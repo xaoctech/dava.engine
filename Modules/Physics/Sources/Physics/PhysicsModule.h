@@ -17,6 +17,7 @@ class PxScene;
 class PxActor;
 class PxShape;
 class PxMaterial;
+class PxDefaultCpuDispatcher;
 }
 
 namespace DAVA
@@ -53,11 +54,15 @@ public:
 
     physx::PxMaterial* GetDefaultMaterial() const;
 
+    const Vector<uint32>& GetBodyComponentTypes() const;
+    const Vector<uint32>& GetShapeComponentTypes() const;
+
 private:
     physx::PxFoundation* foundation = nullptr;
     physx::PxPhysics* physics = nullptr;
     physx::PxCooking* cooking = nullptr;
 
+    mutable physx::PxDefaultCpuDispatcher* cpuDispatcher = nullptr;
     mutable physx::PxMaterial* defaultMaterial = nullptr;
 
     class PhysicsAllocator;
@@ -65,6 +70,9 @@ private:
 
     class PhysicsErrotCallback;
     PhysicsErrotCallback* errorCallback = nullptr;
+
+    Vector<uint32> bodyComponents;
+    Vector<uint32> shapeComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

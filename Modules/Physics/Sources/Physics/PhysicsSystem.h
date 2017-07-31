@@ -41,8 +41,8 @@ public:
     void SetDebugDrawEnabled(bool drawDebugInfo);
     bool IsDebugDrawEnabled() const;
 
-    void SheduleUpdate(PhysicsComponent* component);
-    void SheduleUpdate(CollisionShapeComponent* component);
+    void ScheduleUpdate(PhysicsComponent* component);
+    void ScheduleUpdate(CollisionShapeComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
@@ -71,7 +71,7 @@ private:
     bool isSimulationEnabled = true;
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
-    PhysicsGeometryCache* geometryCache;
+    PhysicsGeometryCache* geometryCache = nullptr;
 
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;

@@ -59,16 +59,6 @@ void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& com
     }
 }
 
-Array<uint32, 7> collisionShapeTypes = {
-    Component::BOX_SHAPE_COMPONENT,
-    Component::CAPSULE_SHAPE_COMPONENT,
-    Component::SPHERE_SHAPE_COMPONENT,
-    Component::PLANE_SHAPE_COMPONENT,
-    Component::CONVEX_HULL_SHAPE_COMPONENT,
-    Component::MESH_SHAPE_COMPONENT,
-    Component::HEIGHT_FIELD_SHAPE_COMPONENT
-};
-
 void UpdateGlobalPose(physx::PxRigidActor* actor, const Matrix4& m, Vector3& scale)
 {
     Vector3 position;
@@ -79,10 +69,11 @@ void UpdateGlobalPose(physx::PxRigidActor* actor, const Matrix4& m, Vector3& sca
 
 bool IsCollisionShapeType(uint32 componentType)
 {
-    return std::any_of(collisionShapeTypes.begin(), collisionShapeTypes.end(), [componentType](uint32 type)
-                       {
-                           return componentType == type;
-                       });
+    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+    return std::any_of(shapeComponents.begin(), shapeComponents.end(), [componentType](uint32 type) {
+        return componentType == type;
+    });
 }
 
 Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
@@ -165,12 +156,20 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
         }
     };
 
-    processEntity(entity, Component::STATIC_BODY_COMPONENT);
-    processEntity(entity, Component::DYNAMIC_BODY_COMPONENT);
-    for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
+    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+    const Vector<uint32>& bodyComponents = module->GetBodyComponentTypes();
+    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+
+    for (uint32 type : bodyComponents)
     {
         processEntity(entity, type);
     }
+
+    for (uint32 type : shapeComponents)
+    {
+        processEntity(entity, type);
+    }
+
     processEntity(entity, Component::RENDER_COMPONENT);
 }
 
@@ -184,9 +183,16 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
         }
     };
 
-    processEntity(entity, Component::STATIC_BODY_COMPONENT);
-    processEntity(entity, Component::DYNAMIC_BODY_COMPONENT);
-    for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
+    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+    const Vector<uint32>& bodyComponents = module->GetBodyComponentTypes();
+    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+
+    for (uint32 type : bodyComponents)
+    {
+        processEntity(entity, type);
+    }
+
+    for (uint32 type : shapeComponents)
     {
         processEntity(entity, type);
     }
@@ -462,8 +468,6 @@ void PhysicsSystem::InitNewObjects()
         physx::PxShape* shape = CreateShape(component, physics);
         if (shape != nullptr)
         {
-            DVASSERT(shape != nullptr);
-
             Entity* entity = component->GetEntity();
             Matrix4 worldTransform = entity->GetWorldTransform();
             Vector3 position, scale, rotation;
@@ -492,6 +496,7 @@ void PhysicsSystem::InitNewObjects()
             }
 
             collisionComponents.push_back(component);
+            shape->release();
         }
     }
     pendingAddCollisionComponents.clear();
@@ -510,24 +515,19 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
     if (shape != nullptr)
     {
         rigidActor->attachShape(*shape);
-        SheduleUpdate(shapeComponent);
-        SheduleUpdate(bodyComponent);
+        ScheduleUpdate(shapeComponent);
+        ScheduleUpdate(bodyComponent);
     }
 }
 
 void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale)
 {
-    auto componentLoop = [&scale, this](Entity* entity, PhysicsComponent* bodyComponent, uint32 componentType)
+    for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
     {
-        for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount(type); ++i)
         {
-            AttachShape(bodyComponent, static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i)), scale);
+            AttachShape(bodyComponent, static_cast<CollisionShapeComponent*>(entity->GetComponent(type, i)), scale);
         }
-    };
-
-    for (uint32 type : PhysicsSystemDetail::collisionShapeTypes)
-    {
-        componentLoop(entity, bodyComponent, type);
     }
 }
 
@@ -557,7 +557,6 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     break;
     case Component::PLANE_SHAPE_COMPONENT:
     {
-        PlaneShapeComponent* planeComponent = static_cast<PlaneShapeComponent*>(component);
         shape = physics->CreatePlaneShape();
     }
     break;
@@ -718,12 +717,12 @@ void PhysicsSystem::ReleaseShape(CollisionShapeComponent* component)
     component->ReleasePxShape();
 }
 
-void PhysicsSystem::SheduleUpdate(PhysicsComponent* component)
+void PhysicsSystem::ScheduleUpdate(PhysicsComponent* component)
 {
     physicsComponensUpdatePending.insert(component);
 }
 
-void PhysicsSystem::SheduleUpdate(CollisionShapeComponent* component)
+void PhysicsSystem::ScheduleUpdate(CollisionShapeComponent* component)
 {
     collisionComponentsUpdatePending.insert(component);
 }

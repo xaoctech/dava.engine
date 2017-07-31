@@ -22,8 +22,6 @@ void ReleaseWindowContext(Window* targetWindow);
 QApplication* GetApplication();
 RenderWidget* GetRenderWidget();
 
-bool SetLoopPaused(bool isPaused);
-
 } // namespace Qt
 } // namespace PlatformApi
 } // namespace DAVA

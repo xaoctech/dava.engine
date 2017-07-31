@@ -16,7 +16,7 @@ Component* CapsuleShapeComponent::Clone(Entity* toEntity)
 
     result->radius = radius;
     result->halfHeight = halfHeight;
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
 }
@@ -43,6 +43,7 @@ float32 CapsuleShapeComponent::GetRadius() const
 void CapsuleShapeComponent::SetRadius(float32 r)
 {
     radius = r;
+    DVASSERT(radius > 0.0f);
     SheduleUpdate();
 }
 
@@ -54,6 +55,7 @@ DAVA::float32 CapsuleShapeComponent::GetHalfHeight() const
 void CapsuleShapeComponent::SetHalfHeight(float32 halfHeight_)
 {
     halfHeight = halfHeight_;
+    DVASSERT(halfHeight > 0.0f);
     SheduleUpdate();
 }
 
@@ -68,6 +70,7 @@ void CapsuleShapeComponent::CheckShapeType() const
 void CapsuleShapeComponent::UpdateLocalProperties()
 {
     physx::PxShape* shape = GetPxShape();
+    DVASSERT(shape != nullptr);
     physx::PxCapsuleGeometry geom;
     shape->getCapsuleGeometry(geom);
     geom.halfHeight = halfHeight;

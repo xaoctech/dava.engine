@@ -8,9 +8,8 @@
 #include <Engine/PlatformApiQt.h>
 #include <Concurrency/LockGuard.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <Debug/MessageBox.h>
 #include <Utils/StringFormat.h>
-
-#include <QMessageBox>
 
 namespace ErrorDialogDetail
 {
@@ -171,9 +170,7 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         errors.clear();
     }
 
-    bool prevValue = DAVA::PlatformApi::Qt::SetLoopPaused(true);
-    QMessageBox::critical(globalOperations->GetGlobalParentWidget(), title.c_str(), errorMessage.c_str());
-    DAVA::PlatformApi::Qt::SetLoopPaused(prevValue);
+    DAVA::Debug::MessageBox(title, errorMessage, { "Close" });
 }
 
 void ErrorDialogOutput::Disable()

@@ -16,7 +16,7 @@ DAVA::Component* PlaneShapeComponent::Clone(Entity* toEntity)
 
     result->point = point;
     result->normal = normal;
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
 }
@@ -53,7 +53,7 @@ const Vector3& PlaneShapeComponent::GetNormal() const
 
 void PlaneShapeComponent::SetNormal(const Vector3& normal_)
 {
-    normal = normal_;
+    normal = Normalize(normal_);
     SheduleUpdate();
 }
 

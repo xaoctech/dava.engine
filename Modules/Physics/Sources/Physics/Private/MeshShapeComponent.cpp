@@ -14,19 +14,9 @@ DAVA::Component* MeshShapeComponent::Clone(Entity* toEntity)
     MeshShapeComponent* result = new MeshShapeComponent();
     result->SetEntity(toEntity);
 
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
-}
-
-void MeshShapeComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
-{
-    CollisionShapeComponent::Serialize(archive, serializationContext);
-}
-
-void MeshShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
-{
-    CollisionShapeComponent::Deserialize(archive, serializationContext);
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -39,6 +29,7 @@ void MeshShapeComponent::CheckShapeType() const
 void MeshShapeComponent::UpdateLocalProperties()
 {
     physx::PxShape* shape = GetPxShape();
+    DVASSERT(shape != nullptr);
     physx::PxTriangleMeshGeometry geom;
     shape->getTriangleMeshGeometry(geom);
     geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);

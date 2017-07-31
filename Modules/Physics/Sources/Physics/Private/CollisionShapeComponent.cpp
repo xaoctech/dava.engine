@@ -94,6 +94,7 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     DVASSERT(name.IsValid());
     shape->setName(name.c_str());
     shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+    shape->acquireReference();
 
 #if defined(__DAVAENGINE_DEBUG__)
     CheckShapeType();
@@ -102,7 +103,7 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     SheduleUpdate();
 }
 
-void CollisionShapeComponent::CopyFields(CollisionShapeComponent* component)
+void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* component) const
 {
     component->name = name;
     component->localPose = localPose;
@@ -118,7 +119,7 @@ void CollisionShapeComponent::SheduleUpdate()
         DVASSERT(entity != nullptr);
         Scene* scene = entity->GetScene();
         DVASSERT(scene != nullptr);
-        scene->physicsSystem->SheduleUpdate(this);
+        scene->physicsSystem->ScheduleUpdate(this);
     }
 }
 

@@ -14,19 +14,9 @@ DAVA::Component* HeightFieldShapeComponent::Clone(Entity* toEntity)
     HeightFieldShapeComponent* result = new HeightFieldShapeComponent();
     result->SetEntity(toEntity);
 
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
-}
-
-void HeightFieldShapeComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
-{
-    CollisionShapeComponent::Serialize(archive, serializationContext);
-}
-
-void HeightFieldShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
-{
-    CollisionShapeComponent::Deserialize(archive, serializationContext);
 }
 
 #if defined(__DAVAENGINE_DEBUG__)

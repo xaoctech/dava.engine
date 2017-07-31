@@ -44,7 +44,7 @@ void Frame(SceneInfo& info)
     info.scene->Update(0.16f);
     while (PhysicsSystemPrivate::HasPendingComponents(info.scene->physicsSystem))
     {
-        DAVA::Thread::Sleep(16);
+        Thread::Sleep(16);
         info.scene->Update(0.16f);
     }
 }
@@ -132,7 +132,7 @@ DAVA_TESTCLASS (PhysicsTest)
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
 
-        physx::PxShape* shape = ExtractPxShape(info, DAVA::Component::BOX_SHAPE_COMPONENT);
+        physx::PxShape* shape = ExtractPxShape(info, Component::BOX_SHAPE_COMPONENT);
         TEST_VERIFY(shape != nullptr);
 
         AttachComponent<StaticBodyComponent>(info);
@@ -193,7 +193,7 @@ DAVA_TESTCLASS (PhysicsTest)
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
 
-        physx::PxShape* shape = ExtractPxShape(info, DAVA::Component::BOX_SHAPE_COMPONENT);
+        physx::PxShape* shape = ExtractPxShape(info, Component::BOX_SHAPE_COMPONENT);
         TEST_VERIFY(shape != nullptr);
 
         AttachComponent<StaticBodyComponent>(info);
@@ -240,17 +240,17 @@ DAVA_TESTCLASS (PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         Matrix4 localTransform = Matrix4::MakeTranslation(Vector3(90.0f, 0.0f, 0.0f));
-        static_cast<DAVA::TransformComponent*>(info.entity->GetComponent(DAVA::Component::TRANSFORM_COMPONENT))->SetLocalTransform(&localTransform);
+        static_cast<TransformComponent*>(info.entity->GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&localTransform);
 
         StaticBodyComponent* bodyComponent = AttachComponent<StaticBodyComponent>(info);
         BoxShapeComponent* boxComponent = AttachComponent<BoxShapeComponent>(info);
-        boxComponent->SetHalfSize(DAVA::Vector3(5.0f, 5.0f, 5.0f));
+        boxComponent->SetHalfSize(Vector3(5.0f, 5.0f, 5.0f));
         info.scene->transformSystem->Process(0.0f);
         Frame(info);
 
         {
             physx::PxRaycastBuffer hitBuffer;
-            bool objectHit = info.scene->physicsSystem->Raycast(DAVA::Vector3(0.0f, 0.0f, 0.0f), DAVA::Vector3(1.0f, 0.0f, 0.0f), std::numeric_limits<float32>::max(), hitBuffer);
+            bool objectHit = info.scene->physicsSystem->Raycast(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), std::numeric_limits<float32>::max(), hitBuffer);
             TEST_VERIFY(objectHit == true);
             TEST_VERIFY(bodyComponent == PhysicsComponent::GetComponent(hitBuffer.block.actor));
             TEST_VERIFY(boxComponent == CollisionShapeComponent::GetComponent(hitBuffer.block.shape));
@@ -258,7 +258,7 @@ DAVA_TESTCLASS (PhysicsTest)
 
         {
             physx::PxRaycastBuffer hitBuffer;
-            bool objectHit = info.scene->physicsSystem->Raycast(DAVA::Vector3(90.0f, 90.0f, 0.0f), DAVA::Vector3(0.0f, -1.0f, 0.0f), std::numeric_limits<float32>::max(), hitBuffer);
+            bool objectHit = info.scene->physicsSystem->Raycast(Vector3(90.0f, 90.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), std::numeric_limits<float32>::max(), hitBuffer);
             TEST_VERIFY(objectHit == true);
             TEST_VERIFY(bodyComponent == PhysicsComponent::GetComponent(hitBuffer.block.actor));
             TEST_VERIFY(boxComponent == CollisionShapeComponent::GetComponent(hitBuffer.block.shape));
@@ -266,7 +266,7 @@ DAVA_TESTCLASS (PhysicsTest)
 
         {
             physx::PxRaycastBuffer hitBuffer;
-            bool objectHit = info.scene->physicsSystem->Raycast(DAVA::Vector3(0.0f, 00.0f, 0.0f), DAVA::Vector3(1.0f, 0.0f, 0.0f), 75.0f, hitBuffer);
+            bool objectHit = info.scene->physicsSystem->Raycast(Vector3(0.0f, 00.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), 75.0f, hitBuffer);
             TEST_VERIFY(objectHit == false);
         }
     }

@@ -40,7 +40,7 @@ protected:
     virtual void CheckShapeType() const = 0;
 #endif
 
-    void CopyFields(CollisionShapeComponent* component);
+    void CopyFieldsIntoClone(CollisionShapeComponent* component) const;
     void SheduleUpdate();
     virtual void UpdateLocalProperties();
 

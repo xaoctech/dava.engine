@@ -28,7 +28,7 @@ Component* DynamicBodyComponent::Clone(Entity* toEntity)
 {
     DynamicBodyComponent* result = new DynamicBodyComponent();
     result->SetEntity(toEntity);
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
     result->linearDamping = linearDamping;
     result->angularDamping = angularDamping;
     result->maxAngularVelocity = maxAngularVelocity;

@@ -26,9 +26,9 @@ public:
     enum eBodyFlags
     {
         VISUALIZE = 0x1,
-        DISABLE_GRAVITY = 0x8,
+        DISABLE_GRAVITY = 0x2,
         WAKEUP_SPEEL_NOTIFY = 0x4,
-        DISABLE_SIMULATION = 0x2,
+        DISABLE_SIMULATION = 0x8,
     };
 
     eBodyFlags GetBodyFlags() const;
@@ -45,7 +45,7 @@ protected:
     virtual void ValidateActorType() const = 0;
 #endif
     void SetPxActor(physx::PxActor* actor);
-    void CopyFields(PhysicsComponent* component) const;
+    void CopyFieldsIntoClone(PhysicsComponent* component) const;
     void SheduleUpdate();
 
     virtual void UpdateLocalProperties();
