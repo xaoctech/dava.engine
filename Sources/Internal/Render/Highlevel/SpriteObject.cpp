@@ -267,7 +267,7 @@ const Vector2& SpriteObject::GetPivot() const
     return sprPivot;
 }
 
-void SpriteObject::BindDynamicParameters(Camera* camera)
+void SpriteObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     const Matrix4& cameraMatrix = camera->GetMatrix();
     switch (spriteType)

@@ -153,6 +153,10 @@ const QIcon& SceneTreeItemEntity::ItemIcon() const
         {
             return SharedIcon(":/QtIcons/grass.png");
         }
+        else if (nullptr != DAVA::GetSkeletonComponent(entity))
+        {
+            return SharedIcon(":/QtIcons/skinned_object.png");
+        }
         else if (nullptr != DAVA::GetRenderObject(entity))
         {
             return SharedIcon(":/QtIcons/render_object.png");

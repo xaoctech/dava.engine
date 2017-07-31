@@ -420,7 +420,8 @@
     </widget>
     <addaction name="actionGridCopy"/>
     <addaction name="actionBatchProcess"/>
-    <addaction name="actionCreateTestSkinnedObject"/>
+    <addaction name="actionCreateTestHardSkinnedObject"/>
+    <addaction name="actionCreateTestSoftSkinnedObject"/>
     <addaction name="actionImageSplitterForNormals"/>
     <addaction name="actionReplaceTextureMipmap"/>
     <addaction name="menuDump"/>
@@ -1789,9 +1790,9 @@
     <string>Add Skeleton Component</string>
    </property>
   </action>
-  <action name="actionCreateTestSkinnedObject">
+  <action name="actionCreateTestSoftSkinnedObject">
    <property name="text">
-    <string>Create Test Skinned Object</string>
+    <string>Create Test Soft Skinned Object</string>
    </property>
   </action>
   <action name="actionWayEditor">
@@ -2001,6 +2002,11 @@
    </property>
    <property name="toolTip">
     <string>Perform some routine checks under scene objects</string>
+   </property>
+  </action>
+  <action name="actionCreateTestHardSkinnedObject">
+   <property name="text">
+    <string>Create Test Hard Skinned Object</string>
    </property>
   </action>
  </widget>

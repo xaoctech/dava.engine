@@ -31,6 +31,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
+#include "Scene3D/Systems/MotionSystem.h"
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
@@ -38,6 +39,7 @@
 #include "Scene3D/Systems/SlotSystem.h"
 
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -244,7 +246,15 @@ void Scene::CreateSystems()
     }
 #endif
 
-    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
+    {
+        motionSystem = new MotionSystem(this);
+        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+
+        motionSingleComponent = new MotionSingleComponent();
+    }
+
+    if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
     {
         skeletonSystem = new SkeletonSystem(this);
         AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
@@ -374,22 +384,23 @@ Scene::~Scene()
 
     SafeRelease(sceneGlobalMaterial);
 
-    transformSystem = 0;
-    renderUpdateSystem = 0;
-    lodSystem = 0;
-    debugRenderSystem = 0;
-    particleEffectSystem = 0;
-    updatableSystem = 0;
-    lightUpdateSystem = 0;
-    switchSystem = 0;
-    soundSystem = 0;
-    actionSystem = 0;
-    staticOcclusionSystem = 0;
-    speedTreeUpdateSystem = 0;
-    foliageSystem = 0;
-    windSystem = 0;
-    waveSystem = 0;
-    animationSystem = 0;
+    transformSystem = nullptr;
+    renderUpdateSystem = nullptr;
+    lodSystem = nullptr;
+    debugRenderSystem = nullptr;
+    particleEffectSystem = nullptr;
+    updatableSystem = nullptr;
+    lightUpdateSystem = nullptr;
+    switchSystem = nullptr;
+    soundSystem = nullptr;
+    actionSystem = nullptr;
+    staticOcclusionSystem = nullptr;
+    speedTreeUpdateSystem = nullptr;
+    foliageSystem = nullptr;
+    windSystem = nullptr;
+    waveSystem = nullptr;
+    animationSystem = nullptr;
+    motionSystem = nullptr;
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     physicsSystem = nullptr;
 #endif
@@ -400,6 +411,7 @@ Scene::~Scene()
     systems.clear();
 
     SafeDelete(transformSingleComponent);
+    SafeDelete(motionSingleComponent);
 
     systemsToProcess.clear();
     systemsToInput.clear();
@@ -431,6 +443,10 @@ void Scene::UnregisterEntity(Entity* entity)
     if (transformSingleComponent)
     {
         transformSingleComponent->EraseEntity(entity);
+    }
+    if (motionSingleComponent)
+    {
+        motionSingleComponent->EntityRemoved(entity);
     }
 
     for (auto& system : systems)
@@ -630,6 +646,7 @@ void Scene::Update(float32 timeElapsed)
     {
         transformSingleComponent->Clear();
     }
+
     sceneGlobalTime += timeElapsed;
 }
 

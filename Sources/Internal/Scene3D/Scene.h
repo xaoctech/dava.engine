@@ -47,12 +47,14 @@ class FoliageSystem;
 class WindSystem;
 class WaveSystem;
 class SkeletonSystem;
+class MotionSystem;
 class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
 class SlotSystem;
 class TransformSingleComponent;
+class MotionSingleComponent;
 
 class UIEvent;
 
@@ -107,9 +109,10 @@ public:
         SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG = 1 << 14,
         SCENE_SYSTEM_WIND_UPDATE_FLAG = 1 << 15,
         SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
-        SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
+        SCENE_SYSTEM_SKELETON_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
         SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
+        SCENE_SYSTEM_MOTION_FLAG = 1 << 20,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
@@ -172,6 +175,7 @@ public:
     AnimationSystem* animationSystem = nullptr;
     StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem = nullptr;
     SkeletonSystem* skeletonSystem = nullptr;
+    MotionSystem* motionSystem = nullptr;
     LandscapeSystem* landscapeSystem = nullptr;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
@@ -180,6 +184,7 @@ public:
 #endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
+    MotionSingleComponent* motionSingleComponent = nullptr;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

@@ -59,6 +59,10 @@ public:
     inline void GetFlexibility(int32 i, float32& v);
     inline void GetAngle(int32 i, Vector2& v);
 
+    inline void GetHardJointIndex(int32 vIndex, int32& indexValue);
+    inline void GetJointIndex(int32 vIndex, int32 jIndex, int32& indexValue);
+    inline void GetJointWeight(int32 vIndex, int32 jIndex, float32& weightValue);
+
     inline rhi::PrimitiveType GetPrimitiveType();
 
     //! Setters
@@ -70,9 +74,10 @@ public:
     inline void SetColor(int32 i, const uint32& c);
     inline void SetTexcoord(int32 ti, int32 i, const Vector2& v);
     inline void SetCubeTexcoord(int32 ti, int32 i, const Vector3& v);
-    inline void SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue);
-    inline void SetJointCount(int32 vIndex, int32 jointCount);
-    inline void SetJointWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue);
+
+    inline void SetHardJointIndex(int32 vIndex, int32 indexValue);
+    inline void SetJointIndex(int32 vIndex, int32 jIndex, int32 indexValue);
+    inline void SetJointWeight(int32 vIndex, int32 jIndex, float32 weightValue);
 
     inline void SetIndex(int32 i, int16 index);
 
@@ -89,35 +94,34 @@ public:
 
     inline void SetPrimitiveType(rhi::PrimitiveType type);
 
-    int32 vertexCount;
-    int32 indexCount;
-    int32 textureCoordCount;
-    int32 vertexStride;
-    int32 vertexFormat;
-    int32 indexFormat;
-    int32 primitiveCount;
-    rhi::PrimitiveType primitiveType;
-    int32 cubeTextureCoordCount;
+    int32 vertexCount = 0;
+    int32 indexCount = 0;
+    int32 textureCoordCount = 0;
+    int32 vertexStride = 0;
+    int32 vertexFormat = 0;
+    int32 indexFormat = EIF_16;
+    int32 primitiveCount = 0;
+    rhi::PrimitiveType primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
+    int32 cubeTextureCoordCount = 0;
 
-    Vector3* vertexArray;
-    Vector2** textureCoordArray;
-    Vector3* normalArray;
-    Vector3* tangentArray;
-    Vector3* binormalArray;
-    float32* jointIdxArray;
-    float32* jointWeightArray;
-    Vector3** cubeTextureCoordArray;
+    Vector3* vertexArray = nullptr;
+    Vector2** textureCoordArray = nullptr;
+    Vector3* normalArray = nullptr;
+    Vector3* tangentArray = nullptr;
+    Vector3* binormalArray = nullptr;
+    float32* hardJointIndexArray = nullptr;
+    Vector4* jointIndexArray = nullptr;
+    Vector4* jointWeightArray = nullptr;
+    Vector3** cubeTextureCoordArray = nullptr;
 
-    uint32* jointCountArray;
+    Vector4* pivot4Array = nullptr;
+    Vector3* pivotArray = nullptr;
+    float32* flexArray = nullptr;
+    Vector2* angleArray = nullptr;
 
-    Vector4* pivot4Array;
-    Vector3* pivotArray;
-    float32* flexArray;
-    Vector2* angleArray;
-
-    uint32* colorArray;
-    int16* indexArray; // Boroda: why int16? should be uint16?
-    uint8* meshData;
+    uint32* colorArray = nullptr;
+    int16* indexArray = nullptr; // Boroda: why int16? should be uint16?
+    uint8* meshData = nullptr;
 
     AABBox3 aabbox;
 
@@ -151,7 +155,7 @@ public:
 
     rhi::HVertexBuffer vertexBuffer;
     rhi::HIndexBuffer indexBuffer;
-    uint32 vertexLayoutId;
+    uint32 vertexLayoutId = rhi::VertexLayout::InvalidUID;
 
 private:
     void UpdateDataPointersAndStreams();
@@ -240,25 +244,22 @@ inline void PolygonGroup::SetAngle(int32 i, const Vector2& _v)
     *v = _v;
 }
 
-inline void PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue)
+inline void PolygonGroup::SetHardJointIndex(int32 vIndex, int32 indexValue)
 {
-    DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneIndexValue);
-    //	uint8 * t = ((uint8*)jointIdxArray) + vIndex * vertexStride;
-    //	t[jointIndex] = boneIndexValue;
+    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(hardJointIndexArray) + vIndex * vertexStride);
+    *v = float32(indexValue);
 }
 
-inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue)
+inline void PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 indexValue)
 {
     DVASSERT(jointIndex >= 0 && jointIndex < 4);
-    *reinterpret_cast<float32*>(reinterpret_cast<uint8*>(jointIdxArray) + vIndex * vertexStride) = float32(boneWeightValue);
-    //    uint8 * t = ((uint8*)jointWeightArray) + vIndex * vertexStride;
-    //	t[jointIndex] = (uint8)(255 * boneWeightValue);
+    reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointIndexArray) + vIndex * vertexStride)->data[jointIndex] = float32(indexValue);
 }
 
-inline void PolygonGroup::SetJointCount(int32 vIndex, int32 jointCount)
+inline void PolygonGroup::SetJointWeight(int32 vIndex, int32 jointIndex, float32 weightValue)
 {
-    jointCountArray[vIndex] = jointCount;
+    DVASSERT(jointIndex >= 0 && jointIndex < 4);
+    reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride)->data[jointIndex] = float32(weightValue);
 }
 
 inline void PolygonGroup::SetIndex(int32 i, int16 index)
@@ -340,6 +341,24 @@ inline void PolygonGroup::GetAngle(int32 i, Vector2& _v)
 {
     Vector2* v = reinterpret_cast<Vector2*>(reinterpret_cast<uint8*>(angleArray) + i * vertexStride);
     _v = *v;
+}
+
+inline void PolygonGroup::GetHardJointIndex(int32 vIndex, int32& indexValue)
+{
+    float32* v = reinterpret_cast<float32*>(reinterpret_cast<uint8*>(hardJointIndexArray) + vIndex * vertexStride);
+    indexValue = int32(*v);
+}
+
+inline void PolygonGroup::GetJointIndex(int32 vIndex, int32 jointIndex, int32& indexValue)
+{
+    DVASSERT(jointIndex >= 0 && jointIndex < 4);
+    indexValue = int32(reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointIndexArray) + vIndex * vertexStride)->data[jointIndex]);
+}
+
+inline void PolygonGroup::GetJointWeight(int32 vIndex, int32 jointIndex, float32& weightValue)
+{
+    DVASSERT(jointIndex >= 0 && jointIndex < 4);
+    weightValue = reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride)->data[jointIndex];
 }
 
 inline void PolygonGroup::GetIndex(int32 i, int32& index)

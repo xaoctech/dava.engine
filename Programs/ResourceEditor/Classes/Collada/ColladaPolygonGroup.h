@@ -11,14 +11,12 @@ class ColladaMesh;
 
 struct ColladaVertex
 {
+    const static uint32 COLLADA_MAX_JOINT_WEIGHTS = 8;
+
     ColladaVertex()
     {
-        jointCount = 0;
-        for (int i = 0; i < 20; ++i)
-        {
-            joint[i] = 0;
-            weight[i] = 0.0f;
-        }
+        memset(joint, 0, sizeof(joint));
+        memset(weight, 0, sizeof(weight));
     }
 
     static bool IsEqual(const ColladaVertex& v1, const ColladaVertex& c2, int32 vertexFormat);
@@ -29,9 +27,9 @@ struct ColladaVertex
     Vector3 binormal;
     Vector2 texCoords[4];
 
-    int32 jointCount;
-    int32 joint[20];
-    float32 weight[20];
+    int32 jointCount = 0;
+    int32 joint[COLLADA_MAX_JOINT_WEIGHTS];
+    float32 weight[COLLADA_MAX_JOINT_WEIGHTS];
 };
 
 struct ColladaSortVertex
@@ -46,13 +44,14 @@ struct ColladaVertexWeight
 {
     ColladaVertexWeight()
     {
-        jointCount = 0;
+        memset(jointArray, 0, sizeof(jointArray));
+        memset(weightArray, 0, sizeof(weightArray));
     }
 
-    void AddWeight(int jointI, float32 weight);
+    void AddWeight(int32 jointI, float32 weight);
     void Normalize();
 
-    int32 jointCount;
+    int32 jointCount = 0;
     int32 jointArray[10];
     float32 weightArray[10];
 };
@@ -60,7 +59,7 @@ struct ColladaVertexWeight
 class ColladaPolygonGroup
 {
 public:
-    ColladaPolygonGroup(ColladaMesh* _mesh, FCDGeometryPolygons* _polygons, ColladaVertexWeight* wertexWeightArray);
+    ColladaPolygonGroup(ColladaMesh* _mesh, FCDGeometryPolygons* _polygons, ColladaVertexWeight* wertexWeightArray, uint32 maxVertexInfluence);
     ~ColladaPolygonGroup();
 
     void Render(ColladaMaterial* material);
@@ -91,8 +90,10 @@ public:
 
     ColladaMesh* parentMesh;
 
+    uint32 maxVertexInfluenceCount;
+
 protected:
-    bool skinAnimation;
+    bool skinned;
 
     FCDGeometryPolygons* polygons;
 

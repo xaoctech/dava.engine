@@ -318,6 +318,9 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
     {
         QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertDae()));
         actionConvert->setData(fileInfoAsVariant);
+
+        QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsDae()));
+        actionConvertAnimations->setData(fileInfoAsVariant);
     }
     else if (pathname.IsEqualToExtension(".fbx"))
     {
@@ -365,6 +368,14 @@ void LibraryWidget::OnConvertDae()
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEConvertionRequested(fileInfo.absoluteFilePath().toStdString());
+}
+
+void LibraryWidget::OnConvertAnimationsDae()
+{
+    QVariant indexAsVariant = ((QAction*)sender())->data();
+    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
+
+    emit DAEAnimationConvertionRequested(fileInfo.absoluteFilePath().toStdString());
 }
 
 void LibraryWidget::OnConvertFBX()

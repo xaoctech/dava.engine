@@ -690,7 +690,7 @@ Vector3 ParticleRenderObject::GetStripeNormalizedSpeed(const StripeData& data)
     return baseSpeed;
 }
 
-void ParticleRenderObject::BindDynamicParameters(Camera* camera)
+void ParticleRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &Matrix4::IDENTITY, reinterpret_cast<pointer_size>(&Matrix4::IDENTITY));
 }

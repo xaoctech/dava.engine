@@ -164,7 +164,7 @@ enum eVertexFormat
     EVF_TEXCOORD3 = 1 << 6,
     EVF_TANGENT = 1 << 7,
     EVF_BINORMAL = 1 << 8,
-    // nine bit skipped cause legacy; for now it unused
+    EVF_HARD_JOINTINDEX = 1 << 9, //single joint index for hard-skinning
     EVF_PIVOT4 = 1 << 10,
     EVF_PIVOT_DEPRECATED = 1 << 11, //deprecated, need remove after content re-saving
     EVF_FLEXIBILITY = 1 << 12,
@@ -235,6 +235,8 @@ inline int32 GetVertexSize(int32 flags)
         size += 3 * sizeof(float32);
     if (flags & EVF_BINORMAL)
         size += 3 * sizeof(float32);
+    if (flags & EVF_HARD_JOINTINDEX)
+        size += sizeof(float32);
 
     if (flags & EVF_CUBETEXCOORD0)
         size += 3 * sizeof(float32);
@@ -254,12 +256,10 @@ inline int32 GetVertexSize(int32 flags)
     if (flags & EVF_ANGLE_SIN_COS)
         size += 2 * sizeof(float32);
 
-    //    if (flags & EVF_JOINTINDEX) size += 4;
-    //    if (flags & EVF_JOINTWEIGHT) size += 4;
     if (flags & EVF_JOINTINDEX)
-        size += 1 * sizeof(float32);
+        size += 4 * sizeof(float32);
     if (flags & EVF_JOINTWEIGHT)
-        size += 1 * sizeof(float32);
+        size += 4 * sizeof(float32);
 
     return size;
 }

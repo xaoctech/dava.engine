@@ -75,31 +75,50 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
     }
 }
 
-void DeveloperTools::OnDebugCreateTestSkinnedObject()
+void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
 {
     SceneEditor2* currentScene = sceneHolder.GetScene();
     if (!currentScene)
         return;
+
     ScopedPtr<Entity> entity(new Entity());
-    entity->SetName(FastName("SkeletonTestComponent"));
+    entity->SetName(FastName("TestHardSkinned"));
 
     int boxesCount = 4;
-    Vector3 boxes[] = { Vector3(0, 0, 0), Vector3(0, 0, 10), Vector3(2, 0, 15), Vector3(-2, 0, 15) };
+    Vector3 boxes[] = { Vector3(0, 0, 0), Vector3(0, 0, 10), Vector3(2, 0, 5), Vector3(-2, 0, 5) };
 
     AABBox3 jointBox(Vector3(-1, -1, -1), Vector3(1, 1, 1));
     SkeletonComponent* component = new SkeletonComponent();
 
-    Vector<SkeletonComponent::JointConfig> configJoints;
-    configJoints.push_back(SkeletonComponent::JointConfig(SkeletonComponent::INVALID_JOINT_INDEX, 0, FastName("root0"), Vector3(0, 0, 0), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[0], jointBox.max + boxes[0])));
-    configJoints.push_back(SkeletonComponent::JointConfig(0, 1, FastName("root0.bone0"), Vector3(0, 0, 10), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[1], jointBox.max + boxes[1])));
-    configJoints.push_back(SkeletonComponent::JointConfig(1, 2, FastName("root0.bone0.bone0"), Vector3(2, 0, 5), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[2], jointBox.max + boxes[2])));
-    configJoints.push_back(SkeletonComponent::JointConfig(1, 3, FastName("root0.bone0.bone1"), Vector3(-2, 0, 5), Quaternion(0, 0, 0, 1), 1.0, AABBox3(jointBox.min + boxes[3], jointBox.max + boxes[3])));
-    component->SetConfigJoints(configJoints);
+    Vector<SkeletonComponent::Joint> joints;
+    joints.resize(4);
+
+    joints[0].parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+    joints[0].uid = FastName("root0");
+
+    joints[1].parentIndex = 0;
+    joints[1].uid = FastName("root0.bone0");
+
+    joints[2].parentIndex = 1;
+    joints[2].uid = FastName("root0.bone0.bone0");
+
+    joints[3].parentIndex = 1;
+    joints[3].uid = FastName("root0.bone0.bone1");
+
+    for (int32 i = 0; i < 4; ++i)
+    {
+        joints[i].name = joints[i].uid;
+        joints[i].bindTransform = Matrix4::MakeTranslation(boxes[i]);
+        joints[i].bindTransform.GetInverse(joints[i].bindTransformInv);
+        joints[i].bbox = AABBox3(jointBox.min + boxes[i], jointBox.max + boxes[i]);
+    }
+
+    component->SetJoints(joints);
     entity->AddComponent(component);
 
     ScopedPtr<PolygonGroup> polygonGroup(new PolygonGroup());
     polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_LINELIST);
-    polygonGroup->AllocateData(EVF_VERTEX | EVF_JOINTINDEX | EVF_JOINTWEIGHT, boxesCount * 8, boxesCount * 24);
+    polygonGroup->AllocateData(EVF_VERTEX | EVF_HARD_JOINTINDEX, boxesCount * 8, boxesCount * 24);
     for (int32 i = 0; i < boxesCount; i++)
     {
         polygonGroup->SetCoord(i * 8 + 0, boxes[i] + Vector3(jointBox.min.x, jointBox.min.y, jointBox.min.z));
@@ -112,8 +131,7 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
         polygonGroup->SetCoord(i * 8 + 7, boxes[i] + Vector3(jointBox.max.x, jointBox.min.y, jointBox.max.z));
         for (int32 v = 0; v < 8; v++)
         {
-            polygonGroup->SetJointIndex(i * 8 + v, 0, i);
-            polygonGroup->SetJointWeight(i * 8 + v, 0, 1.0f);
+            polygonGroup->SetHardJointIndex(i * 8 + v, i);
         }
 
         polygonGroup->SetIndex(i * 24 + 0, i * 8 + 0);
@@ -148,7 +166,194 @@ void DeveloperTools::OnDebugCreateTestSkinnedObject()
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetMaterialName(FastName("DebugSkeleton"));
     material->SetFXName(NMaterialName::DECAL_OPAQUE);
-    material->AddFlag(NMaterialFlagName::FLAG_SKINNING, 1);
+    material->AddFlag(NMaterialFlagName::FLAG_HARD_SKINNING, 1);
+
+    ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
+    renderBatch->SetMaterial(material);
+    renderBatch->SetPolygonGroup(polygonGroup);
+
+    ScopedPtr<SkinnedMesh> skinnedMesh(new SkinnedMesh());
+    skinnedMesh->AddRenderBatch(renderBatch);
+
+    RenderComponent* renderComponent = new RenderComponent();
+    renderComponent->SetRenderObject(skinnedMesh);
+    entity->AddComponent(renderComponent);
+
+    currentScene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(entity, currentScene)));
+}
+
+void DeveloperTools::OnDebugCreateTestSoftSkinnedObject()
+{
+    SceneEditor2* currentScene = sceneHolder.GetScene();
+    if (!currentScene)
+        return;
+
+    ScopedPtr<Entity> entity(new Entity());
+    entity->SetName(FastName("TestSoftSkinned"));
+
+    //////////////////////////////////////////////////////////////////////////
+
+    SkeletonComponent* component = new SkeletonComponent();
+    Vector<SkeletonComponent::Joint> joints;
+    joints.resize(5);
+
+    AABBox3 jointBBox = AABBox3(Vector3(0.f, 0.f, 0.f), 1.f);
+
+    joints[0].uid = FastName("root");
+    joints[0].bindTransform = Matrix4::IDENTITY;
+
+    joints[1].uid = FastName("corner00");
+    joints[1].bindTransform = Matrix4::MakeTranslation(Vector3(-10.f, -10.f, 0.f));
+
+    joints[2].uid = FastName("corner01");
+    joints[2].bindTransform = Matrix4::MakeTranslation(Vector3(-10.f, 10.f, 0.f));
+
+    joints[3].uid = FastName("corner10");
+    joints[3].bindTransform = Matrix4::MakeTranslation(Vector3(10.f, -10.f, 0.f));
+
+    joints[4].uid = FastName("corner11");
+    joints[4].bindTransform = Matrix4::MakeTranslation(Vector3(10.f, 10.f, 0.f));
+
+    for (int32 j = 0; j < 5; ++j)
+    {
+        joints[j].parentIndex = (j == 0) ? SkeletonComponent::INVALID_JOINT_INDEX : 0;
+        joints[j].name = joints[j].uid;
+        joints[j].bbox = jointBBox;
+        joints[j].bindTransform.GetInverse(joints[j].bindTransformInv);
+    }
+
+    component->SetJoints(joints);
+    entity->AddComponent(component);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    ScopedPtr<PolygonGroup> polygonGroup(new PolygonGroup());
+    polygonGroup->AllocateData(EVF_VERTEX | EVF_TEXCOORD0 | EVF_NORMAL | EVF_JOINTINDEX | EVF_JOINTWEIGHT, 9, 8 * 3);
+
+    for (int32 v = 0; v < 9; ++v)
+    {
+        for (int32 j = 0; j < 4; ++j)
+        {
+            polygonGroup->SetJointIndex(v, j, 0);
+            polygonGroup->SetJointWeight(v, j, 0.f);
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    polygonGroup->SetIndex(0, 1);
+    polygonGroup->SetIndex(1, 0);
+    polygonGroup->SetIndex(2, 4);
+
+    polygonGroup->SetIndex(3, 4);
+    polygonGroup->SetIndex(4, 0);
+    polygonGroup->SetIndex(5, 3);
+
+    polygonGroup->SetIndex(6, 1);
+    polygonGroup->SetIndex(7, 4);
+    polygonGroup->SetIndex(8, 2);
+
+    polygonGroup->SetIndex(9, 2);
+    polygonGroup->SetIndex(10, 4);
+    polygonGroup->SetIndex(11, 5);
+
+    polygonGroup->SetIndex(12, 3);
+    polygonGroup->SetIndex(13, 6);
+    polygonGroup->SetIndex(14, 4);
+
+    polygonGroup->SetIndex(15, 4);
+    polygonGroup->SetIndex(16, 6);
+    polygonGroup->SetIndex(17, 7);
+
+    polygonGroup->SetIndex(18, 5);
+    polygonGroup->SetIndex(19, 4);
+    polygonGroup->SetIndex(20, 8);
+
+    polygonGroup->SetIndex(21, 8);
+    polygonGroup->SetIndex(22, 4);
+    polygonGroup->SetIndex(23, 7);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    polygonGroup->SetCoord(0, Vector3(-10.f, -10.f, 0.f));
+    polygonGroup->SetCoord(1, Vector3(-10.f, 0.f, 0.f));
+    polygonGroup->SetCoord(2, Vector3(-10.f, 10.f, 0.f));
+
+    polygonGroup->SetCoord(3, Vector3(0.f, -10.f, 0.f));
+    polygonGroup->SetCoord(4, Vector3(0.f, 0.f, 0.f));
+    polygonGroup->SetCoord(5, Vector3(0.f, 10.f, 0.f));
+
+    polygonGroup->SetCoord(6, Vector3(10.f, -10.f, 0.f));
+    polygonGroup->SetCoord(7, Vector3(10.f, 0.f, 0.f));
+    polygonGroup->SetCoord(8, Vector3(10.f, 10.f, 0.f));
+
+    //////////////////////////////////////////////////////////////////////////
+
+    polygonGroup->SetTexcoord(0, 0, Vector2(0.f, 0.0f));
+    polygonGroup->SetTexcoord(0, 1, Vector2(0.f, 0.5f));
+    polygonGroup->SetTexcoord(0, 2, Vector2(0.f, 1.0f));
+
+    polygonGroup->SetTexcoord(0, 3, Vector2(0.5f, 0.0f));
+    polygonGroup->SetTexcoord(0, 4, Vector2(0.5f, 0.5f));
+    polygonGroup->SetTexcoord(0, 5, Vector2(0.5f, 1.0f));
+
+    polygonGroup->SetTexcoord(0, 6, Vector2(1.f, 0.0f));
+    polygonGroup->SetTexcoord(0, 7, Vector2(1.f, 0.5f));
+    polygonGroup->SetTexcoord(0, 8, Vector2(1.f, 1.0f));
+
+    //////////////////////////////////////////////////////////////////////////
+
+    for (int32 v = 0; v < 9; ++v)
+    {
+        polygonGroup->SetNormal(v, Vector3(0.f, 0.f, 1.f));
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    polygonGroup->SetJointIndex(0, 0, 1);
+    polygonGroup->SetJointWeight(0, 0, 1.f);
+
+    polygonGroup->SetJointIndex(1, 0, 1);
+    polygonGroup->SetJointIndex(1, 1, 2);
+    polygonGroup->SetJointWeight(1, 0, 0.5f);
+    polygonGroup->SetJointWeight(1, 1, 0.5f);
+
+    polygonGroup->SetJointIndex(2, 0, 2);
+    polygonGroup->SetJointWeight(2, 0, 1.f);
+
+    polygonGroup->SetJointIndex(3, 0, 1);
+    polygonGroup->SetJointIndex(3, 1, 3);
+    polygonGroup->SetJointWeight(3, 0, 0.5f);
+    polygonGroup->SetJointWeight(3, 1, 0.5f);
+
+    polygonGroup->SetJointIndex(4, 0, 0);
+    polygonGroup->SetJointWeight(4, 0, 1.f);
+
+    polygonGroup->SetJointIndex(5, 0, 2);
+    polygonGroup->SetJointIndex(5, 1, 4);
+    polygonGroup->SetJointWeight(5, 0, 0.5f);
+    polygonGroup->SetJointWeight(5, 1, 0.5f);
+
+    polygonGroup->SetJointIndex(6, 0, 3);
+    polygonGroup->SetJointWeight(6, 0, 1.f);
+
+    polygonGroup->SetJointIndex(7, 0, 3);
+    polygonGroup->SetJointIndex(7, 1, 4);
+    polygonGroup->SetJointWeight(7, 0, 0.5f);
+    polygonGroup->SetJointWeight(7, 1, 0.5f);
+
+    polygonGroup->SetJointIndex(8, 0, 4);
+    polygonGroup->SetJointWeight(8, 0, 1.f);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    MeshUtils::RebuildMeshTangentSpace(polygonGroup);
+    polygonGroup->BuildBuffers();
+
+    ScopedPtr<NMaterial> material(new NMaterial());
+    material->SetMaterialName(FastName("DebugSkeleton"));
+    material->SetFXName(FastName("~res:/Materials/NormalizedBlinnPhongPerVertex.Opaque.material"));
+    material->AddFlag(NMaterialFlagName::FLAG_SOFT_SKINNING, 4);
 
     ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
     renderBatch->SetMaterial(material);

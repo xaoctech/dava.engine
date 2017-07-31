@@ -34,6 +34,7 @@ void LibraryModule::PostInit()
     connections.AddConnection(libraryWidget, &LibraryWidget::AddSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnAddSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::EditSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnEditSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DAEConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEConvertionRequested));
+    connections.AddConnection(libraryWidget, &LibraryWidget::DAEAnimationConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEAnimationConvertionRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::FBXConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnFBXConvertionRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DoubleClicked, DAVA::MakeFunction(this, &LibraryModule::OnDoubleClicked));
     connections.AddConnection(libraryWidget, &LibraryWidget::DragStarted, DAVA::MakeFunction(this, &LibraryModule::OnDragStarted));
@@ -113,6 +114,21 @@ void LibraryModule::OnDAEConvertionRequested(const DAVA::FilePath& daePathname)
         std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
 
         DAEConverter::Convert(daePathname);
+    });
+}
+
+void LibraryModule::OnDAEAnimationConvertionRequested(const DAVA::FilePath& daePathname)
+{
+    HidePreview();
+
+    executor.DelayedExecute([this, daePathname]() {
+        DAVA::TArc::UI* ui = GetUI();
+        DAVA::TArc::WaitDialogParams waitDlgParams;
+        waitDlgParams.message = QString("DAE animations conversion\n%1").arg(daePathname.GetAbsolutePathname().c_str());
+        waitDlgParams.needProgressBar = false;
+        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+
+        DAEConverter::ConvertAnimations(daePathname);
     });
 }
 

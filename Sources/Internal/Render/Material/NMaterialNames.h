@@ -177,7 +177,8 @@ public:
     static const FastName FLAG_DEBUG_Z_NORMAL_SCALE;
     static const FastName FLAG_DEBUG_NORMAL_ROTATION;
 
-    static const FastName FLAG_SKINNING;
+    static const FastName FLAG_HARD_SKINNING;
+    static const FastName FLAG_SOFT_SKINNING;
 
     static const FastName FLAG_FLOWMAP_SKY;
     static const FastName FLAG_PARTICLES_FLOWMAP;

@@ -273,7 +273,7 @@ private:
                                      {
                                          for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             joints.insert(skeleton->GetJointName(i).c_str());
+                                             joints.insert(skeleton->GetJoint(i).name.c_str());
                                          }
                                      }
                                  }
@@ -285,7 +285,7 @@ private:
                                      {
                                          for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             jointIntersection.insert(skeleton->GetJointName(i).c_str());
+                                             jointIntersection.insert(skeleton->GetJoint(i).name.c_str());
                                          }
                                      }
 
