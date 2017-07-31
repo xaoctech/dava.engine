@@ -51,6 +51,7 @@ private:
 private:
     bool needLineBreak = false;
     bool needSpace = false;
+    bool needSoftStick = false;
     bool isEditorMode = false;
     bool isDebugDraw = false;
     bool classesInheritance = false;

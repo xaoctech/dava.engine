@@ -26,6 +26,14 @@ enum eLineBreakType
 };
 
 /**
+ * \brief Gets information about UTF8 line breaks using libunibreak library.
+ * \param string The input string.
+ * \param [out] breaks The output vector of breaks.
+ * \param locale (Optional) The locale code.
+ */
+void GetLineBreaks(const String& string, Vector<uint8>& breaks, const char8* locale = 0);
+
+/**
 * \brief Gets information about line breaks using libunibreak library.
 * \param string The input string.
 * \param [out] breaks The output vector of breaks.
@@ -176,7 +184,7 @@ inline bool IsWhitespace(char16 t)
 
 inline bool IsWhitespace(char8 t)
 {
-    return (std::isspace(t) != 0);
+    return (std::isspace(static_cast<unsigned char>(t)) != 0);
 }
 
 /**
