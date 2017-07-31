@@ -31,9 +31,8 @@ class SceneInfo : public QtPropertyEditor
 protected:
     struct SpeedTreeInfo
     {
-        DAVA::float32 leafsSquareX = 0.0f;
-        DAVA::float32 leafsSquareY = 0.0f;
-        DAVA::float32 leafsSquareZ = 0.0f;
+        DAVA::Vector3 leafsSquareAbsolute;
+        DAVA::Vector3 leafsSquareRelative;
     };
 
 public:

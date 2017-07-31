@@ -174,31 +174,35 @@ void SceneInfo::InitializeSpeedTreeInfoSelection()
 {
     QtPropertyData* header = CreateInfoHeader("SpeedTree Info");
 
-    AddChild("Leafs Square (X-axis)", header);
-    AddChild("Leafs Square (Y-axis)", header);
-    AddChild("Leafs Square (Z-axis)", header);
+    AddChild("Leafs Square Absolute (X-axis)", header);
+    AddChild("Leafs Square Absolute (Y-axis)", header);
+    AddChild("Leafs Square Absolute (Z-axis)", header);
+    AddChild("Leafs Square Relative (X-axis)", header);
+    AddChild("Leafs Square Relative (Y-axis)", header);
+    AddChild("Leafs Square Relative (Z-axis)", header);
 }
 
 void SceneInfo::RefreshSpeedTreeInfoSelection()
 {
     QtPropertyData* header = GetInfoHeader("SpeedTree Info");
 
-    float32 leafsSquareX = 0.f, leafsSquareY = 0.f, leafsSquareZ = 0.f;
+    DAVA::Vector3 leafsSquareAbsolute, leafsSquareRelative;
     for (const SpeedTreeInfo& info : speedTreesInfo)
     {
-        leafsSquareX += info.leafsSquareX;
-        leafsSquareY += info.leafsSquareY;
-        leafsSquareZ += info.leafsSquareZ;
+        leafsSquareAbsolute += info.leafsSquareAbsolute;
+        leafsSquareRelative += info.leafsSquareRelative;
     }
 
     //percentage
-    leafsSquareX *= 100.f;
-    leafsSquareY *= 100.f;
-    leafsSquareZ *= 100.f;
+    leafsSquareRelative *= 100.f;
 
-    SetChild("Leafs Square (X-axis)", DAVA::Format("%.2f%%", leafsSquareX).c_str(), header);
-    SetChild("Leafs Square (Y-axis)", DAVA::Format("%.2f%%", leafsSquareY).c_str(), header);
-    SetChild("Leafs Square (Z-axis)", DAVA::Format("%.2f%%", leafsSquareZ).c_str(), header);
+    SetChild("Leafs Square Absolute (X-axis)", DAVA::Format("%.2f m^2", leafsSquareAbsolute.x).c_str(), header);
+    SetChild("Leafs Square Absolute (Y-axis)", DAVA::Format("%.2f m^2", leafsSquareAbsolute.y).c_str(), header);
+    SetChild("Leafs Square Absolute (Z-axis)", DAVA::Format("%.2f m^2", leafsSquareAbsolute.z).c_str(), header);
+
+    SetChild("Leafs Square Relative (X-axis)", DAVA::Format("%.2f%%", leafsSquareRelative.x).c_str(), header);
+    SetChild("Leafs Square Relative (Y-axis)", DAVA::Format("%.2f%%", leafsSquareRelative.y).c_str(), header);
+    SetChild("Leafs Square Relative (Z-axis)", DAVA::Format("%.2f%%", leafsSquareRelative.z).c_str(), header);
 }
 
 void SceneInfo::InitializeLODSectionInFrame()
@@ -744,23 +748,21 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
                 DAVA::Vector3(v3.x, v3.y, 0.f)
                 );
 
-                info.leafsSquareX += square;
-                info.leafsSquareY += square;
-                info.leafsSquareZ += square;
+                info.leafsSquareAbsolute = info.leafsSquareAbsolute + square;
             }
             else
             {
-                info.leafsSquareX += CALCULATE_TRIANGLE_SQUEARE(
+                info.leafsSquareAbsolute.x += CALCULATE_TRIANGLE_SQUEARE(
                 DAVA::Vector3(v1.x, 0.f, v1.z),
                 DAVA::Vector3(v2.x, 0.f, v2.z),
                 DAVA::Vector3(v3.x, 0.f, v3.z)
                 );
-                info.leafsSquareY += CALCULATE_TRIANGLE_SQUEARE(
+                info.leafsSquareAbsolute.y += CALCULATE_TRIANGLE_SQUEARE(
                 DAVA::Vector3(0.f, v1.y, v1.z),
                 DAVA::Vector3(0.f, v2.y, v2.z),
                 DAVA::Vector3(0.f, v3.y, v3.z)
                 );
-                info.leafsSquareZ += CALCULATE_TRIANGLE_SQUEARE(
+                info.leafsSquareAbsolute.z += CALCULATE_TRIANGLE_SQUEARE(
                 DAVA::Vector3(v1.x, v1.y, 0.f),
                 DAVA::Vector3(v2.x, v2.y, 0.f),
                 DAVA::Vector3(v3.x, v3.y, 0.f)
@@ -771,9 +773,9 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
         }
     }
 
-    info.leafsSquareX /= (bboxSize.x * bboxSize.z);
-    info.leafsSquareY /= (bboxSize.y * bboxSize.z);
-    info.leafsSquareZ /= (bboxSize.x * bboxSize.y);
+    info.leafsSquareRelative.x = info.leafsSquareAbsolute.x / (bboxSize.x * bboxSize.z);
+    info.leafsSquareRelative.y = info.leafsSquareAbsolute.y / (bboxSize.y * bboxSize.z);
+    info.leafsSquareRelative.z = info.leafsSquareAbsolute.z / (bboxSize.x * bboxSize.y);
 
     return info;
 }
