@@ -10,10 +10,9 @@ from user_lvl_api import app
 from user_lvl_api.etw_session import ETWSession
 from user_lvl_api.app_monitor import AppMonitor
 
-from utils.logger import Logger
+from utils.logger import Logger, LogParser
 from utils.args_parser import parser
 from utils.package import Package
-from utils.log_parser import LogParser
 from utils.sync_start import SyncStart
 
 def print_args_values(args):

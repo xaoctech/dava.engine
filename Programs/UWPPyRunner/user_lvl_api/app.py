@@ -21,10 +21,15 @@ def get_praid_and_pname(key, value, cached = True):
 
     response = app_deploy.get_installed_apps()
     installed_apps = loads(response.text)["InstalledPackages"]
+    pair = None
     for app in reversed(installed_apps):
         if app[key] == value:
-            cache.update({key + value: app})
-            return app["PackageRelativeId"], app["PackageFullName"]
+            if pair is None:
+                cache.update({key + value: app})
+                pair = app["PackageRelativeId"], app["PackageFullName"]
+            else:
+                raise ValueError("Key - value pair {}:{} is not unique.".format(key, value))
+    return pair
 
 
 def get_version(key, value, cached = True):
