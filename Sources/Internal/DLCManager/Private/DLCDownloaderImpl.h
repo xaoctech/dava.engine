@@ -8,13 +8,6 @@
 
 namespace DAVA
 {
-/**
-  We have to share curl global initialization and cleanup
-  cause it is not thread safe and is using in several modules
-*/
-void CurlGlobalInit();
-void CurlGlobalDeinit();
-
 struct Buffer
 {
     void* ptr = nullptr;
@@ -180,6 +173,7 @@ private:
     CURLM* multiHandle = nullptr;
     Thread* downloadThread = nullptr;
     int numOfRunningSubTasks = 0;
+    int multiWaitRepeats = 0;
     // [end] variables
 
     Semaphore downloadSem; // to resume download thread

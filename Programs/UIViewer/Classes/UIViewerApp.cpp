@@ -31,6 +31,8 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
     options.AddOption("-testedCtrl", VariantType(String("")), "Name of tested control");
 
     optionsAreParsed = options.Parse(cmdLine);
+
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/UIViewer/quality.yaml");
 }
 
 void UIViewerApp::OnAppStarted()

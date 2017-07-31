@@ -1,5 +1,7 @@
 #include "Application/QEApplication.h"
 #include "Application/QEGlobal.h"
+
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystemModule.h"
 #include "Modules/LegacySupportModule/LegacySupportModule.h"
 #include "Classes/Application/ReflectionExtensions.h"
 
@@ -70,6 +72,8 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
 #endif
     PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
+    Texture::SetPixelization(true);
+
     FileSystem* fs = engineContext->fileSystem;
 
     auto copyFromOldFolder = [&]
@@ -108,6 +112,8 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
 
     engineContext->logger->Log(Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
+
+    BaseApplication::Init(engineContext);
 }
 
 void QEApplication::Cleanup()
@@ -133,6 +139,7 @@ QString QEApplication::GetInstanceKey() const
 void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 {
     Q_INIT_RESOURCE(QtToolsResources);
+    tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<LegacySupportModule>();
 
     for (const DAVA::ReflectedType* type : DAVA::TArc::ModuleCollection::Instance()->GetGuiModules())
