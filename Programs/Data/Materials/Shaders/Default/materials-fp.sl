@@ -73,7 +73,7 @@ fragment_in
 
     #if GEO_DECAL
         float2 geoDecalCoord : TEXCOORD6;
-	#endif
+    #endif
 
     #if FRAME_BLEND && PARTICLES_ALPHA_REMAP
         half2 varTexcoord3 : TEXCOORD3;
@@ -209,6 +209,7 @@ fragment_out fp_main( fragment_in input )
         #if PIXEL_LIT || ALPHATEST || ALPHABLEND || VERTEX_LIT
 
             #if FLOWMAP || PARTICLES_FLOWMAP
+                #if FLOWMAP
                     float2 flowtc = input.varTexCoord0.xy;
                 #else
                     float2 flowtc = input.varParticleFlowTexCoord;
@@ -247,7 +248,7 @@ fragment_out fp_main( fragment_in input )
             #if PARTICLES_ALPHA_REMAP
                 #if FRAME_BLEND
                     float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.y));
-        #else
+                #else                           
                     float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3));
                 #endif
                 textureColor0.a = remap.r;
@@ -255,7 +256,7 @@ fragment_out fp_main( fragment_in input )
 
           #else
             #if FLOWMAP || PARTICLES_FLOWMAP
-            #if FLOWMAP
+                #if FLOWMAP
                     float2 flowtc = input.varTexCoord0;
                 #else
                     float2 flowtc = input.varParticleFlowTexCoord;
@@ -272,7 +273,6 @@ fragment_out fp_main( fragment_in input )
                 #else
                     half3 textureColor0 = half3(tex2D( albedo, input.varTexCoord0 ).rgb);
                 #endif
-                
             #endif
         #endif
         
@@ -309,7 +309,6 @@ fragment_out fp_main( fragment_in input )
         
         #if ALPHASTEPVALUE && ALPHABLEND
             textureColor0.a = half(step(alphaStepValue, float(textureColor0.a)));
-        #endif
         #endif
     #endif
 
