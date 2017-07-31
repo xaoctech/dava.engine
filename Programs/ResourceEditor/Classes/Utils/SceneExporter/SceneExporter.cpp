@@ -909,6 +909,7 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
     }
 
     //export only slot objects
+    SceneExporterDetails::RemoveDuplicates(objectsToExport[OBJECT_SLOT_CONFIG]);
     for (const ExportedObject& slot : objectsToExport[OBJECT_SLOT_CONFIG])
     {
         DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
