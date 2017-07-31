@@ -1,8 +1,6 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 
 #include "Logger/Logger.h"
-#include "Render/Renderer.h"
-#include "Render/RenderOptions.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
@@ -22,9 +20,10 @@
 
 namespace DAVA
 {
-XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*= false*/)
+XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*= false*/, bool debugDraw /*= false*/)
     : link(link_)
     , isEditorMode(editorMode)
+    , isDebugDraw(debugDraw)
 {
     DVASSERT(link);
     defaultClasses = link->component->GetBaseClasses();
@@ -35,8 +34,6 @@ XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*
 
 bool XMLRichContentBuilder::Build(const String& text)
 {
-    debugDraw = Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
-
     controls.clear();
     direction = bidiHelper.GetDirectionUTF8String(text); // Detect text direction
     RefPtr<XMLParser> parser(new XMLParser());
@@ -79,7 +76,7 @@ const String& XMLRichContentBuilder::GetClass() const
     return classesStack.back();
 }
 
-void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool stick)
+void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
 {
     ctrl->SetClassesFromString(ctrl->GetClassesAsString() + " " + GetClass());
 
@@ -99,20 +96,30 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool 
 
     UIFlowLayoutHintComponent* flh = ctrl->GetOrCreateComponent<UIFlowLayoutHintComponent>();
     flh->SetContentDirection(direction);
-    flh->SetNewLineBeforeThis(needLineBreak);
-    if (!needSpace)
+    if (needLineBreak)
     {
-        flh->SetStickItemBeforeThis(stick);
+        flh->SetNewLineBeforeThis(true);
+    }
+    else if (!needSpace)
+    {
+        flh->SetStickItemBeforeThis(true);
     }
 
-    if (debugDraw)
+    if (isDebugDraw)
     {
         UIDebugRenderComponent* debug = ctrl->GetOrCreateComponent<UIDebugRenderComponent>();
         debug->SetEnabled(true);
-        debug->SetDrawColor(Color::Cyan);
-        if (!needSpace && stick)
+        if (needLineBreak)
+        {
+            debug->SetDrawColor(Color::Yellow);
+        }
+        else if (!needSpace)
         {
             debug->SetDrawColor(Color::Magenta);
+        }
+        else
+        {
+            debug->SetDrawColor(Color::Cyan);
         }
     }
 
@@ -191,7 +198,6 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
     else if (tag == "li")
     {
         needLineBreak = true;
-        ProcessText("*"); // TODO: Change to create "bullet" control
     }
     else if (tag == "img")
     {
@@ -199,7 +205,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
         if (GetAttribute(attributes, "src", src))
         {
             UIControl* img = new UIControl();
-            PrepareControl(img, true, true);
+            PrepareControl(img, true);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
@@ -264,7 +270,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
                         obj->SetName(name);
                     }
 
-                    PrepareControl(obj, false, true);
+                    PrepareControl(obj, false);
 
                     UIRichContentObjectComponent* objComp = obj->GetOrCreateComponent<UIRichContentObjectComponent>();
                     objComp->SetPackagePath(path);
@@ -321,6 +327,8 @@ void XMLRichContentBuilder::ProcessText(const String& text)
         }
         else
         {
+            needSpace = !first;
+
             BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
             if (wordDirection == BiDiHelper::Direction::NEUTRAL)
             {
@@ -339,11 +347,10 @@ void XMLRichContentBuilder::ProcessText(const String& text)
             }
 
             UIStaticText* ctrl = new UIStaticText();
-            PrepareControl(ctrl, true, first);
+            PrepareControl(ctrl, true);
             ctrl->SetUtf8Text(token);
             AppendControl(ctrl);
         }
-
         first = false;
     }
 }
