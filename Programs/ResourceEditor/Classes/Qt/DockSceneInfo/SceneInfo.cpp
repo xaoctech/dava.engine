@@ -692,88 +692,89 @@ void SceneInfo::CollectSpeedInfo(const SelectableGroup* forGroup)
 
 SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* renderObject)
 {
+    DVASSERT(renderObject != nullptr);
+
     SpeedTreeInfo info;
-    if (renderObject)
+
+    Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
+    int32 rbCount = renderObject->GetRenderBatchCount();
+    int32 lodIndex, switchIndex;
+    for (int32 i = 0; i < rbCount; ++i)
     {
-        Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
-        int32 rbCount = renderObject->GetRenderBatchCount();
-        int32 lodIndex, switchIndex;
-        for (int32 i = 0; i < rbCount; ++i)
+        RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
+
+        if (lodIndex > 0)
+            continue;
+
+        PolygonGroup* pg = rb->GetPolygonGroup();
+
+        if ((pg->GetFormat() & DAVA::EVF_PIVOT4) == 0)
+            continue;
+
+        String fxName = rb->GetMaterial()->GetEffectiveFXName().c_str();
+        std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
+
+        if ((strstr(fxName.c_str(), "alphatest") == nullptr) && (strstr(fxName.c_str(), "alphablend") == nullptr))
+            continue;
+
+        int32 triangleCount = pg->GetPrimitiveCount();
+        for (int32 t = 0; t < triangleCount; t++)
         {
-            RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
+            int32 i1, i2, i3;
+            int32 baseVertexIndex = t * 3;
+            pg->GetIndex(baseVertexIndex, i1);
+            pg->GetIndex(baseVertexIndex + 1, i2);
+            pg->GetIndex(baseVertexIndex + 2, i3);
 
-            if (lodIndex > 0)
-                continue;
+            Vector3 v1, v2, v3;
+            pg->GetCoord(i1, v1);
+            pg->GetCoord(i2, v2);
+            pg->GetCoord(i3, v3);
 
-            PolygonGroup* pg = rb->GetPolygonGroup();
-
-            if ((pg->GetFormat() & DAVA::EVF_PIVOT4) == 0)
-                continue;
-
-            String fxName = rb->GetMaterial()->GetEffectiveFXName().c_str();
-            std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
-
-            if ((strstr(fxName.c_str(), "alphatest") == nullptr) && (strstr(fxName.c_str(), "alphablend") == nullptr))
-                continue;
-
-            int32 triangleCount = pg->GetIndexCount() / 3;
-            for (int32 t = 0; t < triangleCount; t++)
-            {
-                int32 i1, i2, i3;
-                int32 baseVertexIndex = t * 3;
-                pg->GetIndex(baseVertexIndex, i1);
-                pg->GetIndex(baseVertexIndex + 1, i2);
-                pg->GetIndex(baseVertexIndex + 2, i3);
-
-                Vector3 v1, v2, v3;
-                pg->GetCoord(i1, v1);
-                pg->GetCoord(i2, v2);
-                pg->GetCoord(i3, v3);
-
-                Vector4 pivot;
-                pg->GetPivot(i1, pivot);
+            Vector4 pivot;
+            pg->GetPivot(i1, pivot);
 
 #define CALCULATE_TRIANGLE_SQUEARE(v1, v2, v3) ((((v2) - (v1)).CrossProduct((v3) - (v1))).Length() / 2.f)
 
-                if (pivot.w > DAVA::EPSILON) //billboard
-                {
-                    float32 square = CALCULATE_TRIANGLE_SQUEARE(
-                    DAVA::Vector3(v1.x, v1.y, 0.f),
-                    DAVA::Vector3(v2.x, v2.y, 0.f),
-                    DAVA::Vector3(v3.x, v3.y, 0.f)
-                    );
+            if (pivot.w > DAVA::EPSILON) //billboard
+            {
+                float32 square = CALCULATE_TRIANGLE_SQUEARE(
+                DAVA::Vector3(v1.x, v1.y, 0.f),
+                DAVA::Vector3(v2.x, v2.y, 0.f),
+                DAVA::Vector3(v3.x, v3.y, 0.f)
+                );
 
-                    info.leafsSquareX += square;
-                    info.leafsSquareY += square;
-                    info.leafsSquareZ += square;
-                }
-                else
-                {
-                    info.leafsSquareX += CALCULATE_TRIANGLE_SQUEARE(
-                    DAVA::Vector3(v1.x, 0.f, v1.z),
-                    DAVA::Vector3(v2.x, 0.f, v2.z),
-                    DAVA::Vector3(v3.x, 0.f, v3.z)
-                    );
-                    info.leafsSquareY += CALCULATE_TRIANGLE_SQUEARE(
-                    DAVA::Vector3(0.f, v1.y, v1.z),
-                    DAVA::Vector3(0.f, v2.y, v2.z),
-                    DAVA::Vector3(0.f, v3.y, v3.z)
-                    );
-                    info.leafsSquareZ += CALCULATE_TRIANGLE_SQUEARE(
-                    DAVA::Vector3(v1.x, v1.y, 0.f),
-                    DAVA::Vector3(v2.x, v2.y, 0.f),
-                    DAVA::Vector3(v3.x, v3.y, 0.f)
-                    );
-                }
+                info.leafsSquareX += square;
+                info.leafsSquareY += square;
+                info.leafsSquareZ += square;
+            }
+            else
+            {
+                info.leafsSquareX += CALCULATE_TRIANGLE_SQUEARE(
+                DAVA::Vector3(v1.x, 0.f, v1.z),
+                DAVA::Vector3(v2.x, 0.f, v2.z),
+                DAVA::Vector3(v3.x, 0.f, v3.z)
+                );
+                info.leafsSquareY += CALCULATE_TRIANGLE_SQUEARE(
+                DAVA::Vector3(0.f, v1.y, v1.z),
+                DAVA::Vector3(0.f, v2.y, v2.z),
+                DAVA::Vector3(0.f, v3.y, v3.z)
+                );
+                info.leafsSquareZ += CALCULATE_TRIANGLE_SQUEARE(
+                DAVA::Vector3(v1.x, v1.y, 0.f),
+                DAVA::Vector3(v2.x, v2.y, 0.f),
+                DAVA::Vector3(v3.x, v3.y, 0.f)
+                );
+            }
 
 #undef CALCULATE_TRIANGLE_SQUEARE
-            }
         }
-
-        info.leafsSquareX /= (bboxSize.x * bboxSize.z);
-        info.leafsSquareY /= (bboxSize.y * bboxSize.z);
-        info.leafsSquareZ /= (bboxSize.x * bboxSize.y);
     }
+
+    info.leafsSquareX /= (bboxSize.x * bboxSize.z);
+    info.leafsSquareY /= (bboxSize.y * bboxSize.z);
+    info.leafsSquareZ /= (bboxSize.x * bboxSize.y);
+
     return info;
 }
 
