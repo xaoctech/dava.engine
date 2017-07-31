@@ -93,6 +93,7 @@ void SceneInfo::InitializeInfo()
     Initialize3DDrawSection();
     InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
+    InitializeSpeedTreeInfoSelection();
     InitializeLayersSection();
 
     InitializeVegetationInfoSection();
@@ -167,6 +168,37 @@ void SceneInfo::Refresh3DDrawInfo()
 
     SetChild("Dynamic Param Bind Count", renderStats.dynamicParamBindCount, header2);
     SetChild("Material Param Bind Count", renderStats.materialParamBindCount, header2);
+}
+
+void SceneInfo::InitializeSpeedTreeInfoSelection()
+{
+    QtPropertyData* header = CreateInfoHeader("SpeedTree Info");
+
+    AddChild("Leafs Square (X-axis)", header);
+    AddChild("Leafs Square (Y-axis)", header);
+    AddChild("Leafs Square (Z-axis)", header);
+}
+
+void SceneInfo::RefreshSpeedTreeInfoSelection()
+{
+    QtPropertyData* header = GetInfoHeader("SpeedTree Info");
+
+    float32 leafsSquareX = 0.f, leafsSquareY = 0.f, leafsSquareZ = 0.f;
+    for (const SpeedTreeInfo& info : speedTreesInfo)
+    {
+        leafsSquareX += info.leafsSquareX;
+        leafsSquareY += info.leafsSquareY;
+        leafsSquareZ += info.leafsSquareZ;
+    }
+
+    //percentage
+    leafsSquareX *= 100.f;
+    leafsSquareY *= 100.f;
+    leafsSquareZ *= 100.f;
+
+    SetChild("Leafs Square (X-axis)", DAVA::Format("%.2f%%", leafsSquareX).c_str(), header);
+    SetChild("Leafs Square (Y-axis)", DAVA::Format("%.2f%%", leafsSquareY).c_str(), header);
+    SetChild("Leafs Square (Z-axis)", DAVA::Format("%.2f%%", leafsSquareZ).c_str(), header);
 }
 
 void SceneInfo::InitializeLODSectionInFrame()
@@ -336,6 +368,8 @@ void SceneInfo::ClearData()
     particleTexturesSize = 0;
     emittersCount = 0;
     spritesCount = 0;
+
+    speedTreesInfo.clear();
 }
 
 void SceneInfo::ClearSelectionData()
@@ -541,6 +575,7 @@ void SceneInfo::RefreshAllData()
     Refresh3DDrawInfo();
     RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
+    RefreshSpeedTreeInfoSelection();
 
     RefreshVegetationInfoSection();
 
@@ -593,6 +628,9 @@ void SceneInfo::OnSelectionChanged(const DAVA::Any& selectionAny)
         ClearSelectionData();
         CollectSelectedRenderObjects(&selection);
         RefreshLODInfoForSelection();
+
+        CollectSpeedInfo(&selection);
+        RefreshSpeedTreeInfoSelection();
     }
 }
 
@@ -638,6 +676,105 @@ void SceneInfo::CollectSelectedRenderObjectsRecursivly(Entity* entity)
     {
         CollectSelectedRenderObjectsRecursivly(entity->GetChild(i));
     }
+}
+
+void SceneInfo::CollectSpeedInfo(const SelectableGroup* forGroup)
+{
+    speedTreesInfo.clear();
+
+    for (auto entity : forGroup->ObjectsOfType<DAVA::Entity>())
+    {
+        RenderObject* ro = GetRenderObject(entity);
+        if (ro && ro->GetType() == RenderObject::TYPE_SPEED_TREE)
+            speedTreesInfo.push_back(GetSpeedTreeInfo(static_cast<SpeedTreeObject*>(ro)));
+    }
+}
+
+SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* renderObject)
+{
+    SpeedTreeInfo info;
+    if (renderObject)
+    {
+        Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
+        int32 rbCount = renderObject->GetRenderBatchCount();
+        int32 lodIndex, switchIndex;
+        for (int32 i = 0; i < rbCount; ++i)
+        {
+            RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
+
+            if (lodIndex != 0)
+                continue;
+
+            PolygonGroup* pg = rb->GetPolygonGroup();
+
+            if ((pg->GetFormat() & DAVA::EVF_PIVOT4) == 0)
+                continue;
+
+            String fxName = rb->GetMaterial()->GetEffectiveFXName().c_str();
+            std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
+
+            if ((strstr(fxName.c_str(), "alphatest") == nullptr) && (strstr(fxName.c_str(), "alphablend") == nullptr))
+                continue;
+
+            int32 triangleCount = pg->GetIndexCount() / 3;
+            for (int32 t = 0; t < triangleCount; t++)
+            {
+                int32 i1, i2, i3;
+                int32 baseVertexIndex = t * 3;
+                pg->GetIndex(baseVertexIndex, i1);
+                pg->GetIndex(baseVertexIndex + 1, i2);
+                pg->GetIndex(baseVertexIndex + 2, i3);
+
+                Vector3 v1, v2, v3;
+                pg->GetCoord(i1, v1);
+                pg->GetCoord(i2, v2);
+                pg->GetCoord(i3, v3);
+
+                Vector4 pivot;
+                pg->GetPivot(i1, pivot);
+
+#define CALCULATE_TRIANGLE_SQUEARE(v1, v2, v3) ((((v2) - (v1)).CrossProduct((v3) - (v1))).Length() / 2.f)
+
+                if (pivot.w > DAVA::EPSILON) //billboard
+                {
+                    float32 square = CALCULATE_TRIANGLE_SQUEARE(
+                    DAVA::Vector3(v1.x, v1.y, 0.f),
+                    DAVA::Vector3(v2.x, v2.y, 0.f),
+                    DAVA::Vector3(v3.x, v3.y, 0.f)
+                    );
+
+                    info.leafsSquareX += square;
+                    info.leafsSquareY += square;
+                    info.leafsSquareZ += square;
+                }
+                else
+                {
+                    info.leafsSquareX += CALCULATE_TRIANGLE_SQUEARE(
+                    DAVA::Vector3(v1.x, 0.f, v1.z),
+                    DAVA::Vector3(v2.x, 0.f, v2.z),
+                    DAVA::Vector3(v3.x, 0.f, v3.z)
+                    );
+                    info.leafsSquareY += CALCULATE_TRIANGLE_SQUEARE(
+                    DAVA::Vector3(0.f, v1.y, v1.z),
+                    DAVA::Vector3(0.f, v2.y, v2.z),
+                    DAVA::Vector3(0.f, v3.y, v3.z)
+                    );
+                    info.leafsSquareZ += CALCULATE_TRIANGLE_SQUEARE(
+                    DAVA::Vector3(v1.x, v1.y, 0.f),
+                    DAVA::Vector3(v2.x, v2.y, 0.f),
+                    DAVA::Vector3(v3.x, v3.y, 0.f)
+                    );
+                }
+
+#undef CALCULATE_TRIANGLE_SQUEARE
+            }
+        }
+
+        info.leafsSquareX /= (bboxSize.x * bboxSize.z);
+        info.leafsSquareY /= (bboxSize.y * bboxSize.z);
+        info.leafsSquareZ /= (bboxSize.x * bboxSize.y);
+    }
+    return info;
 }
 
 void SceneInfo::TexturesReloaded()
