@@ -9,6 +9,7 @@
 #include "Model/ControlProperties/RootProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 #include "UI/Preview/Data/CanvasData.h"
 
 #include <TArc/Core/FieldBinder.h>
@@ -415,12 +416,14 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
     canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
     UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
+
+    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &EditorControlsView::BeforeRendering);
 }
 
 EditorControlsView::~EditorControlsView()
 {
     canvasParent->RemoveControl(controlsCanvas.Get());
-
     UIControlSystem::Instance()->GetLayoutSystem()->RemoveListener(this);
 }
 
@@ -446,7 +449,7 @@ void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*c
             control->AdjustToNestedControl();
         }
     }
-    Layout();
+    needRecalculateBgrBeforeRender = true;
 }
 
 void EditorControlsView::ControlWasRemoved(ControlNode* node, ControlsContainerNode* from)
@@ -488,28 +491,41 @@ void EditorControlsView::ControlPropertyWasChanged(ControlNode* node, AbstractPr
     {
         if (BackgroundController::IsPropertyAffectBackground(property))
         {
-            for (auto& iter : gridControls)
-            {
-                iter->RecalculateBackgroundProperties(node->GetControl());
-            }
+            RecalculateBackgroundPropertiesForGrids(node->GetControl());
         }
     }
 }
 
 void EditorControlsView::OnControlLayouted(UIControl* control)
 {
-    if (controlsCanvas->GetParent() == nullptr) //detached canvas
-    {
-        DVASSERT(false);
-        return;
-    }
+    needRecalculateBgrBeforeRender = true;
+}
 
-    if (systemsManager->GetDragState() != EditorSystemsManager::Transform)
+void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control)
+{
+    for (auto& iter : gridControls)
     {
-        for (std::unique_ptr<BackgroundController>& bc : gridControls)
-        {
-            bc->RecalculateBackgroundProperties(control);
+        iter->RecalculateBackgroundProperties(control);
+    }
+}
+
+void EditorControlsView::BeforeRendering()
+{
+    if (needRecalculateBgrBeforeRender)
+    {
+        if (systemsManager->GetDragState() == EditorSystemsManager::Transform)
+        { // do not recalculate while control is dragged
+            return;
         }
+
+        needRecalculateBgrBeforeRender = false;
+
+        for (auto& iter : gridControls)
+        {
+            iter->UpdateCounterpoise();
+            iter->AdjustToNestedControl();
+        }
+        Layout();
     }
 }
 
@@ -639,7 +655,7 @@ void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
         BackgroundController* backgroundController = CreateControlBackground(node);
         AddBackgroundControllerToCanvas(backgroundController, std::distance(newRootControls.begin(), iter));
     }
-    Layout();
+    needRecalculateBgrBeforeRender = true;
 }
 
 //later background controls must be a part of data and rootControlPos must be simple getter
