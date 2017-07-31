@@ -376,9 +376,9 @@ void XMLRichContentBuilder::ProcessText(const String& text)
             token.clear();
         }
 
-        needLineBreak = br == StringUtils::LB_MUSTBREAK || walker.GetUnicodeCodepoint() == NEW_LINE;
-        needSoftStick = allowBreak;
-        needSpace = walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
+        needLineBreak |= br == StringUtils::LB_MUSTBREAK || walker.GetUnicodeCodepoint() == NEW_LINE;
+        needSoftStick |= allowBreak;
+        needSpace |= walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
 
         first = false;
     }
