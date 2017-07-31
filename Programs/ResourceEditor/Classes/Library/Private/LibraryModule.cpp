@@ -143,7 +143,7 @@ void LibraryModule::OnFBXConvertionRequested(const DAVA::FilePath& fbxPathname)
         waitDlgParams.needProgressBar = false;
         std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
 
-        DAVA::FBXImporter::ConvertToSC2(fbxPathname);
+        DAVA::FBXImporter::ConvertToSC2(fbxPathname, DAVA::FilePath::CreateWithNewExtension(fbxPathname, ".sc2"));
     });
 }
 

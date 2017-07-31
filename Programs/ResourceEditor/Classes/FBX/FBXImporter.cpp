@@ -1,6 +1,8 @@
 #include "FBXImporter.h"
 #include "DAVAEngine.h"
 
+#define FBXSDK_SHARED //requested only for dynamic linking
+
 #include <fbxsdk.h>
 
 namespace DAVA
@@ -9,11 +11,6 @@ namespace FBXImporterDetails
 {
 struct FBXVertex
 {
-    FBXVertex()
-    {
-        Memset(data, 0, sizeof(data));
-    }
-
     union
     {
         float32 data[14];
@@ -25,39 +22,146 @@ struct FBXVertex
         };
     };
 
-    bool operator<(const FBXVertex& other) const
-    {
-        for (int32 d = 0; d < 14; ++d)
-        {
-            if (!FLOAT_EQUAL(data[d], other.data[d]))
-                return data[d] < other.data[d];
-        }
+    FBXVertex();
 
-        return false;
-    }
+    bool operator<(const FBXVertex& other) const;
 };
 
-Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix)
-{
-    Matrix4 mx;
+//////////////////////////////////////////////////////////////////////////
 
-    for (int r = 0; r < 4; ++r)
-        for (int c = 0; c < 4; ++c)
-            mx._data[r][c] = float32(fbxMatrix.Get(r, c));
+void ProcessHierarchyRecursive(FbxNode* node, Entity* entity);
+void ClearCache();
 
-    return mx;
+RenderObject* CreateRenderObject(FbxMesh* fbxMesh);
+NMaterial* RetrieveMaterial(FbxSurfaceMaterial* fbxMaterial);
+SkeletonComponent* RetrieveSkeleton(FbxSkeleton* skeleton);
+
+Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix);
+const char* GetFBXTexturePath(const FbxProperty& textureProperty);
+
+//////////////////////////////////////////////////////////////////////////
+
+using GeometrySet = Vector<std::pair<PolygonGroup*, NMaterial*>>;
+
+Map<FbxMesh*, GeometrySet> geometryCache; //in geometry cache material isn't retained
+Map<FbxSurfaceMaterial*, NMaterial*> materialCache;
+Map<FbxSkeleton*, SkeletonComponent*> skeletonCache;
+
+static uint32 materialInstanceIndex = 0;
 }
 
-Mesh* ConvertMesh(FbxMesh* fbxMesh)
+//////////////////////////////////////////////////////////////////////////
+
+bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
 {
-    static Map<FbxMesh*, PolygonGroup*> convertedPolygonGroups;
+    FbxManager* fbxManager = FbxManager::Create();
 
-    ScopedPtr<PolygonGroup> polygonGroup;
+    FbxIOSettings* fbxIOSettings = FbxIOSettings::Create(fbxManager, IOSROOT);
+    FbxImporter* importer = FbxImporter::Create(fbxManager, "fbxImporter");
 
-    auto found = convertedPolygonGroups.find(fbxMesh);
-    if (found == convertedPolygonGroups.end())
+    bool initSuccess = importer->Initialize(fbxPath.GetAbsolutePathname().c_str());
+    if (!initSuccess)
     {
-        polygonGroup.reset(new PolygonGroup());
+        Logger::Error("FBX Initialization error: %s", importer->GetStatus().GetErrorString());
+        return false;
+    }
+
+    FbxScene* fbxScene = FbxScene::Create(fbxManager, "importedScene");
+    bool importSuccess = importer->Import(fbxScene);
+    if (!importSuccess)
+    {
+        Logger::Error("FBX Import error: %s", importer->GetStatus().GetErrorString());
+        return false;
+    }
+    importer->Destroy();
+
+    FbxAxisSystem::MayaZUp.ConvertScene(fbxScene); // UpVector = ZAxis, CoordSystem = RightHanded
+    FbxGeometryConverter fbxGeometryConverter(fbxManager);
+    fbxGeometryConverter.Triangulate(fbxScene, true); //Triangulate whole scene
+
+    ScopedPtr<Scene> scene(new Scene());
+    FBXImporterDetails::ProcessHierarchyRecursive(fbxScene->GetRootNode(), scene);
+    FBXImporterDetails::ClearCache();
+    fbxScene->Destroy();
+
+    scene->SaveScene(sc2Path);
+
+    fbxManager->Destroy();
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//Details implementation
+namespace FBXImporterDetails
+{
+void ProcessHierarchyRecursive(FbxNode* node, Entity* entity)
+{
+    entity->SetName(node->GetName());
+
+    Matrix4 transform = ToMatrix4(node->EvaluateLocalTransform());
+    entity->SetLocalTransform(transform);
+
+    int attrCount = node->GetNodeAttributeCount();
+    for (int32 a = 0; a < attrCount; ++a)
+    {
+        FbxNodeAttribute* attr = node->GetNodeAttributeByIndex(a);
+        if (attr->GetAttributeType() == FbxNodeAttribute::eMesh)
+        {
+            FbxMesh* fbxMesh = static_cast<FbxMesh*>(attr);
+            entity->AddComponent(new RenderComponent(ScopedPtr<RenderObject>(CreateRenderObject(fbxMesh))));
+        }
+        else if (attr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
+        {
+            FbxSkeleton* fbxSkeleton = static_cast<FbxSkeleton*>(attr);
+            entity->AddComponent(RetrieveSkeleton(fbxSkeleton)->Clone(nullptr));
+        }
+    }
+
+    int childCount = node->GetChildCount();
+    for (int c = 0; c < childCount; ++c)
+    {
+        ScopedPtr<Entity> childEntity(new Entity());
+        entity->AddNode(childEntity);
+
+        ProcessHierarchyRecursive(node->GetChild(c), childEntity);
+    }
+}
+
+void ClearCache()
+{
+    for (auto& it : geometryCache)
+    {
+        for (auto& p : it.second)
+            SafeRelease(p.first);
+        //in geometry cache material isn't retained
+    }
+    geometryCache.clear();
+
+    for (auto& it : materialCache)
+    {
+        SafeRelease(it.second);
+    }
+    materialCache.clear();
+
+    for (auto& it : skeletonCache)
+    {
+        SafeDelete(it.second);
+    }
+    skeletonCache.clear();
+
+    materialInstanceIndex = 0;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+RenderObject* CreateRenderObject(FbxMesh* fbxMesh)
+{
+    auto found = geometryCache.find(fbxMesh);
+    if (found == geometryCache.end())
+    {
+        FbxNode* fbxNode = fbxMesh->GetNode();
+        DVASSERT(fbxNode);
 
         FbxStringList uvNames;
         fbxMesh->GetUVSetNames(uvNames);
@@ -81,7 +185,10 @@ Mesh* ConvertMesh(FbxMesh* fbxMesh)
         FbxVector2 tmpUV;
         bool tmpUnmapped = false;
 
-        Map<FBXVertex, Vector<int32>> geometry;
+        using VerticesMap = Map<FBXVertex, Vector<int32>>; //[vertex, indices]
+        using MaterialGeometryMap = Map<FbxSurfaceMaterial*, VerticesMap>;
+
+        MaterialGeometryMap materialGeometry;
         int32 polygonCount = fbxMesh->GetPolygonCount();
         for (int32 p = 0; p < polygonCount; p++)
         {
@@ -105,156 +212,167 @@ Mesh* ConvertMesh(FbxMesh* fbxMesh)
                     vertex.texCoord[t] = Vector2(tmpUV[0], -tmpUV[1]);
                 }
 
-                geometry[vertex].push_back(p * 3 + v);
+                FbxSurfaceMaterial* fbxMaterial = nullptr;
+                for (int32 me = 0; me < fbxMesh->GetElementMaterialCount(); me++)
+                {
+                    fbxMaterial = fbxNode->GetMaterial(fbxMesh->GetElementMaterial(me)->GetIndexArray().GetAt(p));
+                    if (fbxMaterial != nullptr)
+                        break;
+                }
+
+                materialGeometry[fbxMaterial][vertex].push_back(p * 3 + v);
             }
         }
 
-        int32 vxCount = int32(geometry.size());
-        int32 indCount = polygonCount * 3;
-        polygonGroup->AllocateData(meshFormat, vxCount, indCount);
-
-        int32 vertexIndex = 0;
-        for (auto it = geometry.cbegin(); it != geometry.cend(); ++it)
+        GeometrySet geometrySet;
+        for (auto& it : materialGeometry)
         {
-            polygonGroup->SetCoord(vertexIndex, it->first.position);
+            FbxSurfaceMaterial* fbxMaterial = it.first;
+            const VerticesMap& vertices = it.second;
 
-            for (int32 t = 0; t < uvCount; ++t)
-                polygonGroup->SetTexcoord(t, vertexIndex, it->first.texCoord[t]);
+            int32 vxCount = int32(vertices.size());
+            int32 indCount = polygonCount * 3;
 
-            if (hasNormal)
-                polygonGroup->SetNormal(vertexIndex, it->first.normal);
+            PolygonGroup* polygonGroup = new PolygonGroup();
+            polygonGroup->AllocateData(meshFormat, vxCount, indCount);
 
-            for (int32 index : it->second)
-                polygonGroup->SetIndex(index, uint16(vertexIndex));
-
-            ++vertexIndex;
-        }
-
-        //if (uvCount && hasNormal)
-        //    MeshUtils::RebuildMeshTangentSpace(polygonGroup);
-        //else
-        //    polygonGroup->BuildBuffers();
-
-        //////////////////////////////////////////////////////////////////////////
-
-        /*
-        int32 vxCount = fbxMesh->GetControlPointsCount();
-        int32 indCount = fbxMesh->GetPolygonVertexCount();
-
-
-#define EVALUATE_FBX_ELEMENT_INDEX(e, i) (((e)->GetReferenceMode() == FbxLayerElement::eIndexToDirect) ? (e)->GetIndexArray().GetAt((i)) : (i))
-
-        polygonGroup->AllocateData(meshFormat, vxCount, indCount);
-        for (int32 v = 0; v < vxCount; ++v)
-        {
-            FbxVector4 coords = fbxMesh->GetControlPointAt(v);
-            polygonGroup->SetCoord(v, Vector3(float32(coords[0]), float32(coords[1]), float32(coords[2])));
-
-            for (int32 t = 0; t < texCoordCount; ++t)
+            int32 vertexIndex = 0;
+            for (auto it = vertices.cbegin(); it != vertices.cend(); ++it)
             {
-                const FbxGeometryElementUV* uvElement = fbxMesh->GetElementUV(t);
-                const FbxVector2& uv = uvElement->GetDirectArray().GetAt(EVALUATE_FBX_ELEMENT_INDEX(uvElement, v));
-                polygonGroup->SetTexcoord(t, v, Vector2(float32(uv[0]), float32(uv[1])));
+                polygonGroup->SetCoord(vertexIndex, it->first.position);
+
+                for (int32 t = 0; t < uvCount; ++t)
+                    polygonGroup->SetTexcoord(t, vertexIndex, it->first.texCoord[t]);
+
+                if (hasNormal)
+                    polygonGroup->SetNormal(vertexIndex, it->first.normal);
+
+                for (int32 index : it->second)
+                    polygonGroup->SetIndex(index, uint16(vertexIndex));
+
+                ++vertexIndex;
             }
 
             if (hasNormal)
-            {
-                const FbxGeometryElementNormal* normalElement = fbxMesh->GetElementNormal(0);
-                const FbxVector4& normal = normalElement->GetDirectArray().GetAt(EVALUATE_FBX_ELEMENT_INDEX(normalElement, v));
-                polygonGroup->SetNormal(v, Vector3(float32(normal[0]), float32(normal[1]), float32(normal[2])));
-            }
+                MeshUtils::RebuildMeshTangentSpace(polygonGroup);
+
+            geometrySet.emplace_back(polygonGroup, RetrieveMaterial(fbxMaterial));
         }
 
-#undef EVALUATE_FBX_ELEMENT_INDEX
+        found = geometryCache.emplace(fbxMesh, std::move(geometrySet)).first;
+    }
 
-        for (int32 i = 0; i < indCount; ++i)
+    Mesh* renderObject = new Mesh();
+
+    const GeometrySet& geometrySet = found->second;
+    for (auto& geometry : geometrySet)
+    {
+        PolygonGroup* polygonGroup = geometry.first;
+        NMaterial* material = geometry.second;
+
+        ScopedPtr<NMaterial> materialInstance(new NMaterial());
+        materialInstance->SetParent(material);
+        materialInstance->SetMaterialName(FastName(Format("Instance%d", materialInstanceIndex++).c_str()));
+
+        renderObject->AddPolygonGroup(polygonGroup, materialInstance);
+    }
+
+    return renderObject;
+}
+
+NMaterial* RetrieveMaterial(FbxSurfaceMaterial* fbxMaterial)
+{
+    auto found = materialCache.find(fbxMaterial);
+    if (found == materialCache.end())
+    {
+        NMaterial* material = new NMaterial();
+        material->SetFXName(NMaterialName::TEXTURED_OPAQUE);
+        material->SetMaterialName(FastName(fbxMaterial->GetName()));
+
+        Vector<std::pair<const char*, FastName>> texturesToImport = {
+            { FbxSurfaceMaterial::sDiffuse, NMaterialTextureName::TEXTURE_ALBEDO },
+            { FbxSurfaceMaterial::sNormalMap, NMaterialTextureName::TEXTURE_NORMAL }
+        };
+
+        for (auto& tex : texturesToImport)
         {
-            polygonGroup->SetIndex(i, int16(fbxMesh->GetPolygonVertices()[i]));
+            const char* texturePath = GetFBXTexturePath(fbxMaterial->FindProperty(tex.first));
+            if (texturePath)
+                material->AddTexture(tex.second, Texture::CreateFromFile(FilePath(texturePath)));
         }
-        */
+
+        found = materialCache.emplace(fbxMaterial, material).first;
+    }
+
+    return found->second;
+}
+
+SkeletonComponent* RetrieveSkeleton(FbxSkeleton* fbxSkeleton)
+{
+    auto found = skeletonCache.find(fbxSkeleton);
+    if (found == skeletonCache.end())
+    {
+        SkeletonComponent* skeleton = new SkeletonComponent();
+
+        //TODO
+
+        found = skeletonCache.emplace(fbxSkeleton, skeleton).first;
+    }
+
+    return found->second;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+FBXVertex::FBXVertex()
+{
+    Memset(data, 0, sizeof(data));
+}
+
+inline bool FBXVertex::operator<(const FBXVertex& other) const
+{
+    for (int32 d = 0; d < 14; ++d)
+    {
+        if (!FLOAT_EQUAL(data[d], other.data[d]))
+            return data[d] < other.data[d];
+    }
+
+    return false;
+}
+
+Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix)
+{
+    Matrix4 mx;
+
+    for (int r = 0; r < 4; ++r)
+        for (int c = 0; c < 4; ++c)
+            mx._data[r][c] = float32(fbxMatrix.Get(r, c));
+
+    return mx;
+}
+
+const char* GetFBXTexturePath(const FbxProperty& textureProperty)
+{
+    FbxTexture* fbxTexture = nullptr;
+    if (textureProperty.GetSrcObjectCount<FbxLayeredTexture>() > 0)
+    {
+        FbxLayeredTexture* layeredTexture = textureProperty.GetSrcObject<FbxLayeredTexture>(0);
+        if (layeredTexture->GetSrcObjectCount<FbxTexture>() > 0)
+            fbxTexture = layeredTexture->GetSrcObject<FbxTexture>(0);
     }
     else
     {
-        polygonGroup.reset((*found).second);
+        if (textureProperty.GetSrcObjectCount<FbxTexture>() > 0)
+            textureProperty.GetSrcObject<FbxTexture>(0);
     }
 
-    Mesh* mesh = new Mesh();
-    ScopedPtr<NMaterial> material(new NMaterial());
-    material->SetFXName(NMaterialName::TEXTURED_OPAQUE);
-    material->SetMaterialName(FastName("bla-bla"));
-    mesh->AddPolygonGroup(polygonGroup, material);
+    FbxFileTexture* fbxFileTexture = FbxCast<FbxFileTexture>(fbxTexture);
+    if (fbxFileTexture)
+        return fbxFileTexture->GetFileName();
 
-    return mesh;
+    return nullptr;
 }
 
-void ProcessHierarchyRecursive(FbxNode* node, Entity* entity)
-{
-    entity->SetName(node->GetName());
+}; //ns Details
 
-    Matrix4 transform = ToMatrix4(node->EvaluateLocalTransform());
-    entity->SetLocalTransform(transform);
-
-    int attrCount = node->GetNodeAttributeCount();
-    for (int a = 0; a < attrCount; ++a)
-    {
-        FbxNodeAttribute* attr = node->GetNodeAttributeByIndex(a);
-        if (attr->GetAttributeType() == FbxNodeAttribute::eMesh)
-        {
-            FbxMesh* mesh = static_cast<FbxMesh*>(attr);
-            entity->AddComponent(new RenderComponent(ScopedPtr<Mesh>(FBXImporterDetails::ConvertMesh(mesh))));
-        }
-    }
-
-    int childCount = node->GetChildCount();
-    for (int c = 0; c < childCount; ++c)
-    {
-        ScopedPtr<Entity> childEntity(new Entity());
-        entity->AddNode(childEntity);
-
-        ProcessHierarchyRecursive(node->GetChild(c), childEntity);
-    }
-}
-}
-
-void FBXImporter::ConvertToSC2(const FilePath& fbxPath)
-{
-    FbxManager* fbxManager = FbxManager::Create();
-
-    FbxIOSettings* fbxIOSettings = FbxIOSettings::Create(fbxManager, IOSROOT);
-    fbxManager->SetIOSettings(fbxIOSettings);
-
-    fbxIOSettings->SetBoolProp(IMP_FBX_MATERIAL, true);
-    fbxIOSettings->SetBoolProp(IMP_FBX_TEXTURE, true);
-    fbxIOSettings->SetBoolProp(IMP_FBX_LINK, true);
-    fbxIOSettings->SetBoolProp(IMP_FBX_SHAPE, true);
-    fbxIOSettings->SetBoolProp(IMP_FBX_GOBO, true);
-    fbxIOSettings->SetBoolProp(IMP_FBX_ANIMATION, true);
-    fbxIOSettings->SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
-
-    FbxImporter* importer = FbxImporter::Create(fbxManager, "fbxImporter");
-
-    bool initSuccess = importer->Initialize(fbxPath.GetAbsolutePathname().c_str(), -1, fbxManager->GetIOSettings());
-    if (!initSuccess)
-    {
-        Logger::Error("FBX Initialization error: %s", importer->GetStatus().GetErrorString());
-        return;
-    }
-
-    FbxScene* fbxScene = FbxScene::Create(fbxManager, "importedScene");
-    importer->Import(fbxScene);
-    importer->Destroy();
-
-    FbxAxisSystem(FbxAxisSystem::EPreDefinedAxisSystem::eMax).ConvertScene(fbxScene); // UpVector = ZAxis, CoordSystem = RightHanded
-    //FbxSystemUnit(100.0).ConvertScene(fbxScene); // cm -> m
-    FbxGeometryConverter* fbxGeometryConverter = new FbxGeometryConverter(fbxManager);
-    fbxGeometryConverter->Triangulate(fbxScene, true);
-    SafeDelete(fbxGeometryConverter);
-
-    Scene* scene = new Scene();
-    FBXImporterDetails::ProcessHierarchyRecursive(fbxScene->GetRootNode(), scene);
-
-    scene->SaveScene(FilePath::CreateWithNewExtension(fbxPath, ".sc2"));
-
-    fbxManager->Destroy();
-}
-};
+}; //ns DAVA
