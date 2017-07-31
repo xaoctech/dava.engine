@@ -37,16 +37,16 @@ void DumpAndCompareBytes(const char* ptr0, size_t size0, const char* ptr1, size_
 
         for (DAVA::uint32 i = 0; i < len; ++i)
         {
-            char c = (pos + i < size0) ? *(ptr0 + pos + i) : 0;
-            linePos += sprintf(line + linePos, "%c", ((c >= 0x20) && (c <= 0x7f)) ? c : '.');
+            DAVA::uint8 c = static_cast<DAVA::uint8>((pos + i < size0) ? *(ptr0 + pos + i) : 0);
+            linePos += sprintf(line + linePos, "%c", ((c >= 0x20) && (c <= 0x7f)) ? static_cast<char>(c) : '.');
         }
 
         linePos += sprintf(line + linePos, " | ");
 
         for (DAVA::uint32 i = 0; i < len; ++i)
         {
-            char c = (pos + i < size1) ? *(ptr1 + pos + i) : 0;
-            linePos += sprintf(line + linePos, "%c", ((c >= 0x20) && (c <= 0x7f)) ? c : '.');
+            DAVA::uint8 c = static_cast<DAVA::uint8>((pos + i < size1) ? *(ptr1 + pos + i) : 0);
+            linePos += sprintf(line + linePos, "%c", ((c >= 0x20) && (c <= 0x7f)) ? static_cast<char>(c) : '.');
         }
 
         bool same = memcmp(ptr0 + pos, ptr1 + pos, len) == 0;
