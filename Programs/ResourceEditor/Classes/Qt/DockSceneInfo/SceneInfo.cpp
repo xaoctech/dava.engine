@@ -702,7 +702,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
         {
             RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
 
-            if (lodIndex != 0)
+            if (lodIndex > 0)
                 continue;
 
             PolygonGroup* pg = rb->GetPolygonGroup();
