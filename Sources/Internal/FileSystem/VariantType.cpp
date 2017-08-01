@@ -850,7 +850,7 @@ bool VariantType::Write(File* fp) const
     {
         uint32 len = static_cast<uint32>(stringValue->length());
 
-        uint32 slen = strlen(stringValue->c_str()); //we meet situaltions when string was "aa\0\0"
+        uint32 slen = static_cast<uint32>(strlen(stringValue->c_str())); //we meet situaltions when string was "aa\0\0"
         if (slen != len)
         {
             DVASSERT(false);
@@ -1167,7 +1167,7 @@ bool VariantType::Read(File* fp)
             stringValue = nullptr;
         }
 
-        uint32 slen = strlen(stringValue->c_str()); //we meet situaltions when string was "aa\0\0"
+        uint32 slen = static_cast<uint32>(strlen(stringValue->c_str())); //we meet situations when string was "aa\0\0"
         if (slen != len)
         {
             stringValue->resize(slen);
