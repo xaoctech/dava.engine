@@ -22,7 +22,8 @@ class ApiPaths:
 
 
 def install_app(app_package, deps_packages, cer_path = None, callback = None):
-    files = {app_package.file_name : (app_package.file_name, open(app_package.path, "rb"))}
+    files = {app_package.file_name : (app_package.file_name, \
+                                      open(app_package.path, "rb"))}
 
     for dep_package in deps_packages:
         files.update({dep_package.file_name : \

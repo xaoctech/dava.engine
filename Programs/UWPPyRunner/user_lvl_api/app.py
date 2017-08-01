@@ -10,61 +10,93 @@ sys.path.append("../")
 from dp_api import app_deploy, task_manager, performance_data
 
 
+full_name_tag = "PackageFullName"
+
+
 cache = {}
 
 
-def get_praid_and_pname(key, value, cached = True):
+# Update cache and test if given key-value pair is unique
+def update_cache(key, value):
     global cache
-    if cached and key + value in cache:
-        return [cache[key + value]["PackageRelativeId"], \
-                cache[key + value]["PackageFullName"]]
-
     response = app_deploy.get_installed_apps()
-    installed_apps = loads(response.text)["InstalledPackages"]
-    pair = None
-    for app in reversed(installed_apps):
-        if app[key] == value:
-            if pair is None:
-                cache.update({key + value: app})
-                pair = app["PackageRelativeId"], app["PackageFullName"]
+    installed_packages = loads(response.text)["InstalledPackages"]
+    check = True
+    for package in installed_packages:
+        if package[key] == value:
+            if check:
+                cache.update({key + value: package})
+                check = False
             else:
-                raise ValueError("Key - value pair {}:{} is not unique.".format(key, value))
-    return pair
+                raise ValueError("Key - value pair {}:{} is not unique."\
+                                                           .format(key, value))
+
+# Get specific tag for package with given key-value pair
+def get_tag(key, value, tag, cached = True):
+    if not cached or key + value not in cache:
+        update_cache(key, value)
+    return cache[key + value][tag]
+
+
+def get_package_full_name(key, value, cached = True):
+    if key == full_name_tag:
+        return value
+    else:
+        return get_tag(key, value, full_name_tag, cached)
+
+
+def get_package_relative_id(key, value, cached = True):
+    return get_tag(key, value, "PackageRelativeId", cached)
 
 
 def get_version(key, value, cached = True):
-    global cache
-    if cached and key + value in cache:
-        v = cache[key + value]["Version"]
-        return [v["Major"], v["Minor"], v["Build"], v["Revision"]]
-    
-    response = app_deploy.get_installed_apps()
-    installed_apps = loads(response.text)["InstalledPackages"]
-    for app in reversed(installed_apps):
-        if app[key] == value:
-            cache.update({cache + value: app})
-            v = app["Version"]
-            return [v["Major"], v["Minor"], v["Build"], v["Revision"]]
+    v = get_tag(key, value, "Version", cached)
+    return [v["Major"], v["Minor"], v["Build"], v["Revision"]]
 
 
 def is_installed(key, value, cached = True):
-    pair = get_praid_and_pname(key, value, cached)
-    return pair is not None
+    return get_package_full_name(key, value, cached) is not None
+
+# Check if app process is active
+def is_active(key, value):
+    package_full_name = get_package_full_name(key, value)
+    response = performance_data.get_list_of_running_processes()
+    processes = loads(response.text)["Processes"]
+    for process in processes:
+        process_full_name = process.get(full_name_tag)
+        if process_full_name is not None and \
+                                    process_full_name == package_full_name:
+            return True
+    return False
+
+# Check if app process is running (is active and not sleeping)
+def is_running(key, value):
+    package_full_name = get_package_full_name(key, value)
+    response = performance_data.get_list_of_running_processes()
+    processes = loads(response.text)["Processes"]
+    for process in processes:
+        process_full_name = process.get(full_name_tag)
+        if process_full_name is not None and \
+                                    process_full_name == package_full_name:
+            running = process.get("IsRunning")
+            return running is not None and running
+    return False
 
 
 def start(key, value):
     status_msg = "\rStarting app: "
     sys.stdout.write(status_msg + "...")
 
-    pair = get_praid_and_pname(key, value)
+    package_full_name = get_package_full_name(key, value)
+    package_relative_id = get_package_relative_id(key, value)
 
-    if pair is None:
+    if package_full_name is None or package_relative_id is None:
         print status_msg + "Failed."
         print "App with {} == {} is not installed.".format(key, value)
         return False
 
-    response = task_manager.start_modern_app(b64encode(pair[0]), \
-                                             b64encode(pair[1]))
+    response = task_manager.start_modern_app(b64encode(package_relative_id), \
+                                             b64encode(package_full_name))
     return _check_response_code_and_show_msg(response, {200}, status_msg)
 
 
@@ -72,14 +104,15 @@ def stop(key, value, force_stop = "yes"):
     status_msg = "\rStopping app: "
     sys.stdout.write(status_msg + "...")
 
-    pair = get_praid_and_pname(key, value)
+    package_full_name = get_package_full_name(key, value)
 
-    if pair is None:
+    if package_full_name is None:
         print status_msg + "Failed."
         print "App with {} == {} is not installed.".format(key, value)
         return False
 
-    response = task_manager.stop_modern_app(b64encode(pair[1]), force_stop)
+    response = task_manager.stop_modern_app(b64encode(package_full_name), \
+                                            force_stop)
     return _check_response_code_and_show_msg(response, {200}, status_msg)
 
 
@@ -88,9 +121,14 @@ def deploy(app_package, deps_packages, cer_path):
 
     callback = _UploadCallback(_calc_total_upload_size_in_bytes(app_package, \
                                                     deps_packages), status_msg)
+    
+    try:
+        response = app_deploy.install_app(app_package, deps_packages, cer_path, \
+                                          callback)
+    except:
+        print "Make sure that there is enough free space left on the device."
+        raise
 
-    response = app_deploy.install_app(app_package, deps_packages, cer_path, \
-                                      callback)
     # 'response' may be 'None' for a short period of time right after return.
     # Just a small fix. Consider rework.
     loop_timeout = 5.0 # seconds
@@ -100,6 +138,7 @@ def deploy(app_package, deps_packages, cer_path):
         sleep(loop_step)
         loop_time += loop_step
 
+    # According to API docs status code should be 200, but it's is 202, so check both
     if response.status_code in {200, 202} and callback.current_percents == 100:
         print status_msg + "Done."
         return _show_app_installation_status()
@@ -113,41 +152,19 @@ def uninstall(key, value):
     status_msg = "\rUninstalling app: "
     sys.stdout.write(status_msg + "...")
 
-    pair = get_praid_and_pname(key, value)
+    package_full_name = get_package_full_name(key, value)
 
-    if pair is None:
-        print status_msg + "Failed."
+    if package_full_name is None:
+        print status_msg + "Not needed."
         print "App with {} == {} is not installed.".format(key, value)
-        return False
+        return True
 
-    if not cache[key + value]["CanUninstall"]:
+    if not get_tag(key, value,"CanUninstall"):
         print "App with {} == {} can't be uninstalled.".format(key, value)
         return False
 
-    response = app_deploy.uninstall_app(pair[1])
+    response = app_deploy.uninstall_app(package_full_name)
     return _check_response_code_and_show_msg(response, {200}, status_msg)
-
-
-def is_active(key, value):
-    pair = get_praid_and_pname(key, value)
-    response = performance_data.get_list_of_running_processes()
-    processes = loads(response.text)["Processes"]
-    for process in processes:
-        pname = process.get("PackageFullName")
-        if pname is not None and pname == pair[1]:
-            return True
-    return False
-
-
-def is_running(key, value):
-    pair = get_praid_and_pname(key, value)
-    response = performance_data.get_list_of_running_processes()
-    processes = loads(response.text)["Processes"]
-    for process in processes:
-        pname = process.get("PackageFullName")
-        if pname is not None and pname == pair[1]:
-            return process["IsRunning"]
-    return False
 
 
 def _print_response_reason_if_exists(response):

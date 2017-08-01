@@ -45,7 +45,7 @@ class LogParser:
                         # Convert webkit timestamp to unix timestamp
                         unix_timestamp = event["Timestamp"] / 1e7 - 11644473600
                         sys.stdout.write(datetime.fromtimestamp(unix_timestamp).\
-                                         strftime("%Y-%m-%d %H:%M:%S.%f") + " ")
+                                         strftime("%Y-%m-%d %H:%M:%S.%f "))
                     string_message = event["StringMessage"]
                     if string_message.endswith("\n"):
                         string_message = string_message[:-1]

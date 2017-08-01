@@ -26,26 +26,11 @@ class ParseDeps(argparse.Action):
         setattr(args, self.dest, res)
 
 
-parser = argparse.ArgumentParser(description="UWP pyrunner")
-parser.add_argument("-app_path",\
-                    nargs = "?",\
-                    dest = "app_path", \
-                    default = None,\
-                    help = "Path to uwp .appx[bundle] file.")
+parser = argparse.ArgumentParser(description="UWPPyRunner")
 
-parser.add_argument("-deps_paths",\
-                    nargs = "?",\
-                    dest = "deps_paths",\
-                    action = ParseDeps,\
-                    default = [],\
-                    help = "Comma separated list of paths to dependencies or single path to dependencies dir.")
-
-parser.add_argument("-cer_path",\
-                    nargs = "?",\
-                    dest = "cer_path", \
-                    default = None, \
-                    help = "Path to app .cer file.")
-
+#
+# Global arguments
+#
 parser.add_argument("-url",\
                     nargs = "?",\
                     dest = "url",\
@@ -60,95 +45,182 @@ parser.add_argument("-timeout",\
                     default = 10.0,\
                     help = "Requests timeout. (default: 10.0).")
 
-parser.add_argument("-stop_on_close",\
-                    dest = "stop_on_close",\
-                    action = "store_true",\
-                    help = "Stop the session if app is minimized.")
-
-parser.add_argument("-show_timestamp",\
-                    dest = "show_timestamp",\
-                    action = "store_true",\
-                    help = "Show log timestamp.")
-
-parser.add_argument("-log_levels",\
-                    nargs = "?",\
-                    dest = "log_levels",\
-                    action = Split,\
-                    default = [1,2,3,4,5],\
-                    help = "Comma separated list of log levels to be shown\
-                            (default: \"1,2,3,4,5\").")
-
-parser.add_argument("-providers_guids",\
-                    nargs = "?",\
-                    dest = "providers_guids",\
-                    action = Split,\
-                    default = ["4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a"],\
-                    help = "Comma separated list of providers GUIDs \
-                          (default: \"4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a\".")
-
-parser.add_argument("-providers_names",\
-                    nargs = "?",\
-                    dest = "providers_names",\
-                    action = Split,\
-                    default = ["DAVALogProvider","Test-log-service"],\
-                    help = "Comma separated list of providers GUIDs \
-                            (default: \"DAVALogProvider,Test-log-service\".")
-
-parser.add_argument("-deploy",\
-                    dest = "deploy",\
-                    action = "store_true",\
-                    help = "Deploy the app. Will uninstall any prev. versions.")
-
-parser.add_argument("-uninstall",\
-                    dest = "uninstall",\
-                    action = "store_true",\
-                    help = "Uninstall the app.")
-
-parser.add_argument("-start",\
-                    dest = "start",\
-                    action = "store_true",\
-                    help = "Start the app.")
-
-parser.add_argument("-stop",\
-                    dest = "stop",\
-                    action = "store_true",\
-                    help = "Stop the app.")
-
-parser.add_argument("-ds",\
-                    dest = "ds",\
-                    action = "store_true",\
-                    help = "Deploy and start operations combined.")
-
-parser.add_argument("-force",\
-                    dest = "force",\
-                    action = "store_true",\
-                    help = "'display name' will be used as unique key for stop/start/uninstall opertaions.")
-
-parser.add_argument("-key",\
-                    dest = "key",\
-                    nargs = "?", \
-                    default = None,\
-                    help = "Key for stop/start/uninstall options.")
-
-parser.add_argument("-value",\
-                    dest = "value",\
-                    nargs = "?", \
-                    default = None,\
-                    help = "Value for stop/start/uninstall options.")
-
-parser.add_argument("-to_file",\
-                    dest = "to_file",\
-                    nargs = "?", \
-                    default = None,\
-                    help = "Path to file to log in.")
-
-parser.add_argument("-verbose",\
-                    dest = "verbose",\
-                    action = "store_true",\
-                    help = "Print additional information.")
-
 parser.add_argument('-version', \
                     action='version', \
                     version='%(prog)s 1.0.0')
 
+#parser.add_argument("-to_file",\
+#                    dest = "to_file",\
+#                    nargs = "?", \
+#                    default = None,\
+#                    help = "Path to file to log in.")
 
+subparsers = parser.add_subparsers(dest = "s_name", help = "TEST")
+
+#
+# 'Deploy' command parser
+#
+
+deploy_parser = subparsers.add_parser("deploy", help = "App deploy.")
+
+deploy_parser.add_argument("-app_path",\
+                           nargs = "?",\
+                           dest = "app_path", \
+                           required = True, \
+                           help = "Path to uwp .appx[bundle] file.")
+
+deploy_parser.add_argument("-deps_paths",\
+                           nargs = "?",\
+                           dest = "deps_paths",\
+                           action = ParseDeps,\
+                           default = [],\
+                           help = "Comma separated list of paths to dependencies files or \
+                                   dependencies dirs.")
+
+deploy_parser.add_argument("-cer_path",\
+                           nargs = "?",\
+                           dest = "cer_path", \
+                           default = None, \
+                           help = "Path to app .cer file.")
+
+
+#
+# 'Uninstall' command parser
+#
+
+uninstall_parser = subparsers.add_parser("uninstall", help = "App uninstall.")
+
+uninstall_parser.add_argument("package_full_name",\
+                              nargs = "?",\
+                              #dest = "package_full_name",\
+                              #required = True, \
+                              help = "Package full name.")
+
+#
+# 'Run' command parser
+#
+                    
+run_parser = subparsers.add_parser("run", help = "Run the app and listen to logs.")
+
+run_parser.add_argument("package_full_name",\
+                        nargs = "?",\
+                        #dest = "package_full_name",\
+                        #required = True, \
+                        help = "Package full name.")
+          
+run_parser.add_argument("-guids",\
+                        nargs = "?",\
+                        dest = "guids", \
+                        action = Split,\
+                        default = ["4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a"],\
+                        help = "Comma separated list of providers GUIDs \
+                          (default: \"4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a\".")
+
+run_parser.add_argument("-channels",\
+                        nargs = "?",\
+                        dest = "channels",\
+                        action = Split,\
+                        default = ["DAVALogProvider","Test-log-service"],\
+                        help = "Comma separated list of providers GUIDs \
+                              (default: \"DAVALogProvider,Test-log-service\".")
+
+run_parser.add_argument("-log_levels",\
+                        nargs = "?",\
+                        dest = "log_levels",\
+                        action = Split,\
+                        default = [1,2,3,4,5],\
+                        help = "Comma separated list of log levels to be shown\
+                                (default: \"1,2,3,4,5\").")
+
+run_parser.add_argument("-no_timestamp",\
+                        dest = "no_timestamp",\
+                        action = "store_true",\
+                        help = "Disable timestamp.")
+
+run_parser.add_argument("-delay",\
+                        nargs = "?",\
+                        dest = "delay",\
+                        type = float, \
+                        default = 20.0,\
+                        help = "Delay for app monitor to wait before the app start (deafult: 20.0).")
+
+run_parser.add_argument("-stop_on_close",\
+                        dest = "stop_on_close",\
+                        action = "store_true",\
+                        help = "Stop the session if app is minimized.")
+
+
+#
+# 'Attach' command parser
+#
+
+attach_parser = subparsers.add_parser("attach", help = "Attach to event tracer without run.")
+
+attach_parser.add_argument("-app_to_monitor",\
+                           nargs = "?",\
+                           dest = "app_to_monitor",\
+                           default = None, \
+                           help = "Monitor app activity with specified package full name.")
+         
+attach_parser.add_argument("-guids",\
+                           nargs = "?",\
+                           dest = "guids", \
+                           action = Split,\
+                           default = ["4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a"],\
+                           help = "Comma separated list of providers GUIDs \
+                          (default: \"4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a\".")
+
+attach_parser.add_argument("-channels",\
+                           nargs = "?",\
+                           dest = "channels",\
+                           action = Split,\
+                           default = ["DAVALogProvider","Test-log-service"],\
+                           help = "Comma separated list of providers GUIDs \
+                              (default: \"DAVALogProvider,Test-log-service\".")
+
+attach_parser.add_argument("-log_levels",\
+                           nargs = "?",\
+                           dest = "log_levels",\
+                           action = Split,\
+                           default = [1,2,3,4,5],\
+                           help = "Comma separated list of log levels to be shown\
+                                   (default: \"1,2,3,4,5\").")
+
+attach_parser.add_argument("-no_timestamp",\
+                           dest = "no_timestamp",\
+                           action = "store_true",\
+                           help = "Disable timestamp.")
+
+attach_parser.add_argument("-delay",\
+                           nargs = "?",\
+                           dest = "delay",\
+                           type = float, \
+                           default = 20.0,\
+                           help = "Delay for app monitor to wait before the app start (deafult: 20.0).")
+
+attach_parser.add_argument("-stop_on_close",\
+                           dest = "stop_on_close",\
+                           action = "store_true",\
+                           help = "Stop the session if app is minimized.")
+
+#
+# 'Stop' command parser
+#
+
+stop_parser = subparsers.add_parser("stop", help = "App stop.")
+
+stop_parser.add_argument("package_full_name",\
+                         nargs = "?",\
+                         #dest = "package_full_name",\
+                         #required = True, \
+                         help = "Package full name.")
+
+#
+# 'List' command parser
+#
+
+list_parser = subparsers.add_parser("list", help = "List installed or running apps.")
+
+list_parser.add_argument("what",\
+                         #dest = "installed",\
+                         help = "Specify what to list: 'running' or 'installed' apps.")

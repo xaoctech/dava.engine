@@ -17,47 +17,29 @@ appx_bundle_manifest_file = "AppxMetadata/AppxBundleManifest.xml"
 #x = {"uap": "http://schemas.microsoft.com/appx/manifest/foundation/windows10"}
 #y =  {"uap": "http://schemas.microsoft.com/appx/2013/bundle"}
 
-def get_display_name_from_appx(zip_file, manifest_path):
-    with zip_file.open(manifest_path) as f:
-        x = etree.parse(f)
-        root = x.getroot()
-        apps = root.find("{*}Applications")
-        if apps is None:
-            return
-        app = apps.find("{*}Application")
-        visual = app.find("{*}VisualElements")
-        return visual.get("DisplayName")
+def get_display_name_from_appx(xml_tree):
+    root = xml_tree.getroot()
+    apps = root.find("{*}Applications")
+    if apps is None:
+        return
+    app = apps.find("{*}Application")
+    visual = app.find("{*}VisualElements")
+    return visual.get("DisplayName")
 
 
-def get_identity_name_from_appx(zip_file, manifest_path):
-    with zip_file.open(manifest_path) as f:
-        x = etree.parse(f)
-        root = x.getroot()
-        identity = root.find("{*}Identity")
-        name = identity.get("Name")
-        return name
+def get_identity_name_from_appx_or_bundle(xml_tree):
+    root = xml_tree.getroot()
+    identity = root.find("{*}Identity")
+    name = identity.get("Name")
+    return name
 
 
-def get_executable_name_from_appx(zip_file, manifest_path):
-    with zip_file.open(manifest_path) as f:
-        x = etree.parse(f)
-        root = x.getroot()
-        apps = root.find("{*}Applications")
-        if apps is None:
-            return
-        app = apps.find("{*}Application")
-        x = app.get("Executable")
-        return x
-
-
-def get_version_from_appx(zip_file, manifest_path):
-    with zip_file.open(manifest_path) as f:
-        x = etree.parse(f)
-        root = x.getroot()
-        identity = root.find("{*}Identity")
-        version = identity.get("Version")
-        if version is not None:
-            return [int(i) for i in version.split(".")]
+def get_version_from_appx_or_bundle(xml_tree):
+    root = xml_tree.getroot()
+    identity = root.find("{*}Identity")
+    version = identity.get("Version")
+    if version is not None:
+        return [int(i) for i in version.split(".")]
 
 
 class Package:
@@ -70,8 +52,10 @@ class Package:
             manifest_path = appx_manifest_file
             if self.file_name.lower().endswith(".appxbundle"):
                 manifest_path = appx_bundle_manifest_file
-            self.identity_name = get_identity_name_from_appx(zf, manifest_path)
-            self.version = get_version_from_appx(zf, manifest_path)
+            with zf.open(manifest_path) as f:
+                xml_tree = etree.parse(f)
+                self.identity_name = get_identity_name_from_appx_or_bundle(xml_tree)
+                self.version = get_version_from_appx_or_bundle(xml_tree)
 
 
     def get_display_name(self):
@@ -98,7 +82,10 @@ class Package:
         
         try:                
             with ZipFile(path, "r") as zf:
-                self.__display_name = get_display_name_from_appx(zf, appx_manifest_file)
+                with zf.open(manifest_path) as f:
+                    xml_tree = etree.parse(f)
+                    self.__display_name = \
+                            get_display_name_from_appx(xml_tree)
                 return self.__display_name
         finally:
             if path != self.path:
