@@ -74,7 +74,7 @@ DLCDownloader& DLCManagerImpl::GetDownloader() const
 }
 
 static const std::array<int32, 8> errorForExternalHandle = { ENAMETOOLONG,
-                                                             ENOSPC, ENODEV, EACCES, EROFS, ENFILE, EMFILE };
+                                                             ENOSPC, ENODEV, EROFS, ENFILE, EMFILE };
 
 bool DLCManagerImpl::CountError(int32 errCode)
 {
