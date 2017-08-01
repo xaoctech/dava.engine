@@ -61,7 +61,7 @@ DAVA_TESTCLASS (UIRichContentTest)
         c->SetText(testData);
 
         UpdateRichContentSystem();
-        TEST_VERIFY(richControl->GetChildren().size() == 14);
+        TEST_VERIFY(richControl->GetChildren().size() == 12);
     }
 
     DAVA_TEST (BaseClassesTest)
