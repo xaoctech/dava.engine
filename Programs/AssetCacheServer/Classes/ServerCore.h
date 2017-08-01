@@ -21,6 +21,7 @@ class ServerCore : public QObject,
     Q_OBJECT
 
     static const DAVA::uint32 UPDATE_INTERVAL_MS = 16;
+    static const DAVA::uint32 LAZY_UPDATE_INTERVAL_MS = 500;
     static const DAVA::uint32 CONNECT_TIMEOUT_SEC = 1;
     static const DAVA::uint32 CONNECT_REATTEMPT_WAIT_SEC = 5;
     static const DAVA::uint32 SHARED_UPDATE_INTERVAL_SEC = 3;
@@ -83,6 +84,7 @@ private slots:
     void OnSharedDataReceived(const DAVA::List<SharedPoolParams>& pools, const DAVA::List<SharedServerParams>& servers);
     void OnSettingsUpdated(const ApplicationSettings* settings);
     void OnRefreshTimer();
+    void OnLazyUpdateTimer();
     void OnConnectTimeout();
     void OnReattemptTimer();
     void ReconnectAsynchronously();
@@ -129,6 +131,7 @@ private:
     SharedDataRequester sharedDataRequester;
 
     QTimer* updateTimer = nullptr;
+    QTimer* lazyUpdateTimer = nullptr;
     QTimer* connectTimer = nullptr;
     QTimer* reconnectWaitTimer = nullptr;
     QTimer* sharedDataUpdateTimer = nullptr;

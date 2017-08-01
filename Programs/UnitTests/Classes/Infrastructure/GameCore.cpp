@@ -1,5 +1,6 @@
 #include "Infrastructure/GameCore.h"
 
+
 #include "CommandLine/CommandLineParser.h"
 #include "Debug/DVAssert.h"
 #include "Debug/DVAssertDefaultHandlers.h"
@@ -19,7 +20,8 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 #include "Network/PeerDesription.h"
 #include "Network/NetConfig.h"
-#include "Network/Services/NetLogger.h"
+#include <LoggerService/NetLogger.h>
+#include <LoggerService/ServiceInfo.h>
 #include "Platform/TemplateWin32/UAPNetworkHelper.h"
 #endif
 
@@ -381,14 +383,14 @@ void GameCore::InitNetwork()
     };
     // clang-format on
 
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_LOG, loggerCreate, loggerDestroy);
+    NetCore::Instance()->RegisterService(DAVA::Net::LOG_SERVICE_ID, loggerCreate, loggerDestroy);
 
     eNetworkRole role = UAPNetworkHelper::GetCurrentNetworkRole();
     Net::Endpoint endpoint = UAPNetworkHelper::GetCurrentEndPoint();
 
     NetConfig config(role);
     config.AddTransport(TRANSPORT_TCP, endpoint);
-    config.AddService(NetCore::SERVICE_LOG);
+    config.AddService(DAVA::Net::LOG_SERVICE_ID);
 
     netController = NetCore::Instance()->CreateController(config, nullptr);
 }
