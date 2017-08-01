@@ -47,6 +47,8 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QBoxLayout>
+#include "Render/Texture.h"
+#include "Scene/SceneHelper.h"
 
 namespace UIName
 {
@@ -181,6 +183,7 @@ public:
         UpdateAllAddRemoveButtons(propertiesRoot.get());
         UpdateAllAddRemoveButtons(illuminationRoot.get());
         UpdateAllAddRemoveButtons(texturesRoot.get());
+        CreateReloadTextureButton(texturesRoot.get());
 
         FillInvalidTextures(texturesRoot.get(), materials);
 
@@ -270,6 +273,39 @@ private:
         QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnAddRemoveButton);
 
         return button;
+    }
+
+    void CreateReloadTextureButton(QtPropertyData* data)
+    {
+        QtPropertyDataInspDynamic* dynamicData = dynamic_cast<QtPropertyDataInspDynamic*>(data);
+        if (nullptr != dynamicData)
+        {
+            bool buttonAlreadyExists = false;
+            QString reloadButtonName = QStringLiteral("reloadTexture");
+            for (int i = 0; i < data->GetButtonsCount(); ++i)
+            {
+                QtPropertyToolButton* btn = data->GetButton(i);
+                if (btn->objectName() == reloadButtonName)
+                {
+                    buttonAlreadyExists = true;
+                    break;
+                }
+            }
+
+            if (buttonAlreadyExists == false)
+            {
+                QtPropertyToolButton* button = data->AddButton();
+                button->setObjectName(QStringLiteral("reloadTexture"));
+                button->setIcon(SharedIcon(":/QtIcons/reloadtextures.png"));
+                button->setIconSize(QSize(14, 14));
+                QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnReloadTexture);
+            }
+        }
+
+        for (int i = 0; i < data->ChildCount(); ++i)
+        {
+            CreateReloadTextureButton(data->ChildGet(i));
+        }
     }
 
     std::unique_ptr<QtPropertyData> CreateHeader(const DAVA::FastName& sectionName)
@@ -1082,6 +1118,34 @@ void MaterialEditor::OnAddRemoveButton()
 
             data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
             PropertiesBuilder(this).UpdateAddRemoveButtonState(data);
+        }
+    }
+}
+
+void MaterialEditor::OnReloadTexture()
+{
+    QtPropertyToolButton* btn = dynamic_cast<QtPropertyToolButton*>(QObject::sender());
+    if (nullptr != btn)
+    {
+        QtPropertyDataInspDynamic* data = static_cast<QtPropertyDataInspDynamic*>(btn->GetPropertyData());
+        if (nullptr != data)
+        {
+            DAVA::VariantType value = data->dynamicInfo->MemberValueGet(data->ddata, data->name);
+            DAVA::FilePath path = value.AsFilePath();
+            DAVA::Texture* texture = DAVA::Texture::Get(path);
+            if (texture != nullptr)
+            {
+                DAVA::eGPUFamily curEditorImageGPUForTextures = Settings::GetGPUFormat();
+                texture->ReloadAs(curEditorImageGPUForTextures);
+
+                DAVA::Set<DAVA::NMaterial*> materials;
+                SceneHelper::EnumerateMaterials(activeScene, materials);
+                for (auto mat : materials)
+                {
+                    if (mat->ContainsTexture(texture))
+                        mat->InvalidateTextureBindings();
+                }
+            }
         }
     }
 }
