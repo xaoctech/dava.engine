@@ -24,16 +24,17 @@
 DeviceListController::DeviceListController(QObject* parent)
     : QObject(parent)
     , model(NULL)
-    , loggerServiceCreatorAsync(MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
-    , profilerServiceCreatorAsync(MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
-    , loggerServiceDeleterAsync(MakeFunction(this, &DeviceListController::DeleteLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
-    , profilerServiceDeleterAsync(MakeFunction(this, &DeviceListController::DeleteMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , loggerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , loggerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , profilerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
 {
+    using namespace DAVA;
     using namespace DAVA::Net;
 
     model = new QStandardItemModel(this);
 
-    // Register network service for recieving logs from device
+    // Register network service for receiving logs from device
     NetCore::Instance()->RegisterService(LOG_SERVICE_ID, MakeFunction(&loggerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&loggerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Logger");
     NetCore::Instance()->RegisterService(MEMORY_PROFILER_SERVICE_ID, MakeFunction(&profilerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&profilerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Memory profiler");
 
@@ -534,7 +535,7 @@ bool DeviceListController::AlreadyInModel(const DAVA::Net::Endpoint& endp, const
     return false;
 }
 
-void DeviceListController::DiscoverOnRange(const DAVA::Net::IPAddress& addr, const std::pair<uint16, uint16>& range)
+void DeviceListController::DiscoverOnRange(const DAVA::Net::IPAddress& addr, const std::pair<DAVA::uint16, DAVA::uint16>& range)
 {
     ipAddr = addr;
     portsRange = range;
