@@ -190,7 +190,6 @@ protected:
 
     void RemoveCommandsHelper(const DAVA::String& text, SceneTreeItem::eItemType type, const DAVA::Function<RemoveInfo(SceneTreeItem*)>& callback)
     {
-        SelectableGroup currentGroup = Selection::GetSelection();
         DAVA::Vector<std::unique_ptr<DAVA::Command>> commands;
         commands.reserve(GetSelectedItemsCount());
 
@@ -198,6 +197,7 @@ protected:
         foreach (QModelIndex index, treeWidget->selectionModel()->selectedRows())
         {
             selectedIndecies.insert(treeWidget->filteringProxyModel->mapToSource(index));
+            SceneTreeItem* item = treeWidget->treeModel->GetItem(treeWidget->filteringProxyModel->mapToSource(index));
         }
 
         foreach (QModelIndex srcIndex, selectedIndecies)
@@ -222,18 +222,10 @@ protected:
                 srcIndexParent = srcIndexParent.parent();
             }
 
-            if (parentSelected)
+            if (!parentSelected && static_cast<SceneTreeItem::eItemType>(item->ItemType()) == type)
             {
-                currentGroup.Remove(item->GetItemObject());
-            }
-            else
-            {
-                if (static_cast<SceneTreeItem::eItemType>(item->ItemType()) == type)
-                {
-                    RemoveInfo info = callback(item);
-                    commands.push_back(std::move(info.command));
-                    currentGroup.Remove(info.selectedObject);
-                }
+                RemoveInfo info = callback(item);
+                commands.push_back(std::move(info.command));
             }
         }
 
@@ -241,8 +233,6 @@ protected:
         {
             SceneEditor2* sceneEditor = GetScene();
             sceneEditor->BeginBatch(text, static_cast<DAVA::uint32>(commands.size()));
-
-            Selection::SetSelection(currentGroup);
 
             static_cast<SceneTree*>(GetParentWidget())->SyncSelectionToTree();
             for (std::unique_ptr<DAVA::Command>& command : commands)
@@ -252,6 +242,8 @@ protected:
             MarkStructureChanged();
             sceneEditor->EndBatch();
         }
+
+        treeWidget->SyncSelectionFromTree();
     }
 
     void ForEachSelectedByType(SceneTreeItem::eItemType type, const DAVA::Function<void(SceneTreeItem*)>& callback)
