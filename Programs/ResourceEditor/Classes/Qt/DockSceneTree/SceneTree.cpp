@@ -194,30 +194,32 @@ protected:
         DAVA::Vector<std::unique_ptr<DAVA::Command>> commands;
         commands.reserve(GetSelectedItemsCount());
 
+        QSet<QModelIndex> selectedIndecies;
         foreach (QModelIndex index, treeWidget->selectionModel()->selectedRows())
         {
-            QModelIndex srcIndex = treeWidget->filteringProxyModel->mapToSource(index);
+            selectedIndecies.insert(treeWidget->filteringProxyModel->mapToSource(index));
+        }
+
+        foreach (QModelIndex srcIndex, selectedIndecies)
+        {
             SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
             DVASSERT(item != nullptr);
 
             bool parentSelected = false;
-            SceneTreeItem* parent = static_cast<SceneTreeItem*>(item->parent());
 
-            while (parent != nullptr && !parentSelected)
+            QModelIndex srcIndexParent = srcIndex.parent();
+
+            while (srcIndexParent.isValid() && !parentSelected)
             {
-                foreach (QModelIndex index, this->treeWidget->selectionModel()->selectedRows())
-                {
-                    QModelIndex srcIndex = treeWidget->filteringProxyModel->mapToSource(index);
-                    SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
+                SceneTreeItem* itemParent = treeWidget->treeModel->GetItem(srcIndexParent);
 
-                    if (parent == item && parent->ItemType() == type)
-                    {
-                        parentSelected = true;
-                        break;
-                    }
+                if (selectedIndecies.contains(srcIndexParent) && itemParent->ItemType() == type)
+                {
+                    parentSelected = true;
+                    break;
                 }
 
-                parent = static_cast<SceneTreeItem*>(parent->parent());
+                srcIndexParent = srcIndexParent.parent();
             }
 
             if (parentSelected)
