@@ -59,8 +59,9 @@ endif()
 
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
+find_package( LoggerService REQUIRED )
+find_package( MemoryProfilerService REQUIRED )
 find_package( EmbeddedWebServer REQUIRED )
-
 
 include_directories   ( "Classes" )
 include_directories   ( "Classes/Infrastructure" )

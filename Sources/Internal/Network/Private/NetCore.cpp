@@ -9,6 +9,7 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Concurrency/LockGuard.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -133,6 +134,20 @@ NetCore::TrackId NetCore::CreateController(const NetConfig& config, void* contex
 #else
     return INVALID_TRACK_ID;
 #endif
+}
+
+IController::Status NetCore::GetControllerStatus(TrackId id) const
+{
+    IController* ctrl = TrackIdToObject(id);
+    if (ctrl)
+    {
+        return ctrl->GetStatus();
+    }
+    else
+    {
+        DVASSERT(false, Format("Wrong track id: %u", id).c_str());
+        return IController::START_FAILED;
+    }
 }
 
 NetCore::TrackId NetCore::CreateAnnouncer(const Endpoint& endpoint, uint32 sendPeriod, Function<size_t(size_t, void*)> needDataCallback, const Endpoint& tcpEndpoint)
@@ -368,7 +383,7 @@ void NetCore::Finish(bool waitForFinished)
 #endif
 }
 
-bool NetCore::TryDiscoverDevice(const Endpoint& endpoint)
+NetCore::DiscoverStartResult NetCore::TryDiscoverDevice(const Endpoint& endpoint)
 {
 #if !defined(DAVA_NETWORK_DISABLE)
     if (discovererId != INVALID_TRACK_ID)
@@ -381,12 +396,19 @@ bool NetCore::TryDiscoverDevice(const Endpoint& endpoint)
             // Variable is named in honor of big fan and donater of tanks - Sergey Demidov
             // And this man assures that cast below is valid, so do not worry, guys
             Discoverer* SergeyDemidov = static_cast<Discoverer*>(ctrl);
-            return SergeyDemidov->TryDiscoverDevice(endpoint);
+            return (SergeyDemidov->TryDiscoverDevice(endpoint) ? DISCOVER_STARTED : CLOSING_PREVIOUS_DISCOVER);
+        }
+        else
+        {
+            return CONTROLLER_NOT_STARTED_YET;
         }
     }
-    return false;
+    else
+    {
+        return CONTROLLER_NOT_CREATED;
+    }    
 #else
-    return true;
+    return DISCOVER_STARTED;
 #endif
 }
 

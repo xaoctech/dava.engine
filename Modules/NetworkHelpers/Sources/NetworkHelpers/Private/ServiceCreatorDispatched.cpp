@@ -1,5 +1,5 @@
-#include "Tools/NetworkHelpers/ServiceCreatorDispatched.h"
-#include "Tools/NetworkHelpers/SafeMemberFnCaller.h"
+#include "NetworkHelpers/ServiceCreatorDispatched.h"
+#include "NetworkHelpers/SafeMemberFnCaller.h"
 
 namespace DAVA
 {
