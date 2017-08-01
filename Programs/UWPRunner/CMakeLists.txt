@@ -11,6 +11,7 @@ dava_add_definitions (
 
 find_package( QT5           REQUIRED )
 find_package( DavaFramework REQUIRED )
+find_package( LoggerService REQUIRED )
 find_package( DocDirSetup REQUIRED )
 
 if ( NOT WIN32 OR WINDOWS_UAP )
