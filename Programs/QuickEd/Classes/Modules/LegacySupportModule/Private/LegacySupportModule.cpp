@@ -13,8 +13,6 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-#include <QtTools/Utils/Themes/Themes.h>
-
 #include <Tools/Version.h>
 #include <DAVAVersion.h>
 
@@ -29,8 +27,6 @@ void LegacySupportModule::PostInit()
 {
     using namespace DAVA;
     using namespace TArc;
-
-    Themes::InitFromQApplication();
 
     ContextAccessor* accessor = GetAccessor();
 

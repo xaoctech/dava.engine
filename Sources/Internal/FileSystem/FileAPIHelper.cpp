@@ -1,4 +1,5 @@
 #include "FileSystem/FileAPIHelper.h"
+#include "FileSystem/Private/CheckIOError.h"
 #include "Utils/UTF8Utils.h"
 #include "Logger/Logger.h"
 
@@ -53,6 +54,13 @@ int32 RemoveFile(const String& fileName)
 
 int32 RenameFile(const String& oldFileName, const String& newFileName)
 {
+#ifdef __DAVAENGINE_DEBUG__
+    if (DebugFS::GenErrorOnMoveFailed())
+    {
+        return 1;
+    }
+#endif
+
 #ifdef __DAVAENGINE_WINDOWS__
     WideString old = UTF8Utils::EncodeToWideString(oldFileName);
     WideString new_ = UTF8Utils::EncodeToWideString(newFileName);

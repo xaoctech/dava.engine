@@ -81,6 +81,28 @@ void UIFlowLayoutHintComponent::SetStickItemAfterThis(bool flag)
     SetLayoutDirty();
 }
 
+bool UIFlowLayoutHintComponent::IsStickHardBeforeThis() const
+{
+    return flags.test(FLAG_STICK_HARD_BEFORE_THIS);
+}
+
+void UIFlowLayoutHintComponent::SetStickHardBeforeThis(bool flag)
+{
+    flags.set(FLAG_STICK_HARD_BEFORE_THIS, flag);
+    SetLayoutDirty();
+}
+
+bool UIFlowLayoutHintComponent::IsStickHardAfterThis() const
+{
+    return flags.test(FLAG_STICK_HARD_AFTER_THIS);
+}
+
+void UIFlowLayoutHintComponent::SetStickHardAfterThis(bool flag)
+{
+    flags.set(FLAG_STICK_HARD_AFTER_THIS, flag);
+    SetLayoutDirty();
+}
+
 BiDiHelper::Direction UIFlowLayoutHintComponent::GetContentDirection() const
 {
     return contentDirection;

@@ -173,6 +173,8 @@ public:
 
     DLCDownloader& GetDownloader() const;
 
+    bool CountError(int32 errCode);
+
 private:
     // initialization state functions
     void AskFooter();
@@ -294,6 +296,11 @@ private:
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+
+    // collect errno codes and count it, also remember last error code
+    size_t errorCounter = 0;
+    int32 prevErrorCode = 0;
+
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
 };
