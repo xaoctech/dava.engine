@@ -849,6 +849,14 @@ bool VariantType::Write(File* fp) const
     case TYPE_STRING:
     {
         uint32 len = static_cast<uint32>(stringValue->length());
+
+        uint32 slen = strlen(stringValue->c_str()); //we meet situaltions when string was "aa\0\0"
+        if (slen != len)
+        {
+            DVASSERT(false);
+            len = slen;
+        }
+
         written = fp->Write(&len, 4);
         if (written != 4)
         {
@@ -1158,6 +1166,13 @@ bool VariantType::Read(File* fp)
             delete stringValue;
             stringValue = nullptr;
         }
+
+        uint32 slen = strlen(stringValue->c_str()); //we meet situaltions when string was "aa\0\0"
+        if (slen != len)
+        {
+            stringValue->resize(slen);
+        }
+
         return (read == len);
     }
     case TYPE_WIDE_STRING:
