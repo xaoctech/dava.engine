@@ -19,8 +19,8 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/Themes.h>
 
-#include <QtTools/Utils/Themes/Themes.h>
 #include <QtTools/Utils/Utils.h>
 
 #include <Reflection/ReflectedTypeDB.h>

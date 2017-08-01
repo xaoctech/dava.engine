@@ -56,6 +56,7 @@ private:
     void SetResourceDirectory(const QString& path);
 
     void OnProjectPathChanged(const DAVA::Any& projectPath);
+    void OnDirectoryLoaded(const QString& path);
 
     enum ePathType
     {
@@ -80,4 +81,5 @@ private:
 
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    QString fileToSelect;
 };

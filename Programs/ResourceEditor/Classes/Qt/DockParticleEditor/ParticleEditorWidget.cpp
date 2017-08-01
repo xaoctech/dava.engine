@@ -6,6 +6,8 @@
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/SceneManager/SceneData.h"
 
+#include "Scene/System/EditorParticlesSystem.h"
+
 #include "TArc/Core/FieldBinder.h"
 
 #include "ui_mainwindow.h"
@@ -164,9 +166,13 @@ void ParticleEditorWidget::UpdateWidgetsForLayer()
     {
         return;
     }
+    EmitterLayerWidget::eLayerMode mode = EmitterLayerWidget::eLayerMode::REGULAR;
+    if (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+        mode = EmitterLayerWidget::eLayerMode::SUPEREMITTER;
+    else if (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE)
+        mode = EmitterLayerWidget::eLayerMode::STRIPE;
 
-    bool isSuperemitter = (emitterLayerWidget->GetLayer()->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
-    emitterLayerWidget->SetSuperemitterMode(isSuperemitter);
+    emitterLayerWidget->SetLayerMode(mode);
 }
 
 void ParticleEditorWidget::HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, bool forceUpdate)

@@ -43,6 +43,16 @@ void TransformComponent::SetLocalTransform(const Matrix4* transform)
     }
 }
 
+void TransformComponent::SetWorldTransform(const Matrix4* transform)
+{
+    if (entity && entity->GetScene() && entity->GetScene()->transformSingleComponent)
+    {
+        TransformSingleComponent* tsc = entity->GetScene()->transformSingleComponent;
+        tsc->worldTransformChanged.Push(entity);
+    }
+    worldMatrix = *transform;
+}
+
 void TransformComponent::SetParent(Entity* node)
 {
     parent = node;

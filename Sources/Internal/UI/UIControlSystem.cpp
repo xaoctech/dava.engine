@@ -65,13 +65,10 @@ UIControlSystem::~UIControlSystem()
     inputSystem->SetCurrentScreen(nullptr);
     styleSheetSystem->SetPopupContainer(RefPtr<UIControl>());
     styleSheetSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    styleSheetSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
     layoutSystem->SetPopupContainer(RefPtr<UIControl>());
     layoutSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    layoutSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
     renderSystem->SetPopupContainer(RefPtr<UIControl>());
     renderSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    renderSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
 
     popupContainer->InvokeInactive();
     popupContainer->SetScene(nullptr);
@@ -109,13 +106,12 @@ void UIControlSystem::Init()
     renderSystem->SetPopupContainer(popupContainer);
 }
 
-void UIControlSystem::SetScreen(UIScreen* _nextScreen, UIScreenTransition* _transition)
+void UIControlSystem::SetScreen(UIScreen* _nextScreen)
 {
     if (_nextScreen == currentScreen)
     {
         if (nextScreen != nullptr)
         {
-            nextScreenTransition = nullptr;
             nextScreen = nullptr;
         }
         return;
@@ -126,7 +122,6 @@ void UIControlSystem::SetScreen(UIScreen* _nextScreen, UIScreenTransition* _tran
         Logger::Warning("2 screen switches during one frame.");
     }
 
-    nextScreenTransition = _transition;
     nextScreen = _nextScreen;
 
     if (nextScreen == nullptr)
@@ -193,11 +188,6 @@ UIControl* UIControlSystem::GetPopupContainer() const
     return popupContainer.Get();
 }
 
-UIScreenTransition* UIControlSystem::GetScreenTransition() const
-{
-    return currentScreenTransition.Get();
-}
-
 void UIControlSystem::Reset()
 {
     inputSystem->SetCurrentScreen(nullptr);
@@ -240,12 +230,9 @@ void UIControlSystem::ProcessScreenLogic()
     if (screenLockCount == 0 && (nextScreen.Valid() || removeCurrentScreen))
     {
         RefPtr<UIScreen> nextScreenProcessed;
-        RefPtr<UIScreenTransition> nextScreenTransitionProcessed;
 
         nextScreenProcessed = nextScreen;
-        nextScreenTransitionProcessed = nextScreenTransition;
         nextScreen = nullptr; // functions called by this method can request another screen switch (for example, LoadResources)
-        nextScreenTransition = nullptr;
 
         LockInput();
 
@@ -253,16 +240,6 @@ void UIControlSystem::ProcessScreenLogic()
 
         NotifyListenersWillSwitch(nextScreenProcessed.Get());
 
-        if (nextScreenTransitionProcessed)
-        {
-            if (nextScreenTransitionProcessed->GetRect() != fullscreenRect)
-            {
-                nextScreenTransitionProcessed->SystemScreenSizeChanged(fullscreenRect);
-            }
-
-            nextScreenTransitionProcessed->StartTransition();
-            nextScreenTransitionProcessed->SetSourceScreen(currentScreen.Get());
-        }
         // if we have current screen we call events, unload resources for it group
         if (currentScreen)
         {
@@ -305,45 +282,10 @@ void UIControlSystem::ProcessScreenLogic()
 
         NotifyListenersDidSwitch(currentScreen.Get());
 
-        if (nextScreenTransitionProcessed)
-        {
-            nextScreenTransitionProcessed->SetDestinationScreen(currentScreen.Get());
-
-            LockSwitch();
-            LockInput();
-
-            currentScreenTransition = nextScreenTransitionProcessed;
-            currentScreenTransition->SetScene(this);
-            currentScreenTransition->InvokeActive(UIControl::eViewState::VISIBLE);
-            styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
-            layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
-            renderSystem->SetCurrentScreenTransition(currentScreenTransition);
-        }
-
         UnlockInput();
 
         frameSkip = FRAME_SKIP;
         removeCurrentScreen = false;
-    }
-    else
-    if (currentScreenTransition)
-    {
-        if (currentScreenTransition->IsComplete())
-        {
-            currentScreenTransition->InvokeInactive();
-            currentScreenTransition->SetScene(nullptr);
-
-            RefPtr<UIScreenTransition> prevScreenTransitionProcessed = currentScreenTransition;
-            currentScreenTransition = nullptr;
-            styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
-            layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
-            renderSystem->SetCurrentScreenTransition(currentScreenTransition);
-
-            UnlockInput();
-            UnlockSwitch();
-
-            prevScreenTransitionProcessed->EndTransition();
-        }
     }
 
     /*
@@ -513,11 +455,6 @@ void UIControlSystem::ScreenSizeChanged(const Rect& newFullscreenRect)
     }
 
     fullscreenRect = newFullscreenRect;
-
-    if (currentScreenTransition.Valid())
-    {
-        currentScreenTransition->SystemScreenSizeChanged(fullscreenRect);
-    }
 
     if (currentScreen.Valid())
     {
@@ -690,7 +627,7 @@ void UIControlSystem::SetBiDiSupportEnabled(bool support)
 
 bool UIControlSystem::IsHostControl(const UIControl* control) const
 {
-    return (GetScreen() == control || GetPopupContainer() == control || GetScreenTransition() == control);
+    return (GetScreen() == control || GetPopupContainer() == control);
 }
 
 void UIControlSystem::RegisterControl(UIControl* control)

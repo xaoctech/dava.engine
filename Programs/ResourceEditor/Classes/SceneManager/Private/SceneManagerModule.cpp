@@ -13,6 +13,7 @@
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
+#include "Scene/System/EditorParticlesSystem.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -63,7 +64,11 @@ public:
 }
 
 //to use std::unique_ptr<FileSystemCache> sceneFilesCache with forward declaration
-SceneManagerModule::SceneManagerModule() = default;
+SceneManagerModule::SceneManagerModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneData);
+}
+
 SceneManagerModule::~SceneManagerModule() = default;
 
 void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)

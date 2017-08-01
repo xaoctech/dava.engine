@@ -47,13 +47,17 @@ void UIScreenManager::SetFirst(int screenId)
     }
 }
 
-void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
+void UIScreenManager::SetScreen(int screenId)
 {
     Screen& screen = screens[screenId];
     if (screen.type == Screen::TYPE_SCREEN)
     {
         activeScreenId = screenId;
+<<<<<<< HEAD
         GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value), transition);
+        == == == =
+                 UIControlSystem::Instance()->SetScreen(static_cast<UIScreen*>(screen.value));
+>>>>>>> development
     }
 }
 
