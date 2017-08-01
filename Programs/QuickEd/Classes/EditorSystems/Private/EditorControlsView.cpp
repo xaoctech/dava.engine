@@ -417,7 +417,7 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
 
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 
-    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &EditorControlsView::BeforeRendering);
 }
 

@@ -16,7 +16,7 @@ EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAcce
     : BaseEditorSystem(parent, accessor)
     , canvasDataAdapter(accessor)
 {
-    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &EditorCanvas::UpdateMovableControlState);
 
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
