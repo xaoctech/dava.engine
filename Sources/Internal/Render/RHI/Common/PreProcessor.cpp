@@ -101,18 +101,6 @@ bool PreProc::AddDefine(const char* name, const char* value)
 
 //------------------------------------------------------------------------------
 
-void PreProc::Dump() const
-{
-    /*
-    for (uint32 i = 0; i != line.size(); ++i)
-    {
-        Logger::Info("%04u | %s", line[i].line_n, line[i].text);
-    }
-    */
-}
-
-//------------------------------------------------------------------------------
-
 void PreProc::Reset()
 {
     for (uint32 b = 0; b != buffer.size(); ++b)
@@ -194,36 +182,29 @@ int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end)
     // zero, if name/value not retieved;
     // -1, if end-of-file was encountered (name/value successfully retrieved)
 
-    char* t = txt;
-    char* n0 = nullptr;
-    char* n1 = nullptr;
-    char* v0 = nullptr;
-    char* v1 = nullptr;
+    char* t = SkipWhitespace(txt);
 
-    while (*t == Space || *t == Tab)
+    if (*t == Zero)
+        return 0;
+
+    char* n0 = t;
+
+    while ((*t != Zero) && (*t != Space) && (*t != Tab) && (*t != NewLine))
         ++t;
 
     if (*t == Zero)
         return 0;
 
-    n0 = t;
+    char* n1 = t - 1;
 
-    while (*t && *t != Space && *t != Tab && *t != NewLine)
-        ++t;
-
-    if (*t == Zero)
-        return 0;
-
-    n1 = t - 1;
-    while (*t == Space || *t == Tab)
-        ++t;
+    t = SkipWhitespace(t);
 
     if (*t == Zero)
         return 0;
 
-    v0 = t;
+    char* v0 = t;
     int32 brace_lev = 0;
-    while (*t && (*t != Space || brace_lev > 0) && *t != Tab && *t != NewLine)
+    while ((*t != Zero) && (*t != Space || brace_lev > 0) && (*t != Tab) && (*t != NewLine))
     {
         if (*t == '(')
             ++brace_lev;
@@ -236,7 +217,7 @@ int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end)
     if (*t == Zero)
         return 0;
 
-    v1 = t - 1;
+    char* v1 = t - 1;
 
     *name = n0;
     *value = v0;
@@ -249,12 +230,10 @@ int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end)
             ++t;
         }
 
-        while (*t != NewLine)
-        {
-            if (*t == 0)
-                return 0;
-            ++t;
-        }
+        t = SeekToLineEnding(t);
+        if (*t == Zero)
+            return 0;
+
         *t = Zero;
         *end = t;
 
@@ -276,37 +255,36 @@ int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end)
 
 bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 {
-    uint32 inputTextLength = static_cast<uint32>(strlen(inputText));
-    char* filteredText = AllocBuffer(inputTextLength + 1);
-    char* filteredTextPtr = filteredText;
-    for (char* s = inputText; *s != Zero; ++s)
+    uint32 textLength = 0;
+    char* dest = inputText;
+    char* source = inputText;
+
+    for (; *source != Zero; ++source)
     {
-        char* begin = s;
-
+        char* begin = source;
         bool unterminatedComment = false;
-        s = SkipCommentBlock(s, unterminatedComment);
-
+        source = SkipCommentBlock(source, unterminatedComment);
         if (unterminatedComment)
         {
             Logger::Error("Unterminated comment, starting at:\n%s", begin);
             return false;
         }
 
-        s = SkipCommentLine(s);
+        source = SkipCommentLine(source);
 
-        char currentChar = *s;
+        char currentChar = *source;
         if (currentChar != CarriageReturn)
         {
-            *filteredTextPtr++ = currentChar;
+            *dest++ = *source;
+            ++textLength;
+
             if (currentChar == '#')
-                s = SkipWhitespace(s + 1) - 1;
+                source = SkipWhitespace(source + 1) - 1;
         }
     }
+    *dest = Zero;
 
-    bool success = true;
-    char* ln = filteredText;
-    bool ln_external = false;
-    char* last_s = nullptr;
+    char* currentLine = inputText;
     uint32 line_n = 1;
     uint32 src_line_n = 1;
 
@@ -318,18 +296,20 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
     };
 
     std::vector<condition_t> pending_elif;
+    pending_elif.reserve(16);
     bool dcheck_pending = true;
 
     pending_elif.emplace_back();
     pending_elif.back().do_skip_lines = false;
 
-    for (char* s = filteredText; *s; ++s)
+    for (char* currentChar = inputText; ((currentChar - inputText) < textLength) && (*currentChar != Zero); ++currentChar)
     {
         int32 skipping_line = false;
 
-        for (int32 i = int(pending_elif.size()) - 1; i >= 0; --i)
+        /* searching from last to first entries in pending_elif (notice rbegin, rend)*/
+        for (auto i = pending_elif.rbegin(), e = pending_elif.rend(); i != e; ++i)
         {
-            if (pending_elif[i].do_skip_lines)
+            if (i->do_skip_lines)
             {
                 skipping_line = true;
                 break;
@@ -342,16 +322,10 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
             if (dcheck_pending)
             {
-                char* ns1 = s;
-
-                while (*ns1 && (*ns1 == Space || *ns1 == Tab))
-                    ++ns1;
+                char* ns1 = SkipWhitespace(currentChar);
 
                 if (*ns1 == Zero)
-                {
-                    success = false;
-                    break;
-                }
+                    return false;
 
                 if (*ns1 == '#')
                     do_skip = false;
@@ -359,13 +333,14 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
             if (do_skip)
             {
-                while (*s && *s != NewLine)
-                    ++s;
+                currentChar = SeekToLineEnding(currentChar);
 
-                if (*s == Zero)
+                if (*currentChar == Zero)
                     break;
 
-                ln = s = s + 1;
+                ++currentChar;
+                currentLine = currentChar;
+
                 ++src_line_n;
                 dcheck_pending = true;
             }
@@ -373,105 +348,83 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
         bool expand_macros = false;
 
-        if (*s == NewLine)
+        if (*currentChar == NewLine)
         {
-            *s = Zero;
-            lines.emplace_back(ln, line_n);
+            *currentChar = Zero;
+            lines.emplace_back(currentLine, line_n);
 
-            if (ln_external)
-            {
-                s = last_s;
-                ln_external = false;
-            }
-
-            ln = s + 1;
+            currentLine = currentChar + 1;
             ++line_n;
             ++src_line_n;
             dcheck_pending = true;
         }
         else if (dcheck_pending)
         {
-            char* ns1 = SkipWhitespace(s);
+            char* ns1 = SkipWhitespace(currentChar);
 
             if (*ns1 == Zero)
-            {
-                success = false;
                 break;
-            }
 
             if (*ns1 == '#')
             {
-                s = ns1;
-                if (!skipping_line && strncmp(s + 1, "include", 7) == 0)
+                currentChar = ns1;
+                if (!skipping_line && strncmp(currentChar + 1, "include", 7) == 0)
                 {
-                    char* t = s;
-                    char* f0 = nullptr;
-                    char* f1 = nullptr;
-
-                    while (*t != DoubleQuotes)
+                    char* t = SeekToCharacter(currentChar, DoubleQuotes);
+                    if (*t == 0)
                     {
-                        if (*t == 0)
-                            return false;
-                        ++t;
+                        Logger::Error("#include does not contain filename in double quotes");
+                        return false;
                     }
-                    f0 = t + 1;
-                    ++t;
-                    while (*t != DoubleQuotes)
+
+                    char* includeFileName = t + 1;
+
+                    t = SeekToCharacter(t + 1, DoubleQuotes);
+
+                    if (*t == 0)
                     {
-                        if (*t == 0)
-                            return false;
-                        ++t;
+                        Logger::Error("#include contains unterminated double quotes");
+                        return false;
                     }
-                    f1 = t - 1;
 
-                    char fname[256] = {};
-                    strncpy(fname, f0, f1 - f0 + 1);
+                    *t = Zero; // make includeFileName zero terminated
 
-                    if (!ProcessInclude(fname, lines))
+                    if (!ProcessInclude(includeFileName, lines))
                         return false;
 
-                    while (*t != NewLine)
-                    {
-                        if (*t == Zero)
-                            return false;
-                        ++t;
-                    }
+                    t = SeekToLineEnding(t + 1);
 
                     if (*t == Zero)
-                        break;
+                        return false;
 
-                    s = t;
-                    ln = t + 1;
+                    currentChar = t;
+                    currentLine = t + 1;
                 }
-                else if (!skipping_line && strncmp(s + 1, "define", 6) == 0)
+                else if (!skipping_line && strncmp(currentChar + 1, "define", 6) == 0)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
-                    int32 nv = GetNameAndValue(s + 1 + 6, &name, &value, &s);
+                    int32 nv = GetNameAndValue(currentChar + 1 + 6, &name, &value, &currentChar);
 
                     if (nv)
                     {
                         if (value[0] == Zero)
                         {
                             Logger::Error("#define without value not allowed (%s)", name);
-                            success = false;
-                            break;
+                            return false;
                         }
 
                         if (!ProcessDefine(name, value))
-                        {
-                            success = false;
-                            break;
-                        }
+                            return false;
 
                         if (nv != -1)
                         {
-                            *s = NewLine; // since it was null'ed in GetNameAndValue
-                            ln = s + 1;
+                            *currentChar = NewLine; // since it was null'ed in GetNameAndValue
+                            currentLine = currentChar + 1;
                         }
                         else
                         {
-                            ln = s;
+                            currentLine = currentChar;
                             break;
                         }
                     }
@@ -480,19 +433,18 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         break;
                     }
                 }
-                else if (!skipping_line && strncmp(s + 1, "ensuredefined", 13) == 0)
+                else if (!skipping_line && strncmp(currentChar + 1, "ensuredefined", 13) == 0)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
-                    int32 nv = GetNameAndValue(s + 1 + 13, &name, &value, &s);
+                    int32 nv = GetNameAndValue(currentChar + 1 + 13, &name, &value, &currentChar);
 
                     if (nv)
                     {
                         if (value[0] == Zero)
                         {
-                            Logger::Error("#define without value not allowed (%s)", name);
-                            success = false;
-                            break;
+                            Logger::Error("#ensuredefined without value not allowed (%s)", name);
+                            return false;
                         }
 
                         if (!evaluator.HasVariable(name))
@@ -500,12 +452,12 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                         if (nv != -1)
                         {
-                            *s = NewLine; // since it was null'ed in GetNameAndValue
-                            ln = s + 1;
+                            *currentChar = NewLine; // since it was null'ed in GetNameAndValue
+                            currentLine = currentChar + 1;
                         }
                         else
                         {
-                            ln = s;
+                            currentLine = currentChar;
                             break;
                         }
                     }
@@ -514,65 +466,72 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         break;
                     }
                 }
-                else if (!skipping_line && strncmp(s + 1, "undef", 5) == 0)
+                else if (!skipping_line && strncmp(currentChar + 1, "undef", 5) == 0)
                 {
-                    char* name = GetIdentifier(s + 1 + 5, &s);
-                    if (!name)
-                        break;
+                    char* name = GetIdentifier(currentChar + 1 + 5, &currentChar);
+                    if (name == nullptr)
+                    {
+                        Logger::Error("#under without identified not allowed");
+                        return false;
+                    }
 
                     Undefine(name);
-
-                    *s = NewLine; // since it was null'ed in GetIdentifier
-                    ln = s + 1;
+                    *currentChar = NewLine; // since it was null'ed in GetIdentifier
+                    currentLine = currentChar + 1;
                 }
-                else if (strncmp(s + 1, "ifdef", 5) == 0)
+                else if (strncmp(currentChar + 1, "ifdef", 5) == 0)
                 {
-                    char* name = GetIdentifier(s + 1 + 5, &s);
-                    if (!name)
-                        break;
-                    bool condition = evaluator.HasVariable(name);
-                    condition_t p;
-
-                    p.original_condition = condition;
-                    p.effective_condition = condition;
-                    p.do_skip_lines = !condition;
-                    pending_elif.push_back(p);
-
-                    *s = NewLine; // since it was null'ed in GetIdentifier
-                    ln = s + 1;
-                }
-                else if (strncmp(s + 1, "ifndef", 6) == 0)
-                {
-                    char* name = GetIdentifier(s + 1 + 6, &s);
-                    if (!name)
-                        break;
-                    bool condition = !evaluator.HasVariable(name);
-                    condition_t p;
-
-                    p.original_condition = condition;
-                    p.effective_condition = condition;
-                    p.do_skip_lines = !condition;
-                    pending_elif.push_back(p);
-
-                    *s = NewLine; // since it was null'ed in GetIdentifier
-                    ln = s + 1;
-                }
-                else if (strncmp(s + 1, "if", 2) == 0)
-                {
-                    char* e = GetExpression(s + 1 + 2, &s);
-                    float v = 0;
-
-                    if (e == nullptr)
+                    char* name = GetIdentifier(currentChar + 1 + 5, &currentChar);
+                    if (name == nullptr)
+                    {
+                        Logger::Error("#ifdef without identified not allowed");
                         return false;
+                    }
 
+                    bool condition = evaluator.HasVariable(name);
+
+                    condition_t p;
+                    p.original_condition = condition;
+                    p.effective_condition = condition;
+                    p.do_skip_lines = !condition;
+                    pending_elif.push_back(p);
+
+                    *currentChar = NewLine; // since it was null'ed in GetIdentifier
+                    currentLine = currentChar + 1;
+                }
+                else if (strncmp(currentChar + 1, "ifndef", 6) == 0)
+                {
+                    char* name = GetIdentifier(currentChar + 1 + 6, &currentChar);
+                    if (name == nullptr)
+                    {
+                        Logger::Error("#ifndef without identified not allowed");
+                        return false;
+                    }
+
+                    bool condition = !evaluator.HasVariable(name);
+
+                    condition_t p;
+                    p.original_condition = condition;
+                    p.effective_condition = condition;
+                    p.do_skip_lines = !condition;
+                    pending_elif.push_back(p);
+
+                    *currentChar = NewLine; // since it was null'ed in GetIdentifier
+                    currentLine = currentChar + 1;
+                }
+                else if (strncmp(currentChar + 1, "if", 2) == 0)
+                {
+                    char* e = GetExpression(currentChar + 1 + 2, &currentChar);
+
+                    float v = 0;
                     if (!evaluator.Evaluate(e, &v))
                     {
                         ReportExprEvalError(src_line_n);
                         return false;
                     }
 
-                    *s = NewLine; // since it was null'ed in GetExpression
-                    ln = s + 1;
+                    *currentChar = NewLine; // since it was null'ed in GetExpression
+                    currentLine = currentChar + 1;
 
                     bool condition = (v != 0.0f);
 
@@ -582,24 +541,21 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     p.do_skip_lines = !condition;
                     pending_elif.push_back(p);
                 }
-                else if (strncmp(s + 1, "elif", 4) == 0)
+                else if (strncmp(currentChar + 1, "elif", 4) == 0)
                 {
-                    char* e = GetExpression(s + 1 + 4, &s);
+                    char* e = GetExpression(currentChar + 1 + 4, &currentChar);
 
-                    if (e == nullptr)
-                        return false;
-
-                    float v = 0;
+                    float v = 0.0f;
                     if (!evaluator.Evaluate(e, &v))
                     {
                         ReportExprEvalError(src_line_n);
                         return false;
                     }
 
-                    *s = NewLine; // since it was null'ed in GetExpression
-                    ln = s + 1;
+                    *currentChar = NewLine; // since it was null'ed in GetExpression
+                    currentLine = currentChar + 1;
 
-                    bool condition = static_cast<int32>(v) != 0;
+                    bool condition = (v != 0.0f);
 
                     if (pending_elif.back().original_condition)
                         pending_elif.back().do_skip_lines = true;
@@ -608,46 +564,46 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                     pending_elif.back().effective_condition = pending_elif.back().effective_condition || condition;
 
-                    if (*s == Zero)
+                    if (*currentChar == Zero)
                     {
-                        ln[0] = Zero;
+                        currentLine[0] = Zero;
                         break;
                     }
                 }
-                else if (strncmp(s + 1, "else", 4) == 0)
+                else if (strncmp(currentChar + 1, "else", 4) == 0)
                 {
                     pending_elif.back().do_skip_lines = pending_elif.back().effective_condition;
 
-                    while (*s && *s != NewLine)
-                        ++s;
+                    while (*currentChar && *currentChar != NewLine)
+                        ++currentChar;
 
-                    if (*s == Zero)
+                    if (*currentChar == Zero)
                     {
-                        ln[0] = Zero;
+                        currentLine[0] = Zero;
                         break;
                     }
 
-                    ln = s + 1;
+                    currentLine = currentChar + 1;
                 }
-                else if (strncmp(s + 1, "endif", 5) == 0)
+                else if (strncmp(currentChar + 1, "endif", 5) == 0)
                 {
                     DVASSERT(pending_elif.size());
                     pending_elif.pop_back();
 
-                    while (*s && *s != NewLine)
-                        ++s;
+                    while (*currentChar && *currentChar != NewLine)
+                        ++currentChar;
 
-                    if (*s == Zero)
+                    if (*currentChar == Zero)
                     {
-                        ln[0] = Zero;
+                        currentLine[0] = Zero;
                         break;
                     }
 
-                    ln = s + 1;
+                    currentLine = currentChar + 1;
                 }
                 else if (!skipping_line)
                 {
-                    Logger::Error("Unknown preprocessor directive \"%s\"", s + 1);
+                    Logger::Error("Unknown preprocessor directive \"%s\"", currentChar + 1);
                     break;
                 }
 
@@ -656,7 +612,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
             else
             {
                 if (*ns1 == NewLine)
-                    s = ns1 - 1;
+                    currentChar = ns1 - 1;
 
                 dcheck_pending = false;
                 expand_macros = (*ns1 != NewLine) && (!skipping_line);
@@ -669,15 +625,15 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
         if (expand_macros)
         {
-            ln = ExpandMacroInLine(s);
-            s = SeekToLineEnding(s) - 1; /* -1 added to compensate increment in loop ¯\_(ツ)_/¯ */
+            currentLine = ExpandMacroInLine(currentChar);
+            currentChar = SeekToLineEnding(currentChar) - 1; /* -1 added to compensate increment in loop ¯\_(ツ)_/¯ */
         }
     }
 
-    if (ln[0] != Zero)
-        lines.emplace_back(ln, line_n);
+    if (currentLine[0] != Zero)
+        lines.emplace_back(currentLine, line_n);
 
-    return success;
+    return true;
 }
 
 //------------------------------------------------------------------------------

@@ -67,11 +67,18 @@ inline char* SkipCommentLine(char* s)
     return s;
 }
 
-inline char* SeekToLineEnding(char* s)
+inline char* SeekToCharacter(char* s, char value)
 {
-    while ((*s != 0) && (*s != '\n'))
+    DVASSERT(s != nullptr);
+
+    while ((*s != 0) && (*s != value))
         ++s;
 
     return s;
+}
+
+inline char* SeekToLineEnding(char* s)
+{
+    return SeekToCharacter(s, '\n');
 }
 }

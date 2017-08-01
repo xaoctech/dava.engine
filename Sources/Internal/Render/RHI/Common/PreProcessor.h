@@ -27,8 +27,6 @@ public:
 
     bool AddDefine(const char* name, const char* value);
 
-    void Dump() const;
-
 private:
     struct Line
     {

@@ -313,7 +313,7 @@ void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatri
     for (uint32 i = 0; i < uint32(DRAW_TYPE_COUNT); ++i)
     {
         CommitRenderStruct(packetList, renderStructs[i]);
-        DVASSERT(vBuffersElemCount[i] == 0 && iBuffersElemCount[i] == 0);
+        DVASSERT(!renderStructs[i].valid || (vBuffersElemCount[i] == 0 && iBuffersElemCount[i] == 0));
     }
 }
 

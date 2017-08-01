@@ -62,7 +62,7 @@ static bool ReadTextData(const char* fileName, std::vector<char>* data)
 {
     bool success = false;
     DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(fileName, DAVA::File::READ | DAVA::File::OPEN));
-    if (file)
+    if (file.get() != nullptr)
     {
         data->resize(static_cast<size_t>(file->GetSize()));
         file->Read(data->data(), static_cast<DAVA::uint32>(file->GetSize()));

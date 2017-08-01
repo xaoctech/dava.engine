@@ -80,14 +80,6 @@ static const char* ExprEvalError[] =
   "", "one of operands is missing", "unmatched parenthesis", "unknown symbol"
 };
 
-enum
-{
-    EXPRERR_NONE = 0,
-    EXPRERR_MISSING_OPERAND = 1,
-    EXPRERR_UNMATCHED_PARENTHESIS = 2,
-    EXPRERR_UNKNOWN_SYMBOL = 3
-};
-
 struct ExpressionEvaluator::SyntaxTreeNode
 {
     float32 operand = 0.0f;
@@ -122,9 +114,8 @@ struct ExpressionEvaluator::SyntaxTreeNode
 //------------------------------------------------------------------------------
 
 ExpressionEvaluator::ExpressionEvaluator()
-    : expressionText(nullptr)
 {
-    Reset();
+    memset(expressionText, 0, sizeof(expressionText));
 }
 
 //------------------------------------------------------------------------------
@@ -140,13 +131,6 @@ void ExpressionEvaluator::Reset()
     operatorStack.clear();
     nodeStack.clear();
     nodeArray.clear();
-
-    if (expressionText)
-    {
-        ::free(expressionText);
-        expressionText = nullptr;
-    }
-
     lastErrorCode = EXPRERR_NONE;
     lastErrorIndex = 0;
 }
@@ -336,14 +320,16 @@ static inline uint32 _GetVariable(const char* expression)
 
 bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 {
-    uint32 len = uint32(strlen(expression));
-    char* text = reinterpret_cast<char*>(::malloc(len + 1));
+    DVASSERT(result != nullptr);
 
-    DVASSERT(result);
+    uint32 len = uint32(strlen(expression));
     DVASSERT(len > 0);
+    DVASSERT(len < EXPRESSION_BUFFER_SIZE);
+
+    memset(expressionText, 0, sizeof(expressionText));
 
     const char* s = expression;
-    char* d = text;
+    char* d = expressionText;
     bool ignore_closing_brace = false;
 
     while (*s && *s != '\n' && *s != '\r')
@@ -439,12 +425,11 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
     *d = '\0';
 
     Reset();
-    expressionText = text;
 
     // build expr.tree
 
-    const char* expr = text; // expression;
-    char var[1024] = "";
+    const char* expr = expressionText; // expression;
+    char var[EXPRESSION_BUFFER_SIZE] = {};
     bool last_token_operand = false;
     bool negate_operand_value = false;
     bool invert_operand_value = false;
@@ -464,7 +449,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         {
             SyntaxTreeNode node;
             offset = _GetOperand(expr, &node.operand);
-            node.expr_index = uint32(expr - text);
+            node.expr_index = uint32(expr - expressionText);
 
             if (negate_operand_value)
                 node.operand = -node.operand;
@@ -491,7 +476,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
 
             if (func != FuncImplMap.end())
             {
-                operatorStack.push_back(SyntaxTreeNode(OpFunctionCall, func->second, uint32(expr - text)));
+                operatorStack.push_back(SyntaxTreeNode(OpFunctionCall, func->second, uint32(expr - expressionText)));
                 last_token_operand = false;
             }
             else
@@ -510,7 +495,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                         value = 0.0f;
 
                     nodeStack.push_back(uint32(nodeArray.size()));
-                    nodeArray.push_back(SyntaxTreeNode(value, uint32(expr - text)));
+                    nodeArray.push_back(SyntaxTreeNode(value, uint32(expr - expressionText)));
 
                     last_token_operand = true;
                     negate_operand_value = false;
@@ -530,7 +515,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                     else
                     {
                         lastErrorCode = EXPRERR_UNKNOWN_SYMBOL;
-                        lastErrorIndex = uint32(expr - text);
+                        lastErrorIndex = uint32(expr - expressionText);
                         return false;
                     }
                 }
@@ -538,7 +523,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         }
         else if (*expr == OpLogicalNot)
         {
-            operatorStack.push_back(SyntaxTreeNode(OpLogicalNot, uint32(expr - text)));
+            operatorStack.push_back(SyntaxTreeNode(OpLogicalNot, uint32(expr - expressionText)));
             last_token_operand = false;
             offset = 1;
         }
@@ -565,7 +550,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                 || OperationPriority(operatorStack.back().operation) < OperationPriority(*expr)
                 )
             {
-                operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
+                operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - expressionText)));
             }
             else
             {
@@ -584,7 +569,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
                     PopConnectPush();
                 }
 
-                operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
+                operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - expressionText)));
             }
 
             last_token_operand = false;
@@ -594,7 +579,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
         // process parenthesis
         else if (*expr == '(')
         {
-            operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - text)));
+            operatorStack.push_back(SyntaxTreeNode(*expr, uint32(expr - expressionText)));
             offset = 1;
 
             last_token_operand = false;
@@ -617,7 +602,7 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
             if (operatorStack.size() == 0)
             {
                 lastErrorCode = EXPRERR_UNMATCHED_PARENTHESIS;
-                lastErrorIndex = uint32(expr - text);
+                lastErrorIndex = uint32(expr - expressionText);
                 return false;
             }
 
@@ -716,12 +701,11 @@ bool ExpressionEvaluator::GetLastError(char* err_buffer, uint32 err_buffer_size)
 
     if (lastErrorCode)
     {
-        uint32 len = uint32(::strlen(expressionText));
-        char buf[2048];
+        uint32 len = static_cast<uint32>(strlen(expressionText));
+        char buf[2048] = {};
 
-        DVASSERT(len < countof(buf) - 1);
+        DVASSERT(len + 1 < countof(buf));
         ::memset(buf, ' ', len);
-        buf[len] = '\0';
         buf[lastErrorIndex] = '^';
 
         Snprintf(err_buffer, err_buffer_size, "%s\n%s\n%s\n", ExprEvalError[lastErrorCode], expressionText, buf);
