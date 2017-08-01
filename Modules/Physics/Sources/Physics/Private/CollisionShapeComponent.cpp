@@ -40,7 +40,7 @@ void CollisionShapeComponent::SetName(const FastName& name_)
 {
     DVASSERT(name_.IsValid());
     name = name_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 const DAVA::Matrix4& CollisionShapeComponent::GetLocalPose() const
@@ -51,7 +51,7 @@ const DAVA::Matrix4& CollisionShapeComponent::GetLocalPose() const
 void CollisionShapeComponent::SetLocalPose(const Matrix4& localPose_)
 {
     localPose = localPose_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 bool CollisionShapeComponent::GetOverrideMass() const
@@ -62,7 +62,7 @@ bool CollisionShapeComponent::GetOverrideMass() const
 void CollisionShapeComponent::SetOverrideMass(bool override)
 {
     overrideMass = override;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 float32 CollisionShapeComponent::GetMass() const
@@ -75,7 +75,7 @@ void CollisionShapeComponent::SetMass(float32 mass_)
     if (overrideMass == true)
     {
         mass = mass_;
-        SheduleUpdate();
+        ScheduleUpdate();
     }
 }
 
@@ -100,7 +100,7 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     CheckShapeType();
 #endif
 
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* component) const
@@ -111,7 +111,7 @@ void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* compo
     component->mass = mass;
 }
 
-void CollisionShapeComponent::SheduleUpdate()
+void CollisionShapeComponent::ScheduleUpdate()
 {
     if (shape != nullptr)
     {

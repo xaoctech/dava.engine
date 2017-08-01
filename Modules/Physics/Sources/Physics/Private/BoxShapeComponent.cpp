@@ -44,7 +44,7 @@ void BoxShapeComponent::SetHalfSize(const Vector3& size)
     DVASSERT(halfExtents.x > 0.0f);
     DVASSERT(halfExtents.y > 0.0f);
     DVASSERT(halfExtents.z > 0.0f);
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)

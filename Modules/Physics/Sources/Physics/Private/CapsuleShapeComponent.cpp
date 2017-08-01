@@ -44,7 +44,7 @@ void CapsuleShapeComponent::SetRadius(float32 r)
 {
     radius = r;
     DVASSERT(radius > 0.0f);
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 DAVA::float32 CapsuleShapeComponent::GetHalfHeight() const
@@ -56,7 +56,7 @@ void CapsuleShapeComponent::SetHalfHeight(float32 halfHeight_)
 {
     halfHeight = halfHeight_;
     DVASSERT(halfHeight > 0.0f);
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)

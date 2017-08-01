@@ -46,7 +46,7 @@ protected:
 #endif
     void SetPxActor(physx::PxActor* actor);
     void CopyFieldsIntoClone(PhysicsComponent* component) const;
-    void SheduleUpdate();
+    void ScheduleUpdate();
 
     virtual void UpdateLocalProperties();
 

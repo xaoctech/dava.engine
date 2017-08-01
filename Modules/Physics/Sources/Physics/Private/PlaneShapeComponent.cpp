@@ -43,7 +43,7 @@ const Vector3& PlaneShapeComponent::GetPoint() const
 void PlaneShapeComponent::SetPoint(const Vector3& point_)
 {
     point = point_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 const Vector3& PlaneShapeComponent::GetNormal() const
@@ -54,7 +54,7 @@ const Vector3& PlaneShapeComponent::GetNormal() const
 void PlaneShapeComponent::SetNormal(const Vector3& normal_)
 {
     normal = Normalize(normal_);
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)

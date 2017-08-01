@@ -42,7 +42,7 @@ void SphereShapeComponent::SetRadius(float32 radius_)
 {
     radius = radius_;
     DVASSERT(radius > 0.0f);
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)

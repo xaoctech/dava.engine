@@ -41,7 +41,7 @@ protected:
 #endif
 
     void CopyFieldsIntoClone(CollisionShapeComponent* component) const;
-    void SheduleUpdate();
+    void ScheduleUpdate();
     virtual void UpdateLocalProperties();
 
     Matrix4 localPose;
