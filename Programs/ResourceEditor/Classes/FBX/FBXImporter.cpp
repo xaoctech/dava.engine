@@ -9,8 +9,20 @@ namespace DAVA
 {
 namespace FBXImporterDetails
 {
+using VertexInfluence = std::pair<uint32, float32>; //[jointIndex, jointWeight]
+using FbxControlPointInfluences = Vector<VertexInfluence>;
+using GeometrySet = Vector<std::pair<PolygonGroup*, NMaterial*>>;
+
 struct FBXVertex
 {
+    struct JointWeightComparator
+    {
+        bool operator()(const VertexInfluence& l, const VertexInfluence& r) const
+        {
+            return l.second > r.second; //for sorting in descending order
+        }
+    };
+
     union
     {
         float32 data[14];
@@ -21,10 +33,29 @@ struct FBXVertex
             Vector3 normal;
         };
     };
+    Set<VertexInfluence, JointWeightComparator> joints;
+
+    //////////////////////////////////////////////////////////////////////////
 
     FBXVertex();
 
     bool operator<(const FBXVertex& other) const;
+};
+
+struct FBXJoint
+{
+    const FbxSkeleton* joint = nullptr;
+    const FbxSkeleton* parentJoint = nullptr;
+    uint32 hierarchyDepth = 0;
+
+    uint32 parentIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+};
+
+struct ProcessedMesh
+{
+    GeometrySet geometry;
+    SkeletonComponent* skeleton = nullptr;
+    uint32 maxVertexInfluenceCount = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -32,20 +63,27 @@ struct FBXVertex
 void ProcessHierarchyRecursive(FbxNode* node, Entity* entity);
 void ClearCache();
 
-RenderObject* CreateRenderObject(FbxMesh* fbxMesh);
-NMaterial* RetrieveMaterial(FbxSurfaceMaterial* fbxMaterial);
-SkeletonComponent* RetrieveSkeleton(FbxSkeleton* skeleton);
+void ProcessMesh(const FbxMesh* fbxMesh, Entity* entity);
+NMaterial* RetrieveMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexInfluence);
+
+void ProcessSkeletonsRecursive(const FbxNode* fbxSkeleton);
+void CollectSkeletonNodes(const FbxSkeleton* joint, Vector<FBXJoint>* fbxJoints, const FbxSkeleton* parentJoint = nullptr, uint32 depth = 0);
+void ProcessSkeletonHierarchy(const FbxSkeleton* fbxSkeleton);
 
 Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix);
+Vector3 ToVector3(const FbxVector4& fbxVector);
 const char* GetFBXTexturePath(const FbxProperty& textureProperty);
+FastName GenerateJointUID(const FbxSkeleton* node);
+
+const FbxSkeleton* GetSkeletonAttribute(const FbxNode* fbxNode);
+const FbxSkeleton* FindSkeletonRoot(const FbxSkeleton* fbxNode);
+SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluences>* controlPointsInfluences, uint32* outMaxInfluenceCount);
 
 //////////////////////////////////////////////////////////////////////////
 
-using GeometrySet = Vector<std::pair<PolygonGroup*, NMaterial*>>;
-
-Map<FbxMesh*, GeometrySet> geometryCache; //in geometry cache material isn't retained
-Map<FbxSurfaceMaterial*, NMaterial*> materialCache;
-Map<FbxSkeleton*, SkeletonComponent*> skeletonCache;
+Map<const FbxMesh*, ProcessedMesh> meshCache; //in ProcessedMesh::GeometrySet materials isn't retained. It's owned by materialCache
+Map<std::pair<const FbxSurfaceMaterial*, uint32>, NMaterial*> materialCache;
+Map<const FbxSkeleton*, Vector<FBXJoint>> linkedSkeletons; // [rootJoint, jointsArray]
 
 static uint32 materialInstanceIndex = 0;
 }
@@ -80,6 +118,7 @@ bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
     fbxGeometryConverter.Triangulate(fbxScene, true); //Triangulate whole scene
 
     ScopedPtr<Scene> scene(new Scene());
+    FBXImporterDetails::ProcessSkeletonsRecursive(fbxScene->GetRootNode());
     FBXImporterDetails::ProcessHierarchyRecursive(fbxScene->GetRootNode(), scene);
     FBXImporterDetails::ClearCache();
     fbxScene->Destroy();
@@ -95,48 +134,44 @@ bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
 //Details implementation
 namespace FBXImporterDetails
 {
-void ProcessHierarchyRecursive(FbxNode* node, Entity* entity)
+void ProcessHierarchyRecursive(FbxNode* fbxNode, Entity* entity)
 {
-    entity->SetName(node->GetName());
+    entity->SetName(fbxNode->GetName());
 
-    Matrix4 transform = ToMatrix4(node->EvaluateLocalTransform());
+    Matrix4 transform = ToMatrix4(fbxNode->EvaluateLocalTransform());
     entity->SetLocalTransform(transform);
 
-    int attrCount = node->GetNodeAttributeCount();
+    int32 attrCount = fbxNode->GetNodeAttributeCount();
     for (int32 a = 0; a < attrCount; ++a)
     {
-        FbxNodeAttribute* attr = node->GetNodeAttributeByIndex(a);
+        const FbxNodeAttribute* attr = fbxNode->GetNodeAttributeByIndex(a);
         if (attr->GetAttributeType() == FbxNodeAttribute::eMesh)
         {
-            FbxMesh* fbxMesh = static_cast<FbxMesh*>(attr);
-            entity->AddComponent(new RenderComponent(ScopedPtr<RenderObject>(CreateRenderObject(fbxMesh))));
-        }
-        else if (attr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
-        {
-            FbxSkeleton* fbxSkeleton = static_cast<FbxSkeleton*>(attr);
-            entity->AddComponent(RetrieveSkeleton(fbxSkeleton)->Clone(nullptr));
+            ProcessMesh(static_cast<const FbxMesh*>(attr), entity);
         }
     }
 
-    int childCount = node->GetChildCount();
-    for (int c = 0; c < childCount; ++c)
+    int32 childCount = fbxNode->GetChildCount();
+    for (int32 c = 0; c < childCount; ++c)
     {
         ScopedPtr<Entity> childEntity(new Entity());
         entity->AddNode(childEntity);
 
-        ProcessHierarchyRecursive(node->GetChild(c), childEntity);
+        ProcessHierarchyRecursive(fbxNode->GetChild(c), childEntity);
     }
 }
 
 void ClearCache()
 {
-    for (auto& it : geometryCache)
+    for (auto& it : meshCache)
     {
-        for (auto& p : it.second)
+        SafeDelete(it.second.skeleton);
+
+        for (auto& p : it.second.geometry)
             SafeRelease(p.first);
         //in geometry cache material isn't retained
     }
-    geometryCache.clear();
+    meshCache.clear();
 
     for (auto& it : materialCache)
     {
@@ -144,30 +179,37 @@ void ClearCache()
     }
     materialCache.clear();
 
-    for (auto& it : skeletonCache)
-    {
-        SafeDelete(it.second);
-    }
-    skeletonCache.clear();
+    linkedSkeletons.clear();
 
     materialInstanceIndex = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-RenderObject* CreateRenderObject(FbxMesh* fbxMesh)
+void ProcessMesh(const FbxMesh* fbxMesh, Entity* entity)
 {
-    auto found = geometryCache.find(fbxMesh);
-    if (found == geometryCache.end())
+    auto found = meshCache.find(fbxMesh);
+    if (found == meshCache.end())
     {
         FbxNode* fbxNode = fbxMesh->GetNode();
         DVASSERT(fbxNode);
 
+        bool hasNormal = fbxMesh->GetElementNormalCount() > 0;
+        bool hasSkinning = fbxMesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
+
+        uint32 maxControlPointInfluence = 0;
+        Vector<FbxControlPointInfluences> controlPointsInfluences;
+        SkeletonComponent* skeleton = nullptr;
+        if (hasSkinning)
+        {
+            FbxSkin* skin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
+            skeleton = ProcessSkin(skin, &controlPointsInfluences, &maxControlPointInfluence);
+        }
+        maxControlPointInfluence = Min(maxControlPointInfluence, PolygonGroup::MAX_JOINTS_COUNT);
+
         FbxStringList uvNames;
         fbxMesh->GetUVSetNames(uvNames);
         int32 uvCount = Min(uvNames.GetCount(), 4);
-
-        bool hasNormal = fbxMesh->GetElementNormalCount() > 0;
 
         int32 meshFormat = EVF_VERTEX;
         if (uvCount > 0)
@@ -180,6 +222,10 @@ RenderObject* CreateRenderObject(FbxMesh* fbxMesh)
             meshFormat |= EVF_TEXCOORD3;
         if (hasNormal)
             meshFormat |= EVF_NORMAL | EVF_TANGENT | EVF_BINORMAL;
+        if (maxControlPointInfluence == 1)
+            meshFormat |= EVF_HARD_JOINTINDEX;
+        if (maxControlPointInfluence > 1)
+            meshFormat |= EVF_JOINTINDEX | EVF_JOINTWEIGHT;
 
         FbxVector4 tmpNormal;
         FbxVector2 tmpUV;
@@ -203,13 +249,28 @@ RenderObject* CreateRenderObject(FbxMesh* fbxMesh)
                 const FbxVector4& coords = fbxMesh->GetControlPointAt(vIndex);
                 vertex.position = Vector3(coords[0], coords[1], coords[2]);
 
-                fbxMesh->GetPolygonVertexNormal(p, v, tmpNormal);
-                vertex.normal = Vector3(tmpNormal[0], tmpNormal[1], tmpNormal[2]);
+                if (hasNormal)
+                {
+                    fbxMesh->GetPolygonVertexNormal(p, v, tmpNormal);
+                    vertex.normal = Vector3(tmpNormal[0], tmpNormal[1], tmpNormal[2]);
+                }
 
                 for (int32 t = 0; t < uvCount; ++t)
                 {
                     fbxMesh->GetPolygonVertexUV(p, v, uvNames[t], tmpUV, tmpUnmapped);
                     vertex.texCoord[t] = Vector2(tmpUV[0], -tmpUV[1]);
+                }
+
+                if (hasSkinning)
+                {
+                    const FbxControlPointInfluences& vertexInfluences = controlPointsInfluences[vIndex];
+
+                    float32 weightsSum = 0.f;
+                    for (const VertexInfluence& vInf : vertexInfluences)
+                        weightsSum += vInf.second;
+
+                    for (const VertexInfluence& vInf : vertexInfluences)
+                        vertex.joints.insert(VertexInfluence(vInf.first, vInf.second / weightsSum));
                 }
 
                 FbxSurfaceMaterial* fbxMaterial = nullptr;
@@ -239,13 +300,42 @@ RenderObject* CreateRenderObject(FbxMesh* fbxMesh)
             int32 vertexIndex = 0;
             for (auto it = vertices.cbegin(); it != vertices.cend(); ++it)
             {
-                polygonGroup->SetCoord(vertexIndex, it->first.position);
+                const FBXVertex& fbxVertex = it->first;
+
+                polygonGroup->SetCoord(vertexIndex, fbxVertex.position);
 
                 for (int32 t = 0; t < uvCount; ++t)
-                    polygonGroup->SetTexcoord(t, vertexIndex, it->first.texCoord[t]);
+                    polygonGroup->SetTexcoord(t, vertexIndex, fbxVertex.texCoord[t]);
 
                 if (hasNormal)
-                    polygonGroup->SetNormal(vertexIndex, it->first.normal);
+                    polygonGroup->SetNormal(vertexIndex, fbxVertex.normal);
+
+                if (hasSkinning)
+                {
+                    if (maxControlPointInfluence == 1) //hard-skinning
+                    {
+                        polygonGroup->SetHardJointIndex(vertexIndex, int32(fbxVertex.joints.cbegin()->first));
+                    }
+                    else
+                    {
+                        auto vInf = fbxVertex.joints.cbegin();
+                        for (uint32 j = 0; j < PolygonGroup::MAX_JOINTS_COUNT; ++j)
+                        {
+                            if (vInf != fbxVertex.joints.end())
+                            {
+                                polygonGroup->SetJointIndex(vertexIndex, j, int32(vInf->first));
+                                polygonGroup->SetJointWeight(vertexIndex, j, vInf->second);
+
+                                ++vInf;
+                            }
+                            else
+                            {
+                                polygonGroup->SetJointIndex(vertexIndex, j, 0);
+                                polygonGroup->SetJointWeight(vertexIndex, j, 0.f);
+                            }
+                        }
+                    }
+                }
 
                 for (int32 index : it->second)
                     polygonGroup->SetIndex(index, uint16(vertexIndex));
@@ -256,38 +346,90 @@ RenderObject* CreateRenderObject(FbxMesh* fbxMesh)
             if (hasNormal)
                 MeshUtils::RebuildMeshTangentSpace(polygonGroup);
 
-            geometrySet.emplace_back(polygonGroup, RetrieveMaterial(fbxMaterial));
+            geometrySet.emplace_back(polygonGroup, RetrieveMaterial(fbxMaterial, maxControlPointInfluence));
         }
 
-        found = geometryCache.emplace(fbxMesh, std::move(geometrySet)).first;
+        found = meshCache.emplace(fbxMesh, ProcessedMesh()).first;
+        found->second.geometry = std::move(geometrySet);
+        found->second.skeleton = skeleton;
+        found->second.maxVertexInfluenceCount = maxControlPointInfluence;
     }
 
-    Mesh* renderObject = new Mesh();
-
-    const GeometrySet& geometrySet = found->second;
-    for (auto& geometry : geometrySet)
+    bool isSkinned = (found->second.skeleton != nullptr);
+    if (isSkinned)
     {
-        PolygonGroup* polygonGroup = geometry.first;
-        NMaterial* material = geometry.second;
+        ScopedPtr<SkinnedMesh> mesh(new SkinnedMesh());
 
-        ScopedPtr<NMaterial> materialInstance(new NMaterial());
-        materialInstance->SetParent(material);
-        materialInstance->SetMaterialName(FastName(Format("Instance%d", materialInstanceIndex++).c_str()));
+        uint32 maxVertexInfluenceCount = found->second.maxVertexInfluenceCount;
+        const GeometrySet& geometrySet = found->second.geometry;
+        for (auto& geometry : geometrySet)
+        {
+            PolygonGroup* polygonGroup = geometry.first;
+            NMaterial* material = geometry.second;
 
-        renderObject->AddPolygonGroup(polygonGroup, materialInstance);
+            ScopedPtr<NMaterial> materialInstance(new NMaterial());
+            materialInstance->SetParent(material);
+            materialInstance->SetMaterialName(FastName(Format("Instance%d", materialInstanceIndex++).c_str()));
+
+            auto splitedPolygons = MeshUtils::SplitSkinnedMeshGeometry(polygonGroup, SkinnedMesh::MAX_TARGET_JOINTS);
+            for (auto& p : splitedPolygons)
+            {
+                PolygonGroup* pg = p.first;
+                //TODO?
+                //pg->ApplyMatrix(bindShapeMatrix);
+                pg->RecalcAABBox();
+
+                ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
+                renderBatch->SetPolygonGroup(pg);
+                renderBatch->SetMaterial(materialInstance);
+
+                mesh->AddRenderBatch(renderBatch);
+                mesh->SetJointTargets(renderBatch, p.second);
+
+                SafeRelease(pg);
+            }
+        }
+
+        entity->AddComponent(new RenderComponent(mesh));
+        entity->AddComponent(found->second.skeleton->Clone(entity));
     }
+    else
+    {
+        ScopedPtr<Mesh> mesh(new Mesh());
 
-    return renderObject;
+        const GeometrySet& geometrySet = found->second.geometry;
+        for (auto& geometry : geometrySet)
+        {
+            PolygonGroup* polygonGroup = geometry.first;
+            NMaterial* material = geometry.second;
+
+            ScopedPtr<NMaterial> materialInstance(new NMaterial());
+            materialInstance->SetParent(material);
+            materialInstance->SetMaterialName(FastName(Format("Instance%d", materialInstanceIndex++).c_str()));
+
+            mesh->AddPolygonGroup(polygonGroup, materialInstance);
+        }
+
+        entity->AddComponent(new RenderComponent(mesh));
+    }
 }
 
-NMaterial* RetrieveMaterial(FbxSurfaceMaterial* fbxMaterial)
+NMaterial* RetrieveMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexInfluence)
 {
-    auto found = materialCache.find(fbxMaterial);
+    auto found = materialCache.find(std::make_pair(fbxMaterial, maxVertexInfluence));
     if (found == materialCache.end())
     {
         NMaterial* material = new NMaterial();
         material->SetFXName(NMaterialName::TEXTURED_OPAQUE);
         material->SetMaterialName(FastName(fbxMaterial->GetName()));
+
+        if (maxVertexInfluence > 0)
+        {
+            if (maxVertexInfluence == 1)
+                material->AddFlag(NMaterialFlagName::FLAG_HARD_SKINNING, 1);
+            else
+                material->AddFlag(NMaterialFlagName::FLAG_SOFT_SKINNING, maxVertexInfluence);
+        }
 
         Vector<std::pair<const char*, FastName>> texturesToImport = {
             { FbxSurfaceMaterial::sDiffuse, NMaterialTextureName::TEXTURE_ALBEDO },
@@ -301,25 +443,78 @@ NMaterial* RetrieveMaterial(FbxSurfaceMaterial* fbxMaterial)
                 material->AddTexture(tex.second, Texture::CreateFromFile(FilePath(texturePath)));
         }
 
-        found = materialCache.emplace(fbxMaterial, material).first;
+        found = materialCache.emplace(std::make_pair(fbxMaterial, maxVertexInfluence), material).first;
     }
 
     return found->second;
 }
 
-SkeletonComponent* RetrieveSkeleton(FbxSkeleton* fbxSkeleton)
+void ProcessSkeletonsRecursive(const FbxNode* fbxNode)
 {
-    auto found = skeletonCache.find(fbxSkeleton);
-    if (found == skeletonCache.end())
+    int32 attrCount = fbxNode->GetNodeAttributeCount();
+    for (int32 a = 0; a < attrCount; ++a)
     {
-        SkeletonComponent* skeleton = new SkeletonComponent();
-
-        //TODO
-
-        found = skeletonCache.emplace(fbxSkeleton, skeleton).first;
+        const FbxSkeleton* fbxSkeleton = GetSkeletonAttribute(fbxNode);
+        if (fbxSkeleton != nullptr && fbxSkeleton->IsSkeletonRoot())
+        {
+            ProcessSkeletonHierarchy(fbxSkeleton);
+            return;
+        }
     }
 
-    return found->second;
+    int32 childCount = fbxNode->GetChildCount();
+    for (int32 c = 0; c < childCount; ++c)
+        ProcessSkeletonsRecursive(fbxNode->GetChild(c));
+}
+
+void CollectSkeletonNodes(const FbxSkeleton* joint, Vector<FBXJoint>* fbxJoints, const FbxSkeleton* parentJoint, uint32 depth)
+{
+    if (joint != nullptr && joint->GetSkeletonType())
+    {
+        fbxJoints->emplace_back();
+        fbxJoints->back().joint = joint;
+        fbxJoints->back().parentJoint = parentJoint;
+        fbxJoints->back().hierarchyDepth = depth;
+
+        const FbxNode* fbxNode = joint->GetNode();
+        int32 childCount = fbxNode->GetChildCount();
+        for (int32 c = 0; c < childCount; ++c)
+        {
+            const FbxSkeleton* childJoint = GetSkeletonAttribute(fbxNode->GetChild(c));
+            if (childJoint != nullptr)
+            {
+                CollectSkeletonNodes(childJoint, fbxJoints, joint, depth + 1);
+            }
+        }
+    }
+}
+
+void ProcessSkeletonHierarchy(const FbxSkeleton* fbxSkeleton)
+{
+    DVASSERT(linkedSkeletons.count(fbxSkeleton) == 0);
+
+    Vector<FBXJoint> fbxJoints; //[node, hierarchy-depth]
+    CollectSkeletonNodes(fbxSkeleton, &fbxJoints);
+
+    //sort nodes by hierarchy depth, and by uid inside hierarchy-level
+    std::sort(fbxJoints.begin(), fbxJoints.end(), [](const FBXJoint& l, const FBXJoint& r)
+              {
+                  if (l.hierarchyDepth == r.hierarchyDepth)
+                      return (l.joint->GetUniqueID() < r.joint->GetUniqueID());
+                  else
+                      return (l.hierarchyDepth < r.hierarchyDepth);
+              });
+
+    for (FBXJoint& fbxJoint : fbxJoints)
+    {
+        size_t parentIndex = std::distance(fbxJoints.begin(), std::find_if(fbxJoints.begin(), fbxJoints.end(), [&fbxJoint](const FBXJoint& item) {
+                                               return (item.joint == fbxJoint.parentJoint);
+                                           }));
+
+        fbxJoint.parentIndex = (parentIndex == fbxJoints.size()) ? SkeletonComponent::INVALID_JOINT_INDEX : uint32(parentIndex);
+    }
+
+    linkedSkeletons.emplace(fbxSkeleton, std::move(fbxJoints));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -337,6 +532,23 @@ inline bool FBXVertex::operator<(const FBXVertex& other) const
             return data[d] < other.data[d];
     }
 
+    if (joints.size() != other.joints.size() || joints.size() == 0)
+        return joints.size() < other.joints.size();
+
+    auto i = joints.cbegin();
+    auto j = other.joints.cbegin();
+    while (i != joints.cend())
+    {
+        if (i->first != j->first)
+            return i->first < j->first;
+
+        if (!FLOAT_EQUAL(i->second, j->second))
+            return i->second < j->second;
+
+        ++i;
+        ++j;
+    }
+
     return false;
 }
 
@@ -344,11 +556,16 @@ Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix)
 {
     Matrix4 mx;
 
-    for (int r = 0; r < 4; ++r)
-        for (int c = 0; c < 4; ++c)
+    for (int32 r = 0; r < 4; ++r)
+        for (int32 c = 0; c < 4; ++c)
             mx._data[r][c] = float32(fbxMatrix.Get(r, c));
 
     return mx;
+}
+
+Vector3 ToVector3(const FbxVector4& fbxVector)
+{
+    return Vector3(fbxVector[0], fbxVector[1], fbxVector[2]);
 }
 
 const char* GetFBXTexturePath(const FbxProperty& textureProperty)
@@ -371,6 +588,132 @@ const char* GetFBXTexturePath(const FbxProperty& textureProperty)
         return fbxFileTexture->GetFileName();
 
     return nullptr;
+}
+
+FastName GenerateJointUID(const FbxSkeleton* joint)
+{
+    return FastName(Format("%llu", joint->GetUniqueID()).c_str());
+}
+
+const FbxSkeleton* GetSkeletonAttribute(const FbxNode* fbxNode)
+{
+    if (fbxNode == nullptr)
+        return nullptr;
+
+    int32 attrCount = fbxNode->GetNodeAttributeCount();
+    for (int32 a = 0; a < attrCount; ++a)
+    {
+        const FbxNodeAttribute* attr = fbxNode->GetNodeAttributeByIndex(a);
+        if (attr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
+            return static_cast<const FbxSkeleton*>(attr);
+    }
+
+    return nullptr;
+}
+
+const FbxSkeleton* FindSkeletonRoot(const FbxSkeleton* fbxSkeleton)
+{
+    if (fbxSkeleton == nullptr)
+        return nullptr;
+
+    while (fbxSkeleton != nullptr && !fbxSkeleton->IsSkeletonRoot())
+    {
+        fbxSkeleton = GetSkeletonAttribute(fbxSkeleton->GetNode());
+    }
+
+    return fbxSkeleton;
+}
+
+SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluences>* controlPointsInfluences, uint32* outMaxInfluenceCount)
+{
+    const FbxMesh* fbxMesh = static_cast<const FbxMesh*>(fbxSkin->GetGeometry());
+    int32 clusterCount = fbxSkin->GetClusterCount();
+
+    const FbxSkeleton* skeletonRoot = nullptr;
+    for (int32 c = 0; c < clusterCount; ++c)
+    {
+        const FbxCluster* cluster = fbxSkin->GetCluster(c);
+        const FbxSkeleton* linkedJoint = GetSkeletonAttribute(cluster->GetLink());
+
+        skeletonRoot = FindSkeletonRoot(linkedJoint);
+        if (skeletonRoot != nullptr)
+            break;
+    }
+
+    DVASSERT(skeletonRoot != nullptr);
+    const Vector<FBXJoint>& fbxJoints = linkedSkeletons[skeletonRoot];
+
+    Map<const FbxSkeleton*, std::pair<Matrix4, Matrix4>> linksTransforms; // [bindTransform, bindTransformInv]
+    Map<const FbxSkeleton*, AABBox3> linksBBox;
+
+    FbxAMatrix linkTransform;
+    Matrix4 bindTransform, bindTransformInv;
+
+    *outMaxInfluenceCount = 0;
+    controlPointsInfluences->resize(fbxMesh->GetControlPointsCount());
+
+    for (int32 c = 0; c < clusterCount; ++c)
+    {
+        const FbxCluster* cluster = fbxSkin->GetCluster(c);
+        const FbxSkeleton* linkedJoint = GetSkeletonAttribute(cluster->GetLink());
+
+        if (skeletonRoot == nullptr)
+            skeletonRoot = FindSkeletonRoot(linkedJoint);
+
+        cluster->GetTransformLinkMatrix(linkTransform);
+        bindTransform = ToMatrix4(linkTransform);
+        bindTransform.GetInverse(bindTransformInv);
+
+        if (cluster->GetLinkMode() != FbxCluster::eNormalize)
+        {
+            static const char* linkModes[] = { "Normalize", "Additive", "Total1" };
+            Logger::Warning("[FBXImporter] Skin cluster linked with %s mode (node: %s)!", linkModes[cluster->GetLinkMode()], cluster->GetLink()->GetName());
+        }
+
+        int32 indicesCount = cluster->GetControlPointIndicesCount();
+        for (int32 i = 0; i < indicesCount; ++i)
+        {
+            uint32 jointIndex = std::distance(fbxJoints.begin(), std::find_if(fbxJoints.begin(), fbxJoints.end(), [&linkedJoint](const FBXJoint& item) {
+                                                  return (item.joint == linkedJoint);
+                                              }));
+
+            int32 controlPointIndex = cluster->GetControlPointIndices()[i];
+            float32 controlPointWeight = float32(cluster->GetControlPointWeights()[i]);
+
+            controlPointsInfluences->at(controlPointIndex).emplace_back(jointIndex, controlPointWeight);
+            *outMaxInfluenceCount = Max(*outMaxInfluenceCount, uint32(controlPointsInfluences->at(controlPointIndex).size()));
+
+            if (controlPointWeight > EPSILON)
+            {
+                Vector3 vertexPosition = ToVector3(fbxMesh->GetControlPointAt(controlPointIndex));
+                linksBBox[linkedJoint].AddPoint(vertexPosition * bindTransformInv);
+            }
+        }
+
+        linksTransforms.emplace(linkedJoint, std::make_pair(bindTransform, bindTransformInv));
+    }
+
+    uint32 jointCount = uint32(fbxJoints.size());
+
+    Vector<SkeletonComponent::Joint> joints(jointCount);
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const FBXJoint& fbxJoint = fbxJoints[j];
+        SkeletonComponent::Joint& joint = joints[j];
+
+        joint.parentIndex = fbxJoint.parentIndex;
+        joint.name = FastName(fbxJoint.joint->GetNode()->GetName());
+        joint.uid = GenerateJointUID(fbxJoint.joint);
+        joint.bbox = linksBBox[fbxJoint.joint];
+
+        joint.bindTransform = linksTransforms[fbxJoint.joint].first;
+        joint.bindTransformInv = linksTransforms[fbxJoint.joint].second;
+    }
+
+    SkeletonComponent* component = new SkeletonComponent();
+    component->SetJoints(joints);
+
+    return component;
 }
 
 }; //ns Details
