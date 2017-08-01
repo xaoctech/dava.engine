@@ -1,17 +1,18 @@
-#include "Functional/Function.h"
+#include "MemoryProfilerService/MMBigDataTransferService.h"
+#include "MemoryProfilerService/MMNetProto.h"
 
-#include "FileSystem/File.h"
-#include "FileSystem/FileSystem.h"
-#include "Logger/Logger.h"
+#include <Functional/Function.h>
 
-#include "Concurrency/Thread.h"
+#include <FileSystem/File.h>
+#include <FileSystem/FileSystem.h>
+#include <Logger/Logger.h>
 
-#include "Network/NetConfig.h"
-#include "Network/ServiceRegistrar.h"
-#include "Network/Base/IOLoop.h"
-#include "Network/Private/NetController.h"
-#include "Network/Services/MMNet/MMNetProto.h"
-#include "Network/Services/MMNet/MMBigDataTransferService.h"
+#include <Concurrency/Thread.h>
+
+#include <Network/NetConfig.h>
+#include <Network/ServiceRegistrar.h>
+#include <Network/Base/IOLoop.h>
+#include <Network/Private/NetController.h>
 
 namespace DAVA
 {

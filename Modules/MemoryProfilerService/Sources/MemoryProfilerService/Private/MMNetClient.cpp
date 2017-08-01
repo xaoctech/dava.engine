@@ -1,14 +1,15 @@
-#include "Functional/Function.h"
+#include "MemoryProfilerService/MMNetClient.h"
+#include "MemoryProfilerService/MMBigDataTransferService.h"
 
-#include "Debug/DVAssert.h"
+#include <Functional/Function.h>
 
-#include "FileSystem/DynamicMemoryFile.h"
-#include "DLC/Patcher/ZLibStream.h"
-#include "MemoryManager/MemoryManager.h"
+#include <Debug/DVAssert.h>
 
-#include "Network/Base/Endpoint.h"
-#include "Network/Services/MMNet/MMNetClient.h"
-#include "Network/Services/MMNet/MMBigDataTransferService.h"
+#include <FileSystem/DynamicMemoryFile.h>
+#include <DLC/Patcher/ZLibStream.h>
+#include <MemoryManager/MemoryManager.h>
+
+#include <Network/Base/Endpoint.h>
 
 namespace DAVA
 {

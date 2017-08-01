@@ -1,16 +1,12 @@
-#ifndef __DAVAENGINE_MMNETSERVER_H__
-#define __DAVAENGINE_MMNETSERVER_H__
-
-#include "Base/BaseTypes.h"
+#pragma once
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
 
-#include "Concurrency/Spinlock.h"
+#include "MMNetProto.h"
 
-#include "Network/NetService.h"
-#include "Network/Services/MMNet/MMNetProto.h"
-
-#include "MemoryManager/MemoryManagerTypes.h"
+#include <Base/BaseTypes.h>
+#include <Network/NetService.h>
+#include <MemoryManager/MemoryManagerTypes.h>
 
 namespace DAVA
 {
@@ -82,4 +78,3 @@ private:
 } // namespace DAVA
 
 #endif // defined(DAVA_MEMORY_PROFILING_ENABLE)
-#endif // __DAVAENGINE_MMNETSERVER_H__
