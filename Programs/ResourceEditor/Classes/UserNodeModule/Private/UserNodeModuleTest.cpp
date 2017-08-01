@@ -1,3 +1,5 @@
+#include "Classes/UserNodeModule/UserNodeModule.h"
+
 #include <TArc/Testing/TArcUnitTests.h>
 
 #include <Base/ScopedPtr.h>
@@ -13,7 +15,7 @@ DAVA_TARC_TESTCLASS(UserModuleTest)
     {
         using namespace DAVA;
 
-        FilePath scenePath = "~res:/ResourceEditor/3DObjects/Botspawn/tanksbox.sc2";
+        FilePath scenePath = UserNodeModule::GetBotSpawnPath();
 
         ScopedPtr<Scene> scene(new Scene());
         SceneFileV2::eError result = scene->LoadScene(scenePath);

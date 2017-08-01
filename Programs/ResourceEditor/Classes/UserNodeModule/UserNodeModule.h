@@ -9,10 +9,14 @@
 namespace DAVA
 {
 class RenderObject;
+class FilePath;
 }
 
 class UserNodeModule : public DAVA::TArc::ClientModule
 {
+public:
+    static DAVA::FilePath GetBotSpawnPath();
+
 protected:
     void PostInit() override;
     void OnContextCreated(DAVA::TArc::DataContext* context) override;

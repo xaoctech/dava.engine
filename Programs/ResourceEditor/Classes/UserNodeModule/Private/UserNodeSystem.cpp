@@ -18,10 +18,13 @@ UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, DAVA::RenderObject* object)
     : SceneSystem(scene)
     , sourceObject(DAVA::SafeRetain(object))
 {
-    using namespace DAVA;
+    if (sourceObject != nullptr)
+    {
+        using namespace DAVA;
 
-    Vector3 size = sourceObject->GetBoundingBox().GetSize();
-    nodeMatrix = Matrix4::MakeRotation(Vector3::UnitZ, DAVA::PI) * Matrix4::MakeScale(Vector3(6.f / size.x, 13.f / size.y, 6.f / size.z));
+        Vector3 size = sourceObject->GetBoundingBox().GetSize();
+        nodeMatrix = Matrix4::MakeRotation(Vector3::UnitZ, DAVA::PI) * Matrix4::MakeScale(Vector3(6.f / size.x, 13.f / size.y, 6.f / size.z));
+    }
 }
 
 UserNodeSystem::~UserNodeSystem()

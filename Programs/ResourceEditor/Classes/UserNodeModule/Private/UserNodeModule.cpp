@@ -26,7 +26,7 @@ DAVA::RenderObject* CreateRenderObject()
 {
     using namespace DAVA;
 
-    FilePath scenePath = "~res:/ResourceEditor/3DObjects/Botspawn/tanksbox.sc2";
+    FilePath scenePath = UserNodeModule::GetBotSpawnPath();
 
     ScopedPtr<Scene> scene(new Scene());
     SceneFileV2::eError result = scene->LoadScene(scenePath);
@@ -45,8 +45,15 @@ DAVA::RenderObject* CreateRenderObject()
                     NMaterial* mat = ro->GetRenderBatch(i)->GetMaterial();
                     if (mat != nullptr)
                     {
-                        mat->AddFlag(NMaterialFlagName::FLAG_FLATCOLOR, 1);
-                        mat->AddProperty(NMaterialParamName::PARAM_FLAT_COLOR, Color().color, rhi::ShaderProp::TYPE_FLOAT4);
+                        if (mat->HasLocalFlag(NMaterialFlagName::FLAG_FLATCOLOR) == false)
+                        {
+                            mat->AddFlag(NMaterialFlagName::FLAG_FLATCOLOR, 1);
+                        }
+
+                        if (mat->HasLocalProperty(NMaterialParamName::PARAM_FLAT_COLOR) == false)
+                        {
+                            mat->AddProperty(NMaterialParamName::PARAM_FLAT_COLOR, Color().color, rhi::ShaderProp::TYPE_FLOAT4);
+                        }
                     }
                 }
             }
@@ -58,6 +65,11 @@ DAVA::RenderObject* CreateRenderObject()
     Logger::Error("[%s] Can't open scene %s properly", __FUNCTION__, scenePath.GetStringValue().c_str());
     return nullptr;
 }
+}
+
+DAVA::FilePath UserNodeModule::GetBotSpawnPath()
+{
+    return "~res:/ResourceEditor/3DObjects/Botspawn/tanksbox.sc2";
 }
 
 void UserNodeModule::PostInit()
