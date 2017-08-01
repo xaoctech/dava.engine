@@ -103,7 +103,7 @@ void UIScreenManager::SetScreen(int screenId)
         }
         activeScreenId = screenId;
 
-        UGetEngineContext()->uiControlSystem->SetScreen((UIScreen*)screen.value);
+        GetEngineContext()->uiControlSystem->SetScreen((UIScreen*)screen.value);
     }
 }
 
