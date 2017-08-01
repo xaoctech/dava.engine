@@ -13,7 +13,6 @@
 #include <Scene3D/Scene.h>
 #include <Utils/Utils.h>
 
-
 UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, DAVA::RenderObject* object)
     : SceneSystem(scene)
     , sourceObject(DAVA::SafeRetain(object))
