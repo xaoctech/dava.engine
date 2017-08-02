@@ -1,5 +1,4 @@
 #system
-from datetime import datetime
 from ssl import CERT_NONE
 
 #pip

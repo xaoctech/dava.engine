@@ -1,6 +1,5 @@
 #system
 import sys
-from threading import Thread, Timer
 
 #local
 sys.path.append("../")
@@ -17,32 +16,29 @@ class ETWSession:
         self.callback = callback
         self.args = args
 
-        #self.session_thread = Thread(target = etw.loop, args=[self.session_ws])
-        # Start a timer to avoid deadlock 
-        #self.timer = Timer(5.0, self.sync_start.notify, args=[False])
-        #self.timer.start()
     def start(self):
         etw.loop(self.session_ws)
-
-    #def join(self):
-    #    self.session_thread.join()
 
     def cancel(self):
         self.session_ws.close()
 
     def enable_guid(self, guid):
-        print "Enabling provider with guid: " + guid
+        # In case of running on separate thread this will fix grabled output
+        print "Enabling provider with guid: " + guid + "\n",
         return etw.enable_provider(self.session_ws, guid)
 
     def on_open(self, ws):
-        print "Websocket connection for logging session opened."
+        # In case of running on separate thread this will fix grabled output
+        print "Websocket connection for logging session opened.\n",
         for guid in self.guids_list:
             self.enable_guid(guid)
         if self.callback is not None:
             self.callback(*self.args)
+        print "Listening"
     
     def on_close(self, ws):
-        print "Websocket connection for logging session closed."
+        # In case of running on separate thread this will fix grabled output
+        print "Websocket connection for logging session closed.\n",
         if self.app_monitor is not None:
             self.app_monitor.session_ws.close()
 

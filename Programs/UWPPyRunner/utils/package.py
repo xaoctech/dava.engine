@@ -57,7 +57,7 @@ class Package:
                 self.identity_name = get_identity_name_from_appx_or_bundle(xml_tree)
                 self.version = get_version_from_appx_or_bundle(xml_tree)
 
-
+    # Unused
     def get_display_name(self):
         if self.__display_name is not None: 
             return self.__display_name

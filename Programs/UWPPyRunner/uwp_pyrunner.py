@@ -1,73 +1,124 @@
 #sys
 from json import loads
+from datetime import datetime
 from threading import Thread
 
 #local
-from dp_api import options, app_deploy, performance_data
+from dp_api import options
 
-from utils import logger, package, args_parser
+from utils import package, args_parser
 
 from user_lvl_api import app
 from user_lvl_api.app_monitor import AppMonitor
 from user_lvl_api.etw_session import ETWSession
 
-options.set_url("http://10.128.95.108")
+class Tags:
+    full_name = "PackageFullName"
+    family_name = "PackageFamilyName"
+    version = "Version"
 
-full_name_tag = "PackageFullName"
-family_name_tag = "PackageFamilyName"
 
-def deploy(app_path, deps_paths, cer_path, url, timeout, force = False):
-    app_package = package.Package(app_path)
+class LogParser:
+    def __init__(self, levels = [], providers = [], show_timestamp = True):
+        self.levels = levels
+        self.providers = providers
+        self.show_timestamp = show_timestamp
+    
+    def __call__(self, msg):
+        if msg is None:
+            return
+        events = loads(msg).get("Events")
+        if events is not None:
+            for event in events:
+                level = event["Level"]
+                provider = event["ProviderName"]
+                if level in self.levels and provider in self.providers:
+                    if self.show_timestamp:
+                        # Convert webkit timestamp to unix timestamp
+                        unix_timestamp = event["Timestamp"] / 1e7 - 11644473600
+                        sys.stdout.write(datetime.fromtimestamp(unix_timestamp).\
+                                         strftime("%Y-%m-%d %H:%M:%S.%f "))
+                    string_message = event["StringMessage"]
+                    if string_message.endswith("\n"):
+                        string_message = string_message[:-1]
+                    print string_message
+
+
+def parse_version(v):
+    return [v["Major"], v["Minor"], v["Build"], v["Revision"]]
+
+
+def post_check(condition, msg):
+    if condition:
+        print msg + "Succeeded."
+        return True
+    else:
+        print msg + "Failed."
+        return False
+
+def deploy(cli_args):
+    app_package = package.Package(cli_args.app_path)
     deps = []
-    for dep_path in deps_paths:
+    for dep_path in cli_args.deps_paths:
         deps.append(package.Package(dep_path))
     
-    if force:
-        if not uninstall(app.get_package_full_name(family_name_tag, app_package.identity_name), url, timeout):
-            print "Uninstall failed, deploy will not start."
+    if cli_args.force:
+        if not app.uninstall(Tags.family_name, app_package.identity_name):
+            print "Failed to uninstall the app, deploy will not start."
             return False
+        
+    package_info = app.get_installed_package_info(Tags.family_name, \
+                                                  app_package.identity_name)
 
-    if app.is_installed(family_name_tag, app_package.identity_name, force):
-        installed_version = app.get_version(family_name_tag, app_package.identity_name)
-        if installed_version >= package.version:
+    if package_info is not None:
+        installed_version = parse_version(package_info[Tags.version])
+        if installed_version >= app_package.version:
             print "Installed version: " + str(installed_version)
             print "Deploying version: " + str(app_package.version)
-            print "Deploy will have no effect. Uninstall current version first."
+            print "Deploy will have no effect. Uninstall current" \
+                  "version first or use '-force' flag."
             return False
 
-    fine = app.deploy(app_package, deps, cer_path)
-    if fine and app.is_installed(family_name_tag, app_package.identity_name, cached = False) \
-            and app.get_version(family_name_tag, app_package.identity_name) == app_package.identity_name:
-        print "Deploy check: Done."
-        return True
-    else:
-        print "Deploy check: Falied."
+    fine = app.deploy(app_package, deps, cli_args.cer_path)
+    # Post-check
+    status_msg = "\rChecking 'deploy' result: "
+    print status_msg + "...",
+    package_info = app.get_installed_package_info(Tags.family_name, \
+                                                  app_package.identity_name)
+    installed_version = parse_version(package_info[Tags.version])
+    return post_check(fine and package_info is not None and \
+                      installed_version == app_package.version,\
+                      status_msg)
+
+
+def uninstall(cli_args):
+    fine = app.uninstall(Tags.full_name, cli_args.package_full_name)
+    # Post-check
+    status_msg = "\rChecking 'uninstall' result: "
+    print status_msg + "...",
+    return post_check(fine and \
+           not app.is_installed(Tags.full_name, cli_args.package_full_name), \
+           status_msg)
+
+
+def run(cli_args):
+    if not stop(cli_args):
+        print "Failed to stop the app, app will not be runned."
         return False
+    attach(cli_args, app.start, Tags.full_name, cli_args.package_full_name)
 
 
-def uninstall(package_full_name, url, timeout):
-    fine = app.uninstall(full_name_tag, package_full_name)
-    if fine and not app.is_installed(full_name_tag, package_full_name, cached = False):
-        print "Uninstall check: Done."
-        return True
-    else:
-        print "Uninstall check: Failed."
-        return False 
+def stop(cli_args):
+    fine = app.stop(Tags.full_name, cli_args.package_full_name)
+    # Post-check
+    status_msg = "\rChecking 'stop' result: "
+    print status_msg + "...",
+    return post_check(fine and \
+            not app.is_running(Tags.full_name, cli_args.package_full_name), \
+            status_msg)
 
 
-def run(package_full_name, guids, channels, levels, show_timestamp, delay, stop_on_close, url, timeout):
-    if not stop(package_full_name, url, timeout):
-        print "Failed to stop the app, run will not start."
-        return False
-    attach(package_full_name, guids, channels, levels, show_timestamp, delay, stop_on_close, url, timeout, app.start, full_name_tag, package_full_name)
-
-
-def stop(package_full_name, url, timeout):
-    fine = app.stop(full_name_tag, package_full_name)
-    return fine and not app.is_running(full_name_tag, package_full_name)
-
-
-def attach(package_full_name, guids, channels, levels, show_timestamp, delay, stop_on_close, url, timeout, callback = None, *args):
+def attach(cli_args, callback = None, *args):
 
     def deadline_callback(etw_session, app_monitor):
         if etw_session is not None:
@@ -75,28 +126,30 @@ def attach(package_full_name, guids, channels, levels, show_timestamp, delay, st
         if app_monitor is not None:
             app_monitor.session_ws.close()
 
-    log_parser = logger.LogParser(levels, channels, show_timestamp)
+    log_parser = logger.LogParser(cli_args.log_levels, cli_args.channels, \
+                                  not cli_args.no_timestamp)
     etw_session = None
     app_monitor = None
 
     try:
+        app_monitor = AppMonitor(etw_session, \
+                                 cli_args.package_full_name, \
+                                 deadline_callback, \
+                                 cli_args.wait_time, \
+                                 cli_args.stop_on_close)
+
         etw_session = ETWSession(app_monitor, \
-                                 guids, \
+                                 cli_args.guids, \
                                  log_parser, \
                                  callback, \
                                  *args)
 
-        if package_full_name is not None:
-            if not app.is_installed(full_name_tag, package_full_name):
-                print "App is not installed. Install the app or use attach without app monitor."
+        if cli_args.package_full_name is not None:
+            if not app.is_installed(Tags.full_name, cli_args.package_full_name):
+                print "App is not installed. Install the app or use attach " \
+                       "without app monitor."
                 return
-    
-            app_monitor = AppMonitor(etw_session, \
-                                     package_full_name, \
-                                     deadline_callback, \
-                                     delay, \
-                                     stop_on_close,\
-                                     timeout)
+            # Will be terminated by timeout or from etw_session
             Thread(target = app_monitor.start).start()
 
         etw_session.start()
@@ -104,48 +157,37 @@ def attach(package_full_name, guids, channels, levels, show_timestamp, delay, st
         deadline_callback(etw_session, app_monitor)
         raise
 
+def list(cli_args):
+    if cli_args.what == "installed":
+        return app.list_installed()
+    if cli_args.what == "running":
+        return app.list_running()
+    print "Only 'installed' and 'running' options are available."
+    return False
 
-def list_installed(url = None, timeout = None):
-    response = app_deploy.get_installed_apps()
-    installed_packages = loads(response.text)["InstalledPackages"]
-    for installed_package in installed_packages:
-        fmt = u"{:<17}: {}"
-        print fmt.format("Name", installed_package["Name"])
-        v = installed_package["Version"]
-        print fmt.format("Version", str([v["Major"], v["Minor"], v["Build"], v["Revision"]]))
-        print fmt.format("Package full name", installed_package[full_name_tag])
-        print
-
-
-def list_running(url = None, timeout = None):
-    response = performance_data.get_list_of_running_processes()
-    processes = loads(response.text)["Processes"]
-    for process in processes:
-        fmt = u"{:<17}: {}"
-        # This check is the same as original check in web device-portal in /js/controls.js
-        app_name = process.get("AppName")
-        package_full_name = process.get(full_name_tag)
-        if package_full_name is not None and app_name is not None:
-            print fmt.format("Name", app_name)
-            v = process["Version"]
-            print fmt.format("Version", str([v["Major"], v["Minor"], v["Build"], v["Revision"]]))
-            print fmt.format("Package full name", package_full_name)
-            print
         
-def error():
-    print "ARGS PARSING ERROR"
+def error(cli_args = None):
+    print "Args parsing error."
 
-def f(args):
+
+def parse_and_do(cli_args):
     return {
-        "list": (list_running if args.what == "running" else (list_installed if args.what == "installed" else error)),
-    }.get(args.s_name, error)
+        "deploy" : deploy,
+        "uninstall" : uninstall,
+        "run" : run,
+        "attach" : attach,
+        "stop" : stop,
+        "list": list
+    }.get(cli_args.s_name, error)(cli_args)
         
+
 def main():
-    args = args_parser.parser.parse_args()
-    options.set_url(args.url)
-    options.set_timeout(args.timeout)
-    f(args)()
-    return
+    cli_args = args_parser.parser.parse_args()
+
+    options.set_url(cli_args.url)
+    options.set_timeout(cli_args.timeout)
+
+    parse_and_do(cli_args)
 
 
 if __name__ == "__main__":
