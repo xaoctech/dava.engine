@@ -75,16 +75,31 @@ bool MoveEntry(const QFileInfo& fileInfo, const QString& newFilePath)
 }
 } //namespace FileManagerDetails
 
+QString FileManager::documentsDirectory;
+
 QString FileManager::GetDocumentsDirectory()
 {
-    QString docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
-    MakeDirectory(docDir);
-    return docDir;
+    return documentsDirectory;
 }
 
 FileManager::FileManager(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {
+#ifdef Q_OS_MAC
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/DAVAEngine/Launcher/";
+#else
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVAProject/Launcher/";
+#endif
+    if (!QDir(documentsDirectory).exists())
+    {
+        QString oldDocDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
+        if (QDir(oldDocDir).exists())
+        {
+            QtHelpers::CopyRecursively(oldDocDir, documentsDirectory);
+        }
+    }
+    MakeDirectory(documentsDirectory);
+
     //by default we need to use launcher directory, because MoveFiles works only between single hard drive
     //but on os x we can start application in temp directory. In this case we need to use filesDirectory
     launcherDirectory = QtHelpers::GetApplicationDirPath();
