@@ -313,23 +313,6 @@
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
     </widget>
-    <widget class="QMenu" name="menuObjectTypes">
-     <property name="title">
-      <string>Collision Type</string>
-     </property>
-     <addaction name="actionObjectTypesOff"/>
-     <addaction name="separator"/>
-     <addaction name="actionNoObject"/>
-     <addaction name="actionTree"/>
-     <addaction name="actionBush"/>
-     <addaction name="actionFragileProj"/>
-     <addaction name="actionFragileProjInv"/>
-     <addaction name="actionFalling"/>
-     <addaction name="actionBuilding"/>
-     <addaction name="actionInvisibleWall"/>
-     <addaction name="actionSpeedTree"/>
-     <addaction name="actionUndefinedCollision"/>
-    </widget>
     <widget class="QMenu" name="menuVisibility_Check_System">
      <property name="title">
       <string>Visibility Check System</string>
@@ -357,9 +340,6 @@
     <addaction name="actionBeastAndSave"/>
     <addaction name="menuVisibility_Check_System"/>
     <addaction name="separator"/>
-    <addaction name="menuObjectTypes"/>
-    <addaction name="actionHangingObjects"/>
-    <addaction name="actionSwitchesWithDifferentLODs"/>
     <addaction name="separator"/>
     <addaction name="actionSnapCameraToLandscape"/>
     <addaction name="separator"/>
@@ -700,7 +680,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionSwitchesWithDifferentLODs"/>
   </widget>
   <widget class="QToolBar" name="cameraToolBar">
    <property name="windowTitle">
@@ -1282,62 +1261,6 @@
     <string>Add Lod Component</string>
    </property>
   </action>
-  <action name="actionNoObject">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>No Collision</string>
-   </property>
-  </action>
-  <action name="actionTree">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Tree</string>
-   </property>
-  </action>
-  <action name="actionBush">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Bush</string>
-   </property>
-  </action>
-  <action name="actionFragileProj">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Fragile Proj</string>
-   </property>
-  </action>
-  <action name="actionFragileProjInv">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Fragile ^Proj</string>
-   </property>
-  </action>
-  <action name="actionFalling">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Falling</string>
-   </property>
-  </action>
-  <action name="actionBuilding">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Building</string>
-   </property>
-  </action>
   <action name="actionInvisibleWall">
    <property name="checkable">
     <bool>true</bool>
@@ -1356,18 +1279,6 @@
     <string>Remove Sound Component</string>
    </property>
   </action>
-  <action name="actionHangingObjects">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/hangingobjects.png</normaloff>:/QtIcons/hangingobjects.png</iconset>
-   </property>
-   <property name="text">
-    <string>Hanging Objects</string>
-   </property>
-  </action>
   <action name="actionAddEmptyEntity">
    <property name="icon">
     <iconset resource="Resources.qrc">
@@ -1375,14 +1286,6 @@
    </property>
    <property name="text">
     <string>Empty Entity</string>
-   </property>
-  </action>
-  <action name="actionObjectTypesOff">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Off</string>
    </property>
   </action>
   <action name="actionShowEditorGizmo">
@@ -1599,18 +1502,6 @@
     <string>Vegetation</string>
    </property>
   </action>
-  <action name="actionSwitchesWithDifferentLODs">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/switches_with_different_lods.png</normaloff>:/QtIcons/switches_with_different_lods.png</iconset>
-   </property>
-   <property name="text">
-    <string>Switches with Different LODs</string>
-   </property>
-  </action>
   <action name="actionCenterPivotPoint">
    <property name="icon">
     <iconset resource="Resources.qrc">
@@ -1653,14 +1544,6 @@
    </property>
    <property name="toolTip">
     <string>Add Wave Component</string>
-   </property>
-  </action>
-  <action name="actionUndefinedCollision">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Undefined Collision</string>
    </property>
   </action>
   <action name="action123">
