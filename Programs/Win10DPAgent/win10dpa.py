@@ -24,24 +24,21 @@ class LogParser:
         self.providers = providers
         self.no_timestamp = no_timestamp
     
-    def __call__(self, msg):
-        if msg is None:
+    def __call__(self, event):
+        if event is None:
             return
-        events = loads(msg).get("Events")
-        if events is not None:
-            for event in events:
-                level = event["Level"]
-                provider = event["ProviderName"]
-                if level in self.levels and provider in self.providers:
-                    if not self.no_timestamp:
-                        # Convert webkit timestamp to unix timestamp
-                        unix_timestamp = event["Timestamp"] / 1e7 - 11644473600
-                        print datetime.fromtimestamp(unix_timestamp).\
-                                         strftime("%Y-%m-%d %H:%M:%S.%f "),
-                    string_message = event["StringMessage"]
-                    if string_message.endswith("\n"):
-                        string_message = string_message[:-1]
-                    print string_message
+        level = event["Level"]
+        provider = event["ProviderName"]
+        if level in self.levels and provider in self.providers:
+            if not self.no_timestamp:
+                # Convert webkit timestamp to unix timestamp
+                unix_timestamp = event["Timestamp"] / 1e7 - 11644473600
+                print datetime.fromtimestamp(unix_timestamp).\
+                                    strftime("%Y-%m-%d %H:%M:%S.%f "),
+            string_message = event["StringMessage"]
+            if string_message.endswith("\n"):
+                string_message = string_message[:-1]
+            print string_message
 
 
 def parse_version(v):
@@ -119,26 +116,13 @@ def stop(cli_args):
 
 
 def attach(cli_args, callback = None, *args):
-
-    def deadline_callback(etw_session, app_monitor):
-        if etw_session is not None:
-            etw_session.session_ws.close()
-        if app_monitor is not None:
-            app_monitor.session_ws.close()
-
     log_parser = LogParser(cli_args.log_levels, cli_args.channels, \
                            cli_args.no_timestamp)
     etw_session = None
-    app_monitor = None
 
     try:
-        app_monitor = AppMonitor(etw_session, \
-                                 cli_args.package_full_name, \
-                                 deadline_callback, \
+        etw_session = ETWSession(cli_args.package_full_name, \
                                  cli_args.wait_time, \
-                                 cli_args.stop_on_close)
-
-        etw_session = ETWSession(app_monitor, \
                                  cli_args.guids, \
                                  log_parser, \
                                  callback, \
@@ -149,12 +133,13 @@ def attach(cli_args, callback = None, *args):
                 print "App is not installed. Install the app or use attach " \
                        "without app monitor."
                 return
-            # Will be terminated by timeout or from etw_session
-            Thread(target = app_monitor.start).start()
+            if callback is None:
+                etw_session.set_pid(app.get_pid(Tags.full_name, cli_args.package_full_name))
 
         etw_session.start()
     except:
-        deadline_callback(etw_session, app_monitor)
+        if etw_session is not None:
+            etw_session.session_ws.close()
         raise
 
 def list(cli_args):

@@ -136,12 +136,6 @@ run_attach_parent.add_argument("-wait_time",\
                                       "start before session cancelling" \
                                       "(default: 20.0).")
 
-run_attach_parent.add_argument("-stop_on_close",\
-                               dest = "stop_on_close",\
-                               action = "store_true",\
-                               help = "Stop the session if app is minimized.")
-
-
 # 'Run' command parser
 run_parser = subparsers.add_parser("run", \
                                    help = "Run the app and listen to logs.", \

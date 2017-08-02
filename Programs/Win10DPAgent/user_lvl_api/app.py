@@ -30,6 +30,20 @@ def get_installed_package_info(key, value):
 def is_installed(key, value):
     return get_installed_package_info(key, value) is not None
 
+
+def get_pid(key, value):
+    package_info = get_installed_package_info(key, value)
+    if package_info is None:
+        return
+    package_full_name = package_info[full_name_tag]
+    response = performance_data.get_list_of_running_processes()
+    processes = loads(response.text)["Processes"]
+    for process in processes:
+        process_full_name = process.get(full_name_tag)
+        if process_full_name is not None and \
+                                    process_full_name == package_full_name:
+            return process["ProcessId"]
+
 # Check if app process is active
 def is_active(key, value):
     package_info = get_installed_package_info(key, value)
