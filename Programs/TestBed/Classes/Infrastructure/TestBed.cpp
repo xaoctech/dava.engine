@@ -1,5 +1,7 @@
 #include "Infrastructure/TestBed.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <Engine/EngineSettings.h>
 #include <Render/RHI/rhi_Public.h>
@@ -169,7 +171,12 @@ TestBed::TestBed(Engine& engine)
         w->SetSizeAsync({ 1024.f, 768.f });
     }
 
-    engine.GetContext()->settings->Load("~res:/EngineSettings.yaml");
+    const EngineContext* context = engine.GetContext();
+    FileSystem* fileSystem = context->fileSystem;
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
+
+    context->settings->Load("~res:/EngineSettings.yaml");
 
     servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "TestBed"));
     netLogger.reset(new DAVA::Net::NetLogger);

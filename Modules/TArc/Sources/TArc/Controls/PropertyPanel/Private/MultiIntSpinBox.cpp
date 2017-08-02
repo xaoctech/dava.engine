@@ -1,8 +1,7 @@
-#include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
+#include "TArc/Controls/PropertyPanel/Private/MultiIntSpinBox.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Controls/QtWrapLayout.h"
 #include "TArc/Controls/IntSpinBox.h"
-#include "TArc/Controls/DoubleSpinBox.h"
 #include "TArc/Controls/ControlDescriptor.h"
 
 #include <Debug/DVAssert.h>
@@ -14,7 +13,7 @@ namespace DAVA
 {
 namespace TArc
 {
-namespace MultiFieldsControlDetails
+namespace MultiIntSpinBoxDetails
 {
 template <typename TEnum>
 void ApplyRole(ControlDescriptorBuilder<TEnum>& descriptor, TEnum role, const String& name)
@@ -26,8 +25,8 @@ void ApplyRole(ControlDescriptorBuilder<TEnum>& descriptor, TEnum role, const St
 }
 
 template <typename T>
-QWidget* CreatedEditor(const Reflection& r, const MultiDoubleSpinBox::FieldDescriptor& fieldDescr, QWidget* parent, T* accessor,
-                       const MultiDoubleSpinBox::BaseParams& controlParams, Reflection& model, Vector<ControlProxy*>& subControls)
+QWidget* CreatedEditor(const Reflection& r, const MultiIntSpinBox::FieldDescriptor& fieldDescr, QWidget* parent, T* accessor,
+                       const MultiIntSpinBox::BaseParams& controlParams, Reflection& model, Vector<ControlProxy*>& subControls)
 {
     QWidget* result = new QWidget(parent);
     QtHBoxLayout* layout = new QtHBoxLayout(result);
@@ -37,13 +36,12 @@ QWidget* CreatedEditor(const Reflection& r, const MultiDoubleSpinBox::FieldDescr
     QLabel* label = new QLabel(QString::fromStdString(fieldDescr.valueRole + ":"), result);
     layout->addWidget(label);
 
-    DoubleSpinBox::Params params(controlParams.accessor, controlParams.ui, controlParams.wndKey);
-    params.fields[DoubleSpinBox::Fields::Value] = fieldDescr.valueRole;
-    ApplyRole(params.fields, DoubleSpinBox::Fields::Range, fieldDescr.rangeRole);
-    ApplyRole(params.fields, DoubleSpinBox::Fields::IsReadOnly, fieldDescr.readOnlyRole);
-    ApplyRole(params.fields, DoubleSpinBox::Fields::ShowSpinArrows, fieldDescr.showSpinArrowsRole);
-    ApplyRole(params.fields, DoubleSpinBox::Fields::Accuracy, fieldDescr.accuracyRole);
-    DoubleSpinBox* spinBox = new DoubleSpinBox(params, accessor, model, result);
+    IntSpinBox::Params params(controlParams.accessor, controlParams.ui, controlParams.wndKey);
+    params.fields[IntSpinBox::Fields::Value] = fieldDescr.valueRole;
+    ApplyRole(params.fields, IntSpinBox::Fields::Range, fieldDescr.rangeRole);
+    ApplyRole(params.fields, IntSpinBox::Fields::ShowSpinArrows, fieldDescr.showSpinArrowsRole);
+    ApplyRole(params.fields, IntSpinBox::Fields::IsReadOnly, fieldDescr.readOnlyRole);
+    IntSpinBox* spinBox = new IntSpinBox(params, accessor, model, result);
     subControls.push_back(spinBox);
     layout->AddControl(spinBox);
 
@@ -56,20 +54,20 @@ QWidget* CreatedEditor(const Reflection& r, const MultiDoubleSpinBox::FieldDescr
 }
 }
 
-MultiDoubleSpinBox::MultiDoubleSpinBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent /*= nullptr*/)
+MultiIntSpinBox::MultiIntSpinBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent /*= nullptr*/)
     : TBase(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
     SetupControl(wrappersProcessor);
 }
 
-MultiDoubleSpinBox::MultiDoubleSpinBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent /*= nullptr*/)
+MultiIntSpinBox::MultiIntSpinBox(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent /*= nullptr*/)
     : TBase(params, ControlDescriptor(params.fields), accessor, model, parent)
 {
     SetupControl(accessor);
 }
 
 template <typename T>
-void MultiDoubleSpinBox::SetupControl(T* accessor)
+void MultiIntSpinBox::SetupControl(T* accessor)
 {
     DVASSERT(layout() == nullptr);
     Reflection r = model.GetField(GetFieldName(Fields::FieldsList));
@@ -93,11 +91,11 @@ void MultiDoubleSpinBox::SetupControl(T* accessor)
 
         Reflection editableField = model.GetField(fieldDescr.valueRole);
         DVASSERT(editableField.IsValid());
-        layout->addWidget(MultiFieldsControlDetails::CreatedEditor(editableField, fieldDescr, this, accessor, controlParams, model, subControls));
+        layout->addWidget(MultiIntSpinBoxDetails::CreatedEditor(editableField, fieldDescr, this, accessor, controlParams, model, subControls));
     }
 }
 
-void MultiDoubleSpinBox::ForceUpdate()
+void MultiIntSpinBox::ForceUpdate()
 {
     for_each(subControls.begin(), subControls.end(), [](ControlProxy* proxy)
              {
@@ -107,7 +105,7 @@ void MultiDoubleSpinBox::ForceUpdate()
     TBase::ForceUpdate();
 }
 
-void MultiDoubleSpinBox::TearDown()
+void MultiIntSpinBox::TearDown()
 {
     for_each(subControls.begin(), subControls.end(), [](ControlProxy* proxy)
              {
@@ -117,17 +115,16 @@ void MultiDoubleSpinBox::TearDown()
     TBase::TearDown();
 }
 
-void MultiDoubleSpinBox::UpdateControl(const ControlDescriptor& descriptor)
+void MultiIntSpinBox::UpdateControl(const ControlDescriptor& descriptor)
 {
 }
 
-bool MultiDoubleSpinBox::FieldDescriptor::operator==(const FieldDescriptor& other) const
+bool MultiIntSpinBox::FieldDescriptor::operator==(const FieldDescriptor& other) const
 {
     return valueRole == other.valueRole &&
     readOnlyRole == other.readOnlyRole &&
-    accuracyRole == other.accuracyRole &&
-    showSpinArrowsRole == other.showSpinArrowsRole &&
-    rangeRole == other.rangeRole;
+    rangeRole == other.rangeRole &&
+    showSpinArrowsRole == other.showSpinArrowsRole;
 }
 
 } // namespace TArc
