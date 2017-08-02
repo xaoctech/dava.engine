@@ -115,6 +115,20 @@ void BaseSpinBox<TBase, TEditableType>::UpdateRange()
 template <typename TBase, typename TEditableType>
 void BaseSpinBox<TBase, TEditableType>::UpdateControl(const ControlDescriptor& changedFields)
 {
+    if (changedFields.IsChanged(BaseFields::ShowSpinArrows))
+    {
+        bool showArrows = this->template GetFieldValue<bool>(BaseFields::ShowSpinArrows, true);
+        if (showArrows == true)
+        {
+            validStateButtonSymbol = QAbstractSpinBox::UpDownArrows;
+        }
+        else
+        {
+            validStateButtonSymbol = QAbstractSpinBox::NoButtons;
+        }
+        this->setButtonSymbols(validStateButtonSymbol);
+    }
+
     UpdateRange();
     bool valueChanged = changedFields.IsChanged(BaseFields::Value);
     bool readOnlychanged = changedFields.IsChanged(BaseFields::IsReadOnly);
@@ -214,7 +228,7 @@ void BaseSpinBox<TBase, TEditableType>::ToEditingState()
     }
     else
     {
-        this->setButtonSymbols(QAbstractSpinBox::UpDownArrows);
+        this->setButtonSymbols(validStateButtonSymbol);
     }
 }
 
@@ -232,7 +246,7 @@ void BaseSpinBox<TBase, TEditableType>::ToValidState()
 {
     stateHistory = Stack<ControlState>();
     stateHistory.push(ControlState::ValidValue);
-    this->setButtonSymbols(QAbstractSpinBox::UpDownArrows);
+    this->setButtonSymbols(validStateButtonSymbol);
 }
 
 template <typename TBase, typename TEditableType>

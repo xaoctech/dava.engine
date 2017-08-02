@@ -62,7 +62,7 @@ find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 find_package( LoggerService REQUIRED )
 find_package( MemoryProfilerService REQUIRED )
 find_package( EmbeddedWebServer REQUIRED )
-
+find_package( DocDirSetup REQUIRED )
 include_directories   ( "Sources" )
 include_directories   ( "Sources/Infrastructure" )
 

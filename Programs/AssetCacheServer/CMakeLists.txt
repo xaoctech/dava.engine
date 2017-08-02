@@ -8,6 +8,7 @@ include               ( CMake-common )
 find_package          ( QT5 REQUIRED )
 find_package          ( QtHelpers REQUIRED )
 find_package          ( DavaTools     REQUIRED )
+find_package          ( DocDirSetup REQUIRED )
 
 dava_add_definitions  ( -DCONSOLE )
 

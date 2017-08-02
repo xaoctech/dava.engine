@@ -25,7 +25,8 @@ public:
         Value,
         IsReadOnly,
         IsEnabled,
-        Range
+        Range,
+        ShowSpinArrows,
     };
 
     using BaseParams = typename ControlProxyImpl<TBase>::BaseParams;
@@ -64,6 +65,8 @@ protected:
     };
 
     Stack<ControlState> stateHistory;
+
+    QAbstractSpinBox::ButtonSymbols validStateButtonSymbol = QAbstractSpinBox::UpDownArrows;
 
 private:
     QString textFromValue(TEditableType val) const override;

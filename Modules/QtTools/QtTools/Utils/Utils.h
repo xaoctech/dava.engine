@@ -27,6 +27,9 @@ void RestoreMenuBar();
 QString EscapeString(const QString& str);
 QString UnescapeString(const QString& str);
 
+DAVA::Vector<DAVA::float32> ParseFloatList(const DAVA::String& str);
+DAVA::Vector<DAVA::float32> ParseFloatList(const QString& str);
+
 template <typename T>
 T StringToVector(const QString& str)
 {
@@ -36,25 +39,12 @@ T StringToVector(const QString& str)
                   "this function works only for types Vector2, Vector3 and Vector4"
                   );
 
-    QRegularExpression expr("[+-]?[\\d*]*[.]?[\\d*]+");
-    QRegularExpressionMatchIterator iter = expr.globalMatch(str);
-    QList<float> floatList;
-    while (iter.hasNext())
-    {
-        QRegularExpressionMatch match(iter.next());
-        if (match.hasMatch())
-        {
-            QString matchedStr = match.captured(0);
-            bool ok;
-            floatList << matchedStr.toFloat(&ok);
-            DVASSERT(ok);
-        }
-    }
+    DAVA::Vector<DAVA::float32> result = ParseFloatList(str);
     T vector;
-    int count = DAVA::Min(floatList.size(), static_cast<int>(T::AXIS_COUNT));
-    for (int i = 0; i < count; i++)
+    DAVA::int32 count = DAVA::Min(static_cast<DAVA::int32>(result.size()), static_cast<DAVA::int32>(T::AXIS_COUNT));
+    for (DAVA::int32 i = 0; i < count; i++)
     {
-        vector.data[i] = floatList[i];
+        vector.data[i] = result[i];
     }
     return vector;
 }

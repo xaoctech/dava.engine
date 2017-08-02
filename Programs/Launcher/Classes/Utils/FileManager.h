@@ -32,13 +32,13 @@ public:
     bool MoveLauncherRecursively(const QString& pathOut, const QString& pathIn, ErrorHolder* result) const;
 
     QString GetFilesDirectory() const;
+    static QString GetDocumentsDirectory();
 
     QString GetLauncherDirectory() const;
 
     bool IsInQuarantine() const;
 
     static QString GetFileNameFromURL(const QString& url);
-    static QString GetDocumentsDirectory();
     static bool DeleteDirectory(const QString& path);
     static void MakeDirectory(const QString& path);
 
@@ -51,8 +51,6 @@ signals:
 private:
     using EntireList = QList<QPair<QFileInfo, QString>>;
 
-    QString GetDefaultFilesDirectory() const;
-
     QStringList OwnDirectories() const;
     EntireList CreateEntireList(const QString& pathOut, const QString& pathIn, ErrorHolder* result) const;
 
@@ -60,4 +58,6 @@ private:
 
     QString launcherDirectory;
     bool isInQuarantine = false;
+
+    static QString documentsDirectory;
 };
