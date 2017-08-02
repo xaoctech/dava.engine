@@ -54,6 +54,14 @@ public:
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        STATIC_BODY_COMPONENT,
+        DYNAMIC_BODY_COMPONENT,
+#endif
+
+        NOT_EXPORTED_COMPONENTS, //components for RE only. Serialized, but not exported
+        TEXT_COMPONENT = NOT_EXPORTED_COMPONENTS,
+
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,
         STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,

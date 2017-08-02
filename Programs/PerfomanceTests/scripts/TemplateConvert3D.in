@@ -8,8 +8,8 @@
 #
 
 # ResourceEditor.exe -sceneexporter -clean /projects/wot.mobile/Data/3d
-# ResourceEditor.exe -sceneexporter -export -indir /projects/wot.mobile/DataSource/3d/ -outdir /projects/wot.mobile/Data/3d/ -processfile Maps/level_mp_2_92.sc2
-# ResourceEditor.exe -sceneexporter -export -indir /projects/wot.mobile/DataSource/3d/ -outdir /projects/wot.mobile/Data/3d/ -processfile Tanks/German/tiger_sniper.sc2
+# ResourceEditor.exe -sceneexporter -scene -indir /projects/wot.mobile/DataSource/3d/ -outdir /projects/wot.mobile/Data/3d/ -processfile Maps/level_mp_2_92.sc2
+# ResourceEditor.exe -sceneexporter -scene -indir /projects/wot.mobile/DataSource/3d/ -outdir /projects/wot.mobile/Data/3d/ -processfile Tanks/German/tiger_sniper.sc2
 
 import os
 import sys
@@ -108,7 +108,7 @@ def main_convert_3d(): # it's function for external usage
     # export files
     for i in range(0, len(processing)):
         log_time("processfile " + processing[i])
-        params = [executable, '-sceneexporter', '-export', '-indir', dataSourceDir, '-outdir', dataDir, '-processfile', processing[i], '-qualitycfgpath', qualityConfigPath]
+        params = [executable, '-sceneexporter', '-scene', '-indir', dataSourceDir, '-outdir', dataDir, '-processfile', processing[i], '-qualitycfgpath', qualityConfigPath]
         params.extend(gpuParams)
         print "[%s]" % ", ".join(map(str, params))
         os.spawnv(os.P_WAIT, executable, params)

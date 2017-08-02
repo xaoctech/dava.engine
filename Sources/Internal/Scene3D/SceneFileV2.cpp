@@ -1054,6 +1054,13 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
             c--;
     }
 
+    KeyedArchive* customProperties = GetCustomPropertiesArchieve(currentNode);
+    bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
+    if (doNotRemove == true)
+    {
+        return false;
+    }
+
     if (currentNode->GetChildrenCount() == 1)
     {
         uint32 allowed_comp_count = 0;

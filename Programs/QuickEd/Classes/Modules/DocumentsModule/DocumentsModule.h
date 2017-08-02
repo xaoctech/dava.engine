@@ -38,7 +38,7 @@ protected:
 private:
     void InitEditorSystems();
     void InitCentralWidget();
-    void InitWatcher();
+    void InitGlobalData();
 
     void CreateDocumentsActions();
     void RegisterOperations();
@@ -50,6 +50,7 @@ private:
 
     //View
     void CreateViewActions();
+    void CreateFindActions();
 
     DAVA::TArc::DataContext::ContextID OpenDocument(const QString& path);
     DAVA::RefPtr<PackageNode> CreatePackage(const QString& path);
@@ -83,6 +84,8 @@ private:
     void OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState);
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
+
+    void OnSelectInFileSystem();
 
     PreviewWidget* previewWidget = nullptr;
     std::unique_ptr<EditorSystemsManager> systemsManager;

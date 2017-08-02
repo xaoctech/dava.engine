@@ -6,7 +6,10 @@ set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}
 include      ( CMake-common )
 
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
-find_package( ScenePerformanceTests REQUIRED )
+find_package( NetworkHelpers  REQUIRED)
+find_package( ScenePerformanceTests  REQUIRED)
+find_package( LoggerService  REQUIRED)
+find_package( MemoryProfilerService  REQUIRED)
 
 include_directories   ( "Classes" )
 
@@ -26,7 +29,7 @@ file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLD
 define_source ( SOURCE "Classes" ${PLATFORM_SPECIFIC_FOLDER} )
 
 set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
-                                  "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
+                                  "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
 set( IOS_PLISTT                   ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneVieweriPhone-Info.plist )
 

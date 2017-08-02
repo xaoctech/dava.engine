@@ -11,6 +11,11 @@ Widget::Widget(QWidget* parent /*= nullptr*/)
 {
 }
 
+Widget::~Widget()
+{
+    TearDown();
+}
+
 void Widget::SetLayout(QLayout* layout)
 {
     setLayout(layout);
@@ -30,11 +35,6 @@ void Widget::AddControl(ControlProxy* control, Qt::Alignment alignment)
     {
         l->addWidget(control->ToWidgetCast());
     }
-}
-
-void Widget::HandleControl(ControlProxy* control)
-{
-    controls.push_back(control);
 }
 
 void Widget::ForceUpdate()
