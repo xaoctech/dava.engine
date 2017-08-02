@@ -220,7 +220,7 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
 
         bool isAlphaTestOrAlphaBlend = (packet.userFlags & NMaterial::USER_FLAG_ALPHATEST) != 0;
         isAlphaTestOrAlphaBlend |= (packet.userFlags & NMaterial::USER_FLAG_ALPHABLEND) != 0;
-        
+
         if ((batch.second & OPTION_DISABLE_DEPTH) == OPTION_DISABLE_DEPTH || isAlphaTestOrAlphaBlend)
             packet.depthStencilState = stateDisabledDepthWrite;
 
