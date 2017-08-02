@@ -218,14 +218,14 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
         }
         packet.cullMode = rhi::CULL_NONE;
 
-        if ((batch.second & OPTION_DISABLE_DEPTH) == OPTION_DISABLE_DEPTH)
+        bool isAlphaTestOrAlphaBlend = (packet.userFlags & NMaterial::USER_FLAG_ALPHATEST) != 0;
+        isAlphaTestOrAlphaBlend |= (packet.userFlags & NMaterial::USER_FLAG_ALPHABLEND) != 0;
+        
+        if ((batch.second & OPTION_DISABLE_DEPTH) == OPTION_DISABLE_DEPTH || isAlphaTestOrAlphaBlend)
             packet.depthStencilState = stateDisabledDepthWrite;
 
-        if ((packet.userFlags & (NMaterial::USER_FLAG_ALPHATEST | NMaterial::USER_FLAG_ALPHABLEND)) == 0)
-        {
-            rhi::AddPacket(packetList, packet);
-            ++k;
-        }
+        rhi::AddPacket(packetList, packet);
+        ++k;
     }
 
 #if (SAVE_OCCLUSION_IMAGES)
