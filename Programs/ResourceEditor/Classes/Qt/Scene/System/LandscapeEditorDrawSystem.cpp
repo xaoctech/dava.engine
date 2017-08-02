@@ -714,8 +714,3 @@ bool LandscapeEditorDrawSystem::InitTilemaskImageCopy()
     DVASSERT(landscapeProxy != nullptr);
     return landscapeProxy->InitTilemaskImageCopy(sourceTilemaskPath);
 }
-
-void LandscapeEditorDrawSystem::DisableSystem()
-{
-    systemIsEnabled = false;
-}
