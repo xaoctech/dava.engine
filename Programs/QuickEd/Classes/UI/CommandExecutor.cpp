@@ -83,7 +83,7 @@ Rect GetConstraintBox(const Vector<ControlNode*> nodes)
     return constraintBox;
 }
 
-void ShiftPositionsRelativeToBox(Vector<ControlNode*> nodes, const Rect& constraintBox, DocumentData* data)
+void ShiftPositionsRelativeToBox(const Vector<ControlNode*>& nodes, const Rect& constraintBox, DocumentData* data)
 {
     const Vector2& constraintPos = constraintBox.GetPosition();
     for (ControlNode* node : nodes)
@@ -314,7 +314,7 @@ void CommandExecutor::RemoveStyleSelector(StyleSheetNode* node, DAVA::int32 sele
     }
 }
 
-ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex)
+ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     ResultList resultList;
     if (dest->CanInsertControl(control, destIndex))
@@ -393,7 +393,7 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
     return copiedNodes;
 }
 
-Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex)
+DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
@@ -697,7 +697,7 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
     return createdNodes;
 }
 
-ControlNode* CommandExecutor::GroupControls(DAVA::Vector<ControlNode*> controls)
+ControlNode* CommandExecutor::GroupControls(const DAVA::Vector<ControlNode*>& controls) const
 {
     using namespace DAVA;
     using namespace CommandExecutorDetails;
@@ -727,7 +727,7 @@ void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPac
     data->ExecCommand<InsertImportedPackageCommand>(importedPackage, package->GetImportedPackagesNode()->GetCount());
 }
 
-void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex)
+void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     DocumentData* data = GetDocumentData();
     data->ExecCommand<InsertControlCommand>(control, dest, destIndex);
@@ -745,7 +745,7 @@ void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerN
     }
 }
 
-void CommandExecutor::RemoveControlImpl(ControlNode* node)
+void CommandExecutor::RemoveControlImpl(ControlNode* node) const
 {
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
     if (src)
@@ -767,7 +767,7 @@ void CommandExecutor::RemoveControlImpl(ControlNode* node)
     }
 }
 
-bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex)
+bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     node->Retain();
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());

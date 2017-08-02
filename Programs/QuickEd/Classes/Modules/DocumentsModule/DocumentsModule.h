@@ -48,7 +48,7 @@ private:
     void OnUndo();
     void OnRedo();
 
-    bool CanGroupSelection();
+    bool CanGroupSelection() const;
     void DoGroupSelection();
 
     //View

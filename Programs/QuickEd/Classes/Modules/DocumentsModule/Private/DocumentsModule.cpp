@@ -409,7 +409,6 @@ void DocumentsModule::CreateEditActions()
         QAction* separator = new QAction(editMenuSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
@@ -433,7 +432,7 @@ void DocumentsModule::CreateEditActions()
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, editMenuSeparatorName }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -465,13 +464,13 @@ void DocumentsModule::OnRedo()
     data->commandStack->Redo();
 }
 
-bool DocumentsModule::CanGroupSelection()
+bool DocumentsModule::CanGroupSelection() const
 {
     using namespace DAVA;
     using namespace TArc;
 
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* activeContext = accessor->GetActiveContext();
+    const ContextAccessor* accessor = GetAccessor();
+    const DataContext* activeContext = accessor->GetActiveContext();
     if (!activeContext)
     {
         return false;
@@ -526,11 +525,7 @@ void DocumentsModule::DoGroupSelection()
     {
         CommandExecutor commandExecutor(GetAccessor(), nullptr);
         ControlNode* groupControl = commandExecutor.GroupControls(selectedControlNodes);
-        data->SetSelectedNodes({ groupControl });
-
-        MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
-        mainWindow->GetPackageWidget()->OnSelectionChanged(data->GetSelectedNodes());
-        mainWindow->GetPackageWidget()->OnRename();
+        InvokeOperation(QEGlobal::SelectAndRename.ID, groupControl);
     }
 }
 
