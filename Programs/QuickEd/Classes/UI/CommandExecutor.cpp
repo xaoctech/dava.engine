@@ -70,6 +70,33 @@ String FormatNodeNames(const DAVA::Vector<T*>& nodes)
 
     return list;
 }
+
+Rect GetConstraintBox(const Vector<ControlNode*> nodes)
+{
+    UIControl* firstControl = nodes.front()->GetControl();
+    Rect constraintBox(firstControl->GetRect());
+
+    std::for_each(std::next(nodes.begin()), nodes.end(), [&constraintBox](ControlNode* node)
+                  {
+                      constraintBox = constraintBox.Combine(node->GetControl()->GetRect());
+                  });
+    return constraintBox;
+}
+
+void ShiftPositionsRelativeToBox(Vector<ControlNode*> nodes, const Rect& constraintBox, DocumentData* data)
+{
+    const Vector2& constraintPos = constraintBox.GetPosition();
+    for (ControlNode* node : nodes)
+    {
+        Vector2 newPositionValue = node->GetControl()->GetPosition() - constraintPos;
+
+        std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+        RootProperty* rootProperty = node->GetRootProperty();
+        AbstractProperty* positionProperty = rootProperty->FindPropertyByName("position");
+        command->AddNodePropertyValue(node, positionProperty, newPositionValue);
+        data->ExecCommand(std::move(command));
+    }
+}
 }
 
 CommandExecutor::CommandExecutor(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_)
@@ -139,11 +166,16 @@ void CommandExecutor::AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::Fi
 
     if (result.type == Result::RESULT_ERROR)
     {
-        using namespace DAVA::TArc;
-        NotificationParams params;
-        params.title = "Can't import package";
-        params.message = result;
-        ui->ShowNotification(mainWindowKey, params);
+        String errMsg = "Can't import package";
+        Logger::Error(errMsg.c_str());
+        if (ui != nullptr)
+        {
+            using namespace DAVA::TArc;
+            NotificationParams params;
+            params.title = errMsg;
+            params.message = result;
+            ui->ShowNotification(mainWindowKey, params);
+        }
     }
 }
 
@@ -663,6 +695,30 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
         }
     }
     return createdNodes;
+}
+
+ControlNode* CommandExecutor::GroupControls(DAVA::Vector<ControlNode*> controls)
+{
+    using namespace DAVA;
+    using namespace CommandExecutorDetails;
+
+    DocumentData* data = GetDocumentData();
+    data->BeginBatch("Group controls");
+
+    Rect constraintBox = GetConstraintBox(controls);
+    ShiftPositionsRelativeToBox(controls, constraintBox, data);
+
+    ScopedPtr<UIControl> control(new UIControl(constraintBox));
+    control->SetName("Group");
+    ControlNode* groupControl = ControlNode::CreateFromControl(control);
+
+    ControlNode* parent = dynamic_cast<ControlNode*>(controls.front()->GetParent());
+    InsertControl(groupControl, parent, parent->GetCount());
+    MoveControls(controls, groupControl, 0);
+
+    data->EndBatch();
+
+    return groupControl;
 }
 
 void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package)

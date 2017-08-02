@@ -49,6 +49,25 @@
 #include <QFileSystemWatcher>
 #include <QMouseEvent>
 
+namespace DocumentsModuleDetails
+{
+using namespace DAVA;
+Vector<ControlNode*> ToControlNodesVector(const SelectedNodes& selectedNodes)
+{
+    Vector<ControlNode*> controlNodes;
+    controlNodes.reserve(selectedNodes.size());
+    for (PackageBaseNode* node : selectedNodes)
+    {
+        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+        if (controlNode)
+        {
+            controlNodes.push_back(controlNode);
+        }
+    }
+    return controlNodes;
+}
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
 {
     DAVA::ReflectionRegistrator<DocumentsModule>::Begin()
@@ -56,7 +75,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
     .End();
 }
 
-DocumentsModule::DocumentsModule() = default;
+DocumentsModule::DocumentsModule()
+{
+    DAVA::RefPtr<UIControl> sampleControl(new UIControl);
+    sampleGroupNode.Set(ControlNode::CreateFromControl(sampleControl.Get()));
+}
+
 DocumentsModule::~DocumentsModule() = default;
 
 void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
@@ -124,7 +148,7 @@ void DocumentsModule::PostInit()
 
     RegisterOperations();
     CreateDocumentsActions();
-    CreateUndoRedoActions();
+    CreateEditActions();
     CreateViewActions();
     CreateFindActions();
 }
@@ -300,7 +324,7 @@ void DocumentsModule::CreateDocumentsActions()
     }
 }
 
-void DocumentsModule::CreateUndoRedoActions()
+void DocumentsModule::CreateEditActions()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -385,8 +409,33 @@ void DocumentsModule::CreateUndoRedoActions()
         QAction* separator = new QAction(editMenuSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+    }
+
+    // Group
+    {
+        const QString groupActionName("Group");
+
+        QtAction* action = new QtAction(accessor, groupActionName, nullptr);
+        action->setShortcutContext(Qt::WindowShortcut);
+        action->setShortcut(QKeySequence("Ctrl+G"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
+                                         {
+                                             return CanGroupSelection();
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, editMenuSeparatorName }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 }
 
@@ -414,6 +463,75 @@ void DocumentsModule::OnRedo()
     DocumentData* data = context->GetData<DocumentData>();
     DVASSERT(data != nullptr);
     data->commandStack->Redo();
+}
+
+bool DocumentsModule::CanGroupSelection()
+{
+    using namespace DAVA;
+    using namespace TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (!activeContext)
+    {
+        return false;
+    }
+
+    DocumentData* data = activeContext->GetData<DocumentData>();
+    DVASSERT(data != nullptr);
+
+    const SelectedNodes& selectedNodes = data->GetSelectedNodes();
+    if (selectedNodes.size() < 2)
+    {
+        return false;
+    }
+
+    PackageBaseNode* commonParent = (*selectedNodes.begin())->GetParent();
+    ControlNode* commonParentControl = dynamic_cast<ControlNode*>(commonParent);
+    if (commonParentControl == nullptr)
+    {
+        return false;
+    }
+
+    bool allHaveCommonParent = std::all_of(std::next(selectedNodes.begin()), selectedNodes.end(), [commonParent](PackageBaseNode* node)
+                                           {
+                                               return node->GetParent() == commonParent;
+                                           });
+    if (!allHaveCommonParent)
+    {
+        return false;
+    }
+
+    return commonParent->CanInsertControl(sampleGroupNode.Get(), commonParent->GetCount());
+}
+
+void DocumentsModule::DoGroupSelection()
+{
+    using namespace DAVA;
+    using namespace TArc;
+    using namespace DocumentsModuleDetails;
+
+    if (!CanGroupSelection())
+    {
+        DVASSERT(false, "OnGroupSelection should not be called");
+        return;
+    }
+
+    DataContext* context = GetAccessor()->GetActiveContext();
+    DVASSERT(context != nullptr);
+    DocumentData* data = context->GetData<DocumentData>();
+    DVASSERT(data != nullptr);
+    Vector<ControlNode*> selectedControlNodes = ToControlNodesVector(data->GetSelectedNodes());
+    if (data->GetSelectedNodes().size() == selectedControlNodes.size())
+    {
+        CommandExecutor commandExecutor(GetAccessor(), nullptr);
+        ControlNode* groupControl = commandExecutor.GroupControls(selectedControlNodes);
+        data->SetSelectedNodes({ groupControl });
+
+        MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+        mainWindow->GetPackageWidget()->OnSelectionChanged(data->GetSelectedNodes());
+        mainWindow->GetPackageWidget()->OnRename();
+    }
 }
 
 void DocumentsModule::CreateViewActions()

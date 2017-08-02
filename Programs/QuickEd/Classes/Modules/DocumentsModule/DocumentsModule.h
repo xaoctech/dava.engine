@@ -44,9 +44,12 @@ private:
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
+
+    bool CanGroupSelection();
+    void DoGroupSelection();
 
     //View
     void CreateViewActions();
@@ -97,6 +100,8 @@ private:
     QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
+
+    DAVA::RefPtr<ControlNode> sampleGroupNode;
 
     DAVA_VIRTUAL_REFLECTION(DocumentsModule, DAVA::TArc::ControllerModule);
 };
