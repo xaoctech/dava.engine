@@ -8,6 +8,15 @@ namespace DAVA
 {
 namespace TArc
 {
+namespace ReflectionPathTreeDetail
+{
+uint32 INITIAL_VERSION = 0;
+uint32 REGULAR_TREE_VERSION = 1;
+uint32 CURRENT_VERSION = REGULAR_TREE_VERSION;
+
+const char* versionKey = "version";
+} // namespace ReflectionPathTreeDetail
+
 ReflectionPathTree::ReflectionPathTree(const FastName& rootName)
     : objectsPool(256 * sizeof(Node), 1)
 {
@@ -147,12 +156,17 @@ std::shared_ptr<ReflectionPathTree::Node> ReflectionPathTree::CreateNode(const F
 void ReflectionPathTree::Load(const PropertiesItem& settingsNode)
 {
     DVASSERT(root.size() == 1);
-    Load(settingsNode, root.top());
+    uint32 version = settingsNode.Get(ReflectionPathTreeDetail::versionKey, ReflectionPathTreeDetail::INITIAL_VERSION);
+    if (version == ReflectionPathTreeDetail::CURRENT_VERSION)
+    {
+        Load(settingsNode, root.top());
+    }
 }
 
 void ReflectionPathTree::Save(PropertiesItem& settingsNode) const
 {
     DVASSERT(root.size() == 1);
+    settingsNode.Set(ReflectionPathTreeDetail::versionKey, static_cast<int32>(ReflectionPathTreeDetail::CURRENT_VERSION));
     Save(settingsNode, root.top());
 }
 
