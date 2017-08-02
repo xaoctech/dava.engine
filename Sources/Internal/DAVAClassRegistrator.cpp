@@ -87,6 +87,7 @@ REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
 REGISTER_CLASS(SlotComponent);
 REGISTER_CLASS(TextComponent);
+REGISTER_CLASS(ParticleDragForceComponent);
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 REGISTER_CLASS(StaticBodyComponent);

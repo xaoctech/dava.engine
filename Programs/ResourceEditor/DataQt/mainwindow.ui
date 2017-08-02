@@ -1655,6 +1655,14 @@
     <string>Add Wave Component</string>
    </property>
   </action>
+   <action name="actionAddParticleDragForceComponent">
+     <property name="text">
+       <string>Add particle drag force component</string>
+     </property>
+     <property name="toolTip">
+       <string>Add particle drag force component</string>
+     </property>
+   </action>
   <action name="actionUndefinedCollision">
    <property name="checkable">
     <bool>true</bool>

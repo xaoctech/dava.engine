@@ -86,6 +86,7 @@ public slots:
     void ActionEditSoundComponent();
     void OnAddActionComponent();
     void OnAddLodComponent();
+    void OnAddParticleDragForceComponent();
     void OnAddStaticOcclusionComponent();
     void OnAddSoundComponent();
     void OnAddWaveComponent();

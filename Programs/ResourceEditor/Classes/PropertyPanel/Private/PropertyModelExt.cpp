@@ -4,6 +4,7 @@
 #include "Classes/Commands2/KeyedArchiveCommand.h"
 #include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/PropertyPanel/PropertyPanelCommon.h"
+#include "Classes/Qt/DockParticleEditor/TimeLineWidget.h"
 
 #include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
 #include <TArc/Controls/PropertyPanel/PropertyModelExtensions.h>
@@ -30,6 +31,8 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QPalette>
+#include <QPointer>
+#include "TArc/DataProcessing/DataWrappersProcessor.h"
 
 namespace PropertyModelExtDetails
 {
@@ -208,6 +211,125 @@ private:
     QPointer<QToolButton> toolButton;
     QtConnections connections;
 };
+
+class ParticlePropertyLineComponentValue : public DAVA::TArc::BaseComponentValue
+{
+protected:
+    DAVA::Any GetMultipleValue() const override
+    {
+        return DAVA::Any();
+    }
+    bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override
+    {
+        DVASSERT(currentValue.IsEmpty() == false);
+        return true;
+    }
+    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    {
+        using namespace DAVA;
+        DAVA::TArc::Widget* widget = new DAVA::TArc::Widget(parent);
+        QHBoxLayout* layout = new QHBoxLayout();
+        widget->SetLayout(layout);
+        timeLineWidget = new TimeLineWidget(widget->ToWidgetCast());
+        timeLineWidget->setMinimumHeight(800);
+
+        connections.AddConnection(timeLineWidget, &TimeLineWidget::ValueChanged, MakeFunction(this, &ParticlePropertyLineComponentValue::OnWidgetDataChanged));
+
+        layout->addWidget(timeLineWidget);
+        UpdateValue();
+        wrapper.SetListener(nullptr);
+        wrapper = GetDataProcessor()->CreateWrapper([this](const DAVA::TArc::DataContext*) {
+            return DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        }, nullptr);
+        wrapper.SetListener(&dummyListener);
+
+        widgetInited = false;
+        return widget;
+    }
+    bool IsSpannedControl() const override
+    {
+        return true;
+    }
+
+private:
+    void OnWidgetDataChanged()
+    {
+        DAVA::PropLineWrapper<DAVA::float32> prop;
+        timeLineWidget->GetValue(0, prop.GetPropsPtr());
+        SetValue(prop.GetPropLine());
+    }
+
+    bool UpdateValueHack() const
+    {
+        const_cast<ParticlePropertyLineComponentValue*>(this)->UpdateValue();
+        return true;
+    }
+
+    void UpdateValue()
+    {
+        using namespace DAVA;
+        using PropKey = PropertyLine<float32>::PropertyKey;
+        auto isEqualFn = [](const Vector<PropKey>& keyCollection1, const Vector<PropKey>& keyCollection2)
+        {
+            if (keyCollection1.size() != keyCollection2.size())
+            {
+                return false;
+            }
+
+            for (size_t i = 0; i < keyCollection1.size(); ++i)
+            {
+                const PropKey& key1 = keyCollection1[i];
+                const PropKey& key2 = keyCollection2[i];
+
+                if (key1.t != key2.t || key1.value != key2.value)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+        DAVA::Any val = GetValue();
+        if (val.IsEmpty() == false)
+        {
+            RefPtr<PropertyLine<float32>> accVal = val.Cast<RefPtr<PropertyLine<float32>>>();
+
+            if (widgetInited == false || prevValues != accVal)
+            {
+                widgetInited = true;
+                prevValues = accVal;
+                timeLineWidget->Init(0, 1, false);
+                timeLineWidget->AddLine(0, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(accVal)).GetProps(), Qt::red, "Stripe edge size over life");
+            }
+        }
+        else
+        {
+            timeLineWidget->setEnabled(false);
+        }
+    }
+
+    class DummnyListener : public DAVA::TArc::DataListener
+    {
+    public:
+        void OnDataChanged(const DataWrapper& wrapper, const Vector<Any>& fields) override
+        {
+        }
+    };
+
+    bool widgetInited = false;
+    RefPtr<PropertyLine<float32>> prevValues;
+    QPointer<TimeLineWidget> timeLineWidget;
+    DAVA::TArc::QtConnections connections;
+    DAVA::TArc::DataWrapper wrapper;
+    DummnyListener dummyListener;
+    
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticlePropertyLineComponentValue, DAVA::TArc::BaseComponentValue)
+    {
+        DAVA::ReflectionRegistrator<ParticlePropertyLineComponentValue>::Begin()
+            .Field("updateValue", &ParticlePropertyLineComponentValue::UpdateValueHack, nullptr)
+            .End();
+    }
+};
 }
 
 namespace DAVA
@@ -374,6 +496,21 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
         return std::move(editor);
+    }
+
+    return EditorComponentExtension::GetEditor(node);
+}
+
+std::unique_ptr<DAVA::TArc::BaseComponentValue> ParticleDragForceCreator::GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const
+{
+    using namespace DAVA;
+    using namespace PropertyModelExtDetails;
+    const DAVA::Type* valueType = node->cachedValue.GetType();
+    const Type* propertyLineType = Type::Instance<RefPtr<PropertyLine<float32>>>();
+
+    if (node->propertyType == DAVA::TArc::PropertyNode::RealProperty && valueType == propertyLineType)
+    {
+        return std::make_unique<ParticlePropertyLineComponentValue>();
     }
 
     return EditorComponentExtension::GetEditor(node);

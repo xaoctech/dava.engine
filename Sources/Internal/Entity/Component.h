@@ -53,6 +53,7 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
+        PARTICLE_DRAG_FORCE_COMPONENT,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         STATIC_BODY_COMPONENT,
@@ -95,8 +96,8 @@ public:
      */
     virtual void GetDataNodes(Set<DataNode*>& dataNodes);
     /**
-	 \brief This function optimize component before export.
-	*/
+     \brief This function optimize component before export.
+    */
     virtual void OptimizeBeforeExport()
     {
     }

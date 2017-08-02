@@ -118,6 +118,7 @@ void PropertyEditor::Init(Ui::MainWindow* mainWindowUi, const std::shared_ptr<Gl
     connect(mainWindowUi->actionAddWASDComponent, &QAction::triggered, this, &PropertyEditor::OnAddWASDControllerComponent);
     connect(mainWindowUi->actionAddVisibilityComponent, &QAction::triggered, this, &PropertyEditor::OnAddVisibilityComponent);
     connect(mainWindowUi->actionAddLodComponent, &QAction::triggered, this, &PropertyEditor::OnAddLodComponent);
+    connect(mainWindowUi->actionAddParticleDragForceComponent, &QAction::triggered, this, &PropertyEditor::OnAddParticleDragForceComponent);
 }
 
 void PropertyEditor::SetEntities(const SelectableGroup* selected)
@@ -1455,6 +1456,11 @@ void PropertyEditor::OnAddActionComponent()
 void PropertyEditor::OnAddLodComponent()
 {
     OnAddComponent(DAVA::Component::LOD_COMPONENT);
+}
+
+void PropertyEditor::OnAddParticleDragForceComponent()
+{
+    OnAddComponent(DAVA::Component::PARTICLE_DRAG_FORCE_COMPONENT);
 }
 
 void PropertyEditor::OnAddStaticOcclusionComponent()
