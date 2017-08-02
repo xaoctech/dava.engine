@@ -9,7 +9,6 @@ from dp_api import options
 from utils import package, args_parser
 
 from user_lvl_api import app
-from user_lvl_api.app_monitor import AppMonitor
 from user_lvl_api.etw_session import ETWSession
 
 class Tags:
