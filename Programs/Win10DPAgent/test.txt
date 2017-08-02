@@ -1,44 +1,0 @@
-
-###### Package values ######
-### Path: C:\Users\s_lyba\Documents\Visual Studio 2015\Projects\app_test_etw\AppPackages\app_test_etw\app_test_etw_1.0.27.0_ARM_Debug_Test\app_test_etw_1.0.27.0_ARM_Debug.appx
-### File name: app_test_etw_1.0.27.0_ARM_Debug.appx
-### Version: [1, 0, 27, 0]
-### Size in bytes: 851132
-
-###### Package values ######
-### Path: C:\Users\s_lyba\Documents\Visual Studio 2015\Projects\app_test_etw\AppPackages\app_test_etw\app_test_etw_1.0.27.0_ARM_Debug_Test\Dependencies\ARM\Microsoft.VCLibs.ARM.Debug.14.00.appx
-### File name: Microsoft.VCLibs.ARM.Debug.14.00.appx
-### Version: [14, 0, 24210, 0]
-### Size in bytes: 1903866
-Uninstalling app: Done.
-Uploading app: Done.
-Installing app: Done.
-Checking installation result: Done.
-Websocket connection for logging session opened.
-Enabling provider with guid: 4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a
-Starting app: Done.
-Websocket connection for app process monitor opened.
-Test sequence initialized.
-Test: #0. Sleep for 617 milliseconds
-Test: #1. Sleep for 349 milliseconds
-Test: #2. Sleep for 957 milliseconds
-Test: #3. Sleep for 72 milliseconds
-Test: #4. Sleep for 61 milliseconds
-Test: #5. Sleep for 611 milliseconds
-Test: #6. Sleep for 446 milliseconds
-Test: #7. Sleep for 527 milliseconds
-Test: #8. Sleep for 271 milliseconds
-Test: #9. Sleep for 714 milliseconds
-Test: #10. Sleep for 618 milliseconds
-Test: #11. Sleep for 329 milliseconds
-Test: #12. Sleep for 68 milliseconds
-Test: #13. Sleep for 558 milliseconds
-Test: #14. Sleep for 988 milliseconds
-Test: #15. Sleep for 496 milliseconds
-Test: #16. Sleep for 816 milliseconds
-Test: #17. Sleep for 998 milliseconds
-Test: #18. Sleep for 504 milliseconds
-End of test.
-App was stopped/closed or session was interrupted.
-Websocket connection for app process monitor closed.
-Websocket connection for logging session closed.
