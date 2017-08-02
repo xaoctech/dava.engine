@@ -676,7 +676,7 @@ vertex_out vp_main( vertex_in input )
 #endif
 
 #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
-    #if ( MATERIAL_LIGHTMAP && VIEW_DIFFUSE )
+    #if ( MATERIAL_LIGHTMAP && VIEW_DIFFUSE && !SETUP_LIGHTMAP )
         output.varTexCoord1 = uvScale*input.texcoord1.xy + uvOffset;
     #else
         output.varTexCoord1 = input.texcoord1.xy;

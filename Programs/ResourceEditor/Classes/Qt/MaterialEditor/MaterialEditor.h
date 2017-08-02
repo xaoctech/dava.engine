@@ -55,6 +55,7 @@ protected slots:
     void OnTemplateButton();
     void OnPropertyEdited(const QModelIndex&);
     void OnAddRemoveButton();
+    void OnReloadTexture();
 
     void OnMaterialAddGlobal(bool checked);
     void OnMaterialRemoveGlobal(bool checked);

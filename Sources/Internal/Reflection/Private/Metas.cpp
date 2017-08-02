@@ -31,11 +31,11 @@ MaxLength::MaxLength(uint32 length_)
 Validator::Validator(const TValidationFn& fn_)
     : fn(fn_)
 {
-    DVASSERT(fn != nullptr);
 }
 
 ValidationResult Validator::Validate(const Any& value, const Any& prevValue) const
 {
+    DVASSERT(fn != nullptr);
     return fn(value, prevValue);
 }
 

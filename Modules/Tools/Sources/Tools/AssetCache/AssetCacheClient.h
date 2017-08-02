@@ -1,8 +1,11 @@
 #pragma once
 
-#include "AssetCache.h"
-#include "Base/Introspection.h"
-#include "Preferences/PreferencesRegistrator.h"
+#include "Tools/AssetCache/AssetCache.h"
+
+#include <Base/Introspection.h>
+#include <Preferences/PreferencesRegistrator.h>
+#include <FileSystem/DynamicMemoryFile.h>
+
 #include <atomic>
 
 namespace DAVA
@@ -40,13 +43,13 @@ public:
     bool IsConnected() const;
 
 private:
-    AssetCache::Error WaitRequest(uint64 requestTimeoutMs);
+    AssetCache::Error WaitRequest();
     AssetCache::Error CheckStatusSynchronously();
     void ProcessNetwork();
 
     //ClientNetProxyListener
     void OnAddedToCache(const AssetCache::CacheItemKey& key, bool added) override;
-    void OnReceivedFromCache(const AssetCache::CacheItemKey& key, const AssetCache::CachedItemValue& value) override;
+    void OnReceivedFromCache(const AssetCache::CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData) override;
     void OnRemovedFromCache(const AssetCache::CacheItemKey& key, bool removed) override;
     void OnCacheCleared(bool cleared) override;
     void OnServerStatusReceived() override;
@@ -90,22 +93,60 @@ private:
     };
 
     Dispatcher<Function<void()>> dispatcher;
+
+    struct GetFilesRequest
+    {
+        Vector<uint8> receivedData;
+        size_t bytesReceived = 0;
+        size_t bytesRemaining = 0;
+        uint32 chunksReceived = 0;
+        uint32 chunksOverall = 0;
+
+        void Reset()
+        {
+            receivedData.clear();
+            bytesReceived = 0;
+            bytesRemaining = 0;
+            chunksReceived = 0;
+        }
+    };
+
+    struct AddFilesRequest
+    {
+        AddFilesRequest()
+        {
+            serializedData = DynamicMemoryFile::Create(File::CREATE | File::WRITE | File::READ);
+            Reset();
+        }
+
+        void Reset()
+        {
+            serializedData->Truncate(0);
+            chunksSent = 0;
+            chunksOverall = 0;
+        }
+
+        ScopedPtr<DynamicMemoryFile> serializedData;
+        uint32 chunksSent = 0;
+        uint32 chunksOverall = 0;
+    };
+
     AssetCache::ClientNetProxy client;
 
-    uint64 lightRequestTimeoutMs = 60u * 1000u;
-    uint64 heavyRequestTimeoutMs = 60u * 1000u;
-    uint64 currentTimeoutMs = 60u * 1000u;
+    uint64 timeoutMs = 60u * 1000u;
 
     Mutex requestLocker;
     Mutex connectEstablishLocker;
     Request request;
+    GetFilesRequest getFilesRequest;
+    AddFilesRequest addFilesRequest;
 
     std::atomic<bool> isActive;
 };
 
 inline uint64 AssetCacheClient::GetTimeoutMs() const
 {
-    return currentTimeoutMs;
+    return timeoutMs;
 }
 
 } //END of DAVA

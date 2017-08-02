@@ -11,7 +11,7 @@ public:
     EditorTextSystem(DAVA::Scene* scene);
 
     void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(Entity* entity) override;
+    void RemoveEntity(DAVA::Entity* entity) override;
 
 protected:
     void Draw() override;
