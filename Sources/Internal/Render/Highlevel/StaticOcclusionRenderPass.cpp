@@ -221,8 +221,11 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
         if ((batch.second & OPTION_DISABLE_DEPTH) == OPTION_DISABLE_DEPTH)
             packet.depthStencilState = stateDisabledDepthWrite;
 
-        rhi::AddPacket(packetList, packet);
-        ++k;
+        if ((packet.userFlags & (NMaterial::USER_FLAG_ALPHATEST | NMaterial::USER_FLAG_ALPHABLEND)) == 0)
+        {
+            rhi::AddPacket(packetList, packet);
+            ++k;
+        }
     }
 
 #if (SAVE_OCCLUSION_IMAGES)
