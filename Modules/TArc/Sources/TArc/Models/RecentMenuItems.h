@@ -51,12 +51,13 @@ public:
     void Add(const DAVA::String& recent);
     DAVA::Signal<DAVA::String> actionTriggered;
 
+    DAVA::Vector<DAVA::String> Get() const;
+
 private:
     void InitMenuItems();
     void AddInternal(const DAVA::String& recent);
     void RemoveMenuItems();
 
-    DAVA::Vector<DAVA::String> Get() const;
 
     DAVA::TArc::QtConnections connections;
 
