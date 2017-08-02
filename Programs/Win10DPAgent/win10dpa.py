@@ -19,10 +19,10 @@ class Tags:
 
 
 class LogParser:
-    def __init__(self, levels = [], providers = [], show_timestamp = True):
+    def __init__(self, levels = [], providers = [], no_timestamp = False):
         self.levels = levels
         self.providers = providers
-        self.show_timestamp = show_timestamp
+        self.no_timestamp = no_timestamp
     
     def __call__(self, msg):
         if msg is None:
@@ -33,11 +33,11 @@ class LogParser:
                 level = event["Level"]
                 provider = event["ProviderName"]
                 if level in self.levels and provider in self.providers:
-                    if self.show_timestamp:
+                    if not self.no_timestamp:
                         # Convert webkit timestamp to unix timestamp
                         unix_timestamp = event["Timestamp"] / 1e7 - 11644473600
-                        sys.stdout.write(datetime.fromtimestamp(unix_timestamp).\
-                                         strftime("%Y-%m-%d %H:%M:%S.%f "))
+                        print datetime.fromtimestamp(unix_timestamp).\
+                                         strftime("%Y-%m-%d %H:%M:%S.%f "),
                     string_message = event["StringMessage"]
                     if string_message.endswith("\n"):
                         string_message = string_message[:-1]
@@ -126,8 +126,8 @@ def attach(cli_args, callback = None, *args):
         if app_monitor is not None:
             app_monitor.session_ws.close()
 
-    log_parser = logger.LogParser(cli_args.log_levels, cli_args.channels, \
-                                  not cli_args.no_timestamp)
+    log_parser = LogParser(cli_args.log_levels, cli_args.channels, \
+                           cli_args.no_timestamp)
     etw_session = None
     app_monitor = None
 

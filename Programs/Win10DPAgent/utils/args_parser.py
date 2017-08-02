@@ -27,7 +27,7 @@ class ParseDeps(argparse.Action):
 
 
 # Main parser
-parser = argparse.ArgumentParser(description="UWPPyRunner")
+parser = argparse.ArgumentParser(description="Win10 Device Portal Agent")
 subparsers = parser.add_subparsers(dest = "s_name", help = "TEST")
 
 # Shared parent
