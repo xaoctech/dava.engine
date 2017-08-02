@@ -10,6 +10,9 @@
 #include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/Widget.h>
 #include <TArc/Controls/CommonStrings.h>
+#include <TArc/Controls/ReflectedButton.h>
+#include <TArc/Controls/QtBoxLayouts.h>
+#include <TArc/Qt/QtSize.h>
 
 #include <QtTools/WidgetHelpers/SharedIcon.h>
 
@@ -17,6 +20,7 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Functional/Signal.h>
 #include <Base/RefPtr.h>
+#include <Base/BaseTypes.h>
 
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -269,6 +273,14 @@ DAVA_REFLECTION_IMPL(AddKeyedArchiveItemWidget)
 //                                      KeyedArchiveEditor                                               //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+KeyedArchiveEditor::KeyedArchiveEditor(const DAVA::Vector<DAVA::String>& presetNames_, const DAVA::Vector<DAVA::VariantType>& defaultValues_)
+    : presetNames(presetNames_)
+    , defaultValues(defaultValues_)
+{
+    DVASSERT(presetNames.size() == defaultValues.size());
+    choosedPreset = -1;
+}
+
 KeyedArchiveEditor::~KeyedArchiveEditor()
 {
     if (widget.isNull() == false)
@@ -294,21 +306,42 @@ DAVA::TArc::ControlProxy* KeyedArchiveEditor::CreateEditorWidget(QWidget* parent
     using namespace DAVA::TArc;
 
     Widget* w = new Widget(parent);
-    QHBoxLayout* layout = new QHBoxLayout(w->ToWidgetCast());
+    QtHBoxLayout* layout = new QtHBoxLayout(w->ToWidgetCast());
     layout->setMargin(0);
-    QToolButton* button = new QToolButton();
-    button->setIcon(SharedIcon(":/QtIcons/keyplus.png"));
-    button->setIconSize(toolButtonIconSize);
-    button->setToolTip("Add keyed archive member");
-    button->setAutoRaise(false);
+    layout->setSpacing(1);
+    {
+        ReflectedButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ReflectedButton::Fields::Clicked] = "createPropertyValue";
+        params.fields[ReflectedButton::Fields::Icon] = "createPropertyButtonIcon";
+        params.fields[ReflectedButton::Fields::IconSize] = "createPropertyButtonIconSize";
+        params.fields[ReflectedButton::Fields::AutoRaise] = "buttonAutoRise";
+        ReflectedButton* button = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
+        w->AddControl(button);
+    }
+    {
+        ReflectedButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ReflectedButton::Fields::Clicked] = "createPresetValue";
+        params.fields[ReflectedButton::Fields::Icon] = "createPresetButtonIcon";
+        params.fields[ReflectedButton::Fields::IconSize] = "createPropertyButtonIconSize";
+        params.fields[ReflectedButton::Fields::AutoRaise] = "buttonAutoRise";
+        params.fields[ReflectedButton::Fields::Enabled] = "isPresetChoosed";
 
-    connections.AddConnection(button, &QToolButton::clicked, MakeFunction(this, &KeyedArchiveEditor::OnButtonClicked));
-    layout->addWidget(button, 0, Qt::AlignLeft);
+        ReflectedButton* button = new ReflectedButton(params, wrappersProcessor, model, w->ToWidgetCast());
+        w->AddControl(button);
+    }
+    {
+        ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ComboBox::Fields::Value] = "choosedPreset";
+        params.fields[ComboBox::Fields::Enumerator] = "presetNames";
+        params.fields[ComboBox::Fields::MultipleValueText] = "unchoosedPresetText";
+        ComboBox* comboBox = new ComboBox(params, wrappersProcessor, model, w->ToWidgetCast());
+        w->AddControl(comboBox);
+    }
 
     return w;
 }
 
-void KeyedArchiveEditor::OnButtonClicked()
+void KeyedArchiveEditor::OnCreatePropertyClicked()
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -338,6 +371,13 @@ void KeyedArchiveEditor::OnButtonClicked()
     widget->move(wPos);
 }
 
+void KeyedArchiveEditor::OnCreatePresetPropertyClicked()
+{
+    DVASSERT(choosedPreset > -1 && choosedPreset < presetNames.size());
+    AddProperty(presetNames[choosedPreset], defaultValues[choosedPreset]);
+    choosedPreset = -1;
+}
+
 void KeyedArchiveEditor::AddProperty(const DAVA::String& key, const DAVA::VariantType& value)
 {
     using namespace DAVA;
@@ -354,7 +394,40 @@ void KeyedArchiveEditor::AddProperty(const DAVA::String& key, const DAVA::Varian
     }
 }
 
+bool KeyedArchiveEditor::IsPresetChoosed() const
+{
+    return choosedPreset > -1;
+}
+
+DAVA::int32 KeyedArchiveEditor::GetChoosedPreset() const
+{
+    return choosedPreset;
+}
+
+void KeyedArchiveEditor::SetChoosedPreset(DAVA::int32 choosedPreset_)
+{
+    DVASSERT(choosedPreset != choosedPreset_);
+    choosedPreset = choosedPreset_;
+    editorWidget->ForceUpdate();
+}
+
 int KeyedArchiveEditor::lastAddedType = DAVA::VariantType::TYPE_STRING;
+
+DAVA_VIRTUAL_REFLECTION_IMPL(KeyedArchiveEditor)
+{
+    DAVA::ReflectionRegistrator<KeyedArchiveEditor>::Begin()
+    .Field("presetNames", &KeyedArchiveEditor::presetNames)
+    .Field("choosedPreset", &KeyedArchiveEditor::GetChoosedPreset, &KeyedArchiveEditor::SetChoosedPreset)
+    .Field("unchoosedPresetText", [](KeyedArchiveEditor* v) { return "Choose preset for Add"; }, nullptr)
+    .Field("isPresetChoosed", &KeyedArchiveEditor::IsPresetChoosed, nullptr)
+    .Field("createPresetButtonIcon", [](KeyedArchiveEditor* v) { return SharedIcon(":/QtIcons/add_green.png"); }, nullptr)
+    .Method("createPresetValue", &KeyedArchiveEditor::OnCreatePresetPropertyClicked)
+    .Field("createPropertyButtonIcon", [](KeyedArchiveEditor* v) { return SharedIcon(":/QtIcons/keyplus.png"); }, nullptr)
+    .Field("buttonIconSize", [](KeyedArchiveEditor* v) { return DAVA::TArc::BaseComponentValue::toolButtonIconSize; }, nullptr)
+    .Field("buttonAutoRise", [](KeyedArchiveEditor* v) { return false; }, nullptr)
+    .Method("createPropertyValue", &KeyedArchiveEditor::OnCreatePropertyClicked)
+    .End();
+}
 
 KeyedArchiveComboPresetEditor::KeyedArchiveComboPresetEditor(const DAVA::Vector<DAVA::Any>& values)
     : allowedValues(values)
