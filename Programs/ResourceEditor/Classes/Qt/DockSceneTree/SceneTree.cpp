@@ -197,7 +197,6 @@ protected:
         foreach (QModelIndex index, treeWidget->selectionModel()->selectedRows())
         {
             selectedIndecies.insert(treeWidget->filteringProxyModel->mapToSource(index));
-            SceneTreeItem* item = treeWidget->treeModel->GetItem(treeWidget->filteringProxyModel->mapToSource(index));
         }
 
         foreach (QModelIndex srcIndex, selectedIndecies)
