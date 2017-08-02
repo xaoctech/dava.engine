@@ -47,7 +47,7 @@ public:
     /**
         Get clamped time difference in seconds between current frame timestamp and previous frame timestamp.
 
-        The difference is clamped to the range [0.001, 0.1].
+        The difference is clamped to the range [0.0004, 0.1].
         Application can modify delta for current frame by `SetFrameDelta` method.
     */
     static float32 GetFrameDelta();
