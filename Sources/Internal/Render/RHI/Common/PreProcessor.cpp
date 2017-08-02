@@ -302,7 +302,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
     pending_elif.emplace_back();
     pending_elif.back().do_skip_lines = false;
 
-    for (char* currentChar = inputText; ((currentChar - inputText) < textLength) && (*currentChar != Zero); ++currentChar)
+    for (char* currentChar = inputText; (static_cast<uint32>(currentChar - inputText) < textLength) && (*currentChar != Zero); ++currentChar)
     {
         int32 skipping_line = false;
 
