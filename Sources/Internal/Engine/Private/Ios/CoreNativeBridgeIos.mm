@@ -21,11 +21,11 @@
 {
     DAVA::Private::CoreNativeBridge* bridge;
     CADisplayLink* displayLink;
-    DAVA::int32 curInterval;
+    DAVA::int32 currentFPS;
 }
 
 - (id)init:(DAVA::Private::CoreNativeBridge*)nativeBridge;
-- (void)setDisplayLinkInterval:(DAVA::int32)interval;
+- (void)setDisplayLinkPreferredFPS:(DAVA::int32)fps;
 - (void)pauseDisplayLink;
 - (void)resumeDisplayLink;
 - (void)cancelDisplayLink;
@@ -41,23 +41,29 @@
     if (self != nil)
     {
         bridge = nativeBridge;
-        curInterval = 1;
+        currentFPS = 60;
         displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTimerFired:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     }
     return self;
 }
 
-- (void)setDisplayLinkInterval:(DAVA::int32)interval
+- (void)setDisplayLinkPreferredFPS:(DAVA::int32)fps
 {
-    if (interval <= 0)
+    if (currentFPS != fps)
     {
-        interval = 1;
-    }
-    if (curInterval != interval)
-    {
-        [displayLink setFrameInterval:interval];
-        curInterval = interval;
+        NSString* currSysVer = [[UIDevice currentDevice] systemVersion];
+        if ([currSysVer compare:@"10.0" options:NSNumericSearch] != NSOrderedAscending)
+        {
+            [displayLink setPreferredFramesPerSecond:fps];
+        }
+        else
+        {
+            DAVA::int32 interval = DAVA::Max(DAVA::int32(60.0 / fps + 0.5), 1);
+            [displayLink setFrameInterval:interval];
+        }
+        
+        currentFPS = fps;
     }
 }
 
@@ -154,13 +160,8 @@ void CoreNativeBridge::OnFrameTimer()
     if (!EngineBackend::showingModalMessageBox)
     {
         int32 fps = core->OnFrame();
-        if (fps <= 0)
-        {
-            fps = std::numeric_limits<int32>::max();
-        }
-
-        int32 interval = static_cast<int32>(60.0 / fps + 0.5);
-        [objcInterop setDisplayLinkInterval:interval];
+        
+        [objcInterop setDisplayLinkPreferredFPS:fps];
     }
 }
 
@@ -181,7 +182,7 @@ BOOL CoreNativeBridge::ApplicationDidFinishLaunchingWithOptions(UIApplication* a
     primaryWindowImpl->Create();
 
     objcInterop = [[ObjectiveCInterop alloc] init:this];
-    [objcInterop setDisplayLinkInterval:1];
+    [objcInterop setDisplayLinkPreferredFPS:60];
     [objcInterop enableGameControllerObserver:YES];
 
     return NotifyListeners(ON_DID_FINISH_LAUNCHING, app, launchOptions);
