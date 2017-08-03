@@ -8,6 +8,8 @@
 #include <TArc/Core/Core.h>
 #include <TArc/Utils/ModuleCollection.h>
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Render/Renderer.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
@@ -73,8 +75,20 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     Texture::SetPixelization(true);
 
     FileSystem* fs = engineContext->fileSystem;
-    fs->SetCurrentDocumentsDirectory(fs->GetUserDocumentsPath() + "QuickEd/");
-    fs->CreateDirectory(fs->GetCurrentDocumentsDirectory(), true);
+
+    auto copyFromOldFolder = [&]
+    {
+        FileSystem::eCreateDirectoryResult createResult = DocumentsDirectorySetup::CreateApplicationDocDirectory(fs, "QuickEd");
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = fs->GetUserDocumentsPath() + "QuickEd/";
+            DAVA::FilePath documentsNewFolder = DocumentsDirectorySetup::GetApplicationDocDirectory(fs, "QuickEd");
+            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
+        }
+    };
+    copyFromOldFolder(); // todo: remove function some versions after
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "QuickEd");
+
     engineContext->logger->SetLogFilename("QuickEd.txt");
 
     ParticleEmitter::FORCE_DEEP_CLONE = true;

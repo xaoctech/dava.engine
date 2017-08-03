@@ -7,13 +7,14 @@
 #include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
 #include <Time/DateTime.h>
-#include <Network/Services/MMNet/MMNetClient.h>
 #include <Network/NetCore.h>
 #include <Utils/UTF8Utils.h>
 #include <Utils/StringFormat.h>
 
 #include <QMessageBox>
 #include <QFileDialog>
+
+#include <MemoryProfilerService/MMNetClient.h>
 
 using namespace DAVA;
 using namespace DAVA::Net;
@@ -70,8 +71,9 @@ void MemProfController::ShowView()
 {
     if (nullptr == view)
     {
-        const QString title = QString("%1 (%2 %3)")
-                              .arg(profiledPeer.GetName().c_str())
+        const QString title = QString("%1 | %2 (%3 %4)")
+                              .arg(profiledPeer.GetAppName().c_str())
+                              .arg(profiledPeer.GetDeviceName().c_str())
                               .arg(profiledPeer.GetPlatformString().c_str())
                               .arg(profiledPeer.GetVersion().c_str());
 
@@ -194,11 +196,13 @@ void MemProfController::ComposeFilePath(DAVA::FilePath& result)
                            profiledPeer.GetManufacturer().c_str(),
                            profiledPeer.GetModel().c_str());
     String level2 = Format("%s {%s}/",
-                           profiledPeer.GetName().c_str(),
+                           profiledPeer.GetDeviceName().c_str(),
                            profiledPeer.GetUDID().c_str());
 
+    String level3 = Format("%s/", profiledPeer.GetAppName().c_str());
+
     DateTime now = DateTime::Now();
-    String level3 = Format("%04d-%02d-%02d %02d%02d%02d/",
+    String level4 = Format("%04d-%02d-%02d %02d%02d%02d/",
                            now.GetYear(), now.GetMonth() + 1, now.GetDay(),
                            now.GetHour(), now.GetMinute(), now.GetSecond());
 
@@ -209,4 +213,5 @@ void MemProfController::ComposeFilePath(DAVA::FilePath& result)
     result += level1;
     result += level2;
     result += level3;
+    result += level4;
 }

@@ -2,6 +2,8 @@
 #include "SceneViewerApp.h"
 #include "Settings.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Math/MathHelpers.h>
 #include <Render/2D/Sprite.h>
 #include <Input/Keyboard.h>
@@ -356,7 +358,7 @@ void ViewSceneScreen::OnButtonSelectFromRes(DAVA::BaseObject* caller, void* para
 void ViewSceneScreen::OnButtonSelectFromDoc(DAVA::BaseObject* caller, void* param, void* callerData)
 {
     DVASSERT(fileSystemDialog);
-    fileSystemDialog->SetCurrentDir("~doc:/");
+    fileSystemDialog->SetCurrentDir(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
     fileSystemDialog->Show(this);
     menu->SetEnabled(false);
 }
@@ -418,8 +420,8 @@ void ViewSceneScreen::OnButtonReloadShaders(DAVA::BaseObject* caller, void* para
             material->InvalidateRenderVariants();
         }
 
-        const Map<uint64, NMaterial*>& particleInstances = scene->particleEffectSystem->GetMaterialInstances();
-        for (auto material : particleInstances)
+        const auto particleInstances = scene->particleEffectSystem->GetMaterialInstances();
+        for (auto& material : particleInstances)
         {
             material.second->InvalidateRenderVariants();
         }

@@ -14,7 +14,8 @@ void GenerateIOErrorOnNextOperation(IOErrorTypes types)
     types.readFailed ||
     types.seekFailed ||
     types.truncateFailed ||
-    types.writeFailed;
+    types.writeFailed ||
+    types.moveFailed;
 
     if (types.ioErrorCode != 0)
     {
@@ -74,6 +75,15 @@ bool GenErrorOnCloseFailed()
 bool GenErrorOnTruncateFailed()
 {
     if (ioErrors.truncateFailed)
+    {
+        errno = ioErrors.ioErrorCode;
+        return true;
+    }
+    return false;
+}
+bool GenErrorOnMoveFailed()
+{
+    if (ioErrors.moveFailed)
     {
         errno = ioErrors.ioErrorCode;
         return true;
