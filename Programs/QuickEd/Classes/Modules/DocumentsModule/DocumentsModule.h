@@ -48,7 +48,6 @@ private:
     void OnUndo();
     void OnRedo();
 
-    bool CanGroupSelection() const;
     void DoGroupSelection();
 
     //View
@@ -100,8 +99,6 @@ private:
     QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
-
-    DAVA::RefPtr<ControlNode> sampleGroupNode;
 
     DAVA_VIRTUAL_REFLECTION(DocumentsModule, DAVA::TArc::ControllerModule);
 };

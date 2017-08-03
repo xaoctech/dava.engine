@@ -68,7 +68,7 @@ public:
     void Remove(const DAVA::Vector<ControlNode*>& controls, const DAVA::Vector<StyleSheetNode*>& styles);
     SelectedNodes Paste(PackageNode* root, PackageBaseNode* dest, DAVA::int32 destIndex, const DAVA::String& data);
 
-    ControlNode* GroupControls(const DAVA::Vector<ControlNode*>& controls) const;
+    ControlNode* GroupSelectedNodes() const;
 
 private:
     void AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package);
@@ -78,6 +78,7 @@ private:
     void AddComponentImpl(ControlNode* node, const DAVA::Type* type, DAVA::int32 index, ComponentPropertiesSection* prototypeSection);
     void RemoveComponentImpl(ControlNode* node, ComponentPropertiesSection* section);
     bool IsNodeInHierarchy(const PackageBaseNode* node) const;
+    Result CanGroupSelectedNodes(const SelectedNodes& selectedNodes) const;
 
     static bool IsControlNodesHasSameParentControlNode(const ControlNode* n1, const ControlNode* n2);
     DocumentData* GetDocumentData() const;
@@ -85,4 +86,6 @@ private:
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::TArc::UI* ui = nullptr;
+
+    DAVA::RefPtr<ControlNode> sampleGroupNode;
 };

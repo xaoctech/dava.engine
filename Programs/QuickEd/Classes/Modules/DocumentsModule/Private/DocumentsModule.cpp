@@ -49,25 +49,6 @@
 #include <QFileSystemWatcher>
 #include <QMouseEvent>
 
-namespace DocumentsModuleDetails
-{
-using namespace DAVA;
-Vector<ControlNode*> ToControlNodesVector(const SelectedNodes& selectedNodes)
-{
-    Vector<ControlNode*> controlNodes;
-    controlNodes.reserve(selectedNodes.size());
-    for (PackageBaseNode* node : selectedNodes)
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (controlNode)
-        {
-            controlNodes.push_back(controlNode);
-        }
-    }
-    return controlNodes;
-}
-}
-
 DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
 {
     DAVA::ReflectionRegistrator<DocumentsModule>::Begin()
@@ -75,12 +56,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
     .End();
 }
 
-DocumentsModule::DocumentsModule()
-{
-    DAVA::RefPtr<UIControl> sampleControl(new UIControl);
-    sampleGroupNode.Set(ControlNode::CreateFromControl(sampleControl.Get()));
-}
-
+DocumentsModule::DocumentsModule() = default;
 DocumentsModule::~DocumentsModule() = default;
 
 void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
@@ -426,7 +402,7 @@ void DocumentsModule::CreateEditActions()
         fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
                                          {
-                                             return CanGroupSelection();
+                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
@@ -464,68 +440,13 @@ void DocumentsModule::OnRedo()
     data->commandStack->Redo();
 }
 
-bool DocumentsModule::CanGroupSelection() const
-{
-    using namespace DAVA;
-    using namespace TArc;
-
-    const ContextAccessor* accessor = GetAccessor();
-    const DataContext* activeContext = accessor->GetActiveContext();
-    if (!activeContext)
-    {
-        return false;
-    }
-
-    DocumentData* data = activeContext->GetData<DocumentData>();
-    DVASSERT(data != nullptr);
-
-    const SelectedNodes& selectedNodes = data->GetSelectedNodes();
-    if (selectedNodes.size() < 2)
-    {
-        return false;
-    }
-
-    PackageBaseNode* commonParent = (*selectedNodes.begin())->GetParent();
-    ControlNode* commonParentControl = dynamic_cast<ControlNode*>(commonParent);
-    if (commonParentControl == nullptr)
-    {
-        return false;
-    }
-
-    bool allHaveCommonParent = std::all_of(std::next(selectedNodes.begin()), selectedNodes.end(), [commonParent](PackageBaseNode* node)
-                                           {
-                                               return node->GetParent() == commonParent;
-                                           });
-    if (!allHaveCommonParent)
-    {
-        return false;
-    }
-
-    return commonParent->CanInsertControl(sampleGroupNode.Get(), commonParent->GetCount());
-}
-
 void DocumentsModule::DoGroupSelection()
 {
-    using namespace DAVA;
-    using namespace TArc;
-    using namespace DocumentsModuleDetails;
-
-    if (!CanGroupSelection())
+    CommandExecutor commandExecutor(GetAccessor(), GetUI());
+    ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
+    if (newGroupControl)
     {
-        DVASSERT(false, "OnGroupSelection should not be called");
-        return;
-    }
-
-    DataContext* context = GetAccessor()->GetActiveContext();
-    DVASSERT(context != nullptr);
-    DocumentData* data = context->GetData<DocumentData>();
-    DVASSERT(data != nullptr);
-    Vector<ControlNode*> selectedControlNodes = ToControlNodesVector(data->GetSelectedNodes());
-    if (data->GetSelectedNodes().size() == selectedControlNodes.size())
-    {
-        CommandExecutor commandExecutor(GetAccessor(), GetUI());
-        ControlNode* groupControl = commandExecutor.GroupControls(selectedControlNodes);
-        InvokeOperation(QEGlobal::SelectAndRename.ID, groupControl);
+        InvokeOperation(QEGlobal::SelectAndRename.ID, newGroupControl);
     }
 }
 
