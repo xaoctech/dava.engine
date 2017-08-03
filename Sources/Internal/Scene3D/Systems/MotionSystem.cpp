@@ -27,12 +27,12 @@ void MotionSystem::AddEntity(Entity* entity)
 {
     MotionComponent* motionComponent = GetMotionComponent(entity);
 
-    GetScene()->motionSingleComponent->rebindAnimation.push_back(motionComponent);
+    GetScene()->motionSingleComponent->reloadConfig.push_back(motionComponent);
 }
 
 void MotionSystem::RemoveEntity(Entity* entity)
 {
-    FindAndRemoveExchangingWithLast(activeMotions, GetMotionComponent(entity));
+    FindAndRemoveExchangingWithLast(activeComponents, GetMotionComponent(entity));
 }
 
 void MotionSystem::ImmediateEvent(Component* component, uint32 event)
@@ -51,63 +51,85 @@ void MotionSystem::Process(float32 timeElapsed)
     Vector<std::pair<MotionComponent*, FastName>> triggeredEvents;
 
     MotionSingleComponent* msc = GetScene()->motionSingleComponent;
+    for (MotionComponent* motionComponent : msc->reloadConfig)
+    {
+        motionComponent->ReloadFromConfig();
+        msc->rebindAnimation.emplace_back(motionComponent);
+    }
+
     for (MotionComponent* motionComponent : msc->rebindAnimation)
     {
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-        if (skeleton)
-        {
-            MotionComponent::SimpleMotion* motion = motionComponent->simpleMotion;
+        DVASSERT(skeleton);
 
+        if (motionComponent->GetMotionsCount() > 0)
+        {
+            Motion* motion = motionComponent->GetMotion(0);
             motion->BindSkeleton(skeleton);
-            skeleton->ApplyPose(motion->GetAnimation()->GetSkeletonPose());
+            skeleton->ApplyPose(motion->GetCurrentSkeletonPose());
+
+            activeComponents.emplace_back(motionComponent);
         }
     }
 
     for (MotionComponent* motionComponent : msc->stopAnimation)
     {
-        MotionComponent::SimpleMotion* motion = motionComponent->simpleMotion;
+        //MotionComponent::SimpleMotion* motion = motionComponent->simpleMotion;
 
-        motion->Stop();
-        FindAndRemoveExchangingWithLast(activeMotions, motionComponent);
+        //motion->Stop();
+        //FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
 
-        SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-        if (skeleton)
-        {
-            skeleton->ApplyPose(motion->GetAnimation()->GetSkeletonPose());
-        }
+        //SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
+        //if (skeleton)
+        //{
+        //    skeleton->ApplyPose(&motion->GetSkeletonPose());
+        //}
     }
 
     for (MotionComponent* motionComponent : msc->startAnimation)
     {
-        motionComponent->simpleMotion->Start();
-        triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_STARTED);
+        //motionComponent->simpleMotion->Start();
+        //triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_STARTED);
 
-        activeMotions.emplace_back(motionComponent);
+        //activeComponents.emplace_back(motionComponent);
     }
 
-    for (int32 i = int32(activeMotions.size()) - 1; i >= 0; --i)
+    for (int32 i = int32(activeComponents.size()) - 1; i >= 0; --i)
     {
-        MotionComponent* motionComponent = activeMotions[i];
-        MotionComponent::SimpleMotion* motion = motionComponent->simpleMotion;
-        DVASSERT(motion->IsPlaying());
+        MotionComponent* motionComponent = activeComponents[i];
+        UpdateMotions(motionComponent, timeElapsed);
 
-        motion->Update(timeElapsed);
-        if (motion->IsFinished())
-        {
-            motion->Stop();
-            triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_ENDED);
+        //DVASSERT(motion->IsPlaying());
 
-            RemoveExchangingWithLast(activeMotions, i);
-        }
+        //if (motion->IsFinished())
+        //{
+        //    motion->Stop();
+        //    triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_ENDED);
 
-        SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-        if (skeleton)
-        {
-            skeleton->ApplyPose(motion->GetAnimation()->GetSkeletonPose());
-        }
+        //    RemoveExchangingWithLast(activeComponents, i);
+        //}
     }
 
     msc->Clear();
     msc->eventTriggered = triggeredEvents;
+}
+
+void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime)
+{
+    DVASSERT(motionComponent);
+    DVASSERT(motionComponent->GetMotionsCount() > 0);
+    Motion* motion = motionComponent->GetMotion(0);
+
+    //debug
+    //////////////////////////////////////////////////////////////////////////
+    uint32 iParam = motion->GetParameterIndex(FastName("speed"));
+    motion->SetParameter(iParam, motionComponent->workSpeedParameter);
+    //////////////////////////////////////////////////////////////////////////
+
+    motion->Update(dTime);
+
+    SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
+    DVASSERT(skeleton);
+    skeleton->ApplyPose(motion->GetCurrentSkeletonPose());
 }
 }

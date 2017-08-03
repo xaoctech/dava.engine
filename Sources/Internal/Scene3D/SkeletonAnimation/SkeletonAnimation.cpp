@@ -5,13 +5,12 @@
 
 namespace DAVA
 {
-void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonComponent* skeleton)
+void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonComponent* skeleton, SkeletonPose* outInitialPose)
 {
     DVASSERT(skeleton);
 
     boundTracks.clear();
     animationStates.clear();
-    skeletonPose.SetNodeCount(0);
 
     if (clip)
     {
@@ -30,27 +29,30 @@ void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonC
 
                     animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
                     track->Evaluate(0.f, &animationStates.back());
-                    skeletonPose.AddNode(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
 
-                    boundTracks.emplace_back(track);
+                    if (outInitialPose)
+                        outInitialPose->SetTransform(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
+
+                    boundTracks.emplace_back(std::make_pair(j, track));
                 }
             }
         }
     }
 }
 
-void SkeletonAnimation::EvaluatePose(float32 time, Vector3* offset)
+void SkeletonAnimation::EvaluatePose(SkeletonPose* outPose, float32 time, Vector3* offset)
 {
     uint32 boundTrackCount = uint32(boundTracks.size());
     for (uint32 t = 0; t < boundTrackCount; ++t)
     {
-        const AnimationTrack* track = boundTracks[t];
+        uint32 jointIndex = boundTracks[t].first;
+        const AnimationTrack* track = boundTracks[t].second;
         AnimationTrack::State* state = &animationStates[t];
 
         track->Evaluate(time, state);
 
         JointTransform transform = ConstructJointTransform(track, state);
-        skeletonPose.SetTransform(t, transform);
+        outPose->SetTransform(jointIndex, transform);
     }
 }
 
@@ -80,11 +82,6 @@ JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* 
     }
 
     return transform;
-}
-
-const SkeletonPose& SkeletonAnimation::GetSkeletonPose() const
-{
-    return skeletonPose;
 }
 
 } //ns

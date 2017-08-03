@@ -4,6 +4,7 @@
 #include "Base/FastName.h"
 #include "Reflection/Reflection.h"
 #include "Entity/Component.h"
+#include "Scene3D/SkeletonAnimation/SkeletonPose.h"
 
 namespace DAVA
 {
@@ -11,6 +12,7 @@ class AnimationClip;
 class MotionSystem;
 class SkeletonAnimation;
 class SkeletonComponent;
+class Motion;
 class MotionComponent : public Component
 {
 public:
@@ -21,17 +23,27 @@ public:
 
     IMPLEMENT_COMPONENT_TYPE(MOTION_COMPONENT);
 
-    MotionComponent();
+    MotionComponent() = default;
     ~MotionComponent();
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    const SimpleMotion* GetSimpleMotion() const;
+    uint32 GetMotionsCount() const;
+    Motion* GetMotion(uint32 index) const;
 
-private:
-    SimpleMotion* simpleMotion = nullptr;
+    const FilePath& GetConfigPath() const;
+    void SetConfigPath(const FilePath& path);
+
+    //temporary for debug
+    float32 workSpeedParameter = 0.f;
+
+protected:
+    void ReloadFromConfig();
+
+    FilePath configPath;
+    Vector<Motion*> motions;
 
     DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
@@ -40,6 +52,8 @@ public:
 
     friend class MotionSystem;
 };
+
+//////////////////////////////////////////////////////////////////////////
 
 class MotionComponent::SimpleMotion
 {
@@ -56,7 +70,7 @@ public:
     bool IsPlaying() const;
     bool IsFinished() const;
 
-    const SkeletonAnimation* GetAnimation() const;
+    const SkeletonPose& GetSkeletonPose() const;
 
     const FilePath& GetAnimationPath() const;
     void SetAnimationPath(const FilePath& path);
@@ -72,6 +86,8 @@ private:
     //Runtime
     AnimationClip* animationClip = nullptr;
     SkeletonAnimation* skeletonAnimation = nullptr;
+
+    SkeletonPose resultPose;
 
     bool isPlaying = false;
     uint32 repeatsLeft = 0;

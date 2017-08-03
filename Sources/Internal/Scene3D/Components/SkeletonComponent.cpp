@@ -48,13 +48,14 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
 SkeletonPose SkeletonComponent::GetDefaultPose() const
 {
     uint32 jointCount = uint32(jointsArray.size());
-    SkeletonPose pose(jointCount);
+
+    SkeletonPose pose;
+    pose.SetJointCount(jointCount);
 
     JointTransform transform;
     for (uint32 j = 0; j < jointCount; ++j)
     {
         transform.Construct(jointsArray[j].bindTransform);
-        pose.SetJointIndex(j, j);
         pose.SetTransform(j, transform);
     }
 
@@ -63,10 +64,11 @@ SkeletonPose SkeletonComponent::GetDefaultPose() const
 
 void SkeletonComponent::ApplyPose(const SkeletonPose& pose)
 {
-    uint32 nodeCount = pose.GetNodeCount();
-    for (uint32 n = 0; n < nodeCount; ++n)
+    uint32 minJoints = Min(GetJointsCount(), pose.GetJointsCount());
+    for (uint32 j = 0; j < minJoints; ++j)
     {
-        SetJointTransform(pose.GetJointIndex(n), pose.GetJointTransform(n));
+        if (pose.IsJointTransformUsed(j))
+            SetJointTransform(j, pose.GetJointTransform(j));
     }
 }
 

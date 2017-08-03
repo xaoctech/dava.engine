@@ -11,6 +11,7 @@ void MotionSingleComponent::Clear()
     startAnimation.clear();
     stopAnimation.clear();
     rebindAnimation.clear();
+    reloadConfig.clear();
 }
 
 void MotionSingleComponent::EntityRemoved(const Entity* entity)
@@ -30,6 +31,7 @@ void MotionSingleComponent::EntityRemoved(const Entity* entity)
         FindAndRemoveExchangingWithLast(startAnimation, component);
         FindAndRemoveExchangingWithLast(stopAnimation, component);
         FindAndRemoveExchangingWithLast(rebindAnimation, component);
+        FindAndRemoveExchangingWithLast(reloadConfig, component);
     }
 }
 }

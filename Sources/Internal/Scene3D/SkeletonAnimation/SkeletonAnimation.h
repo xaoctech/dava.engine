@@ -12,16 +12,13 @@ class SkeletonAnimation
 public:
     SkeletonAnimation() = default;
 
-    void BindAnimation(const AnimationClip* animationClip, const SkeletonComponent* skeleton);
-    void EvaluatePose(float32 time, Vector3* offset = nullptr);
-
-    const SkeletonPose& GetSkeletonPose() const;
+    void BindAnimation(const AnimationClip* animationClip, const SkeletonComponent* skeleton, SkeletonPose* outInitialPose = nullptr);
+    void EvaluatePose(SkeletonPose* outPose, float32 time, Vector3* offset = nullptr);
 
 protected:
     static JointTransform ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state);
 
-    SkeletonPose skeletonPose;
-    Vector<const AnimationTrack*> boundTracks; //weak pointers
+    Vector<std::pair<uint32, const AnimationTrack*>> boundTracks; //[jointIndex, track weak pointer]
     Vector<AnimationTrack::State> animationStates;
 };
 
