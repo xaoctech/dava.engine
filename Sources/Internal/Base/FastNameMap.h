@@ -16,7 +16,7 @@ struct Hash<FastName>
 
     bool Compare(const FastName& name1, const FastName& name2) const
     {
-        return name1.Index() == name2.Index();
+        return name1 == name2;
     }
 };
 
@@ -74,29 +74,7 @@ struct Hash<FastNameSet>
 {
     size_t operator()(const FastNameSet& set) const
     {
-        size_t i = 0;
-        Vector<int> indices;
-        indices.resize(set.size());
-
-        FastNameSet::iterator it = set.begin();
-        const FastNameSet::iterator& endIt = set.end();
-        for (; it != endIt; ++it)
-        {
-            const FastName& key = it->first;
-            indices[i] = key.Index();
-            i++;
-        }
-
-        std::stable_sort(indices.begin(), indices.end());
-
-        size_t keyCount = indices.size();
-        size_t hashVal = 2166136261u;
-        for (i = 0; i < keyCount; ++i)
-        {
-            hashVal += (hashVal * 16777619) ^ indices[i];
-        }
-
-        return hashVal;
+        return set.size();
     }
 
     bool Compare(const FastNameSet& set1, const FastNameSet& set2) const
