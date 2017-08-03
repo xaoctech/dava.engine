@@ -1,0 +1,16 @@
+.git
+Bin
+Docs
+Libs
+Modules
+Programs
+RepoTools
+Sources
+Thirdparty
+.clang-format
+.gitignore
+.gitmodules
+build_tools.py
+DavaConfig.in
+LICENSE
+README
