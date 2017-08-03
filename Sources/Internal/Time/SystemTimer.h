@@ -48,6 +48,7 @@ public:
         Get clamped time difference in seconds between current frame timestamp and previous frame timestamp.
 
         The difference is clamped to the range [0.0004, 0.1].
+        4ms - it's minimal display-snapping time of hardware that we supported (iPad Pro 2017 with 120 Hz display).
         Application can modify delta for current frame by `SetFrameDelta` method.
     */
     static float32 GetFrameDelta();

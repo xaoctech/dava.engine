@@ -44,6 +44,7 @@
         currentFPS = 60;
         displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTimerFired:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [self setDisplayLinkPreferredFPS:currentFPS];
     }
     return self;
 }
@@ -62,7 +63,7 @@
             DAVA::int32 interval = DAVA::Max(DAVA::int32(60.0 / fps + 0.5), 1);
             [displayLink setFrameInterval:interval];
         }
-        
+
         currentFPS = fps;
     }
 }
@@ -160,7 +161,7 @@ void CoreNativeBridge::OnFrameTimer()
     if (!EngineBackend::showingModalMessageBox)
     {
         int32 fps = core->OnFrame();
-        
+
         [objcInterop setDisplayLinkPreferredFPS:fps];
     }
 }
@@ -182,7 +183,6 @@ BOOL CoreNativeBridge::ApplicationDidFinishLaunchingWithOptions(UIApplication* a
     primaryWindowImpl->Create();
 
     objcInterop = [[ObjectiveCInterop alloc] init:this];
-    [objcInterop setDisplayLinkPreferredFPS:60];
     [objcInterop enableGameControllerObserver:YES];
 
     return NotifyListeners(ON_DID_FINISH_LAUNCHING, app, launchOptions);
