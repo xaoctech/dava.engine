@@ -10,7 +10,7 @@
 
 namespace DAVA
 {
-DAVA::Component* BoxShapeComponent::Clone(Entity* toEntity)
+Component* BoxShapeComponent::Clone(Entity* toEntity)
 {
     BoxShapeComponent* result = new BoxShapeComponent();
     result->SetEntity(toEntity);

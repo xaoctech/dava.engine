@@ -116,6 +116,9 @@ bool IsGeometryEqual(const physx::PxGeometryHolder& holder1, const physx::PxGeom
         }
     }
     break;
+    case physx::PxGeometryType::ePLANE:
+        result = true;
+        break;
     default:
         DVASSERT(false);
         break;
@@ -579,9 +582,11 @@ void PhysicsDebugDrawSystem::UnregisterComponent(Entity* entity, Component* comp
         if (iter != renderObjects.end())
         {
             RenderObjectInfo& roInfo = iter->second;
-            DVASSERT(roInfo.ro != nullptr);
-            GetScene()->GetRenderSystem()->RemoveFromRender(roInfo.ro);
-            DAVA::SafeRelease(roInfo.ro);
+            if (roInfo.ro != nullptr)
+            {
+                GetScene()->GetRenderSystem()->RemoveFromRender(roInfo.ro);
+                DAVA::SafeRelease(roInfo.ro);
+            }
             renderObjects.erase(iter);
         }
 
