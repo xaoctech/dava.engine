@@ -384,15 +384,19 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
     if (descr.group->componentType == nullptr)
     {
-        Reflection ref = Reflection::Create(ReflectedObject(control));
-        ref = ref.GetField(descr.field->name);
-        if (ref.IsValid())
+        ReflectedObject refObject(control);
+        if (TypeInheritance::CanDownCast(refObject.GetReflectedType()->GetType(), descr.group->refType->GetType()))
         {
-            action(control, ref);
-
-            if (listener != nullptr)
+            Reflection ref = Reflection::Create(refObject);
+            ref = ref.GetField(descr.field->name);
+            if (ref.IsValid())
             {
-                listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+                action(control, ref);
+
+                if (listener != nullptr)
+                {
+                    listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+                }
             }
         }
     }
