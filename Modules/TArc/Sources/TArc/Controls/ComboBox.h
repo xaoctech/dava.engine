@@ -5,6 +5,7 @@
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/QtConnections.h"
+#include "TArc/Controls/CommonStrings.h"
 
 #include <QComboBox>
 
@@ -20,6 +21,7 @@ public:
         Value,
         Enumerator,
         IsReadOnly,
+        MultipleValueText,
         FieldCount
     };
 
@@ -38,6 +40,7 @@ private:
 
     bool updateControlProceed = false;
     QtConnections connections;
+    QString multipleValueText = QString(MultipleValuesString);
 };
 } // namespace TArc
 } // namespace DAVA
