@@ -36,5 +36,6 @@ set( STATIC_LIBRARIES_WINUAP_RELEASE ${LIBRARIES_SPINE}/Win10/$(Platform)/Releas
 set( STATIC_LIBRARIES_WINUAP_DEBUG   ${LIBRARIES_SPINE}/Win10/$(Platform)/Debug/spined.lib )
 
 set( EXCLUDE_FROM_ALL true )
+set( NOT_USE_PARENT_DEFINITIONS true )
 
 setup_main_module()

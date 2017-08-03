@@ -67,6 +67,7 @@ DEFINITIONS
 DEFINITIONS_PRIVATE             
 DEFINITIONS_${DAVA_PLATFORM_CURENT}     
 DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURENT}  
+NOT_USE_PARENT_DEFINITIONS
 #
 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}           
 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE   
@@ -449,13 +450,22 @@ macro( setup_main_module )
             endif()
 
             set( MODULE_CACHE   "ROOT_${ORIGINAL_NAME_MODULE}"
-                                ${LOADED_MODULES} 
-                                ${DEFINITIONS} 
-                                ${DEFINITIONS_${DAVA_PLATFORM_CURENT}}  
-                                ${GLOBAL_DEFINITIONS_PROP}
-                                ${DEFINITIONS_PROP} 
-                                ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} 
                                 ${COVERAGE_STRING} )
+            
+            if( NOT NOT_USE_PARENT_DEFINITIONS  )
+
+                list( APPEND MODULE_CACHE ${DEFINITIONS} 
+                                          ${DEFINITIONS_${DAVA_PLATFORM_CURENT}} 
+                                          ${DEFINITIONS_PROP} 
+                                          ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} 
+                                          ${GLOBAL_DEFINITIONS_PROP} 
+                                          ${LOADED_MODULES}  )
+
+                list( REMOVE_ITEM MODULE_CACHE ${ORIGINAL_NAME_MODULE} )
+
+            endif()
+
+
 
             list( REMOVE_DUPLICATES MODULE_CACHE )
             list( SORT MODULE_CACHE )
@@ -648,8 +658,6 @@ macro( setup_main_module )
 
         #"SAVE PROPERTY"
         save_property( PROPERTY_LIST 
-                DEFINITIONS
-                DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}          
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG
@@ -671,19 +679,38 @@ macro( setup_main_module )
                 JAVA_FOLDERS_ANDROID
                 )
 
-        load_property( PROPERTY_LIST 
-                DEFINITIONS
-                DEFINITIONS_${DAVA_PLATFORM_CURENT}
-                GLOBAL_DEFINITIONS                
+        load_property( PROPERTY_LIST                
                 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} 
                 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE 
                 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG 
                 STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT}
                 INCLUDES
                 INCLUDES_PRIVATE
+                PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 )
 
-        list( APPEND DEFINITIONS ${GLOBAL_DEFINITIONS} )
+        if(  NOT_USE_PARENT_DEFINITIONS  )
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT} )
+
+        else()
+
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT} )
+
+            load_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT}
+                GLOBAL_DEFINITIONS  ) 
+
+            list( APPEND DEFINITIONS ${GLOBAL_DEFINITIONS} )
+
+        endif()
+        
+        list( APPEND DEFINITIONS ${PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}} )
+
 
         #"DEFINITIONS"
         if( DEFINITIONS )

@@ -15,4 +15,6 @@ set(DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
 
 set(FIND_PACKAGE NetworkHelpers)
 
+set(NOT_USE_PARENT_DEFINITIONS true)
+
 setup_main_module()

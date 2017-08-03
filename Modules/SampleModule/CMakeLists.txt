@@ -10,5 +10,6 @@ set( MODULE_INITIALIZATION_CODE SampleModule.h ) # set hider where found module
 set( MODULE_INITIALIZATION_NAMESPACE Test )      # set module namespace
 set( HPP_FILES *.h )                             # 
 set( CPP_FILES Private/*.cpp )                   # set where are sources
+set( NOT_USE_PARENT_DEFINITIONS true )
 
 setup_main_module()                              # induce macros of module formation

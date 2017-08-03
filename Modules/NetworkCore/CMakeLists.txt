@@ -15,5 +15,6 @@ set( HPP_FILES *.h )                             #
 set( CPP_FILES Private/*.cpp )                   # set where are sources
 
 set( EXCLUDE_FROM_ALL true )                     
+set(NOT_USE_PARENT_DEFINITIONS true)
 
 setup_main_module()                              # induce macros of module formation
