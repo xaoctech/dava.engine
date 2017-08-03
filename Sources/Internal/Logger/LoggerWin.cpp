@@ -2,7 +2,9 @@
 
 #if defined(__DAVAENGINE_WINDOWS__)
 
+#include "Objbase.h"
 #include "Base/Platform.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
@@ -47,7 +49,9 @@ void Logger::PlatformLog(eLogLevel ll, const char8* text)
         }
 
         WideString wtext = UTF8Utils::EncodeToWideString(text);
-        lc->LogMessage(ref new Platform::String(wtext.c_str()), lv);
+        // Platform::StringReference should prevent an extra copy here.
+        // Details: https://docs.microsoft.com/en-us/cpp/cppcx/strings-c-cx#stringreference
+        lc->LogMessage(Platform::StringReference(wtext.c_str()), lv);
     }
 #endif
 }
