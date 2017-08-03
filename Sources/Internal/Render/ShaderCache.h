@@ -18,7 +18,6 @@ void ReloadShaders();
 
 void SetLoadingNotifyEnabled(bool enable);
 ShaderDescriptor* GetShaderDescriptor(const FastName& name, const HashMap<FastName, int32>& defines);
-
-Vector<size_t> BuildFlagsKey(const FastName& name, const HashMap<FastName, int32>& defines);
+Vector<pointer_size> BuildFlagsKey(const FastName& name, const HashMap<FastName, int32>& defines);
 };
 };

@@ -11,7 +11,7 @@ struct Hash<FastName>
 {
     size_t operator()(const FastName& name) const
     {
-        return name.Index();
+        return std::hash<FastName>().operator()(name);
     }
 
     bool Compare(const FastName& name1, const FastName& name2) const

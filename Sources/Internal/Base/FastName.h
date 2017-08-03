@@ -53,7 +53,7 @@ private:
     };
 
     Vector<const CharT*> namesTable;
-    UnorderedMap<const CharT*, int, FastNameDBHash, FastNameDBEqualTo> nameToIndexMap;
+    UnorderedMap<const CharT*, pointer_size, FastNameDBHash, FastNameDBEqualTo> nameToIndexMap;
 
     MutexT mutex;
     size_t sizeOfNames = 0;
@@ -76,7 +76,7 @@ public:
     size_t find(const String& str, size_t pos = 0) const;
     size_t find(const FastName& fn, size_t pos = 0) const;
 
-    size_t Index() const;
+    pointer_size UID() const;
     bool IsValid() const;
 
 private:
@@ -136,9 +136,9 @@ inline size_t FastName::find(const FastName& fn, size_t pos) const
     return find(fn.c_str(), pos);
 }
 
-inline size_t FastName::Index() const
+inline pointer_size FastName::UID() const
 {
-    return reinterpret_cast<size_t>(str);
+    return reinterpret_cast<pointer_size>(str);
 }
 
 inline bool FastName::IsValid() const
@@ -163,7 +163,7 @@ struct hash<DAVA::FastName>
 {
     std::size_t operator()(const DAVA::FastName& k) const
     {
-        return k.Index();
+        return static_cast<size_t>(k.UID());
     }
 };
 }

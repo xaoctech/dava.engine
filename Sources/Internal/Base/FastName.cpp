@@ -54,7 +54,7 @@ void FastName::Init(const char* name)
         db->sizeOfNames += (nameLen * sizeof(FastNameDB::CharT));
 
         // index will be a new row in names table
-        size_t index = static_cast<int32>(db->namesTable.size());
+        size_t index = db->namesTable.size();
 
         db->namesTable.push_back(nameCopy);
         db->nameToIndexMap.emplace(nameCopy, index);
