@@ -686,6 +686,7 @@ macro( setup_main_module )
                 STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT}
                 INCLUDES
                 INCLUDES_PRIVATE
+                PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 )
 
         if(  NOT_USE_PARENT_DEFINITIONS  )
@@ -707,6 +708,9 @@ macro( setup_main_module )
             list( APPEND DEFINITIONS ${GLOBAL_DEFINITIONS} )
 
         endif()
+        
+        list( APPEND DEFINITIONS ${PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}} )
+
 
         #"DEFINITIONS"
         if( DEFINITIONS )
