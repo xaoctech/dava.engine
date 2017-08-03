@@ -579,7 +579,7 @@ void SceneInfo::RefreshAllData()
     Refresh3DDrawInfo();
     RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
-    
+
     CollectSpeedInfo(&Selection::GetSelection());
     RefreshSpeedTreeInfoSelection();
 
