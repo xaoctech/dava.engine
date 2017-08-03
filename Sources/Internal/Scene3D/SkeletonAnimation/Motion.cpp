@@ -157,18 +157,19 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
         state.treeRoot->BindSkeleton(skeleton);
 
     if (currentState != nullptr)
-        currentState->treeRoot->Evaluate(&resultPose, 0.f);
+        currentState->treeRoot->EvaluatePose(&resultPose, 0.f);
 }
 
 void Motion::Update(float32 dTime)
 {
     if (currentState != nullptr)
     {
-        normalizedTime += dTime * playbackRate;
-        if (normalizedTime >= 1.f)
-            normalizedTime -= 1.f;
+        float32 duration = currentState->treeRoot->EvaluatePhaseDuration();
+        animationPhase += dTime / duration;
+        if (animationPhase >= 1.f)
+            animationPhase -= 1.f;
 
-        currentState->treeRoot->Evaluate(&resultPose, normalizedTime);
+        currentState->treeRoot->EvaluatePose(&resultPose, animationPhase);
     }
 }
 

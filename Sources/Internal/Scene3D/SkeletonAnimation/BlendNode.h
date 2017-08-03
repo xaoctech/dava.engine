@@ -30,17 +30,17 @@ public:
     void AddChild(BlendNode* node, Vector2 point);
 
     void BindSkeleton(const SkeletonComponent* skeleton);
-    void Evaluate(SkeletonPose* outPose, float32 time);
+    void EvaluatePose(SkeletonPose* outPose, float32 phase) const;
+    float32 EvaluatePhaseDuration() const;
 
     void SetParameter(Vector2 value);
 
 protected:
     Vector<std::pair<BlendNode*, Vector2>> children;
+    Vector2 parameter;
 
     SkeletonAnimation* animation = nullptr;
-    AnimationClip* animationClip = nullptr;
 
-    Vector2 parameter;
     eType type = TYPE_COUNT;
 };
 

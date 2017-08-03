@@ -68,8 +68,7 @@ protected:
 
     SkeletonPose resultPose;
 
-    float32 normalizedTime = 0.f;
-    float32 playbackRate = 1.f;
+    float32 animationPhase = 0.f;
 };
 
 inline const FastName& Motion::GetName() const

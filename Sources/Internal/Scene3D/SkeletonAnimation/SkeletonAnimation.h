@@ -10,16 +10,22 @@ class AnimationClip;
 class SkeletonAnimation
 {
 public:
-    SkeletonAnimation() = default;
+    SkeletonAnimation(AnimationClip* animationClip);
+    ~SkeletonAnimation();
 
-    void BindAnimation(const AnimationClip* animationClip, const SkeletonComponent* skeleton, SkeletonPose* outInitialPose = nullptr);
-    void EvaluatePose(SkeletonPose* outPose, float32 time, Vector3* offset = nullptr);
+    void BindSkeleton(const SkeletonComponent* skeleton, SkeletonPose* outInitialPose = nullptr);
+    void EvaluatePose(SkeletonPose* outPose, float32 phase, Vector3* offset = nullptr);
+    float32 GetPhaseDuration() const;
 
 protected:
     static JointTransform ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state);
 
-    Vector<std::pair<uint32, const AnimationTrack*>> boundTracks; //[jointIndex, track weak pointer]
+    Vector<std::pair<uint32, const AnimationTrack*>> boundTracks; //[jointIndex, track]
     Vector<AnimationTrack::State> animationStates;
+
+    AnimationClip* animationClip = nullptr;
+
+    uint32 maxJointIndex = 0;
 };
 
 } //ns

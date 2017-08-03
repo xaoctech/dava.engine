@@ -151,8 +151,8 @@ MotionComponent::SimpleMotion::~SimpleMotion()
 void MotionComponent::SimpleMotion::BindSkeleton(SkeletonComponent* skeleton)
 {
     SafeDelete(skeletonAnimation);
-    skeletonAnimation = new SkeletonAnimation();
-    skeletonAnimation->BindAnimation(animationClip, skeleton);
+    skeletonAnimation = new SkeletonAnimation(animationClip);
+    skeletonAnimation->BindSkeleton(skeleton);
 
     currentAnimationTime = 0.f;
 }

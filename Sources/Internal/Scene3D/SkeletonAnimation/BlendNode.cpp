@@ -29,7 +29,6 @@ BlendNode::~BlendNode()
     if (type == TYPE_ANIMATION)
     {
         SafeDelete(animation);
-        SafeRelease(animationClip);
     }
     else
     {
@@ -38,13 +37,12 @@ BlendNode::~BlendNode()
     }
 }
 
-BlendNode::BlendNode(AnimationClip* _animationClip)
-    : animationClip(SafeRetain(_animationClip))
+BlendNode::BlendNode(AnimationClip* animationClip)
 {
     DVASSERT(animationClip != nullptr);
 
     type = TYPE_ANIMATION;
-    animation = new SkeletonAnimation();
+    animation = new SkeletonAnimation(animationClip);
 }
 
 void BlendNode::AddChild(BlendNode* node, Vector2 point)
@@ -55,9 +53,9 @@ void BlendNode::AddChild(BlendNode* node, Vector2 point)
 
 void BlendNode::BindSkeleton(const SkeletonComponent* skeleton)
 {
-    if (type == TYPE_ANIMATION && animation)
+    if (type == TYPE_ANIMATION)
     {
-        animation->BindAnimation(animationClip, skeleton);
+        animation->BindSkeleton(skeleton);
     }
     else
     {
@@ -66,25 +64,29 @@ void BlendNode::BindSkeleton(const SkeletonComponent* skeleton)
     }
 }
 
-void BlendNode::Evaluate(SkeletonPose* outPose, float32 nTime)
+void BlendNode::EvaluatePose(SkeletonPose* outPose, float32 phase) const
 {
     switch (type)
     {
     case TYPE_ANIMATION:
     {
-        animation->EvaluatePose(outPose, nTime * animationClip->GetDuration());
+        animation->EvaluatePose(outPose, phase);
     }
     break;
     case TYPE_LERP_1D:
     {
         if (children.size() == 2)
         {
-            float32 factor = parameter.x / (children[1].second.x - children[0].second.x);
+            BlendNode* child0 = children[0].first;
+            BlendNode* child1 = children[1].first;
+            float32 param0 = children[0].second.x;
+            float32 param1 = children[1].second.x;
 
             SkeletonPose pose0, pose1;
-            children[0].first->Evaluate(&pose0, nTime);
-            children[1].first->Evaluate(&pose1, nTime);
+            child0->EvaluatePose(&pose0, phase);
+            child1->EvaluatePose(&pose1, phase);
 
+            float32 factor = parameter.x / (param1 - param0);
             *outPose = SkeletonPose::Lerp(pose0, pose1, factor);
         }
     }
@@ -104,6 +106,51 @@ void BlendNode::Evaluate(SkeletonPose* outPose, float32 nTime)
     default:
         break;
     }
+}
+
+float32 BlendNode::EvaluatePhaseDuration() const
+{
+    switch (type)
+    {
+    case TYPE_ANIMATION:
+    {
+        return animation->GetPhaseDuration();
+    }
+    break;
+    case TYPE_LERP_1D:
+    {
+        if (children.size() == 2)
+        {
+            BlendNode* child0 = children[0].first;
+            BlendNode* child1 = children[1].first;
+            float32 param0 = children[0].second.x;
+            float32 param1 = children[1].second.x;
+
+            float32 dur0 = child0->EvaluatePhaseDuration();
+            float32 dur1 = child1->EvaluatePhaseDuration();
+
+            float32 factor = parameter.x / (param1 - param0);
+            return Lerp(dur0, dur1, factor);
+        }
+    }
+    break;
+    case TYPE_LERP_2D:
+    {
+    }
+    break;
+    case TYPE_ADD:
+    {
+    }
+    break;
+    case TYPE_SUB:
+    {
+    }
+    break;
+    default:
+        break;
+    }
+
+    return 1.f;
 }
 
 } //ns

@@ -5,43 +5,57 @@
 
 namespace DAVA
 {
-void SkeletonAnimation::BindAnimation(const AnimationClip* clip, const SkeletonComponent* skeleton, SkeletonPose* outInitialPose)
+SkeletonAnimation::SkeletonAnimation(AnimationClip* clip)
+    : animationClip(SafeRetain(clip))
+{
+    DVASSERT(animationClip);
+}
+
+SkeletonAnimation::~SkeletonAnimation()
+{
+    SafeRelease(animationClip);
+}
+
+void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, SkeletonPose* outInitialPose)
 {
     DVASSERT(skeleton);
+    DVASSERT(animationClip);
 
     boundTracks.clear();
     animationStates.clear();
+    maxJointIndex = 0;
 
-    if (clip)
+    uint32 trackCount = animationClip->GetTrackCount();
+    uint32 jointCount = skeleton->GetJointsCount();
+    for (uint32 j = 0; j < jointCount; ++j)
     {
-        uint32 trackCount = clip->GetTrackCount();
+        const SkeletonComponent::Joint& joint = skeleton->GetJoint(j);
 
-        uint32 jointCount = skeleton->GetJointsCount();
-        for (uint32 j = 0; j < jointCount; ++j)
+        for (uint32 t = 0; t < trackCount; ++t)
         {
-            const SkeletonComponent::Joint& joint = skeleton->GetJoint(j);
-
-            for (uint32 t = 0; t < trackCount; ++t)
+            if (strcmp(animationClip->GetTrackUID(t), joint.uid.c_str()) == 0)
             {
-                if (strcmp(clip->GetTrackUID(t), joint.uid.c_str()) == 0)
-                {
-                    const AnimationTrack* track = clip->GetTrack(t);
+                const AnimationTrack* track = animationClip->GetTrack(t);
 
-                    animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
-                    track->Evaluate(0.f, &animationStates.back());
+                animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
+                track->Evaluate(0.f, &animationStates.back());
 
-                    if (outInitialPose)
-                        outInitialPose->SetTransform(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
+                if (outInitialPose)
+                    outInitialPose->SetTransform(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
 
-                    boundTracks.emplace_back(std::make_pair(j, track));
-                }
+                boundTracks.emplace_back(std::make_pair(j, track));
+
+                maxJointIndex = Max(maxJointIndex, j);
             }
         }
     }
 }
 
-void SkeletonAnimation::EvaluatePose(SkeletonPose* outPose, float32 time, Vector3* offset)
+void SkeletonAnimation::EvaluatePose(SkeletonPose* outPose, float32 phase, Vector3* offset)
 {
+    DVASSERT(outPose);
+    outPose->SetJointCount(maxJointIndex + 1);
+
     uint32 boundTrackCount = uint32(boundTracks.size());
     for (uint32 t = 0; t < boundTrackCount; ++t)
     {
@@ -49,11 +63,17 @@ void SkeletonAnimation::EvaluatePose(SkeletonPose* outPose, float32 time, Vector
         const AnimationTrack* track = boundTracks[t].second;
         AnimationTrack::State* state = &animationStates[t];
 
-        track->Evaluate(time, state);
+        float32 localTime = phase * animationClip->GetDuration();
+        track->Evaluate(localTime, state);
 
         JointTransform transform = ConstructJointTransform(track, state);
         outPose->SetTransform(jointIndex, transform);
     }
+}
+
+float32 SkeletonAnimation::GetPhaseDuration() const
+{
+    return animationClip->GetDuration();
 }
 
 JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state)
