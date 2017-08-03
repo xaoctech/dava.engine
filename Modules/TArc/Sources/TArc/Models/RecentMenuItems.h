@@ -58,7 +58,6 @@ private:
     void AddInternal(const DAVA::String& recent);
     void RemoveMenuItems();
 
-
     DAVA::TArc::QtConnections connections;
 
     Params params;
