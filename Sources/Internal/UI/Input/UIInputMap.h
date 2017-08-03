@@ -2,6 +2,7 @@
 #define __DAVAENGINE_UI_INPUT_MAP_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/FastName.h"
 #include "Input/KeyboardShortcut.h"
 
 namespace DAVA
