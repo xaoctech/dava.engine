@@ -523,7 +523,7 @@ void DocumentsModule::DoGroupSelection()
     Vector<ControlNode*> selectedControlNodes = ToControlNodesVector(data->GetSelectedNodes());
     if (data->GetSelectedNodes().size() == selectedControlNodes.size())
     {
-        CommandExecutor commandExecutor(GetAccessor(), nullptr);
+        CommandExecutor commandExecutor(GetAccessor(), GetUI());
         ControlNode* groupControl = commandExecutor.GroupControls(selectedControlNodes);
         InvokeOperation(QEGlobal::SelectAndRename.ID, groupControl);
     }

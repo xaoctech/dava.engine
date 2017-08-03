@@ -103,6 +103,8 @@ CommandExecutor::CommandExecutor(DAVA::TArc::ContextAccessor* accessor_, DAVA::T
     : accessor(accessor_)
     , ui(ui_)
 {
+    DVASSERT(accessor != nullptr);
+    DVASSERT(ui != nullptr);
 }
 
 void CommandExecutor::AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::FilePath> packagePaths, const PackageNode* package)
@@ -166,16 +168,11 @@ void CommandExecutor::AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::Fi
 
     if (result.type == Result::RESULT_ERROR)
     {
-        String errMsg = "Can't import package";
-        Logger::Error(errMsg.c_str());
-        if (ui != nullptr)
-        {
-            using namespace DAVA::TArc;
-            NotificationParams params;
-            params.title = errMsg;
-            params.message = result;
-            ui->ShowNotification(mainWindowKey, params);
-        }
+        using namespace DAVA::TArc;
+        NotificationParams params;
+        params.title = "Can't import package";
+        params.message = result;
+        ui->ShowNotification(mainWindowKey, params);
     }
 }
 
