@@ -53,9 +53,22 @@ ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
     return objectType;
 }
 
+void DebugDrawSystem::AddEntity(DAVA::Entity* entity)
+{
+    entities.push_back(entity);
+}
+
+void DebugDrawSystem::RemoveEntity(DAVA::Entity* entity)
+{
+    DAVA::FindAndRemoveExchangingWithLast(entities, entity);
+}
+
 void DebugDrawSystem::Draw()
 {
-    Draw(GetScene());
+    for (auto entity : entities)
+    {
+        Draw(entity);
+    }
 }
 
 void DebugDrawSystem::Draw(DAVA::Entity* entity)
@@ -77,11 +90,6 @@ void DebugDrawSystem::Draw(DAVA::Entity* entity)
         if (isSelected)
         {
             DrawSelectedSoundNode(entity);
-        }
-
-        for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
-        {
-            Draw(entity->GetChild(i));
         }
     }
 }
