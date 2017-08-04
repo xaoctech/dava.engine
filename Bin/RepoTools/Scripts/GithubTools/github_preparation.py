@@ -67,6 +67,7 @@ class Preparation:
                 sys.exit(3)
 
     def remove_big_files(self):
+        os.chdir(self.base_path)
         cmd = 'java -jar bfg-1.12.15.jar --strip-blobs-bigger-than 99M %s' % self.repo
         sys.stdout.write(cmd)
         sys.stdout.flush()
