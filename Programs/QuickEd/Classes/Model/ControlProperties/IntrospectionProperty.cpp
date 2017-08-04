@@ -117,7 +117,7 @@ IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, const D
     }
     else if (name == INTROSPECTION_PROPERTY_NAME_FONT || name == INTROSPECTION_PROPERTY_NAME_FONT_NAME)
     {
-        return new FontValueProperty(object, name, ref, sourceProperty, cloneType);
+        return new FontValueProperty(object, componentType, name, ref, sourceProperty, cloneType);
     }
     else if (name == INTROSPECTION_PROPERTY_NAME_VISIBLE)
     {
