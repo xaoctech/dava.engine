@@ -24,13 +24,6 @@ namespace DAVA
 {
 namespace TArc
 {
-namespace ColorPickerDialogDetail
-{
-//const String PROPERTIES_KEY = "ColorPickerDialogProperties";
-//const String GEOMETRY_KEY = "CPD_geometry";
-//const String PALETTE_KEY = "CPD_palette";
-//const String MULTIPLIER_KEY = "CPD_maxMultiplier";
-}
 
 ColorPickerDialog::ColorPickerDialog(ContextAccessor* accessor, QWidget* parent)
     : AbstractColorPicker(parent)

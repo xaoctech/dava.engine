@@ -1,6 +1,7 @@
 #include "TArc/SharedModules/SettingsModule/Private/SettingsManager.h"
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/DataProcessing/SettingsNode.h"
+#include "TArc/Utils/ReflectionHelpers.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Reflection/ReflectedTypeDB.h>

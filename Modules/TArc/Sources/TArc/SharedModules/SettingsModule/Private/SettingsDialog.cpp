@@ -6,6 +6,7 @@
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "Tarc/WindowSubSystem/UI.h"
 #include "TArc/Utils/ReflectionHelpers.h"
+#include "TArc/DataProcessing/SettingsNode.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 

@@ -12,6 +12,7 @@
 
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Selection/SelectionData.h"
 
 #include "Classes/Qt/Main/QtUtils.h"
@@ -1134,8 +1135,7 @@ void MaterialEditor::OnReloadTexture()
             DAVA::Texture* texture = DAVA::Texture::Get(path);
             if (texture != nullptr)
             {
-                DAVA::eGPUFamily curEditorImageGPUForTextures = Settings::GetGPUFormat();
-                texture->ReloadAs(curEditorImageGPUForTextures);
+                texture->ReloadAs(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
 
                 DAVA::Set<DAVA::NMaterial*> materials;
                 SceneHelper::EnumerateMaterials(activeScene, materials);

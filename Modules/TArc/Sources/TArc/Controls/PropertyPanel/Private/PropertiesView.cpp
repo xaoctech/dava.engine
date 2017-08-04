@@ -262,7 +262,10 @@ PropertiesView::PropertiesView(const Params& params_)
     view->setColumnWidth(0, columnWidth);
 
     model->LoadState(viewItem);
-    viewMode = static_cast<eViewMode>(viewItem.Get(PropertiesViewDetail::isFavoritesViewOnlyKey, static_cast<int32>(VIEW_MODE_REGULAR_TREE)));
+    if (params.showToolBar == true)
+    {
+        viewMode = static_cast<eViewMode>(viewItem.Get(PropertiesViewDetail::isFavoritesViewOnlyKey, static_cast<int32>(VIEW_MODE_REGULAR_TREE)));
+    }
 
     QObject::connect(view, &QTreeView::expanded, this, &PropertiesView::OnExpanded);
     QObject::connect(view, &QTreeView::collapsed, this, &PropertiesView::OnCollapsed);
