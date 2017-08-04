@@ -3,7 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Engine/EngineTypes.h"
 #include "Math/Vector.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -78,7 +78,7 @@ public:
     Send specified `key` with `modifiers` from UIEvent to STB text edit.
     Return true if content of field has been changed.
     */
-    virtual bool SendKey(Key key, eModifierKeys modifiers);
+    virtual bool SendKey(eInputElements key, eModifierKeys modifiers);
 
     /**
     Send specified `keyChar` with `modifiers` to STB text edit.

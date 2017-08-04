@@ -22,6 +22,16 @@ class InputSystem;
 class UIControlSystem;
 class VirtualCoordinatesSystem;
 
+/** Describes input handling modes for `Window` class */
+enum class eInputHandlingModes
+{
+    /** Window handles input only when focused */
+    HANDLE_ONLY_WHEN_FOCUSED,
+
+    /** Window handles input in both focused and unfocused states */
+    HANDLE_ALWAYS
+};
+
 /**
     \ingroup engine
     The `Window` class represents an abstract window - rectangular area on display application can draw at.
@@ -45,7 +55,7 @@ class VirtualCoordinatesSystem;
 
     Window has special attribute denoting whether window is primary:
         - primary window is the first Window instance created by dava.engine.
-        - primary window become available to application after `Engine::Init` method has been invoked except `Engine` has been
+        - primary window becomes available to application after `Engine::Init` method has been invoked, except when `Engine` has been
           initialized to run in console mode (`eEngineRunMode::CONSOLE_MODE`).
         - closing primary window leads to application exit.
     Application can get primary window instance through `Engine::PrimaryWindow` method or throught freestanding `GetPrimaryWindow` function.
@@ -279,6 +289,13 @@ public:
     */
     bool GetCursorVisibility() const;
 
+    /**
+        Set input handling mode.
+
+        By default, eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED is used.
+    */
+    void SetInputHandlingMode(eInputHandlingModes mode);
+
     /** Get Window's UIControlSystem */
     UIControlSystem* GetUIControlSystem() const;
 
@@ -294,6 +311,7 @@ public:
     Signal<Window*, float32> update; //!< Emitted on each frame if window is visible.
     Signal<Window*> draw; //!< Emited after `update` signal after `UIControlSystem::Draw`
     Signal<Window*, Rect /*visibleFrameRect*/> visibleFrameChanged; //!< Emitted when window visible frame changed (showed virtual keyboard over window).
+    Signal<Window*> backNavigation; //!< Emitted when user presses a back button or its alternative (like Win + Backspace on UWP).
 
 private:
     /// Initialize platform specific render params, e.g. acquire/release context functions for Qt platform
@@ -302,7 +320,7 @@ private:
     void Draw();
 
     /// Process main dispatcher events targeting this window
-    void EventHandler(const Private::MainDispatcherEvent& e);
+    bool EventHandler(const Private::MainDispatcherEvent& e);
     /// Do some window specific tasks after all dispatcher events have been processed on current frame,
     /// e.g. initiate processing tasks on window UI thread
     void FinishEventHandlingOnCurrentFrame();
@@ -316,14 +334,7 @@ private:
     void HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e);
     void HandleFocusChanged(const Private::MainDispatcherEvent& e);
     void HandleVisibilityChanged(const Private::MainDispatcherEvent& e);
-    void HandleMouseClick(const Private::MainDispatcherEvent& e);
-    void HandleMouseWheel(const Private::MainDispatcherEvent& e);
-    void HandleMouseMove(const Private::MainDispatcherEvent& e);
-    void HandleTouchClick(const Private::MainDispatcherEvent& e);
-    void HandleTouchMove(const Private::MainDispatcherEvent& e);
     void HandleTrackpadGesture(const Private::MainDispatcherEvent& e);
-    void HandleKeyPress(const Private::MainDispatcherEvent& e);
-    void HandleKeyChar(const Private::MainDispatcherEvent& e);
     bool HandleInputActivation(const Private::MainDispatcherEvent& e);
 
     void MergeSizeChangedEvents(const Private::MainDispatcherEvent& e);
@@ -344,9 +355,6 @@ private:
     bool sizeEventsMerged = false; // Flag indicating that all size events are merged on current frame
     eFullscreen fullscreenMode = eFullscreen::Off;
 
-    // Shortcut for eMouseButtons::COUNT
-    static const size_t MOUSE_BUTTON_COUNT = static_cast<size_t>(eMouseButtons::COUNT);
-    std::bitset<MOUSE_BUTTON_COUNT> mouseButtonState;
     eCursorCapture cursorCapture = eCursorCapture::OFF;
     bool cursorVisible = false;
     bool waitInputActivation = false;
@@ -356,6 +364,8 @@ private:
     float32 surfaceWidth = 0.0f; //!< Window rendering surface width.
     float32 surfaceHeight = 0.0f; //!< Window rendering surface height.
     float32 surfaceScale = 1.0f; //!< Window rendering surface scale.
+
+    eInputHandlingModes inputHandlingMode = eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED;
 };
 
 inline bool Window::IsPrimary() const
