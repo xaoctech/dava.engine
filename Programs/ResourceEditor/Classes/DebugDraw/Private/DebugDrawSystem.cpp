@@ -1,14 +1,13 @@
-#include "Scene/System/DebugDrawSystem.h"
-#include "Scene/SceneEditor2.h"
-#include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/DebugDraw/DebugDrawSystem.h"
+#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Selection/Selection.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
+#include "Scene/SceneEditor2.h"
 #include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-
-#include "Classes/Selection/Selection.h"
 
 using namespace DAVA;
 

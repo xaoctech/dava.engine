@@ -139,9 +139,6 @@ SceneEditor2::SceneEditor2()
     editorLightSystem = new EditorLightSystem(this);
     AddSystem(editorLightSystem, MAKE_COMPONENT_MASK(DAVA::Component::LIGHT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
 
-    debugDrawSystem = new DebugDrawSystem(this);
-    AddSystem(debugDrawSystem, 0);
-
     beastSystem = new BeastSystem(this);
     AddSystem(beastSystem, 0);
 
@@ -850,7 +847,6 @@ void SceneEditor2::RemoveSystems()
     materialSystem = nullptr;
     visibilityCheckSystem = nullptr;
     cameraSystem = nullptr;
-    debugDrawSystem = nullptr;
     editorLODSystem = nullptr;
     particlesSystem = nullptr;
     hoodSystem = nullptr;
