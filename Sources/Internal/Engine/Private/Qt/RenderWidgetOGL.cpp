@@ -1,10 +1,12 @@
 #include "Engine/Private/Qt/RenderWidgetOGL.h"
 
 #if defined(__DAVAENGINE_QT__)
+#include "Engine/Engine.h"
 #include "Engine/Qt/IClientDelegate.h"
 #include "Engine/Private/Qt/IWindowDelegate.h"
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/Keyboard.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Logger/Logger.h"
 #include "Debug/DVAssert.h"
 
@@ -226,8 +228,11 @@ void RenderWidgetOGL::OnActiveFocusItemChanged()
         item->installEventFilter(this);
     }
 
-    KeyboardDevice& kd = InputSystem::Instance()->GetKeyboard();
-    kd.ClearAllKeys(); //we need only reset keyboard status on focus changing
+    Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
+    if (kb != nullptr)
+    {
+        kb->ResetState(GetPrimaryWindow()); //we need only reset keyboard status on focus changing
+    }
 }
 
 void RenderWidgetOGL::OnSceneGraphInvalidated()

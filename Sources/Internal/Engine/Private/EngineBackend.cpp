@@ -32,6 +32,8 @@
 #include "FileSystem/LocalizationSystem.h"
 #include "Job/JobManager.h"
 #include "Input/InputSystem.h"
+#include "Input/ActionSystem.h"
+#include "Input/InputBindingListener.h"
 #include "Logger/Logger.h"
 #include "MemoryManager/MemoryManager.h"
 #include "ModuleManager/ModuleManager.h"
@@ -233,6 +235,9 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     CreateSubsystems(modules);
 
     isInitialized = true;
+
+    // TODO: find a better way
+    context->deviceManager->OnEngineInited();
 }
 
 int EngineBackend::Run()
@@ -488,7 +493,6 @@ void EngineBackend::UpdateAndDrawWindows(float32 frameDelta, bool drawOnly)
 void EngineBackend::EndFrame()
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::ENGINE_END_FRAME);
-    context->inputSystem->OnAfterUpdate();
     engine->endFrame.Emit();
     Renderer::EndFrame();
 }
@@ -563,6 +567,7 @@ void EngineBackend::OnWindowVisibilityChanged(Window* window, bool visible)
 
 void EngineBackend::EventHandler(const MainDispatcherEvent& e)
 {
+    bool isHandled = true;
     switch (e.type)
     {
     case MainDispatcherEvent::FUNCTOR:
@@ -583,28 +588,21 @@ void EngineBackend::EventHandler(const MainDispatcherEvent& e)
     case MainDispatcherEvent::APP_TERMINATE:
         HandleAppTerminate(e);
         break;
-    case MainDispatcherEvent::GAMEPAD_MOTION:
-        context->inputSystem->HandleGamepadMotion(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_BUTTON_DOWN:
-    case MainDispatcherEvent::GAMEPAD_BUTTON_UP:
-        context->inputSystem->HandleGamepadButton(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_ADDED:
-        context->inputSystem->HandleGamepadAdded(e);
-        break;
-    case MainDispatcherEvent::GAMEPAD_REMOVED:
-        context->inputSystem->HandleGamepadRemoved(e);
-        break;
-    case MainDispatcherEvent::DISPLAY_CONFIG_CHANGED:
-        context->deviceManager->HandleEvent(e);
-        break;
     default:
-        if (e.window != nullptr)
-        {
-            e.window->EventHandler(e);
-        }
+        isHandled = false;
         break;
+    }
+
+    if (!isHandled && (e.window == nullptr || !e.window->EventHandler(e)))
+    {
+        for (const EventFilter& f : eventFilters)
+        {
+            if (f.filter(e))
+            {
+                isHandled = true;
+                break;
+            }
+        }
     }
 }
 
@@ -679,13 +677,15 @@ void EngineBackend::HandleAppResumed(const MainDispatcherEvent& e)
 
 void EngineBackend::HandleBackNavigation(const MainDispatcherEvent& e)
 {
+    // TODO: Handle different windows
+    primaryWindow->backNavigation.Emit(primaryWindow);
+
     UIEvent uie;
     uie.window = primaryWindow;
-    uie.key = Key::BACK;
+    uie.key = eInputElements::BACK;
     uie.phase = UIEvent::Phase::KEY_DOWN;
     uie.device = eInputDevices::KEYBOARD;
     uie.timestamp = e.timestamp / 1000.0;
-
     context->inputSystem->HandleInputEvent(&uie);
 }
 
@@ -807,6 +807,22 @@ void EngineBackend::UpdateDisplayConfig()
     context->deviceManager->UpdateDisplayConfig();
 }
 
+void EngineBackend::InstallEventFilter(void* token, const Function<bool(const MainDispatcherEvent&)>& filter)
+{
+    DVASSERT(token != nullptr);
+    DVASSERT(std::find_if(begin(eventFilters), end(eventFilters), [token](const EventFilter& ef) { return ef.token == token; }) == end(eventFilters));
+    eventFilters.push_back(EventFilter{ token, filter });
+}
+
+void EngineBackend::UninstallEventFilter(void* token)
+{
+    auto it = std::find_if(begin(eventFilters), end(eventFilters), [token](const EventFilter& ef) { return ef.token == token; });
+    if (it != end(eventFilters))
+    {
+        eventFilters.erase(it);
+    }
+}
+
 void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 {
     context->allocatorFactory = new AllocatorFactory();
@@ -881,6 +897,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     if (!IsConsoleMode())
     {
         context->inputSystem = new InputSystem(engine);
+        context->actionSystem = new ActionSystem();
         context->uiScreenManager = new UIScreenManager();
         context->localNotificationController = new LocalNotificationController();
 
@@ -898,6 +915,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
+
+    context->inputListener = new InputBindingListener();
 
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
@@ -963,6 +982,15 @@ void EngineBackend::DestroySubsystems()
     SafeRelease(context->downloadManager);
     SafeRelease(context->soundSystem);
     SafeDelete(context->dlcManager);
+
+    if (context->actionSystem != nullptr)
+    {
+        delete context->actionSystem;
+        context->actionSystem = nullptr;
+    }
+
+    SafeDelete(context->inputListener);
+
     if (context->inputSystem != nullptr)
     {
         delete context->inputSystem;

@@ -1,11 +1,13 @@
 #include "Infrastructure/GameCore.h"
 
+#include <DocDirSetup/DocDirSetup.h>
 
 #include "CommandLine/CommandLineParser.h"
 #include "Debug/DVAssert.h"
 #include "Debug/DVAssertDefaultHandlers.h"
 #include "Engine/Engine.h"
 #include "FileSystem/KeyedArchive.h"
+#include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 #include "Logger/TeamCityTestsOutput.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
@@ -95,6 +97,10 @@ int DAVAMain(Vector<String> cmdline)
 #else
     e.Init(eEngineRunMode::GUI_STANDALONE, modules, appOptions);
 #endif
+
+    FileSystem* fileSystem = e.GetContext()->fileSystem;
+
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UnitTests");
 
     GameCore g(e);
     e.Run();

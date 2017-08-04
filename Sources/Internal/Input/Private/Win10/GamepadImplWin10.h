@@ -6,17 +6,16 @@
 
 namespace DAVA
 {
-class GamepadDevice;
+class Gamepad;
 namespace Private
 {
 struct MainDispatcherEvent;
-class GamepadDeviceImpl final
+class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepad);
+    GamepadImpl(Gamepad* gamepad);
 
     void Update();
-    void ReadElements(float32 buf[], size_t size);
 
     void HandleGamepadMotion(const MainDispatcherEvent&)
     {
@@ -28,7 +27,9 @@ public:
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);
 
-    GamepadDevice* gamepadDevice = nullptr;
+    void DetermineSupportedElements();
+
+    Gamepad* gamepadDevice = nullptr;
     ::Windows::Gaming::Input::Gamepad ^ gamepad = nullptr;
 };
 

@@ -20,6 +20,7 @@
 #include <Scene3D/Components/StaticOcclusionComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TextComponent.h>
 #include <Scene3D/Components/Waypoint/WaypointComponent.h>
 #include <Scene3D/Components/Waypoint/EdgeComponent.h>
 #include <Scene3D/Scene.h>

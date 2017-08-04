@@ -27,7 +27,14 @@
 #include "Input/InputSystem.h"
 #include "UI/Update/UIUpdateSystem.h"
 #include "Debug/ProfilerOverlay.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Engine/Engine.h"
+#include "Input/InputEvent.h"
+#include "Input/InputSystem.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
+#include "Input/TouchScreen.h"
+#include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 
 namespace DAVA
@@ -344,6 +351,17 @@ void UIControlSystem::Draw()
 void UIControlSystem::SwitchInputToControl(uint32 eventID, UIControl* targetControl)
 {
     return inputSystem->SwitchInputToControl(eventID, targetControl);
+}
+
+bool UIControlSystem::HandleInputEvent(const InputEvent& inputEvent)
+{
+    UIEvent uie = MakeUIEvent(inputEvent);
+    if (uie.phase != UIEvent::Phase::ERROR)
+    {
+        OnInput(&uie);
+        return true; // ????
+    }
+    return false;
 }
 
 void UIControlSystem::OnInput(UIEvent* newEvent)
@@ -776,5 +794,165 @@ void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)
     DVASSERT((time > 0.0f) && (inch > 0.0f));
     doubleClickTime = time;
     doubleClickInchSquare = inch * inch;
+}
+
+UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
+{
+    UIEvent uie;
+    uie.phase = UIEvent::Phase::ERROR;
+    uie.timestamp = inputEvent.timestamp;
+    uie.window = inputEvent.window;
+
+    if (inputEvent.deviceType == eInputDeviceTypes::KEYBOARD)
+    {
+        uie.device = eInputDevices::KEYBOARD;
+        uie.key = inputEvent.elementId;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        if (inputEvent.keyboardEvent.charCode > 0)
+        {
+            uie.phase = inputEvent.keyboardEvent.charRepeated ? UIEvent::Phase::CHAR_REPEAT : UIEvent::Phase::CHAR;
+            uie.keyChar = inputEvent.keyboardEvent.charCode;
+        }
+        else
+        {
+            if (inputEvent.digitalState.IsReleased())
+            {
+                uie.phase = UIEvent::Phase::KEY_UP;
+            }
+            else
+            {
+                if (inputEvent.digitalState.IsJustPressed())
+                {
+                    uie.phase = UIEvent::Phase::KEY_DOWN;
+                }
+                else
+                {
+                    uie.phase = UIEvent::Phase::KEY_DOWN_REPEAT;
+                }
+            }
+        }
+    }
+    else if (IsMouseInputElement(inputEvent.elementId))
+    {
+        uie.device = eInputDevices::MOUSE;
+        uie.mouseButton = eMouseButtons::NONE;
+        uie.isRelative = inputEvent.mouseEvent.isRelative;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
+        AnalogElementState mousePosition = mouse->GetPosition();
+        AnalogElementState mouseWheelDelta = mouse->GetWheelDelta();
+
+        switch (inputEvent.elementId)
+        {
+        case eInputElements::MOUSE_LBUTTON:
+        case eInputElements::MOUSE_RBUTTON:
+        case eInputElements::MOUSE_MBUTTON:
+        case eInputElements::MOUSE_EXT1BUTTON:
+        case eInputElements::MOUSE_EXT2BUTTON:
+            uie.phase = inputEvent.digitalState.IsPressed() ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.mouseButton = static_cast<eMouseButtons>(inputEvent.elementId - eInputElements::MOUSE_LBUTTON + 1);
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            break;
+        case eInputElements::MOUSE_WHEEL:
+            uie.phase = UIEvent::Phase::WHEEL;
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            uie.wheelDelta = { mouseWheelDelta.x, mouseWheelDelta.y };
+            break;
+        case eInputElements::MOUSE_POSITION:
+            // TODO: Holy shit, how to make multiple DRAG UIEvents from single inputEvent
+            uie.mouseButton = TranslateMouseElementToButtons(mouse->GetFirstPressedButton());
+            uie.phase = uie.mouseButton == eMouseButtons::NONE ? UIEvent::Phase::MOVE : UIEvent::Phase::DRAG;
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            break;
+        default:
+            DVASSERT(0, "Unexpected mouse input element");
+            break;
+        }
+    }
+    else if (IsTouchInputElement(inputEvent.elementId))
+    {
+        uie.device = eInputDevices::TOUCH_SURFACE;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        const bool isDigitalEvent = IsTouchClickInputElement(inputEvent.elementId);
+
+        // UIEvent's touch id = touch index + 1 (since 0 means 'no touch' inside of UI system)
+
+        if (isDigitalEvent)
+        {
+            AnalogElementState analogState = inputEvent.device->GetAnalogElementState(GetTouchPositionElementFromClickElement(inputEvent.elementId));
+
+            uie.phase = inputEvent.digitalState.IsPressed() ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.physPoint = { analogState.x, analogState.y };
+
+            uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_CLICK + 1;
+        }
+        else
+        {
+            uie.phase = UIEvent::Phase::DRAG;
+            uie.physPoint = { inputEvent.analogState.x, inputEvent.analogState.y };
+            uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_POSITION + 1;
+        }
+    }
+
+    return uie;
+}
+
+eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
+{
+    eModifierKeys modifierKeys = eModifierKeys::NONE;
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard != nullptr)
+    {
+        DigitalElementState lctrl = keyboard->GetKeyState(eInputElements::KB_LCTRL);
+        DigitalElementState rctrl = keyboard->GetKeyState(eInputElements::KB_RCTRL);
+        if (lctrl.IsPressed() | rctrl.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::CONTROL;
+        }
+
+        DigitalElementState lshift = keyboard->GetKeyState(eInputElements::KB_LSHIFT);
+        DigitalElementState rshift = keyboard->GetKeyState(eInputElements::KB_RSHIFT);
+        if (lshift.IsPressed() | rshift.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::SHIFT;
+        }
+
+        DigitalElementState lalt = keyboard->GetKeyState(eInputElements::KB_LALT);
+        DigitalElementState ralt = keyboard->GetKeyState(eInputElements::KB_RALT);
+        if (lalt.IsPressed() | ralt.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::ALT;
+        }
+
+        DigitalElementState lcmd = keyboard->GetKeyState(eInputElements::KB_LCMD);
+        DigitalElementState rcmd = keyboard->GetKeyState(eInputElements::KB_RCMD);
+        if (lcmd.IsPressed() | rcmd.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::COMMAND;
+        }
+    }
+    return modifierKeys;
+}
+
+eMouseButtons UIControlSystem::TranslateMouseElementToButtons(eInputElements element)
+{
+    switch (element)
+    {
+    case eInputElements::MOUSE_LBUTTON:
+        return eMouseButtons::LEFT;
+    case eInputElements::MOUSE_RBUTTON:
+        return eMouseButtons::RIGHT;
+    case eInputElements::MOUSE_MBUTTON:
+        return eMouseButtons::MIDDLE;
+    case eInputElements::MOUSE_EXT1BUTTON:
+        return eMouseButtons::EXTENDED1;
+    case eInputElements::MOUSE_EXT2BUTTON:
+        return eMouseButtons::EXTENDED2;
+    default:
+        return eMouseButtons::NONE;
+    }
 }
 }

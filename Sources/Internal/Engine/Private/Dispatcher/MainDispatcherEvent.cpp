@@ -149,13 +149,14 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowVisibleFrameChangedEvent(Wi
     return e;
 }
 
-MainDispatcherEvent MainDispatcherEvent::CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 key, eModifierKeys modifierKeys, bool isRepeated)
+MainDispatcherEvent MainDispatcherEvent::CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 keyScancode, uint32 keyVirtual, eModifierKeys modifierKeys, bool isRepeated)
 {
     DVASSERT(keyEventType == KEY_DOWN || keyEventType == KEY_UP || keyEventType == KEY_CHAR);
 
     MainDispatcherEvent e(keyEventType, window);
     e.timestamp = SystemTimer::GetMs();
-    e.keyEvent.key = key;
+    e.keyEvent.keyScancode = keyScancode;
+    e.keyEvent.keyVirtual = keyVirtual;
     e.keyEvent.modifierKeys = modifierKeys;
     e.keyEvent.isRepeated = isRepeated;
     return e;
@@ -264,6 +265,12 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowSwipeGestureEvent(Window* w
 MainDispatcherEvent MainDispatcherEvent::CreateWindowCaptureLostEvent(Window* window)
 {
     MainDispatcherEvent e(WINDOW_CAPTURE_LOST, window);
+    return e;
+}
+
+MainDispatcherEvent MainDispatcherEvent::CreateInputLanguageChangedEvent()
+{
+    MainDispatcherEvent e(INPUT_LANGUAGE_CHANGED);
     return e;
 }
 } // namespace Private
