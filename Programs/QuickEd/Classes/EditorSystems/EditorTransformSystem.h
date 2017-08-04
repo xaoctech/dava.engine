@@ -69,8 +69,6 @@ private:
 
     void CorrectNodesToMove();
     void UpdateNeighboursToMove();
-    void SetNodesMoveRestrictions();
-    DAVA::Vector2 TruncateMouseDelta(DAVA::Vector2 mouseDelta, const EditorTransformSystem::MoveInfo* moveInfo);
 
     void ClampAngle();
     struct MagnetLine;
