@@ -63,6 +63,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene* scene)
     landCollWorld->setDebugDrawer(landDebugDrawer);
 
     scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
 }
 
 SceneCollisionSystem::~SceneCollisionSystem()
@@ -70,6 +71,7 @@ SceneCollisionSystem::~SceneCollisionSystem()
     if (GetScene())
     {
         GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+        GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
     }
 
     for (const auto& etc : objectToCollision)
@@ -477,6 +479,11 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
     switch (event)
     {
     case DAVA::EventSystem::SWITCH_CHANGED:
+    {
+        UpdateCollisionObject(Selectable(component->GetEntity()));
+        break;
+    }
+    case DAVA::EventSystem::GEO_DECAL_CHANGED:
     {
         UpdateCollisionObject(Selectable(component->GetEntity()));
         break;

@@ -30,6 +30,8 @@ void GeoDecalSystem::BakeDecals()
             RemoveCreatedDecals(entity, geoDecalComponent);
             BuildDecal(entity, geoDecalComponent);
             decal.second.lastValidConfig = currentConfig;
+
+            GlobalEventSystem::Instance()->Event(geoDecalComponent, EventSystem::GEO_DECAL_CHANGED);
         }
     }
 }
