@@ -10,18 +10,18 @@ DAVA_FORWARD_DECLARE_OBJC_CLASS(GCGamepad);
 
 namespace DAVA
 {
-class GamepadDevice;
+class Gamepad;
 namespace Private
 {
 struct MainDispatcherEvent;
-class GamepadDeviceImpl final
+class GamepadImpl final
 {
 public:
-    GamepadDeviceImpl(GamepadDevice* gamepadDevice);
+    GamepadImpl(Gamepad* gamepadDevice);
 
     void Update();
-    void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad, float32 buf[]);
-    void ReadGamepadElements(GCGamepad* gamepad, float32 buf[]);
+    void ReadExtendedGamepadElements(GCExtendedGamepad* gamepad);
+    void ReadGamepadElements(GCGamepad* gamepad);
 
     void HandleGamepadMotion(const MainDispatcherEvent&)
     {
@@ -33,7 +33,9 @@ public:
     bool HandleGamepadAdded(uint32 id);
     bool HandleGamepadRemoved(uint32 id);
 
-    GamepadDevice* gamepadDevice = nullptr;
+    void DetermineSupportedElements();
+
+    Gamepad* gamepadDevice = nullptr;
     GCController* controller = nullptr;
 };
 

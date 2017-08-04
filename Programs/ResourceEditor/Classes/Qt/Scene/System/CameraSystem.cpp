@@ -10,8 +10,10 @@
 // framework
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Scene.h"
+#include "Engine/Engine.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/Keyboard.h"
 #include "Render/RenderHelper.h"
 
 #include "Scene3D/Systems/Controller/WASDControllerSystem.h"
@@ -307,17 +309,24 @@ void SceneCameraSystem::ScrollCamera(DAVA::float32 dy)
 
 void SceneCameraSystem::OnKeyboardInput(DAVA::UIEvent* event)
 {
-    const auto isModificatorPressed =
-    DAVA::InputSystem::Instance()->GetKeyboard().IsKeyPressed(DAVA::Key::LCTRL) ||
-    DAVA::InputSystem::Instance()->GetKeyboard().IsKeyPressed(DAVA::Key::LALT) ||
-    DAVA::InputSystem::Instance()->GetKeyboard().IsKeyPressed(DAVA::Key::LSHIFT);
+    bool isModificatorPressed = false;
+
+    DAVA::Keyboard* kb = DAVA::GetEngineContext()->deviceManager->GetKeyboard();
+    if (kb != nullptr)
+    {
+        isModificatorPressed =
+        kb->GetKeyState(DAVA::eInputElements::KB_LCTRL).IsPressed() ||
+        kb->GetKeyState(DAVA::eInputElements::KB_LALT).IsPressed() ||
+        kb->GetKeyState(DAVA::eInputElements::KB_LSHIFT).IsPressed();
+    }
+
     if (isModificatorPressed)
         return;
 
     switch (event->key)
     {
-    case DAVA::Key::ADD:
-    case DAVA::Key::EQUALS:
+    case DAVA::eInputElements::KB_NUMPAD_PLUS:
+    case DAVA::eInputElements::KB_EQUALS:
     {
         auto entity = GetEntityWithEditorCamera();
         auto snapComponent = GetSnapToLandscapeControllerComponent(entity);
@@ -329,8 +338,8 @@ void SceneCameraSystem::OnKeyboardInput(DAVA::UIEvent* event)
         }
     }
     break;
-    case DAVA::Key::SUBTRACT:
-    case DAVA::Key::MINUS:
+    case DAVA::eInputElements::KB_NUMPAD_MINUS:
+    case DAVA::eInputElements::KB_MINUS:
     {
         auto entity = GetEntityWithEditorCamera();
         auto snapComponent = GetSnapToLandscapeControllerComponent(entity);
@@ -343,20 +352,20 @@ void SceneCameraSystem::OnKeyboardInput(DAVA::UIEvent* event)
     }
     break;
 
-    case DAVA::Key::KEY_T:
+    case DAVA::eInputElements::KB_T:
         MoveTo(DAVA::Vector3(0, 0, 200), DAVA::Vector3(1, 0, 0));
         break;
 
-    case DAVA::Key::KEY_1:
+    case DAVA::eInputElements::KB_1:
         SetMoveSpeedArrayIndex(0);
         break;
-    case DAVA::Key::KEY_2:
+    case DAVA::eInputElements::KB_2:
         SetMoveSpeedArrayIndex(1);
         break;
-    case DAVA::Key::KEY_3:
+    case DAVA::eInputElements::KB_3:
         SetMoveSpeedArrayIndex(2);
         break;
-    case DAVA::Key::KEY_4:
+    case DAVA::eInputElements::KB_4:
         SetMoveSpeedArrayIndex(3);
         break;
 
