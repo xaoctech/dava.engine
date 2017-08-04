@@ -704,7 +704,11 @@ void UIPackageLoader::ProcessLegacyStaticText(const ReflectedType* ref, const Ya
                         }
                         else
                         {
-                            DVASSERT(false && "Invalid fitting combination!");
+                            if (points)
+                            {
+                                res = UITextComponent::eTextFitting::FITTING_POINTS;
+                            }
+                            Logger::Warning("[UIPackageLoader::ProcessLegacyStaticText] Invalid fitting combination!");
                         }
                         builder->ProcessProperty(*field, res);
                     }
