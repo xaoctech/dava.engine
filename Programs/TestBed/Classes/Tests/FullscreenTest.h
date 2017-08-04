@@ -28,7 +28,7 @@ private:
     void OnMulDown(DAVA::BaseObject* sender, void* data, void* callerData);
     void On3DViewControllClick(DAVA::BaseObject* sender, void* data, void* callerData);
     void OnPinningClick(DAVA::BaseObject* sender, void* data, void* callerData);
-    bool OnToggleFullscreen(DAVA::UIEvent* uie);
+    bool OnToggleFullscreen(const DAVA::InputEvent& uie);
     void OnWindowSizeChanged(DAVA::Window*, DAVA::Size2f windowSize, DAVA::Size2f surfaceSize);
 
     DAVA::UIStaticText* currentModeText = nullptr;
