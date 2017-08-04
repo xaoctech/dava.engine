@@ -633,7 +633,6 @@ public final class DavaActivity extends Activity
                 }
             }
         });
-
     }
 
     // Invoked from c++ thread and tells that Engine has entered Run method

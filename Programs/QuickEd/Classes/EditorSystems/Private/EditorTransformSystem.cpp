@@ -1,5 +1,4 @@
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
 
 #include "UI/Preview/Data/CanvasData.h"
 
@@ -325,7 +324,7 @@ void EditorTransformSystem::OnDragStateChanged(EditorSystemsManager::eDragState 
     }
 }
 
-void EditorTransformSystem::ProcessKey(Key key)
+void EditorTransformSystem::ProcessKey(eInputElements key)
 {
     PrepareDrag();
     if (!selectedControlNodes.empty())
@@ -338,16 +337,16 @@ void EditorTransformSystem::ProcessKey(Key key)
         Vector2 deltaPos;
         switch (key)
         {
-        case Key::LEFT:
+        case eInputElements::KB_LEFT:
             deltaPos.dx -= step.dx;
             break;
-        case Key::UP:
+        case eInputElements::KB_UP:
             deltaPos.dy -= step.dy;
             break;
-        case Key::RIGHT:
+        case eInputElements::KB_RIGHT:
             deltaPos.dx += step.dx;
             break;
-        case Key::DOWN:
+        case eInputElements::KB_DOWN:
             deltaPos.dy += step.dy;
             break;
         default:

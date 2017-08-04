@@ -732,6 +732,7 @@ def build_with_autotools(source_folder_path,
                          configure_exec_name='configure',
                          make_exec_name='make',
                          make_targets=['all', 'install'],
+                         shell_prefix='sh',
                          postclean=True):
     if isinstance(configure_exec_name, list):
         if sys.platform == 'win32':
@@ -739,13 +740,13 @@ def build_with_autotools(source_folder_path,
         else:
             cmd = ['./{}'.format(configure_exec_name[0])]
             cmd.extend(configure_exec_name[1:])
-            cmd.insert(0, 'sh')
+            cmd.insert(0, shell_prefix)
     else:
         if sys.platform == 'win32':
             cmd = [configure_exec_name]
         else:
             cmd = ['./{}'.format(configure_exec_name)]
-            cmd.insert(0, 'sh')
+            cmd.insert(0, shell_prefix)
 
     cmd.extend(configure_args)
     if install_dir is not None:
