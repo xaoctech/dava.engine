@@ -1,0 +1,41 @@
+#include "TArc/Controls/ColorPicker/ColorPickerSettings.h"
+
+#include <Reflection/ReflectionRegistrator.h>
+#include <Reflection/ReflectedMeta.h>
+
+#include <QDataStream>
+#include <QColor>
+
+namespace DAVA
+{
+namespace TArc
+{
+ColorPickerSettings::ColorPickerSettings()
+{
+    const DAVA::int32 nColors = Qt::darkYellow - Qt::black + 1;
+    Vector<QColor> colors;
+    for (int i = 0; i < nColors; i++)
+    {
+        colors.push_back(QColor(Qt::GlobalColor(i + Qt::black)));
+    }
+
+    QByteArray paletteData;
+    QDataStream paletteStream(&paletteData, QIODevice::WriteOnly);
+
+    for (int i = 0; i < nColors; i++)
+    {
+        paletteStream << colors[i].rgba();
+    }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ColorPickerSettings)
+{
+    ReflectionRegistrator<ColorPickerSettings>::Begin()[M::DisplayName("Color Picker"), M::SettingsSortKey(0)]
+    .ConstructorByPointer()
+    .Field("maxMultiplier", &ColorPickerSettings::maxMultiplier)[M::DisplayName("Maximum multiplier")]
+    .Field("customPalette", &ColorPickerSettings::customPalette)[M::HiddenField()]
+    .Field("dialogGeometry", &ColorPickerSettings::dialogGeometry)[M::HiddenField()]
+    .End();
+}
+} // namespace TArc
+} // namespace DAVA

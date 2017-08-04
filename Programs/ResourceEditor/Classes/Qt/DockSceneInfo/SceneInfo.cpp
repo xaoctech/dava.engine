@@ -1,6 +1,5 @@
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Qt/Main/QtUtils.h"
 #include "Qt/Scene/SceneSignals.h"
 #include "Qt/Scene/SceneEditor2.h"
@@ -11,12 +10,13 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Selection/SelectionData.h"
+#include "Classes/Application/RESettings.h"
 
 #include "ImageTools/ImageTools.h"
 #include "Commands2/Base/RECommandNotificationObject.h"
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Core/FieldBinder.h>
 
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Render/TextureDescriptor.h"
@@ -278,7 +278,8 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap& textures)
     String projectPath = data->GetProjectPath().GetAbsolutePathname();
     uint32 textureSize = 0;
 
-    eGPUFamily requestedGPU = static_cast<eGPUFamily>(SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32());
+    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    eGPUFamily requestedGPU = settings->textureViewGPU;
 
     TexturesMap::const_iterator endIt = textures.end();
     for (TexturesMap::const_iterator it = textures.begin(); it != endIt; ++it)

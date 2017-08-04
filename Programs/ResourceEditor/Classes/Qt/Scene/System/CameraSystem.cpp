@@ -1,36 +1,29 @@
-#include <QApplication>
-#include <QDebug>
+#include "Classes/Qt/Scene/System/CameraSystem.h"
 
-#include "Scene/SceneEditor2.h"
-#include "Scene/System/CameraSystem.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/HoodSystem.h"
-#include "Classes/Settings/SettingsManager.h"
-
-// framework
-#include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Scene.h"
-#include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
-#include "Render/RenderHelper.h"
-
-#include "Scene3D/Systems/Controller/WASDControllerSystem.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
-
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-
-#include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
-
-#include "Commands2/RemoveComponentCommand.h"
-#include "Commands2/AddComponentCommand.h"
-
-#include "../StringConstants.h"
-
-#include "../../Main/QtUtils.h"
-#include "Classes/Settings/SettingsManager.h"
-
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/Selection.h"
+#include "Classes/SceneManager/SceneData.h"
+
+#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/System/CollisionSystem.h"
+#include "Classes/Qt/Scene/System/HoodSystem.h"
+#include "Classes/Qt/Main/QtUtils.h"
+
+#include "Classes/Commands2/RemoveComponentCommand.h"
+#include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/StringConstants.h"
+
+#include <Scene3D/Components/CameraComponent.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/Controller/WASDControllerSystem.h>
+#include <Scene3D/Systems/Controller/RotationControllerSystem.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h>
+#include <Input/InputSystem.h>
+#include <Input/KeyboardDevice.h>
+#include <Render/RenderHelper.h>
 
 #include <QDebug>
 
@@ -96,19 +89,21 @@ DAVA::float32 SceneCameraSystem::GetMoveSpeed()
 {
     DAVA::float32 speed = 1.0;
 
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+
     switch (activeSpeedIndex)
     {
     case 0:
-        speed = SettingsManager::GetValue(Settings::Scene_CameraSpeed0).AsFloat();
+        speed = settings->cameraSpeed0;
         break;
     case 1:
-        speed = SettingsManager::GetValue(Settings::Scene_CameraSpeed1).AsFloat();
+        speed = settings->cameraSpeed1;
         break;
     case 2:
-        speed = SettingsManager::GetValue(Settings::Scene_CameraSpeed2).AsFloat();
+        speed = settings->cameraSpeed2;
         break;
     case 3:
-        speed = SettingsManager::GetValue(Settings::Scene_CameraSpeed3).AsFloat();
+        speed = settings->cameraSpeed3;
         break;
     }
 
@@ -289,12 +284,12 @@ bool SceneCameraSystem::Input(DAVA::UIEvent* event)
 
 void SceneCameraSystem::ScrollCamera(DAVA::float32 dy)
 {
-    bool moveCamera = SettingsManager::GetValue(Settings::General_Mouse_WheelMoveCamera).AsBool();
-    if (!moveCamera)
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    if (settings->wheelMoveCamera == false)
         return;
 
-    DAVA::int32 reverse = SettingsManager::GetValue(Settings::General_Mouse_InvertWheel).AsBool() ? -1 : 1;
-    DAVA::float32 moveIntence = SettingsManager::GetValue(Settings::General_Mouse_WheelMoveIntensity).AsFloat();
+    DAVA::int32 reverse = settings->invertWheel ? -1 : 1;
+    DAVA::float32 moveIntence = settings->wheelMoveIntensity;
     int offset = dy * moveIntence;
 #ifdef Q_OS_MAC
     offset *= reverse * -1;
@@ -323,9 +318,10 @@ void SceneCameraSystem::OnKeyboardInput(DAVA::UIEvent* event)
         auto snapComponent = GetSnapToLandscapeControllerComponent(entity);
         if (snapComponent != nullptr)
         {
-            const auto height = snapComponent->GetHeightOnLandscape() + SettingsManager::Instance()->GetValue(Settings::Scene_CameraHeightOnLandscapeStep).AsFloat();
+            GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+            DAVA::float32 height = snapComponent->GetHeightOnLandscape() + settings->heightOnLandscapeStep;
             snapComponent->SetHeightOnLandscape(height);
-            SettingsManager::Instance()->SetValue(Settings::Scene_CameraHeightOnLandscape, DAVA::VariantType(height));
+            settings->heightOnLandscape = height;
         }
     }
     break;
@@ -336,9 +332,10 @@ void SceneCameraSystem::OnKeyboardInput(DAVA::UIEvent* event)
         auto snapComponent = GetSnapToLandscapeControllerComponent(entity);
         if (snapComponent != nullptr)
         {
-            const auto height = snapComponent->GetHeightOnLandscape() - SettingsManager::Instance()->GetValue(Settings::Scene_CameraHeightOnLandscapeStep).AsFloat();
+            GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+            DAVA::float32 height = snapComponent->GetHeightOnLandscape() - settings->heightOnLandscapeStep;
             snapComponent->SetHeightOnLandscape(height);
-            SettingsManager::Instance()->SetValue(Settings::Scene_CameraHeightOnLandscape, DAVA::VariantType(height));
+            settings->heightOnLandscape = height;
         }
     }
     break;
@@ -410,13 +407,15 @@ void SceneCameraSystem::CreateDebugCameras()
     // there already can be other cameras in scene
     if (nullptr != scene)
     {
+        GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+
         DAVA::ScopedPtr<DAVA::Camera> topCamera(new DAVA::Camera());
         topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
         topCamera->SetPosition(DAVA::Vector3(-50.0f, 0.0f, 50.0f));
         topCamera->SetTarget(DAVA::Vector3(0.0f, 0.1f, 0.0f));
-        DAVA::float32 cameraFov = SettingsManager::GetValue(Settings::Scene_CameraFOV).AsFloat();
-        DAVA::float32 cameraNear = SettingsManager::GetValue(Settings::Scene_CameraNear).AsFloat();
-        DAVA::float32 cameraFar = SettingsManager::GetValue(Settings::Scene_CameraFar).AsFloat();
+        DAVA::float32 cameraFov = settings->cameraFOV;
+        DAVA::float32 cameraNear = settings->cameraNear;
+        DAVA::float32 cameraFar = settings->cameraFar;
         topCamera->SetupPerspective(cameraFov, 320.0f / 480.0f, cameraNear, cameraFar);
         topCamera->SetAspect(1.0f);
 
@@ -592,7 +591,7 @@ bool SceneCameraSystem::SnapEditorCameraToLandscape(bool snap)
     {
         if (!snapComponent)
         {
-            DAVA::float32 height = SettingsManager::Instance()->GetValue(Settings::Scene_CameraHeightOnLandscape).AsFloat();
+            DAVA::float32 height = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->heightOnLandscape;
 
             snapComponent = static_cast<DAVA::SnapToLandscapeControllerComponent*>(DAVA::Component::CreateByType(DAVA::Component::SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT));
             snapComponent->SetHeightOnLandscape(height);

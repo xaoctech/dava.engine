@@ -283,9 +283,36 @@ void PropertiesView::SetupUI()
     layout->setSpacing(0);
     setLayout(layout);
 
-    QToolBar* toolBar = new QToolBar(this);
-    toolBar->setFixedHeight(PropertiesViewDetail::ToolBarHeight);
-    layout->addWidget(toolBar);
+    if (params.showToolBar == true)
+    {
+        QToolBar* toolBar = new QToolBar(this);
+        toolBar->setFixedHeight(PropertiesViewDetail::ToolBarHeight);
+        layout->addWidget(toolBar);
+
+        // Toolbar setup
+        QAction* favoriteModeAction = new QAction(toolBar);
+        favoriteModeAction->setCheckable(true);
+        QIcon icon;
+        icon.addFile(QStringLiteral(":/QtIcons/star.png"), QSize(), QIcon::Normal, QIcon::Off);
+        favoriteModeAction->setIcon(icon);
+        toolBar->addAction(favoriteModeAction);
+        connections.AddConnection(favoriteModeAction, &QAction::toggled, MakeFunction(this, &PropertiesView::OnFavoritesEditChanged));
+
+        Reflection thisModel = Reflection::Create(ReflectedObject(this));
+        {
+            ComboBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+            controlParams.fields[ComboBox::Fields::Value] = "viewMode";
+            ComboBox* comboBox = new ComboBox(controlParams, params.accessor, thisModel, toolBar);
+            toolBar->addWidget(comboBox->ToWidgetCast());
+        }
+
+        {
+            CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+            controlParams.fields[CheckBox::Fields::Checked] = "devMode";
+            CheckBox* checkBox = new CheckBox(controlParams, params.accessor, thisModel, toolBar);
+            toolBar->addWidget(checkBox->ToWidgetCast());
+        }
+    }
 
     view = new PropertiesTreeView(this);
     view->setObjectName(QString("%1_propertiesview").arg(QString::fromStdString(params.settingsNodeName)));
@@ -295,30 +322,6 @@ void PropertiesView::SetupUI()
     view->setModel(model.get());
     view->setRootIndex(QModelIndex());
     view->setItemDelegate(new PropertiesViewDelegate(view, model.get(), this));
-
-    // Toolbar setup
-    QAction* favoriteModeAction = new QAction(toolBar);
-    favoriteModeAction->setCheckable(true);
-    QIcon icon;
-    icon.addFile(QStringLiteral(":/QtIcons/star.png"), QSize(), QIcon::Normal, QIcon::Off);
-    favoriteModeAction->setIcon(icon);
-    toolBar->addAction(favoriteModeAction);
-    connections.AddConnection(favoriteModeAction, &QAction::toggled, MakeFunction(this, &PropertiesView::OnFavoritesEditChanged));
-
-    Reflection thisModel = Reflection::Create(ReflectedObject(this));
-    {
-        ComboBox::Params controlParams(params.accessor, params.ui, params.wndKey);
-        controlParams.fields[ComboBox::Fields::Value] = "viewMode";
-        ComboBox* comboBox = new ComboBox(controlParams, params.accessor, thisModel, toolBar);
-        toolBar->addWidget(comboBox->ToWidgetCast());
-    }
-
-    {
-        CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
-        controlParams.fields[CheckBox::Fields::Checked] = "devMode";
-        CheckBox* checkBox = new CheckBox(controlParams, params.accessor, thisModel, toolBar);
-        toolBar->addWidget(checkBox->ToWidgetCast());
-    }
 
     QHeaderView* headerView = view->header();
     connections.AddConnection(headerView, &QHeaderView::sectionResized, MakeFunction(this, &PropertiesView::OnColumnResized));
@@ -333,8 +336,19 @@ void PropertiesView::OnObjectsChanged(const Any& objects)
     }
     else
     {
-        DVASSERT(objects.CanCast<Vector<Reflection>>());
-        model->SetObjects(objects.Cast<Vector<Reflection>>());
+        if (objects.CanCast<Vector<Reflection>>())
+        {
+            model->SetObjects(objects.Cast<Vector<Reflection>>());
+        }
+        else if (objects.CanCast<Reflection>())
+        {
+            Vector<Reflection> modelData(1, objects.Cast<Reflection>());
+            model->SetObjects(modelData);
+        }
+        else
+        {
+            DVASSERT(false);
+        }
     }
     UpdateViewRootIndex();
     UpdateExpanded();

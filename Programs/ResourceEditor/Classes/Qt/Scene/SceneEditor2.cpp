@@ -5,7 +5,6 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/Selection.h"
 
-#include "Settings/SettingsManager.h"
 #include "Deprecated/SceneValidator.h"
 #include "Commands2/Base/RECommandStack.h"
 #include "Commands2/Base/RECommandNotificationObject.h"

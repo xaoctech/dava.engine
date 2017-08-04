@@ -5,7 +5,6 @@
 #include "Classes/Selection/Selectable.h"
 
 #include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/StringConstants.h"
 
 #include <Tools/Version.h>
@@ -18,6 +17,7 @@
 #include "Engine/EngineContext.h"
 #include "FileSystem/ResourceArchive.h"
 #include "FileSystem/FileSystem.h"
+#include "SettingsConverter.h"
 
 class LaunchModule::FirstSceneCreator : public QObject, private DAVA::TArc::DataListener
 {
@@ -62,18 +62,19 @@ void LaunchModule::PostInit()
     Selectable::AddTransformProxyForClass<DAVA::Entity, EntityTransformProxy>();
     Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, EmitterTransformProxy>();
 
-    delayedExecutor.DelayedExecute([this]()
-                                   {
-                                       InvokeOperation(REGlobal::OpenLastProjectOperation.ID);
-                                   });
+    delayedExecutor.DelayedExecute([this]() {
+        InvokeOperation(REGlobal::OpenLastProjectOperation.ID);
+    });
+
     UnpackHelpDoc();
     new FirstSceneCreator(this);
 }
 
 void LaunchModule::UnpackHelpDoc()
 {
+    DAVA::TArc::PropertiesItem versionsInfo = GetAccessor()->CreatePropertiesNode("VersionsInfo");
     const DAVA::EngineContext* engineContext = GetAccessor()->GetEngineContext();
-    DAVA::String editorVer = SettingsManager::GetValue(Settings::Internal_EditorVersion).AsString();
+    DAVA::String editorVer = versionsInfo.Get("EditorVersion", DAVA::String(""));
     DAVA::FilePath docsPath = DAVA::FilePath(ResourceEditor::DOCUMENTATION_PATH);
     if (editorVer != APPLICATION_BUILD_VERSION || !engineContext->fileSystem->Exists(docsPath))
     {
@@ -91,5 +92,5 @@ void LaunchModule::UnpackHelpDoc()
             DVASSERT(false && "can't upack Help.docs");
         }
     }
-    SettingsManager::SetValue(Settings::Internal_EditorVersion, DAVA::VariantType(DAVA::String(APPLICATION_BUILD_VERSION)));
+    versionsInfo.Set("EditorVersion", DAVA::String(APPLICATION_BUILD_VERSION));
 }

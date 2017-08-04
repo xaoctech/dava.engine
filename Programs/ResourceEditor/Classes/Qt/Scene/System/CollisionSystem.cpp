@@ -1,32 +1,31 @@
-#include "Base/AlignedAllocator.h"
-#include "Math/AABBox3.h"
-#include "Functional/Function.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/CollisionSystem/CollisionRenderObject.h"
-#include "Scene/System/CollisionSystem/CollisionLandscape.h"
-#include "Scene/System/CollisionSystem/CollisionBox.h"
-#include "Scene/System/CameraSystem.h"
-#include "Scene/SceneEditor2.h"
-
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Commands2/TransformCommand.h"
-#include "Commands2/ParticleEditorCommands.h"
-#include "Commands2/EntityParentChangeCommand.h"
-#include "Commands2/CreatePlaneLODCommand.h"
-#include "Commands2/DeleteLODCommand.h"
-#include "Commands2/InspMemberModifyCommand.h"
-#include "Commands2/ConvertToBillboardCommand.h"
-
-#include "Settings/SettingsManager.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Application/REGlobal.h"
+#include "Classes/Commands2/SetFieldValueCommand.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/TransformCommand.h"
+#include "Classes/Commands2/ParticleEditorCommands.h"
+#include "Classes/Commands2/EntityParentChangeCommand.h"
+#include "Classes/Commands2/CreatePlaneLODCommand.h"
+#include "Classes/Commands2/DeleteLODCommand.h"
+#include "Classes/Commands2/InspMemberModifyCommand.h"
+#include "Classes/Commands2/ConvertToBillboardCommand.h"
 
 #include "Classes/Selection/Selection.h"
 
-// framework
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Scene.h"
-#include "Commands2/SetFieldValueCommand.h"
+#include "Classes/Qt/Scene/System/CollisionSystem.h"
+#include "Classes/Qt/Scene/System/CollisionSystem/CollisionRenderObject.h"
+#include "Classes/Qt/Scene/System/CollisionSystem/CollisionLandscape.h"
+#include "Classes/Qt/Scene/System/CollisionSystem/CollisionBox.h"
+#include "Classes/Qt/Scene/System/CameraSystem.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Scene.h>
+#include <Math/AABBox3.h>
+#include <Functional/Function.h>
+#include <Base/AlignedAllocator.h>
 
 #define SIMPLE_COLLISION_BOX_SIZE 1.0f
 
@@ -333,7 +332,7 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
     // reset ray cache on new frame
     rayIntersectCached = false;
 
-    drawMode = SettingsManager::GetValue(Settings::Scene_CollisionDrawMode).AsInt32();
+    drawMode = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->collisionDrawMode;
     if (drawMode & CS_DRAW_LAND_COLLISION)
     {
         DAVA::Vector3 tmp;
@@ -583,15 +582,17 @@ CollisionObj InitCollision(bool createCollision, Args... args)
 
 void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bool createCollision, const TCallBack& callback)
 {
-    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxScale).AsFloat();
-    DAVA::float32 debugBoxParticleScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxParticleScale).AsFloat();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+
+    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
+    DAVA::float32 debugBoxParticleScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxParticleScale;
     if (object.CanBeCastedTo<DAVA::Entity>())
     {
         CollisionDetails::CollisionObj result;
         DAVA::Entity* entity = object.AsEntity();
 
-        DAVA::float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxUserScale).AsFloat();
-        DAVA::float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxWaypointScale).AsFloat();
+        DAVA::float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxUserScale;
+        DAVA::float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxWaypointScale;
 
         DAVA::Landscape* landscape = DAVA::GetLandscape(entity);
         if (landscape != nullptr)

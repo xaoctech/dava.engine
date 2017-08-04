@@ -4,6 +4,8 @@
 #include "Scene/SceneEditor2.h"
 #include "Classes/Selection/SelectableGroup.h"
 #include "Classes/Selection/Selection.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 
 #include "Main/QtUtils.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
@@ -14,8 +16,6 @@
 #include "TextureBrowser/TextureCache.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "TextureBrowser/TextureInfo.h"
-
-#include "Settings/SettingsManager.h"
 
 #include "QtTools/Utils/Utils.h"
 
@@ -487,34 +487,11 @@ bool MaterialModel::dropCanBeAccepted(const QMimeData* data, Qt::DropAction acti
 void MaterialModel::ReloadLodSwColors()
 {
     QString key;
-
-    for (int i = 0; i < supportedLodColorsCount; ++i)
-    {
-        key.sprintf("General/MaterialEditor/LodColor%d", i);
-
-        DAVA::VariantType val = SettingsManager::GetValue(key.toStdString());
-        if (val.type == DAVA::VariantType::TYPE_COLOR)
-        {
-            lodColors[i] = ColorToQColor(val.AsColor());
-        }
-        else
-        {
-            lodColors[i] = QColor();
-        }
-    }
-
-    for (int i = 0; i < supportedSwColorsCount; ++i)
-    {
-        key.sprintf("General/MaterialEditor/SwitchColor%d", i);
-
-        DAVA::VariantType val = SettingsManager::GetValue(key.toStdString());
-        if (val.type == DAVA::VariantType::TYPE_COLOR)
-        {
-            switchColors[i] = ColorToQColor(val.AsColor());
-        }
-        else
-        {
-            switchColors[i] = QColor();
-        }
-    }
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    lodColors[0] = ColorToQColor(settings->materialEditorLodColor0);
+    lodColors[1] = ColorToQColor(settings->materialEditorLodColor1);
+    lodColors[2] = ColorToQColor(settings->materialEditorLodColor2);
+    lodColors[3] = ColorToQColor(settings->materialEditorLodColor3);
+    switchColors[0] = ColorToQColor(settings->materialEditorSwitchColor0);
+    switchColors[1] = ColorToQColor(settings->materialEditorSwitchColor1);
 }

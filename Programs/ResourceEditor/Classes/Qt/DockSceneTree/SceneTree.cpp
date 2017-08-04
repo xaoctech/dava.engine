@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <QSignalBlocker>
 
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
 #include "Deprecated/SceneValidator.h"
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
@@ -77,7 +77,8 @@ void SaveEmitter(SceneEditor2* scene, DAVA::ParticleEffectComponent* component, 
     DAVA::FilePath yamlPath = emitter->configPath;
     if (askFileName)
     {
-        DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastSaveEmitterDir).AsFilePath();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        DAVA::FilePath defaultPath = settings->emitterSaveDir;
         QString particlesPath = defaultPath.IsEmpty() ? GetParticlesConfigPath() : QString::fromStdString(defaultPath.GetAbsolutePathname());
 
         DAVA::FileSystem::Instance()->CreateDirectory(DAVA::FilePath(particlesPath.toStdString()), true); //to ensure that folder is created
@@ -92,8 +93,7 @@ void SaveEmitter(SceneEditor2* scene, DAVA::ParticleEffectComponent* component, 
         }
 
         yamlPath = DAVA::FilePath(filePath.toStdString());
-
-        SettingsManager::SetValue(Settings::Internal_ParticleLastSaveEmitterDir, DAVA::VariantType(yamlPath.GetDirectory()));
+        settings->emitterSaveDir = yamlPath.GetDirectory();
     }
 
     scene->Exec(commandCreator(yamlPath));
@@ -532,8 +532,8 @@ private:
         params.scene = scene;
         params.cameraToGrab = GetCamera(entityItem->GetEntity());
         DVASSERT(params.cameraToGrab.Get() != nullptr);
-        params.imageSize = DAVA::Size2i(SettingsManager::GetValue(Settings::Scene_Grab_Size_Width).AsInt32(),
-                                        SettingsManager::GetValue(Settings::Scene_Grab_Size_Height).AsInt32());
+        GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+        params.imageSize = DAVA::Size2i(settings->grabSizeWidth, settings->grabSizeHeight);
         params.outputFile = filePath.toStdString();
 
         SceneImageGrabber::GrabImage(params);
@@ -752,7 +752,8 @@ protected:
 
     void LoadEmitterFromYaml()
     {
-        DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastLoadEmitterDir).AsFilePath();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        DAVA::FilePath defaultPath = settings->emitterLoadDir;
         QString particlesPath = defaultPath.IsEmpty() ? SceneTreeDetails::GetParticlesConfigPath() : QString::fromStdString(defaultPath.GetAbsolutePathname());
 
         QString selectedPath = FileDialog::getOpenFileName(nullptr, QStringLiteral("Open Particle Emitter Yaml file"), particlesPath, QStringLiteral("YAML File (*.yaml)"));
@@ -760,7 +761,7 @@ protected:
         if (selectedPath.isEmpty() == false)
         {
             DAVA::FilePath yamlPath = selectedPath.toStdString();
-            SettingsManager::SetValue(Settings::Internal_ParticleLastLoadEmitterDir, DAVA::VariantType(yamlPath.GetDirectory()));
+            settings->emitterLoadDir = yamlPath.GetDirectory();
 
             GetScene()->Exec(CreateLoadCommand(yamlPath));
             MarkStructureChanged();
@@ -969,7 +970,8 @@ void SceneTree::dragMoveEvent(QDragMoveEvent* event)
 {
     QTreeView::dragMoveEvent(event);
 
-    if (SettingsManager::GetValue(Settings::Scene_DragAndDropWithShift).AsBool() && ((event->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    if (settings->dragAndDropWithShift == true && ((event->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
     {
         event->setDropAction(Qt::IgnoreAction);
         event->accept();

@@ -9,7 +9,6 @@
 #include "Commands2/KeyedArchiveCommand.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Scene/SceneSignals.h"
-#include "Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
 #include "Main/QtUtils.h"
 

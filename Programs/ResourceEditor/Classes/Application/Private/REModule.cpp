@@ -1,5 +1,7 @@
 #include "Classes/Application/REModule.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/Private/SettingsConverter.h"
 
 #include "Main/mainwindow.h"
 #include "TextureCache.h"
@@ -42,6 +44,12 @@ public:
 };
 }
 
+REModule::REModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
+}
+
 REModule::~REModule()
 {
     GetAccessor()->GetGlobalContext()->DeleteData<REModuleDetail::REGlobalData>();
@@ -50,6 +58,7 @@ REModule::~REModule()
 void REModule::PostInit()
 {
     DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+    ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
 
     const DAVA::EngineContext* engineContext = accessor->GetEngineContext();
     engineContext->localizationSystem->InitWithDirectory("~res:/Strings/");

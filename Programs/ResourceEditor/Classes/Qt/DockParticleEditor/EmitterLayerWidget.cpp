@@ -3,7 +3,6 @@
 #include "Commands2/ParticleLayerCommands.h"
 
 #include "TextureBrowser/TextureConvertor.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "ImageTools/ImageTools.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"

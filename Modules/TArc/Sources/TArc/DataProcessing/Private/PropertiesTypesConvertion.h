@@ -11,6 +11,34 @@ bool PropertiesItem::Impl::FromValue(const QJsonValue& value, const bool& defaul
 }
 
 template <>
+int8 PropertiesItem::Impl::FromValue(const QJsonValue& value, const int8& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<int8>(value.toDouble(defaultValue));
+}
+
+template <>
+uint8 PropertiesItem::Impl::FromValue(const QJsonValue& value, const uint8& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<uint8>(value.toDouble(defaultValue));
+}
+
+template <>
+int16 PropertiesItem::Impl::FromValue(const QJsonValue& value, const int16& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<int16>(value.toDouble(defaultValue));
+}
+
+template <>
+uint16 PropertiesItem::Impl::FromValue(const QJsonValue& value, const uint16& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<uint16>(value.toDouble(defaultValue));
+}
+
+template <>
 int32 PropertiesItem::Impl::FromValue(const QJsonValue& value, const int32& defaultValue)
 {
     //QJsonValue actually doesn't store int
@@ -156,6 +184,30 @@ QJsonValue PropertiesItem::Impl::ToValue(const bool& value)
 }
 
 template <>
+QJsonValue PropertiesItem::Impl::ToValue(const int8& value)
+{
+    return QJsonValue(value);
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const uint8& value)
+{
+    return QJsonValue(static_cast<int32>(value));
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const int16& value)
+{
+    return QJsonValue(value);
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const uint16& value)
+{
+    return QJsonValue(static_cast<int32>(value));
+}
+
+template <>
 QJsonValue PropertiesItem::Impl::ToValue(const int32& value)
 {
     return QJsonValue(value);
@@ -166,6 +218,7 @@ QJsonValue PropertiesItem::Impl::ToValue(const uint32& value)
 {
     return QJsonValue(static_cast<int32>(value));
 }
+
 template <>
 QJsonValue PropertiesItem::Impl::ToValue(const int64& value)
 {

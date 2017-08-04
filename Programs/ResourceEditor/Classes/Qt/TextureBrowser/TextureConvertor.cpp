@@ -1,3 +1,19 @@
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
+
+#include "Classes/Qt/Main/mainwindow.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Deprecated/SceneValidator.h"
+#include "Classes/ImageTools/ImageTools.h"
+
+#include <Tools/TextureCompression/TextureConverter.h>
+
+#include <Render/Image/LibDdsHelper.h>
+#include <FileSystem/FileSystem.h>
+
+
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
@@ -6,20 +22,6 @@
 #include <QFileInfo>
 #include <QtConcurrent>
 #include <QImage>
-
-#include "Main/mainwindow.h"
-#include "TextureBrowser/TextureConvertor.h"
-#include "Deprecated/SceneValidator.h"
-
-#include <Tools/TextureCompression/TextureConverter.h>
-
-#include "Render/Image/LibDdsHelper.h"
-#include "FileSystem/FileSystem.h"
-
-#include "Main/QtUtils.h"
-#include "Scene/SceneHelper.h"
-#include "ImageTools/ImageTools.h"
-#include "Settings/SettingsManager.h"
 
 TextureConvertor::TextureConvertor()
     : jobIdCounter(1)
@@ -529,8 +531,8 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 
         if (convert)
         {
-            DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
-            outputPath = DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, static_cast<DAVA::TextureConverter::eConvertQuality>(quality.AsInt32()));
+            GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+            outputPath = DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, settings->compressionQuality);
         }
 
         DAVA::Vector<DAVA::Image*> davaImages;

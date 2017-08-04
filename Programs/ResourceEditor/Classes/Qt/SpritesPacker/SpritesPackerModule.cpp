@@ -2,20 +2,19 @@
 
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
-#include "Settings/Settings.h"
-#include "Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
 
-#include "Functional/Function.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/WindowSubSystem/UI.h>
+
+#include <QtTools/ReloadSprites/DialogReloadSprites.h>
+#include <QtTools/ReloadSprites/SpritesPacker.h>
 
 #include <Tools/AssetCache/AssetCacheClient.h>
-#include "QtTools/ReloadSprites/DialogReloadSprites.h"
-#include "QtTools/ReloadSprites/SpritesPacker.h"
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/WindowSubSystem/UI.h"
-
-#include "Job/JobManager.h"
-#include "Render/2D/Sprite.h"
+#include <Job/JobManager.h>
+#include <Render/2D/Sprite.h>
+#include <Functional/Function.h>
 
 #include <QAction>
 #include <QDir>
@@ -111,8 +110,7 @@ void SpritesPackerModule::ReloadObjects()
     const DAVA::Vector<DAVA::eGPUFamily>& gpus = spritesPacker->GetResourcePacker().requestedGPUs;
     if (gpus.empty() == false)
     {
-        DAVA::uint32 gpu = gpus[0];
-        SettingsManager::SetValue(Settings::Internal_SpriteViewGPU, DAVA::VariantType(gpu));
+        REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->spritesViewGPU = gpus[0];
     }
 
     emit SpritesReloaded();
@@ -121,11 +119,12 @@ void SpritesPackerModule::ReloadObjects()
 void SpritesPackerModule::ConnectCacheClient()
 {
     DVASSERT(cacheClient == nullptr);
-    if (SettingsManager::GetValue(Settings::General_AssetCache_UseCache).AsBool())
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    if (settings->useAssetCache == true)
     {
-        DAVA::String ipStr = SettingsManager::GetValue(Settings::General_AssetCache_Ip).AsString();
-        DAVA::uint16 port = static_cast<DAVA::uint16>(SettingsManager::GetValue(Settings::General_AssetCache_Port).AsUInt32());
-        DAVA::uint64 timeoutSec = SettingsManager::GetValue(Settings::General_AssetCache_Timeout).AsUInt32();
+        DAVA::String ipStr = settings->assetCacheIP;
+        DAVA::uint16 port = settings->assetCachePort;
+        DAVA::uint64 timeoutSec = settings->assetCacheTimeout;
 
         DAVA::AssetCacheClient::ConnectionParams params;
         params.ip = (ipStr.empty() ? DAVA::AssetCache::GetLocalHost() : ipStr);

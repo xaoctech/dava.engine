@@ -40,6 +40,7 @@ public:
 
     template <typename T>
     T Get(const String& key, const T& defaultValue = T()) const;
+    Any Get(const String& key, const Any& defaultValue, const Type* type) const;
 
     PropertiesItem(const PropertiesItem& holder) = delete;
     PropertiesItem(PropertiesItem&& holder);
@@ -50,7 +51,6 @@ private:
     friend class PropertiesHolder;
     //RootPropertiesHolder use this empty c-tor
     PropertiesItem();
-    Any Get(const String& key, const Any& defaultValue, const Type* type) const;
     PropertiesItem(const PropertiesItem& parent, const String& name);
 
     struct Impl;

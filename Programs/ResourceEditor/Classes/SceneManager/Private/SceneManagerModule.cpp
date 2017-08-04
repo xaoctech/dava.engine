@@ -3,17 +3,17 @@
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
+#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
-#include "Scene/System/EditorParticlesSystem.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -67,6 +67,7 @@ public:
 SceneManagerModule::SceneManagerModule()
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneData);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GlobalSceneSettings);
 }
 
 SceneManagerModule::~SceneManagerModule() = default;
@@ -75,8 +76,7 @@ void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)
 {
     DAVA::Renderer::SetDesiredFPS(60);
 
-    DAVA::uint32 val = SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32();
-    DAVA::eGPUFamily family = static_cast<DAVA::eGPUFamily>(val);
+    DAVA::eGPUFamily family = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU;
     DAVA::Texture::SetGPULoadingOrder({ family });
 
     QtMainWindow* wnd = qobject_cast<QtMainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
@@ -207,7 +207,7 @@ void SceneManagerModule::PostInit()
         return v.CanCast<DAVA::FilePath>() && !v.Cast<DAVA::FilePath>().IsEmpty();
     };
     params.getMaximumCount = []() {
-        return SettingsManager::GetValue(Settings::General_RecentFilesCount).AsInt32();
+        return 5;
     };
     params.insertionParams.method = InsertionParams::eInsertionMethod::AfterItem;
     params.insertionParams.item = QString("importSeparator");
@@ -890,10 +890,9 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
     using namespace DAVA::TArc;
     if (SaveTileMaskInAllScenes())
     {
-        SettingsManager::SetValue(Settings::Internal_TextureViewGPU, DAVA::VariantType(static_cast<DAVA::uint32>(gpu)));
+        CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+        settings->textureViewGPU = gpu;
         DAVA::Texture::SetGPULoadingOrder({ gpu });
-
-        DAVA::eGPUFamily gpu = static_cast<DAVA::eGPUFamily>(SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32());
 
         SceneHelper::TextureCollector collector;
         DAVA::Set<DAVA::NMaterial*> allSceneMaterials;
@@ -1181,7 +1180,7 @@ bool SceneManagerModule::SaveSceneImpl(DAVA::RefPtr<SceneEditor2> scene, const D
         return false;
     }
 
-    if (SettingsManager::GetValue(Settings::Scene_SaveEmitters).AsBool() == true)
+    if (GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->saveEmitters == true)
     {
         scene->SaveEmitters(DAVA::MakeFunction(this, &SceneManagerModule::SaveEmitterFallback));
     }
@@ -1231,7 +1230,8 @@ DAVA::FilePath SceneManagerModule::GetSceneSavePath(const DAVA::RefPtr<SceneEdit
 
 DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName)
 {
-    DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastSaveEmitterDir).AsFilePath();
+    CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+    DAVA::FilePath defaultPath = settings->emitterSaveDir;
     if (defaultPath.IsEmpty())
     {
         ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
@@ -1254,7 +1254,7 @@ DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entit
     DAVA::FilePath result(savePath.toStdString());
     if (!result.IsEmpty())
     {
-        SettingsManager::SetValue(Settings::Internal_ParticleLastSaveEmitterDir, DAVA::VariantType(result));
+        settings->emitterSaveDir = result;
     }
 
     return result;

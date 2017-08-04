@@ -186,6 +186,11 @@ public:
         return propertiesHolder->CreateSubHolder(nodeName);
     }
 
+    const PropertiesHolder& GetPropertiesHolder() override
+    {
+        return *propertiesHolder.get();
+    }
+
     const EngineContext* GetEngineContext() override
     {
         const EngineContext* engineContext = engine.GetContext();

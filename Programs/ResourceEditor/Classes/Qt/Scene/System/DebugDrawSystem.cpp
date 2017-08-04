@@ -9,6 +9,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 
 #include "Classes/Selection/Selection.h"
+#include "SceneManager/SceneData.h"
 
 using namespace DAVA;
 
@@ -194,9 +195,9 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
 
 void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
 {
-    SettingsManager* settings = SettingsManager::Instance();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
 
-    if (!settings->GetValue(Settings::Scene_Sound_SoundObjectDraw).AsBool())
+    if (settings->drawSoundObjects == false)
         return;
 
     DAVA::SoundComponent* sc = GetSoundComponent(entity);
@@ -210,7 +211,7 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
         {
             localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
 
-            Color soundColor = settings->GetValue(Settings::Scene_Sound_SoundObjectBoxColor).AsColor();
+            Color soundColor = settings->soundObjectBoxColor;
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, ClampToUnityRange(soundColor), RenderHelper::DRAW_SOLID_DEPTH);
         }
     }
@@ -218,9 +219,8 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
 
 void DebugDrawSystem::DrawSelectedSoundNode(DAVA::Entity* entity)
 {
-    SettingsManager* settings = SettingsManager::Instance();
-
-    if (!settings->GetValue(Settings::Scene_Sound_SoundObjectDraw).AsBool())
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    if (settings->drawSoundObjects == false)
         return;
 
     DAVA::SoundComponent* sc = GetSoundComponent(entity);
@@ -241,8 +241,7 @@ void DebugDrawSystem::DrawSelectedSoundNode(DAVA::Entity* entity)
             SoundEvent* sEvent = sc->GetSoundEvent(i);
             float32 distance = sEvent->GetMaxDistance();
 
-            Color soundColor = settings->GetValue(Settings::Scene_Sound_SoundObjectSphereColor).AsColor();
-
+            Color soundColor = settings->soundObjectSphereColor;
             sceneEditor->GetRenderSystem()->GetDebugDrawer()->DrawIcosahedron(position, distance,
                                                                               ClampToUnityRange(soundColor), RenderHelper::DRAW_SOLID_DEPTH);
 
@@ -322,7 +321,7 @@ void DebugDrawSystem::CollectRenderBatchesRecursively(Entity* entity, RenderBatc
 DAVA::float32 DebugDrawSystem::GetMinimalZ(const RenderBatchesWithTransforms& batches) const
 {
     float32 minZ = AABBOX_INFINITY;
-    for (auto batch : batches)
+    for (const auto& batch : batches)
     {
         PolygonGroup* polygonGroup = batch.first->GetPolygonGroup();
         for (uint32 v = 0, e = polygonGroup->GetVertexCount(); v < e; ++v)
@@ -338,7 +337,7 @@ DAVA::float32 DebugDrawSystem::GetMinimalZ(const RenderBatchesWithTransforms& ba
 void DebugDrawSystem::GetLowestVertexes(const RenderBatchesWithTransforms& batches, DAVA::Vector<DAVA::Vector3>& vertexes) const
 {
     const float32 minZ = GetMinimalZ(batches);
-    for (auto batch : batches)
+    for (const auto& batch : batches)
     {
         float32 scale = std::sqrt(batch.second._20 * batch.second._20 + batch.second._21 * batch.second._21 + batch.second._22 * batch.second._22);
         PolygonGroup* polygonGroup = batch.first->GetPolygonGroup();

@@ -5,9 +5,9 @@
 #include "Classes/Project/ProjectManagerModule.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Application/LaunchModule.h"
+#include "Classes/Application/RESettings.h"
 
 #include <Tools/TextureCompression/PVRConverter.h>
-#include "Settings/SettingsManager.h"
 #include "Deprecated/SceneValidator.h"
 #include "Preferences/PreferencesStorage.h"
 #include "Deprecated/EditorConfig.h"
@@ -33,9 +33,10 @@
 
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
-#include "TArc/Core/Core.h"
-#include "TArc/Testing/TArcTestClass.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <TArc/Core/Core.h>
+#include <TArc/Testing/TArcTestClass.h>
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
@@ -131,17 +132,15 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsFolder);
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
 
-    settingsManager = new SettingsManager();
 #if !defined(DEPLOY_BUILD)
-    RenderingBackend renderBackend = static_cast<RenderingBackend>(settingsManager->GetValue(Settings::General_RenderBackend).AsInt32());
-    appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
+//RenderingBackend renderBackend = static_cast<RenderingBackend>(settingsManager->GetValue(Settings::General_RenderBackend).AsInt32());
+//appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
 #endif
 
     beastProxy = new BEAST_PROXY_TYPE();
     const char* settingsPath = "ResourceEditorSettings.archive";
     DAVA::FilePath localPrefrencesPath(engineContext->fileSystem->GetCurrentDocumentsDirectory() + settingsPath);
     PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
-    SettingsManager::UpdateGPUSettings();
 
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
@@ -160,7 +159,6 @@ void REApplication::Cleanup()
 {
     REGlobal::InitTArcCore(nullptr);
     DAVA::SafeRelease(beastProxy);
-    DAVA::SafeRelease(settingsManager);
 
     VisibilityCheckSystem::ReleaseCubemapRenderTargets();
 
@@ -185,6 +183,7 @@ QString REApplication::GetInstanceKey() const
 void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
 {
     Q_INIT_RESOURCE(QtToolsResources);
+    tarcCore->CreateModule<DAVA::TArc::SettingsModule>();
     tarcCore->CreateModule<ReflectionExtensionsModule>();
     tarcCore->CreateModule<REModule>();
     tarcCore->CreateModule<ProjectManagerModule>();

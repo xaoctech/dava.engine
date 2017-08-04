@@ -829,6 +829,22 @@ QString UIManager::GetExistingDirectory(const WindowKey& windowKey, const Direct
     return dirPath;
 }
 
+int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
+{
+    DVASSERT(dlg != nullptr);
+    UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
+    if (windowInfo != nullptr)
+    {
+        dlg->setParent(windowInfo->window.data());
+        dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
+        dlg->setModal(true);
+    }
+
+    int result = dlg->exec();
+    dlg->setParent(nullptr);
+    return result;
+}
+
 ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)
 {
     using namespace UIManagerDetail;

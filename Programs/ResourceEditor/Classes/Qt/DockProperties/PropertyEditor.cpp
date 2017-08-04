@@ -35,11 +35,9 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 
-#include "TArc/DataProcessing/DataContext.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
 
-#include "Classes/Settings/SettingsManager.h"
 #include "PropertyEditorStateHelper.h"
 
 #include "ActionComponentEditor.h"
@@ -51,7 +49,8 @@
 #include "QtTools/Updaters/LazyUpdater.h"
 #include "QtTools/WidgetHelpers/SharedIcon.h"
 
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Core/FieldBinder.h>
 
 #include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
@@ -1510,10 +1509,6 @@ void PropertyEditor::OnAddRotationControllerComponent()
 void PropertyEditor::OnAddSnapToLandscapeControllerComponent()
 {
     DAVA::SnapToLandscapeControllerComponent* snapComponent = static_cast<DAVA::SnapToLandscapeControllerComponent*>(DAVA::Component::CreateByType(DAVA::Component::SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT));
-
-    DAVA::float32 height = SettingsManager::Instance()->GetValue(Settings::Scene_CameraHeightOnLandscape).AsFloat();
-    snapComponent->SetHeightOnLandscape(height);
-
     OnAddComponent(snapComponent);
 
     SafeDelete(snapComponent);
