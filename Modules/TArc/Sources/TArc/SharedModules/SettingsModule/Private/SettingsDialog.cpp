@@ -116,7 +116,7 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     : QDialog(parent)
     , params(params_)
 {
-    //setWindowFlags(Qt::Tool);
+    setWindowFlags(Qt::Tool);
     setWindowTitle("Settings");
 
     updater.reset(new TimerUpdater(5000, TimerUpdater::DisableFastUpdate));
@@ -163,12 +163,6 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     }
 
     setLayout(dlgLayout);
-    LoadState();
-}
-
-void SettingsDialog::closeEvent(QCloseEvent* e)
-{
-    SaveState();
 }
 
 void SettingsDialog::OnResetPressed()
@@ -184,24 +178,6 @@ void SettingsDialog::OnResetPressed()
     {
         resetSettings.Emit();
     }
-}
-
-void SettingsDialog::LoadState()
-{
-    PropertiesItem pi = params.accessor->CreatePropertiesNode(SettingsDialogDetails::settingsDialogPropertiesNode);
-    QRect geometry = pi.Get("geometry", QRect());
-
-    if (geometry.isValid())
-    {
-        setGeometry(geometry);
-        move(geometry.topLeft());
-    }
-}
-
-void SettingsDialog::SaveState()
-{
-    PropertiesItem pi = params.accessor->CreatePropertiesNode(SettingsDialogDetails::settingsDialogPropertiesNode);
-    pi.Set("geometry", geometry());
 }
 
 DAVA_REFLECTION_IMPL(SettingsDialog)

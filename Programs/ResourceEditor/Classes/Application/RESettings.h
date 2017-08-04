@@ -21,7 +21,7 @@ class PropertiesItem;
 } // namespace TArc
 } // namespace DAVA
 
-enum class RenderingBackend : int
+enum class RenderingBackend
 {
     DX11 = 0,
     DX9,

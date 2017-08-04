@@ -79,11 +79,15 @@ public:
         return engine.IsConsoleMode();
     }
 
-    virtual void OnLoopStarted()
+    void PostInit()
     {
         FileSystem* fileSystem = GetEngineContext()->fileSystem;
         DVASSERT(fileSystem != nullptr);
         propertiesHolder.reset(new PropertiesHolder("TArcProperties", fileSystem->GetCurrentDocumentsDirectory()));
+    }
+
+    virtual void OnLoopStarted()
+    {
     }
 
     virtual void OnLoopStopped()
@@ -933,6 +937,11 @@ void Core::SetInvokeListener(OperationInvoker* proxyInvoker)
     GuiImpl* guiImpl = dynamic_cast<GuiImpl*>(impl.get());
     DVASSERT(guiImpl != nullptr);
     guiImpl->SetInvokeListener(proxyInvoker);
+}
+
+void Core::PostInit()
+{
+    impl->PostInit();
 }
 
 } // namespace TArc

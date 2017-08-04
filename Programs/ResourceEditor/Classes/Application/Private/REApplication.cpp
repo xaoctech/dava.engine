@@ -53,6 +53,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QCryptographicHash>
+#include "TArc/DataProcessing/PropertiesHolder.h"
 
 namespace REApplicationDetail
 {
@@ -104,6 +105,28 @@ DAVA::TArc::BaseApplication::EngineInitInfo REApplication::GetInitInfo() const
 
 void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 {
+    DAVA::TArc::ContextAccessor* accessor = tarcCore->GetCoreInterface();
+    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+    RenderingBackend renderBackend = item.Get("renderBackend", RenderingBackend::OpenGL);
+
+    appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
+
+    renderBackEndListener.reset(new DAVA::TArc::FieldBinder(accessor));
+    DAVA::TArc::FieldDescriptor descr;
+    descr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
+    descr.fieldName = DAVA::FastName("renderBackend");
+
+    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v)
+                                     {
+                                         if (v.IsEmpty() == true)
+                                         {
+                                             return;
+                                         }
+
+                                         DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+                                         item.Set("renderBackend", v);
+                                     });
+
     REGlobal::InitTArcCore(tarcCore);
     if (isConsoleMode)
     {
@@ -117,6 +140,9 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 
 void REApplication::Init(const DAVA::EngineContext* engineContext)
 {
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
+
 #if defined(__DAVAENGINE_MACOS__)
     const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI";
 #elif defined(__DAVAENGINE_WIN32__)
@@ -148,11 +174,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "ResourceEditor");
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
-
-#if !defined(DEPLOY_BUILD)
-//RenderingBackend renderBackend = static_cast<RenderingBackend>(settingsManager->GetValue(Settings::General_RenderBackend).AsInt32());
-//appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
-#endif
 
     beastProxy = new BEAST_PROXY_TYPE();
     const char* settingsPath = "ResourceEditorSettings.archive";

@@ -27,13 +27,8 @@ public:
 
     Signal<> resetSettings;
 
-protected:
-    void closeEvent(QCloseEvent* e) override;
-
 private:
     void OnResetPressed();
-    void LoadState();
-    void SaveState();
 
 private:
     PropertiesView* view = nullptr;

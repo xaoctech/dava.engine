@@ -3,6 +3,7 @@
 #include "TArc/Core/ControllerModule.h"
 #include "TArc/WindowSubSystem/UI.h"
 #include "TArc/Utils/DebuggerDetection.h"
+#include "TArc/SharedModules/SettingsModule/SettingsModule.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -143,6 +144,8 @@ void TestClass::Init()
         mockInvoker.reset(new MockInvoker());
         core->SetInvokeListener(mockInvoker.get());
 
+        core->PostInit();
+        core->CreateModule<DAVA::TArc::SettingsModule>();
         CreateTestedModules();
         if (!core->HasControllerModule())
         {
@@ -168,6 +171,12 @@ void TestClass::DirectUpdate(float32 timeElapsed, const String& testName)
 bool TestClass::DirectTestComplete(const String& testName) const
 {
     DVASSERT(core != nullptr);
+
+    if (core->GetUI()->HasActiveWaitDalogues() == true)
+    {
+        return false;
+    }
+
     auto iter = std::find_if(tests.begin(), tests.end(), [&testName](const TestInfo& testInfo)
                              {
                                  return testInfo.name == testName;

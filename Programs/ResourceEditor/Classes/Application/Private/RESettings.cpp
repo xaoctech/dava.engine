@@ -42,7 +42,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeneralSettings)
     .Field("assetCacheTimeout", &GeneralSettings::assetCacheTimeout)[DAVA::M::DisplayName("Timeout"), DAVA::M::Group("Asset Cache")]
     .Field("autoConversion", &GeneralSettings::autoConversion)[DAVA::M::DisplayName("Convert automatically"), DAVA::M::Group("Texture Browser")]
     .Field("renderBackend", &GeneralSettings::renderBackend)[
-#if !defined(DEPLOY_BUILD)
+#if defined(DEPLOY_BUILD)
     DAVA::M::HiddenField(),
 #endif
     DAVA::M::DisplayName("Backend"), DAVA::M::Group("Renderer"), DAVA::M::EnumT<RenderingBackend>()]
@@ -55,7 +55,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeneralSettings)
 void GeneralSettings::Load(const DAVA::TArc::PropertiesItem& settingsNode)
 {
     SettingsNode::Load(settingsNode);
-#if !defined(DEPLOY_BUILD)
+#if defined(DEPLOY_BUILD)
     renderBackend = RenderingBackend::OpenGL;
 #endif
 }

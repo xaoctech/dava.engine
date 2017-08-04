@@ -836,11 +836,27 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
     if (windowInfo != nullptr)
     {
         dlg->setParent(windowInfo->window.data());
-        dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
-        dlg->setModal(true);
+    }
+
+    dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
+    dlg->setModal(true);
+
+    QString dialogName = dlg->objectName();
+    if (dialogName.isEmpty() == true)
+    {
+        dialogName = dlg->windowTitle();
+    }
+
+    PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+    QRect dialogRect = pi.Get("geometry", QRect());
+    if (dialogRect.isValid())
+    {
+        dlg->setGeometry(dialogRect);
+        dlg->move(dialogRect.topLeft());
     }
 
     int result = dlg->exec();
+    pi.Set("geometry", dlg->geometry());
     dlg->setParent(nullptr);
     return result;
 }

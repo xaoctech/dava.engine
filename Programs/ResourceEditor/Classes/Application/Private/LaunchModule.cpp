@@ -9,15 +9,13 @@
 
 #include <Tools/Version.h>
 
-#include "TArc/DataProcessing/DataListener.h"
-#include "TArc/DataProcessing/DataWrapper.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <TArc/DataProcessing/DataListener.h>
+#include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/Utils/ModuleCollection.h>
 
-#include "Particles/ParticleEmitterInstance.h"
-#include "Engine/EngineContext.h"
-#include "FileSystem/ResourceArchive.h"
-#include "FileSystem/FileSystem.h"
-#include "SettingsConverter.h"
+#include <Particles/ParticleEmitterInstance.h>
+#include <FileSystem/ResourceArchive.h>
+#include <FileSystem/FileSystem.h>
 
 class LaunchModule::FirstSceneCreator : public QObject, private DAVA::TArc::DataListener
 {

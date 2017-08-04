@@ -6,9 +6,9 @@
 #include "Main/mainwindow.h"
 #include "TextureCache.h"
 
-#include "TArc/WindowSubSystem/Private/UIManager.h"
-#include "TArc/DataProcessing/DataNode.h"
-#include "UI/Render/UIRenderSystem.h"
+#include <TArc/WindowSubSystem/Private/UIManager.h>
+#include <TArc/DataProcessing/DataNode.h>
+#include <UI/Render/UIRenderSystem.h>
 
 #include <QPointer>
 
@@ -46,8 +46,6 @@ public:
 
 REModule::REModule()
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
 }
 
 REModule::~REModule()

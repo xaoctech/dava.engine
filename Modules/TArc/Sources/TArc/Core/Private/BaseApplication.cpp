@@ -72,6 +72,7 @@ int BaseApplication::RunImpl()
 
         Core core(e);
         Init(&core);
+        core.PostInit();
         CreateModules(&core);
         return e.Run();
     }

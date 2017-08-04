@@ -148,11 +148,8 @@ void SettingsManager::CreateSettingsImpl(const TypeInheritance* inheritance)
     for (const TypeInheritance::Info& typeInfo : derivedClasses)
     {
         const ReflectedType* nodeType = ReflectedTypeDB::GetByType(typeInfo.type);
-        if (nodeType == nullptr)
-        {
-            Logger::Warning("Settings type without reflected type detected: %s", typeInfo.type->GetName());
-            continue;
-        }
+        DVASSERT(nodeType != nullptr, Format("Settings type without reflected type detected: %s", typeInfo.type->GetName()).c_str());
+        DVASSERT(nodeType->GetCtor(nodeType->GetType()->Pointer()) != nullptr);
 
         SettingsNode* node = nodeType->CreateObject(ReflectedType::CreatePolicy::ByPointer).Cast<SettingsNode*>();
         settings->nodes.push_back(node);

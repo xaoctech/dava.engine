@@ -61,7 +61,7 @@ template <typename T>
 T PropertiesItem::Get(const String& key, const T& defaultValue) const
 {
     Any loadedValue = Get(key, defaultValue, Type::Instance<T>());
-    return loadedValue.Get<T>(defaultValue);
+    return loadedValue.Cast<T>(defaultValue);
 }
 
 } // namespace TArc
