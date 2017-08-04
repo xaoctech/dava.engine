@@ -159,6 +159,7 @@ void FileSystemWidget::SelectFile(const QString& filePath)
 {
     QModelIndex index = model->index(filePath);
     //scrollTo will expand all collapsed indexes
+    treeView->scrollTo(index);
     treeView->setCurrentIndex(index);
     fileToSelect = filePath;
 }
