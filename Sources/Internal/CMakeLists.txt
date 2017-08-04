@@ -14,7 +14,7 @@ set( NAME_MODULE ${DAVA_LIBRARY} )
 set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC
 
 set( EXTERNAL_MODULES_WIN           ${DAVA_EXTERNAL_DIR}/cef )
-set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/SampleModule
+set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/Sample
                                     ${DAVA_MODULES_DIR}/NetworkCore
                                     ${DAVA_MODULES_DIR}/Physics
                                     ${DAVA_MODULES_DIR}/PhysicsDebug
@@ -87,8 +87,6 @@ set( DYNAMIC_LIBRARIES_ANDROID      ${DAVA_DYNAMIC_LIBRARIES_ANDROID} )
 set( STATIC_LIBRARIES_LINUX         ${DAVA_STATIC_LIBRARIES_LINUX} )
 
 set( SRC_FOLDERS                    "." )
-
-set( MODULE_MANAGER_TEMPLATE        ModuleManager/ModuleManager.in )
 
 set( CPP_FILES                      ${DAVA_EXTERNAL_DIR}/lz4/*.c
                                     ${DAVA_EXTERNAL_DIR}/imgui/*.cpp)

@@ -33,7 +33,7 @@ dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 if (NOT LINUX)
     # Enable sound after fmod libraries
-    set ( DAVA_COMPONENTS "Sound" "SpineModule" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
+    set ( DAVA_COMPONENTS "Sound" "Spine" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
 else()
     set ( DAVA_COMPONENTS "NetworkCore" DAVA_DISABLE_AUTOTESTS )
 endif()
@@ -43,7 +43,7 @@ if ( WIN32 AND NOT WINDOWS_UAP )
 endif ()
 
 if (NOT ANDROID)
-    list ( APPEND DAVA_COMPONENTS "SampleModule" )
+    list ( APPEND DAVA_COMPONENTS "Sample" )
 endif()
 
 # add physics
@@ -54,7 +54,7 @@ elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
 elseif (LINUX)
     # for now physx is not supported for linux
 else()
-    list ( APPEND DAVA_COMPONENTS "PhysicsModule" )
+    list ( APPEND DAVA_COMPONENTS "Physics" )
 endif()
 
 find_package( Steam REQUIRED )

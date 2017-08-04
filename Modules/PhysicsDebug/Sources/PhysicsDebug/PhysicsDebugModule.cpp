@@ -1,6 +1,7 @@
-#include "PhysicsDebug/PhysicsDebugModule.h"
-#include "Reflection/Reflection.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "PhysicsDebugModule.h"
+
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <physx/PxPhysicsAPI.h>
 #include <PxShared/pvd/PxPvd.h>
