@@ -56,7 +56,7 @@ class Preparation:
 
             cmd = 'java -jar {}/bfg-1.12.15.jar --delete-files {} {}'.format(self.base_path + '/Bin/RepoTools/Scripts/GithubTools', os.path.basename(path), self.repo)
 
-            sys.stdout.write(cmd)
+            sys.stdout.write(cmd + '\n')
             sys.stdout.flush()
             try:
                 cmd_log = subprocess.check_output(cmd, shell=True)
@@ -68,7 +68,7 @@ class Preparation:
 
     def remove_big_files(self):
         cmd = 'java -jar {}/bfg-1.12.15.jar --strip-blobs-bigger-than 99M {}'.format(self.base_path + '/Bin/RepoTools/Scripts/GithubTools', self.repo)
-        sys.stdout.write(cmd)
+        sys.stdout.write(cmd + '\n')
         sys.stdout.flush()
         try:
             cmd_log = subprocess.check_output(cmd, shell=True)
