@@ -14,6 +14,7 @@ class AddKeyedArchiveItemWidget;
 class KeyedArchiveEditor : public DAVA::TArc::BaseComponentValue
 {
 public:
+    KeyedArchiveEditor(const DAVA::Vector<DAVA::String>& presetNames, const DAVA::Vector<DAVA::VariantType>& defaultValues);
     ~KeyedArchiveEditor() override;
 
 protected:
@@ -22,13 +23,24 @@ protected:
 
     DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override;
 
-    void OnButtonClicked();
+    void OnCreatePropertyClicked();
+    void OnCreatePresetPropertyClicked();
     void AddProperty(const DAVA::String& key, const DAVA::VariantType& value);
+
+    bool IsPresetChoosed() const;
+    DAVA::int32 GetChoosedPreset() const;
+    void SetChoosedPreset(DAVA::int32 choosedPreset);
 
 private:
     DAVA::TArc::QtConnections connections;
     static int lastAddedType;
     QPointer<AddKeyedArchiveItemWidget> widget;
+
+    DAVA::Vector<DAVA::String> presetNames;
+    DAVA::Vector<DAVA::VariantType> defaultValues;
+    DAVA::int32 choosedPreset;
+
+    DAVA_VIRTUAL_REFLECTION(KeyedArchiveEditor, DAVA::TArc::BaseComponentValue);
 };
 
 class KeyedArchiveComboPresetEditor : public DAVA::TArc::BaseComponentValue

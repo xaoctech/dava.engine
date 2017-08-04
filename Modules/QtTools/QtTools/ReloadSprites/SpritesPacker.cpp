@@ -4,6 +4,7 @@
 
 #include <Render/2D/Sprite.h>
 #include <Logger/Logger.h>
+#include <Time/SystemTimer.h>
 
 #include <QDir>
 #include <QDirIterator>
@@ -46,7 +47,10 @@ void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFa
         resourcePacker2D.clearOutputDirectory = clearDirs;
         resourcePacker2D.SetConvertQuality(quality);
         resourcePacker2D.InitFolders(inputFilePath, outputFilePath);
+        DAVA::int64 packTime = SystemTimer::GetMs();
         resourcePacker2D.PackResources({ gpu });
+        packTime = SystemTimer::GetMs() - packTime;
+        Logger::Info("Sprites reload time: %.2lf sec", static_cast<float64>(packTime) / 1000.0);
         if (!resourcePacker2D.IsRunning())
         {
             break;

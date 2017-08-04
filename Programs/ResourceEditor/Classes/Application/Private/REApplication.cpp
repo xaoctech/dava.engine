@@ -38,6 +38,8 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 #include "Particles/ParticleEmitter.h"
@@ -127,9 +129,24 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
-    DAVA::FilePath documentsFolder = engineContext->fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
-    engineContext->fileSystem->CreateDirectory(documentsFolder, true);
-    engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsFolder);
+    DAVA::FileSystem* fileSystem = engineContext->fileSystem;
+    
+#ifdef __DAVAENGINE_MACOS__
+    auto copyDocumentsFromOldFolder = [&]
+    {
+        DAVA::FileSystem::eCreateDirectoryResult createResult = DAVA::DocumentsDirectorySetup::CreateApplicationDocDirectory(fileSystem, "ResourceEditor");
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
+            DAVA::FilePath documentsNewFolder = DAVA::DocumentsDirectorySetup::GetApplicationDocDirectory(fileSystem, "ResourceEditor");
+            fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
+        }
+    };
+    copyDocumentsFromOldFolder(); // todo: remove function some versions after
+#endif
+
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "ResourceEditor");
+
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
 
 #if !defined(DEPLOY_BUILD)

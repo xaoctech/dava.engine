@@ -637,6 +637,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         {
             if ((entity->GetComponent(DAVA::Component::SOUND_COMPONENT) != nullptr) ||
                 (entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) != nullptr) ||
+                (entity->GetComponent(DAVA::Component::TEXT_COMPONENT) != nullptr) ||
                 (entity->GetComponent(DAVA::Component::WIND_COMPONENT) != nullptr))
             {
                 result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxScale);
