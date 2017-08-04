@@ -564,6 +564,9 @@ void SceneInfo::UpdateInfoByTimer()
     RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
 
+    CollectSpeedInfo(&Selection::GetSelection());
+    RefreshSpeedTreeInfoSelection();
+
     RefreshVegetationInfoSection();
 
     RefreshLayersSection();
