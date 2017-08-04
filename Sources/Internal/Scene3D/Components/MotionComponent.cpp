@@ -21,7 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
     .Field("configPath", &MotionComponent::GetConfigPath, &MotionComponent::SetConfigPath)[M::DisplayName("Motion Config")]
-    .Field("debugParameter", &MotionComponent::GetDebugParameter, &MotionComponent::SetDebugParameter)[M::DisplayName("Debug Param"), M::Range(0.f, 1.f, 0.01f)]
+    .Field("debugParameter", &MotionComponent::GetDebugParameter, &MotionComponent::SetDebugParameter)[M::DisplayName("Debug Param"), M::Range(0.f, 2.f, 0.01f)]
     .End();
 }
 

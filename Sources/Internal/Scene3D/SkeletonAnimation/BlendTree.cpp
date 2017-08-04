@@ -33,43 +33,86 @@ void BlendTree::BindSkeleton(const SkeletonComponent* skeleton)
 
 void BlendTree::EvaluatePose(float32 phase, const Vector<const Vector2*>& parameters, SkeletonPose* outPose) const
 {
-    EvaluatePoseRecursive(phase, nodes.front(), parameters, outPose);
+    EvaluateRecursive(phase, nodes.front(), parameters, outPose, nullptr);
 }
 
 float32 BlendTree::EvaluatePhaseDuration(const Vector<const Vector2*>& parameters) const
 {
-    return EvaluatePhaseDurationRecursice(nodes.front(), parameters);
+    float32 duration = 1.f;
+    EvaluateRecursive(0.f, nodes.front(), parameters, nullptr, &duration);
+    return duration;
 }
 
-void BlendTree::EvaluatePoseRecursive(float32 phase, const BlendNode& node, const Vector<const Vector2*>& parameters, SkeletonPose* outPose) const
+void BlendTree::EvaluateRecursive(float32 phase, const BlendNode& node, const Vector<const Vector2*>& parameters, SkeletonPose* outPose, float32* outPhaseDuration) const
 {
     switch (node.type)
     {
     case TYPE_ANIMATION:
     {
-        if (node.animData.animationIndex != -1)
-            animations[node.animData.animationIndex].skeletonAnimation->EvaluatePose(phase, outPose);
+        int32 animationIndex = node.animData.animationIndex;
+        if (animationIndex != -1)
+        {
+            SkeletonAnimation* skeletonAnimation = animations[node.animData.animationIndex].skeletonAnimation;
+
+            if (outPose != nullptr)
+                skeletonAnimation->EvaluatePose(phase, outPose);
+
+            if (outPhaseDuration != nullptr)
+                *outPhaseDuration = skeletonAnimation->GetPhaseDuration();
+        }
     }
     break;
     case TYPE_LERP_1D:
     {
         const BlendNode::BlendData& blendData = node.blendData;
-
         int32 childrenCount = blendData.endChildIndex - blendData.beginChildIndex;
-        if (childrenCount == 2)
+        if (childrenCount == 1)
         {
-            const BlendNode& child0 = nodes[blendData.beginChildIndex];
-            const BlendNode& child1 = nodes[blendData.beginChildIndex + 1];
-            float32 coord0 = child0.coord.x;
-            float32 coord1 = child1.coord.x;
+            EvaluateRecursive(phase, nodes[blendData.beginChildIndex], parameters, outPose, outPhaseDuration);
+        }
+        else
+        {
+            float32 parameter = (parameters[blendData.parameterIndex] != nullptr) ? parameters[blendData.parameterIndex]->x : 0.f;
 
-            SkeletonPose pose0, pose1;
-            EvaluatePoseRecursive(phase, child0, parameters, &pose0);
-            EvaluatePoseRecursive(phase, child1, parameters, &pose1);
+            int32 c = blendData.beginChildIndex;
+            for (; c < blendData.endChildIndex; ++c)
+            {
+                if (nodes[c].coord.x >= parameter)
+                    break;
+            }
 
-            float32 param = (parameters[blendData.parameterIndex] != nullptr) ? parameters[blendData.parameterIndex]->x : 0.f;
-            float32 factor = param / (coord1 - coord0);
-            *outPose = SkeletonPose::Lerp(pose0, pose1, factor);
+            if (c == blendData.beginChildIndex)
+            {
+                EvaluateRecursive(phase, nodes[blendData.beginChildIndex], parameters, outPose, outPhaseDuration);
+            }
+            else if (c == blendData.endChildIndex)
+            {
+                EvaluateRecursive(phase, nodes[blendData.endChildIndex - 1], parameters, outPose, outPhaseDuration);
+            }
+            else
+            {
+                const BlendNode& child0 = nodes[c - 1];
+                const BlendNode& child1 = nodes[c];
+                float32 coord0 = child0.coord.x;
+                float32 coord1 = child1.coord.x;
+
+                float32 factor = (parameter - coord0) / (coord1 - coord0);
+                if (outPose != nullptr)
+                {
+                    SkeletonPose pose0, pose1;
+                    EvaluateRecursive(phase, child0, parameters, &pose0, nullptr);
+                    EvaluateRecursive(phase, child1, parameters, &pose1, nullptr);
+                    *outPose = SkeletonPose::Lerp(pose0, pose1, factor);
+                }
+
+                if (outPhaseDuration != nullptr)
+                {
+                    float32 dur0, dur1;
+                    EvaluateRecursive(phase, child0, parameters, nullptr, &dur0);
+                    EvaluateRecursive(phase, child1, parameters, nullptr, &dur1);
+                    *outPhaseDuration = Lerp(dur0, dur1, factor);
+                }
+            }
         }
     }
     break;
@@ -79,47 +122,6 @@ void BlendTree::EvaluatePoseRecursive(float32 phase, const BlendNode& node, cons
     default:
         break;
     }
-}
-
-float32 BlendTree::EvaluatePhaseDurationRecursice(const BlendNode& node, const Vector<const Vector2*>& parameters) const
-{
-    switch (node.type)
-    {
-    case TYPE_ANIMATION:
-    {
-        if (node.animData.animationIndex != -1)
-            return animations[node.animData.animationIndex].skeletonAnimation->GetPhaseDuration();
-    }
-    break;
-    case TYPE_LERP_1D:
-    {
-        const BlendNode::BlendData& blendData = node.blendData;
-
-        int32 childrenCount = blendData.endChildIndex - blendData.beginChildIndex;
-        if (childrenCount == 2)
-        {
-            const BlendNode& child0 = nodes[blendData.beginChildIndex];
-            const BlendNode& child1 = nodes[blendData.beginChildIndex + 1];
-            float32 coord0 = child0.coord.x;
-            float32 coord1 = child1.coord.x;
-
-            float32 dur0 = EvaluatePhaseDurationRecursice(child0, parameters);
-            float32 dur1 = EvaluatePhaseDurationRecursice(child1, parameters);
-
-            float32 param = (parameters[blendData.parameterIndex] != nullptr) ? parameters[blendData.parameterIndex]->x : 0.f;
-            float32 factor = param / (coord1 - coord0);
-            return Lerp(dur0, dur1, factor);
-        }
-    }
-    break;
-    case TYPE_LERP_2D:
-    case TYPE_ADD:
-    case TYPE_SUB:
-    default:
-        break;
-    }
-
-    return 1.f;
 }
 
 //////////////////////////////////////////////////////////////////////////
