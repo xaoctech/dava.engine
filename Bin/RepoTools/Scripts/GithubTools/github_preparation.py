@@ -46,7 +46,7 @@ class Preparation:
                 sys.stdout.flush()
                 self.delete_files.append(path)
 
-        self.delete_files.append(os.path.abspath('white_list.txt'))
+        self.delete_files.append(os.path.abspath(self.base_path + '/Bin/RepoTools/Scripts/GithubTools/white_list.txt'))
 
     def remove_extra(self):
 
