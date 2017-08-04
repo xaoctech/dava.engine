@@ -32,7 +32,8 @@ class Preparation:
             for path in files_list:
                 self.white_list_path.append(os.path.abspath('../../../../' + path.replace('\n', '')))
         except IOError:
-            print 'Unable to open file "white_list.txt"'
+            print "##teamcity[message text='Unable to open file white_list.txt' status='ERROR']"
+            sys.exit(3)
 
     def get_delete_list(self):
         root_path = self.scan_paths()
@@ -56,7 +57,8 @@ class Preparation:
             sys.stdout.write(cmd_log)
             sys.stdout.flush()
         except subprocess.CalledProcessError as cmd_except:
-            print "error code", cmd_except.returncode, cmd_except.output
+            print "##teamcity[message text='Error removing extra files' errorDetails='%s' status='ERROR']" % cmd_except.output
+            sys.exit(3)
 
     def remove_big_files(self):
         cmd = 'java -jar bfg-1.12.15.jar --strip-blobs-bigger-than 99M %s' % self.repo
@@ -67,7 +69,8 @@ class Preparation:
             sys.stdout.write(cmd_log)
             sys.stdout.flush()
         except subprocess.CalledProcessError as cmd_except:
-            print "error code", cmd_except.returncode, cmd_except.output
+            print "##teamcity[message text='Error removing big files' errorDetails='%s' status='ERROR']" % cmd_except.output
+            sys.exit(3)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Utility tool to delete files from the repository that are not in the whitelist.')

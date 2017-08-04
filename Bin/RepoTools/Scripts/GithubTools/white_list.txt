@@ -11,6 +11,5 @@ Thirdparty
 .gitignore
 .gitmodules
 build_tools.py
-DavaConfig.in
 LICENSE
 README
