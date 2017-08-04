@@ -29,7 +29,7 @@ set(QT_UI_FILES "Sources/TArc/Controls/ColorPicker/Private/Resources/*.ui")
 set(FIND_PACKAGE QT5)
 set(PACKAGE_QT5_INCLUDES Qt5Widgets_PRIVATE_INCLUDE_DIRS)
 
-set(DEFINITIONS_PRIVATE -DDAVA_QT -D__DAVAENGINE_QT__ )
+set(DEFINITIONS_PRIVATE -D__DAVAENGINE_QT__ )
 set(NOT_USE_PARENT_DEFINITIONS true)
 
 setup_main_module()
