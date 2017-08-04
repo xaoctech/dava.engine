@@ -1,10 +1,13 @@
 #include "Tests/MicroWebBrowserTest.h"
-#include "UI/Focus/UIFocusComponent.h"
-#include "UI/Render/UIDebugRenderComponent.h"
+#include <UI/Focus/UIFocusComponent.h>
+#include <UI/Render/UIDebugRenderComponent.h>
+#include <UI/Update/UIUpdateComponent.h>
+#include <MemoryManager/MemoryManager.h>
 
 MicroWebBrowserTest::MicroWebBrowserTest(TestBed& app)
     : BaseScreen(app, "MicroWebBrowserTest")
 {
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void MicroWebBrowserTest::LoadResources()
@@ -13,24 +16,13 @@ void MicroWebBrowserTest::LoadResources()
     DVASSERT(font);
     font->SetSize(14);
 
-    Rect webViewRect = GetRect();
-    webViewRect.x = 5.0f;
-    webViewRect.y = 5.0f;
-    webViewRect.dx -= webViewRect.x * 2.0f;
-    webViewRect.dy *= 0.85f;
+    Rect screenRect = GetRect();
 
-    webView.Set(new UIWebView(webViewRect));
-    webView->SetVisibilityFlag(true);
-    webView->SetRenderToTexture(true);
-    webView->GetOrCreateComponent<UIDebugRenderComponent>();
-    webView->SetInputEnabled(true);
-    webView->GetOrCreateComponent<UIFocusComponent>();
-    AddControl(webView.Get());
-
-    Rect textFieldRect = webViewRect;
-    textFieldRect.y += webViewRect.dy + 10.0f;
-    textFieldRect.dy = 22.0f;
-    textFieldRect.dx -= 210.0f;
+    Rect textFieldRect;
+    textFieldRect.x = 10.0f;
+    textFieldRect.y = 10.0f;
+    textFieldRect.dx = screenRect.dx - 230.0f;
+    textFieldRect.dy = 50.0f;
 
     textField.Set(new UITextField(textFieldRect));
     textField->SetFont(font);
@@ -53,6 +45,36 @@ void MicroWebBrowserTest::LoadResources()
     loadPage->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &MicroWebBrowserTest::OnLoadPage));
     AddControl(loadPage);
 
+    Rect webViewRect;
+    webViewRect.x = textFieldRect.x;
+    webViewRect.y = textFieldRect.y + textFieldRect.dy + 5.0f;
+    webViewRect.dx = (loadPageRect.x + loadPageRect.dx) - webViewRect.x;
+    webViewRect.dy = screenRect.dy * 0.8f;
+
+    webView.Set(new UIWebView(webViewRect));
+    webView->SetVisibilityFlag(true);
+    webView->SetRenderToTexture(true);
+    webView->GetOrCreateComponent<UIDebugRenderComponent>();
+    webView->SetInputEnabled(true);
+    webView->GetOrCreateComponent<UIFocusComponent>();
+    AddControl(webView.Get());
+
+    fpsText = new UIStaticText(Rect(10.0f, screenRect.dy - 50.0f, 100.0f, 45.0f));
+    fpsText->SetTextColor(Color::White);
+    fpsText->SetFont(font);
+    fpsText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    fpsText->SetUtf8Text("FPS: ");
+    AddControl(fpsText);
+    
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    memoryText = new UIStaticText(Rect(110.0f, screenRect.dy - 50.0f, 200.0f, 45.0f));
+    memoryText->SetTextColor(Color::White);
+    memoryText->SetFont(font);
+    memoryText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    memoryText->SetUtf8Text("Memory usage: ");
+    AddControl(memoryText);
+#endif
+
     BaseScreen::LoadResources();
 }
 
@@ -60,6 +82,12 @@ void MicroWebBrowserTest::UnloadResources()
 {
     webView = nullptr;
     textField = nullptr;
+
+    SafeRelease(fpsText);
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    SafeRelease(memoryText);
+#endif
+
     BaseScreen::UnloadResources();
 }
 
@@ -75,4 +103,18 @@ void MicroWebBrowserTest::OnLoadPage(BaseObject* obj, void* data, void* callerDa
 void MicroWebBrowserTest::TextFieldShouldReturn(UITextField* /*textField*/)
 {
     OnLoadPage(nullptr, nullptr, nullptr);
+}
+
+void MicroWebBrowserTest::Update(float elapsedTime)
+{
+    fpsMeter.Update(elapsedTime);
+    if (fpsMeter.IsFpsReady())
+    {
+        fpsText->SetUtf8Text(Format("FPS: %u", static_cast<uint32>(fpsMeter.GetFps())));
+    }
+    
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    float32 memoryUsageMb = static_cast<float32>(MemoryManager::Instance()->GetSystemMemoryUsage()) / (1024 * 1024);
+    memoryText->SetUtf8Text(Format("Memory usage: %.2f MB", memoryUsageMb));
+#endif
 }

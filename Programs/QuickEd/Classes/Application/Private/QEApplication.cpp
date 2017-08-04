@@ -1,10 +1,14 @@
 #include "Application/QEApplication.h"
 #include "Application/QEGlobal.h"
+
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystemModule.h"
 #include "Modules/LegacySupportModule/LegacySupportModule.h"
 #include "Classes/Application/ReflectionExtensions.h"
 
 #include <TArc/Core/Core.h>
 #include <TArc/Utils/ModuleCollection.h>
+
+#include <DocDirSetup/DocDirSetup.h>
 
 #include <Render/Renderer.h>
 #include <Tools/TextureCompression/PVRConverter.h>
@@ -68,9 +72,23 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
 #endif
     PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
+    Texture::SetPixelization(true);
+
     FileSystem* fs = engineContext->fileSystem;
-    fs->SetCurrentDocumentsDirectory(fs->GetUserDocumentsPath() + "QuickEd/");
-    fs->CreateDirectory(fs->GetCurrentDocumentsDirectory(), true);
+
+    auto copyFromOldFolder = [&]
+    {
+        FileSystem::eCreateDirectoryResult createResult = DocumentsDirectorySetup::CreateApplicationDocDirectory(fs, "QuickEd");
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = fs->GetUserDocumentsPath() + "QuickEd/";
+            DAVA::FilePath documentsNewFolder = DocumentsDirectorySetup::GetApplicationDocDirectory(fs, "QuickEd");
+            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
+        }
+    };
+    copyFromOldFolder(); // todo: remove function some versions after
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "QuickEd");
+
     engineContext->logger->SetLogFilename("QuickEd.txt");
 
     ParticleEmitter::FORCE_DEEP_CLONE = true;
@@ -81,19 +99,21 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
 
     UIInputSystem* inputSystem = uiControlSystem->GetInputSystem();
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::UP), UIInputSystem::ACTION_FOCUS_UP);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::DOWN), UIInputSystem::ACTION_FOCUS_DOWN);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_UP), UIInputSystem::ACTION_FOCUS_UP);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_DOWN), UIInputSystem::ACTION_FOCUS_DOWN);
 
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::TAB), UIInputSystem::ACTION_FOCUS_NEXT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB), UIInputSystem::ACTION_FOCUS_NEXT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
 
     const char* settingsPath = "QuickEdSettings.archive";
     FilePath localPrefrencesPath(fs->GetCurrentDocumentsDirectory() + settingsPath);
     PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
 
     engineContext->logger->Log(Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
+
+    BaseApplication::Init(engineContext);
 }
 
 void QEApplication::Cleanup()
@@ -119,6 +139,7 @@ QString QEApplication::GetInstanceKey() const
 void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 {
     Q_INIT_RESOURCE(QtToolsResources);
+    tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<LegacySupportModule>();
 
     for (const DAVA::ReflectedType* type : DAVA::TArc::ModuleCollection::Instance()->GetGuiModules())

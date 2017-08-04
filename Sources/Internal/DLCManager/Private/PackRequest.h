@@ -89,7 +89,7 @@ private:
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
-    bool CheckHaskState(FileRequest& fileRequest);
+    bool CheckFileHashState(FileRequest& fileRequest);
     bool UpdateFileRequests();
 
     DLCManagerImpl* packManagerImpl = nullptr;

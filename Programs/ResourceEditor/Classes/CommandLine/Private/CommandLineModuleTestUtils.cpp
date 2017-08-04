@@ -1,26 +1,30 @@
 #include "CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/Qt/Scene/System/BeastSystem.h"
 
 #include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
-#include "FileSystem/FilePath.h"
-#include "FileSystem/FileSystem.h"
-#include "Render/3D/PolygonGroup.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/Mesh.h"
-#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Material/NMaterial.h"
-#include "Scene3D/Components/CustomPropertiesComponent.h"
-#include "Scene3D/Lod/LodComponent.h"
-#include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/LightComponent.h"
-#include "Scene3D/Components/StaticOcclusionComponent.h"
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Scene.h"
-#include "Utils/Random.h"
+#include <FileSystem/FilePath.h>
+#include <FileSystem/FileSystem.h>
+#include <Render/3D/PolygonGroup.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/Mesh.h>
+#include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
+#include <Render/Image/Image.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/Material/NMaterial.h>
+#include <Scene3D/Lod/LodComponent.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
+#include <Scene3D/Components/CameraComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/SwitchComponent.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/Waypoint/WaypointComponent.h>
+#include <Scene3D/Components/Waypoint/EdgeComponent.h>
+#include <Scene3D/Scene.h>
+#include <Utils/Random.h>
 #include <Utils/StringFormat.h>
 
 namespace CommandLineModuleTestUtils
@@ -359,7 +363,7 @@ Entity* CreateLightsEntity(const FilePath& scenePathname)
         archieve->SetFloat("editor.staticlight.shadowangle", 0.f);
         archieve->SetFloat("editor.staticlight.shadowradius", 0.f);
         archieve->SetInt32("editor.staticlight.shadowsamples", 1);
-        archieve->SetFloat("editor.staticlight.falloffcutoff", 1000.f);
+        archieve->SetFloat("editor.staticlight.falloffcutoff", BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE);
         archieve->SetFloat("editor.staticlight.falloffexponent", 1.f);
     };
 
@@ -478,6 +482,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePathname)
     builder.AddVegetation(SceneBuilder::WITH_REF_TO_OWNER);
     builder.AddLights(SceneBuilder::WITH_REF_TO_OWNER);
     builder.AddStaticOcclusion(SceneBuilder::WITH_REF_TO_OWNER);
+    builder.AddEntityWithTestedComponents(SceneBuilder::WITH_REF_TO_OWNER);
 }
 
 SceneBuilder::SceneBuilder(const FilePath& scenePathname)
@@ -598,6 +603,34 @@ Entity* SceneBuilder::AddStaticOcclusion(R2OMode mode)
     }
 
     return occlusion;
+}
+
+Entity* SceneBuilder::AddEntityWithTestedComponents(R2OMode mode)
+{
+    ScopedPtr<Entity> entity(new Entity);
+    entity->SetName(FastName("entityWithTestedComponents"));
+
+    TextComponent* text = new TextComponent();
+    text->SetText(L"text");
+    text->SetSize(10);
+    entity->AddComponent(text);
+
+    text = new TextComponent();
+    text->SetText(L"super text");
+    text->SetSize(20);
+    entity->AddComponent(text);
+
+    entity->AddComponent(new StaticOcclusionDebugDrawComponent());
+    entity->AddComponent(new WaypointComponent());
+    entity->AddComponent(new EdgeComponent());
+
+    scene->AddNode(entity);
+    if (mode == WITH_REF_TO_OWNER)
+    {
+        AddR2O(entity);
+    }
+
+    return entity;
 }
 
 void SceneBuilder::AddR2O(Entity* entity)
