@@ -1,5 +1,5 @@
 RenderTechnique:
-    Layers: ["TransclucentRenderLayer"]
+    Layers: ["AlphaTestLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Default/materials"
