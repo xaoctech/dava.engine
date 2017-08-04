@@ -423,7 +423,7 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
         for (const RefPtr<ControlNode>& copy : nodesToCopy)
         {
             copiedNodes.push_back(copy.Get());
-            InsertControlImpl(copy.Get(), dest, index);
+            InsertControl(copy.Get(), dest, index);
             index++;
         }
         nodesToCopy.clear();
