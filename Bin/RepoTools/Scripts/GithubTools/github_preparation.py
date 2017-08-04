@@ -49,16 +49,22 @@ class Preparation:
         self.delete_files.append(os.path.abspath('white_list.txt'))
 
     def remove_extra(self):
-        cmd = 'java -jar bfg-1.12.15.jar --delete-files {%s}  %s' % (','.join(self.delete_files), self.repo)
-        sys.stdout.write(cmd)
-        sys.stdout.flush()
-        try:
-            cmd_log = subprocess.check_output(cmd, shell=True)
-            sys.stdout.write(cmd_log)
+
+        for path in self.delete_files:
+
+            os.chdir(os.path.dirname(path))
+
+            cmd = 'java -jar bfg-1.12.15.jar --delete-files %s  %s' % (os.path.basename(path), self.repo)
+
+            sys.stdout.write(cmd)
             sys.stdout.flush()
-        except subprocess.CalledProcessError as cmd_except:
-            print "##teamcity[message text='Error removing extra files' errorDetails='%s' status='ERROR']" % cmd_except.output
-            sys.exit(3)
+            try:
+                cmd_log = subprocess.check_output(cmd, shell=True)
+                sys.stdout.write(cmd_log)
+                sys.stdout.flush()
+            except subprocess.CalledProcessError as cmd_except:
+                print "##teamcity[message text='Error removing extra files' errorDetails='%s' status='ERROR']" % cmd_except.output
+                sys.exit(3)
 
     def remove_big_files(self):
         cmd = 'java -jar bfg-1.12.15.jar --strip-blobs-bigger-than 99M %s' % self.repo
