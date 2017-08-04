@@ -1,15 +1,15 @@
 #include "Motion.h"
 
+#include "BlendTree.h"
 #include "Base/GlobalEnum.h"
 #include "FileSystem/YamlNode.h"
-#include "Scene3D/SkeletonAnimation/BlendNode.h"
 
-ENUM_DECLARE(DAVA::Motion::eBlend)
+ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 {
-    ENUM_ADD_DESCR(DAVA::Motion::eBlend::BLEND_OVERRIDE, "Override");
-    ENUM_ADD_DESCR(DAVA::Motion::eBlend::BLEND_ADD, "Additive");
-    ENUM_ADD_DESCR(DAVA::Motion::eBlend::BLEND_SUB, "Subtract");
-    ENUM_ADD_DESCR(DAVA::Motion::eBlend::BLEND_LERP, "LERP");
+    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_OVERRIDE, "Override");
+    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_ADD, "Additive");
+    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_SUB, "Subtract");
+    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_LERP, "LERP");
 };
 
 namespace DAVA
@@ -17,12 +17,41 @@ namespace DAVA
 Motion::~Motion()
 {
     for (State& s : states)
-        SafeDelete(s.treeRoot);
+        SafeDelete(s.blendTree);
+}
+
+void Motion::BindSkeleton(const SkeletonComponent* skeleton)
+{
+    for (State& s : states)
+        s.blendTree->BindSkeleton(skeleton);
+
+    if (currentState != nullptr)
+    {
+        currentState->animationPhase = 0.f;
+        currentState->blendTree->EvaluatePose(0.f, currentState->boundParams, &currentPose);
+    }
+}
+
+void Motion::Update(float32 dTime)
+{
+    if (currentState != nullptr)
+    {
+        float32 duration = currentState->blendTree->EvaluatePhaseDuration(currentState->boundParams);
+
+        float32& phase = currentState->animationPhase;
+        phase += dTime / duration;
+        if (phase >= 1.f)
+            phase -= 1.f;
+
+        currentState->blendTree->EvaluatePose(phase, currentState->boundParams, &currentPose);
+    }
 }
 
 Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 {
     Motion* motion = new Motion();
+
+    Set<FastName> parameters;
 
     const YamlNode* nameNode = motionNode->Get("name");
     if (nameNode != nullptr && nameNode->GetType() == YamlNode::TYPE_STRING)
@@ -34,8 +63,8 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
     if (blendModeNode != nullptr && blendModeNode->GetType() == YamlNode::TYPE_STRING)
     {
         int32 enumValue;
-        if (GlobalEnumMap<Motion::eBlend>::Instance()->ToValue(blendModeNode->AsString().c_str(), enumValue))
-            motion->blendMode = eBlend(enumValue);
+        if (GlobalEnumMap<Motion::eMotionBlend>::Instance()->ToValue(blendModeNode->AsString().c_str(), enumValue))
+            motion->blendMode = eMotionBlend(enumValue);
     }
 
     const YamlNode* statesNode = motionNode->Get("states");
@@ -54,7 +83,12 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
             const YamlNode* blendTreeNode = statesNode->Get(s)->Get("blend-tree");
             if (blendTreeNode != nullptr)
             {
-                state.treeRoot = motion->LoadBlendNodeFromYaml(blendTreeNode);
+                state.blendTree = BlendTree::LoadFromYaml(blendTreeNode);
+
+                const Vector<FastName>& treeParams = state.blendTree->GetParameterIDs();
+                state.boundParams.resize(treeParams.size());
+
+                parameters.insert(treeParams.begin(), treeParams.end());
             }
         }
 
@@ -64,112 +98,42 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
         }
     }
 
+    motion->parameterIDs.insert(motion->parameterIDs.begin(), parameters.begin(), parameters.end());
+
     return motion;
 }
 
-BlendNode* Motion::LoadBlendNodeFromYaml(const YamlNode* yamlNode)
+bool Motion::BindParameter(const FastName& parameterID, const Vector2* param)
 {
-    BlendNode* blendNode = nullptr;
+    bool success = false;
 
-    const YamlNode* clipNode = yamlNode->Get("clip");
-    if (clipNode != nullptr && clipNode->GetType() == YamlNode::TYPE_STRING)
+    for (State& s : states)
     {
-        FilePath animationClipPath(clipNode->AsString());
-        ScopedPtr<AnimationClip> animationClip(AnimationClip::Load(animationClipPath));
-        if (animationClip)
+        const Vector<FastName>& params = s.blendTree->GetParameterIDs();
+        auto found = std::find(params.begin(), params.end(), parameterID);
+        if (found != params.end())
         {
-            blendNode = new BlendNode(animationClip);
-            //animationNodes.emplace_back(blendNode, animationClip);
-        }
-    }
-    else
-    {
-        const YamlNode* operationNode = yamlNode->Get("operation");
-        if (operationNode != nullptr && operationNode->GetType() == YamlNode::TYPE_MAP)
-        {
-            const YamlNode* typeNode = operationNode->Get("type");
-            if (typeNode != nullptr && typeNode->GetType() == YamlNode::TYPE_STRING)
-            {
-                int32 nodeType;
-                if (GlobalEnumMap<BlendNode::eType>::Instance()->ToValue(typeNode->AsString().c_str(), nodeType))
-                {
-                    blendNode = new BlendNode(BlendNode::eType(nodeType));
+            size_t paramIndex = std::distance(params.begin(), found);
+            s.boundParams[paramIndex] = param;
 
-                    const YamlNode* parameterNode = operationNode->Get("parameter");
-                    if (parameterNode != nullptr && parameterNode->GetType() == YamlNode::TYPE_STRING)
-                    {
-                        FastName parameter = parameterNode->AsFastName();
-                        AddParametrizedNode(blendNode, parameter);
-                    }
-
-                    const YamlNode* childrenNode = yamlNode->Get("nodes");
-                    if (childrenNode != nullptr && childrenNode->GetType() == YamlNode::TYPE_ARRAY)
-                    {
-                        uint32 childrenCount = childrenNode->GetCount();
-                        for (uint32 c = 0; c < childrenCount; ++c)
-                        {
-                            const YamlNode* childNode = childrenNode->Get(c);
-
-                            Vector2 childParam;
-                            const YamlNode* childParamNode = childNode->Get("param-value");
-                            if (childParamNode != nullptr)
-                            {
-                                if (childParamNode->GetType() == YamlNode::TYPE_ARRAY)
-                                    childParam = childParamNode->AsVector2();
-                                else if (childParamNode->GetType() == YamlNode::TYPE_STRING)
-                                    childParam.x = childParamNode->AsFloat();
-                            }
-
-                            BlendNode* child = LoadBlendNodeFromYaml(childNode);
-                            blendNode->AddChild(child, childParam);
-                        }
-                    }
-                }
-            }
+            success = true;
         }
     }
 
-    return blendNode;
+    return success;
 }
 
-void Motion::AddParametrizedNode(BlendNode* node, const FastName& parameter)
+bool Motion::UnbindParameter(const FastName& parameterID)
 {
-    auto found = std::find(parametersIDs.begin(), parametersIDs.end(), parameter);
-    size_t paramterIndex = std::distance(parametersIDs.begin(), found);
-    if (found == parametersIDs.end())
+    return BindParameter(parameterID, nullptr);
+}
+
+void Motion::UnbindParameters()
+{
+    for (State& s : states)
     {
-        parametersIDs.emplace_back(parameter);
-        parametrizedNodes.emplace_back();
-    }
-    parametrizedNodes[paramterIndex].push_back(node);
-}
-
-void Motion::SetParameter(uint32 index, Vector2 value)
-{
-    DVASSERT(index < GetParametersCount());
-    for (BlendNode* node : parametrizedNodes[index])
-        node->SetParameter(value);
-}
-
-void Motion::BindSkeleton(const SkeletonComponent* skeleton)
-{
-    for (State& state : states)
-        state.treeRoot->BindSkeleton(skeleton);
-
-    if (currentState != nullptr)
-        currentState->treeRoot->EvaluatePose(&resultPose, 0.f);
-}
-
-void Motion::Update(float32 dTime)
-{
-    if (currentState != nullptr)
-    {
-        float32 duration = currentState->treeRoot->EvaluatePhaseDuration();
-        animationPhase += dTime / duration;
-        if (animationPhase >= 1.f)
-            animationPhase -= 1.f;
-
-        currentState->treeRoot->EvaluatePose(&resultPose, animationPhase);
+        for (const Vector2*& param : s.boundParams)
+            param = nullptr;
     }
 }
 

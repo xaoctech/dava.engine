@@ -1,15 +1,16 @@
+#include "SkeletonSystem.h"
+
 #include "Animation/AnimationTrack.h"
-#include "Scene3D/Systems/SkeletonSystem.h"
+#include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerMarkerNames.h"
+#include "Render/Highlevel/SkinnedMesh.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/SkeletonAnimation/JointTransform.h"
-#include "Render/Highlevel/SkinnedMesh.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Debug/ProfilerCPU.h"
-#include "Debug/ProfilerMarkerNames.h"
 
 #define RE_DEBUG_PROCESS_TEST_SKINNED_MESHES 0
 

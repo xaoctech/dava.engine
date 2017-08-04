@@ -1,14 +1,14 @@
+#include "MotionSystem.h"
+
+#include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerMarkerNames.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
-#include "Scene3D/SkeletonAnimation/SkeletonAnimation.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
-#include "Scene3D/Systems/MotionSystem.h"
-#include "Debug/ProfilerCPU.h"
-#include "Debug/ProfilerMarkerNames.h"
 
 namespace DAVA
 {
@@ -117,15 +117,11 @@ void MotionSystem::Process(float32 timeElapsed)
 void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime)
 {
     DVASSERT(motionComponent);
-    DVASSERT(motionComponent->GetMotionsCount() > 0);
+
+    if (motionComponent->GetMotionsCount() == 0)
+        return;
+
     Motion* motion = motionComponent->GetMotion(0);
-
-    //debug
-    //////////////////////////////////////////////////////////////////////////
-    uint32 iParam = motion->GetParameterIndex(FastName("speed"));
-    motion->SetParameter(iParam, motionComponent->workSpeedParameter);
-    //////////////////////////////////////////////////////////////////////////
-
     motion->Update(dTime);
 
     SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());

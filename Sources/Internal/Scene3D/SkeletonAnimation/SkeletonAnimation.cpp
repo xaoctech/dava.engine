@@ -51,7 +51,7 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
     }
 }
 
-void SkeletonAnimation::EvaluatePose(SkeletonPose* outPose, float32 phase, Vector3* offset)
+void SkeletonAnimation::EvaluatePose(float32 phase, SkeletonPose* outPose, Vector3* offset)
 {
     DVASSERT(outPose);
     outPose->SetJointCount(maxJointIndex + 1);
