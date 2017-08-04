@@ -56,7 +56,7 @@ public:
         DVASSERT(colorPickerSettings);
 
 #define LOAD_SETTING(settingsVar, field, key, convertFn)\
-        settingsVar->field = GetValue(key, settingsVar->field).##convertFn()
+        settingsVar->field = GetValue(key, settingsVar->field).convertFn()
 
         LOAD_SETTING(generalSettings, reloadParticlesOnProjectOpening, General_ReloadParticlesOnPojectOpening, AsBool);
         LOAD_SETTING(generalSettings, previewEnabled, General_PreviewEnabled, AsBool);
@@ -191,9 +191,9 @@ private:
     }
 
     template <typename T>
-    T GetEnumValue(const DAVA::String& key, T default) const
+    T GetEnumValue(const DAVA::String& key, T defaultValue) const
     {
-        DAVA::VariantType v = GetValue(key, static_cast<DAVA::int32>(default));
+        DAVA::VariantType v = GetValue(key, static_cast<DAVA::int32>(defaultValue));
         return static_cast<T>(DAVA::VariantType::Convert(v, DAVA::VariantType::TYPE_INT32).AsInt32());
     }
 
