@@ -478,4 +478,6 @@ set(BINARY_WIN64_DIR_RELEASE "${LibsPath}/Win32/x64")
 set(BINARY_WIN64_DIR_RELWITHDEB "${LibsPath}/Win32/x64")
 set(BINARY_WIN64_DIR_DEBUG "${LibsPath}/Win32/x64")
 
+set(NOT_USE_PARENT_DEFINITIONS true )
+
 setup_main_module()
