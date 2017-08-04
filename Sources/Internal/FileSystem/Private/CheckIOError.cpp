@@ -1,5 +1,6 @@
 #include "FileSystem/Private/CheckIOError.h"
 #include "Debug/DVAssert.h"
+#include <cerrno>
 
 namespace DAVA
 {
