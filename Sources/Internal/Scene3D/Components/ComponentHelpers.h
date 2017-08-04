@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_COMPONENT_HELPERS_H__
-#define __DAVAENGINE_COMPONENT_HELPERS_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
@@ -8,6 +7,7 @@ namespace DAVA
 {
 class ParticleEmitter;
 class ParticleEffectComponent;
+class ParticleDragForceComponent;
 class SkeletonComponent;
 class Entity;
 class RenderObject;
@@ -40,6 +40,7 @@ class StaticOcclusionDebugDrawComponent;
 bool HasComponent(const Entity* fromEntity, const Component::eType componentType);
 
 ParticleEffectComponent* GetEffectComponent(const Entity* fromEntity);
+ParticleDragForceComponent* GetDragForceComponent(const Entity* fromEntity);
 AnimationComponent* GetAnimationComponent(const Entity* fromEntity);
 TransformComponent* GetTransformComponent(const Entity* fromEntity);
 RenderComponent* GetRenderComponent(const Entity* fromEntity);
@@ -87,5 +88,3 @@ VariantType* GetCustomPropertiesValueRecursive(Entity* fromEntity, const String&
 PathComponent* GetPathComponent(const Entity* fromEntity);
 WaypointComponent* GetWaypointComponent(const Entity* fromEntity);
 }
-
-#endif //__DAVAENGINE_COMPONENT_HELPERS_H__

@@ -8,6 +8,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Base/Result.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 #include <TArc/DataProcessing/DataContext.h>
 #include <QtTools/FileDialogs/FileDialog.h>
@@ -28,6 +29,8 @@ QString ConvertPSDPathToSprite(QString& pathToSprite)
 {
     return pathToSprite.replace("/DataSource/", "/Data/");
 }
+
+QString undefinedForce = QStringLiteral("Undefined");
 }
 
 static const DAVA::uint32 SPRITE_SIZE = 60;
@@ -62,6 +65,27 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 {
     mainBox = new QVBoxLayout;
     this->setLayout(mainBox);
+
+    //////////////////////////////////////////////////////////////////////////
+    forcesGroup = new QGroupBox(this);
+    mainBox->addWidget(forcesGroup);
+    forcesGroup->setTitle("Forces");
+    forcesGroup->setCheckable(false);
+
+    QVBoxLayout* forcesLayout = new QVBoxLayout();
+    forcesGroup->setLayout(forcesLayout);
+    activeForcesContainer = new QWidget(this);
+    forcesLayout->addWidget(activeForcesContainer);
+    activeForcesContainer->setLayout(new QVBoxLayout());
+
+    QHBoxLayout* addForceButtonLayout = new QHBoxLayout();
+    forcesLayout->addLayout(addForceButtonLayout);
+    addForceButtonLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    QPushButton* addForceButton = new QPushButton("Add force", forcesGroup);
+    addForceButtonLayout->addWidget(addForceButton);
+    connect(addForceButton, &QPushButton::clicked, this, &EmitterLayerWidget::OnAddForce);
+
+    //////////////////////////////////////////////////////////////////////////
 
     layerNameLineEdit = new QLineEdit();
     mainBox->addWidget(layerNameLineEdit);
@@ -482,14 +506,88 @@ void EmitterLayerWidget::InitWidget(QWidget* widget)
             SLOT(OnValueChanged()));
 }
 
+void EmitterLayerWidget::InitForcesWidget()
+{
+    using namespace DAVA;
+    DVASSERT(activeForcesContainer != nullptr);
+
+    QBoxLayout* layout = qobject_cast<QBoxLayout*>(activeForcesContainer->layout());
+    DVASSERT(layout != nullptr);
+    int widgetCount = layout->count();
+    for (int i = 0; i < widgetCount; ++i)
+    {
+        delete layout->takeAt(i);
+    }
+    
+    ParticleEffectComponent* component = GetEffect(GetActiveScene());
+    Entity* effectEntity = component->GetEntity();
+    Set<FastName> allForces;
+    int32 childrenCount = effectEntity->GetChildrenCount();
+    for (int32 i = 0; i < childrenCount; ++i)
+    {
+        Entity* child = effectEntity->GetChild(i);
+        ParticleDragForceComponent* force = GetDragForceComponent(child);
+        if (force != nullptr)
+            allForces.insert(child->GetName());
+    }
+    // TODO loop up all forces in effectEntity and store names in availableForces
+
+    DAVA::Set<FastName> selectedForces;
+    const Vector<FastName>& layerForces = layer->GetForces();
+    for (auto& forceName : layerForces)
+    {
+        selectedForces.insert(forceName);
+    }
+
+    for (size_t i = 0; i < layerForces.size(); ++i)
+    {
+        const FastName& forceName = layerForces[i];
+        QHBoxLayout* currentForceLayout = new QHBoxLayout();
+        layout->addLayout(currentForceLayout);
+
+        QComboBox* comboBox = new QComboBox();
+        comboBox->setProperty("forceIndex", static_cast<DAVA::int32>(i));
+        comboBox->addItem(EmitterLayerWidgetDetails::undefinedForce);
+        std::set<QString> comboboxItems;
+        comboboxItems.insert(QString(forceName.c_str()));
+        for (auto& avaliableForce : allForces)
+        {
+            FastName availableForceName = avaliableForce;
+            if (availableForceName.IsValid() && selectedForces.count(availableForceName) == 0)
+            {
+                comboboxItems.insert(QString(availableForceName.c_str()));
+            }
+        }
+
+        for(const QString& itemName: comboboxItems)
+        {
+            comboBox->addItem(itemName);
+        }
+        comboBox->setCurrentText(QString(forceName.c_str()));
+        connect(comboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged), this, &EmitterLayerWidget::OnForceChanged);
+
+        currentForceLayout->addWidget(comboBox);
+
+        QToolButton* removeButton = new QToolButton();
+        removeButton->setProperty("comboBoxPtr", QVariant::fromValue(comboBox));
+        removeButton->setAutoRaise(false);
+        removeButton->setIcon(SharedIcon(":/QtIcons/remove.png"));
+        currentForceLayout->addWidget(removeButton);
+        connect(removeButton, &QToolButton::clicked, this, &EmitterLayerWidget::OnRemoveForce);
+    }
+
+}
+
 void EmitterLayerWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitterInstance* instance_,
                               DAVA::ParticleLayer* layer_, bool updateMinimized)
 {
     if ((instance_ == nullptr) || (layer_ == nullptr))
         return;
 
+
     layer = layer_;
     SetObjectsForScene(scene, effect_, instance_);
+    InitForcesWidget();
     Update(updateMinimized);
 }
 
@@ -955,6 +1053,48 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 
         spriteUpdateTimer->stop();
     }
+}
+
+void EmitterLayerWidget::OnAddForce()
+{
+    // TODO
+    layer->AddDragForce(FastName(EmitterLayerWidgetDetails::undefinedForce.toStdString()), nullptr);
+
+    executor.DelayedExecute([this]() {
+        InitForcesWidget();
+    });
+}
+
+void EmitterLayerWidget::OnRemoveForce()
+{
+    QToolButton* button = qobject_cast<QToolButton*>(sender());
+    DVASSERT(button);
+
+    QComboBox* comboBox = button->property("comboBoxPtr").value<QComboBox*>();
+
+    QString forceName = comboBox->currentText();
+    layer->RemoveDragForce(FastName(forceName.toStdString()));
+    //if (forceName != EmitterLayerWidgetDetails::undefinedForce)
+    {
+        // TODO
+        executor.DelayedExecute([this]() {
+            InitForcesWidget();
+        });
+    }
+}
+
+void EmitterLayerWidget::OnForceChanged(const QString& forceName)
+{
+    QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
+    DAVA::int32 forceIndex = comboBox->property("forceIndex").value<DAVA::int32>();
+
+    DAVA::FastName newForceName;
+    if (forceName != EmitterLayerWidgetDetails::undefinedForce)
+    {
+        newForceName = DAVA::FastName(forceName.toStdString());
+    }
+
+    //layer->SetForceName(forceIndex, newForceName);
 }
 
 void EmitterLayerWidget::Update(bool updateMinimized)
