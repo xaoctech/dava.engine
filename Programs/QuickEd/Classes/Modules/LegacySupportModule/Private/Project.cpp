@@ -170,6 +170,7 @@ void Project::SetRtl(bool isRtl)
 {
     const EngineContext* engineContext = GetEngineContext();
     engineContext->uiControlSystem->SetRtl(isRtl);
+    engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
     accessor->ForEachContext([](DAVA::TArc::DataContext& context)
                              {
@@ -184,6 +185,7 @@ void Project::SetBiDiSupport(bool support)
 {
     const EngineContext* engineContext = GetEngineContext();
     engineContext->uiControlSystem->SetBiDiSupportEnabled(support);
+    engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
     accessor->ForEachContext([](DAVA::TArc::DataContext& context)
                              {
@@ -239,6 +241,9 @@ const QString& Project::GetProjectName() const
 
 void Project::OnFontPresetChanged()
 {
+    const EngineContext* engineContext = GetEngineContext();
+    engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
+
     accessor->ForEachContext([](DAVA::TArc::DataContext& context)
                              {
                                  DocumentData* data = context.GetData<DocumentData>();

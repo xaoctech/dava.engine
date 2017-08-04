@@ -91,6 +91,7 @@ DialogConfigurePreset::~DialogConfigurePreset() = default;
 
 void DialogConfigurePreset::initPreset()
 {
+	editorFontSystem->RegisterCurrentLocaleFonts();
     UpdateDefaultFontWidgets();
     UpdateLocalizedFontWidgets();
 }
