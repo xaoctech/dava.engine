@@ -39,7 +39,7 @@ public:
         ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
         if (data->IsOpened())
         {
-            module->InvokeOperation(REGlobal::CreateNewSceneOperation.ID);
+            module->InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
             wrapper.SetListener(nullptr);
             deleteLater();
         }
@@ -91,4 +91,3 @@ void LaunchModule::UnpackHelpDoc()
         }
     }
     versionsInfo.Set("EditorVersion", DAVA::String(APPLICATION_BUILD_VERSION));
-}
