@@ -54,7 +54,7 @@ class Preparation:
 
             os.chdir(os.path.dirname(path))
 
-            cmd = 'java -jar {}/bfg-1.12.15.jar --delete-files {} {}' % (os.path.realpath(__file__), os.path.basename(path), self.repo)
+            cmd = 'java -jar {}/bfg-1.12.15.jar --delete-files {} {}'.format(self.base_path + '/Bin/RepoTools/Scripts/GithubTools', os.path.basename(path), self.repo)
 
             sys.stdout.write(cmd)
             sys.stdout.flush()
@@ -67,7 +67,7 @@ class Preparation:
                 sys.exit(3)
 
     def remove_big_files(self):
-        cmd = 'java -jar {}/bfg-1.12.15.jar --strip-blobs-bigger-than 99M {}' % (os.path.realpath(__file__), self.repo)
+        cmd = 'java -jar {}/bfg-1.12.15.jar --strip-blobs-bigger-than 99M {}'.format(self.base_path + '/Bin/RepoTools/Scripts/GithubTools', self.repo)
         sys.stdout.write(cmd)
         sys.stdout.flush()
         try:
