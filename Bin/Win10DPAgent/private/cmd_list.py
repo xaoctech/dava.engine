@@ -15,7 +15,7 @@ parser.add_argument("-url", \
                     nargs="?", \
                     dest="url", \
                     default="127.0.0.1:10080", \
-                    help="Target device url" \
+                    help="Target device url " \
                     "(default is usb: \"127.0.0.1:10080\").")
 
 parser.add_argument("-timeout", \
