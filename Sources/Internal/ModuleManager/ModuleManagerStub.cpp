@@ -11,7 +11,6 @@ namespace DAVA
 {
 Vector<IModule*> CreateModuleInstances(Engine* engine)
 {
-    return Vector<IModule*>();
     Vector<IModule*> modules;
 #if defined(__DAVAENGINE_ANDROID__)
     modules.emplace_back(new SpineModule(engine));
