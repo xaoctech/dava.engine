@@ -60,12 +60,12 @@ void CEFWebPageRender::ConnectToSignals()
     });
 
     window->focusChanged.Connect(this, [this](Window*, bool isFocused) -> void
-                                 {
-                                     if (!isFocused)
-                                     {
-                                         ResetCursor();
-                                     }
-                                 });
+    {
+        if (!isFocused)
+        {
+            ResetCursor();
+        }
+    });
 }
 
 void CEFWebPageRender::DisconnectFromSignals()

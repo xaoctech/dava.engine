@@ -56,90 +56,88 @@ class CefStreamReader;
 //     means that files from the same folder may not be located together in the
 //     file content map.
 ///
-class CefZipArchive : public base::RefCountedThreadSafe<CefZipArchive>
-{
-public:
+class CefZipArchive : public base::RefCountedThreadSafe<CefZipArchive> {
+ public:
+  ///
+  // Class representing a file in the archive. Accessing the file data from
+  // multiple threads is safe provided a reference to the File object is kept.
+  ///
+  class File : public CefBase {
+   public:
     ///
-    // Class representing a file in the archive. Accessing the file data from
-    // multiple threads is safe provided a reference to the File object is kept.
+    // Returns the read-only data contained in the file.
     ///
-    class File : public CefBase
-    {
-    public:
-        ///
-        // Returns the read-only data contained in the file.
-        ///
-        virtual const unsigned char* GetData() const = 0;
-
-        ///
-        // Returns the size of the data in the file.
-        ///
-        virtual size_t GetDataSize() const = 0;
-
-        ///
-        // Returns a CefStreamReader object for streaming the contents of the file.
-        ///
-        virtual CefRefPtr<CefStreamReader> GetStreamReader() const = 0;
-    };
-
-    typedef std::map<CefString, CefRefPtr<File>> FileMap;
+    virtual const unsigned char* GetData() const =0;
 
     ///
-    // Create a new object.
+    // Returns the size of the data in the file.
     ///
-    CefZipArchive();
+    virtual size_t GetDataSize() const =0;
 
     ///
-    // Load the contents of the specified zip archive stream into this object.
-    // If the zip archive requires a password then provide it via |password|.
-    // If |overwriteExisting| is true then any files in this object that also
-    // exist in the specified archive will be replaced with the new files.
-    // Returns the number of files successfully loaded.
+    // Returns a CefStreamReader object for streaming the contents of the file.
     ///
-    size_t Load(CefRefPtr<CefStreamReader> stream,
-                const CefString& password,
-                bool overwriteExisting);
+    virtual CefRefPtr<CefStreamReader> GetStreamReader() const =0;
+  };
 
-    ///
-    // Clears the contents of this object.
-    ///
-    void Clear();
+  typedef std::map<CefString, CefRefPtr<File> > FileMap;
 
-    ///
-    // Returns the number of files in the archive.
-    ///
-    size_t GetFileCount() const;
+  ///
+  // Create a new object.
+  ///
+  CefZipArchive();
 
-    ///
-    // Returns true if the specified file exists and has contents.
-    ///
-    bool HasFile(const CefString& fileName) const;
+  ///
+  // Load the contents of the specified zip archive stream into this object.
+  // If the zip archive requires a password then provide it via |password|.
+  // If |overwriteExisting| is true then any files in this object that also
+  // exist in the specified archive will be replaced with the new files.
+  // Returns the number of files successfully loaded.
+  ///
+  size_t Load(CefRefPtr<CefStreamReader> stream,
+              const CefString& password,
+              bool overwriteExisting);
 
-    ///
-    // Returns the specified file.
-    ///
-    CefRefPtr<File> GetFile(const CefString& fileName) const;
+  ///
+  // Clears the contents of this object.
+  ///
+  void Clear();
 
-    ///
-    // Removes the specified file.
-    ///
-    bool RemoveFile(const CefString& fileName);
+  ///
+  // Returns the number of files in the archive.
+  ///
+  size_t GetFileCount() const;
 
-    ///
-    // Returns the map of all files.
-    ///
-    size_t GetFiles(FileMap& map) const;
+  ///
+  // Returns true if the specified file exists and has contents.
+  ///
+  bool HasFile(const CefString& fileName) const;
 
-private:
-    // Protect against accidental deletion of this object.
-    friend class base::RefCountedThreadSafe<CefZipArchive>;
-    ~CefZipArchive();
+  ///
+  // Returns the specified file.
+  ///
+  CefRefPtr<File> GetFile(const CefString& fileName) const;
 
-    FileMap contents_;
+  ///
+  // Removes the specified file.
+  ///
+  bool RemoveFile(const CefString& fileName);
 
-    mutable base::Lock lock_;
+  ///
+  // Returns the map of all files.
+  ///
+  size_t GetFiles(FileMap& map) const;
 
-    DISALLOW_COPY_AND_ASSIGN(CefZipArchive);
+ private:
+  // Protect against accidental deletion of this object.
+  friend class base::RefCountedThreadSafe<CefZipArchive>;
+  ~CefZipArchive();
+
+  FileMap contents_;
+
+  mutable base::Lock lock_;
+
+  DISALLOW_COPY_AND_ASSIGN(CefZipArchive);
 };
 
-#endif // CEF_INCLUDE_WRAPPER_CEF_ZIP_ARCHIVE_H_
+#endif  // CEF_INCLUDE_WRAPPER_CEF_ZIP_ARCHIVE_H_

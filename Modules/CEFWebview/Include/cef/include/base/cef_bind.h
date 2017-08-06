@@ -40,7 +40,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/bind.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -86,463 +86,463 @@
 // need to crack open bind_internal.h.  On the other hand, it makes Bind()
 // harder to read.
 
-namespace base
-{
+namespace base {
+
 template <typename Functor>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void()>
-::UnboundRunType>
-Bind(Functor functor)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void()>
+            ::UnboundRunType>
+Bind(Functor functor) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    typedef cef_internal::BindState<RunnableType, RunType, void()> BindState;
+  typedef cef_internal::BindState<RunnableType, RunType, void()> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor)));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor)));
 }
 
 template <typename Functor, typename P1>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType)>
-::UnboundRunType>
-Bind(Functor functor, const P1& p1)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType)>
+            ::UnboundRunType>
+Bind(Functor functor, const P1& p1) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1));
 }
 
 template <typename Functor, typename P1, typename P2>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-     typename cef_internal::CallbackParamTraits<P2>::StorageType)>
-::UnboundRunType>
-Bind(Functor functor, const P1& p1, const P2& p2)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+            typename cef_internal::CallbackParamTraits<P2>::StorageType)>
+            ::UnboundRunType>
+Bind(Functor functor, const P1& p1, const P2& p2) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A2Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
-                   p2_is_refcounted_type_and_needs_scoped_refptr);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P2>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
+                 p2_is_refcounted_type_and_needs_scoped_refptr);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+      typename cef_internal::CallbackParamTraits<P2>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1, p2));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1, p2));
 }
 
 template <typename Functor, typename P1, typename P2, typename P3>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-     typename cef_internal::CallbackParamTraits<P2>::StorageType,
-     typename cef_internal::CallbackParamTraits<P3>::StorageType)>
-::UnboundRunType>
-Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+            typename cef_internal::CallbackParamTraits<P2>::StorageType,
+            typename cef_internal::CallbackParamTraits<P3>::StorageType)>
+            ::UnboundRunType>
+Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A3Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
-                   p2_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
-                   p3_is_refcounted_type_and_needs_scoped_refptr);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P2>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P3>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
+                 p2_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
+                 p3_is_refcounted_type_and_needs_scoped_refptr);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+      typename cef_internal::CallbackParamTraits<P2>::StorageType,
+      typename cef_internal::CallbackParamTraits<P3>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3));
 }
 
 template <typename Functor, typename P1, typename P2, typename P3, typename P4>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-     typename cef_internal::CallbackParamTraits<P2>::StorageType,
-     typename cef_internal::CallbackParamTraits<P3>::StorageType,
-     typename cef_internal::CallbackParamTraits<P4>::StorageType)>
-::UnboundRunType>
-Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3, const P4& p4)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+            typename cef_internal::CallbackParamTraits<P2>::StorageType,
+            typename cef_internal::CallbackParamTraits<P3>::StorageType,
+            typename cef_internal::CallbackParamTraits<P4>::StorageType)>
+            ::UnboundRunType>
+Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3, const P4& p4) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A4Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
-                   p2_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
-                   p3_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
-                   p4_is_refcounted_type_and_needs_scoped_refptr);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P2>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P3>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P4>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
+                 p2_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
+                 p3_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
+                 p4_is_refcounted_type_and_needs_scoped_refptr);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+      typename cef_internal::CallbackParamTraits<P2>::StorageType,
+      typename cef_internal::CallbackParamTraits<P3>::StorageType,
+      typename cef_internal::CallbackParamTraits<P4>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4));
 }
 
 template <typename Functor, typename P1, typename P2, typename P3, typename P4,
-          typename P5>
+    typename P5>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-     typename cef_internal::CallbackParamTraits<P2>::StorageType,
-     typename cef_internal::CallbackParamTraits<P3>::StorageType,
-     typename cef_internal::CallbackParamTraits<P4>::StorageType,
-     typename cef_internal::CallbackParamTraits<P5>::StorageType)>
-::UnboundRunType>
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+            typename cef_internal::CallbackParamTraits<P2>::StorageType,
+            typename cef_internal::CallbackParamTraits<P3>::StorageType,
+            typename cef_internal::CallbackParamTraits<P4>::StorageType,
+            typename cef_internal::CallbackParamTraits<P5>::StorageType)>
+            ::UnboundRunType>
 Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3, const P4& p4,
-     const P5& p5)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    const P5& p5) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A5Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A5Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
-                   p2_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
-                   p3_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
-                   p4_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P5>::value,
-                   p5_is_refcounted_type_and_needs_scoped_refptr);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P2>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P3>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P4>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P5>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
+                 p2_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
+                 p3_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
+                 p4_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P5>::value,
+                 p5_is_refcounted_type_and_needs_scoped_refptr);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+      typename cef_internal::CallbackParamTraits<P2>::StorageType,
+      typename cef_internal::CallbackParamTraits<P3>::StorageType,
+      typename cef_internal::CallbackParamTraits<P4>::StorageType,
+      typename cef_internal::CallbackParamTraits<P5>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4, p5));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4, p5));
 }
 
 template <typename Functor, typename P1, typename P2, typename P3, typename P4,
-          typename P5, typename P6>
+    typename P5, typename P6>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-     typename cef_internal::CallbackParamTraits<P2>::StorageType,
-     typename cef_internal::CallbackParamTraits<P3>::StorageType,
-     typename cef_internal::CallbackParamTraits<P4>::StorageType,
-     typename cef_internal::CallbackParamTraits<P5>::StorageType,
-     typename cef_internal::CallbackParamTraits<P6>::StorageType)>
-::UnboundRunType>
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+            typename cef_internal::CallbackParamTraits<P2>::StorageType,
+            typename cef_internal::CallbackParamTraits<P3>::StorageType,
+            typename cef_internal::CallbackParamTraits<P4>::StorageType,
+            typename cef_internal::CallbackParamTraits<P5>::StorageType,
+            typename cef_internal::CallbackParamTraits<P6>::StorageType)>
+            ::UnboundRunType>
 Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3, const P4& p4,
-     const P5& p5, const P6& p6)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    const P5& p5, const P6& p6) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A5Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A6Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A5Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A6Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
-                   p2_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
-                   p3_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
-                   p4_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P5>::value,
-                   p5_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P6>::value,
-                   p6_is_refcounted_type_and_needs_scoped_refptr);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P2>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P3>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P4>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P5>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P6>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
+                 p2_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
+                 p3_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
+                 p4_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P5>::value,
+                 p5_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P6>::value,
+                 p6_is_refcounted_type_and_needs_scoped_refptr);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+      typename cef_internal::CallbackParamTraits<P2>::StorageType,
+      typename cef_internal::CallbackParamTraits<P3>::StorageType,
+      typename cef_internal::CallbackParamTraits<P4>::StorageType,
+      typename cef_internal::CallbackParamTraits<P5>::StorageType,
+      typename cef_internal::CallbackParamTraits<P6>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4, p5, p6));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4, p5, p6));
 }
 
 template <typename Functor, typename P1, typename P2, typename P3, typename P4,
-          typename P5, typename P6, typename P7>
+    typename P5, typename P6, typename P7>
 base::Callback<
-typename cef_internal::BindState<
-typename cef_internal::FunctorTraits<Functor>::RunnableType,
-typename cef_internal::FunctorTraits<Functor>::RunType,
-void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-     typename cef_internal::CallbackParamTraits<P2>::StorageType,
-     typename cef_internal::CallbackParamTraits<P3>::StorageType,
-     typename cef_internal::CallbackParamTraits<P4>::StorageType,
-     typename cef_internal::CallbackParamTraits<P5>::StorageType,
-     typename cef_internal::CallbackParamTraits<P6>::StorageType,
-     typename cef_internal::CallbackParamTraits<P7>::StorageType)>
-::UnboundRunType>
+    typename cef_internal::BindState<
+        typename cef_internal::FunctorTraits<Functor>::RunnableType,
+        typename cef_internal::FunctorTraits<Functor>::RunType,
+        void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+            typename cef_internal::CallbackParamTraits<P2>::StorageType,
+            typename cef_internal::CallbackParamTraits<P3>::StorageType,
+            typename cef_internal::CallbackParamTraits<P4>::StorageType,
+            typename cef_internal::CallbackParamTraits<P5>::StorageType,
+            typename cef_internal::CallbackParamTraits<P6>::StorageType,
+            typename cef_internal::CallbackParamTraits<P7>::StorageType)>
+            ::UnboundRunType>
 Bind(Functor functor, const P1& p1, const P2& p2, const P3& p3, const P4& p4,
-     const P5& p5, const P6& p6, const P7& p7)
-{
-    // Typedefs for how to store and run the functor.
-    typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
-    typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
+    const P5& p5, const P6& p6, const P7& p7) {
+  // Typedefs for how to store and run the functor.
+  typedef typename cef_internal::FunctorTraits<Functor>::RunnableType RunnableType;
+  typedef typename cef_internal::FunctorTraits<Functor>::RunType RunType;
 
-    // Use RunnableType::RunType instead of RunType above because our
-    // checks should below for bound references need to know what the actual
-    // functor is going to interpret the argument as.
-    typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
-    BoundFunctorTraits;
+  // Use RunnableType::RunType instead of RunType above because our
+  // checks should below for bound references need to know what the actual
+  // functor is going to interpret the argument as.
+  typedef cef_internal::FunctionTraits<typename RunnableType::RunType>
+      BoundFunctorTraits;
 
-    // Do not allow binding a non-const reference parameter. Non-const reference
-    // parameters are disallowed by the Google style guide.  Also, binding a
-    // non-const reference parameter can make for subtle bugs because the
-    // invoked function will receive a reference to the stored copy of the
-    // argument and not the original.
-    COMPILE_ASSERT(
-    !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A5Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A6Type>::value ||
-      is_non_const_reference<typename BoundFunctorTraits::A7Type>::value),
-    do_not_bind_functions_with_nonconst_ref);
+  // Do not allow binding a non-const reference parameter. Non-const reference
+  // parameters are disallowed by the Google style guide.  Also, binding a
+  // non-const reference parameter can make for subtle bugs because the
+  // invoked function will receive a reference to the stored copy of the
+  // argument and not the original.
+  COMPILE_ASSERT(
+      !(is_non_const_reference<typename BoundFunctorTraits::A1Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A2Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A3Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A4Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A5Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A6Type>::value ||
+          is_non_const_reference<typename BoundFunctorTraits::A7Type>::value ),
+      do_not_bind_functions_with_nonconst_ref);
 
-    // For methods, we need to be careful for parameter 1.  We do not require
-    // a scoped_refptr because BindState<> itself takes care of AddRef() for
-    // methods. We also disallow binding of an array as the method's target
-    // object.
-    COMPILE_ASSERT(
-    cef_internal::HasIsMethodTag<RunnableType>::value ||
-    !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
-    p1_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
-                   !is_array<P1>::value,
-                   first_bound_argument_to_method_cannot_be_array);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
-                   p2_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
-                   p3_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
-                   p4_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P5>::value,
-                   p5_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P6>::value,
-                   p6_is_refcounted_type_and_needs_scoped_refptr);
-    COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P7>::value,
-                   p7_is_refcounted_type_and_needs_scoped_refptr);
-    typedef cef_internal::BindState<RunnableType, RunType,
-                                    void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P2>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P3>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P4>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P5>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P6>::StorageType,
-                                         typename cef_internal::CallbackParamTraits<P7>::StorageType)> BindState;
+  // For methods, we need to be careful for parameter 1.  We do not require
+  // a scoped_refptr because BindState<> itself takes care of AddRef() for
+  // methods. We also disallow binding of an array as the method's target
+  // object.
+  COMPILE_ASSERT(
+      cef_internal::HasIsMethodTag<RunnableType>::value ||
+          !cef_internal::NeedsScopedRefptrButGetsRawPtr<P1>::value,
+      p1_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::HasIsMethodTag<RunnableType>::value ||
+                     !is_array<P1>::value,
+                 first_bound_argument_to_method_cannot_be_array);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P2>::value,
+                 p2_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P3>::value,
+                 p3_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P4>::value,
+                 p4_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P5>::value,
+                 p5_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P6>::value,
+                 p6_is_refcounted_type_and_needs_scoped_refptr);
+  COMPILE_ASSERT(!cef_internal::NeedsScopedRefptrButGetsRawPtr<P7>::value,
+                 p7_is_refcounted_type_and_needs_scoped_refptr);
+  typedef cef_internal::BindState<RunnableType, RunType,
+      void(typename cef_internal::CallbackParamTraits<P1>::StorageType,
+      typename cef_internal::CallbackParamTraits<P2>::StorageType,
+      typename cef_internal::CallbackParamTraits<P3>::StorageType,
+      typename cef_internal::CallbackParamTraits<P4>::StorageType,
+      typename cef_internal::CallbackParamTraits<P5>::StorageType,
+      typename cef_internal::CallbackParamTraits<P6>::StorageType,
+      typename cef_internal::CallbackParamTraits<P7>::StorageType)> BindState;
 
-    return Callback<typename BindState::UnboundRunType>(
-    new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4, p5, p6,
-                  p7));
+
+  return Callback<typename BindState::UnboundRunType>(
+      new BindState(cef_internal::MakeRunnable(functor), p1, p2, p3, p4, p5, p6,
+          p7));
 }
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_BIND_H_
+#endif  // CEF_INCLUDE_BASE_CEF_BIND_H_
