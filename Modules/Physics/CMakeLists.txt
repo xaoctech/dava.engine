@@ -12,7 +12,9 @@ set(INCLUDES "${PhysicsRootDir}/Sources"
              "${PhysicsRootDir}/Libs/include/physx"
              "${PhysicsRootDir}/Libs/include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
+
 set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
+set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
 
 set (LibsPath "${PhysicsRootDir}/Libs")
 
