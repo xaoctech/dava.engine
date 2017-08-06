@@ -1,4 +1,6 @@
 
+components_option( DAVA_TEST_COMPONENT )
+
 set( NAME_MODULE Sample )                     # set name to module 
 
 set( MODULE_TYPE STATIC )                     # set module type [INLINE, STATIC, DYNAMIC]
@@ -11,5 +13,11 @@ set( CPP_FILES_RECURSE Sources/*.cpp )
 
 set( MODULE_INITIALIZATION true )
 set( NOT_USE_PARENT_DEFINITIONS true )
+
+if( DAVA_TEST_COMPONENT )
+    #message( STATUS "DAVA_TEST_COMPONENT  on")
+else()
+    #message( STATUS "DAVA_TEST_COMPONENT  off")
+endif()
 
 setup_main_module()                           # induce macros of module formation

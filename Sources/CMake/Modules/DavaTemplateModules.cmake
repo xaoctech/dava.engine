@@ -243,6 +243,7 @@ macro( setup_main_module )
     endif()
 
     if ( INIT )
+
         #"find root call"
         get_property( MAIN_MODULES_FIND_FIRST_CALL_LIST GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST )
         if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )  
@@ -281,7 +282,8 @@ macro( setup_main_module )
             endif()
 
             set( MODULE_CACHE   "ROOT_${ORIGINAL_NAME_MODULE}"
-                                ${COVERAGE_STRING} )
+                                ${COVERAGE_STRING}
+                                ${MODULE_COMPONENTS}  )
             
             if( NOT NOT_USE_PARENT_DEFINITIONS  )
 
@@ -290,12 +292,11 @@ macro( setup_main_module )
                                           ${DEFINITIONS_PROP} 
                                           ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} 
                                           ${GLOBAL_DEFINITIONS_PROP} 
-                                          ${MODULE_COMPONENTS}  )
-
-                list( REMOVE_ITEM MODULE_CACHE ${ORIGINAL_NAME_MODULE} )
+                                        )
 
             endif()
 
+            list( REMOVE_ITEM MODULE_CACHE ${ORIGINAL_NAME_MODULE} )
 
 
             list( REMOVE_DUPLICATES MODULE_CACHE )

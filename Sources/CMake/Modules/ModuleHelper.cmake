@@ -5,20 +5,23 @@ macro ( components_option OPTION )
     if ( ${_index} GREATER -1 )
         set( ${OPTION} true )
     endif()
+
 endmacro ()
 
 macro( find_package_module NAME  )
-
-    add_module_subdirectory( ${NAME}  "${DAVA_MODULES_DIR}/${NAME}" )
+    cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
+    add_module_subdirectory( ${NAME}  "${DAVA_MODULES_DIR}/${NAME}" COMPONENTS ${ARG_COMPONENTS} )
 
 endmacro()
-
 
 macro ( add_module_subdirectory NAME SOURCE_DIR )
     cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
 
-    if( ARG_COMPONENTS )
+    list(LENGTH ARG_COMPONENTS ARG_COMPONENTS_LENGTH ) 
+
+    if( ARG_COMPONENTS_LENGTH )
         set( MODULE_COMPONENTS_VALUE_NAME ${NAME} )
+        list( APPEND ARG_COMPONENTS ${NAME} )
     else()
         set( MODULE_COMPONENTS_VALUE_NAME ) 
     endif()
