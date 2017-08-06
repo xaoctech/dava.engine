@@ -62,7 +62,8 @@ set( FIND_SYSTEM_LIBRARY_MACOS      Cocoa
                                     WebKit
                                     SystemConfiguration
                                     IOKit
-                                    ZLIB )
+                                    ZLIB
+                                    Carbon )
 
 
 set( FIND_SYSTEM_LIBRARY_ANDROID    ZLIB )

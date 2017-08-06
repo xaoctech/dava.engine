@@ -6,11 +6,17 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+
 #include "Render/Highlevel/Camera.h"
 
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/Keyboard.h"
+
 #include "UI/UIEvent.h"
+
+#include "DeviceManager/DeviceManager.h"
 
 namespace DAVA
 {
@@ -92,14 +98,17 @@ bool RotationControllerSystem::Input(UIEvent* event)
                     }
                     else if (event->mouseButton == eMouseButtons::MIDDLE)
                     {
-                        KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-                        if (keyboard.IsKeyPressed(Key::LALT) || keyboard.IsKeyPressed(Key::RALT))
+                        Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+                        if (keyboard != nullptr)
                         {
-                            RotatePositionAroundPoint(camera, rotationPoint);
-                        }
-                        else
-                        {
-                            RotatePosition(camera);
+                            if (keyboard->GetKeyState(eInputElements::KB_LALT).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RALT).IsPressed())
+                            {
+                                RotatePositionAroundPoint(camera, rotationPoint);
+                            }
+                            else
+                            {
+                                RotatePosition(camera);
+                            }
                         }
                     }
 #endif
