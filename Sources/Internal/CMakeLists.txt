@@ -99,7 +99,7 @@ set( ERASE_FOLDERS_ANDROID          "Metal" "DX9" "DX11" )
 set( ERASE_FOLDERS_WIN              "Metal" )
 set( ERASE_FOLDERS_WINUAP           "DX9" "GLES2" "Metal" )
 set( ERASE_FOLDERS_LINUX            "DX9" "DX11" "Metal" "GLES2" )
-
+set( ERASE_FILES                    ModuleManagerStub.cpp )
 
 set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "Compression/ZipCompressor.cpp"
