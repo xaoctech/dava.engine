@@ -25,7 +25,7 @@ if (LINUX)
 endif()
 
 if ( WIN32 OR MACOS )
-    find_package(DavaTools REQUIRED )
+    find_package_module( Tools )
 endif()
 
 # Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
@@ -33,17 +33,17 @@ dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 if (NOT LINUX)
     # Enable sound after fmod libraries
-    set ( DAVA_COMPONENTS "Sound" "Spine" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
-else()
-    set ( DAVA_COMPONENTS "NetworkCore" DAVA_DISABLE_AUTOTESTS )
+    set ( DAVA_COMPONENTS "Sound" )
+    find_package_module( "Spine" )
+    find_package_module( "NetworkCore" )
 endif()
 
 if ( WIN32 AND NOT WINDOWS_UAP )
-    list ( APPEND DAVA_COMPONENTS "CEFWebview" )
+    find_package_module( "CEFWebview" )
 endif ()
 
 if (NOT ANDROID)
-    list ( APPEND DAVA_COMPONENTS "Sample" )
+    find_package_module( "Sample" )
 endif()
 
 # add physics
@@ -54,14 +54,17 @@ elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
 elseif (LINUX)
     # for now physx is not supported for linux
 else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
+    find_package_module( "Physics" )
 endif()
 
 find_package( Steam REQUIRED )
-find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )
-find_package( LoggerService REQUIRED )
-find_package( EmbeddedWebServer REQUIRED )
-find_package( DocDirSetup REQUIRED )
+
+find_package_module( LoggerService  )
+find_package_module( EmbeddedWebServer  )
+find_package_module( DocDirSetup  )
+
+find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" DAVA_DISABLE_AUTOTESTS )
+
 
 include_directories   ( "Classes" )
 

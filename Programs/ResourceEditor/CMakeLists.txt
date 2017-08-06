@@ -19,28 +19,25 @@ if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
     set( DEPLOY_BEAST_DIR ${DEPLOY_DIR} )
 endif()
 
-list(APPEND DAVA_COMPONENTS "Sound")
-list(APPEND DAVA_COMPONENTS "Spine")
-#list(APPEND DAVA_COMPONENTS "Physics")
-#list(APPEND DAVA_COMPONENTS "PhysicsDebug")
+set( DAVA_COMPONENTS 
+     "Sound" 
+     DAVA_PLATFORM_QT
+     DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME
+     DAVA_DISABLE_AUTOTESTS
+     DAVA_USE_RENDERSTATS )
 
-list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
-list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
-list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
-list(APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS)
-
-find_package( DavaTools REQUIRED )
-find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
-find_package( QtHelpers REQUIRED )
-find_package( DocDirSetup REQUIRED )
+find_package( QT5 REQUIRED )
+
+find_package_module( Spine REQUIRED )
+find_package_module( Tools REQUIRED )
+find_package_module( QtHelpers REQUIRED )
+find_package_module( DocDirSetup REQUIRED )
+find_package_module( QtTools REQUIRED )
+find_package_module( TArc REQUIRED )
+find_package_module( RemoteTool REQUIRED )
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
-
-find_package( QtTools REQUIRED )
-find_package( TArc REQUIRED )
-find_package( RemoteTool REQUIRED )
-# find_package( EditorPhysics REQUIRED )
 
 #
 

@@ -12,10 +12,11 @@ endif()
 
 set ( DAVA_COMPONENTS "Sample" "DAVA_DISABLE_AUTOTESTS" )
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" "Spine" )
+    list ( APPEND DAVA_COMPONENTS "Sound" )
+    find_package_module( Spine )
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    list ( APPEND DAVA_COMPONENTS "CEFWebview" )
+    find_package_module( CEFWebview )
 endif ()
 
 # add physics
@@ -24,8 +25,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
-    list ( APPEND DAVA_COMPONENTS "PhysicsDebug" )
+    find_package_module( Physics )
+    find_package_module( PhysicsDebug )
 endif()
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )

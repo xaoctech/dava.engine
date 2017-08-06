@@ -10,6 +10,7 @@ set( INCLUDES "${NetworkCoreRootDir}/Sources" )
 set( INCLUDES_PRIVATE ${DAVA_ENGINE_DIR}
                       ${DAVA_INCLUDE_DIR} )
 
+set( MODULE_INITIALIZATION true )
 set( NOT_USE_PARENT_DEFINITIONS true )
 
 setup_main_module()

@@ -7,7 +7,7 @@ set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_
 include               ( CMake-common )
 
 find_package          ( QT5 REQUIRED  COMPONENTS Network )
-find_package          ( QtHelpers  REQUIRED )
+find_package_module   ( QtHelpers )
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 

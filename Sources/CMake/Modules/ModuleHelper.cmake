@@ -1,5 +1,19 @@
 include ( CMakeParseArguments  )
- 
+
+macro ( components_option OPTION )
+    list (FIND ARG_COMPONENTS ${OPTION} _index)
+    if ( ${_index} GREATER -1 )
+        set( ${OPTION} true )
+    endif()
+endmacro ()
+
+macro( find_package_module NAME  )
+
+    add_module_subdirectory( ${NAME}  "${DAVA_MODULES_DIR}/${NAME}" )
+
+endmacro()
+
+
 macro ( add_module_subdirectory NAME SOURCE_DIR )
     cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
 

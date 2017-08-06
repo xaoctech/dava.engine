@@ -6,8 +6,8 @@ set                   ( WARNINGS_AS_ERRORS true )
 set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
 include               ( CMake-common )
 
-find_package          ( DavaTools     REQUIRED )
-find_package          ( DocDirSetup REQUIRED )
+find_package_module   ( Tools REQUIRED )
+find_package_module   ( DocDirSetup REQUIRED )
 
 dava_add_definitions ( -DCONSOLE )
 

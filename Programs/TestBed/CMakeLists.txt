@@ -20,12 +20,16 @@ endif()
 # Uncomment to use local resources for android
 # dava_add_definitions(-DUSE_LOCAL_RESOURCES)
 
-set ( DAVA_COMPONENTS "Sample" "DAVA_DISABLE_AUTOTESTS" )
+set ( DAVA_COMPONENTS "DAVA_DISABLE_AUTOTESTS" )
+
+find_package_module( "Sample" )
+
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" "Spine" )
+    list ( APPEND DAVA_COMPONENTS "Sound"  )
+    find_package_module( "Spine" )
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    list ( APPEND DAVA_COMPONENTS "CEFWebview" )
+    find_package_module( "CEFWebview" )
 endif ()
 
 # add physics
@@ -34,8 +38,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
-    list ( APPEND DAVA_COMPONENTS "PhysicsDebug" )
+    find_package_module( "Physics" )
+    find_package_module( "PhysicsDebug" )
 endif()
 
 if (DAVA_PLATFORM_QT)
@@ -52,17 +56,16 @@ endif()
 
 dava_add_definitions(-DLOCALIZATION_DEBUG)
 
-
 if( NOT WINDOWS_UAP AND ( MACOS OR WIN32 ) )
     #add_plugin( SamplePlugin "${DAVA_MODULES_DIR}/SamplePlugin" COMPONENTS  ${DAVA_COMPONENTS} )
 endif()
 
-
+find_package_module( LoggerService )
+find_package_module( MemoryProfilerService )
+find_package_module( EmbeddedWebServer )
+find_package_module( DocDirSetup )
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
-find_package( LoggerService REQUIRED )
-find_package( MemoryProfilerService REQUIRED )
-find_package( EmbeddedWebServer REQUIRED )
-find_package( DocDirSetup REQUIRED )
+
 include_directories   ( "Classes" )
 include_directories   ( "Classes/Infrastructure" )
 

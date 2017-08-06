@@ -7,19 +7,20 @@ if( NOT DAVA_LIBRARY )
     set( DAVA_LIBRARY    "DavaFramework" )
 endif()
 
+components_option( DAVA_DISABLE_AUTOTESTS )
+components_option( DAVA_USE_RENDERSTATS )
+components_option( DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
+components_option( DENY_RUN_MULTIPLE_APP_INSTANCES )
+components_option( ANDROID_USE_LOCAL_RESOURCES )
+components_option( DAVA_PLATFORM_QT )
+
 include ( DavaLibs )
 
 set( NAME_MODULE ${DAVA_LIBRARY} )
 
-set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC
+set( MODULE_MANAGER true )
 
-set( EXTERNAL_MODULES_WIN           ${DAVA_EXTERNAL_DIR}/cef )
-set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/Sample
-                                    ${DAVA_MODULES_DIR}/NetworkCore
-                                    ${DAVA_MODULES_DIR}/Physics
-                                    ${DAVA_MODULES_DIR}/PhysicsDebug
-                                    ${DAVA_MODULES_DIR}/Spine
-                                    )
+set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC
 
 set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR}
                                     ${DAVA_THIRD_PARTY_INCLUDES_PATH}  )

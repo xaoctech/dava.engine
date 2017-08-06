@@ -12,7 +12,6 @@ set(INCLUDES "${PhysicsRootDir}/Sources"
              "${PhysicsRootDir}/Libs/include/physx"
              "${PhysicsRootDir}/Libs/include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
-set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
 set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
 
 set (LibsPath "${PhysicsRootDir}/Libs")
@@ -478,6 +477,7 @@ set(BINARY_WIN64_DIR_RELEASE "${LibsPath}/Win32/x64")
 set(BINARY_WIN64_DIR_RELWITHDEB "${LibsPath}/Win32/x64")
 set(BINARY_WIN64_DIR_DEBUG "${LibsPath}/Win32/x64")
 
+set(MODULE_INITIALIZATION true )
 set(NOT_USE_PARENT_DEFINITIONS true )
 
 setup_main_module()

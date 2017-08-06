@@ -11,8 +11,8 @@ dava_add_definitions (
 
 find_package( QT5           REQUIRED )
 find_package( DavaFramework REQUIRED )
-find_package( LoggerService REQUIRED )
-find_package( DocDirSetup REQUIRED )
+find_package_module( LoggerService )
+find_package_module( DocDirSetup )
 
 if ( NOT WIN32 OR WINDOWS_UAP )
     message( FATAL_ERROR "This util can be built only on Windows Desktop platform" )

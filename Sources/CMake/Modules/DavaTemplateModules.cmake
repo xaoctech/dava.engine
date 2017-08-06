@@ -5,8 +5,7 @@ NAME_MODULE_STUB                       #
 MODULE_TYPE                            #"[ INLINE STATIC PLUGIN  ]"
 #
 IMPL_MODULE
-EXTERNAL_MODULES
-EXTERNAL_MODULES_${DAVA_PLATFORM_CURENT} 
+MODULE_MANAGER
 #
 SRC_FOLDERS             
 ERASE_FOLDERS              
@@ -76,6 +75,9 @@ DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG
 FIND_SYSTEM_LIBRARY                   
 FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}
 #
+FIND_MODULE
+FIND_MODULE_${DAVA_PLATFORM_CURENT}
+#
 FIND_PACKAGE
 FIND_PACKAGE_${DAVA_PLATFORM_CURENT}
 #
@@ -119,23 +121,6 @@ set(  GLOBAL_PROPERTY_VALUES ${MAIN_MODULE_VALUES}  TARGET_MODULES_LIST
                                                     QT_LINKAGE_LIST_VALUE 
                                                     DEPENDENT_LIST
                                                     GROUP_SOURCE )
-#
-macro ( load_external_modules EXTERNAL_MODULES )
-    foreach( FOLDER_MODULE ${EXTERNAL_MODULES} )
-        file( GLOB FIND_CMAKELIST "${FOLDER_MODULE}/CMakeLists.txt" )
-        if( FIND_CMAKELIST )
-            get_filename_component ( FOLDER_NAME ${FOLDER_MODULE} NAME )
-            add_subdirectory ( ${FOLDER_MODULE}  ${FOLDER_NAME} )       
-        else()
-            file( GLOB LIST ${FOLDER_MODULE} )
-            foreach( ITEM ${LIST} )
-                if( IS_DIRECTORY ${ITEM} )
-                    load_external_modules( ${ITEM} )
-                endif()
-            endforeach()
-        endif()
-    endforeach()
-endmacro()
 #
 macro( reset_MAIN_MODULE_VALUES )
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} GLOBAL_DEFINITIONS )
@@ -407,6 +392,12 @@ macro( setup_main_module )
 
         endforeach()
 
+        #"FIND_MODULE"
+        foreach( NAME ${FIND_MODULE} ${FIND_MODULE_${DAVA_PLATFORM_CURENT}} )
+            find_package_module( ${NAME})
+        endforeach()
+     
+
         #"ERASE FILES"
         foreach( PLATFORM  ${DAVA_PLATFORM_LIST} )
             if( NOT ${PLATFORM} AND ERASE_FILES_NOT_${PLATFORM} )
@@ -419,18 +410,13 @@ macro( setup_main_module )
 
         set( ALL_SRC )
         set( ALL_SRC_HEADER_FILE_ONLY )
-        set( EXTERNAL_MODULES ${EXTERNAL_MODULES} ${EXTERNAL_MODULES_${DAVA_PLATFORM_CURENT}} ${IMPL_MODULE} ) 
         
-        if( SRC_FOLDERS OR EXTERNAL_MODULES )
+        if( SRC_FOLDERS  )
 
             foreach( VALUE ${MAIN_MODULE_VALUES} )
                 set( ${VALUE}_DIR_NAME ${${VALUE}} )
                 set( ${VALUE})
             endforeach()
-
-            if( EXTERNAL_MODULES_DIR_NAME )
-                load_external_modules( "${EXTERNAL_MODULES_DIR_NAME}" )
-            endif()
             
             if( SRC_FOLDERS_DIR_NAME )
                 define_source( SOURCE        ${SRC_FOLDERS_DIR_NAME}
@@ -457,7 +443,7 @@ macro( setup_main_module )
                 set( NAME_MODULE )
                 set( MODULE_TYPE INLINE )
                 set( CONECTION_TYPE IMPL )
-
+                add_module_subdirectory( ${NAME_MODULE_STUB}  "${IMPL_MODULE}" )
             endif()
 
             foreach ( ITEM  HPP_FILES_RECURSE HPP_FILES
@@ -605,6 +591,15 @@ macro( setup_main_module )
             endif()
 
             if( ${MODULE_TYPE} STREQUAL "STATIC" )
+
+                if( MODULE_MANAGER )
+                    set_property( GLOBAL PROPERTY MODULE_MANAGER  true )
+                endif()
+
+                if( MODULE_INITIALIZATION )
+                    append_property( DAVA_LOADED_INITIALIZATION_MODULES ${ORIGINAL_NAME_MODULE} )
+                endif()
+
                 if( CREATE_NEW_MODULE )
                     add_library( ${NAME_MODULE} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
                 endif()
