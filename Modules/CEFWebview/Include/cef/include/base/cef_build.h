@@ -35,7 +35,7 @@
 #if defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/compiler_specific.h"
-#else  // !BUILDING_CEF_SHARED
+#else // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -117,12 +117,12 @@
 #if defined(OS_WIN)
 #define WCHAR_T_IS_UTF16
 #elif defined(OS_POSIX) && defined(COMPILER_GCC) && \
-    defined(__WCHAR_MAX__) && \
-    (__WCHAR_MAX__ == 0x7fffffff || __WCHAR_MAX__ == 0xffffffff)
+defined(__WCHAR_MAX__) && \
+(__WCHAR_MAX__ == 0x7fffffff || __WCHAR_MAX__ == 0xffffffff)
 #define WCHAR_T_IS_UTF32
 #elif defined(OS_POSIX) && defined(COMPILER_GCC) && \
-    defined(__WCHAR_MAX__) && \
-    (__WCHAR_MAX__ == 0x7fff || __WCHAR_MAX__ == 0xffff)
+defined(__WCHAR_MAX__) && \
+(__WCHAR_MAX__ == 0x7fff || __WCHAR_MAX__ == 0xffff)
 // On Posix, we'll detect short wchar_t, but projects aren't guaranteed to
 // compile in this mode (in particular, Chrome doesn't). This is intended for
 // other projects using base who manage their own dependencies and make sure
@@ -142,7 +142,7 @@
 #else
 #define WARN_UNUSED_RESULT
 #endif
-#endif  // WARN_UNUSED_RESULT
+#endif // WARN_UNUSED_RESULT
 
 // Annotate a typedef or function indicating it's ok if it's not used.
 // Use like:
@@ -153,7 +153,7 @@
 #else
 #define ALLOW_UNUSED_TYPE
 #endif
-#endif  // ALLOW_UNUSED_TYPE
+#endif // ALLOW_UNUSED_TYPE
 
 // Annotate a variable indicating it's ok if the variable is not used.
 // (Typically used to silence a compiler warning when the assignment
@@ -165,7 +165,7 @@
 #define ALLOW_UNUSED_LOCAL(x) false ? (void)x : (void)0
 #endif
 
-#endif  // !BUILDING_CEF_SHARED
+#endif // !BUILDING_CEF_SHARED
 
 // Annotate a virtual method indicating it must be overriding a virtual method
 // in the parent class.
@@ -181,12 +181,12 @@
 // Visual Studio 2010 and later support override.
 #define OVERRIDE override
 #elif defined(COMPILER_GCC) && __cplusplus >= 201103 && \
-      (__GNUC__ * 10000 + __GNUC_MINOR__ * 100) >= 40700
+(__GNUC__ * 10000 + __GNUC_MINOR__ * 100) >= 40700
 // GCC 4.7 supports explicit virtual overrides when C++11 support is enabled.
 #define OVERRIDE override
 #else
 #define OVERRIDE
 #endif
-#endif  // OVERRIDE
+#endif // OVERRIDE
 
-#endif  // CEF_INCLUDE_BASE_CEF_BUILD_H_
+#endif // CEF_INCLUDE_BASE_CEF_BUILD_H_

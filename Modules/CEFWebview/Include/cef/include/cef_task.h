@@ -50,13 +50,14 @@ typedef cef_thread_id_t CefThreadId;
 // task object destructor.
 ///
 /*--cef(source=client)--*/
-class CefTask : public virtual CefBase {
- public:
-  ///
-  // Method that will be executed on the target thread.
-  ///
-  /*--cef()--*/
-  virtual void Execute() =0;
+class CefTask : public virtual CefBase
+{
+public:
+    ///
+    // Method that will be executed on the target thread.
+    ///
+    /*--cef()--*/
+    virtual void Execute() = 0;
 };
 
 ///
@@ -69,58 +70,58 @@ class CefTask : public virtual CefBase {
 // other CEF threads as appropriate (for example, V8 WebWorker threads).
 ///
 /*--cef(source=library)--*/
-class CefTaskRunner : public virtual CefBase {
- public:
-  ///
-  // Returns the task runner for the current thread. Only CEF threads will have
-  // task runners. An empty reference will be returned if this method is called
-  // on an invalid thread.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefTaskRunner> GetForCurrentThread();
+class CefTaskRunner : public virtual CefBase
+{
+public:
+    ///
+    // Returns the task runner for the current thread. Only CEF threads will have
+    // task runners. An empty reference will be returned if this method is called
+    // on an invalid thread.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefTaskRunner> GetForCurrentThread();
 
-  ///
-  // Returns the task runner for the specified CEF thread.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefTaskRunner> GetForThread(CefThreadId threadId);
+    ///
+    // Returns the task runner for the specified CEF thread.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefTaskRunner> GetForThread(CefThreadId threadId);
 
-  ///
-  // Returns true if this object is pointing to the same task runner as |that|
-  // object.
-  ///
-  /*--cef()--*/
-  virtual bool IsSame(CefRefPtr<CefTaskRunner> that) =0;
+    ///
+    // Returns true if this object is pointing to the same task runner as |that|
+    // object.
+    ///
+    /*--cef()--*/
+    virtual bool IsSame(CefRefPtr<CefTaskRunner> that) = 0;
 
-  ///
-  // Returns true if this task runner belongs to the current thread.
-  ///
-  /*--cef()--*/
-  virtual bool BelongsToCurrentThread() =0;
+    ///
+    // Returns true if this task runner belongs to the current thread.
+    ///
+    /*--cef()--*/
+    virtual bool BelongsToCurrentThread() = 0;
 
-  ///
-  // Returns true if this task runner is for the specified CEF thread.
-  ///
-  /*--cef()--*/
-  virtual bool BelongsToThread(CefThreadId threadId) =0;
+    ///
+    // Returns true if this task runner is for the specified CEF thread.
+    ///
+    /*--cef()--*/
+    virtual bool BelongsToThread(CefThreadId threadId) = 0;
 
-  ///
-  // Post a task for execution on the thread associated with this task runner.
-  // Execution will occur asynchronously.
-  ///
-  /*--cef()--*/
-  virtual bool PostTask(CefRefPtr<CefTask> task) =0;
+    ///
+    // Post a task for execution on the thread associated with this task runner.
+    // Execution will occur asynchronously.
+    ///
+    /*--cef()--*/
+    virtual bool PostTask(CefRefPtr<CefTask> task) = 0;
 
-  ///
-  // Post a task for delayed execution on the thread associated with this task
-  // runner. Execution will occur asynchronously. Delayed tasks are not
-  // supported on V8 WebWorker threads and will be executed without the
-  // specified delay.
-  ///
-  /*--cef()--*/
-  virtual bool PostDelayedTask(CefRefPtr<CefTask> task, int64 delay_ms) =0;
+    ///
+    // Post a task for delayed execution on the thread associated with this task
+    // runner. Execution will occur asynchronously. Delayed tasks are not
+    // supported on V8 WebWorker threads and will be executed without the
+    // specified delay.
+    ///
+    /*--cef()--*/
+    virtual bool PostDelayedTask(CefRefPtr<CefTask> task, int64 delay_ms) = 0;
 };
-
 
 ///
 // Returns true if called on the specified thread. Equivalent to using
@@ -145,4 +146,4 @@ bool CefPostDelayedTask(CefThreadId threadId, CefRefPtr<CefTask> task,
                         int64 delay_ms);
 
 
-#endif  // CEF_INCLUDE_CEF_TASK_H_
+#endif // CEF_INCLUDE_CEF_TASK_H_

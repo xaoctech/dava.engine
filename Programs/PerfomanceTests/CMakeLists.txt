@@ -10,26 +10,9 @@ if ( ENABLE_MEM_PROFILING )
     dava_add_definitions( -DDAVA_MEMORY_PROFILING_ENABLE )
 endif()
 
-set ( DAVA_COMPONENTS "Sample" "DAVA_DISABLE_AUTOTESTS" )
-if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" )
-    find_package_module( Spine )
-endif()
-if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    find_package_module( CEFWebview )
-endif ()
 
-# add physics
-if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
-    # we don't have physx for android x86, so skip this
-elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
-    # we don't have physx for win uap arm, so skip this
-else()
-    find_package_module( Physics )
-    find_package_module( PhysicsDebug )
-endif()
+find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
 
-find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 
 include_directories   ( "iOSSpecific" )
 include_directories   ( "Classes" )

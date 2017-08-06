@@ -44,21 +44,21 @@
 extern "C" {
 #endif
 
-
 ///
 // Implement this structure to receive string values asynchronously.
 ///
-typedef struct _cef_string_visitor_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_t base;
+typedef struct _cef_string_visitor_t
+{
+    ///
+    // Base structure.
+    ///
+    cef_base_t base;
 
-  ///
-  // Method that will be executed.
-  ///
-  void (CEF_CALLBACK *visit)(struct _cef_string_visitor_t* self,
-      const cef_string_t* string);
+    ///
+    // Method that will be executed.
+    ///
+    void(CEF_CALLBACK* visit)(struct _cef_string_visitor_t* self,
+                              const cef_string_t* string);
 } cef_string_visitor_t;
 
 
@@ -66,4 +66,4 @@ typedef struct _cef_string_visitor_t {
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_STRING_VISITOR_CAPI_H_
+#endif // CEF_INCLUDE_CAPI_CEF_STRING_VISITOR_CAPI_H_

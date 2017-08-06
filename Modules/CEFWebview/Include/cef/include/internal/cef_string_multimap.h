@@ -102,4 +102,4 @@ CEF_EXPORT void cef_string_multimap_free(cef_string_multimap_t map);
 }
 #endif
 
-#endif  // CEF_INCLUDE_INTERNAL_CEF_STRING_MULTIMAP_H_
+#endif // CEF_INCLUDE_INTERNAL_CEF_STRING_MULTIMAP_H_

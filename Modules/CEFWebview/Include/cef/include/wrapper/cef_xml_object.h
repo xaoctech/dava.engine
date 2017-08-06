@@ -71,126 +71,127 @@ class CefStreamReader;
 //     (c) Element nodes are represented by their outer XML string.
 // </pre>
 ///
-class CefXmlObject : public base::RefCountedThreadSafe<CefXmlObject> {
- public:
-  typedef std::vector<CefRefPtr<CefXmlObject> > ObjectVector;
-  typedef std::map<CefString, CefString > AttributeMap;
+class CefXmlObject : public base::RefCountedThreadSafe<CefXmlObject>
+{
+public:
+    typedef std::vector<CefRefPtr<CefXmlObject>> ObjectVector;
+    typedef std::map<CefString, CefString> AttributeMap;
 
-  ///
-  // Create a new object with the specified name. An object name must always be
-  // at least one character long.
-  ///
-  explicit CefXmlObject(const CefString& name);
+    ///
+    // Create a new object with the specified name. An object name must always be
+    // at least one character long.
+    ///
+    explicit CefXmlObject(const CefString& name);
 
-  ///
-  // Load the contents of the specified XML stream into this object.  The
-  // existing children and attributes, if any, will first be cleared.
-  ///
-  bool Load(CefRefPtr<CefStreamReader> stream,
-            CefXmlReader::EncodingType encodingType,
-            const CefString& URI, CefString* loadError);
+    ///
+    // Load the contents of the specified XML stream into this object.  The
+    // existing children and attributes, if any, will first be cleared.
+    ///
+    bool Load(CefRefPtr<CefStreamReader> stream,
+              CefXmlReader::EncodingType encodingType,
+              const CefString& URI, CefString* loadError);
 
-  ///
-  // Set the name, children and attributes of this object to a duplicate of the
-  // specified object's contents. The existing children and attributes, if any,
-  // will first be cleared.
-  ///
-  void Set(CefRefPtr<CefXmlObject> object);
+    ///
+    // Set the name, children and attributes of this object to a duplicate of the
+    // specified object's contents. The existing children and attributes, if any,
+    // will first be cleared.
+    ///
+    void Set(CefRefPtr<CefXmlObject> object);
 
-  ///
-  // Append a duplicate of the children and attributes of the specified object
-  // to this object. If |overwriteAttributes| is true then any attributes in
-  // this object that also exist in the specified object will be overwritten
-  // with the new values. The name of this object is not changed.
-  ///
-  void Append(CefRefPtr<CefXmlObject> object, bool overwriteAttributes);
+    ///
+    // Append a duplicate of the children and attributes of the specified object
+    // to this object. If |overwriteAttributes| is true then any attributes in
+    // this object that also exist in the specified object will be overwritten
+    // with the new values. The name of this object is not changed.
+    ///
+    void Append(CefRefPtr<CefXmlObject> object, bool overwriteAttributes);
 
-  ///
-  // Return a new object with the same name, children and attributes as this
-  // object. The parent of the new object will be NULL.
-  ///
-  CefRefPtr<CefXmlObject> Duplicate();
+    ///
+    // Return a new object with the same name, children and attributes as this
+    // object. The parent of the new object will be NULL.
+    ///
+    CefRefPtr<CefXmlObject> Duplicate();
 
-  ///
-  // Clears this object's children and attributes. The name and parenting of
-  // this object are not changed.
-  ///
-  void Clear();
+    ///
+    // Clears this object's children and attributes. The name and parenting of
+    // this object are not changed.
+    ///
+    void Clear();
 
-  ///
-  // Access the object's name. An object name must always be at least one
-  // character long.
-  ///
-  CefString GetName();
-  bool SetName(const CefString& name);
+    ///
+    // Access the object's name. An object name must always be at least one
+    // character long.
+    ///
+    CefString GetName();
+    bool SetName(const CefString& name);
 
-  ///
-  // Access the object's parent. The parent can be NULL if this object has not
-  // been added as the child on another object.
-  ///
-  bool HasParent();
-  CefRefPtr<CefXmlObject> GetParent();
+    ///
+    // Access the object's parent. The parent can be NULL if this object has not
+    // been added as the child on another object.
+    ///
+    bool HasParent();
+    CefRefPtr<CefXmlObject> GetParent();
 
-  ///
-  // Access the object's value. An object cannot have a value if it also has
-  // children. Attempting to set the value while children exist will fail.
-  ///
-  bool HasValue();
-  CefString GetValue();
-  bool SetValue(const CefString& value);
+    ///
+    // Access the object's value. An object cannot have a value if it also has
+    // children. Attempting to set the value while children exist will fail.
+    ///
+    bool HasValue();
+    CefString GetValue();
+    bool SetValue(const CefString& value);
 
-  ///
-  // Access the object's attributes. Attributes must have unique names.
-  ///
-  bool HasAttributes();
-  size_t GetAttributeCount();
-  bool HasAttribute(const CefString& name);
-  CefString GetAttributeValue(const CefString& name);
-  bool SetAttributeValue(const CefString& name, const CefString& value);
-  size_t GetAttributes(AttributeMap& attributes);
-  void ClearAttributes();
+    ///
+    // Access the object's attributes. Attributes must have unique names.
+    ///
+    bool HasAttributes();
+    size_t GetAttributeCount();
+    bool HasAttribute(const CefString& name);
+    CefString GetAttributeValue(const CefString& name);
+    bool SetAttributeValue(const CefString& name, const CefString& value);
+    size_t GetAttributes(AttributeMap& attributes);
+    void ClearAttributes();
 
-  ///
-  // Access the object's children. Each object can only have one parent so
-  // attempting to add an object that already has a parent will fail. Removing a
-  // child will set the child's parent to NULL. Adding a child will set the
-  // child's parent to this object. This object's value, if any, will be cleared
-  // if a child is added.
-  ///
-  bool HasChildren();
-  size_t GetChildCount();
-  bool HasChild(CefRefPtr<CefXmlObject> child);
-  bool AddChild(CefRefPtr<CefXmlObject> child);
-  bool RemoveChild(CefRefPtr<CefXmlObject> child);
-  size_t GetChildren(ObjectVector& children);
-  void ClearChildren();
+    ///
+    // Access the object's children. Each object can only have one parent so
+    // attempting to add an object that already has a parent will fail. Removing a
+    // child will set the child's parent to NULL. Adding a child will set the
+    // child's parent to this object. This object's value, if any, will be cleared
+    // if a child is added.
+    ///
+    bool HasChildren();
+    size_t GetChildCount();
+    bool HasChild(CefRefPtr<CefXmlObject> child);
+    bool AddChild(CefRefPtr<CefXmlObject> child);
+    bool RemoveChild(CefRefPtr<CefXmlObject> child);
+    size_t GetChildren(ObjectVector& children);
+    void ClearChildren();
 
-  ///
-  // Find the first child with the specified name.
-  ///
-  CefRefPtr<CefXmlObject> FindChild(const CefString& name);
+    ///
+    // Find the first child with the specified name.
+    ///
+    CefRefPtr<CefXmlObject> FindChild(const CefString& name);
 
-  ///
-  // Find all children with the specified name.
-  ///
-  size_t FindChildren(const CefString& name, ObjectVector& children);
+    ///
+    // Find all children with the specified name.
+    ///
+    size_t FindChildren(const CefString& name, ObjectVector& children);
 
- private:
-  // Protect against accidental deletion of this object.
-  friend class base::RefCountedThreadSafe<CefXmlObject>;
-  ~CefXmlObject();
+private:
+    // Protect against accidental deletion of this object.
+    friend class base::RefCountedThreadSafe<CefXmlObject>;
+    ~CefXmlObject();
 
-  void SetParent(CefXmlObject* parent);
+    void SetParent(CefXmlObject* parent);
 
-  CefString name_;
-  CefXmlObject* parent_;
-  CefString value_;
-  AttributeMap attributes_;
-  ObjectVector children_;
+    CefString name_;
+    CefXmlObject* parent_;
+    CefString value_;
+    AttributeMap attributes_;
+    ObjectVector children_;
 
-  base::Lock lock_;
+    base::Lock lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(CefXmlObject);
+    DISALLOW_COPY_AND_ASSIGN(CefXmlObject);
 };
 
-#endif  // CEF_INCLUDE_WRAPPER_CEF_XML_OBJECT_H_
+#endif // CEF_INCLUDE_WRAPPER_CEF_XML_OBJECT_H_

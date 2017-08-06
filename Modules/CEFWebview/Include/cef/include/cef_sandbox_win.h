@@ -71,22 +71,28 @@ void cef_sandbox_info_destroy(void* sandbox_info);
 ///
 // Manages the life span of a sandbox information object.
 ///
-class CefScopedSandboxInfo {
- public:
-  CefScopedSandboxInfo() {
-    sandbox_info_ = cef_sandbox_info_create();
-  }
-  ~CefScopedSandboxInfo() {
-    cef_sandbox_info_destroy(sandbox_info_);
-  }
+class CefScopedSandboxInfo
+{
+public:
+    CefScopedSandboxInfo()
+    {
+        sandbox_info_ = cef_sandbox_info_create();
+    }
+    ~CefScopedSandboxInfo()
+    {
+        cef_sandbox_info_destroy(sandbox_info_);
+    }
 
-  void* sandbox_info() const { return sandbox_info_; }
+    void* sandbox_info() const
+    {
+        return sandbox_info_;
+    }
 
- private:
-  void* sandbox_info_;
+private:
+    void* sandbox_info_;
 };
-#endif  // __cplusplus
+#endif // __cplusplus
 
-#endif  // defined(OS_WIN)
+#endif // defined(OS_WIN)
 
-#endif  // CEF_INCLUDE_CEF_SANDBOX_WIN_H_
+#endif // CEF_INCLUDE_CEF_SANDBOX_WIN_H_

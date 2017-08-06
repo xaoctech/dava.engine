@@ -94,4 +94,4 @@ CEF_EXPORT void cef_string_map_free(cef_string_map_t map);
 }
 #endif
 
-#endif  // CEF_INCLUDE_INTERNAL_CEF_STRING_MAP_H_
+#endif // CEF_INCLUDE_INTERNAL_CEF_STRING_MAP_H_

@@ -45,31 +45,32 @@ class CefBrowser;
 // Information about a specific web plugin.
 ///
 /*--cef(source=library)--*/
-class CefWebPluginInfo : public virtual CefBase {
- public:
-  ///
-  // Returns the plugin name (i.e. Flash).
-  ///
-  /*--cef()--*/
-  virtual CefString GetName() =0;
+class CefWebPluginInfo : public virtual CefBase
+{
+public:
+    ///
+    // Returns the plugin name (i.e. Flash).
+    ///
+    /*--cef()--*/
+    virtual CefString GetName() = 0;
 
-  ///
-  // Returns the plugin file path (DLL/bundle/library).
-  ///
-  /*--cef()--*/
-  virtual CefString GetPath() =0;
+    ///
+    // Returns the plugin file path (DLL/bundle/library).
+    ///
+    /*--cef()--*/
+    virtual CefString GetPath() = 0;
 
-  ///
-  // Returns the version of the plugin (may be OS-specific).
-  ///
-  /*--cef()--*/
-  virtual CefString GetVersion() =0;
+    ///
+    // Returns the version of the plugin (may be OS-specific).
+    ///
+    /*--cef()--*/
+    virtual CefString GetVersion() = 0;
 
-  ///
-  // Returns a description of the plugin from the version information.
-  ///
-  /*--cef()--*/
-  virtual CefString GetDescription() =0;
+    ///
+    // Returns a description of the plugin from the version information.
+    ///
+    /*--cef()--*/
+    virtual CefString GetDescription() = 0;
 };
 
 ///
@@ -77,16 +78,17 @@ class CefWebPluginInfo : public virtual CefBase {
 // this class will be called on the browser process UI thread.
 ///
 /*--cef(source=client)--*/
-class CefWebPluginInfoVisitor : public virtual CefBase {
- public:
-  ///
-  // Method that will be called once for each plugin. |count| is the 0-based
-  // index for the current plugin. |total| is the total number of plugins.
-  // Return false to stop visiting plugins. This method may never be called if
-  // no plugins are found.
-  ///
-  /*--cef()--*/
-  virtual bool Visit(CefRefPtr<CefWebPluginInfo> info, int count, int total) =0;
+class CefWebPluginInfoVisitor : public virtual CefBase
+{
+public:
+    ///
+    // Method that will be called once for each plugin. |count| is the 0-based
+    // index for the current plugin. |total| is the total number of plugins.
+    // Return false to stop visiting plugins. This method may never be called if
+    // no plugins are found.
+    ///
+    /*--cef()--*/
+    virtual bool Visit(CefRefPtr<CefWebPluginInfo> info, int count, int total) = 0;
 };
 
 ///
@@ -155,16 +157,17 @@ void CefRegisterWebPluginCrash(const CefString& path);
 // of this class will be called on the browser process IO thread.
 ///
 /*--cef(source=client)--*/
-class CefWebPluginUnstableCallback : public virtual CefBase {
- public:
-  ///
-  // Method that will be called for the requested plugin. |unstable| will be
-  // true if the plugin has reached the crash count threshold of 3 times in 120
-  // seconds.
-  ///
-  /*--cef()--*/
-  virtual void IsUnstable(const CefString& path,
-                          bool unstable) =0;
+class CefWebPluginUnstableCallback : public virtual CefBase
+{
+public:
+    ///
+    // Method that will be called for the requested plugin. |unstable| will be
+    // true if the plugin has reached the crash count threshold of 3 times in 120
+    // seconds.
+    ///
+    /*--cef()--*/
+    virtual void IsUnstable(const CefString& path,
+                            bool unstable) = 0;
 };
 
 ///
@@ -176,4 +179,4 @@ void CefIsWebPluginUnstable(const CefString& path,
                             CefRefPtr<CefWebPluginUnstableCallback> callback);
 
 
-#endif  // CEF_INCLUDE_CEF_WEB_PLUGIN_H_
+#endif // CEF_INCLUDE_CEF_WEB_PLUGIN_H_

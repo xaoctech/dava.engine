@@ -46,11 +46,10 @@
 #include "include/base/cef_macros.h"
 #include "include/cef_task.h"
 
-#define CEF_REQUIRE_UI_THREAD()       DCHECK(CefCurrentlyOn(TID_UI));
-#define CEF_REQUIRE_IO_THREAD()       DCHECK(CefCurrentlyOn(TID_IO));
-#define CEF_REQUIRE_FILE_THREAD()     DCHECK(CefCurrentlyOn(TID_FILE));
+#define CEF_REQUIRE_UI_THREAD() DCHECK(CefCurrentlyOn(TID_UI));
+#define CEF_REQUIRE_IO_THREAD() DCHECK(CefCurrentlyOn(TID_IO));
+#define CEF_REQUIRE_FILE_THREAD() DCHECK(CefCurrentlyOn(TID_FILE));
 #define CEF_REQUIRE_RENDERER_THREAD() DCHECK(CefCurrentlyOn(TID_RENDERER));
-
 
 // Use this struct in conjuction with refcounted types to ensure that an
 // object is deleted on the specified thread. For example:
@@ -72,53 +71,72 @@
 // foo->DoSomething();
 // foo = NULL;  // Deletion of |foo| will occur on the UI thread.
 //
-template<CefThreadId thread>
-struct CefDeleteOnThread {
-  template<typename T>
-  static void Destruct(const T* x) {
-    if (CefCurrentlyOn(thread)) {
-      delete x;
-    } else {
-      CefPostTask(thread,
-                  base::Bind(&CefDeleteOnThread<thread>::Destruct<T>, x));
+template <CefThreadId thread>
+struct CefDeleteOnThread
+{
+    template <typename T>
+    static void Destruct(const T* x)
+    {
+        if (CefCurrentlyOn(thread))
+        {
+            delete x;
+        }
+        else
+        {
+            CefPostTask(thread,
+                        base::Bind(&CefDeleteOnThread<thread>::Destruct<T>, x));
+        }
     }
-  }
 };
 
-struct CefDeleteOnUIThread : public CefDeleteOnThread<TID_UI> { };
-struct CefDeleteOnIOThread : public CefDeleteOnThread<TID_IO> { };
-struct CefDeleteOnFileThread : public CefDeleteOnThread<TID_FILE> { };
-struct CefDeleteOnRendererThread : public CefDeleteOnThread<TID_RENDERER> { };
-
+struct CefDeleteOnUIThread : public CefDeleteOnThread<TID_UI>
+{
+};
+struct CefDeleteOnIOThread : public CefDeleteOnThread<TID_IO>
+{
+};
+struct CefDeleteOnFileThread : public CefDeleteOnThread<TID_FILE>
+{
+};
+struct CefDeleteOnRendererThread : public CefDeleteOnThread<TID_RENDERER>
+{
+};
 
 ///
 // Helper class to manage a scoped copy of |argv|.
 ///
-class CefScopedArgArray {
- public:
-  CefScopedArgArray(int argc, char* argv[]) {
-    // argv should have (argc + 1) elements, the last one always being NULL.
-    array_ = new char*[argc + 1];
-    for (int i = 0; i < argc; ++i) {
-      values_.push_back(argv[i]);
-      array_[i] = const_cast<char*>(values_[i].c_str());
+class CefScopedArgArray
+{
+public:
+    CefScopedArgArray(int argc, char* argv[])
+    {
+        // argv should have (argc + 1) elements, the last one always being NULL.
+        array_ = new char*[argc + 1];
+        for (int i = 0; i < argc; ++i)
+        {
+            values_.push_back(argv[i]);
+            array_[i] = const_cast<char*>(values_[i].c_str());
+        }
+        array_[argc] = NULL;
     }
-    array_[argc] = NULL;
-  }
-  ~CefScopedArgArray() {
-    delete [] array_;
-  }
+    ~CefScopedArgArray()
+    {
+        delete[] array_;
+    }
 
-  char** array() const { return array_; }
+    char** array() const
+    {
+        return array_;
+    }
 
- private:
-  char** array_;
+private:
+    char** array_;
 
-  // Keep values in a vector separate from |array_| because various users may
-  // modify |array_| and we still want to clean up memory properly.
-  std::vector<std::string> values_;
-  
-  DISALLOW_COPY_AND_ASSIGN(CefScopedArgArray);
+    // Keep values in a vector separate from |array_| because various users may
+    // modify |array_| and we still want to clean up memory properly.
+    std::vector<std::string> values_;
+
+    DISALLOW_COPY_AND_ASSIGN(CefScopedArgArray);
 };
 
-#endif  // CEF_INCLUDE_WRAPPER_CEF_HELPERS_H_
+#endif // CEF_INCLUDE_WRAPPER_CEF_HELPERS_H_

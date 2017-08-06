@@ -44,7 +44,6 @@
 extern "C" {
 #endif
 
-
 ///
 // Launches the process specified via |command_line|. Returns true (1) upon
 // success. Must be called on the browser process TID_PROCESS_LAUNCHER thread.
@@ -61,4 +60,4 @@ CEF_EXPORT int cef_launch_process(struct _cef_command_line_t* command_line);
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_PROCESS_UTIL_CAPI_H_
+#endif // CEF_INCLUDE_CAPI_CEF_PROCESS_UTIL_CAPI_H_

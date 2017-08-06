@@ -46,87 +46,87 @@
 extern "C" {
 #endif
 
-
 ///
 // Callback structure used to asynchronously continue a download.
 ///
-typedef struct _cef_before_download_callback_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_t base;
+typedef struct _cef_before_download_callback_t
+{
+    ///
+    // Base structure.
+    ///
+    cef_base_t base;
 
-  ///
-  // Call to continue the download. Set |download_path| to the full file path
-  // for the download including the file name or leave blank to use the
-  // suggested name and the default temp directory. Set |show_dialog| to true
-  // (1) if you do wish to show the default "Save As" dialog.
-  ///
-  void (CEF_CALLBACK *cont)(struct _cef_before_download_callback_t* self,
-      const cef_string_t* download_path, int show_dialog);
+    ///
+    // Call to continue the download. Set |download_path| to the full file path
+    // for the download including the file name or leave blank to use the
+    // suggested name and the default temp directory. Set |show_dialog| to true
+    // (1) if you do wish to show the default "Save As" dialog.
+    ///
+    void(CEF_CALLBACK* cont)(struct _cef_before_download_callback_t* self,
+                             const cef_string_t* download_path, int show_dialog);
 } cef_before_download_callback_t;
-
 
 ///
 // Callback structure used to asynchronously cancel a download.
 ///
-typedef struct _cef_download_item_callback_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_t base;
+typedef struct _cef_download_item_callback_t
+{
+    ///
+    // Base structure.
+    ///
+    cef_base_t base;
 
-  ///
-  // Call to cancel the download.
-  ///
-  void (CEF_CALLBACK *cancel)(struct _cef_download_item_callback_t* self);
+    ///
+    // Call to cancel the download.
+    ///
+    void(CEF_CALLBACK* cancel)(struct _cef_download_item_callback_t* self);
 
-  ///
-  // Call to pause the download.
-  ///
-  void (CEF_CALLBACK *pause)(struct _cef_download_item_callback_t* self);
+    ///
+    // Call to pause the download.
+    ///
+    void(CEF_CALLBACK* pause)(struct _cef_download_item_callback_t* self);
 
-  ///
-  // Call to resume the download.
-  ///
-  void (CEF_CALLBACK *resume)(struct _cef_download_item_callback_t* self);
+    ///
+    // Call to resume the download.
+    ///
+    void(CEF_CALLBACK* resume)(struct _cef_download_item_callback_t* self);
 } cef_download_item_callback_t;
-
 
 ///
 // Structure used to handle file downloads. The functions of this structure will
 // called on the browser process UI thread.
 ///
-typedef struct _cef_download_handler_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_t base;
+typedef struct _cef_download_handler_t
+{
+    ///
+    // Base structure.
+    ///
+    cef_base_t base;
 
-  ///
-  // Called before a download begins. |suggested_name| is the suggested name for
-  // the download file. By default the download will be canceled. Execute
-  // |callback| either asynchronously or in this function to continue the
-  // download if desired. Do not keep a reference to |download_item| outside of
-  // this function.
-  ///
-  void (CEF_CALLBACK *on_before_download)(struct _cef_download_handler_t* self,
-      struct _cef_browser_t* browser,
-      struct _cef_download_item_t* download_item,
-      const cef_string_t* suggested_name,
-      struct _cef_before_download_callback_t* callback);
+    ///
+    // Called before a download begins. |suggested_name| is the suggested name for
+    // the download file. By default the download will be canceled. Execute
+    // |callback| either asynchronously or in this function to continue the
+    // download if desired. Do not keep a reference to |download_item| outside of
+    // this function.
+    ///
+    void(CEF_CALLBACK* on_before_download)(struct _cef_download_handler_t* self,
+                                           struct _cef_browser_t* browser,
+                                           struct _cef_download_item_t* download_item,
+                                           const cef_string_t* suggested_name,
+                                           struct _cef_before_download_callback_t* callback);
 
-  ///
-  // Called when a download's status or progress information has been updated.
-  // This may be called multiple times before and after on_before_download().
-  // Execute |callback| either asynchronously or in this function to cancel the
-  // download if desired. Do not keep a reference to |download_item| outside of
-  // this function.
-  ///
-  void (CEF_CALLBACK *on_download_updated)(struct _cef_download_handler_t* self,
-      struct _cef_browser_t* browser,
-      struct _cef_download_item_t* download_item,
-      struct _cef_download_item_callback_t* callback);
+    ///
+    // Called when a download's status or progress information has been updated.
+    // This may be called multiple times before and after on_before_download().
+    // Execute |callback| either asynchronously or in this function to cancel the
+    // download if desired. Do not keep a reference to |download_item| outside of
+    // this function.
+    ///
+    void(CEF_CALLBACK* on_download_updated)(struct _cef_download_handler_t* self,
+                                            struct _cef_browser_t* browser,
+                                            struct _cef_download_item_t* download_item,
+                                            struct _cef_download_item_callback_t* callback);
 } cef_download_handler_t;
 
 
@@ -134,4 +134,4 @@ typedef struct _cef_download_handler_t {
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_DOWNLOAD_HANDLER_CAPI_H_
+#endif // CEF_INCLUDE_CAPI_CEF_DOWNLOAD_HANDLER_CAPI_H_

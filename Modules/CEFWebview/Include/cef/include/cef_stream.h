@@ -44,199 +44,200 @@
 // methods of this class may be called on any thread.
 ///
 /*--cef(source=client)--*/
-class CefReadHandler : public virtual CefBase {
- public:
-  ///
-  // Read raw binary data.
-  ///
-  /*--cef()--*/
-  virtual size_t Read(void* ptr, size_t size, size_t n) =0;
+class CefReadHandler : public virtual CefBase
+{
+public:
+    ///
+    // Read raw binary data.
+    ///
+    /*--cef()--*/
+    virtual size_t Read(void* ptr, size_t size, size_t n) = 0;
 
-  ///
-  // Seek to the specified offset position. |whence| may be any one of
-  // SEEK_CUR, SEEK_END or SEEK_SET. Return zero on success and non-zero on
-  // failure.
-  ///
-  /*--cef()--*/
-  virtual int Seek(int64 offset, int whence) =0;
+    ///
+    // Seek to the specified offset position. |whence| may be any one of
+    // SEEK_CUR, SEEK_END or SEEK_SET. Return zero on success and non-zero on
+    // failure.
+    ///
+    /*--cef()--*/
+    virtual int Seek(int64 offset, int whence) = 0;
 
-  ///
-  // Return the current offset position.
-  ///
-  /*--cef()--*/
-  virtual int64 Tell() =0;
+    ///
+    // Return the current offset position.
+    ///
+    /*--cef()--*/
+    virtual int64 Tell() = 0;
 
-  ///
-  // Return non-zero if at end of file.
-  ///
-  /*--cef()--*/
-  virtual int Eof() =0;
+    ///
+    // Return non-zero if at end of file.
+    ///
+    /*--cef()--*/
+    virtual int Eof() = 0;
 
-  ///
-  // Return true if this handler performs work like accessing the file system
-  // which may block. Used as a hint for determining the thread to access the
-  // handler from.
-  ///
-  /*--cef()--*/
-  virtual bool MayBlock() =0;
+    ///
+    // Return true if this handler performs work like accessing the file system
+    // which may block. Used as a hint for determining the thread to access the
+    // handler from.
+    ///
+    /*--cef()--*/
+    virtual bool MayBlock() = 0;
 };
-
 
 ///
 // Class used to read data from a stream. The methods of this class may be
 // called on any thread.
 ///
 /*--cef(source=library)--*/
-class CefStreamReader : public virtual CefBase {
- public:
-  ///
-  // Create a new CefStreamReader object from a file.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefStreamReader> CreateForFile(const CefString& fileName);
-  ///
-  // Create a new CefStreamReader object from data.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefStreamReader> CreateForData(void* data, size_t size);
-  ///
-  // Create a new CefStreamReader object from a custom handler.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefStreamReader> CreateForHandler(
-      CefRefPtr<CefReadHandler> handler);
+class CefStreamReader : public virtual CefBase
+{
+public:
+    ///
+    // Create a new CefStreamReader object from a file.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefStreamReader> CreateForFile(const CefString& fileName);
+    ///
+    // Create a new CefStreamReader object from data.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefStreamReader> CreateForData(void* data, size_t size);
+    ///
+    // Create a new CefStreamReader object from a custom handler.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefStreamReader> CreateForHandler(
+    CefRefPtr<CefReadHandler> handler);
 
-  ///
-  // Read raw binary data.
-  ///
-  /*--cef()--*/
-  virtual size_t Read(void* ptr, size_t size, size_t n) =0;
+    ///
+    // Read raw binary data.
+    ///
+    /*--cef()--*/
+    virtual size_t Read(void* ptr, size_t size, size_t n) = 0;
 
-  ///
-  // Seek to the specified offset position. |whence| may be any one of
-  // SEEK_CUR, SEEK_END or SEEK_SET. Returns zero on success and non-zero on
-  // failure.
-  ///
-  /*--cef()--*/
-  virtual int Seek(int64 offset, int whence) =0;
+    ///
+    // Seek to the specified offset position. |whence| may be any one of
+    // SEEK_CUR, SEEK_END or SEEK_SET. Returns zero on success and non-zero on
+    // failure.
+    ///
+    /*--cef()--*/
+    virtual int Seek(int64 offset, int whence) = 0;
 
-  ///
-  // Return the current offset position.
-  ///
-  /*--cef()--*/
-  virtual int64 Tell() =0;
+    ///
+    // Return the current offset position.
+    ///
+    /*--cef()--*/
+    virtual int64 Tell() = 0;
 
-  ///
-  // Return non-zero if at end of file.
-  ///
-  /*--cef()--*/
-  virtual int Eof() =0;
+    ///
+    // Return non-zero if at end of file.
+    ///
+    /*--cef()--*/
+    virtual int Eof() = 0;
 
-  ///
-  // Returns true if this reader performs work like accessing the file system
-  // which may block. Used as a hint for determining the thread to access the
-  // reader from.
-  ///
-  /*--cef()--*/
-  virtual bool MayBlock() =0;
+    ///
+    // Returns true if this reader performs work like accessing the file system
+    // which may block. Used as a hint for determining the thread to access the
+    // reader from.
+    ///
+    /*--cef()--*/
+    virtual bool MayBlock() = 0;
 };
-
 
 ///
 // Interface the client can implement to provide a custom stream writer. The
 // methods of this class may be called on any thread.
 ///
 /*--cef(source=client)--*/
-class CefWriteHandler : public virtual CefBase {
- public:
-  ///
-  // Write raw binary data.
-  ///
-  /*--cef()--*/
-  virtual size_t Write(const void* ptr, size_t size, size_t n) =0;
+class CefWriteHandler : public virtual CefBase
+{
+public:
+    ///
+    // Write raw binary data.
+    ///
+    /*--cef()--*/
+    virtual size_t Write(const void* ptr, size_t size, size_t n) = 0;
 
-  ///
-  // Seek to the specified offset position. |whence| may be any one of
-  // SEEK_CUR, SEEK_END or SEEK_SET. Return zero on success and non-zero on
-  // failure.
-  ///
-  /*--cef()--*/
-  virtual int Seek(int64 offset, int whence) =0;
+    ///
+    // Seek to the specified offset position. |whence| may be any one of
+    // SEEK_CUR, SEEK_END or SEEK_SET. Return zero on success and non-zero on
+    // failure.
+    ///
+    /*--cef()--*/
+    virtual int Seek(int64 offset, int whence) = 0;
 
-  ///
-  // Return the current offset position.
-  ///
-  /*--cef()--*/
-  virtual int64 Tell() =0;
+    ///
+    // Return the current offset position.
+    ///
+    /*--cef()--*/
+    virtual int64 Tell() = 0;
 
-  ///
-  // Flush the stream.
-  ///
-  /*--cef()--*/
-  virtual int Flush() =0;
+    ///
+    // Flush the stream.
+    ///
+    /*--cef()--*/
+    virtual int Flush() = 0;
 
-  ///
-  // Return true if this handler performs work like accessing the file system
-  // which may block. Used as a hint for determining the thread to access the
-  // handler from.
-  ///
-  /*--cef()--*/
-  virtual bool MayBlock() =0;
+    ///
+    // Return true if this handler performs work like accessing the file system
+    // which may block. Used as a hint for determining the thread to access the
+    // handler from.
+    ///
+    /*--cef()--*/
+    virtual bool MayBlock() = 0;
 };
-
 
 ///
 // Class used to write data to a stream. The methods of this class may be called
 // on any thread.
 ///
 /*--cef(source=library)--*/
-class CefStreamWriter : public virtual CefBase {
- public:
-  ///
-  // Create a new CefStreamWriter object for a file.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefStreamWriter> CreateForFile(const CefString& fileName);
-  ///
-  // Create a new CefStreamWriter object for a custom handler.
-  ///
-  /*--cef()--*/
-  static CefRefPtr<CefStreamWriter> CreateForHandler(
-      CefRefPtr<CefWriteHandler> handler);
+class CefStreamWriter : public virtual CefBase
+{
+public:
+    ///
+    // Create a new CefStreamWriter object for a file.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefStreamWriter> CreateForFile(const CefString& fileName);
+    ///
+    // Create a new CefStreamWriter object for a custom handler.
+    ///
+    /*--cef()--*/
+    static CefRefPtr<CefStreamWriter> CreateForHandler(
+    CefRefPtr<CefWriteHandler> handler);
 
-  ///
-  // Write raw binary data.
-  ///
-  /*--cef()--*/
-  virtual size_t Write(const void* ptr, size_t size, size_t n) =0;
+    ///
+    // Write raw binary data.
+    ///
+    /*--cef()--*/
+    virtual size_t Write(const void* ptr, size_t size, size_t n) = 0;
 
-  ///
-  // Seek to the specified offset position. |whence| may be any one of
-  // SEEK_CUR, SEEK_END or SEEK_SET. Returns zero on success and non-zero on
-  // failure.
-  ///
-  /*--cef()--*/
-  virtual int Seek(int64 offset, int whence) =0;
+    ///
+    // Seek to the specified offset position. |whence| may be any one of
+    // SEEK_CUR, SEEK_END or SEEK_SET. Returns zero on success and non-zero on
+    // failure.
+    ///
+    /*--cef()--*/
+    virtual int Seek(int64 offset, int whence) = 0;
 
-  ///
-  // Return the current offset position.
-  ///
-  /*--cef()--*/
-  virtual int64 Tell() =0;
+    ///
+    // Return the current offset position.
+    ///
+    /*--cef()--*/
+    virtual int64 Tell() = 0;
 
-  ///
-  // Flush the stream.
-  ///
-  /*--cef()--*/
-  virtual int Flush() =0;
+    ///
+    // Flush the stream.
+    ///
+    /*--cef()--*/
+    virtual int Flush() = 0;
 
-  ///
-  // Returns true if this writer performs work like accessing the file system
-  // which may block. Used as a hint for determining the thread to access the
-  // writer from.
-  ///
-  /*--cef()--*/
-  virtual bool MayBlock() =0;
+    ///
+    // Returns true if this writer performs work like accessing the file system
+    // which may block. Used as a hint for determining the thread to access the
+    // writer from.
+    ///
+    /*--cef()--*/
+    virtual bool MayBlock() = 0;
 };
 
-#endif  // CEF_INCLUDE_CEF_STREAM_H_
+#endif // CEF_INCLUDE_CEF_STREAM_H_

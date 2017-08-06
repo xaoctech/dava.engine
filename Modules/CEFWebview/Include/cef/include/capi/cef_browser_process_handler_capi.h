@@ -47,53 +47,53 @@
 extern "C" {
 #endif
 
-
 ///
 // Structure used to implement browser process callbacks. The functions of this
 // structure will be called on the browser process main thread unless otherwise
 // indicated.
 ///
-typedef struct _cef_browser_process_handler_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_t base;
+typedef struct _cef_browser_process_handler_t
+{
+    ///
+    // Base structure.
+    ///
+    cef_base_t base;
 
-  ///
-  // Called on the browser process UI thread immediately after the CEF context
-  // has been initialized.
-  ///
-  void (CEF_CALLBACK *on_context_initialized)(
-      struct _cef_browser_process_handler_t* self);
+    ///
+    // Called on the browser process UI thread immediately after the CEF context
+    // has been initialized.
+    ///
+    void(CEF_CALLBACK* on_context_initialized)(
+    struct _cef_browser_process_handler_t* self);
 
-  ///
-  // Called before a child process is launched. Will be called on the browser
-  // process UI thread when launching a render process and on the browser
-  // process IO thread when launching a GPU or plugin process. Provides an
-  // opportunity to modify the child process command line. Do not keep a
-  // reference to |command_line| outside of this function.
-  ///
-  void (CEF_CALLBACK *on_before_child_process_launch)(
-      struct _cef_browser_process_handler_t* self,
-      struct _cef_command_line_t* command_line);
+    ///
+    // Called before a child process is launched. Will be called on the browser
+    // process UI thread when launching a render process and on the browser
+    // process IO thread when launching a GPU or plugin process. Provides an
+    // opportunity to modify the child process command line. Do not keep a
+    // reference to |command_line| outside of this function.
+    ///
+    void(CEF_CALLBACK* on_before_child_process_launch)(
+    struct _cef_browser_process_handler_t* self,
+    struct _cef_command_line_t* command_line);
 
-  ///
-  // Called on the browser process IO thread after the main thread has been
-  // created for a new render process. Provides an opportunity to specify extra
-  // information that will be passed to
-  // cef_render_process_handler_t::on_render_thread_created() in the render
-  // process. Do not keep a reference to |extra_info| outside of this function.
-  ///
-  void (CEF_CALLBACK *on_render_process_thread_created)(
-      struct _cef_browser_process_handler_t* self,
-      struct _cef_list_value_t* extra_info);
+    ///
+    // Called on the browser process IO thread after the main thread has been
+    // created for a new render process. Provides an opportunity to specify extra
+    // information that will be passed to
+    // cef_render_process_handler_t::on_render_thread_created() in the render
+    // process. Do not keep a reference to |extra_info| outside of this function.
+    ///
+    void(CEF_CALLBACK* on_render_process_thread_created)(
+    struct _cef_browser_process_handler_t* self,
+    struct _cef_list_value_t* extra_info);
 
-  ///
-  // Return the handler for printing on Linux. If a print handler is not
-  // provided then printing will not be supported on the Linux platform.
-  ///
-  struct _cef_print_handler_t* (CEF_CALLBACK *get_print_handler)(
-      struct _cef_browser_process_handler_t* self);
+    ///
+    // Return the handler for printing on Linux. If a print handler is not
+    // provided then printing will not be supported on the Linux platform.
+    ///
+    struct _cef_print_handler_t*(CEF_CALLBACK* get_print_handler)(
+    struct _cef_browser_process_handler_t* self);
 } cef_browser_process_handler_t;
 
 
@@ -101,4 +101,4 @@ typedef struct _cef_browser_process_handler_t {
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_BROWSER_PROCESS_HANDLER_CAPI_H_
+#endif // CEF_INCLUDE_CAPI_CEF_BROWSER_PROCESS_HANDLER_CAPI_H_

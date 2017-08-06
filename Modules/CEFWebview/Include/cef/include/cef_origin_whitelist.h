@@ -40,7 +40,6 @@
 
 #include "include/cef_base.h"
 
-
 ///
 // Add an entry to the cross-origin access whitelist.
 //
@@ -100,4 +99,4 @@ bool CefRemoveCrossOriginWhitelistEntry(const CefString& source_origin,
 /*--cef()--*/
 bool CefClearCrossOriginWhitelist();
 
-#endif  // CEF_INCLUDE_CEF_ORIGIN_WHITELIST_H_
+#endif // CEF_INCLUDE_CEF_ORIGIN_WHITELIST_H_

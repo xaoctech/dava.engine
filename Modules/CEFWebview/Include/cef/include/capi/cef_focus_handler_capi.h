@@ -47,39 +47,39 @@
 extern "C" {
 #endif
 
-
 ///
 // Implement this structure to handle events related to focus. The functions of
 // this structure will be called on the UI thread.
 ///
-typedef struct _cef_focus_handler_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_t base;
+typedef struct _cef_focus_handler_t
+{
+    ///
+    // Base structure.
+    ///
+    cef_base_t base;
 
-  ///
-  // Called when the browser component is about to loose focus. For instance, if
-  // focus was on the last HTML element and the user pressed the TAB key. |next|
-  // will be true (1) if the browser is giving focus to the next component and
-  // false (0) if the browser is giving focus to the previous component.
-  ///
-  void (CEF_CALLBACK *on_take_focus)(struct _cef_focus_handler_t* self,
-      struct _cef_browser_t* browser, int next);
+    ///
+    // Called when the browser component is about to loose focus. For instance, if
+    // focus was on the last HTML element and the user pressed the TAB key. |next|
+    // will be true (1) if the browser is giving focus to the next component and
+    // false (0) if the browser is giving focus to the previous component.
+    ///
+    void(CEF_CALLBACK* on_take_focus)(struct _cef_focus_handler_t* self,
+                                      struct _cef_browser_t* browser, int next);
 
-  ///
-  // Called when the browser component is requesting focus. |source| indicates
-  // where the focus request is originating from. Return false (0) to allow the
-  // focus to be set or true (1) to cancel setting the focus.
-  ///
-  int (CEF_CALLBACK *on_set_focus)(struct _cef_focus_handler_t* self,
-      struct _cef_browser_t* browser, cef_focus_source_t source);
+    ///
+    // Called when the browser component is requesting focus. |source| indicates
+    // where the focus request is originating from. Return false (0) to allow the
+    // focus to be set or true (1) to cancel setting the focus.
+    ///
+    int(CEF_CALLBACK* on_set_focus)(struct _cef_focus_handler_t* self,
+                                    struct _cef_browser_t* browser, cef_focus_source_t source);
 
-  ///
-  // Called when the browser component has received focus.
-  ///
-  void (CEF_CALLBACK *on_got_focus)(struct _cef_focus_handler_t* self,
-      struct _cef_browser_t* browser);
+    ///
+    // Called when the browser component has received focus.
+    ///
+    void(CEF_CALLBACK* on_got_focus)(struct _cef_focus_handler_t* self,
+                                     struct _cef_browser_t* browser);
 } cef_focus_handler_t;
 
 
@@ -87,4 +87,4 @@ typedef struct _cef_focus_handler_t {
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_FOCUS_HANDLER_CAPI_H_
+#endif // CEF_INCLUDE_CAPI_CEF_FOCUS_HANDLER_CAPI_H_
