@@ -175,11 +175,6 @@ public:
 
         bool operator==(const IndexedRenderBatch& other) const;
 
-        INTROSPECTION(IndexedRenderBatch,
-                      MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW)
-                      MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW)
-                      MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW));
-
         DAVA_VIRTUAL_REFLECTION(IndexedRenderBatch, InspBase);
     };
 
@@ -206,26 +201,6 @@ protected:
     uint32 removeIndex = static_cast<uint32>(-1);
     uint16 treeNodeIndex = INVALID_TREE_NODE_INDEX;
     uint16 staticOcclusionIndex = INVALID_STATIC_OCCLUSION_INDEX;
-
-public:
-    INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-                         MEMBER(type, "Type", I_SAVE | I_VIEW)
-
-                         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(debugFlags, "Debug Flags", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(removeIndex, "Remove index", I_SAVE)
-                         MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("lodIndex", "Lod Index", GetLodIndex, SetLodIndex, I_VIEW | I_EDIT)
-                         PROPERTY("switchIndex", "Switch Index", GetSwitchIndex, SetSwitchIndex, I_VIEW | I_EDIT)
-
-                         PROPERTY("visibleReflection", "Visible Reflection", GetReflectionVisible, SetReflectionVisible, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visibleRefraction", "Visible Refraction", GetRefractionVisible, SetRefractionVisible, I_SAVE | I_VIEW | I_EDIT)
-
-                         COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(activeRenderBatchArray, "Render Batch Array", I_VIEW)
-                         );
 
     DAVA_VIRTUAL_REFLECTION(RenderObject, AnimatedObject);
 };

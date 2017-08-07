@@ -32,9 +32,6 @@ private:
     FilePath filePath;
     Vector3 spawnPosition;
     bool isInnerEmitter = false;
-
-public:
-    INTROSPECTION_EXTEND(ParticleEmitterInstance, BaseObject, nullptr)
 };
 
 inline ParticleEmitter* ParticleEmitterInstance::GetEmitter() const

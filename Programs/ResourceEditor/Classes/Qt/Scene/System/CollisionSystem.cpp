@@ -247,7 +247,7 @@ void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object)
     }
 }
 
-DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(Selectable::Object* object) const
+DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const Any& object) const
 {
     DVASSERT(object != nullptr);
 
@@ -274,7 +274,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(Selectable::Object* object) c
     return aabox;
 }
 
-void SceneCollisionSystem::AddCollisionObject(Selectable::Object* obj, CollisionBaseObject* collision)
+void SceneCollisionSystem::AddCollisionObject(const Any& obj, CollisionBaseObject* collision)
 {
     if (collision == nullptr)
         return;
@@ -311,7 +311,7 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
         for (auto obj : objectsToRemove)
         {
             Selectable wrapper(obj);
-            EnumerateObjectHierarchy(wrapper, false, [this](Selectable::Object* object, CollisionBaseObject* collision)
+            EnumerateObjectHierarchy(wrapper, false, [this](const Any& object, CollisionBaseObject* collision)
                                      {
                                          DestroyFromObject(object);
                                      });
@@ -527,7 +527,7 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
-void SceneCollisionSystem::DestroyFromObject(Selectable::Object* entity)
+void SceneCollisionSystem::DestroyFromObject(const Any& entity)
 {
     CollisionBaseObject* cObj = objectToCollision[entity];
     if (cObj != nullptr)
@@ -659,13 +659,13 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     else
     {
         DAVA::float32 scale = object.CanBeCastedTo<DAVA::ParticleEmitterInstance>() ? debugBoxParticleScale : debugBoxScale;
-        Selectable::Object* containedObject = object.GetContainedObject();
+        const Any& containedObject = object.GetContainedObject();
         CollisionDetails::CollisionObj result = CollisionDetails::InitCollision<CollisionBox>(createCollision, containedObject, objectsCollWorld, object.GetWorldTransform().GetTranslationVector(), scale);
         callback(containedObject, result.collisionObject);
     }
 }
 
-DAVA::AABBox3 SceneCollisionSystem::GetUntransformedBoundingBox(Selectable::Object* entity) const
+DAVA::AABBox3 SceneCollisionSystem::GetUntransformedBoundingBox(const Any& entity) const
 {
     return GetTransformedBoundingBox(Selectable(entity), DAVA::Matrix4::IDENTITY);
 }

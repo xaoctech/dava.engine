@@ -172,7 +172,7 @@ protected:
 
     struct RemoveInfo
     {
-        RemoveInfo(std::unique_ptr<DAVA::Command>&& command_, Selectable::Object* selectedObject_)
+        RemoveInfo(std::unique_ptr<DAVA::Command>&& command_, const DAVA::Any& selectedObject_)
             : command(std::move(command_))
             , selectedObject(selectedObject_)
         {
@@ -185,7 +185,7 @@ protected:
         }
 
         std::unique_ptr<DAVA::Command> command;
-        Selectable::Object* selectedObject;
+        DAVA::Any selectedObject;
     };
 
     void RemoveCommandsHelper(const DAVA::String& text, SceneTreeItem::eItemType type, const DAVA::Function<RemoveInfo(SceneTreeItem*)>& callback)
@@ -1351,8 +1351,9 @@ void SceneTree::SyncSelectionFromTree()
         QModelIndexList indexList = selectionModel()->selection().indexes();
         for (int i = 0; i < indexList.size(); ++i)
         {
-            auto item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i]));
-            group.Add(item->GetItemObject(), curScene->collisionSystem->GetUntransformedBoundingBox(item->GetItemObject()));
+            SceneTreeItem* item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i]));
+            DAVA::Any object(item->GetItemObject());
+            group.Add(object, curScene->collisionSystem->GetUntransformedBoundingBox(object));
         }
         Selection::SetSelection(group);
     }

@@ -18,9 +18,6 @@ public:
 
     RefPtr<PropertyLine<Vector3>> force;
     RefPtr<PropertyLine<float32>> forceOverLife;
-
-public:
-    INTROSPECTION_EXTEND(ParticleForce, BaseObject, nullptr)
 };
 };
 

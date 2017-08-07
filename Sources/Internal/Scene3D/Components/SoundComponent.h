@@ -25,8 +25,6 @@ struct SoundComponentElement : public InspBase
     uint32 flags;
 
     bool operator==(const SoundComponentElement& other) const;
-
-    INTROSPECTION(SoundComponentElement, NULL);
     DAVA_VIRTUAL_REFLECTION(SoundComponentElement, InspBase);
 };
 
@@ -68,11 +66,6 @@ public:
 
 protected:
     Vector<SoundComponentElement> events;
-
-public:
-    INTROSPECTION_EXTEND(SoundComponent, Component,
-                         COLLECTION(events, "events", I_SAVE | I_VIEW | I_EDIT)
-                         );
 
     DAVA_VIRTUAL_REFLECTION(SoundComponent, Component);
 };

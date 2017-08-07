@@ -94,19 +94,6 @@ private:
 
     void InsertDataNode(DataNode* node, Set<DataNode*>& dataNodes);
 
-public:
-    INTROSPECTION_EXTEND(RenderBatch, BaseObject,
-                         MEMBER(dataSource, "Data Source", I_SAVE | I_VIEW | I_EDIT)
-
-                         MEMBER(startIndex, "Start Index", I_SAVE)
-                         MEMBER(indexCount, "Index Count", I_SAVE)
-                         //MEMBER(primitiveType, InspDesc("primitiveType", GlobalEnumMap<rhi::PrimitiveType>::Instance()), I_VIEW | I_EDIT | I_SAVE)
-
-                         MEMBER(aabbox, "AABBox", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(material, "Material", I_VIEW | I_EDIT)
-
-                         PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT));
-
     DAVA_VIRTUAL_REFLECTION(RenderBatch, BaseObject);
 };
 
