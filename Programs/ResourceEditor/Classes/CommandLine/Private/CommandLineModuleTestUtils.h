@@ -66,6 +66,7 @@ public:
     Entity* AddVegetation(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddLights(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddStaticOcclusion(R2OMode mode = WITHOUT_REF_TO_OWNER);
+    Entity* AddEntityWithTestedComponents(R2OMode mode = WITHOUT_REF_TO_OWNER);
 
     /*
     adds 'reference to owner' scene to passed `entity`

@@ -1,10 +1,13 @@
 #include "Infrastructure/GameCore.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include "CommandLine/CommandLineParser.h"
 #include "Debug/DVAssert.h"
 #include "Debug/DVAssertDefaultHandlers.h"
 #include "Engine/Engine.h"
 #include "FileSystem/KeyedArchive.h"
+#include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 #include "Logger/TeamCityTestsOutput.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
@@ -19,7 +22,8 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 #include "Network/PeerDesription.h"
 #include "Network/NetConfig.h"
-#include "Network/Services/NetLogger.h"
+#include <LoggerService/NetLogger.h>
+#include <LoggerService/ServiceInfo.h>
 #include "Platform/TemplateWin32/UAPNetworkHelper.h"
 #endif
 
@@ -93,6 +97,10 @@ int DAVAMain(Vector<String> cmdline)
 #else
     e.Init(eEngineRunMode::GUI_STANDALONE, modules, appOptions);
 #endif
+
+    FileSystem* fileSystem = e.GetContext()->fileSystem;
+
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UnitTests");
 
     GameCore g(e);
     e.Run();
@@ -381,14 +389,14 @@ void GameCore::InitNetwork()
     };
     // clang-format on
 
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_LOG, loggerCreate, loggerDestroy);
+    NetCore::Instance()->RegisterService(DAVA::Net::LOG_SERVICE_ID, loggerCreate, loggerDestroy);
 
     eNetworkRole role = UAPNetworkHelper::GetCurrentNetworkRole();
     Net::Endpoint endpoint = UAPNetworkHelper::GetCurrentEndPoint();
 
     NetConfig config(role);
     config.AddTransport(TRANSPORT_TCP, endpoint);
-    config.AddService(NetCore::SERVICE_LOG);
+    config.AddService(DAVA::Net::LOG_SERVICE_ID);
 
     netController = NetCore::Instance()->CreateController(config, nullptr);
 }

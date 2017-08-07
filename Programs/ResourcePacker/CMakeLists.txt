@@ -8,6 +8,7 @@ set                   ( NO_CEF true )
 include               ( CMake-common )
 
 find_package          ( DavaTools REQUIRED )
+find_package          ( DocDirSetup REQUIRED )
 
 dava_add_definitions  ( -DCONSOLE )
 find_package          ( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS )
