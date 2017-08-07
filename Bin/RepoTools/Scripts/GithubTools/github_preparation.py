@@ -62,6 +62,9 @@ class Preparation:
                 cmd_log = subprocess.check_output(cmd, shell=True)
                 sys.stdout.write(cmd_log)
                 sys.stdout.flush()
+                if 'Usage: bfg' in cmd_log:
+                    print "##teamcity[message text='Error removing big files' errorDetails='Not passed important parameters' status='ERROR']"
+                    sys.exit(3)
             except subprocess.CalledProcessError as cmd_except:
                 print "##teamcity[message text='Error removing extra files' errorDetails='%s' status='ERROR']" % cmd_except.output
                 sys.exit(3)
@@ -74,6 +77,9 @@ class Preparation:
             cmd_log = subprocess.check_output(cmd, shell=True)
             sys.stdout.write(cmd_log)
             sys.stdout.flush()
+            if 'Usage: bfg' in cmd_log:
+                print "##teamcity[message text='Error removing big files' errorDetails='Not passed important parameters' status='ERROR']"
+                sys.exit(3)
         except subprocess.CalledProcessError as cmd_except:
             print "##teamcity[message text='Error removing big files' errorDetails='%s' status='ERROR']" % cmd_except.output
             sys.exit(3)
