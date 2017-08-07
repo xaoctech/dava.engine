@@ -6,8 +6,8 @@
 #include "ApplicationSettings.h"
 #include "CustomServerWidget.h"
 
-#include <Tools/AssetCache/AssetCacheConstants.h>
-#include <Tools/Version.h>
+#include <DavaTools/AssetCache/AssetCacheConstants.h>
+#include <DavaTools/Version.h>
 
 
 #include "FileSystem/KeyedArchive.h"

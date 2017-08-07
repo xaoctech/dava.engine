@@ -5,8 +5,8 @@
 #include "Scene/System/EditorMaterialSystem.h"
 #include "Scene/System/CollisionSystem.h"
 
-#include <Tools/TextureCompression/TextureConverter.h>
-#include <Tools/AssetCache/AssetCache.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <DavaTools/AssetCache/AssetCache.h>
 
 // framework
 #include <FileSystem/KeyedArchive.h>

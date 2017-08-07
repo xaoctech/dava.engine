@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include <Tools/Version.h>
+#include <DavaTools/Version.h>
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
 #include "Classes/Qt/CubemapEditor/CubeMapTextureBrowser.h"
 #include "Classes/Qt/CubemapEditor/CubemapUtils.h"
@@ -65,7 +65,7 @@
 #include "Constants.h"
 #include "StringConstants.h"
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <TArc/Utils/Themes.h>
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>

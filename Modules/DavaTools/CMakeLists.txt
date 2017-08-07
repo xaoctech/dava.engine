@@ -2,8 +2,8 @@ set(NAME_MODULE DavaTools)
 
 set(MODULE_TYPE STATIC)
 
-set(HPP_FILES_RECURSE Sources/Tools/*.h)
-set(CPP_FILES_RECURSE Sources/Tools/*.cpp)
+set(HPP_FILES_RECURSE Sources/DavaTools/*.h)
+set(CPP_FILES_RECURSE Sources/DavaTools/*.cpp)
 
 set(DavaToolsRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 

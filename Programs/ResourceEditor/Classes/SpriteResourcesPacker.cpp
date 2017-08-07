@@ -2,7 +2,7 @@
 
 #include "Platform/DeviceInfo.h"
 
-#include <Tools/TexturePacker/ResourcePacker2D.h>
+#include <DavaTools/TexturePacker/ResourcePacker2D.h>
 #include "SpriteResourcesPacker.h"
 #include "Settings/SettingsManager.h"
 

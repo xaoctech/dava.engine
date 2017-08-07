@@ -1,6 +1,6 @@
 #include "ImageTools/ImageTools.h"
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include "Base/GlobalEnum.h"
 #include "Render/GPUFamilyDescriptor.h"

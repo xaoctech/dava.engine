@@ -11,7 +11,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "Deprecated/SceneValidator.h"
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include "Render/Image/LibDdsHelper.h"
 #include "FileSystem/FileSystem.h"

@@ -4,8 +4,8 @@
 #include "StringConstants.h"
 #include "Scene/SceneHelper.h"
 
-#include <Tools/AssetCache/AssetCacheClient.h>
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>

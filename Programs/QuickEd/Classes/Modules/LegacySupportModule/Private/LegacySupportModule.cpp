@@ -13,7 +13,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-#include <Tools/Version.h>
+#include <DavaTools/Version.h>
 #include <DAVAVersion.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)

@@ -6,7 +6,7 @@
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Application/LaunchModule.h"
 
-#include <Tools/TextureCompression/PVRConverter.h>
+#include <DavaTools/TextureCompression/PVRConverter.h>
 #include "Settings/SettingsManager.h"
 #include "Deprecated/SceneValidator.h"
 #include "Preferences/PreferencesStorage.h"
