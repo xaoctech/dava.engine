@@ -88,16 +88,6 @@ set( DAVA_STATIC_LIBRARIES_LINUX
                                     "-ldl"
                                     "-lz"
                                     )
-                                    
-if( DEFINED ANDROID_NDK 
-	AND DEFINED ANDROID_STL_PREFIX 
-	AND DEFINED ANDROID_ABI 
-	AND ANDROID_STL STREQUAL c++_shared)
-# Add c++abi lib for c++_shared STL
-set( DAVA_STATIC_LIBRARIES_ANDROID ${DAVA_STATIC_LIBRARIES_ANDROID}
-                                   ${ANDROID_NDK}/sources/cxx-stl/${ANDROID_STL_PREFIX}/libs/${ANDROID_ABI}/libc++abi.a 
-                                   )
-endif()
 
 if( WIN ) 
 
