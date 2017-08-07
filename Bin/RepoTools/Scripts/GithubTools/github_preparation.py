@@ -37,7 +37,7 @@ class Preparation:
 
     def get_delete_list(self):
         root_path = self.scan_paths()
-        sys.stdout.write('Files to delete from repo:\n')
+        sys.stdout.write('Deleting files from repo:\n')
         sys.stdout.flush()
 
         for path in root_path:
