@@ -2,9 +2,13 @@
 
 #if defined(__DAVAENGINE_WINDOWS__)
 
-#include <objbase.h>
+
 #include "Base/Platform.h"
+
+#if defined(__DAVAENGINE_WIN_UAP__)
+#include <objbase.h>
 #include "Utils/UTF8Utils.h"
+#endif
 
 namespace DAVA
 {
