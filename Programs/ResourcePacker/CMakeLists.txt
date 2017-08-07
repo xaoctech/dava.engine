@@ -7,8 +7,8 @@ set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_
 set                   ( NO_CEF true )
 include               ( CMake-common )
 
-find_package_module   ( Tools REQUIRED )
-find_package_module   ( DocDirSetup REQUIRED )
+find_package_module   ( DavaTools )
+find_package_module   ( DocDirSetup  )
 
 dava_add_definitions  ( -DCONSOLE )
 find_package          ( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS )

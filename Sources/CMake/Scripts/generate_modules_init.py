@@ -13,7 +13,7 @@ def main():
     try:
         args = parser.parse_args()
     except SystemExit as e:
-        print 'Argument were:', str(sys.argv)
+        print 'Error parse arguments !!! Argument were:', str(sys.argv)
         raise
 
     output = 'out.cpp'

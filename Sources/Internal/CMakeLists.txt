@@ -18,6 +18,8 @@ include ( DavaLibs )
 
 set( NAME_MODULE ${DAVA_LIBRARY} )
 
+set( USE_PARENT_DEFINITIONS true )
+
 set( MODULE_MANAGER true )
 
 set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC

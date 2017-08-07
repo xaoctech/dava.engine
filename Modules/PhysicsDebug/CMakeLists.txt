@@ -8,7 +8,7 @@ set(CPP_FILES_RECURSE Sources/*.cpp)
 set(PhysicsDebugRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PhysicsRootDir "${PhysicsDebugRootDir}/../Physics")
 
-set(INCLUDES "${PhysicsDebugRootDir}/Sources")
+set(INCLUDES "${PhysicsDebugRootDir}/Sources" )
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR}
                      "${PhysicsRootDir}/Libs/include/physx"
                      "${PhysicsRootDir}/Libs/include/PxShared")
@@ -27,6 +27,5 @@ set(DYNAMIC_LIBRARIES_WIN32_DEBUG "${WIN32_DYNAMIC_DEBUG_LIBS}")
 set(DYNAMIC_LIBRARIES_WIN64_DEBUG "${WIN64_DYNAMIC_DEBUG_LIBS}")
 
 set(MODULE_INITIALIZATION true )
-set(NOT_USE_PARENT_DEFINITIONS true )
 
 setup_main_module()

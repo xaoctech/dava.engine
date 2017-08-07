@@ -1,11 +1,11 @@
-#include "PhysicsDebugModule.h"
-
-#include <Reflection/Reflection.h>
-#include <Reflection/ReflectionRegistrator.h>
+#include <PhysicsDebug/PhysicsDebugModule.h>
 
 #include <physx/PxPhysicsAPI.h>
 #include <PxShared/pvd/PxPvd.h>
 #include <PxShared/pvd/PxPvdTransport.h>
+
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {

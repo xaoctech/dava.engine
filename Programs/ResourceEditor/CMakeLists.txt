@@ -29,13 +29,16 @@ set( DAVA_COMPONENTS
 find_package( GMock REQUIRED )
 find_package( QT5 REQUIRED )
 
-find_package_module( Spine REQUIRED )
-find_package_module( Tools REQUIRED )
-find_package_module( QtHelpers REQUIRED )
-find_package_module( DocDirSetup REQUIRED )
-find_package_module( QtTools REQUIRED )
-find_package_module( TArc REQUIRED )
-find_package_module( RemoteTool REQUIRED )
+find_package_module( Spine )
+find_package_module( DavaTools )
+find_package_module( QtHelpers )
+find_package_module( DocDirSetup )
+find_package_module( QtTools )
+find_package_module( TArc )
+find_package_module( RemoteTool )
+
+#find_package_module( Physics )
+#find_package_module( PhysicsDebug )
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 

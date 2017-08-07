@@ -1,6 +1,4 @@
 
-components_option( DAVA_TEST_OPTIONS )
-
 set( NAME_MODULE Sample )                     # set name to module 
 
 set( MODULE_TYPE STATIC )                     # set module type [INLINE, STATIC, DYNAMIC]
@@ -12,12 +10,5 @@ set( HPP_FILES_RECURSE Sources/*.h )
 set( CPP_FILES_RECURSE Sources/*.cpp )
 
 set( MODULE_INITIALIZATION true )
-set( NOT_USE_PARENT_DEFINITIONS true )
-
-if( DAVA_TEST_OPTIONS )
-    #message( STATUS "DAVA_TEST_OPTIONS  on")
-else()
-    #message( STATUS "DAVA_TEST_OPTIONS  off")
-endif()
 
 setup_main_module()                           # induce macros of module formation

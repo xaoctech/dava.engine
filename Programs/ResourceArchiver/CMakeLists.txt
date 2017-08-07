@@ -7,7 +7,7 @@ set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}
 
 include      ( CMake-common )
 
-find_package_module( Tools )
+find_package_module( DavaTools )
 find_package_module( DocDirSetup )
 dava_add_definitions ( -DCONSOLE )
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS )

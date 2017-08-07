@@ -75,7 +75,6 @@ set( DYNAMIC_LIBRARIES_WINUAP_DEBUG   ${LIBRARIES_FMOD}/win10/Win32/DEBUG/fmod_e
                                       ${LIBRARIES_FMOD}/win10/x64/DEBUG/fmodexUWPD64.dll )
 
 set( JAR_FOLDERS_ANDROID             ${LIBRARIES_FMOD}/Android/jar )
-set(NOT_USE_PARENT_DEFINITIONS true)
 
 setup_main_module()
 

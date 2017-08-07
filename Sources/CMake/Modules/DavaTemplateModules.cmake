@@ -62,7 +62,7 @@ DEFINITIONS
 DEFINITIONS_PRIVATE             
 DEFINITIONS_${DAVA_PLATFORM_CURENT}     
 DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURENT}  
-NOT_USE_PARENT_DEFINITIONS
+USE_PARENT_DEFINITIONS
 #
 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}           
 STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE   
@@ -285,7 +285,7 @@ macro( setup_main_module )
                                 ${COVERAGE_STRING}
                                 ${MODULE_COMPONENTS}  )
             
-            if( NOT NOT_USE_PARENT_DEFINITIONS  )
+            if( USE_PARENT_DEFINITIONS  )
 
                 list( APPEND MODULE_CACHE ${DEFINITIONS} 
                                           ${DEFINITIONS_${DAVA_PLATFORM_CURENT}} 
@@ -517,7 +517,7 @@ macro( setup_main_module )
                 PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 )
 
-        if(  NOT_USE_PARENT_DEFINITIONS  )
+        if(  USE_PARENT_DEFINITIONS  )
             save_property( PROPERTY_LIST 
                 DEFINITIONS
                 DEFINITIONS_${DAVA_PLATFORM_CURENT} )

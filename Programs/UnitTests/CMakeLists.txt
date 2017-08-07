@@ -25,7 +25,7 @@ if (LINUX)
 endif()
 
 if ( WIN32 OR MACOS )
-    find_package_module( Tools )
+    find_package_module( DavaTools )
 endif()
 
 # Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
