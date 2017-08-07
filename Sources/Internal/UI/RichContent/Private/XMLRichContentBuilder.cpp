@@ -218,12 +218,12 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
         String src;
         if (GetAttribute(attributes, "src", src))
         {
-            UIControl* img = new UIControl();
-            PrepareControl(img, true);
+            RefPtr<UIControl> img(new UIControl());
+            PrepareControl(img.Get(), true);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
-            AppendControl(img);
+            AppendControl(img.Get());
         }
     }
     else if (tag == "object")
@@ -335,7 +335,6 @@ void XMLRichContentBuilder::ProcessText(const String& text)
 
     UTF8Walker walker(text);
     String token;
-    bool first = true;
     while (walker.Next())
     {
         token += walker.GetUtf8Character();
@@ -368,10 +367,10 @@ void XMLRichContentBuilder::ProcessText(const String& text)
                 direction = wordDirection;
             }
 
-            UIStaticText* ctrl = new UIStaticText();
-            PrepareControl(ctrl, true);
+            RefPtr<UIStaticText> ctrl(new UIStaticText());
+            PrepareControl(ctrl.Get(), true);
             ctrl->SetUtf8Text(token);
-            AppendControl(ctrl);
+            AppendControl(ctrl.Get());
 
             token.clear();
         }
@@ -379,8 +378,6 @@ void XMLRichContentBuilder::ProcessText(const String& text)
         needLineBreak |= br == StringUtils::LB_MUSTBREAK || walker.GetUnicodeCodepoint() == NEW_LINE;
         needSoftStick |= allowBreak;
         needSpace |= walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
-
-        first = false;
     }
 }
 
