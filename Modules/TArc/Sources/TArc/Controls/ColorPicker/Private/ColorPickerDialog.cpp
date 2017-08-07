@@ -24,7 +24,6 @@ namespace DAVA
 {
 namespace TArc
 {
-
 ColorPickerDialog::ColorPickerDialog(ContextAccessor* accessor, QWidget* parent)
     : AbstractColorPicker(parent)
     , ui(new Ui::ColorPickerDialog())

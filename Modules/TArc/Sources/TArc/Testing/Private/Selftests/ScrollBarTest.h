@@ -150,7 +150,6 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
 
     DAVA_TEST (RangedValueFieldTest)
     {
-
         using namespace ScrollBarTestDetails;
         QScrollBar* scrollBar = LookupSingleWidget<QScrollBar>(wndKey, "ScrollBar_value");
 
