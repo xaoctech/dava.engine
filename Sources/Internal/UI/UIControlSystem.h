@@ -6,6 +6,7 @@
 #include "Base/FastName.h"
 #include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Input/InputElements.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #include "UI/UIControl.h"
@@ -19,6 +20,8 @@
 */
 namespace DAVA
 {
+struct InputEvent;
+class Mouse;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;
@@ -144,6 +147,9 @@ public:
 	 \brief Sets the current screen to 0 LOL.
 	 */
     void Reset();
+
+    bool HandleInputEvent(const InputEvent& inputEvent);
+
     /**
 	 \brief Calls by the system for input processing.
 	 */
@@ -325,6 +331,10 @@ private:
     void NotifyListenersDidSwitch(UIScreen* screen);
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
+
+    UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
+    eModifierKeys GetKeyboardModifierKeys() const;
+    static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
 
     friend class Private::EngineBackend;
 

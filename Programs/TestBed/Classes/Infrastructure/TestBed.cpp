@@ -27,7 +27,7 @@
 #include "Tests/FontTest.h"
 #include "Tests/WebViewTest.h"
 #include "Tests/FunctionSignalTest.h"
-#include "Tests/KeyboardTest.h"
+#include "Tests/GamepadTest.h"
 #include "Tests/FullscreenTest.h"
 #include "Tests/UIBackgroundTest.h"
 #include "Tests/ClipTest.h"
@@ -50,7 +50,9 @@
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
 #include "Tests/UIStylesTest.h"
+#include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
+
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
 #endif
@@ -389,7 +391,8 @@ void TestBed::RegisterTests()
     new FontTest(*this);
     new WebViewTest(*this);
     new FunctionSignalTest(*this);
-    new KeyboardTest(*this);
+    new InputSystemTest(*this);
+    new GamepadTest(*this);
     new FullscreenTest(*this);
     new UIBackgroundTest(*this);
     new ClipTest(*this);
