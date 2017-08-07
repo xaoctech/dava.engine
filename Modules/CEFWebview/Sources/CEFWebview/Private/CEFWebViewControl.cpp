@@ -7,8 +7,8 @@
 #include "UI/UIEvent.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
-#include "CEFWebViewControl.h"
-#include "CEFDavaResourceHandler.h"
+#include "CEFWebview/CEFWebViewControl.h"
+#include "CEFWebview/CEFDavaResourceHandler.h"
 #include "Utils/Utils.h"
 #include "DeviceManager/DeviceManager.h"
 

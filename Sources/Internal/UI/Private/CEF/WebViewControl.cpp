@@ -1,6 +1,6 @@
 #if defined(ENABLE_CEF_WEBVIEW)
 
-#include "CEFWebViewControl.h"
+#include <CEFWebview/CEFWebViewControl.h>
 #include "UI/Private/CEF/WebViewControl.h"
 
 namespace DAVA

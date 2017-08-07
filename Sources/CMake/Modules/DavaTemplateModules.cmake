@@ -517,7 +517,7 @@ macro( setup_main_module )
                 PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 )
 
-        if(  USE_PARENT_DEFINITIONS  )
+        if(  NOT USE_PARENT_DEFINITIONS  )
             save_property( PROPERTY_LIST 
                 DEFINITIONS
                 DEFINITIONS_${DAVA_PLATFORM_CURENT} )

@@ -1,13 +1,13 @@
 set( NAME_MODULE CEFWebview )
 set( MODULE_TYPE STATIC )
 
-set( HPP_FILES Sources/*.h Sources/*.hpp )
-set( CPP_FILES Sources/*.cpp     )
+set( HPP_FILES Sources/CEFWebview/*.h )
+set( CPP_FILES Sources/CEFWebview/Private/*.cpp     )
 
-set ( UNITY_IGNORE_LIST "Sources/CEFController.cpp"
-                        "Sources/CEFWebViewControl.cpp"
-                        "Sources/CEFWebPageRender.cpp"
-                        "Sources/CEFDavaResourceHandler.cpp" )
+set ( UNITY_IGNORE_LIST "CEFController.cpp"
+                        "CEFWebViewControl.cpp"
+                        "CEFWebPageRender.cpp"
+                        "CEFDavaResourceHandler.cpp" )
 
 set( DEFINITIONS      -DENABLE_CEF_WEBVIEW -DDISABLE_NATIVE_WEBVIEW )
 
@@ -61,5 +61,7 @@ if ( USE_DYNAMIC_CRT )
     set( ADDITIONAL_RELEASE_LIBS "${ADDITIONAL_RELEASE_LIBS}" "${RELEASE_LIBS}" CACHE INTERNAL "" )
     set( ADDITIONAL_DEBUG_LIBS "${ADDITIONAL_DEBUG_LIBS}" "${DEBUG_LIBS}" CACHE INTERNAL "" )
 endif ()
+
+set( USE_PARENT_DEFINITIONS true )
 
 setup_main_module()

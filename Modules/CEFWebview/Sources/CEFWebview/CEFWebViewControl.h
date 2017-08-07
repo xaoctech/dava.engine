@@ -3,8 +3,8 @@
 #include <cef/include/cef_client.h>
 
 #include "UI/IWebViewControl.h"
-#include "CEFController.h"
-#include "CEFWebPageRender.h"
+#include "CEFWebview/CEFController.h"
+#include "CEFWebview/CEFWebPageRender.h"
 
 namespace DAVA
 {
