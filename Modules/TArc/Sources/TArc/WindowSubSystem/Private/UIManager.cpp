@@ -832,6 +832,7 @@ QString UIManager::GetExistingDirectory(const WindowKey& windowKey, const Direct
 int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
 {
     DVASSERT(dlg != nullptr);
+    DVASSERT(dlg->parent() == nullptr);
     UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
     if (windowInfo != nullptr)
     {
