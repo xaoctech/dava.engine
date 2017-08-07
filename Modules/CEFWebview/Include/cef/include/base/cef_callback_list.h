@@ -126,27 +126,27 @@ public:
             ,
             iter_(iter)
         {
-        }
+    }
 
-        ~Subscription()
+    ~Subscription()
+    {
+        if (list_->active_iterator_count_)
         {
-            if (list_->active_iterator_count_)
-            {
-                iter_->Reset();
-            }
-            else
-            {
-                list_->callbacks_.erase(iter_);
-                if (!list_->removal_callback_.is_null())
-                    list_->removal_callback_.Run();
-            }
+            iter_->Reset();
         }
+        else
+        {
+            list_->callbacks_.erase(iter_);
+            if (!list_->removal_callback_.is_null())
+                list_->removal_callback_.Run();
+        }
+    }
 
-    private:
-        CallbackListBase<CallbackType>* list_;
-        typename std::list<CallbackType>::iterator iter_;
+private:
+    CallbackListBase<CallbackType>* list_;
+    typename std::list<CallbackType>::iterator iter_;
 
-        DISALLOW_COPY_AND_ASSIGN(Subscription);
+    DISALLOW_COPY_AND_ASSIGN(Subscription);
     };
 
     // Add a callback to the list. The callback will remain registered until the
@@ -184,41 +184,41 @@ protected:
             list_iter_(list_->callbacks_.begin())
         {
             ++list_->active_iterator_count_;
-        }
+    }
 
-        Iterator(const Iterator& iter)
-            : list_(iter.list_)
-            ,
-            list_iter_(iter.list_iter_)
+    Iterator(const Iterator& iter)
+        : list_(iter.list_)
+        ,
+        list_iter_(iter.list_iter_)
+    {
+        ++list_->active_iterator_count_;
+    }
+
+    ~Iterator()
+    {
+        if (list_ && --list_->active_iterator_count_ == 0)
         {
-            ++list_->active_iterator_count_;
+            list_->Compact();
         }
+    }
 
-        ~Iterator()
+    CallbackType* GetNext()
+    {
+        while ((list_iter_ != list_->callbacks_.end()) && list_iter_->is_null())
+            ++list_iter_;
+
+        CallbackType* cb = NULL;
+        if (list_iter_ != list_->callbacks_.end())
         {
-            if (list_ && --list_->active_iterator_count_ == 0)
-            {
-                list_->Compact();
-            }
+            cb = &(*list_iter_);
+            ++list_iter_;
         }
+        return cb;
+    }
 
-        CallbackType* GetNext()
-        {
-            while ((list_iter_ != list_->callbacks_.end()) && list_iter_->is_null())
-                ++list_iter_;
-
-            CallbackType* cb = NULL;
-            if (list_iter_ != list_->callbacks_.end())
-            {
-                cb = &(*list_iter_);
-                ++list_iter_;
-            }
-            return cb;
-        }
-
-    private:
-        CallbackListBase<CallbackType>* list_;
-        typename std::list<CallbackType>::iterator list_iter_;
+private:
+    CallbackListBase<CallbackType>* list_;
+    typename std::list<CallbackType>::iterator list_iter_;
     };
 
     CallbackListBase()
@@ -259,7 +259,7 @@ protected:
 
             if (updated && !removal_callback_.is_null())
                 removal_callback_.Run();
-        }
+    }
     }
 
 private:
@@ -294,7 +294,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run();
-        }
+    }
     }
 
 private:
@@ -320,7 +320,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1);
-        }
+    }
     }
 
 private:
@@ -347,7 +347,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1, a2);
-        }
+    }
     }
 
 private:
@@ -375,7 +375,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1, a2, a3);
-        }
+    }
     }
 
 private:
@@ -404,7 +404,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1, a2, a3, a4);
-        }
+    }
     }
 
 private:
@@ -434,7 +434,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1, a2, a3, a4, a5);
-        }
+    }
     }
 
 private:
@@ -467,7 +467,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1, a2, a3, a4, a5, a6);
-        }
+    }
     }
 
 private:
@@ -501,7 +501,7 @@ public:
         while ((cb = it.GetNext()) != NULL)
         {
             cb->Run(a1, a2, a3, a4, a5, a6, a7);
-        }
+    }
     }
 
 private:

@@ -85,7 +85,7 @@ struct CefDeleteOnThread
         {
             CefPostTask(thread,
                         base::Bind(&CefDeleteOnThread<thread>::Destruct<T>, x));
-        }
+    }
     }
 };
 
@@ -116,8 +116,8 @@ public:
         {
             values_.push_back(argv[i]);
             array_[i] = const_cast<char*>(values_[i].c_str());
-        }
-        array_[argc] = NULL;
+    }
+    array_[argc] = NULL;
     }
     ~CefScopedArgArray()
     {

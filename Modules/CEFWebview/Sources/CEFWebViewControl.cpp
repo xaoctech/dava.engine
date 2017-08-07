@@ -579,7 +579,7 @@ void CEFWebViewControl::OnKey(UIEvent* input)
     CefKeyEvent keyEvent;
     keyEvent.type = static_cast<cef_key_event_type_t>(CEFDetails::GetCefKeyType(input));
     keyEvent.modifiers = ConvertDAVAModifiersToCef(CEFDetails::GetKeyModifier());
-    if (UIEvent::Phase::CHAR == input->phase)
+    if (UIEvent::Phase::CHAR == input->phase || UIEvent::Phase::CHAR == input->phase)
     {
         keyEvent.windows_key_code = input->keyChar;
     }

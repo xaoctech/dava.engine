@@ -856,7 +856,7 @@ private:
             string_ = new struct_type;
             memset(string_, 0, sizeof(struct_type));
             owner_ = true;
-        }
+    }
     }
 
     struct_type* string_;

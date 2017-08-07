@@ -34,7 +34,7 @@ else:
     execName = 'clang-format'
 
 sources = ['../../Sources/Internal', '../../Modules', '../../Programs']
-exclude = ['*/Libs/*', '../../Modules/CEFWebview/*']
+exclude = ['*/Libs/*', '*/Modules/CEFWebview/*']
 extensions = ['cpp', 'h', 'mm', 'unittest']
 
 def main():

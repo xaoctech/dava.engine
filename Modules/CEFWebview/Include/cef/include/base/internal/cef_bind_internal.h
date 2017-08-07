@@ -142,7 +142,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     ();
 };
 
@@ -165,7 +165,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     ();
 };
 
@@ -188,7 +188,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     () const;
 };
 
@@ -210,7 +210,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1);
 };
 
@@ -233,7 +233,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1);
 };
 
@@ -256,7 +256,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1) const;
 };
 
@@ -279,7 +279,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1, A2);
 };
 
@@ -303,7 +303,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2);
 };
 
@@ -327,7 +327,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2) const;
 };
 
@@ -352,7 +352,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1, A2, A3);
 };
 
@@ -378,7 +378,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3);
 };
 
@@ -404,7 +404,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3) const;
 };
 
@@ -430,7 +430,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1, A2, A3, A4);
 };
 
@@ -458,7 +458,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4);
 };
 
@@ -486,7 +486,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4) const;
 };
 
@@ -514,7 +514,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1, A2, A3, A4, A5);
 };
 
@@ -543,7 +543,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4, A5);
 };
 
@@ -572,7 +572,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4, A5) const;
 };
 
@@ -602,7 +602,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1, A2, A3, A4, A5, A6);
 };
 
@@ -633,7 +633,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4, A5, A6);
 };
 
@@ -664,7 +664,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4, A5, A6) const;
 };
 
@@ -695,7 +695,7 @@ public:
     }
 
 private:
-    R(*function_)
+    R (*function_)
     (A1, A2, A3, A4, A5, A6, A7);
 };
 
@@ -727,7 +727,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4, A5, A6, A7);
 };
 
@@ -759,7 +759,7 @@ public:
     }
 
 private:
-    R(T::*method_)
+    R (T::*method_)
     (A1, A2, A3, A4, A5, A6, A7) const;
 };
 
@@ -1025,8 +1025,8 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get());
+    }
+    runnable.Run(weak_ptr.get());
     }
 };
 
@@ -1059,8 +1059,8 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2));
     }
 };
 
@@ -1095,8 +1095,8 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3));
     }
 };
 
@@ -1134,9 +1134,9 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4));
     }
 };
 
@@ -1176,9 +1176,9 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4), CallbackForward(a5));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4), CallbackForward(a5));
     }
 };
 
@@ -1220,9 +1220,9 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4), CallbackForward(a5), CallbackForward(a6));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4), CallbackForward(a5), CallbackForward(a6));
     }
 };
 
@@ -1265,10 +1265,10 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4), CallbackForward(a5), CallbackForward(a6),
-                     CallbackForward(a7));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4), CallbackForward(a5), CallbackForward(a6),
+                 CallbackForward(a7));
     }
 };
 

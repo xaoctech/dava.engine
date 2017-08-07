@@ -66,20 +66,20 @@ public:
     class File : public CefBase
     {
     public:
-        ///
-        // Returns the read-only data contained in the file.
-        ///
-        virtual const unsigned char* GetData() const = 0;
+    ///
+    // Returns the read-only data contained in the file.
+    ///
+    virtual const unsigned char* GetData() const = 0;
 
-        ///
-        // Returns the size of the data in the file.
-        ///
-        virtual size_t GetDataSize() const = 0;
+    ///
+    // Returns the size of the data in the file.
+    ///
+    virtual size_t GetDataSize() const = 0;
 
-        ///
-        // Returns a CefStreamReader object for streaming the contents of the file.
-        ///
-        virtual CefRefPtr<CefStreamReader> GetStreamReader() const = 0;
+    ///
+    // Returns a CefStreamReader object for streaming the contents of the file.
+    ///
+    virtual CefRefPtr<CefStreamReader> GetStreamReader() const = 0;
     };
 
     typedef std::map<CefString, CefRefPtr<File>> FileMap;
