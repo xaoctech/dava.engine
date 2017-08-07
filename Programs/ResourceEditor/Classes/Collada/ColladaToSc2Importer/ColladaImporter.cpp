@@ -238,7 +238,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
         joint.name = FastName(colladaJoint.jointName);
         joint.uid = FastName(colladaJoint.jointUID);
 
-        joint.bindTransform = isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) : jointNode->localTransform;
+        joint.bindTransform = /*isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) :*/ jointNode->localTransform;
         joint.bindTransformInv = colladaJoint.inverse0;
 
         joint.bbox = AABBox3(Vector3(), Vector3());
@@ -373,7 +373,7 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
     if (eColladaErrorCodes::COLLADA_OK == convertRes)
     {
         // Apply transforms to render batches and use identity local transforms
-        SceneUtils::BakeTransformsUpToFarParent(scene, scene);
+        //SceneUtils::BakeTransformsUpToFarParent(scene, scene);
 
         // post process Entities and create Lod nodes.
         bool combinedSuccessfull = SceneUtils::CombineLods(scene);
@@ -437,7 +437,7 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         uint8 dimension = 0;
         uint8 interpolation = 0;
         uint16 compression = 0;
-        uint32 key_count = 0;
+        uint32 keyCount = 0;
     } channelHeader;
 
     uint32 zeroU4 = 0;
@@ -447,22 +447,22 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         ScopedPtr<File> file(File::Create(filePath, File::CREATE | File::WRITE));
         if (file)
         {
-            Vector<uint8> animationData;
+            Vector<uint8> animationClipData;
 
-            WriteToBuffer(animationData, &canimation->duration);
+            WriteToBuffer(animationClipData, &canimation->duration);
 
-            uint32 nodeCount = uint32(canimation->animations.size());
-            WriteToBuffer(animationData, &nodeCount);
+            uint32 nodeCount = uint32(canimation->animationsData.size());
+            WriteToBuffer(animationClipData, &nodeCount);
 
             //Write nodes data
-            for (auto& pair : canimation->animations)
+            for (auto& pair : canimation->animationsData)
             {
                 ColladaSceneNode* colladaNode = pair.first;
-                uint32 animationKeysCount = pair.second->keyCount;
-                SceneNodeAnimationKey* animationKeys = pair.second->keys;
-                SceneNodeAnimationKey* animationKeysCopy = nullptr;
+                const ColladaAnimation::ColladaAnimatinData& animationData = pair.second;
 
+                //SceneNodeAnimationKey* animationKeysCopy = nullptr;
                 //bake parents transform to root-joint animation
+                /* TODO: *Skinning*
                 if ((colladaNode->originalNode->GetJointFlag()) && (colladaNode->parent != nullptr) && !(colladaNode->parent->originalNode->GetJointFlag()))
                 {
                     animationKeysCopy = new SceneNodeAnimationKey[animationKeysCount];
@@ -481,83 +481,88 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
 
                     animationKeys = animationKeysCopy;
                 }
+                */
 
                 String nodeUID = String(colladaNode->originalNode->GetDaeId().c_str());
                 String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
 
-                WriteToBuffer(animationData, nodeUID);
-                WriteToBuffer(animationData, nodeName);
+                WriteToBuffer(animationClipData, nodeUID);
+                WriteToBuffer(animationClipData, nodeName);
 
                 //Write Track data
                 uint32 signature = AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE;
-                WriteToBuffer(animationData, &signature);
+                WriteToBuffer(animationClipData, &signature);
 
-                uint32 channelsCount = 3; //position, orientation, scale
-                WriteToBuffer(animationData, &channelsCount);
+                uint32 channelsCount = 0;
+                channelsCount += animationData.translations.empty() ? 0 : 1;
+                channelsCount += animationData.rotations.empty() ? 0 : 1;
+                channelsCount += animationData.scales.empty() ? 0 : 1;
 
-                uint32 keyCount = animationKeysCount;
-                channelHeader.key_count = keyCount;
+                WriteToBuffer(animationClipData, &channelsCount);
 
-                //Write position channel
+                if (!animationData.translations.empty())
                 {
+                    //Write position channel
                     channelHeader.dimension = 3;
                     channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_POSITION;
-                    WriteToBuffer(animationData, &channelHeader);
+                    channelHeader.keyCount = uint32(animationData.translations.size());
+                    WriteToBuffer(animationClipData, &channelHeader);
 
-                    for (uint32 k = 0; k < keyCount; ++k)
+                    for (auto& t : animationData.translations)
                     {
-                        const SceneNodeAnimationKey& key = animationKeys[k];
-                        WriteToBuffer(animationData, &key.time);
-                        WriteToBuffer(animationData, &key.translation);
+                        WriteToBuffer(animationClipData, &t.first); //time
+                        WriteToBuffer(animationClipData, &t.second); //position
                     }
                 }
 
                 //Write orientation channel
+                if (!animationData.rotations.empty())
                 {
                     channelHeader.dimension = 4;
                     channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_SPHERICAL_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_ORIENTATION;
-                    WriteToBuffer(animationData, &channelHeader);
+                    channelHeader.keyCount = uint32(animationData.rotations.size());
+                    WriteToBuffer(animationClipData, &channelHeader);
 
-                    for (uint32 k = 0; k < keyCount; ++k)
+                    for (auto& r : animationData.rotations)
                     {
-                        const SceneNodeAnimationKey& key = animationKeys[k];
-                        WriteToBuffer(animationData, &key.time);
-                        WriteToBuffer(animationData, &key.rotation);
+                        WriteToBuffer(animationClipData, &r.first); //time
+                        WriteToBuffer(animationClipData, &r.second); //rotation
                     }
                 }
 
                 //Write scale channel
+                if (!animationData.scales.empty())
                 {
                     channelHeader.dimension = 1;
                     channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_LINEAR);
                     channelHeader.target = AnimationTrack::CHANNEL_TARGET_SCALE;
-                    WriteToBuffer(animationData, &channelHeader);
+                    channelHeader.keyCount = uint32(animationData.scales.size());
+                    WriteToBuffer(animationClipData, &channelHeader);
 
-                    for (uint32 k = 0; k < keyCount; ++k)
+                    for (auto& s : animationData.scales)
                     {
-                        const SceneNodeAnimationKey& key = animationKeys[k];
-                        WriteToBuffer(animationData, &key.time);
-                        WriteToBuffer(animationData, &key.scale.x);
+                        WriteToBuffer(animationClipData, &s.first); //time
+                        WriteToBuffer(animationClipData, &s.second.x); //scale
                     }
                 }
 
-                SafeDeleteArray(animationKeysCopy);
+                //SafeDeleteArray(animationKeysCopy);
             }
 
-            WriteToBuffer(animationData, &zeroU4); //TODO: *Skinning* marks count
+            WriteToBuffer(animationClipData, &zeroU4); //TODO: *Skinning* marks count
 
-            uint32 animationDataSize = uint32(animationData.size());
+            uint32 animationDataSize = uint32(animationClipData.size());
 
             AnimationClip::FileHeader header;
             header.signature = AnimationClip::ANIMATION_CLIP_FILE_SIGNATURE;
             header.version = 1;
-            header.crc32 = CRC32::ForBuffer(animationData.data(), animationDataSize);
+            header.crc32 = CRC32::ForBuffer(animationClipData.data(), animationDataSize);
             header.dataSize = animationDataSize;
 
             file->Write(&header);
-            file->Write(animationData.data(), animationDataSize);
+            file->Write(animationClipData.data(), animationDataSize);
 
             file->Flush();
         }

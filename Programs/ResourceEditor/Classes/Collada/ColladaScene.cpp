@@ -25,7 +25,10 @@ void ColladaScene::ExportAnimations(ColladaAnimation* colladaAnimation, FCDScene
         //printf("- founded equal node: %s", currentNode->GetDaeId().c_str());
         SceneNodeAnimation* anim = ColladaSceneNode::ExportNodeAnimation(currentNode, anStart, anEnd, 30.0f);
         if (anim)
+        {
             colladaAnimation->animations[node] = anim;
+            ColladaAnimation::ExportAnimationData(currentNode, &colladaAnimation->animationsData[node]);
+        }
     }
 
     for (int i = 0; i < (int)currentNode->GetChildrenCount(); i++)
