@@ -25,6 +25,7 @@ namespace DAVA
 class PolygonGroup;
 class Landscape;
 class PhysicsGeometryCache;
+class PhysicsVehiclesSubsystem;
 struct Matrix4;
 
 class PhysicsModule : public IModule
@@ -56,6 +57,7 @@ public:
 
     const Vector<uint32>& GetBodyComponentTypes() const;
     const Vector<uint32>& GetShapeComponentTypes() const;
+    const Vector<uint32>& GetVehicleComponentTypes() const;
 
 private:
     physx::PxFoundation* foundation = nullptr;
@@ -73,6 +75,7 @@ private:
 
     Vector<uint32> bodyComponents;
     Vector<uint32> shapeComponents;
+    Vector<uint32> vehicleComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

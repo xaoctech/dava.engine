@@ -20,6 +20,7 @@ class PhysicsModule;
 class PhysicsComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
+class PhysicsVehiclesSubsystem;
 
 class PhysicsSystem final : public SceneSystem
 {
@@ -52,7 +53,7 @@ private:
     void DrawDebugInfo();
 
     void InitNewObjects();
-    void AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
+    void AttachShapesRecursively(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
     void AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale);
 
     void ReleaseShape(CollisionShapeComponent* component);
@@ -72,6 +73,8 @@ private:
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
     PhysicsGeometryCache* geometryCache = nullptr;
+
+    PhysicsVehiclesSubsystem* vehiclesSubsystem = nullptr;
 
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;

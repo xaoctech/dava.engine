@@ -93,6 +93,15 @@
 #include "Scene/System/EditorVegetationSystem.h"
 #include "Utils/StringFormat.h"
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/DynamicBodyComponent.h>
+#include <Physics/VehicleComponent.h>
+#include <Physics/VehicleChassisComponent.h>
+#include <Physics/VehicleWheelComponent.h>
+#include <Physics/BoxShapeComponent.h>
+#include <Physics/ConvexHullShapeComponent.h>
+#endif
+
 #include <QActionGroup>
 #include <QColorDialog>
 #include <QDesktopServices>
@@ -623,6 +632,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
     QObject::connect(ui->actionAddPath, SIGNAL(triggered()), this, SLOT(OnAddPathEntity()));
+    QObject::connect(ui->actionAddVehicle, SIGNAL(triggered()), this, SLOT(OnAddVehicleEntity()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
@@ -2197,6 +2207,159 @@ void QtMainWindow::OnAddPathEntity()
 
     pathEntity->AddComponent(pc);
     scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(pathEntity, scene.Get())));
+}
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+
+RenderObject* CreateVehicleWheelRenderObject(float32 radius, float32 width)
+{
+    // Generate wheel mesh triangles
+
+    const size_t segments = 36;
+
+    Array<Vector3, segments * 2> vertices;
+    for (size_t i = 0; i < segments; ++i)
+    {
+        const float32 angle = i * PI * 2.0f / segments;
+        const float32 x = radius * std::cos(angle);
+        const float32 z = radius * std::sin(angle);
+        vertices[2 * i + 0] = Vector3(x, -width / 2.0f, z);
+        vertices[2 * i + 1] = Vector3(x, +width / 2.0f, z);
+    }
+
+    // Sectors * 2 triangles
+    Array<uint16, segments * 2 * 3> indices;
+    for (uint16 i = 0; i < segments; ++i)
+    {
+        if (i == segments - 1)
+        {
+            // Loop with the first indices
+
+            indices[i * 6 + 0] = i * 2 + 0;
+            indices[i * 6 + 1] = 0;
+            indices[i * 6 + 2] = i * 2 + 1;
+
+            indices[i * 6 + 3] = i * 2 + 1;
+            indices[i * 6 + 4] = 0;
+            indices[i * 6 + 5] = 1;
+        }
+        else
+        {
+            indices[i * 6 + 0] = i * 2 + 0;
+            indices[i * 6 + 1] = i * 2 + 2;
+            indices[i * 6 + 2] = i * 2 + 1;
+
+            indices[i * 6 + 3] = i * 2 + 1;
+            indices[i * 6 + 4] = i * 2 + 2;
+            indices[i * 6 + 5] = i * 2 + 3;
+        }
+    }
+
+    // Create render object
+
+    RefPtr<NMaterial> material(new NMaterial());
+    material->SetMaterialName(FastName("VehicleWheelMaterial"));
+    material->SetFXName(NMaterialName::DEBUG_DRAW_WIREFRAME);
+    material->AddProperty(FastName("color"), Color::White.color, rhi::ShaderProp::TYPE_FLOAT4);
+
+    RefPtr<PolygonGroup> group(new PolygonGroup());
+    group->SetPrimitiveType(rhi::PRIMITIVE_TRIANGLELIST);
+    group->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), segments * 2);
+    memcpy(group->vertexArray, vertices.data(), vertices.size() * sizeof(Vector3));
+    memcpy(group->indexArray, indices.data(), indices.size() * sizeof(uint16));
+    group->BuildBuffers();
+    group->RecalcAABBox();
+
+    RenderObject* renderObject = new RenderObject();
+    RenderBatch* batch = new RenderBatch();
+    batch->SetMaterial(material.Get());
+    batch->SetPolygonGroup(group.Get());
+    batch->vertexLayoutId = static_cast<uint32>(-1);
+    renderObject->AddRenderBatch(batch);
+
+    return renderObject;
+}
+
+Entity* CreateVehicleWheelEntity(String name, float32 radius, float32 width, float32 mass, Vector3 localTranslation)
+{
+    DAVA::Entity* wheel = new DAVA::Entity();
+    wheel->SetName(name.c_str());
+
+    DAVA::VehicleWheelComponent* wheelComponent = new DAVA::VehicleWheelComponent();
+    wheelComponent->SetRadius(radius);
+    wheelComponent->SetWidth(width);
+    wheel->AddComponent(wheelComponent);
+
+    DAVA::ConvexHullShapeComponent* shape = new DAVA::ConvexHullShapeComponent();
+    shape->SetOverrideMass(true);
+    shape->SetMass(mass);
+    wheel->AddComponent(shape);
+
+    RenderComponent* wheel1Rendercomponent = new RenderComponent(CreateVehicleWheelRenderObject(radius, width));
+    wheel->AddComponent(wheel1Rendercomponent);
+
+    Matrix4 localTransform;
+    localTransform.SetTranslationVector(localTranslation);
+    wheel->SetLocalTransform(localTransform);
+
+    return wheel;
+}
+
+#endif
+
+void QtMainWindow::OnAddVehicleEntity()
+{
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
+    if (scene.Get() == nullptr)
+        return;
+
+    const Vector3 chassisHalfDimensions = Vector3(2.5f, 1.0f, 1.25f);
+    const float32 chassisMass = 1500.0f;
+    const float32 wheelRadius = 0.5f;
+    const float32 wheelWidth = 0.5f;
+    const float32 wheelMass = 20.0f;
+
+    // Root entity
+    DAVA::Entity* vehicleEntity = new DAVA::Entity();
+    vehicleEntity->SetName("Vehicle");
+    DAVA::VehicleComponent* vehicleComponent = new DAVA::VehicleComponent();
+    vehicleEntity->AddComponent(vehicleComponent);
+    DAVA::DynamicBodyComponent* dynamicBody = new DAVA::DynamicBodyComponent();
+    vehicleEntity->AddComponent(dynamicBody);
+
+    // Wheels
+
+    // Wheel (front left)
+    Entity* vehicleWheel4Entity = CreateVehicleWheelEntity("Wheel (front left)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    vehicleEntity->AddNode(vehicleWheel4Entity);
+
+    // Wheel (front right)
+    Entity* vehicleWheel3Entity = CreateVehicleWheelEntity("Wheel (front right)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    vehicleEntity->AddNode(vehicleWheel3Entity);
+
+    // Wheel (rear left)
+    Entity* vehicleWheel2Entity = CreateVehicleWheelEntity("Wheel (rear left)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    vehicleEntity->AddNode(vehicleWheel2Entity);
+
+    // Wheel (rear right)
+    Entity* vehicleWheel1Entity = CreateVehicleWheelEntity("Wheel (rear right)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    vehicleEntity->AddNode(vehicleWheel1Entity);
+
+    // Chassis
+    DAVA::Entity* vehicleChassisEntity = new DAVA::Entity();
+    vehicleChassisEntity->SetName("Chassis");
+    DAVA::VehicleChassisComponent* chassisComponent = new DAVA::VehicleChassisComponent();
+    vehicleChassisEntity->AddComponent(chassisComponent);
+    DAVA::BoxShapeComponent* chassisShape = new DAVA::BoxShapeComponent();
+    chassisShape->SetHalfSize(chassisHalfDimensions);
+    chassisShape->SetOverrideMass(true);
+    chassisShape->SetMass(chassisMass);
+    vehicleChassisEntity->AddComponent(chassisShape);
+    vehicleEntity->AddNode(vehicleChassisEntity);
+
+    scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(vehicleEntity, scene.Get())));
+#endif
 }
 
 bool QtMainWindow::LoadAppropriateTextureFormat()

@@ -116,6 +116,9 @@ bool IsGeometryEqual(const physx::PxGeometryHolder& holder1, const physx::PxGeom
         }
     }
     break;
+    case physx::PxGeometryType::ePLANE:
+        result = true;
+        break;
     default:
         DVASSERT(false);
         break;
@@ -518,6 +521,26 @@ RenderObject* CreateRenderObject(const physx::PxGeometryHolder& geometry, uint32
     return ro;
 }
 
+void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const UnorderedMap<Entity*, RenderObject*>& entityToRoMap)
+{
+    auto roIter = entityToRoMap.find(root);
+    if (roIter != entityToRoMap.end() && roIter->second != nullptr)
+    {
+        Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(root->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+        roIter->second->SetWorldTransformPtr(worldTransformPointer);
+        scene->renderSystem->MarkForUpdate(roIter->second);
+    }
+
+    const size_t childrenCount = root->GetChildrenCount();
+    for (int i = 0; i < childrenCount; ++i)
+    {
+        Entity* child = root->GetChild(i);
+        DVASSERT(child != nullptr);
+
+        MarkRenderObjectsForUpdateRecursively(scene, child, entityToRoMap);
+    }
+}
+
 } // namespace PhysicsDebugDrawSystemDetail
 
 uint32 PhysicsDebugDrawSystem::vertexLayoutId = static_cast<uint32>(-1);
@@ -579,9 +602,11 @@ void PhysicsDebugDrawSystem::UnregisterComponent(Entity* entity, Component* comp
         if (iter != renderObjects.end())
         {
             RenderObjectInfo& roInfo = iter->second;
-            DVASSERT(roInfo.ro != nullptr);
-            GetScene()->GetRenderSystem()->RemoveFromRender(roInfo.ro);
-            DAVA::SafeRelease(roInfo.ro);
+            if (roInfo.ro != nullptr)
+            {
+                GetScene()->GetRenderSystem()->RemoveFromRender(roInfo.ro);
+                DAVA::SafeRelease(roInfo.ro);
+            }
             renderObjects.erase(iter);
         }
 
@@ -654,22 +679,15 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
     {
         for (auto& pair : trSingle->worldTransformChanged.map)
         {
-            uint64 components = pair.first->GetComponentsFlags();
-            for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
+            for (Entity* e : pair.second)
             {
-                if (pair.first->GetComponentsCount(type) > 0)
-                {
-                    for (Entity* e : pair.second)
-                    {
-                        auto roIter = mapping.find(e);
-                        DVASSERT(roIter != mapping.end());
-
-                        Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(e->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
-                        roIter->second->SetWorldTransformPtr(worldTransformPointer);
-                        GetScene()->renderSystem->MarkForUpdate(roIter->second);
-                    }
-                }
+                MarkRenderObjectsForUpdateRecursively(GetScene(), e, mapping);
             }
+        }
+
+        for (DAVA::Entity* e : trSingle->localTransformChanged)
+        {
+            MarkRenderObjectsForUpdateRecursively(GetScene(), e, mapping);
         }
     }
 }

@@ -64,6 +64,9 @@ public:
         MESH_SHAPE_COMPONENT,
         CONVEX_HULL_SHAPE_COMPONENT,
         HEIGHT_FIELD_SHAPE_COMPONENT,
+        VEHICLE_COMPONENT,
+        VEHICLE_CHASSIS_COMPONENT,
+        VEHICLE_WHEEL_COMPONENT,
 #endif
 
         //debug components - note that everything below won't be serialized

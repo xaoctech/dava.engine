@@ -118,6 +118,7 @@ public slots:
     void OnEmptyEntity();
     void OnAddWindEntity();
     void OnAddPathEntity();
+    void OnAddVehicleEntity();
 
     void OnUserNodeDialog();
     void OnSwitchEntityDialog();

@@ -8,6 +8,9 @@
 #include "Physics/MeshShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
 #include "Physics/HeightFieldShapeComponent.h"
+#include "Physics/VehicleComponent.h"
+#include "Physics/VehicleChassisComponent.h"
+#include "Physics/VehicleWheelComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/Private/PhysicsMath.h"
 
@@ -30,7 +33,7 @@ namespace PhysicsModuleDetail
 {
 physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return nullptr;
@@ -51,7 +54,7 @@ physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 
 void ReleasePvd()
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return;
@@ -103,6 +106,27 @@ void BuildPhysxMeshInfo(const Vector<PolygonGroup*>& polygons, Vector<physx::PxV
         indexOffset = static_cast<uint32>(vertices.size());
     }
 }
+}
+
+// TODO: move after merging with collision single component branch,
+// since it's made specifically for vehicles
+physx::PxFilterFlags FilterShader
+(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+ physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+ physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+{
+    PX_UNUSED(attributes0);
+    PX_UNUSED(attributes1);
+    PX_UNUSED(constantBlock);
+    PX_UNUSED(constantBlockSize);
+
+    if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
+        return physx::PxFilterFlag::eSUPPRESS;
+
+    pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+    pairFlags |= physx::PxPairFlags(physx::PxU16(filterData0.word2 | filterData1.word2));
+
+    return physx::PxFilterFlags();
 }
 
 class PhysicsModule::PhysicsAllocator : public physx::PxAllocatorCallback
@@ -160,6 +184,7 @@ PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
+
     bodyComponents.reserve(2);
     bodyComponents.push_back(Component::STATIC_BODY_COMPONENT);
     bodyComponents.push_back(Component::DYNAMIC_BODY_COMPONENT);
@@ -172,6 +197,11 @@ PhysicsModule::PhysicsModule(Engine* engine)
     shapeComponents.push_back(Component::MESH_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
+
+    vehicleComponents.reserve(3);
+    vehicleComponents.push_back(Component::VEHICLE_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_CHASSIS_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_WHEEL_COMPONENT);
 }
 
 void PhysicsModule::Init()
@@ -196,6 +226,10 @@ void PhysicsModule::Init()
     cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, cookingParams);
     DVASSERT(cooking);
 
+    PxInitVehicleSDK(*physics);
+    PxVehicleSetBasisVectors(PxVec3(0.0f, 0.0f, 1.0f), PxVec3(1.0f, 0.0f, 0.0f));
+    PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+
     static PhysicsModuleDetail::AssertHandler assertHandler;
     PxSetAssertHandler(assertHandler);
 
@@ -208,11 +242,20 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConvexHullShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleChassisComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleWheelComponent);
 }
 
 void PhysicsModule::Shutdown()
 {
-    defaultMaterial->release();
+    physx::PxCloseVehicleSDK();
+
+    if (defaultMaterial != nullptr)
+    {
+        defaultMaterial->release();
+    }
+
     cpuDispatcher->release();
     cooking->release();
     physics->release();
@@ -254,7 +297,7 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) con
     DVASSERT(cpuDispatcher);
     sceneDesc.cpuDispatcher = cpuDispatcher;
 
-    sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+    sceneDesc.filterShader = FilterShader;
 
     PxScene* scene = physics->createScene(sceneDesc);
     DVASSERT(scene);
@@ -457,6 +500,11 @@ const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
 const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
 {
     return shapeComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetVehicleComponentTypes() const
+{
+    return vehicleComponents;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)
