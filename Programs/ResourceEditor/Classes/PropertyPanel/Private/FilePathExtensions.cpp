@@ -239,32 +239,35 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
     M::ValidationResult result;
 
     FilePath texturePath = value.Cast<FilePath>();
-    FilePath validDir = GetValidDir(true);
-    if (FilePath::ContainPath(texturePath, validDir) == false)
+    if (texturePath.IsEmpty() == false)
     {
-        result.state = M::ValidationResult::eState::Invalid;
-        result.message = Format("\"%s\" is wrong. It's allowed to select only from %s", texturePath.GetAbsolutePathname().c_str(), validDir.GetAbsolutePathname().c_str());
-        return result;
-    }
-
-    if (texturePath.GetExtension() != TextureDescriptor::GetDescriptorExtension())
-    {
-        result.state = M::ValidationResult::eState::Invalid;
-        const EngineContext* ctx = GetEngineContext();
-        if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+        FilePath validDir = GetValidDir(true);
+        if (FilePath::ContainPath(texturePath, validDir) == false)
         {
-            FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
-
-            const TexturesMap& texturesMap = Texture::GetTextureMap();
-            auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
-            if (found != texturesMap.end())
-            {
-                found->second->ReloadAs(Settings::GetGPUFormat());
-            }
-
-            result.fixedValue = FilePath(descriptorPath);
+            result.state = M::ValidationResult::eState::Invalid;
+            result.message = Format("\"%s\" is wrong. It's allowed to select only from %s", texturePath.GetAbsolutePathname().c_str(), validDir.GetAbsolutePathname().c_str());
+            return result;
         }
-        return result;
+
+        if (texturePath.GetExtension() != TextureDescriptor::GetDescriptorExtension())
+        {
+            result.state = M::ValidationResult::eState::Invalid;
+            const EngineContext* ctx = GetEngineContext();
+            if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+            {
+                FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
+
+                const TexturesMap& texturesMap = Texture::GetTextureMap();
+                auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
+                if (found != texturesMap.end())
+                {
+                    found->second->ReloadAs(Settings::GetGPUFormat());
+                }
+
+                result.fixedValue = FilePath(descriptorPath);
+            }
+            return result;
+        }
     }
 
     result.state = M::ValidationResult::eState::Valid;
