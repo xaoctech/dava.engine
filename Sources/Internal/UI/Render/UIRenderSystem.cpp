@@ -229,8 +229,11 @@ void UIRenderSystem::RenderPivotPoint(const UIDebugRenderComponent* component, c
     renderSystem2D->DrawLine(lineStartPoint, lineEndPoint, drawColor);
 }
 
-void UIRenderSystem::RenderText(const UIControl* control, const UITextComponent* component, const UIGeometricData& geometricData, const Color& parentColor)
+void UIRenderSystem::RenderText(const UIControl* control, const UITextComponent* component, const UIGeometricData& geometricData_, const Color& parentColor)
 {
+    UIGeometricData geometricData(geometricData_);
+    geometricData.position += component->GetTextOffset() * geometricData.scale;
+
     UITextSystemLink* link = component->GetLink();
     DVASSERT(link, "Empty text comonent link!");
 

@@ -162,7 +162,6 @@ void UITextComponent::SetShadowOffset(const Vector2& value)
     if (shadowOffset != value)
     {
         shadowOffset = value;
-        modified = true;
     }
 }
 
@@ -254,6 +253,19 @@ Font* UITextComponent::GetFont()
 bool UITextComponent::IsForceBiDiSupportEnabled() const
 {
     return forceBiDiSupport;
+}
+
+void UITextComponent::SetTextOffset(const Vector2& value)
+{
+    if (textOffset != value)
+    {
+        textOffset = value;
+    }
+}
+
+const Vector2& UITextComponent::GetTextOffset() const
+{
+    return textOffset;
 }
 
 void UITextComponent::SetModified(bool value)
