@@ -116,16 +116,15 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
     descr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
     descr.fieldName = DAVA::FastName("renderBackend");
 
-    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v)
-                                     {
-                                         if (v.IsEmpty() == true)
-                                         {
-                                             return;
-                                         }
+    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v) {
+        if (v.IsEmpty() == true)
+        {
+            return;
+        }
 
-                                         DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
-                                         item.Set("renderBackend", v);
-                                     });
+        DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+        item.Set("renderBackend", v);
+    });
 
     REGlobal::InitTArcCore(tarcCore);
     if (isConsoleMode)

@@ -83,6 +83,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
 {
     DAVA::ReflectionRegistrator<GlobalSceneSettings>::Begin()[DAVA::M::DisplayName("Scene"), DAVA::M::SettingsSortKey(1)]
     .ConstructorByPointer()
+    .Field("openLastScene", &GlobalSceneSettings::openLastScene)[DAVA::M::DisplayName("Open last opened scene on launch")]
     .Field("dragAndDropWithShift", &GlobalSceneSettings::dragAndDropWithShift)[DAVA::M::DisplayName("Drag'n'Drop with shift")]
     .Field("rememberForceParameters", &GlobalSceneSettings::rememberForceParameters)[DAVA::M::DisplayName("Remember force parameters")]
     .Field("saveEmitters", &GlobalSceneSettings::saveEmitters)[DAVA::M::DisplayName("Save Emitters")]

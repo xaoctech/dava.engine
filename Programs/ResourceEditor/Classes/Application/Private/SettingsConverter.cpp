@@ -154,13 +154,15 @@ public:
         LOAD_SETTING(internalSettings, validateMaterialGroups, Internal_Validate_MaterialGroups, AsBool);
         LOAD_SETTING(internalSettings, validateShowConsole, Internal_Validate_ShowConsole, AsBool);
 
+#undef LOAD_SETTING
+
         auto iter = settingsMap.find(FastName(Internal_LogWidget));
         if (iter != settingsMap.end())
         {
             VariantType value = iter->second;
             int32 size = value.AsByteArraySize();
             const uint8* byteArray = value.AsByteArray();
-            QByteArray logWidgetState = QByteArray(reinterpret_cast<const char*>(byteArray), size);
+            internalSettings->logWidgetState = QByteArray(reinterpret_cast<const char*>(byteArray), size);
         }
 
         // convert module specific settings

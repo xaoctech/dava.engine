@@ -87,6 +87,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommonInternalSettings)
     .Field("validateTextureRelevance", &CommonInternalSettings::validateTextureRelevance)
     .Field("validateMaterialGroups", &CommonInternalSettings::validateMaterialGroups)
     .Field("validateShowConsole", &CommonInternalSettings::validateMaterialGroups)
-    .Field("logWidgetState", &CommonInternalSettings::validateMaterialGroups)
+    .Field("logWidgetState", &CommonInternalSettings::logWidgetState)
     .End();
 }

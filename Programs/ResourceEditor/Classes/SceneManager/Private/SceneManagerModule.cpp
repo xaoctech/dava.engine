@@ -588,7 +588,7 @@ void SceneManagerModule::RegisterOperations()
 
 void SceneManagerModule::CreateFirstScene()
 {
-    if (SettingsManager::GetValue(Settings::General_OpenLastSceneOnLaunch).AsBool())
+    if (GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->openLastScene == true)
     {
         using namespace DAVA;
         Vector<String> recentScenes = recentItems->Get();

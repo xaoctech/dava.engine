@@ -86,6 +86,7 @@ public:
     bool saveEmitters = false;
     bool saveStaticOcclusion = true;
     DAVA::uint32 defaultCustomColorIndex = 0;
+    bool openLastScene = false;
 
     // Sound settings
     bool drawSoundObjects = false;

@@ -119,7 +119,7 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     setWindowFlags(Qt::Tool);
     setWindowTitle("Settings");
 
-    updater.reset(new TimerUpdater(5000, TimerUpdater::DisableFastUpdate));
+    updater.reset(new TimerUpdater(2500, TimerUpdater::DisableFastUpdate));
 
     QVBoxLayout* dlgLayout = new QVBoxLayout();
     dlgLayout->setMargin(5);

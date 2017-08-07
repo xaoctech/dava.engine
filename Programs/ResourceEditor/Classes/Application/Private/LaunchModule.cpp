@@ -91,3 +91,4 @@ void LaunchModule::UnpackHelpDoc()
         }
     }
     versionsInfo.Set("EditorVersion", DAVA::String(APPLICATION_BUILD_VERSION));
+}
