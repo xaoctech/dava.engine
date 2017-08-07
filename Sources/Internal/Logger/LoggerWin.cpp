@@ -2,7 +2,6 @@
 
 #if defined(__DAVAENGINE_WINDOWS__)
 
-
 #include "Base/Platform.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
@@ -21,6 +20,7 @@ void Logger::PlatformLog(eLogLevel ll, const char8* text)
         static GUID rawguid;
         static HRESULT hr = []() {
             // {4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a} is GUID of "Microsoft-Windows-Diagnostics-LoggingChannel"
+            // Details: https://docs.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.loggingchannel#remarks
             HRESULT hr = IIDFromString(L"{4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a}", &rawguid);
             DVASSERT(SUCCEEDED(hr));
             return hr;
@@ -55,7 +55,7 @@ void Logger::PlatformLog(eLogLevel ll, const char8* text)
         WideString wtext = UTF8Utils::EncodeToWideString(text);
         // Platform::StringReference should prevent an extra copy here.
         // Details: https://docs.microsoft.com/en-us/cpp/cppcx/strings-c-cx#stringreference
-        lc->LogMessage(Platform::StringReference(wtext.c_str()), lv);
+        lc->LogMessage(Platform::StringReference(wtext.c_str(), wtext.size()), lv);
     }
 #endif
 }

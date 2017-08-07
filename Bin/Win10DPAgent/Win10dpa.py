@@ -11,8 +11,10 @@ parser.add_argument("action",\
 
 def do():
     args = parser.parse_args(sys.argv[1:2])
-    fmt = "python private/cmd_{}.py {}"
-    return subprocess.call(fmt.format(args.action, " ".join("\"{}\"".format(arg) for arg in sys.argv[2:])))
+    exec_string = "python Private/cmd_{}.py {}"
+    # Grab all remaining arguments and wrap them into quotes to forward to another script
+    args_string = " ".join("\"{}\"".format(arg) for arg in sys.argv[2:])
+    return subprocess.call(exec_string.format(args.action, args_string))
 
 if __name__ == "__main__":
     exit(do())
