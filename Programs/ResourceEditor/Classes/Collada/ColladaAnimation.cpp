@@ -54,8 +54,8 @@ Vector3 ColladaAnimation::EvaluateTranslation(FCDTransform* transform, float32 t
 
     Vector3 translation;
     translation.x = (curveX != nullptr) ? curveX->Evaluate(time) : 0.f;
-    translation.y = (curveX != nullptr) ? curveY->Evaluate(time) : 0.f;
-    translation.z = (curveX != nullptr) ? curveZ->Evaluate(time) : 0.f;
+    translation.y = (curveY != nullptr) ? curveY->Evaluate(time) : 0.f;
+    translation.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : 0.f;
 
     return translation;
 }
@@ -103,8 +103,8 @@ Vector3 ColladaAnimation::EvaluateScale(FCDTransform* transform, float32 time)
 
     Vector3 scale;
     scale.x = (curveX != nullptr) ? curveX->Evaluate(time) : 1.f;
-    scale.y = (curveX != nullptr) ? curveY->Evaluate(time) : 1.f;
-    scale.z = (curveX != nullptr) ? curveZ->Evaluate(time) : 1.f;
+    scale.y = (curveY != nullptr) ? curveY->Evaluate(time) : 1.f;
+    scale.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : 1.f;
 
     return scale;
 }
