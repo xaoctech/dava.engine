@@ -5,6 +5,8 @@
 
 #include <utf8.h>
 
+#include <cwctype>
+
 namespace DAVA
 {
 
