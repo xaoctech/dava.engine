@@ -155,9 +155,9 @@ namespace std
 template <>
 struct hash<DAVA::FastName>
 {
-    std::size_t operator()(const DAVA::FastName& k) const
+    size_t operator()(const DAVA::FastName& k) const
     {
-        return std::hash<const void*>().operator()(k.c_str());
+        return reinterpret_cast<size_t>(k.c_str());
     }
 };
 }

@@ -74,7 +74,29 @@ struct Hash<FastNameSet>
 {
     size_t operator()(const FastNameSet& set) const
     {
-        return set.size();
+        size_t i = 0;
+        Vector<const char*> data;
+        data.resize(set.size());
+
+        FastNameSet::iterator it = set.begin();
+        const FastNameSet::iterator& endIt = set.end();
+        for (; it != endIt; ++it)
+        {
+            const FastName& key = it->first;
+            data[i] = key.c_str();
+            i++;
+        }
+
+        std::stable_sort(data.begin(), data.end());
+
+        size_t keyCount = data.size();
+        size_t hashVal = 2166136261u;
+        for (i = 0; i < keyCount; ++i)
+        {
+            hashVal += (hashVal * 16777619) ^ reinterpret_cast<size_t>(data[i]);
+        }
+
+        return hashVal;
     }
 
     bool Compare(const FastNameSet& set1, const FastNameSet& set2) const
