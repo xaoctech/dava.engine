@@ -26,6 +26,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Systems/SlotSystem.h"
 #include "Commands2/SetFieldValueCommand.h"
 
 #define SIMPLE_COLLISION_BOX_SIZE 1.0f
@@ -594,6 +595,12 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     {
         CollisionDetails::CollisionObj result;
         DAVA::Entity* entity = object.AsEntity();
+
+        if (entity != nullptr && entity->GetParent() != nullptr)
+        {
+            if (GetScene()->slotSystem->LookUpSlot(entity->GetParent()) != nullptr)
+                return;
+        }
 
         DAVA::float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxUserScale).AsFloat();
         DAVA::float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxWaypointScale).AsFloat();

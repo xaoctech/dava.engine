@@ -398,7 +398,7 @@ void SlotSystem::Process(float32 timeElapsed)
     {
         SlotNode& node = nodes[i];
 
-        if (node.component->GetJointName().IsValid())
+        if (node.component->GetJointUID().IsValid())
         {
             node.loadedEnity->SetLocalTransform(GetResultTranform(node.component));
             ResetFlag(node, SlotNode::ATTACHMENT_TRANSFORM_CHANGED);
@@ -518,18 +518,22 @@ Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
 {
     DVASSERT(component->GetEntity()->GetScene() == GetScene());
     Matrix4 jointTransform;
-    FastName boneName = component->GetJointName();
+    FastName boneName = component->GetJointUID();
     if (boneName.IsValid())
     {
         SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
         DVASSERT(skeleton != nullptr);
-        uint32 jointId = skeleton->GetJointIndex(boneName);
-        DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
-        const JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointId);
-        jointTransform = transform.orientation.GetMatrix();
-        jointTransform.SetTranslationVector(transform.position);
 
+        if (component->attachmentToJointIndex == SkeletonComponent::INVALID_JOINT_INDEX)
+            component->attachmentToJointIndex = skeleton->GetJointIndex(boneName);
+
+        uint32 jointIndex = component->attachmentToJointIndex;
+        DVASSERT(jointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+
+        const JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointIndex);
+        jointTransform = transform.orientation.GetMatrix();
         jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
+        jointTransform.SetTranslationVector(transform.position);
     }
 
     return jointTransform;
@@ -538,19 +542,23 @@ Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
 DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
 {
     DVASSERT(component->GetEntity()->GetScene() == GetScene());
-    FastName boneName = component->GetJointName();
+    FastName boneName = component->GetJointUID();
     DVASSERT(boneName.IsValid());
     SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
     DVASSERT(skeleton != nullptr);
-    uint32 jointId = skeleton->GetJointIndex(boneName);
-    DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
-    const JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointId);
+
+    if (component->attachmentToJointIndex == SkeletonComponent::INVALID_JOINT_INDEX)
+        component->attachmentToJointIndex = skeleton->GetJointIndex(boneName);
+
+    uint32 jointIndex = component->attachmentToJointIndex;
+    DVASSERT(jointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+
+    const JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointIndex);
     Matrix4 jointTransform = transform.orientation.GetMatrix();
+    jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
     jointTransform.SetTranslationVector(transform.position);
 
-    jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
-
-    return jointTransform * component->GetAttachmentTransform();
+    return component->GetAttachmentTransform() * jointTransform;
 }
 
 void SlotSystem::SetScene(Scene* scene)

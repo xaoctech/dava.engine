@@ -261,7 +261,7 @@ public:
 
 private:
     static const DAVA::String DetachItemName;
-    const DAVA::Set<DAVA::String>& GetJoints() const
+    const DAVA::Map<DAVA::String, DAVA::String>& GetJoints() const
     {
         joints.clear();
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
@@ -271,21 +271,23 @@ private:
                                      DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
                                      if (skeleton != nullptr)
                                      {
-                                         for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         for (DAVA::uint32 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             joints.insert(skeleton->GetJoint(i).name.c_str());
+                                             const SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
+                                             joints.emplace(joint.uid.c_str(), joint.name.c_str());
                                          }
                                      }
                                  }
                                  else
                                  {
-                                     DAVA::Set<DAVA::String> jointIntersection;
+                                     DAVA::Map<DAVA::String, DAVA::String> jointIntersection;
                                      DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
                                      if (skeleton != nullptr)
                                      {
-                                         for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         for (DAVA::uint32 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             jointIntersection.insert(skeleton->GetJoint(i).name.c_str());
+                                             const SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
+                                             joints.emplace(joint.uid.c_str(), joint.name.c_str());
                                          }
                                      }
 
@@ -294,7 +296,7 @@ private:
                                  return true;
                              });
 
-        joints.emplace(DetachItemName);
+        joints.emplace(DetachItemName, DetachItemName);
         return joints;
     }
 
@@ -306,11 +308,11 @@ private:
                              {
                                  if (isFirst == true)
                                  {
-                                     result = component->GetJointName();
+                                     result = component->GetJointUID();
                                  }
                                  else
                                  {
-                                     DAVA::FastName jointName = component->GetJointName();
+                                     DAVA::FastName jointName = component->GetJointUID();
                                      if (jointName != result)
                                      {
                                          result = DAVA::FastName(DAVA::TArc::MultipleValuesString);
@@ -383,7 +385,7 @@ private:
         return result;
     }
 
-    mutable DAVA::Set<DAVA::String> joints;
+    mutable DAVA::Map<DAVA::String, DAVA::String> joints;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotJointComponentValue, BaseSlotComponentValue)
     {
