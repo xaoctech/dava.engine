@@ -1,5 +1,5 @@
 Header:
-    version: "17"
+    version: "18"
 Prototypes:
 -   class: "UIControl"
     name: "StaticTextComponentTest"
@@ -7,19 +7,18 @@ Prototypes:
     size: [288.000000, 155.000000]
     noInput: true
     components:
-        LinearLayout: {}
+        LinearLayout:
+            padding: 5.000000
+            spacing: 1.000000
         SizePolicy:
             horizontalPolicy: "PercentOfParent"
             verticalPolicy: "PercentOfParent"
     children:
     -   class: "UIStaticText"
         name: "UIStaticText"
-        position: [0.000000, 0.000000]
-        size: [144.000000, 155.000000]
-        classes: "text1 text-color-white"
-        textcolorInheritType: "COLOR_IGNORE_PARENT"
-        text: "MULTILINE: DISABLED, FITTING: NONE"
-        font: "DroidSansMono_18"
+        position: [5.000000, 0.000000]
+        size: [138.500000, 155.000000]
+        classes: ""
         components:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
@@ -29,11 +28,18 @@ Prototypes:
                 rightAnchorEnabled: true
                 topAnchorEnabled: true
                 bottomAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.176471, 0.176471, 0.176471, 1.000000]
+            UITextComponent:
+                fontName: "DroidSansMono_18"
+                text: "MULTILINE: DISABLED, FITTING: NONE"
     -   class: "UIControl"
         name: "Component"
-        position: [144.000000, 0.000000]
-        size: [144.000000, 155.000000]
+        position: [144.500000, 0.000000]
+        size: [138.500000, 155.000000]
         noInput: true
+        classes: ""
         components:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
@@ -43,6 +49,9 @@ Prototypes:
                 rightAnchorEnabled: true
                 topAnchorEnabled: true
                 bottomAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.176471, 0.176471, 0.176471, 1.000000]
             UITextComponent:
                 fontName: "DroidSansMono_18"
                 text: "MULTILINE: DISABLED, FITTING: NONE"
@@ -63,9 +72,11 @@ Controls:
                 orientation: "TopDown"
         children:
         -   path: "UIStaticText"
-            text: "MULTILINE: DISABLED, FITTING: NONE"
+            components:
+                UITextComponent:
+                    text: "MULTILINE: DISABLED, FITTING: NONE"
         -   path: "Component"
-            position: [0.000000, 38.500000]
+            position: [0.000000, 39.000000]
             components:
                 UITextComponent:
                     text: "MULTILINE: DISABLED, FITTING: NONE"
@@ -77,8 +88,10 @@ Controls:
                 orientation: "TopDown"
         children:
         -   path: "UIStaticText"
-            fitting: ["ENLARGE"]
-            text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_ENLARGE"
+                    text: "MULTILINE: DISABLED, FITTING: ENLARGE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -92,8 +105,10 @@ Controls:
                 orientation: "TopDown"
         children:
         -   path: "UIStaticText"
-            fitting: ["REDUCE"]
-            text: "MULTILINE: DISABLED, FITTING: REDUCE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_REDUCE"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -107,8 +122,10 @@ Controls:
                 orientation: "TopDown"
         children:
         -   path: "UIStaticText"
-            fitting: ["ENLARGE", "REDUCE"]
-            text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_FILL"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -122,8 +139,10 @@ Controls:
                 orientation: "TopDown"
         children:
         -   path: "UIStaticText"
-            fitting: ["POINTS"]
-            text: "MULTILINE: DISABLED, FITTING: POINTS"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_POINTS"
+                    text: "MULTILINE: DISABLED, FITTING: POINTS"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -137,42 +156,55 @@ Controls:
     components:
         LinearLayout:
             orientation: "TopDown"
+            spacing: 5.000000
     children:
     -   prototype: "StaticTextComponentTest"
         name: "FittingNone"
         position: [0.000000, 0.000000]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED"
-            text: "MULTILINE: DISABLED, FITTING: NONE"
-        -   path: "Component"
-            position: [151.000000, 0.000000]
             components:
                 UITextComponent:
                     multiline: "MULTILINE_ENABLED"
                     text: "MULTILINE: DISABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [151.500000, 0.000000]
+            components:
+                UITextComponent:
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: NONE"
+    -   class: "UIControl"
+        name: "Spacer"
+        size: [0.000000, 40.000000]
     -   prototype: "StaticTextComponentTest"
         name: "FittingEnlarge"
-        position: [0.000000, 84.000000]
+        position: [0.000000, 112.000000]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED"
-            fitting: ["ENLARGE"]
-            text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_ENLARGE"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: ENLARGE"
         -   path: "Component"
             components:
                 UITextComponent:
                     fitting: "FITTING_ENLARGE"
                     multiline: "MULTILINE_ENABLED"
                     text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+    -   class: "UIControl"
+        name: "Spacer"
+        size: [0.000000, 40.000000]
     -   prototype: "StaticTextComponentTest"
         name: "FittingReduce"
-        position: [0.000000, 168.000000]
+        position: [0.000000, 224.000000]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED"
-            fitting: ["REDUCE"]
-            text: "MULTILINE: DISABLED, FITTING: REDUCE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_REDUCE"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -181,12 +213,14 @@ Controls:
                     text: "MULTILINE: DISABLED, FITTING: REDUCE"
     -   prototype: "StaticTextComponentTest"
         name: "FittingFill"
-        position: [0.000000, 252.000000]
+        position: [0.000000, 291.000000]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED"
-            fitting: ["ENLARGE", "REDUCE"]
-            text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_FILL"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -195,12 +229,14 @@ Controls:
                     text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
     -   prototype: "StaticTextComponentTest"
         name: "FittingPoints"
-        position: [0.000000, 336.000000]
+        position: [0.000000, 358.000000]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED"
-            fitting: ["POINTS"]
-            text: "MULTILINE: DISABLED, FITTING: POINTS"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_POINTS"
+                    multiline: "MULTILINE_ENABLED"
+                    text: "MULTILINE: DISABLED, FITTING: POINTS"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -215,42 +251,55 @@ Controls:
     components:
         LinearLayout:
             orientation: "TopDown"
+            spacing: 5.000000
     children:
     -   prototype: "StaticTextComponentTest"
         name: "FittingNone"
         position: [0.000000, 0.000000]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
-            text: "MULTILINE: DISABLED, FITTING: NONE"
-        -   path: "Component"
-            position: [150.500000, 0.000000]
             components:
                 UITextComponent:
                     multiline: "MULTILINE_ENABLED_BY_SYMBOL"
                     text: "MULTILINE: DISABLED, FITTING: NONE"
+        -   path: "Component"
+            position: [151.000000, 0.000000]
+            components:
+                UITextComponent:
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: NONE"
+    -   class: "UIControl"
+        name: "Spacer"
+        size: [0.000000, 40.000000]
     -   prototype: "StaticTextComponentTest"
         name: "FittingEnlarge"
-        position: [0.000000, 90.800003]
+        position: [0.000000, 118.800003]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
-            fitting: ["ENLARGE"]
-            text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_ENLARGE"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: ENLARGE"
         -   path: "Component"
             components:
                 UITextComponent:
                     fitting: "FITTING_ENLARGE"
                     multiline: "MULTILINE_ENABLED_BY_SYMBOL"
                     text: "MULTILINE: DISABLED, FITTING: ENLARGE"
+    -   class: "UIControl"
+        name: "Spacer"
+        size: [0.000000, 40.000000]
     -   prototype: "StaticTextComponentTest"
         name: "FittingReduce"
-        position: [0.000000, 181.600006]
+        position: [0.000000, 237.600006]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
-            fitting: ["REDUCE"]
-            text: "MULTILINE: DISABLED, FITTING: REDUCE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_REDUCE"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -259,12 +308,14 @@ Controls:
                     text: "MULTILINE: DISABLED, FITTING: REDUCE"
     -   prototype: "StaticTextComponentTest"
         name: "FittingFill"
-        position: [0.000000, 272.400024]
+        position: [0.000000, 311.400024]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
-            fitting: ["ENLARGE", "REDUCE"]
-            text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_FILL"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -273,12 +324,14 @@ Controls:
                     text: "MULTILINE: DISABLED, FITTING: REDUCE|ENLARGE"
     -   prototype: "StaticTextComponentTest"
         name: "FittingPoints"
-        position: [0.000000, 363.200012]
+        position: [0.000000, 385.200012]
         children:
         -   path: "UIStaticText"
-            multiline: "MULTILINE_ENABLED_BY_SYMBOL"
-            fitting: ["POINTS"]
-            text: "MULTILINE: DISABLED, FITTING: POINTS"
+            components:
+                UITextComponent:
+                    fitting: "FITTING_POINTS"
+                    multiline: "MULTILINE_ENABLED_BY_SYMBOL"
+                    text: "MULTILINE: DISABLED, FITTING: POINTS"
         -   path: "Component"
             components:
                 UITextComponent:
@@ -294,10 +347,12 @@ Controls:
         name: "StaticTextComponentTest"
         children:
         -   path: "UIStaticText"
-            shadowoffset: [3.000000, 3.000000]
-            shadowcolor: [0.000000, 1.000000, 0.000000, 1.000000]
-            multiline: "MULTILINE_ENABLED"
-            text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+            components:
+                UITextComponent:
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 1.000000, 0.000000, 1.000000]
+                    shadowOffset: [3.000000, 3.000000]
+                    text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
         -   path: "Component"
             components:
                 UITextComponent:
@@ -312,21 +367,21 @@ Controls:
     components:
         LinearLayout:
             orientation: "TopDown"
+            spacing: 5.000000
     children:
     -   prototype: "StaticTextComponentTest"
         name: "StaticTextComponentTest"
         position: [0.000000, 0.000000]
-        components:
-            Background:
-                color: [0.533333, 0.533333, 0.533333, 0.533333]
         children:
         -   path: "UIStaticText"
-            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
-            textcolorInheritType: "COLOR_MULTIPLY_ON_PARENT"
-            shadowoffset: [0.000000, 0.000000]
-            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
-            multiline: "MULTILINE_ENABLED"
-            text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+            components:
+                UITextComponent:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_MULTIPLY_ON_PARENT"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
         -   path: "Component"
             components:
                 UITextComponent:
@@ -338,20 +393,19 @@ Controls:
                     text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
     -   prototype: "StaticTextComponentTest"
         name: "StaticTextComponentTest"
-        position: [0.000000, 82.599998]
-        components:
-            Background:
-                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        position: [0.000000, 83.599998]
         children:
         -   path: "UIStaticText"
-            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
-            textcolorInheritType: "COLOR_ADD_TO_PARENT"
-            shadowoffset: [0.000000, 0.000000]
-            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
-            multiline: "MULTILINE_ENABLED"
-            text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+            components:
+                UITextComponent:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_ADD_TO_PARENT"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
         -   path: "Component"
-            position: [282.500000, 0.000000]
+            position: [283.000000, 0.000000]
             components:
                 UITextComponent:
                     color: [1.000000, 1.000000, 0.000000, 1.000000]
@@ -362,20 +416,19 @@ Controls:
                     text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
     -   prototype: "StaticTextComponentTest"
         name: "StaticTextComponentTest"
-        position: [0.000000, 165.199997]
-        components:
-            Background:
-                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        position: [0.000000, 167.199997]
         children:
         -   path: "UIStaticText"
-            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
-            textcolorInheritType: "COLOR_REPLACE_TO_PARENT"
-            shadowoffset: [0.000000, 0.000000]
-            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
-            multiline: "MULTILINE_ENABLED"
-            text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+            components:
+                UITextComponent:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_REPLACE_TO_PARENT"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
         -   path: "Component"
-            position: [282.500000, 0.000000]
+            position: [283.000000, 0.000000]
             components:
                 UITextComponent:
                     color: [1.000000, 1.000000, 0.000000, 1.000000]
@@ -386,20 +439,19 @@ Controls:
                     text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
     -   prototype: "StaticTextComponentTest"
         name: "StaticTextComponentTest"
-        position: [0.000000, 247.799988]
-        components:
-            Background:
-                color: [0.533333, 0.533333, 0.533333, 0.533333]
+        position: [0.000000, 250.799988]
         children:
         -   path: "UIStaticText"
-            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
-            textcolorInheritType: "COLOR_MULTIPLY_ALPHA_ONLY"
-            shadowoffset: [0.000000, 0.000000]
-            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
-            multiline: "MULTILINE_ENABLED"
-            text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+            components:
+                UITextComponent:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_MULTIPLY_ALPHA_ONLY"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
         -   path: "Component"
-            position: [282.500000, 0.000000]
+            position: [283.000000, 0.000000]
             components:
                 UITextComponent:
                     color: [1.000000, 1.000000, 0.000000, 1.000000]
@@ -410,21 +462,19 @@ Controls:
                     text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
     -   prototype: "StaticTextComponentTest"
         name: "StaticTextComponentTest"
-        position: [0.000000, 330.399994]
-        components:
-            Background:
-                color: [0.533333, 0.533333, 0.533333, 0.533333]
-                colorInherit: "COLOR_REPLACE_ALPHA_ONLY"
+        position: [0.000000, 334.399994]
         children:
         -   path: "UIStaticText"
-            textColor: [1.000000, 1.000000, 0.000000, 1.000000]
-            textcolorInheritType: "COLOR_REPLACE_ALPHA_ONLY"
-            shadowoffset: [0.000000, 0.000000]
-            shadowcolor: [0.000000, 0.000000, 0.000000, 1.000000]
-            multiline: "MULTILINE_ENABLED"
-            text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
+            components:
+                UITextComponent:
+                    color: [1.000000, 1.000000, 0.000000, 1.000000]
+                    colorInheritType: "COLOR_REPLACE_ALPHA_ONLY"
+                    multiline: "MULTILINE_ENABLED"
+                    shadowColor: [0.000000, 0.000000, 0.000000, 1.000000]
+                    shadowOffset: [0.000000, 0.000000]
+                    text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
         -   path: "Component"
-            position: [282.500000, 0.000000]
+            position: [283.000000, 0.000000]
             components:
                 UITextComponent:
                     color: [1.000000, 1.000000, 0.000000, 1.000000]
@@ -450,10 +500,6 @@ Controls:
         position: [0.000000, 0.000000]
         size: [252.000000, 86.400002]
         classes: "text1 text-color-white"
-        textcolorInheritType: "COLOR_IGNORE_PARENT"
-        multiline: "MULTILINE_ENABLED"
-        text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
-        font: "DroidSansMono_18"
         components:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
@@ -464,6 +510,14 @@ Controls:
                 rightAnchorEnabled: true
                 topAnchorEnabled: true
                 bottomAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.176471, 0.176471, 0.176471, 1.000000]
+            UITextComponent:
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                fontName: "DroidSansMono_18"
+                multiline: "MULTILINE_ENABLED"
+                text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
     -   class: "UIControl"
         name: "Component"
         position: [0.000000, 86.400002]
@@ -480,6 +534,9 @@ Controls:
                 topAnchorEnabled: true
                 vCenterAnchorEnabled: false
                 bottomAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.176471, 0.176471, 0.176471, 1.000000]
             UITextComponent:
                 fontName: "DroidSansMono_18"
                 multiline: "MULTILINE_ENABLED"
@@ -487,40 +544,47 @@ Controls:
     -   class: "UIStaticText"
         name: "UIStaticText"
         position: [0.000000, 172.800003]
-        size: [252.000000, 144.000000]
+        size: [252.000000, 108.000000]
         classes: "text1 text-color-white"
-        textcolorInheritType: "COLOR_IGNORE_PARENT"
-        multiline: "MULTILINE_ENABLED"
-        text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
-        font: "DroidSansMono_18"
         components:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
                 horizontalValue: 100.000000
                 verticalPolicy: "PercentOfContent"
-                verticalValue: 200.000000
+                verticalValue: 150.000000
             Anchor:
                 leftAnchorEnabled: true
                 rightAnchorEnabled: true
                 topAnchorEnabled: true
                 bottomAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.113725, 0.176471, 0.101961, 1.000000]
+            UITextComponent:
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                fontName: "DroidSansMono_18"
+                multiline: "MULTILINE_ENABLED"
+                text: "Lorem ipsum dolor sit amet, nobis solet commodo est in."
     -   class: "UIControl"
         name: "Component"
-        position: [0.000000, 316.799988]
-        size: [252.000000, 144.000000]
+        position: [0.000000, 280.799988]
+        size: [252.000000, 108.000000]
         noInput: true
         components:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
                 horizontalValue: 100.000000
                 verticalPolicy: "PercentOfContent"
-                verticalValue: 200.000000
+                verticalValue: 150.000000
             Anchor:
                 leftAnchorEnabled: true
                 rightAnchorEnabled: true
                 topAnchorEnabled: true
                 vCenterAnchorEnabled: false
                 bottomAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.113725, 0.176471, 0.101961, 1.000000]
             UITextComponent:
                 fontName: "DroidSansMono_18"
                 multiline: "MULTILINE_ENABLED"
@@ -539,12 +603,12 @@ Controls:
     children:
     -   class: "UIControl"
         name: "Holder"
-        position: [377.000000, 273.000000]
+        position: [11.000000, 120.000000]
         size: [253.000000, 238.000000]
         noInput: true
     -   class: "UIControl"
         name: "UIControl"
-        position: [19.000000, 19.000000]
+        position: [21.000000, 10.000000]
         size: [228.000000, 48.000000]
         components:
             LinearLayout: {}
@@ -554,8 +618,6 @@ Controls:
             position: [0.000000, 0.000000]
             size: [114.000000, 38.000000]
             noInput: false
-            text: "Start"
-            font: "Korinna_18"
             components:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
@@ -564,13 +626,14 @@ Controls:
                     action: "START"
                 DebugRender:
                     enabled: true
+                UITextComponent:
+                    fontName: "Korinna_18"
+                    text: "Start"
         -   class: "UIStaticText"
             name: "StopBtn"
             position: [114.000000, 0.000000]
             size: [114.000000, 38.000000]
             noInput: false
-            text: "Stop"
-            font: "Korinna_18"
             components:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
@@ -579,9 +642,12 @@ Controls:
                     action: "STOP"
                 DebugRender:
                     enabled: true
+                UITextComponent:
+                    fontName: "Korinna_18"
+                    text: "Stop"
     -   class: "UIControl"
         name: "UIControl"
-        position: [19.000000, 89.000000]
+        position: [21.000000, 60.000000]
         size: [228.000000, 40.000000]
         components:
             LinearLayout: {}
@@ -591,8 +657,6 @@ Controls:
             position: [0.000000, 0.000000]
             size: [114.000000, 38.000000]
             noInput: false
-            text: "Prev test"
-            font: "Korinna_18"
             components:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
@@ -601,13 +665,14 @@ Controls:
                     action: "PREV"
                 DebugRender:
                     enabled: true
+                UITextComponent:
+                    fontName: "Korinna_18"
+                    text: "Prev test"
         -   class: "UIStaticText"
             name: "StopBtn"
             position: [114.000000, 0.000000]
             size: [114.000000, 38.000000]
             noInput: false
-            text: "Next test"
-            font: "Korinna_18"
             components:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
@@ -616,14 +681,14 @@ Controls:
                     action: "NEXT"
                 DebugRender:
                     enabled: true
+                UITextComponent:
+                    fontName: "Korinna_18"
+                    text: "Next test"
     -   class: "UIStaticText"
         name: "StatusText"
-        position: [262.000000, 19.000000]
-        size: [465.000000, 110.000000]
+        position: [264.000000, 10.000000]
+        size: [465.000000, 90.000000]
         noInput: false
-        multiline: "MULTILINE_ENABLED"
-        text: "FPS: 0"
-        font: "Korinna_18"
         components:
             SizePolicy:
                 horizontalPolicy: "Ignore"
@@ -632,33 +697,7 @@ Controls:
                 action: "STOP"
             DebugRender:
                 enabled: true
-    -   class: "UIStaticText"
-        name: "Benchmark1Btn"
-        position: [19.000000, 148.000000]
-        size: [377.500000, 38.000000]
-        noInput: false
-        text: "Benchmark UIStaticText"
-        font: "Korinna_18"
-        components:
-            SizePolicy:
-                horizontalPolicy: "PercentOfParent"
-                horizontalValue: 50.000000
-            Action:
-                action: "BENCHMARK1"
-            DebugRender:
-                enabled: true
-    -   class: "UIStaticText"
-        name: "Benchmark2Btn"
-        position: [19.000000, 199.000000]
-        size: [377.500000, 38.000000]
-        noInput: false
-        text: "Benchmark UITextComponent"
-        font: "Korinna_18"
-        components:
-            SizePolicy:
-                horizontalPolicy: "PercentOfParent"
-                horizontalValue: 50.000000
-            Action:
-                action: "BENCHMARK2"
-            DebugRender:
-                enabled: true
+            UITextComponent:
+                fontName: "Korinna_18"
+                multiline: "MULTILINE_ENABLED"
+                text: "FPS: 0"

@@ -73,8 +73,6 @@ void TextSystemTest::LoadResources()
 
     statusText = static_cast<UIStaticText*>(dialog->FindByName("StatusText"));
     holderControl = static_cast<UIStaticText*>(dialog->FindByName("Holder"));
-    benchmark1Btn = static_cast<UIStaticText*>(dialog->FindByName("Benchmark1Btn"));
-    benchmark2Btn = static_cast<UIStaticText*>(dialog->FindByName("Benchmark2Btn"));
 
     UIActionMap& amap = dialog->GetOrCreateComponent<UIActionBindingComponent>()->GetActionMap();
     amap.Put(FastName("START"), [&]() {
@@ -90,17 +88,11 @@ void TextSystemTest::LoadResources()
     amap.Put(FastName("PREV"), [&]() {
         ChangeCurrentTest(testIdx - 1);
     });
-    amap.Put(FastName("BENCHMARK1"), [&]() {
-        Benchmark1();
-    });
-    amap.Put(FastName("BENCHMARK2"), [&]() {
-        Benchmark2();
-    });
 
     for (String name : testCaseNames)
     {
         UIControl* c = pkgBuilder.GetPackage()->GetControl(name);
-        objects.push_back(std::move(std::make_shared<TextTestCase>(c, name)));
+        objects.push_back(std::make_shared<TextTestCase>(c, name));
     }
     activeObject = nullptr;
 }
@@ -112,89 +104,6 @@ void TextSystemTest::UnloadResources()
     statusText = nullptr;
     activeObject = nullptr;
     holderControl = nullptr;
-    benchmark1Btn = nullptr;
-    benchmark2Btn = nullptr;
-}
-
-void TextSystemTest::Benchmark1()
-{
-    Vector<String> testTexts;
-    String s = "qwe ";
-    for (int32 i = 0; i < 10; i++)
-    {
-        s = s + s;
-        testTexts.push_back(s);
-    }
-    UITextSystem* textSystem = UIControlSystem::Instance()->GetSystem<UITextSystem>();
-
-    uint64 begin = SystemTimer::GetUs();
-    const int32 n = 100;
-    for (int j = 0; j < n; j++)
-    {
-        UIStaticText* staticText = new UIStaticText(Rect(0.f, 0.f, 100.f, 100.f));
-        AddControl(staticText);
-        for (String ts : testTexts)
-        {
-            staticText->SetUtf8Text(s);
-        }
-        for (auto mType : { UIStaticText::MULTILINE_DISABLED, UIStaticText::MULTILINE_ENABLED, UIStaticText::MULTILINE_ENABLED_BY_SYMBOL })
-        {
-            staticText->SetMultilineType(mType);
-        }
-        Vector<int32> fittingMasks{ 0, TextBlock::FITTING_ENLARGE, TextBlock::FITTING_REDUCE, TextBlock::FITTING_ENLARGE | TextBlock::FITTING_REDUCE, TextBlock::FITTING_POINTS };
-        for (int32 fitting : fittingMasks)
-        {
-            staticText->SetFittingOption(fitting);
-        }
-        textSystem->ForceProcessControl(0.f, staticText);
-
-        RemoveControl(staticText);
-        SafeRelease(staticText);
-    }
-
-    uint64 time = SystemTimer::GetUs() - begin;
-    benchmark1Btn->SetUtf8Text(Format("UIStaticText %d updates: %u ms", n, time / 1000));
-}
-
-void TextSystemTest::Benchmark2()
-{
-    Vector<String> testTexts;
-    String s = "qwe ";
-    for (int32 i = 0; i < 10; i++)
-    {
-        s = s + s;
-        testTexts.push_back(s);
-    }
-    UITextSystem* textSystem = UIControlSystem::Instance()->GetSystem<UITextSystem>();
-
-    uint64 begin = SystemTimer::GetUs();
-    const int32 n = 100;
-    for (int j = 0; j < n; j++)
-    {
-        UIControl* control = new UIControl(Rect(0.f, 0.f, 100.f, 100.f));
-        AddControl(control);
-        UITextComponent* textComponent = control->GetOrCreateComponent<UITextComponent>();
-        for (String ts : testTexts)
-        {
-            textComponent->SetText(s);
-        }
-        for (auto multiline : { UITextComponent::MULTILINE_DISABLED, UITextComponent::MULTILINE_ENABLED, UITextComponent::MULTILINE_ENABLED_BY_SYMBOL })
-        {
-            textComponent->SetMultiline(multiline);
-        }
-        Vector<UITextComponent::eTextFitting> fittingMasks{ UITextComponent::FITTING_NONE, UITextComponent::FITTING_ENLARGE, UITextComponent::FITTING_REDUCE, UITextComponent::FITTING_FILL, UITextComponent::FITTING_POINTS };
-        for (UITextComponent::eTextFitting fitting : fittingMasks)
-        {
-            textComponent->SetFitting(fitting);
-        }
-        textSystem->ForceProcessControl(0.f, control);
-
-        RemoveControl(control);
-        SafeRelease(control);
-    }
-
-    uint64 time = SystemTimer::GetUs() - begin;
-    benchmark2Btn->SetUtf8Text(Format("UITextComponent %d updates: %u ms", n, time / 1000));
 }
 
 void TextSystemTest::ChangeCurrentTest(int32 testIdx_)
@@ -235,7 +144,7 @@ void TextSystemTest::Update(float32 delta)
         {
             testName = activeObject->name;
         }
-        statusText->SetUtf8Text(Format("FPS: %f\nSTATE: %s\nTEST: %s", fps, stateStr.c_str(), testName.c_str()));
+        statusText->SetUtf8Text(Format("FPS: %.0f\nSTATE: %s\nTEST: %s", fps, stateStr.c_str(), testName.c_str()));
         updateDelta = 0.f;
         framesCount = 0;
     }
