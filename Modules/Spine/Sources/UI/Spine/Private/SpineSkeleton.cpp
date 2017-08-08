@@ -121,6 +121,11 @@ bool SpineSkeleton::Load(const FilePath& dataPath_, const FilePath& atlasPath_)
     ReleaseAtlas();
     ReleaseSkeleton();
 
+    if (dataPath_.IsEmpty() || atlasPath_.IsEmpty())
+    {
+        return false;
+    }
+
     FilePath atlasPath(atlasPath_);
     FilePath dataPath(dataPath_);
 
@@ -143,8 +148,15 @@ bool SpineSkeleton::Load(const FilePath& dataPath_, const FilePath& atlasPath_)
         dataPath = localizedPath;
     }
 
-    if (!dataPath.Exists() || !atlasPath.Exists())
+    if (!dataPath.Exists())
     {
+        Logger::Error("[SpineSkeleton::Load] Data file `%s` doesn't exist!", dataPath.GetStringValue().c_str());
+        return false;
+    }
+
+    if (!atlasPath.Exists())
+    {
+        Logger::Error("[SpineSkeleton::Load] Atlas file `%s` doesn't exist!", atlasPath.GetStringValue().c_str());
         return false;
     }
 
