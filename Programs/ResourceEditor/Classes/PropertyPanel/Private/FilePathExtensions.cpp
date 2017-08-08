@@ -233,7 +233,7 @@ DAVA::M::ValidationResult ValidateHeightMap(const DAVA::Any& value, const DAVA::
     return result;
 }
 
-DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::Any& oldValue)
+DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::Any& oldValue, bool withScene)
 {
     using namespace DAVA;
     M::ValidationResult result;
@@ -241,7 +241,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
     FilePath texturePath = value.Cast<FilePath>();
     if (texturePath.IsEmpty() == false)
     {
-        FilePath validDir = GetValidDir(true);
+        FilePath validDir = GetValidDir(withScene);
         if (FilePath::ContainPath(texturePath, validDir) == false)
         {
             result.state = M::ValidationResult::eState::Invalid;
@@ -272,6 +272,16 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
 
     result.state = M::ValidationResult::eState::Valid;
     return result;
+}
+
+DAVA::M::ValidationResult ValidateTextureWithScene(const DAVA::Any& value, const DAVA::Any& oldValue)
+{
+    return ValidateTexture(value, oldValue, true);
+}
+
+DAVA::M::ValidationResult ValidateTextureWithOutScene(const DAVA::Any& value, const DAVA::Any& oldValue)
+{
+    return ValidateTexture(value, oldValue, false);
 }
 
 DAVA::M::ValidationResult ValidateImage(const DAVA::Any& value, const DAVA::Any& oldValue)
@@ -375,9 +385,11 @@ DAVA::M::Validator CreateHeightMapValidator()
     return DAVA::M::Validator(PathValidatorsDetail::ValidateHeightMap);
 }
 
-DAVA::M::Validator CreateTextureValidator()
+DAVA::M::Validator CreateTextureValidator(bool bindToScenePath)
 {
-    return DAVA::M::Validator(PathValidatorsDetail::ValidateTexture);
+    return DAVA::M::Validator(bindToScenePath == true ? PathValidatorsDetail::ValidateTextureWithScene
+                                                        :
+                                                        PathValidatorsDetail::ValidateTextureWithOutScene);
 }
 
 DAVA::M::Validator CreateImageValidator()
