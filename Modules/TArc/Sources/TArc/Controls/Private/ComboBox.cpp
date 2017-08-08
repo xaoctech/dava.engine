@@ -60,7 +60,40 @@ void ComboBox::UpdateControl(const ControlDescriptor& changedFields)
         CreateItems(fieldValue, fieldEnumerator);
     }
 
+    if (changedFields.IsChanged(Fields::MultipleValueText))
+    {
+        int index = findText(multipleValueText);
+        if (index != -1)
+        {
+            removeItem(index);
+        }
+        multipleValueText = GetFieldValue<QString>(Fields::MultipleValueText, multipleValueText);
+    }
+
     int currentIndex = SelectCurrentItem(fieldValue, fieldEnumerator);
+    if (currentIndex == -1)
+    {
+        int index = findText(multipleValueText);
+        if (index == -1)
+        {
+            insertItem(0, multipleValueText);
+            currentIndex = 0;
+        }
+        else
+        {
+            currentIndex = index;
+        }
+    }
+    else
+    {
+        int index = findText(multipleValueText);
+        if (index != -1)
+        {
+            removeItem(index);
+        }
+        currentIndex = SelectCurrentItem(fieldValue, fieldEnumerator);
+    }
+
     setCurrentIndex(currentIndex);
 }
 
@@ -138,7 +171,7 @@ int ComboBox::SelectCurrentItem(const Reflection& fieldValue, const Reflection& 
 
 void ComboBox::CurrentIndexChanged(int newCurrentItem)
 {
-    if (updateControlProceed)
+    if (updateControlProceed || newCurrentItem == -1)
     {
         // ignore reaction on control initialization
         return;
