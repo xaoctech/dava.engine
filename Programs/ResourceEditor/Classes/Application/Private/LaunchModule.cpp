@@ -41,7 +41,7 @@ public:
         ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
         if (data->IsOpened())
         {
-            module->InvokeOperation(REGlobal::CreateNewSceneOperation.ID);
+            module->InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
             wrapper.SetListener(nullptr);
             deleteLater();
         }

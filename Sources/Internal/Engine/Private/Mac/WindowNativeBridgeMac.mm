@@ -7,6 +7,9 @@
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSScreen.h>
+#import <Carbon/Carbon.h>
+
+#import "Engine/Private/OsX/DVApplication.h"
 
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
@@ -132,7 +135,7 @@ void WindowNativeBridge::SetFullscreen(eFullscreen newMode)
             // To handle cases when app is being opened with fullscreen mode,
             // but another app gets focus before our app's window is created,
             // thus ignoring any input afterwards
-            [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+            [[DVApplication sharedApplication] activateIgnoringOtherApps:YES];
         }
     }
 }
@@ -353,7 +356,7 @@ void WindowNativeBridge::KeyEvent(NSEvent* theEvent)
 
     eModifierKeys modifierKeys = GetModifierKeys(theEvent);
     MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, isRepeated));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, 0, modifierKeys, isRepeated));
 
     if ([theEvent type] == NSKeyDown)
     {
@@ -361,12 +364,18 @@ void WindowNativeBridge::KeyEvent(NSEvent* theEvent)
         NSUInteger n = [chars length];
         if (n > 0)
         {
-            MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, modifierKeys, false);
+            MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, 0, modifierKeys, false);
             for (NSUInteger i = 0; i < n; ++i)
             {
                 uint32 key = [chars characterAtIndex:i];
-                e.keyEvent.key = key;
-                mainDispatcher->PostEvent(e);
+
+                // Some key combinations can produce non-empty NSString with zero chars in it (e.g. ctrl + space)
+                // Do not handle such symbols
+                if (key > 0)
+                {
+                    e.keyEvent.keyVirtual = key;
+                    mainDispatcher->PostEvent(e);
+                }
             }
         }
     }
@@ -390,21 +399,39 @@ void WindowNativeBridge::FlagsChanged(NSEvent* theEvent)
         NX_ALPHASHIFTMASK, // Capslock
     };
 
+    static constexpr uint32 flagsKeys[] = {
+        kVK_Control,
+        kVK_RightControl,
+        kVK_Shift,
+        kVK_RightShift,
+        kVK_Command,
+        0x36, // kVK_RightCommand from HIToolbox/Events.h, defined only on macOS 10.12+
+        kVK_Option,
+        kVK_RightOption,
+        kVK_CapsLock
+    };
+
     uint32 newModifierFlags = [theEvent modifierFlags];
     uint32 changedModifierFlags = newModifierFlags ^ lastModifierFlags;
 
-    uint32 key = [theEvent keyCode];
     eModifierKeys modifierKeys = GetModifierKeys(theEvent);
-    MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, key, modifierKeys, false);
-    for (uint32 flag : interestingFlags)
+    MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, 0, 0, modifierKeys, false);
+
+    for (int i = 0; i < COUNT_OF(interestingFlags); ++i)
     {
+        const uint32 flag = interestingFlags[i];
         if (flag & changedModifierFlags)
         {
+            uint32 scancode = flagsKeys[i];
+            e.keyEvent.keyScancode = scancode;
+
             bool isPressed = (flag & newModifierFlags) == flag;
             e.type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
+
             mainDispatcher->PostEvent(e);
         }
     }
+
     lastModifierFlags = newModifierFlags;
 }
 

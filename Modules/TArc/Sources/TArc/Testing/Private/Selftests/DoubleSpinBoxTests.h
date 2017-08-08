@@ -8,6 +8,7 @@
 #include "TArc/Core/ClientModule.h"
 #include "TArc/Testing/Private/TestModuleHolder.h"
 #include "TArc/Utils/QtConnections.h"
+#include "TArc/Utils/StringFormatingUtils.h"
 
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
@@ -194,6 +195,14 @@ using Holder = TestModuleHolder<DoubleSpinBoxTestModule>;
 
 DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
 {
+    QString GetTextValue(DAVA::float64 v, QDoubleSpinBox * box)
+    {
+        QString textValue;
+        DAVA::TArc::FloatToString(v, box->decimals(), textValue);
+
+        return textValue;
+    }
+
     void SetFocus(QDoubleSpinBox * box)
     {
         box->clearFocus();
@@ -224,7 +233,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
         QDoubleSpinBox* box = LookupSingleWidget<QDoubleSpinBox>(wndKey, name);
         DoubleSpinBoxTestModule* module = Holder::moduleInstance;
         TEST_VERIFY(box->value() == module->model.value);
-        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f'));
+        TEST_VERIFY(box->text() == GetTextValue(module->model.value, box));
         TEST_VERIFY(box->minimum() == 3.0);
         TEST_VERIFY(box->maximum() == 30.0);
         TEST_VERIFY(box->singleStep() == 0.2);
@@ -375,7 +384,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
 
         TEST_VERIFY(box->value() == 18.0);
         TEST_VERIFY(box->value() == module->model.value);
-        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f'));
+        TEST_VERIFY(box->text() == GetTextValue(module->model.value, box));
 
         events.clear();
         SetFocus(box);
@@ -383,7 +392,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
         events.simulate(box);
         TEST_VERIFY(box->value() == 17.0);
         TEST_VERIFY(box->value() == module->model.value);
-        TEST_VERIFY(box->text() == QString::number(module->model.value, 'f'));
+        TEST_VERIFY(box->text() == GetTextValue(module->model.value, box));
 
         module->model.value = 10.0;
     }

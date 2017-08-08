@@ -14,7 +14,7 @@ class PeerDescription
 {
 public:
     PeerDescription();
-    PeerDescription(const NetConfig& config);
+    PeerDescription(const String& appName, const NetConfig& config);
 
     DeviceInfo::ePlatform GetPlatform() const;
     const String& GetPlatformString() const;
@@ -22,7 +22,8 @@ public:
     const String& GetManufacturer() const;
     const String& GetModel() const;
     const String& GetUDID() const;
-    const String& GetName() const;
+    const String& GetDeviceName() const;
+    const String& GetAppName() const;
     eGPUFamily GetGPUFamily() const;
     const NetConfig& NetworkConfig() const;
     const Vector<IfAddress>& NetworkInterfaces() const;
@@ -31,6 +32,7 @@ public:
     size_t SerializedSize() const;
     size_t Serialize(void* dstBuffer, size_t buflen) const;
     size_t Deserialize(const void* srcBuffer, size_t buflen);
+    static bool ExtractAppName(const void* srcBuffer, size_t buflen, String& appName);
 
 #ifdef __DAVAENGINE_DEBUG__
     void DumpToStdout() const;
@@ -43,7 +45,8 @@ private:
     String manufacturer;
     String model;
     String udid;
-    String name;
+    String deviceName;
+    String appName;
     eGPUFamily gpuFamily;
 
     NetConfig netConfig;
@@ -81,9 +84,14 @@ inline const String& PeerDescription::GetUDID() const
     return udid;
 }
 
-inline const String& PeerDescription::GetName() const
+inline const String& PeerDescription::GetDeviceName() const
 {
-    return name;
+    return deviceName;
+}
+
+inline const String& PeerDescription::GetAppName() const
+{
+    return appName;
 }
 
 inline eGPUFamily PeerDescription::GetGPUFamily() const

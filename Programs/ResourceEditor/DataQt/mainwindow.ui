@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1205</width>
+    <width>1149</width>
     <height>807</height>
    </rect>
   </property>
@@ -36,16 +36,7 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
    </layout>
@@ -78,16 +69,7 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -114,16 +96,7 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
        </layout>
@@ -141,16 +114,7 @@
         <property name="spacing">
          <number>1</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -210,7 +174,7 @@
      <x>0</x>
      <y>0</y>
      <width>1205</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="path" stdset="0">
@@ -249,6 +213,7 @@
      <addaction name="actionAddWind"/>
      <addaction name="actionAddVegetation"/>
      <addaction name="actionAddPath"/>
+     <addaction name="actionTextEntity"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
@@ -516,16 +481,7 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -577,16 +533,7 @@
      <property name="spacing">
       <number>2</number>
      </property>
-     <property name="leftMargin">
-      <number>1</number>
-     </property>
-     <property name="topMargin">
-      <number>1</number>
-     </property>
-     <property name="rightMargin">
-      <number>1</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>1</number>
      </property>
      <item>
@@ -618,16 +565,7 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -682,16 +620,7 @@
    </attribute>
    <widget class="QWidget" name="dockLODEditorContent">
     <layout class="QVBoxLayout" name="verticalLayout_2">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -705,7 +634,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>71</height>
+          <height>76</height>
          </rect>
         </property>
        </widget>
@@ -801,16 +730,7 @@
    </attribute>
    <widget class="QWidget" name="dockLandscapeEditorControlsContent">
     <layout class="QVBoxLayout" name="verticalLayout_3">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -824,7 +744,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>72</height>
+          <height>76</height>
          </rect>
         </property>
        </widget>
@@ -2007,6 +1927,24 @@
   <action name="actionCreateTestHardSkinnedObject">
    <property name="text">
     <string>Create Test Hard Skinned Object</string>
+   </property>
+  </action>
+  <action name="actionAddGeoDecalComponent">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/QtIcons/mipmap.png</normaloff>:/QtIcons/mipmap.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Geo Decal Component</string>
+   </property>
+  </action>
+  <action name="actionTextEntity">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/QtIcons/text_component.png</normaloff>:/QtIcons/text_component.png</iconset>
+   </property>
+   <property name="text">
+    <string>Text Entity</string>
    </property>
   </action>
  </widget>

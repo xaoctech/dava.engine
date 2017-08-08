@@ -8,6 +8,8 @@
 #include <TArc/Core/Core.h>
 #include <TArc/Utils/ModuleCollection.h>
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Render/Renderer.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
@@ -73,8 +75,20 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     Texture::SetPixelization(true);
 
     FileSystem* fs = engineContext->fileSystem;
-    fs->SetCurrentDocumentsDirectory(fs->GetUserDocumentsPath() + "QuickEd/");
-    fs->CreateDirectory(fs->GetCurrentDocumentsDirectory(), true);
+
+    auto copyFromOldFolder = [&]
+    {
+        FileSystem::eCreateDirectoryResult createResult = DocumentsDirectorySetup::CreateApplicationDocDirectory(fs, "QuickEd");
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = fs->GetUserDocumentsPath() + "QuickEd/";
+            DAVA::FilePath documentsNewFolder = DocumentsDirectorySetup::GetApplicationDocDirectory(fs, "QuickEd");
+            engineContext->fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
+        }
+    };
+    copyFromOldFolder(); // todo: remove function some versions after
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fs, "QuickEd");
+
     engineContext->logger->SetLogFilename("QuickEd.txt");
 
     ParticleEmitter::FORCE_DEEP_CLONE = true;
@@ -85,13 +99,13 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
 
     UIInputSystem* inputSystem = uiControlSystem->GetInputSystem();
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::UP), UIInputSystem::ACTION_FOCUS_UP);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::DOWN), UIInputSystem::ACTION_FOCUS_DOWN);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_UP), UIInputSystem::ACTION_FOCUS_UP);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_DOWN), UIInputSystem::ACTION_FOCUS_DOWN);
 
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::TAB), UIInputSystem::ACTION_FOCUS_NEXT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB), UIInputSystem::ACTION_FOCUS_NEXT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
 
     const char* settingsPath = "QuickEdSettings.archive";
     FilePath localPrefrencesPath(fs->GetCurrentDocumentsDirectory() + settingsPath);

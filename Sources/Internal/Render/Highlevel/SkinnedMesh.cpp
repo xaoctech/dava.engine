@@ -82,7 +82,7 @@ void SkinnedMesh::RecalcBoundingBox()
 {
     AABBox3 geometryBBox;
 
-    for (const IndexedRenderBatch& i : renderBatchArray)
+    for (const RenderBatchWithOptions& i : renderBatchArray)
     {
         RenderBatch* batch = i.renderBatch;
         geometryBBox.AddAABBox(batch->GetBoundingBox());

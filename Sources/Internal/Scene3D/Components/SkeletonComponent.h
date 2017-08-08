@@ -111,7 +111,7 @@ inline uint32 SkeletonComponent::GetJointIndex(const FastName& uid) const
     if (jointMap.end() != it)
         return it->second;
     else
-        return uint32(INVALID_JOINT_INDEX);
+        return INVALID_JOINT_INDEX;
 }
 
 inline uint32 SkeletonComponent::GetJointsCount() const

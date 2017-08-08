@@ -60,7 +60,8 @@ void RecentMenuItems::InitMenuItems()
         connections.AddConnection(action, &QAction::triggered, [path, this]()
                                   {
                                       actionTriggered.Emit(path);
-                                  });
+                                  },
+                                  Qt::QueuedConnection);
 
         DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(params.menuSubPath));
         params.ui->AddAction(params.windowKey, placement, action);
