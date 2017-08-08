@@ -17,16 +17,15 @@ void Logger::PlatformLog(eLogLevel ll, const char8* text)
 
 #if defined(__DAVAENGINE_WIN_UAP__)
     {
-        static GUID rawguid;
-        static HRESULT hr = []() {
+        static Windows::Foundation::Diagnostics::LoggingChannel ^ lc = []() {
+            GUID rawguid;
             // {4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a} is GUID of "Microsoft-Windows-Diagnostics-LoggingChannel"
             // Details: https://docs.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.loggingchannel#remarks
             HRESULT hr = IIDFromString(L"{4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a}", &rawguid);
             DVASSERT(SUCCEEDED(hr));
-            return hr;
+            return ref new Windows::Foundation::Diagnostics::LoggingChannel("DAVALogProvider", nullptr, Platform::Guid(rawguid));
         }();
-        static Windows::Foundation::Diagnostics::LoggingChannel ^ lc =
-        ref new Windows::Foundation::Diagnostics::LoggingChannel("DAVALogProvider", nullptr, Platform::Guid(rawguid));
+
         Windows::Foundation::Diagnostics::LoggingLevel lv;
 
         switch (ll)

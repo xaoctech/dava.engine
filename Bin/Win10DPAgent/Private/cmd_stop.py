@@ -2,7 +2,7 @@
 import argparse
 
 #local
-import Win10PortalRestAPI as dp_api
+import win10_portal_rest_api as dp_api
 
 parser = argparse.ArgumentParser(description="Win10dpa stop app")
 
