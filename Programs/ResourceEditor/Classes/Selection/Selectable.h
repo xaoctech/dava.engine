@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene3D/Entity.h"
+#include <Base/Type.h>
 #include <type_traits>
 
 class Selectable
@@ -115,7 +116,7 @@ inline void Selectable::AddTransformProxyForClass()
 {
     static_assert(std::is_base_of<Selectable::TransformProxy, PROXY>::value,
                   "Transform proxy should be derived from Selectable::TransformProxy");
-    AddConcreteProxy(Type::Instance<CLASS>(), new PROXY());
+    AddConcreteProxy(DAVA::Type::Instance<CLASS>(), new PROXY());
 }
 
 inline bool Selectable::ContainsObject() const
