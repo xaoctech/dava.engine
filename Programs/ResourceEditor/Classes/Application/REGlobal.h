@@ -50,7 +50,7 @@ T* GetActiveDataNode()
 }
 
 DECLARE_OPERATION_ID(OpenLastProjectOperation); // Args - empty
-DECLARE_OPERATION_ID(CreateNewSceneOperation); // Args - empty
+DECLARE_OPERATION_ID(CreateFirstSceneOperation); // Args - empty
 DECLARE_OPERATION_ID(OpenSceneOperation); // Args - scenePath: DAVA::FilePath
 DECLARE_OPERATION_ID(AddSceneOperation); // Args - scenePath: DAVA::FilePath
 DECLARE_OPERATION_ID(SaveCurrentScene); // Args - empty

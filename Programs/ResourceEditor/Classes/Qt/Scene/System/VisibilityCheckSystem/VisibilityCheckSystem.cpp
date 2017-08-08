@@ -267,6 +267,8 @@ void VisibilityCheckSystem::Draw()
         if (renderer.reprojectionTexture)
             DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(520.f, 516.f, 256.f, 256.f));
     }
+
+    GetFinalGatherCamera()->SetupDynamicParameters(false, nullptr);
 }
 
 void VisibilityCheckSystem::InvalidateMaterials()

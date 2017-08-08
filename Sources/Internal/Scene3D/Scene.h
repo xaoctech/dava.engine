@@ -52,11 +52,13 @@ class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
+class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
 class MotionSingleComponent;
 
 class UIEvent;
+class RenderPass;
 
 /**
     \ingroup scene3d
@@ -65,7 +67,6 @@ class UIEvent;
     Scene have visible hierarchy and invisible root nodes. You can add as many root nodes as you want, and do not visualize them.
     For example you can have multiple scenes, load them to one scene, and show each scene when it will be required. 
  */
-
 class EntityCache
 {
 public:
@@ -82,15 +83,13 @@ protected:
     Map<FilePath, Entity*> cachedEntities;
 };
 
-class RenderPass;
-
 class Scene : public Entity, Observer
 {
 protected:
     virtual ~Scene();
 
 public:
-    enum
+    enum : uint32
     {
         SCENE_SYSTEM_TRANSFORM_FLAG = 1 << 0,
         SCENE_SYSTEM_RENDER_UPDATE_FLAG = 1 << 1,
@@ -102,7 +101,6 @@ public:
         SCENE_SYSTEM_SWITCH_FLAG = 1 << 7,
         SCENE_SYSTEM_SOUND_UPDATE_FLAG = 1 << 8,
         SCENE_SYSTEM_ACTION_UPDATE_FLAG = 1 << 9,
-
         SCENE_SYSTEM_STATIC_OCCLUSION_FLAG = 1 << 11,
         SCENE_SYSTEM_LANDSCAPE_FLAG = 1 << 12,
         SCENE_SYSTEM_FOLIAGE_FLAG = 1 << 13,
@@ -113,6 +111,7 @@ public:
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
         SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
         SCENE_SYSTEM_MOTION_FLAG = 1 << 20,
+        SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 21,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
@@ -120,7 +119,7 @@ public:
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
 
-    enum eSceneProcessFlags
+    enum eSceneProcessFlags : uint32
     {
         SCENE_SYSTEM_REQUIRE_PROCESS = 1 << 0,
         SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1,
@@ -179,6 +178,7 @@ public:
     LandscapeSystem* landscapeSystem = nullptr;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
+    GeoDecalSystem* geoDecalSystem = nullptr;
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     PhysicsSystem* physicsSystem = nullptr;
 #endif

@@ -163,7 +163,7 @@ def main():
     options = parser.parse_args()
 
     if not setup_framework_env():
-        print "Couldn't configure environment. Make sure that you runs this script from dava.framework subfolder."
+        print "Couldn't configure environment. Make sure that you run this script from dava.framework subfolder."
         exit()
 
     destination_platform = ""

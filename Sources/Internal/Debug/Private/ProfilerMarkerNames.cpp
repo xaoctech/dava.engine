@@ -49,6 +49,7 @@ const char* SCENE_WIND_SYSTEM = "WindSystem";
 const char* SCENE_WAVE_SYSTEM = "WaveSystem";
 const char* SCENE_SKELETON_SYSTEM = "SkeletonSystem";
 const char* SCENE_MOTION_SYSTEM = "MotionSystem";
+const char* SCENE_GEODECAL_SYSTEM = "GeoDecalSystem";
 
 //Render
 const char* RENDER_PASS_PREPARE_ARRAYS = "RenderPass::PrepareArrays";

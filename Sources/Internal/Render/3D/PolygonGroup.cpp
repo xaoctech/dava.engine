@@ -2,9 +2,9 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Render/Renderer.h"
 #include "Scene3D/SceneFileV2.h"
-#include "Logger/Logger.h"
+#include "Render/Highlevel/GeometryOctTree.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Reflection/ReflectedMeta.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -24,6 +24,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PolygonGroup)
 PolygonGroup::PolygonGroup()
     : DataNode()
 {
+    std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
     Renderer::GetSignals().needRestoreResources.Connect(this, &PolygonGroup::RestoreBuffers);
 }
 
@@ -175,18 +176,25 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
 
     vertexCount = _vertexCount;
     indexCount = _indexCount;
-    vertexStride = GetVertexSize(_meshFormat);
     vertexFormat = _meshFormat;
+    vertexStride = GetVertexSize(_meshFormat);
     textureCoordCount = GetTexCoordCount(vertexFormat);
     cubeTextureCoordCount = GetCubeTexCoordCount(vertexFormat);
 
+    DVASSERT(vertexStride * vertexCount > 0);
     DVASSERT(_primitiveCount >= 0 && _primitiveCount <= int32(CalculatePrimitiveCount(indexCount, primitiveType)));
+
     primitiveCount = (_primitiveCount == 0) ? CalculatePrimitiveCount(indexCount, primitiveType) : _primitiveCount;
 
     meshData = new uint8[vertexStride * vertexCount];
+
+    DVASSERT(indexCount > 0);
     indexArray = new int16[indexCount];
-    textureCoordArray = new Vector2*[textureCoordCount];
-    cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
+
+    if (cubeTextureCoordCount > 0)
+        cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
+
+    DVASSERT(vertexCount == _vertexCount);
 
     UpdateDataPointersAndStreams();
 }
@@ -236,10 +244,11 @@ void PolygonGroup::ApplyMatrix(const Matrix4& matrix)
 
 void PolygonGroup::ReleaseData()
 {
+    SafeDelete(octTree);
     SafeDeleteArray(meshData);
     SafeDeleteArray(indexArray);
-    SafeDeleteArray(textureCoordArray);
     SafeDeleteArray(cubeTextureCoordArray);
+    std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
 }
 
 uint32 PolygonGroup::ReleaseGeometryData()
@@ -248,11 +257,10 @@ uint32 PolygonGroup::ReleaseGeometryData()
     {
         SafeDeleteArray(meshData);
         SafeDeleteArray(indexArray);
-        SafeDeleteArray(textureCoordArray);
         SafeDeleteArray(cubeTextureCoordArray);
+        std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
 
         vertexArray = nullptr;
-        textureCoordArray = nullptr;
         normalArray = nullptr;
         tangentArray = nullptr;
         binormalArray = nullptr;
@@ -304,6 +312,12 @@ void PolygonGroup::BuildBuffers()
     indexBuffer = rhi::CreateIndexBuffer(ibDesc);
     DVASSERT(indexBuffer);
 };
+
+void PolygonGroup::GenerateGeometryOctTree()
+{
+    octTree = new GeometryOctTree();
+    octTree->BuildTree(this);
+}
 
 void PolygonGroup::RestoreBuffers()
 {
@@ -423,12 +437,10 @@ void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationCont
         memcpy(indexArray, archiveData, indexCount * INDEX_FORMAT_SIZE[indexFormat]);
     }
 
-    SafeDeleteArray(textureCoordArray);
-    textureCoordArray = new Vector2*[textureCoordCount];
-
+    std::fill(std::begin(textureCoordArray), std::end(textureCoordArray), nullptr);
     UpdateDataPointersAndStreams();
-    RecalcAABBox();
 
+    RecalcAABBox();
     BuildBuffers();
 }
 

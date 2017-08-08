@@ -6,9 +6,10 @@
 
 #include <Preferences/PreferencesRegistrator.h>
 #include <UI/UIControl.h>
-#include <Input/KeyboardDevice.h>
+#include <Input/Keyboard.h>
 #include <Base/BaseTypes.h>
 #include <Math/Vector.h>
+#include <Input/InputElements.h>
 
 namespace DAVA
 {
@@ -47,7 +48,8 @@ private:
 
     void PrepareDrag();
 
-    void ProcessKey(DAVA::Key key);
+    void ProcessKey(DAVA::eInputElements key);
+
     void ProcessDrag(const DAVA::Vector2& point);
 
     void ResizeControl(DAVA::Vector2 delta, bool withPivot, bool rateably);
@@ -67,8 +69,6 @@ private:
 
     void CorrectNodesToMove();
     void UpdateNeighboursToMove();
-    void SetNodesMoveRestrictions();
-    DAVA::Vector2 TruncateMouseDelta(DAVA::Vector2 mouseDelta, const EditorTransformSystem::MoveInfo* moveInfo);
 
     void ClampAngle();
     struct MagnetLine;
