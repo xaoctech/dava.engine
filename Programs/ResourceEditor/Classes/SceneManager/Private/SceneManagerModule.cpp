@@ -270,7 +270,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
 
         ui->AddAction(mainWindowKey, placementInfo, action);
 
-        RegisterOperation(REGlobal::CreateNewSceneOperation.ID, this, &SceneManagerModule::CreateNewScene);
+        RegisterOperation(REGlobal::CreateFirstSceneOperation.ID, this, &SceneManagerModule::CreateFirstScene);
     }
 
     // Open Scene action
@@ -584,6 +584,31 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(REGlobal::AddSceneOperation.ID, this, &SceneManagerModule::AddSceneByPath);
     RegisterOperation(REGlobal::SaveCurrentScene.ID, this, static_cast<void (SceneManagerModule::*)()>(&SceneManagerModule::SaveScene));
     RegisterOperation(REGlobal::ReloadTexturesOperation.ID, this, &SceneManagerModule::ReloadTextures);
+}
+
+void SceneManagerModule::CreateFirstScene()
+{
+    if (SettingsManager::GetValue(Settings::General_OpenLastSceneOnLaunch).AsBool())
+    {
+        using namespace DAVA;
+        Vector<String> recentScenes = recentItems->Get();
+        if (recentScenes.empty() == false)
+        {
+            FilePath lastOpenedScene = recentScenes[0];
+
+            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            DVASSERT(data != nullptr);
+            FilePath projectPath = data->GetProjectPath();
+
+            if (FilePath::ContainPath(lastOpenedScene, projectPath))
+            {
+                OpenSceneByPath(lastOpenedScene);
+                return;
+            }
+        }
+    }
+
+    CreateNewScene();
 }
 
 void SceneManagerModule::CreateNewScene()

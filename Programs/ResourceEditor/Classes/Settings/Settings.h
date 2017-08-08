@@ -14,6 +14,7 @@ public:
     static const DAVA::FastName General_ReloadParticlesOnPojectOpening;
     static const DAVA::FastName General_PreviewEnabled;
     static const DAVA::FastName General_OpenByDBClick;
+    static const DAVA::FastName General_OpenLastSceneOnLaunch;
     static const DAVA::FastName General_CompressionQuality;
     static const DAVA::FastName General_ShowErrorDialog;
 
