@@ -73,12 +73,16 @@ String UTF8Utils::TrimLeft(const String& str)
     {
         while (it != end)
         {
-            begin = it;
-            if (!std::iswspace(utf8::next(it, end)))
+            if (std::iswspace(utf8::next(it, end)))
             {
-                return String(begin, end);
+                begin = it;
+            }
+            else
+            {
+                break;
             }
         }
+        return String(begin, end);
     }
     catch (const utf8::exception& e)
     {
@@ -86,7 +90,6 @@ String UTF8Utils::TrimLeft(const String& str)
         Logger::Warning(msg.c_str());
         DAVA_THROW(Exception, msg);
     }
-    return str;
 }
 
 String UTF8Utils::TrimRight(const String& str)
@@ -98,12 +101,16 @@ String UTF8Utils::TrimRight(const String& str)
     {
         while (it != begin)
         {
-            end = it;
-            if (!std::iswspace(utf8::prior(it, begin)))
+            if (std::iswspace(utf8::prior(it, begin)))
             {
-                return String(begin, end);
+                end = it;
+            }
+            else
+            {
+                break;
             }
         }
+        return String(begin, end);
     }
     catch (const utf8::exception& e)
     {
@@ -111,7 +118,6 @@ String UTF8Utils::TrimRight(const String& str)
         Logger::Warning(msg.c_str());
         DAVA_THROW(Exception, msg);
     }
-    return str;
 }
 
 } // namespace DAVA
