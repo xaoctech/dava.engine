@@ -44,8 +44,6 @@ void PhysicsDebugModule::Shutdown()
 
         transport->release();
         transport = nullptr;
-
-        pvd = nullptr;
     }
 }
 

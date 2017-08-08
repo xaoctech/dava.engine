@@ -492,6 +492,11 @@ physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
     return defaultMaterial;
 }
 
+physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
+{
+    return allocator;
+}
+
 const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
 {
     return bodyComponents;

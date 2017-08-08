@@ -47,7 +47,7 @@ public:
     void Free(physx::PxAllocatorCallback& allocator);
 
     // Create a PxBatchQuery instance that will be used for a single specified batch
-    static physx::PxBatchQuery* SsetUpBatchedSceneQuery(const physx::PxU32 batchId, const VehicleSceneQueryData& vehicleSceneQueryData, physx::PxScene* scene);
+    static physx::PxBatchQuery* SetUpBatchedSceneQuery(const physx::PxU32 batchId, const VehicleSceneQueryData& vehicleSceneQueryData, physx::PxScene* scene);
 
     // Return an array of scene query results for a single specified batch
     physx::PxRaycastQueryResult* GetRaycastQueryResultBuffer(const physx::PxU32 batchId);
@@ -82,16 +82,11 @@ private:
 
 VehicleSceneQueryData::VehicleSceneQueryData()
     : numQueriesPerBatch(0)
-    ,
-    numHitResultsPerQuery(0)
-    ,
-    raycastResults(NULL)
-    ,
-    raycastHitBuffer(NULL)
-    ,
-    preFilterShader(NULL)
-    ,
-    postFilterShader(NULL)
+    , numHitResultsPerQuery(0)
+    , raycastResults(NULL)
+    , raycastHitBuffer(NULL)
+    , preFilterShader(NULL)
+    , postFilterShader(NULL)
 {
 }
 
@@ -117,7 +112,7 @@ VehicleSceneQueryData* VehicleSceneQueryData::Allocate
     const PxU32 sweepHitSize = ((sizeof(PxSweepHit) * maxNumHitPoints + 15) & ~15);
 
     const PxU32 size = sqDataSize + raycastResultSize + raycastHitSize + sweepResultSize + sweepHitSize;
-    PxU8* buffer = static_cast<PxU8*>(allocator.allocate(size, NULL, NULL, 0));
+    PxU8* buffer = static_cast<PxU8*>(allocator.allocate(size, "VehicleSceneQueryData", __FILE__, __LINE__));
 
     VehicleSceneQueryData* sqData = new (buffer) VehicleSceneQueryData();
     sqData->numQueriesPerBatch = numVehiclesInBatch * maxNumWheelsPerVehicle;
@@ -159,7 +154,7 @@ void VehicleSceneQueryData::Free(physx::PxAllocatorCallback& allocator)
     allocator.deallocate(this);
 }
 
-physx::PxBatchQuery* VehicleSceneQueryData::SsetUpBatchedSceneQuery(const physx::PxU32 batchId, const VehicleSceneQueryData& vehicleSceneQueryData, physx::PxScene* scene)
+physx::PxBatchQuery* VehicleSceneQueryData::SetUpBatchedSceneQuery(const physx::PxU32 batchId, const VehicleSceneQueryData& vehicleSceneQueryData, physx::PxScene* scene)
 {
     using namespace physx;
 
@@ -216,10 +211,7 @@ physx::PxVehicleDrivableSurfaceToTireFrictionPairs* createFrictionPairs(const ph
     return surfaceTirePairs;
 }
 
-physx::PxQueryHitType::Enum WheelSceneQueryPreFilterBlocking
-(physx::PxFilterData filterData0, physx::PxFilterData filterData1,
- const void* constantBlock, physx::PxU32 constantBlockSize,
- physx::PxHitFlags& queryFlags)
+physx::PxQueryHitType::Enum WheelSceneQueryPreFilterBlocking(physx::PxFilterData filterData0, physx::PxFilterData filterData1, const void* constantBlock, physx::PxU32 constantBlockSize, physx::PxHitFlags& queryFlags)
 {
     using namespace physx;
 
@@ -296,9 +288,8 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
 
     PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
 
-    static VehicleSceneQueryData* vehicleSceneQueryData = VehicleSceneQueryData::Allocate(1, PX_MAX_NB_WHEELS, 1, 1, WheelSceneQueryPreFilterBlocking, NULL, PxDefaultAllocator());
-    ;
-    static physx::PxBatchQuery* batchQuery = VehicleSceneQueryData::SsetUpBatchedSceneQuery(0, *vehicleSceneQueryData, pxScene);
+    static VehicleSceneQueryData* vehicleSceneQueryData = VehicleSceneQueryData::Allocate(MAX_VEHICLES_COUNT, PX_MAX_NB_WHEELS, 1, MAX_VEHICLES_COUNT, WheelSceneQueryPreFilterBlocking, NULL, *physics->GetAllocator());
+    static physx::PxBatchQuery* batchQuery = VehicleSceneQueryData::SetUpBatchedSceneQuery(0, *vehicleSceneQueryData, pxScene);
     static PxVehicleDrivableSurfaceToTireFrictionPairs* frictionPairs = createFrictionPairs(physics->GetDefaultMaterial());
 
     static PxVehicleWheels* physxVehicles[MAX_VEHICLES_COUNT];

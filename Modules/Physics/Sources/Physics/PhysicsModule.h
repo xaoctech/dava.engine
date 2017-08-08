@@ -18,6 +18,7 @@ class PxActor;
 class PxShape;
 class PxMaterial;
 class PxDefaultCpuDispatcher;
+class PxAllocatorCallback;
 }
 
 namespace DAVA
@@ -54,6 +55,8 @@ public:
     physx::PxShape* CreateHeightField(Landscape* landscape, Matrix4& localPose) const;
 
     physx::PxMaterial* GetDefaultMaterial() const;
+
+    physx::PxAllocatorCallback* GetAllocator() const;
 
     const Vector<uint32>& GetBodyComponentTypes() const;
     const Vector<uint32>& GetShapeComponentTypes() const;
