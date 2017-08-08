@@ -15,6 +15,7 @@
 #include "Classes/Settings/SettingsManager.h"
 
 #include <TArc/Testing/TArcUnitTests.h>
+#include <TArc/Testing/MockDefine.h>
 #include <TArc/Testing/MockListener.h>
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
@@ -28,6 +29,7 @@
 #include <QWidget>
 #include <QMenuBar>
 #include <QMenu>
+#include <QAction>
 #include <QTest>
 
 #include <gmock/gmock.h>
@@ -139,6 +141,11 @@ private:
 
                 SceneData::TSceneType scene = data->GetScene();
                 TEST_VERIFY(scene);
+                scene->Update(0.16f);
+
+                TEST_VERIFY(scene->GetChildrenCount() == 2);
+                TEST_VERIFY(scene->FindByName("editor.camera-light") != nullptr);
+                TEST_VERIFY(scene->FindByName("editor.debug-camera") != nullptr);
 
                 testSucceed = true;
             }
@@ -172,6 +179,7 @@ private:
 
             SceneData::TSceneType scene = data->GetScene();
             TEST_VERIFY(scene);
+            scene->Update(0.16f);
 
             ScopedPtr<Entity> entity(new Entity());
             entity->SetName(SMTest::allEntitiesName);
@@ -220,6 +228,7 @@ private:
 
                 SceneData::TSceneType scene = data->GetScene();
                 TEST_VERIFY(scene);
+                scene->Update(0.16f);
 
                 Entity* entity = scene->FindByName(SMTest::allEntitiesName);
                 TestEntityWithComponents(entity);
@@ -282,6 +291,7 @@ private:
                 TEST_VERIFY(data != nullptr);
                 SceneData::TSceneType scene = data->GetScene();
                 TEST_VERIFY(scene);
+                scene->Update(0.16f);
 
                 scene->SetName(FastName("OriginalScene"));
                 FastName loadedEntityName = FastName(FilePath(SMTest::testScenePath).GetFilename());
@@ -301,22 +311,6 @@ private:
         TEST_VERIFY(listener.testSucceed);
 
         CloseActiveScene();
-    }
-
-    void FindAllEntitiesWithName(DAVA::Entity * entity, const DAVA::FastName& name, DAVA::Vector<DAVA::Entity*>& collectedEntities)
-    {
-        using namespace DAVA;
-
-        if (entity->GetName() == name)
-        {
-            collectedEntities.push_back(entity);
-        }
-
-        uint32 count = entity->GetChildrenCount();
-        for (uint32 i = 0; i < count; ++i)
-        {
-            FindAllEntitiesWithName(entity->GetChild(i), name, collectedEntities);
-        }
     }
 
     DAVA_TEST (OpenSavedModifiedScene)
@@ -343,9 +337,14 @@ private:
                 TEST_VERIFY(data != nullptr);
                 SceneData::TSceneType scene = data->GetScene();
                 TEST_VERIFY(scene);
+                scene->Update(0.16f);
 
                 Vector<Entity*> foundEntities;
-                FindAllEntitiesWithName(scene.Get(), SMTest::allEntitiesName, foundEntities);
+                scene->GetChildEntitiesWithCondition(foundEntities, [](Entity* entity)
+                                                     {
+                                                         return (entity->GetName() == SMTest::allEntitiesName);
+                                                     });
+
                 TEST_VERIFY(foundEntities.size() == 2);
 
                 for (Entity* entity : foundEntities)
@@ -385,6 +384,58 @@ private:
 
         TEST_VERIFY(listener.testSucceed);
         CloseActiveScene();
+    }
+
+    DAVA_TEST (OpenResentSceneFromMenu)
+    {
+        using namespace DAVA;
+        using namespace DAVA::TArc;
+        using namespace ::testing;
+
+        OpenSavedSceneListener listener;
+        listener.accessor = GetAccessor();
+        listener.componentTypes = componentTypes;
+
+        DataWrapper openSceneWrapper = GetAccessor()->CreateWrapper(ReflectedTypeDB::Get<SceneData>());
+        openSceneWrapper.SetListener(&listener);
+
+        TEST_VERIFY(openSceneWrapper.HasData() == false);
+        if (openSceneWrapper.HasData() == false)
+        {
+            QWidget* wnd = GetWindow(DAVA::TArc::mainWindowKey);
+            QMainWindow* mainWnd = qobject_cast<QMainWindow*>(wnd);
+            TEST_VERIFY(wnd != nullptr);
+
+            QMenuBar* menu = mainWnd->menuBar();
+            QMenu* fileMenu = menu->findChild<QMenu*>(MenuItems::menuFile);
+
+            QList<QAction*> actions = fileMenu->actions();
+            TEST_VERIFY(actions.size() > 0);
+
+            QAction* resentSceneAction = *actions.rbegin();
+            TEST_VERIFY(resentSceneAction->text() == QString::fromStdString(FilePath(SMTest::testScenePath).GetAbsolutePathname()));
+            resentSceneAction->triggered(false);
+
+            testCompleted = false;
+            EXPECT_CALL(*this, AfterWrappersSync())
+            .WillOnce(Return())
+            .WillOnce(Invoke([this, &listener]() {
+
+                testCompleted = true;
+
+                TEST_VERIFY(listener.testSucceed);
+                CloseActiveScene();
+            }))
+            .WillRepeatedly(Return());
+        }
+    }
+
+    MOCK_METHOD0_VIRTUAL(AfterWrappersSync, void());
+
+    bool testCompleted = true;
+    bool TestComplete(const DAVA::String& testName) const override
+    {
+        return testCompleted;
     }
 
     class CloseSceneListener : public BaseTestListener
