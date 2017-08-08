@@ -59,4 +59,59 @@ String UTF8Utils::EncodeToUTF8(const WideString& wstring)
     return result;
 };
 
+String UTF8Utils::Trim(const String& str)
+{
+    return UTF8Utils::TrimLeft(UTF8Utils::TrimRight(str));
+}
+
+String UTF8Utils::TrimLeft(const String& str)
+{
+    auto begin = str.begin();
+    auto end = str.end();
+    auto it = begin;
+    try
+    {
+        while (it != end)
+        {
+            begin = it;
+            if (!std::iswspace(utf8::next(it, end)))
+            {
+                return String(begin, end);
+            }
+        }
+    }
+    catch (const utf8::exception& e)
+    {
+        String msg = "UTF8 Trim begin error: " + String(e.what());
+        Logger::Warning(msg.c_str());
+        DAVA_THROW(Exception, msg);
+    }
+    return str;
+}
+
+String UTF8Utils::TrimRight(const String& str)
+{
+    auto begin = str.begin();
+    auto end = str.end();
+    auto it = end;
+    try
+    {
+        while (it != begin)
+        {
+            end = it;
+            if (!std::iswspace(utf8::prior(it, begin)))
+            {
+                return String(begin, end);
+            }
+        }
+    }
+    catch (const utf8::exception& e)
+    {
+        String msg = "UTF8 Trim end error: " + String(e.what());
+        Logger::Warning(msg.c_str());
+        DAVA_THROW(Exception, msg);
+    }
+    return str;
+}
+
 } // namespace DAVA

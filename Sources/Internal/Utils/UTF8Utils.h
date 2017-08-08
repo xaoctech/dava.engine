@@ -52,6 +52,15 @@ inline String MakeUTF8String<char16>(const char16* value)
     return EncodeToUTF8(WideString(value));
 }
 
+/** Trim whitespaces at begin and end of specified UTF8 string. */
+String Trim(const String& str);
+
+/** Trim whitespaces at begin of specified UTF8 string. */
+String TrimLeft(const String& str);
+
+/** Trim whitespaces at end of specified UTF8 string. */
+String TrimRight(const String& str);
+
 } // namespace UTF8Utils
 
 //////////////////////////////////////////////////////////////////////////
