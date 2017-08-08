@@ -15,6 +15,8 @@
 #include <UI/UIScrollViewContainer.h>
 #include <UI/UISlider.h>
 #include <UI/UISwitch.h>
+#include <UI/Text/UITextComponent.h>
+#include <UI/UITextField.h>
 
 using namespace DAVA;
 
@@ -102,6 +104,13 @@ IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const D
             }
         }
     }
+
+    // If "UITextField" has helper component "UITextComponent" mark all properties as "ReadOnly".
+    UITextComponent* text = CastIfEqual<UITextComponent*>(anObject);
+    if (text)
+    {
+        forceReadOnly = dynamic_cast<UITextField*>(text->GetControl()) != nullptr;
+    }
 }
 
 IntrospectionProperty::~IntrospectionProperty()
@@ -184,6 +193,11 @@ Any IntrospectionProperty::GetValue() const
 void IntrospectionProperty::DisableResetFeature()
 {
     flags &= ~EF_CAN_RESET;
+}
+
+bool IntrospectionProperty::IsReadOnly() const
+{
+    return forceReadOnly || ValueProperty::IsReadOnly();
 }
 
 void IntrospectionProperty::ApplyValue(const DAVA::Any& value)
