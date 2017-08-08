@@ -68,14 +68,15 @@ String UTF8Utils::Trim(const String& str)
 
 String UTF8Utils::TrimLeft(const String& str)
 {
-    auto begin = str.begin();
-    auto end = str.end();
-    auto it = begin;
+    String::const_iterator begin = str.begin();
+    String::const_iterator end = str.end();
+    String::const_iterator it = begin;
     try
     {
         while (it != end)
         {
-            if (std::iswspace(utf8::next(it, end)))
+            uint32_t code = utf8::next(it, end);
+            if (std::iswspace(static_cast<wint_t>(code)))
             {
                 begin = it;
             }
@@ -96,14 +97,15 @@ String UTF8Utils::TrimLeft(const String& str)
 
 String UTF8Utils::TrimRight(const String& str)
 {
-    auto begin = str.begin();
-    auto end = str.end();
-    auto it = end;
+    String::const_iterator begin = str.begin();
+    String::const_iterator end = str.end();
+    String::const_iterator it = end;
     try
     {
         while (it != begin)
         {
-            if (std::iswspace(utf8::prior(it, begin)))
+            uint32_t code = utf8::prior(it, begin);
+            if (std::iswspace(static_cast<wint_t>(code)))
             {
                 end = it;
             }
