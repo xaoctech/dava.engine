@@ -3,7 +3,7 @@ import sys
 import argparse
 import subprocess
 
-parser = argparse.ArgumentParser(description="Win10dpa (list, deploy, attach, uninstall, stop)")
+parser = argparse.ArgumentParser(description="Win10DPAgent (list, deploy, attach, uninstall, stop)")
 
 parser.add_argument("action",\
                     choices=["list", "deploy", "attach", "uninstall", "stop"],\

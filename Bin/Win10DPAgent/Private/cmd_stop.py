@@ -2,9 +2,9 @@
 import argparse
 
 #local
-import win10_portal_rest_api as dp_api
+import win10_device_portal_rest_api as dp_api
 
-parser = argparse.ArgumentParser(description="Win10dpa stop app")
+parser = argparse.ArgumentParser(description="Win10DPAgent stop an app")
 
 parser.add_argument("package_full_name", \
                     nargs="?", \
