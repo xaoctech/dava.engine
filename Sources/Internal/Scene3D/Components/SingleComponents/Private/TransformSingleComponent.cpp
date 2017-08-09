@@ -13,9 +13,9 @@ void RemoveEntitiesFromVector(Vector<Entity*>& vector, const Entity* entity)
     {
         if (vector[k] == entity)
         {
-            vector[k] = vector[size - 1];
+            vector[k] = vector.back();
             vector.pop_back();
-            size--;
+            --size;
         }
         else
         {
