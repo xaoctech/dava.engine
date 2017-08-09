@@ -2,12 +2,12 @@
 #include "TArc/Testing/MockInvoker.h"
 #include "TArc/Core/ControllerModule.h"
 #include "TArc/WindowSubSystem/UI.h"
-#include "TArc/Utils/DebuggerDetection.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Engine/PlatformApiQt.h>
 #include <FileSystem/FileSystem.h>
+#include <Debug/DebuggerDetection.h>
 #include <UnitTests/UnitTests.h>
 
 #include <QTimer>

@@ -1,6 +1,5 @@
 #include "TArc/Utils/AssertGuard.h"
 #include "TArc/Utils/ScopedValueGuard.h"
-#include "TArc/Utils/DebuggerDetection.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 #include "TArc/Utils/AssertGuardMacOSHack.h"
@@ -8,6 +7,7 @@
 
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <Debug/DebuggerDetection.h>
 #include <Concurrency/LockGuard.h>
 #include <Concurrency/Thread.h>
 
