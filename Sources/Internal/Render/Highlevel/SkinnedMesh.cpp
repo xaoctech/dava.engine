@@ -127,8 +127,8 @@ void SkinnedMesh::PrepareToRender(Camera* camera)
                 DVASSERT(transformIndex < skeletonJointCount);
 
                 const JointTransform& finalTransform = skeletonFinalJointTransforms[transformIndex];
-                data.positions[j] = Vector4(Vector3(finalTransform.position.data), finalTransform.scale);
-                data.quaternions[j] = Vector4(finalTransform.orientation.data);
+                data.positions[j] = Vector4(Vector3(finalTransform.GetPosition().data), finalTransform.GetScale());
+                data.quaternions[j] = Vector4(finalTransform.GetOrientation().data);
             }
         }
     }

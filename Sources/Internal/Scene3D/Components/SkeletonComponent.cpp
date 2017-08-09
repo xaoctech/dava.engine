@@ -67,17 +67,19 @@ void SkeletonComponent::ApplyPose(const SkeletonPose& pose)
     uint32 minJoints = Min(GetJointsCount(), pose.GetJointsCount());
     for (uint32 j = 0; j < minJoints; ++j)
     {
-        const JointTransform& sTransform = GetJointTransform(j);
-        const JointTransform& pTransform = pose.GetJointTransform(j);
-        uint8 flags = pose.GetJointTransformFlags(j);
+        const JointTransform& poseTransform = pose.GetJointTransform(j);
 
-        if (flags == 0)
+        if (poseTransform.IsEmpty())
             continue;
 
-        JointTransform transform;
-        transform.position = (flags & SkeletonPose::FLAG_POSITION) ? pTransform.position : sTransform.position;
-        transform.orientation = (flags & SkeletonPose::FLAG_ORIENTATION) ? pTransform.orientation : sTransform.orientation;
-        transform.scale = (flags & SkeletonPose::FLAG_SCALE) ? pTransform.scale : sTransform.scale;
+        JointTransform& transform = localSpaceTransforms[j];
+
+        if (poseTransform.HasPosition())
+            transform.SetPosition(poseTransform.GetPosition());
+        if (poseTransform.HasOrientation())
+            transform.SetOrientation(poseTransform.GetOrientation());
+        if (poseTransform.HasScale())
+            transform.SetScale(poseTransform.GetScale());
 
         SetJointTransform(j, transform);
     }

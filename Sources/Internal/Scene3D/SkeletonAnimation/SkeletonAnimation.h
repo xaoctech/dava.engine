@@ -18,7 +18,7 @@ public:
     float32 GetPhaseDuration() const;
 
 protected:
-    static void ApplyJointTransform(const AnimationTrack* track, const AnimationTrack::State* state, SkeletonPose* pose, uint32 jointIndex);
+    static JointTransform ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state);
 
     Vector<std::pair<uint32, const AnimationTrack*>> boundTracks; //[jointIndex, track]
     Vector<AnimationTrack::State> animationStates;

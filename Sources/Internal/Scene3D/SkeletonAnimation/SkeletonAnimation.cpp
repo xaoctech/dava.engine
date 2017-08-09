@@ -41,7 +41,7 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
                 track->Evaluate(0.f, &animationStates.back());
 
                 if (outInitialPose)
-                    ApplyJointTransform(track, &animationStates.back(), outInitialPose, j);
+                    outInitialPose->SetTransform(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
 
                 boundTracks.emplace_back(std::make_pair(j, track));
 
@@ -66,7 +66,7 @@ void SkeletonAnimation::EvaluatePose(float32 phase, SkeletonPose* outPose, Vecto
         float32 localTime = phase * animationClip->GetDuration();
         track->Evaluate(localTime, state);
 
-        ApplyJointTransform(track, state, outPose, jointIndex);
+        outPose->SetTransform(jointIndex, ConstructJointTransform(track, state));
     }
 }
 
@@ -75,29 +75,32 @@ float32 SkeletonAnimation::GetPhaseDuration() const
     return animationClip->GetDuration();
 }
 
-void SkeletonAnimation::ApplyJointTransform(const AnimationTrack* track, const AnimationTrack::State* state, SkeletonPose* pose, uint32 jointIndex)
+JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state)
 {
+    JointTransform transform;
     for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
     {
         AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
         switch (target)
         {
         case DAVA::AnimationTrack::CHANNEL_TARGET_POSITION:
-            pose->SetPosition(jointIndex, Vector3(track->GetStateValue(state, c)));
+            transform.SetPosition(Vector3(track->GetStateValue(state, c)));
             break;
 
         case DAVA::AnimationTrack::CHANNEL_TARGET_ORIENTATION:
-            pose->SetOrientation(jointIndex, Quaternion(track->GetStateValue(state, c)));
+            transform.SetOrientation(Quaternion(track->GetStateValue(state, c)));
             break;
 
         case DAVA::AnimationTrack::CHANNEL_TARGET_SCALE:
-            pose->SetScale(jointIndex, *track->GetStateValue(state, c));
+            transform.SetScale(*track->GetStateValue(state, c));
             break;
 
         default:
             break;
         }
     }
+
+    return transform;
 }
 
 } //ns

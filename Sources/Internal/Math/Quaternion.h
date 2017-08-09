@@ -380,7 +380,7 @@ inline void Quaternion::Construct(const Vector3& axis, float32 angle)
 
 inline void Quaternion::ConstructRotationFast(const Vector3& vector, float32 angle)
 {
-    DVASSERT(FLOAT_EQUAL(vector.SquareLength(), 1.f));
+    DVASSERT(FLOAT_EQUAL(vector.SquareLength(), 1.f) || (angle == 0.f));
 
     float32 sine;
     SinCosFast(angle * .5f, sine, w);

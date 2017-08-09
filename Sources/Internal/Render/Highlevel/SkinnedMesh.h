@@ -16,7 +16,7 @@ class PolygonGroup;
 class RenderBatch;
 class ShadowVolume;
 class NMaterial;
-struct JointTransform;
+class JointTransform;
 class SkinnedMesh : public RenderObject
 {
 public:

@@ -107,7 +107,7 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
             Vector<Vector3> positions(component->GetJointsCount());
             for (uint32 i = 0; i < component->GetJointsCount(); ++i)
             {
-                positions[i] = component->objectSpaceTransforms[i].position * worldTransform;
+                positions[i] = component->objectSpaceTransforms[i].GetPosition() * worldTransform;
             }
 
             const Vector<SkeletonComponent::Joint>& joints = component->jointsArray;
@@ -252,9 +252,11 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
                 {
                     component->GetJoint(j).bindTransform.GetTranslationVector();
 
+                    Vector3 position = component->GetJoint(j).bindTransform.GetTranslationVector();
+                    position.z += 5.f * sinf(float32(j + t));
+
                     JointTransform transform;
-                    transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
-                    transform.position.z += 5.f * sinf(float32(j + t));
+                    transform.SetPosition(position);
 
                     component->SetJointTransform(j, transform);
                 }
@@ -265,8 +267,11 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
                 {
                     float32 fi = t;
 
+                    Quaternion orientation;
+                    orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
+
                     JointTransform transform = component->GetJointTransform(i);
-                    transform.orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
+                    transform.SetOrientation(orientation);
                     component->SetJointTransform(i, transform);
                 }
             }

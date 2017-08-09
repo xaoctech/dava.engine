@@ -28,7 +28,7 @@ Matrix4 ColladaAnimation::EvaluateMatrix(FCDTransform* transform, float32 time)
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::MATRIX);
 
-    Matrix4 result;
+    FMMatrix44 result = transform->ToMatrix();
     if (transform->IsAnimated())
     {
         FCDAnimated* animated = transform->GetAnimated();
@@ -37,16 +37,12 @@ Matrix4 ColladaAnimation::EvaluateMatrix(FCDTransform* transform, float32 time)
             for (int32 j = 0; j < 4; ++j)
             {
                 FCDAnimationCurve* curve = animated->FindCurve(Format("(%i)(%i)", i, j).c_str());
-                result._data[i][j] = (curve != nullptr) ? curve->Evaluate(time) : 0.f;
+                result.m[i][j] = (curve != nullptr) ? curve->Evaluate(time) : result.m[i][j];
             }
         }
     }
-    else
-    {
-        result = ConvertMatrix(transform->ToMatrix());
-    }
 
-    return result;
+    return ConvertMatrix(result);
 }
 
 Vector3 ColladaAnimation::EvaluateTranslation(FCDTransform* transform, float32 time)
@@ -54,9 +50,7 @@ Vector3 ColladaAnimation::EvaluateTranslation(FCDTransform* transform, float32 t
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::TRANSLATION);
 
-    FMVector3 transformTranslation = dynamic_cast<FCDTTranslation*>(transform)->GetTranslation();
-    Vector3 result(static_cast<float*>(transformTranslation));
-
+    FMVector3 result = static_cast<FCDTTranslation*>(transform)->GetTranslation();
     if (transform->IsAnimated())
     {
         FCDAnimated* animated = transform->GetAnimated();
@@ -69,7 +63,7 @@ Vector3 ColladaAnimation::EvaluateTranslation(FCDTransform* transform, float32 t
         result.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : result.z;
     }
 
-    return result;
+    return Vector3(static_cast<float32*>(result));
 }
 
 Quaternion ColladaAnimation::EvaluateRotation(FCDTransform* transform, float32 time)
@@ -77,7 +71,7 @@ Quaternion ColladaAnimation::EvaluateRotation(FCDTransform* transform, float32 t
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::ROTATION);
 
-    FMAngleAxis angleAxis = dynamic_cast<FCDTRotation*>(transform)->GetAngleAxis();
+    FMAngleAxis angleAxis = static_cast<FCDTRotation*>(transform)->GetAngleAxis();
     if (transform->IsAnimated())
     {
         FCDAnimated* animated = transform->GetAnimated();
@@ -99,10 +93,8 @@ Vector3 ColladaAnimation::EvaluateScale(FCDTransform* transform, float32 time)
 {
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::SCALE);
-    DVASSERT(transform->IsAnimated());
 
-    FMVector3 transformScale = static_cast<FCDTScale*>(transform)->GetScale();
-    Vector3 scale(static_cast<float32*>(transformScale));
+    FMVector3 result = static_cast<FCDTScale*>(transform)->GetScale();
     if (transform->IsAnimated())
     {
         FCDAnimated* animated = transform->GetAnimated();
@@ -110,12 +102,12 @@ Vector3 ColladaAnimation::EvaluateScale(FCDTransform* transform, float32 time)
         FCDAnimationCurve* curveY = animated->FindCurve(".Y");
         FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
 
-        scale.x = (curveX != nullptr) ? curveX->Evaluate(time) : scale.x;
-        scale.y = (curveY != nullptr) ? curveY->Evaluate(time) : scale.y;
-        scale.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : scale.z;
+        result.x = (curveX != nullptr) ? curveX->Evaluate(time) : result.x;
+        result.y = (curveY != nullptr) ? curveY->Evaluate(time) : result.y;
+        result.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : result.z;
     }
 
-    return scale;
+    return Vector3(static_cast<float32*>(result));
 }
 
 void ColladaAnimation::CollectAnimationKeys(FCDAnimationCurve* curve, TimeStampSet* timeStamps)
@@ -134,6 +126,7 @@ void ColladaAnimation::CollectAnimationKeys(FCDSceneNode* node, ColladaAnimatinD
     TimeStampSet translationKeys;
     TimeStampSet rotationKeys;
     TimeStampSet scaleKeys;
+    TimeStampSet mxKeys;
 
     for (size_t t = 0; t < node->GetTransformCount(); ++t)
     {
@@ -144,44 +137,33 @@ void ColladaAnimation::CollectAnimationKeys(FCDSceneNode* node, ColladaAnimatinD
 
             if (transform->GetType() == FCDTransform::MATRIX)
             {
-                FCDAnimationCurve* mxCurves[4][4] = {};
-                for (int32 i = 0; i < 4; ++i)
-                {
-                    for (int32 j = 0; j < 4; ++j)
-                    {
-                        mxCurves[i][j] = animated->FindCurve(Format("(%i)(%i)", i, j).c_str());
-                        CollectAnimationKeys(mxCurves[i][j], &translationKeys);
-                        CollectAnimationKeys(mxCurves[i][j], &rotationKeys);
-                        CollectAnimationKeys(mxCurves[i][j], &scaleKeys);
-                    }
-                }
+                FCDAnimationCurve* mxCurve = animated->FindCurve("(0)(0)");
+                CollectAnimationKeys(mxCurve, &mxKeys);
+
+                translationKeys = mxKeys;
+                rotationKeys = mxKeys;
+                scaleKeys = mxKeys;
             }
             else
             {
-                FCDAnimationCurve* curveX = animated->FindCurve(".X");
-                FCDAnimationCurve* curveY = animated->FindCurve(".Y");
-                FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
+                Array<FCDAnimationCurve*, 4> curves = {
+                    animated->FindCurve(".X"),
+                    animated->FindCurve(".Y"),
+                    animated->FindCurve(".Z"),
+                    animated->FindCurve(".ANGLE")
+                };
 
                 if (transform->GetType() == FCDTransform::TRANSLATION)
                 {
-                    CollectAnimationKeys(curveX, &translationKeys);
-                    CollectAnimationKeys(curveY, &translationKeys);
-                    CollectAnimationKeys(curveZ, &translationKeys);
+                    CollectAnimationKeys(curves, &translationKeys);
                 }
                 else if (transform->GetType() == FCDTransform::ROTATION)
                 {
-                    CollectAnimationKeys(curveX, &rotationKeys);
-                    CollectAnimationKeys(curveY, &rotationKeys);
-                    CollectAnimationKeys(curveZ, &rotationKeys);
-
-                    FCDAnimationCurve* curveAngle = animated->FindCurve(".ANGLE");
-                    CollectAnimationKeys(curveAngle, &rotationKeys);
+                    CollectAnimationKeys(curves, &rotationKeys);
                 }
                 else if (transform->GetType() == FCDTransform::SCALE)
                 {
-                    CollectAnimationKeys(curveX, &scaleKeys);
-                    CollectAnimationKeys(curveY, &scaleKeys);
-                    CollectAnimationKeys(curveZ, &scaleKeys);
+                    CollectAnimationKeys(curves, &scaleKeys);
                 }
             }
         }

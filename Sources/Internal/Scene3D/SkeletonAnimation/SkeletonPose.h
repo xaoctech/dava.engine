@@ -8,13 +8,6 @@ namespace DAVA
 class SkeletonPose
 {
 public:
-    enum eFlag : uint8
-    {
-        FLAG_POSITION = 1 << 0,
-        FLAG_ORIENTATION = 1 << 1,
-        FLAG_SCALE = 1 << 2
-    };
-
     SkeletonPose(uint32 jointCount = 0);
 
     void SetJointCount(uint32 jointCount);
@@ -29,7 +22,6 @@ public:
     void SetScale(uint32 jointIndex, float32 scale);
 
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
-    uint8 GetJointTransformFlags(uint32 jointIndex) const;
 
     static SkeletonPose Add(const SkeletonPose& p0, const SkeletonPose& p1);
     static SkeletonPose Sub(const SkeletonPose& p0, const SkeletonPose& p1);
@@ -37,13 +29,11 @@ public:
 
 private:
     Vector<JointTransform> jointTransforms;
-    Vector<uint8> jointTransformFlags;
 };
 
 inline void SkeletonPose::SetJointCount(uint32 jointCount)
 {
     jointTransforms.resize(jointCount, JointTransform());
-    jointTransformFlags.resize(jointCount, 0);
 }
 
 inline uint32 SkeletonPose::GetJointsCount() const
@@ -53,7 +43,8 @@ inline uint32 SkeletonPose::GetJointsCount() const
 
 inline void SkeletonPose::Reset()
 {
-    std::fill(jointTransformFlags.begin(), jointTransformFlags.end(), 0);
+    for (JointTransform& t : jointTransforms)
+        t.Reset();
 }
 
 inline void SkeletonPose::SetTransform(uint32 jointIndex, const JointTransform& transform)
@@ -62,7 +53,6 @@ inline void SkeletonPose::SetTransform(uint32 jointIndex, const JointTransform& 
         SetJointCount(jointIndex + 1);
 
     jointTransforms[jointIndex] = transform;
-    jointTransformFlags[jointIndex] = FLAG_POSITION | FLAG_ORIENTATION | FLAG_SCALE;
 }
 
 inline void SkeletonPose::SetPosition(uint32 jointIndex, const Vector3& position)
@@ -70,8 +60,7 @@ inline void SkeletonPose::SetPosition(uint32 jointIndex, const Vector3& position
     if (GetJointsCount() <= jointIndex)
         SetJointCount(jointIndex + 1);
 
-    jointTransforms[jointIndex].position = position;
-    jointTransformFlags[jointIndex] |= FLAG_POSITION;
+    jointTransforms[jointIndex].SetPosition(position);
 }
 
 inline void SkeletonPose::SetOrientation(uint32 jointIndex, const Quaternion& orientation)
@@ -79,8 +68,7 @@ inline void SkeletonPose::SetOrientation(uint32 jointIndex, const Quaternion& or
     if (GetJointsCount() <= jointIndex)
         SetJointCount(jointIndex + 1);
 
-    jointTransforms[jointIndex].orientation = orientation;
-    jointTransformFlags[jointIndex] |= FLAG_ORIENTATION;
+    jointTransforms[jointIndex].SetOrientation(orientation);
 }
 
 inline void SkeletonPose::SetScale(uint32 jointIndex, float32 scale)
@@ -88,20 +76,13 @@ inline void SkeletonPose::SetScale(uint32 jointIndex, float32 scale)
     if (GetJointsCount() <= jointIndex)
         SetJointCount(jointIndex + 1);
 
-    jointTransforms[jointIndex].scale = scale;
-    jointTransformFlags[jointIndex] |= FLAG_SCALE;
+    jointTransforms[jointIndex].SetScale(scale);
 }
 
 inline const JointTransform& SkeletonPose::GetJointTransform(uint32 jointIndex) const
 {
     DVASSERT(jointIndex < GetJointsCount());
     return jointTransforms[jointIndex];
-}
-
-inline uint8 SkeletonPose::GetJointTransformFlags(uint32 jointIndex) const
-{
-    DVASSERT(jointIndex < GetJointsCount());
-    return jointTransformFlags[jointIndex];
 }
 
 } //ns

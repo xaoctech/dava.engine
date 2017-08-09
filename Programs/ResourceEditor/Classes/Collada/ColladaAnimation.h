@@ -46,7 +46,17 @@ protected:
     static void CollectAnimationKeys(FCDAnimationCurve* curve, TimeStampSet* timeStamps);
     static void CollectAnimationKeys(FCDSceneNode* node, ColladaAnimatinData* data);
     static void EvaluateAnimationData(FCDSceneNode* node, ColladaAnimatinData* data);
+
+    template <size_t N>
+    static void CollectAnimationKeys(Array<FCDAnimationCurve*, N> curves, TimeStampSet* timeStamps);
 };
+
+template <size_t N>
+void ColladaAnimation::CollectAnimationKeys(Array<FCDAnimationCurve*, N> curves, TimeStampSet* timeStamps)
+{
+    for (FCDAnimationCurve* c : curves)
+        CollectAnimationKeys(c, timeStamps);
+}
 };
 					 
 #endif // __DAVAENGINE_COLLADAANIMATION_H__
