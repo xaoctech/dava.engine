@@ -35,6 +35,7 @@
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
+#include "Scene3D/Systems/GeoDecalSystem.h"
 #include "Scene3D/Systems/SlotSystem.h"
 
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
@@ -347,6 +348,12 @@ void Scene::CreateSystems()
     {
         waveSystem = new WaveSystem(this);
         AddSystem(waveSystem, MAKE_COMPONENT_MASK(Component::WAVE_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_GEO_DECAL_FLAG & systemsMask)
+    {
+        geoDecalSystem = new GeoDecalSystem(this);
+        AddSystem(geoDecalSystem, MAKE_COMPONENT_MASK(Component::GEO_DECAL_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
