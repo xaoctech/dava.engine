@@ -1,6 +1,23 @@
 #include "UI/Text/UITextComponent.h"
+#include "Base/GlobalEnum.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
+
+ENUM_DECLARE(DAVA::UITextComponent::eTextMultiline)
+{
+    ENUM_ADD_DESCR(DAVA::UITextComponent::MULTILINE_DISABLED, "MULTILINE_DISABLED");
+    ENUM_ADD_DESCR(DAVA::UITextComponent::MULTILINE_ENABLED, "MULTILINE_ENABLED");
+    ENUM_ADD_DESCR(DAVA::UITextComponent::MULTILINE_ENABLED_BY_SYMBOL, "MULTILINE_ENABLED_BY_SYMBOL");
+};
+
+ENUM_DECLARE(DAVA::UITextComponent::eTextFitting)
+{
+    ENUM_ADD_DESCR(DAVA::UITextComponent::FITTING_NONE, "FITTING_NONE");
+    ENUM_ADD_DESCR(DAVA::UITextComponent::FITTING_ENLARGE, "FITTING_ENLARGE");
+    ENUM_ADD_DESCR(DAVA::UITextComponent::FITTING_REDUCE, "FITTING_REDUCE");
+    ENUM_ADD_DESCR(DAVA::UITextComponent::FITTING_FILL, "FITTING_FILL");
+    ENUM_ADD_DESCR(DAVA::UITextComponent::FITTING_POINTS, "FITTING_POINTS");
+};
 
 namespace DAVA
 {
