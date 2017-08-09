@@ -80,4 +80,23 @@ inline float32 FloatClamp(float32 min, float32 max, float32 val)
 extern const int MultiplyDeBruijnBitPosition2[32];
 #define FastLog2(value) MultiplyDeBruijnBitPosition2[(uint32)(value * 0x077CB531U) >> 27]
 #endif
+
+template <pointer_size I>
+struct StaticLog2
+{
+    static_assert(I > 0, "Invalid argument provided to StaticLog2");
+    enum : pointer_size
+    {
+        value = 1 + StaticLog2<I / 2>::value
+    };
+};
+
+template <>
+struct StaticLog2<1>
+{
+    enum : pointer_size
+    {
+        value = 0
+    };
+};
 };

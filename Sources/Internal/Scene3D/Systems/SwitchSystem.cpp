@@ -1,13 +1,13 @@
 #include "Scene3D/Systems/SwitchSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SwitchComponent.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 #include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA

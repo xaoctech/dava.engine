@@ -12,7 +12,7 @@ BaseScreen::BaseScreen()
 
 bool BaseScreen::SystemInput(DAVA::UIEvent* currentInput)
 {
-    if ((currentInput->key == DAVA::Key::BACK) && (DAVA::UIEvent::Phase::KEY_DOWN == currentInput->phase))
+    if ((currentInput->key == DAVA::eInputElements::BACK) && (DAVA::UIEvent::Phase::KEY_DOWN == currentInput->phase))
     {
         SetPreviousScreen();
     }

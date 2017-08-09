@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QToolBar>
+#include <QAction>
 #include <QPersistentModelIndex>
 #include <QtWidgets/private/qheaderview_p.h>
 
@@ -63,6 +64,22 @@ private:
     bool isInFavoritesEdit = false;
 };
 
+String RegularTreeDescription(const Any& v)
+{
+    if (v.Get<bool>() == true)
+        return "Regular Tree on";
+    else
+        return "Regular Tree off";
+}
+
+String FavoritesDescription(const Any& v)
+{
+    if (v.Get<bool>() == true)
+        return "Favorites on";
+    else
+        return "Favorites off";
+}
+
 String DeveloperModeDescription(const Any& v)
 {
     if (v.Get<bool>() == true)
@@ -99,12 +116,17 @@ public:
         headerView->update();
     }
 
+    bool IsInFavoritesEditMode() const
+    {
+        return isInFavoritesEdit;
+    }
+
 protected:
     void drawRow(QPainter* painter, const QStyleOptionViewItem& options, const QModelIndex& index) const override
     {
         QTreeView::drawRow(painter, options, index);
 
-        QColor gridColor = options.palette.color(QPalette::Normal, QPalette::Window);
+        QColor gridColor = options.palette.color(QPalette::Normal, QPalette::Mid);
 
         painter->save();
         // draw horizontal bottom line
@@ -215,7 +237,8 @@ private:
 DAVA_REFLECTION_IMPL(PropertiesView)
 {
     ReflectionRegistrator<PropertiesView>::Begin()
-    .Field("viewMode", &PropertiesView::GetViewMode, &PropertiesView::SetViewMode)[M::EnumT<eViewMode>()]
+    .Field("regularTreeShown", &PropertiesView::IsRegularTreeShown, &PropertiesView::SetRegularTreeShown)[M::ValueDescription(&PropertiesViewDetail::RegularTreeDescription)]
+    .Field("favoritesShown", &PropertiesView::IsFavoritesShown, &PropertiesView::SetFavoritesShown)[M::ValueDescription(&PropertiesViewDetail::FavoritesDescription)]
     .Field("devMode", &PropertiesView::IsInDeveloperMode, &PropertiesView::SetDeveloperMode)[M::ValueDescription(&PropertiesViewDetail::DeveloperModeDescription)]
     .End();
 }
@@ -240,7 +263,7 @@ PropertiesView::PropertiesView(const Params& params_)
     view->setColumnWidth(0, columnWidth);
 
     model->LoadState(viewItem);
-    viewMode = static_cast<eViewMode>(viewItem.Get(PropertiesViewDetail::isFavoritesViewOnlyKey, static_cast<int32>(VIEW_MODE_NORMAL)));
+    viewMode = static_cast<eViewMode>(viewItem.Get(PropertiesViewDetail::isFavoritesViewOnlyKey, static_cast<int32>(VIEW_MODE_REGULAR_TREE)));
 
     QObject::connect(view, &QTreeView::expanded, this, &PropertiesView::OnExpanded);
     QObject::connect(view, &QTreeView::collapsed, this, &PropertiesView::OnCollapsed);
@@ -307,12 +330,17 @@ void PropertiesView::SetupUI()
 
     Reflection thisModel = Reflection::Create(ReflectedObject(this));
     {
-        ComboBox::Params controlParams(params.accessor, params.ui, params.wndKey);
-        controlParams.fields[ComboBox::Fields::Value] = "viewMode";
-        ComboBox* comboBox = new ComboBox(controlParams, params.accessor, thisModel, toolBar);
-        toolBar->addWidget(comboBox->ToWidgetCast());
+        CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+        controlParams.fields[CheckBox::Fields::Checked] = "regularTreeShown";
+        CheckBox* checkBox = new CheckBox(controlParams, params.accessor, thisModel, toolBar);
+        toolBar->addWidget(checkBox->ToWidgetCast());
     }
-
+    {
+        CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
+        controlParams.fields[CheckBox::Fields::Checked] = "favoritesShown";
+        CheckBox* checkBox = new CheckBox(controlParams, params.accessor, thisModel, toolBar);
+        toolBar->addWidget(checkBox->ToWidgetCast());
+    }
     {
         CheckBox::Params controlParams(params.accessor, params.ui, params.wndKey);
         controlParams.fields[CheckBox::Fields::Checked] = "devMode";
@@ -411,17 +439,38 @@ void PropertiesView::OnCollapsed(const QModelIndex& index)
 void PropertiesView::OnFavoritesEditChanged(bool isChecked)
 {
     view->SetFavoritesEditMode(isChecked);
+    UpdateViewRootIndex();
+    UpdateExpanded();
 }
 
-PropertiesView::eViewMode PropertiesView::GetViewMode() const
+bool PropertiesView::IsRegularTreeShown() const
 {
-    return viewMode;
+    return (viewMode & VIEW_MODE_REGULAR_TREE) == VIEW_MODE_REGULAR_TREE;
 }
 
-void PropertiesView::SetViewMode(PropertiesView::eViewMode mode)
+void PropertiesView::SetRegularTreeShown(bool isShown)
 {
-    view->setRootIndex(QModelIndex());
-    viewMode = mode;
+    if (isShown == true)
+        viewMode |= VIEW_MODE_REGULAR_TREE;
+    else
+        viewMode &= (~VIEW_MODE_REGULAR_TREE);
+
+    UpdateViewRootIndex();
+    UpdateExpanded();
+}
+
+bool PropertiesView::IsFavoritesShown() const
+{
+    return (viewMode & VIEW_MODE_FAVORITES) == VIEW_MODE_FAVORITES;
+}
+
+void PropertiesView::SetFavoritesShown(bool isShown)
+{
+    if (isShown == true)
+        viewMode |= VIEW_MODE_FAVORITES;
+    else
+        viewMode &= (~VIEW_MODE_FAVORITES);
+
     UpdateViewRootIndex();
     UpdateExpanded();
 }
@@ -451,13 +500,23 @@ void PropertiesView::SetDeveloperMode(bool isDevMode)
 
 void PropertiesView::UpdateViewRootIndex()
 {
-    QModelIndex newRootIndex = model->GetRegularRootIndex();
-    if (viewMode == VIEW_MODE_FAVORITES_ONLY)
+    QModelIndex rootIndex;
+    bool isFavoritesShown = IsFavoritesShown();
+    bool isRegularShown = IsRegularTreeShown();
+    if ((isFavoritesShown == true && isRegularShown == true) || view->IsInFavoritesEditMode())
     {
-        newRootIndex = model->GetFavoriteRootIndex();
+        rootIndex = model->GetRootIndex();
+    }
+    else if (isFavoritesShown == true)
+    {
+        rootIndex = model->GetFavoriteRootIndex();
+    }
+    else if (isRegularShown == true)
+    {
+        rootIndex = model->GetRegularRootIndex();
     }
 
-    view->setRootIndex(newRootIndex);
+    view->setRootIndex(rootIndex);
 }
 
 void PropertiesView::OnCurrentChanged(const QModelIndex& index, const QModelIndex& prev)
@@ -470,9 +529,3 @@ void PropertiesView::OnCurrentChanged(const QModelIndex& index, const QModelInde
 
 } // namespace TArc
 } // namespace DAVA
-
-ENUM_DECLARE(DAVA::TArc::PropertiesView::eViewMode)
-{
-    ENUM_ADD_DESCR(DAVA::TArc::PropertiesView::eViewMode::VIEW_MODE_NORMAL, "Normal");
-    ENUM_ADD_DESCR(DAVA::TArc::PropertiesView::eViewMode::VIEW_MODE_FAVORITES_ONLY, "Favorites only");
-}
