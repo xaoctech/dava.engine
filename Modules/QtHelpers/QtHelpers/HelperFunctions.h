@@ -11,5 +11,9 @@ void InvokeInAutoreleasePool(std::function<void()> function);
 
 //in os Windows returns path to executable, in mac os returns bundle path
 QString GetApplicationFilePath();
+
+/** copy recursively `srcDir` contents into `dstDir` */
+void CopyRecursively(const QString& srcDir, const QString& dstDir);
+
 QString GetApplicationDirPath();
 } // namespace QtHelpers

@@ -20,20 +20,25 @@ class SkinnedMesh : public RenderObject
 public:
     SkinnedMesh();
 
-    virtual RenderObject* Clone(RenderObject* newObject);
+    RenderObject* Clone(RenderObject* newObject) override;
+    void BindDynamicParameters(Camera* camera) override;
 
-    virtual void RecalcBoundingBox()
+    const AABBox3& GetObjectSpaceBoundingBox() const;
+    void SetObjectSpaceBoundingBox(const AABBox3& box);
+
+    Vector4* GetPositionArray() const;
+    Vector4* GetQuaternionArray() const;
+    int32 GetJointsArraySize() const;
+    void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count);
+
+    void RecalcBoundingBox() override
     {
     }
-    virtual void BindDynamicParameters(Camera* camera);
-
-    inline void SetObjectSpaceBoundingBox(const AABBox3& box);
-    inline void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count);
 
 protected:
-    Vector4* positionArray;
-    Vector4* quaternionArray;
-    int32 jointsCount;
+    Vector4* positionArray = nullptr;
+    Vector4* quaternionArray = nullptr;
+    int32 jointsCount = 0;
 };
 
 inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count)
@@ -46,6 +51,26 @@ inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinP
 inline void SkinnedMesh::SetObjectSpaceBoundingBox(const AABBox3& box)
 {
     bbox = box;
+}
+
+inline const AABBox3& SkinnedMesh::GetObjectSpaceBoundingBox() const
+{
+    return bbox;
+}
+
+inline Vector4* SkinnedMesh::GetPositionArray() const
+{
+    return positionArray;
+}
+
+inline Vector4* SkinnedMesh::GetQuaternionArray() const
+{
+    return quaternionArray;
+}
+
+inline int32 SkinnedMesh::GetJointsArraySize() const
+{
+    return jointsCount;
 }
 
 } //ns

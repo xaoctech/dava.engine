@@ -924,9 +924,15 @@ void AssetCacheServerWindow::OnServerStateChanged(const ServerCore* server)
 void AssetCacheServerWindow::UpdateUsageProgressbar(DAVA::uint64 occupied, DAVA::uint64 overall)
 {
     DAVA::float64 p = overall ? (100. / static_cast<DAVA::float64>(overall)) : 0;
-    int val = static_cast<int>(p * static_cast<DAVA::float64>(occupied));
+    int occupiedInPercents = static_cast<int>(p * static_cast<DAVA::float64>(occupied));
+    if (occupiedInPercents == 0 && occupied > 0)
+    {
+        // If storage size vanishes, then 0 percent of usage is shown, yet some data is actually present.
+        // There we are forcing to display 1 percent to indicate that storage is not empty.
+        occupiedInPercents = 1;
+    }
     ui->occupiedSizeBar->setRange(0, 100);
-    ui->occupiedSizeBar->setValue(val);
+    ui->occupiedSizeBar->setValue(occupiedInPercents);
 }
 
 void AssetCacheServerWindow::SetVisibilityForShareControls()
