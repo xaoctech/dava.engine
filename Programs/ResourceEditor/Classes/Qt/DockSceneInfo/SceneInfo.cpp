@@ -11,6 +11,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Selection/SelectionData.h"
+#include "Classes/Selection/Selection.h"
 
 #include "ImageTools/ImageTools.h"
 #include "Commands2/Base/RECommandNotificationObject.h"

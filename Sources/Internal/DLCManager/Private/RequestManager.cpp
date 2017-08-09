@@ -2,7 +2,7 @@
 #include "DLCManager/Private/DLCManagerImpl.h"
 #include "Debug/DVAssert.h"
 #include "Base/BaseTypes.h"
-#include <Time/SystemTimer.h>
+#include "Time/SystemTimer.h"
 
 namespace DAVA
 {
@@ -36,6 +36,7 @@ void RequestManager::FireStartLoadingWhileInactiveSignals()
             PackRequest* r = packManager.FindRequest(pack);
             if (r)
             {
+                packManager.GetLog() << "inAct start: " << r->GetRequestedPackName() << std::endl;
                 packManager.requestStartLoading.Emit(*r);
             }
         }
@@ -52,7 +53,8 @@ void RequestManager::FireUpdateWhileInactiveSignals()
             PackRequest* r = packManager.FindRequest(pack);
             if (r)
             {
-                packManager.requestStartLoading.Emit(*r);
+                packManager.GetLog() << "inAct update: " << r->GetRequestedPackName() << std::endl;
+                packManager.requestUpdated.Emit(*r);
             }
         }
         requestUpdatedWhileInactive.clear();
@@ -79,7 +81,7 @@ void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
         const String& packName = request.GetRequestedPackName();
         auto it = find(begin(requestUpdatedWhileInactive), end(requestUpdatedWhileInactive), packName);
         // add only once for update signal
-        if (it != end(requestUpdatedWhileInactive))
+        if (it == end(requestUpdatedWhileInactive))
         {
             requestUpdatedWhileInactive.push_back(packName);
         }
