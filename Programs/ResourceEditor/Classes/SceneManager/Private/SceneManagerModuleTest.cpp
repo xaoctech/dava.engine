@@ -195,7 +195,7 @@ private:
                     { // to prevent serialization crash
                         SlotComponent* slot = static_cast<SlotComponent*>(component);
                         slot->SetSlotName(FastName("slotName"));
-                        slot->SetJointName(FastName("jointName"));
+                        slot->SetJointUID(FastName("jointName"));
                     }
 
                     entity->AddComponent(component);
@@ -256,7 +256,7 @@ private:
                         if (slot != nullptr)
                         {
                             TEST_VERIFY(slot->GetSlotName() == FastName("slotName"));
-                            TEST_VERIFY(slot->GetJointName() == FastName("jointName"));
+                            TEST_VERIFY(slot->GetJointUID() == FastName("jointName"));
                         }
                     }
                     delete component;
