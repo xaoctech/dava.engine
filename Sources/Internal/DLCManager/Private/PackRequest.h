@@ -70,6 +70,7 @@ private:
         {
         }
         ~DVPLWriter() override;
+        bool OpenFile(uint64& value1);
         /** Save next buffer bytes into memory or file, on error return differs from parameter size */
         uint64 Save(const void* ptr, uint64 size) override;
         /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
@@ -86,6 +87,7 @@ private:
         const FileRequest& fileRequest_;
         PackRequest& packRequest_;
         DLCDownloader& dm_;
+        bool opened = false;
     };
 
     struct FileRequest
