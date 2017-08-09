@@ -557,7 +557,6 @@ DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
     Matrix4 jointTransform = transform.orientation.GetMatrix();
     jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
     jointTransform.SetTranslationVector(transform.position);
-
     return component->GetAttachmentTransform() * jointTransform;
 }
 
