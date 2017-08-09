@@ -687,7 +687,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetTransformedBoundingBox(const Selectable& 
     if (object.CanBeCastedTo<DAVA::Entity>())
     {
         // add childs boxes into entity box
-        Entity* entity = object.AsEntity();
+        DAVA::Entity* entity = object.AsEntity();
         for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); i++)
         {
             Selectable childEntity(entity->GetChild(i));
