@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Scene3D/Entity.h"
+#include <TArc/Utils/ReflectionHelpers.h>
+#include <Reflection/ReflectedType.h>
+#include <Base/TypeInheritance.h>
 #include <Base/Type.h>
 #include <type_traits>
 
@@ -86,14 +89,31 @@ template <typename T>
 bool Selectable::CanBeCastedTo() const
 {
     DVASSERT(ContainsObject() == true);
-    return object.CanCast<T*>();
+    DVASSERT(object.GetType()->IsPointer());
+    const DAVA::ReflectedType* t = DAVA::TArc::GetValueReflectedType(object);
+    DVASSERT(t != nullptr);
+    return DAVA::TypeInheritance::CanCast(t->GetType()->Pointer(), DAVA::Type::Instance<T*>());
 }
 
 template <typename T>
 inline T* Selectable::Cast() const
 {
-    DVASSERT(object.IsEmpty() == false);
-    return object.Cast<T*>(nullptr);
+    DVASSERT(ContainsObject() == true);
+    DVASSERT(object.GetType()->IsPointer());
+    const DAVA::ReflectedType* t = DAVA::TArc::GetValueReflectedType(object);
+    DVASSERT(t != nullptr);
+    const DAVA::Type* objType = t->GetType()->Pointer();
+    const DAVA::Type* castToType = DAVA::Type::Instance<T*>();
+    if (DAVA::TypeInheritance::CanCast(objType, castToType) == false)
+    {
+        return nullptr;
+    }
+
+    void* inPtr = object.Get<void*>();
+    void* outPtr = nullptr;
+    bool casted = DAVA::TypeInheritance::Cast(objType, castToType, inPtr, &outPtr);
+    DVASSERT(casted == true);
+    return reinterpret_cast<T*>(outPtr);
 }
 
 inline const DAVA::Any& Selectable::GetContainedObject() const

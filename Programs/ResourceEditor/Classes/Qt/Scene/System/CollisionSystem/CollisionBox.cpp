@@ -22,7 +22,7 @@ CollisionBox::~CollisionBox()
     }
 }
 
-void CollisionBox::Initialize(const DAVA::Any& object, btCollisionWorld* world_, const DAVA::Vector3& position_, const DAVA::Vector3& boxSize_)
+void CollisionBox::Initialize(const DAVA::Any& object_, btCollisionWorld* world_, const DAVA::Vector3& position_, const DAVA::Vector3& boxSize_)
 {
     if (world_ != nullptr)
     {

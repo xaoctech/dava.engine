@@ -7,7 +7,7 @@
 class CollisionBox : public CollisionBaseObject
 {
 public:
-    CollisionBox(const DAVA::Any& object, btCollisionWorld* word, DAVA::Vector3 position, DAVA::float32 boxSize);
+    CollisionBox(const DAVA::Any& object, btCollisionWorld* word, const DAVA::Vector3& position, DAVA::float32 boxSize);
     CollisionBox(const DAVA::Any& object, btCollisionWorld* word, const DAVA::Vector3& position, const DAVA::Vector3& boxSize);
     ~CollisionBox();
 

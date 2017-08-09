@@ -88,7 +88,7 @@ private:
 private:
     SceneEditor2* curScene = nullptr;
 
-    DAVA::Map<DAVA::Any, QModelIndex, DAVA::AnyLess> indexesCache;
+    DAVA::Map<DAVA::Any, QModelIndex, DAVA::PointerValueAnyLess> indexesCache;
     QString filterText;
     bool dropAccepted = false;
 };

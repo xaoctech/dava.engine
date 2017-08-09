@@ -54,7 +54,7 @@ bool Selectable::operator!=(const Selectable& other) const
 
 bool Selectable::operator<(const Selectable& other) const
 {
-    return DAVA::AnyLess()(object, other.object);
+    return DAVA::PointerValueAnyLess()(object, other.object);
 }
 
 void Selectable::SetBoundingBox(const DAVA::AABBox3& box)

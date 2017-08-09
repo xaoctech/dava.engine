@@ -57,6 +57,7 @@
 #include "Render/Highlevel/RenderPass.h"
 
 #include "Render/Renderer.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #include <functional>
 
@@ -162,6 +163,12 @@ void EntityCache::ClearAll()
         SafeRelease(i.second);
     }
     cachedEntities.clear();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Scene)
+{
+    ReflectionRegistrator<Scene>::Begin()
+    .End();
 }
 
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)

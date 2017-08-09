@@ -10,6 +10,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Base/Observer.h"
+#include "Reflection/Reflection.h"
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/PhysicsSystem.h>
 #endif
@@ -269,6 +270,7 @@ protected:
     } fixedUpdate;
 
     friend class Entity;
+    DAVA_VIRTUAL_REFLECTION(Scene, Entity);
 };
 
 int32 Scene::GetCameraCount()
