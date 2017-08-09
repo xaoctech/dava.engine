@@ -27,7 +27,7 @@ void ColladaScene::ExportAnimations(ColladaAnimation* colladaAnimation, FCDScene
         if (anim)
         {
             colladaAnimation->animations[node] = anim;
-            ColladaAnimation::ExportAnimationData(currentNode, &colladaAnimation->animationsData[node]);
+            ColladaAnimation::ExportAnimationData(node, &colladaAnimation->animationsData[node]);
         }
     }
 

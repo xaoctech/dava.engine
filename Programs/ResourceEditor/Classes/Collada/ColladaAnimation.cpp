@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "ColladaAnimation.h"
+#include "ColladaScene.h"
+#include "ColladaSceneNode.h"
 
 namespace DAVA
 {
@@ -25,17 +27,23 @@ Matrix4 ColladaAnimation::EvaluateMatrix(FCDTransform* transform, float32 time)
 {
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::MATRIX);
-    DVASSERT(transform->IsAnimated());
 
-    FCDAnimated* animated = transform->GetAnimated();
     Matrix4 result;
-    for (int32 i = 0; i < 4; ++i)
+    if (transform->IsAnimated())
     {
-        for (int32 j = 0; j < 4; ++j)
+        FCDAnimated* animated = transform->GetAnimated();
+        for (int32 i = 0; i < 4; ++i)
         {
-            FCDAnimationCurve* curve = animated->FindCurve(Format("(%i)(%i)", i, j).c_str());
-            result._data[i][j] = (curve != nullptr) ? curve->Evaluate(time) : 0.f;
+            for (int32 j = 0; j < 4; ++j)
+            {
+                FCDAnimationCurve* curve = animated->FindCurve(Format("(%i)(%i)", i, j).c_str());
+                result._data[i][j] = (curve != nullptr) ? curve->Evaluate(time) : 0.f;
+            }
         }
+    }
+    else
+    {
+        result = ConvertMatrix(transform->ToMatrix());
     }
 
     return result;
@@ -45,49 +53,46 @@ Vector3 ColladaAnimation::EvaluateTranslation(FCDTransform* transform, float32 t
 {
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::TRANSLATION);
-    DVASSERT(transform->IsAnimated());
 
-    FCDAnimated* animated = transform->GetAnimated();
-    FCDAnimationCurve* curveX = animated->FindCurve(".X");
-    FCDAnimationCurve* curveY = animated->FindCurve(".Y");
-    FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
+    FMVector3 transformTranslation = dynamic_cast<FCDTTranslation*>(transform)->GetTranslation();
+    Vector3 result(static_cast<float*>(transformTranslation));
 
-    Vector3 translation;
-    translation.x = (curveX != nullptr) ? curveX->Evaluate(time) : 0.f;
-    translation.y = (curveY != nullptr) ? curveY->Evaluate(time) : 0.f;
-    translation.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : 0.f;
+    if (transform->IsAnimated())
+    {
+        FCDAnimated* animated = transform->GetAnimated();
+        FCDAnimationCurve* curveX = animated->FindCurve(".X");
+        FCDAnimationCurve* curveY = animated->FindCurve(".Y");
+        FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
 
-    return translation;
+        result.x = (curveX != nullptr) ? curveX->Evaluate(time) : result.x;
+        result.y = (curveY != nullptr) ? curveY->Evaluate(time) : result.y;
+        result.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : result.z;
+    }
+
+    return result;
 }
 
 Quaternion ColladaAnimation::EvaluateRotation(FCDTransform* transform, float32 time)
 {
     DVASSERT(transform);
     DVASSERT(transform->GetType() == FCDTransform::ROTATION);
-    DVASSERT(transform->IsAnimated());
 
-    FCDAnimated* animated = transform->GetAnimated();
-    FCDAnimationCurve* curveX = animated->FindCurve(".X");
-    FCDAnimationCurve* curveY = animated->FindCurve(".Y");
-    FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
-    FCDAnimationCurve* curveAngle = animated->FindCurve(".ANGLE");
+    FMAngleAxis angleAxis = dynamic_cast<FCDTRotation*>(transform)->GetAngleAxis();
+    if (transform->IsAnimated())
+    {
+        FCDAnimated* animated = transform->GetAnimated();
+        FCDAnimationCurve* curveX = animated->FindCurve(".X");
+        FCDAnimationCurve* curveY = animated->FindCurve(".Y");
+        FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
+        FCDAnimationCurve* curveAngle = animated->FindCurve(".ANGLE");
 
-    FCDTRotation* rotation = dynamic_cast<FCDTRotation*>(transform);
-    Vector3 transformAxis = rotation->GetAxis();
-    float32 transformAngle = rotation->GetAngle();
+        angleAxis.axis.x = (curveX != nullptr) ? curveX->Evaluate(time) : angleAxis.axis.x;
+        angleAxis.axis.y = (curveY != nullptr) ? curveY->Evaluate(time) : angleAxis.axis.y;
+        angleAxis.axis.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : angleAxis.axis.z;
+        angleAxis.angle = (curveAngle != nullptr) ? curveAngle->Evaluate(time) : angleAxis.angle;
+    }
 
-    Vector3 axis;
-    float32 angle;
-
-    axis.x = (curveX != nullptr) ? curveX->Evaluate(time) : transformAxis.x;
-    axis.y = (curveY != nullptr) ? curveY->Evaluate(time) : transformAxis.y;
-    axis.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : transformAxis.z;
-    angle = (curveAngle != nullptr) ? curveAngle->Evaluate(time) : transformAngle;
-
-    if (axis.IsZero() && angle == 0.f)
-        return Quaternion();
-
-    return Quaternion::MakeRotationFast(axis, DegToRad(angle));
+    return Quaternion::MakeRotationFast(Vector3(static_cast<float32*>(angleAxis.axis)), DegToRad(angleAxis.angle));
 }
 
 Vector3 ColladaAnimation::EvaluateScale(FCDTransform* transform, float32 time)
@@ -96,15 +101,19 @@ Vector3 ColladaAnimation::EvaluateScale(FCDTransform* transform, float32 time)
     DVASSERT(transform->GetType() == FCDTransform::SCALE);
     DVASSERT(transform->IsAnimated());
 
-    FCDAnimated* animated = transform->GetAnimated();
-    FCDAnimationCurve* curveX = animated->FindCurve(".X");
-    FCDAnimationCurve* curveY = animated->FindCurve(".Y");
-    FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
+    FMVector3 transformScale = static_cast<FCDTScale*>(transform)->GetScale();
+    Vector3 scale(static_cast<float32*>(transformScale));
+    if (transform->IsAnimated())
+    {
+        FCDAnimated* animated = transform->GetAnimated();
+        FCDAnimationCurve* curveX = animated->FindCurve(".X");
+        FCDAnimationCurve* curveY = animated->FindCurve(".Y");
+        FCDAnimationCurve* curveZ = animated->FindCurve(".Z");
 
-    Vector3 scale;
-    scale.x = (curveX != nullptr) ? curveX->Evaluate(time) : 1.f;
-    scale.y = (curveY != nullptr) ? curveY->Evaluate(time) : 1.f;
-    scale.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : 1.f;
+        scale.x = (curveX != nullptr) ? curveX->Evaluate(time) : scale.x;
+        scale.y = (curveY != nullptr) ? curveY->Evaluate(time) : scale.y;
+        scale.z = (curveZ != nullptr) ? curveZ->Evaluate(time) : scale.z;
+    }
 
     return scale;
 }
@@ -188,49 +197,66 @@ void ColladaAnimation::CollectAnimationKeys(FCDSceneNode* node, ColladaAnimatinD
         data->scales.emplace_back(key, Vector3(1.f, 1.f, 1.f));
 }
 
-void ColladaAnimation::ExportAnimationData(FCDSceneNode* originalNode, ColladaAnimatinData* data)
+void ColladaAnimation::EvaluateAnimationData(FCDSceneNode* node, ColladaAnimatinData* data)
 {
-    CollectAnimationKeys(originalNode, data);
-
-    for (size_t t = 0; t < originalNode->GetTransformCount(); ++t)
+    for (size_t t = 0; t < node->GetTransformCount(); ++t)
     {
-        FCDTransform* transform = originalNode->GetTransform(t);
-        if (transform->IsAnimated())
+        FCDTransform* transform = node->GetTransform(t);
+        if (transform->GetType() == FCDTransform::MATRIX)
         {
-            FCDAnimated* animated = transform->GetAnimated();
+            for (auto& t : data->translations)
+                t.second += EvaluateMatrix(transform, t.first).GetTranslationVector();
 
-            if (transform->GetType() == FCDTransform::MATRIX)
+            for (auto& r : data->rotations)
+                r.second *= EvaluateMatrix(transform, r.first).GetRotation();
+
+            for (auto& s : data->scales)
+                s.second *= EvaluateMatrix(transform, s.first).GetScaleVector();
+        }
+        else
+        {
+            if (transform->GetType() == FCDTransform::TRANSLATION)
             {
-                Matrix4 mxTransform;
-
                 for (auto& t : data->translations)
-                    t.second += EvaluateMatrix(transform, t.first).GetTranslationVector();
-
-                for (auto& r : data->rotations)
-                    r.second *= EvaluateMatrix(transform, r.first).GetRotation();
-
-                for (auto& s : data->scales)
-                    s.second *= EvaluateMatrix(transform, s.first).GetScaleVector();
+                    t.second += EvaluateTranslation(transform, t.first);
             }
-            else
+            else if (transform->GetType() == FCDTransform::ROTATION)
             {
-                if (transform->GetType() == FCDTransform::TRANSLATION)
-                {
-                    for (auto& t : data->translations)
-                        t.second += EvaluateTranslation(transform, t.first);
-                }
-                else if (transform->GetType() == FCDTransform::ROTATION)
-                {
-                    for (auto& r : data->rotations)
-                        r.second *= EvaluateRotation(transform, r.first);
-                }
-                else if (transform->GetType() == FCDTransform::SCALE)
-                {
-                    for (auto& s : data->scales)
-                        s.second *= EvaluateScale(transform, s.first);
-                }
+                for (auto& r : data->rotations)
+                    r.second *= EvaluateRotation(transform, r.first);
+            }
+            else if (transform->GetType() == FCDTransform::SCALE)
+            {
+                for (auto& s : data->scales)
+                    s.second *= EvaluateScale(transform, s.first);
             }
         }
+    }
+}
+
+void ColladaAnimation::ExportAnimationData(ColladaSceneNode* node, ColladaAnimatinData* data)
+{
+    CollectAnimationKeys(node->originalNode, data);
+    EvaluateAnimationData(node->originalNode, data);
+
+    //for skeleton-root node bake transform of parent
+    if (node->parent != nullptr && node->originalNode->GetJointFlag() && !node->parent->originalNode->GetJointFlag())
+    {
+        Matrix4 pTransform = node->parent->AccumulateTransformUptoFarParent(node->scene->rootNode);
+        Vector3 parentTranslation, parentScale;
+        Quaternion parentRotation;
+
+        pTransform.Decomposition(parentTranslation, parentScale, parentRotation);
+        parentRotation.Normalize();
+
+        for (auto& t : data->translations)
+            t.second = parentTranslation + parentRotation.ApplyToVectorFast(t.second) * parentScale;
+
+        for (auto& r : data->rotations)
+            r.second = parentRotation * r.second;
+
+        for (auto& s : data->scales)
+            s.second *= parentScale;
     }
 }
 };

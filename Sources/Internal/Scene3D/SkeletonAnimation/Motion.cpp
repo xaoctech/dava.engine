@@ -28,6 +28,7 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
     if (currentState != nullptr)
     {
         currentState->animationPhase = 0.f;
+        currentPose = skeleton->GetDefaultPose();
         currentState->blendTree->EvaluatePose(0.f, currentState->boundParams, &currentPose);
     }
 }

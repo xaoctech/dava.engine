@@ -26,7 +26,7 @@ public:
 
     void Assign();
 
-    static void ExportAnimationData(FCDSceneNode* originalNode, ColladaAnimatinData* data);
+    static void ExportAnimationData(ColladaSceneNode* node, ColladaAnimatinData* data);
 
 protected:
     struct ColladaAnimatinTimeCmp
@@ -45,6 +45,7 @@ protected:
 
     static void CollectAnimationKeys(FCDAnimationCurve* curve, TimeStampSet* timeStamps);
     static void CollectAnimationKeys(FCDSceneNode* node, ColladaAnimatinData* data);
+    static void EvaluateAnimationData(FCDSceneNode* node, ColladaAnimatinData* data);
 };
 };
 					 

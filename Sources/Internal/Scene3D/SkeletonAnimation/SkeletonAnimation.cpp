@@ -41,7 +41,7 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
                 track->Evaluate(0.f, &animationStates.back());
 
                 if (outInitialPose)
-                    outInitialPose->SetTransform(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
+                    ApplyJointTransform(track, &animationStates.back(), outInitialPose, j);
 
                 boundTracks.emplace_back(std::make_pair(j, track));
 
@@ -66,8 +66,7 @@ void SkeletonAnimation::EvaluatePose(float32 phase, SkeletonPose* outPose, Vecto
         float32 localTime = phase * animationClip->GetDuration();
         track->Evaluate(localTime, state);
 
-        JointTransform transform = ConstructJointTransform(track, state);
-        outPose->SetTransform(jointIndex, transform);
+        ApplyJointTransform(track, state, outPose, jointIndex);
     }
 }
 
@@ -76,32 +75,29 @@ float32 SkeletonAnimation::GetPhaseDuration() const
     return animationClip->GetDuration();
 }
 
-JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state)
+void SkeletonAnimation::ApplyJointTransform(const AnimationTrack* track, const AnimationTrack::State* state, SkeletonPose* pose, uint32 jointIndex)
 {
-    JointTransform transform;
     for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
     {
         AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
         switch (target)
         {
         case DAVA::AnimationTrack::CHANNEL_TARGET_POSITION:
-            transform.position = Vector3(track->GetStateValue(state, c));
+            pose->SetPosition(jointIndex, Vector3(track->GetStateValue(state, c)));
             break;
 
         case DAVA::AnimationTrack::CHANNEL_TARGET_ORIENTATION:
-            transform.orientation = Quaternion(track->GetStateValue(state, c));
+            pose->SetOrientation(jointIndex, Quaternion(track->GetStateValue(state, c)));
             break;
 
         case DAVA::AnimationTrack::CHANNEL_TARGET_SCALE:
-            transform.scale = *track->GetStateValue(state, c);
+            pose->SetScale(jointIndex, *track->GetStateValue(state, c));
             break;
 
         default:
             break;
         }
     }
-
-    return transform;
 }
 
 } //ns

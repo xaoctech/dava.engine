@@ -238,7 +238,7 @@ void ColladaImporter::ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node
         joint.name = FastName(colladaJoint.jointName);
         joint.uid = FastName(colladaJoint.jointUID);
 
-        joint.bindTransform = /*isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) :*/ jointNode->localTransform;
+        joint.bindTransform = isRootJoint ? jointNode->AccumulateTransformUptoFarParent(colladaNode->scene->rootNode) : jointNode->localTransform;
         joint.bindTransformInv = colladaJoint.inverse0;
 
         joint.bbox = AABBox3(Vector3(), Vector3());
