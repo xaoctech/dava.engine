@@ -96,6 +96,7 @@ public slots:
     void OnAddSnapToLandscapeControllerComponent();
     void OnAddWASDControllerComponent();
     void OnAddVisibilityComponent();
+    void OnAddGeoDecalComponent();
     void OnRemoveComponent();
     void OnTriggerWaveComponent();
     void OnConvertRenderObjectToBillboard();

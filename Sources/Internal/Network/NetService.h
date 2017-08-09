@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_NETSERVICE_H__
-#define __DAVAENGINE_NETSERVICE_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Network/IChannel.h"
@@ -69,5 +68,3 @@ inline bool NetService::Send(const T* value, uint32* packetId)
 
 } // namespace Net
 } // namespace DAVA
-
-#endif // __DAVAENGINE_NETSERVICE_H__

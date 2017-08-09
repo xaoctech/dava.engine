@@ -525,6 +525,7 @@ LRESULT WindowImpl::OnExitMenuLoop()
 
     // System menu is usually shown after pressing Alt+Space, window receives Alt up down,
     // but do not receives Alt key up. So send event to force clearing all inputs.
+    // TODO: refactor this event usage according to the new input system?
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCancelInputEvent(window));
     if (captureMode == eCursorCapture::PINNING)
     {
@@ -850,24 +851,25 @@ LRESULT WindowImpl::OnPointerUpdate(uint32 pointerId, int32 x, int32 y)
     return 0;
 }
 
-LRESULT WindowImpl::OnKeyEvent(uint32 key, uint32 scanCode, bool isPressed, bool isExtended, bool isRepeated)
+LRESULT WindowImpl::OnKeyEvent(uint32 keyVirtual, uint32 keyScancode, bool isPressed, bool isExtended, bool isRepeated)
 {
     // Handle shifts separately to workaround some windows behaviours (see comment inside of OnShiftKeyEvent)
-    if (key == VK_SHIFT)
+    if (keyVirtual == VK_SHIFT)
     {
         return OnShiftKeyEvent();
     }
     else
     {
-        // Keyboard class implementation uses 256 + keyId for extended keys (e.g. right shift, right alt etc.)
         if (isExtended)
         {
-            key |= 0x100;
+            // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+            // So, follow this convention and use the same mask
+            keyScancode = 0xE000 | keyScancode;
         }
 
         eModifierKeys modifierKeys = GetModifierKeys();
         MainDispatcherEvent::eType type = isPressed ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, key, modifierKeys, isRepeated));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, type, keyScancode, keyVirtual, modifierKeys, isRepeated));
         return 0;
     }
 }
@@ -877,7 +879,10 @@ LRESULT WindowImpl::OnShiftKeyEvent()
     // Windows does not send event with separate WM_KEYUP for second shift if first one is still pressed
     // So if it's a shift key event, request and store every shift state explicitly
 
-    static const uint32 shiftKeyCodes[2] = { VK_SHIFT, VK_SHIFT | 0x100 };
+    // These are left and right shift scancodes, taken from https://msdn.microsoft.com/en-us/library/aa299374(v=vs.60).aspx
+    static const uint32 shiftKeyScancodes[2] = { 0x2A, 0x36 };
+
+    static const uint32 shiftKeyVirtuals[2] = { VK_LSHIFT, VK_RSHIFT };
 
     const bool lshiftPressed = ::GetKeyState(VK_LSHIFT) & 0x8000 ? true : false;
     const bool rshiftPressed = ::GetKeyState(VK_RSHIFT) & 0x8000 ? true : false;
@@ -890,11 +895,11 @@ LRESULT WindowImpl::OnShiftKeyEvent()
         if (lastShiftStates[i] != currentShiftStates[i])
         {
             const MainDispatcherEvent::eType eventType = currentShiftStates[i] ? MainDispatcherEvent::KEY_DOWN : MainDispatcherEvent::KEY_UP;
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyCodes[i], modifierKeys, false));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, eventType, shiftKeyScancodes[i], shiftKeyVirtuals[i], modifierKeys, false));
         }
         else if (currentShiftStates[i] == true)
         {
-            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyCodes[i], modifierKeys, true));
+            mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, shiftKeyScancodes[i], shiftKeyVirtuals[i], modifierKeys, true));
         }
 
         lastShiftStates[i] = currentShiftStates[i];
@@ -906,7 +911,7 @@ LRESULT WindowImpl::OnShiftKeyEvent()
 LRESULT WindowImpl::OnCharEvent(uint32 key, bool isRepeated)
 {
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, key, modifierKeys, isRepeated));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, key, modifierKeys, isRepeated));
     return 0;
 }
 
@@ -966,6 +971,12 @@ bool WindowImpl::OnSysCommand(int sysCommand)
     }
 
     return false;
+}
+
+LRESULT WindowImpl::OnInputLanguageChanged()
+{
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateInputLanguageChangedEvent());
+    return 0;
 }
 
 LRESULT WindowImpl::OnDestroy()
@@ -1087,12 +1098,12 @@ LRESULT WindowImpl::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bool&
     }
     else if (message == WM_KEYUP || message == WM_KEYDOWN || message == WM_SYSKEYUP || message == WM_SYSKEYDOWN)
     {
-        uint32 key = static_cast<uint32>(wparam);
-        uint32 scanCode = (static_cast<uint32>(lparam) >> 16) & 0xFF;
+        uint32 keyVirtual = static_cast<uint32>(wparam);
+        uint32 keyScancode = (static_cast<uint32>(lparam) >> 16) & 0xFF;
         bool isPressed = message == WM_KEYDOWN || message == WM_SYSKEYDOWN;
         bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
         bool isRepeated = (HIWORD(lparam) & KF_REPEAT) == KF_REPEAT;
-        lresult = OnKeyEvent(key, scanCode, isPressed, isExtended, isRepeated);
+        lresult = OnKeyEvent(keyVirtual, keyScancode, isPressed, isExtended, isRepeated);
         // Mark only WM_SYSKEYUP message as handled to prevent entering modal loop when Alt is released,
         // but leave WM_SYSKEYDOWN and other as unhandled to allow system shortcuts such as Alt+F4.
         isHandled = (message == WM_SYSKEYUP);
@@ -1154,6 +1165,10 @@ LRESULT WindowImpl::WindowProc(UINT message, WPARAM wparam, LPARAM lparam, bool&
     else if (message == WM_SYSCOMMAND)
     {
         isHandled = OnSysCommand(static_cast<int>(wparam));
+    }
+    else if (message == WM_INPUTLANGCHANGE)
+    {
+        lresult = OnInputLanguageChanged();
     }
     else
     {

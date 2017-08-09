@@ -52,6 +52,7 @@ void DockProperties::Init(Ui::MainWindow* mainwindowUi, const std::shared_ptr<Gl
     addComponentMenu->addAction(mainwindowUi->actionAddWASDComponent);
     addComponentMenu->addAction(mainwindowUi->actionAddVisibilityComponent);
     addComponentMenu->addAction(mainwindowUi->actionAddLodComponent);
+    addComponentMenu->addAction(mainwindowUi->actionAddGeoDecalComponent);
 
     connect(mainwindowUi->actionAddNewComponent, SIGNAL(triggered()), SLOT(OnAddAction()));
     propertiesEditor->Init(mainwindowUi, globalOperations);

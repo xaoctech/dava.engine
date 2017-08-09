@@ -68,16 +68,17 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    inline void SetJointPosition(uint16 jointId, const Vector3& position);
-    inline void SetJointOrientation(uint16 jointId, const Quaternion& orientation);
-    inline void SetJointScale(uint16 jointId, float32 scale);
+    void SetJointPosition(uint16 jointId, const Vector3& position);
+    void SetJointOrientation(uint16 jointId, const Quaternion& orientation);
+    void SetJointScale(uint16 jointId, float32 scale);
 
     const FastName& GetJointName(uint16 jointId) const;
+    uint16 GetJointId(const FastName& name) const;
+
     const JointTransform& GetObjectSpaceTransform(uint16 jointId) const;
 
-    inline uint16 GetJointId(const FastName& name) const;
-
-    inline uint16 GetJointsCount() const;
+    uint16 GetJointsCount() const;
+    const Vector<JointConfig>& GetConfigJoints() const;
 
     SkeletonComponent();
     ~SkeletonComponent();
@@ -182,6 +183,10 @@ inline SkeletonComponent::JointTransform SkeletonComponent::JointTransform::GetI
     return res;
 }
 
+inline const Vector<SkeletonComponent::JointConfig>& SkeletonComponent::GetConfigJoints() const
+{
+    return configJoints;
+}
 template <>
 bool AnyCompare<SkeletonComponent::JointConfig>::IsEqual(const Any& v1, const Any& v2);
 extern template struct AnyCompare<SkeletonComponent::JointConfig>;
