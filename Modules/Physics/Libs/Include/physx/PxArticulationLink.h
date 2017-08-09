@@ -55,7 +55,7 @@ are not supported, and links may not be kinematic.
 class PxArticulationLink : public PxRigidBody
 {
 public:
-    /**
+	/**
 	\brief Deletes the articulation link.
 	
 	\note Only a leaf articulation link can be released
@@ -64,34 +64,35 @@ public:
 
 	@see PxArticulation::createLink()
 	*/
-    virtual void release() = 0;
+	virtual		void			release() = 0;
 
-    /**
+
+	/**
 	\brief get the articulation to which this articulation link belongs
 
 	\return the articulation to which this link belongs
 	*/
-    virtual PxArticulation& getArticulation() const = 0;
+	virtual		PxArticulation&	getArticulation() const = 0;
 
-    /**
+	/**
 	\brief Get the joint which connects this link to its parent.
 	
 	\return The joint connecting the link to the parent. NULL for the root link.
 
 	@see PxArticulationJoint
 	*/
-    virtual PxArticulationJoint* getInboundJoint() const = 0;
+	virtual		PxArticulationJoint*	getInboundJoint() const = 0;
 
-    /**
+	/**
 	\brief Get number of child links.
 
 	\return the number of child links
 
 	@see getChildren()
 	*/
-    virtual PxU32 getNbChildren() const = 0;
+	virtual		PxU32			getNbChildren() const = 0;
 
-    /**
+	/**
 	\brief Retrieve all the child links.
 
 	\param[out] userBuffer The buffer to receive articulation link pointers.
@@ -101,29 +102,15 @@ public:
 
 	@see getNbChildren()
 	*/
-    virtual PxU32 getChildren(PxArticulationLink** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
+	virtual		PxU32			getChildren(PxArticulationLink** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
 
-    virtual const char* getConcreteTypeName() const
-    {
-        return "PxArticulationLink";
-    }
+	virtual		const char*		getConcreteTypeName() const					{	return "PxArticulationLink"; }
 
 protected:
-    PX_INLINE PxArticulationLink(PxType concreteType, PxBaseFlags baseFlags)
-        : PxRigidBody(concreteType, baseFlags)
-    {
-    }
-    PX_INLINE PxArticulationLink(PxBaseFlags baseFlags)
-        : PxRigidBody(baseFlags)
-    {
-    }
-    virtual ~PxArticulationLink()
-    {
-    }
-    virtual bool isKindOf(const char* name) const
-    {
-        return !::strcmp("PxArticulationLink", name) || PxRigidBody::isKindOf(name);
-    }
+	PX_INLINE					PxArticulationLink(PxType concreteType, PxBaseFlags baseFlags) : PxRigidBody(concreteType, baseFlags) {}
+	PX_INLINE					PxArticulationLink(PxBaseFlags baseFlags) : PxRigidBody(baseFlags)	{}
+	virtual						~PxArticulationLink()	{}
+	virtual		bool			isKindOf(const char* name)	const		{	return !::strcmp("PxArticulationLink", name) || PxRigidBody::isKindOf(name);		}
 };
 
 #if !PX_DOXYGEN

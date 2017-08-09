@@ -5,9 +5,13 @@ import build_utils
 
 def get_supported_targets(platform):
     if platform == 'win32':
-        return ['win32', 'win10', 'android']
-    else:
+        return ['win32', 'win10']
+    elif platform == 'darwin':
         return ['macos', 'ios', 'android']
+    elif platform == 'linux':
+        return ['android', 'linux']
+    else:
+        return []
 
 
 def get_dependencies_for_target(target):
@@ -25,6 +29,8 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_ios(working_directory_path, root_project_path)
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
+    elif target == 'linux':
+        _build_linux(working_directory_path, root_project_path)
 
 
 def get_download_info():
@@ -129,6 +135,23 @@ def _build_ios(working_directory_path, root_project_path):
     binary_dst_path = os.path.join(root_project_path, 'Modules', 'Physics', 'Libs', 'iOS')
     _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'ios64'), binary_dst_path, '.a')
     _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'ios64'), binary_dst_path, '.a')
+    _copy_headers(source_folder_path, root_project_path)
+
+def _build_linux(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources('patch_common.diff', 'patch_linux.diff', working_directory_path)
+
+    project_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'linux64')
+    build_utils.run_process("make debug", process_cwd=project_path, shell=True)
+    build_utils.run_process("make release", process_cwd=project_path, shell=True)
+    #build_utils.run_process("make profile", process_cwd=project_path, shell=True)
+    #build_utils.run_process("make checked", process_cwd=project_path, shell=True)
+
+    binary_dst_path = os.path.join(root_project_path, 'Modules', 'Physics', 'Libs', 'Linux')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'linux64'), binary_dst_path, '.a')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'linux64'), binary_dst_path, '.a')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Bin', 'linux64'), binary_dst_path, '.so')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'bin', 'linux64'), binary_dst_path, '.so')
     _copy_headers(source_folder_path, root_project_path)
 
 def _build_android(working_directory_path, root_project_path):

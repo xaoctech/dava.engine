@@ -55,17 +55,17 @@ struct PxClothParticle;
 class PxClothParticleData : public PxLockedData
 {
 public:
-    /**
+	/**
 	\brief Particle position and mass data.
 	@see PxCloth.getNbParticles()
 	*/
-    PxClothParticle* particles;
+	PxClothParticle* particles;
 
-    /**
+	/**
 	\brief Particle position and mass data from the second last iteration.
 	\details Can be used together with #particles and #PxCloth.getPreviousTimeStep() to compute particle velocities.
 	*/
-    PxClothParticle* previousParticles;
+	PxClothParticle* previousParticles;
 };
 
 #if !PX_DOXYGEN

@@ -55,8 +55,9 @@ bounceThreshold also.
 
 class PxTolerancesScale
 {
-public:
-    /** brief
+public: 
+
+	/** brief
 	The approximate size of objects in the simulation. 
 	
 	For simulating roughly human-sized in metric units, 1 is a good choice.
@@ -65,17 +66,18 @@ public:
 
 	*/
 
-    PxReal length;
+	PxReal	length;
 
-    /** brief
+
+	/** brief
 	The approximate mass of a length * length * length block.
 	If using metric scale for character sized objects and measuring mass in
 	kilogrammes, 1000 is a good choice.	
 	\note This parameter is ignored by the PhysX SDK.
 	*/
-    PX_DEPRECATED PxReal mass;
+	PX_DEPRECATED PxReal	mass;
 
-    /** brief
+	/** brief
 	The typical magnitude of velocities of objects in simulation. This is used to estimate 
 	whether a contact should be treated as bouncing or resting based on its impact velocity,
 	and a kinetic energy threshold below which the simulation may put objects to sleep.
@@ -83,33 +85,32 @@ public:
 	For normal physical environments, a good choice is the approximate speed of an object falling
 	under gravity for one second.
 	*/
-    PxReal speed;
+	PxReal	speed;
 
-    /**
+
+	/**
 	\brief constructor sets to default 
 	*/
-    PX_INLINE PxTolerancesScale();
+	PX_INLINE PxTolerancesScale();
 
-    /**
+	/**
 	\brief Returns true if the descriptor is valid.
 	\return true if the current settings are valid (returns always true).
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE bool isValid() const;
+
 };
 
-PX_INLINE PxTolerancesScale::PxTolerancesScale()
-    :
-    length(1)
-    ,
-    mass(1000)
-    ,
-    speed(10)
-{
-}
+PX_INLINE PxTolerancesScale::PxTolerancesScale():
+	length(1),
+	mass(1000),
+	speed(10)
+	{
+	}
 
 PX_INLINE bool PxTolerancesScale::isValid() const
 {
-    return length > 0 && mass > 0;
+	return length>0 && mass>0;
 }
 
 #if !PX_DOXYGEN

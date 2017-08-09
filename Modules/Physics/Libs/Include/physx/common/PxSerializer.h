@@ -61,29 +61,30 @@ namespace physx
 class PxSerializer
 {
 public:
-    /**********************************************************************************************************************/
 
-    /** @name Basics needed for Binary- and RepX-Serialization
+	/**********************************************************************************************************************/
+
+	/** @name Basics needed for Binary- and RepX-Serialization
 	*/
-    //@{
-
-    /**
+	//@{
+	
+	/**
 	\brief Returns string name of dynamic type.
 
 	\return	Class name of most derived type of this object.
 	*/
-    virtual const char* getConcreteTypeName() const = 0;
+	virtual	 const	char*			getConcreteTypeName() const															= 0;   
 
-    /**
+	/**
 	\brief Adds required objects to the collection.
 	
 	This method does not add the required objects recursively, e.g. objects required by required objects.
 
 	@see PxCollection, PxSerialization::complete
 	*/
-    virtual void requires(PxBase&, PxProcessPxBaseCallback&) const = 0;
-
-    /**
+	virtual			void			requires(PxBase&, PxProcessPxBaseCallback&) const									= 0;
+	
+	/**
 	\brief Whether the object is subordinate.
 	
 	A class is subordinate, if it can only be instantiated in the context of another class.
@@ -92,154 +93,145 @@ public:
 	
 	@see PxSerialization::isSerializable
 	*/
-    virtual bool isSubordinate() const = 0;
+	virtual			bool			isSubordinate() const																= 0;
 
-    //@}
-    /**********************************************************************************************************************/
+	//@}
+	/**********************************************************************************************************************/
 
-    /**********************************************************************************************************************/
+	/**********************************************************************************************************************/
 
-    /** @name Functionality needed for Binary Serialization only
+	/** @name Functionality needed for Binary Serialization only
 	*/
-    //@{
+	//@{
 
-    /**
+	/**
 	\brief Exports object's extra data to stream.
 	*/
-    virtual void exportExtraData(PxBase&, PxSerializationContext&) const = 0;
+	virtual         void            exportExtraData(PxBase&, PxSerializationContext&) const								= 0;
 
-    /**
+	/**
 	\brief Exports object's data to stream.
 	*/
-    virtual void exportData(PxBase&, PxSerializationContext&) const = 0;
+	virtual         void            exportData(PxBase&, PxSerializationContext&) const									= 0;
 
-    /**
+	/**
 	\brief Register references that the object maintains to other objects.
 	*/
-    virtual void registerReferences(PxBase& obj, PxSerializationContext& s) const = 0;
+	virtual			void			registerReferences(PxBase& obj, PxSerializationContext& s) const					= 0;
 
-    /**
+	/**
 	\brief Returns size needed to create the class instance.
 
 	\return	sizeof class instance.
 	*/
-    virtual size_t getClassSize() const = 0;
+	virtual			size_t			getClassSize() const																= 0;
 
-    /**
+	/**
 	\brief Create object at a given address, resolve references and import extra data.
 
 	\param address Location at which object is created. Address is increased by the size of the created object.
 	\param context Context for reading external data and resolving references.
 	\return	Created PxBase pointer (needs to be identical to address before increment).
 	*/
-    virtual PxBase* createObject(PxU8*& address, PxDeserializationContext& context) const = 0;
+	virtual         PxBase*			createObject(PxU8*& address, PxDeserializationContext& context) const	= 0; 
 
-    //@}
-    /**********************************************************************************************************************/
-    virtual ~PxSerializer()
-    {
-    }
+	//@}
+	/**********************************************************************************************************************/
+	virtual ~PxSerializer() {}
 };
+
 
 /** 
  \brief Default PxSerializer implementation.
 */
-template <class T>
+template<class T>
 class PxSerializerDefaultAdapter : public PxSerializer
 {
 public:
-    /************************************************************************************************/
 
-    /** @name Basics needed for Binary- and RepX-Serialization
+	/************************************************************************************************/
+
+	/** @name Basics needed for Binary- and RepX-Serialization
 	*/
-    //@{
+	//@{
 
-    PxSerializerDefaultAdapter(const char* name)
-        : mTypeName(name)
-    {
-    }
+	PxSerializerDefaultAdapter(const char* name) : mTypeName(name){}
 
-    virtual const char* getConcreteTypeName() const
-    {
-        return mTypeName;
-    }
+	virtual const char* getConcreteTypeName() const
+	{ 
+		return mTypeName; 
+	}
 
-    virtual void requires(PxBase& obj, PxProcessPxBaseCallback& c) const
-    {
-        T& t = static_cast<T&>(obj);
-        t.requires(c);
-    }
+	virtual	void requires(PxBase& obj, PxProcessPxBaseCallback& c) const
+	{
+		T& t = static_cast<T&>(obj);
+		t.requires(c);
+	}
 
-    virtual bool isSubordinate() const
-    {
-        return false;
-    }
+	virtual	bool isSubordinate() const
+	{
+		return false;
+	}
+		
+	//@}
+	/************************************************************************************************/
 
-    //@}
-    /************************************************************************************************/
-
-    /** @name Functionality needed for Binary Serialization only
+	/** @name Functionality needed for Binary Serialization only
 	*/
-    //@{
+	//@{
 
-    // object methods
+	// object methods
 
-    virtual void exportExtraData(PxBase& obj, PxSerializationContext& s) const
-    {
-        T& t = static_cast<T&>(obj);
-        t.exportExtraData(s);
-    }
+	virtual void exportExtraData(PxBase& obj, PxSerializationContext& s) const
+	{ 
+		T& t = static_cast<T&>(obj);
+		t.exportExtraData(s);
+	}
 
-    virtual void exportData(PxBase& obj, PxSerializationContext& s) const
-    {
-        s.writeData(&obj, sizeof(T));
-    }
+	virtual void exportData(PxBase& obj, PxSerializationContext& s) const
+	{ 
+		s.writeData(&obj, sizeof(T));
+	}
 
-    virtual void registerReferences(PxBase& obj, PxSerializationContext& s) const
-    {
-        T& t = static_cast<T&>(obj);
+	virtual void registerReferences(PxBase& obj, PxSerializationContext& s) const
+	{
+		T& t = static_cast<T&>(obj);
 
-        s.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
+		s.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
 
-        struct RequiresCallback : public PxProcessPxBaseCallback
-        {
-            RequiresCallback(PxSerializationContext& c)
-                : context(c)
-            {
-            }
-            RequiresCallback& operator=(RequiresCallback&)
-            {
-                PX_ASSERT(0);
-                return *this;
-            }
-            void process(physx::PxBase& base)
-            {
-                context.registerReference(base, PX_SERIAL_REF_KIND_PXBASE, size_t(&base));
-            }
-            PxSerializationContext& context;
-        };
+		struct RequiresCallback : public PxProcessPxBaseCallback
+		{
+			RequiresCallback(PxSerializationContext& c) : context(c) {}
+			RequiresCallback& operator=(RequiresCallback&) { PX_ASSERT(0); return *this; }
+			void process(physx::PxBase& base)
+			{				
+				context.registerReference(base, PX_SERIAL_REF_KIND_PXBASE, size_t(&base));
+			}
+			PxSerializationContext& context;
+		};
 
-        RequiresCallback callback(s);
-        t.requires(callback);
-    }
+		RequiresCallback callback(s);
+		t.requires(callback);	
+	}
 
-    // class methods
+	// class methods
 
-    virtual size_t getClassSize() const
-    {
-        return sizeof(T);
-    }
+	virtual size_t getClassSize() const
+	{
+		return sizeof(T);
+	}
 
-    virtual PxBase* createObject(PxU8*& address, PxDeserializationContext& context) const
-    {
-        return T::createObject(address, context);
-    }
+	virtual	PxBase*	createObject(PxU8*& address, PxDeserializationContext& context) const
+	{
+		return T::createObject(address, context);
+	}
 
-    //@}
-    /************************************************************************************************/
+
+	//@}
+	/************************************************************************************************/
 
 private:
-    const char* mTypeName;
+	const char*    mTypeName;	
 };
 
 /** 
@@ -248,8 +240,8 @@ private:
  Note: that the allocator used for creation needs to match with the one used in PX_DELETE_SERIALIZER_ADAPTER.
 */
 #define PX_NEW_SERIALIZER_ADAPTER(x) \
-	*new (PxGetFoundation().getAllocatorCallback().allocate(sizeof(PxSerializerDefaultAdapter<x>), \
-                                                            "PxSerializerDefaultAdapter", __FILE__, __LINE__)) PxSerializerDefaultAdapter<x>(#x)
+	*new( PxGetFoundation().getAllocatorCallback().allocate(sizeof(PxSerializerDefaultAdapter<x>), \
+	"PxSerializerDefaultAdapter",  __FILE__, __LINE__ )) PxSerializerDefaultAdapter<x>(#x)
 
 /** 
  \brief Preprocessor Macro to simplify adapter deletion.

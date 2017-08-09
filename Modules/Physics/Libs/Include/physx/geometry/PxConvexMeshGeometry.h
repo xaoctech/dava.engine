@@ -52,10 +52,10 @@ Used in ::PxConvexMeshGeometryFlags.
 */
 struct PxConvexMeshGeometryFlag
 {
-    enum Enum
-    {
-        eTIGHT_BOUNDS = (1 << 0) //!< Use tighter (but more expensive to compute) bounds around the convex geometry.
-    };
+	enum Enum
+	{
+		eTIGHT_BOUNDS = (1<<0)	//!< Use tighter (but more expensive to compute) bounds around the convex geometry.
+	};
 };
 
 /**
@@ -63,8 +63,8 @@ struct PxConvexMeshGeometryFlag
 
 @see PxConvexMeshGeometryFlag
 */
-typedef PxFlags<PxConvexMeshGeometryFlag::Enum, PxU8> PxConvexMeshGeometryFlags;
-PX_FLAGS_OPERATORS(PxConvexMeshGeometryFlag::Enum, PxU8)
+typedef PxFlags<PxConvexMeshGeometryFlag::Enum,PxU8> PxConvexMeshGeometryFlags;
+PX_FLAGS_OPERATORS(PxConvexMeshGeometryFlag::Enum,PxU8)
 
 /**
 \brief Convex mesh geometry class.
@@ -77,46 +77,38 @@ The vertices of the mesh in geometry (or shape) space is the
 PxMeshScale::toMat33() transform, multiplied by the vertex space vertices 
 in the PxConvexMesh object.
 */
-class PxConvexMeshGeometry : public PxGeometry
+class PxConvexMeshGeometry : public PxGeometry 
 {
 public:
-    /**
+	/**
 	\brief Default constructor.
 
 	Creates an empty object with a NULL mesh and identity scale.
 	*/
-    PX_INLINE PxConvexMeshGeometry()
-        :
-        PxGeometry(PxGeometryType::eCONVEXMESH)
-        ,
-        scale(PxMeshScale(1.0f))
-        ,
-        convexMesh(NULL)
-    {
-    }
+	PX_INLINE PxConvexMeshGeometry() :
+		PxGeometry	(PxGeometryType::eCONVEXMESH),
+		scale		(PxMeshScale(1.0f)),
+		convexMesh	(NULL)
+	{}
 
-    /**
+	/**
 	\brief Constructor.
 	\param[in] mesh		Mesh pointer. May be NULL, though this will not make the object valid for shape construction.
 	\param[in] scaling	Scale factor.
 	\param[in] flags	Mesh flags.
 	\
 	*/
-    PX_INLINE PxConvexMeshGeometry(PxConvexMesh* mesh,
-                                   const PxMeshScale& scaling = PxMeshScale(),
-                                   PxConvexMeshGeometryFlags flags = PxConvexMeshGeometryFlags())
-        :
-        PxGeometry(PxGeometryType::eCONVEXMESH)
-        ,
-        scale(scaling)
-        ,
-        convexMesh(mesh)
-        ,
-        meshFlags(flags)
-    {
-    }
+	PX_INLINE PxConvexMeshGeometry(	PxConvexMesh* mesh, 
+									const PxMeshScale& scaling = PxMeshScale(),
+									PxConvexMeshGeometryFlags flags = PxConvexMeshGeometryFlags()) :
+		PxGeometry	(PxGeometryType::eCONVEXMESH),
+		scale		(scaling),
+		convexMesh	(mesh),
+		meshFlags	(flags)
+	{
+	}
 
-    /**
+	/**
 	\brief Returns true if the geometry is valid.
 
 	\return True if the current settings are valid for shape creation.
@@ -126,27 +118,28 @@ public:
 
 	@see PxRigidActor::createShape, PxPhysics::createShape
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE bool isValid() const;
 
 public:
-    PxMeshScale scale; //!< The scaling transformation (from vertex space to shape space).
-    PxConvexMesh* convexMesh; //!< A reference to the convex mesh object.
-    PxConvexMeshGeometryFlags meshFlags; //!< Mesh flags.
-    PxPadding<3> paddingFromFlags; //!< padding for mesh flags
+	PxMeshScale					scale;				//!< The scaling transformation (from vertex space to shape space).
+	PxConvexMesh*				convexMesh;			//!< A reference to the convex mesh object.
+	PxConvexMeshGeometryFlags	meshFlags;			//!< Mesh flags.
+	PxPadding<3>				paddingFromFlags;	//!< padding for mesh flags
 };
+
 
 PX_INLINE bool PxConvexMeshGeometry::isValid() const
 {
-    if (mType != PxGeometryType::eCONVEXMESH)
-        return false;
-    if (!scale.scale.isFinite() || !scale.rotation.isUnit())
-        return false;
-    if (!scale.isValidForConvexMesh())
-        return false;
-    if (!convexMesh)
-        return false;
+	if(mType != PxGeometryType::eCONVEXMESH)
+		return false;
+	if(!scale.scale.isFinite() || !scale.rotation.isUnit())
+		return false;
+	if(!scale.isValidForConvexMesh())
+		return false;
+	if(!convexMesh)
+		return false;
 
-    return true;
+	return true;
 }
 
 #if !PX_DOXYGEN
