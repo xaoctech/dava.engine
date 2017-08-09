@@ -22,6 +22,7 @@
 #include "UI/UIWebView.h"
 #include "Render/RHI/rhi_Type.h"
 #include "Render/Highlevel/BillboardRenderObject.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 #include "Utils/BiDiHelper.h"
 
 using namespace DAVA;
@@ -420,4 +421,11 @@ ENUM_DECLARE(BillboardRenderObject::BillboardType)
 {
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_SPHERICAL, "Spherical");
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_CYLINDRICAL, "Cylindrical");
+}
+
+ENUM_DECLARE(GeoDecalManager::Mapping)
+{
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::PLANAR, "Planar");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::SPHERICAL, "Spherical");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::CYLINDRICAL, "Cylindrical");
 }

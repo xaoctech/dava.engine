@@ -32,7 +32,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         ScopedPtr<Scene> scene(new Scene());
         TEST_VERIFY(scene->LoadScene(scenePathname) == DAVA::SceneFileV2::eError::ERROR_NO_ERROR);
 
-        for (uint32 ct = Component::NOT_EXPORTED_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+        for (uint32 ct = Component::NON_EXPORTABLE_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
         { //test that RE specific components were removed
             Vector<Entity*> entities;
             scene->GetChildEntitiesWithComponent(entities, static_cast<Component::eType>(ct));

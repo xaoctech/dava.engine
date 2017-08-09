@@ -209,13 +209,14 @@ void SuspendRender()
         DispatchPlatform::FinishRendering();
     }
 
-    Logger::Error("Render  Suspended");
+    Logger::Info("Render Suspended");
 }
 
 void ResumeRender()
 {
     DVASSERT(renderThreadSuspended);
-    Logger::Error("Render Resumed");
+
+    Logger::Info("Render Resumed");
     renderThreadSuspended = false;
     if (renderThreadFrameCount)
     {
