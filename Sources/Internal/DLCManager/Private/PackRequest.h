@@ -4,6 +4,9 @@
 #include "DLCManager/DLCManager.h"
 #include "FileSystem/FilePath.h"
 #include "Compression/Compressor.h"
+#include "Utils/CRC32.h"
+
+#include <fstream>
 
 namespace DAVA
 {
@@ -50,10 +53,39 @@ private:
         Wait = 0,
         CheckLocalFile,
         LoadingPackFile, // download manager thread, wait on main thread
-        CheckHash, // on main thread (in future move to job manager)
+        //CheckHash, // on main thread (in future move to job manager)
         Ready, // on main thread
 
         Error
+    };
+
+    struct FileRequest;
+
+    struct DVPLWriter : DLCDownloader::IWriter
+    {
+        DVPLWriter(const FileRequest& fileRequest, PackRequest& packRequest, DLCDownloader& dm)
+            : fileRequest_(fileRequest)
+            , packRequest_(packRequest)
+            , dm_(dm)
+        {
+        }
+        ~DVPLWriter() override;
+        /** Save next buffer bytes into memory or file, on error return differs from parameter size */
+        uint64 Save(const void* ptr, uint64 size) override;
+        /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
+        uint64 GetSeekPos() override;
+        /** Truncate file(or buffer) to zero length, return false on error */
+        bool Truncate() override;
+        /** Close internal resource (file handle, socket, free memory) */
+        void Close() override;
+        /** Check internal state */
+        bool IsClosed() const override;
+
+        std::ofstream fout;
+        CRC32 crc32counter;
+        const FileRequest& fileRequest_;
+        PackRequest& packRequest_;
+        DLCDownloader& dm_;
     };
 
     struct FileRequest
@@ -82,6 +114,7 @@ private:
         DLCDownloader::Task* task = nullptr;
         Compressor::Type compressionType = Compressor::Type::Lz4HC;
         Status status = Wait;
+        std::shared_ptr<DVPLWriter> dvplWriter;
     };
 
     static void DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest);
@@ -89,7 +122,7 @@ private:
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
-    bool CheckFileHashState(FileRequest& fileRequest);
+    //bool CheckFileHashState(FileRequest& fileRequest);
     bool UpdateFileRequests();
 
     DLCManagerImpl* packManagerImpl = nullptr;
@@ -105,6 +138,7 @@ private:
     // else fileIndexes maybe empty and wait initialization
     bool delayedRequest = true;
     bool fileRequestsInitialized = false;
+    bool mutable isDownloaded = false;
 };
 
 } // end namespace DAVA
