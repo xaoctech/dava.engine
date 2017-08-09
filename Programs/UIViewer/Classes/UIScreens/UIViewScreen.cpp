@@ -75,7 +75,7 @@ UIViewScreen::UIViewScreen(DAVA::Window* window_, DAVA::ProgramOptions* options_
     }
     else
     {
-        projectPath = "~doc:/UIViewer/Project/";
+        projectPath = "~doc:/Project/";
     }
 }
 

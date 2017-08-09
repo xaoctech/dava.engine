@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
 
 using DAVA::int32;
