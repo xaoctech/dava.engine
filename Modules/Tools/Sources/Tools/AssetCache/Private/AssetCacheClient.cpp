@@ -586,7 +586,10 @@ void AssetCacheClient::DumpStats() const
             DVASSERT(stats.addRequestsCount == (stats.addRequestsFailedCount + stats.addRequestsTimeoutCount + stats.addRequestsSucceedCount));
         }
 
-        Logger::Info("incorrectPacketsCount: %d", stats.incorrectPacketsCount);
+        if (stats.incorrectPacketsCount > 0)
+        {
+            Logger::Info("incorrectPacketsCount: %d", stats.incorrectPacketsCount);
+        }
         Logger::Info("==========================");
     }
 }
