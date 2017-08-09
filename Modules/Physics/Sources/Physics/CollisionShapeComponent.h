@@ -35,9 +35,6 @@ public:
 
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
 
-    /** Get vector of collision components attached to the entity */
-    static Vector<CollisionShapeComponent*> GetFromEntity(Entity* entity);
-
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
     virtual void CheckShapeType() const = 0;

@@ -88,30 +88,6 @@ CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* s
     return reinterpret_cast<CollisionShapeComponent*>(shape->userData);
 }
 
-Vector<CollisionShapeComponent*> CollisionShapeComponent::GetFromEntity(Entity* entity)
-{
-    const PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
-
-    Vector<CollisionShapeComponent*> shapes;
-    for (uint32 shapeType : shapeComponents)
-    {
-        const size_t shapesCount = entity->GetComponentCount(shapeType);
-        if (shapesCount > 0)
-        {
-            for (int i = 0; i < shapesCount; ++i)
-            {
-                CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(entity->GetComponent(shapeType, i));
-                DVASSERT(component != nullptr);
-
-                shapes.push_back(component);
-            }
-        }
-    }
-
-    return shapes;
-}
-
 void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
 {
     DVASSERT(shape_ != nullptr);

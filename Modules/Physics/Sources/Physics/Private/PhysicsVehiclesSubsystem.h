@@ -1,14 +1,21 @@
 #pragma once
 
-#include <Entity/SceneSystem.h>
+#include <Base/BaseTypes.h>
+#include <Base/Vector.h>
+#include <Math/Vector.h>
 
 namespace physx
 {
 class PxScene;
+class PxShape;
 }
 
 namespace DAVA
 {
+class Scene;
+class Entity;
+class Component;
+class CollisionShapeComponent;
 class VehicleComponent;
 class VehicleChassisComponent;
 class VehicleWheelComponent;

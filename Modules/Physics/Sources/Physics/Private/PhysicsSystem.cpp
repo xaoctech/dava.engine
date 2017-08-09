@@ -8,6 +8,7 @@
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
+#include "Physics/PhysicsHelpers.h"
 #include "Physics/Private/PhysicsMath.h"
 #include "Physics/Private/PhysicsVehiclesSubsystem.h"
 
@@ -417,28 +418,27 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
             DVASSERT(rigidActor != nullptr);
 
-            // Update entity's transform and its shapes down the hierarchy
+            // Update entity's transform and its shapes down the hierarchy recursively
 
             Matrix4 scaleMatrix = Matrix4::MakeScale(component->currentScale);
             entity->SetWorldTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
 
-            const size_t childrenCount = entity->GetChildrenCount();
-            for (int i = 0; i < childrenCount; ++i)
+            Vector<Entity*> children;
+            entity->GetChildEntitiesWithCondition(children, [component](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == component; });
+
+            for (int i = 0; i < children.size(); ++i)
             {
-                Entity* child = entity->GetChild(i);
+                Entity* child = children[i];
                 DVASSERT(child != nullptr);
 
-                Vector<CollisionShapeComponent*> shapes = CollisionShapeComponent::GetFromEntity(child);
+                Vector<CollisionShapeComponent*> shapes = GetShapeComponents(child);
                 if (shapes.size() > 0)
                 {
-                    if (PhysicsSystemDetail::GetParentPhysicsComponent(child) == component)
-                    {
-                        // Update entity using just first shape for now
-                        CollisionShapeComponent* shape = shapes[0];
+                    // Update entity using just first shape for now
+                    CollisionShapeComponent* shape = shapes[0];
 
-                        Matrix4 scaleMatrix = Matrix4::MakeScale(shape->scale);
-                        child->SetLocalTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
-                    }
+                    Matrix4 scaleMatrix = Matrix4::MakeScale(shape->scale);
+                    child->SetLocalTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
                 }
             }
         }

@@ -1,14 +1,25 @@
 #include "Physics/Private/PhysicsVehiclesSubsystem.h"
 
+#include "Physics/PhysicsModule.h"
+#include "Physics/PhysicsHelpers.h"
 #include "Physics/VehicleComponent.h"
 #include "Physics/VehicleChassisComponent.h"
 #include "Physics/VehicleWheelComponent.h"
+#include "Physics/BoxShapeComponent.h"
+#include "Physics/ConvexHullShapeComponent.h"
+#include "Physics/PhysicsComponent.h"
+#include "Physics/Private/PhysicsMath.h"
 
+#include <Engine/Engine.h>
 #include <Input/InputSystem.h>
 #include <Time/SystemTimer.h>
 
 #include <physx/PxScene.h>
+#include <physx/PxBatchQueryDesc.h>
 #include <physx/vehicle/PxVehicleUtil.h>
+#include <physx/vehicle/PxVehicleTireFriction.h>
+#include <physx/vehicle/PxVehicleUpdate.h>
+#include <PxShared/foundation/PxAllocatorCallback.h>
 
 #include <algorithm>
 
@@ -481,7 +492,7 @@ void PhysicsVehiclesSubsystem::CreatePhysxVehicle(VehicleComponent* vehicleCompo
     VehicleChassisComponent* chassis = GetChassis(vehicleComponent);
     DVASSERT(chassis != nullptr);
 
-    Vector<CollisionShapeComponent*> chassisShapes = CollisionShapeComponent::GetFromEntity(chassis->GetEntity());
+    Vector<CollisionShapeComponent*> chassisShapes = GetShapeComponents(chassis->GetEntity());
     DVASSERT(chassisShapes.size() == 1);
     CollisionShapeComponent* chassisShape = chassisShapes[0];
 
@@ -515,7 +526,7 @@ void PhysicsVehiclesSubsystem::CreatePhysxVehicle(VehicleComponent* vehicleCompo
     for (int i = 0; i < wheels.size(); ++i)
     {
         VehicleWheelComponent* wheel = wheels[i];
-        Vector<CollisionShapeComponent*> wheelShapes = CollisionShapeComponent::GetFromEntity(wheel->GetEntity());
+        Vector<CollisionShapeComponent*> wheelShapes = GetShapeComponents(wheel->GetEntity());
         DVASSERT(wheelShapes.size() == 1);
         CollisionShapeComponent* wheelShape = wheelShapes[0];
 

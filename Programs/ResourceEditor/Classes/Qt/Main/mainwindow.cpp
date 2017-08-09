@@ -2211,8 +2211,10 @@ void QtMainWindow::OnAddPathEntity()
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 
-RenderObject* CreateVehicleWheelRenderObject(float32 radius, float32 width)
+DAVA::RenderObject* CreateVehicleWheelRenderObject(DAVA::float32 radius, DAVA::float32 width)
 {
+    using namespace DAVA;
+
     // Generate wheel mesh triangles
 
     const size_t segments = 36;
@@ -2280,17 +2282,19 @@ RenderObject* CreateVehicleWheelRenderObject(float32 radius, float32 width)
     return renderObject;
 }
 
-Entity* CreateVehicleWheelEntity(String name, float32 radius, float32 width, float32 mass, Vector3 localTranslation)
+DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, DAVA::float32 width, DAVA::float32 mass, DAVA::Vector3 localTranslation)
 {
-    DAVA::Entity* wheel = new DAVA::Entity();
+    using namespace DAVA;
+
+    Entity* wheel = new Entity();
     wheel->SetName(name.c_str());
 
-    DAVA::VehicleWheelComponent* wheelComponent = new DAVA::VehicleWheelComponent();
+    VehicleWheelComponent* wheelComponent = new VehicleWheelComponent();
     wheelComponent->SetRadius(radius);
     wheelComponent->SetWidth(width);
     wheel->AddComponent(wheelComponent);
 
-    DAVA::ConvexHullShapeComponent* shape = new DAVA::ConvexHullShapeComponent();
+    ConvexHullShapeComponent* shape = new ConvexHullShapeComponent();
     shape->SetOverrideMass(true);
     shape->SetMass(mass);
     wheel->AddComponent(shape);
@@ -2310,7 +2314,9 @@ Entity* CreateVehicleWheelEntity(String name, float32 radius, float32 width, flo
 void QtMainWindow::OnAddVehicleEntity()
 {
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
+    using namespace DAVA;
+
+    RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (scene.Get() == nullptr)
         return;
 
@@ -2321,11 +2327,11 @@ void QtMainWindow::OnAddVehicleEntity()
     const float32 wheelMass = 20.0f;
 
     // Root entity
-    DAVA::Entity* vehicleEntity = new DAVA::Entity();
+    Entity* vehicleEntity = new DAVA::Entity();
     vehicleEntity->SetName("Vehicle");
-    DAVA::VehicleComponent* vehicleComponent = new DAVA::VehicleComponent();
+    VehicleComponent* vehicleComponent = new VehicleComponent();
     vehicleEntity->AddComponent(vehicleComponent);
-    DAVA::DynamicBodyComponent* dynamicBody = new DAVA::DynamicBodyComponent();
+    DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
     vehicleEntity->AddComponent(dynamicBody);
 
     // Wheels
@@ -2347,18 +2353,18 @@ void QtMainWindow::OnAddVehicleEntity()
     vehicleEntity->AddNode(vehicleWheel1Entity);
 
     // Chassis
-    DAVA::Entity* vehicleChassisEntity = new DAVA::Entity();
+    Entity* vehicleChassisEntity = new Entity();
     vehicleChassisEntity->SetName("Chassis");
-    DAVA::VehicleChassisComponent* chassisComponent = new DAVA::VehicleChassisComponent();
+    VehicleChassisComponent* chassisComponent = new VehicleChassisComponent();
     vehicleChassisEntity->AddComponent(chassisComponent);
-    DAVA::BoxShapeComponent* chassisShape = new DAVA::BoxShapeComponent();
+    BoxShapeComponent* chassisShape = new BoxShapeComponent();
     chassisShape->SetHalfSize(chassisHalfDimensions);
     chassisShape->SetOverrideMass(true);
     chassisShape->SetMass(chassisMass);
     vehicleChassisEntity->AddComponent(chassisShape);
     vehicleEntity->AddNode(vehicleChassisEntity);
 
-    scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(vehicleEntity, scene.Get())));
+    scene->Exec(std::unique_ptr<Command>(new EntityAddCommand(vehicleEntity, scene.Get())));
 #endif
 }
 
