@@ -189,6 +189,7 @@ public:
     template <class T>
     T* GetSingletonComponent();
     void RemoveSingletonComponent(SingletonComponent* component);
+    Vector<SingletonComponent*> singletonComponents;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -267,8 +268,6 @@ protected:
     Vector<Camera*> cameras;
 
     NMaterial* sceneGlobalMaterial;
-
-    Vector<SingletonComponent*> singletonComponents;
 
     Camera* mainCamera;
     Camera* drawCamera;
