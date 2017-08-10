@@ -7,7 +7,6 @@
 
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
-#include <Debug/DebuggerDetection.h>
 #include <Concurrency/LockGuard.h>
 #include <Concurrency/Thread.h>
 
@@ -83,20 +82,20 @@ public:
         Assert::FailBehaviour behaviour = Assert::FailBehaviour::Default;
         switch (mode)
         {
-        case eApplicationMode::CONSOLE_MODE:
-            behaviour = Assert::DefaultLoggerHandler(assertInfo);
-            break;
         case eApplicationMode::GUI_MODE:
             Assert::DefaultLoggerHandler(assertInfo);
             behaviour = Assert::DefaultDialogBoxHandler(assertInfo);
             break;
+
+        case eApplicationMode::CONSOLE_MODE:
         case eApplicationMode::TEST_MODE:
             behaviour = Assert::DefaultLoggerHandler(assertInfo);
-            if (IsDebuggerPresent())
+            if (Assert::FailBehaviour::Halt != behaviour)
             {
-                behaviour = Assert::FailBehaviour::Halt;
+                behaviour = Assert::DefaultDebuggerBreakHandler(assertInfo);
             }
             break;
+
         default:
             break;
         }
