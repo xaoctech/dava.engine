@@ -548,34 +548,38 @@ void EmitterLayerWidget::InitForcesWidget()
     //    delete layout->takeAt(i);
     //}
     
-    ParticleEffectComponent* component = GetEffect(GetActiveScene());
-    Entity* effectEntity = component->GetEntity();
     // TODO loop up all forces in effectEntity and store names in availableForces
+    /**/
+    const Vector<std::pair<FastName, ParticleDragForceComponent*>>& layerForces = layer->GetForces();
 
-    const Vector<FastName>& layerForces = layer->GetForces();
-
-    Set<FastName> allForces;
+    Set<std::pair<FastName, ParticleDragForceComponent*>> allForces;
     for (auto& forceName : layerForces)
     {
-        allForces.insert(forceName);
+        allForces.insert({ forceName.first, forceName.second });
     }
 
+    ParticleEffectComponent* component = GetEffect(GetActiveScene());
+    Entity* effectEntity = component->GetEntity();
     int32 childrenCount = effectEntity->GetChildrenCount();
     
     for (int32 i = 0; i < childrenCount; ++i)
     {
         Entity* child = effectEntity->GetChild(i);
         ParticleDragForceComponent* force = GetDragForceComponent(child);
-        if (force != nullptr && std::find(allForces.begin(), allForces.end(), child->GetName()) == allForces.end())
+        auto it = std::find_if(allForces.begin(), allForces.end(), [&child](const std::pair<FastName, ParticleDragForceComponent*> p)
         {
-            allForces.insert(child->GetName());
+            return p.first == child->GetName();
+        });
+        if (force != nullptr && it == allForces.end())
+        {
+            allForces.insert({ child->GetName(), force });
         }
     }
 
 
     for (size_t i = 0; i < layerForces.size(); ++i)
     {
-        const FastName& forceName = layerForces[i];
+        const FastName& forceName = layerForces[i].first;
         QHBoxLayout* currentForceLayout = new QHBoxLayout();
         layout->addLayout(currentForceLayout);
 
@@ -586,9 +590,9 @@ void EmitterLayerWidget::InitForcesWidget()
         //comboboxItems.emplace_back(QString(forceName.c_str()));
         for (auto& currentForce : allForces)
         {
-            if (currentForce.IsValid() && currentForce != FastName("Undefined"))// && std::find(selectedForces.begin(), selectedForces.end(), availableForceName) == selectedForces.end())
+            if (currentForce.first.IsValid() && currentForce.first != FastName("Undefined"))// && std::find(selectedForces.begin(), selectedForces.end(), availableForceName) == selectedForces.end())
             {
-                comboboxItems.insert(QString(currentForce.c_str()));
+                comboboxItems.insert(QString(currentForce.first.c_str()));
             }
         }
         comboboxItems.insert(QString(forceName.c_str()));
@@ -1093,11 +1097,11 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 void EmitterLayerWidget::OnAddForce()
 {
     // TODO
-    auto forces = layer->GetForces();
+    const Vector<std::pair<FastName, ParticleDragForceComponent*>>& forces = layer->GetForces();
     if (forces.empty())
         layer->AddDragForce(FastName(EmitterLayerWidgetDetails::undefinedForce.toStdString()), nullptr);
     else
-        layer->AddDragForce(forces.back(), nullptr);
+        layer->AddDragForce(forces.back().first, forces.back().second);
 
     executor.DelayedExecute([this]() {
         InitForcesWidget();
@@ -1134,8 +1138,22 @@ void EmitterLayerWidget::OnForceChanged(const QString& forceName)
     {
         newForceName = DAVA::FastName(forceName.toStdString());
     }
+    ParticleEffectComponent* component = GetEffect(GetActiveScene());
+    Entity* effectEntity = component->GetEntity();
+    int32 childrenCount = effectEntity->GetChildrenCount();
+    ParticleDragForceComponent* dragForceComponent = nullptr;
+    for (int32 i = 0; i < childrenCount; ++i)
+    {
+        Entity* child = effectEntity->GetChild(i);
+        ParticleDragForceComponent* force = GetDragForceComponent(child);
+        if (force != nullptr && child->GetName() == newForceName)
+        {
+            dragForceComponent = force;
+            break;
+        }
+    }
 
-    layer->ReplaceDragForce(forceIndex, newForceName);
+    layer->ReplaceDragForce(forceIndex, newForceName, dragForceComponent);
 }
 
 void EmitterLayerWidget::OnCleanupDragForce()
