@@ -98,7 +98,7 @@ public:
         /** Truncate file(or buffer) to zero length, return false on error */
         virtual bool Truncate() = 0;
         /** Close internal resource (file handle, socket, free memory) */
-        virtual void Close() = 0;
+        virtual bool Close() = 0;
         /** Check internal state */
         virtual bool IsClosed() const = 0;
     };
@@ -172,11 +172,11 @@ public:
     /** Start downloading to dstPath file */
     virtual Task* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
     /** Start downloading to custom writer */
-    virtual Task* StartTask(const String& srcUrl, IWriter& customWriter, Range range = EmptyRange) = 0;
+    virtual Task* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
     /** Resume downloading to file starting from current file size */
     virtual Task* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
     /** Resume downloading to custom writer starting from current position */
-    virtual Task* ResumeTask(const String& srcUrl, IWriter& customWriter, Range range = EmptyRange) = 0;
+    virtual Task* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
 
     /**  Clear task data and free resources */
     virtual void RemoveTask(Task* task) = 0;

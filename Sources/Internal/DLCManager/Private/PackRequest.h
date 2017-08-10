@@ -61,12 +61,16 @@ private:
 
     struct FileRequest;
 
-    struct DVPLWriter : DLCDownloader::IWriter
+    class DVPLWriter : public DLCDownloader::IWriter
     {
-        DVPLWriter(const FileRequest& fileRequest, PackRequest& packRequest, DLCDownloader& dm)
-            : fileRequest_(fileRequest)
-            , packRequest_(packRequest)
-            , dm_(dm)
+    public:
+        DVPLWriter(DLCDownloader& dm, FilePath& localPath, uint32 sizeCompressed, uint32 sizeUncompressed, uint32 crc32Compressed, Compressor::Type compressionType)
+            : localPath_(localPath)
+            , downloader_(dm)
+            , sizeCompressed_(sizeCompressed)
+            , sizeUncompressed_(sizeUncompressed)
+            , crc32Compressed_(crc32Compressed)
+            , compressionType_(compressionType)
         {
         }
         ~DVPLWriter() override;
@@ -78,15 +82,19 @@ private:
         /** Truncate file(or buffer) to zero length, return false on error */
         bool Truncate() override;
         /** Close internal resource (file handle, socket, free memory) */
-        void Close() override;
+        bool Close() override;
         /** Check internal state */
         bool IsClosed() const override;
 
+    private:
         std::ofstream fout;
         CRC32 crc32counter;
-        const FileRequest& fileRequest_;
-        PackRequest& packRequest_;
-        DLCDownloader& dm_;
+        FilePath localPath_;
+        DLCDownloader& downloader_;
+        const uint32 sizeCompressed_;
+        const uint32 sizeUncompressed_;
+        const uint32 crc32Compressed_;
+        const Compressor::Type compressionType_;
         bool opened = false;
     };
 
