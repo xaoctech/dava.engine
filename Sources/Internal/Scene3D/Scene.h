@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/Entity.h"
+#include "Base/BaseTypes.h"
+#include "Base/Observer.h"
+#include "Entity/SingletonComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Render/RenderBase.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Scene3D/SceneFileV2.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
-#include "Base/Observer.h"
+#include "Scene3D/SceneFileV2.h"
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/PhysicsSystem.h>
 #endif
@@ -54,6 +55,7 @@ class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
+class SingletonComponent;
 
 class UIEvent;
 class RenderPass;
@@ -145,6 +147,8 @@ public:
 
     virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
     virtual void RemoveSystem(SceneSystem* sceneSystem);
+    template <class T>
+    T* GetSystem();
 
     Vector<SceneSystem*> systems;
     Vector<SceneSystem*> systemsToProcess;
@@ -180,6 +184,11 @@ public:
 #endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
+
+    void AddSingletonComponent(SingletonComponent* component);
+    template <class T>
+    T* GetSingletonComponent();
+    void RemoveSingletonComponent(SingletonComponent* component);
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -259,6 +268,8 @@ protected:
 
     NMaterial* sceneGlobalMaterial;
 
+    Vector<SingletonComponent*> singletonComponents;
+
     Camera* mainCamera;
     Camera* drawCamera;
 
@@ -270,6 +281,42 @@ protected:
 
     friend class Entity;
 };
+
+template <class T>
+T* Scene::GetSystem()
+{
+    T* res = nullptr;
+    const type_info& type = typeid(T);
+    for (SceneSystem* system : systems)
+    {
+        const type_info& currType = typeid(*system);
+        if (currType == type)
+        {
+            res = static_cast<T*>(system);
+            break;
+        }
+    }
+
+    return res;
+}
+
+template <class T>
+T* Scene::GetSingletonComponent()
+{
+    T* res = nullptr;
+    const type_info& type = typeid(T);
+    for (SingletonComponent* component : singletonComponents)
+    {
+        const type_info& currType = typeid(*component);
+        if (currType == type)
+        {
+            res = static_cast<T*>(component);
+            break;
+        }
+    }
+
+    return res;
+}
 
 int32 Scene::GetCameraCount()
 {
