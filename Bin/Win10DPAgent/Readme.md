@@ -21,7 +21,7 @@ pip install lxml requests requests_toolbelt websocket_client
 
 #### List:
 ```
-python Win10dpa.py list installed(running) -url=10.1.3.37 -timeout=15.0
+python win10_dpa.py list installed(running) -url=10.1.3.37 -timeout=15.0
 ```
 
 Output is JSON. 
@@ -40,7 +40,7 @@ For **'running'**:
 
 #### Deploy:
 ```
-python Win10dpa.py deploy "c:/path/to/appx/or/appxbundle/file.appx" -deps_paths="c:/path/to/specific/arch/dep/ARM/file.appx","c:/path/to/specific/arch/deps/dir/ARM" -cer_path="c:/path/to/cer/file.cer" -force -url=10.1.3.37 -timeout=15.0
+python win10_dpa.py deploy "c:/path/to/appx/or/appxbundle/file.appx" -deps_paths="c:/path/to/specific/arch/dep/ARM/file.appx","c:/path/to/specific/arch/deps/dir/ARM" -cer_path="c:/path/to/cer/file.cer" -force -url=10.1.3.37 -timeout=15.0
 ```
 
 First argument is a path to .appx or .appxbundle file to be deployed.  
@@ -54,7 +54,7 @@ First argument is a path to .appx or .appxbundle file to be deployed.
 
 #### Attach:
 ```
-python Win10dpa.py attach -start(-monitor) "package full name here" -guids="4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a","3bd1826e-53a1-4ba9-bf63-92b73ea1bc4b" -channels="DAVALogProvider","Test-log-service","YouNameIt" -log_levels="1,2,3,4,5" -no_timestamp -wait_time=21.0 -url=10.1.3.37 -timeout=15.0
+python win10_dpa.py attach -start(-monitor) "package full name here" -guids="4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a","3bd1826e-53a1-4ba9-bf63-92b73ea1bc4b" -channels="DAVALogProvider","Test-log-service","YouNameIt" -log_levels="1,2,3,4,5" -no_timestamp -wait_time=21.0 -url=10.1.3.37 -timeout=15.0
 ```
   
 **'-start'** is optional flag, specify PackageFullName (you can get it by app name from 'list' option) to start. Log session will be closed when app process stopped. App will be stopped and restarted if it's already running.  
@@ -73,7 +73,7 @@ You can attach without **'-start'** or **'-monitor'**, then you need to stop ses
 
 #### Stop:
 ```
-python Win10dpa.py stop "package full name here" -url=10.1.3.37 -timeout=15.0
+python win10_dpa.py stop "package full name here" -url=10.1.3.37 -timeout=15.0
 ```
 App with given package full name will be stopped (app process may stay active)  
 
@@ -83,7 +83,7 @@ App with given package full name will be stopped (app process may stay active)
 
 #### Uninstall
 ```
-python Win10dpa.py uninstall "package full name here" -url=10.1.3.37 -timeout=15.0
+python win10_dpa.py uninstall "package full name here" -url=10.1.3.37 -timeout=15.0
 ```
 App with given package full name will be uninstalled.  
 
@@ -106,7 +106,7 @@ import subprocess
 def main():
     package_name = sys.argv[1]
     url = "http://10.1.3.37"
-    exec_string = "python win10dpa.py {} {} -url=" + url
+    exec_string = "python win10_dpa.py {} {} -url=" + url
 
     env = os.environ
     env['PYTHONIOENCODING'] = 'utf-8'
