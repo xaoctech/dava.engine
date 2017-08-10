@@ -285,10 +285,10 @@ template <class T>
 T* Scene::GetSystem()
 {
     T* res = nullptr;
-    const type_info& type = typeid(T);
+    const std::type_info& type = typeid(T);
     for (SceneSystem* system : systems)
     {
-        const type_info& currType = typeid(*system);
+        const std::type_info& currType = typeid(*system);
         if (currType == type)
         {
             res = static_cast<T*>(system);
@@ -303,10 +303,10 @@ template <class T>
 T* Scene::GetSingletonComponent()
 {
     T* res = nullptr;
-    const type_info& type = typeid(T);
+    const std::type_info& type = typeid(T);
     for (SingletonComponent* component : singletonComponents)
     {
-        const type_info& currType = typeid(*component);
+        const std::type_info& currType = typeid(*component);
         if (currType == type)
         {
             res = static_cast<T*>(component);
