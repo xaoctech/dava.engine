@@ -285,6 +285,7 @@ void RequestManager::Pop()
         packManager.GetLog() << "downloaded: " << (*it)->GetRequestedPackName() << std::endl;
 
         auto nameIt = requestNames.find((*it)->GetRequestedPackName());
+        (*it)->Finalize();
 
         requestNames.erase(nameIt);
         requests.erase(it);

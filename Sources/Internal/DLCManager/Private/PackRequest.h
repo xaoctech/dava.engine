@@ -40,6 +40,9 @@ public:
     /** return true when all files loaded and ready */
     bool IsDownloaded() const override;
 
+    // clear redundant data to free memory
+    void Finalize();
+
     void SetFileIndexes(Vector<uint32> fileIndexes_);
 
     /** this request depends on other, so other should be downloaded first */
@@ -59,8 +62,6 @@ private:
         Error
     };
 
-    struct FileRequest;
-
     class DVPLWriter : public DLCDownloader::IWriter
     {
     public:
@@ -73,8 +74,7 @@ private:
             , compressionType_(compressionType)
         {
         }
-        ~DVPLWriter() override;
-        bool OpenFile(uint64& value1);
+        bool OpenFile();
         /** Save next buffer bytes into memory or file, on error return differs from parameter size */
         uint64 Save(const void* ptr, uint64 size) override;
         /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
@@ -132,7 +132,6 @@ private:
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
-    //bool CheckFileHashState(FileRequest& fileRequest);
     bool UpdateFileRequests();
 
     DLCManagerImpl* packManagerImpl = nullptr;
@@ -143,6 +142,7 @@ private:
     mutable Vector<uint32> dependencyCache;
 
     uint32 numOfDownloadedFile = 0;
+    uint64 totalDownloadedSize = 0;
 
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization
