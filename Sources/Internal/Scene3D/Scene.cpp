@@ -4,7 +4,6 @@
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Entity/SceneSystem.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/Highlevel/Landscape.h"

@@ -7,12 +7,14 @@ using namespace DAVA;
 class Mysystem : public SceneSystem
 {
 public:
-    Mysystem(Scene* scene) : SceneSystem(scene) {}
+    Mysystem(Scene* scene)
+        : SceneSystem(scene)
+    {
+    }
 };
 
 class MyComponent : public SingletonComponent
 {
-
 };
 
 DAVA_TESTCLASS (SceneTest)
@@ -20,10 +22,16 @@ DAVA_TESTCLASS (SceneTest)
     DAVA_TEST (GetSystem)
     {
         Scene* scene = new Scene();
-        SCOPE_EXIT{ SafeRelease(scene); };
+        SCOPE_EXIT
+        {
+            SafeRelease(scene);
+        };
 
         Mysystem* mySystem = new Mysystem(scene);
-        SCOPE_EXIT{delete mySystem; };
+        SCOPE_EXIT
+        {
+            delete mySystem;
+        };
 
         TEST_VERIFY(scene->GetSystem<Mysystem>() == nullptr);
 
@@ -32,15 +40,21 @@ DAVA_TESTCLASS (SceneTest)
 
         scene->RemoveSystem(mySystem);
         TEST_VERIFY(scene->GetSystem<Mysystem>() == nullptr);
-	}
+    }
 
-    DAVA_TEST(SingletonComponent)
+    DAVA_TEST (SingletonComponent)
     {
         Scene* scene = new Scene();
-        SCOPE_EXIT{SafeRelease(scene); };
+        SCOPE_EXIT
+        {
+            SafeRelease(scene);
+        };
 
         MyComponent* myComponent = new MyComponent();
-        SCOPE_EXIT{delete myComponent; };
+        SCOPE_EXIT
+        {
+            delete myComponent;
+        };
 
         TEST_VERIFY(scene->GetSingletonComponent<MyComponent>() == nullptr);
 

@@ -3,6 +3,7 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
 #include "Entity/SingletonComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
@@ -29,7 +30,6 @@ class Light;
 class ShadowRect;
 class QuadTree;
 class Component;
-class SceneSystem;
 class RenderSystem;
 class RenderUpdateSystem;
 class TransformSystem;
@@ -55,7 +55,6 @@ class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
-class SingletonComponent;
 
 class UIEvent;
 class RenderPass;
