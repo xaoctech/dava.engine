@@ -486,7 +486,7 @@ void AssetCacheClient::OnCacheCleared(bool cleared)
 void AssetCacheClient::OnIncorrectPacketReceived(AssetCache::IncorrectPacketType type)
 {
     LockGuard<Mutex> guard(requestLocker);
-    stats.incorrectPacketsCount = 0;
+    ++stats.incorrectPacketsCount;
     request.recieved = true;
     request.processingRequest = false;
 
