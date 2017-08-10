@@ -65,7 +65,7 @@ FailBehaviour DefaultDialogBoxHandler(const AssertInfo& assertInfo)
     return choice <= 0 ? FailBehaviour::Halt : FailBehaviour::Continue;
 }
 
-FailBehaviour DefaultConsoleDebuggerHandler(const AssertInfo& assertInfo)
+FailBehaviour DefaultDebuggerBreakHandler(const AssertInfo& assertInfo)
 {
     return (IsDebuggerPresent() == true) ? FailBehaviour::Halt : FailBehaviour::Continue;
 }
