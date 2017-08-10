@@ -1,4 +1,4 @@
-#include "DAEConverter.h"
+#include "Classes/Library/Private/DAEConverter.h"
 #include "Classes/Collada/ColladaConvert.h"
 #include "Classes/Collada/ImportParams.h"
 
