@@ -54,6 +54,7 @@ void MotionSystem::Process(float32 timeElapsed)
     for (MotionComponent* motionComponent : msc->reloadConfig)
     {
         motionComponent->ReloadFromConfig();
+        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
         msc->rebindAnimation.emplace_back(motionComponent);
     }
 
@@ -62,14 +63,14 @@ void MotionSystem::Process(float32 timeElapsed)
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
         DVASSERT(skeleton);
 
-        if (motionComponent->GetMotionsCount() > 0)
+        uint32 motionCount = motionComponent->GetMotionsCount();
+        for (uint32 m = 0; m < motionCount; ++m)
         {
-            Motion* motion = motionComponent->GetMotion(0);
+            Motion* motion = motionComponent->GetMotion(m);
             motion->BindSkeleton(skeleton);
             skeleton->ApplyPose(motion->GetCurrentSkeletonPose());
-
-            activeComponents.emplace_back(motionComponent);
         }
+        activeComponents.emplace_back(motionComponent);
     }
 
     for (MotionComponent* motionComponent : msc->stopAnimation)
@@ -118,14 +119,36 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
 {
     DVASSERT(motionComponent);
 
-    if (motionComponent->GetMotionsCount() == 0)
-        return;
+    SkeletonPose resultPose;
 
-    Motion* motion = motionComponent->GetMotion(0);
-    motion->Update(dTime);
+    uint32 motionCount = motionComponent->GetMotionsCount();
+    for (uint32 m = 0; m < motionCount; ++m)
+    {
+        Motion* motion = motionComponent->GetMotion(m);
+        motion->Update(dTime);
+
+        Motion::eMotionBlend blendMode = motion->GetBlendMode();
+        switch (blendMode)
+        {
+        case DAVA::Motion::BLEND_OVERRIDE:
+            resultPose.Override(motion->GetCurrentSkeletonPose());
+            break;
+        case DAVA::Motion::BLEND_ADD:
+            resultPose.Add(motion->GetCurrentSkeletonPose());
+            break;
+        case DAVA::Motion::BLEND_SUB:
+            resultPose.Sub(motion->GetCurrentSkeletonPose());
+            break;
+        case DAVA::Motion::BLEND_LERP:
+            resultPose.Lerp(motion->GetCurrentSkeletonPose(), 0.5f /*motion-blend param*/);
+            break;
+        default:
+            break;
+        }
+    }
 
     SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-    DVASSERT(skeleton);
-    skeleton->ApplyPose(motion->GetCurrentSkeletonPose());
+    if (skeleton)
+        skeleton->ApplyPose(resultPose);
 }
 }

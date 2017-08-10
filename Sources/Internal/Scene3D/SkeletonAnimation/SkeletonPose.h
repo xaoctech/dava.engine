@@ -23,9 +23,10 @@ public:
 
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
 
-    static SkeletonPose Add(const SkeletonPose& p0, const SkeletonPose& p1);
-    static SkeletonPose Sub(const SkeletonPose& p0, const SkeletonPose& p1);
-    static SkeletonPose Lerp(const SkeletonPose& p0, const SkeletonPose& p1, float32 factor);
+    void Add(const SkeletonPose& other);
+    void Sub(const SkeletonPose& other);
+    void Override(const SkeletonPose& other);
+    void Lerp(const SkeletonPose& other, float32 factor);
 
 private:
     Vector<JointTransform> jointTransforms;
@@ -81,8 +82,12 @@ inline void SkeletonPose::SetScale(uint32 jointIndex, float32 scale)
 
 inline const JointTransform& SkeletonPose::GetJointTransform(uint32 jointIndex) const
 {
-    DVASSERT(jointIndex < GetJointsCount());
-    return jointTransforms[jointIndex];
+    static JointTransform emptyTransform;
+
+    if (jointIndex < GetJointsCount())
+        return jointTransforms[jointIndex];
+    else
+        return emptyTransform;
 }
 
 } //ns

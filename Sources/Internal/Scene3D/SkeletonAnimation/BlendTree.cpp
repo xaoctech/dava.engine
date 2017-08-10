@@ -99,10 +99,10 @@ void BlendTree::EvaluateRecursive(float32 phase, const BlendNode& node, const Ve
                 float32 factor = (parameter - coord0) / (coord1 - coord0);
                 if (outPose != nullptr)
                 {
-                    SkeletonPose pose0, pose1;
-                    EvaluateRecursive(phase, child0, parameters, &pose0, nullptr);
+                    SkeletonPose pose1;
+                    EvaluateRecursive(phase, child0, parameters, outPose, nullptr);
                     EvaluateRecursive(phase, child1, parameters, &pose1, nullptr);
-                    *outPose = SkeletonPose::Lerp(pose0, pose1, factor);
+                    outPose->Lerp(pose1, factor);
                 }
 
                 if (outPhaseDuration != nullptr)

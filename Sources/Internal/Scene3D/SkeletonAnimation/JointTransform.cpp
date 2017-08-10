@@ -15,6 +15,31 @@ Matrix4 JointTransform::GetMatrix() const
     return result;
 }
 
+JointTransform JointTransform::AppendTransform(const JointTransform& transform) const
+{
+    //TODO: *Skinning* optimize by flags
+
+    JointTransform res;
+    res.position = ApplyToPoint(transform.position);
+    res.orientation = orientation * transform.orientation;
+    res.scale = scale * transform.scale;
+    res.flags = flags | transform.flags;
+    return res;
+}
+
+JointTransform JointTransform::SubtractTransform(const JointTransform& transform) const
+{
+    //TODO: *Skinning* optimize by flags
+
+    JointTransform res;
+    res.scale = scale / transform.scale;
+    res.orientation = orientation * transform.orientation.GetInverse();
+    res.position = position - res.orientation.ApplyToVectorFast(transform.position) * res.scale;
+    res.flags = flags | transform.flags;
+
+    return res;
+}
+
 AABBox3 JointTransform::ApplyToAABBox(const AABBox3& bbox) const
 {
     const Vector3& min = bbox.min;

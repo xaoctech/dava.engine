@@ -31,6 +31,7 @@ public:
 
     inline Matrix4 GetMatrix() const;
     inline void GetMatrix(Matrix4* m) const;
+    inline Quaternion GetInverse() const;
 
     inline float32 Lenght() const;
     inline void Normalize();
@@ -198,6 +199,13 @@ inline void Quaternion::Inverse()
 {
     Transpose(); //
     Normalize(); //
+}
+
+inline Quaternion Quaternion::GetInverse() const
+{
+    Quaternion result = *this;
+    result.Inverse();
+    return result;
 }
 
 inline Matrix4 Quaternion::GetMatrix() const

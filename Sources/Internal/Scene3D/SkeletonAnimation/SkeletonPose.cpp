@@ -8,46 +8,63 @@ SkeletonPose::SkeletonPose(uint32 jointCount)
     SetJointCount(jointCount);
 }
 
-SkeletonPose SkeletonPose::Add(const SkeletonPose& p0, const SkeletonPose& p1)
+void SkeletonPose::Add(const SkeletonPose& other)
 {
-    uint32 maxJoints = Max(p0.GetJointsCount(), p1.GetJointsCount());
-    SkeletonPose resultPose(maxJoints);
-    for (uint32 j = 0; j < resultPose.GetJointsCount(); ++j)
-    {
-        const JointTransform transform0 = p0.GetJointTransform(j);
-        const JointTransform transform1 = p1.GetJointTransform(j);
-        resultPose.SetTransform(j, transform0.AppendTransform(transform1));
-    }
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
 
-    return resultPose;
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, transform0.AppendTransform(transform1));
+    }
 }
 
-SkeletonPose SkeletonPose::Sub(const SkeletonPose& p0, const SkeletonPose& p1)
+void SkeletonPose::Sub(const SkeletonPose& other)
 {
-    uint32 maxJoints = Max(p0.GetJointsCount(), p1.GetJointsCount());
-    SkeletonPose resultPose(maxJoints);
-    for (uint32 j = 0; j < resultPose.GetJointsCount(); ++j)
-    {
-        const JointTransform transform0 = p0.GetJointTransform(j);
-        const JointTransform transform1 = p1.GetJointTransform(j);
-        resultPose.SetTransform(j, transform0.AppendTransform(transform1.GetInverse()));
-    }
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
 
-    return resultPose;
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, transform0.SubtractTransform(transform1));
+    }
 }
 
-SkeletonPose SkeletonPose::Lerp(const SkeletonPose& p0, const SkeletonPose& p1, float32 factor)
+void SkeletonPose::Override(const SkeletonPose& other)
 {
-    uint32 maxJoints = Max(p0.GetJointsCount(), p1.GetJointsCount());
-    SkeletonPose resultPose(maxJoints);
-    for (uint32 j = 0; j < resultPose.GetJointsCount(); ++j)
-    {
-        const JointTransform transform0 = p0.GetJointTransform(j);
-        const JointTransform transform1 = p1.GetJointTransform(j);
-        resultPose.SetTransform(j, JointTransform::Lerp(transform0, transform1, factor));
-    }
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
 
-    return resultPose;
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& otherTransform = other.GetJointTransform(j);
+
+        if (otherTransform.HasPosition())
+            SetPosition(j, otherTransform.GetPosition());
+
+        if (otherTransform.HasOrientation())
+            SetOrientation(j, otherTransform.GetOrientation());
+
+        if (otherTransform.HasScale())
+            SetScale(j, otherTransform.GetScale());
+    }
+}
+
+void SkeletonPose::Lerp(const SkeletonPose& other, float32 factor)
+{
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
+
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, JointTransform::Lerp(transform0, transform1, factor));
+    }
 }
 
 } //ns
