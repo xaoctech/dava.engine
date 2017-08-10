@@ -5,7 +5,7 @@ import build_utils
 
 def get_supported_targets(platform):
     if platform == 'win32':
-        return ['win32', 'win10']
+        return ['win32', 'win10', 'android']
     elif platform == 'darwin':
         return ['macos', 'ios', 'android']
     elif platform == 'linux':
