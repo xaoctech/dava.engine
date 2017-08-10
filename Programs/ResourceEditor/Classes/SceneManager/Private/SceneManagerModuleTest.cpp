@@ -419,6 +419,7 @@ private:
             testCompleted = false;
             EXPECT_CALL(*this, AfterWrappersSync())
             .WillOnce(Return())
+            .WillOnce(Return())
             .WillOnce(Invoke([this, &listener]() {
 
                 testCompleted = true;
