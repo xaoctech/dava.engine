@@ -527,9 +527,8 @@ Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
         DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
         const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
         jointTransform = transform.orientation.GetMatrix();
-        jointTransform.SetTranslationVector(transform.position);
-
         jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
+        jointTransform.SetTranslationVector(transform.position);
     }
 
     return jointTransform;
@@ -546,11 +545,9 @@ DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
     DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
     const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
     Matrix4 jointTransform = transform.orientation.GetMatrix();
-    jointTransform.SetTranslationVector(transform.position);
-
     jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
-
-    return jointTransform * component->GetAttachmentTransform();
+    jointTransform.SetTranslationVector(transform.position);
+    return component->GetAttachmentTransform() * jointTransform;
 }
 
 void SlotSystem::SetScene(Scene* scene)

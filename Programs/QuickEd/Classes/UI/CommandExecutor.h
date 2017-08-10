@@ -56,7 +56,7 @@ public:
     void AddStyleSelector(StyleSheetNode* node);
     void RemoveStyleSelector(StyleSheetNode* node, DAVA::int32 selectorIndex);
 
-    DAVA::ResultList InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const;
+    void InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const;
     DAVA::Vector<ControlNode*> InsertInstances(const DAVA::Vector<ControlNode*>& controls, ControlsContainerNode* dest, DAVA::int32 destIndex);
     DAVA::Vector<ControlNode*> CopyControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex);
     DAVA::Vector<ControlNode*> MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const;

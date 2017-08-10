@@ -71,6 +71,77 @@ String FormatNodeNames(const DAVA::Vector<T*>& nodes)
     return list;
 }
 
+bool IsNameExists(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
+{
+    auto isEqual = [&name](ControlNode* siblingControl)
+    {
+        return (siblingControl->GetName() == name);
+    };
+
+    return std::any_of(dest->begin(), dest->end(), isEqual) || (siblingContainer != nullptr && std::any_of(siblingContainer->begin(), siblingContainer->end(), isEqual));
+}
+
+void SplitName(const String& name, String& nameMainPart, uint32& namePostfix)
+{
+    size_t underlinePos = name.rfind('_');
+    if (underlinePos != String::npos && (underlinePos + 1) < name.size())
+    {
+        char anySymbol; // dummy symbol indicating that there are some symbols after %u in name string
+        int res = sscanf(name.data() + underlinePos + 1, "%u%c", &namePostfix, &anySymbol);
+        if (res == 1)
+        {
+            nameMainPart = name.substr(0, underlinePos);
+            return;
+        }
+    }
+
+    nameMainPart = name;
+    namePostfix = 0;
+}
+
+String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
+{
+    String nameMainPart;
+    uint32 namePostfixCounter = 0;
+    SplitName(name, nameMainPart, namePostfixCounter);
+
+    for (++namePostfixCounter; namePostfixCounter <= UINT32_MAX; ++namePostfixCounter)
+    {
+        String newName = Format("%s_%u", nameMainPart.c_str(), namePostfixCounter);
+        if (!IsNameExists(newName, dest, siblingContainer))
+        {
+            return newName;
+        }
+    }
+
+    DAVA::Logger::Warning("Can't produce unique name: reaching uint32 max");
+    return name;
+}
+
+void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package, const ControlsContainerNode* dest)
+{
+    ControlsContainerNode* siblingTopContainer = nullptr;
+
+    if (dest->GetParent() == package)
+    {
+        ControlsContainerNode* topPrototypes = static_cast<ControlsContainerNode*>(package->GetPrototypes());
+        if (dest == topPrototypes) // If we are inserting into top controls container, then prototypes scope will also be taking into account.
+        {
+            siblingTopContainer = static_cast<ControlsContainerNode*>(package->GetPackageControlsNode());
+        }
+        else // Vice versa, if we are inserting into top prototypes container, then top controls scope will also be taking into account
+        {
+            siblingTopContainer = topPrototypes;
+        }
+    }
+
+    String origName = control->GetName();
+    if (IsNameExists(origName, dest, siblingTopContainer))
+    {
+        String newName = ProduceUniqueName(origName, dest, siblingTopContainer);
+        control->GetControl()->SetName(newName);
+    }
+}
 Vector<ControlNode*> ToControlNodesVector(const SelectedNodes& selectedNodes)
 {
     Vector<ControlNode*> controlNodes;
@@ -329,12 +400,13 @@ void CommandExecutor::RemoveStyleSelector(StyleSheetNode* node, DAVA::int32 sele
     }
 }
 
-ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
+void CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
-    ResultList resultList;
     if (dest->CanInsertControl(control, destIndex))
     {
         DocumentData* data = GetDocumentData();
+        CommandExecutorDetails::EnsureControlNameIsUnique(control, data->GetPackageNode(), dest);
+
         data->BeginBatch(Format("Insert Control %s(%s)", control->GetName().c_str(), control->GetClassName().c_str()));
         InsertControlImpl(control, dest, destIndex);
         data->EndBatch();
@@ -343,7 +415,6 @@ ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContaine
     {
         Logger::Warning("%s", String("Can not insert control!" + PointerSerializer::FromPointer(control)).c_str());
     }
-    return resultList;
 }
 
 Vector<ControlNode*> CommandExecutor::InsertInstances(const DAVA::Vector<ControlNode*>& controls, ControlsContainerNode* dest, DAVA::int32 destIndex)
@@ -398,7 +469,7 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
         for (const RefPtr<ControlNode>& copy : nodesToCopy)
         {
             copiedNodes.push_back(copy.Get());
-            InsertControlImpl(copy.Get(), dest, index);
+            InsertControl(copy.Get(), dest, index);
             index++;
         }
         nodesToCopy.clear();
