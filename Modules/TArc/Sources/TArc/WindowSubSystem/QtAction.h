@@ -37,5 +37,11 @@ private:
     FieldBinder fieldBinder;
     UnorderedMap<eActionState, Function<Any(const Any&)>> functorsMap;
 };
+
+class QtActionSeparator : public QAction
+{
+public:
+    QtActionSeparator(const QString& name, QObject* parent = nullptr);
+};
 } // namespace TArc
 } // namespace DAVA

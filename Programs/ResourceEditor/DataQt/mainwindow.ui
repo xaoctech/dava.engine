@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1205</width>
-    <height>807</height>
+    <height>799</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -313,7 +313,7 @@
      <addaction name="actionSaveHeightmapToPNG"/>
      <addaction name="actionSaveTiledTexture"/>
     </widget>
-    <widget class="QMenu" name="menuVisibility_Check_System">
+    <widget class="QMenu" name="VisibilityCheckSystem">
      <property name="title">
       <string>Visibility Check System</string>
      </property>
@@ -338,7 +338,7 @@
     <addaction name="actionBuildStaticOcclusion"/>
     <addaction name="actionInvalidateStaticOcclusion"/>
     <addaction name="actionBeastAndSave"/>
-    <addaction name="menuVisibility_Check_System"/>
+    <addaction name="VisibilityCheckSystem"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionSnapCameraToLandscape"/>
@@ -663,23 +663,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionConvertModifiedTextures"/>
-  </widget>
-  <widget class="QToolBar" name="testingToolBar">
-   <property name="windowTitle">
-    <string>Testing Toolbar</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>16</width>
-     <height>16</height>
-    </size>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <widget class="QToolBar" name="cameraToolBar">
    <property name="windowTitle">

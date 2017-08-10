@@ -13,6 +13,16 @@ using namespace DAVA;
 
 DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.001f;
 
+void DebugDrawSystem::SetHangingObjectsHeight(DAVA::float32 height)
+{
+    HANGING_OBJECTS_HEIGHT = height;
+}
+
+DAVA::float32 DebugDrawSystem::HangingObjectsHeight()
+{
+    return HANGING_OBJECTS_HEIGHT;
+}
+
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
 {

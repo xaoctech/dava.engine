@@ -75,5 +75,12 @@ void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
     }
 }
 
+QtActionSeparator::QtActionSeparator(const QString& name, QObject* parent)
+    : QAction(parent)
+{
+    setObjectName(name);
+    setSeparator(true);
+}
+
 } // namespace TArc
 } // namespace DAVA

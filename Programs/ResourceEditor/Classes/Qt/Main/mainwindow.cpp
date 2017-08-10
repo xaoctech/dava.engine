@@ -423,7 +423,6 @@ void QtMainWindow::SetupToolBars()
     ui->Toolbars->addAction(actionModifToolBar);
     ui->Toolbars->addAction(actionLandscapeToolbar);
     ui->Toolbars->addAction(ui->sceneToolBar->toggleViewAction());
-    ui->Toolbars->addAction(ui->testingToolBar->toggleViewAction());
     ui->Toolbars->addAction(ui->cameraToolBar->toggleViewAction());
 
     // modification widget
