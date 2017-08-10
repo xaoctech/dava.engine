@@ -12,8 +12,8 @@ add_test.py TestClassName"""
 test_class_name = sys.argv[1]
 
 #source
-cpp_read = "Classes/Infrastructure/TestTemplate.cpp.template"
-cpp_write = "Classes/Tests/"+test_class_name+".cpp"
+cpp_read = "Sources/Infrastructure/TestTemplate.cpp.template"
+cpp_write = "Sources/Tests/"+test_class_name+".cpp"
 
 with open(cpp_write, 'w') as outfile:
     with open(cpp_read, 'r') as infile:

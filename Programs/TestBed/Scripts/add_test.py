@@ -7,8 +7,8 @@ import shutil
 def updateTestBed(className):
     """Updates TestBed.cpp to add new test"""
 
-    gc_read = "Classes/Infrastructure/TestBed.cpp"
-    gc_write = "Classes/Infrastructure/TestBed.cpp.new"
+    gc_read = "Sources/Infrastructure/TestBed.cpp"
+    gc_write = "Sources/Infrastructure/TestBed.cpp.new"
 
     with open(gc_write, 'w') as outfile:
         with open(gc_read, 'r') as infile:
@@ -24,8 +24,8 @@ def updateTestBed(className):
 def checkTest(className):
     """Checks that test's header and source files exist"""
 
-    h_write = "Classes/Tests/"+className+".h"
-    cpp_write = "Classes/Tests/"+className+".cpp"
+    h_write = "Sources/Tests/"+className+".h"
+    cpp_write = "Sources/Tests/"+className+".cpp"
 
     if os.path.exists(h_write):
         print "Header with name %s already exists!" % h_write
@@ -39,8 +39,8 @@ def checkTest(className):
 def createHeader(className):
     """Create test's header file from template"""
 
-    h_read = "Classes/Infrastructure/TestTemplate.h.template"
-    h_write = "Classes/Tests/"+className+".h"
+    h_read = "Sources/Infrastructure/TestTemplate.h.template"
+    h_write = "Sources/Tests/"+className+".h"
 
     with open(h_write, 'w') as outfile:
         with open(h_read, 'r') as infile:
@@ -51,8 +51,8 @@ def createHeader(className):
 def createSource(className):
     """Create test's source file from template"""
 
-    cpp_read = "Classes/Infrastructure/TestTemplate.cpp.template"
-    cpp_write = "Classes/Tests/"+className+".cpp"
+    cpp_read = "Sources/Infrastructure/TestTemplate.cpp.template"
+    cpp_write = "Sources/Tests/"+className+".cpp"
 
     with open(cpp_write, 'w') as outfile:
         with open(cpp_read, 'r') as infile:
