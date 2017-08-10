@@ -24,7 +24,7 @@ public:
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
 
     void Add(const SkeletonPose& other);
-    void Sub(const SkeletonPose& other);
+    void Diff(const SkeletonPose& other);
     void Override(const SkeletonPose& other);
     void Lerp(const SkeletonPose& other, float32 factor);
 

@@ -13,8 +13,8 @@ ENUM_DECLARE(DAVA::BlendTree::eNodeType)
     ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_ANIMATION, "Animation");
     ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_LERP_1D, "LERP1D");
     ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_LERP_2D, "LERP2D");
-    ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_ADD, "Additive");
-    ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_SUB, "Subtract");
+    ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_ADD, "Add");
+    ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_DIFF, "Diff");
 };
 
 namespace DAVA
@@ -31,19 +31,19 @@ void BlendTree::BindSkeleton(const SkeletonComponent* skeleton)
         a.skeletonAnimation->BindSkeleton(skeleton);
 }
 
-void BlendTree::EvaluatePose(float32 phase, const Vector<const Vector2*>& parameters, SkeletonPose* outPose) const
+void BlendTree::EvaluatePose(float32 phase, const Vector<const float32*>& parameters, SkeletonPose* outPose) const
 {
     EvaluateRecursive(phase, nodes.front(), parameters, outPose, nullptr);
 }
 
-float32 BlendTree::EvaluatePhaseDuration(const Vector<const Vector2*>& parameters) const
+float32 BlendTree::EvaluatePhaseDuration(const Vector<const float32*>& parameters) const
 {
     float32 duration = 1.f;
     EvaluateRecursive(0.f, nodes.front(), parameters, nullptr, &duration);
     return duration;
 }
 
-void BlendTree::EvaluateRecursive(float32 phase, const BlendNode& node, const Vector<const Vector2*>& parameters, SkeletonPose* outPose, float32* outPhaseDuration) const
+void BlendTree::EvaluateRecursive(float32 phase, const BlendNode& node, const Vector<const float32*>& parameters, SkeletonPose* outPose, float32* outPhaseDuration) const
 {
     switch (node.type)
     {
@@ -72,7 +72,7 @@ void BlendTree::EvaluateRecursive(float32 phase, const BlendNode& node, const Ve
         }
         else
         {
-            float32 parameter = (parameters[blendData.parameterIndex] != nullptr) ? parameters[blendData.parameterIndex]->x : 0.f;
+            float32 parameter = (parameters[blendData.parameterIndex] != nullptr) ? *parameters[blendData.parameterIndex] : 0.f;
 
             int32 c = blendData.beginChildIndex;
             for (; c < blendData.endChildIndex; ++c)
@@ -117,8 +117,37 @@ void BlendTree::EvaluateRecursive(float32 phase, const BlendNode& node, const Ve
     }
     break;
     case TYPE_LERP_2D:
+    {
+        //TODO: *Skinning*
+        DVASSERT(false);
+    }
+    break;
     case TYPE_ADD:
-    case TYPE_SUB:
+    {
+        const BlendNode::BlendData& blendData = node.blendData;
+        DVASSERT((blendData.endChildIndex - blendData.beginChildIndex) == 2);
+        if (outPose != nullptr)
+        {
+            SkeletonPose pose1;
+            EvaluateRecursive(phase, nodes[blendData.beginChildIndex], parameters, outPose, nullptr);
+            EvaluateRecursive(phase, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr);
+            outPose->Add(pose1);
+        }
+    }
+    break;
+    case TYPE_DIFF:
+    {
+        const BlendNode::BlendData& blendData = node.blendData;
+        DVASSERT((blendData.endChildIndex - blendData.beginChildIndex) == 2);
+        if (outPose != nullptr)
+        {
+            SkeletonPose pose1;
+            EvaluateRecursive(phase, nodes[blendData.beginChildIndex], parameters, outPose, nullptr);
+            EvaluateRecursive(phase, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr);
+            outPose->Diff(pose1);
+        }
+    }
+    break;
     default:
         break;
     }

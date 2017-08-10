@@ -7,8 +7,8 @@
 ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 {
     ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_OVERRIDE, "Override");
-    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_ADD, "Additive");
-    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_SUB, "Subtract");
+    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_ADD, "Add");
+    ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_DIFF, "Diff");
     ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_LERP, "LERP");
 };
 
@@ -104,7 +104,7 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
     return motion;
 }
 
-bool Motion::BindParameter(const FastName& parameterID, const Vector2* param)
+bool Motion::BindParameter(const FastName& parameterID, const float32* param)
 {
     bool success = false;
 
@@ -133,7 +133,7 @@ void Motion::UnbindParameters()
 {
     for (State& s : states)
     {
-        for (const Vector2*& param : s.boundParams)
+        for (const float32*& param : s.boundParams)
             param = nullptr;
     }
 }

@@ -70,6 +70,7 @@ void MotionSystem::Process(float32 timeElapsed)
             motion->BindSkeleton(skeleton);
             skeleton->ApplyPose(motion->GetCurrentSkeletonPose());
         }
+        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
         activeComponents.emplace_back(motionComponent);
     }
 
@@ -127,20 +128,21 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
         Motion* motion = motionComponent->GetMotion(m);
         motion->Update(dTime);
 
+        const SkeletonPose& pose = motion->GetCurrentSkeletonPose();
         Motion::eMotionBlend blendMode = motion->GetBlendMode();
         switch (blendMode)
         {
-        case DAVA::Motion::BLEND_OVERRIDE:
-            resultPose.Override(motion->GetCurrentSkeletonPose());
+        case Motion::BLEND_OVERRIDE:
+            resultPose.Override(pose);
             break;
-        case DAVA::Motion::BLEND_ADD:
-            resultPose.Add(motion->GetCurrentSkeletonPose());
+        case Motion::BLEND_ADD:
+            resultPose.Add(pose);
             break;
-        case DAVA::Motion::BLEND_SUB:
-            resultPose.Sub(motion->GetCurrentSkeletonPose());
+        case Motion::BLEND_DIFF:
+            resultPose.Diff(pose);
             break;
-        case DAVA::Motion::BLEND_LERP:
-            resultPose.Lerp(motion->GetCurrentSkeletonPose(), 0.5f /*motion-blend param*/);
+        case Motion::BLEND_LERP:
+            resultPose.Lerp(pose, 0.5f /*TODO: *Skinning* motion-blend param*/);
             break;
         default:
             break;

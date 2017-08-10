@@ -17,7 +17,7 @@ public:
     {
         BLEND_OVERRIDE,
         BLEND_ADD,
-        BLEND_SUB,
+        BLEND_DIFF,
         BLEND_LERP,
 
         BLEND_COUNT
@@ -35,7 +35,7 @@ public:
     void Update(float32 dTime);
 
     const Vector<FastName>& GetParameterIDs() const;
-    bool BindParameter(const FastName& parameterID, const Vector2* param);
+    bool BindParameter(const FastName& parameterID, const float32* param);
     bool UnbindParameter(const FastName& parameterID);
     void UnbindParameters();
 
@@ -46,7 +46,7 @@ protected:
         BlendTree* blendTree = nullptr;
         float32 animationPhase = 0.f;
 
-        Vector<const Vector2*> boundParams;
+        Vector<const float32*> boundParams;
 
         //TODO: *Skinning* transitions ?
     };

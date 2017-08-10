@@ -21,7 +21,7 @@ void SkeletonPose::Add(const SkeletonPose& other)
     }
 }
 
-void SkeletonPose::Sub(const SkeletonPose& other)
+void SkeletonPose::Diff(const SkeletonPose& other)
 {
     uint32 jointCount = other.GetJointsCount();
     SetJointCount(Max(GetJointsCount(), jointCount));
@@ -30,7 +30,7 @@ void SkeletonPose::Sub(const SkeletonPose& other)
     {
         const JointTransform& transform0 = GetJointTransform(j);
         const JointTransform& transform1 = other.GetJointTransform(j);
-        SetTransform(j, transform0.SubtractTransform(transform1));
+        SetTransform(j, transform0.GetInverse().AppendTransform(transform1));
     }
 }
 

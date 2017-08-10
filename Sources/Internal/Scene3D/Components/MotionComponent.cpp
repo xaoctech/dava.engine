@@ -121,7 +121,7 @@ void MotionComponent::ReloadFromConfig()
                         motions.push_back(motion);
 
                         //temporary for debug
-                        motion->BindParameter(FastName("debug-param"), &debugParameter);
+                        motion->BindParameter(FastName("debug-param"), debugParameter.data);
                     }
                 }
             }

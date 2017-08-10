@@ -27,15 +27,13 @@ JointTransform JointTransform::AppendTransform(const JointTransform& transform) 
     return res;
 }
 
-JointTransform JointTransform::SubtractTransform(const JointTransform& transform) const
+JointTransform JointTransform::GetInverse() const
 {
-    //TODO: *Skinning* optimize by flags
-
     JointTransform res;
-    res.scale = scale / transform.scale;
-    res.orientation = orientation * transform.orientation.GetInverse();
-    res.position = position - res.orientation.ApplyToVectorFast(transform.position) * res.scale;
-    res.flags = flags | transform.flags;
+    res.scale = 1.f / scale;
+    res.orientation = orientation.GetInverse();
+    res.position = -res.orientation.ApplyToVectorFast(position) * res.scale;
+    res.flags = flags;
 
     return res;
 }
