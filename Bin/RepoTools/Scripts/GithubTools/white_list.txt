@@ -1,9 +1,9 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Файл white_list.txt                                                               #
-# Этот файл содержит список относительных путей для загрузки в репозиторий git_hub  #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# File name: white_list.txt                                             #
+# This file contains a list of paths to load into the GitHub repository #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-.git # Пример комментария для пути/директории/файла
+.git # Example comment for path/dir/file
 Bin
 Docs
 Libs
