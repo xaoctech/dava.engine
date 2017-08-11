@@ -310,7 +310,6 @@ void WindowImpl::OnDragMoved(QDragMoveEvent* qtEvent)
 void WindowImpl::OnMouseDBClick(QMouseEvent* qtEvent)
 {
     OnMousePressed(qtEvent);
-    OnMouseReleased(qtEvent);
 }
 
 void WindowImpl::OnWheel(QWheelEvent* qtEvent)

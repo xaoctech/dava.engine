@@ -81,7 +81,6 @@ void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)
     DAVA::Texture::SetGPULoadingOrder({ family });
 
     QtMainWindow* wnd = qobject_cast<QtMainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
-    DVASSERT(wnd != nullptr);
     if (wnd != nullptr)
     {
         wnd->OnRenderingInitialized();
