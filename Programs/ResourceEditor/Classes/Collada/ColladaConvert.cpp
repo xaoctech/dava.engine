@@ -52,7 +52,7 @@ eColladaErrorCodes ConvertDaeToAnimations(const DAVA::FilePath& pathToFile)
 
     DAVA::ColladaDocument colladaDocument;
 
-    eColladaErrorCodes code = colladaDocument.Open(pathToFile.GetAbsolutePathname().c_str());
+    eColladaErrorCodes code = colladaDocument.Open(pathToFile.GetAbsolutePathname().c_str(), true);
     if (code != COLLADA_OK)
     {
         DAVA::Logger::Error("[ConvertDaeToAnimations] Failed to read %s with error %d", pathToFile.GetAbsolutePathname().c_str(), (int32)code);
