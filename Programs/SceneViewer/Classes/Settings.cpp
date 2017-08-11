@@ -12,7 +12,6 @@ DAVA::String SETTING_QUALITY = "Quality/";
 Settings::Settings()
     : settings(new DAVA::KeyedArchive())
 {
-    Load();
 }
 
 void Settings::Load()

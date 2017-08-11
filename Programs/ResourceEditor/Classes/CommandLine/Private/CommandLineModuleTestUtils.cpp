@@ -3,6 +3,7 @@
 
 #include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
+#include <Engine/Engine.h>
 #include <FileSystem/FilePath.h>
 #include <FileSystem/FileSystem.h>
 #include <Render/3D/PolygonGroup.h>
@@ -20,6 +21,7 @@
 #include <Scene3D/Components/StaticOcclusionComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TextComponent.h>
 #include <Scene3D/Components/Waypoint/WaypointComponent.h>
 #include <Scene3D/Components/Waypoint/EdgeComponent.h>
 #include <Scene3D/Scene.h>
@@ -470,9 +472,9 @@ void CreateProjectInfrastructure(const DAVA::FilePath& projectPathname)
     DAVA::FileSystem::Instance()->CopyFile("~res:/ResourceEditor/quality.template.yaml", qulityPath, true);
 }
 
-void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePathname)
+void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePathname, DAVA::Scene* scene)
 {
-    SceneBuilder builder(scenePathname);
+    SceneBuilder builder(scenePathname, scene);
     builder.AddCamera(SceneBuilder::WITH_REF_TO_OWNER);
     builder.AddBox(SceneBuilder::WITH_REF_TO_OWNER);
     builder.AddLandscape(SceneBuilder::WITH_REF_TO_OWNER);
@@ -484,12 +486,16 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePathname)
     builder.AddEntityWithTestedComponents(SceneBuilder::WITH_REF_TO_OWNER);
 }
 
-SceneBuilder::SceneBuilder(const FilePath& scenePathname)
-    : scenePathname(scenePathname)
-    , scene(nullptr)
+SceneBuilder::SceneBuilder(const FilePath& scenePathname_, Scene* scene_)
+    : scenePathname(scenePathname_)
+    , scene(SafeRetain(scene_))
 {
-    FileSystem::Instance()->CreateDirectory(scenePathname.GetDirectory(), false);
-    scene.reset(new Scene);
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    fs->CreateDirectory(scenePathname.GetDirectory(), true);
+    if (!scene)
+    {
+        scene.reset(new Scene);
+    }
 }
 
 SceneBuilder::~SceneBuilder()

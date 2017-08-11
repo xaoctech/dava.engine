@@ -1,5 +1,7 @@
 #include "Infrastructure/TestBed.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <Engine/EngineSettings.h>
 #include <Render/RHI/rhi_Public.h>
@@ -24,7 +26,7 @@
 #include "Tests/FontTest.h"
 #include "Tests/WebViewTest.h"
 #include "Tests/FunctionSignalTest.h"
-#include "Tests/KeyboardTest.h"
+#include "Tests/GamepadTest.h"
 #include "Tests/FullscreenTest.h"
 #include "Tests/UIBackgroundTest.h"
 #include "Tests/ClipTest.h"
@@ -46,7 +48,9 @@
 #include "Tests/AnyPerformanceTest.h"
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
+#include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
+
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
 #endif
@@ -169,7 +173,12 @@ TestBed::TestBed(Engine& engine)
         w->SetSizeAsync({ 1024.f, 768.f });
     }
 
-    engine.GetContext()->settings->Load("~res:/EngineSettings.yaml");
+    const EngineContext* context = engine.GetContext();
+    FileSystem* fileSystem = context->fileSystem;
+
+    DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
+
+    context->settings->Load("~res:/EngineSettings.yaml");
 
     servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "TestBed"));
     netLogger.reset(new DAVA::Net::NetLogger);
@@ -380,7 +389,8 @@ void TestBed::RegisterTests()
     new FontTest(*this);
     new WebViewTest(*this);
     new FunctionSignalTest(*this);
-    new KeyboardTest(*this);
+    new InputSystemTest(*this);
+    new GamepadTest(*this);
     new FullscreenTest(*this);
     new UIBackgroundTest(*this);
     new ClipTest(*this);

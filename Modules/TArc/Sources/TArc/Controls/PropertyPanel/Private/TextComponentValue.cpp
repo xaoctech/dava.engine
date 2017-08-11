@@ -72,6 +72,45 @@ DAVA_REFLECTION_IMPL(MultilineEditDialog)
 }
 }
 
+String DefaultFieldAccessor::GetFieldValue(const Any& v, const Reflection&) const
+{
+    return v.Cast<String>();
+}
+
+Any DefaultFieldAccessor::CreateNewValue(const String& newFieldValue, const Any& propertyValue, M::ValidationResult& result) const
+{
+    return Parse(newFieldValue, result);
+}
+
+DAVA::Any DefaultFieldAccessor::Parse(const String& strValue, M::ValidationResult& result) const
+{
+    result.state = M::ValidationResult::eState::Valid;
+    return strValue;
+}
+
+TextComponentValue::TextComponentValue()
+    : M::Validator(nullptr)
+    , accessor(new DefaultFieldAccessor())
+{
+}
+
+TextComponentValue::TextComponentValue(std::unique_ptr<IFieldAccessor>&& accessor_)
+    : M::Validator(nullptr)
+    , accessor(std::move(accessor_))
+{
+}
+
+QString TextComponentValue::GetPropertyName() const
+{
+    QString propertyName;
+    if (accessor->OverridePropertyName(propertyName))
+    {
+        return propertyName;
+    }
+
+    return BaseComponentValue::GetPropertyName();
+}
+
 Any TextComponentValue::GetMultipleValue() const
 {
     static Any multValue = String(MultipleValuesString);
@@ -93,12 +132,68 @@ bool TextComponentValue::IsValidValueToSet(const Any& newValue, const Any& curre
 
 String TextComponentValue::GetText() const
 {
-    return GetValue().Cast<String>();
+    std::shared_ptr<PropertyNode> node = nodes.front();
+    Any value = accessor->GetFieldValue(node->cachedValue, node->field.ref);
+    for (const std::shared_ptr<const PropertyNode>& node : nodes)
+    {
+        Any currentValue = accessor->GetFieldValue(node->cachedValue, node->field.ref);
+        if (value != currentValue)
+        {
+            return String(MultipleValuesString);
+        }
+    }
+
+    return value.Cast<String>();
 }
 
 void TextComponentValue::SetText(const String& text)
 {
-    SetValue(text);
+    Vector<Any> newValues;
+    newValues.reserve(nodes.size());
+    for (const std::shared_ptr<PropertyNode>& node : nodes)
+    {
+        M::ValidationResult validationResult;
+        Any parseValue = accessor->CreateNewValue(text, node->field.ref.GetValue(), validationResult);
+        if (validationResult.state == M::ValidationResult::eState::Invalid)
+        {
+            NotificationParams params;
+            params.title = "Incorrect value";
+            params.message.type = Result::RESULT_ERROR;
+            params.message.message = validationResult.message;
+            GetUI()->ShowNotification(GetWindowKey(), params);
+            editorWidget->ForceUpdate();
+            return;
+        }
+        newValues.push_back(parseValue);
+    }
+    DVASSERT(newValues.size() == nodes.size());
+
+    ModifyExtension::MultiCommandInterface cmd = GetModifyInterface()->GetMultiCommandInterface(static_cast<uint32>(nodes.size()));
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        cmd.ModifyPropertyValue(nodes[i], newValues[i]);
+    }
+}
+
+bool TextComponentValue::IsReadOnly() const
+{
+    bool v = BaseComponentValue::IsReadOnly();
+    v |= accessor->IsReadOnly();
+
+    return v;
+}
+
+const DAVA::M::Validator* TextComponentValue::GetValidator() const
+{
+    return this;
+}
+
+M::ValidationResult TextComponentValue::Validate(const Any& value, const Any& prevValue) const
+{
+    M::ValidationResult result;
+    accessor->Parse(value.Cast<String>(""), result);
+    result.message.clear();
+    return result;
 }
 
 ControlProxy* TextComponentValue::CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor)
@@ -106,6 +201,7 @@ ControlProxy* TextComponentValue::CreateEditorWidget(QWidget* parent, const Refl
     LineEdit::Params params(GetAccessor(), GetUI(), GetWindowKey());
     params.fields[LineEdit::Fields::Text] = "text";
     params.fields[LineEdit::Fields::IsReadOnly] = readOnlyFieldName;
+    params.fields[LineEdit::Fields::Validator] = "validator";
     return new LineEdit(params, wrappersProcessor, model, parent);
 }
 
@@ -113,6 +209,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TextComponentValue)
 {
     ReflectionRegistrator<TextComponentValue>::Begin(CreateComponentStructureWrapper<TextComponentValue>())
     .Field("text", &TextComponentValue::GetText, &TextComponentValue::SetText)[M::ProxyMetaRequire()]
+    .Field("validator", &TextComponentValue::GetValidator, nullptr)
     .End();
 }
 

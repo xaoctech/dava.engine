@@ -18,9 +18,17 @@ DAVA_REFLECTION_IMPL(FavoriteItemValue)
     .End();
 }
 
+namespace FavoritesControllerDetail
+{
+uint32 INITIAL_VERSION = 0;
+uint32 REGULAR_TREE_VERSION = 1;
+uint32 CURRENT_VERSION = REGULAR_TREE_VERSION;
+
+const char* favoritesVersionKey = "version";
 const char* favoritedItemsKey = "favoritedItems";
 const char* favoritedCountKey = "favoritesCount";
 const char* favoritedElementKey = "favoritesElement_%u";
+} // namespace FavoritesControllerDetail
 
 FavoritesController::FavoritesController()
 {
@@ -34,7 +42,9 @@ FavoritesController::FavoritesController()
 
 void FavoritesController::Save(PropertiesItem& propertiesRoot) const
 {
+    using namespace FavoritesControllerDetail;
     PropertiesItem favoritesListSettings = propertiesRoot.CreateSubHolder(favoritedItemsKey);
+    favoritesListSettings.Set(favoritesVersionKey, CURRENT_VERSION);
     favoritesListSettings.Set(favoritedCountKey, static_cast<int32>(favoritedPathes.size()));
     for (size_t i = 0; i < favoritedPathes.size(); ++i)
     {
@@ -44,13 +54,24 @@ void FavoritesController::Save(PropertiesItem& propertiesRoot) const
 
 void FavoritesController::Load(const PropertiesItem& propertiesRoot)
 {
+    using namespace FavoritesControllerDetail;
     PropertiesItem favoritesListSettings = propertiesRoot.CreateSubHolder(favoritedItemsKey);
+    uint32 version = static_cast<uint32>(favoritesListSettings.Get(favoritesVersionKey, int32(0)));
     uint32 count = static_cast<uint32>(favoritesListSettings.Get(favoritedCountKey, int32(0)));
     favoritedPathes.reserve(count);
 
     for (uint32 i = 0; i < count; ++i)
     {
         favoritedPathes.push_back(favoritesListSettings.Get<Vector<FastName>>(Format(favoritedElementKey, static_cast<uint32>(i))));
+    }
+
+    if (version == INITIAL_VERSION)
+    {
+        for (Vector<FastName>& path : favoritedPathes)
+        {
+            DVASSERT(path.front() == FastName("SelfRootEntity"));
+            path[0] = FastName("Regular TreeEntity");
+        }
     }
 }
 

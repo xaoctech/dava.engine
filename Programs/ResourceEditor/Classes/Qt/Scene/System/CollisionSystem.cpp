@@ -63,6 +63,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene* scene)
     landCollWorld->setDebugDrawer(landDebugDrawer);
 
     scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
 }
 
 SceneCollisionSystem::~SceneCollisionSystem()
@@ -70,6 +71,7 @@ SceneCollisionSystem::~SceneCollisionSystem()
     if (GetScene())
     {
         GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+        GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
     }
 
     for (const auto& etc : objectToCollision)
@@ -311,10 +313,9 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
         for (auto obj : objectsToRemove)
         {
             Selectable wrapper(obj);
-            EnumerateObjectHierarchy(wrapper, false, [this](Selectable::Object* object, CollisionBaseObject* collision)
-                                     {
-                                         DestroyFromObject(object);
-                                     });
+            EnumerateObjectHierarchy(wrapper, false, [this](Selectable::Object* object, CollisionBaseObject* collision) {
+                DestroyFromObject(object);
+            });
         }
 
         for (auto obj : objectsToAdd)
@@ -482,6 +483,11 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
         UpdateCollisionObject(Selectable(component->GetEntity()));
         break;
     }
+    case DAVA::EventSystem::GEO_DECAL_CHANGED:
+    {
+        UpdateCollisionObject(Selectable(component->GetEntity()));
+        break;
+    }
     default:
         break;
     }
@@ -563,8 +569,8 @@ namespace CollisionDetails
 {
 struct CollisionObj
 {
-    bool isValid = false;
     CollisionBaseObject* collisionObject = nullptr;
+    bool isValid = false;
 };
 
 template <typename T, class... Args>
@@ -574,9 +580,8 @@ CollisionObj InitCollision(bool createCollision, Args... args)
     result.isValid = true;
     if (createCollision)
     {
-        result.collisionObject = new T(args...);
+        result.collisionObject = new T(std::forward<Args>(args)...);
     }
-
     return result;
 }
 }
@@ -606,8 +611,13 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 EnumerateObjectHierarchy(Selectable(particleEffect->GetEmitterInstance(i)), createCollision, callback);
             }
-
             result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxParticleScale);
+        }
+
+        DAVA::GeoDecalComponent* geoDecalComponent = DAVA::GetGeoDecalComponent(entity);
+        if ((result.isValid == false) && (geoDecalComponent != nullptr))
+        {
+            result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), geoDecalComponent->GetDimensions());
         }
 
         DAVA::RenderObject* renderObject = DAVA::GetRenderObject(entity);
