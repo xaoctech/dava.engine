@@ -43,40 +43,7 @@ protected:
 
     //temporary for debug
     //////////////////////////////////////////////////////////////////////////
-    float32 GetDebugParameterX() const
-    {
-        return debugParameter.x;
-    }
-    void SetDebugParameterX(float32 value)
-    {
-        debugParameter.x = value;
-    }
-    float32 GetDebugParameterY() const
-    {
-        return debugParameter.y;
-    }
-    void SetDebugParameterY(float32 value)
-    {
-        debugParameter.y = value;
-    }
-    float32 GetDebugParameterX2() const
-    {
-        return debugParameter2.x;
-    }
-    void SetDebugParameterX2(float32 value)
-    {
-        debugParameter2.x = value;
-    }
-    float32 GetDebugParameterY2() const
-    {
-        return debugParameter2.y;
-    }
-    void SetDebugParameterY2(float32 value)
-    {
-        debugParameter2.y = value;
-    }
-    Vector2 debugParameter;
-    Vector2 debugParameter2;
+    Map<FastName, float32> parameters;
     //////////////////////////////////////////////////////////////////////////
 
 public:
