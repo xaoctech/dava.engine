@@ -50,19 +50,19 @@ Used to distinguish the type of a ::PxGeometry object.
 */
 struct PxGeometryType
 {
-    enum Enum
-    {
-        eSPHERE,
-        ePLANE,
-        eCAPSULE,
-        eBOX,
-        eCONVEXMESH,
-        eTRIANGLEMESH,
-        eHEIGHTFIELD,
+	enum Enum
+	{
+		eSPHERE,
+		ePLANE,
+		eCAPSULE,
+		eBOX,
+		eCONVEXMESH,
+		eTRIANGLEMESH,
+		eHEIGHTFIELD,
 
-        eGEOMETRY_COUNT, //!< internal use only!
-        eINVALID = -1 //!< internal use only!
-    };
+		eGEOMETRY_COUNT,	//!< internal use only!
+		eINVALID = -1		//!< internal use only!
+	};
 };
 
 /**
@@ -73,24 +73,18 @@ about its placement in the world.
 
 \note This is an abstract class.  You cannot create instances directly.  Create an instance of one of the derived classes instead.
 */
-class PxGeometry
-{
+class PxGeometry 
+{ 
 public:
-    /**
+	/**
 	\brief Returns the type of the geometry.
 	\return The type of the object.
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxGeometryType::Enum getType() const
-    {
-        return mType;
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxGeometryType::Enum getType() const	{ return mType; }	
 
 protected:
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxGeometry(PxGeometryType::Enum type)
-        : mType(type)
-    {
-    }
-    PxGeometryType::Enum mType;
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxGeometry(PxGeometryType::Enum type) : mType(type) {}
+	PxGeometryType::Enum mType; 
 };
 
 #if !PX_DOXYGEN

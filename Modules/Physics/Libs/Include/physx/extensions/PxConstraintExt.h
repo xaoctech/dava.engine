@@ -52,14 +52,14 @@ and not eINVALID_ID.
 */
 struct PxConstraintExtIDs
 {
-    enum Enum
-    {
-        eJOINT,
-        eVEHICLE_SUSP_LIMIT,
-        eVEHICLE_STICKY_TYRE,
-        eNEXT_FREE_ID,
-        eINVALID_ID = 0x7fffffff
-    };
+	enum Enum
+	{
+		eJOINT,
+		eVEHICLE_SUSP_LIMIT,
+		eVEHICLE_STICKY_TYRE,
+		eNEXT_FREE_ID,
+		eINVALID_ID = 0x7fffffff
+	};
 };
 
 #if !PX_DOXYGEN

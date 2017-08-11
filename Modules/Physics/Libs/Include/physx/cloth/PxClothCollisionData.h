@@ -49,20 +49,15 @@ a pair of spheres with possibly different radii.
 */
 struct PxClothCollisionSphere
 {
-    PxVec3 pos; //!< position of the sphere
-    PxReal radius; //!< radius of the sphere.
+	PxVec3 pos;    //!< position of the sphere
+	PxReal radius; //!< radius of the sphere.
 
-    /**
+	/**
 	\brief Default constructor, performs no initialization.
 	*/
-    PxClothCollisionSphere()
-    {
-    }
-    PxClothCollisionSphere(const PxVec3& p, PxReal r)
-        : pos(p)
-        , radius(r)
-    {
-    }
+	PxClothCollisionSphere() {}
+	PxClothCollisionSphere(const PxVec3& p, PxReal r)
+		: pos(p), radius(r) {}
 };
 
 /**
@@ -72,20 +67,15 @@ a mask of the planes that make up the convex.
 */
 struct PxClothCollisionPlane
 {
-    PxVec3 normal; //!< The normal to the plane
-    PxReal distance; //!< The distance to the origin (in the normal direction)
+	PxVec3 normal;   //!< The normal to the plane
+	PxReal distance; //!< The distance to the origin (in the normal direction)
 
-    /**
+	/**
 	\brief Default constructor, performs no initialization.
 	*/
-    PxClothCollisionPlane()
-    {
-    }
-    PxClothCollisionPlane(const PxVec3& normal_, PxReal distance_)
-        : normal(normal_)
-        , distance(distance_)
-    {
-    }
+	PxClothCollisionPlane() {}
+	PxClothCollisionPlane(const PxVec3& normal_, PxReal distance_)
+		: normal(normal_), distance(distance_) {}
 };
 
 /**
@@ -93,28 +83,21 @@ struct PxClothCollisionPlane
 */
 struct PxClothCollisionTriangle
 {
-    PxVec3 vertex0;
-    PxVec3 vertex1;
-    PxVec3 vertex2;
+	PxVec3 vertex0;
+	PxVec3 vertex1;
+	PxVec3 vertex2;
 
-    /**
+	/**
 	\brief Default constructor, performs no initialization.
 	*/
-    PxClothCollisionTriangle()
-    {
-    }
-    PxClothCollisionTriangle(
-    const PxVec3& v0,
-    const PxVec3& v1,
-    const PxVec3& v2)
-        :
-        vertex0(v0)
-        ,
-        vertex1(v1)
-        ,
-        vertex2(v2)
-    {
-    }
+	PxClothCollisionTriangle() {}
+	PxClothCollisionTriangle(
+		const PxVec3& v0, 
+		const PxVec3& v1,
+		const PxVec3& v2) :
+		vertex0(v0),
+		vertex1(v1),
+		vertex2(v2) {}
 };
 
 

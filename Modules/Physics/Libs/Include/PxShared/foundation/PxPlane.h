@@ -49,97 +49,92 @@ namespace physx
 */
 class PxPlane
 {
-public:
-    /**
+  public:
+	/**
 	\brief Constructor
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane()
-    {
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane()
+	{
+	}
 
-    /**
+	/**
 	\brief Constructor from a normal and a distance
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(float nx, float ny, float nz, float distance)
-        : n(nx, ny, nz)
-        , d(distance)
-    {
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(float nx, float ny, float nz, float distance) : n(nx, ny, nz), d(distance)
+	{
+	}
 
-    /**
+	/**
 	\brief Constructor from a normal and a distance
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(const PxVec3& normal, float distance)
-        : n(normal)
-        , d(distance)
-    {
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(const PxVec3& normal, float distance) : n(normal), d(distance)
+	{
+	}
 
-    /**
+	/**
 	\brief Constructor from a point on the plane and a normal
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(const PxVec3& point, const PxVec3& normal)
-        : n(normal)
-        , d(-point.dot(n)) // p satisfies normal.dot(p) + d = 0
-    {
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(const PxVec3& point, const PxVec3& normal)
+	: n(normal), d(-point.dot(n)) // p satisfies normal.dot(p) + d = 0
+	{
+	}
 
-    /**
+	/**
 	\brief Constructor from three points
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(const PxVec3& p0, const PxVec3& p1, const PxVec3& p2)
-    {
-        n = (p1 - p0).cross(p2 - p0).getNormalized();
-        d = -p0.dot(n);
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxPlane(const PxVec3& p0, const PxVec3& p1, const PxVec3& p2)
+	{
+		n = (p1 - p0).cross(p2 - p0).getNormalized();
+		d = -p0.dot(n);
+	}
 
-    /**
+	/**
 	\brief returns true if the two planes are exactly equal
 	*/
-    PX_CUDA_CALLABLE PX_INLINE bool operator==(const PxPlane& p) const
-    {
-        return n == p.n && d == p.d;
-    }
+	PX_CUDA_CALLABLE PX_INLINE bool operator==(const PxPlane& p) const
+	{
+		return n == p.n && d == p.d;
+	}
 
-    PX_CUDA_CALLABLE PX_FORCE_INLINE float distance(const PxVec3& p) const
-    {
-        return p.dot(n) + d;
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE float distance(const PxVec3& p) const
+	{
+		return p.dot(n) + d;
+	}
 
-    PX_CUDA_CALLABLE PX_FORCE_INLINE bool contains(const PxVec3& p) const
-    {
-        return PxAbs(distance(p)) < (1.0e-7f);
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE bool contains(const PxVec3& p) const
+	{
+		return PxAbs(distance(p)) < (1.0e-7f);
+	}
 
-    /**
+	/**
 	\brief projects p into the plane
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxVec3 project(const PxVec3& p) const
-    {
-        return p - n * distance(p);
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxVec3 project(const PxVec3& p) const
+	{
+		return p - n * distance(p);
+	}
 
-    /**
+	/**
 	\brief find an arbitrary point in the plane
 	*/
-    PX_CUDA_CALLABLE PX_FORCE_INLINE PxVec3 pointInPlane() const
-    {
-        return -n * d;
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE PxVec3 pointInPlane() const
+	{
+		return -n * d;
+	}
 
-    /**
+	/**
 	\brief equivalent plane with unit normal
 	*/
 
-    PX_CUDA_CALLABLE PX_FORCE_INLINE void normalize()
-    {
-        float denom = 1.0f / n.magnitude();
-        n *= denom;
-        d *= denom;
-    }
+	PX_CUDA_CALLABLE PX_FORCE_INLINE void normalize()
+	{
+		float denom = 1.0f / n.magnitude();
+		n *= denom;
+		d *= denom;
+	}
 
-    PxVec3 n; //!< The normal to the plane
-    float d; //!< The distance from the origin
+	PxVec3 n; //!< The normal to the plane
+	float d;  //!< The distance from the origin
 };
 
 #if !PX_DOXYGEN
