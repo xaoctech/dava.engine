@@ -210,8 +210,7 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                 int32 nodeType;
                 if (GlobalEnumMap<eNodeType>::Instance()->ToValue(typeNode->AsString().c_str(), nodeType))
                 {
-                    eNodeType nodeType = eNodeType(nodeType);
-                    node.type = nodeType;
+                    node.type = eNodeType(nodeType);
 
                     const YamlNode* parameterNode = operationNode->Get("parameter");
                     if (parameterNode != nullptr && parameterNode->GetType() == YamlNode::TYPE_STRING)
@@ -242,7 +241,7 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                             LoadBlendNodeRecursive(childNode, blendTree, childBegin + c);
                         }
 
-                        if (nodeType == TYPE_LERP_1D)
+                        if (nodes[nodeIndex].type == TYPE_LERP_1D)
                         {
                             std::sort(nodes.data() + childBegin, nodes.data() + childEnd, [](const BlendNode& l, const BlendNode& r) {
                                 return l.coord.x < r.coord.x;
