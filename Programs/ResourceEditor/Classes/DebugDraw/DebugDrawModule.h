@@ -3,6 +3,7 @@
 #include "Classes/Constants.h"
 
 #include <TArc/Core/ClientModule.h>
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/QtConnections.h>
 
 #include <Reflection/Reflection.h>
@@ -19,6 +20,7 @@ protected:
 
 private:
     DAVA::TArc::QtConnections connections;
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     void OnHangingObjects();
     void OnHangingObjectsHeight(double value);

@@ -75,10 +75,16 @@ private:
         debugDrawSystem->SetRequestedObjectType(type);
     }
 
+    DAVA::float32 GetHeightForHangingObjects() const
+    {
+        return debugDrawSystem->GetHangingObjectsHeight();
+    }
+
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(DebugDrawData, DAVA::TArc::DataNode)
     {
         DAVA::ReflectionRegistrator<DebugDrawData>::Begin()
         .Field("currentObject", &DebugDrawData::GetDebugDrawObject, &DebugDrawData::SetDebugDrawObject)
+        .Field("heightForHangingObjects", &DebugDrawData::GetHeightForHangingObjects, nullptr)
         .End();
     }
 };
@@ -114,6 +120,8 @@ void DebugDrawModule::PostInit()
     DAVA::TArc::UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
 
+    fieldBinder.reset(new DAVA::TArc::FieldBinder(accessor));
+
     QAction* collisionTypeMenuAction = new QAction("Collision Type", nullptr);
     QList<QString> upperMenuPath;
     upperMenuPath.push_back("Scene");
@@ -121,6 +129,10 @@ void DebugDrawModule::PostInit()
     InsertionParams upperMenuInsertion(InsertionParams::eInsertionMethod::AfterItem, "VisibilityCheckSystem");
     ActionPlacementInfo placementInfo(CreateMenuPoint(upperMenuPath, upperMenuInsertion));
     ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, collisionTypeMenuAction);
+
+    FieldDescriptor sceneFieldDescr;
+    sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+    sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
 
     QList<QString> menuPath;
     menuPath << "Scene"
@@ -138,10 +150,6 @@ void DebugDrawModule::PostInit()
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName("currentObject");
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<DebugDrawData>();
-
-        FieldDescriptor sceneFieldDescr;
-        sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
 
         action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, DAVA::Bind(&DebugDrawDetail::IsCurrentType, DAVA::_1, type));
         action->SetStateUpdationFunction(QtAction::Enabled, sceneFieldDescr, [](const DAVA::Any& v) {
@@ -169,6 +177,7 @@ void DebugDrawModule::PostInit()
         QToolButton* switchesWithDifferentLodsBtn = new QToolButton();
         switchesWithDifferentLodsBtn->setIcon(QIcon(":/QtIcons/switches_with_different_lods.png"));
         switchesWithDifferentLodsBtn->setAutoRaise(false);
+        switchesWithDifferentLodsBtn->setToolTip("Switches with Different LODs");
 
         AttachWidgetToAction(action, switchesWithDifferentLodsBtn);
 
@@ -184,9 +193,35 @@ void DebugDrawModule::PostInit()
         ToolButtonWithWidget* hangingBtn = new ToolButtonWithWidget();
         hangingBtn->setIcon(QIcon(":/QtIcons/hangingobjects.png"));
         hangingBtn->setAutoRaise(false);
+        hangingBtn->setToolTip("Hanging Objects");
+
+        action->SetStateUpdationFunction(QtAction::Enabled, sceneFieldDescr, [hangingBtn](const DAVA::Any& v) {
+            bool enabled = (v.IsEmpty() == false);
+            hangingBtn->setEnabled(enabled);
+            return enabled;
+        });
 
         HangingObjectsHeight* hangingObjectsWidget = new HangingObjectsHeight(nullptr);
-        hangingObjectsWidget->SetHeight(DebugDrawSystem::HangingObjectsHeight());
+        QPointer<HangingObjectsHeight> closureWidget = hangingObjectsWidget;
+        DAVA::TArc::FieldDescriptor descr;
+        descr.type = DAVA::ReflectedTypeDB::Get<DebugDrawData>();
+        descr.fieldName = DAVA::FastName("heightForHangingObjects");
+        fieldBinder->BindField(descr, [closureWidget](const DAVA::Any& height) {
+            if (closureWidget != nullptr)
+            {
+                if (height.CanCast<DAVA::float32>())
+                {
+                    closureWidget->SetHeight(height.Cast<DAVA::float32>());
+                    closureWidget->setEnabled(true);
+                }
+                else
+                {
+                    closureWidget->SetHeight(0.0f);
+                    closureWidget->setEnabled(false);
+                }
+            }
+        });
+        hangingObjectsWidget->SetHeight(0.0f);
 
         hangingBtn->SetWidget(hangingObjectsWidget);
 
@@ -197,28 +232,18 @@ void DebugDrawModule::PostInit()
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
         connections.AddConnection(hangingObjectsWidget, &HangingObjectsHeight::HeightChanged, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjectsHeight));
         connections.AddConnection(hangingBtn, &ToolButtonWithWidget::clicked, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjects));
-
-        auto activatedHangingBtn = [hangingBtn]() { hangingBtn->setEnabled(true); };
-        auto deactivatedHangingBtn = [hangingBtn]() { hangingBtn->setEnabled(false); };
-
-        connections.AddConnection(SceneSignals::Instance(), &SceneSignals::Activated, activatedHangingBtn);
-        connections.AddConnection(SceneSignals::Instance(), &SceneSignals::Deactivated, deactivatedHangingBtn);
     }
 
     //scene objects tool bar
     {
-        QWidget* w = new QWidget();
-        QtHBoxLayout* layout = new QtHBoxLayout(w);
-
         QtAction* action = new QtAction(accessor, "SceneObject");
 
         ComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
         params.fields[ComboBox::Fields::IsReadOnly] = "readOnly";
         params.fields[ComboBox::Fields::Value] = "currentObject";
 
-        layout->AddControl(new ComboBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this))));
-
-        AttachWidgetToAction(action, w);
+        ControlProxy* control = new ComboBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)));
+        AttachWidgetToAction(action, control);
 
         ActionPlacementInfo placementInfo(CreateToolbarPoint("sceneToolBar"));
 
@@ -228,7 +253,15 @@ void DebugDrawModule::PostInit()
 
 void DebugDrawModule::OnHangingObjectsHeight(double value)
 {
-    DebugDrawSystem::SetHangingObjectsHeight(static_cast<DAVA::float32>(value));
+    if (IsDisabled())
+    {
+        return;
+    }
+
+    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
+
+    debugDrawData->debugDrawSystem->SetHangingObjectsHeight(static_cast<DAVA::float32>(value));
 }
 
 void DebugDrawModule::OnSwitchWithDifferentLODs()

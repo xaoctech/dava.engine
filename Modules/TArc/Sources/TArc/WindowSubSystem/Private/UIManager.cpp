@@ -177,6 +177,7 @@ void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
     {
         QToolButton* toolButton = qobject_cast<QToolButton*>(w);
         bool autoRise = (toolButton != nullptr) ? toolButton->autoRaise() : false;
+        w->setMaximumHeight(24);
         toolbar->insertWidget(before, w);
         if (toolButton != nullptr)
         {

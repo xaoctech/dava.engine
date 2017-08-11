@@ -17,17 +17,7 @@
 
 #define DAVA_ALLOW_OCTREE_DEBUG 0
 
-DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.001f;
-
-void DebugDrawSystem::SetHangingObjectsHeight(DAVA::float32 height)
-{
-    HANGING_OBJECTS_HEIGHT = height;
-}
-
-DAVA::float32 DebugDrawSystem::HangingObjectsHeight()
-{
-    return HANGING_OBJECTS_HEIGHT;
-}
+const DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT = 0.001f;
 
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
@@ -70,7 +60,12 @@ ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
 
 void DebugDrawSystem::AddEntity(DAVA::Entity* entity)
 {
-    entities.push_back(entity);
+    auto it = find_if(entities.begin(), entities.end(), [entity](const DAVA::Entity* obj) { return entity == obj; });
+
+    if (it == entities.end())
+    {
+        entities.push_back(entity);
+    }
 }
 
 void DebugDrawSystem::RemoveEntity(DAVA::Entity* entity)
@@ -80,7 +75,7 @@ void DebugDrawSystem::RemoveEntity(DAVA::Entity* entity)
 
 void DebugDrawSystem::Draw()
 {
-    for (auto entity : entities)
+    for (DAVA::Entity* entity : entities)
     {
         Draw(entity);
     }
@@ -417,7 +412,7 @@ void DebugDrawSystem::GetLowestVertexes(const RenderBatchesWithTransforms& batch
         {
             DAVA::Vector3 pos;
             polygonGroup->GetCoord(v, pos);
-            if (scale * (pos.z - minZ) <= HANGING_OBJECTS_HEIGHT)
+            if (scale * (pos.z - minZ) <= hangingObjectsHeight)
             {
                 vertexes.push_back(pos * batch.second);
             }
