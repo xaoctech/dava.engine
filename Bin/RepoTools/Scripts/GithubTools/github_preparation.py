@@ -29,8 +29,12 @@ class Preparation:
     def get_white_list(self):
         try:
             files_list = open('white_list.txt')
-            for path in files_list:
-                self.white_list_path.append(os.path.abspath('../../../../' + path.replace('\n', '')))
+            for line in files_list:
+                path = line.partition('#')[0]
+                if len(path) != 0:
+                    path = os.path.abspath('../../../../' + path.replace('\n', ''))
+                    if path != self.base_path:
+                        self.white_list_path.append(path)
         except IOError:
             print "##teamcity[message text='Unable to open file white_list.txt' status='ERROR']"
             sys.exit(3)
