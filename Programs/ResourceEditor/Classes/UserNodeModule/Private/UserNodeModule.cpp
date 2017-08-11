@@ -107,6 +107,12 @@ void UserNodeModule::PostInit()
     placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
 
     GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+
+    { //handle visibility of HUD
+        FieldDescriptor fieldDescriptor(ReflectedTypeDB::Get<SceneData>(), FastName(SceneData::sceneHUDVisiblePropertyName));
+        fieldBinder.reset(new FieldBinder(GetAccessor()));
+        fieldBinder->BindField(fieldDescriptor, MakeFunction(this, &UserNodeModule::OnHUDVisibilityChanged));
+    }
 }
 
 void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
@@ -146,6 +152,19 @@ void UserNodeModule::ChangeDrawingState()
 
     bool enabled = moduleData->IsDrawingEnabled();
     moduleData->SetDrawingEnabled(!enabled);
+}
+
+void UserNodeModule::OnHUDVisibilityChanged(const DAVA::Any& hudVisibilityValue)
+{
+    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    if (context != nullptr)
+    {
+        UserNodeData* userData = context->GetData<UserNodeData>();
+        DVASSERT(userData != nullptr);
+
+        bool isHudVisible = hudVisibilityValue.Cast<bool>(false);
+        userData->system->SetVisible(isHudVisible);
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UserNodeModule)

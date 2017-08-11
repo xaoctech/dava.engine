@@ -1,7 +1,9 @@
 #pragma once
 
 #include <TArc/Core/ClientModule.h>
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/QtConnections.h>
+
 
 #include <Reflection/Reflection.h>
 #include <Base/ScopedPtr.h>
@@ -24,6 +26,10 @@ protected:
 
 private:
     void ChangeDrawingState();
+
+    void OnHUDVisibilityChanged(const DAVA::Any& hudVisibilityValue);
+
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     DAVA::ScopedPtr<DAVA::RenderObject> spawnObject;
     DAVA::TArc::QtConnections connections;

@@ -206,7 +206,7 @@ void UserNodeSystem::UpdateSpawnVisibility()
     for (auto it = spawnNodes.begin(); it != spawnNodes.end(); ++it)
     {
         RenderObject* ro = it->second.ro;
-        if (it->first->GetVisible() && IsSystemEnabled())
+        if (it->first->GetVisible() && IsSystemEnabled() && isSystemVisible)
         {
             const Color& color = GetSpawnColor(it->first);
 
@@ -265,4 +265,8 @@ void UserNodeSystem::RemoveObject(DAVA::RenderObject* renderObject)
 {
     GetScene()->GetRenderSystem()->RemoveFromRender(renderObject);
     DAVA::SafeRelease(renderObject);
+}
+void UserNodeSystem::SetVisible(bool visible)
+{
+    isSystemVisible = visible;
 }
