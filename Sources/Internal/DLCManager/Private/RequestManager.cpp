@@ -118,6 +118,7 @@ void RequestManager::OneUpdateIteration(bool inBackground)
             FireStartLoadingSignal(*request, inBackground);
         }
         Pop();
+        request->Finalize();
         // inform pack just downloaded
         FireUpdateSignal(*request, inBackground);
         if (!Empty())
@@ -126,6 +127,7 @@ void RequestManager::OneUpdateIteration(bool inBackground)
             while (next->IsDownloaded())
             {
                 Pop();
+                next->Finalize();
                 // inform pack just downloaded
                 FireUpdateSignal(*next, inBackground);
                 if (!Empty() && Top()->IsDownloaded())
@@ -134,7 +136,6 @@ void RequestManager::OneUpdateIteration(bool inBackground)
                 }
                 else
                 {
-                    next = nullptr;
                     break;
                 }
             }
@@ -285,7 +286,6 @@ void RequestManager::Pop()
         packManager.GetLog() << "downloaded: " << (*it)->GetRequestedPackName() << std::endl;
 
         auto nameIt = requestNames.find((*it)->GetRequestedPackName());
-        (*it)->Finalize();
 
         requestNames.erase(nameIt);
         requests.erase(it);

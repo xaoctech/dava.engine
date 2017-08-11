@@ -134,7 +134,7 @@ private:
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
     bool UpdateFileRequests();
 
-    DLCManagerImpl* packManagerImpl = nullptr;
+    DLCManagerImpl* packManager = nullptr;
 
     Vector<FileRequest> requests;
     Vector<uint32> fileIndexes;
