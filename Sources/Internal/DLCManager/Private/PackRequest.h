@@ -65,9 +65,8 @@ private:
     class DVPLWriter : public DLCDownloader::IWriter
     {
     public:
-        DVPLWriter(DLCDownloader& dm, FilePath& localPath, uint32 sizeCompressed, uint32 sizeUncompressed, uint32 crc32Compressed, Compressor::Type compressionType)
+        DVPLWriter(FilePath& localPath, uint32 sizeCompressed, uint32 sizeUncompressed, uint32 crc32Compressed, Compressor::Type compressionType)
             : localPath_(localPath)
-            , downloader_(dm)
             , sizeCompressed_(sizeCompressed)
             , sizeUncompressed_(sizeUncompressed)
             , crc32Compressed_(crc32Compressed)
@@ -90,7 +89,6 @@ private:
         std::ofstream fout;
         CRC32 crc32counter;
         FilePath localPath_;
-        DLCDownloader& downloader_;
         const uint32 sizeCompressed_;
         const uint32 sizeUncompressed_;
         const uint32 crc32Compressed_;
@@ -127,7 +125,6 @@ private:
         std::shared_ptr<DVPLWriter> dvplWriter;
     };
 
-    static void DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest);
     void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
