@@ -825,6 +825,11 @@ ControlNode* CommandExecutor::GroupSelectedNodes() const
     InsertControl(newGroupControl, parent, parent->GetCount());
     MoveControls(selectedControlNodes, newGroupControl, 0);
 
+    AbstractProperty* postionProperty = newGroupControl->GetRootProperty()->FindPropertyByName("position");
+    AbstractProperty* sizeProperty = newGroupControl->GetRootProperty()->FindPropertyByName("size");
+    newGroupControl->GetRootProperty()->SetProperty(postionProperty, Any(newGroupControl->GetControl()->GetPosition()));
+    newGroupControl->GetRootProperty()->SetProperty(sizeProperty, Any(newGroupControl->GetControl()->GetSize()));
+
     data->EndBatch();
 
     return newGroupControl;

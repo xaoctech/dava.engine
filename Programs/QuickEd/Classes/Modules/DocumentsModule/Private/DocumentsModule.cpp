@@ -444,10 +444,7 @@ void DocumentsModule::DoGroupSelection()
 {
     CommandExecutor commandExecutor(GetAccessor(), GetUI());
     ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
-    if (newGroupControl)
-    {
-        InvokeOperation(QEGlobal::SelectAndRename.ID, newGroupControl);
-    }
+    GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
 }
 
 void DocumentsModule::CreateViewActions()
