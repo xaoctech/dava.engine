@@ -198,7 +198,6 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
     {
         BlendNode::BlendData& blendData = node.blendData;
         blendData.parameterIndex = -1;
-
         blendData.beginChildIndex = -1;
         blendData.endChildIndex = -1;
 
@@ -211,7 +210,8 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                 int32 nodeType;
                 if (GlobalEnumMap<eNodeType>::Instance()->ToValue(typeNode->AsString().c_str(), nodeType))
                 {
-                    node.type = eNodeType(nodeType);
+                    eNodeType nodeType = eNodeType(nodeType);
+                    node.type = nodeType;
 
                     const YamlNode* parameterNode = operationNode->Get("parameter");
                     if (parameterNode != nullptr && parameterNode->GetType() == YamlNode::TYPE_STRING)
@@ -228,17 +228,25 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                     if (childrenNode != nullptr && childrenNode->GetType() == YamlNode::TYPE_ARRAY)
                     {
                         uint32 childrenCount = childrenNode->GetCount();
-                        uint32 child0 = uint32(nodes.size());
+                        uint32 childBegin = uint32(nodes.size());
+                        uint32 childEnd = childBegin + childrenCount;
 
-                        blendData.beginChildIndex = child0;
-                        blendData.endChildIndex = child0 + int32(childrenCount);
+                        blendData.beginChildIndex = int32(childBegin);
+                        blendData.endChildIndex = int32(childEnd);
 
-                        //Hint: 'blendData' should be filled at this point. After 'nodes.resize()' reference is invalid.
-                        nodes.resize(nodes.size() + childrenCount);
+                        //Hint: 'blendData' and 'node' should be filled at this point. After 'nodes.resize()' references is invalid.
+                        nodes.resize(childEnd);
                         for (uint32 c = 0; c < childrenCount; ++c)
                         {
                             const YamlNode* childNode = childrenNode->Get(c);
-                            LoadBlendNodeRecursive(childNode, blendTree, child0 + c);
+                            LoadBlendNodeRecursive(childNode, blendTree, childBegin + c);
+                        }
+
+                        if (nodeType == TYPE_LERP_1D)
+                        {
+                            std::sort(nodes.data() + childBegin, nodes.data() + childEnd, [](const BlendNode& l, const BlendNode& r) {
+                                return l.coord.x < r.coord.x;
+                            });
                         }
                     }
                 }
