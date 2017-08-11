@@ -213,4 +213,4 @@ DAVA_TARC_TESTCLASS(LibraryModuleTests)
     END_TESTED_MODULES()
 };
 
-    // clang-format on
+// clang-format on
