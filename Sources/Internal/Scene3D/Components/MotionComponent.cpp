@@ -21,7 +21,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
     .Field("configPath", &MotionComponent::GetConfigPath, &MotionComponent::SetConfigPath)[M::DisplayName("Motion Config")]
-    .Field("debugParameter", &MotionComponent::GetDebugParameter, &MotionComponent::SetDebugParameter)[M::DisplayName("Debug Param"), M::Range(0.f, 2.f, 0.01f)]
+    .Field("debugParameterX", &MotionComponent::GetDebugParameterX, &MotionComponent::SetDebugParameterX)[M::DisplayName("Debug Param X"), M::Range(-1.f, 1.f, 0.01f)]
+    .Field("debugParameterY", &MotionComponent::GetDebugParameterY, &MotionComponent::SetDebugParameterY)[M::DisplayName("Debug Param Y"), M::Range(-1.f, 1.f, 0.01f)]
+    .Field("debugParameterX2", &MotionComponent::GetDebugParameterX2, &MotionComponent::SetDebugParameterX2)[M::DisplayName("Debug Param 2 X"), M::Range(-1.f, 1.f, 0.01f)]
+    .Field("debugParameterY2", &MotionComponent::GetDebugParameterY2, &MotionComponent::SetDebugParameterY2)[M::DisplayName("Debug Param 2 Y"), M::Range(-1.f, 1.f, 0.01f)]
     .End();
 }
 
@@ -121,7 +124,10 @@ void MotionComponent::ReloadFromConfig()
                         motions.push_back(motion);
 
                         //temporary for debug
-                        motion->BindParameter(FastName("debug-param"), debugParameter.data);
+                        motion->BindParameter(FastName("debug-param-x"), debugParameter.data);
+                        motion->BindParameter(FastName("debug-param-y"), debugParameter.data + 1);
+                        motion->BindParameter(FastName("debug-param2-x"), debugParameter2.data);
+                        motion->BindParameter(FastName("debug-param2-y"), debugParameter2.data + 1);
                     }
                 }
             }

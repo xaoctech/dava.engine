@@ -169,6 +169,15 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
     Vector<BlendNode>& nodes = blendTree->nodes;
     BlendNode& node = nodes[nodeIndex];
 
+    const YamlNode* paramNode = yamlNode->Get("param-value");
+    if (paramNode != nullptr)
+    {
+        if (paramNode->GetType() == YamlNode::TYPE_ARRAY)
+            node.coord = paramNode->AsVector2();
+        else if (paramNode->GetType() == YamlNode::TYPE_STRING)
+            node.coord.x = paramNode->AsFloat();
+    }
+
     const YamlNode* clipNode = yamlNode->Get("clip");
     if (clipNode != nullptr && clipNode->GetType() == YamlNode::TYPE_STRING)
     {
@@ -235,15 +244,6 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                 }
             }
         }
-    }
-
-    const YamlNode* paramNode = yamlNode->Get("param-value");
-    if (paramNode != nullptr)
-    {
-        if (paramNode->GetType() == YamlNode::TYPE_ARRAY)
-            node.coord = paramNode->AsVector2();
-        else if (paramNode->GetType() == YamlNode::TYPE_STRING)
-            node.coord.x = paramNode->AsFloat();
     }
 }
 
