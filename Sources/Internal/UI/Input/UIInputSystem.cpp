@@ -1,6 +1,6 @@
 #include "UIInputSystem.h"
 
-#include "UI/UIAnalitycs.h"
+#include "UI/UIAnalytics.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIEvent.h"
@@ -12,6 +12,8 @@
 #include "UI/Input/UIActionComponent.h"
 
 #include "Input/InputSystem.h"
+
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -45,8 +47,8 @@ UIInputSystem::~UIInputSystem()
 {
     SafeDelete(focusSystem);
 
-    currentScreen = nullptr; // we are not owner
-    popupContainer = nullptr; // we are not owner
+    currentScreen = nullptr; // we are not an owner
+    popupContainer = nullptr; // we are not an owner
 }
 
 void UIInputSystem::SetCurrentScreen(UIScreen* screen)

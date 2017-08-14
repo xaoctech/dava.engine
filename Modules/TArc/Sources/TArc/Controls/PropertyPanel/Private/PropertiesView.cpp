@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QToolBar>
+#include <QAction>
 #include <QPersistentModelIndex>
 #include <QtWidgets/private/qheaderview_p.h>
 

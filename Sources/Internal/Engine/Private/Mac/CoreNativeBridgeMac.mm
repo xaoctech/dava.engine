@@ -12,6 +12,7 @@
 #include "Engine/Private/Mac/WindowImplMac.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
+#import "Engine/Private/OsX/DVApplication.h"
 #import "Engine/PlatformApiMac.h"
 #import "Engine/Private/Mac/AppDelegateMac.h"
 
@@ -92,7 +93,7 @@ CoreNativeBridge::CoreNativeBridge(PlatformCore* core)
     appDelegateListeners = [[NSMutableArray alloc] init];
 
     // Force init NSApplication
-    [NSApplication sharedApplication];
+    [DVApplication sharedApplication];
 
     // On macOS, AppKit will catch exceptions thrown on the main thread, preventing the application
     // from crashing, but also preventing Crashlytics from reporting them.
@@ -109,7 +110,7 @@ CoreNativeBridge::~CoreNativeBridge()
 void CoreNativeBridge::Run()
 {
     appDelegate = [[AppDelegate alloc] initWithBridge:this];
-    [[NSApplication sharedApplication] setDelegate:(id<NSApplicationDelegate>)appDelegate];
+    [[DVApplication sharedApplication] setDelegate:(id<NSApplicationDelegate>)appDelegate];
 
     [preMainLoopReleasePool drain];
 
@@ -125,7 +126,7 @@ void CoreNativeBridge::Quit()
     if (!quitSent)
     {
         quitSent = true;
-        [[NSApplication sharedApplication] terminate:nil];
+        [[DVApplication sharedApplication] terminate:nil];
     }
 }
 
@@ -217,7 +218,7 @@ void CoreNativeBridge::ApplicationWillTerminate(NSNotification* notification)
 
     core->engineBackend->OnGameLoopStopped();
 
-    [[NSApplication sharedApplication] setDelegate:nil];
+    [[DVApplication sharedApplication] setDelegate:nil];
     [appDelegate release];
     [frameTimer release];
 
