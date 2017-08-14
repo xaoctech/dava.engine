@@ -5,6 +5,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/SceneManager/SceneData.h"
+#include "Classes/Qt/DockParticleEditor/LayerDragForceWidget.h"
 
 #include "Scene/System/EditorParticlesSystem.h"
 
@@ -18,10 +19,11 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget* parent /* = 0*/)
 {
     setWidgetResizable(true);
 
-    emitterLayerWidget = NULL;
-    layerForceWidget = NULL;
-    emitterPropertiesWidget = NULL;
-    effectPropertiesWidget = NULL;
+    emitterLayerWidget = nullptr;
+    layerForceWidget = nullptr;
+    emitterPropertiesWidget = nullptr;
+    effectPropertiesWidget = nullptr;
+    layerDragForceWidget = nullptr;
 
     CreateInnerWidgets();
 
@@ -58,6 +60,9 @@ void ParticleEditorWidget::CreateInnerWidgets()
     layerForceWidget = new LayerForceWidget(this);
     layerForceWidget->hide();
 
+    layerDragForceWidget = new LayerDragForceWidget(this);
+    layerDragForceWidget->hide();
+
     widgetMode = MODE_NONE;
 }
 
@@ -67,6 +72,7 @@ void ParticleEditorWidget::DeleteInnerWidgets()
     SAFE_DELETE(emitterPropertiesWidget);
     SAFE_DELETE(emitterLayerWidget);
     SAFE_DELETE(layerForceWidget);
+    SAFE_DELETE(layerDragForceWidget);
 }
 
 void ParticleEditorWidget::OnUpdate()
@@ -88,6 +94,11 @@ void ParticleEditorWidget::OnUpdate()
     case MODE_FORCE:
     {
         layerForceWidget->Update();
+        break;
+    }
+    case MODE_DRAG_FORCE:
+    {
+        layerDragForceWidget->Update();
         break;
     }
 
@@ -259,6 +270,20 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
             }
         }
     }
+    else if (obj.CanBeCastedTo<DAVA::ParticleDragForce>())
+    {
+        DAVA::ParticleDragForce* force = obj.Cast<DAVA::ParticleDragForce>(); 
+        DAVA::ParticleLayer* layer = scene->particlesSystem->GetDragForceOwner(force);
+        if (layer != nullptr)
+        {
+            auto i = std::find(layer->GetDragForces().begin(), layer->GetDragForces().end(), force);
+            if (i != layer->GetDragForces().end())
+            {
+                shouldReset = false;
+                SwitchEditorToDragForceMode(scene, layer, std::distance(layer->GetDragForces().begin(), i));
+            }
+        }
+    }
 }
 
 void ParticleEditorWidget::OnParticleLayerValueChanged(SceneEditor2* /*scene*/, DAVA::ParticleLayer* layer)
@@ -384,6 +409,27 @@ void ParticleEditorWidget::SwitchEditorToForceMode(SceneEditor2* scene, DAVA::Pa
     UpdateParticleEditorWidgets();
 }
 
+void ParticleEditorWidget::SwitchEditorToDragForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
+{
+    ResetEditorMode();
+
+    if (!layer)
+    {
+        emit ChangeVisible(false);
+        return;
+    }
+
+    emit ChangeVisible(true);
+    widgetMode = MODE_DRAG_FORCE;
+
+    layerDragForceWidget->Init(scene, layer, forceIndex, true);
+    setWidget(layerDragForceWidget);
+    layerDragForceWidget->show();
+    connect(layerDragForceWidget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
+
+    UpdateParticleEditorWidgets();
+}
+
 void ParticleEditorWidget::ResetEditorMode()
 {
     QWidget* activeEditorWidget = takeWidget();
@@ -426,6 +472,15 @@ void ParticleEditorWidget::ResetEditorMode()
         layerForceWidget = static_cast<LayerForceWidget*>(activeEditorWidget);
         disconnect(layerForceWidget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
         layerForceWidget->hide();
+
+        break;
+    }
+
+    case MODE_DRAG_FORCE:
+    {
+        layerDragForceWidget = static_cast<LayerDragForceWidget*>(activeEditorWidget);
+        disconnect(layerDragForceWidget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
+        layerDragForceWidget->hide();
 
         break;
     }

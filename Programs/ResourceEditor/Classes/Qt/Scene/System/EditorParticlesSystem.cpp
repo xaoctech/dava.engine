@@ -272,6 +272,53 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* f
     return nullptr;
 }
 
+DAVA::ParticleLayer* EditorParticlesSystem::GetDragForceOwner(DAVA::ParticleDragForce* force) const
+{
+    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleDragForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleDragForce* force) -> DAVA::ParticleLayer*
+    {
+        for (DAVA::ParticleLayer* layer : emitter->layers)
+        {
+            if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+            {
+                DAVA::ParticleLayer* foundLayer = getForceOwner(layer->innerEmitter, force);
+                if (foundLayer != nullptr)
+                {
+                    return foundLayer;
+                }
+            }
+
+            if (std::find(layer->GetDragForces().begin(), layer->GetDragForces().end(), force) != layer->GetDragForces().end())
+            {
+                return layer;
+            }
+        }
+
+        return nullptr;
+    };
+
+    for (DAVA::Entity* entity : entities)
+    {
+        DAVA::ParticleEffectComponent* effectComponent = DAVA::GetEffectComponent(entity);
+        DAVA::uint32 emittersCount = effectComponent->GetEmittersCount();
+        for (DAVA::uint32 id = 0; id < emittersCount; ++id)
+        {
+            DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
+            DVASSERT(emitterInstance != nullptr);
+
+            DAVA::ParticleEmitter* emitter = emitterInstance->GetEmitter();
+            DVASSERT(emitter != nullptr);
+
+            DAVA::ParticleLayer* owner = getForceOwner(emitter, force);
+            if (owner != nullptr)
+            {
+                return owner;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetLayerOwner(DAVA::ParticleLayer* layer) const
 {
     DAVA::Function<bool(DAVA::ParticleEmitter*, DAVA::ParticleLayer*)> hasLayerOwner = [&hasLayerOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleLayer* layer) -> bool
@@ -383,6 +430,11 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
             SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
             break;
         }
+        case CMDID_PARTICLE_DRAG_FORCE_UPDATE:
+        {
+            const CommandUpdateParticleDragForce* castedCmd = static_cast<const CommandUpdateParticleDragForce*>(command);
+            SceneSignals::Instance()->EmitParticleDragForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
+        }
 
         case CMDID_PARTICLE_EFFECT_START_STOP:
         {
@@ -452,7 +504,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
       CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES, CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP,
-      CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE,
+      CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE, CMDID_PARTICLE_DRAG_FORCE_UPDATE,
       CMDID_PARTICLE_EFFECT_START_STOP, CMDID_PARTICLE_EFFECT_RESTART, CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML,
       CMDID_PARTICLE_EMITTER_SAVE_TO_YAML,
       CMDID_PARTICLE_INNER_EMITTER_LOAD_FROM_YAML, CMDID_PARTICLE_INNER_EMITTER_SAVE_TO_YAML,

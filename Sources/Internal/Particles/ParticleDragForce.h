@@ -12,6 +12,10 @@ public:
     ParticleDragForce(ParticleLayer* parent);
 
     ParticleDragForce* Clone();
+
+    Vector3 position;
+    Vector3 rotation;
+    bool infinityRange = true;
 public:
     INTROSPECTION_EXTEND(ParticleDragForce, BaseObject, nullptr)
 

@@ -577,10 +577,10 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
             rootItem->insertRows(0, items);
         }
 
-        size_t dragCount = layer->dragForces.size();
+        size_t dragCount = layer->GetDragForces().size();
         QList<QStandardItem*> dragItems;
         for (size_t i = 0; i < dragCount; ++i)
-            dragItems.push_back(new SceneTreeItemParticleDragForce(layer, layer->dragForces[i]));
+            dragItems.push_back(new SceneTreeItemParticleDragForce(layer, layer->GetDragForces()[i]));
         if (!dragItems.empty())
             rootItem->insertRows(0, dragItems);
 

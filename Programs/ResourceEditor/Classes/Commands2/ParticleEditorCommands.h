@@ -407,6 +407,38 @@ protected:
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> forcesOverLife;
 };
 
+class CommandUpdateParticleDragForce : public CommandAction
+{
+public:
+    CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_);
+
+    void Init(DAVA::Vector3 position_, DAVA::Vector3 rotation_, bool infinityRange);
+
+    void Redo() override;
+    void Undo() override;
+
+    DAVA::ParticleLayer* GetLayer() const
+    {
+        return layer;
+    }
+    DAVA::uint32 GetForceIndex() const
+    {
+        return forceId;
+    }
+
+protected:
+    DAVA::ParticleLayer* layer = nullptr;
+    DAVA::uint32 forceId = -1;
+
+    DAVA::Vector3 position;
+    DAVA::Vector3 rotation;
+    bool infinityRange = false;
+
+    DAVA::Vector3 oldPosition;
+    DAVA::Vector3 oldRotation;
+    bool oldInfinityRange = false;
+};
+
 // Load/save Particle Emitter Node.
 class CommandLoadParticleEmitterFromYaml : public CommandAction
 {

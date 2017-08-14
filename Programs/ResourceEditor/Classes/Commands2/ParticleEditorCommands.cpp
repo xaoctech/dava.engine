@@ -317,6 +317,43 @@ void CommandUpdateParticleForce::Redo()
     layer->forces[forceId]->forceOverLife = forcesOverLife;
 }
 
+//////////////////////////////////////////////////////////////////////////
+CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_)
+    : CommandAction(CMDID_PARTICLE_DRAG_FORCE_UPDATE)
+{
+    layer = layer_;
+    forceId = forceId_;
+    DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
+    oldPosition = layer->GetDragForces()[forceId]->position;
+    oldRotation = layer->GetDragForces()[forceId]->rotation;
+    oldInfinityRange = layer->GetDragForces()[forceId]->infinityRange;
+}
+
+void CommandUpdateParticleDragForce::Init(DAVA::Vector3 position_, DAVA::Vector3 rotation_, bool infinityRange_)
+{
+    position = position_;
+    rotation = rotation_;
+    infinityRange = infinityRange_;
+}
+
+void CommandUpdateParticleDragForce::Redo()
+{
+    DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
+    auto& forces = layer->GetDragForces();
+    forces[forceId]->position = position;
+    forces[forceId]->rotation = rotation;
+    forces[forceId]->infinityRange = infinityRange;
+}
+
+void CommandUpdateParticleDragForce::Undo()
+{
+    DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
+    auto& forces = layer->GetDragForces();
+    forces[forceId]->position = oldPosition;
+    forces[forceId]->rotation = oldRotation;
+    forces[forceId]->infinityRange = oldInfinityRange;
+}
+
 CommandAddParticleEmitter::CommandAddParticleEmitter(DAVA::Entity* effect)
     : CommandAction(CMDID_PARTICLE_EMITTER_ADD)
     , effectEntity(effect)

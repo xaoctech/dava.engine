@@ -14,6 +14,10 @@ ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
 DAVA::ParticleDragForce* ParticleDragForce::Clone()
 {
     ParticleDragForce* dst = new ParticleDragForce(parentLayer);
+    dst->parentLayer = parentLayer;
+    dst->position = position;
+    dst->rotation = rotation;
+    dst->infinityRange = infinityRange;
     return dst;
 }
 
