@@ -33,6 +33,9 @@ public:
     float32 GetMass() const;
     void SetMass(float32 mass);
 
+    const FastName& GetMaterialName() const;
+    void SetMaterialName(const FastName& materialName);
+
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
 
 protected:
@@ -53,6 +56,7 @@ private:
     FastName name = FastName("");
     bool overrideMass = false;
     float32 mass = 1.0f;
+    FastName materialName;
 
     physx::PxShape* shape = nullptr;
 

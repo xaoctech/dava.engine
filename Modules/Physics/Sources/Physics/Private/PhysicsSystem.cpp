@@ -540,24 +540,24 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     case Component::BOX_SHAPE_COMPONENT:
     {
         BoxShapeComponent* boxShape = static_cast<BoxShapeComponent*>(component);
-        shape = physics->CreateBoxShape(boxShape->GetHalfSize());
+        shape = physics->CreateBoxShape(boxShape->GetHalfSize(), component->GetMaterialName());
     }
     break;
     case Component::CAPSULE_SHAPE_COMPONENT:
     {
         CapsuleShapeComponent* capsuleShape = static_cast<CapsuleShapeComponent*>(component);
-        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight());
+        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight(), component->GetMaterialName());
     }
     break;
     case Component::SPHERE_SHAPE_COMPONENT:
     {
         SphereShapeComponent* sphereShape = static_cast<SphereShapeComponent*>(component);
-        shape = physics->CreateSphereShape(sphereShape->GetRadius());
+        shape = physics->CreateSphereShape(sphereShape->GetRadius(), component->GetMaterialName());
     }
     break;
     case Component::PLANE_SHAPE_COMPONENT:
     {
-        shape = physics->CreatePlaneShape();
+        shape = physics->CreatePlaneShape(component->GetMaterialName());
     }
     break;
     case Component::CONVEX_HULL_SHAPE_COMPONENT:
@@ -567,7 +567,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         Vector3 scale = AccumulateMeshInfo(entity, groups);
         if (groups.empty() == false)
         {
-            shape = physics->CreateConvexHullShape(std::move(groups), scale, geometryCache);
+            shape = physics->CreateConvexHullShape(std::move(groups), scale, component->GetMaterialName(), geometryCache);
         }
         else
         {
@@ -582,7 +582,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         Vector3 scale = AccumulateMeshInfo(entity, groups);
         if (groups.empty() == false)
         {
-            shape = physics->CreateMeshShape(std::move(groups), scale, geometryCache);
+            shape = physics->CreateMeshShape(std::move(groups), scale, component->GetMaterialName(), geometryCache);
         }
         else
         {
@@ -597,7 +597,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         if (landscape != nullptr)
         {
             Matrix4 localPose;
-            shape = physics->CreateHeightField(landscape, localPose);
+            shape = physics->CreateHeightField(landscape, component->GetMaterialName(), localPose);
             component->SetLocalPose(localPose);
         }
         else
@@ -737,11 +737,14 @@ bool PhysicsSystem::Raycast(const Vector3& origin, const Vector3& direction, flo
 
 void PhysicsSystem::UpdateComponents()
 {
+    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     for (CollisionShapeComponent* shapeComponent : collisionComponentsUpdatePending)
     {
         shapeComponent->UpdateLocalProperties();
         physx::PxShape* shape = shapeComponent->GetPxShape();
         DVASSERT(shape != nullptr);
+        physx::PxMaterial* material = module->GetMaterial(shapeComponent->GetMaterialName());
+        shape->setMaterials(&material, 1);
         physx::PxActor* actor = shape->getActor();
         if (actor != nullptr)
         {

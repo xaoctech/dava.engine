@@ -12,9 +12,16 @@
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/QtConnections.h>
+#include <TArc/Utils/ReflectedPairsVector.h>
 
 #include <QtTools/WidgetHelpers/SharedIcon.h>
 
+#include <Physics/CollisionShapeComponent.h>
+
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <ModuleManager/ModuleManager.h>
+#include <Physics/PhysicsModule.h>
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
 #include <FileSystem/KeyedArchive.h>
@@ -24,8 +31,10 @@
 #include <Engine/PlatformApiQt.h>
 #include <Functional/Function.h>
 #include <Base/Any.h>
+#include <Base/FastName.h>
 #include <Base/StaticSingleton.h>
 #include <Base/TypeInheritance.h>
+#include <Base/BaseTypes.h>
 
 #include <QToolButton>
 #include <QHBoxLayout>
@@ -213,6 +222,75 @@ private:
     QPointer<QToolButton> toolButton;
     QtConnections connections;
 };
+
+class PhysicsMaterialComponentValue : public BaseComponentValue
+{
+public:
+    PhysicsMaterialComponentValue()
+    {
+        DAVA::PhysicsModule* module = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::PhysicsModule>();
+        DVASSERT(module != nullptr);
+
+        Vector<FastName> materialNames = module->GetMaterialNames();
+
+        std::sort(materialNames.begin(), materialNames.end(), [](const DAVA::FastName& name1, const DAVA::FastName& name2) {
+            DVASSERT(name1.IsValid() == true);
+            DVASSERT(name2.IsValid() == true);
+            return strcmp(name1.c_str(), name2.c_str()) < 0;
+        });
+
+        materials.values.emplace_back(FastName(), String("Default material"));
+        for (const FastName& name : materialNames)
+        {
+            materials.values.emplace_back(name, name.c_str());
+        }
+    }
+
+    Any GetMultipleValue() const override
+    {
+        return DAVA::Any();
+    }
+
+    bool IsValidValueToSet(const Any& newValue, const Any& currentValue) const override
+    {
+        if (currentValue.IsEmpty())
+        {
+            return true;
+        }
+        return newValue != currentValue;
+    }
+
+    ControlProxy* CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor) override
+    {
+        ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ComboBox::Fields::Enumerator] = "materials";
+        params.fields[ComboBox::Fields::Value] = "currentMaterial";
+        params.fields[ComboBox::Fields::MultipleValueText] = "unregisteredMaterial";
+        return new ComboBox(params, wrappersProcessor, model, parent);
+    }
+
+private:
+    DAVA::Any GetCurrentMaterial()
+    {
+        return GetValue();
+    }
+
+    void SetCurrentMaterial(const DAVA::Any& materialName)
+    {
+        SetValue(materialName);
+    }
+
+    DAVA::TArc::ReflectedPairsVector<DAVA::FastName, DAVA::String> materials;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(PhysicsMaterialComponentValue, DAVA::TArc::BaseComponentValue)
+    {
+        DAVA::ReflectionRegistrator<PhysicsMaterialComponentValue>::Begin()
+        .Field("materials", &PhysicsMaterialComponentValue::materials)
+        .Field("currentMaterial", &PhysicsMaterialComponentValue::GetCurrentMaterial, &PhysicsMaterialComponentValue::SetCurrentMaterial)
+        .Field("unregisteredMaterial", [](PhysicsMaterialComponentValue*) -> DAVA::String { return "Unregistered material"; }, nullptr)
+        .End();
+    }
+};
 }
 
 namespace DAVA
@@ -382,6 +460,18 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
         return std::move(editor);
+    }
+
+    std::shared_ptr<DAVA::TArc::PropertyNode> parentNode = node->parent.lock();
+    if (parentNode != nullptr)
+    {
+        if (node->propertyType == DAVA::TArc::PropertyNode::RealProperty &&
+            valueType == DAVA::Type::Instance<DAVA::FastName>() &&
+            parentNode->cachedValue.CanCast<DAVA::CollisionShapeComponent*>() &&
+            node->field.key.Cast<DAVA::String>() == "material")
+        {
+            return std::make_unique<PropertyModelExtDetails::PhysicsMaterialComponentValue>();
+        }
     }
 
     return EditorComponentExtension::GetEditor(node);

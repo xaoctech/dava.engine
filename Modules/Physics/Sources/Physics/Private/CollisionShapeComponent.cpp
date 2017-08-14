@@ -15,6 +15,10 @@ void CollisionShapeComponent::Serialize(KeyedArchive* archive, SerializationCont
     archive->SetMatrix4("shape.localPose", localPose);
     archive->SetBool("shape.overrideMass", overrideMass);
     archive->SetFloat("shape.mass", mass);
+    if (materialName.IsValid())
+    {
+        archive->SetFastName("shape.materialName", materialName);
+    }
 }
 
 void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -24,6 +28,7 @@ void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationCo
     localPose = archive->GetMatrix4("shape.localPose");
     overrideMass = archive->GetBool("shape.overrideMass", overrideMass);
     mass = archive->GetFloat("shape.mass", mass);
+    materialName = archive->GetFastName("shape.materialName", materialName);
 }
 
 physx::PxShape* CollisionShapeComponent::GetPxShape() const
@@ -79,6 +84,20 @@ void CollisionShapeComponent::SetMass(float32 mass_)
     }
 }
 
+const FastName& CollisionShapeComponent::GetMaterialName() const
+{
+    return materialName;
+}
+
+void CollisionShapeComponent::SetMaterialName(const FastName& materialName_)
+{
+    if (materialName != materialName_)
+    {
+        materialName = materialName_;
+        ScheduleUpdate();
+    }
+}
+
 CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* shape)
 {
     DVASSERT(shape != nullptr);
@@ -109,6 +128,7 @@ void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* compo
     component->localPose = localPose;
     component->overrideMass = overrideMass;
     component->mass = mass;
+    component->materialName = materialName;
 }
 
 void CollisionShapeComponent::ScheduleUpdate()
@@ -146,6 +166,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CollisionShapeComponent)
 {
     ReflectionRegistrator<CollisionShapeComponent>::Begin()
     .Field("Name", &CollisionShapeComponent::GetName, &CollisionShapeComponent::SetName)
+    .Field("material", &CollisionShapeComponent::GetMaterialName, &CollisionShapeComponent::SetMaterialName)[M::DisplayName("Material name")]
     .Field("Local pose", &CollisionShapeComponent::localPose)
     .Field("Override mass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)
     .Field("Mass", &CollisionShapeComponent::GetMass, &CollisionShapeComponent::SetMass)
