@@ -47,34 +47,35 @@ namespace physx
 
 @see PxDefaultCpuDispatcherCreate() PxCpuDispatcher
 */
-class PxDefaultCpuDispatcher : public PxCpuDispatcher
+class PxDefaultCpuDispatcher: public PxCpuDispatcher
 {
 public:
-    /**
+	/**
 	\brief Deletes the dispatcher.
 	
 	Do not keep a reference to the deleted instance.
 
 	@see PxDefaultCpuDispatcherCreate()
 	*/
-    virtual void release() = 0;
+	virtual void release() = 0;
 
-    /**
+	/**
 	\brief Enables profiling at task level.
 
 	\note By default enabled only in profiling builds.
 	
 	\param[in] runProfiled True if tasks should be profiled.
 	*/
-    virtual void setRunProfiled(bool runProfiled) = 0;
+	virtual void setRunProfiled(bool runProfiled) = 0;
 
-    /**
+	/**
 	\brief Checks if profiling is enabled at task level.
 
 	\return True if tasks should be profiled.
 	*/
-    virtual bool getRunProfiled() const = 0;
+	virtual bool getRunProfiled() const = 0;
 };
+
 
 /**
 \brief Create default dispatcher, extensions SDK needs to be initialized first.

@@ -42,9 +42,9 @@ namespace physx
 {
 #endif
 
-class PxConvexMeshGeometry;
+	class PxConvexMeshGeometry;
 
-/**
+	/**
 	\brief Computes closest polygon of the convex hull geometry for a given impact point
 	and impact direction. When doing sweeps against a scene, one might want to delay
 	the rather expensive computation of the hit face index for convexes until it is clear
@@ -60,10 +60,10 @@ class PxConvexMeshGeometry;
 
 	@see PxTransform PxConvexMeshGeometry
 	*/
-PxU32 PxFindFaceIndex(const PxConvexMeshGeometry& convexGeom,
-                      const PxTransform& geomPose,
-                      const PxVec3& impactPos,
-                      const PxVec3& unitDir);
+	PxU32 PxFindFaceIndex(const PxConvexMeshGeometry& convexGeom, 
+								   const PxTransform& geomPose,
+								   const PxVec3& impactPos, 
+								   const PxVec3& unitDir);
 
 #if !PX_DOXYGEN
 } // namespace physx

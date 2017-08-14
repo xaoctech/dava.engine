@@ -256,7 +256,7 @@ void PrepareSceneToExport(DAVA::Scene* scene, bool removeCustomProperties)
                 RemoveEditorCustomProperties(entity);
             }
 
-            for (uint32 ct = Component::NOT_EXPORTED_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+            for (uint32 ct = Component::NON_EXPORTABLE_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
             { // remove RE specific components
                 while (entity->GetComponentCount(ct) > 0)
                 {

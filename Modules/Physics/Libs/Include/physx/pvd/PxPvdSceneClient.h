@@ -38,14 +38,14 @@
 
 namespace physx
 {
-namespace pvdsdk
-{
-class PvdClient;
-struct PvdDebugPoint;
-struct PvdDebugLine;
-struct PvdDebugTriangle;
-struct PvdDebugText;
-}
+	namespace pvdsdk
+	{
+		class PvdClient;   
+		struct PvdDebugPoint;
+		struct PvdDebugLine;
+		struct PvdDebugTriangle;
+		struct PvdDebugText;
+	}
 }
 
 #if !PX_DOXYGEN
@@ -58,12 +58,12 @@ namespace physx
 */
 struct PxPvdSceneFlag
 {
-    enum Enum
-    {
-        eTRANSMIT_CONTACTS = (1 << 0), //! Transmits contact stream to PVD.
-        eTRANSMIT_SCENEQUERIES = (1 << 1), //! Transmits scene query stream to PVD.
-        eTRANSMIT_CONSTRAINTS = (1 << 2) //! Transmits constraints visualize stream to PVD.
-    };
+	enum Enum
+	{
+		eTRANSMIT_CONTACTS     = (1 << 0), //! Transmits contact stream to PVD.
+		eTRANSMIT_SCENEQUERIES = (1 << 1), //! Transmits scene query stream to PVD.
+		eTRANSMIT_CONSTRAINTS  = (1 << 2)  //! Transmits constraints visualize stream to PVD.
+	};
 };
 
 /**
@@ -81,59 +81,57 @@ It also provides simple user debug services that associated scene position such 
 */
 class PxPvdSceneClient
 {
-public:
-    /**
+  public:
+	/**
 	Sets the PVD flag. See PxPvdSceneFlag.
 	\param flag Flag to set.
 	\param value value the flag gets set to.
 	*/
-    virtual void setScenePvdFlag(PxPvdSceneFlag::Enum flag, bool value) = 0;
+	virtual void setScenePvdFlag(PxPvdSceneFlag::Enum flag, bool value) = 0;
 
-    /**
+	/**
 	Sets the PVD flags. See PxPvdSceneFlags.
 	\param flags Flags to set.
 	*/
-    virtual void setScenePvdFlags(PxPvdSceneFlags flags) = 0;
+	virtual void setScenePvdFlags(PxPvdSceneFlags flags) = 0;
 
-    /**
+	/**
 	Retrieves the PVD flags. See PxPvdSceneFlags.
 	*/
-    virtual PxPvdSceneFlags getScenePvdFlags() const = 0;
+	virtual PxPvdSceneFlags getScenePvdFlags() const = 0;
 
-    /**
+	/**
 	update camera on PVD application's DirectX render window
 	*/
-    virtual void updateCamera(const char* name, const PxVec3& origin, const PxVec3& up, const PxVec3& target) = 0;
+	virtual void updateCamera(const char* name, const PxVec3& origin, const PxVec3& up, const PxVec3& target) = 0;
 
-    /**
+	/**
 	draw points on PVD application's DirectX render window
 	*/
-    virtual void drawPoints(const physx::pvdsdk::PvdDebugPoint* points, PxU32 count) = 0;
+	virtual void drawPoints(const physx::pvdsdk::PvdDebugPoint* points, PxU32 count) = 0;
 
-    /**
+	/**
 	draw lines on PVD application's DirectX render window
 	*/
-    virtual void drawLines(const physx::pvdsdk::PvdDebugLine* lines, PxU32 count) = 0;
+	virtual void drawLines(const physx::pvdsdk::PvdDebugLine* lines, PxU32 count) = 0;
 
-    /**
+	/**
 	draw triangles on PVD application's DirectX render window
 	*/
-    virtual void drawTriangles(const physx::pvdsdk::PvdDebugTriangle* triangles, PxU32 count) = 0;
+	virtual void drawTriangles(const physx::pvdsdk::PvdDebugTriangle* triangles, PxU32 count) = 0;
 
-    /**
+	/**
 	draw text on PVD application's DirectX render window
 	*/
-    virtual void drawText(const physx::pvdsdk::PvdDebugText& text) = 0;
+	virtual void drawText(const physx::pvdsdk::PvdDebugText& text) = 0;
 
-    /**
+	/**
 	get the underlying client, for advanced users
 	*/
-    virtual physx::pvdsdk::PvdClient* getClientInternal() = 0;
+	virtual physx::pvdsdk::PvdClient* getClientInternal() = 0;
 
 protected:
-    virtual ~PxPvdSceneClient()
-    {
-    }
+	virtual ~PxPvdSceneClient(){}
 };
 
 #if !PX_DOXYGEN

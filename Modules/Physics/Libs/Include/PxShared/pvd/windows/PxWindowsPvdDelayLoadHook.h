@@ -44,14 +44,14 @@ namespace physx
 {
 #endif
 
-/**
+	/**
 	\brief Sets delay load hook instance for Foundation dll.
 
 	\param[in] hook Delay load hook.
 
 	@see PxFoundationDelayLoadHook
 	*/
-PX_C_EXPORT PX_PVDSDK_API void PX_CALL_CONV PxPvdSetFoundationDelayLoadHook(const physx::PxFoundationDelayLoadHook* hook);
+	PX_C_EXPORT PX_PVDSDK_API void PX_CALL_CONV PxPvdSetFoundationDelayLoadHook(const physx::PxFoundationDelayLoadHook* hook);
 
 #if !PX_DOXYGEN
 } // namespace physx
