@@ -13,7 +13,6 @@ public:
     struct Joint
     {
         FCDSkinControllerJoint* joint;
-        FCDSkinControllerJoint* parentJoint;
         ColladaSceneNode* node;
         int32 index;
         int32 parentIndex;
