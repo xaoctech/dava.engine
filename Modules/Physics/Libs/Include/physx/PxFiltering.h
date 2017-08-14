@@ -47,6 +47,7 @@ class PxShape;
 
 static const PxU32 INVALID_FILTER_PAIR_INDEX = 0xffffffff;
 
+
 /**
 \brief Collection of flags describing the actions to take for a collision pair.
 
@@ -54,25 +55,25 @@ static const PxU32 INVALID_FILTER_PAIR_INDEX = 0xffffffff;
 */
 struct PxPairFlag
 {
-    enum Enum
-    {
-        /**
+	enum Enum
+	{
+		/**
 		\brief Process the contacts of this collision pair in the dynamics solver.
 
 		\note Only takes effect if the colliding actors are rigid bodies.
 		*/
-        eSOLVE_CONTACT = (1 << 0),
+		eSOLVE_CONTACT						= (1<<0),
 
-        /**
+		/**
 		\brief Call contact modification callback for this collision pair
 
 		\note Only takes effect if the colliding actors are rigid bodies.
 
 		@see PxContactModifyCallback
 		*/
-        eMODIFY_CONTACTS = (1 << 1),
+		eMODIFY_CONTACTS					= (1<<1),
 
-        /**
+		/**
 		\brief Call contact report callback or trigger callback when this collision pair starts to be in contact.
 
 		If one of the two collision objects is a trigger shape (see #PxShapeFlag::eTRIGGER_SHAPE) 
@@ -86,9 +87,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact() PxSimulationEventCallback.onTrigger()
 		*/
-        eNOTIFY_TOUCH_FOUND = (1 << 2),
+		eNOTIFY_TOUCH_FOUND					= (1<<2),
 
-        /**
+		/**
 		\brief Call contact report callback while this collision pair is in contact
 
 		If none of the two collision objects is a trigger shape then the contact report callback will get 
@@ -106,9 +107,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact() PxSimulationEventCallback.onTrigger()
 		*/
-        eNOTIFY_TOUCH_PERSISTS = (1 << 3),
+		eNOTIFY_TOUCH_PERSISTS				= (1<<3),
 
-        /**
+		/**
 		\brief Call contact report callback or trigger callback when this collision pair stops to be in contact
 
 		If one of the two collision objects is a trigger shape (see #PxShapeFlag::eTRIGGER_SHAPE) 
@@ -124,9 +125,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact() PxSimulationEventCallback.onTrigger()
 		*/
-        eNOTIFY_TOUCH_LOST = (1 << 4),
+		eNOTIFY_TOUCH_LOST					= (1<<4),
 
-        /**
+		/**
 		\brief Call contact report callback when this collision pair is in contact during CCD passes.
 
 		If CCD with multiple passes is enabled, then a fast moving object might bounce on and off the same
@@ -144,9 +145,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact() PxSimulationEventCallback.onTrigger()
 		*/
-        eNOTIFY_TOUCH_CCD = (1 << 5),
+		eNOTIFY_TOUCH_CCD					= (1<<5),
 
-        /**
+		/**
 		\brief Call contact report callback when the contact force between the actors of this collision pair exceeds one of the actor-defined force thresholds.
 
 		\note Only takes effect if the colliding actors are rigid bodies.
@@ -155,9 +156,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact()
 		*/
-        eNOTIFY_THRESHOLD_FORCE_FOUND = (1 << 6),
+		eNOTIFY_THRESHOLD_FORCE_FOUND		= (1<<6),
 
-        /**
+		/**
 		\brief Call contact report callback when the contact force between the actors of this collision pair continues to exceed one of the actor-defined force thresholds.
 
 		\note Only takes effect if the colliding actors are rigid bodies.
@@ -169,9 +170,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact()
 		*/
-        eNOTIFY_THRESHOLD_FORCE_PERSISTS = (1 << 7),
+		eNOTIFY_THRESHOLD_FORCE_PERSISTS	= (1<<7),
 
-        /**
+		/**
 		\brief Call contact report callback when the contact force between the actors of this collision pair falls below one of the actor-defined force thresholds (includes the case where this collision pair stops being in contact).
 
 		\note Only takes effect if the colliding actors are rigid bodies.
@@ -183,9 +184,9 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact()
 		*/
-        eNOTIFY_THRESHOLD_FORCE_LOST = (1 << 8),
+		eNOTIFY_THRESHOLD_FORCE_LOST		= (1<<8),
 
-        /**
+		/**
 		\brief Provide contact points in contact reports for this collision pair.
 
 		\note Only takes effect if the colliding actors are rigid bodies and if used in combination with the flags eNOTIFY_TOUCH_... or eNOTIFY_THRESHOLD_FORCE_...
@@ -194,17 +195,18 @@ struct PxPairFlag
 
 		@see PxSimulationEventCallback.onContact() PxContactPair PxContactPair.extractContacts()
 		*/
-        eNOTIFY_CONTACT_POINTS = (1 << 9),
+		eNOTIFY_CONTACT_POINTS				= (1<<9),
 
-        /**
+		/**
 		\brief This flag is used to indicate whether this pair generates discrete collision detection contacts. 
 
 		\note Contacts are only responded to if eSOLVE_CONTACT is enabled.
 		*/
 
-        eDETECT_DISCRETE_CONTACT = (1 << 10),
+		eDETECT_DISCRETE_CONTACT			= (1<<10),
+		
 
-        /**
+		/**
 		\brief This flag is used to indicate whether this pair generates CCD contacts. 
 
 		\note The contacts will only be responded to if eSOLVE_CONTACT is enabled on this pair.
@@ -217,9 +219,9 @@ struct PxPairFlag
 		@see PxSceneFlag::eENABLE_CCD
 		*/
 
-        eDETECT_CCD_CONTACT = (1 << 11),
+		eDETECT_CCD_CONTACT					= (1<<11),
 
-        /**
+		/**
 		\brief Provide pre solver velocities in contact reports for this collision pair.
 		
 		If the collision pair has contact reports enabled, the velocities of the rigid bodies before contacts have been solved
@@ -231,9 +233,9 @@ struct PxPairFlag
 		
 		@see PxSimulationEventCallback.onContact(), PxContactPairVelocity, PxContactPairHeader.extraDataStream
 		*/
-        ePRE_SOLVER_VELOCITY = (1 << 12),
-
-        /**
+		ePRE_SOLVER_VELOCITY				= (1<<12),
+		
+		/**
 		\brief Provide post solver velocities in contact reports for this collision pair.
 		
 		If the collision pair has contact reports enabled, the velocities of the rigid bodies after contacts have been solved
@@ -241,9 +243,9 @@ struct PxPairFlag
 		
 		@see PxSimulationEventCallback.onContact(), PxContactPairVelocity, PxContactPairHeader.extraDataStream
 		*/
-        ePOST_SOLVER_VELOCITY = (1 << 13),
-
-        /**
+		ePOST_SOLVER_VELOCITY				= (1<<13),
+		
+		/**
 		\brief Provide rigid body poses in contact reports for this collision pair.
 		
 		If the collision pair has contact reports enabled, the rigid body poses at the contact event will be provided 
@@ -257,20 +259,20 @@ struct PxPairFlag
 		
 		@see PxSimulationEventCallback.onContact(), PxContactPairPose, PxContactPairHeader.extraDataStream
 		*/
-        eCONTACT_EVENT_POSE = (1 << 14),
+		eCONTACT_EVENT_POSE					= (1<<14),
 
-        eNEXT_FREE = (1 << 15), //!< For internal use only.
+		eNEXT_FREE							= (1<<15),        //!< For internal use only.
 
-        /**
+		/**
 		\brief Provided default flag to do simple contact processing for this collision pair.
 		*/
-        eCONTACT_DEFAULT = eSOLVE_CONTACT | eDETECT_DISCRETE_CONTACT,
+		eCONTACT_DEFAULT					= eSOLVE_CONTACT | eDETECT_DISCRETE_CONTACT,
 
-        /**
+		/**
 		\brief Provided default flag to get commonly used trigger behavior for this collision pair.
 		*/
-        eTRIGGER_DEFAULT = eNOTIFY_TOUCH_FOUND | eNOTIFY_TOUCH_LOST | eDETECT_DISCRETE_CONTACT
-    };
+		eTRIGGER_DEFAULT					= eNOTIFY_TOUCH_FOUND | eNOTIFY_TOUCH_LOST | eDETECT_DISCRETE_CONTACT
+	};
 };
 
 /**
@@ -281,6 +283,8 @@ struct PxPairFlag
 typedef PxFlags<PxPairFlag::Enum, PxU16> PxPairFlags;
 PX_FLAGS_OPERATORS(PxPairFlag::Enum, PxU16)
 
+
+
 /**
 \brief Collection of flags describing the filter actions to take for a collision pair.
 
@@ -288,9 +292,9 @@ PX_FLAGS_OPERATORS(PxPairFlag::Enum, PxU16)
 */
 struct PxFilterFlag
 {
-    enum Enum
-    {
-        /**
+	enum Enum
+	{
+		/**
 		\brief Ignore the collision pair as long as the bounding volumes of the pair objects overlap.
 
 		Killed pairs will be ignored by the simulation and won't run through the filter again until one
@@ -301,9 +305,9 @@ struct PxFilterFlag
 
 		@see PxScene::resetFiltering()
 		*/
-        eKILL = (1 << 0),
+		eKILL				= (1<<0),
 
-        /**
+		/**
 		\brief Ignore the collision pair as long as the bounding volumes of the pair objects overlap or until filtering relevant data changes for one of the collision objects.
 
 		Suppressed pairs will be ignored by the simulation and won't make another filter request until one
@@ -316,16 +320,16 @@ struct PxFilterFlag
 
 		@see PxFilterData PxFilterObjectAttributes
 		*/
-        eSUPPRESS = (1 << 1),
+		eSUPPRESS			= (1<<1),
 
-        /**
+		/**
 		\brief Invoke the filter callback (#PxSimulationFilterCallback::pairFound()) for this collision pair.
 
 		@see PxSimulationFilterCallback
 		*/
-        eCALLBACK = (1 << 2),
+		eCALLBACK			= (1<<2),
 
-        /**
+		/**
 		\brief Track this collision pair with the filter callback mechanism.
 
 		When the bounding volumes of the collision pair lose contact, the filter callback #PxSimulationFilterCallback::pairLost()
@@ -334,9 +338,9 @@ struct PxFilterFlag
 
 		@see PxSimulationFilterCallback
 		*/
-        eNOTIFY = (1 << 3) | eCALLBACK,
+		eNOTIFY				= (1<<3) | eCALLBACK,
 
-        /**
+		/**
 		\brief Provided default to get standard behavior:
 
 		The application configure the pair's collision properties once when bounding volume overlap is found and
@@ -347,8 +351,8 @@ struct PxFilterFlag
 		The pair will not be killed or suppressed, so collision detection will be processed
 		*/
 
-        eDEFAULT = 0
-    };
+		eDEFAULT = 0
+	};
 };
 
 /**
@@ -359,6 +363,7 @@ struct PxFilterFlag
 typedef PxFlags<PxFilterFlag::Enum, PxU16> PxFilterFlags;
 PX_FLAGS_OPERATORS(PxFilterFlag::Enum, PxU16)
 
+
 /**
 \brief PxFilterData is user-definable data which gets passed into the collision filtering shader and/or callback.
 
@@ -366,65 +371,60 @@ PX_FLAGS_OPERATORS(PxFilterFlag::Enum, PxU16)
 */
 struct PxFilterData
 {
-    //= ATTENTION! =====================================================================================
-    // Changing the data layout of this class breaks the binary serialization format.  See comments for
-    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
-    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-    // accordingly.
-    //==================================================================================================
+//= ATTENTION! =====================================================================================
+// Changing the data layout of this class breaks the binary serialization format.  See comments for 
+// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
+// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+// accordingly.
+//==================================================================================================
 
-    PX_INLINE PxFilterData(const PxEMPTY)
-    {
-    }
+	PX_INLINE PxFilterData(const PxEMPTY)
+	{
+	}
 
-    /**
+	/**
 	\brief Default constructor.
 	*/
-    PX_INLINE PxFilterData()
-    {
-        word0 = word1 = word2 = word3 = 0;
-    }
+	PX_INLINE PxFilterData() 
+	{
+		word0 = word1 = word2 = word3 = 0;
+	}
 
-    /**
+	/**
 	\brief Constructor to set filter data initially.
 	*/
-    PX_INLINE PxFilterData(PxU32 w0, PxU32 w1, PxU32 w2, PxU32 w3)
-        : word0(w0)
-        , word1(w1)
-        , word2(w2)
-        , word3(w3)
-    {
-    }
+	PX_INLINE PxFilterData(PxU32 w0, PxU32 w1, PxU32 w2, PxU32 w3) : word0(w0), word1(w1), word2(w2), word3(w3) {}
 
-    /**
+	/**
 	\brief (re)sets the structure to the default.	
 	*/
-    PX_INLINE void setToDefault()
-    {
-        *this = PxFilterData();
-    }
+	PX_INLINE void setToDefault()
+	{
+		*this = PxFilterData();
+	}
 
-    /**
+	/**
 	\brief Comparison operator to allow use in Array.
 	*/
-    PX_INLINE bool operator==(const PxFilterData& a) const
-    {
-        return a.word0 == word0 && a.word1 == word1 && a.word2 == word2 && a.word3 == word3;
-    }
+	PX_INLINE bool operator == (const PxFilterData& a) const
+	{
+		return a.word0 == word0 && a.word1 == word1 && a.word2 == word2 && a.word3 == word3;
+	}
 
-    /**
+	/**
 	\brief Comparison operator to allow use in Array.
 	*/
-    PX_INLINE bool operator!=(const PxFilterData& a) const
-    {
-        return !(a == *this);
-    }
+	PX_INLINE bool operator != (const PxFilterData& a) const
+	{
+		return !(a == *this);
+	}
 
-    PxU32 word0;
-    PxU32 word1;
-    PxU32 word2;
-    PxU32 word3;
+	PxU32 word0;
+	PxU32 word1;
+	PxU32 word2;
+	PxU32 word3;
 };
+
 
 /**
 \brief Identifies each type of filter object.
@@ -433,63 +433,65 @@ struct PxFilterData
 */
 struct PxFilterObjectType
 {
-    enum Enum
-    {
-        /**
+	enum Enum
+	{
+		/**
 		\brief A static rigid body
 		@see PxRigidStatic
 		*/
-        eRIGID_STATIC,
+		eRIGID_STATIC,
 
-        /**
+		/**
 		\brief A dynamic rigid body
 		@see PxRigidDynamic
 		*/
-        eRIGID_DYNAMIC,
+		eRIGID_DYNAMIC,
 
-        /**
+		/**
 		\brief A particle system (deprecated)
 		\deprecated The PhysX particle feature has been deprecated in PhysX version 3.4
 		@see PxParticleSystem
 		*/
-        ePARTICLE_SYSTEM PX_DEPRECATED,
+		ePARTICLE_SYSTEM PX_DEPRECATED,
 
-        /**
+		/**
 		\brief A particle fluid (deprecated)
 		\deprecated The PhysX particle feature has been deprecated in PhysX version 3.4
 		@see PxParticleFluid
 		*/
-        ePARTICLE_FLUID PX_DEPRECATED,
+		ePARTICLE_FLUID PX_DEPRECATED,
 
-        /**
+		/**
 		\brief An articulation
 		@see PxArticulation
 		*/
-        eARTICULATION,
-
-        /**
+		eARTICULATION,
+		
+		/**
 		\brief A cloth object
 		@see PxCloth
 		*/
-        eCLOTH,
+		eCLOTH,
 
-        //brief internal use only!
-        eMAX_TYPE_COUNT = 16,
+		//brief internal use only!
+		eMAX_TYPE_COUNT = 16,
 
-        //brief internal use only!
-        eUNDEFINED = eMAX_TYPE_COUNT - 1
-    };
+		//brief internal use only!
+		eUNDEFINED = eMAX_TYPE_COUNT-1
+	};
 };
+
 
 // For internal use only
 struct PxFilterObjectFlag
 {
-    enum Enum
-    {
-        eKINEMATIC = (1 << 4),
-        eTRIGGER = (1 << 5)
-    };
+	enum Enum
+	{
+		eKINEMATIC		= (1<<4),
+		eTRIGGER		= (1<<5)
+	};
 };
+
 
 /**
 \brief Structure which gets passed into the collision filtering shader and/or callback providing additional information on objects of a collision pair
@@ -497,6 +499,7 @@ struct PxFilterObjectFlag
 @see PxSimulationFilterShader PxSimulationFilterCallback getActorType() PxFilterObjectIsKinematic() PxFilterObjectIsTrigger()
 */
 typedef PxU32 PxFilterObjectAttributes;
+
 
 /**
 \brief Extract filter object type from the filter attributes of a collision pair object
@@ -508,8 +511,9 @@ typedef PxU32 PxFilterObjectAttributes;
 */
 PX_INLINE PxFilterObjectType::Enum PxGetFilterObjectType(PxFilterObjectAttributes attr)
 {
-    return static_cast<PxFilterObjectType::Enum>((attr & (PxFilterObjectType::eMAX_TYPE_COUNT - 1)));
+	return static_cast<PxFilterObjectType::Enum>( (attr & (PxFilterObjectType::eMAX_TYPE_COUNT-1)) );
 }
+
 
 /**
 \brief Specifies whether the collision object belongs to a kinematic rigid body
@@ -521,8 +525,9 @@ PX_INLINE PxFilterObjectType::Enum PxGetFilterObjectType(PxFilterObjectAttribute
 */
 PX_INLINE bool PxFilterObjectIsKinematic(PxFilterObjectAttributes attr)
 {
-    return ((attr & PxFilterObjectFlag::eKINEMATIC) != 0);
+	return ((attr & PxFilterObjectFlag::eKINEMATIC) != 0);
 }
+
 
 /**
 \brief Specifies whether the collision object is a trigger shape
@@ -534,8 +539,9 @@ PX_INLINE bool PxFilterObjectIsKinematic(PxFilterObjectAttributes attr)
 */
 PX_INLINE bool PxFilterObjectIsTrigger(PxFilterObjectAttributes attr)
 {
-    return ((attr & PxFilterObjectFlag::eTRIGGER) != 0);
+	return ((attr & PxFilterObjectFlag::eTRIGGER) != 0);
 }
+
 
 /**
 \brief Filter shader to specify handling of collision pairs.
@@ -592,9 +598,11 @@ filter callback should get invoked for this pair.
 */
 
 typedef PxFilterFlags (*PxSimulationFilterShader)
-(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
- PxFilterObjectAttributes attributes1, PxFilterData filterData1,
- PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize);
+	(PxFilterObjectAttributes attributes0, PxFilterData filterData0, 
+	 PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	 PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize);
+
+
 
 /**
 \brief Filter callback to specify handling of collision pairs.
@@ -621,7 +629,8 @@ into the simulation.
 class PxSimulationFilterCallback
 {
 public:
-    /**
+
+	/**
 	\brief Filter method to specify how a pair of potentially colliding objects should be processed.
 
 	This method gets called when the filter flags returned by the filter shader (see #PxSimulationFilterShader)
@@ -644,12 +653,12 @@ public:
 
 	@see PxSimulationFilterShader PxFilterData PxFilterObjectAttributes PxFilterFlag PxPairFlag
 	*/
-    virtual PxFilterFlags pairFound(PxU32 pairID,
-                                    PxFilterObjectAttributes attributes0, PxFilterData filterData0, const PxActor* a0, const PxShape* s0,
-                                    PxFilterObjectAttributes attributes1, PxFilterData filterData1, const PxActor* a1, const PxShape* s1,
-                                    PxPairFlags& pairFlags) = 0;
+	virtual		PxFilterFlags	pairFound(	PxU32 pairID,
+		PxFilterObjectAttributes attributes0, PxFilterData filterData0, const PxActor* a0, const PxShape* s0,
+		PxFilterObjectAttributes attributes1, PxFilterData filterData1, const PxActor* a1, const PxShape* s1,
+		PxPairFlags& pairFlags) = 0;
 
-    /**
+	/**
 	\brief Callback to inform that a tracked collision pair is gone.
 
 	This method gets called when a collision pair disappears or gets re-filtered. Only applies to
@@ -664,14 +673,14 @@ public:
 
 	@see pairFound() PxSimulationFilterShader PxFilterData PxFilterObjectAttributes
 	*/
-    virtual void pairLost(PxU32 pairID,
-                          PxFilterObjectAttributes attributes0,
-                          PxFilterData filterData0,
-                          PxFilterObjectAttributes attributes1,
-                          PxFilterData filterData1,
-                          bool objectRemoved) = 0;
+	virtual		void			pairLost(	PxU32 pairID,
+		PxFilterObjectAttributes attributes0,
+		PxFilterData filterData0,
+		PxFilterObjectAttributes attributes1,
+		PxFilterData filterData1,
+		bool objectRemoved) = 0;
 
-    /**
+	/**
 	\brief Callback to give the opportunity to change the filter state of a tracked collision pair.
 
 	This method gets called once per simulation step to let the application change the filter and pair
@@ -693,32 +702,21 @@ public:
 
 	@see pairFound() pairLost() PxFilterFlag PxPairFlag
 	*/
-    virtual bool statusChange(PxU32& pairID, PxPairFlags& pairFlags, PxFilterFlags& filterFlags) = 0;
+	virtual		bool			statusChange(PxU32& pairID, PxPairFlags& pairFlags, PxFilterFlags& filterFlags) = 0;
 
 protected:
-    virtual ~PxSimulationFilterCallback()
-    {
-    }
+	virtual						~PxSimulationFilterCallback() {}
 };
+
 
 struct PxFilterInfo
 {
-    PX_FORCE_INLINE PxFilterInfo()
-        : filterFlags(0)
-        , pairFlags(0)
-        , filterPairIndex(INVALID_FILTER_PAIR_INDEX)
-    {
-    }
-    PX_FORCE_INLINE PxFilterInfo(PxFilterFlags filterFlags_)
-        : filterFlags(filterFlags_)
-        , pairFlags(0)
-        , filterPairIndex(INVALID_FILTER_PAIR_INDEX)
-    {
-    }
+	PX_FORCE_INLINE	PxFilterInfo()							:	filterFlags(0), pairFlags(0), filterPairIndex(INVALID_FILTER_PAIR_INDEX)			{}
+	PX_FORCE_INLINE	PxFilterInfo(PxFilterFlags filterFlags_)	:	filterFlags(filterFlags_), pairFlags(0), filterPairIndex(INVALID_FILTER_PAIR_INDEX)	{}
 
-    PxFilterFlags filterFlags;
-    PxPairFlags pairFlags;
-    PxU32 filterPairIndex;
+	PxFilterFlags	filterFlags;
+	PxPairFlags		pairFlags;
+	PxU32			filterPairIndex;
 };
 
 #if !PX_DOXYGEN

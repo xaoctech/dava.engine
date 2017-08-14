@@ -54,14 +54,14 @@ documentation for specific joint types for details.
 
 class PxJointLimitParameters
 {
-    //= ATTENTION! =====================================================================================
-    // Changing the data layout of this class breaks the binary serialization format.  See comments for
-    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
-    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-    // accordingly.
-    //==================================================================================================
+//= ATTENTION! =====================================================================================
+// Changing the data layout of this class breaks the binary serialization format.  See comments for 
+// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
+// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+// accordingly.
+//==================================================================================================
 public:
-    /**
+	/**
 	\brief Controls the amount of bounce when the joint hits a limit.
 
 	A restitution value of 1.0 causes the joint to bounce back with the velocity which it hit the limit.
@@ -80,30 +80,31 @@ public:
 	<b>Range:</b> [0,1]<br>
 	<b>Default:</b> 0.0
 	*/
-    PxReal restitution;
+	PxReal restitution;
 
-    /**
+
+	/**
 	determines the minimum impact velocity which will cause the joint to bounce
 	*/
 
-    PxReal bounceThreshold;
-    /**
+	PxReal bounceThreshold;
+	/**
 	\brief if greater than zero, the limit is soft, i.e. a spring pulls the joint back to the limit
 
 	<b>Range:</b> [0, PX_MAX_F32)<br>
 	<b>Default:</b> 0.0
 	*/
-    PxReal stiffness;
+	PxReal stiffness;
 
-    /**
+	/**
 	\brief if spring is greater than zero, this is the damping of the limit spring
 
 	<b>Range:</b> [0, PX_MAX_F32)<br>
 	<b>Default:</b> 0.0
 	*/
-    PxReal damping;
+	PxReal damping;
 
-    /**
+	/**
 	\brief the distance inside the limit value at which the limit will be considered to be active by the
 	solver.  As this value is made larger, the limit becomes active more quickly. It thus becomes less 
 	likely to violate the extents of the limit, but more expensive.
@@ -119,63 +120,64 @@ public:
 	@see PxPhysics::getTolerancesScale()
 	*/
 
-    PxReal contactDistance;
+	PxReal contactDistance;
 
-    PxJointLimitParameters()
-        : restitution(0)
-        , bounceThreshold(0)
-        , stiffness(0)
-        , damping(0)
-        , contactDistance(0)
-    {
-    }
 
-    /**
+
+	PxJointLimitParameters()
+	: restitution(0)
+	, bounceThreshold(0)
+	, stiffness(0)
+	, damping(0)
+	, contactDistance(0)
+	{
+	}	
+
+	/**
 	\brief Returns true if the current settings are valid.
 
 	\return true if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const
-    {
-        return PxIsFinite(restitution) && restitution >= 0 && restitution <= 1 &&
-        PxIsFinite(stiffness) && stiffness >= 0 &&
-        PxIsFinite(damping) && damping >= 0 &&
-        PxIsFinite(bounceThreshold) && bounceThreshold >= 0 &&
-        PxIsFinite(contactDistance) && contactDistance >= 0;
-    }
+	PX_INLINE bool isValid() const
+	{
+		return	PxIsFinite(restitution) && restitution >= 0 && restitution <= 1 && 
+			    PxIsFinite(stiffness) && stiffness >= 0 && 
+			    PxIsFinite(damping) && damping >= 0 &&
+				PxIsFinite(bounceThreshold) && bounceThreshold >= 0 &&
+				PxIsFinite(contactDistance) && contactDistance >= 0;
+	}
 
-    PX_INLINE bool isSoft() const
-    {
-        return damping > 0 || stiffness > 0;
-    }
+	PX_INLINE bool isSoft() const
+	{
+		return damping>0 || stiffness>0;
+	}
 
 protected:
-    ~PxJointLimitParameters()
-    {
-    }
+	~PxJointLimitParameters() {}
 };
+
 
 /**
 \brief Describes a one-sided linear limit.
 */
 class PxJointLinearLimit : public PxJointLimitParameters
 {
-    //= ATTENTION! =====================================================================================
-    // Changing the data layout of this class breaks the binary serialization format.  See comments for
-    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
-    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-    // accordingly.
-    //==================================================================================================
+//= ATTENTION! =====================================================================================
+// Changing the data layout of this class breaks the binary serialization format.  See comments for 
+// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
+// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+// accordingly.
+//==================================================================================================
 public:
-    /**
+	/**
 	\brief the extent of the limit. 
 
 	<b>Range:</b> (0, PX_MAX_F32) <br>
 	<b>Default:</b> PX_MAX_F32
 	*/
-    PxReal value;
+	PxReal value;
 
-    /**
+	/**
 	\brief construct a linear hard limit
 
 	\param[in] scale a PxTolerancesScale struct. Should be the same as used when creating the PxPhysics object.
@@ -185,13 +187,14 @@ public:
 	@see PxJointLimitParameters PxTolerancesScale
 	*/
 
-    PxJointLinearLimit(const PxTolerancesScale& scale, PxReal extent, PxReal contactDist = -1)
-        : value(extent)
-    {
-        PxJointLimitParameters::contactDistance = contactDist == -1 ? 0.01f * scale.length : contactDist;
-    }
+	PxJointLinearLimit(const PxTolerancesScale& scale, PxReal extent, PxReal contactDist = -1)
+	: value(extent)
+	{
+		PxJointLimitParameters::contactDistance = contactDist == -1 ? 0.01f*scale.length : contactDist; 
+	}
 
-    /**
+
+	/**
 	\brief construct a linear soft limit 
 
 	\param[in] extent the extent of the limit
@@ -200,25 +203,28 @@ public:
 	@see PxJointLimitParameters PxTolerancesScale
 	*/
 
-    PxJointLinearLimit(PxReal extent, const PxSpring& spring)
-        : value(extent)
-    {
-        stiffness = spring.stiffness;
-        damping = spring.damping;
-    }
+	PxJointLinearLimit(PxReal extent, const PxSpring& spring)
+	: value(extent)
+	{
+		stiffness = spring.stiffness;
+		damping = spring.damping;
+	}
 
-    /**
+
+
+	/**
 	\brief Returns true if the limit is valid
 
 	\return true if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const
-    {
-        return PxJointLimitParameters::isValid() &&
-        PxIsFinite(value) &&
-        value > 0;
-    }
+	PX_INLINE bool isValid() const
+	{
+		return PxJointLimitParameters::isValid() &&
+			   PxIsFinite(value) && 
+			   value > 0;
+	}
 };
+
 
 /**
 \brief Describes a two-sided limit.
@@ -226,14 +232,14 @@ public:
 
 class PxJointLinearLimitPair : public PxJointLimitParameters
 {
-    //= ATTENTION! =====================================================================================
-    // Changing the data layout of this class breaks the binary serialization format.  See comments for
-    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
-    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-    // accordingly.
-    //==================================================================================================
+//= ATTENTION! =====================================================================================
+// Changing the data layout of this class breaks the binary serialization format.  See comments for 
+// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
+// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+// accordingly.
+//==================================================================================================
 public:
-    /**
+	/**
 	\brief the range of the limit. The upper limit must be no lower than the
 	lower limit, and if they are equal the limited degree of freedom will be treated as locked.
 
@@ -241,9 +247,10 @@ public:
 	<b>Range:</b> See the joint on which the limit is used for details<br>
 	<b>Default:</b> 0.0
 	*/
-    PxReal upper, lower;
+	PxReal upper, lower;
 
-    /**
+
+	/**
 	\brief Construct a linear hard limit pair. The lower distance value must be less than the upper distance value. 
 
 	\param[in] scale a PxTolerancesScale struct. Should be the same as used when creating the PxPhysics object.
@@ -254,15 +261,16 @@ public:
 	@see PxJointLimitParameters PxTolerancesScale
 	*/
 
-    PxJointLinearLimitPair(const PxTolerancesScale& scale, PxReal lowerLimit, PxReal upperLimit, PxReal contactDist = -1)
-        : upper(upperLimit)
-        , lower(lowerLimit)
-    {
-        PxJointLimitParameters::contactDistance = contactDist == -1 ? PxMin(scale.length * 0.01f, (upperLimit * 0.49f - lowerLimit * 0.49f)) : contactDist;
-        bounceThreshold = 2 * scale.length;
-    }
+	PxJointLinearLimitPair(const PxTolerancesScale& scale, PxReal lowerLimit, PxReal upperLimit, PxReal contactDist = -1)
+	: upper(upperLimit)
+	, lower(lowerLimit)
+	{
+		PxJointLimitParameters::contactDistance = contactDist == -1 ? PxMin(scale.length * 0.01f, (upperLimit*0.49f-lowerLimit*0.49f)) : contactDist; 
+		bounceThreshold = 2*scale.length;
+	}
 
-    /**
+
+	/**
 	\brief construct a linear soft limit pair
 
 	\param[in] lowerLimit the lower distance of the limit
@@ -272,47 +280,50 @@ public:
 	@see PxJointLimitParameters PxTolerancesScale
 	*/
 
-    PxJointLinearLimitPair(PxReal lowerLimit, PxReal upperLimit, const PxSpring& spring)
-        : upper(upperLimit)
-        , lower(lowerLimit)
-    {
-        stiffness = spring.stiffness;
-        damping = spring.damping;
-    }
+	PxJointLinearLimitPair(PxReal lowerLimit, PxReal upperLimit, const PxSpring& spring)
+	: upper(upperLimit)
+	, lower(lowerLimit)
+	{
+		stiffness = spring.stiffness;
+		damping = spring.damping;
+	}
 
-    /**
+
+	/**
 	\brief Returns true if the limit is valid.
 
 	\return true if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const
-    {
-        return PxJointLimitParameters::isValid() &&
-        PxIsFinite(upper) && PxIsFinite(lower) && upper >= lower &&
-        PxIsFinite(upper - lower) &&
-        PxIsFinite(contactDistance) && contactDistance <= upper - lower;
-    }
+	PX_INLINE bool isValid() const
+	{
+		return PxJointLimitParameters::isValid() &&
+			   PxIsFinite(upper) && PxIsFinite(lower) && upper >= lower &&
+			   PxIsFinite(upper - lower) && 
+			   PxIsFinite(contactDistance) && contactDistance <= upper - lower;
+	}
 };
+
 
 class PxJointAngularLimitPair : public PxJointLimitParameters
 {
-    //= ATTENTION! =====================================================================================
-    // Changing the data layout of this class breaks the binary serialization format.  See comments for
-    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
-    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-    // accordingly.
-    //==================================================================================================
+//= ATTENTION! =====================================================================================
+// Changing the data layout of this class breaks the binary serialization format.  See comments for 
+// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
+// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+// accordingly.
+//==================================================================================================
 public:
-    /**
+	/**
 	\brief the range of the limit. The upper limit must be no lower than the lower limit.
 
 	<b>Unit:</b> Angular: Radians
 	<b>Range:</b> See the joint on which the limit is used for details<br>
 	<b>Default:</b> 0.0
 	*/
-    PxReal upper, lower;
+	PxReal upper, lower;
 
-    /**
+
+	/**
 	\brief construct an angular hard limit pair. 
 	
 	The lower value must be less than the upper value. 
@@ -324,15 +335,16 @@ public:
 	@see PxJointLimitParameters
 	*/
 
-    PxJointAngularLimitPair(PxReal lowerLimit, PxReal upperLimit, PxReal contactDist = -1)
-        : upper(upperLimit)
-        , lower(lowerLimit)
-    {
-        PxJointLimitParameters::contactDistance = contactDist == -1 ? PxMin(0.1f, 0.49f * (upperLimit - lowerLimit)) : contactDist;
-        bounceThreshold = 0.5f;
-    }
+	PxJointAngularLimitPair(PxReal lowerLimit, PxReal upperLimit, PxReal contactDist = -1)
+	: upper(upperLimit)
+	, lower(lowerLimit)
+	{
+		PxJointLimitParameters::contactDistance = contactDist ==-1 ? PxMin(0.1f, 0.49f*(upperLimit-lowerLimit)) : contactDist;
+		bounceThreshold = 0.5f;
+	}
 
-    /**
+
+	/**
 	\brief construct an angular soft limit pair. 
 	
 	The lower value must be less than the upper value. 
@@ -344,26 +356,29 @@ public:
 	@see PxJointLimitParameters
 	*/
 
-    PxJointAngularLimitPair(PxReal lowerLimit, PxReal upperLimit, const PxSpring& spring)
-        : upper(upperLimit)
-        , lower(lowerLimit)
-    {
-        stiffness = spring.stiffness;
-        damping = spring.damping;
-    }
+	PxJointAngularLimitPair(PxReal lowerLimit, PxReal upperLimit, const PxSpring& spring)
+	: upper(upperLimit)
+	, lower(lowerLimit)
+	{
+		stiffness = spring.stiffness;
+		damping = spring.damping;
+	}
 
-    /**
+
+	/**
 	\brief Returns true if the limit is valid.
 
 	\return true if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const
-    {
-        return PxJointLimitParameters::isValid() &&
-        PxIsFinite(upper) && PxIsFinite(lower) && upper >= lower &&
-        PxIsFinite(contactDistance) && contactDistance <= upper - lower;
-    }
+	PX_INLINE bool isValid() const
+	{
+		return PxJointLimitParameters::isValid() &&
+			   PxIsFinite(upper) && PxIsFinite(lower) && upper >= lower &&
+			   PxIsFinite(contactDistance) && contactDistance <= upper - lower;
+	}
 };
+
+
 
 /**
 \brief Describes an elliptical conical joint limit. Note that very small or highly elliptical limit cones may 
@@ -374,32 +389,33 @@ result in jitter.
 
 class PxJointLimitCone : public PxJointLimitParameters
 {
-    //= ATTENTION! =====================================================================================
-    // Changing the data layout of this class breaks the binary serialization format.  See comments for
-    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
-    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-    // accordingly.
-    //==================================================================================================
+//= ATTENTION! =====================================================================================
+// Changing the data layout of this class breaks the binary serialization format.  See comments for 
+// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
+// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+// accordingly.
+//==================================================================================================
 public:
-    /**
+	/**
 	\brief the maximum angle from the Y axis of the constraint frame.
 
 	<b>Unit:</b> Angular: Radians
 	<b>Range:</b> Angular: (0,PI)<br>
 	<b>Default:</b> PI/2
 	*/
-    PxReal yAngle;
+	PxReal yAngle;
 
-    /**
+
+	/**
 	\brief the maximum angle from the Z-axis of the constraint frame.
 
 	<b>Unit:</b> Angular: Radians
 	<b>Range:</b> Angular: (0,PI)<br>
 	<b>Default:</b> PI/2
 	*/
-    PxReal zAngle;
+	PxReal zAngle;
 
-    /**
+	/**
 	\brief Construct a cone hard limit. 
 
 	\param[in] yLimitAngle the limit angle from the Y-axis of the constraint frame
@@ -409,17 +425,17 @@ public:
 	@see PxJointLimitParameters
 	*/
 
-    PxJointLimitCone(PxReal yLimitAngle, PxReal zLimitAngle, PxReal contactDist = -1)
-        :
-        yAngle(yLimitAngle)
-        ,
-        zAngle(zLimitAngle)
-    {
-        PxJointLimitParameters::contactDistance = contactDist == -1 ? PxMin(0.1f, PxMin(yLimitAngle, zLimitAngle) * 0.49f) : contactDist;
-        bounceThreshold = 0.5f;
-    }
+	PxJointLimitCone(PxReal yLimitAngle, PxReal zLimitAngle, PxReal contactDist = -1):
+	  yAngle(yLimitAngle),
+	  zAngle(zLimitAngle)
+	  {
+			PxJointLimitParameters::contactDistance = contactDist == -1 ? PxMin(0.1f, PxMin(yLimitAngle, zLimitAngle)*0.49f) : contactDist;
+			bounceThreshold = 0.5f;
+	  }
 
-    /**
+
+	
+	/**
 	\brief Construct a cone soft limit. 
 
 	\param[in] yLimitAngle the limit angle from the Y-axis of the constraint frame
@@ -429,27 +445,26 @@ public:
 	@see PxJointLimitParameters
 	*/
 
-    PxJointLimitCone(PxReal yLimitAngle, PxReal zLimitAngle, const PxSpring& spring)
-        :
-        yAngle(yLimitAngle)
-        ,
-        zAngle(zLimitAngle)
-    {
-        stiffness = spring.stiffness;
-        damping = spring.damping;
-    }
+	  PxJointLimitCone(PxReal yLimitAngle, PxReal zLimitAngle, const PxSpring& spring):
+	  yAngle(yLimitAngle),
+	  zAngle(zLimitAngle)
+	  {
+		  stiffness = spring.stiffness;
+		  damping = spring.damping;
+	  }
 
-    /**
+
+	/**
 	\brief Returns true if the limit is valid.
 
 	\return true if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const
-    {
-        return PxJointLimitParameters::isValid() &&
-        PxIsFinite(yAngle) && yAngle > 0 && yAngle < PxPi &&
-        PxIsFinite(zAngle) && zAngle > 0 && zAngle < PxPi;
-    }
+	PX_INLINE bool isValid() const
+	{
+		return PxJointLimitParameters::isValid() &&
+			   PxIsFinite(yAngle) && yAngle>0 && yAngle<PxPi && 
+			   PxIsFinite(zAngle) && zAngle>0 && zAngle<PxPi;
+	}
 };
 
 #if !PX_DOXYGEN

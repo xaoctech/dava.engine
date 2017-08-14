@@ -52,58 +52,58 @@ application, the application entry points are PxPvd and PvdClient.
 
 class PxPvdTransport
 {
-public:
-    // connect, isConnected, disconnect, read, write, flush
+  public:
+	// connect, isConnected, disconnect, read, write, flush
 
-    /**
+	/**
 	Connects to the Visual Debugger application.
 	return True if success
 	*/
-    virtual bool connect() = 0;
+	virtual bool connect() = 0;
 
-    /**
+	/**
 	Disconnects from the Visual Debugger application.
 	If we are still connected, this will kill the entire debugger connection.
 	*/
-    virtual void disconnect() = 0;
+	virtual void disconnect() = 0;
 
-    /**
+	/**
 	 *	Return if connection to PVD is created.
 	 */
-    virtual bool isConnected() = 0;
+	virtual bool isConnected() = 0;
 
-    /**
+	/**
 	 *	write bytes to the other endpoint of the connection. should lock before witre. If an error occurs
 	 *	this connection will assume to be dead.
 	 */
-    virtual bool write(const uint8_t* inBytes, uint32_t inLength) = 0;
+	virtual bool write(const uint8_t* inBytes, uint32_t inLength) = 0;
 
-    /*
+	/*
 	    lock this transport and return it
 	*/
-    virtual PxPvdTransport& lock() = 0;
+	virtual PxPvdTransport& lock() = 0;
 
-    /*
+	/*
 	    unlock this transport
 	*/
-    virtual void unlock() = 0;
+	virtual void unlock() = 0;
 
-    /**
+	/**
 	 *	send any data and block until we know it is at least on the wire.
 	 */
-    virtual void flush() = 0;
+	virtual void flush() = 0;
 
-    /**
+	/**
 	 *	Return size of written data.
 	 */
-    virtual uint64_t getWrittenDataSize() = 0;
+	virtual uint64_t getWrittenDataSize() = 0;
 
-    virtual void release() = 0;
+	virtual void release() = 0;
 
-protected:
-    virtual ~PxPvdTransport()
-    {
-    }
+  protected:
+	virtual ~PxPvdTransport()
+	{
+	}
 };
 
 /**

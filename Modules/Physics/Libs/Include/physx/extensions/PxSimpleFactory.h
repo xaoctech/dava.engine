@@ -43,13 +43,14 @@ namespace physx
 {
 #endif
 
-class PxPhysics;
-class PxMaterial;
-class PxRigidActor;
-class PxRigidDynamic;
-class PxRigidStatic;
-class PxGeometry;
-class PxShape;
+	class PxPhysics;
+	class PxMaterial;
+	class PxRigidActor;
+	class PxRigidDynamic;
+	class PxRigidStatic;
+	class PxGeometry;
+	class PxShape;
+
 
 /** \brief simple method to create a PxRigidDynamic actor with a single PxShape. 
 
@@ -66,12 +67,13 @@ class PxShape;
 	@see PxRigidDynamic PxShapeFlag
 */
 
-PxRigidDynamic* PxCreateDynamic(PxPhysics& sdk,
-                                const PxTransform& transform,
-                                const PxGeometry& geometry,
-                                PxMaterial& material,
-                                PxReal density,
-                                const PxTransform& shapeOffset = PxTransform(PxIdentity));
+PxRigidDynamic*	PxCreateDynamic(PxPhysics& sdk,
+								const PxTransform& transform,
+								const PxGeometry& geometry,
+								PxMaterial& material,
+								PxReal density,
+								const PxTransform& shapeOffset = PxTransform(PxIdentity));
+
 
 /** \brief simple method to create a PxRigidDynamic actor with a single PxShape. 
 
@@ -86,10 +88,11 @@ PxRigidDynamic* PxCreateDynamic(PxPhysics& sdk,
 	@see PxRigidDynamic PxShapeFlag
 */
 
-PxRigidDynamic* PxCreateDynamic(PxPhysics& sdk,
-                                const PxTransform& transform,
-                                PxShape& shape,
-                                PxReal density);
+PxRigidDynamic*	PxCreateDynamic(PxPhysics& sdk,
+								const PxTransform& transform,
+								PxShape& shape,
+								PxReal density);
+
 
 /** \brief simple method to create a kinematic PxRigidDynamic actor with a single PxShape. 
 
@@ -111,12 +114,13 @@ PxRigidDynamic* PxCreateDynamic(PxPhysics& sdk,
 	@see PxRigidDynamic PxShapeFlag
 */
 
-PxRigidDynamic* PxCreateKinematic(PxPhysics& sdk,
-                                  const PxTransform& transform,
-                                  const PxGeometry& geometry,
-                                  PxMaterial& material,
-                                  PxReal density,
-                                  const PxTransform& shapeOffset = PxTransform(PxIdentity));
+PxRigidDynamic*	PxCreateKinematic(PxPhysics& sdk,
+								  const PxTransform& transform,
+								  const PxGeometry& geometry,
+								  PxMaterial& material,
+								  PxReal density,
+								  const PxTransform& shapeOffset = PxTransform(PxIdentity));
+
 
 /** \brief simple method to create a kinematic PxRigidDynamic actor with a single PxShape. 
 
@@ -136,10 +140,11 @@ PxRigidDynamic* PxCreateKinematic(PxPhysics& sdk,
 	@see PxRigidDynamic PxShapeFlag
 */
 
-PxRigidDynamic* PxCreateKinematic(PxPhysics& sdk,
-                                  const PxTransform& transform,
-                                  PxShape& shape,
-                                  PxReal density);
+PxRigidDynamic*	PxCreateKinematic(PxPhysics& sdk,
+								  const PxTransform& transform,
+								  PxShape& shape,
+								  PxReal density);
+
 
 /** \brief simple method to create a PxRigidStatic actor with a single PxShape. 
 
@@ -154,11 +159,12 @@ PxRigidDynamic* PxCreateKinematic(PxPhysics& sdk,
 	@see PxRigidStatic
 */
 
-PxRigidStatic* PxCreateStatic(PxPhysics& sdk,
-                              const PxTransform& transform,
-                              const PxGeometry& geometry,
-                              PxMaterial& material,
-                              const PxTransform& shapeOffset = PxTransform(PxIdentity));
+PxRigidStatic*	PxCreateStatic(PxPhysics& sdk,
+							   const PxTransform& transform,
+							   const PxGeometry& geometry,
+							   PxMaterial& material,
+							   const PxTransform& shapeOffset = PxTransform(PxIdentity));
+
 
 /** \brief simple method to create a PxRigidStatic actor with a single PxShape. 
 
@@ -171,9 +177,10 @@ PxRigidStatic* PxCreateStatic(PxPhysics& sdk,
 	@see PxRigidStatic
 */
 
-PxRigidStatic* PxCreateStatic(PxPhysics& sdk,
-                              const PxTransform& transform,
-                              PxShape& shape);
+PxRigidStatic*	PxCreateStatic(PxPhysics& sdk,
+							   const PxTransform& transform,
+							   PxShape& shape);
+
 
 /** \brief simple method to create a PxRigidStatic actor with a single PxShape. 
 
@@ -186,9 +193,10 @@ PxRigidStatic* PxCreateStatic(PxPhysics& sdk,
 	@see PxRigidStatic
 */
 
-PxRigidStatic* PxCreateStatic(PxPhysics& sdk,
-                              const PxTransform& transform,
-                              PxShape& shape);
+PxRigidStatic*	PxCreateStatic(PxPhysics& sdk,
+							   const PxTransform& transform,
+							   PxShape& shape);
+
 
 /**
 \brief create a shape by copying attributes from another shape
@@ -216,8 +224,10 @@ The following are not copied and retain their default values:
 */
 
 PxShape* PxCloneShape(PxPhysics& physicsSDK,
-                      const PxShape& shape,
-                      bool isExclusive);
+					  const PxShape& shape,
+					  bool isExclusive);
+
+
 
 /**
 \brief create a static body by copying attributes from another rigid actor
@@ -243,9 +253,10 @@ The following are not copied and retain their default values:
 
 */
 
-PxRigidStatic* PxCloneStatic(PxPhysics& physicsSDK,
-                             const PxTransform& transform,
-                             const PxRigidActor& actor);
+PxRigidStatic* PxCloneStatic(PxPhysics& physicsSDK, 
+							 const PxTransform& transform,
+							 const PxRigidActor& actor);
+
 
 /**
 \brief create a dynamic body by copying attributes from an existing body
@@ -282,9 +293,10 @@ The following are not copied and retain their default values:
 
 */
 
-PxRigidDynamic* PxCloneDynamic(PxPhysics& physicsSDK,
-                               const PxTransform& transform,
-                               const PxRigidDynamic& body);
+PxRigidDynamic*	PxCloneDynamic(PxPhysics& physicsSDK, 	 
+							   const PxTransform& transform,
+							   const PxRigidDynamic& body);
+
 
 /** \brief create a plane actor. The plane equation is n.x + d = 0
 
@@ -297,9 +309,10 @@ PxRigidDynamic* PxCloneDynamic(PxPhysics& physicsSDK,
 	@see PxRigidStatic
 */
 
-PxRigidStatic* PxCreatePlane(PxPhysics& sdk,
-                             const PxPlane& plane,
-                             PxMaterial& material);
+PxRigidStatic*	PxCreatePlane(PxPhysics& sdk,
+							  const PxPlane& plane,
+							  PxMaterial& material);
+
 
 /**
 \brief scale a rigid actor by a uniform scale
