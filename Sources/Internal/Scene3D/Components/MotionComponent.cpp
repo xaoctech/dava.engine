@@ -22,6 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
     .ConstructorByPointer()
     .Field("configPath", &MotionComponent::GetConfigPath, &MotionComponent::SetConfigPath)[M::DisplayName("Motion Config")]
     .Field("parameters", &MotionComponent::parameters)[M::DisplayName("parameters")]
+    .Field("motions", &MotionComponent::motions)[M::DisplayName("Motions")]
     .End();
 }
 

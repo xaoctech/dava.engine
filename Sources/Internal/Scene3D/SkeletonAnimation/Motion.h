@@ -2,6 +2,7 @@
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
+#include "Reflection/Reflection.h"
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
 
 namespace DAVA
@@ -39,27 +40,89 @@ public:
     bool UnbindParameter(const FastName& parameterID);
     void UnbindParameters();
 
+    const Vector<FastName>& GetStateIDs() const;
+    bool RequestState(const FastName& stateID);
+
 protected:
+    struct State;
+    class Transition
+    {
+    public:
+        enum eType : uint8
+        {
+            TYPE_SMOOTH,
+            TYPE_FROZEN,
+            TYPE_BLENDTREE,
+
+            TYPE_COUNT
+        };
+
+        enum eFunc : uint8
+        {
+            FUNC_LERP,
+            FUNC_CURVE,
+
+            FUNC_COUNT
+        };
+
+        void Update(float32 dTime, SkeletonPose* outPose);
+        void Reset(State* srcState, State* dstState);
+
+        bool IsComplete() const;
+
+    protected:
+        eType type = TYPE_COUNT;
+        eFunc func = FUNC_COUNT;
+        float32 duration = 0.f;
+
+        //runtime
+        State* srcState = nullptr;
+        State* dstState = nullptr;
+        float32 transitionPhase = 0.f;
+
+        friend class Motion;
+    };
     struct State
     {
-        FastName id;
+        FastName id; //temporary for debug
         BlendTree* blendTree = nullptr;
+        FastNameMap<Transition*> transitions;
+
         float32 animationPhase = 0.f;
-
         Vector<const float32*> boundParams;
-
-        //TODO: *Skinning* transitions ?
     };
+
+    static void UpdateAndEvaluateStatePose(float32 dTime, State* state, SkeletonPose* pose);
 
     FastName name;
     eMotionBlend blendMode = BLEND_COUNT;
 
     Vector<State> states;
+    FastNameMap<State*> statesMap;
     State* currentState = nullptr;
 
+    Vector<Transition> transitions;
+    Transition* currentTransition = nullptr;
+
+    Vector<FastName> statesIDs;
     Vector<FastName> parameterIDs;
 
     SkeletonPose currentPose;
+
+    //////////////////////////////////////////////////////////////////////////
+    //temporary for debug
+    const FastName& GetStateID() const
+    {
+        static const FastName invalidID = FastName("#invalid-state");
+        return (currentState != nullptr) ? currentState->id : invalidID;
+    }
+    void SetStateID(const FastName& id)
+    {
+        RequestState(id);
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+    DAVA_REFLECTION(Motion);
 };
 
 inline const FastName& Motion::GetName() const
