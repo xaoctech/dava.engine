@@ -61,6 +61,7 @@ static void WriteBufferToFile(const Vector<uint8>& outDB, const FilePath& path)
 
 std::ostream& DLCManagerImpl::GetLog() const
 {
+    DVASSERT(Thread::IsMainThread());
     return log;
 }
 

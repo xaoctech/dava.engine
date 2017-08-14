@@ -58,6 +58,7 @@ void LODDistanceWidget::CreateUI()
     deleteButton->setMaximumSize(QSize(24, 24));
     deleteButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/remove.png"));
     deleteButton->setToolTip("Remove geometry");
+    deleteButton->setEnabled(active && canDelete);
     layout->addWidget(deleteButton);
 
     spinBox = new EventFilterDoubleSpinBox(this);

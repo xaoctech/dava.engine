@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1205</width>
+    <width>1149</width>
     <height>807</height>
    </rect>
   </property>
@@ -1996,6 +1996,15 @@
    </property>
    <property name="toolTip">
     <string>Perform some routine checks under scene objects</string>
+   </property>
+  </action>
+  <action name="actionAddGeoDecalComponent">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/QtIcons/mipmap.png</normaloff>:/QtIcons/mipmap.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Geo Decal Component</string>
    </property>
   </action>
   <action name="actionTextEntity">

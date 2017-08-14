@@ -71,9 +71,6 @@ const double TestClass::testTimeLimit = 10.0; // seconds
 TestClass::~TestClass()
 {
     DVASSERT(core != nullptr);
-    RenderWidget* widget = PlatformApi::Qt::GetRenderWidget();
-    DVASSERT(widget != nullptr);
-    widget->setParent(nullptr); // remove it from Qt hierarchy to avoid Widget deletion.
 
     QWidget* focusWidget = PlatformApi::Qt::GetApplication()->focusWidget();
     if (focusWidget != nullptr)
@@ -89,6 +86,11 @@ TestClass::~TestClass()
     mockInvoker.reset();
     QTimer::singleShot(0, [c, prevDocPath]()
                        {
+                           RenderWidget* widget = PlatformApi::Qt::GetRenderWidget();
+                           DVASSERT(widget != nullptr);
+                           widget->setParent(nullptr); // remove it from Qt hierarchy to avoid Widget deletion.
+                           widget->show();
+
                            c->OnLoopStopped();
                            delete c;
 
@@ -165,14 +167,19 @@ void TestClass::Init()
 
 void TestClass::DirectUpdate(float32 timeElapsed, const String& testName)
 {
-    DVASSERT(core != nullptr);
-    core->OnFrame(timeElapsed);
-    updateForCurrentTestCalled = true;
+    if (core != nullptr)
+    {
+        core->OnFrame(timeElapsed);
+        updateForCurrentTestCalled = true;
+    }
 }
 
 bool TestClass::DirectTestComplete(const String& testName) const
 {
-    DVASSERT(core != nullptr);
+    if (core == nullptr)
+    {
+        return false;
+    }
 
     if (core->GetUI()->HasActiveWaitDalogues() == true)
     {
@@ -299,9 +306,9 @@ void TestClassHolder::InitTimeStampForTest(const String& testName)
 void TestClassHolder::SetUp(const String& testName)
 {
     currentTestFinished = false;
-    testClass->Init();
     AddCall([this, testName]()
             {
+                testClass->Init();
                 testClass->SetUp(testName);
             });
 }

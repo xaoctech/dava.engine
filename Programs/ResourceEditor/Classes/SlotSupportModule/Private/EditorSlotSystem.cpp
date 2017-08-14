@@ -170,7 +170,7 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
         Matrix4 jointTranfsorm = scene->slotSystem->GetJointTransform(slot);
         bool inverseSuccessed = jointTranfsorm.Inverse();
         DVASSERT(inverseSuccessed);
-        Matrix4 attachmentTransform = jointTranfsorm * entity->GetLocalTransform();
+        Matrix4 attachmentTransform = entity->GetLocalTransform() * jointTranfsorm;
         scene->slotSystem->SetAttachmentTransform(slot, attachmentTransform);
     }
 

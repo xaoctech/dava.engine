@@ -393,12 +393,35 @@ bool EditorLODSystem::CanDeleteLOD() const
     DVASSERT(activeLodData != nullptr);
 
     bool canDeleteLod = (!activeLodData->lodComponents.empty()) && (activeLodData->GetLODLayersCount() > 1);
-    for (auto& lc : activeLodData->lodComponents)
+    if (canDeleteLod == true)
     {
-        if (HasComponent(lc->GetEntity(), DAVA::Component::PARTICLE_EFFECT_COMPONENT))
+        for (auto& lc : activeLodData->lodComponents)
         {
-            canDeleteLod = false;
-            break;
+            Entity* entity = lc->GetEntity();
+            if (HasComponent(entity, Component::PARTICLE_EFFECT_COMPONENT))
+            {
+                canDeleteLod = false;
+                break;
+            }
+            else
+            {
+                RenderObject* ro = GetRenderObject(entity);
+                Set<int32> lodIndexes;
+                uint32 batchCount = ro->GetRenderBatchCount();
+
+                for (uint32 i = 0; i < batchCount; ++i)
+                {
+                    DAVA::int32 lodIndex, switchIndex;
+                    ro->GetRenderBatch(i, lodIndex, switchIndex);
+                    lodIndexes.insert(lodIndex);
+                }
+
+                if (lodIndexes.size() == 1)
+                {
+                    canDeleteLod = false;
+                    break;
+                }
+            }
         }
     }
 
