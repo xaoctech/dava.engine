@@ -174,13 +174,13 @@ public:
     /** Start downloading to dstPath file */
     virtual Task* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
     /** Start downloading to custom writer
-	    You can reuse castomWriter after finish Task
+	    You can reuse customWriter after finish Task
 	*/
     virtual Task* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
     /** Resume downloading to file starting from current file size */
     virtual Task* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
     /** Resume downloading to custom writer starting from current position
-	    You can reuse castomWriter after finish Task
+	    You can reuse customWriter after finish Task
 	*/
     virtual Task* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
 

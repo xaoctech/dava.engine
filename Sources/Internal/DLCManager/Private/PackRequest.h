@@ -61,6 +61,16 @@ private:
         Error
     };
 
+    /**
+	   DVPLWriter - is class for optimization only. I try to do:
+	   1 - downloading of data
+	   2 - crc32 hash check
+	   3 - write footer
+	   all inside downloader thread.
+	   So DVPLWriter doing 2 task:
+	   1 - writing data to disk
+	   2 - checking data, moving files, and adding footer
+	*/
     class DVPLWriter : public DLCDownloader::IWriter
     {
     public:
