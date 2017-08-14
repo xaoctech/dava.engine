@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TArc/Qt/QtByteArray.h>
+
 #include <Logger/Logger.h>
 #include <functional>
 

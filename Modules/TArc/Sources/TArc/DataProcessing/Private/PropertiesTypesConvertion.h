@@ -1,5 +1,9 @@
 #pragma once
 
+#include "TArc/Qt/QtRect.h"
+#include "TArc/Qt/QtByteArray.h"
+#include "TArc/Qt/QtString.h"
+
 namespace DAVA
 {
 namespace TArc

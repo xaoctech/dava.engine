@@ -112,10 +112,6 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB), UIInputSystem::ACTION_FOCUS_NEXT);
     inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
 
-    //const char* settingsPath = "QuickEdSettings.archive";
-    //FilePath localPrefrencesPath(fs->GetCurrentDocumentsDirectory() + settingsPath);
-    //PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
-
     engineContext->logger->Log(Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
 
     BaseApplication::Init(engineContext);
@@ -154,8 +150,8 @@ void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 
     InsertionParams params(InsertionParams::eInsertionMethod::AfterItem, "Dock");
     tarcCore->CreateModule<ThemesModule>(params);
-    tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<LegacySupportModule>();
+    tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<ProjectModule>();
     tarcCore->CreateModule<DocumentsModule>();
 

@@ -41,6 +41,15 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ThemesSettings)
     .End();
 }
 
+void ThemesSettings::SetTheme(DAVA::int64 themeValue)
+{
+    theme = static_cast<eTheme>(themeValue);
+    if (theme != Dark && theme != Light)
+    {
+        theme = Dark;
+    }
+}
+
 void ThemesSettings::SetTheme(ThemesSettings::eTheme theme_, QApplication* app)
 {
     theme = theme_;
@@ -238,6 +247,8 @@ void ThemesModule::PostInit()
         ContextAccessor* accessor = GetAccessor();
         QAction* menuAction = new QAction("App style", nullptr);
 
+        QActionGroup* styleGroup = new QActionGroup(menuAction);
+
         ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "View", insertionParams));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, menuAction);
 
@@ -254,6 +265,7 @@ void ThemesModule::PostInit()
                 FieldDescriptor descr;
                 descr.type = ReflectedTypeDB::Get<ThemesSettings>();
                 descr.fieldName = FastName("currentTheme");
+                styleGroup->addAction(action);
 
                 action->SetStateUpdationFunction(QtAction::Checked, descr, [value](const DAVA::Any& v) -> DAVA::Any
                                                  {

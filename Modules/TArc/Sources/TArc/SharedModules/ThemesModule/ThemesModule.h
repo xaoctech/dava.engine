@@ -30,6 +30,8 @@ public:
     QColor GetHighligtedItemTextColor();
     QColor GetErrorColor();
 
+    DAVA_DEPRECATED(void SetTheme(DAVA::int64 themeValue)); // for settings convert only
+
 private:
     friend class ThemesModule;
     eTheme theme = eTheme::Dark;

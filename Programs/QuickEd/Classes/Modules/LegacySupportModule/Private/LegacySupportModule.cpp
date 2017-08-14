@@ -5,20 +5,21 @@
 
 #include "Model/PackageHierarchy/PackageNode.h"
 
-#include "Application/QEGlobal.h"
+#include "Classes/Application/SettingsConverter.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/EditorSystems/EditorControlsView.h"
 
 #include "UI/mainwindow.h"
 #include "UI/ProjectView.h"
 #include "UI/Find/Filters/PrototypeUsagesFilter.h"
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/DataProcessing/Common.h>
 
 #include <Tools/Version.h>
 #include <DAVAVersion.h>
-#include "TArc/WindowSubSystem/ActionUtils.h"
-#include "EditorSystems/EditorControlsView.h"
-#include "TArc/DataProcessing/Common.h"
-#include "TArc/WindowSubSystem/QtAction.h"
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)
 {
@@ -33,6 +34,7 @@ void LegacySupportModule::PostInit()
     using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
+    ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
 
     projectDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<ProjectData>());
     projectDataWrapper.SetListener(this);
