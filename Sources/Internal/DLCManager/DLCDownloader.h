@@ -91,14 +91,14 @@ public:
     struct IWriter
     {
         virtual ~IWriter() = default;
-        /** Save next buffer bytes into memory or file, on error return differs from parameter size */
+        /** Save next buffer bytes into memory or file, on error result != size */
         virtual uint64 Save(const void* ptr, uint64 size) = 0;
         /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
         virtual uint64 GetSeekPos() = 0;
         /** Truncate file(or buffer) to zero length, return false on error */
         virtual bool Truncate() = 0;
         /** Close internal resource (file handle, socket, free memory)
-		    return true on successes
+		    return true on success
 		*/
         virtual bool Close() = 0;
         /** Check internal state */

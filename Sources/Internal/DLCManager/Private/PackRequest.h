@@ -64,12 +64,12 @@ private:
     class DVPLWriter : public DLCDownloader::IWriter
     {
     public:
-        DVPLWriter(FilePath& localPath, uint32 sizeCompressed, uint32 sizeUncompressed, uint32 crc32Compressed, Compressor::Type compressionType)
-            : localPath_(localPath)
-            , sizeCompressed_(sizeCompressed)
-            , sizeUncompressed_(sizeUncompressed)
-            , crc32Compressed_(crc32Compressed)
-            , compressionType_(compressionType)
+        DVPLWriter(FilePath& localPath_, uint32 sizeCompressed_, uint32 sizeUncompressed_, uint32 crc32Compressed_, Compressor::Type compressionType_)
+            : localPath(localPath_)
+            , sizeCompressed(sizeCompressed_)
+            , sizeUncompressed(sizeUncompressed_)
+            , crc32Compressed(crc32Compressed_)
+            , compressionType(compressionType_)
         {
         }
         bool OpenFile();
@@ -87,12 +87,11 @@ private:
     private:
         std::ofstream fout;
         CRC32 crc32counter;
-        FilePath localPath_;
-        const uint32 sizeCompressed_;
-        const uint32 sizeUncompressed_;
-        const uint32 crc32Compressed_;
-        const Compressor::Type compressionType_;
-        bool opened = false;
+        FilePath localPath;
+        const uint32 sizeCompressed;
+        const uint32 sizeUncompressed;
+        const uint32 crc32Compressed;
+        const Compressor::Type compressionType;
     };
 
     struct FileRequest
