@@ -389,6 +389,7 @@ void EditorTransformSystem::PrepareDrag()
 void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
 {
     using namespace DAVA;
+    using namespace DAVA::TArc;
     Vector2 delta = systemsManager->GetMouseDelta();
     switch (activeArea)
     {
@@ -404,8 +405,8 @@ void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
     {
-        bool withPivot = DAVA::TArc::IsKeyPressed(eModifierKeys::ALT);
-        bool rateably = DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL);
+        bool withPivot = IsKeyPressed(eModifierKeys::ALT);
+        bool rateably = IsKeyPressed(eModifierKeys::CONTROL);
         ResizeControl(delta, withPivot, rateably);
         break;
     }

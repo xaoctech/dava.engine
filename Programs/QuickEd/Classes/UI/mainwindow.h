@@ -71,7 +71,7 @@ private:
     QActionGroup* backgroundActions = nullptr;
 
 #if defined(__DAVAENGINE_MACOS__)
-    ShortcutChecker shortcutChecker;
+    DAVA::TArc::ShortcutChecker shortcutChecker;
 #endif //__DAVAENGINE_MACOS__
 
     DAVA::TArc::QtDelayedExecutor delayedExecutor;

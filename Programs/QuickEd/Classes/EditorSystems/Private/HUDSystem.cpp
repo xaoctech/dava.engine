@@ -8,7 +8,8 @@
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
-#include "EditorSystems/HUDControls.h"
+#include "Classes/EditorSystems/HUDControls.h"
+#include "Classes/EditorSystems/ControlTransformationSettings.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
@@ -18,7 +19,6 @@
 #include <Base/BaseTypes.h>
 #include <UI/UIControl.h>
 #include <UI/UIEvent.h>
-#include "../ControlTransformationSettings.h"
 
 using namespace DAVA;
 
