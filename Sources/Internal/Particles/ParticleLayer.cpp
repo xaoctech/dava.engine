@@ -171,6 +171,15 @@ ParticleLayer* ParticleLayer::Clone()
         clonedForce->Release();
     }
 
+    dstLayer->CleanupDrag();
+    dstLayer->dragForces.reserve(dragForces.size());
+    for (size_t f = 0; f < dragForces.size(); ++f)
+    {
+        ParticleDragForce* clonedForce = dragForces[f]->Clone();
+        dstLayer->AddDrag(clonedForce);
+        clonedForce->Release();
+    }
+
     if (spin)
         dstLayer->spin.Set(spin->Clone());
 
@@ -687,6 +696,46 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         particleForce->Release();
     }
 
+    int32 dragForceCount = 0;
+    const YamlNode* dragForceCountNode = node->Get("dragForceCount");
+    if (dragForceCountNode)
+        dragForceCount = dragForceCountNode->AsInt();
+
+    for (int32 i = 0; i < dragForceCount; ++i)
+    {
+        Vector3 position;
+        Vector3 rotation;
+        bool infinityRange = false;
+
+        String forceDataName = Format("dragForcePosition%d", i);
+        const YamlNode* positionNode = node->Get(forceDataName);
+        if (positionNode)
+        {
+            position = positionNode->AsVector3();
+        }
+
+        forceDataName = Format("dragForceRotation%d", i);
+        const YamlNode* rotationNode = node->Get(forceDataName);
+        if (rotationNode)
+        {
+            rotation = rotationNode->AsVector3();
+        }
+
+        forceDataName = Format("dragForceInfinityRange%d", i);
+        const YamlNode* rangeNode = node->Get(forceDataName);
+        if (rangeNode)
+        {
+            infinityRange = rangeNode->AsBool();
+        }
+
+        ParticleDragForce* dragForce = new ParticleDragForce(this);
+        dragForce->position = position;
+        dragForce->rotation = rotation;
+        dragForce->infinityRange = infinityRange;
+        AddDrag(dragForce);
+        dragForce->Release();
+    }
+
     spin = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("spin"));
     spinVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("spinVariation"));
     spinOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("spinOverLife"));
@@ -1057,6 +1106,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);
+
+    SaveDragForcesToYamlNode(layerNode);
 }
 
 void ParticleLayer::SaveSpritePath(FilePath& path, const FilePath& configPath, YamlNode* layerNode, std::string name)
@@ -1088,6 +1139,31 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("forceOverLife%d", i);
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, forceDataName, currentForce->forceOverLife);
+    }
+}
+
+void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
+{
+    int32 forceCount = static_cast<int32>(dragForces.size());
+    if (forceCount == 0)
+    {
+        // No forces to write.
+        return;
+    }
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "dragForceCount", forceCount);
+    for (int32 i = 0; i < forceCount; i++)
+    {
+        ParticleDragForce* currentForce = dragForces[i];
+
+        String forceDataName = Format("dragForcePosition%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->position);
+
+        forceDataName = Format("dragForceRotation%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->rotation);
+
+        forceDataName = Format("dragForceInfinityRange%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->infinityRange);
     }
 }
 
