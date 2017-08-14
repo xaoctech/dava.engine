@@ -544,6 +544,8 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
     {
         if (IsLocalMetaAlreadyExist())
         {
+            skipedStates.push_back(initState);
+            Logger::Debug("DLCManager skip state from %s to %s, use local meta", ToString(initState).c_str(), ToString(nextState).c_str());
             initState = nextState;
         }
         else
@@ -1170,6 +1172,26 @@ uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
     }
 
     return result;
+}
+
+DLCManager::InitStatus DLCManagerImpl::GetInitStatus() const
+{
+    if (!IsInitialized())
+    {
+        return InitStatus::NotFinished;
+    }
+
+    if (skipedStates.empty())
+    {
+        return InitStatus::UsingRemoteMeta;
+    }
+    return InitStatus::UsingLocalMeta;
+}
+
+DLCManager::InitStatus DLCManager::GetInitStatus() const
+{
+    // default implementation
+    return InitStatus::NotFinished;
 }
 
 uint64 DLCManager::GetPackSize(const String&)

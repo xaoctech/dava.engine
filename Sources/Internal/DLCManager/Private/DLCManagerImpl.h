@@ -120,6 +120,8 @@ public:
 
     InitState GetInitState() const;
 
+    InitStatus GetInitStatus() const override;
+
     const String& GetLastErrorMessage() const;
 
     bool IsRequestingEnabled() const override;
@@ -277,6 +279,7 @@ private:
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
 
+    List<InitState> skipedStates; // if we can't download from server but have local meta, we can skip some state and use already downloaded meta
     String initErrorMsg;
     InitState initState = InitState::Starting;
     std::unique_ptr<MemoryBufferWriter> memBufWriter;

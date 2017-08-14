@@ -129,6 +129,18 @@ public:
 
     virtual bool IsInitialized() const = 0;
 
+    /**
+	 InitStatus represent how initialization was done
+	*/
+    enum class InitStatus
+    {
+        NotFinished, //!< initialization is still continue
+        UsingLocalMeta, //!< during initialization can't download data from server and try to use previous loaded local data
+        UsingRemoteMeta //!< download data from server(new version) or just match version from server data with local(same version)
+    };
+    /** return initialization status */
+    virtual InitStatus GetInitStatus() const;
+
     virtual bool IsRequestingEnabled() const = 0;
 
     /** Return true if pack is already downloaded. */

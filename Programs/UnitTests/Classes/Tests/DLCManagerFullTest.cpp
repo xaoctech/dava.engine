@@ -112,6 +112,8 @@ struct FSMTest02
 
             TEST_VERIFY(dlcManager.IsRequestingEnabled());
 
+            TEST_VERIFY(dlcManager.GetInitStatus() == DLCManager::InitStatus::UsingRemoteMeta);
+
             auto currentProgress = dlcManager.GetProgress();
             TEST_VERIFY(currentProgress.alreadyDownloaded <= currentProgress.total);
             TEST_VERIFY(currentProgress.inQueue == progressAfterInit.inQueue);
