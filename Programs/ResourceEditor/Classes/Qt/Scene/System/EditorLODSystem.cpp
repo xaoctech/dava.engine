@@ -391,6 +391,7 @@ void EditorLODSystem::SetForceValues(const ForceValues& values)
 bool EditorLODSystem::CanDeleteLOD() const
 {
     DVASSERT(activeLodData != nullptr);
+    using namespace DAVA;
 
     bool canDeleteLod = (!activeLodData->lodComponents.empty()) && (activeLodData->GetLODLayersCount() > 1);
     if (canDeleteLod == true)
