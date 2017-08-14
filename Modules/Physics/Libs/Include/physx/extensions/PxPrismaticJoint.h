@@ -56,9 +56,10 @@ class PxPrismaticJoint;
 @see PxPrismaticJoint
 */
 
-PxPrismaticJoint* PxPrismaticJointCreate(PxPhysics& physics,
-                                         PxRigidActor* actor0, const PxTransform& localFrame0,
-                                         PxRigidActor* actor1, const PxTransform& localFrame1);
+PxPrismaticJoint*	PxPrismaticJointCreate(PxPhysics& physics, 
+										   PxRigidActor* actor0, const PxTransform& localFrame0, 
+										   PxRigidActor* actor1, const PxTransform& localFrame1);
+
 
 /**
 \brief Flags specific to the prismatic joint.
@@ -68,14 +69,15 @@ PxPrismaticJoint* PxPrismaticJointCreate(PxPhysics& physics,
 
 struct PxPrismaticJointFlag
 {
-    enum Enum
-    {
-        eLIMIT_ENABLED = 1 << 1
-    };
+	enum Enum
+	{
+		eLIMIT_ENABLED	= 1<<1
+	};
 };
 
 typedef PxFlags<PxPrismaticJointFlag::Enum, PxU16> PxPrismaticJointFlags;
 PX_FLAGS_OPERATORS(PxPrismaticJointFlag::Enum, PxU16)
+
 
 /**
  \brief A prismatic joint permits relative translational movement between two bodies along
@@ -92,18 +94,20 @@ PX_FLAGS_OPERATORS(PxPrismaticJointFlag::Enum, PxU16)
 class PxPrismaticJoint : public PxJoint
 {
 public:
-    /** 
+	
+
+	/** 
 	\brief returns the displacement of the joint along its axis.
 	*/
 
-    virtual PxReal getPosition() const = 0;
+	virtual PxReal			getPosition()				const				= 0;
 
-    /** 
+	/** 
 	\brief returns the velocity of the joint along its axis
 	*/
-    virtual PxReal getVelocity() const = 0;
+	virtual PxReal			getVelocity()				const				= 0;
 
-    /**
+	/**
 	\brief sets the joint limit  parameters.
 
 	The limit range is [-PX_MAX_F32, PX_MAX_F32], but note that the width of the limit (upper-lower) must also be
@@ -111,16 +115,17 @@ public:
 
 	@see PxJointLinearLimitPair getLimit()
 	*/
-    virtual void setLimit(const PxJointLinearLimitPair&) = 0;
+	virtual void			setLimit(const PxJointLinearLimitPair&)		= 0;
 
-    /**
+	/**
 	\brief gets the joint limit  parameters.
 
 	@see PxJointLinearLimit getLimit()
 	*/
-    virtual PxJointLinearLimitPair getLimit() const = 0;
+	virtual PxJointLinearLimitPair getLimit()			const			= 0;
 
-    /**
+
+	/**
 	\brief Set the flags specific to the Prismatic Joint.
 
 	<b>Default</b> PxPrismaticJointFlags(0)
@@ -130,9 +135,9 @@ public:
 	@see PxPrismaticJointFlag setFlag() getFlags()
 	*/
 
-    virtual void setPrismaticJointFlags(PxPrismaticJointFlags flags) = 0;
+	virtual void					setPrismaticJointFlags(PxPrismaticJointFlags flags) = 0;
 
-    /**
+	/**
 	\brief Set a single flag specific to a Prismatic Joint to true or false.
 
 	\param[in] flag The flag to set or clear.
@@ -141,9 +146,9 @@ public:
 	@see PxPrismaticJointFlag, getFlags() setFlags()
 	*/
 
-    virtual void setPrismaticJointFlag(PxPrismaticJointFlag::Enum flag, bool value) = 0;
+	virtual void					setPrismaticJointFlag(PxPrismaticJointFlag::Enum flag, bool value) = 0;
 
-    /**
+	/**
 	\brief Get the flags specific to the Prismatic Joint.
 
 	\return the joint flags
@@ -151,9 +156,9 @@ public:
 	@see PxPrismaticJoint::flags, PxPrismaticJointFlag setFlag() setFlags()
 	*/
 
-    virtual PxPrismaticJointFlags getPrismaticJointFlags(void) const = 0;
+	virtual PxPrismaticJointFlags	getPrismaticJointFlags(void)					const	= 0;
 
-    /**
+		/**
 	\brief Set the linear tolerance threshold for projection.
 
 	If the joint separates by more than this distance along its locked degrees of freedom, the solver 
@@ -172,9 +177,9 @@ public:
 
 	@see getProjectionLinearTolerance()
 	*/
-    virtual void setProjectionLinearTolerance(PxReal tolerance) = 0;
+	virtual void			setProjectionLinearTolerance(PxReal tolerance)					= 0;
 
-    /**
+	/**
 	\brief Get the linear tolerance threshold for projection.
 
 	\return the linear tolerance threshold in radians
@@ -182,9 +187,9 @@ public:
 	@see setProjectionLinearTolerance()
 	*/
 
-    virtual PxReal getProjectionLinearTolerance() const = 0;
+	virtual PxReal			getProjectionLinearTolerance()			const					= 0;
 
-    /**
+	/**
 	\brief Set the angular tolerance threshold for projection. Projection is enabled if PxConstraintFlag::ePROJECTION
 	is set for the joint.
 
@@ -203,51 +208,39 @@ public:
 	@see getProjectionLinearTolerance() PxJoint::setConstraintFlags()
 	*/
 
-    virtual void setProjectionAngularTolerance(PxReal tolerance) = 0;
+	virtual void			setProjectionAngularTolerance(PxReal tolerance)					= 0;
 
-    /**
+	/**
 	\brief Get the angular tolerance threshold for projection.
 
 	@see getProjectionAngularTolerance()
 	*/
-    virtual PxReal getProjectionAngularTolerance() const = 0;
+	virtual PxReal			getProjectionAngularTolerance()			const					= 0;
 
-    /**
+	/**
 	\brief Returns string name of PxPrismaticJoint, used for serialization
 	*/
-    virtual const char* getConcreteTypeName() const
-    {
-        return "PxPrismaticJoint";
-    }
+	virtual	const char*		getConcreteTypeName() const { return "PxPrismaticJoint"; }
 
 protected:
-    //serialization
-
-    /**
+	//serialization
+	
+	/**
 	\brief Constructor
 	*/
-    PX_INLINE PxPrismaticJoint(PxType concreteType, PxBaseFlags baseFlags)
-        : PxJoint(concreteType, baseFlags)
-    {
-    }
+	PX_INLINE				PxPrismaticJoint(PxType concreteType, PxBaseFlags baseFlags) : PxJoint(concreteType, baseFlags) {}
 
-    /**
+	/**
 	\brief Deserialization constructor
-	*/
-    PX_INLINE PxPrismaticJoint(PxBaseFlags baseFlags)
-        : PxJoint(baseFlags)
-    {
-    }
-
-    /**
+	*/		
+	PX_INLINE				PxPrismaticJoint(PxBaseFlags baseFlags) : PxJoint(baseFlags) {}
+	
+	/**
 	\brief Returns whether a given type name matches with the type of this instance
 	*/
-    virtual bool isKindOf(const char* name) const
-    {
-        return !::strcmp("PxPrismaticJoint", name) || PxJoint::isKindOf(name);
-    }
-
-    //~serialization
+	virtual	bool			isKindOf(const char* name) const {	return !::strcmp("PxPrismaticJoint", name) || PxJoint::isKindOf(name); }
+	
+	//~serialization
 };
 
 #if !PX_DOXYGEN

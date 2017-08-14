@@ -48,7 +48,7 @@
 namespace physx
 {
 #endif
-/**
+	/**
  	\brief PxDelayLoadHook
 
 	This is a helper class for delay loading the PhysXCommon dll, PxFoundation dll and PxPvdSDK dll. 
@@ -64,65 +64,61 @@ namespace physx
 	@see PxSetPhysXDelayLoadHook(), PxSetPhysXCookingDelayLoadHook(), PxSetPhysXGpuDelayLoadHook(), PxSetPhysXCommonDelayLoadHook()
 	@see PxFoundationDelayLoadHook
  	*/
-class PxDelayLoadHook : public PxFoundationDelayLoadHook
-{
-public:
-    PxDelayLoadHook()
-    {
-    }
-    virtual ~PxDelayLoadHook()
-    {
-    }
+	class PxDelayLoadHook: public PxFoundationDelayLoadHook
+	{
+	public:
+		PxDelayLoadHook() {}
+		virtual ~PxDelayLoadHook() {}
 
-    virtual const char* getPhysXCommonDEBUGDllName() const = 0;
-    virtual const char* getPhysXCommonCHECKEDDllName() const = 0;
-    virtual const char* getPhysXCommonPROFILEDllName() const = 0;
-    virtual const char* getPhysXCommonDllName() const = 0;
+		virtual const char* getPhysXCommonDEBUGDllName() const = 0;
+		virtual const char* getPhysXCommonCHECKEDDllName() const = 0;
+		virtual const char* getPhysXCommonPROFILEDllName() const = 0;
+		virtual const char* getPhysXCommonDllName() const = 0;
 
-    virtual const char* getPxPvdSDKDEBUGDllName() const = 0;
-    virtual const char* getPxPvdSDKCHECKEDDllName() const = 0;
-    virtual const char* getPxPvdSDKPROFILEDllName() const = 0;
-    virtual const char* getPxPvdSDKDllName() const = 0;
+		virtual const char* getPxPvdSDKDEBUGDllName() const = 0;
+		virtual const char* getPxPvdSDKCHECKEDDllName() const = 0;
+		virtual const char* getPxPvdSDKPROFILEDllName() const = 0;
+		virtual const char* getPxPvdSDKDllName() const = 0;
 
-protected:
-private:
-};
+	protected:
+	private:
+	};
 
-/**
+	/**
 	\brief Sets delay load hook instance for PhysX dll.
 
 	\param[in] hook Delay load hook.
 
 	@see PxDelayLoadHook
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXDelayLoadHook(const physx::PxDelayLoadHook* hook);
+	PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
-/**
+	/**
 	\brief Sets delay load hook instance for PhysXCooking dll.
 
 	\param[in] hook Delay load hook.
 
 	@see PxDelayLoadHook
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXCookingDelayLoadHook(const physx::PxDelayLoadHook* hook);
+	PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxSetPhysXCookingDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
-/**
+	/**
 	\brief Sets delay load hook instance for PhysXGpu dll.
 
 	\param[in] hook Delay load hook.
 
 	@see PxDelayLoadHook
 	*/
-PX_C_EXPORT PX_PHYSX_GPU_API void PX_CALL_CONV PxSetPhysXGpuDelayLoadHook(const physx::PxDelayLoadHook* hook);
+	PX_C_EXPORT PX_PHYSX_GPU_API void PX_CALL_CONV PxSetPhysXGpuDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
-/**
+	/**
 	\brief Sets delay load hook instance for PhysXCommon dll.
 
 	\param[in] hook Delay load hook.
 
 	@see PxDelayLoadHook
 	*/
-PX_C_EXPORT PX_PHYSX_COMMON_API void PX_CALL_CONV PxSetPhysXCommonDelayLoadHook(const physx::PxDelayLoadHook* hook);
+	PX_C_EXPORT PX_PHYSX_COMMON_API void PX_CALL_CONV PxSetPhysXCommonDelayLoadHook(const physx::PxDelayLoadHook* hook);
 
 #if !PX_DOXYGEN
 } // namespace physx

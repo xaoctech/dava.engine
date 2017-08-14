@@ -42,9 +42,9 @@ namespace physx
 {
 #endif
 
-class PxActor;
+	class PxActor;
 
-/**
+	/**
 	\brief Broad phase algorithm used in the simulation
 
 	eSAP is a good generic choice with great performance when many objects are sleeping. Performance
@@ -57,19 +57,19 @@ class PxActor;
 	its generic performance when many objects are sleeping might be inferior to eSAP, and it requires
 	users to define world bounds in order to work.
 	*/
-struct PxBroadPhaseType
-{
-    enum Enum
-    {
-        eSAP, //!< 3-axes sweep-and-prune
-        eMBP, //!< Multi box pruning
-        eGPU,
+	struct PxBroadPhaseType
+	{
+		enum Enum
+		{
+			eSAP,		//!< 3-axes sweep-and-prune
+			eMBP,		//!< Multi box pruning
+			eGPU,
 
-        eLAST
-    };
-};
+			eLAST
+		};
+	};
 
-/**
+	/**
 	\brief Broad-phase callback to receive broad-phase related events.
 
 	Each broadphase callback object is associated with a PxClientID. It is possible to register different
@@ -86,14 +86,12 @@ struct PxBroadPhaseType
 
 	@see PxSceneDesc PxScene.setBroadPhaseCallback() PxScene.getBroadPhaseCallback()
 	*/
-class PxBroadPhaseCallback
-{
-public:
-    virtual ~PxBroadPhaseCallback()
-    {
-    }
+	class PxBroadPhaseCallback
+	{
+		public:
+		virtual				~PxBroadPhaseCallback()	{}
 
-    /**
+		/**
 		\brief Out-of-bounds notification.
 		
 		This function is called when an object leaves the broad-phase.
@@ -101,19 +99,19 @@ public:
 		\param[in] shape	Shape that left the broad-phase bounds
 		\param[in] actor	Owner actor
 		*/
-    virtual void onObjectOutOfBounds(PxShape& shape, PxActor& actor) = 0;
+		virtual		void	onObjectOutOfBounds(PxShape& shape, PxActor& actor) = 0;
 
-    /**
+		/**
 		\brief Out-of-bounds notification.
 		
 		This function is called when an aggregate leaves the broad-phase.
 
 		\param[in] aggregate	Aggregate that left the broad-phase bounds
 		*/
-    virtual void onObjectOutOfBounds(PxAggregate& aggregate) = 0;
-};
+		virtual		void	onObjectOutOfBounds(PxAggregate& aggregate) = 0;
+	};
 
-/**
+	/**
 	\brief "Region of interest" for the broad-phase.
 
 	This is currently only used for the PxBroadPhaseType::eMBP broad-phase, which requires zones or regions to be defined
@@ -133,33 +131,33 @@ public:
 
 	@see PxBroadPhaseCallback PxBroadPhaseExt.createRegionsFromWorldBounds
 	*/
-struct PxBroadPhaseRegion
-{
-    PxBounds3 bounds; //!< Region's bounds
-    void* userData; //!< Region's user-provided data
-};
+	struct PxBroadPhaseRegion
+	{
+		PxBounds3		bounds;		//!< Region's bounds
+		void*			userData;	//!< Region's user-provided data
+	};
 
-/**
+	/**
 	\brief Information & stats structure for a region
 	*/
-struct PxBroadPhaseRegionInfo
-{
-    PxBroadPhaseRegion region; //!< User-provided region data
-    PxU32 nbStaticObjects; //!< Number of static objects in the region
-    PxU32 nbDynamicObjects; //!< Number of dynamic objects in the region
-    bool active; //!< True if region is currently used, i.e. it has not been removed
-    bool overlap; //!< True if region overlaps other regions (regions that are just touching are not considering overlapping)
-};
+	struct PxBroadPhaseRegionInfo
+	{
+		PxBroadPhaseRegion	region;				//!< User-provided region data
+		PxU32				nbStaticObjects;	//!< Number of static objects in the region
+		PxU32				nbDynamicObjects;	//!< Number of dynamic objects in the region
+		bool				active;				//!< True if region is currently used, i.e. it has not been removed
+		bool				overlap;			//!< True if region overlaps other regions (regions that are just touching are not considering overlapping)
+	};
 
-/**
+	/**
 	\brief Caps class for broad phase.
 	*/
-struct PxBroadPhaseCaps
-{
-    PxU32 maxNbRegions; //!< Max number of regions supported by the broad-phase
-    PxU32 maxNbObjects; //!< Max number of objects supported by the broad-phase
-    bool needsPredefinedBounds; //!< If true, broad-phase needs 'regions' to work
-};
+	struct PxBroadPhaseCaps
+	{
+		PxU32	maxNbRegions;			//!< Max number of regions supported by the broad-phase
+		PxU32	maxNbObjects;			//!< Max number of objects supported by the broad-phase
+		bool	needsPredefinedBounds;	//!< If true, broad-phase needs 'regions' to work
+	};
 
 #if !PX_DOXYGEN
 } // namespace physx
