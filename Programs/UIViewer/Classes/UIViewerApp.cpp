@@ -44,7 +44,7 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
 
     optionsAreParsed = options.Parse(cmdLine);
 
-    DAVA::QualitySettingsSystem::Instance()->Load("~res:/UIViewer/quality.yaml");
+    QualitySettingsSystem::Instance()->Load("~res:/UIViewer/quality.yaml");
 }
 
 void UIViewerApp::OnAppStarted()

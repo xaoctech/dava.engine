@@ -8,6 +8,7 @@
 #include <FileSystem/FileSystem.h>
 #include <Render/2D/TextBlock.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Sound/SoundSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
@@ -86,6 +87,8 @@ void UIViewScreen::LoadResources()
     DAVA::FilePath::AddResourcesFolder(projectPath + "/Data/");
     DAVA::FilePath::AddResourcesFolder(projectPath + "/DataSource/");
 
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/quality.yaml");
+
     SetupUI();
 }
 
@@ -118,6 +121,7 @@ void UIViewScreen::SetupUI()
         { //  sound
             SoundSystem* soundSystem = GetEngineContext()->soundSystem;
             soundSystem->SetCurrentLocale(locale);
+            soundSystem->InitFromQualitySettings();
         }
 
         { //  Fonts
