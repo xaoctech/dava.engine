@@ -5,6 +5,8 @@
 
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
+#include <Debug/DVAssert.h>
+#include <Debug/DVAssertDefaultHandlers.h>
 #include <Render/RHI/rhi_Public.h>
 #include <Utils/StringFormat.h>
 #include <UI/UIScreenManager.h>
@@ -178,6 +180,9 @@ DAVA::KeyedArchive* CreateOptions()
 
 int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
 {
+    DAVA::Assert::AddHandler(DAVA::Assert::DefaultLoggerHandler);
+    DAVA::Assert::AddHandler(DAVA::Assert::DefaultDialogBoxHandler);
+
     DAVA::Vector<DAVA::String> modules =
     {
       "JobManager",
