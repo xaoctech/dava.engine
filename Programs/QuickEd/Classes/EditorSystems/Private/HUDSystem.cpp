@@ -13,13 +13,12 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Utils/KeyboardProxy.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Base/BaseTypes.h>
 #include <UI/UIControl.h>
 #include <UI/UIEvent.h>
-#include <Preferences/PreferencesRegistrator.h>
-#include <Preferences/PreferencesStorage.h>
+#include "../ControlTransformationSettings.h"
 
 using namespace DAVA;
 
@@ -28,20 +27,14 @@ namespace
 const Array<HUDAreaInfo::eArea, 2> AreasToHide = { { HUDAreaInfo::PIVOT_POINT_AREA, HUDAreaInfo::ROTATE_AREA } };
 }
 
-REGISTER_PREFERENCES_ON_START(HUDSystem,
-                              PREF_ARG("showPivot", false),
-                              PREF_ARG("showRotate", false),
-                              PREF_ARG("minimumSelectionRectSize", Vector2(5.0f, 5.0f))
-                              )
-
-std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area)
+std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area, DAVA::TArc::ContextAccessor* accessor)
 {
     switch (area)
     {
     case HUDAreaInfo::PIVOT_POINT_AREA:
-        return std::unique_ptr<ControlContainer>(new PivotPointControl());
+        return std::unique_ptr<ControlContainer>(new PivotPointControl(accessor));
     case HUDAreaInfo::ROTATE_AREA:
-        return std::unique_ptr<ControlContainer>(new RotateControl());
+        return std::unique_ptr<ControlContainer>(new RotateControl(accessor));
     case HUDAreaInfo::TOP_LEFT_AREA:
     case HUDAreaInfo::TOP_CENTER_AREA:
     case HUDAreaInfo::TOP_RIGHT_AREA:
@@ -50,9 +43,9 @@ std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area
     case HUDAreaInfo::BOTTOM_LEFT_AREA:
     case HUDAreaInfo::BOTTOM_CENTER_AREA:
     case HUDAreaInfo::BOTTOM_RIGHT_AREA:
-        return std::unique_ptr<ControlContainer>(new FrameRectControl(area));
+        return std::unique_ptr<ControlContainer>(new FrameRectControl(area, accessor));
     case HUDAreaInfo::FRAME_AREA:
-        return std::unique_ptr<ControlContainer>(new FrameControl(FrameControl::SELECTION));
+        return std::unique_ptr<ControlContainer>(new FrameControl(FrameControl::SELECTION, accessor));
     default:
         DVASSERT(!"unacceptable value of area");
         return std::unique_ptr<ControlContainer>(nullptr);
@@ -83,8 +76,9 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem, UIControl* hudCont
         areas.reserve(HUDAreaInfo::AREAS_COUNT);
         for (int area = HUDAreaInfo::AREAS_COUNT - 1; area >= HUDAreaInfo::AREAS_BEGIN; --area)
         {
-            if ((hudSystem->showPivot == false && area == HUDAreaInfo::PIVOT_POINT_AREA) ||
-                (hudSystem->showRotate == false && area == HUDAreaInfo::ROTATE_AREA))
+            ControlTransformationSettings* settings = hudSystem->GetSettings();
+            if ((settings->showPivot == false && area == HUDAreaInfo::PIVOT_POINT_AREA) ||
+                (settings->showRotate == false && area == HUDAreaInfo::ROTATE_AREA))
             {
                 continue;
             }
@@ -107,7 +101,7 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem, UIControl* hudCont
     }
     for (HUDAreaInfo::eArea area : areas)
     {
-        std::unique_ptr<ControlContainer> controlContainer = CreateControlContainer(area);
+        std::unique_ptr<ControlContainer> controlContainer = CreateControlContainer(area, hudSystem->GetAccessor());
         hudControls[area] = controlContainer.get();
         container->AddChild(std::move(controlContainer));
     }
@@ -137,15 +131,11 @@ HUDSystem::HUDSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* 
     systemsManager->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 
     InitFieldBinder();
-
-    PreferencesStorage::Instance()->RegisterPreferences(this);
 }
 
 HUDSystem::~HUDSystem()
 {
     DVASSERT(systemsManager->GetDragState() != EditorSystemsManager::SelectByRect);
-
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
 }
 
 void HUDSystem::InitFieldBinder()
@@ -188,7 +178,7 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
 
 void HUDSystem::ProcessInput(UIEvent* currentInput)
 {
-    bool findPivot = hudMap.size() == 1 && Utils::IsKeyPressed(eModifierKeys::CONTROL) && Utils::IsKeyPressed(eModifierKeys::ALT);
+    bool findPivot = hudMap.size() == 1 && DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL) && DAVA::TArc::IsKeyPressed(eModifierKeys::ALT);
     eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
     hoveredPoint = currentInput->point;
     UIEvent::Phase phase = currentInput->phase;
@@ -265,7 +255,7 @@ void HUDSystem::OnHighlightNode(ControlNode* node)
 
         UIControl* targetControl = node->GetControl();
         DVASSERT(hoveredNodeControl == nullptr);
-        hoveredNodeControl = CreateHighlightRect(node);
+        hoveredNodeControl = CreateHighlightRect(node, GetAccessor());
         hoveredNodeControl->AddToParent(hudControl);
     }
 }
@@ -306,13 +296,13 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
         {
             RefPtr<UIControl> lineControl(new UIControl());
             lineControl->SetName(FastName("magnet line control"));
-            ::SetupHUDMagnetLineControl(lineControl.Get());
+            ::SetupHUDMagnetLineControl(lineControl.Get(), accessor);
             hudControl->AddControl(lineControl.Get());
             magnetControls.emplace_back(lineControl);
 
             RefPtr<UIControl> rectControl(new UIControl());
             rectControl->SetName(FastName("rect of target control which we magnet to"));
-            ::SetupHUDMagnetRectControl(rectControl.Get());
+            ::SetupHUDMagnetRectControl(rectControl.Get(), accessor);
             hudControl->AddControl(rectControl.Get());
             magnetTargetControls.emplace_back(rectControl);
         }
@@ -438,7 +428,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
     {
     case EditorSystemsManager::SelectByRect:
         DVASSERT(selectionRectControl == nullptr);
-        selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT));
+        selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT, accessor));
         selectionRectControl->AddToParent(hudControl);
         break;
     case EditorSystemsManager::Transform:
@@ -526,7 +516,8 @@ EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* curre
             //distinguish between mouse click and mouse drag sometimes is less than few pixels
             //so lets select by rect only if we sure that is not mouse click
             Vector2 rectSize(pressedPoint - point);
-            if (fabs(rectSize.dx) >= minimumSelectionRectSize.dx || fabs(rectSize.dy) >= minimumSelectionRectSize.dy)
+            ControlTransformationSettings* settings = GetSettings();
+            if (fabs(rectSize.dx) >= settings->minimumSelectionRectSize.dx || fabs(rectSize.dy) >= settings->minimumSelectionRectSize.dy)
             {
                 return EditorSystemsManager::SelectByRect;
             }
@@ -554,4 +545,14 @@ void HUDSystem::UpdateHUDEnabled()
     {
         systemsManager->GetRootControl()->RemoveControl(hudControl);
     }
+}
+
+ControlTransformationSettings* HUDSystem::GetSettings()
+{
+    return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>();
+}
+
+DAVA::TArc::ContextAccessor* HUDSystem::GetAccessor()
+{
+    return accessor;
 }

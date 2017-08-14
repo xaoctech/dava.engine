@@ -5,19 +5,18 @@
 #include "TArc/Controls/ColorPicker/Private/ColorPickerRGBAM.h"
 #include "TArc/Controls/ColorPicker/Private/ColorPreview.h"
 #include "TArc/Controls/ColorPicker/Private/EyeDropper.h"
+#include "TArc/Utils/Utils.h"
 
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
+#include "TArc/Qt/QtByteArray.h"
 
 #include "ui_ColorPicker.h"
-
-#include <QtTools/Utils/Utils.h>
 
 #include <Math/Color.h>
 
 #include <Qt>
 #include <QKeyEvent>
-#include <QByteArray>
 #include <QDataStream>
 
 namespace DAVA

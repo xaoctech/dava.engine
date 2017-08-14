@@ -24,17 +24,46 @@ class OldSettingsConverter
 public:
     OldSettingsConverter()
     {
-        DAVA::KeyedArchive* toLoad = new DAVA::KeyedArchive();
-        if (toLoad->Load(settingsFilePath))
         {
-            const DAVA::KeyedArchive::UnderlyingMap& values = toLoad->GetArchieveData();
-            for (const auto& valueNode : values)
+            DAVA::KeyedArchive* toLoad = new DAVA::KeyedArchive();
+            if (toLoad->Load(settingsFilePath))
             {
-                settingsMap.Insert(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
+                const DAVA::KeyedArchive::UnderlyingMap& values = toLoad->GetArchieveData();
+                for (const auto& valueNode : values)
+                {
+                    settingsMap.Insert(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
+                }
             }
+
+            SafeRelease(toLoad);
         }
 
-        SafeRelease(toLoad);
+        {
+            DAVA::KeyedArchive* toLoad = new DAVA::KeyedArchive();
+            if (toLoad->Load(settingsFilePath2))
+            {
+                std::function<void(DAVA::KeyedArchive*)> unpackKeyedArchive = [&](DAVA::KeyedArchive* archive)
+                {
+                    const DAVA::KeyedArchive::UnderlyingMap& values = archive->GetArchieveData();
+                    for (const auto& valueNode : values)
+                    {
+                        if (valueNode.second->GetType() == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
+                        {
+                            DAVA::KeyedArchive* archive = valueNode.second->AsKeyedArchive();
+                            unpackKeyedArchive(archive);
+                        }
+                        else
+                        {
+                            settingsMap2.Insert(DAVA::FastName(valueNode.first), *valueNode.second);
+                        }
+                    }
+                };
+
+                unpackKeyedArchive(toLoad);
+            }
+
+            SafeRelease(toLoad);
+        }
     }
 
     void Do(const DAVA::TArc::PropertiesHolder& rootSettingsNode, DAVA::TArc::ContextAccessor* accessor) const
@@ -212,8 +241,10 @@ private:
     }
 
     DAVA::FastNameMap<DAVA::VariantType> settingsMap;
+    DAVA::FastNameMap<DAVA::VariantType> settingsMap2;
 
     const DAVA::String settingsFilePath = "~doc:/ResourceEditorOptions.archive";
+    const DAVA::String settingsFilePath2 = "~doc:/ResourceEditorSettings.archive";
 
     const DAVA::String General_RecentFilesCount = "General/RecentFilesCount";
     const DAVA::String General_RecentProjectsCount = "General/RecentProjectsCount";

@@ -5,7 +5,7 @@
 #include "Classes/SceneManager/SceneData.h"
 
 #include <TArc/DataProcessing/DataContext.h>
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Entity/Component.h>
 #include <Base/TemplateHelpers.h>
@@ -24,7 +24,7 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = SharedIcon(":/QtIcons/remove.png");
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/remove.png");
         info.tooltip = "Remove Component";
         info.description = "Remove Component";
 
@@ -55,7 +55,7 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = SharedIcon(":/QtIcons/settings.png");
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/settings.png");
         info.tooltip = "Edit action component";
         info.description = "Edit action component";
 
@@ -103,7 +103,7 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = SharedIcon(":/QtIcons/settings.png");
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/settings.png");
         info.tooltip = "Edit sound component";
         info.description = "Edit sound component";
 
@@ -146,7 +146,7 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = SharedIcon(":/QtIcons/clone.png");
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone.png");
         info.tooltip = "Trigger Wave";
         info.description = "";
 

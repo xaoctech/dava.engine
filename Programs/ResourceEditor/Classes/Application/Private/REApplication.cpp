@@ -6,10 +6,10 @@
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Application/LaunchModule.h"
 #include "Classes/Application/RESettings.h"
+#include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 
 #include <Tools/TextureCompression/PVRConverter.h>
 #include "Deprecated/SceneValidator.h"
-#include "Preferences/PreferencesStorage.h"
 #include "Deprecated/EditorConfig.h"
 
 #include "CommandLine/BeastCommandLineTool.h"
@@ -33,27 +33,29 @@
 
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
+#include <QtTools/InitQtTools.h>
+
 #include <TArc/Core/Core.h>
 #include <TArc/Testing/TArcTestClass.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
 #include <DocDirSetup/DocDirSetup.h>
 
-#include "Scene3D/Systems/QualitySettingsSystem.h"
-#include "Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
-#include "Particles/ParticleEmitter.h"
-#include "Engine/Engine.h"
-#include "Engine/EngineContext.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Render/RHI/rhi_Type.h"
-#include "Core/PerformanceSettings.h"
-#include "Base/BaseTypes.h"
+#include <Particles/ParticleEmitter.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Render/RHI/rhi_Type.h>
+#include <Core/PerformanceSettings.h>
+#include <Base/BaseTypes.h>
 
 #include <QDir>
 #include <QFileInfo>
 #include <QCryptographicHash>
-#include "TArc/DataProcessing/PropertiesHolder.h"
 
 namespace REApplicationDetail
 {
@@ -175,10 +177,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
 
     beastProxy = new BEAST_PROXY_TYPE();
-    const char* settingsPath = "ResourceEditorSettings.archive";
-    DAVA::FilePath localPrefrencesPath(engineContext->fileSystem->GetCurrentDocumentsDirectory() + settingsPath);
-    PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
-
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
@@ -219,8 +217,13 @@ QString REApplication::GetInstanceKey() const
 
 void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
 {
-    Q_INIT_RESOURCE(QtToolsResources);
+    using namespace DAVA::TArc;
+    InitColorPickerOptions(false);
+    InitQtTools();
+
     tarcCore->CreateModule<DAVA::TArc::SettingsModule>();
+    InsertionParams params(InsertionParams::eInsertionMethod::BeforeItem, "Toolbars");
+    tarcCore->CreateModule<DAVA::TArc::ThemesModule>(params);
     tarcCore->CreateModule<ReflectionExtensionsModule>();
     tarcCore->CreateModule<REModule>();
     tarcCore->CreateModule<ProjectManagerModule>();

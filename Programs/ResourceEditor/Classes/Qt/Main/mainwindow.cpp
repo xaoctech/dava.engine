@@ -64,19 +64,17 @@
 
 #include "Constants.h"
 #include "StringConstants.h"
-
 #include <Tools/TextureCompression/TextureConverter.h>
 
-#include <TArc/Utils/Themes.h>
-#include <TArc/WindowSubSystem/Private/WaitDialog.h>
+#include <QtTools/ConsoleWidget/LogWidget.h>
+#include <QtTools/ConsoleWidget/LogModel.h>
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <QtTools/ConsoleWidget/LoggerOutputObject.h>
+#include <QtTools/FileDialogs/FileDialog.h>
+#include <QtTools/FileDialogs/FindFileDialog.h>
 
-#include "QtTools/ConsoleWidget/LogWidget.h"
-#include "QtTools/ConsoleWidget/LogModel.h"
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/ConsoleWidget/LoggerOutputObject.h"
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/FileDialogs/FindFileDialog.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/WindowSubSystem/Private/WaitDialog.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Engine/Engine.h>
 #include <Engine/PlatformApiQt.h>
@@ -240,7 +238,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
 
     SetupDocks();
     SetupMainMenu();
-    SetupThemeActions();
     SetupToolBars();
     SetupActions();
 
@@ -381,31 +378,6 @@ void QtMainWindow::SetupMainMenu()
 
     ui->Dock->addAction(dockActionEvent->toggleViewAction());
     ui->Dock->addAction(dockConsole->toggleViewAction());
-}
-
-void QtMainWindow::SetupThemeActions()
-{
-    QMenu* themesMenu = ui->menuTheme;
-    QActionGroup* actionGroup = new QActionGroup(this);
-    for (const QString& theme : Themes::ThemesNames())
-    {
-        QAction* action = new QAction(theme, themesMenu);
-        actionGroup->addAction(action);
-        action->setCheckable(true);
-        if (theme == Themes::GetCurrentThemeStr())
-        {
-            action->setChecked(true);
-        }
-        themesMenu->addAction(action);
-    }
-    connect(actionGroup, &QActionGroup::triggered, [](QAction* action)
-            {
-                if (action->isChecked())
-                {
-                    Themes::SetCurrentTheme(action->text());
-                    SceneSignals::Instance()->ThemeChanged();
-                }
-            });
 }
 
 void QtMainWindow::SetupToolBars()

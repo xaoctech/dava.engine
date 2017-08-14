@@ -10,7 +10,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
@@ -83,7 +83,7 @@ void BillboardCommandProducer::ClearCache()
 DAVA::M::CommandProducer::Info BillboardCommandProducer::GetInfo() const
 {
     Info info;
-    info.icon = SharedIcon(":/QtIcons/sphere.png");
+    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/sphere.png");
     info.tooltip = QStringLiteral("Make billboard");
     info.description = "Convert to billboard";
     return info;
@@ -111,7 +111,7 @@ bool FixLodsAndSwitches::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyN
 DAVA::M::CommandProducer::Info FixLodsAndSwitches::GetInfo() const
 {
     Info info;
-    info.icon = SharedIcon(":/QtIcons/clone_batches.png");
+    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone_batches.png");
     info.tooltip = QStringLiteral("Clone batches for LODs correction");
     info.description = "Clone Last Batch";
     return info;
@@ -153,7 +153,7 @@ bool RemoveRenderBatch::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNo
 DAVA::M::CommandProducer::Info RemoveRenderBatch::GetInfo() const
 {
     Info info;
-    info.icon = SharedIcon(":/QtIcons/remove.png");
+    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/remove.png");
     info.tooltip = QStringLiteral("Delete render batch");
     info.description = "Render batch deletion";
     return info;
@@ -233,7 +233,7 @@ bool ConvertToShadow::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode
 DAVA::M::CommandProducer::Info ConvertToShadow::GetInfo() const
 {
     Info info;
-    info.icon = SharedIcon(":/QtIcons/shadow.png");
+    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/shadow.png");
     info.tooltip = QStringLiteral("Convert To ShadowVolume");
     info.description = "ConvertToShadow batch";
     return info;
@@ -316,7 +316,7 @@ bool RebuildTangentSpace::IsApplyable(const std::shared_ptr<DAVA::TArc::Property
 DAVA::M::CommandProducer::Info RebuildTangentSpace::GetInfo() const
 {
     Info info;
-    info.icon = SharedIcon(":/QtIcons/external.png");
+    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/external.png");
     info.tooltip = QStringLiteral("Rebuild tangent space");
     info.description = "ConvertToShadow batch";
     return info;

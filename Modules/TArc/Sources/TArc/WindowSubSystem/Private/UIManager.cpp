@@ -4,6 +4,7 @@
 #include "TArc/WindowSubSystem/Private/WaitDialog.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
+#include "TArc/Qt/QtByteArray.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>

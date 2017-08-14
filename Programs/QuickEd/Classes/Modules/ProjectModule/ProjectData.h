@@ -1,14 +1,13 @@
 #pragma once
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/Qt/QtString.h>
 
 #include <Base/Result.h>
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <Math/Math2D.h>
 #include <FileSystem/FilePath.h>
-
-#include <QString>
 
 #include <tuple>
 

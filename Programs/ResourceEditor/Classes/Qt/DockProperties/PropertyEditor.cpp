@@ -47,8 +47,8 @@
 #include "Scene/System/PathSystem.h"
 
 #include "QtTools/Updaters/LazyUpdater.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
 
+#include <TArc/Utils/Utils.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/FieldBinder.h>
 
@@ -68,7 +68,6 @@ PropertyEditor::PropertyEditor(QWidget* parent /* = 0 */, bool connectToSceneSig
         QObject::connect(SceneSignals::Instance(), &SceneSignals::Activated, this, &PropertyEditor::sceneActivated);
         QObject::connect(SceneSignals::Instance(), &SceneSignals::Deactivated, this, &PropertyEditor::sceneDeactivated);
         QObject::connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &PropertyEditor::CommandExecuted);
-        QObject::connect(SceneSignals::Instance(), &SceneSignals::ThemeChanged, this, &PropertyEditor::ResetProperties);
 
         selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
         {
@@ -196,7 +195,7 @@ void PropertyEditor::AddEntityProperties(DAVA::Entity* node, std::unique_ptr<QtP
 
                 if (isRemovable)
                 {
-                    QtPropertyToolButton* deleteButton = CreateButton(componentData.get(), SharedIcon(":/QtIcons/remove.png"), "Remove Component");
+                    QtPropertyToolButton* deleteButton = CreateButton(componentData.get(), DAVA::TArc::SharedIcon(":/QtIcons/remove.png"), "Remove Component");
                     deleteButton->setObjectName("RemoveButton");
                     deleteButton->setEnabled(true);
                     QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(OnRemoveComponent()));
@@ -386,6 +385,7 @@ void PropertyEditor::ApplyFavorite(QtPropertyData* data)
 
 void PropertyEditor::ApplyCustomExtensions(QtPropertyData* data)
 {
+    using namespace DAVA::TArc;
     if (NULL != data)
     {
         const DAVA::MetaInfo* meta = data->MetaInfo();
@@ -936,11 +936,11 @@ void PropertyEditor::drawRow(QPainter* painter, const QStyleOptionViewItem& opti
             {
                 if (IsFavorite(data))
                 {
-                    SharedIcon(":/QtIcons/star.png").paint(painter, opt.rect.x(), opt.rect.y(), 16, opt.rect.height());
+                    DAVA::TArc::SharedIcon(":/QtIcons/star.png").paint(painter, opt.rect.x(), opt.rect.y(), 16, opt.rect.height());
                 }
                 else
                 {
-                    SharedIcon(":/QtIcons/star_empty.png").paint(painter, opt.rect.x(), opt.rect.y(), 16, opt.rect.height());
+                    DAVA::TArc::SharedIcon(":/QtIcons/star_empty.png").paint(painter, opt.rect.x(), opt.rect.y(), 16, opt.rect.height());
                 }
             }
         }

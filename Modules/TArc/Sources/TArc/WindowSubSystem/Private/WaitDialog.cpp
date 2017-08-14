@@ -1,8 +1,8 @@
 #include "WaitDialog.h"
 
-#include "QtTools/Utils/RenderContextGuard.h"
+#include "TArc/Utils/RenderContextGuard.h"
+#include "TArc/Qt/QtString.h"
 
-#include <QString>
 #include <QLabel>
 #include <QPlainTextEdit>
 #include <QDialog>

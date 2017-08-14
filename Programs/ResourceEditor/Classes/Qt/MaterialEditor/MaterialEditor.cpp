@@ -24,11 +24,11 @@
 
 #include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
-#include "TArc/Core/FieldBinder.h"
+#include <QtTools/FileDialogs/FileDialog.h>
+#include <QtTools/Updaters/LazyUpdater.h>
 
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/Updaters/LazyUpdater.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Base/Introspection.h>
 #include <Functional/Function.h>
@@ -227,7 +227,7 @@ public:
         if (memberFlags & DAVA::I_EDIT)
         {
             editEnabled = true;
-            addRemoveButton->setIcon(SharedIcon(":/QtIcons/cminus.png"));
+            addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
             addRemoveButton->setToolTip(QStringLiteral("Remove property"));
 
             // isn't set in parent or shader
@@ -241,7 +241,7 @@ public:
         {
             editEnabled = false;
             bgColor = QBrush(QColor(0, 0, 0, 25));
-            addRemoveButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+            addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
             addRemoveButton->setToolTip(QStringLiteral("Add property"));
         }
 
@@ -296,7 +296,7 @@ private:
             {
                 QtPropertyToolButton* button = data->AddButton();
                 button->setObjectName(QStringLiteral("reloadTexture"));
-                button->setIcon(SharedIcon(":/QtIcons/reloadtextures.png"));
+                button->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png"));
                 button->setIconSize(QSize(14, 14));
                 QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnReloadTexture);
             }
@@ -383,7 +383,7 @@ private:
                 QtPropertyToolButton* addRemoveButton = textureSlot->AddButton();
                 addRemoveButton->setObjectName("dynamicAddRemoveButton");
                 addRemoveButton->setIconSize(QSize(14, 14));
-                addRemoveButton->setIcon(SharedIcon(":/QtIcons/cminus.png"));
+                addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
                 addRemoveButton->setToolTip(QStringLiteral("Remove property"));
                 QObject::connect(addRemoveButton, &QAbstractButton::clicked, editor, &MaterialEditor::removeInvalidTexture);
 
@@ -968,7 +968,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
             ui->templateBox->setCurrentIndex(-1);
             ui->templateBox->setEnabled(false);
             ui->templateButton->setEnabled(false);
-            ui->templateButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+            ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
         }
         else
         {
@@ -1014,11 +1014,11 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
 
                 if (hasLocalFxName)
                 {
-                    ui->templateButton->setIcon(SharedIcon(":/QtIcons/cminus.png"));
+                    ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
                 }
                 else
                 {
-                    ui->templateButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+                    ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
                 }
 
                 if (parentMaterial == nullptr || parentMaterial == globalMaterial || isAssignableFx == false)
@@ -1039,7 +1039,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
         ui->templateBox->setCurrentIndex(-1);
         ui->templateBox->setEnabled(false);
         ui->templateButton->setEnabled(false);
-        ui->templateButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+        ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
     }
 }
 

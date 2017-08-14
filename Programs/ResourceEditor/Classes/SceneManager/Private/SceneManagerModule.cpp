@@ -658,7 +658,7 @@ void SceneManagerModule::OpenSceneQuckly()
     DAVA::FileSystem* fileSystem = GetAccessor()->GetEngineContext()->fileSystem;
     if (fileSystem->Exists(cachedPath))
     {
-        QString path = FindFileDialog::GetFilePath(sceneFilesCache.get(), "sc2", GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+        QString path = FindFileDialog::GetFilePath(GetAccessor(), sceneFilesCache.get(), "sc2", GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
         if (!path.isEmpty())
         {
             OpenSceneByPath(DAVA::FilePath(path.toStdString()));

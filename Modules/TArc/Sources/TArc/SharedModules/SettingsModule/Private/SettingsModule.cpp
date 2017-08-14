@@ -1,17 +1,18 @@
 #include "TArc/SharedModules/SettingsModule/SettingsModule.h"
+#include "TArc/SharedModules/SettingsModule/Private/SettingsDialog.h"
 #include "TArc/SharedModules/SettingsModule/Private/SettingsManager.h"
 #include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/WindowSubSystem/QtAction.h"
 #include "TArc/Controls/ColorPicker/ColorPickerSettings.h"
 #include "TArc/Qt/QtString.h"
 #include "TArc/Qt/QtIcon.h"
+#include "TArc/Utils/ReflectionHelpers.h"
 
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Functional/Function.h>
 
 #include <QList>
-#include "SettingsDialog.h"
 
 namespace DAVA
 {
@@ -36,14 +37,12 @@ SettingsModule::SettingsModule()
 {
     placementInfo.AddPlacementPoint(CreateMenuPoint(QList<QString>() << "Tools"));
     actionName = "Settings";
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ColorPickerSettings);
 }
 
-SettingsModule::SettingsModule(const ActionPlacementInfo& placementInfo_, const QString& actionName_)
+SettingsModule::SettingsModule(ActionPlacementInfo placementInfo_, QString actionName_)
     : placementInfo(placementInfo_)
     , actionName(actionName_)
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ColorPickerSettings);
 }
 
 void SettingsModule::PostInit()
@@ -58,7 +57,7 @@ void SettingsModule::PostInit()
     accessor->GetGlobalContext()->CreateData(std::unique_ptr<DataNode>(node));
 
     executor.DelayedExecute([this]() {
-        QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/QtIcons/settings.png"), actionName);
+        QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/TArc/Resources/settings.png"), actionName);
 
         GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, settingsAction);
         connections.AddConnection(settingsAction, &QAction::triggered, DAVA::MakeFunction(this, &SettingsModule::ShowSettings));
@@ -84,8 +83,18 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SettingsModule)
 {
     ReflectionRegistrator<SettingsModule>::Begin()
     .ConstructorByPointer()
-    .ConstructorByPointer<const ActionPlacementInfo&, const QString&>()
+    .ConstructorByPointer<ActionPlacementInfo, QString>()
     .End();
+}
+
+void InitColorPickerOptions(bool initForHiddenUsage)
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ColorPickerSettings);
+
+    if (initForHiddenUsage == true)
+    {
+        EmplaceTypeMeta<ColorPickerSettings>(M::HiddenField());
+    }
 }
 
 } // namespace TArc

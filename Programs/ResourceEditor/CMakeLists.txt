@@ -41,8 +41,8 @@ find_package( DocDirSetup REQUIRED )
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
+find_package( QtTools REQUIRED )
 find_package( RemoteTool REQUIRED )
 # find_package( EditorPhysics REQUIRED )
 

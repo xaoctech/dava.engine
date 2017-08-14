@@ -145,6 +145,8 @@ void TestClass::Init()
         core->SetInvokeListener(mockInvoker.get());
 
         core->PostInit();
+
+        InitColorPickerOptions(false);
         core->CreateModule<DAVA::TArc::SettingsModule>();
         CreateTestedModules();
         if (!core->HasControllerModule())

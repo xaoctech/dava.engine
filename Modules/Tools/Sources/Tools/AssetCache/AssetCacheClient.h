@@ -3,7 +3,6 @@
 #include "Tools/AssetCache/AssetCache.h"
 
 #include <Base/Introspection.h>
-#include <Preferences/PreferencesRegistrator.h>
 #include <FileSystem/DynamicMemoryFile.h>
 
 #include <atomic>
@@ -13,19 +12,12 @@ namespace DAVA
 class AssetCacheClient final : public AssetCache::ClientNetProxyListener
 {
 public:
-    struct ConnectionParams : InspBase
+    struct ConnectionParams
     {
-        ConnectionParams();
-        ~ConnectionParams();
+        ConnectionParams() = default;
         String ip = AssetCache::GetLocalHost();
         uint16 port = AssetCache::ASSET_SERVER_PORT;
         uint64 timeoutms = 60u * 1000u;
-
-        INTROSPECTION(ConnectionParams,
-                      MEMBER(ip, "Asset cache/Asset Cache IP", DAVA::I_PREFERENCE)
-                      MEMBER(port, "Asset cache/Asset Cache Port", DAVA::I_PREFERENCE)
-                      MEMBER(timeoutms, "Asset cache/Asset Cache Timeout (ms)", DAVA::I_PREFERENCE)
-                      )
     };
 
     AssetCacheClient();

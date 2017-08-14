@@ -2,8 +2,8 @@
 #include "TArc/Core/Core.h"
 #include "TArc/Testing/TArcTestCore.h"
 #include "TArc/DataProcessing/TArcAnyCasts.h"
+#include "TArc/SharedModules/ThemesModule/ThemesModule.h"
 #include "TArc/Utils/AssertGuard.h"
-#include "TArc/Utils/Themes.h"
 #include "QtHelpers/RunGuard.h"
 
 #include "Engine/Engine.h"
@@ -80,7 +80,6 @@ int BaseApplication::RunImpl()
 
 void BaseApplication::Init(const EngineContext* /*engineContext*/)
 {
-    Themes::InitFromQApplication();
 }
 
 void BaseApplication::Init(Core* tarcCore)

@@ -1,8 +1,6 @@
 #include "QtTools/FileDialogs/FindFileDialog.h"
 #include "ui_FindFileDialog.h"
 
-#include "Preferences/PreferencesRegistrator.h"
-
 #include "Debug/DVAssert.h"
 #include "FileSystem/FilePath.h"
 
@@ -16,13 +14,7 @@
 #include <QAbstractItemView>
 #include <QKeyEvent>
 
-using namespace DAVA;
-
-REGISTER_PREFERENCES_ON_START(FindFileDialog,
-                              PREF_ARG("lastUsedPath", String())
-                              )
-
-QString FindFileDialog::GetFilePath(const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
+QString FindFileDialog::GetFilePath(DAVA::TArc::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
 {
     //Qt::Popup do not prevent us to show another dialog
     static bool shown = false;
@@ -33,6 +25,7 @@ QString FindFileDialog::GetFilePath(const FileSystemCache* fileSystemCache, cons
     shown = true;
 
     FindFileDialog dialog(fileSystemCache, extension, parent);
+    dialog.lastUsedPath = accessor->CreatePropertiesNode("FindFileDialog").Get<DAVA::String>("lastUsedPath");
     dialog.setModal(true);
     int retCode = dialog.exec();
 
@@ -47,7 +40,8 @@ QString FindFileDialog::GetFilePath(const FileSystemCache* fileSystemCache, cons
             dialog.lastUsedPath = filePath.toStdString();
             return filePath;
         }
-        dialog.lastUsedPath = String();
+        dialog.lastUsedPath = DAVA::String();
+        accessor->CreatePropertiesNode("FindFileDialog").Set("lastUsedPath", dialog.lastUsedPath);
     }
     return QString();
 }
@@ -69,7 +63,6 @@ FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QS
     : QDialog(parent, Qt::Popup)
     , ui(new Ui::FindFileDialog())
 {
-    PreferencesStorage::Instance()->RegisterPreferences(this);
     QStringList files = projectStructure->GetFiles(extension);
 
     QStringList projectDirectories = projectStructure->GetTrackedDirectories();
@@ -94,11 +87,6 @@ FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QS
     {
         ui->lineEdit->setPlaceholderText(tr("Project not contains files with extension %1").arg(extension));
     }
-}
-
-FindFileDialog::~FindFileDialog()
-{
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
 }
 
 void FindFileDialog::Init(const QStringList& files)

@@ -50,7 +50,7 @@ void ProjectModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
 
 void ProjectModule::CreateActions()
 {
-    const QString toolBarName("mainToolbar");
+    const QString toolBarName("Main Toolbar");
     const QString fileMenuName("File");
 
     const QString newProjectActionName("New project");
@@ -378,5 +378,3 @@ namespace ProjectModuleTesting
 {
 IMPL_OPERATION_ID(CreateProjectOperation);
 }
-
-DECL_GUI_MODULE(ProjectModule);

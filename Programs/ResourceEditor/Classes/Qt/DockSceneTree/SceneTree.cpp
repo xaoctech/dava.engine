@@ -37,15 +37,15 @@
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
 
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/Updaters/LazyUpdater.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <QtTools/Updaters/LazyUpdater.h>
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/Utils/ScopedValueGuard.h"
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/Utils/Utils.h>
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/ScopedValueGuard.h>
+#include <TArc/Core/FieldBinder.h>
 
-#include "FileSystem/VariantType.h"
+#include <FileSystem/VariantType.h>
 
 #include <QShortcut>
 
@@ -266,6 +266,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         SceneEditor2* scene = GetScene();
 
         const SelectableGroup& selection = Selection::GetSelection();
@@ -368,6 +369,7 @@ protected:
 private:
     void FillCameraActions(QMenu& menu)
     {
+        using namespace DAVA::TArc;
         Connect(menu.addAction(SharedIcon(":/QtIcons/eye.png"), QStringLiteral("Look from")), this, &EntityContextMenu::SetCurrentCamera);
         Connect(menu.addAction(SharedIcon(":/QtIcons/camera.png"), QStringLiteral("Set custom draw camera")), this, &EntityContextMenu::SetCustomDrawCamera);
         Connect(menu.addAction(SharedIcon(":/QtIcons/grab-image.png"), QStringLiteral("Grab image")), this, &EntityContextMenu::GrabImage);
@@ -634,6 +636,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         Connect(menu.addAction(SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Layer")), this, &ParticleLayerContextMenu::CloneLayer);
         QString removeLayerText = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Layer") : QStringLiteral("Remove Layers");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_layer.png"), removeLayerText), this, &ParticleLayerContextMenu::RemoveLayer);
@@ -681,6 +684,7 @@ public:
 protected:
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Forces") : QStringLiteral("Remove Force");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleForceContextMenu::RemoveForce);
     }
@@ -721,6 +725,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         if (IsRemovable())
         {
             QString removeEmitterText = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove emitter") : QStringLiteral("Remove emitters");

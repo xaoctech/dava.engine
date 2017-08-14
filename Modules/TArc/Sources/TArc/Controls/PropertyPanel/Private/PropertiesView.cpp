@@ -6,8 +6,7 @@
 #include "TArc/WindowSubSystem/UI.h"
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/Utils/ScopedValueGuard.h"
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include "TArc/Utils/Utils.h"
 
 #include <Reflection/Reflection.h>
 #include <Base/BaseTypes.h>

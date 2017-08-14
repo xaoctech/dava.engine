@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TArc/DataProcessing/DataWrapper.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Functional/Function.h>
 #include <Base/Result.h>
@@ -9,7 +10,6 @@
 
 #include <Qt>
 #include <QUrl>
-#include <QString>
 #include <QFlags>
 #include <QFileDialog>
 #include <QPointer>

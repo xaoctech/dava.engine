@@ -17,7 +17,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "TextureBrowser/TextureInfo.h"
 
-#include "QtTools/Utils/Utils.h"
+#include <TArc/Utils/Utils.h>
 
 #include <QPainter>
 
@@ -488,10 +488,10 @@ void MaterialModel::ReloadLodSwColors()
 {
     QString key;
     GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
-    lodColors[0] = ColorToQColor(settings->materialEditorLodColor0);
-    lodColors[1] = ColorToQColor(settings->materialEditorLodColor1);
-    lodColors[2] = ColorToQColor(settings->materialEditorLodColor2);
-    lodColors[3] = ColorToQColor(settings->materialEditorLodColor3);
-    switchColors[0] = ColorToQColor(settings->materialEditorSwitchColor0);
-    switchColors[1] = ColorToQColor(settings->materialEditorSwitchColor1);
+    lodColors[0] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor0);
+    lodColors[1] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor1);
+    lodColors[2] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor2);
+    lodColors[3] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor3);
+    switchColors[0] = DAVA::TArc::ColorToQColor(settings->materialEditorSwitchColor0);
+    switchColors[1] = DAVA::TArc::ColorToQColor(settings->materialEditorSwitchColor1);
 }

@@ -4,12 +4,11 @@
 #include "EditorSystems/SelectionContainer.h"
 
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Qt/QtString.h>
 
 #include <Command/Command.h>
 #include <Base/BaseObject.h>
 #include <Base/Result.h>
-
-#include <QString>
 
 namespace DAVA
 {

@@ -1,4 +1,5 @@
 #include "TArc/Controls/ColorPicker/ColorPickerSettings.h"
+#include "TArc/Utils/ReflectionHelpers.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Reflection/ReflectedMeta.h>
@@ -25,6 +26,12 @@ ColorPickerSettings::ColorPickerSettings()
     for (int i = 0; i < nColors; i++)
     {
         paletteStream << colors[i].rgba();
+    }
+
+    const M::HiddenField* meta = GetReflectedTypeMeta<M::HiddenField>(ReflectedTypeDB::GetByPointer(this));
+    if (meta != nullptr)
+    {
+        maxMultiplier = 1.0f;
     }
 }
 

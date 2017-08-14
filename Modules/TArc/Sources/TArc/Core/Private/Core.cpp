@@ -12,8 +12,7 @@
 #include "TArc/Utils/Private/CrashDumpHandler.h"
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
-
-#include "QtTools/Utils/QtDelayedExecutor.h"
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"

@@ -3,8 +3,7 @@
 #include "TArc/Core/ClientModule.h"
 #include "TArc/WindowSubSystem/UI.h"
 #include "TArc/Utils/QtConnections.h"
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 namespace DAVA
 {
@@ -15,7 +14,7 @@ class SettingsModule : public ClientModule
 {
 public:
     SettingsModule();
-    SettingsModule(const ActionPlacementInfo& placementInfo, const QString& actionName);
+    SettingsModule(ActionPlacementInfo placementInfo, QString actionName);
 
 private:
     void PostInit() override;
@@ -29,5 +28,7 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(SettingsModule, ClientModule);
 };
+
+void InitColorPickerOptions(bool initForHiddenUsage);
 } // namespace TArc
 } // namespace DAVA

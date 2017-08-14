@@ -19,10 +19,11 @@
 #include <QAction>
 #include <QDir>
 
-SpritesPackerModule::SpritesPackerModule(DAVA::TArc::UI* ui_)
+SpritesPackerModule::SpritesPackerModule(DAVA::TArc::UI* ui_, DAVA::TArc::ContextAccessor* accessor_)
     : QObject(nullptr)
     , spritesPacker(new SpritesPacker())
     , ui(ui_)
+    , accessor(accessor_)
 {
     qRegisterMetaType<DAVA::eGPUFamily>("DAVA::eGPUFamily");
     qRegisterMetaType<DAVA::TextureConverter::eConvertQuality>("DAVA::TextureConverter::eConvertQuality");
@@ -86,8 +87,8 @@ void SpritesPackerModule::ProcessSilentPacking(bool clearDirs, bool forceRepack,
 
 void SpritesPackerModule::ShowPackerDialog()
 {
-    DialogReloadSprites dialogReloadSprites(spritesPacker.get(), ui->GetWindow(DAVA::TArc::mainWindowKey));
-    dialogReloadSprites.exec();
+    DialogReloadSprites dialogReloadSprites(accessor, spritesPacker.get(), nullptr);
+    ui->ShowModalDialog(DAVA::TArc::mainWindowKey, &dialogReloadSprites);
 }
 
 void SpritesPackerModule::CreateWaitDialog(const DAVA::FilePath& projectPath)
