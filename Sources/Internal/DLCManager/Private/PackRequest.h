@@ -56,7 +56,6 @@ private:
         Wait = 0,
         CheckLocalFile,
         LoadingPackFile, // download manager thread, wait on main thread
-        //CheckHash, // on main thread (in future move to job manager)
         Ready, // on main thread
 
         Error

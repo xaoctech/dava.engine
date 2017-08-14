@@ -97,7 +97,9 @@ public:
         virtual uint64 GetSeekPos() = 0;
         /** Truncate file(or buffer) to zero length, return false on error */
         virtual bool Truncate() = 0;
-        /** Close internal resource (file handle, socket, free memory) */
+        /** Close internal resource (file handle, socket, free memory)
+		    return true on successes
+		*/
         virtual bool Close() = 0;
         /** Check internal state */
         virtual bool IsClosed() const = 0;
@@ -171,11 +173,15 @@ public:
     virtual Task* StartGetContentSize(const String& srcUrl) = 0;
     /** Start downloading to dstPath file */
     virtual Task* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
-    /** Start downloading to custom writer */
+    /** Start downloading to custom writer
+	    You can reuse castomWriter after finish Task
+	*/
     virtual Task* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
     /** Resume downloading to file starting from current file size */
     virtual Task* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
-    /** Resume downloading to custom writer starting from current position */
+    /** Resume downloading to custom writer starting from current position
+	    You can reuse castomWriter after finish Task
+	*/
     virtual Task* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
 
     /**  Clear task data and free resources */
