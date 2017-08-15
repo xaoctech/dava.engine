@@ -1,3 +1,5 @@
+#include <atomic>
+
 #include "Base/Type.h"
 #include "Base/TypeInheritance.h"
 #include "Debug/DVAssert.h"
