@@ -87,13 +87,13 @@ class TypeDB
 public:
     struct Stats
     {
-        uint32_t typesCount = 0;
-        uint32_t typesMemory = 0;
-        uint32_t typeInheritanceCount = 0;
-        uint32_t typeInheritanceInfoCount = 0;
-        uint32_t typeInheritanceMemory = 0;
-        uint32_t typeDBMemory = 0;
-        uint32_t totalMemory = 0;
+        size_t typesCount = 0;
+        size_t typesMemory = 0;
+        size_t typeInheritanceCount = 0;
+        size_t typeInheritanceInfoCount = 0;
+        size_t typeInheritanceMemory = 0;
+        size_t typeDBMemory = 0;
+        size_t totalMemory = 0;
     };
 
     static TypeDB* GetLocalDB();
