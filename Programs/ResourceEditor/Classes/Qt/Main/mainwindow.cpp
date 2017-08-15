@@ -2008,7 +2008,6 @@ void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLa
     ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
 }
 
-
 void QtMainWindow::OnMaterialLightViewChanged(bool)
 {
     int newMode = EditorMaterialSystem::LIGHTVIEW_NOTHING;

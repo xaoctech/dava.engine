@@ -1,7 +1,6 @@
 #include "Classes/DebugDraw/DebugDrawModule.h"
 #include "Classes/DebugDraw/DebugDrawSystem.h"
 
-#include "Classes/Constants.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/SceneManager/SceneData.h"
 
@@ -13,11 +12,6 @@
 #include "Classes/Qt/Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
 #include "Classes/Deprecated/SceneValidator.h"
 
-#include "Reflection/ReflectionRegistrator.h"
-#include "Logger/Logger.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -25,14 +19,14 @@
 #include <TArc/Controls/ComboBox.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 
-#include "Reflection/ReflectionRegistrator.h"
-#include "Logger/Logger.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
+#include <Reflection/ReflectionRegistrator.h>
+#include <Logger/Logger.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/RenderUpdateSystem.h>
 
 namespace DebugDrawDetail
 {
-DAVA::Any IsCurrentType(const DAVA::Any& value, ResourceEditor::eSceneObjectType type)
+bool IsCurrentType(const DAVA::Any& value, ResourceEditor::eSceneObjectType type)
 {
     if (value.CanCast<ResourceEditor::eSceneObjectType>() == false)
     {
@@ -97,15 +91,13 @@ void DebugDrawModule::OnContextCreated(DAVA::TArc::DataContext* context)
 
     std::unique_ptr<DebugDrawData> debugDrawData = std::make_unique<DebugDrawData>();
     debugDrawData->debugDrawSystem.reset(new DebugDrawSystem(scene));
-    scene->AddSystem(debugDrawData->debugDrawSystem.get(), 0 );
+    scene->AddSystem(debugDrawData->debugDrawSystem.get(), 0);
 
     context->CreateData(std::move(debugDrawData));
 }
 
 void DebugDrawModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 {
-    using namespace DAVA::TArc;
-
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
 
@@ -117,10 +109,10 @@ void DebugDrawModule::PostInit()
 {
     using namespace DAVA::TArc;
 
-    DAVA::TArc::UI* ui = GetUI();
+    UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
 
-    fieldBinder.reset(new DAVA::TArc::FieldBinder(accessor));
+    fieldBinder.reset(new FieldBinder(accessor));
 
     QAction* collisionTypeMenuAction = new QAction("Collision Type", nullptr);
     QList<QString> upperMenuPath;
@@ -128,7 +120,7 @@ void DebugDrawModule::PostInit()
 
     InsertionParams upperMenuInsertion(InsertionParams::eInsertionMethod::AfterItem, "VisibilityCheckSystem");
     ActionPlacementInfo placementInfo(CreateMenuPoint(upperMenuPath, upperMenuInsertion));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, collisionTypeMenuAction);
+    ui->AddAction(mainWindowKey, placementInfo, collisionTypeMenuAction);
 
     FieldDescriptor sceneFieldDescr;
     sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -140,7 +132,7 @@ void DebugDrawModule::PostInit()
 
     //Create menu
     bool separatorInserted = false;
-    for (int i = ResourceEditor::eSceneObjectType::ESOT_NONE; i < ResourceEditor::eSceneObjectType::ESOT_UNDEFINED_COLLISION; i++)
+    for (int32 i = ResourceEditor::eSceneObjectType::ESOT_NONE; i < ResourceEditor::eSceneObjectType::ESOT_COUNT; i++)
     {
         ResourceEditor::eSceneObjectType type = static_cast<ResourceEditor::eSceneObjectType>(i);
         QString actionName = GlobalEnumMap<ResourceEditor::eSceneObjectType>::Instance()->ToString(type);
@@ -161,12 +153,12 @@ void DebugDrawModule::PostInit()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(menuPath));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(mainWindowKey, placementInfo, action);
 
         if (separatorInserted == false)
         {
             separatorInserted = true;
-            ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, new QtActionSeparator("separator"));
+            ui->AddAction(mainWindowKey, placementInfo, new QtActionSeparator("separator"));
         }
     }
 
@@ -182,7 +174,7 @@ void DebugDrawModule::PostInit()
         AttachWidgetToAction(action, switchesWithDifferentLodsBtn);
 
         ActionPlacementInfo placementInfo(CreateToolbarPoint("DebugDrawToolbar"));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(mainWindowKey, placementInfo, action);
         connections.AddConnection(switchesWithDifferentLodsBtn, &QToolButton::clicked, DAVA::MakeFunction(this, &DebugDrawModule::OnSwitchWithDifferentLODs));
     }
 
@@ -203,7 +195,7 @@ void DebugDrawModule::PostInit()
 
         HangingObjectsHeight* hangingObjectsWidget = new HangingObjectsHeight(nullptr);
         QPointer<HangingObjectsHeight> closureWidget = hangingObjectsWidget;
-        DAVA::TArc::FieldDescriptor descr;
+        FieldDescriptor descr;
         descr.type = DAVA::ReflectedTypeDB::Get<DebugDrawData>();
         descr.fieldName = DAVA::FastName("heightForHangingObjects");
         fieldBinder->BindField(descr, [closureWidget](const DAVA::Any& height) {
@@ -216,12 +208,13 @@ void DebugDrawModule::PostInit()
                 }
                 else
                 {
-                    closureWidget->SetHeight(0.0f);
+                    closureWidget->SetHeight(DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT);
                     closureWidget->setEnabled(false);
                 }
             }
         });
-        hangingObjectsWidget->SetHeight(0.0f);
+
+        hangingObjectsWidget->SetHeight(DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT);
 
         hangingBtn->SetWidget(hangingObjectsWidget);
 
@@ -229,7 +222,7 @@ void DebugDrawModule::PostInit()
 
         ActionPlacementInfo placementInfo(CreateToolbarPoint("DebugDrawToolbar"));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(mainWindowKey, placementInfo, action);
         connections.AddConnection(hangingObjectsWidget, &HangingObjectsHeight::HeightChanged, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjectsHeight));
         connections.AddConnection(hangingBtn, &ToolButtonWithWidget::clicked, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjects));
     }
@@ -238,7 +231,7 @@ void DebugDrawModule::PostInit()
     {
         QtAction* action = new QtAction(accessor, "SceneObject");
 
-        ComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ComboBox::Params params(accessor, ui, mainWindowKey);
         params.fields[ComboBox::Fields::IsReadOnly] = "readOnly";
         params.fields[ComboBox::Fields::Value] = "currentObject";
 
@@ -247,7 +240,7 @@ void DebugDrawModule::PostInit()
 
         ActionPlacementInfo placementInfo(CreateToolbarPoint("sceneToolBar"));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(mainWindowKey, placementInfo, action);
     }
 }
 
@@ -274,7 +267,7 @@ void DebugDrawModule::OnSwitchWithDifferentLODs()
     DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
 
-    bool isEnable = !debugDrawData->debugDrawSystem->HangingObjectsModeEnabled();
+    bool isEnable = !debugDrawData->debugDrawSystem->SwithcesWithDifferentLODsModeEnabled();
 
     debugDrawData->debugDrawSystem->EnableSwithcesWithDifferentLODsMode(isEnable);
 
@@ -364,6 +357,3 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DebugDrawModule)
 }
 
 DECL_GUI_MODULE(DebugDrawModule);
-
-
-
