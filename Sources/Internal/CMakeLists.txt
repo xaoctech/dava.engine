@@ -21,6 +21,8 @@ set( NAME_MODULE ${DAVA_LIBRARY} )
 set( USE_PARENT_DEFINITIONS true )
 
 set( MODULE_MANAGER true )
+set( MODULE_MANAGER_STUB ModuleManager/ModuleManagerStub.cpp )
+
 
 set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC
 
@@ -83,6 +85,8 @@ set( STATIC_LIBRARIES_WINUAP        ${DAVA_STATIC_LIBRARIES_WINUAP} )
 set( STATIC_LIBRARIES_WINUAP_RELEASE ${DAVA_STATIC_LIBRARIES_WINUAP_RELEASE} )
 set( STATIC_LIBRARIES_WINUAP_DEBUG  ${DAVA_STATIC_LIBRARIES_WINUAP_DEBUG} )
 
+
+set( DYNAMIC_LIBRARIES_MACOS        ${DAVA_DYNAMIC_LIBRARIES_MACOS})
 set( DYNAMIC_LIBRARIES_WIN32        ${DAVA_DYNAMIC_LIBRARIES_WIN32})
 set( DYNAMIC_LIBRARIES_WIN64        ${DAVA_DYNAMIC_LIBRARIES_WIN64} )
 
@@ -101,7 +105,7 @@ set( ERASE_FOLDERS_ANDROID          "Metal" "DX9" "DX11" )
 set( ERASE_FOLDERS_WIN              "Metal" )
 set( ERASE_FOLDERS_WINUAP           "DX9" "GLES2" "Metal" )
 set( ERASE_FOLDERS_LINUX            "DX9" "DX11" "Metal" "GLES2" )
-set( ERASE_FILES                    ModuleManagerStub.cpp )
+set( ERASE_FILES                    ${MODULE_MANAGER_STUB} )
 
 set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "Compression/ZipCompressor.cpp"

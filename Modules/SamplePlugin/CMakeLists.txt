@@ -11,7 +11,7 @@ set( FIND_PACKAGE  DavaFramework )
 set( INCLUDES "." )                                     # set search path headers for all project
 set( INCLUDES_PRIVATE ${DAVA_ENGINE_DIR} )              # set search path headers inside module
 
-set( HPP_FILES *.h )                                    # 
+set( HPP_FILES Private/*.h )                            # 
 set( CPP_FILES Private/*.cpp )                          # set where are sources
 
 set( PLUGIN_OUT_DIR "${PLUGIN_OUT_DIR_SamplePlugin}"  ) #plugin out dir

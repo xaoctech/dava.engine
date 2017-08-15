@@ -35,14 +35,14 @@ macro ( add_module_subdirectory NAME SOURCE_DIR )
     set_property( GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} ${ARG_COMPONENTS} )
 
     foreach( VALUE ${MAIN_MODULE_VALUES} )
-        set( ${VALUE}_DIR_NAME ${${VALUE}} )
+        set( ${VALUE}_HASH ${${VALUE}} )
         set( ${VALUE})
     endforeach()
     
     add_subdirectory ( ${SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${NAME} )
 
     foreach( VALUE ${MAIN_MODULE_VALUES} )
-        set(  ${VALUE} ${${VALUE}_DIR_NAME} )
+        set(  ${VALUE} ${${VALUE}_HASH} )
     endforeach()
 
 endmacro()    
@@ -59,15 +59,17 @@ macro ( add_plugin NAME SOURCE_DIR )
     set_property( GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} ${ARG_COMPONENTS} ${NAME} )
 
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} )
+        set( ${VALUE}_HASH ${${VALUE}} )
+        get_property( ${VALUE}_HASH_PROPERTY GLOBAL PROPERTY ${VALUE} )
         set( ${VALUE} )
-        set_property( GLOBAL PROPERTY ${VALUE} ${${VALUE}} )
+        set_property( GLOBAL PROPERTY ${VALUE} )
     endforeach()
 
     add_subdirectory ( ${SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${NAME} )
 
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} )
-        set( ${VALUE} )
-        set_property( GLOBAL PROPERTY ${VALUE} ${${VALUE}} )
+        set(  ${VALUE} ${${VALUE}_HASH} )
+        set_property( GLOBAL PROPERTY ${VALUE} ${${VALUE}_HASH_PROPERTY} )
     endforeach()
     
 endmacro()
