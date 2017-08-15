@@ -30,7 +30,6 @@ Bin/tup
 Bin/tup.exe
 Bin/tup32detect.exe
 Bin/tup-dllinject.dll
-Bin/tup-dllinject.dll
 Bin/tup-dllinject32.dll
 Bin/UWPRunner.exe
 Docs
