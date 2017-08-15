@@ -118,7 +118,7 @@ void DebugDrawSystem::UnregisterComponent(Entity* entity, Component* component)
 
     auto it = entitiesComponentMap.find(type);
 
-    if (it != entitiesComponentMap.end())
+    if (it != entitiesComponentMap.end() && entity->GetComponentCount(component->GetType()) <= 1)
     {
         DAVA::FindAndRemoveExchangingWithLast(it->second, entity);
     }
