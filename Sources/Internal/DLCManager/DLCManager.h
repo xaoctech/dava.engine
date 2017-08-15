@@ -135,12 +135,12 @@ public:
     virtual bool IsInitialized() const = 0;
 
     /**
-	 InitStatus represent how initialization was done
+	 InitStatus represents how initialization was done
 	*/
     enum class InitStatus : uint32
     {
-        NotFinished, //!< initialization is still continue
-        UsingLocalMeta, //!< during initialization can't download data from server and try to use previous loaded local data
+        NotFinished, //!< initialization is not finished yet
+        UsingLocalMeta, //!< couldn't download data from server during initialization and tried to use previously loaded local data
         UsingRemoteMeta //!< either downloaded data from server or used local data with the same version
     };
     /** return initialization status */
