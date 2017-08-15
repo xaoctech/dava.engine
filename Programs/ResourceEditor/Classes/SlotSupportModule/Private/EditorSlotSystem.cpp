@@ -451,17 +451,9 @@ void EditorSlotSystem::Draw()
                             t->boundingBoxSize.y - t->pivot.y,
                             t->boundingBoxSize.z - t->pivot.z);
                 AABBox3 box(min, max);
-                Matrix4 transform;
-                if (component->GetJointName().IsValid())
-                {
-                    transform = scene->slotSystem->GetResultTranform(component);
-                }
-                else
-                {
-                    transform = component->GetAttachmentTransform();
-                }
-                Matrix4 worldTransform = entity->GetWorldTransform();
-                transform = worldTransform * transform;
+                Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
+                DVASSERT(loadedEntity != nullptr);
+                Matrix4 transform = loadedEntity->GetWorldTransform();
                 rh->DrawAABoxTransformed(box, transform, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
                 rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
 
