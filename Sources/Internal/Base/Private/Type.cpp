@@ -4,6 +4,8 @@
 
 namespace DAVA
 {
+static std::atomic<size_t> typeUserDataStorageIndex = 0;
+
 Type::Type()
     : inheritance(nullptr, [](TypeInheritance* inh) { if (nullptr != inh) delete inh; })
 {
@@ -101,6 +103,27 @@ TypeDB::Stats TypeDB::GetLocalDBStats()
     stats.totalMemory += stats.typeDBMemory;
 
     return stats;
+}
+
+size_t Type::AllocUserData()
+{
+    size_t index = typeUserDataStorageIndex.fetch_add(1);
+
+    DVASSERT(index < Type::userDataStorageSize);
+
+    return index;
+}
+
+void Type::SetUserData(size_t index, void* data) const
+{
+    DVASSERT(index < typeUserDataStorageIndex);
+    userDataStorage[index] = data;
+}
+
+void* Type::GetUserData(size_t index) const
+{
+    DVASSERT(index < typeUserDataStorageIndex);
+    return userDataStorage[index];
 }
 
 } // namespace DAVA

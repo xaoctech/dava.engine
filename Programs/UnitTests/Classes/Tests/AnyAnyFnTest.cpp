@@ -237,6 +237,9 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         {
         };
 
+        ccc c1;
+        ccc c2;
+
         const Type* t1 = Type::Instance<ccc&>();
         const Type* t2 = Type::Instance<ccc const&>();
         const Type* t3 = Type::Instance<const ccc&>();
@@ -255,6 +258,25 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         TEST_VERIFY(tp1->GetTypeFlags() != tp2->GetTypeFlags());
         TEST_VERIFY(tp1->GetTypeFlags() != tp3->GetTypeFlags());
         TEST_VERIFY(tp2->GetTypeFlags() != tp3->GetTypeFlags());
+
+        size_t customIndex = Type::AllocUserData();
+
+        TEST_VERIFY(nullptr == Type::Instance<int>()->GetUserData(customIndex));
+        TEST_VERIFY(nullptr == Type::Instance<float>()->GetUserData(customIndex));
+
+        Type::Instance<int>()->SetUserData(customIndex, &c1);
+        Type::Instance<float>()->SetUserData(customIndex, &c2);
+
+        TEST_VERIFY(&c1 == Type::Instance<int>()->GetUserData(customIndex));
+        TEST_VERIFY(&c1 != Type::Instance<float>()->GetUserData(customIndex));
+        TEST_VERIFY(&c2 != Type::Instance<int>()->GetUserData(customIndex));
+        TEST_VERIFY(&c2 == Type::Instance<float>()->GetUserData(customIndex));
+
+        Type::Instance<int>()->SetUserData(customIndex, nullptr);
+        Type::Instance<float>()->SetUserData(customIndex, nullptr);
+
+        TEST_VERIFY(nullptr == Type::Instance<int>()->GetUserData(customIndex));
+        TEST_VERIFY(nullptr == Type::Instance<float>()->GetUserData(customIndex));
     }
 
     DAVA_TEST (AnyMove)
