@@ -61,6 +61,7 @@ void LaunchModule::PostInit()
 {
     Selectable::AddTransformProxyForClass<DAVA::Entity, EntityTransformProxy>();
     Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, EmitterTransformProxy>();
+    Selectable::AddTransformProxyForClass<DAVA::ParticleDragForce, DragForceTransformProxy>();
 
     delayedExecutor.DelayedExecute([this]()
                                    {
