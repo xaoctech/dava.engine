@@ -18,18 +18,25 @@ UIRichContentSystem::UIRichContentSystem()
 {
     Engine* engine = Engine::Instance();
     engine->windowCreated.Connect([&](Window*) {
-        RenderOptions* options = Renderer::GetOptions();
+        RenderOptions* options = Renderer::IsInitialized() ? Renderer::GetOptions() : nullptr;
         if (options)
         {
             isDebugDraw = options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
             options->AddObserver(this);
         }
     });
+    engine->windowDestroyed.Connect([&](Window*) {
+        RenderOptions* options = Renderer::IsInitialized() ? Renderer::GetOptions() : nullptr;
+        if (options)
+        {
+            options->RemoveObserver(this);
+        }
+    });
 }
 
 UIRichContentSystem::~UIRichContentSystem()
 {
-    RenderOptions* options = Renderer::GetOptions();
+    RenderOptions* options = Renderer::IsInitialized() ? Renderer::GetOptions() : nullptr;
     if (options)
     {
         options->RemoveObserver(this);

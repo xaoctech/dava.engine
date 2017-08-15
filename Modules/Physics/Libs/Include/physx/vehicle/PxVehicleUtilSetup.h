@@ -45,6 +45,7 @@ class PxVehicleWheelsDynData;
 class PxVehicleDriveSimData4W;
 class PxVehicleWheels;
 
+
 /**
 \brief Reconfigure a PxVehicle4W instance as a three-wheeled car with tadpole config (2 front wheels, 1 rear wheel)
 
@@ -88,6 +89,7 @@ The center of mass of the masses in sprungMasses with the coordinates in sprungM
 */
 void PxVehicleComputeSprungMasses(const PxU32 nbSprungMasses, const PxVec3* sprungMassCoordinates, const PxVec3& centreOfMass, const PxReal totalMass, const PxU32 gravityDirection, PxReal* sprungMasses);
 
+
 /**
 \brief Reconfigure the vehicle to reflect a new center of mass local pose that has been applied to the actor.  The function requires
 (i) the center of mass local pose that was last used to configure the vehicle and the vehicle's actor, (ii) the new center of mass local pose that 
@@ -113,17 +115,18 @@ void PxVehicleUpdateCMassLocalPose(const PxTransform& oldCMassLocalPose, const P
 class PxVehicleCopyDynamicsMap
 {
 public:
-    PxVehicleCopyDynamicsMap()
-    {
-        for (PxU32 i = 0; i < PX_MAX_NB_WHEELS; i++)
-        {
-            sourceWheelIds[i] = PX_MAX_U8;
-            targetWheelIds[i] = PX_MAX_U8;
-        }
-    }
 
-    PxU8 sourceWheelIds[PX_MAX_NB_WHEELS];
-    PxU8 targetWheelIds[PX_MAX_NB_WHEELS];
+	PxVehicleCopyDynamicsMap()
+	{
+		for(PxU32 i = 0; i < PX_MAX_NB_WHEELS; i++)
+		{
+			sourceWheelIds[i] = PX_MAX_U8;
+			targetWheelIds[i] = PX_MAX_U8;
+		}
+	}
+
+	PxU8 sourceWheelIds[PX_MAX_NB_WHEELS];
+	PxU8 targetWheelIds[PX_MAX_NB_WHEELS];
 };
 
 /**

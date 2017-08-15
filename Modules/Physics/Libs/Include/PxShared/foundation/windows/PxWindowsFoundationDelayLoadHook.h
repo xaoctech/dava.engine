@@ -40,7 +40,7 @@
 namespace physx
 {
 #endif
-/**
+	/**
  	\brief PxFoundationDelayLoadHook
 
 	This is a helper class for delay loading the PxFoundation dll. 
@@ -49,24 +49,20 @@ namespace physx
 
 	Once the names are set, the instance must be set for use by the loading dll. 
  	*/
-class PxFoundationDelayLoadHook
-{
-public:
-    PxFoundationDelayLoadHook()
-    {
-    }
-    virtual ~PxFoundationDelayLoadHook()
-    {
-    }
+	class PxFoundationDelayLoadHook
+	{
+	public:
+		PxFoundationDelayLoadHook() {}
+		virtual ~PxFoundationDelayLoadHook() {}
 
-    virtual const char* getPxFoundationDEBUGDllName() const = 0;
-    virtual const char* getPxFoundationCHECKEDDllName() const = 0;
-    virtual const char* getPxFoundationPROFILEDllName() const = 0;
-    virtual const char* getPxFoundationDllName() const = 0;
+		virtual const char* getPxFoundationDEBUGDllName() const = 0;
+		virtual const char* getPxFoundationCHECKEDDllName() const = 0;
+		virtual const char* getPxFoundationPROFILEDllName() const = 0;
+		virtual const char* getPxFoundationDllName() const = 0;
 
-protected:
-private:
-};
+	protected:
+	private:
+	};
 
 #if !PX_DOXYGEN
 } // namespace physx

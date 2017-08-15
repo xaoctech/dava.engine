@@ -53,7 +53,7 @@ namespace physx
 */
 PX_FORCE_INLINE void* PxMemZero(void* dest, PxU32 count)
 {
-    return physx::intrinsics::memZero(dest, count);
+	return physx::intrinsics::memZero(dest, count);
 }
 
 /**
@@ -67,7 +67,7 @@ PX_FORCE_INLINE void* PxMemZero(void* dest, PxU32 count)
 */
 PX_FORCE_INLINE void* PxMemSet(void* dest, PxI32 c, PxU32 count)
 {
-    return physx::intrinsics::memSet(dest, c, count);
+	return physx::intrinsics::memSet(dest, c, count);
 }
 
 /**
@@ -83,7 +83,7 @@ PX_FORCE_INLINE void* PxMemSet(void* dest, PxI32 c, PxU32 count)
 */
 PX_FORCE_INLINE void* PxMemCopy(void* PX_RESTRICT dest, const void* PX_RESTRICT src, PxU32 count)
 {
-    return physx::intrinsics::memCopy(dest, src, count);
+	return physx::intrinsics::memCopy(dest, src, count);
 }
 
 /**
@@ -99,7 +99,7 @@ PX_FORCE_INLINE void* PxMemCopy(void* PX_RESTRICT dest, const void* PX_RESTRICT 
 */
 PX_FORCE_INLINE void* PxMemMove(void* dest, const void* src, PxU32 count)
 {
-    return physx::intrinsics::memMove(dest, src, count);
+	return physx::intrinsics::memMove(dest, src, count);
 }
 
 #if !PX_DOXYGEN

@@ -40,7 +40,7 @@ public:
     /*
     creates scene
     */
-    explicit SceneBuilder(const FilePath& scenePathname);
+    explicit SceneBuilder(const FilePath& scenePathname, Scene* scene = nullptr);
 
     /*
     saves scene into scenePathname passed to constructor
@@ -50,7 +50,7 @@ public:
     /*
     creates scene with all objects that can be added with SceneBuilder: camera, box etc.
     */
-    static void CreateFullScene(const FilePath& scenePathname);
+    static void CreateFullScene(const FilePath& scenePathname, DAVA::Scene* scene = nullptr);
 
     enum R2OMode
     {

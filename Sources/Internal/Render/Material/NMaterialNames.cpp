@@ -200,6 +200,7 @@ const FastName NMaterialFlagName::FLAG_TEST_OCCLUSION = FastName("TEST_OCCLUSION
 const FastName NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION = FastName("FORCED_SHADOW_DIRECTION");
 
 const FastName NMaterialFlagName::FLAG_PARTICLES_DEBUG_SHOW_HEATMAP = FastName("HEATMAP");
+const FastName NMaterialFlagName::FLAG_GEO_DECAL = FastName("GEO_DECAL");
 
 //quality
 const FastName NMaterialQualityName::QUALITY_FLAG_NAME = FastName("Quality");

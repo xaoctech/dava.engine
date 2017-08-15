@@ -347,7 +347,7 @@ void XMLRichContentBuilder::ProcessText(const String& text)
             continue;
         }
 
-        token = StringUtils::Trim(token);
+        token = UTF8Utils::Trim(token);
         if (!token.empty())
         {
             BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);

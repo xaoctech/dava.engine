@@ -51,55 +51,55 @@ Disabling unneeded buffers saves memory and improves performance.
 \deprecated The PhysX particle feature has been deprecated in PhysX version 3.4
 */
 struct PX_DEPRECATED PxParticleReadDataFlag
-{
-    enum Enum
-    {
-        /**
+	{
+	enum Enum
+		{
+			/**
 			Enables reading particle positions from the SDK.
 			@see PxParticleReadData.positionBuffer
 			*/
-        ePOSITION_BUFFER = (1 << 0),
+			ePOSITION_BUFFER			= (1<<0),
 
-        /**
+			/**
 			Enables reading particle velocities from the SDK.
 			@see PxParticleReadData.velocityBuffer
 			*/
-        eVELOCITY_BUFFER = (1 << 1),
+			eVELOCITY_BUFFER			= (1<<1),
 
-        /**
+			/**
 			Enables reading per particle rest offsets from the SDK.
 			Per particle rest offsets are never changed by the simulation.
 			This option may only be used on particle systems that have 
 			PxParticleBaseFlag.ePER_PARTICLE_REST_OFFSET enabled.
 			@see PxParticleBaseFlag.ePER_PARTICLE_REST_OFFSET
 			*/
-        eREST_OFFSET_BUFFER = (1 << 2),
+			eREST_OFFSET_BUFFER			= (1<<2),
 
-        /**
+			/**
 			Enables reading particle flags from the SDK.
 			@see PxParticleReadData.flagsBuffer
 			*/
-        eFLAGS_BUFFER = (1 << 3),
+			eFLAGS_BUFFER				= (1<<3),
 
-        /**
+			/**
 			Enables reading particle collision normals from the SDK.
 			@see PxParticleReadData.collisionNormalBuffer
 			*/
-        eCOLLISION_NORMAL_BUFFER = (1 << 4),
+			eCOLLISION_NORMAL_BUFFER	= (1<<4),
 
-        /**
+			/**
 			Enables reading particle collision velocities from the SDK.
 			@see PxParticleReadData.collisionVelocity
 			*/
-        eCOLLISION_VELOCITY_BUFFER = (1 << 5),
+			eCOLLISION_VELOCITY_BUFFER	= (1<<5),
 
-        /**
+			/**
 			Enables reading particle densities from the SDK. (PxParticleFluid only)
 			@see PxParticleFluidReadData.densityBuffer
 			*/
-        eDENSITY_BUFFER = (1 << 6)
-    };
-};
+			eDENSITY_BUFFER				= (1<<6)
+		};
+	};
 
 /**
 \brief collection of set bits defined in PxParticleReadDataFlag. (deprecated)
@@ -109,7 +109,7 @@ struct PX_DEPRECATED PxParticleReadDataFlag
 @see PxParticleReadDataFlag
 */
 typedef PX_DEPRECATED PxFlags<PxParticleReadDataFlag::Enum, PxU16> PxParticleReadDataFlags;
-PX_FLAGS_OPERATORS(PxParticleReadDataFlag::Enum, PxU16)
+PX_FLAGS_OPERATORS(PxParticleReadDataFlag::Enum,PxU16)
 
 /**
 \brief collection of set bits defined in PxParticleFlag. (deprecated)
@@ -119,7 +119,7 @@ PX_FLAGS_OPERATORS(PxParticleReadDataFlag::Enum, PxU16)
 @see PxParticleFlag
 */
 typedef PX_DEPRECATED PxFlags<PxParticleFlag::Enum, PxU16> PxParticleFlags;
-PX_FLAGS_OPERATORS(PxParticleFlag::Enum, PxU16)
+PX_FLAGS_OPERATORS(PxParticleFlag::Enum,PxU16)
 
 /**
 \brief Data layout descriptor for reading particle data from the SDK. (deprecated)
@@ -141,80 +141,80 @@ The bitmap words are defined in the range [0, (PxParticleReadData.validParticleR
 @see PxParticleBase::lockParticleReadData()
 */
 class PX_DEPRECATED PxParticleReadData : public PxLockedData
-{
-public:
-    /**
+	{
+	public:
+
+	/**
 	\brief Number of particles (only including particles with PxParticleFlag.eVALID set). 
 	*/
-    PxU32 nbValidParticles;
+	PxU32										nbValidParticles;
 
-    /**
+	/**
 	\brief Index after the last valid particle (PxParticleFlag.eVALID set). Its 0 if there are no valid particles. 
 	*/
-    PxU32 validParticleRange;
+	PxU32										validParticleRange;
 
-    /**
+	/**
 	\brief Bitmap marking valid particle indices. The bitmap is defined between [0, (PxParticleReadData.validParticleRange-1) >> 5].
 	\note Might be NULL if PxParticleReadData.validParticleRange == 0. 
 	*/
-    const PxU32* validParticleBitmap;
+	const PxU32*								validParticleBitmap;
 
-    /**
+	/**
 	\brief Particle position data.
 	*/
-    PxStrideIterator<const PxVec3> positionBuffer;
-
-    /**
+	PxStrideIterator<const PxVec3>				positionBuffer;
+	
+	/**
 	\brief Particle velocity data.
 	*/
-    PxStrideIterator<const PxVec3> velocityBuffer;
+	PxStrideIterator<const PxVec3>				velocityBuffer;
 
-    /**
+	/**
 	\brief Particle rest offset data.
 	*/
-    PxStrideIterator<const PxF32> restOffsetBuffer;
+	PxStrideIterator<const PxF32>				restOffsetBuffer;
 
-    /**
+	/**
 	\brief Particle flags.
 	*/
-    PxStrideIterator<const PxParticleFlags> flagsBuffer;
+	PxStrideIterator<const PxParticleFlags>		flagsBuffer;
 
-    /**
+	/**
 	\brief Collision normals of colliding particles.
 	The collision normal buffer is only guaranteed to be valid after the particle 
 	system has been simulated. Otherwise collisionNormalBuffer.ptr() is NULL. This also 
 	applies to particle systems that are not assigned to a scene.
 	*/
-    PxStrideIterator<const PxVec3> collisionNormalBuffer;
-
-    /**
+	PxStrideIterator<const PxVec3>				collisionNormalBuffer;
+	
+	/**
 	\brief Velocities of particles relative to shapes they collide with.
 	The collision velocity buffer is only guaranteed to be valid after the particle 
 	system has been simulated. Otherwise collisionVelocityBuffer.ptr() is NULL. This also 
 	applies to particle systems that are not assigned to a scene.
 	The collision velocity is identical to the particle velocity if the particle is not colliding.
 	*/
-    PxStrideIterator<const PxVec3> collisionVelocityBuffer;
+	PxStrideIterator<const PxVec3>				collisionVelocityBuffer;
 
-    /**
+	/**
 	\brief Returns PxDataAccessFlag::eREADABLE, since PxParticleReadData is read only data
 	@see PxLockedData
 	*/
     virtual PxDataAccessFlags getDataAccessFlags() = 0;
 
-    /**
+	/**
 	\brief Unlocks the data.
 	@see PxLockedData
 	*/
     virtual void unlock() = 0;
 
-    /**
+	/**
 	\brief virtual destructor
 	*/
-    virtual ~PxParticleReadData()
-    {
-    }
-};
+	virtual ~PxParticleReadData() {}
+
+	};
 
 #if !PX_DOXYGEN
 } // namespace physx

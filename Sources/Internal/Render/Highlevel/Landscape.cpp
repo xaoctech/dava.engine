@@ -188,8 +188,9 @@ void Landscape::ReleaseGeometryData()
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
     ////General
-    for (IndexedRenderBatch& batch : renderBatchArray)
+    for (RenderBatchWithOptions& batch : renderBatchArray)
         batch.renderBatch->Release();
+
     renderBatchArray.clear();
     activeRenderBatchArray.clear();
 
@@ -977,7 +978,7 @@ void Landscape::FlushQueue()
 
         DAVA_PROFILER_GPU_RENDER_BATCH(batch, ProfilerGPUMarkerName::LANDSCAPE);
 
-        activeRenderBatchArray.push_back(batch);
+        activeRenderBatchArray.emplace_back(batch);
 
         queueIndexCount -= allocatedIndices;
         indicesPtr += allocatedIndices;
@@ -1185,7 +1186,7 @@ void Landscape::DrawLandscapeInstancing()
 
         renderBatchArray[0].renderBatch->instanceBuffer = instanceDataBuffer->buffer;
         renderBatchArray[0].renderBatch->instanceCount = patchesToRender;
-        activeRenderBatchArray.push_back(renderBatchArray[0].renderBatch);
+        activeRenderBatchArray.emplace_back(renderBatchArray[0].renderBatch);
 
         instanceDataPtr = static_cast<uint8*>(rhi::MapVertexBuffer(instanceDataBuffer->buffer, 0, patchesToRender * instanceDataSize));
 
@@ -1402,7 +1403,7 @@ void Landscape::Save(KeyedArchive* archive, SerializationContext* serializationC
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    AnimatedObject::SaveObject(archive);
+    BaseObject::SaveObject(archive);
 
     archive->SetUInt32("ro.debugflags", debugFlags);
     archive->SetUInt32("ro.sOclIndex", staticOcclusionIndex);
@@ -1686,5 +1687,217 @@ void Landscape::UpdatePart(const Rect2i& rect)
     default:
         break;
     }
+}
+
+void Landscape::RecursiveRayTrace(uint32 level, uint32 x, uint32 y, const Ray3& rayInObjectSpace, float32& resultT)
+{
+#if 0
+	const LandscapeSubdivision::SubdivisionPatchInfo& subdivPatchInfo = subdivision->GetPatchInfo(level, x, y);
+	const LandscapeSubdivision::PatchQuadInfo& patchQuadInfo = subdivision->GetPatchQuadInfo(level, x, y);
+
+	float32 tMin, tMax;
+	bool currentPatchIntersects = Intersection::RayBox(rayInObjectSpace, patchQuadInfo.bbox, tMin, tMax);
+
+	if (currentPatchIntersects)
+	{
+		if (level == subdivision->GetLevelCount() - 1)
+		{
+			int32 hmSize = heightmap->Size();
+			uint32 patchSize = hmSize >> level;
+
+			uint32 xx = x * patchSize;
+			uint32 yy = y * patchSize;
+
+			float32 localResult = FLT_MAX;
+			/*int32 collisionCellX2 = -1;
+			int32 collisionCellY2 = -1;
+
+			float32 localResult2 = FLT_MAX;
+			// Bruteforce algorithm
+			{
+			for (uint32 y0 = yy; y0 < yy + patchSize; y0 ++)
+			{
+			for (uint32 x0 = xx; x0 < xx + patchSize; x0 ++)
+			{
+			uint32 x1 = x0 + 1;
+			uint32 y1 = y0 + 1;
+
+			Vector3 p00 = heightmap->GetPoint(x0, y0, bbox);
+			Vector3 p01 = heightmap->GetPoint(x0, y1, bbox);
+			Vector3 p10 = heightmap->GetPoint(x1, y0, bbox);
+			Vector3 p11 = heightmap->GetPoint(x1, y1, bbox);
+
+			float32 t1, t2;
+			if (Intersection::RayTriangle(rayInObjectSpace, p00, p01, p11, t1))
+			{
+			if (t1 < localResult2)
+			{
+			localResult2 = t1;
+			collisionCellX2 = x0;
+			collisionCellY2 = y0;
+			}
+			}
+
+			if (Intersection::RayTriangle(rayInObjectSpace, p00, p11, p10, t2))
+			{
+			if (t2 < localResult2)
+			{
+			localResult2 = t2;
+			collisionCellX2 = x0;
+			collisionCellY2 = y0;
+
+			}
+			}
+			}
+			}
+			}
+
+			//Logger::Debug("bf res: %d %d" , collisionCellX2, collisionCellY2);
+
+			//DVASSERT(FLOAT_EQUAL(localResult2, localResult));
+			resultT = Min(resultT, localResult2);*/
+			float32 localResult3 = FLT_MAX;
+			{
+				Vector3 grid00 = heightmap->GetPoint(xx, yy, bbox);
+				Vector3 gridCellSize = heightmap->GetPoint(xx + 1, yy + 1, bbox) - grid00;
+
+				auto GetPosToVoxel = [patchSize, grid00, gridCellSize](const Vector3 & point, int32 axis)
+				{
+					int32 pos = static_cast<int32>((point.data[axis] - grid00.data[axis]) / (float32)gridCellSize.data[axis]);
+					return Clamp(pos, 0, (int32)patchSize - 1);
+				};
+
+				auto GetVoxelToPos = [patchSize, grid00, gridCellSize](int32 voxel, int32 axis)
+				{
+					float32 pos = (float32)(voxel)* gridCellSize.data[axis] + grid00.data[axis];
+					return pos;
+				};
+
+
+
+				Vector3 patchIntersect = rayInObjectSpace.origin + rayInObjectSpace.direction * tMin;
+
+
+				float32 width[3] = { gridCellSize.x, gridCellSize.y, gridCellSize.z };
+
+
+				// Set up 3D DDA for ray
+				float32 nextCrossingT[3], deltaT[3];
+				int32 step[3], out[3], pos[3];
+				for (int axis = 0; axis < 2; ++axis)
+				{
+					// Compute current voxel for axis
+					pos[axis] = GetPosToVoxel(patchIntersect, axis);
+					if (rayInObjectSpace.direction.data[axis] >= 0)
+					{
+						// Handle ray with positive direction for voxel stepping
+						nextCrossingT[axis] = tMin + (GetVoxelToPos(pos[axis] + 1, axis) - patchIntersect.data[axis]) / rayInObjectSpace.direction.data[axis];
+						deltaT[axis] = width[axis] / rayInObjectSpace.direction.data[axis];
+						step[axis] = 1;
+						out[axis] = patchSize;
+					}
+					else
+					{
+						// Handle ray with negative direction for voxel stepping
+						nextCrossingT[axis] = tMin + (GetVoxelToPos(pos[axis], axis) - patchIntersect.data[axis]) / rayInObjectSpace.direction.data[axis];
+						deltaT[axis] = -width[axis] / rayInObjectSpace.direction.data[axis];
+						step[axis] = -1;
+						out[axis] = -1;
+					}
+				}
+
+				bool hitSomething = false;
+				for (;;)
+				{
+					//Logger::Debug("na: %d %d", xx + pos[0], yy + pos[1]);
+					// Check for intersection in current voxel and advance to next
+					Vector3 p00 = heightmap->GetPoint(xx + pos[0], yy + pos[1], bbox);
+					Vector3 p01 = heightmap->GetPoint(xx + pos[0], yy + pos[1] + 1, bbox);
+					Vector3 p10 = heightmap->GetPoint(xx + pos[0] + 1, yy + pos[1], bbox);
+					Vector3 p11 = heightmap->GetPoint(xx + pos[0] + 1, yy + pos[1] + 1, bbox);
+
+					float32 t1, t2;
+					if (Intersection::RayTriangle(rayInObjectSpace, p00, p01, p11, t1))
+					{
+						if (t1 < localResult3)
+						{
+							localResult3 = t1;
+						}
+					}
+
+					if (Intersection::RayTriangle(rayInObjectSpace, p00, p11, p10, t2))
+					{
+						if (t2 < localResult3)
+						{
+							localResult3 = t2;
+						}
+					}
+
+
+					// Advance to next voxel
+
+					// Find _stepAxis_ for stepping to next voxel
+					/*int bits = (   (nextCrossingT[0] < nextCrossingT[1]) << 2)  // X < Y
+					+ ((nextCrossingT[0] < nextCrossingT[2]) << 1)  // X < Z
+					+ ((nextCrossingT[1] < nextCrossingT[2]));      // Y < Z
+					//    0 - ZYX
+					//    7 - XYZ
+
+
+					const int cmpToAxis[8] = { 2, 1, 2, 1, 2, 2, 0, 0 };
+					int stepAxis = cmpToAxis[bits];
+					*/
+
+
+					int32 stepAxis = 0;
+					if (nextCrossingT[0] < nextCrossingT[1])stepAxis = 0;
+					else stepAxis = 1;
+
+					if (tMax < nextCrossingT[stepAxis])
+						break;
+					pos[stepAxis] += step[stepAxis];
+					if (pos[stepAxis] == out[stepAxis])
+						break;
+					nextCrossingT[stepAxis] += deltaT[stepAxis];
+				}
+			}
+			//if (!FLOAT_EQUAL(localResult2, localResult3))
+			//            {
+			//                int i = 0;
+			//                Logger::Error("DDA Algorithm mistake");
+			//            }
+
+			resultT = Min(resultT, localResult3);
+
+
+		} // End of intersection code
+
+
+		  // If level is not final go deeper
+		if ((level < subdivision->GetLevelCount() - 1))
+		{
+			uint32 x2 = x << 1;
+			uint32 y2 = y << 1;
+
+			RecursiveRayTrace(level + 1, x2 + 0, y2 + 0, rayInObjectSpace, resultT);
+			RecursiveRayTrace(level + 1, x2 + 1, y2 + 0, rayInObjectSpace, resultT);
+			RecursiveRayTrace(level + 1, x2 + 0, y2 + 1, rayInObjectSpace, resultT);
+			RecursiveRayTrace(level + 1, x2 + 1, y2 + 1, rayInObjectSpace, resultT);
+		}
+	}
+#endif
+}
+
+bool Landscape::RayTrace(const Ray3& rayInObjectSpace, float32& resultT)
+{
+    float32 localResultT = FLOAT_MAX;
+    RecursiveRayTrace(0, 0, 0, rayInObjectSpace, localResultT);
+
+    if (localResultT < FLOAT_MAX)
+    {
+        resultT = localResultT;
+        return true;
+    }
+    return false;
 }
 }

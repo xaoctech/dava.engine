@@ -53,33 +53,33 @@ namespace physx
 // on win32 we only have 8-byte alignment guaranteed, but the CRT provides special aligned allocation fns
 PX_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {
-    return _aligned_malloc(size, 16);
+	return _aligned_malloc(size, 16);
 }
 
 PX_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
-    _aligned_free(ptr);
+	_aligned_free(ptr);
 }
 #elif PX_LINUX_FAMILY || PX_NX
 PX_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {
-    return ::memalign(16, size);
+	return ::memalign(16, size);
 }
 
 PX_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
-    ::free(ptr);
+	::free(ptr);
 }
 #else
 // on all other platforms we get 16-byte alignment by default
 PX_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {
-    return ::malloc(size);
+	return ::malloc(size);	
 }
 
 PX_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
-    ::free(ptr);
+	::free(ptr);
 }
 #endif
 
@@ -89,17 +89,17 @@ PX_FORCE_INLINE void platformAlignedFree(void* ptr)
 class PxDefaultAllocator : public PxAllocatorCallback
 {
 public:
-    void* allocate(size_t size, const char*, const char*, int)
-    {
-        void* ptr = platformAlignedAlloc(size);
-        PX_ASSERT((reinterpret_cast<size_t>(ptr) & 15) == 0);
-        return ptr;
-    }
+	void* allocate(size_t size, const char*, const char*, int)
+	{
+		void* ptr = platformAlignedAlloc(size);
+		PX_ASSERT((reinterpret_cast<size_t>(ptr) & 15)==0);
+		return ptr;
+	}
 
-    void deallocate(void* ptr)
-    {
-        platformAlignedFree(ptr);
-    }
+	void deallocate(void* ptr)
+	{
+		platformAlignedFree(ptr);
+	}
 };
 
 #if !PX_DOXYGEN

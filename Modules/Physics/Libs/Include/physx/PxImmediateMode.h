@@ -46,46 +46,44 @@ namespace immediate
 {
 #endif
 
-/**
+	/**
 	\brief Structure to store rigid body properties
 	*/
-struct PxRigidBodyData
-{
-    PX_ALIGN(16, PxVec3 linearVelocity); //!< 12 Linear velocity
-    PxReal invMass; //!< 16 Inverse mass
-    PxVec3 angularVelocity; //!< 28 Angular velocity
-    PxReal maxDepenetrationVelocity; //!< 32 Maximum de-penetration velocity
-    PxVec3 invInertia; //!< 44 Mass-space inverse interia diagonal vector
-    PxReal maxContactImpulse; //!< 48 Maximum permissable contact impulse
-    PxTransform body2World; //!< 76 World space transform
-    PxReal linearDamping; //!< 80 Linear damping coefficient
-    PxReal angularDamping; //!< 84 Angular damping coefficient
-    PxReal maxLinearVelocitySq; //!< 88 Squared maximum linear velocity
-    PxReal maxAngularVelocitySq; //!< 92 Squared maximum angular velocity
-    PxU32 pad; //!< 96 Padding for 16-byte alignment
-};
+	struct PxRigidBodyData
+	{
+		PX_ALIGN(16, PxVec3 linearVelocity);				//!< 12 Linear velocity
+		PxReal invMass;										//!< 16 Inverse mass
+		PxVec3 angularVelocity;								//!< 28 Angular velocity
+		PxReal maxDepenetrationVelocity;					//!< 32 Maximum de-penetration velocity
+		PxVec3 invInertia;									//!< 44 Mass-space inverse interia diagonal vector
+		PxReal maxContactImpulse;							//!< 48 Maximum permissable contact impulse
+		PxTransform body2World;								//!< 76 World space transform
+		PxReal linearDamping;								//!< 80 Linear damping coefficient
+		PxReal angularDamping;								//!< 84 Angular damping coefficient
+		PxReal maxLinearVelocitySq;							//!< 88 Squared maximum linear velocity
+		PxReal maxAngularVelocitySq;						//!< 92 Squared maximum angular velocity
+		PxU32 pad;											//!< 96 Padding for 16-byte alignment
+	};
 
-/**
+	/**
 	\brief Callback class to record contact points produced by immediate::PxGenerateContacts
 	*/
-class PxContactRecorder
-{
-public:
-    /**
+	class PxContactRecorder
+	{
+	public:
+		/**
 		\brief Method to record new contacts
 		\param[in] contactPoints The contact points produced
 		\param[in] nbContacts The number of contact points produced
 		\param[in] index The index of this pair. This is an index from 0-N-1 identifying which pair this relates to from within the array of pairs passed to PxGenerateContacts
 		\return a boolean to indicate if this callback successfully stored the contacts or not.
 		*/
-    virtual bool recordContacts(const Gu::ContactPoint* contactPoints, const PxU32 nbContacts, const PxU32 index) = 0;
+		virtual bool recordContacts(const Gu::ContactPoint* contactPoints, const PxU32 nbContacts, const PxU32 index) = 0;
 
-    virtual ~PxContactRecorder()
-    {
-    }
-};
+		virtual ~PxContactRecorder(){}
+	};
 
-/**
+	/**
 	\brief Constructs a PxSolverBodyData structure based on rigid body properties. Applies gravity, damping and clamps maximum velocity.
 	\param[in] inRigidData The array rigid body properties
 	\param[out] outSolverBodyData The array of solverBodyData produced to repreent these bodies
@@ -93,16 +91,16 @@ public:
 	\param[in] gravity The gravity vector
 	\param[in] dt The timestep
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PxConstructSolverBodies(const PxRigidBodyData* inRigidData, PxSolverBodyData* outSolverBodyData, const PxU32 nbBodies, const PxVec3& gravity, const PxReal dt);
+	PX_C_EXPORT PX_PHYSX_CORE_API void PxConstructSolverBodies(const PxRigidBodyData* inRigidData, PxSolverBodyData* outSolverBodyData, const PxU32 nbBodies, const PxVec3& gravity, const PxReal dt);
 
-/**
+	/**
 	\brief Constructs a PxSolverBodyData structure for a static body at a given pose.
 	\param[in] globalPose The pose of this static actor
 	\param[out] solverBodyData The solver body representation of this static actor
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PxConstructStaticSolverBody(const PxTransform& globalPose, PxSolverBodyData& solverBodyData);
+	PX_C_EXPORT PX_PHYSX_CORE_API void PxConstructStaticSolverBody(const PxTransform& globalPose,PxSolverBodyData& solverBodyData);
 
-/**
+	/**
 	\brief Groups together sets of independent PxSolverConstraintDesc objects to be solved using SIMD SOA approach.
 	\param[in] solverConstraintDescs the set of solver constraint descs to batch
 	\param[in] nbConstraints The number of constraints to batch
@@ -117,10 +115,10 @@ PX_C_EXPORT PX_PHYSX_CORE_API void PxConstructStaticSolverBody(const PxTransform
 			infinite mass (static or kinematic). This means that either appending static/kinematic to the end of the array of bodies or placing static/kinematic bodies at before the start body pointer
 			will ensure that the minimum number of batches are produced.
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API PxU32 PxBatchConstraints(PxSolverConstraintDesc* solverConstraintDescs, const PxU32 nbConstraints, PxSolverBody* solverBodies, PxU32 nbBodies, PxConstraintBatchHeader* outBatchHeaders,
-                                                       PxSolverConstraintDesc* outOrderedConstraintDescs);
+	PX_C_EXPORT PX_PHYSX_CORE_API PxU32 PxBatchConstraints(PxSolverConstraintDesc* solverConstraintDescs, const PxU32 nbConstraints, PxSolverBody* solverBodies, PxU32 nbBodies, PxConstraintBatchHeader* outBatchHeaders,
+		PxSolverConstraintDesc* outOrderedConstraintDescs);
 
-/**
+	/**
 	
 	\brief Creates a set of contact constraint blocks. Note that, depending the results of PxBatchConstraints, each batchHeader may refer to up to 4 solverConstraintDescs.
 	This function will allocate both constraint and friction patch data via the PxConstraintAllocator provided. Constraint data is only valid until PxSolveConstraints has completed. 
@@ -138,10 +136,10 @@ PX_C_EXPORT PX_PHYSX_CORE_API PxU32 PxBatchConstraints(PxSolverConstraintDesc* s
 
 	\return a boolean to define if this method was successful or not.
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateContactConstraints(PxConstraintBatchHeader* batchHeader, const PxU32 nbHeaders, PxSolverContactDesc* contactDescs,
-                                                              PxConstraintAllocator& allocator, PxReal invDt, PxReal bounceThreshold, PxReal frictionOffsetThreshold, PxReal correlationDistance);
+	PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateContactConstraints(PxConstraintBatchHeader* batchHeader, const PxU32 nbHeaders, PxSolverContactDesc* contactDescs,
+		PxConstraintAllocator& allocator, PxReal invDt, PxReal bounceThreshold, PxReal frictionOffsetThreshold, PxReal correlationDistance);
 
-/**
+	/**
 	\brief Creates a set of joint constraint blocks. Note that, depending the results of PxBatchConstraints, the batchHeader may refer to up to 4 solverConstraintDescs
 	\param[in] batchHeader The array of batch headers to be processed
 	\param[in] nbHeaders The total number of batch headers to process
@@ -151,9 +149,9 @@ PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateContactConstraints(PxConstraintBatchH
 	\param[in] invDt The inverse timestep
 	\return a boolean indicating if this method was successful or not.
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateJointConstraints(PxConstraintBatchHeader* batchHeader, const PxU32 nbHeaders, PxSolverConstraintPrepDesc* jointDescs, PxConstraintAllocator& allocator, PxReal dt, PxReal invDt);
+	PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateJointConstraints(PxConstraintBatchHeader* batchHeader, const PxU32 nbHeaders, PxSolverConstraintPrepDesc* jointDescs, PxConstraintAllocator& allocator, PxReal dt, PxReal invDt);
 
-/**
+	/**
 	\brief Creates a set of joint constraint blocks. This function runs joint shaders defined inside PxConstraint** param, fills in joint row information in jointDescs and then calls PxCreateJointConstraints.
 	\param[in] batchHeader The set of batchHeaders to be processed
 	\param[in] nbBatchHeaders The number of batch headers to process.
@@ -164,9 +162,9 @@ PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateJointConstraints(PxConstraintBatchHea
 	\param[in] invDt The inverse timestep
 	\return a boolean indicating if this method was successful or not.
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateJointConstraintsWithShaders(PxConstraintBatchHeader* batchHeader, const PxU32 nbBatchHeaders, PxConstraint** constraints, PxSolverConstraintPrepDesc* jointDescs, PxConstraintAllocator& allocator, PxReal dt, PxReal invDt);
+	PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateJointConstraintsWithShaders(PxConstraintBatchHeader* batchHeader, const PxU32 nbBatchHeaders, PxConstraint** constraints, PxSolverConstraintPrepDesc* jointDescs, PxConstraintAllocator& allocator, PxReal dt, PxReal invDt);
 
-/**
+	/**
 	\brief Iteratively solves the set of constraints defined by the provided PxConstraintBatchHeader and PxSolverConstraintDesc structures. Updates deltaVelocities inside the PxSolverBody structures. Produces resulting linear and angular motion velocities.
 	\param[in] batchHeaders The set of batch headers to be solved
 	\param[in] nbBatchHeaders The total number of batch headers to be solved
@@ -178,10 +176,10 @@ PX_C_EXPORT PX_PHYSX_CORE_API bool PxCreateJointConstraintsWithShaders(PxConstra
 	\param[in] nbPositionIterations The number of position iterations to run
 	\param[in] nbVelocityIterations The number of velocity iterations to run
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PxSolveConstraints(PxConstraintBatchHeader* batchHeaders, const PxU32 nbBatchHeaders, PxSolverConstraintDesc* solverConstraintDescs, PxSolverBody* solverBodies,
-                                                      PxVec3* linearMotionVelocity, PxVec3* angularMotionVelocity, const PxU32 nbSolverBodies, const PxU32 nbPositionIterations, const PxU32 nbVelocityIterations);
+	PX_C_EXPORT PX_PHYSX_CORE_API void PxSolveConstraints(PxConstraintBatchHeader* batchHeaders, const PxU32 nbBatchHeaders, PxSolverConstraintDesc* solverConstraintDescs, PxSolverBody* solverBodies,
+		PxVec3* linearMotionVelocity, PxVec3* angularMotionVelocity, const PxU32 nbSolverBodies, const PxU32 nbPositionIterations, const PxU32 nbVelocityIterations);
 
-/**
+	/**
 	\brief Integrates a rigid body, returning the new velocities and transforms. After this function has been called, solverBodyData stores all the body's velocity data.
 
 	\param[in,out] solverBodyData The array of solver body data to be integrated
@@ -191,9 +189,9 @@ PX_C_EXPORT PX_PHYSX_CORE_API void PxSolveConstraints(PxConstraintBatchHeader* b
 	\param[in] nbBodiesToIntegrate The total number of bodies to integrate
 	\param[in] dt The timestep
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API void PxIntegrateSolverBodies(PxSolverBodyData* solverBodyData, PxSolverBody* solverBody, const PxVec3* linearMotionVelocity, const PxVec3* angularMotionState, const PxU32 nbBodiesToIntegrate, PxReal dt);
+	PX_C_EXPORT PX_PHYSX_CORE_API void PxIntegrateSolverBodies(PxSolverBodyData* solverBodyData, PxSolverBody* solverBody, const PxVec3* linearMotionVelocity, const PxVec3* angularMotionState, const PxU32 nbBodiesToIntegrate, PxReal dt);
 
-/**
+	/**
 	abrief Performs contact generation for a given pair of geometries at the specified poses. Produced contacts are stored in the provided Gu::ContactBuffer. Information is cached in PxCache structure
 	to accelerate future contact generation between pairs. This cache data is valid only as long as the memory provided by PxCacheAllocator has not been released/re-used. Recommendation is to 
 	retain that data for a single simulation frame, discarding cached data after 2 frames. If the cached memory has been released/re-used prior to the corresponding pair having contact generation
@@ -213,8 +211,8 @@ PX_C_EXPORT PX_PHYSX_CORE_API void PxIntegrateSolverBodies(PxSolverBodyData* sol
 
 	\return a boolean indicating if the function was successful or not.
 	*/
-PX_C_EXPORT PX_PHYSX_CORE_API bool PxGenerateContacts(const PxGeometry* const* geom0, const PxGeometry* const* geom1, const PxTransform* pose0, const PxTransform* pose1, PxCache* contactCache, const PxU32 nbPairs, PxContactRecorder& contactRecorder,
-                                                      const PxReal contactDistance, const PxReal meshContactMargin, const PxReal toleranceLength, PxCacheAllocator& allocator);
+	PX_C_EXPORT PX_PHYSX_CORE_API bool PxGenerateContacts(const PxGeometry* const * geom0, const PxGeometry* const * geom1, const PxTransform* pose0, const PxTransform* pose1, PxCache* contactCache, const PxU32 nbPairs, PxContactRecorder& contactRecorder,
+		const PxReal contactDistance, const PxReal meshContactMargin, const PxReal toleranceLength, PxCacheAllocator& allocator);
 
 #if !PX_DOXYGEN
 }
@@ -227,3 +225,4 @@ PX_C_EXPORT PX_PHYSX_CORE_API bool PxGenerateContacts(const PxGeometry* const* g
 
 /** @} */
 #endif
+

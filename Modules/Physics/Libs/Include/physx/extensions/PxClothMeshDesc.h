@@ -51,21 +51,22 @@ namespace physx
 class PxClothMeshDesc
 {
 public:
-    /**
+
+	/**
 	\brief Pointer to first vertex point.
 	*/
-    PxBoundedData points;
+	PxBoundedData points;
 
-    /**
+	/**
 	\brief Determines whether particle is simulated or static.
 	A positive value denotes that the particle is being simulated, zero denotes a static particle.
 	This data is used to generate tether and zero stretch constraints.
 	If invMasses.data is null, all particles are assumed to be simulated 
 	and no tether and zero stretch constraints are being generated.
 	*/
-    PxBoundedData invMasses;
+	PxBoundedData invMasses;
 
-    /**
+	/**
 	\brief Pointer to the first triangle.
 
 	These are triplets of 0 based indices:
@@ -79,9 +80,9 @@ public:
 	
 	This is declared as a void pointer because it is actually either an PxU16 or a PxU32 pointer.
 	*/
-    PxBoundedData triangles;
+	PxBoundedData triangles;
 
-    /**
+	/**
 	\brief Pointer to the first quad.
 
 	These are quadruples of 0 based indices:
@@ -95,67 +96,67 @@ public:
 
 	This is declared as a void pointer because it is actually either an PxU16 or a PxU32 pointer.
 	*/
-    PxBoundedData quads;
+	PxBoundedData quads;
 
-    /**
+	/**
 	\brief Flags bits, combined from values of the enum ::PxMeshFlag
 	*/
-    PxMeshFlags flags;
+	PxMeshFlags flags;
 
-    /**
+	/**
 	\brief constructor sets to default.
 	*/
-    PX_INLINE PxClothMeshDesc();
-    /**
+	PX_INLINE PxClothMeshDesc();
+	/**
 	\brief (re)sets the structure to the default.	
 	*/
-    PX_INLINE void setToDefault();
-    /**
+	PX_INLINE void setToDefault();
+	/**
 	\brief Returns true if the descriptor is valid.
 	\return True if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE bool isValid() const;
 };
 
-PX_INLINE PxClothMeshDesc::PxClothMeshDesc() //constructor sets to default
+PX_INLINE PxClothMeshDesc::PxClothMeshDesc()	//constructor sets to default
 {
 }
 
 PX_INLINE void PxClothMeshDesc::setToDefault()
 {
-    *this = PxClothMeshDesc();
+	*this = PxClothMeshDesc();
 }
 
 PX_INLINE bool PxClothMeshDesc::isValid() const
 {
-    if (points.count < 3) //at least 1 trig's worth of points
-        return false;
-    if (points.count > 0xffff && flags & PxMeshFlag::e16_BIT_INDICES)
-        return false;
-    if (!points.data)
-        return false;
-    if (points.stride < sizeof(PxVec3)) //should be at least one point's worth of data
-        return false;
+	if(points.count < 3) 	//at least 1 trig's worth of points
+		return false;
+	if(points.count > 0xffff && flags & PxMeshFlag::e16_BIT_INDICES)
+		return false;
+	if(!points.data)
+		return false;
+	if(points.stride < sizeof(PxVec3))	//should be at least one point's worth of data
+		return false;
 
-    if (invMasses.data && invMasses.stride < sizeof(float))
-        return false;
-    if (invMasses.data && invMasses.count != points.count)
-        return false;
+	if(invMasses.data && invMasses.stride < sizeof(float))
+		return false;
+	if(invMasses.data && invMasses.count != points.count)
+		return false;
 
-    if (!triangles.count && !quads.count) // no support for non-indexed mesh
-        return false;
-    if (triangles.count && !triangles.data)
-        return false;
-    if (quads.count && !quads.data)
-        return false;
+	if (!triangles.count && !quads.count)	// no support for non-indexed mesh
+		return false;
+	if (triangles.count && !triangles.data)
+		return false;
+	if (quads.count && !quads.data)
+		return false;
 
-    PxU32 indexSize = (flags & PxMeshFlag::e16_BIT_INDICES) ? sizeof(PxU16) : sizeof(PxU32);
-    if (triangles.count && triangles.stride < indexSize * 3)
-        return false;
-    if (quads.count && quads.stride < indexSize * 4)
-        return false;
+	PxU32 indexSize = (flags & PxMeshFlag::e16_BIT_INDICES) ? sizeof(PxU16) : sizeof(PxU32);
+	if(triangles.count && triangles.stride < indexSize*3) 
+		return false; 
+	if(quads.count && quads.stride < indexSize*4)
+		return false;
 
-    return true;
+	return true;
 }
 
 #if !PX_DOXYGEN
