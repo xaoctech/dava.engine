@@ -90,6 +90,11 @@ void EditorParticlesSystem::Draw()
     {
         selectedEmitterInstances.insert(instance);
     }
+    DAVA::Set<DAVA::ParticleDragForce*> selectedDragForces;
+    for (DAVA::ParticleDragForce* force : selection.ObjectsOfType<DAVA::ParticleDragForce>())
+    {
+        DrawDragForces(force);
+    }
 
     for (auto entity : entities)
     {
@@ -200,6 +205,30 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
 
     GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
                                                                DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+}
+
+void EditorParticlesSystem::DrawDragForces(DAVA::ParticleDragForce* force)
+{
+    if (force->infinityRange)
+        return;
+    DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    if (force->shape == DAVA::ParticleDragForce::eShape::BOX)
+    {
+        DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
+        Vector3 size = force->boxSize;
+
+        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * size, 0.5f * size), wMat,
+            DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+
+        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * size, 0.5f * size), wMat,
+            DAVA::Color(0.0f, 0.35f, 0.15f, 0.35f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+    }
+    else if(force->shape == DAVA::ParticleDragForce::eShape::SPHERE)
+    {
+        DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
+        float32 radius = force->radius;
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+    }
 }
 
 void EditorParticlesSystem::AddEntity(DAVA::Entity* entity)

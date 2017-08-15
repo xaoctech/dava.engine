@@ -18,6 +18,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     mainLayout->addWidget(rotation);
 
     infinityRange = new QCheckBox("Use infinity range");
+    connect(infinityRange, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(infinityRange);
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
@@ -26,7 +27,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
-    if (!layer_ || layer_->GetDragForces().size() <= forceIndex)
+    if (!layer_ || layer_->GetDragForces().size() <= forceIndex_)
         return;
 
     layer = layer_;
@@ -34,7 +35,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     blockSignals = true;
 
     ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
-
+    infinityRange->setChecked(currForce->infinityRange);
 
     blockSignals = false;
 }

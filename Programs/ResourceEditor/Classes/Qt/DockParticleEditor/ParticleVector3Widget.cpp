@@ -47,6 +47,13 @@ DAVA::Vector3 ParticleVector3Widget::GetValue() const
     return { xSpin->value(), ySpin->value(), zSpin->value() };
 }
 
+void ParticleVector3Widget::SetValue(const DAVA::Vector3& value)
+{
+    xSpin->setValue(value.x);
+    ySpin->setValue(value.y);
+    zSpin->setValue(value.z);
+}
+
 void ParticleVector3Widget::OnValueChanged()
 {
     emit valueChanged();

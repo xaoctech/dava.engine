@@ -8,7 +8,7 @@ namespace DAVA
 ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
     : parentLayer(parent)
 {
-    auto emitter = parentLayer->innerEmitter;
+    boxSize = { 1.03f, 23.13f, 3.0f };
 }
 
 DAVA::ParticleDragForce* ParticleDragForce::Clone()
