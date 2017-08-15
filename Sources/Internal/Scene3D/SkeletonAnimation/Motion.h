@@ -23,6 +23,32 @@ public:
 
         BLEND_COUNT
     };
+    enum eTransitionType : uint8
+    {
+        TRANSITION_TYPE_SMOOTH,
+        TRANSITION_TYPE_FROZEN,
+        TRANSITION_TYPE_BLENDTREE,
+
+        TRANSITION_TYPE_COUNT
+    };
+    enum eTransitionFunc : uint8
+    {
+        TRANSITION_FUNC_LERP,
+        TRANSITION_FUNC_CURVE,
+
+        TRANSITION_FUNC_COUNT
+    };
+    enum eTransitionSync : uint8
+    {
+        TRANSITION_SYNC_IMMIDIATE,
+        TRANSITION_SYNC_WAIT_END,
+        TRANSITION_SYNC_WAIT_TIME,
+        TRANSITION_SYNC_WAIT_MARKER,
+        TRANSITION_SYNC_PERCENTAGE,
+        TRANSITION_SYNC_PERCENTAGE_INVERSE,
+
+        TRANSITION_SYNC_COUNT
+    };
 
     ~Motion();
 
@@ -48,31 +74,15 @@ protected:
     class Transition
     {
     public:
-        enum eType : uint8
-        {
-            TYPE_SMOOTH,
-            TYPE_FROZEN,
-            TYPE_BLENDTREE,
-
-            TYPE_COUNT
-        };
-
-        enum eFunc : uint8
-        {
-            FUNC_LERP,
-            FUNC_CURVE,
-
-            FUNC_COUNT
-        };
-
         void Update(float32 dTime, SkeletonPose* outPose);
         void Reset(State* srcState, State* dstState);
 
         bool IsComplete() const;
 
     protected:
-        eType type = TYPE_COUNT;
-        eFunc func = FUNC_COUNT;
+        eTransitionType type = TRANSITION_TYPE_COUNT;
+        eTransitionFunc func = TRANSITION_FUNC_COUNT;
+        eTransitionSync sync = TRANSITION_SYNC_COUNT;
         float32 duration = 0.f;
 
         //runtime

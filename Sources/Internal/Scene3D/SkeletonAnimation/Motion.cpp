@@ -14,6 +14,29 @@ ENUM_DECLARE(DAVA::Motion::eMotionBlend)
     ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_LERP, "LERP");
 };
 
+ENUM_DECLARE(DAVA::Motion::eTransitionType)
+{
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_SMOOTH, "Smooth");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_FROZEN, "Frozen");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_BLENDTREE, "BlendTree");
+};
+
+ENUM_DECLARE(DAVA::Motion::eTransitionFunc)
+{
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionFunc::TRANSITION_FUNC_LERP, "LERP");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionFunc::TRANSITION_FUNC_CURVE, "Curve");
+};
+
+ENUM_DECLARE(DAVA::Motion::eTransitionSync)
+{
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_IMMIDIATE, "Immidiate");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_END, "WaitEnd");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_TIME, "WaitTime");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_MARKER, "WaitMark");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_PERCENTAGE, "Percent");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_PERCENTAGE_INVERSE, "PercentInv");
+};
+
 namespace DAVA
 {
 DAVA_REFLECTION_IMPL(Motion)
@@ -109,6 +132,7 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
     motion->transitions.back().duration = 0.5f;
 
     Set<FastName> parameters;
+    int32 enumValue;
 
     const YamlNode* nameNode = motionNode->Get("name");
     if (nameNode != nullptr && nameNode->GetType() == YamlNode::TYPE_STRING)
@@ -119,7 +143,6 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
     const YamlNode* blendModeNode = motionNode->Get("blend-mode");
     if (blendModeNode != nullptr && blendModeNode->GetType() == YamlNode::TYPE_STRING)
     {
-        int32 enumValue;
         if (GlobalEnumMap<Motion::eMotionBlend>::Instance()->ToValue(blendModeNode->AsString().c_str(), enumValue))
             motion->blendMode = eMotionBlend(enumValue);
     }
@@ -174,6 +197,27 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                 const YamlNode* durationNode = transitionNode->Get("duration");
                 if (durationNode != nullptr && durationNode->GetType() == YamlNode::TYPE_STRING)
                     transition.duration = durationNode->AsFloat();
+
+                const YamlNode* typeNode = transitionNode->Get("type");
+                if (typeNode != nullptr && typeNode->GetType() == YamlNode::TYPE_STRING)
+                {
+                    if (GlobalEnumMap<Motion::eTransitionType>::Instance()->ToValue(typeNode->AsString().c_str(), enumValue))
+                        transition.type = eTransitionType(enumValue);
+                }
+
+                const YamlNode* funcNode = transitionNode->Get("func");
+                if (funcNode != nullptr && funcNode->GetType() == YamlNode::TYPE_STRING)
+                {
+                    if (GlobalEnumMap<Motion::eTransitionFunc>::Instance()->ToValue(funcNode->AsString().c_str(), enumValue))
+                        transition.func = eTransitionFunc(enumValue);
+                }
+
+                const YamlNode* syncNode = transitionNode->Get("sync");
+                if (syncNode != nullptr && syncNode->GetType() == YamlNode::TYPE_STRING)
+                {
+                    if (GlobalEnumMap<Motion::eTransitionSync>::Instance()->ToValue(syncNode->AsString().c_str(), enumValue))
+                        transition.sync = eTransitionSync(enumValue);
+                }
 
                 const YamlNode* srcNode = transitionNode->Get("src-state");
                 const YamlNode* dstNode = transitionNode->Get("dst-state");
@@ -249,14 +293,19 @@ bool Motion::RequestState(const FastName& stateUID)
             nextState->animationPhase = currentState->animationPhase;
 
             const FastNameMap<Transition*>& transitions = currentState->transitions;
-            auto fountTransition = transitions.find(stateUID);
-            if (fountTransition != transitions.end())
+            auto foundTransition = transitions.find(stateUID);
+            if (foundTransition != transitions.end())
             {
-                Transition* nextTransition = fountTransition->second;
+                Transition* nextTransition = foundTransition->second;
                 nextTransition->Reset(currentState, nextState);
 
                 if (currentTransition != nullptr)
-                    nextTransition->transitionPhase = 1.f - currentTransition->transitionPhase;
+                {
+                    if (nextTransition->sync == TRANSITION_SYNC_PERCENTAGE)
+                        nextTransition->transitionPhase = currentTransition->transitionPhase;
+                    else if (nextTransition->sync == TRANSITION_SYNC_PERCENTAGE_INVERSE)
+                        nextTransition->transitionPhase = 1.f - currentTransition->transitionPhase;
+                }
 
                 currentTransition = nextTransition;
             }
