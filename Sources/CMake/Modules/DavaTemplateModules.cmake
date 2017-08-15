@@ -261,9 +261,6 @@ macro( setup_main_module )
 #####
         if (${MODULE_TYPE} STREQUAL "STATIC" OR ${MODULE_TYPE} STREQUAL "DYNAMIC" )
             append_property(EXTERNAL_TEST_FOLDERS ${CMAKE_CURRENT_LIST_DIR})
-        endif()
-        
-        if( ${MODULE_TYPE} STREQUAL "STATIC" )
 
             if( CPP_FILES_EXECUTE )
                 get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
@@ -513,6 +510,14 @@ macro( setup_main_module )
                 PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURENT}
                 )
 
+        if( ${MODULE_TYPE} STREQUAL "PLUGIN" )
+            load_property( PROPERTY_LIST
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}          
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG
+                )
+        endif()
+
         if(  NOT USE_PARENT_DEFINITIONS  )
             save_property( PROPERTY_LIST 
                 DEFINITIONS
@@ -589,6 +594,8 @@ macro( setup_main_module )
 
                 if( MODULE_MANAGER )
                     set_property( GLOBAL PROPERTY MODULE_MANAGER  true )
+                    get_filename_component( MODULE_MANAGER_STUB ${MODULE_MANAGER_STUB} ABSOLUTE )
+                    set_property( GLOBAL PROPERTY MODULE_MANAGER_STUB  ${MODULE_MANAGER_STUB} )
                 endif()
 
                 if( MODULE_INITIALIZATION )
@@ -601,7 +608,10 @@ macro( setup_main_module )
                 append_property( TARGET_MODULES_LIST ${NAME_MODULE} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
-                add_library( ${NAME_MODULE} SHARED  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
+
+                get_property( MODULE_MANAGER_STUB GLOBAL PROPERTY MODULE_MANAGER_STUB )
+
+                add_library( ${NAME_MODULE} SHARED  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} ${MODULE_MANAGER_STUB} )
                 append_property( PLUGIN_LIST ${NAME_MODULE} )
 
                 load_property( PROPERTY_LIST TARGET_MODULES_LIST ) 
@@ -642,6 +652,12 @@ macro( setup_main_module )
                                                  BINARY_WIN64_DIR_RELEASE 
                                                  BINARY_WIN64_DIR_DEBUG
                                                  BINARY_WIN64_DIR_RELWITHDEB )
+                endif()
+
+                if( MACOS )
+                    list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}  ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}})
+                    list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE  ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE})
+                    list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG  ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG})
                 endif()
 
                 if( PLUGIN_OUT_DIR )
