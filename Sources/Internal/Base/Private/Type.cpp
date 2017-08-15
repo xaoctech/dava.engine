@@ -107,7 +107,7 @@ TypeDB::Stats TypeDB::GetLocalDBStats()
     return stats;
 }
 
-uint32 Type::AllocUserData()
+uint32_t Type::AllocUserData()
 {
     size_t i = typeUserDataStorageIndex.fetch_add(1);
 
