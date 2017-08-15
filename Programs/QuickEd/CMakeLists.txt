@@ -24,13 +24,13 @@ endif()
 
 find_package( QT5 REQUIRED )
 
-find_package_module( DavaTools )
-find_package_module( QtHelpers )
-find_package_module( QtTools )
-find_package_module( DocDirSetup )
-find_package_module( Spine )
-find_package_module( TArc )
-find_package_module( RemoteTool )
+find_dava_module( DavaTools )
+find_dava_module( QtHelpers )
+find_dava_module( QtTools )
+find_dava_module( DocDirSetup )
+find_dava_module( Spine )
+find_dava_module( TArc )
+find_dava_module( RemoteTool )
 
 find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 DAVA_PLATFORM_QT 

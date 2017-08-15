@@ -6,7 +6,7 @@ set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}
 include      ( CMake-common )
 
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
-find_package_module( DocDirSetup )
+find_dava_module( DocDirSetup )
 
 include_directories   ( "Sources" )
 
