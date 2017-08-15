@@ -279,7 +279,6 @@ DAVA::RefPtr<DAVA::Entity> EditorSlotSystem::AttachEntity(DAVA::SlotComponent* c
     };
 
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
-    DAVA::Entity* result = nullptr;
     if (itemName == emptyItemName)
     {
         DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
