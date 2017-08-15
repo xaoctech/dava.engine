@@ -6,7 +6,7 @@
 
 namespace DAVA
 {
-static std::atomic<size_t> typeUserDataStorageIndex = 0;
+static std::atomic<size_t> typeUserDataStorageIndex{ 0 };
 
 Type::Type()
     : inheritance(nullptr, [](TypeInheritance* inh) { if (nullptr != inh) delete inh; })
