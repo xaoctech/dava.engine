@@ -73,6 +73,18 @@ public:
         }
     }
 
+    void ReplaceContextIfNeed(QSurface* surface, QOpenGLContext* context)
+    {
+        if (davaContext.context != context)
+        {
+            DVASSERT(contextStack.size() == 1);
+            davaContext.context = context;
+            davaContext.surface = surface;
+            contextStack.pop();
+            contextStack.push(davaContext);
+        }
+    }
+
     static OGLContextBinder* binder;
 
 private:
@@ -250,6 +262,16 @@ bool RenderWidgetOGL::event(QEvent* e)
     }
 
     return TBase::event(e);
+}
+
+void RenderWidgetOGL::showEvent(QShowEvent* e)
+{
+    TBase::showEvent(e);
+    QOpenGLContext* ctx = quickWindow()->openglContext();
+    if (contextBinder != nullptr)
+    {
+        contextBinder->ReplaceContextIfNeed(ctx->surface(), ctx);
+    }
 }
 
 bool RenderWidgetOGL::eventFilter(QObject* object, QEvent* e)

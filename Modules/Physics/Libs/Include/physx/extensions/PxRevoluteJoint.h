@@ -56,9 +56,10 @@ class PxRevoluteJoint;
 @see PxRevoluteJoint
 */
 
-PxRevoluteJoint* PxRevoluteJointCreate(PxPhysics& physics,
-                                       PxRigidActor* actor0, const PxTransform& localFrame0,
-                                       PxRigidActor* actor1, const PxTransform& localFrame1);
+PxRevoluteJoint*	PxRevoluteJointCreate(PxPhysics& physics, 
+										  PxRigidActor* actor0, const PxTransform& localFrame0, 
+										  PxRigidActor* actor1, const PxTransform& localFrame1);
+
 
 /**
 \brief Flags specific to the Revolute Joint.
@@ -68,16 +69,17 @@ PxRevoluteJoint* PxRevoluteJointCreate(PxPhysics& physics,
 
 struct PxRevoluteJointFlag
 {
-    enum Enum
-    {
-        eLIMIT_ENABLED = 1 << 0, //!< enable the limit
-        eDRIVE_ENABLED = 1 << 1, //!< enable the drive
-        eDRIVE_FREESPIN = 1 << 2 //!< if the existing velocity is beyond the drive velocity, do not add force
-    };
+	enum Enum
+	{
+		eLIMIT_ENABLED			= 1<<0,		//!< enable the limit
+		eDRIVE_ENABLED			= 1<<1,		//!< enable the drive
+		eDRIVE_FREESPIN			= 1<<2		//!< if the existing velocity is beyond the drive velocity, do not add force
+	};
 };
 
 typedef PxFlags<PxRevoluteJointFlag::Enum, PxU16> PxRevoluteJointFlags;
 PX_FLAGS_OPERATORS(PxRevoluteJointFlag::Enum, PxU16)
+
 
 /**
 
@@ -105,17 +107,19 @@ PX_FLAGS_OPERATORS(PxRevoluteJointFlag::Enum, PxU16)
 class PxRevoluteJoint : public PxJoint
 {
 public:
-    /**
+
+	/**
 	\brief return the angle of the joint, in the range (-Pi, Pi]
 	*/
-    virtual PxReal getAngle() const = 0;
+	virtual PxReal getAngle()							const			= 0;
 
-    /**
+
+	/**
 	\brief return the velocity of the joint
 	*/
-    virtual PxReal getVelocity() const = 0;
+	virtual PxReal getVelocity()						const			= 0;
 
-    /**
+	/**
 	\brief set the joint limit parameters. 
 
 	The limit is activated using the flag PxRevoluteJointFlag::eLIMIT_ENABLED
@@ -128,18 +132,20 @@ public:
 	@see PxJointAngularLimitPair getLimit()
 	*/
 
-    virtual void setLimit(const PxJointAngularLimitPair& limits) = 0;
+	virtual void			setLimit(const PxJointAngularLimitPair& limits)			= 0;
 
-    /**
+	/**
 	\brief get the joint limit parameters.
 
 	\return the joint limit parameters
 
 	@see PxJointAngularLimitPair setLimit()
 	*/
-    virtual PxJointAngularLimitPair getLimit() const = 0;
+	virtual PxJointAngularLimitPair getLimit()			const			= 0;
 
-    /**
+
+
+	/**
 	\brief set the target velocity for the drive model.
 
 	The motor will only be able to reach this velocity if the maxForce is sufficiently large.
@@ -158,18 +164,19 @@ public:
 	@see PxRevoluteFlags::eDRIVE_FREESPIN
 	*/
 
-    virtual void setDriveVelocity(PxReal velocity) = 0;
+	virtual void			setDriveVelocity(PxReal velocity)			= 0;
 
-    /**
+	/**
 	\brief gets the target velocity for the drive model.
 
 	\return the drive target velocity
 
 	@see setDriveVelocity()
 	*/
-    virtual PxReal getDriveVelocity() const = 0;
+	virtual PxReal			getDriveVelocity()			const			= 0;
 
-    /**
+
+	/**
 	\brief sets the maximum torque the drive can exert.
 	
 	Setting this to a very large value if velTarget is also very large may cause unexpected results.
@@ -181,18 +188,19 @@ public:
 
 	@see setDriveVelocity()
 	*/
-    virtual void setDriveForceLimit(PxReal limit) = 0;
+	virtual void			setDriveForceLimit(PxReal limit)			= 0;
 
-    /**
+	/**
 	\brief gets the maximum torque the drive can exert.
 	
 	\return the torque limit
 
 	@see setDriveVelocity()
 	*/
-    virtual PxReal getDriveForceLimit() const = 0;
+	virtual PxReal			getDriveForceLimit()		const			= 0;
 
-    /**
+
+	/**
 	\brief sets the gear ratio for the drive.
 	
 	When setting up the drive constraint, the velocity of the first actor is scaled by this value, and its response to drive torque is scaled down.
@@ -205,18 +213,19 @@ public:
 
 	@see getDriveGearRatio()
 	*/
-    virtual void setDriveGearRatio(PxReal ratio) = 0;
+	virtual void			setDriveGearRatio(PxReal ratio)			= 0;
 
-    /**
+	/**
 	\brief gets the gear ratio.
 	
 	\return the drive gear ratio
 
 	@see setDriveGearRatio()
 	*/
-    virtual PxReal getDriveGearRatio() const = 0;
+	virtual PxReal			getDriveGearRatio()		const			= 0;
 
-    /**
+
+	/**
 	\brief sets the flags specific to the Revolute Joint.
 
 	<b>Default</b> PxRevoluteJointFlags(0)
@@ -226,9 +235,9 @@ public:
 	@see PxRevoluteJointFlag setFlag() getFlags()
 	*/
 
-    virtual void setRevoluteJointFlags(PxRevoluteJointFlags flags) = 0;
+	virtual void					setRevoluteJointFlags(PxRevoluteJointFlags flags) = 0;
 
-    /**
+	/**
 	\brief sets a single flag specific to a Revolute Joint.
 
 	\param[in] flag The flag to set or clear.
@@ -237,9 +246,9 @@ public:
 	@see PxRevoluteJointFlag, getFlags() setFlags()
 	*/
 
-    virtual void setRevoluteJointFlag(PxRevoluteJointFlag::Enum flag, bool value) = 0;
+	virtual void					setRevoluteJointFlag(PxRevoluteJointFlag::Enum flag, bool value) = 0;
 
-    /**
+	/**
 	\brief gets the flags specific to the Revolute Joint.
 
 	\return the joint flags
@@ -247,9 +256,9 @@ public:
 	@see PxRevoluteJoint::flags, PxRevoluteJointFlag setFlag() setFlags()
 	*/
 
-    virtual PxRevoluteJointFlags getRevoluteJointFlags(void) const = 0;
+	virtual PxRevoluteJointFlags	getRevoluteJointFlags(void)					const	= 0;
 
-    /**
+	/**
 	\brief Set the linear tolerance threshold for projection. Projection is enabled if PxConstraintFlag::ePROJECTION
 	is set for the joint.
 
@@ -268,9 +277,10 @@ public:
 	@see getProjectionLinearTolerance() PxJoint::setConstraintFlags() PxConstraintFlag::ePROJECTION
 	*/
 
-    virtual void setProjectionLinearTolerance(PxReal tolerance) = 0;
+	virtual void				setProjectionLinearTolerance(PxReal tolerance)					= 0;
 
-    /**
+
+	/**
 	\brief Get the linear tolerance threshold for projection.
 
 	\return the linear tolerance threshold
@@ -278,9 +288,9 @@ public:
 	@see setProjectionLinearTolerance()
 	*/
 
-    virtual PxReal getProjectionLinearTolerance() const = 0;
+	virtual PxReal				getProjectionLinearTolerance()			const					= 0;
 
-    /**
+	/**
 	\brief Set the angular tolerance threshold for projection. Projection is enabled if 
 	PxConstraintFlag::ePROJECTION is set for the joint.
 
@@ -299,9 +309,9 @@ public:
 	@see getProjectionAngularTolerance() PxJoint::setConstraintFlag() PxConstraintFlag::ePROJECTION
 	*/
 
-    virtual void setProjectionAngularTolerance(PxReal tolerance) = 0;
+	virtual void				setProjectionAngularTolerance(PxReal tolerance)					= 0;
 
-    /**
+	/**
 	\brief gets the angular tolerance threshold for projection.
 
 	\return the angular tolerance threshold in radians
@@ -309,44 +319,33 @@ public:
 	@see setProjectionAngularTolerance()
 	*/
 
-    virtual PxReal getProjectionAngularTolerance() const = 0;
+	virtual PxReal				getProjectionAngularTolerance()			const					= 0;
 
-    /**
+	/**
 	\brief Returns string name of PxRevoluteJoint, used for serialization
 	*/
-    virtual const char* getConcreteTypeName() const
-    {
-        return "PxRevoluteJoint";
-    }
+	virtual	const char*			getConcreteTypeName() const { return "PxRevoluteJoint"; }
 
 protected:
-    //serialization
 
-    /**
+	//serialization
+
+	/**
 	\brief Constructor
 	*/
-    PX_INLINE PxRevoluteJoint(PxType concreteType, PxBaseFlags baseFlags)
-        : PxJoint(concreteType, baseFlags)
-    {
-    }
+	PX_INLINE					PxRevoluteJoint(PxType concreteType, PxBaseFlags baseFlags) : PxJoint(concreteType, baseFlags) {}
 
-    /**
+	/**
 	\brief Deserialization constructor
 	*/
-    PX_INLINE PxRevoluteJoint(PxBaseFlags baseFlags)
-        : PxJoint(baseFlags)
-    {
-    }
+	PX_INLINE					PxRevoluteJoint(PxBaseFlags baseFlags) : PxJoint(baseFlags) {}
 
-    /**
+	/**
 	\brief Returns whether a given type name matches with the type of this instance
 	*/
-    virtual bool isKindOf(const char* name) const
-    {
-        return !::strcmp("PxRevoluteJoint", name) || PxJoint::isKindOf(name);
-    }
-
-    //~serialization
+	virtual	bool				isKindOf(const char* name) const { return !::strcmp("PxRevoluteJoint", name) || PxJoint::isKindOf(name); }
+	
+	//~serialization
 };
 
 #if !PX_DOXYGEN

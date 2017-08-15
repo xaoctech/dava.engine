@@ -48,9 +48,9 @@ namespace physx
 */
 struct PX_DEPRECATED PxParticleBaseFlag
 {
-    enum Enum
-    {
-        /**
+	enum Enum
+	{
+		/**
 		\brief Enable/disable two way collision of particles with the rigid body scene.
 		In either case, particles are influenced by colliding rigid bodies.
 		If eCOLLISION_TWOWAY is not set, rigid bodies are not influenced by 
@@ -59,9 +59,9 @@ struct PX_DEPRECATED PxParticleBaseFlag
 		
 		\note Switching this flag while the particle system is part of a scene might have a negative impact on performance.
 		*/
-        eCOLLISION_TWOWAY = (1 << 0),
+		eCOLLISION_TWOWAY					= (1<<0),
 
-        /**
+		/**
 		\brief Enable/disable collision of particles with dynamic actors.
 		The flag can be turned off as a hint to the sdk to save memory space and 
 		execution time. In principle any collisions can be turned off using filters
@@ -69,39 +69,39 @@ struct PX_DEPRECATED PxParticleBaseFlag
 
 		\note Switching this flag while the particle system is part of a scene might have a negative impact on performance.
 		*/
-        eCOLLISION_WITH_DYNAMIC_ACTORS = (1 << 1),
+		eCOLLISION_WITH_DYNAMIC_ACTORS		= (1<<1),
 
-        /**
+		/**
 		\brief Enable/disable execution of particle simulation.
 		*/
-        eENABLED = (1 << 2),
+		eENABLED							= (1<<2),
 
-        /**
+		/**
 		\brief Defines whether the particles of this particle system should be projected to a plane.
 		This can be used to build 2D applications, for instance. The projection
 		plane is defined by the parameter projectionPlaneNormal and projectionPlaneDistance.
 		*/
-        ePROJECT_TO_PLANE = (1 << 3),
+		ePROJECT_TO_PLANE					= (1<<3),
 
-        /**
+		/**
 		\brief Enable/disable per particle rest offsets.
 		Per particle rest offsets can be used to support particles having different sizes with 
 		respect to collision.
 		
 		\note This configuration cannot be changed after the particle system was created.
 		*/
-        ePER_PARTICLE_REST_OFFSET = (1 << 4),
+		ePER_PARTICLE_REST_OFFSET			= (1<<4),
 
-        /**
+		/**
 		\brief Ename/disable per particle collision caches.
 		Per particle collision caches improve collision detection performance at the cost of increased 
 		memory usage.
 
 		\note Switching this flag while the particle system is part of a scene might have a negative impact on performance.
 		*/
-        ePER_PARTICLE_COLLISION_CACHE_HINT = (1 << 5),
+		ePER_PARTICLE_COLLISION_CACHE_HINT	= (1<<5),
 
-        /**
+		/**
 		\brief Enable/disable GPU acceleration. 
 		Enabling GPU acceleration might fail. In this case the eGPU flag is switched off. 
 
@@ -109,9 +109,10 @@ struct PX_DEPRECATED PxParticleBaseFlag
 		
 		@see PxScene.removeActor() PxScene.addActor() PxParticleGpu
 		*/
-        eGPU = (1 << 6)
-    };
+		eGPU								= (1<<6)
+	};
 };
+
 
 /**
 \brief collection of set bits defined in PxParticleBaseFlag. (deprecated)
@@ -121,7 +122,7 @@ struct PX_DEPRECATED PxParticleBaseFlag
 @see PxParticleBaseFlag
 */
 typedef PX_DEPRECATED PxFlags<PxParticleBaseFlag::Enum, PxU16> PxParticleBaseFlags;
-PX_FLAGS_OPERATORS(PxParticleBaseFlag::Enum, PxU16)
+PX_FLAGS_OPERATORS(PxParticleBaseFlag::Enum,PxU16)
 
 #if !PX_DOXYGEN
 } // namespace physx

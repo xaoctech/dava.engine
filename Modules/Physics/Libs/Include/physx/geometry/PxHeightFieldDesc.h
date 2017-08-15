@@ -55,7 +55,8 @@ user may discard the height data.
 class PxHeightFieldDesc
 {
 public:
-    /**
+
+	/**
 	\brief Number of sample rows in the height field samples array.
 
 	\note Local space X-axis corresponds to rows.
@@ -63,9 +64,9 @@ public:
 	<b>Range:</b> &gt;1<br>
 	<b>Default:</b> 0
 	*/
-    PxU32 nbRows;
+	PxU32							nbRows;
 
-    /**
+	/**
 	\brief Number of sample columns in the height field samples array.
 
 	\note Local space Z-axis corresponds to columns.
@@ -73,9 +74,9 @@ public:
 	<b>Range:</b> &gt;1<br>
 	<b>Default:</b> 0
 	*/
-    PxU32 nbColumns;
+	PxU32							nbColumns;
 
-    /**
+	/**
 	\brief Format of the sample data.
 
 	Currently the only supported format is PxHeightFieldFormat::eS16_TM:
@@ -84,9 +85,9 @@ public:
 
 	@see PxHeightFormat PxHeightFieldDesc.samples
 	*/
-    PxHeightFieldFormat::Enum format;
+	PxHeightFieldFormat::Enum		format;
 
-    /**
+	/**
 	\brief The samples array.
 
 	It is copied to the SDK's storage at creation time.
@@ -104,9 +105,9 @@ public:
 
 	@see PxHeightFormat
 	*/
-    PxStridedData samples;
+	PxStridedData					samples;
 
-    /**
+	/**
 	\brief Sets how thick the heightfield surface is.
 
 	In this way even objects which are under the surface of the height field but above
@@ -123,9 +124,9 @@ public:
 	<b>Range:</b> (-PX_MAX_BOUNDS_EXTENTS, PX_MAX_BOUNDS_EXTENTS)<br>
 	<b>Default:</b> -1
 	*/
-    PX_DEPRECATED PxReal thickness;
+	PX_DEPRECATED PxReal					thickness;
 
-    /**
+	/**
 	This threshold is used by the collision detection to determine if a height field edge is convex
 	and can generate contact points.
 	Usually the convexity of an edge is determined from the angle (or cosine of the angle) between
@@ -139,66 +140,66 @@ public:
 	<b>Range:</b> [0, PX_MAX_F32)<br>
 	<b>Default:</b> 0
 	*/
-    PxReal convexEdgeThreshold;
+	PxReal					convexEdgeThreshold;
 
-    /**
+	/**
 	\brief Flags bits, combined from values of the enum ::PxHeightFieldFlag.
 
 	<b>Default:</b> 0
 
 	@see PxHeightFieldFlag PxHeightFieldFlags
 	*/
-    PxHeightFieldFlags flags;
+	PxHeightFieldFlags		flags;
 
-    /**
+	/**
 	\brief Constructor sets to default.
 	*/
-    PX_INLINE PxHeightFieldDesc();
+	PX_INLINE				PxHeightFieldDesc();
 
-    /**
+	/**
 	\brief (re)sets the structure to the default.
 	*/
-    PX_INLINE void setToDefault();
+	PX_INLINE		void	setToDefault();
 
-    /**
+	/**
 	\brief Returns true if the descriptor is valid.
 	\return True if the current settings are valid.
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE		bool	isValid() const;
 };
 
-PX_INLINE PxHeightFieldDesc::PxHeightFieldDesc() //constructor sets to default
+PX_INLINE PxHeightFieldDesc::PxHeightFieldDesc()	//constructor sets to default
 {
-    nbColumns = 0;
-    nbRows = 0;
-    format = PxHeightFieldFormat::eS16_TM;
-    thickness = -1.0f;
-    convexEdgeThreshold = 0.0f;
-    flags = PxHeightFieldFlags();
+	nbColumns					= 0;
+	nbRows						= 0;
+	format						= PxHeightFieldFormat::eS16_TM;
+	thickness					= -1.0f;
+	convexEdgeThreshold			= 0.0f;
+	flags						= PxHeightFieldFlags();
 }
 
 PX_INLINE void PxHeightFieldDesc::setToDefault()
 {
-    *this = PxHeightFieldDesc();
+	*this = PxHeightFieldDesc();
 }
 
 PX_INLINE bool PxHeightFieldDesc::isValid() const
 {
-    if (nbColumns < 2)
-        return false;
-    if (nbRows < 2)
-        return false;
-    if (format != PxHeightFieldFormat::eS16_TM)
-        return false;
-    if (samples.stride < 4)
-        return false;
-    if (convexEdgeThreshold < 0)
-        return false;
-    if ((flags & PxHeightFieldFlag::eNO_BOUNDARY_EDGES) != flags)
-        return false;
-    if (thickness < -PX_MAX_BOUNDS_EXTENTS || thickness > PX_MAX_BOUNDS_EXTENTS)
-        return false;
-    return true;
+	if (nbColumns < 2)
+		return false;
+	if (nbRows < 2)
+		return false;
+	if(format != PxHeightFieldFormat::eS16_TM)
+		return false;
+	if (samples.stride < 4)
+		return false;
+	if (convexEdgeThreshold < 0)
+		return false;
+	if ((flags & PxHeightFieldFlag::eNO_BOUNDARY_EDGES) != flags)
+		return false;
+	if (thickness < -PX_MAX_BOUNDS_EXTENTS || thickness > PX_MAX_BOUNDS_EXTENTS)
+		return false;
+	return true;
 }
 
 #if !PX_DOXYGEN

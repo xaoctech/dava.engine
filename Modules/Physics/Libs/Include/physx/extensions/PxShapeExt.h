@@ -54,7 +54,7 @@ namespace physx
 class PxShapeExt
 {
 public:
-    /**
+	/**
 	\brief Retrieves the world space pose of the shape.
 
 	\param[in] shape The shape for which to get the global pose.
@@ -62,12 +62,12 @@ public:
 
 	\return Global pose of shape.
 	*/
-    static PX_INLINE PxTransform getGlobalPose(const PxShape& shape, const PxRigidActor& actor)
-    {
-        return actor.getGlobalPose() * shape.getLocalPose();
-    }
+	static PX_INLINE	PxTransform		getGlobalPose(const PxShape& shape, const PxRigidActor& actor)
+	{
+		return actor.getGlobalPose() * shape.getLocalPose();
+	}
 
-    /**
+	/**
 	\brief Raycast test against the shape.
 
 	\param[in] shape the shape
@@ -82,15 +82,15 @@ public:
 
 	@see PxRaycastHit PxTransform
 	*/
-    static PX_INLINE PxU32 raycast(const PxShape& shape, const PxRigidActor& actor,
-                                   const PxVec3& rayOrigin, const PxVec3& rayDir, PxReal maxDist, PxHitFlags hitFlags,
-                                   PxU32 maxHits, PxRaycastHit* rayHits)
-    {
-        return PxGeometryQuery::raycast(
-        rayOrigin, rayDir, shape.getGeometry().any(), getGlobalPose(shape, actor), maxDist, hitFlags, maxHits, rayHits);
-    }
+	static PX_INLINE PxU32				raycast(const PxShape& shape, const PxRigidActor& actor, 
+												const PxVec3& rayOrigin, const PxVec3& rayDir, PxReal maxDist, PxHitFlags hitFlags,
+												PxU32 maxHits, PxRaycastHit* rayHits)
+	{
+		return PxGeometryQuery::raycast(
+			rayOrigin, rayDir, shape.getGeometry().any(), getGlobalPose(shape, actor), maxDist, hitFlags, maxHits, rayHits);
+	}
 
-    /**
+	/**
 	\brief Test overlap between the shape and a geometry object
 
 	\param[in] shape the shape
@@ -101,13 +101,13 @@ public:
 
 	@see PxGeometry PxTransform
 	*/
-    static PX_INLINE bool overlap(const PxShape& shape, const PxRigidActor& actor,
-                                  const PxGeometry& otherGeom, const PxTransform& otherGeomPose)
-    {
-        return PxGeometryQuery::overlap(shape.getGeometry().any(), getGlobalPose(shape, actor), otherGeom, otherGeomPose);
-    }
+	static PX_INLINE bool				overlap(const PxShape& shape, const PxRigidActor& actor, 
+												const PxGeometry& otherGeom, const PxTransform& otherGeomPose)
+	{
+		return PxGeometryQuery::overlap(shape.getGeometry().any(), getGlobalPose(shape, actor), otherGeom, otherGeomPose);
+	}
 
-    /**
+	/**
 	\brief Sweep a geometry object against the shape.
 
 	Currently only box, sphere, capsule and convex mesh shapes are supported, i.e. the swept geometry object must be one of those types.
@@ -124,14 +124,15 @@ public:
 
 	@see PxGeometry PxTransform PxSweepHit
 	*/
-    static PX_INLINE bool sweep(const PxShape& shape, const PxRigidActor& actor,
-                                const PxVec3& unitDir, const PxReal distance, const PxGeometry& otherGeom, const PxTransform& otherGeomPose,
-                                PxSweepHit& sweepHit, PxHitFlags hitFlags)
-    {
-        return PxGeometryQuery::sweep(unitDir, distance, otherGeom, otherGeomPose, shape.getGeometry().any(), getGlobalPose(shape, actor), sweepHit, hitFlags);
-    }
+	static PX_INLINE bool			sweep(const PxShape& shape, const PxRigidActor& actor, 
+										  const PxVec3& unitDir, const PxReal distance, const PxGeometry& otherGeom, const PxTransform& otherGeomPose,
+										  PxSweepHit& sweepHit, PxHitFlags hitFlags)
+	{
+		return PxGeometryQuery::sweep(unitDir, distance, otherGeom, otherGeomPose, shape.getGeometry().any(), getGlobalPose(shape, actor), sweepHit, hitFlags);
+	}
 
-    /**
+
+	/**
 	\brief Retrieves the axis aligned bounding box enclosing the shape.
 
 	\return The shape's bounding box.
@@ -142,10 +143,11 @@ public:
 
 	@see PxBounds3
 	*/
-    static PX_INLINE PxBounds3 getWorldBounds(const PxShape& shape, const PxRigidActor& actor, float inflation = 1.01f)
-    {
-        return PxGeometryQuery::getWorldBounds(shape.getGeometry().any(), getGlobalPose(shape, actor), inflation);
-    }
+	static PX_INLINE PxBounds3		getWorldBounds(const PxShape& shape, const PxRigidActor& actor, float inflation=1.01f)
+	{
+		return PxGeometryQuery::getWorldBounds(shape.getGeometry().any(), getGlobalPose(shape, actor), inflation);
+	}
+
 };
 
 #if !PX_DOXYGEN

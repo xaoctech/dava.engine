@@ -44,6 +44,7 @@ namespace physx
 
 class PxTriangleMesh;
 
+
 /**
 \brief Flags controlling the simulated behavior of the triangle mesh geometry.
 
@@ -51,12 +52,12 @@ Used in ::PxMeshGeometryFlags.
 */
 struct PxMeshGeometryFlag
 {
-    enum Enum
-    {
-        eDOUBLE_SIDED = (1 << 1) //!< Meshes with this flag set are treated as double-sided.
-        //!< This flag is currently only used for raycasts and sweeps (it is ignored for overlap queries).
-        //!< For detailed specifications of this flag for meshes and heightfields please refer to the Geometry Query section of the user guide.
-    };
+	enum Enum
+	{
+		eDOUBLE_SIDED = (1<<1)	//!< Meshes with this flag set are treated as double-sided.
+								//!< This flag is currently only used for raycasts and sweeps (it is ignored for overlap queries).
+								//!< For detailed specifications of this flag for meshes and heightfields please refer to the Geometry Query section of the user guide.
+	};
 };
 
 /**
@@ -64,8 +65,8 @@ struct PxMeshGeometryFlag
 
 @see PxMeshGeometryFlag
 */
-typedef PxFlags<PxMeshGeometryFlag::Enum, PxU8> PxMeshGeometryFlags;
-PX_FLAGS_OPERATORS(PxMeshGeometryFlag::Enum, PxU8)
+typedef PxFlags<PxMeshGeometryFlag::Enum,PxU8> PxMeshGeometryFlags;
+PX_FLAGS_OPERATORS(PxMeshGeometryFlag::Enum,PxU8)
 
 /**
 \brief Triangle mesh geometry class.
@@ -78,44 +79,36 @@ The vertices of the mesh in geometry (or shape) space is the
 PxMeshScale::toMat33() transform, multiplied by the vertex space vertices 
 in the PxConvexMesh object.
 */
-class PxTriangleMeshGeometry : public PxGeometry
+class PxTriangleMeshGeometry : public PxGeometry 
 {
 public:
-    /**
+	/**
 	\brief Default constructor.
 
 	Creates an empty object with a NULL mesh and identity scale.
 	*/
-    PX_INLINE PxTriangleMeshGeometry()
-        :
-        PxGeometry(PxGeometryType::eTRIANGLEMESH)
-        ,
-        triangleMesh(NULL)
-    {
-    }
+	PX_INLINE PxTriangleMeshGeometry() : 
+		PxGeometry	(PxGeometryType::eTRIANGLEMESH), 
+		triangleMesh(NULL)
+	{}
 
-    /**
+	/**
 	\brief Constructor.
 	\param[in] mesh		Mesh pointer. May be NULL, though this will not make the object valid for shape construction.
 	\param[in] scaling	Scale factor.
 	\param[in] flags	Mesh flags.
 	\
 	*/
-    PX_INLINE PxTriangleMeshGeometry(PxTriangleMesh* mesh,
-                                     const PxMeshScale& scaling = PxMeshScale(),
-                                     PxMeshGeometryFlags flags = PxMeshGeometryFlags())
-        :
-        PxGeometry(PxGeometryType::eTRIANGLEMESH)
-        ,
-        scale(scaling)
-        ,
-        meshFlags(flags)
-        ,
-        triangleMesh(mesh)
-    {
-    }
+	PX_INLINE PxTriangleMeshGeometry(	PxTriangleMesh* mesh, 
+										const PxMeshScale& scaling = PxMeshScale(), 
+										PxMeshGeometryFlags flags = PxMeshGeometryFlags()) :
+		PxGeometry	(PxGeometryType::eTRIANGLEMESH), 
+		scale		(scaling), 
+		meshFlags	(flags), 
+		triangleMesh(mesh) 
+	{}
 
-    /**
+	/**
 	\brief Returns true if the geometry is valid.
 
 	\return  True if the current settings are valid for shape creation.
@@ -125,27 +118,28 @@ public:
 
 	@see PxRigidActor::createShape, PxPhysics::createShape
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE bool isValid() const;
 
 public:
-    PxMeshScale scale; //!< The scaling transformation.
-    PxMeshGeometryFlags meshFlags; //!< Mesh flags.
-    PxPadding<3> paddingFromFlags; //!< padding for mesh flags
-    PxTriangleMesh* triangleMesh; //!< A reference to the mesh object.
+	PxMeshScale			scale;				//!< The scaling transformation.
+	PxMeshGeometryFlags	meshFlags;			//!< Mesh flags.
+	PxPadding<3>		paddingFromFlags;	//!< padding for mesh flags
+	PxTriangleMesh*		triangleMesh;		//!< A reference to the mesh object.
 };
+
 
 PX_INLINE bool PxTriangleMeshGeometry::isValid() const
 {
-    if (mType != PxGeometryType::eTRIANGLEMESH)
-        return false;
-    if (!scale.scale.isFinite() || !scale.rotation.isUnit())
-        return false;
-    if (!scale.isValidForTriangleMesh())
-        return false;
-    if (!triangleMesh)
-        return false;
+	if(mType != PxGeometryType::eTRIANGLEMESH)
+		return false;
+	if(!scale.scale.isFinite() || !scale.rotation.isUnit())
+		return false;
+	if(!scale.isValidForTriangleMesh())
+		return false;
+	if(!triangleMesh)
+		return false;
 
-    return true;
+	return true;
 }
 
 #if !PX_DOXYGEN
