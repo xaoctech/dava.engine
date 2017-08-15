@@ -107,25 +107,29 @@ TypeDB::Stats TypeDB::GetLocalDBStats()
     return stats;
 }
 
-size_t Type::AllocUserData()
+uint32 Type::AllocUserData()
 {
-    size_t index = typeUserDataStorageIndex.fetch_add(1);
+    size_t i = typeUserDataStorageIndex.fetch_add(1);
 
-    DVASSERT(index < Type::userDataStorageSize);
+    DVASSERT(i < Type::userDataStorageSize);
 
-    return index;
+    return static_cast<uint32_t>(i);
 }
 
-void Type::SetUserData(size_t index, void* data) const
+void Type::SetUserData(uint32_t index, void* data) const
 {
-    DVASSERT(index < typeUserDataStorageIndex);
-    userDataStorage[index] = data;
+    size_t i = static_cast<size_t>(index);
+
+    DVASSERT(i < typeUserDataStorageIndex);
+    userDataStorage[i] = data;
 }
 
-void* Type::GetUserData(size_t index) const
+void* Type::GetUserData(uint32_t index) const
 {
-    DVASSERT(index < typeUserDataStorageIndex);
-    return userDataStorage[index];
+    size_t i = static_cast<size_t>(index);
+
+    DVASSERT(i < typeUserDataStorageIndex);
+    return userDataStorage[i];
 }
 
 } // namespace DAVA

@@ -87,13 +87,13 @@ class TypeDB
 public:
     struct Stats
     {
-        size_t typesCount = 0;
-        size_t typesMemory = 0;
-        size_t typeInheritanceCount = 0;
-        size_t typeInheritanceInfoCount = 0;
-        size_t typeInheritanceMemory = 0;
-        size_t typeDBMemory = 0;
-        size_t totalMemory = 0;
+        uint32_t typesCount = 0;
+        uint32_t typesMemory = 0;
+        uint32_t typeInheritanceCount = 0;
+        uint32_t typeInheritanceInfoCount = 0;
+        uint32_t typeInheritanceMemory = 0;
+        uint32_t typeDBMemory = 0;
+        uint32_t totalMemory = 0;
     };
 
     static TypeDB* GetLocalDB();
@@ -108,7 +108,7 @@ private:
     Vector<Type**> types;
 };
 
-inline size_t Type::GetSize() const
+inline uint32_t Type::GetSize() const
 {
     return size;
 }
@@ -217,7 +217,7 @@ Type* Type::Init()
     static const bool needPointer = (!std::is_pointer<T>::value);
     static const bool needSeed = (std::is_base_of<Type::Seed, T>::value || std::is_same<Type::Seed, T>::value);
 
-    type.size = TypeDetail::TypeSize<T>::size;
+    type.size = static_cast<uint32_t>(TypeDetail::TypeSize<T>::size);
     type.name = typeid(T).name();
     type.stdTypeInfo = &typeid(T);
 
