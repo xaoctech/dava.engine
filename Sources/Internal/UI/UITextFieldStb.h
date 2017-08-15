@@ -55,6 +55,8 @@ public:
     void SetVisible(bool v);
     Font* GetFont() const;
     void SetFont(Font* f);
+    void SetFontByPresetName(const String& presetName);
+    String GetFontPresetName();
     void SetTextColor(const Color& c);
     void SetShadowOffset(const Vector2& v);
     void SetShadowColor(const Color& c);

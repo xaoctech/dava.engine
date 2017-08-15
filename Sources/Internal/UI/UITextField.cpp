@@ -663,6 +663,9 @@ void UITextField::OnInvisible()
 
 String UITextField::GetFontPresetName() const
 {
+#ifdef DAVA_TEXTFIELD_USE_STB
+    return textFieldImpl->GetFontPresetName();
+#else
     String name;
     Font* font = GetFont();
     if (font != nullptr)
@@ -670,10 +673,14 @@ String UITextField::GetFontPresetName() const
         name = FontManager::Instance()->GetFontName(font);
     }
     return name;
+#endif
 }
 
 void UITextField::SetFontByPresetName(const String& presetName)
 {
+#ifdef DAVA_TEXTFIELD_USE_STB
+    textFieldImpl->SetFontByPresetName(presetName);
+#else
     Font* font = nullptr;
     if (!presetName.empty())
     {
@@ -685,6 +692,7 @@ void UITextField::SetFontByPresetName(const String& presetName)
     {
         SetFontSize(static_cast<float32>(font->GetFontHeight()));
     }
+#endif
 }
 
 void UITextField::Draw(const UIGeometricData& geometricData)
