@@ -26,18 +26,18 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
     ReflectionRegistrator<UITextComponent>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UITextComponent* o) { o->Release(); })
-    .Field("align", &UITextComponent::GetAlign, &UITextComponent::SetAlign)[M::FlagsT<eAlign>()]
+    .Field("text", &UITextComponent::GetText, &UITextComponent::SetText)
+    .Field("fontName", &UITextComponent::GetFontName, &UITextComponent::SetFontName)
     .Field("color", &UITextComponent::GetColor, &UITextComponent::SetColor)
     .Field("colorInheritType", &UITextComponent::GetColorInheritType, &UITextComponent::SetColorInheritType)[M::EnumT<UIControlBackground::eColorInheritType>()]
-    .Field("fitting", &UITextComponent::GetFitting, &UITextComponent::SetFitting)[M::EnumT<eTextFitting>()]
-    .Field("fontName", &UITextComponent::GetFontName, &UITextComponent::SetFontName)
-    .Field("forceBiDiSupport", &UITextComponent::IsForceBiDiSupportEnabled, &UITextComponent::SetForceBiDiSupportEnabled)
-    .Field("multiline", &UITextComponent::GetMultiline, &UITextComponent::SetMultiline)[M::EnumT<eTextMultiline>()]
     .Field("perPixelAccuracyType", &UITextComponent::GetPerPixelAccuracyType, &UITextComponent::SetPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>()]
-    .Field("shadowColor", &UITextComponent::GetShadowColor, &UITextComponent::SetShadowColor)
     .Field("shadowOffset", &UITextComponent::GetShadowOffset, &UITextComponent::SetShadowOffset)
-    .Field("text", &UITextComponent::GetText, &UITextComponent::SetText)
+    .Field("shadowColor", &UITextComponent::GetShadowColor, &UITextComponent::SetShadowColor)
+    .Field("multiline", &UITextComponent::GetMultiline, &UITextComponent::SetMultiline)[M::EnumT<eTextMultiline>()]
+    .Field("fitting", &UITextComponent::GetFitting, &UITextComponent::SetFitting)[M::EnumT<eTextFitting>()]
+    .Field("align", &UITextComponent::GetAlign, &UITextComponent::SetAlign)[M::FlagsT<eAlign>()]
     .Field("useRtlAlign", &UITextComponent::GetUseRtlAlign, &UITextComponent::SetUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>()]
+    .Field("forceBiDiSupport", &UITextComponent::IsForceBiDiSupportEnabled, &UITextComponent::SetForceBiDiSupportEnabled)
     .End();
 }
 
