@@ -16,6 +16,7 @@ class Preparation:
         self.get_white_list()
         self.get_delete_list()
         self.remove_extra()
+        self.remove_big_files()
 
     def scan_paths(self):
         paths = []
