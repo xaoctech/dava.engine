@@ -228,7 +228,6 @@ macro( setup_main_module )
 
     if( MODULE_COMPONENTS_VALUE_NAME )
         get_property(  MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
-
         if( ORIGINAL_NAME_MODULE )
             list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
             if ( ${_index} GREATER -1)
@@ -249,10 +248,10 @@ macro( setup_main_module )
         if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )  
             # "root call" 
         endif()
+
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )
         set_property(GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST ${MAIN_MODULES_FIND_FIRST_CALL_LIST} ) 
     endif()
-
 
     if ( INIT )
         if( IOS AND ${MODULE_TYPE} STREQUAL "DYNAMIC" )
@@ -342,11 +341,6 @@ macro( setup_main_module )
         endforeach()
         set( INCLUDES  ${INCLUDES_LIST} )
         list( APPEND INCLUDES_PRIVATE  ${INCLUDES_PRIVATE_${DAVA_PLATFORM_CURENT}} )
-        
-        #"STATIC_LIBRARIES"
-        if( ANDROID )
-            list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}}  )
-        endif()
         
         if( WIN )
             list( APPEND STATIC_LIBRARIES_WIN          ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} )
@@ -440,11 +434,13 @@ macro( setup_main_module )
         if( NAME_MODULE_STUB )
             set( CONECTION_TYPE STUB )
             list (FIND MODULE_COMPONENTS ${NAME_MODULE_STUB} _index)
+
             if ( ${_index} GREATER -1 )
                 set( NAME_MODULE )
                 set( MODULE_TYPE INLINE )
                 set( CONECTION_TYPE IMPL )
                 add_module_subdirectory( ${NAME_MODULE_STUB}  "${IMPL_MODULE}" )
+
             endif()
 
             foreach ( ITEM  HPP_FILES_RECURSE HPP_FILES
@@ -563,8 +559,6 @@ macro( setup_main_module )
             set (${DIR_NAME}_PROJECT_SOURCE_FILES_CPP ${PROJECT_SOURCE_FILES_CPP} PARENT_SCOPE)
             set (${DIR_NAME}_PROJECT_SOURCE_FILES_HPP ${PROJECT_SOURCE_FILES_HPP} PARENT_SCOPE)
         else()
-
-
 #####
             set( CREATE_NEW_MODULE true )
 

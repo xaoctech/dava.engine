@@ -37,34 +37,27 @@ dava_add_definitions(-DLOCALIZATION_DEBUG)
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 
 
-include_directories   ( "iOSSpecific" )
-include_directories   ( "Classes" )
-include_directories   ( "Classes/Infrastructure" )
-include_directories   ( "Classes/Controller" )
-include_directories   ( "Classes/Screen" )
+include_directories   ( "Sources" )
+include_directories   ( "Sources/Infrastructure" )
+include_directories   ( "Sources/Controller" )
+include_directories   ( "Sources/Screen" )
 include_directories   ( ${DAVA_INCLUDE_DIR} ) 
 include_directories   ( ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
-include_directories   ( ${DAVA_ENGINE_DIR}/Platform/TemplateAndroid )
 
 set( PackerTools             ${DAVA_TOOLS_DIR}/TexturePacker )
 set( CommandLineTools        ${DAVA_TOOLS_DIR}/CommandLine/CommandLineParser.h 
                              ${DAVA_TOOLS_DIR}/CommandLine/CommandLineParser.cpp )
 
-if( ANDROID )
-    set( PLATFORM_SPECIFIC_FOLDER ${DAVA_ENGINE_DIR}/Platform/TemplateAndroid )
-
-elseif( MACOS )
-    set( PLATFORM_SPECIFIC_FOLDER "MacOSSpecific" )
-    file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/MacOSSpecific/*.xib" )
-
+if( MACOS )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
 elseif( IOS )
-    set( PLATFORM_SPECIFIC_FOLDER "iOSSpecific" )
-
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
 elseif( WIN32 )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Win32" )
     set( EXECUTABLE_FLAG WIN32 )
 endif()
 
-define_source ( SOURCE "Classes" ${PLATFORM_SPECIFIC_FOLDER} ${TeamcityOutput} )
+define_source ( SOURCE "Sources" ${PLATFORM_SPECIFIC_FOLDER} ${TeamcityOutput} )
 
 set( APP_DATA             ${CMAKE_CURRENT_LIST_DIR}/Data )
 
@@ -74,14 +67,7 @@ endif()
 
 set( MACOS_XIB            ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/MainMenu.xib )
 set( MACOS_PLIST          ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/Info.plist )
-set( MACOS_ICO            ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/icon.icns  )
-
 set( IOS_PLISTT           ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/Info.plist )
-
-set( ANDROID_USE_STANDART_TEMLATE true )
-set( ANDROID_PACKAGE            "com.dava.performancetests" )
-set( ANDROID_APP_NAME           "PerformanceTestApp" )
-set( ANDROID_ACTIVITY_APP_NAME  "PerformanceTests"   )
 
 set( ADDED_SRC            ${IOS_ADD_SRC})
 set( LIBRARIES            )
@@ -139,11 +125,6 @@ if( NOT DAVA_MEGASOLUTION )
     execute_process( COMMAND python convert_everything.py --gpu ${GPU_PARAM} WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/DataSource )
     execute_process( COMMAND python create_file_structure.py WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/DataSource )
 
-endif()
-
-if (ANDROID)
-    # Libraries to load at startup
-    set (ANDROID_BOOT_MODULES "crystax;c++_shared;fmodex;fmodevent;PerformanceTests")
 endif()
 
 setup_main_executable()

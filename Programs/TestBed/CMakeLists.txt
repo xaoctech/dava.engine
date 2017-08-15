@@ -21,15 +21,16 @@ endif()
 # dava_add_definitions(-DUSE_LOCAL_RESOURCES)
 
 set ( DAVA_COMPONENTS "DAVA_DISABLE_AUTOTESTS" )
-
 find_package_module( "Sample" )
 
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound"  )
+    list ( APPEND DAVA_COMPONENTS "Sound" )
     find_package_module( "Spine" )
+
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
     find_package_module( "CEFWebview" )
+
 endif ()
 
 # add physics
@@ -40,6 +41,7 @@ elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
 else()
     find_package_module( "Physics" )
     find_package_module( "PhysicsDebug" )
+
 endif()
 
 if (DAVA_PLATFORM_QT)
@@ -56,23 +58,25 @@ endif()
 
 dava_add_definitions(-DLOCALIZATION_DEBUG)
 
+
 if( NOT WINDOWS_UAP AND ( MACOS OR WIN32 ) )
     #add_plugin( SamplePlugin "${DAVA_MODULES_DIR}/SamplePlugin" COMPONENTS  ${DAVA_COMPONENTS} )
 endif()
 
+
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 find_package_module( LoggerService )
 find_package_module( MemoryProfilerService )
 find_package_module( EmbeddedWebServer )
 find_package_module( DocDirSetup )
-find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 
-include_directories   ( "Classes" )
-include_directories   ( "Classes/Infrastructure" )
+include_directories   ( "Sources" )
+include_directories   ( "Sources/Infrastructure" )
 
 if( MACOS )
-    set( PLATFORM_SPECIFIC_FOLDER "MacOSSpecific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
 elseif( IOS )
-    set( PLATFORM_SPECIFIC_FOLDER "iOSSpecific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
     set( IOS_ADD_SRC ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/TestBed.entitlements )
 elseif( WIN32 )
     if (NOT DAVA_PLATFORM_QT)
@@ -82,7 +86,7 @@ endif()
 
 file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/*.xib" )
 
-define_source ( SOURCE    "Classes" )
+define_source ( SOURCE    "Sources" )
 
 set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                                   "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
@@ -112,7 +116,7 @@ endif ()
 
 if (ANDROID)
     # Libraries and classes to load at startup
-    set (ANDROID_BOOT_MODULES "crystax;c++_shared;fmodex;fmodevent;TestBed")
+    set (ANDROID_BOOT_MODULES "c++_shared;fmodex;fmodevent;TestBed")
     set (ANDROID_BOOT_CLASSES "com.dava.testbed.TestBed")
 endif()
 
