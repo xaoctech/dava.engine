@@ -34,6 +34,7 @@ private:
     void OnRequestUpdated(const DAVA::DLCManager::IRequest& request);
     void OnNetworkReady(bool isReady);
     void OnInitializeFinished(size_t numDownloaded, size_t numTotalFiles);
+    void OnFileErrorSignal(const DAVA::String& msg, DAVA::int32 signal);
 
     DAVA::Engine& engine;
 

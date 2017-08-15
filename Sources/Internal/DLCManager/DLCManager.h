@@ -93,6 +93,10 @@ public:
 			EROFS(read_only_file_system),
 			ENFILE(too_many_files_open_in_system),
 			EMFILE(too_many_files_open)
+		If you receive host_unreachable(EHOSTUNREACH) signal and string
+		argument equals "dlcmanager_timeout" it means dlcManager can't
+		connect to CDN server and timeout exceeded. After this signal
+		DLCManager will still try to continue initialization
 		*/
     Signal<const String&, int32> fileErrorOccured;
 
@@ -109,6 +113,7 @@ public:
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
         uint32 maxFilesToDownload = 0; //!< user should fill this value default value average files count in Data
         uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
+        int64 timeoutForInitialization = 60; //!< timeout(sec) for initialization after which fire signal fileErrorOccured("dlcmanager_timeout", EHOSTUNREACH)
         uint32 skipCDNConnectAfterAttempts = 3; //!< if local metadata exists and CDN is not available use local files without CDN
         uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
         uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
@@ -132,11 +137,11 @@ public:
     /**
 	 InitStatus represent how initialization was done
 	*/
-    enum class InitStatus
+    enum class InitStatus : uint32
     {
         NotFinished, //!< initialization is still continue
         UsingLocalMeta, //!< during initialization can't download data from server and try to use previous loaded local data
-        UsingRemoteMeta //!< download data from server(new version) or just match version from server data with local(same version)
+        UsingRemoteMeta //!< either downloaded data from server or used local data with the same version
     };
     /** return initialization status */
     virtual InitStatus GetInitStatus() const;

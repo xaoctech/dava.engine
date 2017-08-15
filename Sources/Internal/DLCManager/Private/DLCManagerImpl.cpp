@@ -13,12 +13,15 @@
 #include "Debug/Backtrace.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
+#include "Time/SystemTimer.h"
 
 #include <iomanip>
 #include <algorithm>
 
 namespace DAVA
 {
+static const String timeoutString("dlcmanager_timeout");
+
 DLCManager::~DLCManager() = default;
 DLCManager::IRequest::~IRequest() = default;
 
@@ -324,6 +327,7 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
     if (isFirstTimeCall)
     {
         SetRequestingEnabled(true);
+        startInitializationTime = SystemTimer::GetMs();
     }
 }
 
@@ -539,6 +543,17 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
 {
     ++retryCount;
     timeWaitingNextInitializationAttempt = hints.retryConnectMilliseconds / 1000.f;
+
+    if (initTimeoutFirered == false)
+    {
+        int64 initializationTime = SystemTimer::GetMs() - startInitializationTime;
+
+        if (initializationTime >= (hints.timeoutForInitialization * 1000))
+        {
+            fileErrorOccured.Emit(timeoutString, EHOSTUNREACH);
+            initTimeoutFirered = true;
+        }
+    }
 
     if (retryCount > hints.skipCDNConnectAfterAttempts)
     {
