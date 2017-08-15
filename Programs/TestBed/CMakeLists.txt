@@ -21,15 +21,15 @@ endif()
 # dava_add_definitions(-DUSE_LOCAL_RESOURCES)
 
 set ( DAVA_COMPONENTS "DAVA_DISABLE_AUTOTESTS" )
-find_package_module( "Sample" )
+find_dava_module( "Sample" )
 
 if (NOT LINUX)
     list ( APPEND DAVA_COMPONENTS "Sound" )
-    find_package_module( "Spine" )
+    find_dava_module( "Spine" )
 
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    find_package_module( "CEFWebview" )
+    find_dava_module( "CEFWebview" )
 
 endif ()
 
@@ -39,8 +39,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    find_package_module( "Physics" )
-    find_package_module( "PhysicsDebug" )
+    find_dava_module( "Physics" )
+    find_dava_module( "PhysicsDebug" )
 
 endif()
 
@@ -65,10 +65,10 @@ endif()
 
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
-find_package_module( LoggerService )
-find_package_module( MemoryProfilerService )
-find_package_module( EmbeddedWebServer )
-find_package_module( DocDirSetup )
+find_dava_module( LoggerService )
+find_dava_module( MemoryProfilerService )
+find_dava_module( EmbeddedWebServer )
+find_dava_module( DocDirSetup )
 
 include_directories   ( "Sources" )
 include_directories   ( "Sources/Infrastructure" )

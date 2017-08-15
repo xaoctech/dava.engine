@@ -12,14 +12,14 @@ endif()
 
 set ( DAVA_COMPONENTS "DAVA_DISABLE_AUTOTESTS" )
 
-find_package_module( "Sample" )
+find_dava_module( "Sample" )
 
 if (NOT LINUX)
     list ( APPEND DAVA_COMPONENTS "Sound"  )
-    find_package_module( "Spine" )
+    find_dava_module( "Spine" )
 endif()
 if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    find_package_module( "CEFWebview" )
+    find_dava_module( "CEFWebview" )
 endif ()
 
 # add physics
@@ -28,8 +28,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    find_package_module( "Physics" )
-    find_package_module( "PhysicsDebug" )
+    find_dava_module( "Physics" )
+    find_dava_module( "PhysicsDebug" )
 endif()
 
 dava_add_definitions(-DLOCALIZATION_DEBUG)

@@ -25,7 +25,7 @@ if (LINUX)
 endif()
 
 if ( WIN32 OR MACOS )
-    find_package_module( DavaTools )
+    find_dava_module( DavaTools )
 endif()
 
 # Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
@@ -34,16 +34,16 @@ dava_add_definitions(-DLOCALIZATION_DEBUG)
 if (NOT LINUX)
     # Enable sound after fmod libraries
     set ( DAVA_COMPONENTS "Sound" )
-    find_package_module( "Spine" )
-    find_package_module( "NetworkCore" )
+    find_dava_module( "Spine" )
+    find_dava_module( "NetworkCore" )
 endif()
 
 if ( WIN32 AND NOT WINDOWS_UAP )
-    find_package_module( "CEFWebview" )
+    find_dava_module( "CEFWebview" )
 endif ()
 
 if (NOT ANDROID)
-    find_package_module( "Sample" )
+    find_dava_module( "Sample" )
 endif()
 
 # add physics
@@ -52,15 +52,15 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    find_package_module( "Physics" )
+    find_dava_module( "Physics" )
 
 endif()
 
 find_package( Steam REQUIRED )
 
-find_package_module( LoggerService  )
-find_package_module( EmbeddedWebServer  )
-find_package_module( DocDirSetup  )
+find_dava_module( LoggerService  )
+find_dava_module( EmbeddedWebServer  )
+find_dava_module( DocDirSetup  )
 
 find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" DAVA_DISABLE_AUTOTESTS )
 

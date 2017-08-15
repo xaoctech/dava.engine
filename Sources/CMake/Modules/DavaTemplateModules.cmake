@@ -389,7 +389,7 @@ macro( setup_main_module )
 
         #"FIND_MODULE"
         foreach( NAME ${FIND_MODULE} ${FIND_MODULE_${DAVA_PLATFORM_CURENT}} )
-            find_package_module( ${NAME})
+            find_dava_module( ${NAME})
         endforeach()
      
 

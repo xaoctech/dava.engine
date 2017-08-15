@@ -8,7 +8,7 @@ macro ( components_option OPTION )
 
 endmacro ()
 
-macro( find_package_module NAME  )
+macro( find_dava_module NAME  )
     cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
     add_module_subdirectory( ${NAME}  "${DAVA_MODULES_DIR}/${NAME}" COMPONENTS ${ARG_COMPONENTS} )
 
