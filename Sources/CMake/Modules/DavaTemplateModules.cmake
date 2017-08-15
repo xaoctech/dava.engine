@@ -159,8 +159,8 @@ macro( dump_module_log  )
                 math( EXPR UNIQUE_COMPONENTS_NUMBER "${UNIQUE_COMPONENTS_NUMBER} + 1" )
                 file( APPEND ${MODULES_LOG_FILE} "-> ${UNIQUE_COMPONENTS_NUMBER}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "    NAME_MODULE  - ${ITEM} [ ${CACHE_LOG_${ITEM}_MODULE_USES_LIST_LENGTH} ]\n" )
-                file( APPEND ${MODULES_LOG_FILE} "    MODULE_CACHE - ${CACHE_LOG_${ITEM}_MODULE_CACHE}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "    USES_LIST    - ${CACHE_LOG_${ITEM}_MODULE_USES_LIST}\n" )
+                file( APPEND ${MODULES_LOG_FILE} "    MODULE_CACHE - ${CACHE_LOG_${ITEM}_MODULE_CACHE}\n" )                
                 file( APPEND ${MODULES_LOG_FILE} "    MD5          - ${CACHE_LOG_${ITEM}_MODULE_MD5}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "\n" )
             endif()
@@ -232,6 +232,7 @@ macro( setup_main_module )
             list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
             if ( ${_index} GREATER -1)
                 set( INIT true )
+                list( REMOVE_ITEM MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} )
             endif()
         else()
             set( INIT true )
@@ -254,17 +255,50 @@ macro( setup_main_module )
     endif()
 
     if ( INIT )
-        if( IOS AND ${MODULE_TYPE} STREQUAL "DYNAMIC" )
-            set( MODULE_TYPE "STATIC" )
+        
+        if (${MODULE_TYPE} STREQUAL "PLUGIN"  )
+            set( USE_PARENT_DEFINITIONS true )
         endif()
 
 #####
-        if (${MODULE_TYPE} STREQUAL "STATIC" OR ${MODULE_TYPE} STREQUAL "DYNAMIC" )
+        #"FIND LIBRARY"
+        foreach( NAME ${FIND_SYSTEM_LIBRARY} ${FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}} )
+            FIND_LIBRARY( ${NAME}_LIBRARY  ${NAME} )
+
+            if( ${NAME}_LIBRARY )
+                list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${${NAME}_LIBRARY} )
+            else()
+                if ( NOT NOT_TARGET_EXECUTABLE )
+                    find_package( ${NAME} )
+                    list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${${NAME}_LIBRARY} )
+                endif()
+            endif()
+        endforeach()
+
+        #"FIND_MODULE"
+        foreach( NAME ${FIND_MODULE} ${FIND_MODULE_${DAVA_PLATFORM_CURENT}} )
+            find_dava_module( ${NAME} COMPONENTS ${MODULE_COMPONENTS_${NAME}} )
+        endforeach()
+
+        #"FIND PACKAGE"
+        foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURENT}} )
+            find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} ${PACKAGE_COMPONENTS_${NAME}} )
+
+            if (PACKAGE_${NAME}_INCLUDES)
+                foreach( PACKAGE_INCLUDE ${PACKAGE_${NAME}_INCLUDES} )
+                    include_directories(${${PACKAGE_INCLUDE}})
+                endforeach()
+            endif()
+            list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${PACKAGE_${NAME}_STATIC_LIBRARIES} )
+        endforeach()
+
+#####
+        if (${MODULE_TYPE} STREQUAL "STATIC"  )
             append_property(EXTERNAL_TEST_FOLDERS ${CMAKE_CURRENT_LIST_DIR})
 
             if( CPP_FILES_EXECUTE )
                 get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
-                save_property( PROPERTY_LIST DEFINITIONS CPP_FILES_EXECUTE )
+                save_property( PROPERTY_LIST CPP_FILES_EXECUTE )
             endif()
 
             get_property( GLOBAL_DEFINITIONS_PROP GLOBAL PROPERTY GLOBAL_DEFINITIONS )
@@ -277,8 +311,7 @@ macro( setup_main_module )
                 set( COVERAGE_STRING  )                
             endif()
 
-            set( MODULE_CACHE   "ROOT_${ORIGINAL_NAME_MODULE}"
-                                ${COVERAGE_STRING}
+            set( MODULE_CACHE   ${COVERAGE_STRING}
                                 ${MODULE_COMPONENTS}  )
             
             if( USE_PARENT_DEFINITIONS  )
@@ -292,11 +325,12 @@ macro( setup_main_module )
 
             endif()
 
-            list( REMOVE_ITEM MODULE_CACHE ${ORIGINAL_NAME_MODULE} )
-
-
-            list( REMOVE_DUPLICATES MODULE_CACHE )
-            list( SORT MODULE_CACHE )
+            if( MODULE_CACHE )
+                list( REMOVE_DUPLICATES MODULE_CACHE )
+                list( SORT MODULE_CACHE )
+            endif()
+            
+            set( MODULE_CACHE   "ROOT_${ORIGINAL_NAME_MODULE}" ${MODULE_CACHE} )
 
             append_property( MODULE_CACHE_LOG_LIST ${NAME_MODULE}  )
 
@@ -357,39 +391,7 @@ macro( setup_main_module )
 
         endif()      
        
-        #"FIND LIBRARY"
-        foreach( NAME ${FIND_SYSTEM_LIBRARY} ${FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}} )
-            FIND_LIBRARY( ${NAME}_LIBRARY  ${NAME} )
-
-            if( ${NAME}_LIBRARY )
-                list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${${NAME}_LIBRARY} )
-            else()
-                if ( NOT NOT_TARGET_EXECUTABLE )
-                    find_package( ${NAME} )
-                    list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${${NAME}_LIBRARY} )
-                endif()
-            endif()
-        endforeach()
-
-        #"FIND PACKAGE"
-        foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURENT}} )
-            find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} )
-
-            if (PACKAGE_${NAME}_INCLUDES)
-                foreach( PACKAGE_INCLUDE ${PACKAGE_${NAME}_INCLUDES} )
-                    include_directories(${${PACKAGE_INCLUDE}})
-                endforeach()
-            endif()
-            list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${PACKAGE_${NAME}_STATIC_LIBRARIES} )
-
-        endforeach()
-
-        #"FIND_MODULE"
-        foreach( NAME ${FIND_MODULE} ${FIND_MODULE_${DAVA_PLATFORM_CURENT}} )
-            find_dava_module( ${NAME})
-        endforeach()
-     
-
+    
         #"ERASE FILES"
         foreach( PLATFORM  ${DAVA_PLATFORM_LIST} )
             if( NOT ${PLATFORM} AND ERASE_FILES_NOT_${PLATFORM} )
@@ -705,11 +707,8 @@ macro( setup_main_module )
                 include_directories( ${INCLUDES_PRIVATE} ) 
             endif() 
 
-            #include_directories( "Sources/" ) 
-
 
             if( CREATE_NEW_MODULE )
-
 
                 if( WIN32 )
                     grab_libs(LIST_SHARED_LIBRARIES_DEBUG   "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG}"   EXCLUDE_LIBS ADDITIONAL_DEBUG_LIBS)
@@ -767,7 +766,6 @@ macro( setup_main_module )
             reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG )
             reset_property( STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} )
             reset_property( INCLUDES_PRIVATE )
-
                 
         endif()
 

@@ -1,11 +1,12 @@
 include ( CMakeParseArguments  )
 
-macro ( components_option OPTION )
-    list (FIND ARG_COMPONENTS ${OPTION} _index)
-    if ( ${_index} GREATER -1 )
-        set( ${OPTION} true )
-    endif()
-
+macro ( module_options OPTIONS )
+    foreach( VALUE ${OPTIONS}   )
+        list (FIND ARG_COMPONENTS ${VALUE} _index)
+        if ( ${_index} GREATER -1 )
+            set( ${VALUE} true )
+        endif()
+    endforeach()
 endmacro ()
 
 macro( find_dava_module NAME  )
@@ -47,16 +48,8 @@ macro ( add_module_subdirectory NAME SOURCE_DIR )
 
 endmacro()    
 
-
 macro ( add_plugin NAME SOURCE_DIR )
-    cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
-    if( ARG_COMPONENTS )
-        set( MODULE_COMPONENTS_VALUE_NAME ${NAME} )
-    else()
-        set( MODULE_COMPONENTS_VALUE_NAME ) 
-    endif()
-
-    set_property( GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} ${ARG_COMPONENTS} ${NAME} )
+    set_property( GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME}  )
 
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} )
         set( ${VALUE}_HASH ${${VALUE}} )

@@ -7,6 +7,10 @@ set( NAME_MODULE SamplePlugin )                         # set name to plugin
 set( MODULE_TYPE PLUGIN )                               # set module type [INLINE, STATIC, PLUGIN]
 
 set( FIND_PACKAGE  DavaFramework )
+set( PACKAGE_COMPONENTS_DavaFramework  DAVA_DISABLE_AUTOTESTS Sound )
+
+set( FIND_MODULE Physics )
+
 
 set( INCLUDES "." )                                     # set search path headers for all project
 set( INCLUDES_PRIVATE ${DAVA_ENGINE_DIR} )              # set search path headers inside module
