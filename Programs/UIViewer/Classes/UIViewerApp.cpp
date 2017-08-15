@@ -1,6 +1,8 @@
 #include "UIViewerApp.h"
 #include "UIScreens/UIViewScreen.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
 #include <Render/RHI/rhi_Public.h>
@@ -29,6 +31,8 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
     options.AddOption("-testedCtrl", VariantType(String("")), "Name of tested control");
 
     optionsAreParsed = options.Parse(cmdLine);
+
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/UIViewer/quality.yaml");
 }
 
 void UIViewerApp::OnAppStarted()
@@ -148,6 +152,9 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     };
     DAVA::Engine e;
     e.Init(DAVA::eEngineRunMode::GUI_STANDALONE, modules, CreateOptions());
+    DAVA::FileSystem* fileSystem = e.GetContext()->fileSystem;
+
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UIViewer");
 
     UIViewerApp app(e, cmdline);
     return e.Run();

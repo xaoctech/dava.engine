@@ -53,10 +53,18 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
+        GEO_DECAL_COMPONENT,
 
-        //debug components - note that everything below won't be serialized
-        DEBUG_COMPONENTS,
-        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        STATIC_BODY_COMPONENT,
+        DYNAMIC_BODY_COMPONENT,
+#endif
+
+        NON_EXPORTABLE_COMPONENTS, // everything below NON_EXPORTABLE_COMPONENTS will be serialized but won't be exported
+        TEXT_COMPONENT = NON_EXPORTABLE_COMPONENTS,
+
+        NON_SERIALIZABLE_COMPONENTS, // everything below NON_SERIALIZABLE_COMPONENTS won't be serialized
+        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT = NON_SERIALIZABLE_COMPONENTS,
         WAYPOINT_COMPONENT,
         EDGE_COMPONENT,
 

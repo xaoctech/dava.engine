@@ -177,6 +177,10 @@ const QIcon& SceneTreeItemEntity::ItemIcon() const
         {
             return SharedIcon(":/QtIcons/path.png");
         }
+        else if (0 != entity->GetComponentCount(DAVA::Component::TEXT_COMPONENT))
+        {
+            return SharedIcon(":/QtIcons/text_component.png");
+        }
     }
 
     return SceneTreeItem::ItemIcon();

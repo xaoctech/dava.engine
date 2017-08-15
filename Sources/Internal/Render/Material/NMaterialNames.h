@@ -87,6 +87,9 @@ public:
     static const FastName TEXTURE_TANGENTSPACE;
     static const FastName TEXTURE_DECALMASK;
     static const FastName TEXTURE_DECALTEXTURE;
+    static const FastName TEXTURE_FLOW;
+    static const FastName TEXTURE_NOISE;
+    static const FastName TEXTURE_ALPHA_REMAP;
 
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
@@ -160,6 +163,7 @@ public:
     static const FastName FLAG_TILED_DECAL_MASK;
     static const FastName FLAG_TILED_DECAL_ROTATION;
     static const FastName FLAG_FLATCOLOR;
+    static const FastName FLAG_FLATALBEDO;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
     static const FastName FLAG_SEPARATE_NORMALMAPS;
@@ -176,6 +180,12 @@ public:
     static const FastName FLAG_SKINNING;
 
     static const FastName FLAG_FLOWMAP_SKY;
+    static const FastName FLAG_PARTICLES_FLOWMAP;
+    static const FastName FLAG_PARTICLES_FLOWMAP_ANIMATION;
+    static const FastName FLAG_PARTICLES_PERSPECTIVE_MAPPING;
+    static const FastName FLAG_PARTICLES_NOISE;
+    static const FastName FLAG_PARTICLES_FRESNEL_TO_ALPHA;
+    static const FastName FLAG_PARTICLES_ALPHA_REMAP;
 
     static const FastName FLAG_LIGHTMAPONLY;
     static const FastName FLAG_TEXTUREONLY; //VI: this flag is for backward compatibility with old materials. See FLAG_ALBEDOONLY
@@ -206,6 +216,8 @@ public:
     static const FastName FLAG_TEST_OCCLUSION;
 
     static const FastName FLAG_PARTICLES_DEBUG_SHOW_HEATMAP;
+
+    static const FastName FLAG_GEO_DECAL;
 
     static const FastName FLAG_FORCED_SHADOW_DIRECTION;
 

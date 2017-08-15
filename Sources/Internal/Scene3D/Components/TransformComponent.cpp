@@ -9,7 +9,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(TransformComponent)
 {
-    ReflectionRegistrator<TransformComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::CantBeDeletedManualyComponent()]
+    ReflectionRegistrator<TransformComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::CantBeDeletedManualyComponent(), M::DeveloperModeOnly()]
     .ConstructorByPointer()
     .Field("localMatrix", &TransformComponent::localMatrix)[M::ReadOnly(), M::DisplayName("Local Transform")]
     .Field("worldMatrix", &TransformComponent::worldMatrix)[M::ReadOnly(), M::DisplayName("World Transform")]
@@ -41,6 +41,16 @@ void TransformComponent::SetLocalTransform(const Matrix4* transform)
         TransformSingleComponent* tsc = entity->GetScene()->transformSingleComponent;
         tsc->localTransformChanged.push_back(entity);
     }
+}
+
+void TransformComponent::SetWorldTransform(const Matrix4* transform)
+{
+    if (entity && entity->GetScene() && entity->GetScene()->transformSingleComponent)
+    {
+        TransformSingleComponent* tsc = entity->GetScene()->transformSingleComponent;
+        tsc->worldTransformChanged.Push(entity);
+    }
+    worldMatrix = *transform;
 }
 
 void TransformComponent::SetParent(Entity* node)

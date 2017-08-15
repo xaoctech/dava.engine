@@ -144,4 +144,21 @@ DAVA_TESTCLASS (Utf8Test)
         TEST_VERIFY(0 == emptyWide.size());
     }
 #endif
+
+    DAVA_TEST (TrimTest)
+    {
+        const String ascii_test = "   abc   ";
+        const String utf8_test = "   \xd8\xa7\xd9\x85   ";
+
+        TEST_VERIFY(UTF8Utils::TrimLeft(ascii_test) == "abc   ");
+        TEST_VERIFY(UTF8Utils::TrimRight(ascii_test) == "   abc");
+        TEST_VERIFY(UTF8Utils::Trim(ascii_test) == "abc");
+
+        TEST_VERIFY(UTF8Utils::TrimLeft(utf8_test) == "\xd8\xa7\xd9\x85   ");
+        TEST_VERIFY(UTF8Utils::TrimRight(utf8_test) == "   \xd8\xa7\xd9\x85");
+        TEST_VERIFY(UTF8Utils::Trim(utf8_test) == "\xd8\xa7\xd9\x85");
+
+        TEST_VERIFY(UTF8Utils::TrimLeft(" ") == "");
+        TEST_VERIFY(UTF8Utils::TrimRight(" ") == "");
+    }
 };

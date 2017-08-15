@@ -6,9 +6,10 @@
 
 #include <Preferences/PreferencesRegistrator.h>
 #include <UI/UIControl.h>
-#include <Input/KeyboardDevice.h>
+#include <Input/Keyboard.h>
 #include <Base/BaseTypes.h>
 #include <Math/Vector.h>
+#include <Input/InputElements.h>
 
 namespace DAVA
 {
@@ -47,7 +48,8 @@ private:
 
     void PrepareDrag();
 
-    void ProcessKey(DAVA::Key key);
+    void ProcessKey(DAVA::eInputElements key);
+
     void ProcessDrag(const DAVA::Vector2& point);
 
     void ResizeControl(DAVA::Vector2 delta, bool withPivot, bool rateably);
@@ -78,8 +80,7 @@ private:
     void ExtractMatchedLines(DAVA::Vector<MagnetLineInfo>& magnets, const DAVA::Vector<MagnetLine>& magnetLines, const DAVA::UIControl* control, DAVA::Vector2::eAxis axis);
     bool IsShiftPressed() const;
 
-    void ChangeProperty();
-    void Resize();
+    bool CanMagnet() const;
 
     HUDAreaInfo::eArea activeArea = HUDAreaInfo::NO_AREA;
     ControlNode* activeControlNode = nullptr;

@@ -1,6 +1,9 @@
 #include "UI/RichContent/UIRichContentSystem.h"
-
 #include "Debug/DVAssert.h"
+#include "Engine/Engine.h"
+#include "Logger/Logger.h"
+#include "Render/RenderOptions.h"
+#include "Render/Renderer.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -11,6 +14,35 @@
 
 namespace DAVA
 {
+UIRichContentSystem::UIRichContentSystem()
+{
+    Engine* engine = Engine::Instance();
+    engine->windowCreated.Connect([&](Window*) {
+        RenderOptions* options = Renderer::IsInitialized() ? Renderer::GetOptions() : nullptr;
+        if (options)
+        {
+            isDebugDraw = options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
+            options->AddObserver(this);
+        }
+    });
+    engine->windowDestroyed.Connect([&](Window*) {
+        RenderOptions* options = Renderer::IsInitialized() ? Renderer::GetOptions() : nullptr;
+        if (options)
+        {
+            options->RemoveObserver(this);
+        }
+    });
+}
+
+UIRichContentSystem::~UIRichContentSystem()
+{
+    RenderOptions* options = Renderer::IsInitialized() ? Renderer::GetOptions() : nullptr;
+    if (options)
+    {
+        options->RemoveObserver(this);
+    }
+}
+
 void UIRichContentSystem::RegisterControl(UIControl* control)
 {
     UISystem::RegisterControl(control);
@@ -101,7 +133,7 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                 UIControl* root = l->component->GetControl();
                 l->RemoveItems();
 
-                XMLRichContentBuilder builder(l.get(), isEditorMode);
+                XMLRichContentBuilder builder(l.get(), isEditorMode, isDebugDraw);
                 if (builder.Build("<span>" + l->component->GetText() + "</span>"))
                 {
                     for (const RefPtr<UIControl>& ctrl : builder.GetControls())
@@ -109,6 +141,10 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                         root->AddControl(ctrl.Get());
                         l->AddItem(ctrl);
                     }
+                }
+                else
+                {
+                    Logger::Warning("Syntax error in rich content text!");
                 }
             }
         }
@@ -176,6 +212,23 @@ void UIRichContentSystem::RemoveAliases(UIControl* control, UIRichContentAliases
     if (findIt != links.end())
     {
         (*findIt)->RemoveAliases(component);
+    }
+}
+
+void UIRichContentSystem::HandleEvent(Observable* observable)
+{
+    RenderOptions* options = static_cast<RenderOptions*>(observable);
+    bool newVal = options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_RICH_ITEMS);
+    if (newVal != isDebugDraw)
+    {
+        isDebugDraw = newVal;
+        for (std::shared_ptr<RichLink>& l : links)
+        {
+            if (l->component)
+            {
+                l->component->SetModified(true);
+            }
+        }
     }
 }
 }

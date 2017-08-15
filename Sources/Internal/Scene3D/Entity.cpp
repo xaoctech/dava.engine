@@ -468,7 +468,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
     uint32 savedIndex = 0;
     for (Component* c : components)
     {
-        if (c->GetType() < Component::DEBUG_COMPONENTS)
+        if (c->GetType() < Component::NON_SERIALIZABLE_COMPONENTS)
         {
             //don't save empty custom properties
             if (c->GetType() == Component::CUSTOM_PROPERTIES_COMPONENT)
@@ -652,6 +652,16 @@ const Matrix4& Entity::GetLocalTransform()
     return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetLocalTransform();
 }
 
+const Matrix4& Entity::GetWorldTransform() const
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
+}
+
+void Entity::SetWorldTransform(const Matrix4& newMatrix)
+{
+    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->SetWorldTransform(&newMatrix);
+}
+
 Matrix4 Entity::AccamulateLocalTransform(Entity* fromParent)
 {
     if (fromParent == this)
@@ -749,11 +759,6 @@ void Entity::SetVisible(const bool& isVisible)
     {
         GetChild(i)->SetVisible(isVisible);
     }
-}
-
-const Matrix4& Entity::GetWorldTransform() const
-{
-    return (static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransform();
 }
 
 Entity* Entity::GetEntityByID(uint32 id)

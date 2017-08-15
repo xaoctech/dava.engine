@@ -5,6 +5,7 @@
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/RichContent/Private/RichContentUIPackageBuilder.h"
 #include "UI/RichContent/Private/RichLink.h"
 #include "UI/RichContent/UIRichAliasMap.h"
@@ -14,14 +15,17 @@
 #include "UI/UIControl.h"
 #include "UI/UIPackageLoader.h"
 #include "UI/UIStaticText.h"
+#include "Utils/StringUtils.h"
 #include "Utils/UTF8Utils.h"
+#include "Utils/UTF8Walker.h"
 #include "Utils/Utils.h"
 
 namespace DAVA
 {
-XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*= false*/)
+XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*= false*/, bool debugDraw /*= false*/)
     : link(link_)
     , isEditorMode(editorMode)
+    , isDebugDraw(debugDraw)
 {
     DVASSERT(link);
     defaultClasses = link->component->GetBaseClasses();
@@ -74,7 +78,7 @@ const String& XMLRichContentBuilder::GetClass() const
     return classesStack.back();
 }
 
-void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool stick)
+void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
 {
     ctrl->SetClassesFromString(ctrl->GetClassesAsString() + " " + GetClass());
 
@@ -94,14 +98,47 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize, bool 
 
     UIFlowLayoutHintComponent* flh = ctrl->GetOrCreateComponent<UIFlowLayoutHintComponent>();
     flh->SetContentDirection(direction);
-    flh->SetNewLineBeforeThis(needLineBreak);
-    if (!needSpace)
+    if (needLineBreak)
     {
-        flh->SetStickItemBeforeThis(stick);
+        flh->SetNewLineBeforeThis(true);
+    }
+    else if (!needSpace)
+    {
+        flh->SetStickItemBeforeThis(true);
+        if (!needSoftStick)
+        {
+            flh->SetStickHardBeforeThis(true);
+        }
+    }
+
+    if (isDebugDraw)
+    {
+        UIDebugRenderComponent* debug = ctrl->GetOrCreateComponent<UIDebugRenderComponent>();
+        debug->SetEnabled(true);
+        if (needLineBreak)
+        {
+            debug->SetDrawColor(Color::Yellow);
+        }
+        else if (!needSpace)
+        {
+            if (needSoftStick)
+            {
+                debug->SetDrawColor(Color::Cyan);
+            }
+            else
+            {
+                debug->SetDrawColor(Color::Blue);
+            }
+        }
+        else
+        {
+            debug->SetDrawColor(Color::Magenta);
+        }
     }
 
     needSpace = false;
     needLineBreak = false;
+    needSoftStick = false;
 }
 
 void XMLRichContentBuilder::AppendControl(UIControl* ctrl)
@@ -141,11 +178,16 @@ void XMLRichContentBuilder::OnElementEnded(const String& elementName, const Stri
 
 void XMLRichContentBuilder::OnFoundCharacters(const String& chars)
 {
-    ProcessText(chars);
+    // Concat input characters in one single string, because some kind
+    // of intarnalization characters break XML parser to few
+    // OnFoundCharacters callbacks per one word
+    fullText += chars;
 }
 
 void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String, String>& attributes)
 {
+    FlushText();
+
     // Global attributes
     String classes;
     if (!GetAttribute(attributes, "class", classes) && !classesInheritance)
@@ -170,19 +212,18 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
     else if (tag == "li")
     {
         needLineBreak = true;
-        ProcessText("*"); // TODO: Change to create "bullet" control
     }
     else if (tag == "img")
     {
         String src;
         if (GetAttribute(attributes, "src", src))
         {
-            UIControl* img = new UIControl();
-            PrepareControl(img, true, true);
+            RefPtr<UIControl> img(new UIControl());
+            PrepareControl(img.Get(), true);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
-            AppendControl(img);
+            AppendControl(img.Get());
         }
     }
     else if (tag == "object")
@@ -243,7 +284,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
                         obj->SetName(name);
                     }
 
-                    PrepareControl(obj, false, true);
+                    PrepareControl(obj, false);
 
                     UIRichContentObjectComponent* objComp = obj->GetOrCreateComponent<UIRichContentObjectComponent>();
                     objComp->SetPackagePath(path);
@@ -256,7 +297,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
             }
             else
             {
-                Logger::Error("[UIRichContentSystem] Recursive object in rich content from '%s' with name '%s'!",
+                Logger::Error("Recursive object in rich content from '%s' with name '%s'!",
                               path.c_str(),
                               controlName.empty() ? prototypeName.c_str() : controlName.c_str());
             }
@@ -266,6 +307,8 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
 
 void XMLRichContentBuilder::ProcessTagEnd(const String& tag)
 {
+    FlushText();
+
     PopClass();
 
     if (tag == "p")
@@ -286,17 +329,26 @@ void XMLRichContentBuilder::ProcessText(const String& text)
 {
     const static String LTR_MARK = UTF8Utils::EncodeToUTF8(L"\u200E");
     const static String RTL_MARK = UTF8Utils::EncodeToUTF8(L"\u200F");
+    const static uint32 ZERO_WIDTH_SPACE = 0x200B;
+    const static uint32 NO_BREAK_SPACE = 0xA0;
+    const static uint32 NEW_LINE = 0x0A;
 
-    Vector<String> tokens;
-    Split(text, " \n\r\t", tokens, false, true);
-    bool first = true;
-    for (String& token : tokens)
+    UTF8Walker walker(text);
+    String token;
+    while (walker.Next())
     {
-        if (token.empty())
+        token += walker.GetUtf8Character();
+
+        StringUtils::eLineBreakType br = walker.GetLineBreak();
+
+        bool allowBreak = br == StringUtils::LB_ALLOWBREAK || (walker.IsWhitespace() && walker.GetUnicodeCodepoint() != NO_BREAK_SPACE);
+        if (!allowBreak && br == StringUtils::LB_NOBREAK && walker.HasNext())
         {
-            needSpace = true;
+            continue;
         }
-        else
+
+        token = UTF8Utils::Trim(token);
+        if (!token.empty())
         {
             BiDiHelper::Direction wordDirection = bidiHelper.GetDirectionUTF8String(token);
             if (wordDirection == BiDiHelper::Direction::NEUTRAL)
@@ -315,13 +367,26 @@ void XMLRichContentBuilder::ProcessText(const String& text)
                 direction = wordDirection;
             }
 
-            UIStaticText* ctrl = new UIStaticText();
-            PrepareControl(ctrl, true, first);
+            RefPtr<UIStaticText> ctrl(new UIStaticText());
+            PrepareControl(ctrl.Get(), true);
             ctrl->SetUtf8Text(token);
-            AppendControl(ctrl);
+            AppendControl(ctrl.Get());
+
+            token.clear();
         }
 
-        first = false;
+        needLineBreak |= br == StringUtils::LB_MUSTBREAK || walker.GetUnicodeCodepoint() == NEW_LINE;
+        needSoftStick |= allowBreak;
+        needSpace |= walker.IsWhitespace() && walker.GetUnicodeCodepoint() != ZERO_WIDTH_SPACE;
+    }
+}
+
+void XMLRichContentBuilder::FlushText()
+{
+    if (!fullText.empty())
+    {
+        ProcessText(fullText);
+        fullText.clear();
     }
 }
 }

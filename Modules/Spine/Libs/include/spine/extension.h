@@ -32,56 +32,56 @@
 #define SPINE_EXTENSION_H_
 
 /* All allocation uses these. */
-#define MALLOC(TYPE,COUNT) ((TYPE*)_malloc(sizeof(TYPE) * (COUNT), __FILE__, __LINE__))
-#define CALLOC(TYPE,COUNT) ((TYPE*)_calloc(COUNT, sizeof(TYPE), __FILE__, __LINE__))
-#define NEW(TYPE) CALLOC(TYPE,1)
+#define MALLOC(TYPE, COUNT) ((TYPE*)_malloc(sizeof(TYPE) * (COUNT), __FILE__, __LINE__))
+#define CALLOC(TYPE, COUNT) ((TYPE*)_calloc(COUNT, sizeof(TYPE), __FILE__, __LINE__))
+#define NEW(TYPE) CALLOC(TYPE, 1)
 
 /* Gets the direct super class. Type safe. */
 #define SUPER(VALUE) (&VALUE->super)
 
 /* Cast to a super class. Not type safe, use with care. Prefer SUPER() where possible. */
-#define SUPER_CAST(TYPE,VALUE) ((TYPE*)VALUE)
+#define SUPER_CAST(TYPE, VALUE) ((TYPE*)VALUE)
 
 /* Cast to a sub class. Not type safe, use with care. */
-#define SUB_CAST(TYPE,VALUE) ((TYPE*)VALUE)
+#define SUB_CAST(TYPE, VALUE) ((TYPE*)VALUE)
 
 /* Casts away const. Can be used as an lvalue. Not type safe, use with care. */
-#define CONST_CAST(TYPE,VALUE) (*(TYPE*)&VALUE)
+#define CONST_CAST(TYPE, VALUE) (*(TYPE*)&VALUE)
 
 /* Gets the vtable for the specified type. Not type safe, use with care. */
-#define VTABLE(TYPE,VALUE) ((_##TYPE##Vtable*)((TYPE*)VALUE)->vtable)
+#define VTABLE(TYPE, VALUE) ((_##TYPE##Vtable*)((TYPE*)VALUE)->vtable)
 
 /* Frees memory. Can be used on const types. */
 #define FREE(VALUE) _free((void*)VALUE)
 
 /* Allocates a new char[], assigns it to TO, and copies FROM to it. Can be used on const types. */
-#define MALLOC_STR(TO,FROM) strcpy(CONST_CAST(char*, TO) = (char*)MALLOC(char, strlen(FROM) + 1), FROM)
+#define MALLOC_STR(TO, FROM) strcpy(CONST_CAST(char*, TO) = (char*)MALLOC(char, strlen(FROM) + 1), FROM)
 
 #define PI 3.1415926535897932385f
 #define PI2 (PI * 2)
 #define DEG_RAD (PI / 180)
 #define RAD_DEG (180 / PI)
 
-#define ABS(A) ((A) < 0? -(A): (A))
+#define ABS(A) ((A) < 0 ? -(A) : (A))
 
 #ifdef __STDC_VERSION__
-#define FMOD(A,B) fmodf(A, B)
-#define ATAN2(A,B) atan2f(A, B)
+#define FMOD(A, B) fmodf(A, B)
+#define ATAN2(A, B) atan2f(A, B)
 #define SIN(A) sinf(A)
 #define COS(A) cosf(A)
 #define SQRT(A) sqrtf(A)
 #define ACOS(A) acosf(A)
 #else
-#define FMOD(A,B) (float)fmod(A, B)
-#define ATAN2(A,B) (float)atan2(A, B)
-#define COS(A) (float)cos(A)
-#define SIN(A) (float)sin(A)
-#define SQRT(A) (float)sqrt(A)
-#define ACOS(A) (float)acos(A)
+#define FMOD(A, B) (float) fmod(A, B)
+#define ATAN2(A, B) (float) atan2(A, B)
+#define COS(A) (float) cos(A)
+#define SIN(A) (float) sin(A)
+#define SQRT(A) (float) sqrt(A)
+#define ACOS(A) (float) acos(A)
 #endif
 
-#define SIN_DEG(A) SIN((A) * DEG_RAD)
-#define COS_DEG(A) COS((A) * DEG_RAD)
+#define SIN_DEG(A) SIN((A)*DEG_RAD)
+#define COS_DEG(A) COS((A)*DEG_RAD)
 #define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
 #ifndef MIN
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
@@ -114,9 +114,9 @@ extern "C" {
  * Functions that must be implemented:
  */
 
-void _spAtlasPage_createTexture (spAtlasPage* self, const char* path);
-void _spAtlasPage_disposeTexture (spAtlasPage* self);
-char* _spUtil_readFile (const char* path, int* length);
+void _spAtlasPage_createTexture(spAtlasPage* self, const char* path);
+void _spAtlasPage_disposeTexture(spAtlasPage* self);
+char* _spUtil_readFile(const char* path, int* length);
 
 #ifdef SPINE_SHORT_NAMES
 #define _AtlasPage_createTexture(...) _spAtlasPage_createTexture(__VA_ARGS__)
@@ -128,52 +128,58 @@ char* _spUtil_readFile (const char* path, int* length);
  * Internal API available for extension:
  */
 
-void* _malloc (size_t size, const char* file, int line);
-void* _calloc (size_t num, size_t size, const char* file, int line);
-void _free (void* ptr);
+void* _malloc(size_t size, const char* file, int line);
+void* _calloc(size_t num, size_t size, const char* file, int line);
+void _free(void* ptr);
 
-void _setMalloc (void* (*_malloc) (size_t size));
-void _setDebugMalloc (void* (*_malloc) (size_t size, const char* file, int line));
-void _setFree (void (*_free) (void* ptr));
+void _setMalloc(void* (*_malloc)(size_t size));
+void _setDebugMalloc(void* (*_malloc)(size_t size, const char* file, int line));
+void _setFree(void (*_free)(void* ptr));
 
-char* _readFile (const char* path, int* length);
+char* _readFile(const char* path, int* length);
 
 /**/
 
-typedef struct _spAnimationState {
-	spAnimationState super;
-	spEvent** events;
+typedef struct _spAnimationState
+{
+    spAnimationState super;
+    spEvent** events;
 
-	spTrackEntry* (*createTrackEntry) (spAnimationState* self);
-	void (*disposeTrackEntry) (spTrackEntry* entry);
+    spTrackEntry* (*createTrackEntry)(spAnimationState* self);
+    void (*disposeTrackEntry)(spTrackEntry* entry);
 
 #ifdef __cplusplus
-	_spAnimationState() :
-		super(),
-		events(0),
-		createTrackEntry(0),
-		disposeTrackEntry(0) {
-	}
+    _spAnimationState()
+        :
+        super()
+        ,
+        events(0)
+        ,
+        createTrackEntry(0)
+        ,
+        disposeTrackEntry(0)
+    {
+    }
 #endif
 } _spAnimationState;
 
-spTrackEntry* _spTrackEntry_create (spAnimationState* self);
-void _spTrackEntry_dispose (spTrackEntry* self);
+spTrackEntry* _spTrackEntry_create(spAnimationState* self);
+void _spTrackEntry_dispose(spTrackEntry* self);
 
 /**/
 
 /* configureAttachment and disposeAttachment may be 0. */
-void _spAttachmentLoader_init (spAttachmentLoader* self,
-	void (*dispose) (spAttachmentLoader* self),
-	spAttachment* (*createAttachment) (spAttachmentLoader* self, spSkin* skin, spAttachmentType type, const char* name,
-		const char* path),
-	void (*configureAttachment) (spAttachmentLoader* self, spAttachment*),
-	void (*disposeAttachment) (spAttachmentLoader* self, spAttachment*)
-);
-void _spAttachmentLoader_deinit (spAttachmentLoader* self);
+void _spAttachmentLoader_init(spAttachmentLoader* self,
+                              void (*dispose)(spAttachmentLoader* self),
+                              spAttachment* (*createAttachment)(spAttachmentLoader* self, spSkin* skin, spAttachmentType type, const char* name,
+                                                                const char* path),
+                              void (*configureAttachment)(spAttachmentLoader* self, spAttachment*),
+                              void (*disposeAttachment)(spAttachmentLoader* self, spAttachment*)
+                              );
+void _spAttachmentLoader_deinit(spAttachmentLoader* self);
 /* Can only be called from createAttachment. */
-void _spAttachmentLoader_setError (spAttachmentLoader* self, const char* error1, const char* error2);
-void _spAttachmentLoader_setUnknownTypeError (spAttachmentLoader* self, spAttachmentType type);
+void _spAttachmentLoader_setError(spAttachmentLoader* self, const char* error1, const char* error2);
+void _spAttachmentLoader_setUnknownTypeError(spAttachmentLoader* self, spAttachmentType type);
 
 #ifdef SPINE_SHORT_NAMES
 #define _AttachmentLoader_init(...) _spAttachmentLoader_init(__VA_ARGS__)
@@ -184,10 +190,10 @@ void _spAttachmentLoader_setUnknownTypeError (spAttachmentLoader* self, spAttach
 
 /**/
 
-void _spAttachment_init (spAttachment* self, const char* name, spAttachmentType type,
-void (*dispose) (spAttachment* self));
-void _spAttachment_deinit (spAttachment* self);
-void _spVertexAttachment_deinit (spVertexAttachment* self);
+void _spAttachment_init(spAttachment* self, const char* name, spAttachmentType type,
+                        void (*dispose)(spAttachment* self));
+void _spAttachment_deinit(spAttachment* self);
+void _spVertexAttachment_deinit(spVertexAttachment* self);
 
 #ifdef SPINE_SHORT_NAMES
 #define _Attachment_init(...) _spAttachment_init(__VA_ARGS__)
@@ -197,11 +203,11 @@ void _spVertexAttachment_deinit (spVertexAttachment* self);
 
 /**/
 
-void _spTimeline_init (spTimeline* self, spTimelineType type,
-	void (*dispose) (spTimeline* self),
-	void (*apply) (const spTimeline* self, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
-		int* eventsCount, float alpha));
-void _spTimeline_deinit (spTimeline* self);
+void _spTimeline_init(spTimeline* self, spTimelineType type,
+                      void (*dispose)(spTimeline* self),
+                      void (*apply)(const spTimeline* self, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
+                                    int* eventsCount, float alpha));
+void _spTimeline_deinit(spTimeline* self);
 
 #ifdef SPINE_SHORT_NAMES
 #define _Timeline_init(...) _spTimeline_init(__VA_ARGS__)
@@ -210,11 +216,11 @@ void _spTimeline_deinit (spTimeline* self);
 
 /**/
 
-void _spCurveTimeline_init (spCurveTimeline* self, spTimelineType type, int framesCount,
-	void (*dispose) (spTimeline* self),
-	void (*apply) (const spTimeline* self, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
-		int* eventsCount, float alpha));
-void _spCurveTimeline_deinit (spCurveTimeline* self);
+void _spCurveTimeline_init(spCurveTimeline* self, spTimelineType type, int framesCount,
+                           void (*dispose)(spTimeline* self),
+                           void (*apply)(const spTimeline* self, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
+                                         int* eventsCount, float alpha));
+void _spCurveTimeline_deinit(spCurveTimeline* self);
 
 #ifdef SPINE_SHORT_NAMES
 #define _CurveTimeline_init(...) _spCurveTimeline_init(__VA_ARGS__)

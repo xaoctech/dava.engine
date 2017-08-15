@@ -1,15 +1,20 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/Entity.h"
+#include "Base/BaseTypes.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
+#include "Entity/SingletonComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Render/RenderBase.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Scene3D/SceneFileV2.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
-#include "Base/Observer.h"
+#include "Scene3D/SceneFileV2.h"
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/PhysicsSystem.h>
+#endif
 
 namespace DAVA
 {
@@ -25,7 +30,6 @@ class Light;
 class ShadowRect;
 class QuadTree;
 class Component;
-class SceneSystem;
 class RenderSystem;
 class RenderUpdateSystem;
 class TransformSystem;
@@ -48,10 +52,12 @@ class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
 class ParticleEffectDebugDrawSystem;
+class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
 
 class UIEvent;
+class RenderPass;
 
 /**
     \ingroup scene3d
@@ -60,7 +66,6 @@ class UIEvent;
     Scene have visible hierarchy and invisible root nodes. You can add as many root nodes as you want, and do not visualize them.
     For example you can have multiple scenes, load them to one scene, and show each scene when it will be required. 
  */
-
 class EntityCache
 {
 public:
@@ -77,15 +82,13 @@ protected:
     Map<FilePath, Entity*> cachedEntities;
 };
 
-class RenderPass;
-
 class Scene : public Entity, Observer
 {
 protected:
     virtual ~Scene();
 
 public:
-    enum
+    enum : uint32
     {
         SCENE_SYSTEM_TRANSFORM_FLAG = 1 << 0,
         SCENE_SYSTEM_RENDER_UPDATE_FLAG = 1 << 1,
@@ -97,7 +100,6 @@ public:
         SCENE_SYSTEM_SWITCH_FLAG = 1 << 7,
         SCENE_SYSTEM_SOUND_UPDATE_FLAG = 1 << 8,
         SCENE_SYSTEM_ACTION_UPDATE_FLAG = 1 << 9,
-
         SCENE_SYSTEM_STATIC_OCCLUSION_FLAG = 1 << 11,
         SCENE_SYSTEM_LANDSCAPE_FLAG = 1 << 12,
         SCENE_SYSTEM_FOLIAGE_FLAG = 1 << 13,
@@ -107,11 +109,15 @@ public:
         SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
         SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
+        SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 20,
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
+#endif
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
 
-    enum eSceneProcessFlags
+    enum eSceneProcessFlags : uint32
     {
         SCENE_SYSTEM_REQUIRE_PROCESS = 1 << 0,
         SCENE_SYSTEM_REQUIRE_INPUT = 1 << 1,
@@ -140,6 +146,8 @@ public:
 
     virtual void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
     virtual void RemoveSystem(SceneSystem* sceneSystem);
+    template <class T>
+    T* GetSystem();
 
     Vector<SceneSystem*> systems;
     Vector<SceneSystem*> systemsToProcess;
@@ -169,8 +177,18 @@ public:
     LandscapeSystem* landscapeSystem = nullptr;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
+    GeoDecalSystem* geoDecalSystem = nullptr;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    PhysicsSystem* physicsSystem = nullptr;
+#endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
+
+    void AddSingletonComponent(SingletonComponent* component);
+    template <class T>
+    T* GetSingletonComponent();
+    void RemoveSingletonComponent(SingletonComponent* component);
+    Vector<SingletonComponent*> singletonComponents;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -261,6 +279,42 @@ protected:
 
     friend class Entity;
 };
+
+template <class T>
+T* Scene::GetSystem()
+{
+    T* res = nullptr;
+    const std::type_info& type = typeid(T);
+    for (SceneSystem* system : systems)
+    {
+        const std::type_info& currType = typeid(*system);
+        if (currType == type)
+        {
+            res = static_cast<T*>(system);
+            break;
+        }
+    }
+
+    return res;
+}
+
+template <class T>
+T* Scene::GetSingletonComponent()
+{
+    T* res = nullptr;
+    const std::type_info& type = typeid(T);
+    for (SingletonComponent* component : singletonComponents)
+    {
+        const std::type_info& currType = typeid(*component);
+        if (currType == type)
+        {
+            res = static_cast<T*>(component);
+            break;
+        }
+    }
+
+    return res;
+}
 
 int32 Scene::GetCameraCount()
 {
