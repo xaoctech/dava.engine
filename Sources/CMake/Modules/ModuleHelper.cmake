@@ -9,14 +9,20 @@ macro ( components_option OPTION )
 endmacro ()
 
 macro( find_dava_module NAME  )
-    cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
-    add_module_subdirectory( ${NAME}  "${DAVA_MODULES_DIR}/${NAME}" COMPONENTS ${ARG_COMPONENTS} )
-
+    cmake_parse_arguments ( ARG ""  "" "OPTIONS" ${ARGN} )
+    foreach( FOLDER ${CMAKE_MODULE_PATH} ${DAVA_MODULES_DIR}  )
+        get_filename_component( FOLDER ${FOLDER} ABSOLUTE )
+        set( MODULE_DIR ${FOLDER}/${NAME} )
+        if( EXISTS  ${MODULE_DIR})
+            add_module_subdirectory( ${NAME}  "${MODULE_DIR}" OPTIONS ${ARG_OPTIONS} )
+        endif()
+    endforeach()
 endmacro()
 
 macro ( add_module_subdirectory NAME SOURCE_DIR )
-    cmake_parse_arguments ( ARG ""  "" "COMPONENTS" ${ARGN} )
+    cmake_parse_arguments ( ARG ""  "" "COMPONENTS;OPTIONS" ${ARGN} )
 
+    list(APPEND ARG_COMPONENTS ${ARG_OPTIONS})
     list(LENGTH ARG_COMPONENTS ARG_COMPONENTS_LENGTH ) 
 
     if( ARG_COMPONENTS_LENGTH )
