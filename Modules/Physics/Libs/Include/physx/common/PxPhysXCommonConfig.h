@@ -36,7 +36,6 @@
 
 #include "foundation/Px.h"
 
-
 // define API function declaration (public API only needed because of extensions)
 #if defined PX_PHYSX_STATIC_LIB || defined PX_PHYSX_CORE_STATIC_LIB
 	#define PX_PHYSX_CORE_API
@@ -72,17 +71,17 @@
 namespace physx
 {
 #endif
-	class PxCollection;
-	class PxBase;
+class PxCollection;
+class PxBase;
 
-	class PxHeightField;
-	class PxHeightFieldDesc;
+class PxHeightField;
+class PxHeightFieldDesc;
 
-	class PxTriangleMesh;
-	class PxConvexMesh;
+class PxTriangleMesh;
+class PxConvexMesh;
 
-	typedef PxU32 PxTriangleID;
-	typedef PxU16 PxMaterialTableIndex;
+typedef PxU32 PxTriangleID;
+typedef PxU16 PxMaterialTableIndex;
 
 #if !PX_DOXYGEN
 } // namespace physx

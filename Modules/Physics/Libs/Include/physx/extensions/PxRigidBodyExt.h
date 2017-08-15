@@ -58,7 +58,7 @@ class PxShape;
 class PxRigidBodyExt
 {
 public:
-	/**
+    /**
 	\brief Computation of mass properties for a rigid body actor
 
 	To simulate a dynamic rigid actor, the SDK needs a mass and an inertia tensor. 
@@ -91,10 +91,9 @@ public:
 
 	@see PxRigidBody::setMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
-	static		bool			updateMassAndInertia(PxRigidBody& body, const PxReal* shapeDensities, PxU32 shapeDensityCount, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
+    static bool updateMassAndInertia(PxRigidBody& body, const PxReal* shapeDensities, PxU32 shapeDensityCount, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
 
-
-	/**
+    /**
 	\brief Computation of mass properties for a rigid body actor
 
 	See previous method for details.
@@ -107,10 +106,9 @@ public:
 
 	@see PxRigidBody::setMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
-	static		bool			updateMassAndInertia(PxRigidBody& body, PxReal density, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
-	
+    static bool updateMassAndInertia(PxRigidBody& body, PxReal density, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
 
-	/**
+    /**
 	\brief Computation of mass properties for a rigid body actor
 
 	This method sets the mass, inertia and center of mass of a rigid body. The mass is set to the sum of all user-supplied
@@ -131,10 +129,9 @@ public:
 
 	@see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
-	static		bool			setMassAndUpdateInertia(PxRigidBody& body, const PxReal* shapeMasses, PxU32 shapeMassCount, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
+    static bool setMassAndUpdateInertia(PxRigidBody& body, const PxReal* shapeMasses, PxU32 shapeMassCount, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
 
-
-	/**
+    /**
 	\brief Computation of mass properties for a rigid body actor
 
 	This method sets the mass, inertia and center of mass of a rigid body. The mass is set to the user-supplied
@@ -152,10 +149,9 @@ public:
 
 	@see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
-	static		bool			setMassAndUpdateInertia(PxRigidBody& body, PxReal mass, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
+    static bool setMassAndUpdateInertia(PxRigidBody& body, PxReal mass, const PxVec3* massLocalPose = NULL, bool includeNonSimShapes = false);
 
-
-	/**
+    /**
 	\brief Compute the mass, inertia tensor and center of mass from a list of shapes.
 
 	\param[in] shapes The shapes to compute the mass properties from.
@@ -164,10 +160,9 @@ public:
 
 	@see PxRigidBody::setCMassLocalPose PxRigidBody::setMassSpaceInertiaTensor PxRigidBody::setMass
 	*/
-	static		PxMassProperties	computeMassPropertiesFromShapes(const PxShape* const* shapes, PxU32 shapeCount);
-	
+    static PxMassProperties computeMassPropertiesFromShapes(const PxShape* const* shapes, PxU32 shapeCount);
 
-	/**
+    /**
 	\brief Applies a force (or impulse) defined in the global coordinate frame, acting at a particular 
 	point in global coordinates, to the actor. 
 
@@ -193,9 +188,9 @@ public:
 	@see PxForceMode 
 	@see addForceAtLocalPos() addLocalForceAtPos() addLocalForceAtLocalPos()
 	*/
-	static		void			addForceAtPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
+    static void addForceAtPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
-	/**
+    /**
 	\brief Applies a force (or impulse) defined in the global coordinate frame, acting at a particular 
 	point in local coordinates, to the actor. 
 
@@ -221,9 +216,9 @@ public:
 	@see PxForceMode 
 	@see addForceAtPos() addLocalForceAtPos() addLocalForceAtLocalPos()
 	*/
-	static		void			addForceAtLocalPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
+    static void addForceAtLocalPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
-	/**
+    /**
 	\brief Applies a force (or impulse) defined in the actor local coordinate frame, acting at a 
 	particular point in global coordinates, to the actor. 
 
@@ -249,9 +244,9 @@ public:
 	@see PxForceMode 
 	@see addForceAtPos() addForceAtLocalPos() addLocalForceAtLocalPos()
 	*/
-	static		void			addLocalForceAtPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
+    static void addLocalForceAtPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
-	/**
+    /**
 	\brief Applies a force (or impulse) defined in the actor local coordinate frame, acting at a 
 	particular point in local coordinates, to the actor. 
 
@@ -277,9 +272,9 @@ public:
 	@see PxForceMode 
 	@see addForceAtPos() addForceAtLocalPos() addLocalForceAtPos()
 	*/
-	static		void			addLocalForceAtLocalPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
+    static void addLocalForceAtLocalPos(PxRigidBody& body, const PxVec3& force, const PxVec3& pos, PxForceMode::Enum mode = PxForceMode::eFORCE, bool wakeup = true);
 
-	/**
+    /**
 	\brief Computes the velocity of a point given in world coordinates if it were attached to the 
 	specified body and moving with it.
 
@@ -289,9 +284,9 @@ public:
 
 	@see getLocalPointVelocity()
 	*/
-	static		PxVec3			getVelocityAtPos(const PxRigidBody& body, const PxVec3& pos);
+    static PxVec3 getVelocityAtPos(const PxRigidBody& body, const PxVec3& pos);
 
-	/**
+    /**
 	\brief Computes the velocity of a point given in local coordinates if it were attached to the 
 	specified body and moving with it.
 
@@ -301,9 +296,9 @@ public:
 
 	@see getLocalPointVelocity()
 	*/
-	static		PxVec3			getLocalVelocityAtLocalPos(const PxRigidBody& body, const PxVec3& pos);
+    static PxVec3 getLocalVelocityAtLocalPos(const PxRigidBody& body, const PxVec3& pos);
 
-	/**
+    /**
 	\brief Computes the velocity of a point (offset from the origin of the body) given in world coordinates if it were attached to the 
 	specified body and moving with it.
 
@@ -313,10 +308,9 @@ public:
 
 	@see getLocalPointVelocity()
 	*/
-	static		PxVec3			getVelocityAtOffset(const PxRigidBody& body, const PxVec3& pos);
+    static PxVec3 getVelocityAtOffset(const PxRigidBody& body, const PxVec3& pos);
 
-
-	/**
+    /**
 	\brief Performs a linear sweep through space with the body's geometry objects.
 
 	\note Supported geometries are: box, sphere, capsule, convex. Other geometry types will be ignored.
@@ -344,16 +338,16 @@ public:
 
 	@see PxScene PxQueryFlags PxFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader PxSweepHit
 	*/
-	static		bool			linearSweepSingle(
-									PxRigidBody& body, PxScene& scene, const PxVec3& unitDir, const PxReal distance,
-									PxHitFlags outputFlags,
-									PxSweepHit& closestHit, PxU32& shapeIndex,
-									const PxQueryFilterData& filterData = PxQueryFilterData(),
-									PxQueryFilterCallback* filterCall = NULL,
-									const PxQueryCache* cache = NULL,
-									const PxReal inflation=0.0f);
+    static bool linearSweepSingle(
+    PxRigidBody& body, PxScene& scene, const PxVec3& unitDir, const PxReal distance,
+    PxHitFlags outputFlags,
+    PxSweepHit& closestHit, PxU32& shapeIndex,
+    const PxQueryFilterData& filterData = PxQueryFilterData(),
+    PxQueryFilterCallback* filterCall = NULL,
+    const PxQueryCache* cache = NULL,
+    const PxReal inflation = 0.0f);
 
-	/**
+    /**
 	\brief Performs a linear sweep through space with the body's geometry objects, returning all overlaps.
 
 	\note Supported geometries are: box, sphere, capsule, convex. Other geometry types will be ignored.
@@ -385,17 +379,16 @@ public:
 
 	@see PxScene PxQueryFlags PxFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader PxSweepHit
 	*/
-	static		PxU32			linearSweepMultiple(
-									PxRigidBody& body, PxScene& scene, const PxVec3& unitDir, const PxReal distance,
-									PxHitFlags outputFlags,
-									PxSweepHit* touchHitBuffer, PxU32* touchHitShapeIndices, PxU32 touchHitBufferSize,
-									PxSweepHit& block, PxI32& blockingShapeIndex, bool& overflow,
-									const PxQueryFilterData& filterData = PxQueryFilterData(),
-									PxQueryFilterCallback* filterCall = NULL,
-									const PxQueryCache* cache = NULL, const PxReal inflation = 0.0f);
+    static PxU32 linearSweepMultiple(
+    PxRigidBody& body, PxScene& scene, const PxVec3& unitDir, const PxReal distance,
+    PxHitFlags outputFlags,
+    PxSweepHit* touchHitBuffer, PxU32* touchHitShapeIndices, PxU32 touchHitBufferSize,
+    PxSweepHit& block, PxI32& blockingShapeIndex, bool& overflow,
+    const PxQueryFilterData& filterData = PxQueryFilterData(),
+    PxQueryFilterCallback* filterCall = NULL,
+    const PxQueryCache* cache = NULL, const PxReal inflation = 0.0f);
 
-
-	/**
+    /**
 	\brief Compute the change to linear and angular velocity that would occur if an impulsive force and torque were to be applied to a specified rigid body. 
 	
 	The rigid body is left unaffected unless a subsequent independent call is executed that actually applies the computed changes to velocity and angular velocity.
@@ -410,9 +403,9 @@ public:
 	\param[out] deltaLinearVelocity The change in linear velocity that would arise if impulsiveForce was to be applied to the specified rigid body.
 	\param[out] deltaAngularVelocity The change in angular velocity that would arise if impulsiveTorque was to be applied to the specified rigid body.
 	*/
-	static		void			computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxVec3& impulsiveForce, const PxVec3& impulsiveTorque, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
+    static void computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxVec3& impulsiveForce, const PxVec3& impulsiveTorque, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
 
-	/**
+    /**
 	\brief Computes the linear and angular velocity change vectors for a given impulse at a world space position taking a mass and inertia scale into account
 
 	This function is useful for extracting the respective linear and angular velocity changes from a contact or joint when the mass/inertia ratios have been adjusted.
@@ -429,10 +422,10 @@ public:
 	\param[out] deltaAngularVelocity The angular velocity change
 	*/
 
-	static void					computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale, 
-														const PxReal invInertiaScale, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
+    static void computeVelocityDeltaFromImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale,
+                                                const PxReal invInertiaScale, PxVec3& deltaLinearVelocity, PxVec3& deltaAngularVelocity);
 
-	/**
+    /**
 	\brief Computes the linear and angular impulse vectors for a given impulse at a world space position taking a mass and inertia scale into account
 
 	This function is useful for extracting the respective linear and angular impulses from a contact or joint when the mass/inertia ratios have been adjusted.
@@ -446,10 +439,8 @@ public:
 	\param[out] linearImpulse The linear impulse
 	\param[out] angularImpulse The angular impulse
 	*/
-	static void					computeLinearAngularImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale, 
-														const PxReal invInertiaScale, PxVec3& linearImpulse, PxVec3& angularImpulse);
-
-
+    static void computeLinearAngularImpulse(const PxRigidBody& body, const PxTransform& globalPose, const PxVec3& point, const PxVec3& impulse, const PxReal invMassScale,
+                                            const PxReal invInertiaScale, PxVec3& linearImpulse, PxVec3& angularImpulse);
 };
 
 #if !PX_DOXYGEN

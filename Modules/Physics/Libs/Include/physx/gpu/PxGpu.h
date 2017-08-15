@@ -55,13 +55,17 @@ Once the names are set, the instance must be set for use by PhysX.dll using PxSe
 class PxGpuLoadHook
 {
 public:
-	PxGpuLoadHook() {}
-	virtual ~PxGpuLoadHook() {}
+    PxGpuLoadHook()
+    {
+    }
+    virtual ~PxGpuLoadHook()
+    {
+    }
 
-	virtual const char* getPhysXGpuDEBUGDllName() const = 0;
-	virtual const char* getPhysXGpuCHECKEDDllName() const = 0;
-	virtual const char* getPhysXGpuPROFILEDllName() const = 0;
-	virtual const char* getPhysXGpuDllName() const = 0;
+    virtual const char* getPhysXGpuDEBUGDllName() const = 0;
+    virtual const char* getPhysXGpuCHECKEDDllName() const = 0;
+    virtual const char* getPhysXGpuPROFILEDllName() const = 0;
+    virtual const char* getPhysXGpuDllName() const = 0;
 
 protected:
 private:

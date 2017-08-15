@@ -51,15 +51,15 @@ class PxScene;
 */
 struct PxMaterialFlag
 {
-	enum Enum
-	{
+    enum Enum
+    {
 
-		/**
+        /**
 		If this flag is set, friction computations are always skipped between shapes with this material and any other shape.
 		*/
-		eDISABLE_FRICTION = 1 << 0,
+        eDISABLE_FRICTION = 1 << 0,
 
-		/**
+        /**
 		The difference between "normal" and "strong" friction is that the strong friction feature
 		remembers the "friction error" between simulation steps. The friction is a force trying to
 		hold objects in place (or slow them down) and this is handled in the solver. But since the
@@ -77,8 +77,8 @@ struct PxMaterialFlag
 
 		Note: This flag only has an effect if the PxMaterialFlag::eDISABLE_FRICTION bit is 0.
 		*/
-		eDISABLE_STRONG_FRICTION = 1 << 1
-	};
+        eDISABLE_STRONG_FRICTION = 1 << 1
+    };
 };
 
 /**
@@ -86,9 +86,8 @@ struct PxMaterialFlag
 
 @see PxMaterialFlag
 */
-typedef PxFlags<PxMaterialFlag::Enum,PxU16> PxMaterialFlags;
-PX_FLAGS_OPERATORS(PxMaterialFlag::Enum,PxU16)
-
+typedef PxFlags<PxMaterialFlag::Enum, PxU16> PxMaterialFlags;
+PX_FLAGS_OPERATORS(PxMaterialFlag::Enum, PxU16)
 
 /**
 \brief enumeration that determines the way in which two material properties will be combined to yield a friction or restitution coefficient for a collision.
@@ -111,15 +110,15 @@ The effective combine mode for the pair is maximum(material0.combineMode, materi
 */
 struct PxCombineMode
 {
-	enum Enum
-	{
-		eAVERAGE	= 0,		//!< Average: (a + b)/2
-		eMIN		= 1,		//!< Minimum: minimum(a,b)
-		eMULTIPLY	= 2,		//!< Multiply: a*b
-		eMAX		= 3,		//!< Maximum: maximum(a,b)
-		eN_VALUES	= 4,		//!< This is not a valid combine mode, it is a sentinel to denote the number of possible values. We assert that the variable's value is smaller than this.
-		ePAD_32		= 0x7fffffff //!< This is not a valid combine mode, it is to assure that the size of the enum type is big enough.
-	};
+    enum Enum
+    {
+        eAVERAGE = 0, //!< Average: (a + b)/2
+        eMIN = 1, //!< Minimum: minimum(a,b)
+        eMULTIPLY = 2, //!< Multiply: a*b
+        eMAX = 3, //!< Maximum: maximum(a,b)
+        eN_VALUES = 4, //!< This is not a valid combine mode, it is a sentinel to denote the number of possible values. We assert that the variable's value is smaller than this.
+        ePAD_32 = 0x7fffffff //!< This is not a valid combine mode, it is to assure that the size of the enum type is big enough.
+    };
 };
 
 /**
@@ -130,15 +129,14 @@ struct PxCombineMode
 class PxMaterial : public PxBase
 {
 public:
-
-	/**
+    /**
 	\brief Decrements the reference count of a material and releases it if the new reference count is zero.		
 	
 	@see PxPhysics.createMaterial()
 	*/
-	virtual		void			release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Returns the reference count of the material.
 
 	At creation, the reference count of the material is 1. Every shape referencing this material increments the
@@ -146,16 +144,16 @@ public:
 
 	\return the current reference count.
 	*/
-	virtual PxU32				getReferenceCount() const = 0;
+    virtual PxU32 getReferenceCount() const = 0;
 
-	/**
+    /**
 	\brief Acquires a counted reference to a material.
 
 	This method increases the reference count of the material by 1. Decrement the reference count by calling release()
 	*/
-	virtual void				acquireReference() = 0;
+    virtual void acquireReference() = 0;
 
-	/**
+    /**
 	\brief Sets the coefficient of dynamic friction.
 	
 	The coefficient of dynamic friction should be in [0, PX_MAX_F32). If set to greater than staticFriction, the effective value of staticFriction will be increased to match.
@@ -166,18 +164,18 @@ public:
 
 	@see getDynamicFriction()
 	*/
-	virtual		void			setDynamicFriction(PxReal coef) = 0;
+    virtual void setDynamicFriction(PxReal coef) = 0;
 
-	/**
+    /**
 	\brief Retrieves the DynamicFriction value.
 
 	\return The coefficient of dynamic friction.
 
 	@see setDynamicFriction
 	*/
-	virtual		PxReal			getDynamicFriction() const = 0;
+    virtual PxReal getDynamicFriction() const = 0;
 
-	/**
+    /**
 	\brief Sets the coefficient of static friction
 	
 	The coefficient of static friction should be in the range [0, PX_MAX_F32)
@@ -188,17 +186,17 @@ public:
 
 	@see getStaticFriction() 
 	*/
-	virtual		void			setStaticFriction(PxReal coef) = 0;
+    virtual void setStaticFriction(PxReal coef) = 0;
 
-	/**
+    /**
 	\brief Retrieves the coefficient of static friction.
 	\return The coefficient of static friction.
 
 	@see setStaticFriction 
 	*/
-	virtual		PxReal			getStaticFriction() const = 0;
+    virtual PxReal getStaticFriction() const = 0;
 
-	/**
+    /**
 	\brief Sets the coefficient of restitution 
 	
 	A coefficient of 0 makes the object bounce as little as possible, higher values up to 1.0 result in more bounce.
@@ -209,9 +207,9 @@ public:
 
 	@see getRestitution() 
 	*/
-	virtual		void			setRestitution(PxReal rest) = 0;
+    virtual void setRestitution(PxReal rest) = 0;
 
-	/**
+    /**
 	\brief Retrieves the coefficient of restitution.     
 
 	See #setRestitution.
@@ -220,9 +218,9 @@ public:
 
 	@see setRestitution() 
 	*/
-	virtual		PxReal			getRestitution() const = 0;
+    virtual PxReal getRestitution() const = 0;
 
-	/**
+    /**
 	\brief Raises or clears a particular material flag.
 	
 	See the list of flags #PxMaterialFlag
@@ -233,10 +231,9 @@ public:
 
 	@see getFlags() PxMaterialFlag
 	*/
-	virtual		void			setFlag(PxMaterialFlag::Enum flag, bool) = 0;
+    virtual void setFlag(PxMaterialFlag::Enum flag, bool) = 0;
 
-
-	/**
+    /**
 	\brief sets all the material flags.
 	
 	See the list of flags #PxMaterialFlag
@@ -244,18 +241,18 @@ public:
 	<b>Sleeping:</b> Does <b>NOT</b> wake any actors which may be affected.
 
 	*/
-	virtual		void 			setFlags( PxMaterialFlags inFlags ) = 0;
+    virtual void setFlags(PxMaterialFlags inFlags) = 0;
 
-	/**
+    /**
 	\brief Retrieves the flags. See #PxMaterialFlag.
 
 	\return The material flags.
 
 	@see PxMaterialFlag setFlags()
 	*/
-	virtual		PxMaterialFlags	getFlags() const = 0;
+    virtual PxMaterialFlags getFlags() const = 0;
 
-	/**
+    /**
 	\brief Sets the friction combine mode.
 	
 	See the enum ::PxCombineMode .
@@ -266,9 +263,9 @@ public:
 
 	@see PxCombineMode getFrictionCombineMode setStaticFriction() setDynamicFriction()
 	*/
-	virtual		void			setFrictionCombineMode(PxCombineMode::Enum combMode) = 0;
+    virtual void setFrictionCombineMode(PxCombineMode::Enum combMode) = 0;
 
-	/**
+    /**
 	\brief Retrieves the friction combine mode.
 	
 	See #setFrictionCombineMode.
@@ -277,9 +274,9 @@ public:
 
 	@see PxCombineMode setFrictionCombineMode() 
 	*/
-	virtual		PxCombineMode::Enum	getFrictionCombineMode() const = 0;
+    virtual PxCombineMode::Enum getFrictionCombineMode() const = 0;
 
-	/**
+    /**
 	\brief Sets the restitution combine mode.
 	
 	See the enum ::PxCombineMode .
@@ -290,9 +287,9 @@ public:
 
 	@see PxCombineMode getRestitutionCombineMode() setRestitution()
 	*/
-	virtual		void			setRestitutionCombineMode(PxCombineMode::Enum combMode) = 0;
+    virtual void setRestitutionCombineMode(PxCombineMode::Enum combMode) = 0;
 
-	/**
+    /**
 	\brief Retrieves the restitution combine mode.
 	
 	See #setRestitutionCombineMode.
@@ -301,19 +298,33 @@ public:
 
 	@see PxCombineMode setRestitutionCombineMode getRestitution()
 	*/
-	virtual		PxCombineMode::Enum	getRestitutionCombineMode() const = 0;
+    virtual PxCombineMode::Enum getRestitutionCombineMode() const = 0;
 
-	//public variables:
-				void*			userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+    //public variables:
+    void* userData; //!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
 
-	virtual		const char*		getConcreteTypeName() const { return "PxMaterial"; }
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxMaterial";
+    }
 
 protected:
-	PX_INLINE					PxMaterial(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags), userData(NULL) {}
-	PX_INLINE					PxMaterial(PxBaseFlags baseFlags) : PxBase(baseFlags) {}
-	virtual						~PxMaterial() {}
-	virtual		bool			isKindOf(const char* name) const { return !::strcmp("PxMaterial", name) || PxBase::isKindOf(name); }
-
+    PX_INLINE PxMaterial(PxType concreteType, PxBaseFlags baseFlags)
+        : PxBase(concreteType, baseFlags)
+        , userData(NULL)
+    {
+    }
+    PX_INLINE PxMaterial(PxBaseFlags baseFlags)
+        : PxBase(baseFlags)
+    {
+    }
+    virtual ~PxMaterial()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxMaterial", name) || PxBase::isKindOf(name);
+    }
 };
 
 #if !PX_DOXYGEN

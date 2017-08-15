@@ -67,32 +67,32 @@ static const PxClientID PX_MAX_CLIENTS = 128;
 @see PxClientBehaviorFlags PxScene::setClientBehaviorFlags() 
 */
 struct PX_DEPRECATED PxClientBehaviorFlag
-{ 
-	enum Enum 
-	{
-		/**
+{
+    enum Enum
+    {
+        /**
 		\brief Report actors belonging to other clients to the trigger callback of this client.
 
 		@see PxSimulationEventCallback::onTrigger()
 		*/
-		eREPORT_FOREIGN_OBJECTS_TO_TRIGGER_NOTIFY			= (1<<0),
-		/**
+        eREPORT_FOREIGN_OBJECTS_TO_TRIGGER_NOTIFY = (1 << 0),
+        /**
 		\brief Report actors belonging to other clients to the contact callback of this client.
 
 		@see PxSimulationEventCallback::onContact()
 		*/
-		eREPORT_FOREIGN_OBJECTS_TO_CONTACT_NOTIFY			= (1<<1),
-		/**
+        eREPORT_FOREIGN_OBJECTS_TO_CONTACT_NOTIFY = (1 << 1),
+        /**
 		\brief Report actors belonging to other clients to the constraint break callback of this client.
 
 		@see PxSimulationEventCallback::onConstraintBreak()
 		*/
-		eREPORT_FOREIGN_OBJECTS_TO_CONSTRAINT_BREAK_NOTIFY	= (1<<2),
-		/**
+        eREPORT_FOREIGN_OBJECTS_TO_CONSTRAINT_BREAK_NOTIFY = (1 << 2),
+        /**
 		\brief Report actors belonging to other clients to scene queries of this client.
 		*/
-		eREPORT_FOREIGN_OBJECTS_TO_SCENE_QUERY				= (1<<3)
-	};
+        eREPORT_FOREIGN_OBJECTS_TO_SCENE_QUERY = (1 << 3)
+    };
 };
 
 /**
@@ -105,7 +105,6 @@ struct PX_DEPRECATED PxClientBehaviorFlag
 typedef PX_DEPRECATED PxFlags<PxClientBehaviorFlag::Enum, PxU8> PxClientBehaviorFlags;
 PX_FLAGS_OPERATORS(PxClientBehaviorFlag::Enum, PxU8)
 
-
 /**
 \brief Multiclient behavior bit flags for actors.
 
@@ -114,32 +113,32 @@ PX_FLAGS_OPERATORS(PxClientBehaviorFlag::Enum, PxU8)
 @see PxActorClientBehaviorFlags PxActor::setClientBehaviorFlags()
 */
 struct PX_DEPRECATED PxActorClientBehaviorFlag
-{ 
-	enum Enum
-	{
-		/**
+{
+    enum Enum
+    {
+        /**
 		\brief Report this actor to trigger callbacks of other clients.
 
 		@see PxSimulationEventCallback::onTrigger()
 		*/
-		eREPORT_TO_FOREIGN_CLIENTS_TRIGGER_NOTIFY			= (1<<0),
-		/**
+        eREPORT_TO_FOREIGN_CLIENTS_TRIGGER_NOTIFY = (1 << 0),
+        /**
 		\brief Report this actor to contact callbacks of other clients.
 
 		@see PxSimulationEventCallback::onContact()
 		*/
-		eREPORT_TO_FOREIGN_CLIENTS_CONTACT_NOTIFY			= (1<<1),
-		/**
+        eREPORT_TO_FOREIGN_CLIENTS_CONTACT_NOTIFY = (1 << 1),
+        /**
 		\brief Report this actor to constraint break callbacks of other clients.
 
 		@see PxSimulationEventCallback::onConstraintBreak()
 		*/
-		eREPORT_TO_FOREIGN_CLIENTS_CONSTRAINT_BREAK_NOTIFY	= (1<<2),
-		/**
+        eREPORT_TO_FOREIGN_CLIENTS_CONSTRAINT_BREAK_NOTIFY = (1 << 2),
+        /**
 		\brief Report this actor to scene queries of other clients.
 		*/
-		eREPORT_TO_FOREIGN_CLIENTS_SCENE_QUERY				= (1<<3)
-	};
+        eREPORT_TO_FOREIGN_CLIENTS_SCENE_QUERY = (1 << 3)
+    };
 };
 
 /**
