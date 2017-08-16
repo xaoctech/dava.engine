@@ -93,12 +93,13 @@ public:
 			EROFS(read_only_file_system),
 			ENFILE(too_many_files_open_in_system),
 			EMFILE(too_many_files_open)
+			EHOSTUNREACH(host_unreachable) - timeout connect to CDN
 		If you receive host_unreachable(EHOSTUNREACH) signal and string
 		argument equals "dlcmanager_timeout" it means dlcManager can't
 		connect to CDN server and timeout exceeded. After this signal
 		DLCManager will still try to continue initialization
 		*/
-    Signal<const String&, int32> fileErrorOccured;
+    Signal<const String&, int32> error;
 
     /**
 	    User fills hints to internal implementation.
@@ -144,7 +145,7 @@ public:
         UsingRemoteMeta //!< either downloaded data from server or used local data with the same version
     };
     /** return initialization status */
-    virtual InitStatus GetInitStatus() const;
+    virtual InitStatus GetInitStatus() const = 0;
 
     virtual bool IsRequestingEnabled() const = 0;
 
@@ -153,7 +154,7 @@ public:
 
     /** Return size of pack with all it's dependent packs from local meta without downloading
 	    or 0 if manager is not initialized */
-    virtual uint64 GetPackSize(const String& packName);
+    virtual uint64 GetPackSize(const String& packName) = 0;
 
     virtual void SetRequestingEnabled(bool value) = 0;
 
@@ -187,7 +188,7 @@ public:
         uint32 totalFiles = 0; //!< count files in superpack (easy for human to see difference on superpacks)
     };
     /** Check if manager is initialized and return info */
-    virtual Info GetInfo() const;
+    virtual Info GetInfo() const = 0;
 };
 
 } // end namespace DAVA

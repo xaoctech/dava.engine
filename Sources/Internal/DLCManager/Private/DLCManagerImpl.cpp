@@ -544,14 +544,14 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
     ++retryCount;
     timeWaitingNextInitializationAttempt = hints.retryConnectMilliseconds / 1000.f;
 
-    if (initTimeoutFirered == false)
+    if (initTimeoutFired == false)
     {
         int64 initializationTime = SystemTimer::GetMs() - startInitializationTime;
 
         if (initializationTime >= (hints.timeoutForInitialization * 1000))
         {
-            fileErrorOccured.Emit(timeoutString, EHOSTUNREACH);
-            initTimeoutFirered = true;
+            error.Emit(timeoutString, EHOSTUNREACH);
+            initTimeoutFired = true;
         }
     }
 
@@ -659,7 +659,7 @@ void DLCManagerImpl::SaveServerFooter()
     StringStream ss;
     ss << "can't write file: " << localCacheFooter.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << std::endl;
     log << ss.str();
-    fileErrorOccured.Emit(localCacheFooter.GetAbsolutePathname(), errno);
+    error.Emit(localCacheFooter.GetAbsolutePathname(), errno);
     DAVA_THROW(Exception, ss.str());
 }
 
@@ -948,7 +948,7 @@ void DLCManagerImpl::ParseMeta()
             << ex.line << ") errno: (" << localErrno << ") "
             << strerror(localErrno) << std::endl;
 
-        fileErrorOccured.Emit(localCacheMeta.GetAbsolutePathname(), localErrno);
+        error.Emit(localCacheMeta.GetAbsolutePathname(), localErrno);
 
         // lets start all over again
         initState = InitState::LoadingRequestAskFooter;
