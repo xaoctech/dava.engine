@@ -53,7 +53,8 @@ class PxTriangle;
 class PxMeshQuery
 {
 public:
-    /**
+
+	/**
 	\brief Retrieves triangle data from a triangle ID.
 
 	This function can be used together with #findOverlapTriangleMesh() to retrieve triangle properties.
@@ -69,9 +70,10 @@ public:
 
 	@see PxTriangle PxTriangleFlags PxTriangleID findOverlapTriangleMesh()
 	*/
-    PX_PHYSX_COMMON_API static void getTriangle(const PxTriangleMeshGeometry& triGeom, const PxTransform& transform, PxTriangleID triangleIndex, PxTriangle& triangle, PxU32* vertexIndices = NULL, PxU32* adjacencyIndices = NULL);
+	PX_PHYSX_COMMON_API static void getTriangle(const PxTriangleMeshGeometry& triGeom, const PxTransform& transform, PxTriangleID triangleIndex, PxTriangle& triangle, PxU32* vertexIndices=NULL, PxU32* adjacencyIndices=NULL);
 
-    /**
+
+	/**
 	\brief Retrieves triangle data from a triangle ID.
 
 	This function can be used together with #findOverlapHeightField() to retrieve triangle properties.
@@ -87,9 +89,10 @@ public:
 
 	@see PxTriangle PxTriangleFlags PxTriangleID findOverlapHeightField()
 	*/
-    PX_PHYSX_COMMON_API static void getTriangle(const PxHeightFieldGeometry& hfGeom, const PxTransform& transform, PxTriangleID triangleIndex, PxTriangle& triangle, PxU32* vertexIndices = NULL, PxU32* adjacencyIndices = NULL);
+	PX_PHYSX_COMMON_API static void getTriangle(const PxHeightFieldGeometry& hfGeom, const PxTransform& transform, PxTriangleID triangleIndex, PxTriangle& triangle, PxU32* vertexIndices=NULL, PxU32* adjacencyIndices=NULL);
 
-    /**
+
+	/**
 	\brief Find the mesh triangles which touch the specified geometry object.
 
 	Returned triangle indices can be used with #getTriangle() to retrieve the triangle properties.
@@ -106,11 +109,11 @@ public:
 
 	@see PxTriangleMeshGeometry getTriangle()
 	*/
-    PX_PHYSX_COMMON_API static PxU32 findOverlapTriangleMesh(const PxGeometry& geom, const PxTransform& geomPose,
-                                                             const PxTriangleMeshGeometry& meshGeom, const PxTransform& meshPose,
-                                                             PxU32* results, PxU32 maxResults, PxU32 startIndex, bool& overflow);
+	PX_PHYSX_COMMON_API static PxU32 findOverlapTriangleMesh(	const PxGeometry& geom, const PxTransform& geomPose,
+																const PxTriangleMeshGeometry& meshGeom, const PxTransform& meshPose,
+																PxU32* results, PxU32 maxResults, PxU32 startIndex, bool& overflow);
 
-    /**
+	/**
 	\brief Find the height field triangles which touch the specified geometry object.
 
 	Returned triangle indices can be used with #getTriangle() to retrieve the triangle properties.
@@ -127,11 +130,12 @@ public:
 
 	@see PxHeightFieldGeometry getTriangle()
 	*/
-    PX_PHYSX_COMMON_API static PxU32 findOverlapHeightField(const PxGeometry& geom, const PxTransform& geomPose,
-                                                            const PxHeightFieldGeometry& hfGeom, const PxTransform& hfPose,
-                                                            PxU32* results, PxU32 maxResults, PxU32 startIndex, bool& overflow);
+	PX_PHYSX_COMMON_API static PxU32 findOverlapHeightField(const PxGeometry& geom, const PxTransform& geomPose,
+															const PxHeightFieldGeometry& hfGeom, const PxTransform& hfPose,
+															PxU32* results, PxU32 maxResults, PxU32 startIndex, bool& overflow);
 
-    /**
+
+	/**
 	\brief Sweep a specified geometry object in space and test for collision with a set of given triangles.
 
 	This function simply sweeps input geometry against each input triangle, in the order they are given.
@@ -163,17 +167,17 @@ public:
 
 	@see PxTriangle PxSweepHit PxGeometry PxTransform
 	*/
-    PX_PHYSX_COMMON_API static bool sweep(const PxVec3& unitDir,
-                                          const PxReal distance,
-                                          const PxGeometry& geom,
-                                          const PxTransform& pose,
-                                          PxU32 triangleCount,
-                                          const PxTriangle* triangles,
-                                          PxSweepHit& sweepHit,
-                                          PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
-                                          const PxU32* cachedIndex = NULL,
-                                          const PxReal inflation = 0.0f,
-                                          bool doubleSided = false);
+	PX_PHYSX_COMMON_API static bool sweep(const PxVec3& unitDir,
+							const PxReal distance,
+							const PxGeometry& geom,
+							const PxTransform& pose,
+							PxU32 triangleCount,
+							const PxTriangle* triangles,
+							PxSweepHit& sweepHit,
+							PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
+							const PxU32* cachedIndex = NULL,
+							const PxReal inflation = 0.0f,
+							bool doubleSided = false);
 };
 
 

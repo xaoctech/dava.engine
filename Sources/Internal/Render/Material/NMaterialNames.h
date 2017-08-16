@@ -217,6 +217,8 @@ public:
 
     static const FastName FLAG_PARTICLES_DEBUG_SHOW_HEATMAP;
 
+    static const FastName FLAG_GEO_DECAL;
+
     static const FastName FLAG_FORCED_SHADOW_DIRECTION;
 
     static bool IsRuntimeFlag(const FastName& flag);

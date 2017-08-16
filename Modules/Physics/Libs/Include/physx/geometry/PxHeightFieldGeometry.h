@@ -53,46 +53,33 @@ This class allows to create a scaled height field geometry instance.
 
 There is a minimum allowed value for Y and XZ scaling - PX_MIN_HEIGHTFIELD_XZ_SCALE, heightfield creation will fail if XZ value is below this value.
 */
-class PxHeightFieldGeometry : public PxGeometry
+class PxHeightFieldGeometry : public PxGeometry 
 {
 public:
-    PX_INLINE PxHeightFieldGeometry()
-        :
-        PxGeometry(PxGeometryType::eHEIGHTFIELD)
-        ,
-        heightField(NULL)
-        ,
-        heightScale(1.0f)
-        ,
-        rowScale(1.0f)
-        ,
-        columnScale(1.0f)
-        ,
-        heightFieldFlags(0)
-    {
-    }
+	PX_INLINE PxHeightFieldGeometry() :		
+		PxGeometry		(PxGeometryType::eHEIGHTFIELD),
+		heightField		(NULL),
+		heightScale		(1.0f), 
+		rowScale		(1.0f), 
+		columnScale		(1.0f), 
+		heightFieldFlags(0)
+	{}
 
-    PX_INLINE PxHeightFieldGeometry(PxHeightField* hf,
-                                    PxMeshGeometryFlags flags,
-                                    PxReal heightScale_,
-                                    PxReal rowScale_,
-                                    PxReal columnScale_)
-        :
-        PxGeometry(PxGeometryType::eHEIGHTFIELD)
-        ,
-        heightField(hf)
-        ,
-        heightScale(heightScale_)
-        ,
-        rowScale(rowScale_)
-        ,
-        columnScale(columnScale_)
-        ,
-        heightFieldFlags(flags)
-    {
-    }
+	PX_INLINE PxHeightFieldGeometry(PxHeightField* hf,
+									PxMeshGeometryFlags flags, 
+									PxReal heightScale_,
+									PxReal rowScale_, 
+									PxReal columnScale_) :
+		PxGeometry			(PxGeometryType::eHEIGHTFIELD), 
+		heightField			(hf) ,
+		heightScale			(heightScale_), 
+		rowScale			(rowScale_), 
+		columnScale			(columnScale_), 
+		heightFieldFlags	(flags)
+		{
+		}
 
-    /**
+	/**
 	\brief Returns true if the geometry is valid.
 
 	\return True if the current settings are valid
@@ -102,49 +89,50 @@ public:
 
 	@see PxRigidActor::createShape, PxPhysics::createShape
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE bool isValid() const;
 
 public:
-    /**
+	/**
 	\brief The height field data.
 	*/
-    PxHeightField* heightField;
+	PxHeightField*			heightField;
 
-    /**
+	/**
 	\brief The scaling factor for the height field in vertical direction (y direction in local space).
 	*/
-    PxReal heightScale;
+	PxReal					heightScale;
 
-    /**
+	/**
 	\brief The scaling factor for the height field in the row direction (x direction in local space).
 	*/
-    PxReal rowScale;
+	PxReal					rowScale;
 
-    /**
+	/**
 	\brief The scaling factor for the height field in the column direction (z direction in local space).
 	*/
-    PxReal columnScale;
+	PxReal					columnScale;
 
-    /**
+	/**
 	\brief Flags to specify some collision properties for the height field.
 	*/
-    PxMeshGeometryFlags heightFieldFlags;
+	PxMeshGeometryFlags		heightFieldFlags;
 
-    PxPadding<3> paddingFromFlags; //!< padding for mesh flags.
+	PxPadding<3>			paddingFromFlags;	//!< padding for mesh flags.
 };
+
 
 PX_INLINE bool PxHeightFieldGeometry::isValid() const
 {
-    if (mType != PxGeometryType::eHEIGHTFIELD)
-        return false;
-    if (!PxIsFinite(heightScale) || !PxIsFinite(rowScale) || !PxIsFinite(columnScale))
-        return false;
-    if (rowScale < PX_MIN_HEIGHTFIELD_XZ_SCALE || columnScale < PX_MIN_HEIGHTFIELD_XZ_SCALE || heightScale < PX_MIN_HEIGHTFIELD_Y_SCALE)
-        return false;
-    if (!heightField)
-        return false;
+	if (mType != PxGeometryType::eHEIGHTFIELD)
+		return false;
+	if (!PxIsFinite(heightScale) || !PxIsFinite(rowScale) || !PxIsFinite(columnScale))
+		return false;
+	if (rowScale < PX_MIN_HEIGHTFIELD_XZ_SCALE || columnScale < PX_MIN_HEIGHTFIELD_XZ_SCALE || heightScale < PX_MIN_HEIGHTFIELD_Y_SCALE)
+		return false;
+	if (!heightField)
+		return false;
 
-    return true;
+	return true;
 }
 
 #if !PX_DOXYGEN

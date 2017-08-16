@@ -43,13 +43,14 @@ namespace physx
 
 struct PxConverterReportMode
 {
-    enum Enum
-    {
-        eNONE, //!< Silent mode. If enabled, no information is sent to the error stream.
-        eNORMAL, //!< Normal mode. If enabled, only important information is sent to the error stream.
-        eVERBOSE //!< Verbose mode. If enabled, detailed information is sent to the error stream.
-    };
+	enum Enum
+	{
+		eNONE,		//!< Silent mode. If enabled, no information is sent to the error stream.
+		eNORMAL,	//!< Normal mode. If enabled, only important information is sent to the error stream.
+		eVERBOSE	//!< Verbose mode. If enabled, detailed information is sent to the error stream.
+	};
 };
+
 
 /**
 \brief Binary converter for serialized streams.
@@ -67,19 +68,20 @@ of this class for each thread.
 class PxBinaryConverter
 {
 public:
-    /**
+
+	/**
 	\brief Releases binary converter
 	*/
-    virtual void release() = 0;
+	virtual		void	release()																			= 0;
 
-    /**
+	/**
 	\brief Sets desired report mode.
 
 	\param[in] mode	Report mode
 	*/
-    virtual void setReportMode(PxConverterReportMode::Enum mode) = 0;
+	virtual		void	setReportMode(PxConverterReportMode::Enum mode)										= 0;
 
-    /**
+	/**
 	\brief Setups source and target meta-data streams
 
 	The source meta data provided needs to have the same endianness as the platform the converter is run on.
@@ -90,9 +92,9 @@ public:
 
 	\return True if success
 	*/
-    virtual bool setMetaData(PxInputStream& srcMetaData, PxInputStream& dstMetaData) = 0;
+	virtual		bool	setMetaData(PxInputStream& srcMetaData, PxInputStream& dstMetaData)					= 0;
 
-    /**
+	/**
 	\brief Converts binary stream from source platform to target platform
 
 	The converter needs to be configured with source and destination meta data before calling the conversion method. 
@@ -104,15 +106,12 @@ public:
 
 	\return True if success
 	*/
-    virtual bool convert(PxInputStream& srcStream, PxU32 srcSize, PxOutputStream& targetStream) = 0;
+	virtual		bool	convert(PxInputStream& srcStream, PxU32 srcSize, PxOutputStream& targetStream)		= 0;
+
 
 protected:
-    PxBinaryConverter()
-    {
-    }
-    virtual ~PxBinaryConverter()
-    {
-    }
+						PxBinaryConverter()		{}
+	virtual				~PxBinaryConverter()	{}
 };
 
 #if !PX_DOXYGEN

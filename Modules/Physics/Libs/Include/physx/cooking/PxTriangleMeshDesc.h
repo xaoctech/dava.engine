@@ -54,7 +54,8 @@ user may discard the triangle data.
 class PxTriangleMeshDesc : public PxSimpleTriangleMesh
 {
 public:
-    /**
+
+	/**
 	Optional pointer to first material index, or NULL. There are PxSimpleTriangleMesh::numTriangles indices in total.
 	Caller may add materialIndexStride bytes to the pointer to access the next triangle.
 
@@ -70,45 +71,45 @@ public:
 
 	@see materialIndexStride
 	*/
-    PxTypedStridedData<PxMaterialTableIndex> materialIndices;
+	PxTypedStridedData<PxMaterialTableIndex> materialIndices;
 
-    /**
+	/**
 	\brief Constructor sets to default.
 	*/
-    PX_INLINE PxTriangleMeshDesc();
+	PX_INLINE PxTriangleMeshDesc();	
 
-    /**
+	/**
 	\brief (re)sets the structure to the default.	
 	*/
-    PX_INLINE void setToDefault();
+	PX_INLINE void setToDefault();
 
-    /**
+	/**
 	\brief Returns true if the descriptor is valid.
 	\return true if the current settings are valid
 	*/
-    PX_INLINE bool isValid() const;
+	PX_INLINE bool isValid() const;
 };
 
-PX_INLINE PxTriangleMeshDesc::PxTriangleMeshDesc() //constructor sets to default
+PX_INLINE PxTriangleMeshDesc::PxTriangleMeshDesc()	//constructor sets to default
 {
-    PxSimpleTriangleMesh::setToDefault();
+	PxSimpleTriangleMesh::setToDefault();	
 }
 
 PX_INLINE void PxTriangleMeshDesc::setToDefault()
 {
-    *this = PxTriangleMeshDesc();
+	*this = PxTriangleMeshDesc();
 }
 
 PX_INLINE bool PxTriangleMeshDesc::isValid() const
 {
-    if (points.count < 3) //at least 1 trig's worth of points
-        return false;
-    if ((!triangles.data) && (points.count % 3)) // Non-indexed mesh => we must ensure the geometry defines an implicit number of triangles // i.e. numVertices can't be divided by 3
-        return false;
-    //add more validity checks here
-    if (materialIndices.data && materialIndices.stride < sizeof(PxMaterialTableIndex))
-        return false;
-    return PxSimpleTriangleMesh::isValid();
+	if(points.count < 3) 	//at least 1 trig's worth of points
+		return false;
+	if ((!triangles.data) && (points.count%3))		// Non-indexed mesh => we must ensure the geometry defines an implicit number of triangles // i.e. numVertices can't be divided by 3
+		return false;
+	//add more validity checks here
+	if (materialIndices.data && materialIndices.stride < sizeof(PxMaterialTableIndex))
+		return false;
+	return PxSimpleTriangleMesh::isValid();
 }
 
 #if !PX_DOXYGEN
