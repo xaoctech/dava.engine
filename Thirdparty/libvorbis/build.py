@@ -113,7 +113,7 @@ def _build_win32(working_directory_path, root_project_path):
         source_folder_path, 'win32/VS2010/Win32/Release/libvorbis_static.lib')
     shutil.copyfile(
         libvorbis_path_x86_debug,
-        os.path.join(libs_win_root, 'x86/Debug/libvorbis_static_d.lib'))
+        os.path.join(libs_win_root, 'x86/Debug/libvorbis_static.lib'))
     shutil.copyfile(
         libvorbis_path_x86_release,
         os.path.join(libs_win_root, 'x86/Release/libvorbis_static.lib'))
@@ -128,7 +128,7 @@ def _build_win32(working_directory_path, root_project_path):
         libvorbisfile_path_x86_debug,
         os.path.join(
             libs_win_root,
-            'x86/Debug/libvorbisfile_static_d.lib'))
+            'x86/Debug/libvorbisfile_static.lib'))
     shutil.copyfile(
         libvorbisfile_path_x86_release,
         os.path.join(
@@ -141,7 +141,7 @@ def _build_win32(working_directory_path, root_project_path):
         source_folder_path, 'win32/VS2010/x64/Release/libvorbis_static.lib')
     shutil.copyfile(
         libvorbis_path_x64_debug,
-        os.path.join(libs_win_root, 'x64/Debug/libvorbis_static_d.lib'))
+        os.path.join(libs_win_root, 'x64/Debug/libvorbis_static.lib'))
     shutil.copyfile(
         libvorbis_path_x64_release,
         os.path.join(libs_win_root, 'x64/Release/libvorbis_static.lib'))
@@ -152,7 +152,7 @@ def _build_win32(working_directory_path, root_project_path):
         source_folder_path, 'win32/VS2010/x64/Release/libvorbisfile_static.lib')
     shutil.copyfile(
         libvorbisfile_path_x64_debug,
-        os.path.join(libs_win_root, 'x64/Debug/libvorbisfile_static_d.lib'))
+        os.path.join(libs_win_root, 'x64/Debug/libvorbisfile_static.lib'))
     shutil.copyfile(
         libvorbisfile_path_x64_release,
         os.path.join(libs_win_root, 'x64/Release/libvorbisfile_static.lib'))
