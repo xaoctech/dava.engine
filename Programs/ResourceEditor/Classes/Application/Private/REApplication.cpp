@@ -26,7 +26,7 @@
 #include "CommandLine/SceneValidationTool.h"
 
 #ifdef __DAVAENGINE_BEAST__
-#include "BeastProxyImpl.h"
+#include "Beast/BeastProxyImpl.h"
 #else
 #include "Beast/BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__

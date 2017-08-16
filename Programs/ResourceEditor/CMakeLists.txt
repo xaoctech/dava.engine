@@ -26,11 +26,19 @@ list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
 list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
 list(APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS)
 
+
+
 find_package( DavaTools REQUIRED )
 find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
 find_package( QtHelpers REQUIRED )
 find_package( DocDirSetup REQUIRED )
+
+if (NOT PUBLIC_BUILD)
+    if( WIN32 )
+        find_package( Beast REQUIRED )
+    endif()
+endif()
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
@@ -39,14 +47,8 @@ find_package( TArc REQUIRED )
 find_package( RemoteTool REQUIRED )
 # find_package( EditorPhysics REQUIRED )
 
-if (NOT PUBLIC_BUILD)
-    if( WIN32 )
-        find_package( Beast REQUIRED )
-    endif()
-endif()
 
 
-#
 
 include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}" )
 include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}/Sources" )

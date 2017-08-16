@@ -4,7 +4,7 @@
 #define __SCENE_PARSER__
 
 #include "DAVAEngine.h"
-#include "Scene/LandscapeThumbnails.h"
+#include "ResourceEditor/Classes/Qt/Scene/LandscapeThumbnails.h"
 
 struct MaxLodMaxSwitch
 {

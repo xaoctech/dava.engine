@@ -7,7 +7,7 @@
 #include "BeastTypes.h"
 #include "BeastNames.h"
 #include "SceneParser.h"
-#include "Beast/BeastProxy.h"
+#include "ResourceEditor/Classes/Beast/BeastProxy.h"
 
 struct LightmapAtlasingData;
 
