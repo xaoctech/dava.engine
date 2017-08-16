@@ -1,0 +1,3 @@
+surface mirror(color Color = 1) {
+   Ci = Color * reflection(N);
+}
