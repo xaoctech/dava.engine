@@ -75,5 +75,4 @@ uint32 InputDevice::GetId() const
 {
     return id;
 }
-
 } // namespace DAVA

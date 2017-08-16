@@ -65,5 +65,4 @@ private:
     const uint32 id;
     DAVA::UnorderedSet<DAVA::Window*> windows;
 };
-
 } // namespace DAVA

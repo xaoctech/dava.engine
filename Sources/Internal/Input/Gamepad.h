@@ -175,7 +175,7 @@ private:
     void HandleBackButtonPress(bool pressed);
     void HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal);
 
-    void ResetState(DAVA::Window* window);
+    void ResetState(DAVA::Window* window) override;
 
     InputSystem* inputSystem = nullptr;
     std::unique_ptr<Private::GamepadImpl> impl;
@@ -192,5 +192,4 @@ private:
 
     Token endFrameConnectionToken;
 };
-
 } // namespace DAVA

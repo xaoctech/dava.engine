@@ -296,5 +296,4 @@ void Gamepad::ResetState(DAVA::Window* window)
         HandleAxisMovement(axis, 0.0f, false);
     }
 }
-
 } // namespace DAVA

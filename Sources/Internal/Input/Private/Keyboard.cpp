@@ -203,5 +203,4 @@ void Keyboard::CreateAndSendCharInputEvent(char32_t charCode, bool charRepeated,
 
     inputSystem->DispatchInputEvent(inputEvent);
 }
-
 } // namespace DAVA
