@@ -1,5 +1,6 @@
 #pragma once
 
+#include <UI/UIEvent.h>
 #include <Entity/SceneSystem.h>
 #include <Math/Matrix4.h>
 
@@ -23,6 +24,7 @@ public:
     void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
     void Process(DAVA::float32 timeElapsed) override;
+    bool Input(DAVA::UIEvent* uie) override;
 
     void SetSimulationState(eSimulationState newState);
     eSimulationState GetSimulationState() const;
@@ -39,4 +41,5 @@ private:
     };
     DAVA::UnorderedMap<DAVA::Entity*, EntityInfo> transformMap;
     eSimulationState state = eSimulationState::STOPPED;
+    DAVA::Set<DAVA::Entity*> pendingRemove;
 };

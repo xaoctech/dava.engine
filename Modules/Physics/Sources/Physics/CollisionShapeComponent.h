@@ -6,6 +6,8 @@
 
 #include <Reflection/Reflection.h>
 
+#include <physx/PxFiltering.h>
+
 namespace physx
 {
 class PxShape;
@@ -34,6 +36,8 @@ public:
     void SetMass(float32 mass);
 
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
+    static void SetCCDActive(physx::PxShape* shape, bool isCCDActive);
+    static bool IsCCDActive(const physx::PxFilterData& filterData);
 
 protected:
 #if defined(__DAVAENGINE_DEBUG__)

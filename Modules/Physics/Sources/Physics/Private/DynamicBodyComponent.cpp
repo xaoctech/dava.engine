@@ -35,6 +35,7 @@ Component* DynamicBodyComponent::Clone(Entity* toEntity)
     result->lockFlags = lockFlags;
     result->minPositionIters = minPositionIters;
     result->minVelocityIters = minVelocityIters;
+    result->enableCCD = enableCCD;
 
     return result;
 }
@@ -48,6 +49,7 @@ void DynamicBodyComponent::Serialize(KeyedArchive* archive, SerializationContext
     archive->SetUInt32("dynamicBody.lockFlags", static_cast<uint32>(lockFlags));
     archive->SetUInt32("dynamicBody.minPositionIters", minPositionIters);
     archive->SetUInt32("dynamicBody.minVelocityIters", minVelocityIters);
+    archive->SetBool("dynamicBody.enabledCCD", enableCCD);
 }
 
 void DynamicBodyComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -59,6 +61,7 @@ void DynamicBodyComponent::Deserialize(KeyedArchive* archive, SerializationConte
     lockFlags = static_cast<eLockFlags>(archive->GetUInt32("dynamicBody.lockFlags", static_cast<uint32>(lockFlags)));
     minPositionIters = archive->GetUInt32("dynamicBody.minPositionIters", minPositionIters);
     minVelocityIters = archive->GetUInt32("dynamicBody.minVelocityIters", minVelocityIters);
+    enableCCD = archive->GetBool("dynamicBody.enabledCCD", enableCCD);
 }
 
 float32 DynamicBodyComponent::GetLinearDamping() const
@@ -127,6 +130,20 @@ void DynamicBodyComponent::SetLockFlags(eLockFlags lockFlags_)
     SheduleUpdate();
 }
 
+bool DynamicBodyComponent::IsCCDEnabled() const
+{
+    return enableCCD;
+}
+
+void DynamicBodyComponent::SetCCDEnabled(bool isCCDEnabled)
+{
+    if (isCCDEnabled != enableCCD)
+    {
+        enableCCD = isCCDEnabled;
+        SheduleUpdate();
+    }
+}
+
 #if defined(__DAVAENGINE_DEBUG__)
 void DynamicBodyComponent::ValidateActorType() const
 {
@@ -144,6 +161,7 @@ void DynamicBodyComponent::UpdateLocalProperties()
     actor->setMaxAngularVelocity(maxAngularVelocity);
     actor->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlags(static_cast<physx::PxRigidDynamicLockFlag::Enum>(lockFlags)));
     actor->setSolverIterationCounts(minPositionIters, minVelocityIters);
+    actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, enableCCD);
     PhysicsComponent::UpdateLocalProperties();
 }
 
@@ -157,6 +175,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DynamicBodyComponent)
     .Field("Lock flags", &DynamicBodyComponent::GetLockFlags, &DynamicBodyComponent::SetLockFlags)[M::FlagsT<DynamicBodyComponent::eLockFlags>()]
     .Field("Position iterations count", &DynamicBodyComponent::GetMinPositionIters, &DynamicBodyComponent::SetMinPositionIters)[M::Range(1, 255, 1)]
     .Field("Velocity iterations count", &DynamicBodyComponent::GetMinVelocityIters, &DynamicBodyComponent::SetMinVelocityIters)[M::Range(1, 255, 1)]
+    .Field("CCD", &DynamicBodyComponent::IsCCDEnabled, &DynamicBodyComponent::SetCCDEnabled)[M::DisplayName("CCD enabled")]
     .End();
 }
 } // namespace DAVA

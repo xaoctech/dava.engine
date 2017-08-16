@@ -16,7 +16,7 @@ void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
 
     std::unique_ptr<EditorPhysicsData> data(new EditorPhysicsData());
     data->system = new EditorPhysicsSystem(scene);
-    scene->AddSystem(data->system, 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(data->system, 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
     context->CreateData(std::move(data));
 }

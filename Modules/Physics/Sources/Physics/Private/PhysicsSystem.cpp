@@ -143,6 +143,11 @@ physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
     physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | // notify about ongoing contacts
     physx::PxPairFlag::eNOTIFY_CONTACT_POINTS; // report contact points
 
+    if (CollisionShapeComponent::IsCCDActive(filterData0) || CollisionShapeComponent::IsCCDActive(filterData1))
+    {
+        pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT; // report continuous collision detection contacts
+    }
+
     return physx::PxFilterFlag::eDEFAULT;
 }
 
@@ -333,6 +338,23 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
                 physicsComponent->ReleasePxActor();
             }
         }
+
+        if (componentType == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            size_t index = 0;
+            while (index < forces.size())
+            {
+                PendingForce& force = forces[index];
+                if (force.component == component)
+                {
+                    RemoveExchangingWithLast(forces, index);
+                }
+                else
+                {
+                    ++index;
+                }
+            }
+        }
     }
 
     using namespace PhysicsSystemDetail;
@@ -393,6 +415,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
         }
         else
         {
+            ApplyForces();
             DrawDebugInfo();
             physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
             isSimulationRunning = true;
@@ -539,7 +562,6 @@ void PhysicsSystem::InitNewObjects()
         Entity* entity = component->GetEntity();
         AttachShape(entity, component, scale);
 
-        Logger::Info("Add actor %p", component->GetPxActor());
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
     }
@@ -597,7 +619,6 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
     physx::PxShape* shape = shapeComponent->GetPxShape();
     if (shape != nullptr)
     {
-        Logger::Info("Add shape %p to actor %p", shape, rigidActor);
         rigidActor->attachShape(*shape);
         SheduleUpdate(shapeComponent);
         SheduleUpdate(bodyComponent);
@@ -866,10 +887,52 @@ void PhysicsSystem::UpdateComponents()
                 physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
             }
         }
+
+        if (bodyComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(bodyComponent);
+            bool isCCDActive = dynamicBody->IsCCDEnabled();
+
+            physx::PxRigidDynamic* actor = dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>();
+            DVASSERT(actor != nullptr);
+
+            physx::PxU32 shapesCount = actor->getNbShapes();
+            for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
+            {
+                physx::PxShape* shape = nullptr;
+                actor->getShapes(&shape, 1, shapeIndex);
+                CollisionShapeComponent::SetCCDActive(shape, isCCDActive);
+            }
+        }
     }
 
     collisionComponentsUpdatePending.clear();
     physicsComponensUpdatePending.clear();
+}
+
+void PhysicsSystem::AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode)
+{
+    PendingForce pendingForce;
+    pendingForce.component = component;
+    pendingForce.force = force;
+    pendingForce.mode = mode;
+
+    forces.push_back(pendingForce);
+}
+
+void PhysicsSystem::ApplyForces()
+{
+    for (const PendingForce& force : forces)
+    {
+        physx::PxActor* actor = force.component->GetPxActor();
+        DVASSERT(actor != nullptr);
+        physx::PxRigidBody* rigidBody = actor->is<physx::PxRigidBody>();
+        DVASSERT(rigidBody != nullptr);
+
+        rigidBody->addForce(PhysicsMath::Vector3ToPxVec3(force.force), force.mode);
+    }
+
+    forces.clear();
 }
 
 } // namespace DAVA

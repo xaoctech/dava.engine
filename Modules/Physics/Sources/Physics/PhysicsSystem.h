@@ -5,6 +5,7 @@
 
 #include <physx/PxQueryReport.h>
 #include <physx/PxSimulationEventCallback.h>
+#include <physx/PxForceMode.h>
 
 namespace physx
 {
@@ -19,6 +20,7 @@ class Scene;
 class CollisionSingleComponent;
 class PhysicsModule;
 class PhysicsComponent;
+class DynamicBodyComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
 
@@ -47,6 +49,8 @@ public:
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
+    void AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode);
+
 private:
     bool FetchResults(bool waitForFetchFinish);
 
@@ -62,6 +66,7 @@ private:
     void SyncTransformToPhysx();
     void SyncEntityTransformToPhysx(Entity* entity);
     void UpdateComponents();
+    void ApplyForces();
 
 private:
     class SimulationEventCallback : public physx::PxSimulationEventCallback
@@ -101,6 +106,14 @@ private:
     Set<PhysicsComponent*> physicsComponensUpdatePending;
     Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
 
+    struct PendingForce
+    {
+        DynamicBodyComponent* component = nullptr;
+        Vector3 force;
+        physx::PxForceMode::Enum mode;
+    };
+
+    Vector<PendingForce> forces;
     SimulationEventCallback simulationEventCallback;
 
     bool drawDebugInfo = false;

@@ -231,6 +231,7 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config, phy
 
     PxSceneDesc sceneDesc(physics->getTolerancesScale());
     sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVE_ACTORS;
+    sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;
     sceneDesc.gravity = PhysicsMath::Vector3ToPxVec3(config.gravity);
     sceneDesc.filterShader = filterShader;
     sceneDesc.simulationEventCallback = callback;
@@ -426,7 +427,7 @@ physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
 {
     if (defaultMaterial == nullptr)
     {
-        defaultMaterial = physics->createMaterial(0.5f, 0.5f, 0.1f);
+        defaultMaterial = physics->createMaterial(0.5f, 0.8f, 0.7f);
     }
 
     return defaultMaterial;

@@ -8,6 +8,14 @@
 
 namespace DAVA
 {
+namespace CollisionShapeComponentDetail
+{
+enum
+{
+    CCD_FLAG = 1 << 29
+};
+} // namespace CollisionShapeComponentDetail
+
 void CollisionShapeComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
@@ -83,6 +91,27 @@ CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* s
 {
     DVASSERT(shape != nullptr);
     return reinterpret_cast<CollisionShapeComponent*>(shape->userData);
+}
+
+void CollisionShapeComponent::SetCCDActive(physx::PxShape* shape, bool isCCDActive)
+{
+    DVASSERT(shape != nullptr);
+    physx::PxFilterData fd = shape->getSimulationFilterData();
+    physx::PxU32 ccdFlag = static_cast<physx::PxU32>(CollisionShapeComponentDetail::CCD_FLAG);
+    if (isCCDActive == true)
+    {
+        fd.word3 |= ccdFlag;
+    }
+    else
+    {
+        fd.word3 = fd.word3 & (~ccdFlag);
+    }
+    shape->setSimulationFilterData(fd);
+}
+
+bool CollisionShapeComponent::IsCCDActive(const physx::PxFilterData& filterData)
+{
+    return filterData.word3 & CollisionShapeComponentDetail::CCD_FLAG ? true : false;
 }
 
 void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)

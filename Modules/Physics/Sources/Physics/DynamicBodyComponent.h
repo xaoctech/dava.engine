@@ -42,6 +42,9 @@ public:
     eLockFlags GetLockFlags() const;
     void SetLockFlags(eLockFlags lockFlags);
 
+    bool IsCCDEnabled() const;
+    void SetCCDEnabled(bool isCCDEnabled);
+
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
     void ValidateActorType() const override;
@@ -58,6 +61,7 @@ private:
 
     uint32 minPositionIters = 4;
     uint32 minVelocityIters = 1;
+    bool enableCCD = false;
 
     DAVA_VIRTUAL_REFLECTION(DynamicBodyComponent, PhysicsComponent);
 };
