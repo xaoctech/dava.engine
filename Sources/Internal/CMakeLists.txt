@@ -1,7 +1,4 @@
 include ( CMake-common )
-if( WIN32 AND NOT WINDOWS_UAP )
-    include( FindWindowsSDK )
-endif()
 
 if( NOT DAVA_LIBRARY )
     set( DAVA_LIBRARY    "DavaFramework" )
@@ -24,8 +21,7 @@ set( EXTERNAL_MODULES               ${DAVA_MODULES_DIR}/SampleModule
 set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR}
                                     ${DAVA_THIRD_PARTY_INCLUDES_PATH}  )
 
-set( INCLUDES_WIN                   ${WINDOWSSDK_LATEST_DIR}/include/shared
-                                    $ENV{DXSDK_DIR}/include
+set( INCLUDES_WIN                   $ENV{DXSDK_DIR}/include
                                     ${DAVA_THIRD_PARTY_ROOT_PATH}/include/ffmpeg )
 
 
