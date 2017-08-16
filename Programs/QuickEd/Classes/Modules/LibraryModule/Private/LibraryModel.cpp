@@ -58,9 +58,9 @@ LibraryModel::LibraryModel(QObject* parent)
         {
             control->SetName(descr.first);
             if (descr.second)
-                defaultControls.push_back(ControlNode::CreateFromControlWithChildren(control));
+                defaultControls.emplace_back(ControlNode::CreateFromControlWithChildren(control));
             else
-                defaultControls.push_back(ControlNode::CreateFromControl(control));
+                defaultControls.emplace_back(ControlNode::CreateFromControl(control));
 
             AbstractProperty* prop = defaultControls.back()->GetRootProperty()->FindPropertyByName("size");
 
@@ -76,7 +76,7 @@ LibraryModel::LibraryModel(QObject* parent)
     controlsRootItem->setData(QVariant::fromValue(static_cast<void*>(nullptr)));
     invisibleRootItem()->appendRow(controlsRootItem);
 
-    importedPackageRootItem = new QStandardItem(tr("Importred prototypes"));
+    importedPackageRootItem = new QStandardItem(tr("Imported prototypes"));
     importedPackageRootItem->setData(QVariant::fromValue(static_cast<void*>(nullptr)));
     invisibleRootItem()->appendRow(importedPackageRootItem);
 
@@ -84,81 +84,35 @@ LibraryModel::LibraryModel(QObject* parent)
     defaultControlsRootItem->setData(QVariant::fromValue(static_cast<void*>(nullptr)));
     invisibleRootItem()->appendRow(defaultControlsRootItem);
 
-    for (ControlNode* defaultControl : defaultControls)
+    for (RefPtr<ControlNode> defaultControl : defaultControls)
     {
-        AddControl(defaultControl, defaultControlsRootItem, false);
+        AddControl(defaultControl.Get(), defaultControlsRootItem, false);
     }
 }
 
-LibraryModel::~LibraryModel()
-{
-    for (ControlNode* control : defaultControls)
-    {
-        control->Release();
-    }
-    defaultControls.clear();
-
-    for (PackageNode* package : libraryPackages)
-    {
-        package->Release();
-    }
-    libraryPackages.clear();
-}
+LibraryModel::~LibraryModel() = default;
 
 void LibraryModel::SetUI(DAVA::TArc::UI* ui_)
 {
     ui = ui_;
 }
 
-void LibraryModel::SetProjectLibraries(const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& prototypes_, const DAVA::Vector<DAVA::FilePath>& libraryPackages_)
+void LibraryModel::SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& packages)
 {
-    prototypes = prototypes_;
-    libraryPackagePaths = libraryPackages_;
-
     for (QStandardItem* item : libraryRootItems)
     {
         removeRow(item->row());
     }
     libraryRootItems.clear();
 
-    for (PackageNode* package : libraryPackages)
-    {
-        package->Release();
-    }
-    libraryPackages.clear();
+    libraryPackages = packages;
 
-    const EngineContext* engineContext = GetEngineContext();
     int32 index = 0;
-    for (const FilePath& path : libraryPackagePaths)
+    for (const RefPtr<PackageNode>& package : libraryPackages)
     {
-        QuickEdPackageBuilder builder(engineContext);
-        PackageNode* package = nullptr;
-        if (UIPackageLoader(prototypes).LoadPackage(path, &builder))
-        {
-            RefPtr<PackageNode> libraryPackage = builder.BuildPackage();
-            if (builder.GetResults().HasErrors())
-            {
-                using namespace TArc;
-                NotificationParams params;
-                params.title = "Can't load library package";
-                params.message.type = Result::RESULT_ERROR;
-                params.message.message = Format("Package '%s' has problems...", path.GetFilename().c_str());
-                ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
-            }
-            else
-            {
-                package = SafeRetain(libraryPackage.Get());
-                libraryPackages.push_back(package);
-            }
-        }
-
-        if (package)
-        {
-            QStandardItem* libraryRootItem = CreatePackageControlsItem(package, false);
-            libraryRootItems.push_back(libraryRootItem);
-            invisibleRootItem()->insertRow(index, libraryRootItem);
-            index++;
-        }
+        QStandardItem* libraryRootItem = CreatePackageControlsItem(package.Get(), false);
+        libraryRootItems.push_back(libraryRootItem);
+        invisibleRootItem()->insertRow(index++, libraryRootItem);
     }
 }
 

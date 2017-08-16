@@ -32,11 +32,8 @@ void RecentMenuItems::RemoveMenuItems()
     DAVA::Vector<DAVA::String> actions = Get();
     for (const DAVA::String& action : actions)
     {
-        QList<QString> menuPath = params.menuSubPath;
-        menuPath.push_back(QString::fromStdString(action));
-
-        DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(menuPath));
-        params.ui->RemoveAction(params.windowKey, placement);
+        DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(params.menuSubPath));
+        params.ui->RemoveAction(params.windowKey, placement, QString::fromStdString(action));
     }
 }
 

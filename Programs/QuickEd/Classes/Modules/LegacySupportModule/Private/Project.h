@@ -61,7 +61,6 @@ public:
     void SetBiDiSupport(bool support);
     void SetGlobalStyleClasses(const QString& classesStr);
 
-    DAVA::Vector<ProjectData::ResDir> GetLibraryPackages() const;
     const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& GetPrototypes() const;
 
 private:

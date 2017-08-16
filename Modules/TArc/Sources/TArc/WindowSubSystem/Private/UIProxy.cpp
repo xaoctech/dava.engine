@@ -47,10 +47,10 @@ void UIProxy::AddAction(const WindowKey& windowKey, const ActionPlacementInfo& p
     globalUI->AddAction(windowKey, placement, action);
 }
 
-void UIProxy::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement)
+void UIProxy::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName)
 {
     Guard g(this);
-    globalUI->RemoveAction(windowKey, placement);
+    globalUI->RemoveAction(windowKey, placement, actionName);
 }
 
 void UIProxy::ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration /*= 0*/)

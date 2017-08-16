@@ -385,7 +385,7 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
     }
 }
 
-void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
+void RemoveMenuPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
 {
     QStringList path = url.path().split("$/");
     DVASSERT(!path.isEmpty());
@@ -397,7 +397,7 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
     }
 
     QMenu* currentLevelMenu = topLevelMenu;
-    for (int i = 1; i < path.size() - 1; ++i)
+    for (int i = 1; i < path.size(); ++i)
     {
         QString currentLevelTittle = path[i];
         QMenu* menu = currentLevelMenu->findChild<QMenu*>(currentLevelTittle);
@@ -413,39 +413,64 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
         return;
     }
 
-    QAction* action = FindAction(currentLevelMenu, path.back());
+    QAction* action = FindAction(currentLevelMenu, actionName);
     currentLevelMenu->removeAction(action);
     action->deleteLater();
+
+    while (currentLevelMenu != topLevelMenu)
+    {
+        if (currentLevelMenu->isEmpty())
+        {
+            QMenu* parentMenu = qobject_cast<QMenu*>(currentLevelMenu->parent());
+            if (parentMenu != nullptr)
+            {
+                parentMenu->removeAction(currentLevelMenu->menuAction());
+            }
+            currentLevelMenu = parentMenu;
+        }
+        else
+        {
+            break;
+        }
+    }
 }
 
-void RemoveToolbarPoint(const QUrl& url, MainWindowInfo& windowInfo)
+void RemoveToolbarPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
+{
+    QString toolbarName = url.path();
+    DVASSERT(toolbarName.isEmpty() == false);
+
+    QToolBar* toolbar = windowInfo.window->findChild<QToolBar*>(toolbarName);
+    if (toolbar != nullptr)
+    {
+        QAction* action = FindAction(toolbar, actionName);
+        toolbar->removeAction(action);
+        action->deleteLater();
+    }
+}
+
+void RemoveStatusbarPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
 {
     // TODO not implemented
     DVASSERT(false);
 }
 
-void RemoveStatusbarPoint(const QUrl& url, MainWindowInfo& windowInfo)
-{
-    // TODO not implemented
-    DVASSERT(false);
-}
-
-void RemoveAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement)
+void RemoveAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement, const QString& actionName)
 {
     for (const QUrl& url : placement.GetUrls())
     {
         QString scheme = url.scheme();
         if (scheme == menuScheme)
         {
-            RemoveMenuPoint(url, windowInfo);
+            RemoveMenuPoint(url, actionName, windowInfo);
         }
         else if (scheme == toolbarScheme)
         {
-            RemoveToolbarPoint(url, windowInfo);
+            RemoveToolbarPoint(url, actionName, windowInfo);
         }
         else if (scheme == statusbarScheme)
         {
-            RemoveStatusbarPoint(url, windowInfo);
+            RemoveStatusbarPoint(url, actionName, windowInfo);
         }
         else
         {
@@ -729,10 +754,10 @@ void UIManager::AddAction(const WindowKey& windowKey, const ActionPlacementInfo&
     UIManagerDetail::AddAction(windowInfo, placement, action);
 }
 
-void UIManager::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement)
+void UIManager::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName)
 {
     UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
-    UIManagerDetail::RemoveAction(windowInfo, placement);
+    UIManagerDetail::RemoveAction(windowInfo, placement, actionName);
 }
 
 void UIManager::ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration)

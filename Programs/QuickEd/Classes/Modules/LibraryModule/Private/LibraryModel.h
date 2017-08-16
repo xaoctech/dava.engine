@@ -35,7 +35,7 @@ public:
     ~LibraryModel() override;
 
     void SetUI(DAVA::TArc::UI* ui);
-    void SetProjectLibraries(const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& prototypes, const DAVA::Vector<DAVA::FilePath>& libraryPackages);
+    void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QStringList mimeTypes() const override;
@@ -60,16 +60,14 @@ private:
     void ImportedPackageWillBeRemoved(PackageNode* node, ImportedPackagesNode* from) override;
     DAVA::RefPtr<PackageNode> package;
 
-    DAVA::Vector<PackageNode*> libraryPackages;
+    DAVA::Vector<DAVA::RefPtr<PackageNode>> libraryPackages;
     DAVA::Vector<QStandardItem*> libraryRootItems;
 
     QStandardItem* defaultControlsRootItem = nullptr;
     QStandardItem* controlsRootItem = nullptr;
     QStandardItem* importedPackageRootItem = nullptr;
 
-    DAVA::Vector<ControlNode*> defaultControls;
-    DAVA::Vector<DAVA::FilePath> libraryPackagePaths;
-    DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>> prototypes;
+    DAVA::Vector<DAVA::RefPtr<ControlNode>> defaultControls;
 
     DAVA::TArc::UI* ui = nullptr;
 };

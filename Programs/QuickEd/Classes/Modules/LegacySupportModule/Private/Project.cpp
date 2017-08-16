@@ -98,12 +98,6 @@ Project::~Project()
     editorFontSystem->ClearAllFonts();
 }
 
-Vector<ProjectData::ResDir> Project::GetLibraryPackages() const
-{
-    ProjectData* projectData = accessor->GetGlobalContext()->GetData<ProjectData>();
-    return projectData->GetLibraryPackages();
-}
-
 const Map<String, Set<DAVA::FastName>>& Project::GetPrototypes() const
 {
     ProjectData* projectData = accessor->GetGlobalContext()->GetData<ProjectData>();
