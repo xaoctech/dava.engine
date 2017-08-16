@@ -95,7 +95,8 @@
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/DynamicBodyComponent.h>
-#include <Physics/VehicleComponent.h>
+#include <Physics/VehicleCarComponent.h>
+#include <Physics/VehicleTankComponent.h>
 #include <Physics/VehicleChassisComponent.h>
 #include <Physics/VehicleWheelComponent.h>
 #include <Physics/BoxShapeComponent.h>
@@ -2282,7 +2283,7 @@ DAVA::RenderObject* CreateVehicleWheelRenderObject(DAVA::float32 radius, DAVA::f
     return renderObject;
 }
 
-DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, DAVA::float32 width, DAVA::float32 mass, DAVA::Vector3 localTranslation)
+DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, DAVA::float32 width, DAVA::float32 mass, DAVA::Vector3 localTranslation, float32 maxHandbrakeTorque, float32 maxSteerAngle)
 {
     using namespace DAVA;
 
@@ -2292,6 +2293,8 @@ DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, 
     VehicleWheelComponent* wheelComponent = new VehicleWheelComponent();
     wheelComponent->SetRadius(radius);
     wheelComponent->SetWidth(width);
+    wheelComponent->SetMaxHandbrakeTorque(maxHandbrakeTorque);
+    wheelComponent->SetMaxSteerAngle(maxSteerAngle);
     wheel->AddComponent(wheelComponent);
 
     ConvexHullShapeComponent* shape = new ConvexHullShapeComponent();
@@ -2313,6 +2316,9 @@ DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, 
 
 void QtMainWindow::OnAddVehicleEntity()
 {
+    // TODO: create two separate functions for a tank and a car
+    // Refactor
+
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     using namespace DAVA;
 
@@ -2322,35 +2328,75 @@ void QtMainWindow::OnAddVehicleEntity()
 
     const Vector3 chassisHalfDimensions = Vector3(2.5f, 1.0f, 1.25f);
     const float32 chassisMass = 1500.0f;
-    const float32 wheelRadius = 0.5f;
-    const float32 wheelWidth = 0.5f;
+    const float32 wheelRadius = 0.35f;
+    const float32 wheelWidth = 0.4f;
     const float32 wheelMass = 20.0f;
 
     // Root entity
     Entity* vehicleEntity = new DAVA::Entity();
     vehicleEntity->SetName("Vehicle");
-    VehicleComponent* vehicleComponent = new VehicleComponent();
+    VehicleComponent* vehicleComponent = new VehicleTankComponent();
     vehicleEntity->AddComponent(vehicleComponent);
     DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
     vehicleEntity->AddComponent(dynamicBody);
 
     // Wheels
 
+    float mainwheelsz = -1.3f * chassisHalfDimensions.z;
+    float cornerwheelsz = -0.85f * chassisHalfDimensions.z;
+
+    float xoffsetCoeff = 0.75f;
+    for (int i = 0; i < 6; ++i)
+    {
+        float maxHandbrakeTorque = 0.0f;
+        float maxSteerAngle = 0.0f;
+
+        if (i == 0)
+        {
+            maxSteerAngle = PI * 0.333f;
+        }
+
+        if (i == 5)
+        {
+            maxHandbrakeTorque = 4000.0f;
+        }
+
+        Entity* left = CreateVehicleWheelEntity("Wheel (left)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * xoffsetCoeff, chassisHalfDimensions.y * 0.7f, mainwheelsz), maxHandbrakeTorque, maxSteerAngle);
+        vehicleEntity->AddNode(left);
+
+        Entity* right = CreateVehicleWheelEntity("Wheel (right)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * xoffsetCoeff, -chassisHalfDimensions.y * 0.7f, mainwheelsz), maxHandbrakeTorque, maxSteerAngle);
+        vehicleEntity->AddNode(right);
+
+        xoffsetCoeff -= 0.3f;
+    }
+
+    /*Entity* cornerWheel = CreateVehicleWheelEntity("Wheel (left corner front)", wheelRadius, wheelWidth, wheelMass * 0.7f, Vector3(chassisHalfDimensions.x * 1.15f, chassisHalfDimensions.y * 0.7f, cornerwheelsz), 4000.0f, 0.0f);
+    vehicleEntity->AddNode(cornerWheel);
+
+    cornerWheel = CreateVehicleWheelEntity("Wheel (left corner front)", wheelRadius, wheelWidth, wheelMass * 0.7f, Vector3(-chassisHalfDimensions.x * 1.15f, chassisHalfDimensions.y * 0.7f, cornerwheelsz), 4000.0f, 0.0f);
+    vehicleEntity->AddNode(cornerWheel);
+
+    cornerWheel = CreateVehicleWheelEntity("Wheel (right corner rear)", wheelRadius, wheelWidth, wheelMass * 0.7f, Vector3(chassisHalfDimensions.x * 1.15f, -chassisHalfDimensions.y * 0.7f, cornerwheelsz), 4000.0f, 0.0f);
+    vehicleEntity->AddNode(cornerWheel);
+
+    cornerWheel = CreateVehicleWheelEntity("Wheel (right corner rear)", wheelRadius, wheelWidth, wheelMass * 0.7f, Vector3(-chassisHalfDimensions.x * 1.15f, -chassisHalfDimensions.y * 0.7f, cornerwheelsz), 4000.0f, 0.0f);
+    vehicleEntity->AddNode(cornerWheel);*/
+
     // Wheel (front left)
-    Entity* vehicleWheel4Entity = CreateVehicleWheelEntity("Wheel (front left)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    /*Entity* vehicleWheel4Entity = CreateVehicleWheelEntity("Wheel (front left)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 0.0f, PI * 0.333f);
     vehicleEntity->AddNode(vehicleWheel4Entity);
 
     // Wheel (front right)
-    Entity* vehicleWheel3Entity = CreateVehicleWheelEntity("Wheel (front right)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    Entity* vehicleWheel3Entity = CreateVehicleWheelEntity("Wheel (front right)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 0.0f, PI * 0.333f);
     vehicleEntity->AddNode(vehicleWheel3Entity);
 
     // Wheel (rear left)
-    Entity* vehicleWheel2Entity = CreateVehicleWheelEntity("Wheel (rear left)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
+    Entity* vehicleWheel2Entity = CreateVehicleWheelEntity("Wheel (rear left)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 4000.0f, 0.0f);
     vehicleEntity->AddNode(vehicleWheel2Entity);
 
     // Wheel (rear right)
-    Entity* vehicleWheel1Entity = CreateVehicleWheelEntity("Wheel (rear right)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z));
-    vehicleEntity->AddNode(vehicleWheel1Entity);
+    Entity* vehicleWheel1Entity = CreateVehicleWheelEntity("Wheel (rear right)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 4000.0f, 0.0f);
+    vehicleEntity->AddNode(vehicleWheel1Entity);*/
 
     // Chassis
     Entity* vehicleChassisEntity = new Entity();
