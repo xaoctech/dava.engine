@@ -1175,7 +1175,7 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
 }
 
 uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
-                                               const Vector<uint32>& fileIndexes)
+                                               const Vector<uint32>& fileIndexes) const
 {
     uint64 result = startCounterValue;
     const auto& allFiles = usedPackFile.filesTable.data.files;
@@ -1209,13 +1209,13 @@ DLCManager::InitStatus DLCManager::GetInitStatus() const
     return InitStatus::NotFinished;
 }
 
-uint64 DLCManager::GetPackSize(const String&)
+uint64 DLCManager::GetPackSize(const String&) const
 {
     // default implementation
     return 0;
 }
 
-uint64 DLCManagerImpl::GetPackSize(const String& packName)
+uint64 DLCManagerImpl::GetPackSize(const String& packName) const
 {
     uint64 totalSize = 0;
     if (IsInitialized())

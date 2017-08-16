@@ -132,7 +132,7 @@ public:
 
     bool IsPackDownloaded(const String& packName) override;
 
-    uint64 GetPackSize(const String& packName) override;
+    uint64 GetPackSize(const String& packName) const override;
 
     const IRequest* RequestPack(const String& requestedPackName) override;
 
@@ -198,7 +198,7 @@ private:
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
-    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes);
+    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
 
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);

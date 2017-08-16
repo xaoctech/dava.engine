@@ -154,7 +154,7 @@ public:
 
     /** Return size of pack with all it's dependent packs from local meta without downloading
 	    or 0 if manager is not initialized */
-    virtual uint64 GetPackSize(const String& packName) = 0;
+    virtual uint64 GetPackSize(const String& packName) const = 0;
 
     virtual void SetRequestingEnabled(bool value) = 0;
 
