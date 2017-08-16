@@ -748,7 +748,7 @@ public:
             ModalMessageParams::Button resultButton = uiManager->ShowModalMessage(key, params);
             if (resultButton == ModalMessageParams::SaveAll)
             {
-                controllerModule->SaveOnWindowClose(key);
+                result = controllerModule->SaveOnWindowClose(key);
             }
             else if (resultButton == ModalMessageParams::NoToAll)
             {

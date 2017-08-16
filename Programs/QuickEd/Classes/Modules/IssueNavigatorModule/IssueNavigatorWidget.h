@@ -41,6 +41,7 @@ public:
 
     void AddIssue(const Issue& issue);
     void ChangeMessage(DAVA::int32 sectionId, DAVA::int32 id, const DAVA::String& message);
+    void ChangePathToControl(DAVA::int32 sectionId, DAVA::int32 id, const DAVA::String& pathToControlMsg);
     void RemoveIssue(DAVA::int32 sectionId, DAVA::int32 issueId);
 
 signals:
@@ -51,6 +52,7 @@ private slots:
     void OnActivated(const QModelIndex& index);
 
 private:
+    void ChangeIssueText(const DAVA::int32 issueId, const DAVA::int32 sectionId, int columnOfText, const DAVA::String& newText);
     bool eventFilter(QObject* obj, QEvent* event) override;
 
     std::unique_ptr<Ui::IssueNavigatorWidget> ui;

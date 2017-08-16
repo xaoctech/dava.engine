@@ -50,17 +50,12 @@ void IssueNavigatorWidget::AddIssue(const Issue& issue)
 
 void IssueNavigatorWidget::ChangeMessage(DAVA::int32 sectionId_, DAVA::int32 issueId_, const DAVA::String& message)
 {
-    for (int row = 0; row < model->rowCount(); row++)
-    {
-        QStandardItem* item = model->item(row);
-        DAVA::int32 sectionId = item->data(ISSUE_SECTION_DATA).toInt();
-        DAVA::int32 issueId = item->data(ISSUE_ID_DATA).toInt();
-        if (issueId == issueId_ && sectionId == sectionId_)
-        {
-            item->setText(QString::fromStdString(message));
-            break;
-        }
-    }
+    ChangeIssueText(issueId_, sectionId_, 0, message);
+}
+
+void IssueNavigatorWidget::ChangePathToControl(DAVA::int32 sectionId_, DAVA::int32 issueId_, const DAVA::String& pathToControlMsg)
+{
+    ChangeIssueText(issueId_, sectionId_, 1, pathToControlMsg);
 }
 
 void IssueNavigatorWidget::RemoveIssue(DAVA::int32 sectionId_, DAVA::int32 issueId_)
@@ -92,6 +87,21 @@ void IssueNavigatorWidget::OnActivated(const QModelIndex& index)
     else
     {
         emit JumpToPackage(DAVA::FilePath(path.toStdString()));
+    }
+}
+
+void IssueNavigatorWidget::ChangeIssueText(const DAVA::int32 issueId_, const DAVA::int32 sectionId_, int column, const DAVA::String& newText)
+{
+    for (int row = 0; row < model->rowCount(); row++)
+    {
+        QStandardItem* item = model->item(row, column);
+        DAVA::int32 sectionId = item->data(ISSUE_SECTION_DATA).toInt();
+        DAVA::int32 issueId = item->data(ISSUE_ID_DATA).toInt();
+        if (issueId_ == issueId && sectionId_ == sectionId)
+        {
+            item->setText(QString::fromStdString(newText));
+            break;
+        }
     }
 }
 

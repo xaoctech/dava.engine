@@ -94,14 +94,18 @@ bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key
     return HasUnsavedDocuments() == false;
 }
 
-void DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
     using namespace DAVA;
     using namespace TArc;
+
+    bool savedOk = true;
     ContextAccessor* accessor = GetAccessor();
-    accessor->ForEachContext([this](DataContext& context) {
-        SaveDocument(context.GetID());
+    accessor->ForEachContext([&](DataContext& context) {
+        savedOk = savedOk && SaveDocument(context.GetID());
     });
+
+    return savedOk;
 }
 
 void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
@@ -593,14 +597,12 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
     DocumentData* data = activeContext->GetData<DocumentData>();
     const PackageNode* package = data->GetPackageNode();
     String controlPathStr = controlPath.toStdString();
-    ControlNode* node = package->GetPrototypes()->FindControlNodeByPath(controlPathStr);
-    if (node == nullptr)
+    Set<PackageBaseNode*> foundNodes;
+    package->GetPrototypes()->FindAllNodesByPath(controlPathStr, foundNodes);
+    package->GetPackageControlsNode()->FindAllNodesByPath(controlPathStr, foundNodes);
+    if (!foundNodes.empty())
     {
-        node = package->GetPackageControlsNode()->FindControlNodeByPath(controlPathStr);
-    }
-    if (node != nullptr)
-    {
-        data->SetSelectedNodes({ node });
+        data->SetSelectedNodes(foundNodes);
     }
 }
 
@@ -714,10 +716,14 @@ void DocumentsModule::CloseAllDocuments()
         }
         else if (button == ModalMessageParams::SaveAll)
         {
-            SaveAllDocuments();
+            hasUnsaved = (SaveAllDocuments() == false);
         }
     }
-    DeleteAllDocuments();
+
+    if (!hasUnsaved)
+    {
+        DeleteAllDocuments();
+    }
 }
 
 void DocumentsModule::DeleteAllDocuments()
@@ -906,9 +912,8 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     if (serializer.HasErrors())
     {
         ModalMessageParams params;
-        params.title = QObject::tr("Can't save");
-        params.message = QObject::tr("Errors were occurred during serialization:\n");
-        params.message.append(QString::fromStdString(serializer.GetResults().GetResultMessages()));
+        params.title = QObject::tr(DAVA::Format("Can't save %s", data->package->GetPath().GetFilename().c_str()).c_str());
+        params.message = QString::fromStdString(serializer.GetResults().GetResultMessages());
 
         params.buttons = ModalMessageParams::Ok;
         params.icon = ModalMessageParams::Warning;
@@ -923,21 +928,23 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     return true;
 }
 
-void DocumentsModule::SaveAllDocuments()
+bool DocumentsModule::SaveAllDocuments()
 {
-    GetAccessor()->ForEachContext([this](DAVA::TArc::DataContext& context)
+    bool savedOk = true;
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
                                   {
-                                      SaveDocument(context.GetID());
+                                      savedOk = savedOk && SaveDocument(context.GetID());
                                   });
+    return savedOk;
 }
 
-void DocumentsModule::SaveCurrentDocument()
+bool DocumentsModule::SaveCurrentDocument()
 {
     using namespace DAVA::TArc;
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
 
-    SaveDocument(activeContext->GetID());
+    return SaveDocument(activeContext->GetID());
 }
 
 void DocumentsModule::OnFileChanged(const QString& path)
