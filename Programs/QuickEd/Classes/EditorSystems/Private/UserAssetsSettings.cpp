@@ -4,7 +4,7 @@
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UserAssetsSettings)
 {
-    DAVA::ReflectionRegistrator<UserAssetsSettings>::Begin()[DAVA::M::DisplayName("User graphic"), DAVA::M::DisplayName("10")]
+    DAVA::ReflectionRegistrator<UserAssetsSettings>::Begin()[DAVA::M::DisplayName("User graphic"), DAVA::M::SettingsSortKey(10)]
     .ConstructorByPointer()
     .Field("selectionRectColor", &UserAssetsSettings::selectionRectColor)[DAVA::M::DisplayName("Selection rect color")]
     .Field("highlightColor", &UserAssetsSettings::highlightColor)[DAVA::M::DisplayName("Highlight color")]
