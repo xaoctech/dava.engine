@@ -154,7 +154,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libjpegd.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libmongodb_wind.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libogg_static_d.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libogg_static.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpsd.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libtheora_win.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libuv.lib"

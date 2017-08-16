@@ -31,7 +31,7 @@ def get_msvc_toolset_name(vs_ver):
 
 
 def get_msvc_toolset_ver_win32():
-    return get_msvc_toolset(_win32_vs)
+    return get_msvc_toolset_name(_win32_vs)
 
 
 # Get these from registry?

@@ -70,25 +70,34 @@ def _patch_sources(source_folder_path, working_directory_path, patch_postifx):
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
 
-    vc_solution_file_path = os.path.join(
-        source_folder_path, 'win32/VS2010/libogg_static.sln')
+    vc_solution_file_path = os.path.join(source_folder_path, 'win32/VS2010')
+    vc_solution_file_file = os.path.join(vc_solution_file_path, 'libogg_static.sln')
+
     build_utils.build_vs(
-        vc_solution_file_path,
+        vc_solution_file_file,
         'Debug', 'Win32', 'libogg_static',
         build_config.get_msvc_toolset_ver_win32())
     build_utils.build_vs(
-        vc_solution_file_path,
+        vc_solution_file_file,
         'Release', 'Win32', 'libogg_static',
         build_config.get_msvc_toolset_ver_win32())
     build_utils.build_vs(
-        vc_solution_file_path,
+        vc_solution_file_file,
         'Debug', 'x64', 'libogg_static',
         build_config.get_msvc_toolset_ver_win32())
     build_utils.build_vs(
-        vc_solution_file_path,
+        vc_solution_file_file,
         'Release', 'x64', 'libogg_static',
         build_config.get_msvc_toolset_ver_win32())
 
+    shutil.copyfile(os.path.join(vc_solution_file_path, 'Win32/Debug/libogg_static.lib'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x86/Debug/libogg_static.lib'))
+    shutil.copyfile(os.path.join(vc_solution_file_path, 'Win32/Release/libogg_static.lib'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x86/Release/libogg_static.lib'))
+    shutil.copyfile(os.path.join(vc_solution_file_path, 'x64/Debug/libogg_static.lib'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x64/Debug/libogg_static.lib'))
+    shutil.copyfile(os.path.join(vc_solution_file_path, 'x64/Release/libogg_static.lib'),
+                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x64/Release/libogg_static.lib'))
 
 def _build_win10(working_directory_path, root_project_path):
     prefix = '_win10'

@@ -82,7 +82,7 @@ def apply_patch(patch, working_dir = '.'):
 
 def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
     print "Building %s for %s (%s) ..." % (project, configuration, platform)
-    args = [build_config.get_msbuild_path_win32(), project, "/p:Configuration="+configuration, '/p:Platform=' + platform]
+    args = [build_config.get_msbuild_path_win32(), project, "/m", "/p:Configuration="+configuration, '/p:Platform=' + platform]
     if not toolset is None:
         args.append('/p:PlatformToolset=' + toolset)
     if (not target is None):
@@ -95,8 +95,7 @@ def build_vs(project, configuration, platform='Win32', target = None, toolset = 
     proc.wait()
 
     if proc.returncode != 0:
-        print "Failed with return code %s" % proc.returncode
-        raise
+        raise RuntimeError('msbuild failed with return code %s' % proc.returncode)
 
 
 def build_xcode_target(project, target, configuration):
