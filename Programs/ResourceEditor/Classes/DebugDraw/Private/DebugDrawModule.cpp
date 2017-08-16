@@ -1,5 +1,5 @@
 #include "Classes/DebugDraw/DebugDrawModule.h"
-#include "Classes/DebugDraw/DebugDrawSystem.h"
+#include "Classes/DebugDraw/Private/DebugDrawSystem.h"
 
 #include "Classes/Application/REGlobal.h"
 #include "Classes/SceneManager/SceneData.h"

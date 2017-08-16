@@ -1,19 +1,17 @@
 
-#include "Classes/DebugDraw/DebugDrawSystem.h"
+#include "Classes/DebugDraw/Private/DebugDrawSystem.h"
 
-#include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
-#include "Classes/DebugDraw/DebugDrawSystem.h"
+#include "Classes/DebugDraw/Private/DebugDrawSystem.h"
 #include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Selection/Selection.h"
+#include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
 #include "Classes/Selection/Selection.h"
-
-#include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Scene/SceneEditor2.h"
+#include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 
-#include "Deprecated/EditorConfig.h"
-#include "Deprecated/SceneValidator.h"
+#include "Classes/Deprecated/EditorConfig.h"
+#include "Classes/Deprecated/SceneValidator.h"
 
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
@@ -117,7 +115,7 @@ void DebugDrawSystem::UnregisterComponent(Entity* entity, Component* component)
 
     auto it = entitiesComponentMap.find(type);
 
-    if (it != entitiesComponentMap.end() && entity->GetComponentCount(component->GetType()) <= 1)
+    if (it != entitiesComponentMap.end() && entity->GetComponentCount(component->GetType()) == 1)
     {
         DAVA::FindAndRemoveExchangingWithLast(it->second, entity);
     }
