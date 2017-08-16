@@ -80,6 +80,9 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     boxSize->SetValue(currForce->boxSize);
     forcePower->SetValue(currForce->forcePower);
     radiusSpin->setValue(currForce->radius);
+    boxSize->setVisible(currForce->shape == ParticleDragForce::eShape::BOX && !currForce->infinityRange);
+    radiusWidget->setVisible(currForce->shape == ParticleDragForce::eShape::SPHERE && !currForce->infinityRange);
+    shapeComboBox->setVisible(!currForce->infinityRange);
 
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
@@ -119,8 +122,9 @@ void LayerDragForceWidget::OnValueChanged()
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
 
-    boxSize->setVisible(shape == ParticleDragForce::eShape::BOX);
-    radiusWidget->setVisible(shape == ParticleDragForce::eShape::SPHERE);
+    boxSize->setVisible(shape == ParticleDragForce::eShape::BOX && !params.useInfinityRange);
+    radiusWidget->setVisible(shape == ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);
+    shapeComboBox->setVisible(!params.useInfinityRange);
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
 
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)

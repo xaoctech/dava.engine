@@ -348,13 +348,14 @@ void CommandUpdateParticleDragForce::Undo()
 
 void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
 {
-    if (layer != nullptr && layer->GetDragForces().size() < forceId)
+    if (layer != nullptr && forceId < layer->GetDragForces().size())
     {
         DAVA::ParticleDragForce* force = layer->GetDragForces()[forceId];
         force->boxSize = params.boxSize;
         force->radius = params.radius;
         force->forcePower = params.forcePower;
         force->shape = params.shape;
+        force->infinityRange = params.useInfinityRange;
     }
 }
 

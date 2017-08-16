@@ -24,13 +24,13 @@ public:
 
     ParticleDragForce* Clone();
 
+    Matrix4 localMatrix;
+
     Vector3 position;
     Vector3 rotation;
 
-    Vector3 forcePower;
-
-    Matrix4 localMatrix;
-    Vector3 boxSize;
+    Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
+    Vector3 forcePower{ 1.0f, 1.0f, 1.0f };
     float32 radius = 1.0f;
 
     bool infinityRange = true;

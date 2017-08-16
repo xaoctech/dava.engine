@@ -7,6 +7,48 @@
 
 namespace DAVA
 {
+using ForceShape = ParticleDragForce::eShape;
+
+namespace ParticleLayerDetail
+{
+struct ShapeMap
+{
+    ForceShape shape;
+    String shapeName;
+};
+const ShapeMap shapeMap[] =
+{
+    { ParticleDragForce::eShape::BOX, "box" },
+    { ParticleDragForce::eShape::SPHERE, "sphere" }
+};
+
+int32 shapesCount = sizeof(shapeMap) / sizeof(*shapeMap);
+
+ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultLayerType)
+{
+    for (int32 i = 0; i < shapesCount; ++i)
+    {
+        if (shapeMap[i].shapeName == shapeTypeName)
+        {
+            return shapeMap[i].shape;
+        }
+    }
+    return defaultLayerType;
+}
+
+String ForceShapeToString(ForceShape shapeType, const String& defaultLayerTypeName)
+{
+    for (int32 i = 0; i < shapesCount; ++i)
+    {
+        if (shapeMap[i].shape == shapeType)
+        {
+            return shapeMap[i].shapeName;
+        }
+    }
+    return defaultLayerTypeName;
+}
+}
+
 const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 {
   { TYPE_SINGLE_PARTICLE, "single" },
@@ -696,6 +738,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         particleForce->Release();
     }
 
+
+    //////////////////////////////////////////////////////////////////////////
+    // New forces
+    //////////////////////////////////////////////////////////////////////////
     int32 dragForceCount = 0;
     const YamlNode* dragForceCountNode = node->Get("dragForceCount");
     if (dragForceCountNode)
@@ -703,38 +749,62 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
 
     for (int32 i = 0; i < dragForceCount; ++i)
     {
-        Vector3 position;
-        Vector3 rotation;
-        bool infinityRange = false;
+        ParticleDragForce* dragForce = new ParticleDragForce(this);
 
         String forceDataName = Format("dragForcePosition%d", i);
         const YamlNode* positionNode = node->Get(forceDataName);
         if (positionNode)
         {
-            position = positionNode->AsVector3();
+            dragForce->position = positionNode->AsVector3();
         }
 
         forceDataName = Format("dragForceRotation%d", i);
         const YamlNode* rotationNode = node->Get(forceDataName);
         if (rotationNode)
         {
-            rotation = rotationNode->AsVector3();
+            dragForce->rotation = rotationNode->AsVector3();
         }
 
         forceDataName = Format("dragForceInfinityRange%d", i);
         const YamlNode* rangeNode = node->Get(forceDataName);
         if (rangeNode)
         {
-            infinityRange = rangeNode->AsBool();
+            dragForce->infinityRange = rangeNode->AsBool();
         }
 
-        ParticleDragForce* dragForce = new ParticleDragForce(this);
-        dragForce->position = position;
-        dragForce->rotation = rotation;
-        dragForce->infinityRange = infinityRange;
+        forceDataName = Format("dragForcePower%d", i);
+        const YamlNode* powerNode = node->Get(forceDataName);
+        if (powerNode)
+        {
+            dragForce->forcePower = powerNode->AsVector3();
+        }
+
+        forceDataName = Format("dragForceBoxSize%d", i);
+        const YamlNode* sizeNode = node->Get(forceDataName);
+        if (sizeNode)
+        {
+            dragForce->boxSize = sizeNode->AsVector3();
+        }
+
+        forceDataName = Format("dragForceRadius%d", i);
+        const YamlNode* radiusNode = node->Get(forceDataName);
+        if (radiusNode)
+        {
+            dragForce->radius = radiusNode->AsFloat();
+        }
+
+        forceDataName = Format("dragForceShape%d", i);
+        const YamlNode* shapeNode = node->Get(forceDataName);
+        if (shapeNode)
+        {
+            String shapeName = shapeNode->AsString();
+            dragForce->shape = ParticleLayerDetail::StringToForceShape(shapeName, ForceShape::BOX);
+        }
+
         AddDrag(dragForce);
         dragForce->Release();
     }
+    //////////////////////////////////////////////////////////////////////////
 
     spin = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("spin"));
     spinVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("spinVariation"));
@@ -1164,6 +1234,18 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("dragForceInfinityRange%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->infinityRange);
+
+        forceDataName = Format("dragForcePower%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePower);
+
+        forceDataName = Format("dragForceBoxSize%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->boxSize);
+
+        forceDataName = Format("dragForceRadius%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->radius);
+
+        forceDataName = Format("dragForceShape%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, ParticleLayerDetail::ForceShapeToString(currentForce->shape, "box"));
     }
 }
 
