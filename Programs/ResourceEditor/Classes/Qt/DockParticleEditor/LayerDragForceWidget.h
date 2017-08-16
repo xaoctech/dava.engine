@@ -9,6 +9,9 @@ class ParticleVector3Widget;
 class TimeLineWidget;
 class QVBoxLayout;
 class QCheckBox;
+class WheellIgnorantComboBox;
+class EventFilterDoubleSpinBox;
+class QLabel;
 
 class LayerDragForceWidget : public BaseParticleEditorContentWidget
 {
@@ -35,11 +38,15 @@ protected slots:
     void OnValueChanged();
 
 private:
+    WheellIgnorantComboBox* shapeComboBox = nullptr;
     QVBoxLayout* mainLayout = nullptr;
-    DAVA::ParticleLayer* layer = nullptr;
-    ParticleVector3Widget* position = nullptr;
-    ParticleVector3Widget* rotation = nullptr;
+    ParticleVector3Widget* boxSize = nullptr;
+    ParticleVector3Widget* forcePower = nullptr;
     QCheckBox* infinityRange = nullptr;
+    QWidget* radiusWidget = nullptr;
+    EventFilterDoubleSpinBox* radiusSpin = nullptr;
+
+    DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;
 
     bool blockSignals = false;

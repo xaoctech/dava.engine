@@ -318,40 +318,44 @@ void CommandUpdateParticleForce::Redo()
 }
 
 //////////////////////////////////////////////////////////////////////////
-CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_)
+CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params)
     : CommandAction(CMDID_PARTICLE_DRAG_FORCE_UPDATE)
+    , layer(layer_)
+    , forceId(forceId_)
+    , newParams(params)
 {
-    layer = layer_;
-    forceId = forceId_;
     DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
-    oldPosition = layer->GetDragForces()[forceId]->position;
-    oldRotation = layer->GetDragForces()[forceId]->rotation;
-    oldInfinityRange = layer->GetDragForces()[forceId]->infinityRange;
-}
-
-void CommandUpdateParticleDragForce::Init(DAVA::Vector3 position_, DAVA::Vector3 rotation_, bool infinityRange_)
-{
-    position = position_;
-    rotation = rotation_;
-    infinityRange = infinityRange_;
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        DAVA::ParticleDragForce* force = layer->GetDragForces()[forceId];
+        oldParams.boxSize = force->boxSize;
+        oldParams.radius = force->radius;
+        oldParams.forcePower = force->forcePower;
+        oldParams.shape = force->shape;
+    }
 }
 
 void CommandUpdateParticleDragForce::Redo()
 {
-    DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
-    auto& forces = layer->GetDragForces();
-    forces[forceId]->position = position;
-    forces[forceId]->rotation = rotation;
-    forces[forceId]->infinityRange = infinityRange;
+    ApplyParams(newParams);
 }
 
 void CommandUpdateParticleDragForce::Undo()
 {
-    DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
-    auto& forces = layer->GetDragForces();
-    forces[forceId]->position = oldPosition;
-    forces[forceId]->rotation = oldRotation;
-    forces[forceId]->infinityRange = oldInfinityRange;
+    ApplyParams(oldParams);
+}
+
+void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
+{
+    if (layer != nullptr && layer->GetDragForces().size() < forceId)
+    {
+        DAVA::ParticleDragForce* force = layer->GetDragForces()[forceId];
+        force->boxSize = params.boxSize;
+        force->radius = params.radius;
+        force->forcePower = params.forcePower;
+        force->shape = params.shape;
+    }
 }
 
 CommandAddParticleEmitter::CommandAddParticleEmitter(DAVA::Entity* effect)

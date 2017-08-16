@@ -7,6 +7,7 @@
 #include "ImageTools/ImageTools.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Base/Result.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
@@ -2243,21 +2244,4 @@ void EmitterLayerWidget::OnLayerValueChanged()
     }
 
     blockSignals = false;
-}
-
-WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)
-    : QComboBox(parent)
-{
-}
-
-bool WheellIgnorantComboBox::event(QEvent* e)
-{
-    if (e->type() == QEvent::Wheel)
-    {
-        if (this->hasFocus() == false)
-        {
-            return false;
-        }
-    }
-    return QComboBox::event(e);
 }
