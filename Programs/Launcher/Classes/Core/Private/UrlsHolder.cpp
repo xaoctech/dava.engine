@@ -1,12 +1,8 @@
 #include "Core/UrlsHolder.h"
-#include "Core/ApplicationManager.h"
-
-
 #include "Utils/ErrorMessenger.h"
 
-UrlsHolder::UrlsHolder(ApplicationManager* appManager_)
-    : appManager(appManager_)
-    , serverHostName("http://ba-manager.wargaming.net")
+UrlsHolder::UrlsHolder()
+    : serverHostName("http://ba-manager.wargaming.net")
 {
 }
 
