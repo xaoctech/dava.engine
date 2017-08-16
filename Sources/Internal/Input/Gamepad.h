@@ -162,7 +162,6 @@ private:
 
     void Update();
     void OnEndFrame();
-    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
     bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
 
@@ -176,7 +175,7 @@ private:
     void HandleBackButtonPress(bool pressed);
     void HandleAxisMovement(eInputElements element, float32 newValue, bool horizontal);
 
-    void ResetState();
+    void ResetState(DAVA::Window* window);
 
     InputSystem* inputSystem = nullptr;
     std::unique_ptr<Private::GamepadImpl> impl;

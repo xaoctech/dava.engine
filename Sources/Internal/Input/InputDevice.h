@@ -3,6 +3,8 @@
 #include "Input/InputSystemTypes.h"
 #include "Input/InputElements.h"
 
+#include "Engine/Engine.h"
+
 namespace DAVA
 {
 // TODO: add support for virtual (i.e. user defined) devices
@@ -27,7 +29,7 @@ public:
     /** Create InputDevice instance with specified `id` */
     explicit InputDevice(uint32 id);
 
-    virtual ~InputDevice() = default;
+    virtual ~InputDevice();
 
     /** Return unique device id */
     uint32 GetId() const;
@@ -51,18 +53,17 @@ public:
     */
     virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 
+protected:
+    void OnWindowCreated(DAVA::Window* window);
+    void OnWindowDestroyed(DAVA::Window* window);
+    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
+    void OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f, DAVA::Size2f);
+
+    virtual void ResetState(Window* window) = 0;
+
 private:
     const uint32 id;
+    DAVA::UnorderedSet<DAVA::Window*> windows;
 };
-
-inline InputDevice::InputDevice(uint32 id)
-    : id(id)
-{
-}
-
-inline uint32 InputDevice::GetId() const
-{
-    return id;
-}
 
 } // namespace DAVA

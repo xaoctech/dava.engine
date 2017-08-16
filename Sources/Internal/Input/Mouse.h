@@ -77,7 +77,6 @@ private:
     Mouse& operator=(const Mouse&) = delete;
 
     void OnEndFrame();
-    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
 
