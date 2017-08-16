@@ -499,7 +499,7 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
             inputData.setAnalogRightThrust(tank->analogRightThrust);
             physxTank->mDriveDynData.forceGearChange(static_cast<uint32>(tank->gear));
 
-            PxVehiclePadSmoothingData gPadSmoothingData =
+            PxVehiclePadSmoothingData smoothingData =
             {
               {
               6.0f, //rise rate eANALOG_INPUT_ACCEL=0,
@@ -517,7 +517,7 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
               }
             };
 
-            PxVehicleDriveTankSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, inputData, timeElapsed, *physxTank);
+            PxVehicleDriveTankSmoothAnalogRawInputsAndSetAnalogInputs(smoothingData, inputData, timeElapsed, *physxTank);
 
             tank->ResetInputData();
         }
