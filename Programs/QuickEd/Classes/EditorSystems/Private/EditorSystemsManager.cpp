@@ -122,6 +122,13 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
         lastMousePos = currentInput->point;
     }
 
+    if (currentInput->device == eInputDevices::MOUSE && currentInput->tapCount > 0)
+    {
+        // From a series of clicks from mouse we should detect double clicks only.
+        // Therefore third click should be interpreted as first click again, fourth click should be double click etc.
+        currentInput->tapCount = (currentInput->tapCount % 2) ? 1 : 2;
+    }
+
     eDragState newState = NoDrag;
     for (auto it = systems.rbegin(); it != systems.rend(); ++it)
     {

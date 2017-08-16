@@ -119,6 +119,7 @@ void PropertyEditor::Init(Ui::MainWindow* mainWindowUi, const std::shared_ptr<Gl
     connect(mainWindowUi->actionAddVisibilityComponent, &QAction::triggered, this, &PropertyEditor::OnAddVisibilityComponent);
     connect(mainWindowUi->actionAddLodComponent, &QAction::triggered, this, &PropertyEditor::OnAddLodComponent);
     connect(mainWindowUi->actionAddParticleDragForceComponent, &QAction::triggered, this, &PropertyEditor::OnAddParticleDragForceComponent);
+    connect(mainWindowUi->actionAddGeoDecalComponent, &QAction::triggered, this, &PropertyEditor::OnAddGeoDecalComponent);
 }
 
 void PropertyEditor::SetEntities(const SelectableGroup* selected)
@@ -1486,6 +1487,11 @@ void PropertyEditor::OnAddModelTypeComponent()
 void PropertyEditor::OnAddSkeletonComponent()
 {
     OnAddComponent(DAVA::Component::SKELETON_COMPONENT);
+}
+
+void PropertyEditor::OnAddGeoDecalComponent()
+{
+    OnAddComponent(DAVA::Component::GEO_DECAL_COMPONENT);
 }
 
 void PropertyEditor::OnAddPathComponent()

@@ -54,18 +54,18 @@ public:
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
         PARTICLE_DRAG_FORCE_COMPONENT,
+        GEO_DECAL_COMPONENT,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         STATIC_BODY_COMPONENT,
         DYNAMIC_BODY_COMPONENT,
 #endif
 
-        NOT_EXPORTED_COMPONENTS, //components for RE only. Serialized, but not exported
-        TEXT_COMPONENT = NOT_EXPORTED_COMPONENTS,
+        NON_EXPORTABLE_COMPONENTS, // everything below NON_EXPORTABLE_COMPONENTS will be serialized but won't be exported
+        TEXT_COMPONENT = NON_EXPORTABLE_COMPONENTS,
 
-        //debug components - note that everything below won't be serialized
-        DEBUG_COMPONENTS,
-        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,
+        NON_SERIALIZABLE_COMPONENTS, // everything below NON_SERIALIZABLE_COMPONENTS won't be serialized
+        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT = NON_SERIALIZABLE_COMPONENTS,
         WAYPOINT_COMPONENT,
         EDGE_COMPONENT,
 

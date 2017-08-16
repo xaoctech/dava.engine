@@ -155,9 +155,10 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* component, SkinnedMesh
     }
 
     //set data to SkinnedMesh
-    skinnedMeshObject->SetJointsPtr(&component->resultPositions[0], &component->resultQuaternions[0], component->targetJointsCount);
+    skinnedMeshObject->SetJointsPtr(component->resultPositions.data(), component->resultQuaternions.data(), component->targetJointsCount);
     skinnedMeshObject->SetObjectSpaceBoundingBox(resBox);
-    GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);
+
+    GetScene()->GetRenderSystem()->MarkForUpdate(skinnedMeshObject);
 }
 
 void SkeletonSystem::RebuildSkeleton(Entity* entity)
