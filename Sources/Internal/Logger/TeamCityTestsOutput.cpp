@@ -1,4 +1,6 @@
 #include "Logger/TeamCityTestsOutput.h"
+#include "Time/SystemTimer.h"
+#include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
 
 namespace DAVA
@@ -25,11 +27,14 @@ void TeamcityTestsOutput::Output(Logger::eLogLevel ll, const char8* text)
     {
         const String& testName = lines.at(1);
         output = "##teamcity[testSuiteStarted name='" + testName + "']\n";
+        suiteStartTime = SystemTimer::GetMs();
     }
     else if (finishSuiteMarker == lines[0])
     {
+        int64 deltaTime = SystemTimer::GetMs() - suiteStartTime;
+
         const String& testName = lines.at(1);
-        output = "##teamcity[testSuiteFinished name='" + testName + "']\n";
+        output = "##teamcity[testSuiteFinished name='" + testName + Format("' time='%d.%03d sec']\n", deltaTime / 1000, deltaTime % 1000);
     }
     else if (disabledSuiteMarker == lines[0])
     {
@@ -45,11 +50,14 @@ void TeamcityTestsOutput::Output(Logger::eLogLevel ll, const char8* text)
             output += " captureStandardOutput='true'";
         }
         output += "]\n";
+        testStartTime = SystemTimer::GetMs();
     }
     else if (finishTestMarker == lines[0])
     {
+        int64 deltaTime = SystemTimer::GetMs() - testStartTime;
+
         const String& testName = lines.at(1);
-        output = "##teamcity[testFinished name='" + testName + "']\n";
+        output = "##teamcity[testFinished name='" + testName + Format("' time='%d.%03d sec']\n", deltaTime / 1000, deltaTime % 1000);
     }
     else if (errorTestMarker == lines[0])
     {
