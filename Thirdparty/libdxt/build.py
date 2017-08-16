@@ -39,7 +39,18 @@ def get_download_info():
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
 
-    # TODO: implement win32
+    build_utils.build_and_copy_libraries_win32_cmake(
+        os.path.join(working_directory_path, '_build'),
+        source_folder_path,
+        root_project_path,
+        "dxt.sln",
+        "dxt",
+        "dxt.lib", "dxt.lib",
+        "libdxt.lib", "libdxt.lib",
+        "libdxt.lib", "libdxt.lib",
+        "")
+
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_macos(working_directory_path, root_project_path):
