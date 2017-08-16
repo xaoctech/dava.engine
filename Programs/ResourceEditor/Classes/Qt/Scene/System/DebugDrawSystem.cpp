@@ -67,7 +67,6 @@ void DebugDrawSystem::Draw(DAVA::Entity* entity)
         bool isSelected = selection.ContainsObject(entity);
 
         DrawObjectBoxesByType(entity);
-        DrawUserNode(entity);
         DrawLightNode(entity, isSelected);
         DrawHangingObjects(entity);
         DrawSwitchesWithDifferentLods(entity);
@@ -114,32 +113,6 @@ void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity* entity)
     if (drawBox)
     {
         DrawEntityBox(entity, objectTypeColor);
-    }
-}
-
-void DebugDrawSystem::DrawUserNode(DAVA::Entity* entity)
-{
-    if (NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
-    {
-        SceneEditor2* editorScene = static_cast<SceneEditor2*>(GetScene());
-        DAVA::RenderHelper* drawer = editorScene->GetRenderSystem()->GetDebugDrawer();
-
-        DAVA::AABBox3 worldBox = editorScene->collisionSystem->GetUntransformedBoundingBox(entity);
-        DVASSERT(!worldBox.IsEmpty());
-        DAVA::float32 delta = worldBox.GetSize().Length() / 4;
-
-        drawer->DrawAABoxTransformed(worldBox, entity->GetWorldTransform(), DAVA::Color(0.5f, 0.5f, 1.0f, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
-        drawer->DrawAABoxTransformed(worldBox, entity->GetWorldTransform(), DAVA::Color(0.2f, 0.2f, 0.8f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
-
-        const DAVA::Vector3 center = entity->GetWorldTransform().GetTranslationVector();
-        const DAVA::Vector3 xAxis = MultiplyVectorMat3x3(DAVA::Vector3(delta, 0.f, 0.f), entity->GetWorldTransform());
-        const DAVA::Vector3 yAxis = MultiplyVectorMat3x3(DAVA::Vector3(0.f, delta, 0.f), entity->GetWorldTransform());
-        const DAVA::Vector3 zAxis = MultiplyVectorMat3x3(DAVA::Vector3(0.f, 0.f, delta), entity->GetWorldTransform());
-
-        // axises
-        drawer->DrawLine(center, center + xAxis, DAVA::Color(0.7f, 0, 0, 1.0f));
-        drawer->DrawLine(center, center + yAxis, DAVA::Color(0, 0.7f, 0, 1.0f));
-        drawer->DrawLine(center, center + zAxis, DAVA::Color(0, 0, 0.7f, 1.0f));
     }
 }
 
