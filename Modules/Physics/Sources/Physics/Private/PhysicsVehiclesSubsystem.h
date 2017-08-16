@@ -8,6 +8,7 @@ namespace physx
 {
 class PxScene;
 class PxShape;
+class PxVehicleWheelsSimData;
 }
 
 namespace DAVA
@@ -17,6 +18,8 @@ class Entity;
 class Component;
 class CollisionShapeComponent;
 class VehicleComponent;
+class VehicleCarComponent;
+class VehicleTankComponent;
 class VehicleChassisComponent;
 class VehicleWheelComponent;
 
@@ -34,6 +37,7 @@ public:
     void Simulate(float32 timeElapsed);
     void OnSimulationEnabled(bool enabled);
 
+    void SetupNonDrivableSurface(physx::PxShape* surfaceShape) const;
     void SetupDrivableSurface(physx::PxShape* surfaceShape) const;
 
 private:
@@ -41,7 +45,9 @@ private:
     Vector<VehicleWheelComponent*> GetWheels(VehicleComponent* vehicle) const;
     Vector3 CalculateMomentOfInertiaForShape(CollisionShapeComponent* shape);
 
-    void CreatePhysxVehicle(VehicleComponent* vehicleComponent);
+    void CreateVehicleCommonParts(VehicleComponent* vehicleComponent, float32 wheelMaxCompression, float32 wheelMaxDroop, float32 wheelSpringStrength, float32 wheelSpringDamperRate, uint32* outWheelsCount, physx::PxVehicleWheelsSimData** outWheelsSimulationData);
+    void CreateCarVehicle(VehicleCarComponent* vehicleComponent);
+    void CreateTankVehicle(VehicleTankComponent* vehicleComponent);
 
 private:
     physx::PxScene* pxScene;

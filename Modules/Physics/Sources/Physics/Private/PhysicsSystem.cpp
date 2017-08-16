@@ -69,6 +69,15 @@ void UpdateGlobalPose(physx::PxRigidActor* actor, const Matrix4& m, Vector3& sca
     actor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
 }
 
+void UpdateShapeLocalPose(physx::PxShape* shape, const Matrix4& m)
+{
+    Vector3 position;
+    Vector3 scale;
+    Quaternion rotation;
+    m.Decomposition(position, scale, rotation);
+    shape->setLocalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
+}
+
 bool IsCollisionShapeType(uint32 componentType)
 {
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
@@ -729,6 +738,16 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
                 physx::PxShape* shape = nullptr;
                 rigidActor->getShapes(&shape, 1, i);
 
+                // Update local pose for nested shapes
+
+                CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
+                if (shapeComponent->GetEntity() != e)
+                {
+                    PhysicsSystemDetail::UpdateShapeLocalPose(shape, shapeComponent->GetEntity()->GetLocalTransform());
+                }
+
+                // Update geometry scale
+
                 physx::PxGeometryHolder geomHolder = shape->getGeometry();
 
                 physx::PxGeometryType::Enum geomType = geomHolder.getType();
@@ -820,26 +839,34 @@ void PhysicsSystem::UpdateComponents()
     {
         bodyComponent->UpdateLocalProperties();
 
-        physx::PxRigidDynamic* dynamicActor = bodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
-        if (dynamicActor != nullptr)
+        // Recalculate mass
+        // Ignore vehicles, VehiclesSubsystem is responsible for setting correct values
+
+        Entity* entity = bodyComponent->GetEntity();
+        if (entity->GetComponent(Component::VEHICLE_CAR_COMPONENT) != nullptr &&
+            entity->GetComponent(Component::VEHICLE_TANK_COMPONENT) != nullptr)
         {
-            physx::PxU32 shapesCount = dynamicActor->getNbShapes();
-            if (shapesCount > 0)
+            physx::PxRigidDynamic* dynamicActor = bodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+            if (dynamicActor != nullptr)
             {
-                Vector<physx::PxShape*> shapes(shapesCount, nullptr);
-                physx::PxU32 extractedShapesCount = dynamicActor->getShapes(shapes.data(), shapesCount);
-                DVASSERT(shapesCount == extractedShapesCount);
-
-                Vector<physx::PxReal> masses;
-                masses.reserve(shapesCount);
-
-                for (physx::PxShape* shape : shapes)
+                physx::PxU32 shapesCount = dynamicActor->getNbShapes();
+                if (shapesCount > 0)
                 {
-                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
-                    masses.push_back(shapeComponent->GetMass());
-                }
+                    Vector<physx::PxShape*> shapes(shapesCount, nullptr);
+                    physx::PxU32 extractedShapesCount = dynamicActor->getShapes(shapes.data(), shapesCount);
+                    DVASSERT(shapesCount == extractedShapesCount);
 
-                physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
+                    Vector<physx::PxReal> masses;
+                    masses.reserve(shapesCount);
+
+                    for (physx::PxShape* shape : shapes)
+                    {
+                        CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
+                        masses.push_back(shapeComponent->GetMass());
+                    }
+
+                    physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
+                }
             }
         }
     }

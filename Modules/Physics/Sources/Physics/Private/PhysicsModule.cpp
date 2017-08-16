@@ -8,7 +8,8 @@
 #include "Physics/MeshShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
 #include "Physics/HeightFieldShapeComponent.h"
-#include "Physics/VehicleComponent.h"
+#include "Physics/VehicleCarComponent.h"
+#include "Physics/VehicleTankComponent.h"
 #include "Physics/VehicleChassisComponent.h"
 #include "Physics/VehicleWheelComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
@@ -199,7 +200,8 @@ PhysicsModule::PhysicsModule(Engine* engine)
     shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
 
     vehicleComponents.reserve(3);
-    vehicleComponents.push_back(Component::VEHICLE_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_CAR_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_TANK_COMPONENT);
     vehicleComponents.push_back(Component::VEHICLE_CHASSIS_COMPONENT);
     vehicleComponents.push_back(Component::VEHICLE_WHEEL_COMPONENT);
 }
@@ -242,7 +244,8 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConvexHullShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleCarComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleTankComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleChassisComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleWheelComponent);
 }

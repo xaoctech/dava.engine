@@ -13,7 +13,8 @@
 #include "Physics/ConvexHullShapeComponent.h"
 #include <Physics/MeshShapeComponent.h>
 #include <Physics/HeightFieldShapeComponent.h>
-#include <Physics/VehicleComponent.h>
+#include <Physics/VehicleCarComponent.h>
+#include <Physics/VehicleTankComponent.h>
 #include <Physics/VehicleChassisComponent.h>
 #include <Physics/VehicleWheelComponent.h>
 #endif
@@ -106,7 +107,8 @@ REGISTER_CLASS(PlaneShapeComponent);
 REGISTER_CLASS(ConvexHullShapeComponent);
 REGISTER_CLASS(MeshShapeComponent);
 REGISTER_CLASS(HeightFieldShapeComponent);
-REGISTER_CLASS(VehicleComponent);
+REGISTER_CLASS(VehicleCarComponent);
+REGISTER_CLASS(VehicleTankComponent);
 REGISTER_CLASS(VehicleChassisComponent);
 REGISTER_CLASS(VehicleWheelComponent);
 #endif

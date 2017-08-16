@@ -1,8 +1,10 @@
 #include "EditorPhysics/Private/EditorPhysicsSystem.h"
 
+#include <Physics/PhysicsModule.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/DynamicBodyComponent.h>
 
+#include <Engine/Engine.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Entity/Component.h>
@@ -18,12 +20,35 @@ EditorPhysicsSystem::EditorPhysicsSystem(DAVA::Scene* scene)
 
 void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
 {
-    if (entity->GetComponentCount(DAVA::Component::DYNAMIC_BODY_COMPONENT) > 0 ||
-        entity->GetComponentCount(DAVA::Component::STATIC_BODY_COMPONENT) > 0)
+    using namespace DAVA;
+
+    if (entity->GetComponentCount(Component::DYNAMIC_BODY_COMPONENT) > 0 ||
+        entity->GetComponentCount(Component::STATIC_BODY_COMPONENT) > 0)
     {
         EntityInfo& info = transformMap[entity];
         info.originalTransform = entity->GetWorldTransform();
         info.isLocked = entity->GetLocked();
+        info.restoreLocalTransform = false;
+    }
+    else
+    {
+        const PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+        const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+
+        Vector<CollisionShapeComponent*> shapes;
+        for (uint32 shapeType : shapeComponents)
+        {
+            const size_t shapesCount = entity->GetComponentCount(shapeType);
+            if (shapesCount > 0)
+            {
+                EntityInfo& info = transformMap[entity];
+                info.originalTransform = entity->GetLocalTransform();
+                info.isLocked = entity->GetLocked();
+                info.restoreLocalTransform = true;
+
+                break;
+            }
+        }
     }
 }
 
@@ -120,7 +145,15 @@ void EditorPhysicsSystem::StoreActualTransform()
 {
     for (auto& node : transformMap)
     {
-        node.second.originalTransform = node.first->GetWorldTransform();
+        if (node.second.restoreLocalTransform)
+        {
+            node.second.originalTransform = node.first->GetLocalTransform();
+        }
+        else
+        {
+            node.second.originalTransform = node.first->GetWorldTransform();
+        }
+
         node.second.isLocked = node.first->GetLocked();
     }
 }
@@ -129,7 +162,15 @@ void EditorPhysicsSystem::RestoreTransform()
 {
     for (auto& node : transformMap)
     {
-        node.first->SetWorldTransform(node.second.originalTransform);
+        if (node.second.restoreLocalTransform)
+        {
+            node.first->SetLocalTransform(node.second.originalTransform);
+        }
+        else
+        {
+            node.first->SetWorldTransform(node.second.originalTransform);
+        }
+
         node.first->SetLocked(node.second.isLocked);
 
         DAVA::PhysicsComponent* component = static_cast<DAVA::PhysicsComponent*>(node.first->GetComponent(DAVA::Component::DYNAMIC_BODY_COMPONENT, 0));
