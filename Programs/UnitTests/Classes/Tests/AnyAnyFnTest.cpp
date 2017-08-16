@@ -259,7 +259,7 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         TEST_VERIFY(tp1->GetTypeFlags() != tp3->GetTypeFlags());
         TEST_VERIFY(tp2->GetTypeFlags() != tp3->GetTypeFlags());
 
-        size_t customIndex = Type::AllocUserData();
+        uint32_t customIndex = Type::AllocUserData();
 
         TEST_VERIFY(nullptr == Type::Instance<int>()->GetUserData(customIndex));
         TEST_VERIFY(nullptr == Type::Instance<float>()->GetUserData(customIndex));
