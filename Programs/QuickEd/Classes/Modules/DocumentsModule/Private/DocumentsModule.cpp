@@ -96,16 +96,7 @@ bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key
 
 bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    using namespace DAVA;
-    using namespace TArc;
-
-    bool savedOk = true;
-    ContextAccessor* accessor = GetAccessor();
-    accessor->ForEachContext([&](DataContext& context) {
-        savedOk = savedOk && SaveDocument(context.GetID());
-    });
-
-    return savedOk;
+    return SaveAllDocuments();
 }
 
 void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
@@ -912,7 +903,7 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     if (serializer.HasErrors())
     {
         ModalMessageParams params;
-        params.title = QObject::tr(DAVA::Format("Can't save %s", data->package->GetPath().GetFilename().c_str()).c_str());
+        params.title = QString::fromStdString(DAVA::Format("Can't save %s", data->package->GetPath().GetFilename().c_str()));
         params.message = QString::fromStdString(serializer.GetResults().GetResultMessages());
 
         params.buttons = ModalMessageParams::Ok;
@@ -933,7 +924,7 @@ bool DocumentsModule::SaveAllDocuments()
     bool savedOk = true;
     GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
                                   {
-                                      savedOk = savedOk && SaveDocument(context.GetID());
+                                      savedOk = SaveDocument(context.GetID()) && savedOk;
                                   });
     return savedOk;
 }

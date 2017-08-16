@@ -68,8 +68,6 @@ private:
     DAVA::UnorderedMap<ControlNode*, DAVA::int32> symbolsIssues;
     DuplicationsIssuesMap duplicationIssues;
 
-    //DAVA::Unordered<ControlNode*> duplicationControls;
-
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     PackageListenerProxy packageListenerProxy;
 };
