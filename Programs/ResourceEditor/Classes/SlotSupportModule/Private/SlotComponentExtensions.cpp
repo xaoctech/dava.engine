@@ -752,7 +752,7 @@ public:
         Info info;
         info.description = "Slot config reloading";
         info.tooltip = "Reload config from disk";
-        info.icon = SharedIcon(":/QtIcons/reloadtextures.png");
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png");
 
         return info;
     }
