@@ -58,15 +58,15 @@ class PxControllerFilterCallback;
 */
 struct PxControllerDebugRenderFlag
 {
-	enum Enum
-	{
-		eTEMPORAL_BV	= (1<<0),	//!< Temporal bounding volume around controllers
-		eCACHED_BV		= (1<<1),	//!< Cached bounding volume around controllers
-		eOBSTACLES		= (1<<2),	//!< User-defined obstacles
+    enum Enum
+    {
+        eTEMPORAL_BV = (1 << 0), //!< Temporal bounding volume around controllers
+        eCACHED_BV = (1 << 1), //!< Cached bounding volume around controllers
+        eOBSTACLES = (1 << 2), //!< User-defined obstacles
 
-		eNONE			= 0,
-		eALL			= 0xffffffff
-	};
+        eNONE = 0,
+        eALL = 0xffffffff
+    };
 };
 
 /**
@@ -77,7 +77,6 @@ struct PxControllerDebugRenderFlag
 typedef PxFlags<PxControllerDebugRenderFlag::Enum, PxU32> PxControllerDebugRenderFlags;
 PX_FLAGS_OPERATORS(PxControllerDebugRenderFlag::Enum, PxU32)
 
-
 /**
 \brief Manages an array of character controllers.
 
@@ -86,7 +85,7 @@ PX_FLAGS_OPERATORS(PxControllerDebugRenderFlag::Enum, PxU32)
 class PX_PHYSX_CHARACTER_API PxControllerManager
 {
 public:
-	/**
+    /**
 	\brief Releases the controller manager.
 
 	\note This will release all associated controllers and obstacle contexts.
@@ -94,31 +93,31 @@ public:
 	\note This function is required to be called to release foundation usage.
 
 	*/
-	virtual void				release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Returns the scene the manager is adding the controllers to.
 
 	\return The associated physics scene.
 	*/
-	virtual PxScene&			getScene() const = 0;
+    virtual PxScene& getScene() const = 0;
 
-	/**
+    /**
 	\brief Returns the number of controllers that are being managed.
 
 	\return The number of controllers.
 	*/
-	virtual PxU32				getNbControllers() const = 0;
+    virtual PxU32 getNbControllers() const = 0;
 
-	/**
+    /**
 	\brief Retrieve one of the controllers in the manager.
 
 	\param index the index of the controller to return
 	\return The controller with the specified index.
 	*/
-	virtual PxController*		getController(PxU32 index) = 0;
+    virtual PxController* getController(PxU32 index) = 0;
 
-	/**
+    /**
 	\brief Creates a new character controller.
 
 	\param[in] desc The controllers descriptor
@@ -126,56 +125,56 @@ public:
 
 	@see PxController PxController.release() PxControllerDesc
 	*/
-	virtual PxController*		createController(const PxControllerDesc& desc) = 0;
+    virtual PxController* createController(const PxControllerDesc& desc) = 0;
 
-	/**
+    /**
 	\brief Releases all the controllers that are being managed.
 	*/
-	virtual void				purgeControllers() = 0;
+    virtual void purgeControllers() = 0;
 
-	/**
+    /**
 	\brief Retrieves debug data.
 
 	\return The render buffer filled with debug-render data
 
 	@see PxControllerManager.setDebugRenderingFlags()
 	*/
-	virtual	PxRenderBuffer&		getRenderBuffer()		= 0;
+    virtual PxRenderBuffer& getRenderBuffer() = 0;
 
-	/**
+    /**
 	\brief Sets debug rendering flags
 
 	\param[in] flags The debug rendering flags (combination of PxControllerDebugRenderFlags)
 
 	@see PxControllerManager.getRenderBuffer() PxControllerDebugRenderFlags
 	*/
-	virtual	void				setDebugRenderingFlags(PxControllerDebugRenderFlags flags)	= 0;
+    virtual void setDebugRenderingFlags(PxControllerDebugRenderFlags flags) = 0;
 
-	/**
+    /**
 	\brief Returns the number of obstacle contexts that are being managed.
 
 	\return The number of obstacle contexts.
 	*/
-	virtual PxU32				getNbObstacleContexts() const = 0;
+    virtual PxU32 getNbObstacleContexts() const = 0;
 
-	/**
+    /**
 	\brief Retrieve one of the obstacle contexts in the manager.
 
 	\param index The index of the obstacle context to retrieve.
 	\return The obstacle context with the specified index.
 	*/
-	virtual PxObstacleContext*	getObstacleContext(PxU32 index) = 0;
+    virtual PxObstacleContext* getObstacleContext(PxU32 index) = 0;
 
-	/**
+    /**
 	\brief Creates an obstacle context.
 
 	\return New obstacle context
 
 	@see PxObstacleContext
 	*/
-	virtual	PxObstacleContext*	createObstacleContext()	= 0;
+    virtual PxObstacleContext* createObstacleContext() = 0;
 
-	/**
+    /**
 	\brief Computes character-character interactions.
 
 	This function is an optional helper to properly resolve interactions between characters, in case they overlap (which can happen for gameplay reasons, etc).
@@ -192,9 +191,9 @@ public:
 	\param[in] elapsedTime	Elapsed time since last call
 	\param[in] cctFilterCb	Filtering callback for CCT-vs-CCT interactions
 	*/
-	virtual	void				computeInteractions(PxF32 elapsedTime, PxControllerFilterCallback* cctFilterCb=NULL) = 0;
+    virtual void computeInteractions(PxF32 elapsedTime, PxControllerFilterCallback* cctFilterCb = NULL) = 0;
 
-	/**
+    /**
 	\brief Enables or disables runtime tessellation.
 
 	Large triangles can create accuracy issues in the sweep code, which in turn can lead to characters not sliding smoothly
@@ -207,9 +206,9 @@ public:
 	\param[in] flag				True/false to enable/disable runtime tessellation.
 	\param[in] maxEdgeLength	Max edge length allowed before tessellation kicks in.
 	*/
-	virtual	void				setTessellation(bool flag, float maxEdgeLength) = 0;
+    virtual void setTessellation(bool flag, float maxEdgeLength) = 0;
 
-	/**
+    /**
 	\brief Enables or disables the overlap recovery module.
 
 	The overlap recovery module can be used to depenetrate CCTs from static objects when an overlap is detected. This can happen
@@ -228,9 +227,9 @@ public:
 
 	\param[in] flag				True/false to enable/disable overlap recovery module.
 	*/
-	virtual	void				setOverlapRecoveryModule(bool flag) = 0;
+    virtual void setOverlapRecoveryModule(bool flag) = 0;
 
-	/**
+    /**
 	\brief Enables or disables the precise sweeps.
 
 	Precise sweeps are more accurate, but also potentially slower than regular sweeps.
@@ -239,9 +238,9 @@ public:
 
 	\param[in] flag				True/false to enable/disable precise sweeps.
 	*/
-	virtual	void				setPreciseSweeps(bool flag) = 0;
+    virtual void setPreciseSweeps(bool flag) = 0;
 
-	/**
+    /**
 	\brief Enables or disables vertical sliding against ceilings.
 
 	Geometry is seen as "ceilings" when the following condition is met:
@@ -254,9 +253,9 @@ public:
 
 	\param[in] flag				True/false to enable/disable sliding.
 	*/
-	virtual	void				setPreventVerticalSlidingAgainstCeiling(bool flag) = 0;
+    virtual void setPreventVerticalSlidingAgainstCeiling(bool flag) = 0;
 
-	/**
+    /**
 	\brief Shift the origin of the character controllers and obstacle objects by the specified vector.
 
 	The positions of all character controllers, obstacle objects and the corresponding data structures will get adjusted to reflect the shifted origin location
@@ -268,18 +267,22 @@ public:
 
 	\param[in] shift Translation vector to shift the origin by.
 	*/
-	virtual	void				shiftOrigin(const PxVec3& shift) = 0;
+    virtual void shiftOrigin(const PxVec3& shift) = 0;
 
 protected:
-	PxControllerManager() {}
-	virtual ~PxControllerManager() {}
+    PxControllerManager()
+    {
+    }
+    virtual ~PxControllerManager()
+    {
+    }
 };
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-	/**
+/**
 	\brief Creates the controller manager.
 
 	\param[in] scene PhysX scene.

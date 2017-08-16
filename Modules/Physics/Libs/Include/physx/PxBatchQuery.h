@@ -56,84 +56,81 @@ struct PxQueryCache;
 */
 class PX_DEPRECATED PxBatchQuery
 {
-	public:
-
-	/**
+public:
+    /**
 	\brief Executes batched queries.
 	*/
-	virtual	void							execute() = 0;
+    virtual void execute() = 0;
 
-	/**
+    /**
 	\brief Gets the prefilter shader in use for this scene query.
 
 	\return Prefilter shader.
 
 	@see PxBatchQueryDesc.preFilterShade PxBatchQueryPreFilterShader
 	*/
-	virtual	PxBatchQueryPreFilterShader getPreFilterShader() const = 0;
+    virtual PxBatchQueryPreFilterShader getPreFilterShader() const = 0;
 
-	/**
+    /**
 	\brief Gets the postfilter shader in use for this scene query.
 
 	\return Postfilter shader.
 
 	@see PxBatchQueryDesc.preFilterShade PxBatchQueryPostFilterShader
 	*/
-	virtual	PxBatchQueryPostFilterShader getPostFilterShader() const = 0;
+    virtual PxBatchQueryPostFilterShader getPostFilterShader() const = 0;
 
-
-	/**
+    /**
 	\brief Gets the shared global filter data in use for this scene query.
 
 	\return Shared filter data for filter shader.
 
 	@see getFilterShaderDataSize() PxBatchQueryDesc.filterShaderData PxBatchQueryPreFilterShader, PxBatchQueryPostFilterShader
 	*/
-	virtual	const void*						getFilterShaderData() const	= 0;
+    virtual const void* getFilterShaderData() const = 0;
 
-	/**
+    /**
 	\brief Gets the size of the shared global filter data (#PxSceneDesc.filterShaderData)
 
 	\return Size of shared filter data [bytes].
 
 	@see getFilterShaderData() PxBatchQueryDesc.filterShaderDataSize PxBatchQueryPreFilterShader, PxBatchQueryPostFilterShader
 	*/
-	virtual	PxU32							getFilterShaderDataSize() const	= 0;
+    virtual PxU32 getFilterShaderDataSize() const = 0;
 
-
-	/**
+    /**
 	\brief Retrieves the client specified with PxBatchQueryDesc::ownerClient at creation time.
 
 	It is not possible to change this value after creating the scene query.
 
 	@see PxBatchQueryDesc::ownerClient
 	*/
-	PX_DEPRECATED virtual PxClientID		getOwnerClient() const = 0;
+    PX_DEPRECATED virtual PxClientID getOwnerClient() const = 0;
 
-	/**
+    /**
  	\brief Sets new user memory pointers.
  
  	It is not possible to change the memory during query execute.
  
  	@see PxBatchQueryDesc
  	*/
- 	virtual	void							setUserMemory(const PxBatchQueryMemory&) = 0;
+    virtual void setUserMemory(const PxBatchQueryMemory&) = 0;
 
-	/**
+    /**
  	\brief Gets the user memory pointers. 	
  
  	@see PxBatchQueryDesc
  	*/
- 	virtual	const PxBatchQueryMemory&		getUserMemory() = 0;
+    virtual const PxBatchQueryMemory& getUserMemory() = 0;
 
-	/**
+    /**
 	\brief Releases PxBatchQuery from PxScene
 
 	@see PxScene, PxScene.createBatchQuery
 	*/
-	virtual	void							release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Performs a raycast against objects in the scene, returns results in PxBatchQueryMemory::userRaycastResultBuffer
 	specified at PxBatchQuery creation time or via PxBatchQuery::setUserMemory call.
 
@@ -156,14 +153,13 @@ class PX_DEPRECATED PxBatchQuery
 
 	@see PxQueryFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader PxRaycastHit PxScene::raycast
 	*/
-	virtual void raycast(
-		const PxVec3& origin, const PxVec3& unitDir, PxReal distance = PX_MAX_F32, PxU16 maxTouchHits = 0,
-		PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
-		const PxQueryFilterData& filterData = PxQueryFilterData(),
-		void* userData = NULL, const PxQueryCache* cache = NULL) = 0;
+    virtual void raycast(
+    const PxVec3& origin, const PxVec3& unitDir, PxReal distance = PX_MAX_F32, PxU16 maxTouchHits = 0,
+    PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
+    const PxQueryFilterData& filterData = PxQueryFilterData(),
+    void* userData = NULL, const PxQueryCache* cache = NULL) = 0;
 
-
-	/**
+    /**
 	\brief Performs an overlap test of a given geometry against objects in the scene, returns results in PxBatchQueryMemory::userOverlapResultBuffer
 	specified at PxBatchQuery creation time or via PxBatchQuery::setUserMemory call.
 	
@@ -185,11 +181,11 @@ class PX_DEPRECATED PxBatchQuery
 
 	@see PxQueryFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader 
 	*/
-	virtual void overlap(
-		const PxGeometry& geometry, const PxTransform& pose, PxU16 maxTouchHits = 0,
-		const PxQueryFilterData& filterData = PxQueryFilterData(), void* userData=NULL, const PxQueryCache* cache = NULL) = 0;
+    virtual void overlap(
+    const PxGeometry& geometry, const PxTransform& pose, PxU16 maxTouchHits = 0,
+    const PxQueryFilterData& filterData = PxQueryFilterData(), void* userData = NULL, const PxQueryCache* cache = NULL) = 0;
 
-	/**
+    /**
 	\brief Performs a sweep test against objects in the scene, returns results in PxBatchQueryMemory::userSweepResultBuffer
 	specified at PxBatchQuery creation time or via PxBatchQuery::setUserMemory call.
 	
@@ -216,14 +212,16 @@ class PX_DEPRECATED PxBatchQuery
 
 	@see PxHitFlags PxQueryFilterData PxBatchQueryPreFilterShader PxBatchQueryPostFilterShader PxSweepHit
 	*/
-	virtual void sweep(
-		const PxGeometry& geometry, const PxTransform& pose, const PxVec3& unitDir, const PxReal distance,
-		PxU16 maxTouchHits = 0, PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
-		const PxQueryFilterData& filterData = PxQueryFilterData(), void* userData=NULL, const PxQueryCache* cache = NULL,
-		const PxReal inflation = 0.f) = 0;
+    virtual void sweep(
+    const PxGeometry& geometry, const PxTransform& pose, const PxVec3& unitDir, const PxReal distance,
+    PxU16 maxTouchHits = 0, PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
+    const PxQueryFilterData& filterData = PxQueryFilterData(), void* userData = NULL, const PxQueryCache* cache = NULL,
+    const PxReal inflation = 0.f) = 0;
 
 protected:
-	virtual	~PxBatchQuery() {}
+    virtual ~PxBatchQuery()
+    {
+    }
 };
 
 #if !PX_DOXYGEN

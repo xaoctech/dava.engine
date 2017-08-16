@@ -50,19 +50,19 @@ be implemented in a thread-safe manner if the SDK is the only client.
 */
 class PxErrorCallback
 {
-  public:
-	virtual ~PxErrorCallback()
-	{
-	}
+public:
+    virtual ~PxErrorCallback()
+    {
+    }
 
-	/**
+    /**
 	\brief Reports an error code.
 	\param code Error code, see #PxErrorCode
 	\param message Message to display.
 	\param file File error occured in.
 	\param line Line number error occured on.
 	*/
-	virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) = 0;
+    virtual void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) = 0;
 };
 
 #if !PX_DOXYGEN

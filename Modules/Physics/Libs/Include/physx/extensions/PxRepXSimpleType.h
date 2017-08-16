@@ -45,57 +45,60 @@
 namespace physx
 {
 #endif
-	
-	/**
+
+/**
 	\brief Helper class containing the mapping of id to object, and type name.
 	*/
-	struct PxRepXObject
-	{
-		/**
+struct PxRepXObject
+{
+    /**
 		\brief Identifies the extension meant to handle this object.
 		@see PxTypeInfo, PX_DEFINE_TYPEINFO, PxRepXSerializer
 		*/
-		const char*			typeName;
+    const char* typeName;
 
-		/**
+    /**
 		\brief Pointer to the serializable this was created from
 		*/
-		const void*			serializable;
+    const void* serializable;
 
-		/**
+    /**
 		\brief Id given to this object at some point
 		*/
-		PxSerialObjectId 	id;
-		PxRepXObject( const char* inTypeName = "", const void* inSerializable = NULL, const PxSerialObjectId inId = 0 )
-			: typeName( inTypeName )
-			, serializable( inSerializable )
-			, id( inId )
-		{
-		}
-		bool isValid() const { return serializable != NULL; }
-	};
+    PxSerialObjectId id;
+    PxRepXObject(const char* inTypeName = "", const void* inSerializable = NULL, const PxSerialObjectId inId = 0)
+        : typeName(inTypeName)
+        , serializable(inSerializable)
+        , id(inId)
+    {
+    }
+    bool isValid() const
+    {
+        return serializable != NULL;
+    }
+};
 
-	/**
+/**
 	\brief Arguments required to instantiate a serializable object from RepX.
 
 	Extra arguments can be added to the object map under special ids.
 
 	@see PxRepXSerializer::objectToFile, PxRepXSerializer::fileToObject
 	*/
-	struct PxRepXInstantiationArgs
-	{
-		PxPhysics&			physics;
-		PxCooking*			cooker;
-		PxStringTable*		stringTable;
-		PxRepXInstantiationArgs( PxPhysics& inPhysics, PxCooking* inCooking = NULL , PxStringTable* inStringTable = NULL ) 
-			: physics( inPhysics )
-			, cooker( inCooking )
-			, stringTable( inStringTable )
-		{
-		}
+struct PxRepXInstantiationArgs
+{
+    PxPhysics& physics;
+    PxCooking* cooker;
+    PxStringTable* stringTable;
+    PxRepXInstantiationArgs(PxPhysics& inPhysics, PxCooking* inCooking = NULL, PxStringTable* inStringTable = NULL)
+        : physics(inPhysics)
+        , cooker(inCooking)
+        , stringTable(inStringTable)
+    {
+    }
 
-		PxRepXInstantiationArgs& operator=(const PxRepXInstantiationArgs&);
-	};
+    PxRepXInstantiationArgs& operator=(const PxRepXInstantiationArgs&);
+};
 
 
 #if !PX_DOXYGEN

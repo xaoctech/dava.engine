@@ -38,13 +38,13 @@
 namespace physx
 {
 #endif
-	
+
 struct PxClothSimpleTetherCookerImpl;
 
 class PxClothSimpleTetherCooker
 {
 public:
-	/**
+    /**
 	\brief Compute tether data from PxClothMeshDesc with simple distance measure.
 	\details The tether constraint in PxCloth requires rest distance and anchor index to be precomputed during cooking time.
 	This cooker computes a simple Euclidean distance to closest anchor point.
@@ -53,8 +53,8 @@ public:
 	\see PxClothTetherGeodesicCooker for more accurate distance estimation.
 	\param desc The cloth mesh descriptor prepared for cooking
 	*/
-	PxClothSimpleTetherCooker(const PxClothMeshDesc &desc);
-	~PxClothSimpleTetherCooker();
+    PxClothSimpleTetherCooker(const PxClothMeshDesc& desc);
+    ~PxClothSimpleTetherCooker();
 
     /** 
 	\brief Returns computed tether data.
@@ -64,17 +64,15 @@ public:
     void getTetherData(PxU32* userTetherAnchors, PxReal* userTetherLengths) const;
 
 private:
-	PxClothSimpleTetherCookerImpl* mImpl;
-
+    PxClothSimpleTetherCookerImpl* mImpl;
 };
-
 
 struct PxClothGeodesicTetherCookerImpl;
 
 class PxClothGeodesicTetherCooker
 {
 public:
-	/**
+    /**
 	\brief Compute tether data from PxClothMeshDesc using geodesic distance.
 	\details The tether constraint in PxCloth requires rest distance and anchor index to be precomputed during cooking time.
 	The provided tether cooker computes optimal tether distance with geodesic distance computation.
@@ -87,23 +85,23 @@ public:
 	\note The geodesic cooker does not work with non-manifold input such as edges having more than two incident triangles, 
 	or adjacent triangles following inconsitent winding order (e.g. clockwise vs counter-clockwise). 
 	*/
-	PxClothGeodesicTetherCooker(const PxClothMeshDesc &desc);
-	~PxClothGeodesicTetherCooker();
+    PxClothGeodesicTetherCooker(const PxClothMeshDesc& desc);
+    ~PxClothGeodesicTetherCooker();
 
-	/**
+    /**
 	\brief Returns cooker status
 	\details This function returns cooker status after cooker computation is done.
 	A non-zero return value indicates a failure, 1 for non-manifold and 2 for inconsistent winding.
 	*/
-	PxU32 getCookerStatus() const;
+    PxU32 getCookerStatus() const;
 
-	/**
+    /**
 	\brief Returns number of tether anchors per particle
 	\note Returned number indicates the maximum anchors.  
 	If some particles are assigned fewer anchors, the anchor indices will be PxU32(-1) 
 	\note If there is no attached point in the input mesh descriptor, this will return 0 and no tether data will be generated.
 	*/
-	PxU32 getNbTethersPerParticle() const;
+    PxU32 getNbTethersPerParticle() const;
 
     /** 
 	\brief Returns computed tether data.
@@ -114,8 +112,7 @@ public:
     void getTetherData(PxU32* userTetherAnchors, PxReal* userTetherLengths) const;
 
 private:
-	PxClothGeodesicTetherCookerImpl* mImpl;
-
+    PxClothGeodesicTetherCookerImpl* mImpl;
 };
 
 

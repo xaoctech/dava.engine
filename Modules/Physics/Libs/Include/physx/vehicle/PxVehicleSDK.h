@@ -59,7 +59,6 @@ Call this before using any of the vehicle functions.
 */
 PX_C_EXPORT bool PX_CALL_CONV PxInitVehicleSDK(PxPhysics& physics, PxSerializationRegistry* serializationRegistry = NULL);
 
-
 /**
 \brief Shut down the PhysXVehicle library. 
 
@@ -74,12 +73,10 @@ Call this function as part of the physx shutdown process.
 */
 PX_C_EXPORT void PX_CALL_CONV PxCloseVehicleSDK(PxSerializationRegistry* serializationRegistry = NULL);
 
-
 /**
 \brief This number is the maximum number of wheels allowed for a vehicle.
 */
 #define PX_MAX_NB_WHEELS (20)
-
 
 /**
 \brief Compiler setting to enable recording of telemetry data
@@ -88,25 +85,23 @@ PX_C_EXPORT void PX_CALL_CONV PxCloseVehicleSDK(PxSerializationRegistry* seriali
 */
 #define PX_DEBUG_VEHICLE_ON (1)
 
-
 /**
 @see PxVehicleDrive4W, PxVehicleDriveTank, PxVehicleDriveNW, PxVehicleNoDrive, PxVehicleWheels::getVehicleType
 */
 struct PxVehicleTypes
 {
-	enum Enum
-	{
-		eDRIVE4W=0,
-		eDRIVENW,
-		eDRIVETANK,
-		eNODRIVE,
-		eUSER1,
-		eUSER2,
-		eUSER3,
-		eMAX_NB_VEHICLE_TYPES
-	};
+    enum Enum
+    {
+        eDRIVE4W = 0,
+        eDRIVENW,
+        eDRIVETANK,
+        eNODRIVE,
+        eUSER1,
+        eUSER2,
+        eUSER3,
+        eMAX_NB_VEHICLE_TYPES
+    };
 };
-
 
 /**
 \brief An enumeration of concrete vehicle classes inheriting from PxBase.
@@ -115,15 +110,14 @@ struct PxVehicleTypes
 */
 struct PxVehicleConcreteType
 {
-	enum Enum
-	{
-		eVehicleNoDrive = PxConcreteType::eFIRST_VEHICLE_EXTENSION,
-		eVehicleDrive4W,
-		eVehicleDriveNW,
-		eVehicleDriveTank
-	};
+    enum Enum
+    {
+        eVehicleNoDrive = PxConcreteType::eFIRST_VEHICLE_EXTENSION,
+        eVehicleDrive4W,
+        eVehicleDriveNW,
+        eVehicleDriveTank
+    };
 };
-
 
 /**
 \brief Set the basis vectors of the vehicle simulation 
@@ -134,19 +128,17 @@ Call this function before using PxVehicleUpdates unless the default values are c
 */
 void PxVehicleSetBasisVectors(const PxVec3& up, const PxVec3& forward);
 
-
 /**
 @see PxVehicleSetUpdateMode
 */
 struct PxVehicleUpdateMode
 {
-	enum Enum
-	{
-		eVELOCITY_CHANGE,
-		eACCELERATION	
-	};
+    enum Enum
+    {
+        eVELOCITY_CHANGE,
+        eACCELERATION
+    };
 };
-
 
 /**
 \brief Set the effect of PxVehicleUpdates to be either to modify each vehicle's rigid body actor
@@ -214,7 +206,6 @@ by the contact modification callback PxVehicleModifyWheelContacts.
 @see PxVehicleSuspensionSweeps, PxVehicleModifyWheelContacts
 */
 void PxVehicleSetSweepHitRejectionAngles(const PxF32 pointRejectAngle, const PxF32 normalRejectAngle);
-
 
 /**
 \brief Determine the maximum acceleration experienced by PxRigidDynamic instances that are found to be in contact 

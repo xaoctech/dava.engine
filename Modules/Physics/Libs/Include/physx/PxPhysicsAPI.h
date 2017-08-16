@@ -113,7 +113,6 @@ Alternatively, one can instead directly #include a subset of the below files.
 #include "geometry/PxTriangleMesh.h"
 #include "geometry/PxTriangleMeshGeometry.h"
 
-
 // PhysX Core SDK
 #include "PxActor.h"
 #include "PxAggregate.h"

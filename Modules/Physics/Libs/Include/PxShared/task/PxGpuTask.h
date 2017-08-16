@@ -35,7 +35,6 @@
 
 namespace physx
 {
-
 PX_PUSH_PACK_DEFAULT
 
 /** \brief Define the 'flavor' of a PxGpuTask
@@ -50,15 +49,15 @@ PX_PUSH_PACK_DEFAULT
  */
 struct PxGpuTaskHint
 {
-	/// \brief Enums for the type of GPU task
-	enum Enum
-	{
-		HostToDevice,
-		Kernel,
-		DeviceToHost,
+    /// \brief Enums for the type of GPU task
+    enum Enum
+    {
+        HostToDevice,
+        Kernel,
+        DeviceToHost,
 
-		NUM_GPU_TASK_HINTS
-	};
+        NUM_GPU_TASK_HINTS
+    };
 };
 
 /**
@@ -67,9 +66,12 @@ struct PxGpuTaskHint
 class PxGpuTask : public PxTask
 {
 public:
-	PxGpuTask() : mComp(NULL) {}
+    PxGpuTask()
+        : mComp(NULL)
+    {
+    }
 
-	/**
+    /**
 	 * \brief iterative "run" function for a PxGpuTask
 	 *
 	 * The GpuDispatcher acquires the CUDA context for the duration of this
@@ -80,35 +82,35 @@ public:
 	 * subsequent call.  Once launchInstance() returns false, its PxGpuTask is
 	 * considered completed and is released.
 	 */
-	virtual bool    launchInstance(CUstream stream, int kernelIndex) = 0;
+    virtual bool launchInstance(CUstream stream, int kernelIndex) = 0;
 
-	/**
+    /**
 	 * \brief Returns a hint indicating the function of this task
 	 */
-	virtual PxGpuTaskHint::Enum getTaskHint() const = 0;
+    virtual PxGpuTaskHint::Enum getTaskHint() const = 0;
 
-	/**
+    /**
 	 * \brief Specify a task that will have its reference count decremented
 	 * when this task is released
 	 */
-	void setCompletionTask(PxBaseTask& task)
-	{
-		mComp = &task;
-	}
+    void setCompletionTask(PxBaseTask& task)
+    {
+        mComp = &task;
+    }
 
-	void release()
-	{
-		if (mComp)
-		{
-			mComp->removeReference();
-			mComp = NULL;
-		}
-		PxTask::release();
-	}
+    void release()
+    {
+        if (mComp)
+        {
+            mComp->removeReference();
+            mComp = NULL;
+        }
+        PxTask::release();
+    }
 
 protected:
-	/// \brief A pointer to the completion task
-	PxBaseTask* mComp;
+    /// \brief A pointer to the completion task
+    PxBaseTask* mComp;
 };
 
 PX_POP_PACK

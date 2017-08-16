@@ -274,6 +274,28 @@ Vector<SlotSystem::ItemsCache::Item> SlotSystem::ItemsCache::GetItems(const File
     return result;
 }
 
+void SlotSystem::ItemsCache::InvalidateConfig(const FilePath& configPath)
+{
+    if (configPath.IsEmpty())
+    {
+        return;
+    }
+
+    String absolutePath = configPath.GetAbsolutePathname();
+    auto iter = cachedItems.find(absolutePath);
+    if (iter != cachedItems.end())
+    {
+        cachedItems.erase(iter);
+    }
+}
+
+bool SlotSystem::ItemsCache::IsConfigParsed(const FilePath& configPath) const
+{
+    String absolutePath = configPath.GetAbsolutePathname();
+    auto iter = cachedItems.find(absolutePath);
+    return iter != cachedItems.end();
+}
+
 bool SlotSystem::ItemsCache::ItemLess::operator()(const Item& item1, const Item& item2) const
 {
     return item1.itemName < item2.itemName;
@@ -318,6 +340,16 @@ void SlotSystem::SetSharedCache(std::shared_ptr<ItemsCache> cache)
 Vector<SlotSystem::ItemsCache::Item> SlotSystem::GetItems(const FilePath& configPath)
 {
     return sharedCache->GetItems(configPath);
+}
+
+void SlotSystem::InvalidateConfig(const FilePath& configPath)
+{
+    sharedCache->InvalidateConfig(configPath);
+}
+
+bool SlotSystem::IsConfigParsed(const FilePath& configPath) const
+{
+    return sharedCache->IsConfigParsed(configPath);
 }
 
 DAVA::Vector<SlotSystem::ItemsCache::Item> SlotSystem::ParseConfig(const FilePath& configPath)

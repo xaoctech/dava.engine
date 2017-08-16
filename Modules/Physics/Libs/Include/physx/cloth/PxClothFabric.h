@@ -48,15 +48,15 @@ namespace physx
 */
 struct PxClothFabricPhaseType
 {
-	enum Enum
-	{
-		eINVALID,     //!< invalid type 
-		eVERTICAL,    //!< resists stretching or compression, usually along the gravity
-		eHORIZONTAL,  //!< resists stretching or compression, perpendicular to the gravity
-		eBENDING,     //!< resists out-of-plane bending in angle-based formulation
-		eSHEARING,    //!< resists in-plane shearing along (typically) diagonal edges,
-        eCOUNT        // internal use only
-	};
+    enum Enum
+    {
+        eINVALID, //!< invalid type
+        eVERTICAL, //!< resists stretching or compression, usually along the gravity
+        eHORIZONTAL, //!< resists stretching or compression, perpendicular to the gravity
+        eBENDING, //!< resists out-of-plane bending in angle-based formulation
+        eSHEARING, //!< resists in-plane shearing along (typically) diagonal edges,
+        eCOUNT // internal use only
+    };
 };
 
 /**
@@ -65,25 +65,27 @@ struct PxClothFabricPhaseType
 */
 struct PxClothFabricPhase
 {
-	PxClothFabricPhase(PxClothFabricPhaseType::Enum type = 
-		PxClothFabricPhaseType::eINVALID, PxU32 index = 0);
+    PxClothFabricPhase(PxClothFabricPhaseType::Enum type =
+                       PxClothFabricPhaseType::eINVALID,
+                       PxU32 index = 0);
 
-	/**
+    /**
 	\brief Type of constraints to solve.
 	*/
-	PxClothFabricPhaseType::Enum phaseType;
+    PxClothFabricPhaseType::Enum phaseType;
 
-	/**
+    /**
 	\brief Index of the set that contains the particle indices.
 	*/
-	PxU32 setIndex;
+    PxU32 setIndex;
 };
 
 PX_INLINE PxClothFabricPhase::PxClothFabricPhase(
-	PxClothFabricPhaseType::Enum type, PxU32 index)
-	: phaseType(type)
-	, setIndex(index)
-{}
+PxClothFabricPhaseType::Enum type, PxU32 index)
+    : phaseType(type)
+    , setIndex(index)
+{
+}
 
 /**
 \brief References all the data required to create a fabric.
@@ -92,70 +94,69 @@ PX_INLINE PxClothFabricPhase::PxClothFabricPhase(
 class PxClothFabricDesc
 {
 public:
-	/** \brief The number of particles needed when creating a PxCloth instance from the fabric. */
-	PxU32 nbParticles;
+    /** \brief The number of particles needed when creating a PxCloth instance from the fabric. */
+    PxU32 nbParticles;
 
-	/** \brief The number of solver phases. */
-	PxU32 nbPhases;
-	/** \brief Array defining which constraints to solve each phase. See #PxClothFabric.getPhases(). */
-	const PxClothFabricPhase* phases;
+    /** \brief The number of solver phases. */
+    PxU32 nbPhases;
+    /** \brief Array defining which constraints to solve each phase. See #PxClothFabric.getPhases(). */
+    const PxClothFabricPhase* phases;
 
-	/** \brief The number of sets in the fabric. */
-	PxU32 nbSets;
-	/** \brief Array with an index per set which points one entry beyond the last constraint of the set. See #PxClothFabric.getSets(). */
-	const PxU32* sets;
+    /** \brief The number of sets in the fabric. */
+    PxU32 nbSets;
+    /** \brief Array with an index per set which points one entry beyond the last constraint of the set. See #PxClothFabric.getSets(). */
+    const PxU32* sets;
 
-	/** \brief Array of particle indices which specifies the pair of constrained vertices. See #PxClothFabric.getParticleIndices(). */
-	const PxU32* indices;
-	/** \brief Array of rest values for each constraint. See #PxClothFabric.getRestvalues(). */
-	const PxReal* restvalues;
+    /** \brief Array of particle indices which specifies the pair of constrained vertices. See #PxClothFabric.getParticleIndices(). */
+    const PxU32* indices;
+    /** \brief Array of rest values for each constraint. See #PxClothFabric.getRestvalues(). */
+    const PxReal* restvalues;
 
-	/** \brief Size of tetherAnchors and tetherLengths arrays, needs to be multiple of nbParticles. */
-	PxU32 nbTethers;
-	/** \brief Array of particle indices specifying the tether anchors. See #PxClothFabric.getTetherAnchors(). */
-	const PxU32* tetherAnchors;
-	/** \brief Array of rest distance between tethered particle pairs. See #PxClothFabric.getTetherLengths(). */
-	const PxReal* tetherLengths;
+    /** \brief Size of tetherAnchors and tetherLengths arrays, needs to be multiple of nbParticles. */
+    PxU32 nbTethers;
+    /** \brief Array of particle indices specifying the tether anchors. See #PxClothFabric.getTetherAnchors(). */
+    const PxU32* tetherAnchors;
+    /** \brief Array of rest distance between tethered particle pairs. See #PxClothFabric.getTetherLengths(). */
+    const PxReal* tetherLengths;
 
-	/** \brief Array of triangle indices used to calculate air friction. */
-	const PxU32* triangles;
-	/** \brief The number of triangles in the triangles array. (1 triangle means 3 indices in the array) */
-	PxU32 nbTriangles;
+    /** \brief Array of triangle indices used to calculate air friction. */
+    const PxU32* triangles;
+    /** \brief The number of triangles in the triangles array. (1 triangle means 3 indices in the array) */
+    PxU32 nbTriangles;
 
-	/**
+    /**
 	\brief constructor sets to default.
 	*/
-	PX_INLINE PxClothFabricDesc();
+    PX_INLINE PxClothFabricDesc();
 
-	/**
+    /**
 	\brief (re)sets the structure to the default.	
 	*/
-	PX_INLINE void setToDefault();
+    PX_INLINE void setToDefault();
 
-	/**
+    /**
 	\brief Returns true if the descriptor is valid.
 	\return True if the current settings are valid
 	*/
-	PX_INLINE bool isValid() const;
+    PX_INLINE bool isValid() const;
 };
 
 PX_INLINE PxClothFabricDesc::PxClothFabricDesc()
 {
-	setToDefault();
+    setToDefault();
 }
 
 PX_INLINE void PxClothFabricDesc::setToDefault()
 {
-	memset(this, 0, sizeof(PxClothFabricDesc));
+    memset(this, 0, sizeof(PxClothFabricDesc));
 }
 
 PX_INLINE bool PxClothFabricDesc::isValid() const
 {
-	return nbParticles && nbPhases && phases && restvalues && nbSets 
-		&& sets && indices && (!nbTethers || (tetherAnchors && tetherLengths))
-		&& (!nbTriangles || triangles);
+    return nbParticles && nbPhases && phases && restvalues && nbSets
+    && sets && indices && (!nbTethers || (tetherAnchors && tetherLengths))
+    && (!nbTriangles || triangles);
 }
-
 
 /**
 \brief A cloth fabric is a structure that contains all the internal solver constraints of a cloth mesh.
@@ -177,51 +178,51 @@ if the anchor particle has infinite mass (zero inverse weight).
 @see The fabric structure can be created from a mesh using PxClothFabricCreate. Alternatively, the fabric data can 
 be saved into a stream (see PxClothFabricCooker.save()) and later created from the stream using PxPhysics.createClothFabric(PxInputStream&).
 */
-class PxClothFabric	: public PxBase
+class PxClothFabric : public PxBase
 {
 public:
-	/**
+    /**
 	\brief Decrements the cloth fabric's reference count, and releases it if the new reference count is zero.
 	
 	\see PxPhysics.createClothFabric()
 	*/
-	virtual void release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
     \brief Returns number of particles.
     \return The number of particles needed when creating a PxCloth instance from the fabric.
-    */ 
-	virtual	PxU32 getNbParticles() const = 0;
+    */
+    virtual PxU32 getNbParticles() const = 0;
 
-	/**
+    /**
     \brief Returns number of phases.
     \return The number of solver phases. 
-    */ 
-	virtual PxU32 getNbPhases() const = 0;
+    */
+    virtual PxU32 getNbPhases() const = 0;
 
-	/**
+    /**
     \brief Returns number of rest values.
     \return The size of the rest values array.
-    */ 
-	virtual PxU32 getNbRestvalues() const = 0;
+    */
+    virtual PxU32 getNbRestvalues() const = 0;
 
     /**
     \brief Returns number of sets.
     \return The size of the set array.
-    */ 
-	virtual	PxU32 getNbSets() const = 0;
+    */
+    virtual PxU32 getNbSets() const = 0;
 
     /**
     \brief Get number of particle indices.
 	\return The size of the particle indices array.
     */
-	virtual	PxU32 getNbParticleIndices() const = 0;
+    virtual PxU32 getNbParticleIndices() const = 0;
 
     /**
     \brief Get number of tether constraints.
 	\return The size of the tether anchors and lengths arrays.
     */
-	virtual PxU32 getNbTethers() const = 0;
+    virtual PxU32 getNbTethers() const = 0;
 
     /**
     \brief Copies the phase array to a user specified buffer.
@@ -232,7 +233,7 @@ public:
     \return getNbPhases() if the copy was successful, 0 otherwise.
 	\note This function is potentially slow. Consider caching 
 	the (static) result instead of retrieving it multiple times.
-    */    
+    */
     virtual PxU32 getPhases(PxClothFabricPhase* userPhaseBuffer, PxU32 bufferSize) const = 0;
 
     /**
@@ -245,7 +246,7 @@ public:
 	\note Indices of the i-th set are stored at indices [i?2*set[i-1]:0, 2*set[i]) in the indices array.
 	\note This function is potentially slow. Consider caching 
 	the (static) result instead of retrieving it multiple times.
-    */    
+    */
     virtual PxU32 getSets(PxU32* userSetBuffer, PxU32 bufferSize) const = 0;
 
     /**
@@ -273,7 +274,7 @@ public:
 	\note This function is potentially slow. Between calling scaleRestlengths(), 
 	consider caching the result instead of retrieving it multiple times.
     */
-	virtual PxU32 getRestvalues(PxReal* userRestvalueBuffer, PxU32 bufferSize) const = 0;
+    virtual PxU32 getRestvalues(PxReal* userRestvalueBuffer, PxU32 bufferSize) const = 0;
 
     /**
 	\brief Copies the tether anchors array to a user specified buffer.
@@ -287,7 +288,7 @@ public:
 	result instead of retrieving the data multiple times.
 	\see getTetherLengths, getNbTethers
     */
-	virtual PxU32 getTetherAnchors(PxU32* userAnchorBuffer, PxU32 bufferSize) const = 0;
+    virtual PxU32 getTetherAnchors(PxU32* userAnchorBuffer, PxU32 bufferSize) const = 0;
 
     /**
 	\brief Copies the tether lengths array to a user specified buffer.
@@ -300,39 +301,50 @@ public:
 	consider caching the result instead of retrieving it multiple times.
 	\see getTetherAnchors, getNbTethers
     */
-	virtual PxU32 getTetherLengths(PxReal* userLengthBuffer, PxU32 bufferSize) const = 0;
-
+    virtual PxU32 getTetherLengths(PxReal* userLengthBuffer, PxU32 bufferSize) const = 0;
 
     /**
     \brief Scale all rest values of length dependent constraints.
     \param[in] scale The scale factor to multiply each rest value with.
     */
-	virtual	void scaleRestlengths(PxReal scale) = 0;
+    virtual void scaleRestlengths(PxReal scale) = 0;
 
-	/**
+    /**
 	\brief Reference count of the cloth instance
 	\details At creation, the reference count of the fabric is 1. Every cloth instance referencing this fabric increments the
 	count by 1.	When the reference count reaches 0, and only then, the fabric gets released automatically.
 	\see PxCloth
 	*/
-	virtual	PxU32 getReferenceCount() const = 0;
+    virtual PxU32 getReferenceCount() const = 0;
 
-	/**
+    /**
 	\brief Acquires a counted reference to a cloth fabric.
 
 	This method increases the reference count of the cloth fabric by 1. Decrement the reference count by calling release()
 	*/
-	virtual void acquireReference() = 0;
+    virtual void acquireReference() = 0;
 
-
-	virtual	const char*	getConcreteTypeName() const	{ return "PxClothFabric";	}
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxClothFabric";
+    }
 
 protected:
-
-	PX_INLINE PxClothFabric(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags) {}
-	PX_INLINE PxClothFabric(PxBaseFlags baseFlags) : PxBase(baseFlags) {}
-	virtual	~PxClothFabric() {}
-	virtual	bool isKindOf(const char* name) const { return !::strcmp("PxClothFabric", name) || PxBase::isKindOf(name); }
+    PX_INLINE PxClothFabric(PxType concreteType, PxBaseFlags baseFlags)
+        : PxBase(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxClothFabric(PxBaseFlags baseFlags)
+        : PxBase(baseFlags)
+    {
+    }
+    virtual ~PxClothFabric()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxClothFabric", name) || PxBase::isKindOf(name);
+    }
 };
 
 #if !PX_DOXYGEN
