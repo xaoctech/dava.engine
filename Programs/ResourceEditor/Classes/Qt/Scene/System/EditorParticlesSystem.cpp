@@ -12,6 +12,7 @@
 #include "Entity/Component.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Math/Vector.h"
 
 // particles-related commands
 #include "Commands2/ParticleEditorCommands.h"
@@ -215,7 +216,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::ParticleDragForce* force)
     if (force->shape == DAVA::ParticleDragForce::eShape::BOX)
     {
         DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
-        Vector3 size = force->boxSize;
+        DAVA::Vector3 size = force->boxSize;
 
         drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * size, 0.5f * size), wMat,
             DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
@@ -226,8 +227,8 @@ void EditorParticlesSystem::DrawDragForces(DAVA::ParticleDragForce* force)
     else if(force->shape == DAVA::ParticleDragForce::eShape::SPHERE)
     {
         DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
-        float32 radius = force->radius;
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        DAVA::float32 radius = force->radius;
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
     }
 }
 

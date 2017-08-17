@@ -6,6 +6,7 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleForces.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Time/SystemTimer.h"
 #include "Utils/Random.h"
@@ -490,6 +491,9 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         //prepare forces as they will now actually change in time even for already generated particles
         static Vector<Vector3> currForceValues;
         int32 forcesCount;
+
+        static Vector<ParticleDragForce*> currDForces;
+        uint32 dForcesCount = 0;
         if (group.head)
         {
             forcesCount = static_cast<int32>(group.layer->forces.size());
@@ -504,7 +508,19 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                         currForceValues[i] = Vector3(0, 0, 0);
                 }
             }
+
+            dForcesCount = static_cast<uint32>(group.layer->GetDragForces().size());
+            if (dForcesCount > 0)
+            {
+                currDForces.resize(dForcesCount);
+                for (uint32 i = 0; i < dForcesCount; ++i)
+                {
+                    currDForces[i] = group.layer->GetDragForces()[i];
+                }
+
+            }
         }
+
         Particle* current = group.head;
         Particle* prev = nullptr;
         while (current)
@@ -527,7 +543,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
-                UpdateRegularParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox);
+                UpdateRegularParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox, currDForces, dForcesCount);
             }
 
             if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
@@ -859,53 +875,56 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     return particle;
 }
 
-void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox)
+void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& layer, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox, Vector<ParticleDragForce*> dForces, uint32 dForcesCount)
 {
     float32 currVelocityOverLife = 1.0f;
-    if (group.layer->velocityOverLife)
-        currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLife);
+    if (layer.layer->velocityOverLife)
+        currVelocityOverLife = layer.layer->velocityOverLife->GetValue(overLife);
     particle->position += particle->speed * (currVelocityOverLife * dt);
 
     float32 currSpinOverLife = 1.0f;
-    if (group.layer->spinOverLife)
-        currSpinOverLife = group.layer->spinOverLife->GetValue(overLife);
+    if (layer.layer->spinOverLife)
+        currSpinOverLife = layer.layer->spinOverLife->GetValue(overLife);
     particle->angle += particle->spin * currSpinOverLife * dt;
 
     Vector3 acceleration(0.0f, 0.0f, 0.0f);
     for (int32 i = 0; i < forcesCount; ++i)
     {
-        acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+        acceleration += (layer.layer->forces[i]->forceOverLife) ? (currForceValues[i] * layer.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
     }
+    for (uint32 i = 0; i < dForcesCount; ++i)
+        ParticleForces::ApplyForce(dForces[i], particle->speed, acceleration, dt);
+
     particle->speed += acceleration * dt;
 
-    if (group.layer->sizeOverLifeXY)
+    if (layer.layer->sizeOverLifeXY)
     {
-        particle->currSize = particle->baseSize * group.layer->sizeOverLifeXY->GetValue(overLife);
-        Vector2 pivotSize = particle->currSize * group.layer->layerPivotSizeOffsets;
+        particle->currSize = particle->baseSize * layer.layer->sizeOverLifeXY->GetValue(overLife);
+        Vector2 pivotSize = particle->currSize * layer.layer->layerPivotSizeOffsets;
         particle->currRadius = pivotSize.Length();
     }
-    if (group.layer->GetInheritPosition())
-        AddParticleToBBox(particle->position + effect->effectData.infoSources[group.positionSource].position, particle->currRadius, bbox);
+    if (layer.layer->GetInheritPosition())
+        AddParticleToBBox(particle->position + effect->effectData.infoSources[layer.positionSource].position, particle->currRadius, bbox);
     else
         AddParticleToBBox(particle->position, particle->currRadius, bbox);
 
-    if (group.layer->frameOverLifeEnabled && group.layer->sprite)
+    if (layer.layer->frameOverLifeEnabled && layer.layer->sprite)
     {
-        float32 animDelta = group.layer->frameOverLifeFPS;
-        if (group.layer->animSpeedOverLife)
-            animDelta *= group.layer->animSpeedOverLife->GetValue(overLife);
+        float32 animDelta = layer.layer->frameOverLifeFPS;
+        if (layer.layer->animSpeedOverLife)
+            animDelta *= layer.layer->animSpeedOverLife->GetValue(overLife);
         particle->animTime += animDelta * dt;
 
         while (particle->animTime > 1.0f)
         {
             particle->frame++;
             particle->animTime -= 1.0f;
-            if (particle->frame >= group.layer->sprite->GetFrameCount())
+            if (particle->frame >= layer.layer->sprite->GetFrameCount())
             {
-                if (group.layer->loopSpriteAnimation)
+                if (layer.layer->loopSpriteAnimation)
                     particle->frame = 0;
                 else
-                    particle->frame = group.layer->sprite->GetFrameCount() - 1;
+                    particle->frame = layer.layer->sprite->GetFrameCount() - 1;
             }
         }
     }
