@@ -94,6 +94,8 @@ BINARY_WIN64_DIR_RELEASE
 BINARY_WIN64_DIR_DEBUG
 BINARY_WIN64_DIR_RELWITHDEB
 #
+MIX_APP_DATA
+#
 JAR_FOLDERS_ANDROID
 JAVA_FOLDERS_ANDROID
 #
@@ -669,6 +671,7 @@ macro( setup_main_module )
                 BINARY_WIN64_DIR_RELWITHDEB
                 JAR_FOLDERS_ANDROID
                 JAVA_FOLDERS_ANDROID
+                MIX_APP_DATA
                 )
 
         load_property( PROPERTY_LIST 
