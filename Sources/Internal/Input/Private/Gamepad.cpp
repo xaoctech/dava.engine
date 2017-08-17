@@ -284,6 +284,9 @@ void Gamepad::HandleAxisMovement(eInputElements element, float32 newValue, bool 
 
 void Gamepad::ResetState(Window* window)
 {
+    // Unused for now. Keep it for interface consistency.
+    (void)window;
+
     for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
     {
         HandleButtonPress(static_cast<eInputElements>(i), false);
