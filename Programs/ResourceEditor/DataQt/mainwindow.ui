@@ -249,7 +249,6 @@
      <addaction name="actionAddWind"/>
      <addaction name="actionAddVegetation"/>
      <addaction name="actionAddPath"/>
-     <addaction name="actionAddVehicle"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
@@ -1818,14 +1817,6 @@
    <property name="toolTip">
     <string>Add Path</string>
    </property>
-  </action>
-  <action name="actionAddVehicle">
-    <property name="text">
-      <string>Vehicle</string>
-    </property>
-    <property name="toolTip">
-      <string>Add vehicle</string>
-    </property>
   </action>
   <action name="actionAddPathComponent">
    <property name="icon">

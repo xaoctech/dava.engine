@@ -845,8 +845,6 @@ void PhysicsVehiclesSubsystem::CreateTankVehicle(VehicleTankComponent* vehicleCo
     PxVehicleWheelsSimData* wheelsSimData;
     CreateVehicleCommonParts(vehicleComponent, wheelMaxCompression, wheelMaxDroop, wheelSpringStrength, wheelSpringDamperRate, &wheelsCount, &wheelsSimData);
 
-    // Finish
-
     PxVehicleDriveSimData driveSimData;
 
     PxVehicleEngineData engineData = driveSimData.getEngineData();
