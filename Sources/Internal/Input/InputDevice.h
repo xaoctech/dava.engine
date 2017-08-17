@@ -54,12 +54,13 @@ public:
     virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 
 protected:
+    virtual void ResetState(Window* window) = 0;
+
+private:
     void OnWindowCreated(DAVA::Window* window);
     void OnWindowDestroyed(DAVA::Window* window);
     void OnWindowFocusChanged(DAVA::Window* window, bool focused);
     void OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f, DAVA::Size2f);
-
-    virtual void ResetState(Window* window) = 0;
 
 private:
     const uint32 id;
