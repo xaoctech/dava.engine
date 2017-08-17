@@ -2,6 +2,7 @@
 
 #include "Particles/ParticleDragForce.h"
 #include "Scene3D/Entity.h"
+#include "Math/MathHelpers.h"
 
 namespace DAVA
 {
@@ -22,13 +23,12 @@ void ApplyDragForce(const Entity* parent, const ParticleDragForce* force, Vector
 {
     if (!force->infinityRange)
     {
-        Vector3 center = parent->GetWorldTransform().GetTranslationVector() + force->position;
+        Vector3 fPos = force->position;
+        Vector3 transformedPos = TransformPerserveLength(fPos, DAVA::Matrix3(parent->GetWorldTransform()));
+        Vector3 center = parent->GetWorldTransform().GetTranslationVector() + transformedPos;
         if (force->shape == ParticleDragForce::eShape::BOX)
         {
             Vector3 size = force->boxSize * 0.5f;
-            size.x = Abs(size.x);
-            size.y = Abs(size.y);
-            size.z = Abs(size.z);
             Vector3 p1 = center - size;
             Vector3 p2 = center + size;
             AABBox3 box(p1, p2);
