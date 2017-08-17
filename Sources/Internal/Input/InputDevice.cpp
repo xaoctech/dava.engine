@@ -1,11 +1,19 @@
 #include "Input/InputDevice.h"
 
+#include "Engine/Engine.h"
+
 namespace DAVA
 {
 InputDevice::InputDevice(uint32 id)
     : id(id)
 {
-    DAVA::Engine* engine = DAVA::Engine::Instance();
+    Engine* engine = Engine::Instance();
+
+    Vector<Window*> activeWindows = engine->GetWindows();
+    for (Vector<Window*>::iterator it = activeWindows.begin(); it != activeWindows.end(); ++it)
+    {
+        OnWindowCreated(*it);
+    }
 
     engine->windowCreated.Connect(this, &InputDevice::OnWindowCreated);
     engine->windowDestroyed.Connect(this, &InputDevice::OnWindowDestroyed);
@@ -13,14 +21,14 @@ InputDevice::InputDevice(uint32 id)
 
 InputDevice::~InputDevice()
 {
-    DAVA::Engine* engine = DAVA::Engine::Instance();
+    Engine* engine = Engine::Instance();
 
     engine->windowCreated.Disconnect(this);
     engine->windowDestroyed.Disconnect(this);
 
-    for (DAVA::UnorderedSet<DAVA::Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
+    for (Vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
     {
-        DAVA::Window* window = *it;
+        Window* window = *it;
 
         DVASSERT(window != nullptr);
 
@@ -29,21 +37,23 @@ InputDevice::~InputDevice()
     }
 }
 
-void InputDevice::OnWindowCreated(DAVA::Window* window)
+void InputDevice::OnWindowCreated(Window* window)
 {
     DVASSERT(window != nullptr);
 
-    windows.insert(window);
+    DVASSERT(std::find(windows.begin(), windows.end(), window) == windows.end());
+
+    windows.push_back(window);
 
     window->focusChanged.Connect(this, &InputDevice::OnWindowFocusChanged);
     window->sizeChanged.Connect(this, &InputDevice::OnWindowSizeChanged);
 }
 
-void InputDevice::OnWindowDestroyed(DAVA::Window* window)
+void InputDevice::OnWindowDestroyed(Window* window)
 {
     DVASSERT(window != nullptr);
 
-    DAVA::UnorderedSet<DAVA::Window*>::iterator it = windows.find(window);
+    Vector<Window*>::iterator it = std::find(windows.begin(), windows.end(), window);
 
     if (it != windows.end())
     {
@@ -54,7 +64,7 @@ void InputDevice::OnWindowDestroyed(DAVA::Window* window)
     }
 }
 
-void InputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
+void InputDevice::OnWindowFocusChanged(Window* window, bool focused)
 {
     // Reset device state when window is unfocused
     if (!focused)
@@ -63,7 +73,7 @@ void InputDevice::OnWindowFocusChanged(DAVA::Window* window, bool focused)
     }
 }
 
-void InputDevice::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f, DAVA::Size2f)
+void InputDevice::OnWindowSizeChanged(Window* window, Size2f, Size2f)
 {
     // Reset device state when window size changes
     // To workaround cases when input events are not generated while window is changint its size

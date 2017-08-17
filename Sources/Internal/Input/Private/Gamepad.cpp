@@ -282,7 +282,7 @@ void Gamepad::HandleAxisMovement(eInputElements element, float32 newValue, bool 
     }
 }
 
-void Gamepad::ResetState(DAVA::Window* window)
+void Gamepad::ResetState(Window* window)
 {
     for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
     {

@@ -28,7 +28,7 @@ Keyboard::Keyboard(uint32 id)
     , impl(new Private::KeyboardImpl())
     , keys{}
 {
-    DAVA::Engine* engine = Engine::Instance();
+    Engine* engine = Engine::Instance();
 
     engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
 
