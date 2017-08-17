@@ -34,14 +34,14 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return {'win': 'http://www.ijg.org/files/jpegsr9b.zip',
-            'others': 'http://www.ijg.org/files/jpegsrc.v9b.tar.gz'}
+    return {'win': 'http://www.ijg.org/files/jpegsr9a.zip',
+            'others': 'http://www.ijg.org/files/jpegsrc.v9a.tar.gz'}
 
 
 def _get_downloaded_archive_inner_dir():
     # Because archive inner folder and archive file name do not match
     # If you change download link - change this one too
-    return 'jpeg-9b'
+    return 'jpeg-9a'
 
 
 def _download_and_extract(
@@ -88,36 +88,21 @@ def _patch_sources(
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(
         working_directory_path, 'win', source_folder_postfix='_win32')
-    _patch_sources(
-        source_folder_path, working_directory_path, 'patch_win32.diff')
 
-    sln_path = os.path.join(source_folder_path, 'jpeg.sln')
-    build_utils.build_vs(sln_path, 'Debug', 'Win32')
-    build_utils.build_vs(sln_path, 'Release', 'Win32')
-    build_utils.build_vs(sln_path, 'Debug', 'x64')
-    build_utils.build_vs(sln_path, 'Release', 'x64')
+    shutil.copyfile(
+        'CMakeLists.txt',
+        os.path.join(source_folder_path, 'CMakeLists.txt'))
+    os.rename(os.path.join(source_folder_path, 'jconfig.vc'),
+              os.path.join(source_folder_path, 'jconfig.h'))
 
-    libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
-
-    lib_path_x86_debug = os.path.join(source_folder_path, 'Debug/jpeg.lib')
-    lib_path_x86_release = os.path.join(source_folder_path, 'Release/jpeg.lib')
-    shutil.copyfile(
-        lib_path_x86_debug,
-        os.path.join(libs_win_root, 'x86/Debug/libjpegd.lib'))
-    shutil.copyfile(
-        lib_path_x86_release,
-        os.path.join(libs_win_root, 'x86/Release/libjpeg.lib'))
-
-    lib_path_x64_debug = os.path.join(
-        source_folder_path, 'x64/Debug/jpeg.lib')
-    lib_path_x64_release = os.path.join(
-        source_folder_path, 'x64/Release/jpeg.lib')
-    shutil.copyfile(
-        lib_path_x64_debug,
-        os.path.join(libs_win_root, 'x64/Debug/jpeg_d.lib'))
-    shutil.copyfile(
-        lib_path_x64_release,
-        os.path.join(libs_win_root, 'x64/Release/jpeg.lib'))
+    build_utils.build_and_copy_libraries_win32_cmake(
+        os.path.join(working_directory_path, 'gen'),
+        source_folder_path,
+        root_project_path,
+        'jpeg.sln', 'jpeg',
+        'jpeg.lib', 'jpeg.lib',
+        'libjpeg.lib', 'libjpeg.lib',
+        'libjpeg.lib', 'libjpeg.lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -272,4 +257,10 @@ def _copy_headers_from_install(install_folder_path, root_project_path):
 
 def _copy_headers(source_folder_path, root_project_path):
     include_path = os.path.join(root_project_path, 'Libs/include/libjpeg')
-    build_utils.copy_files(source_folder_path, include_path, '*.h')
+    build_utils.copy_files_by_name(source_folder_path,
+                                   include_path,
+                                   ['jpeglib.h',
+                                    'jmorecfg.h',
+                                    'jerror.h',
+                                    'jconfig.h'
+                                   ])
