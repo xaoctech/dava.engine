@@ -30,6 +30,8 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
 PolygonGroup* CreateShadowPolygonGroup(PolygonGroup* source);
 
 Vector<uint16> BuildSortedIndexBufferData(PolygonGroup* pg, Vector3 direction);
+
+uint32 ReleaseGeometryDataRecursive(Entity* forEntity);
 };
 };
 
