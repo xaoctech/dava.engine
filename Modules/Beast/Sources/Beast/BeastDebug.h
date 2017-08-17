@@ -1,12 +1,12 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_DEBUG__
-#define __BEAST_DEBUG__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastNames.h"
 
-#include "Math/Matrix4.h"
-#include "Debug/DVAssert.h"
-#include "BeastTypes.h"
-#include "BeastNames.h"
+#include <Base/BaseTypes.h>
+#include <Math/Matrix4.h>
+#include <Debug/DVAssert.h>
+#include <Logger/Logger.h>
 
 DAVA::String ConvertBeastString(ILBStringHandle h);
 ILBMatrix4x4 ConvertDavaMatrix(const DAVA::Matrix4& davaMatrix);
@@ -24,5 +24,3 @@ ILBMatrix4x4 ConvertDavaMatrixNoTranspose(const DAVA::Matrix4& davaMatrix);
 	} \
 } \
 
-#endif //__BEAST_DEBUG__
-#endif //__DAVAENGINE_BEAST__

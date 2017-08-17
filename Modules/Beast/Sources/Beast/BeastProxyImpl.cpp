@@ -1,5 +1,3 @@
-#ifdef __DAVAENGINE_BEAST__
-
 #include "BeastProxyImpl.h"
 #include "BeastManager.h"
 #include "BeastTexture.h"
@@ -25,7 +23,7 @@ void BeastProxyImpl::SetLightmapsDirectory(BeastManager* manager, const DAVA::Fi
     manager->SetLightmapsDirectory(path.GetAbsolutePathname());
 }
 
-void BeastProxyImpl::SetMode(BeastManager* manager, BeastProxy::eBeastMode mode)
+void BeastProxyImpl::SetMode(BeastManager* manager, eBeastMode mode)
 {
     manager->SetMode(mode);
 }
@@ -98,5 +96,3 @@ DAVA::String BeastProxyImpl::GetCurTaskName(BeastManager* manager) const
     return ret;
 };
 
-
-#endif //__DAVAENGINE_BEAST__

@@ -1,5 +1,3 @@
-#ifdef __DAVAENGINE_BEAST__
-
 #include "BeastTexture.h"
 #include "BeastDebug.h"
 #include "BeastManager.h"
@@ -29,5 +27,3 @@ ILBTextureHandle BeastTexture::GetILBTexture()
 {
     return texture;
 }
-
-#endif //__DAVAENGINE_BEAST__

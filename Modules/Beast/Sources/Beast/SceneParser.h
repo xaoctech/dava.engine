@@ -1,10 +1,22 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __SCENE_PARSER__
-#define __SCENE_PARSER__
+#include <Base/BaseTypes.h>
+#include <Functional/Function.h>
+#include <FileSystem/FilePath.h>
+#include <Math/Vector.h>
+#include <Math/Matrix4.h>
 
-#include "DAVAEngine.h"
-#include "ResourceEditor/Classes/Qt/Scene/LandscapeThumbnails.h"
+namespace DAVA
+{
+class Entity;
+class RenderBatch;
+class RenderObject;
+class RenderComponent;
+class NMaterial;
+class Landscape;
+class Texture;
+class LightComponent;
+}
 
 struct MaxLodMaxSwitch
 {
@@ -68,9 +80,7 @@ private:
     bool landscapeTextureProcessed = false;
     bool entitiesParsed = false;
     bool shouldCancel = false;
-    LandscapeThumbnails::RequestID thumbnailsRequestId = LandscapeThumbnails::InvalidID;
+
+    //TODO: restore it
+    //    LandscapeThumbnails::RequestID thumbnailsRequestId = LandscapeThumbnails::InvalidID;
 };
-
-#endif //__SCENE_PARSER__
-
-#endif //__DAVAENGINE_BEAST__

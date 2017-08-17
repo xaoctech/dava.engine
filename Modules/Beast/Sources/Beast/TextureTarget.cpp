@@ -1,7 +1,5 @@
-#ifdef __DAVAENGINE_BEAST__
-
-#include "TextureTarget.h"
-#include "BeastDebug.h"
+#include "Beast/TextureTarget.h"
+#include "Beast/BeastDebug.h"
 
 TextureTarget::TextureTarget(ILBJobHandle job, DAVA::int32 size)
 {
@@ -16,5 +14,3 @@ ILBTargetHandle TextureTarget::GetHandle()
 {
     return handle;
 }
-
-#endif //__DAVAENGINE_BEAST__

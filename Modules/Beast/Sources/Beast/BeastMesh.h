@@ -1,12 +1,16 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_MESH__
-#define __BEAST_MESH__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastResource.h"
+#include "Beast/BeastManager.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastResource.h"
-#include "BeastManager.h"
+#include <Base/BaseTypes.h>
+
+namespace DAVA
+{
+class RenderBatch;
+class PolygonGroup;
+}
 
 class LandscapeGeometry;
 class BeastMesh : public BeastResource<BeastMesh>
@@ -41,7 +45,3 @@ private:
     DAVA::int32 indecesCount = 0;
     DAVA::int32 textureCoordCount = 0;
 };
-
-#endif //__BEAST_MESH__
-
-#endif //__DAVAENGINE_BEAST__

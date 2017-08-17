@@ -1,15 +1,14 @@
-#ifdef __DAVAENGINE_BEAST__
+#include "Beast/SceneParser.h"
+#include "Beast/BeastMaterial.h"
+#include "Beast/BeastTexture.h"
+#include "Beast/BeastMesh.h"
+#include "Beast/BeastMeshInstance.h"
+#include "Beast/LandscapeGeometry.h"
+#include "Beast/BeastLight.h"
+#include "Beast/BeastPointCloud.h"
 
-#include "SceneParser.h"
-#include "BeastMaterial.h"
-#include "BeastTexture.h"
-#include "BeastMesh.h"
-#include "BeastMeshInstance.h"
-#include "LandscapeGeometry.h"
-#include "BeastLight.h"
-#include "BeastPointCloud.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "FileSystem/FileSystem.h"
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <FileSystem/FileSystem.h>
 
 SceneParser::SceneParser(BeastManager* _beastManager, DAVA::Function<void()> parsingCompletedCallback)
     : beastManager(_beastManager)
@@ -20,10 +19,11 @@ SceneParser::SceneParser(BeastManager* _beastManager, DAVA::Function<void()> par
 SceneParser::~SceneParser()
 {
     ClearScene();
-    if (thumbnailsRequestId != LandscapeThumbnails::InvalidID)
-    {
-        LandscapeThumbnails::CancelRequest(thumbnailsRequestId);
-    }
+    DVASSERT(false);
+    //     if (thumbnailsRequestId != LandscapeThumbnails::InvalidID)
+    //     {
+    //         LandscapeThumbnails::CancelRequest(thumbnailsRequestId);
+    //     }
 }
 
 MaxLodMaxSwitch SceneParser::FindMaxLod(DAVA::Entity* node)
@@ -31,7 +31,7 @@ MaxLodMaxSwitch SceneParser::FindMaxLod(DAVA::Entity* node)
     maxLodMaxSwitch.maxLodLevel = 0;
     maxLodMaxSwitch.maxSwitchIndex = 0;
 
-    if (beastManager->GetMode() == BeastProxy::MODE_LIGHTMAPS)
+    if (beastManager->GetMode() == eBeastMode::MODE_LIGHTMAPS)
     {
         DAVA::ScopedPtr<DAVA::Texture> pinkTexture(DAVA::Texture::CreatePink());
         FindMaxLodRecursive(node, pinkTexture);
@@ -255,8 +255,8 @@ void SceneParser::ParseNodeMeshes(DAVA::RenderComponent* renderComponent)
     const DAVA::Matrix4& entityTransform = renderComponent->GetEntity()->GetWorldTransform();
     entityTransform.GetInverse(entityInverseTransform);
 
-    bool lightmapModeUsed = (beastManager->GetMode() == BeastProxy::MODE_LIGHTMAPS) || (beastManager->GetMode() == BeastProxy::MODE_PREVIEW);
-    bool shModeUsed = (beastManager->GetMode() == BeastProxy::MODE_SPHERICAL_HARMONICS);
+    bool lightmapModeUsed = (beastManager->GetMode() == eBeastMode::MODE_LIGHTMAPS) || (beastManager->GetMode() == eBeastMode::MODE_PREVIEW);
+    bool shModeUsed = (beastManager->GetMode() == eBeastMode::MODE_SPHERICAL_HARMONICS);
 
     bool isSpeedTree = ro->GetType() == DAVA::RenderObject::TYPE_SPEED_TREE;
     if (isSpeedTree && shModeUsed)
@@ -401,7 +401,9 @@ void SceneParser::ParseLandscapeMaterial(DAVA::Landscape* landscape)
     if ((texture != nullptr) && texture->GetPathname().Exists())
     {
         landscapeMaterial = BeastMaterial::CreateWithName(BeastMaterial::PointerToString(landscape), beastManager);
-        thumbnailsRequestId = LandscapeThumbnails::Create(landscape, DAVA::MakeFunction(this, &SceneParser::OnLandscapeImageCaptured));
+
+        DVASSERT(false);
+        //        thumbnailsRequestId = LandscapeThumbnails::Create(landscape, DAVA::MakeFunction(this, &SceneParser::OnLandscapeImageCaptured));
     }
     else
     {
@@ -449,7 +451,7 @@ void SceneParser::ContinueParsingLandscape(DAVA::Entity* node, DAVA::Landscape* 
     beastMeshInstance->InitWithLandscape(landscape, beastMesh);
     beastMeshInstance->SetLodLevel(0);
 
-    if (beastManager->GetMode() == BeastProxy::MODE_LIGHTMAPS || beastManager->GetMode() == BeastProxy::MODE_PREVIEW)
+    if (beastManager->GetMode() == eBeastMode::MODE_LIGHTMAPS || beastManager->GetMode() == eBeastMode::MODE_PREVIEW)
     {
         const DAVA::float32* lightmapSize = davaLandscapeMaterial->GetEffectivePropValue(DAVA::NMaterialParamName::PARAM_LIGHTMAP_SIZE);
         DAVA::float32 targetLightmapSize = (lightmapSize == nullptr) ? DAVA::NMaterial::DEFAULT_LIGHTMAP_SIZE : *lightmapSize;
@@ -513,5 +515,3 @@ DAVA::FilePath SceneParser::GetLandscapeTemporaryFileName()
 {
     return GetTemporaryFolder() + "temp_landscape_color.png";
 }
-
-#endif //__DAVAENGINE_BEAST__

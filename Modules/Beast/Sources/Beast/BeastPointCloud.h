@@ -1,11 +1,14 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_POINT_CLOUD__
-#define __BEAST_POINT_CLOUD__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastResource.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastResource.h"
+#include <Base/BaseTypes.h>
+
+namespace DAVA
+{
+class Entity;
+}
 
 class BeastPointCloud : public BeastResource<BeastPointCloud>
 {
@@ -34,7 +37,3 @@ private:
 
     friend class BeastResource<BeastPointCloud>;
 };
-
-#endif //__BEAST_POINT_CLOUD__
-
-#endif //__DAVAENGINE_BEAST__

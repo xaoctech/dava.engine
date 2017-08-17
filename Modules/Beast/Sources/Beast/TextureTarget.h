@@ -1,11 +1,9 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_TEXTURE_TARGET__
-#define __BEAST_TEXTURE_TARGET__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastNames.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastNames.h"
+#include <Base/BaseTypes.h>
 
 class TextureTarget
 {
@@ -20,7 +18,3 @@ public:
 private:
     ILBTargetHandle handle;
 };
-
-#endif //__BEAST_TEXTURE_TARGET__
-
-#endif //__DAVAENGINE_BEAST__

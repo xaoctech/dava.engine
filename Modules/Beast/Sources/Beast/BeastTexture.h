@@ -1,11 +1,13 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_TEXTURE__
-#define __BEAST_TEXTURE__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastResource.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastResource.h"
+namespace DAVA
+{
+class Texture;
+class FilePath;
+}
 
 class BeastTexture : public BeastResource<BeastTexture>
 {
@@ -20,7 +22,3 @@ private:
 
     friend class BeastResource<BeastTexture>;
 };
-
-#endif //__BEAST_TEXTURE__
-
-#endif //__DAVAENGINE_BEAST__

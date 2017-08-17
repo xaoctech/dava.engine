@@ -1,5 +1,3 @@
-#ifdef __DAVAENGINE_BEAST__
-
 #include "BeastMaterial.h"
 #include "BeastTexture.h"
 #include "BeastDebug.h"
@@ -46,5 +44,3 @@ void BeastMaterial::AttachNormalMap(BeastTexture* beastTexture)
         BEAST_VERIFY(ILBSetChannelUVLayer(material, ILB_CC_NORMAL, CONST_STRING_TO_BEAST_STRING("2")));
     }
 }
-
-#endif //__DAVAENGINE_BEAST__

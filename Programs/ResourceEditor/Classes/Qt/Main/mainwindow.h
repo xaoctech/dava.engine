@@ -185,7 +185,7 @@ protected:
 
     void StartGlobalInvalidateTimer();
 
-    void RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode);
+    void RunBeast(const QString& outputPath, eBeastMode mode);
 
     void SynchronizeStateWithUI();
 

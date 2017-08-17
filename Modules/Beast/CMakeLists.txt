@@ -9,11 +9,9 @@ set( BeastRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 set( BeastThirdparty "${BeastRootDir}/Thirdparty")
 
 
-
-set( INCLUDES "${BeastRootDir}/Sources" 
-              "${BeastThirdparty}/include" 
-              "${DAVA_ROOT_DIR}/Programs" #tmp
-              )
+set(INCLUDES "${BeastRootDir}/Sources" 
+             "${BeastRootDir}/Thirdparty/include" 
+             )
 
 
 set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})

@@ -1,12 +1,17 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_MESH_INSTANCE__
-#define __BEAST_MESH_INSTANCE__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastResource.h"
+#include "Beast/TextureTarget.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastResource.h"
-#include "TextureTarget.h"
+#include <Base/BaseTypes.h>
+#include <Math/Matrix4.h>
+
+namespace DAVA
+{
+class RenderBatch;
+class Landscape;
+}
 
 class BeastMesh;
 class BeastMeshInstance : public BeastResource<BeastMeshInstance>
@@ -59,7 +64,3 @@ private:
     bool useLightmap = false;
     bool isLandscape = false; // TODO: get rid of it, use subclass
 };
-
-#endif //__BEAST_MESH_INSTANCE__
-
-#endif //__DAVAENGINE_BEAST__

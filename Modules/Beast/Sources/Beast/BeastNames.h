@@ -1,7 +1,4 @@
-#ifdef __DAVAENGINE_BEAST__
-
-#ifndef __BEAST_NAMES__
-#define __BEAST_NAMES__
+#pragma once
 
 #include "beastapi/beastapitypes.h"
 #include "Utils/UTF8Utils.h"
@@ -37,6 +34,3 @@ DAVA::String BeastNameGenerator::GenerateName()
 
     return name;
 }
-
-#endif //__BEAST_NAMES__
-#endif //__DAVAENGINE_BEAST__

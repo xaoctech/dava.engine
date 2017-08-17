@@ -1,13 +1,15 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_MANAGER__
-#define __BEAST_MANAGER__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastNames.h"
+#include "Beast/BeastConstants.h"
+#include "Beast/SceneParser.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastNames.h"
-#include "SceneParser.h"
-#include "ResourceEditor/Classes/Beast/BeastProxy.h"
+namespace DAVA
+{
+class Scene;
+class RenderBatch;
+}
 
 struct LightmapAtlasingData;
 
@@ -29,8 +31,8 @@ public:
     void SetLightmapsDirectory(const DAVA::String& path);
     void ParseScene(DAVA::Scene* davaScene);
     bool GenerateLightmaps();
-    void SetMode(BeastProxy::eBeastMode mode);
-    BeastProxy::eBeastMode GetMode() const;
+    void SetMode(eBeastMode mode);
+    eBeastMode GetMode() const;
     void SetLodLevel(int32 lodLevel);
     int32 GetLodLevel();
     void SetSwitchIndex(int32 switchIndex);
@@ -80,7 +82,7 @@ private:
     ILBRenderPassHandle passSH = nullptr;
 
     MaxLodMaxSwitch maxLodMaxSwitch;
-    BeastProxy::eBeastMode mode = BeastProxy::eBeastMode::MODE_LIGHTMAPS;
+    eBeastMode mode = eBeastMode::MODE_LIGHTMAPS;
     SceneParser* sceneParser = nullptr;
 
     eState state = STATE_IDLE;
@@ -93,7 +95,3 @@ private:
     DAVA::int32 switchIndex = 0;
     DAVA::int32 curTaskProgress = 0;
 };
-
-#endif //__BEAST_MANAGER__
-
-#endif //__DAVAENGINE_BEAST__

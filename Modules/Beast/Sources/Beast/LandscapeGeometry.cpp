@@ -1,5 +1,3 @@
-#ifdef __DAVAENGINE_BEAST__
-
 #include "LandscapeGeometry.h"
 
 void LandscapeGeometry::ComputeNormals()
@@ -26,6 +24,3 @@ void LandscapeGeometry::ComputeNormals()
         n.Normalize();
     }
 }
-
-
-#endif //__DAVAENGINE_BEAST__

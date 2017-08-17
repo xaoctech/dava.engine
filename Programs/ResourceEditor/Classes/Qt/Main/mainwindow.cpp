@@ -1698,7 +1698,7 @@ void QtMainWindow::OnBeastAndSave()
     scene->ClearAllCommands();
 }
 
-void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode)
+void QtMainWindow::RunBeast(const QString& outputPath, eBeastMode mode)
 {
 #if defined(__DAVAENGINE_BEAST__)
 
@@ -1711,7 +1711,7 @@ void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mo
     BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, beastWaitDialog);
     beast.RunUIMode();
 
-    if (mode == BeastProxy::MODE_LIGHTMAPS)
+    if (mode == eBeastMode::MODE_LIGHTMAPS)
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([]() {

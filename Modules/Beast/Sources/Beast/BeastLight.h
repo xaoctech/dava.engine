@@ -1,12 +1,16 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_LIGHT__
-#define __BEAST_LIGHT__
+#include "Beast/BeastTypes.h"
+#include "Beast/BeastResource.h"
+#include "Beast/BeastManager.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
-#include "BeastResource.h"
-#include "BeastManager.h"
+#include "Base/BaseTypes.h"
+
+namespace DAVA
+{
+class Entity;
+class Light;
+}
 
 class BeastLight : public BeastResource<BeastLight>
 {
@@ -43,7 +47,3 @@ private:
     ILBMatrix4x4 matrix;
     ILBLinearRGB linearRGB;
 };
-
-#endif //__BEAST_LIGHT__
-
-#endif //__DAVAENGINE_BEAST__

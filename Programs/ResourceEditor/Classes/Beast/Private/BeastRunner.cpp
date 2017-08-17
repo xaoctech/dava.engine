@@ -16,7 +16,7 @@
 #include "Beast/SceneParser.h"
 
 //Beast
-BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, BeastProxy::eBeastMode mode, QtWaitDialog* waitDialog_)
+BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, eBeastMode mode, QtWaitDialog* waitDialog_)
     : workingScene(scene)
     , scenePath(scenePath_)
     , waitDialog(waitDialog_)
@@ -80,7 +80,7 @@ void BeastRunner::Start()
     startTime = DAVA::SystemTimer::GetMs();
 
     DAVA::FilePath path = GetLightmapDirectoryPath();
-    if (beastMode == BeastProxy::MODE_LIGHTMAPS)
+    if (beastMode == eBeastMode::MODE_LIGHTMAPS)
     {
         DAVA::FileSystem::Instance()->CreateDirectory(path, false);
         DAVA::FileSystem::Instance()->CreateDirectory(outputPath, true);
@@ -98,13 +98,13 @@ bool BeastRunner::Process()
 
 void BeastRunner::Finish(bool canceled)
 {
-    if (!canceled && beastMode == BeastProxy::MODE_LIGHTMAPS)
+    if (!canceled && beastMode == eBeastMode::MODE_LIGHTMAPS)
     {
         PackLightmaps();
     }
 
     DAVA::FileSystem::Instance()->DeleteDirectory(SceneParser::GetTemporaryFolder());
-    if (beastMode == BeastProxy::MODE_LIGHTMAPS)
+    if (beastMode == eBeastMode::MODE_LIGHTMAPS)
     {
         DAVA::FileSystem::Instance()->DeleteDirectory(GetLightmapDirectoryPath());
     }

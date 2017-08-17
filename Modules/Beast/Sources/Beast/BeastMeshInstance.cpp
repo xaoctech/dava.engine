@@ -1,10 +1,10 @@
-#ifdef __DAVAENGINE_BEAST__
+#include "Beast/BeastMeshInstance.h"
+#include "Beast/BeastDebug.h"
+#include "Beast/BeastManager.h"
+#include "Beast/BeastMesh.h"
+#include "Beast/SceneParser.h"
 
-#include "BeastMeshInstance.h"
-#include "BeastDebug.h"
-#include "BeastManager.h"
-#include "BeastMesh.h"
-#include "SceneParser.h"
+#include <Render/Highlevel/Landscape.h>
 
 BeastMeshInstance::BeastMeshInstance(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
@@ -134,5 +134,3 @@ DAVA::RenderBatch* BeastMeshInstance::GetRenderBatch()
 {
     return renderBatch;
 }
-
-#endif //__DAVAENGINE_BEAST__

@@ -1,10 +1,9 @@
-#ifdef __DAVAENGINE_BEAST__
+#pragma once
 
-#ifndef __BEAST_RESOURCE__
-#define __BEAST_RESOURCE__
+#include "Beast/BeastTypes.h"
 
-#include "DAVAEngine.h"
-#include "BeastTypes.h"
+#include <Base/BaseTypes.h>
+#include <Base/BaseObject.h>
 
 class BeastManager;
 
@@ -110,6 +109,3 @@ void* BeastResource<T>::StringToPointer(const DAVA::String& str)
     ss >> pointer;
     return pointer;
 }
-
-#endif //__BEAST_RESOURCE__
-#endif //__DAVAENGINE_BEAST__

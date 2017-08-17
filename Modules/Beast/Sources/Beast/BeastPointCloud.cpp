@@ -1,8 +1,9 @@
-#ifdef __DAVAENGINE_BEAST__
+#include "Beast/BeastDebug.h"
+#include "Beast/BeastManager.h"
+#include "Beast/BeastPointCloud.h"
 
-#include "BeastDebug.h"
-#include "BeastManager.h"
-#include "BeastPointCloud.h"
+#include <Render/Highlevel/RenderObject.h>
+#include <Scene3D/Entity.h>
 
 BeastPointCloud::BeastPointCloud(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
@@ -64,5 +65,3 @@ DAVA::Entity* BeastPointCloud::GetEntity(DAVA::int32 index)
 {
     return bakeEntities[index];
 }
-
-#endif //__DAVAENGINE_BEAST__

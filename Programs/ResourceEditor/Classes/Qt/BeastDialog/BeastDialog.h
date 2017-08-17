@@ -25,7 +25,7 @@ public:
     void SetScene(SceneEditor2* scene);
     bool Exec(QWidget* parent = 0);
     QString GetPath() const;
-    BeastProxy::eBeastMode GetMode() const;
+    eBeastMode GetMode() const;
 
 private slots:
     void OnStart();
@@ -46,7 +46,7 @@ private:
     SceneEditor2* scene;
     bool result;
 
-    BeastProxy::eBeastMode beastMode;
+    eBeastMode beastMode;
 };
 
 

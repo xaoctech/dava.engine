@@ -1,9 +1,12 @@
-#ifdef __DAVAENGINE_BEAST__
+#include "Beast/BeastLight.h"
+#include "Beast/BeastDebug.h"
 
-#include "BeastLight.h"
-#include "BeastDebug.h"
-
-#include "Scene3D/Components/ComponentHelpers.h"
+#include <FileSystem/KeyedArchive.h>
+#include <Math/Color.h>
+#include <Render/Highlevel/Light.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Entity.h>
 
 BeastLight::BeastLight(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
@@ -236,5 +239,3 @@ void BeastLight::UpdateLightParamsFromHandle(ILBLightHandle lightHandle)
         props->GetInt32("editor.staticlight.shadowsamples", shadowSamples);
     }
 }
-
-#endif //__DAVAENGINE_BEAST__

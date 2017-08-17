@@ -15,7 +15,7 @@ class QtWaitDialog;
 class BeastRunner final
 {
 public:
-    BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, BeastProxy::eBeastMode mode, QtWaitDialog* _waitDialog);
+    BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, eBeastMode mode, QtWaitDialog* _waitDialog);
     ~BeastRunner();
 
     void RunUIMode();
@@ -35,7 +35,7 @@ private:
     const DAVA::FilePath scenePath;
     DAVA::FilePath outputPath;
     DAVA::uint64 startTime = 0;
-    BeastProxy::eBeastMode beastMode = BeastProxy::eBeastMode::MODE_LIGHTMAPS;
+    eBeastMode beastMode = eBeastMode::MODE_LIGHTMAPS;
 
     bool cancelledManually = false;
 };

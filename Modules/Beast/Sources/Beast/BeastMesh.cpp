@@ -1,10 +1,8 @@
-#ifdef __DAVAENGINE_BEAST__
-
-#include "BeastMesh.h"
-#include "BeastDebug.h"
-#include "BeastManager.h"
-#include "BeastMaterial.h"
-#include "LandscapeGeometry.h"
+#include "Beast/BeastMesh.h"
+#include "Beast/BeastDebug.h"
+#include "Beast/BeastManager.h"
+#include "Beast/BeastMaterial.h"
+#include "Beast/LandscapeGeometry.h"
 
 BeastMesh::BeastMesh(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
@@ -245,5 +243,3 @@ bool BeastMesh::HasTangents(DAVA::PolygonGroup* polygonGroup)
 {
     return (polygonGroup->GetFormat() & DAVA::EVF_TANGENT ? true : false);
 }
-
-#endif //__DAVAENGINE_BEAST__

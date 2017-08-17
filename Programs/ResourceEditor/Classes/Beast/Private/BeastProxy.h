@@ -1,20 +1,13 @@
-#ifndef __BEAST_PROXY__
-#define __BEAST_PROXY__
+#pragma once
 
-#include "DAVAEngine.h"
+#include <Base/BaseTypes.h>
+#include <Base/Singleton.h>
 
 class BeastManager;
 struct LightmapAtlasingData;
 class BeastProxy : public DAVA::Singleton<BeastProxy>
 {
 public:
-    enum eBeastMode : DAVA::uint32
-    {
-        MODE_LIGHTMAPS = 0,
-        MODE_SPHERICAL_HARMONICS,
-        MODE_PREVIEW
-    };
-
     virtual BeastManager* CreateManager();
     virtual void SafeDeleteManager(BeastManager** manager){};
     virtual void Update(BeastManager* manager){};
@@ -44,5 +37,3 @@ public:
         return false;
     }
 };
-
-#endif //__BEAST_PROXY__
