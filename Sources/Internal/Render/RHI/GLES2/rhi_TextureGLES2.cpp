@@ -377,16 +377,19 @@ void TextureGLES2_t::Destroy(bool forceExecute)
         {
             bool do_delete = false;
 
-            for (const GLuint *t = f->colorUID, *t_end = f->colorUID + f->colorCount; t != t_end; ++t)
+            if(!isRenderBuffer)
             {
-                if (*t == uid)
+                for (const GLuint *t = f->colorUID, *t_end = f->colorUID + f->colorCount; t != t_end; ++t)
                 {
-                    do_delete = true;
-                    break;
+                    if (*t == uid)
+                    {
+                        do_delete = true;
+                        break;
+                    }
                 }
             }
-
-            if (f->depthStencilUID != 0 && (f->depthStencilUID == uid || f->depthStencilUID == uid2))
+            
+            if (isRenderBuffer && f->depthStencilUID != 0 && (f->depthStencilUID == uid || f->depthStencilUID == uid2))
                 do_delete = true;
 
             if (do_delete)
