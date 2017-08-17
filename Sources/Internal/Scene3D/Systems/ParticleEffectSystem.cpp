@@ -893,7 +893,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
         acceleration += (layer.layer->forces[i]->forceOverLife) ? (currForceValues[i] * layer.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
     }
     for (uint32 i = 0; i < dForcesCount; ++i)
-        ParticleForces::ApplyForce(dForces[i], particle->speed, acceleration, dt);
+        ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], particle->speed, acceleration, particle->position, dt);
 
     particle->speed += acceleration * dt;
 

@@ -9,6 +9,6 @@ class Vector3;
 
 namespace ParticleForces
 {
-void ApplyForce(const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, float32 dt);
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt);
 }
 }

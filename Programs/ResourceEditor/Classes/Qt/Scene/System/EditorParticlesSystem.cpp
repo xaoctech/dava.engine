@@ -215,7 +215,8 @@ void EditorParticlesSystem::DrawDragForces(DAVA::ParticleDragForce* force)
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->shape == DAVA::ParticleDragForce::eShape::BOX)
     {
-        DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
+        DAVA::Matrix4 wMat = DAVA::Matrix4::IDENTITY;
+        wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
         DAVA::Vector3 size = force->boxSize;
 
         drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * size, 0.5f * size), wMat,
