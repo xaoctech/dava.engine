@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SpeedTree/SpeedTreeImporter.h"
 
 #include "Debug/DVAssert.h"

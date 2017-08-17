@@ -181,7 +181,6 @@ private:
 
             SceneData::TSceneType scene = data->GetScene();
             TEST_VERIFY(scene);
-            scene->Update(0.16f);
 
             ScopedPtr<Entity> entity(new Entity());
             entity->SetName(SMTest::allEntitiesName);
@@ -192,18 +191,11 @@ private:
                 {
                     Any newComponent = cType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
                     Component* component = newComponent.Cast<Component*>();
-
-                    if (cType->GetPermanentName() == "SlotComponent")
-                    { // to prevent serialization crash
-                        SlotComponent* slot = static_cast<SlotComponent*>(component);
-                        slot->SetSlotName(FastName("slotName"));
-                        slot->SetJointUID(FastName("jointName"));
-                    }
-
                     entity->AddComponent(component);
                 }
             }
 
+            scene->Update(0.16f);
             CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SMTest::testScenePath, scene.Get());
         }
 
@@ -252,15 +244,7 @@ private:
                     Component* component = newComponent.Cast<Component*>();
 
                     TEST_VERIFY(entity->GetComponentCount(component->GetType()) > 0);
-                    if (component->GetType() == Component::SLOT_COMPONENT)
-                    { // to prevent serialization crash
-                        SlotComponent* slot = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT));
-                        if (slot != nullptr)
-                        {
-                            TEST_VERIFY(slot->GetSlotName() == FastName("slotName"));
-                            TEST_VERIFY(slot->GetJointUID() == FastName("jointName"));
-                        }
-                    }
+
                     delete component;
                 }
             }
