@@ -107,7 +107,7 @@ public:
 private:
     friend class SlotSystem;
 
-    FastName slotName;
+    FastName slotName = FastName("");
     FastName templateName = FastName("");
 
     Matrix4 attachmentTransform;
