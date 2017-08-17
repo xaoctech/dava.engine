@@ -353,7 +353,7 @@ bool DLCManagerImpl::IsInitialized() const
     return nullptr != requestManager && delayedRequests.empty() && scanThread == nullptr;
 }
 
-DLCManagerImpl::InitState DLCManagerImpl::GetInitState() const
+DLCManagerImpl::InitState DLCManagerImpl::GetInternalInitState() const
 {
     DVASSERT(Thread::IsMainThread());
     return initState;
@@ -550,7 +550,7 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
 
         if (initializationTime >= (hints.timeoutForInitialization * 1000))
         {
-            error.Emit(timeoutString, EHOSTUNREACH);
+            error.Emit(ErrorOrigin::InitTimeout, EHOSTUNREACH, urlToSuperPack);
             initTimeoutFired = true;
         }
     }
@@ -659,7 +659,7 @@ void DLCManagerImpl::SaveServerFooter()
     StringStream ss;
     ss << "can't write file: " << localCacheFooter.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << std::endl;
     log << ss.str();
-    error.Emit(localCacheFooter.GetAbsolutePathname(), errno);
+    error.Emit(ErrorOrigin::FileIO, errno, localCacheFooter.GetAbsolutePathname());
     DAVA_THROW(Exception, ss.str());
 }
 
@@ -948,7 +948,7 @@ void DLCManagerImpl::ParseMeta()
             << ex.line << ") errno: (" << localErrno << ") "
             << strerror(localErrno) << std::endl;
 
-        error.Emit(localCacheMeta.GetAbsolutePathname(), localErrno);
+        error.Emit(ErrorOrigin::FileIO, localErrno, localCacheMeta.GetAbsolutePathname());
 
         // lets start all over again
         initState = InitState::LoadingRequestAskFooter;
@@ -1193,20 +1193,20 @@ DLCManager::InitStatus DLCManagerImpl::GetInitStatus() const
 {
     if (!IsInitialized())
     {
-        return InitStatus::NotFinished;
+        return InitStatus::InProgress;
     }
 
     if (skipedStates.empty())
     {
-        return InitStatus::UsingRemoteMeta;
+        return InitStatus::FinishedWithRemoteMeta;
     }
-    return InitStatus::UsingLocalMeta;
+    return InitStatus::FinishedWithLocalMeta;
 }
 
 DLCManager::InitStatus DLCManager::GetInitStatus() const
 {
     // default implementation
-    return InitStatus::NotFinished;
+    return InitStatus::InProgress;
 }
 
 uint64 DLCManager::GetPackSize(const String&) const

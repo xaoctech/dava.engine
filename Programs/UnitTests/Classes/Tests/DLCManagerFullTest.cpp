@@ -112,7 +112,7 @@ struct FSMTest02
 
             TEST_VERIFY(dlcManager.IsRequestingEnabled());
 
-            TEST_VERIFY(dlcManager.GetInitStatus() == DLCManager::InitStatus::UsingRemoteMeta);
+            TEST_VERIFY(dlcManager.GetInitStatus() == DLCManager::InitStatus::FinishedWithRemoteMeta);
 
             auto currentProgress = dlcManager.GetProgress();
             TEST_VERIFY(currentProgress.alreadyDownloaded <= currentProgress.total);

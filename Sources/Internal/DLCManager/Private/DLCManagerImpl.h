@@ -118,7 +118,7 @@ public:
 
     bool IsInitialized() const override;
 
-    InitState GetInitState() const;
+    InitState GetInternalInitState() const;
 
     InitStatus GetInitStatus() const override;
 

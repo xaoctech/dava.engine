@@ -77,14 +77,25 @@ public:
     Signal<const IRequest&> requestUpdated;
     /** signal just before start loading request */
     Signal<const IRequest&> requestStartLoading;
+
+    /** this enumeration represents origin for error signal */
+    enum class ErrorOrigin
+    {
+        FileIO, //!< error with read, write, create, open etc... file or directory operation
+        InitTimeout //!< initialization timeout
+    };
+
     /**
-	    Tells that some file error occurred during downloading process.
-	    First parameter is a full path to the file which couldn't be created or written,
-		second parameter is an error code
-		(example: ENOSPC - No space left on device (POSIX.1).)
-		DLCManager requesting disabled before signal.
-		If you receive this signal first check available space on device.
-		Suggest to check for:
+	    Tells that some error occurred during downloading process.
+		parameters:
+		    ErrorOrigin - errorType context for error
+			int32 - errnoValue POSIX error code
+			String& - extendedInfo string value depends on context of error:
+			    1. filePath in case FileIO
+				2. url to server in case InitTimeout
+
+		If you receive FileIO error type requesting disabled before signal.
+		Suggest also to check for:
 		    EBUSY(device_or_resource_busy),
 			ENAMETOOLONG(filename_too_long),
 			ENOSPC(no_space_on_device),
@@ -93,13 +104,12 @@ public:
 			EROFS(read_only_file_system),
 			ENFILE(too_many_files_open_in_system),
 			EMFILE(too_many_files_open)
+		If you receive InitTimeout error type check for:
 			EHOSTUNREACH(host_unreachable) - timeout connect to CDN
-		If you receive host_unreachable(EHOSTUNREACH) signal and string
-		argument equals "dlcmanager_timeout" it means dlcManager can't
-		connect to CDN server and timeout exceeded. After this signal
-		DLCManager will still try to continue initialization
 		*/
-    Signal<const String&, int32> error;
+    Signal<ErrorOrigin /*errorType*/,
+           int32 /*errnoValue*/,
+           const String& /*extendedInfo*/> error;
 
     /**
 	    User fills hints to internal implementation.
@@ -140,9 +150,9 @@ public:
 	*/
     enum class InitStatus : uint32
     {
-        NotFinished, //!< initialization is not finished yet
-        UsingLocalMeta, //!< couldn't download data from server during initialization and tried to use previously loaded local data
-        UsingRemoteMeta //!< either downloaded data from server or used local data with the same version
+        InProgress, //!< initialization is not finished yet
+        FinishedWithLocalMeta, //!< couldn't download data from server during initialization and tried to use previously loaded local data
+        FinishedWithRemoteMeta //!< either downloaded data from server or used local data with the same version
     };
     /** return initialization status */
     virtual InitStatus GetInitStatus() const = 0;
