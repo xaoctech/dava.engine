@@ -70,6 +70,9 @@ public:
         VEHICLE_WHEEL_COMPONENT,
 #endif
 
+        NOT_EXPORTED_COMPONENTS, //components for RE only. Serialized, but not exported
+        TEXT_COMPONENT = NOT_EXPORTED_COMPONENTS,
+
         //debug components - note that everything below won't be serialized
         DEBUG_COMPONENTS,
         STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,

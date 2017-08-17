@@ -1,15 +1,16 @@
 #include "CacheDB.h"
 #include "ServerCacheEntry.h"
+#include "PrintHelpers.h"
 
 #include <Tools/AssetCache/CachedItemValue.h>
 
-#include "FileSystem/File.h"
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Debug/DVAssert.h"
-#include "Time/SystemTimer.h"
-#include "Utils/StringFormat.h"
-#include "Logger/Logger.h"
+#include <FileSystem/File.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Debug/DVAssert.h>
+#include <Time/SystemTimer.h>
+#include <Utils/StringFormat.h>
+#include <Logger/Logger.h>
 
 const DAVA::String CacheDB::DB_FILE_NAME = "cache.dat";
 const DAVA::uint32 CacheDB::VERSION = 1;
@@ -41,6 +42,7 @@ void CacheDB::UpdateSettings(const DAVA::FilePath& folderPath, const DAVA::uint6
     {
         if (!cacheRootFolder.IsEmpty())
         {
+            DAVA::Logger::Info("Cache folder is changed: was '%s', now '%s'", cacheRootFolder.GetAbsolutePathname().c_str(), newCacheRootFolder.GetAbsolutePathname().c_str());
             Unload();
         }
 
@@ -246,7 +248,7 @@ ServerCacheEntry* CacheDB::Get(const DAVA::AssetCache::CacheItemKey& key)
             }
             else
             {
-                DAVA::Logger::Error("[CacheDB::%s] Fetch error. Entry '%s' will be removed from cache", __FUNCTION__, key.ToString().c_str());
+                DAVA::Logger::Error("[CacheDB::%s] Fetch error. Entry '%s' will be removed from cache", __FUNCTION__, Brief(key).c_str());
                 if (false == Remove(key))
                 {
                     DAVA::Logger::Error("[CacheDB::%s] Cannot find item in cache");
@@ -322,6 +324,7 @@ void CacheDB::Insert(const DAVA::AssetCache::CacheItemKey& key, ServerCacheEntry
         Remove(found);
     }
 
+    DAVA::Logger::Debug("Inserting into cache: key %s", Brief(key).c_str());
     fullCache[key] = std::move(entry);
     ServerCacheEntry* insertedEntry = &fullCache[key];
     DAVA::FilePath savedPath = CreateFolderPath(key);
@@ -412,6 +415,7 @@ void CacheDB::RemoveFromFullCache(const CacheMap::iterator& it)
     DAVA::uint64 itemSize = it->second.GetValue().GetSize();
     DVASSERT(itemSize <= occupiedSize);
     occupiedSize -= itemSize;
+    DAVA::Logger::Debug("Removing from full cache: key %s", Brief(it->first).c_str());
     fullCache.erase(it);
     NotifySizeChanged();
 }

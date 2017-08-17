@@ -259,7 +259,11 @@ void PhysicsModule::Shutdown()
         defaultMaterial->release();
     }
 
-    cpuDispatcher->release();
+    if (cpuDispatcher != nullptr)
+    {
+        cpuDispatcher->release();
+    }
+
     cooking->release();
     physics->release();
     PhysicsModuleDetail::ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
