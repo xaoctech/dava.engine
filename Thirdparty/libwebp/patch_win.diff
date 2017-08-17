@@ -1,0 +1,25 @@
+diff -ur ./libwebp_source_original/CMakeLists.txt ./libwebp_source/CMakeLists.txt
+--- ./libwebp_source_original/CMakeLists.txt	2016-07-07 04:00:16.000000000 +0300
++++ ./libwebp_source/CMakeLists.txt	2017-08-17 17:20:31.799294700 +0300
+@@ -17,6 +17,21 @@
+   )
+ endif()
+ 
++if (MSVC)
++    # setup static linking with crt
++    set(CompilerFlags
++            CMAKE_CXX_FLAGS
++            CMAKE_CXX_FLAGS_DEBUG
++            CMAKE_CXX_FLAGS_RELEASE
++            CMAKE_C_FLAGS
++            CMAKE_C_FLAGS_DEBUG
++            CMAKE_C_FLAGS_RELEASE
++    )
++    foreach(CompilerFlag ${CompilerFlags})
++        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
++    endforeach()
++endif()
++
+ ################################################################################
+ # Generate the config.h to compile with specific intrinsics / libs.
+ 
