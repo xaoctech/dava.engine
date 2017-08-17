@@ -6,6 +6,7 @@
 
 #include <TArc/DataProcessing/DataWrapper.h>
 
+#include <Preferences/PreferencesRegistrator.h>
 #include <Base/BaseTypes.h>
 
 #include <QWidget>
@@ -13,6 +14,8 @@
 #include <QModelIndex>
 #include <QStack>
 #include <QPointer>
+
+#include <memory>
 
 namespace DAVA
 {
@@ -34,7 +37,7 @@ class PackageNode;
 class QItemSelection;
 class CommandExecutor;
 
-class PackageWidget : public QDockWidget, public Ui::PackageWidget
+class PackageWidget : public QDockWidget, public Ui::PackageWidget, public DAVA::InspBase
 {
     Q_OBJECT
 public:
@@ -73,7 +76,12 @@ public slots:
     void OnBeforeProcessNodes(const SelectedNodes& nodes);
     void OnAfterProcessNodes(const SelectedNodes& nodes);
 
+    void OnRunUIViewer();
+    void OnRunUIViewerFast();
+
 private:
+    void PushErrorMessage(const DAVA::String& errorMessage);
+
     void SetSelectedNodes(const SelectedNodes& selection);
     void CollectExpandedIndexes(PackageBaseNode* node);
     void MoveNodeUpDown(bool up);
@@ -112,6 +120,9 @@ private:
     QAction* moveLeftAction = nullptr;
     QAction* moveRightAction = nullptr;
 
+    QAction* runUIViewerFast = nullptr;
+    QAction* runUIViewer = nullptr;
+
     FilteredPackageModel* filteredPackageModel = nullptr;
     PackageModel* packageModel = nullptr;
 
@@ -124,6 +135,21 @@ private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::TArc::UI* ui = nullptr;
     DAVA::TArc::DataWrapper dataWrapper;
+
+    DAVA::uint32 selectedDevice = 0;
+    DAVA::uint32 selectedBlank = 0;
+
+    bool useCustomUIViewerPath = false;
+    DAVA::String customUIViewerPath;
+
+public:
+    INTROSPECTION(PackageWidget,
+                  MEMBER(selectedDevice, "Selected Device Index", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+                  MEMBER(selectedBlank, "Selected Blank Index", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_PREFERENCE)
+
+                  MEMBER(useCustomUIViewerPath, "Package Widget/Override UIViewer Path", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_VIEW | DAVA::I_PREFERENCE)
+                  MEMBER(customUIViewerPath, "Package Widget/UIViewer path", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_VIEW | DAVA::I_PREFERENCE)
+                  )
 };
 
 struct PackageContext

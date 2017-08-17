@@ -15,12 +15,14 @@
 #include <TArc/Controls/ListView.h>
 #include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
 
 #include <QtTools/WidgetHelpers/SharedIcon.h>
 
 #include <Scene3D/Systems/SlotSystem.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>
+#include <Base/Any.h>
 
 #include <QHBoxLayout>
 
@@ -465,6 +467,14 @@ private:
             filters = currentFilters;
             RebuildItemsList();
         }
+        else
+        {
+            DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
+            if (scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
+            {
+                RebuildItemsList();
+            }
+        }
     }
 
     DAVA::String GetCurrentItem() const
@@ -730,5 +740,51 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
     }
 
     return EditorComponentExtension::GetEditor(node);
+}
+
+class InvalidateSlotConfigCache : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Slot config reloading";
+        info.tooltip = "Reload config from disk";
+        info.icon = SharedIcon(":/QtIcons/reloadtextures.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::TArc::DataContext* ctx = params.accessor->GetActiveContext();
+        DVASSERT(ctx != nullptr);
+
+        DAVA::Any value = node->field.ref.GetValue();
+        if (value.CanCast<DAVA::FilePath>())
+        {
+            DAVA::FilePath path = value.Cast<DAVA::FilePath>();
+            SceneData* data = ctx->GetData<SceneData>();
+            DVASSERT(data != nullptr);
+            data->GetScene()->slotSystem->InvalidateConfig(path);
+        }
+        return nullptr;
+    }
+
+private:
+    DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
+};
+
+DAVA::M::CommandProducerHolder CreateSlotConfigCommandProvider()
+{
+    DAVA::M::CommandProducerHolder holder;
+    holder.AddCommandProducer(std::make_shared<InvalidateSlotConfigCache>());
+
+    return holder;
 }
 }
