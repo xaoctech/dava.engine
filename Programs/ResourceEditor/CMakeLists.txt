@@ -129,6 +129,3 @@ set( UNIFIED_IGNORE_LIST "Classes/Collada" )
 convert_graphics()
 
 setup_main_executable()
-
-
-DEPLOY_SCRIPT ( COPY_DIR    ${DEPLOY_DIR} )
