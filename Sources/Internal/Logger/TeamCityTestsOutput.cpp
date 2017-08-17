@@ -34,7 +34,7 @@ void TeamcityTestsOutput::Output(Logger::eLogLevel ll, const char8* text)
         int64 deltaTime = SystemTimer::GetMs() - suiteStartTime;
 
         const String& testName = lines.at(1);
-        output = "##teamcity[testSuiteFinished name='" + testName + Format("' time= %d.%03d sec]\n", deltaTime / 1000, deltaTime % 1000);
+        output = "##teamcity[testSuiteFinished name='" + testName + Format("' time='%d.%03d sec']\n", deltaTime / 1000, deltaTime % 1000);
     }
     else if (disabledSuiteMarker == lines[0])
     {
@@ -57,7 +57,7 @@ void TeamcityTestsOutput::Output(Logger::eLogLevel ll, const char8* text)
         int64 deltaTime = SystemTimer::GetMs() - testStartTime;
 
         const String& testName = lines.at(1);
-        output = "##teamcity[testFinished name='" + testName + Format("' time= %d.%03d sec]\n", deltaTime / 1000, deltaTime % 1000);
+        output = "##teamcity[testFinished name='" + testName + Format("' time='%d.%03d sec']\n", deltaTime / 1000, deltaTime % 1000);
     }
     else if (errorTestMarker == lines[0])
     {

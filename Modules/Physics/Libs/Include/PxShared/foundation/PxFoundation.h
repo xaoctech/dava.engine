@@ -49,8 +49,8 @@ You need to have an instance of this class to instance the higher level SDKs.
 */
 class PX_FOUNDATION_API PxFoundation
 {
-  public:
-	/**
+public:
+    /**
 	\brief Destroys the instance it is called on.
 
 	The operation will fail, if there are still modules referencing the foundation object. Release all dependent modules
@@ -59,43 +59,43 @@ class PX_FOUNDATION_API PxFoundation
 
 	@see PxCreateFoundation()
 	*/
-	virtual void release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	retrieves error callback
 	*/
-	virtual PxErrorCallback& getErrorCallback() = 0;
+    virtual PxErrorCallback& getErrorCallback() = 0;
 
-	/**
+    /**
 	Sets mask of errors to report.
 	*/
-	virtual void setErrorLevel(PxErrorCode::Enum mask = PxErrorCode::eMASK_ALL) = 0;
+    virtual void setErrorLevel(PxErrorCode::Enum mask = PxErrorCode::eMASK_ALL) = 0;
 
-	/**
+    /**
 	Retrieves mask of errors to be reported.
 	*/
-	virtual PxErrorCode::Enum getErrorLevel() const = 0;
+    virtual PxErrorCode::Enum getErrorLevel() const = 0;
 
-	/**
+    /**
 	Retrieves the allocator this object was created with.
 	*/
-	virtual PxAllocatorCallback& getAllocatorCallback() = 0;
+    virtual PxAllocatorCallback& getAllocatorCallback() = 0;
 
-	/**
+    /**
 	Retrieves if allocation names are being passed to allocator callback.
 	*/
-	virtual bool getReportAllocationNames() const = 0;
+    virtual bool getReportAllocationNames() const = 0;
 
-	/**
+    /**
 	Set if allocation names are being passed to allocator callback.
 	\details Enabled by default in debug and checked build, disabled by default in profile and release build.
 	*/
-	virtual void setReportAllocationNames(bool value) = 0;
+    virtual void setReportAllocationNames(bool value) = 0;
 
-  protected:
-	virtual ~PxFoundation()
-	{
-	}
+protected:
+    virtual ~PxFoundation()
+    {
+    }
 };
 
 #if !PX_DOXYGEN

@@ -48,10 +48,10 @@ namespace physx
 */
 struct PxHeightFieldMaterial
 {
-	enum Enum
-	{
-		eHOLE = 127  //!< A material indicating that the triangle should be treated as a hole in the mesh.
-	};
+    enum Enum
+    {
+        eHOLE = 127 //!< A material indicating that the triangle should be treated as a hole in the mesh.
+    };
 };
 
 /**
@@ -67,23 +67,23 @@ triangles are specified.
 */
 struct PxHeightFieldSample
 {
-//= ATTENTION! =====================================================================================
-// Changing the data layout of this class breaks the binary serialization format.  See comments for 
-// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
-// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-// accordingly.
-//==================================================================================================
+    //= ATTENTION! =====================================================================================
+    // Changing the data layout of this class breaks the binary serialization format.  See comments for
+    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
+    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+    // accordingly.
+    //==================================================================================================
 
-	/**
+    /**
 	\brief The height of the heightfield sample
 
 	This value is scaled by PxHeightFieldGeometry::heightScale.
 
 	@see PxHeightFieldGeometry
 	*/
-	PxI16			height;
+    PxI16 height;
 
-	/**
+    /**
 	\brief The triangle material index of the quad's lower triangle + tesselation flag
 
 	An index pointing into the material table of the shape which instantiates the heightfield.
@@ -98,13 +98,22 @@ struct PxHeightFieldSample
 
 	@see PxHeightFieldGeometry materialIndex1 PxShape.setmaterials() PxShape.getMaterials()
 	*/
-	PxBitAndByte	materialIndex0;
+    PxBitAndByte materialIndex0;
 
-	PX_CUDA_CALLABLE PX_FORCE_INLINE	PxU8	tessFlag()	const	{ return PxU8(materialIndex0.isBitSet() ? 1 : 0);		}	// PT: explicit conversion to make sure we don't break the code
-	PX_CUDA_CALLABLE PX_FORCE_INLINE	void	setTessFlag()		{ materialIndex0.setBit();						}
-	PX_CUDA_CALLABLE PX_FORCE_INLINE	void	clearTessFlag()		{ materialIndex0.clearBit();					}
+    PX_CUDA_CALLABLE PX_FORCE_INLINE PxU8 tessFlag() const
+    {
+        return PxU8(materialIndex0.isBitSet() ? 1 : 0);
+    } // PT: explicit conversion to make sure we don't break the code
+    PX_CUDA_CALLABLE PX_FORCE_INLINE void setTessFlag()
+    {
+        materialIndex0.setBit();
+    }
+    PX_CUDA_CALLABLE PX_FORCE_INLINE void clearTessFlag()
+    {
+        materialIndex0.clearBit();
+    }
 
-	/**
+    /**
 	\brief The triangle material index of the quad's upper triangle + reserved flag
 
 	An index pointing into the material table of the shape which instantiates the heightfield.
@@ -113,7 +122,7 @@ struct PxHeightFieldSample
 
 	@see PxHeightFieldGeometry materialIndex0 PxShape.setmaterials() PxShape.getMaterials()
 	*/
-	PxBitAndByte	materialIndex1;
+    PxBitAndByte materialIndex1;
 };
 
 #if !PX_DOXYGEN

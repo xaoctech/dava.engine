@@ -48,47 +48,47 @@ Particle flags are used for additional information on the particles. (deprecated
 \deprecated The PhysX particle feature has been deprecated in PhysX version 3.4
 */
 struct PX_DEPRECATED PxParticleFlag
-	{
-	enum Enum
-		{
-			/**
+{
+    enum Enum
+    {
+        /**
 			\brief Marks a valid particle. The particle data corresponding to these particle flags is valid, i.e. defines a particle, when set.
 			Particles that are not marked with PxParticleFlag::eVALID are ignored during simulation.
 			
 			Application read only.
 			*/
-			eVALID								= (1<<0),
+        eVALID = (1 << 0),
 
-			/**
+        /**
 			\brief Marks a particle that has collided with a static actor shape.
 
 			Application read only.
 			*/
-			eCOLLISION_WITH_STATIC				= (1<<1),	
+        eCOLLISION_WITH_STATIC = (1 << 1),
 
-			/**
+        /**
 			\brief Marks a particle that has collided with a dynamic actor shape.
 
 			Application read only.
 			*/
-			eCOLLISION_WITH_DYNAMIC				= (1<<2),
+        eCOLLISION_WITH_DYNAMIC = (1 << 2),
 
-			/**
+        /**
 			\brief Marks a particle that has collided with a shape that has been flagged as a drain (See PxShapeFlag.ePARTICLE_DRAIN).
 			
 			Application read only.
 			@see PxShapeFlag.ePARTICLE_DRAIN
 			*/
-			eCOLLISION_WITH_DRAIN				= (1<<3),
+        eCOLLISION_WITH_DRAIN = (1 << 3),
 
-			/**
+        /**
 			\brief Marks a particle that had to be ignored for simulation, because the spatial data structure ran out of resources.
 
 			Application read only.
 			*/
-			eSPATIAL_DATA_STRUCTURE_OVERFLOW	= (1<<4)
-		};
-	};
+        eSPATIAL_DATA_STRUCTURE_OVERFLOW = (1 << 4)
+    };
+};
 
 #if !PX_DOXYGEN
 } // namespace physx

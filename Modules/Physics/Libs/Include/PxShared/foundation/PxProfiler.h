@@ -32,7 +32,6 @@
 
 namespace physx
 {
-
 /**
 \brief The pure virtual callback interface for general purpose instrumentation and profiling of GameWorks modules as
 well as applications
@@ -40,23 +39,25 @@ well as applications
 class PxProfilerCallback
 {
 protected:
-	virtual ~PxProfilerCallback()	{}
+    virtual ~PxProfilerCallback()
+    {
+    }
 
 public:
-	/**************************************************************************************************************************
+    /**************************************************************************************************************************
 	Instrumented profiling events
 	***************************************************************************************************************************/
 
-	/**
+    /**
 	\brief Mark the beginning of a nested profile block
 	\param[in] eventName	Event name. Must be a persistent const char *
 	\param[in] detached		True for cross thread events
 	\param[in] contextId	the context id of this zone. Zones with the same id belong to the same group. 0 is used for no specific group.
 	\return Returns implementation-specific profiler data for this event
 	*/
-	virtual void* zoneStart(const char* eventName, bool detached, uint64_t contextId) = 0;
+    virtual void* zoneStart(const char* eventName, bool detached, uint64_t contextId) = 0;
 
-	/**
+    /**
 	\brief Mark the end of a nested profile block
 	\param[in] profilerData	The data returned by the corresponding zoneStart call (or NULL if not available)
 	\param[in] eventName	The name of the zone ending, must match the corresponding name passed with 'zoneStart'. Must be a persistent const char *.
@@ -65,33 +66,35 @@ public:
 
 	\note eventName plus contextId can be used to uniquely match up start and end of a zone.
 	*/
-	virtual void zoneEnd(void* profilerData, const char* eventName, bool detached, uint64_t contextId) = 0;
+    virtual void zoneEnd(void* profilerData, const char* eventName, bool detached, uint64_t contextId) = 0;
 };
 
 class PxProfileScoped
 {
-  public:
-	PX_FORCE_INLINE PxProfileScoped(const char* eventName, bool detached, uint64_t contextId) : mCallback(PxGetProfilerCallback()), mProfilerData(NULL)
-	{
-		if(mCallback)
-		{
-			mEventName		= eventName;
-			mContextId		= contextId;
-			mDetached		= detached;
-			mProfilerData	= mCallback->zoneStart(eventName, detached, contextId);
-		}
-	}
+public:
+    PX_FORCE_INLINE PxProfileScoped(const char* eventName, bool detached, uint64_t contextId)
+        : mCallback(PxGetProfilerCallback())
+        , mProfilerData(NULL)
+    {
+        if (mCallback)
+        {
+            mEventName = eventName;
+            mContextId = contextId;
+            mDetached = detached;
+            mProfilerData = mCallback->zoneStart(eventName, detached, contextId);
+        }
+    }
 
-	PX_FORCE_INLINE ~PxProfileScoped()
-	{
-		if(mCallback)
-			mCallback->zoneEnd(mProfilerData, mEventName, mDetached, mContextId);
-	}
-	physx::PxProfilerCallback*	mCallback;
-	const char*					mEventName;
-	void*						mProfilerData;
-	uint64_t					mContextId;
-	bool						mDetached;
+    PX_FORCE_INLINE ~PxProfileScoped()
+    {
+        if (mCallback)
+            mCallback->zoneEnd(mProfilerData, mEventName, mDetached, mContextId);
+    }
+    physx::PxProfilerCallback* mCallback;
+    const char* mEventName;
+    void* mProfilerData;
+    uint64_t mContextId;
+    bool mDetached;
 };
 
 } // end of physx namespace
@@ -100,10 +103,10 @@ class PxProfileScoped
 	#define PX_PROFILE_ZONE(x, y)										\
 		physx::PxProfileScoped PX_CONCAT(_scoped, __LINE__)(x, false, y)
 	#define PX_PROFILE_START_CROSSTHREAD(x, y)							\
-		if(PxGetProfilerCallback())										\
+		if (PxGetProfilerCallback())										\
 			PxGetProfilerCallback()->zoneStart(x, true, y)
 	#define PX_PROFILE_STOP_CROSSTHREAD(x, y)							\
-		if(PxGetProfilerCallback())										\
+		if (PxGetProfilerCallback())										\
 			PxGetProfilerCallback()->zoneEnd(NULL, x, true, y)
 #else
 	#define PX_PROFILE_ZONE(x, y)

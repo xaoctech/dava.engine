@@ -55,10 +55,9 @@ class PxFixedJoint;
 @see PxFixedJoint
 */
 
-PxFixedJoint*		PxFixedJointCreate(PxPhysics& physics, 
-									   PxRigidActor* actor0, const PxTransform& localFrame0, 
-									   PxRigidActor* actor1, const PxTransform& localFrame1);
-
+PxFixedJoint* PxFixedJointCreate(PxPhysics& physics,
+                                 PxRigidActor* actor0, const PxTransform& localFrame0,
+                                 PxRigidActor* actor1, const PxTransform& localFrame1);
 
 /**
  \brief A fixed joint permits no relative movement between two bodies. ie the bodies are glued together.
@@ -71,8 +70,7 @@ PxFixedJoint*		PxFixedJointCreate(PxPhysics& physics,
 class PxFixedJoint : public PxJoint
 {
 public:
-	
-	/**
+    /**
 	\brief Set the linear tolerance threshold for projection. Projection is enabled if PxConstraintFlag::ePROJECTION
 	is set for the joint.
 
@@ -91,9 +89,9 @@ public:
 	@see getProjectionLinearTolerance() PxJoint::setConstraintFlags() PxConstraintFlag::ePROJECTION
 	*/
 
-	virtual void				setProjectionLinearTolerance(PxReal tolerance)					= 0;
+    virtual void setProjectionLinearTolerance(PxReal tolerance) = 0;
 
-						/**
+    /**
 	\brief Get the linear tolerance threshold for projection.
 
 	\return the linear tolerance threshold
@@ -101,9 +99,9 @@ public:
 	@see setProjectionLinearTolerance() PxJoint::setConstraintFlag()
 	*/
 
-	virtual PxReal				getProjectionLinearTolerance()			const					= 0;
+    virtual PxReal getProjectionLinearTolerance() const = 0;
 
-	/**
+    /**
 	\brief Set the angular tolerance threshold for projection. Projection is enabled if 
 	PxConstraintFlag::ePROJECTION is set for the joint.
 
@@ -122,9 +120,9 @@ public:
 	@see getProjectionAngularTolerance() PxJoint::setConstraintFlag() PxConstraintFlag::ePROJECTION
 	*/
 
-	virtual void				setProjectionAngularTolerance(PxReal tolerance)							= 0;
+    virtual void setProjectionAngularTolerance(PxReal tolerance) = 0;
 
-	/**
+    /**
 	\brief Get the angular tolerance threshold for projection.
 
 	\return the angular tolerance threshold in radians
@@ -132,33 +130,44 @@ public:
 	@see setProjectionAngularTolerance() 
 	*/
 
-	virtual PxReal				getProjectionAngularTolerance()			const					= 0;
-	
-	/**
+    virtual PxReal getProjectionAngularTolerance() const = 0;
+
+    /**
 	\brief Returns string name of PxFixedJoint, used for serialization
 	*/
-	virtual	const char*			getConcreteTypeName() const { return "PxFixedJoint"; }
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxFixedJoint";
+    }
 
 protected:
+    //serialization
 
-	//serialization
-
-	/**
+    /**
 	\brief Constructor
 	*/
-	PX_INLINE					PxFixedJoint(PxType concreteType, PxBaseFlags baseFlags) : PxJoint(concreteType, baseFlags) {}
+    PX_INLINE PxFixedJoint(PxType concreteType, PxBaseFlags baseFlags)
+        : PxJoint(concreteType, baseFlags)
+    {
+    }
 
-	/**
+    /**
 	\brief Deserialization constructor
 	*/
-	PX_INLINE					PxFixedJoint(PxBaseFlags baseFlags) : PxJoint(baseFlags)	{}
+    PX_INLINE PxFixedJoint(PxBaseFlags baseFlags)
+        : PxJoint(baseFlags)
+    {
+    }
 
-	/**
+    /**
 	\brief Returns whether a given type name matches with the type of this instance
 	*/
-	virtual	bool				isKindOf(const char* name) const { return !::strcmp("PxFixedJoint", name) || PxJoint::isKindOf(name);	}
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxFixedJoint", name) || PxJoint::isKindOf(name);
+    }
 
-	//~serialization
+    //~serialization
 };
 
 #if !PX_DOXYGEN

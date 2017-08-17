@@ -64,9 +64,9 @@ class PxPvdTransport;
 */
 struct PxPvdInstrumentationFlag
 {
-	enum Enum
-	{
-		/**
+    enum Enum
+    {
+        /**
 			\brief Send debugging information to PVD.
 
 			This information is the actual object data of the rigid statics, shapes,
@@ -74,9 +74,9 @@ struct PxPvdInstrumentationFlag
 			performance and thus this flag should not be set if you want an accurate
 			performance profile.
 	     */
-		eDEBUG   = 1 << 0,
+        eDEBUG = 1 << 0,
 
-		/**
+        /**
 			\brief Send profile information to PVD.
 
 			This information populates PVD's profile view.  It has (at this time) negligible
@@ -86,9 +86,9 @@ struct PxPvdInstrumentationFlag
 			This flag works together with a PxCreatePhysics parameter.
 			Using it allows the SDK to send profile events to PVD.
 	    */
-		ePROFILE = 1 << 1,
+        ePROFILE = 1 << 1,
 
-		/**
+        /**
 			\brief Send memory information to PVD.
 
 			The PVD sdk side hooks into the Foundation memory controller and listens to
@@ -108,10 +108,10 @@ struct PxPvdInstrumentationFlag
 			PVD will accurate information about the state of the memory system before the
 			actual connection happened.
 	    */
-		eMEMORY  = 1 << 2,
+        eMEMORY = 1 << 2,
 
-		eALL     = (eDEBUG | ePROFILE | eMEMORY)
-	};
+        eALL = (eDEBUG | ePROFILE | eMEMORY)
+    };
 };
 
 /**
@@ -128,22 +128,22 @@ configuration.It is a singleton class, instantiated and owned by the application
 */
 class PxPvd : public physx::PxProfilerCallback
 {
-  public:
-	/**
+public:
+    /**
 	Connects the SDK to the PhysX Visual Debugger application.
 	\param transport transport for pvd captured data.
 	\param flags Flags to set.
 	return True if success
 	*/
-	virtual bool connect(PxPvdTransport& transport, PxPvdInstrumentationFlags flags) = 0;
+    virtual bool connect(PxPvdTransport& transport, PxPvdInstrumentationFlags flags) = 0;
 
-	/**
+    /**
 	Disconnects the SDK from the PhysX Visual Debugger application.
 	If we are still connected, this will kill the entire debugger connection.
 	*/
-	virtual void disconnect() = 0;
+    virtual void disconnect() = 0;
 
-	/**
+    /**
 	 *	Return if connection to PVD is created.
 	  \param useCachedStatus
 	    1> When useCachedStaus is false, isConnected() checks the lowlevel network status.
@@ -155,28 +155,28 @@ class PxPvd : public physx::PxProfilerCallback
 	       The reason for this is that the cached status is changed inside socket listener, which is not
 	       called immediately when the lowlevel connection status changes.
 	 */
-	virtual bool isConnected(bool useCachedStatus = true) = 0;
+    virtual bool isConnected(bool useCachedStatus = true) = 0;
 
-	/**
+    /**
 	returns the PVD data transport
 	returns NULL if no transport is present.
 	*/
-	virtual PxPvdTransport* getTransport() = 0;
+    virtual PxPvdTransport* getTransport() = 0;
 
-	/**
+    /**
 	Retrieves the PVD flags. See PxPvdInstrumentationFlags.
 	*/
-	virtual PxPvdInstrumentationFlags getInstrumentationFlags() = 0;
+    virtual PxPvdInstrumentationFlags getInstrumentationFlags() = 0;
 
-	/**
+    /**
 	\brief Releases the pvd instance.
 	*/
-	virtual void release() = 0;
+    virtual void release() = 0;
 
-  protected:
-	virtual ~PxPvd()
-	{
-	}
+protected:
+    virtual ~PxPvd()
+    {
+    }
 };
 
 /**

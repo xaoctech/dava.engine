@@ -62,9 +62,9 @@ struct PxSweepHit;
 */
 struct PxShapeFlag
 {
-	enum Enum
-	{
-		/**
+    enum Enum
+    {
+        /**
 		\brief The shape will partake in collision in the physical simulation.
 
 		\note It is illegal to raise the eSIMULATION_SHAPE and eTRIGGER_SHAPE flags.
@@ -76,14 +76,14 @@ struct PxShapeFlag
 
 		@see PxSimulationEventCallback.onContact() PxScene.setSimulationEventCallback() PxShape.setFlag(), PxShape.setFlags()
 		*/
-		eSIMULATION_SHAPE				= (1<<0),
+        eSIMULATION_SHAPE = (1 << 0),
 
-		/**
+        /**
 		\brief The shape will partake in scene queries (ray casts, overlap tests, sweeps, ...).
 		*/
-		eSCENE_QUERY_SHAPE				= (1<<1),
+        eSCENE_QUERY_SHAPE = (1 << 1),
 
-		/**
+        /**
 		\brief The shape is a trigger which can send reports whenever other shapes enter/leave its volume.
 
 		\note Triangle meshes and heightfields can not be triggers. Shape creation will fail in these cases.
@@ -105,20 +105,20 @@ struct PxShapeFlag
 
 		@see PxSimulationEventCallback.onTrigger() PxScene.setSimulationEventCallback() PxShape.setFlag(), PxShape.setFlags()
 		*/
-		eTRIGGER_SHAPE					= (1<<2),
+        eTRIGGER_SHAPE = (1 << 2),
 
-		/**
+        /**
 		\brief Enable debug renderer for this shape
 
 		@see PxScene.getRenderBuffer() PxRenderBuffer PxVisualizationParameter
 		*/
-		eVISUALIZATION					= (1<<3),
+        eVISUALIZATION = (1 << 3),
 
-		/**
+        /**
 		\brief Sets the shape to be a particle drain.
 		*/
-		ePARTICLE_DRAIN					= (1<<4)
-	};
+        ePARTICLE_DRAIN = (1 << 4)
+    };
 };
 
 /**
@@ -126,9 +126,8 @@ struct PxShapeFlag
 
 @see PxShapeFlag
 */
-typedef PxFlags<PxShapeFlag::Enum,PxU8> PxShapeFlags;
-PX_FLAGS_OPERATORS(PxShapeFlag::Enum,PxU8)
-
+typedef PxFlags<PxShapeFlag::Enum, PxU8> PxShapeFlags;
+PX_FLAGS_OPERATORS(PxShapeFlag::Enum, PxU8)
 
 /**
 \brief Abstract class for collision shapes.
@@ -149,8 +148,7 @@ PxTriangleMeshGeometry PxHeightFieldGeometry
 class PxShape : public PxBase
 {
 public:
-
-	/**
+    /**
 	\brief Decrements the reference count of a shape and releases it if the new reference count is zero.
 
 	Note that in releases prior to PhysX 3.3 this method did not have reference counting semantics and was used to destroy a shape 
@@ -160,25 +158,25 @@ public:
 
 	@see PxRigidActor::createShape() PxPhysics::createShape() PxRigidActor::attachShape() PxRigidActor::detachShape()
 	*/
-	virtual		void					release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Acquires a counted reference to a shape.
 
 	This method increases the reference count of the shape by 1. Decrement the reference count by calling release()
 	*/
-	virtual		void					acquireReference() = 0;
+    virtual void acquireReference() = 0;
 
-	/**
+    /**
 	\brief Get the geometry type of the shape.
 
 	\return Type of shape geometry.
 
 	@see PxGeometryType
 	*/
-	virtual		PxGeometryType::Enum	getGeometryType() const = 0;
+    virtual PxGeometryType::Enum getGeometryType() const = 0;
 
-	/**
+    /**
 	\brief Adjust the geometry of the shape.
 
 	\note The type of the passed in geometry must match the geometry type of the shape.
@@ -189,10 +187,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		void					setGeometry(const PxGeometry& geometry) = 0;
+    virtual void setGeometry(const PxGeometry& geometry) = 0;
 
-
-	/**
+    /**
 	\brief Retrieve the geometry from the shape in a PxGeometryHolder wrapper class.
 
 	\return a PxGeometryHolder object containing the geometry;
@@ -200,10 +197,9 @@ public:
 	@see PxGeometry PxGeometryType getGeometryType() setGeometry()
 	*/
 
-	virtual		PxGeometryHolder		getGeometry() const = 0;
+    virtual PxGeometryHolder getGeometry() const = 0;
 
-
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -214,9 +210,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getBoxGeometry(PxBoxGeometry& geometry) const = 0;
+    virtual bool getBoxGeometry(PxBoxGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -227,9 +223,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getSphereGeometry(PxSphereGeometry& geometry) const = 0;
+    virtual bool getSphereGeometry(PxSphereGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -240,9 +236,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getCapsuleGeometry(PxCapsuleGeometry& geometry) const = 0;
+    virtual bool getCapsuleGeometry(PxCapsuleGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -253,9 +249,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getPlaneGeometry(PxPlaneGeometry& geometry) const = 0;
+    virtual bool getPlaneGeometry(PxPlaneGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -266,9 +262,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getConvexMeshGeometry(PxConvexMeshGeometry& geometry) const = 0;
+    virtual bool getConvexMeshGeometry(PxConvexMeshGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -279,9 +275,9 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getTriangleMeshGeometry(PxTriangleMeshGeometry& geometry) const = 0;
+    virtual bool getTriangleMeshGeometry(PxTriangleMeshGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Fetch the geometry of the shape.
 
 	\note If the type of geometry to extract does not match the geometry type of the shape
@@ -292,25 +288,24 @@ public:
 
 	@see PxGeometry PxGeometryType getGeometryType()
 	*/
-	virtual		bool					getHeightFieldGeometry(PxHeightFieldGeometry& geometry) const = 0;
+    virtual bool getHeightFieldGeometry(PxHeightFieldGeometry& geometry) const = 0;
 
-	/**
+    /**
 	\brief Retrieves the actor which this shape is associated with.
 
 	\return The actor this shape is associated with, if it is an exclusive shape, else NULL
 
 	@see PxRigidStatic, PxRigidDynamic, PxArticulationLink
 	*/
-	virtual		PxRigidActor*			getActor() const = 0;
+    virtual PxRigidActor* getActor() const = 0;
 
+    /************************************************************************************************/
 
-/************************************************************************************************/
-
-/** @name Pose Manipulation
+    /** @name Pose Manipulation
 */
-//@{
+    //@{
 
-	/**
+    /**
 	\brief Sets the pose of the shape in actor space, i.e. relative to the actors to which they are attached.
 	
 	This transformation is identity by default.
@@ -328,9 +323,9 @@ public:
 
 	@see getLocalPose() 
 	*/
-	virtual		void					setLocalPose(const PxTransform& pose)		= 0;
+    virtual void setLocalPose(const PxTransform& pose) = 0;
 
-	/**
+    /**
 	\brief Retrieves the pose of the shape in actor space, i.e. relative to the actor they are owned by.
 
 	This transformation is identity by default.
@@ -339,16 +334,16 @@ public:
 
 	@see setLocalPose() 
 	*/
-	virtual		PxTransform				getLocalPose()					const	= 0;
+    virtual PxTransform getLocalPose() const = 0;
 
-//@}
-/************************************************************************************************/
+    //@}
+    /************************************************************************************************/
 
-/** @name Collision Filtering
+    /** @name Collision Filtering
 */
-//@{
+    //@{
 
-	/**
+    /**
 	\brief Sets the user definable collision filter data.
 	
 	<b>Sleeping:</b> Does wake up the actor if the filter data change causes a formerly suppressed
@@ -358,35 +353,35 @@ public:
 
 	@see getSimulationFilterData() 
 	*/
-	virtual		void					setSimulationFilterData(const PxFilterData& data)	= 0;
+    virtual void setSimulationFilterData(const PxFilterData& data) = 0;
 
-	/**
+    /**
 	\brief Retrieves the shape's collision filter data.
 
 	@see setSimulationFilterData() 
 	*/
-	virtual		PxFilterData			getSimulationFilterData()					const	= 0;
+    virtual PxFilterData getSimulationFilterData() const = 0;
 
-	/**
+    /**
 	\brief Sets the user definable query filter data.
 
 	<b>Default:</b> (0,0,0,0)
 
 	@see getQueryFilterData() 
 	*/
-	virtual		void					setQueryFilterData(const PxFilterData& data)	= 0;
+    virtual void setQueryFilterData(const PxFilterData& data) = 0;
 
-	/**
+    /**
 	\brief Retrieves the shape's Query filter data.
 
 	@see setQueryFilterData() 
 	*/
-	virtual		PxFilterData			getQueryFilterData()					const	= 0;
+    virtual PxFilterData getQueryFilterData() const = 0;
 
-//@}
-/************************************************************************************************/
+    //@}
+    /************************************************************************************************/
 
-	/**
+    /**
 	\brief Assigns material(s) to the shape.
 	
 	<b>Sleeping:</b> Does <b>NOT</b> wake the associated actor up automatically.
@@ -396,9 +391,9 @@ public:
 
 	@see PxPhysics.createMaterial() getMaterials() 
 	*/
-	virtual		void					setMaterials(PxMaterial*const* materials, PxU16 materialCount)	= 0;
+    virtual void setMaterials(PxMaterial* const* materials, PxU16 materialCount) = 0;
 
-	/**
+    /**
 	\brief Returns the number of materials assigned to the shape.
 
 	You can use #getMaterials() to retrieve the material pointers.
@@ -407,9 +402,9 @@ public:
 
 	@see PxMaterial getMaterials()
 	*/
-	virtual		PxU16					getNbMaterials()		const	= 0;
+    virtual PxU16 getNbMaterials() const = 0;
 
-	/**
+    /**
 	\brief Retrieve all the material pointers associated with the shape.
 
 	You can retrieve the number of material pointers by calling #getNbMaterials()
@@ -423,9 +418,9 @@ public:
 
 	@see PxMaterial getNbMaterials() PxMaterial::release()
 	*/
-	virtual		PxU32					getMaterials(PxMaterial** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const	= 0;
-	
-	/**
+    virtual PxU32 getMaterials(PxMaterial** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
+
+    /**
 	\brief Retrieve material from given triangle index.
 
 	The input index is the internal triangle index as used inside the SDK. This is the index
@@ -443,9 +438,9 @@ public:
 
 	@see PxMaterial getNbMaterials() PxMaterial::release()
 	*/
-	virtual		PxMaterial*				getMaterialFromInternalFaceIndex(PxU32 faceIndex) const = 0;
+    virtual PxMaterial* getMaterialFromInternalFaceIndex(PxU32 faceIndex) const = 0;
 
-	/**
+    /**
 	\brief Sets the contact offset.
 
 	Shapes whose distance is less than the sum of their contactOffset values will generate contacts. The contact offset must be positive and
@@ -461,18 +456,18 @@ public:
 
 	@see getContactOffset PxTolerancesScale setRestOffset
 	*/
-	virtual		void					setContactOffset(PxReal contactOffset)	= 0;
+    virtual void setContactOffset(PxReal contactOffset) = 0;
 
-	/**
+    /**
 	\brief Retrieves the contact offset. 
 
 	\return The contact offset of the shape.
 
 	@see setContactOffset()
 	*/
-	virtual		PxReal					getContactOffset() const	= 0;
+    virtual PxReal getContactOffset() const = 0;
 
-	/**
+    /**
 	\brief Sets the rest offset. 
 
 	Two shapes will come to rest at a distance equal to the sum of their restOffset values. If the restOffset is 0, they should converge to touching 
@@ -487,20 +482,20 @@ public:
 
 	@see getRestOffset setContactOffset
 	*/
-	virtual		void					setRestOffset(PxReal restOffset)	= 0;
+    virtual void setRestOffset(PxReal restOffset) = 0;
 
-	/**
+    /**
 	\brief Retrieves the rest offset. 
 
 	\return The rest offset of the shape.
 
 	@see setRestOffset()
 	*/
-	virtual		PxReal					getRestOffset() const	= 0;
+    virtual PxReal getRestOffset() const = 0;
 
-/************************************************************************************************/
+    /************************************************************************************************/
 
-	/**
+    /**
 	\brief Sets shape flags
 
 	<b>Sleeping:</b> Does <b>NOT</b> wake the associated actor up automatically.
@@ -512,32 +507,32 @@ public:
 
 	@see PxShapeFlag getFlags()
 	*/
-	virtual		void					setFlag(PxShapeFlag::Enum flag, bool value) = 0;
+    virtual void setFlag(PxShapeFlag::Enum flag, bool value) = 0;
 
-	/**
+    /**
 	\brief Sets shape flags
 
 	@see PxShapeFlag getFlags()
 	*/
-	virtual		void					setFlags(PxShapeFlags inFlags) = 0;
+    virtual void setFlags(PxShapeFlags inFlags) = 0;
 
-	/**
+    /**
 	\brief Retrieves shape flags.
 
 	\return The values of the shape flags.
 
 	@see PxShapeFlag setFlag()
 	*/
-	virtual		PxShapeFlags			getFlags() const = 0;
+    virtual PxShapeFlags getFlags() const = 0;
 
-	/**
+    /**
 	\brief Returns true if the shape is exclusive to an actor.
 	
 	@see PxPhysics::createShape()
 	*/
-	virtual		bool					isExclusive() const	= 0;
+    virtual bool isExclusive() const = 0;
 
-	/**
+    /**
 	\brief Sets a name string for the object that can be retrieved with #getName().
 	
 	This is for debugging and is not used by the SDK.
@@ -549,30 +544,42 @@ public:
 
 	@see getName()
 	*/
-	virtual		void					setName(const char* name)		= 0;
+    virtual void setName(const char* name) = 0;
 
-
-	/**
+    /**
 	\brief retrieves the name string set with setName().
 	\return The name associated with the shape.
 
 	@see setName()
 	*/
-	virtual		const char*				getName()			const	= 0;
+    virtual const char* getName() const = 0;
 
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxShape";
+    }
 
-	virtual		const char*				getConcreteTypeName() const	{ return "PxShape"; }
+    /************************************************************************************************/
 
-/************************************************************************************************/
-
-				void*					userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+    void* userData; //!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
 
 protected:
-	PX_INLINE							PxShape(PxBaseFlags baseFlags) : PxBase(baseFlags) {}
-	PX_INLINE							PxShape(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags), userData(NULL) {}
-	virtual								~PxShape() {}
-	virtual		bool					isKindOf(const char* name) const { return !::strcmp("PxShape", name) || PxBase::isKindOf(name); }
-
+    PX_INLINE PxShape(PxBaseFlags baseFlags)
+        : PxBase(baseFlags)
+    {
+    }
+    PX_INLINE PxShape(PxType concreteType, PxBaseFlags baseFlags)
+        : PxBase(concreteType, baseFlags)
+        , userData(NULL)
+    {
+    }
+    virtual ~PxShape()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxShape", name) || PxBase::isKindOf(name);
+    }
 };
 
 #if !PX_DOXYGEN

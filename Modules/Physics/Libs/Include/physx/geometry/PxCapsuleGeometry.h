@@ -51,20 +51,30 @@ The function PxTransformFromSegment is a helper for generating an appropriate tr
 
 @see PxTransformFromSegment
 */
-class PxCapsuleGeometry : public PxGeometry      
+class PxCapsuleGeometry : public PxGeometry
 {
 public:
-	/**
+    /**
 	\brief Default constructor, initializes to a capsule with zero height and radius.
 	*/
-	PX_INLINE PxCapsuleGeometry() :						PxGeometry(PxGeometryType::eCAPSULE), radius(0), halfHeight(0)		{}
+    PX_INLINE PxCapsuleGeometry()
+        : PxGeometry(PxGeometryType::eCAPSULE)
+        , radius(0)
+        , halfHeight(0)
+    {
+    }
 
-	/**
+    /**
 	\brief Constructor, initializes to a capsule with passed radius and half height.
 	*/
-	PX_INLINE PxCapsuleGeometry(PxReal radius_, PxReal halfHeight_) :	PxGeometry(PxGeometryType::eCAPSULE), radius(radius_), halfHeight(halfHeight_)	{}
+    PX_INLINE PxCapsuleGeometry(PxReal radius_, PxReal halfHeight_)
+        : PxGeometry(PxGeometryType::eCAPSULE)
+        , radius(radius_)
+        , halfHeight(halfHeight_)
+    {
+    }
 
-	/**
+    /**
 	\brief Returns true if the geometry is valid.
 
 	\return True if the current settings are valid.
@@ -74,33 +84,31 @@ public:
 
 	@see PxRigidActor::createShape, PxPhysics::createShape
 	*/
-	PX_INLINE bool isValid() const;
+    PX_INLINE bool isValid() const;
 
 public:
-	/**
+    /**
 	\brief The radius of the capsule.
 	*/
-	PxReal radius;
+    PxReal radius;
 
-	/**
+    /**
 	\brief half of the capsule's height, measured between the centers of the hemispherical ends.
 	*/
-	PxReal halfHeight;
+    PxReal halfHeight;
 };
-
 
 PX_INLINE bool PxCapsuleGeometry::isValid() const
 {
-	if (mType != PxGeometryType::eCAPSULE)
-		return false;
-	if (!PxIsFinite(radius) || !PxIsFinite(halfHeight))
-		return false;
-	if (radius <= 0.0f || halfHeight <= 0.0f)
-		return false;
+    if (mType != PxGeometryType::eCAPSULE)
+        return false;
+    if (!PxIsFinite(radius) || !PxIsFinite(halfHeight))
+        return false;
+    if (radius <= 0.0f || halfHeight <= 0.0f)
+        return false;
 
-	return true;
+    return true;
 }
-
 
 /** \brief creates a transform from the endpoints of a segment, suitable for an actor transform for a PxCapsuleGeometry
 

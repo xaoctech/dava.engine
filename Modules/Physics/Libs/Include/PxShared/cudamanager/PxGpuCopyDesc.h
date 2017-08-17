@@ -36,7 +36,6 @@
 
 namespace physx
 {
-
 PX_PUSH_PACK_DEFAULT
 
 /**
@@ -48,34 +47,34 @@ PX_PUSH_PACK_DEFAULT
  */
 struct PxGpuCopyDesc
 {
-	/**
+    /**
 	 * \brief Input descriptor for the GpuDispatcher's built-in copy kernel
 	 */
-	enum CopyType
-	{
-		HostToDevice,
-		DeviceToHost,
-		DeviceToDevice,
-		DeviceMemset32
-	};
+    enum CopyType
+    {
+        HostToDevice,
+        DeviceToHost,
+        DeviceToDevice,
+        DeviceMemset32
+    };
 
-	size_t		dest;	//!< the destination 
-	size_t		source; //!< the source (32bit value when type == DeviceMemset)
-	size_t		bytes;	//!< the size in bytes
-	CopyType	type;	//!< the memory transaction type
+    size_t dest; //!< the destination
+    size_t source; //!< the source (32bit value when type == DeviceMemset)
+    size_t bytes; //!< the size in bytes
+    CopyType type; //!< the memory transaction type
 
-	/** 
+    /** 
 	 * \brief Copy is optimally performed as 64bit words, requires 64bit alignment.  But it can
 	 * gracefully degrade to 32bit copies if necessary
 	 */
-	PX_INLINE bool isValid()
-	{
-		bool ok = true;
-		ok &= ((dest & 0x3) == 0);
-		ok &= ((type == DeviceMemset32) || (source & 0x3) == 0);
-		ok &= ((bytes & 0x3) == 0);
-		return ok;
-	}
+    PX_INLINE bool isValid()
+    {
+        bool ok = true;
+        ok &= ((dest & 0x3) == 0);
+        ok &= ((type == DeviceMemset32) || (source & 0x3) == 0);
+        ok &= ((bytes & 0x3) == 0);
+        return ok;
+    }
 };
 
 PX_POP_PACK

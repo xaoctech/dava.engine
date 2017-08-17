@@ -5,6 +5,8 @@
 
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
+#include <Debug/DVAssert.h>
+#include <Debug/DVAssertDefaultHandlers.h>
 #include <Render/RHI/rhi_Public.h>
 #include <Utils/StringFormat.h>
 #include <UI/UIScreenManager.h>
@@ -12,6 +14,7 @@
 UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>& cmdLine)
     : engine(engine_)
     , options("options")
+    , physicalToVirtualScale(1.f, 1.f)
 {
     using namespace DAVA;
 
@@ -24,15 +27,26 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
     engine.endFrame.Connect(this, &UIViewerApp::EndFrame);
 
     options.AddOption("-project", VariantType(String("")), "Path to project folder");
-    options.AddOption("-holderYaml", VariantType(String("")), "Path to placeholder yaml");
-    options.AddOption("-holderRoot", VariantType(String("")), "Name pf placeholder root control");
-    options.AddOption("-holderCtrl", VariantType(String("")), "Path to placeholder control");
+    options.AddOption("-blankYaml", VariantType(String("")), "Path to placeholder yaml");
+    options.AddOption("-blankRoot", VariantType(String("")), "Name of placeholder root control");
+    options.AddOption("-blankPath", VariantType(String("")), "Path to placeholder control");
     options.AddOption("-testedYaml", VariantType(String("")), "Path to tested yaml");
     options.AddOption("-testedCtrl", VariantType(String("")), "Name of tested control");
 
+    options.AddOption("-screenWidth", VariantType(1024), "Requested width of screen");
+    options.AddOption("-screenHeight", VariantType(1024), "Requested height of screen");
+
+    options.AddOption("-virtualWidth", VariantType(1024), "Requested virtual width of screen");
+    options.AddOption("-virtualHeight", VariantType(1024), "Requested virtual height of screen");
+
+    options.AddOption("-fontsDir", VariantType(String("~res:/")), "Fonts Directory");
+
+    options.AddOption("-locale", VariantType(String("en")), "Language");
+    options.AddOption("-isRtl", VariantType(true), "Use rtl or no");
+
     optionsAreParsed = options.Parse(cmdLine);
 
-    DAVA::QualitySettingsSystem::Instance()->Load("~res:/UIViewer/quality.yaml");
+    QualitySettingsSystem::Instance()->Load("~res:/UIViewer/quality.yaml");
 }
 
 void UIViewerApp::OnAppStarted()
@@ -44,28 +58,52 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
     using namespace DAVA;
 
     engine.PrimaryWindow()->draw.Connect(this, &UIViewerApp::Draw);
-
-    const Size2i& physicalSize = UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
-    float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
-
-    const Size2f windowSize = { 1024.f, 1024.f / screenAspect };
-
-    DAVA::String title = DAVA::Format("DAVA Engine - UI Viewer | %s [%u bit]", DAVAENGINE_VERSION,
-                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8));
-
-    w->SetTitleAsync(title);
-
-    w->SetSizeAsync(windowSize);
-    w->SetVirtualSize(windowSize.dx, windowSize.dy);
+    engine.PrimaryWindow()->sizeChanged.Connect(this, &UIViewerApp::OnWindowSizeChanged);
 
     VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
-    vcs->RegisterAvailableResourceSize(static_cast<int32>(windowSize.dx), static_cast<int32>(windowSize.dy), "Gfx");
-    vcs->RegisterAvailableResourceSize(static_cast<int32>(windowSize.dx * 2.0f), static_cast<int32>(windowSize.dy * 2.0f), "Gfx2");
+
+    const Size2i& physicalSize = vcs->GetPhysicalScreenSize();
+    float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
+
+    Size2f windowSize = { 1024.f, 1024.f / screenAspect };
+    Size2i virtualSize(static_cast<int32>(windowSize.dx), static_cast<int32>(windowSize.dy));
+    if (optionsAreParsed)
+    {
+        windowSize.dx = static_cast<float32>(options.GetOption("-screenWidth").AsInt32());
+        windowSize.dy = static_cast<float32>(options.GetOption("-screenHeight").AsInt32());
+
+        virtualSize.dx = options.GetOption("-virtualWidth").AsInt32();
+        virtualSize.dy = options.GetOption("-virtualHeight").AsInt32();
+    }
+    physicalToVirtualScale.dx = static_cast<float32>(virtualSize.dx) / windowSize.dx;
+    physicalToVirtualScale.dy = static_cast<float32>(virtualSize.dy) / windowSize.dy;
+
+    String title = DAVA::Format("DAVA Engine - UI Viewer | %s [%u bit]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8));
+    w->SetTitleAsync(title);
+    w->SetSizeAsync(windowSize);
+    w->SetVirtualSize(static_cast<float32>(virtualSize.dx), static_cast<float32>(virtualSize.dy));
 
     Renderer::SetDesiredFPS(60);
 
     uiViewScreen = new UIViewScreen(w, (optionsAreParsed) ? &options : nullptr);
     UIScreenManager::Instance()->SetFirst(uiViewScreen->GetScreenID());
+}
+
+void UIViewerApp::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, DAVA::Size2f surfaceSize)
+{
+    using namespace DAVA;
+
+    VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
+    const Size2i& pSize = vcs->GetPhysicalScreenSize();
+    Size2i vSize(static_cast<int32>(pSize.dx * physicalToVirtualScale.dx), static_cast<int32>(pSize.dy * physicalToVirtualScale.dy));
+
+    vcs->SetVirtualScreenSize(vSize.dx, vSize.dy);
+    vcs->UnregisterAllAvailableResourceSizes();
+    vcs->RegisterAvailableResourceSize(vSize.dx, vSize.dy, "Gfx");
+    vcs->RegisterAvailableResourceSize(vSize.dx * 2, vSize.dy * 2, "Gfx2");
+
+    String title = Format("DAVA Engine - UI Viewer | %s [%u bit] | [%d x %d] - [%d x %d]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8), pSize.dx, pSize.dy, vSize.dx, vSize.dy);
+    window->SetTitleAsync(title);
 }
 
 void UIViewerApp::OnAppFinished()
@@ -142,6 +180,9 @@ DAVA::KeyedArchive* CreateOptions()
 
 int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
 {
+    DAVA::Assert::AddHandler(DAVA::Assert::DefaultLoggerHandler);
+    DAVA::Assert::AddHandler(DAVA::Assert::DefaultDialogBoxHandler);
+
     DAVA::Vector<DAVA::String> modules =
     {
       "JobManager",
