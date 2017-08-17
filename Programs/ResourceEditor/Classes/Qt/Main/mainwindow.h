@@ -70,7 +70,6 @@ public:
 
     // qt actions slots
 public slots:
-    void OnImportSpeedTreeXML();
     void RemoveSelection();
 
     void OnUndo();
