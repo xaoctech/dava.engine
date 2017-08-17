@@ -8,7 +8,7 @@
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/CheckIOError.h"
 #include "FileSystem/ResourceArchive.h"
-#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
+#include "Engine/Private/Android/AssetsManagerAndroid.h"
 
 #include "Compression/LZ4Compressor.h"
 #include "Concurrency/LockGuard.h"
@@ -634,13 +634,10 @@ String File::GetModificationDate(const FilePath& filePathname)
     int32 ret = stat(realPathname.c_str(), &fileInfo);
     if (0 == ret)
     {
-#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_LINUX__)
-        tm* utcTime = gmtime(&fileInfo.st_mtime);
-#elif defined(__DAVAENGINE_ANDROID__)
-        time_t st_mtime = static_cast<time_t>(fileInfo.st_mtime);
-        tm* utcTime = gmtime(&st_mtime);
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
         tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
+#else
+        tm* utcTime = gmtime(&fileInfo.st_mtime);
 #endif
         return String(Format("%04d.%02d.%02d %02d:%02d:%02d",
                              utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,

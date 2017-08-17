@@ -9,6 +9,17 @@ _win10_vs = "2015"
 
 # ========================================================================
 
+def get_android_api_version():
+    return '16'
+
+def get_android_platform():
+    return 'android-16'
+
+def get_android_stl():
+    return 'c++_shared'
+
+def get_android_libc():
+    return 'libc++'
 
 def get_gyp_msvs_version():
     if _win32_vs == "2013":
