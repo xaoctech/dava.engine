@@ -173,7 +173,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1205</width>
+     <width>1149</width>
      <height>22</height>
     </rect>
    </property>
@@ -184,15 +184,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuImport">
-     <property name="title">
-      <string>Import</string>
-     </property>
-     <addaction name="actionImportSpeedTreeXML"/>
-    </widget>
-    <addaction name="separator"/>
-    <addaction name="menuImport"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuCreateNode">
     <property name="title">
@@ -776,11 +767,6 @@
     <string>Camera</string>
    </property>
   </action>
-  <action name="actionImposter">
-   <property name="text">
-    <string>Imposter</string>
-   </property>
-  </action>
   <action name="actionUserNode">
    <property name="icon">
     <iconset resource="Resources.qrc">
@@ -1255,14 +1241,6 @@
    </property>
    <property name="toolTip">
     <string>Visibility Check Tool</string>
-   </property>
-  </action>
-  <action name="actionImportSpeedTreeXML">
-   <property name="text">
-    <string>SpeedTree from XML...</string>
-   </property>
-   <property name="toolTip">
-    <string>Import SpeedTree</string>
    </property>
   </action>
   <action name="actionBeastAndSave">

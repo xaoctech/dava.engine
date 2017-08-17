@@ -1,6 +1,11 @@
 #include "Core/TaskProcessors/AsyncChainProcessor.h"
 #include "Core/Tasks/AsyncChainTask.h"
 
+AsyncChainProcessor::AsyncChainProcessor(QObject* parent)
+    : QObject(parent)
+{
+}
+
 void AsyncChainProcessor::OnFinished()
 {
     tasks.pop_front();
@@ -41,6 +46,11 @@ void AsyncChainProcessor::StartNextTask()
 void AsyncChainProcessor::Terminate()
 {
     //do nothing for now
+}
+
+std::size_t AsyncChainProcessor::GetTasksCount() const
+{
+    return tasks.size();
 }
 
 AsyncChainProcessor::TaskParams::TaskParams(std::unique_ptr<BaseTask>&& task_, Notifier notifier_)

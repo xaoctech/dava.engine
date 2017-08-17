@@ -16,8 +16,8 @@ NetworkTaskProcessor::TaskParams::~TaskParams()
     Q_ASSERT(requests.empty());
 }
 
-NetworkTaskProcessor::NetworkTaskProcessor()
-    : QObject(nullptr)
+NetworkTaskProcessor::NetworkTaskProcessor(QObject* parent)
+    : QObject(parent)
     , networkAccessManager(new QNetworkAccessManager(this))
     , connectionGuard(new QTimer(this))
 {
@@ -111,11 +111,7 @@ void NetworkTaskProcessor::OnDownloadFinished(QNetworkReply* reply)
     reply->deleteLater();
 
     currentTask->requests.remove(reply);
-    if (reply->error() == QNetworkReply::NoError)
-    {
-        currentTask->task->AddLoadedData(reply->readAll());
-    }
-    else
+    if (reply->error() != QNetworkReply::NoError)
     {
         if (currentTask->task->HasError() == false)
         {
@@ -157,6 +153,10 @@ void NetworkTaskProcessor::OnDownloadProgress(qint64 bytes, qint64 total)
     {
         return;
     }
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    Q_ASSERT(reply != nullptr);
+    currentTask->task->AddLoadedData(reply->url(), reply->readAll());
+
     connectionGuard->start();
 
     size_t size = currentTask->task->GetUrls().size();
@@ -173,4 +173,9 @@ void NetworkTaskProcessor::OnTimer()
         currentTask->task->SetError("Operation cancelled by timeout");
         TerminateImpl();
     }
+}
+
+std::size_t NetworkTaskProcessor::GetTasksCount() const
+{
+    return tasks.size() + (currentTask != nullptr ? 1 : 0);
 }

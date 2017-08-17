@@ -8,7 +8,6 @@
 #include <QUrl>
 
 class BaseTask;
-class ApplicationManager;
 
 class UrlsHolder
 {
@@ -28,7 +27,7 @@ public:
         URLTypesCount
     };
 
-    UrlsHolder(ApplicationManager* manager);
+    UrlsHolder();
 
     QString GetURL(eURLType type) const;
     QString GetServerHostName() const;
@@ -40,7 +39,6 @@ public:
     std::vector<QUrl> GetURLs() const;
 
 private:
-    ApplicationManager* appManager = nullptr;
     bool useTestAPI = false;
 
     std::array<QString, URLTypesCount> urls;

@@ -38,10 +38,6 @@
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
 
-#ifdef __DAVAENGINE_SPEEDTREE__
-#include "SpeedTreeImport/SpeedTreeImportDialog.h"
-#endif
-
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
 
@@ -540,11 +536,6 @@ void QtMainWindow::SetupDocks()
 
 void QtMainWindow::SetupActions()
 {
-// import
-#ifdef __DAVAENGINE_SPEEDTREE__
-    QObject::connect(ui->actionImportSpeedTreeXML, &QAction::triggered, this, &QtMainWindow::OnImportSpeedTreeXML);
-#endif //__DAVAENGINE_SPEEDTREE__
-
     QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
@@ -893,13 +884,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2* scene, const RECommandNoti
 // ###################################################################################################
 // Mainwindow Qt actions
 // ###################################################################################################
-void QtMainWindow::OnImportSpeedTreeXML()
-{
-#ifdef __DAVAENGINE_SPEEDTREE__
-    SpeedTreeImportDialog importDialog(globalOperations, this);
-    importDialog.exec();
-#endif //__DAVAENGINE_SPEEDTREE__
-}
 
 void QtMainWindow::OnUndo()
 {
