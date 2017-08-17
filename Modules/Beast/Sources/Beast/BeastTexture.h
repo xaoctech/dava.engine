@@ -12,11 +12,11 @@ class BeastTexture : public BeastResource<BeastTexture>
 public:
     void InitWithTexture(DAVA::Texture* davaTexture);
     void InitWithFile(const DAVA::FilePath& filePath);
-    DAVA_BEAST::ILBTextureHandle GetILBTexture();
+    ILBTextureHandle GetILBTexture();
 
 private:
     BeastTexture(const DAVA::String& name, BeastManager* manager);
-    DAVA_BEAST::ILBTextureHandle texture = nullptr;
+    ILBTextureHandle texture = nullptr;
 
     friend class BeastResource<BeastTexture>;
 };

@@ -18,17 +18,17 @@ void BeastMesh::InitWithSpeedTreeLeaf(DAVA::RenderBatch* batch, DAVA::int32 part
     DAVA::PolygonGroup* polygonGroup = batch->GetPolygonGroup();
     if (CheckVertexFormat(polygonGroup))
     {
-        BEAST_VERIFY(DAVA_BEAST::ILBBeginMesh(manager->GetILBManager(), STRING_TO_BEAST_STRING(resourceName), &mesh));
+        BEAST_VERIFY(ILBBeginMesh(manager->GetILBManager(), STRING_TO_BEAST_STRING(resourceName), &mesh));
         AddTranfromedVertices(polygonGroup, leafTransform);
         AddIndices(polygonGroup, batch->GetMaterial());
         textureCoordCount = polygonGroup->textureCoordCount;
-        for (DAVA_BEAST::int32 i = 0; i < textureCoordCount; ++i)
+        for (int32 i = 0; i < textureCoordCount; ++i)
         {
-            BEAST_VERIFY(DAVA_BEAST::ILBBeginUVLayer(mesh, STRING_TO_BEAST_STRING(DAVA::Format("%d", i))));
+            BEAST_VERIFY(ILBBeginUVLayer(mesh, STRING_TO_BEAST_STRING(DAVA::Format("%d", i))));
             AddUV(polygonGroup, i);
-            BEAST_VERIFY(DAVA_BEAST::ILBEndUVLayer(mesh));
+            BEAST_VERIFY(ILBEndUVLayer(mesh));
         }
-        BEAST_VERIFY(DAVA_BEAST::ILBEndMesh(mesh));
+        BEAST_VERIFY(ILBEndMesh(mesh));
     }
 }
 
@@ -39,17 +39,17 @@ void BeastMesh::InitWithMeshInstancePart(DAVA::RenderBatch* batch, DAVA::int32 p
     DAVA::PolygonGroup* polygonGroup = batch->GetPolygonGroup();
     if (CheckVertexFormat(polygonGroup))
     {
-        BEAST_VERIFY(DAVA_BEAST::ILBBeginMesh(manager->GetILBManager(), STRING_TO_BEAST_STRING(resourceName), &mesh));
+        BEAST_VERIFY(ILBBeginMesh(manager->GetILBManager(), STRING_TO_BEAST_STRING(resourceName), &mesh));
         AddVertices(polygonGroup);
         AddIndices(polygonGroup, batch->GetMaterial());
         textureCoordCount = polygonGroup->textureCoordCount;
-        for (DAVA_BEAST::int32 i = 0; i < textureCoordCount; ++i)
+        for (int32 i = 0; i < textureCoordCount; ++i)
         {
-            BEAST_VERIFY(DAVA_BEAST::ILBBeginUVLayer(mesh, STRING_TO_BEAST_STRING(DAVA::Format("%d", i))));
+            BEAST_VERIFY(ILBBeginUVLayer(mesh, STRING_TO_BEAST_STRING(DAVA::Format("%d", i))));
             AddUV(polygonGroup, i);
-            BEAST_VERIFY(DAVA_BEAST::ILBEndUVLayer(mesh));
+            BEAST_VERIFY(ILBEndUVLayer(mesh));
         }
-        BEAST_VERIFY(DAVA_BEAST::ILBEndMesh(mesh));
+        BEAST_VERIFY(ILBEndMesh(mesh));
     }
 }
 
@@ -68,8 +68,8 @@ bool BeastMesh::CheckVertexFormat(DAVA::PolygonGroup* polygonGroup)
 void BeastMesh::AddTranfromedVertices(DAVA::PolygonGroup* polygonGroup, const DAVA::Matrix4& transform)
 {
     DAVA::int32 vertexCount = polygonGroup->GetVertexCount();
-    DAVA::Vector<DAVA_BEAST::ILBVec3> coordData(vertexCount);
-    DAVA::Vector<DAVA_BEAST::ILBVec3> normalData(vertexCount);
+    DAVA::Vector<ILBVec3> coordData(vertexCount);
+    DAVA::Vector<ILBVec3> normalData(vertexCount);
 
     DAVA::int32 vertexFormat = polygonGroup->GetFormat();
     DAVA::Vector4 vertexPivot;
@@ -94,18 +94,18 @@ void BeastMesh::AddTranfromedVertices(DAVA::PolygonGroup* polygonGroup, const DA
             vertexDataNormal.Normalize();
         }
 
-        coordData[vertexIndex] = DAVA_BEAST::ILBVec3(vertexDataCoord.x, vertexDataCoord.y, vertexDataCoord.z);
-        normalData[vertexIndex] = DAVA_BEAST::ILBVec3(vertexDataNormal.x, vertexDataNormal.y, vertexDataNormal.z);
+        coordData[vertexIndex] = ILBVec3(vertexDataCoord.x, vertexDataCoord.y, vertexDataCoord.z);
+        normalData[vertexIndex] = ILBVec3(vertexDataNormal.x, vertexDataNormal.y, vertexDataNormal.z);
     }
 
-    BEAST_VERIFY(DAVA_BEAST::ILBAddVertexData(mesh, coordData.data(), normalData.data(), vertexCount));
+    BEAST_VERIFY(ILBAddVertexData(mesh, coordData.data(), normalData.data(), vertexCount));
 }
 
 void BeastMesh::AddVertices(DAVA::PolygonGroup* polygonGroup)
 {
     DAVA::int32 vertexCount = polygonGroup->GetVertexCount();
-    DAVA::Vector<DAVA_BEAST::ILBVec3> coordData(vertexCount);
-    DAVA::Vector<DAVA_BEAST::ILBVec3> normalData(vertexCount);
+    DAVA::Vector<ILBVec3> coordData(vertexCount);
+    DAVA::Vector<ILBVec3> normalData(vertexCount);
 
     DAVA::int32 vertexFormat = polygonGroup->GetFormat();
     DAVA::Vector3 vertexDataCoord;
@@ -114,7 +114,7 @@ void BeastMesh::AddVertices(DAVA::PolygonGroup* polygonGroup)
     for (DAVA::int32 vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex)
     {
         polygonGroup->GetCoord(vertexIndex, vertexDataCoord);
-        coordData[vertexIndex] = DAVA_BEAST::ILBVec3(vertexDataCoord.x, vertexDataCoord.y, vertexDataCoord.z);
+        coordData[vertexIndex] = ILBVec3(vertexDataCoord.x, vertexDataCoord.y, vertexDataCoord.z);
 
         if (vertexFormat & DAVA::EVF_NORMAL)
         {
@@ -122,17 +122,17 @@ void BeastMesh::AddVertices(DAVA::PolygonGroup* polygonGroup)
             vertexDataNormal.Normalize();
         }
 
-        normalData[vertexIndex] = DAVA_BEAST::ILBVec3(vertexDataNormal.x, vertexDataNormal.y, vertexDataNormal.z);
+        normalData[vertexIndex] = ILBVec3(vertexDataNormal.x, vertexDataNormal.y, vertexDataNormal.z);
     }
 
-    BEAST_VERIFY(DAVA_BEAST::ILBAddVertexData(mesh, coordData.data(), normalData.data(), vertexCount));
+    BEAST_VERIFY(ILBAddVertexData(mesh, coordData.data(), normalData.data(), vertexCount));
 }
 
 void BeastMesh::AddTangents(DAVA::PolygonGroup* polygonGroup)
 {
     DAVA::int32 vertexCount = polygonGroup->GetVertexCount();
-    DAVA::Vector<DAVA_BEAST::ILBVec3> tangentData(vertexCount);
-    DAVA::Vector<DAVA_BEAST::ILBVec3> biTangentData(vertexCount);
+    DAVA::Vector<ILBVec3> tangentData(vertexCount);
+    DAVA::Vector<ILBVec3> biTangentData(vertexCount);
 
     DAVA::Vector3 vertexDataNormal;
     DAVA::Vector3 vertexDataTangent;
@@ -142,16 +142,16 @@ void BeastMesh::AddTangents(DAVA::PolygonGroup* polygonGroup)
         vertexDataTangent.Normalize();
         DAVA::Vector3 biTangent = vertexDataNormal.CrossProduct(vertexDataTangent);
 
-        tangentData[vertexIndex] = DAVA_BEAST::ILBVec3(vertexDataTangent.x, vertexDataTangent.y, vertexDataTangent.z);
-        biTangentData[vertexIndex] = DAVA_BEAST::ILBVec3(biTangent.x, biTangent.y, biTangent.z);
+        tangentData[vertexIndex] = ILBVec3(vertexDataTangent.x, vertexDataTangent.y, vertexDataTangent.z);
+        biTangentData[vertexIndex] = ILBVec3(biTangent.x, biTangent.y, biTangent.z);
     }
 
-    BEAST_VERIFY(DAVA_BEAST::ILBAddTangentData(mesh, tangentData.data(), biTangentData.data(), vertexCount));
+    BEAST_VERIFY(ILBAddTangentData(mesh, tangentData.data(), biTangentData.data(), vertexCount));
 }
 
 void BeastMesh::AddIndices(DAVA::PolygonGroup* polygonGroup, DAVA::NMaterial* material)
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBBeginMaterialGroup(mesh, STRING_TO_BEAST_STRING(PointerToString(material))));
+    BEAST_VERIFY(ILBBeginMaterialGroup(mesh, STRING_TO_BEAST_STRING(PointerToString(material))));
     DAVA::int32 vertexCount = polygonGroup->GetVertexCount();
     indecesCount = polygonGroup->GetPrimitiveCount() * 3;
     DAVA::Vector<DAVA::int32> indeces(indecesCount);
@@ -161,77 +161,77 @@ void BeastMesh::AddIndices(DAVA::PolygonGroup* polygonGroup, DAVA::NMaterial* ma
         polygonGroup->GetIndex(indexOfIndex, sourceIndex);
         indeces[indexOfIndex] = sourceIndex;
     }
-    BEAST_VERIFY(DAVA_BEAST::ILBAddTriangleData(mesh, indeces.data(), indecesCount));
-    BEAST_VERIFY(DAVA_BEAST::ILBEndMaterialGroup(mesh));
+    BEAST_VERIFY(ILBAddTriangleData(mesh, indeces.data(), indecesCount));
+    BEAST_VERIFY(ILBEndMaterialGroup(mesh));
 }
 
 void BeastMesh::AddUV(DAVA::PolygonGroup* polygonGroup, DAVA::int32 textureCoordIndex)
 {
     DAVA::Vector2 texCoord;
     DAVA::int32 vertexCount = polygonGroup->GetVertexCount();
-    DAVA::Vector<DAVA_BEAST::ILBVec2> uvData(vertexCount);
+    DAVA::Vector<ILBVec2> uvData(vertexCount);
     for (DAVA::int32 i = 0; i < vertexCount; ++i)
     {
         polygonGroup->GetTexcoord(textureCoordIndex, i, texCoord);
-        uvData[i] = DAVA_BEAST::ILBVec2(texCoord.x, 1.f - texCoord.y);
+        uvData[i] = ILBVec2(texCoord.x, 1.f - texCoord.y);
     }
-    BEAST_VERIFY(DAVA_BEAST::ILBAddUVData(mesh, uvData.data(), vertexCount));
+    BEAST_VERIFY(ILBAddUVData(mesh, uvData.data(), vertexCount));
 }
 
 void BeastMesh::InitWithLandscape(LandscapeGeometry* geometry, BeastMaterial* material)
 {
     if (nullptr == mesh)
     {
-        BEAST_VERIFY(DAVA_BEAST::ILBBeginMesh(manager->GetILBManager(), STRING_TO_BEAST_STRING(resourceName), &mesh));
+        BEAST_VERIFY(ILBBeginMesh(manager->GetILBManager(), STRING_TO_BEAST_STRING(resourceName), &mesh));
         AddVertices(geometry);
         AddIndices(geometry, material);
 
-        BEAST_VERIFY(DAVA_BEAST::ILBBeginUVLayer(mesh, CONST_STRING_TO_BEAST_STRING("0")));
+        BEAST_VERIFY(ILBBeginUVLayer(mesh, CONST_STRING_TO_BEAST_STRING("0")));
         AddUV(geometry);
-        BEAST_VERIFY(DAVA_BEAST::ILBEndUVLayer(mesh));
+        BEAST_VERIFY(ILBEndUVLayer(mesh));
 
-        BEAST_VERIFY(DAVA_BEAST::ILBEndMesh(mesh));
+        BEAST_VERIFY(ILBEndMesh(mesh));
     }
 }
 
 void BeastMesh::AddVertices(LandscapeGeometry* geometry)
 {
     DAVA::size_type vertexCount = geometry->vertices.size();
-    DAVA::Vector<DAVA_BEAST::ILBVec3> coordData(vertexCount);
-    DAVA::Vector<DAVA_BEAST::ILBVec3> normalData(vertexCount);
+    DAVA::Vector<ILBVec3> coordData(vertexCount);
+    DAVA::Vector<ILBVec3> normalData(vertexCount);
 
     for (DAVA::size_type i = 0; i < vertexCount; ++i)
     {
         const DAVA::Vector3& position = geometry->vertices[i].position;
         const DAVA::Vector3& normal = geometry->normals[i];
 
-        coordData[i] = DAVA_BEAST::ILBVec3(position.x, position.y, position.z);
-        normalData[i] = DAVA_BEAST::ILBVec3(normal.x, normal.y, normal.z);
+        coordData[i] = ILBVec3(position.x, position.y, position.z);
+        normalData[i] = ILBVec3(normal.x, normal.y, normal.z);
     }
 
-    BEAST_VERIFY(DAVA_BEAST::ILBAddVertexData(mesh, coordData.data(), normalData.data(), static_cast<DAVA_BEAST::int32>(vertexCount)));
+    BEAST_VERIFY(ILBAddVertexData(mesh, coordData.data(), normalData.data(), static_cast<int32>(vertexCount)));
 }
 
 void BeastMesh::AddIndices(LandscapeGeometry* geometry, BeastMaterial* material)
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBBeginMaterialGroup(mesh, STRING_TO_BEAST_STRING(material->GetName())));
-    BEAST_VERIFY(DAVA_BEAST::ILBAddTriangleData(mesh, geometry->indices.data(), static_cast<DAVA_BEAST::int32>(geometry->indices.size())));
-    BEAST_VERIFY(DAVA_BEAST::ILBEndMaterialGroup(mesh));
+    BEAST_VERIFY(ILBBeginMaterialGroup(mesh, STRING_TO_BEAST_STRING(material->GetName())));
+    BEAST_VERIFY(ILBAddTriangleData(mesh, geometry->indices.data(), static_cast<int32>(geometry->indices.size())));
+    BEAST_VERIFY(ILBEndMaterialGroup(mesh));
 }
 
 void BeastMesh::AddUV(LandscapeGeometry* geometry)
 {
     DAVA::size_type vertexCount = geometry->vertices.size();
-    DAVA::Vector<DAVA_BEAST::ILBVec2> uvData(vertexCount);
+    DAVA::Vector<ILBVec2> uvData(vertexCount);
     for (DAVA::size_type i = 0; i < vertexCount; ++i)
     {
         const DAVA::Vector2& texCoord = geometry->vertices[i].texCoord;
-        uvData[i] = DAVA_BEAST::ILBVec2(texCoord.x, texCoord.y);
+        uvData[i] = ILBVec2(texCoord.x, texCoord.y);
     }
-    BEAST_VERIFY(DAVA_BEAST::ILBAddUVData(mesh, uvData.data(), static_cast<DAVA::int32>(vertexCount)));
+    BEAST_VERIFY(ILBAddUVData(mesh, uvData.data(), static_cast<DAVA::int32>(vertexCount)));
 }
 
-DAVA_BEAST::ILBMeshHandle BeastMesh::GetILBMesh() const
+ILBMeshHandle BeastMesh::GetILBMesh() const
 {
     return mesh;
 }

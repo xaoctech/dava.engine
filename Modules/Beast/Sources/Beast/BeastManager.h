@@ -31,17 +31,17 @@ public:
     bool GenerateLightmaps();
     void SetMode(BeastProxy::eBeastMode mode);
     BeastProxy::eBeastMode GetMode() const;
-    void SetLodLevel(DAVA_BEAST::int32 lodLevel);
-    DAVA_BEAST::int32 GetLodLevel();
-    void SetSwitchIndex(DAVA_BEAST::int32 switchIndex);
-    DAVA_BEAST::int32 GetSwitchIndex();
+    void SetLodLevel(int32 lodLevel);
+    int32 GetLodLevel();
+    void SetSwitchIndex(int32 switchIndex);
+    int32 GetSwitchIndex();
 
-    DAVA_BEAST::ILBManagerHandle GetILBManager();
-    DAVA_BEAST::ILBSceneHandle GetILBScene();
+    ILBManagerHandle GetILBManager();
+    ILBSceneHandle GetILBScene();
 
     void OnJobCompleted();
 
-    DAVA_BEAST::int32 GetCurTaskProcess() const;
+    int32 GetCurTaskProcess() const;
     const DAVA::String& GetCurTaskName() const;
 
     void Cancel();
@@ -73,11 +73,11 @@ private:
     };
 
 private:
-    DAVA_BEAST::ILBManagerHandle handle = nullptr;
-    DAVA_BEAST::ILBSceneHandle scene = nullptr;
-    DAVA_BEAST::ILBJobHandle job = nullptr;
-    DAVA_BEAST::ILBRenderPassHandle passLM = nullptr;
-    DAVA_BEAST::ILBRenderPassHandle passSH = nullptr;
+    ILBManagerHandle handle = nullptr;
+    ILBSceneHandle scene = nullptr;
+    ILBJobHandle job = nullptr;
+    ILBRenderPassHandle passLM = nullptr;
+    ILBRenderPassHandle passSH = nullptr;
 
     MaxLodMaxSwitch maxLodMaxSwitch;
     BeastProxy::eBeastMode mode = BeastProxy::eBeastMode::MODE_LIGHTMAPS;

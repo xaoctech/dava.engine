@@ -17,7 +17,7 @@ public:
 
 private:
     BeastMaterial(const DAVA::String& name, BeastManager* manager);
-    DAVA_BEAST::ILBMaterialHandle material;
+    ILBMaterialHandle material;
 
     friend class BeastResource<BeastMaterial>;
 };
