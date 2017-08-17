@@ -3,12 +3,58 @@ project(lua)
 
 include_directories(./src)
 
-FILE(GLOB SOURCE_FILES src/*.c)
+# Explicitly specify source files for lua static library
+set (SOURCE_FILES
+    # core files
+    "src/lapi.c"
+    "src/lcode.c"
+    "src/ldebug.c"
+    "src/ldo.c"
+    "src/ldump.c"
+    "src/lfunc.c"
+    "src/lgc.c"
+    "src/llex.c"
+    "src/lmem.c"
+    "src/lobject.c"
+    "src/lopcodes.c"
+    "src/lparser.c"
+    "src/lstate.c"
+    "src/lstring.c"
+    "src/ltable.c"
+    "src/ltm.c"
+    "src/lundump.c"
+    "src/lvm.c"
+    "src/lzio.c"
+    # lib files
+    "src/lauxlib.c"
+    "src/lbaselib.c"
+    "src/ldblib.c"
+    "src/liolib.c"
+    "src/lmathlib.c"
+    "src/loslib.c"
+    "src/ltablib.c"
+    "src/lstrlib.c"
+    "src/loadlib.c"
+    "src/linit.c"
+)
 add_library(lua STATIC ${SOURCE_FILES})
 
+if (MSVC)
+    # setup static linking with crt
+    set(CompilerFlags
+            CMAKE_CXX_FLAGS
+            CMAKE_CXX_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_C_FLAGS
+            CMAKE_C_FLAGS_DEBUG
+            CMAKE_C_FLAGS_RELEASE
+    )
+    foreach(CompilerFlag ${CompilerFlags})
+        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+    endforeach()
+endif() 
+
 if(WIN32)
-  set ( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
-  set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 elseif(APPLE)
   if(IOS)
