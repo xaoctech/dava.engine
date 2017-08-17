@@ -121,36 +121,6 @@ int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMappingWork* mapping, int
     return -1; // We should never reach this line
 }
 
-uint32 ReleaseGeometryDataRecursive(Entity* forEntity)
-{
-    if (!forEntity)
-        return 0;
-
-    uint32 ret = 0;
-
-    int32 childrenCount = forEntity->GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; ++i)
-    {
-        ret += ReleaseGeometryDataRecursive(forEntity->GetChild(i));
-    }
-
-    RenderObject* ro = GetRenderObject(forEntity);
-    if (ro)
-    {
-        uint32 rbCount = ro->GetRenderBatchCount();
-        for (uint32 i = 0; i < rbCount; ++i)
-        {
-            PolygonGroup* pg = ro->GetRenderBatch(i)->GetPolygonGroup();
-            if (pg && pg->vertexBuffer != rhi::InvalidHandle && pg->indexBuffer != rhi::InvalidHandle)
-            {
-                ret += pg->ReleaseGeometryData();
-            }
-        }
-    }
-
-    return ret;
-}
-
 Vector<int32> GetSignificantJoints(PolygonGroup* pg, int32 vertex)
 {
     DVASSERT(pg);
@@ -1141,6 +1111,36 @@ Vector<uint16> BuildSortedIndexBufferData(PolygonGroup* pg, Vector3 direction)
         indexBufferData.insert(indexBufferData.end(), t.indices.begin(), t.indices.end());
 
     return indexBufferData;
+}
+
+uint32 ReleaseGeometryDataRecursive(Entity* forEntity)
+{
+    if (!forEntity)
+        return 0;
+
+    uint32 ret = 0;
+
+    int32 childrenCount = forEntity->GetChildrenCount();
+    for (int32 i = 0; i < childrenCount; ++i)
+    {
+        ret += ReleaseGeometryDataRecursive(forEntity->GetChild(i));
+    }
+
+    RenderObject* ro = GetRenderObject(forEntity);
+    if (ro)
+    {
+        uint32 rbCount = ro->GetRenderBatchCount();
+        for (uint32 i = 0; i < rbCount; ++i)
+        {
+            PolygonGroup* pg = ro->GetRenderBatch(i)->GetPolygonGroup();
+            if (pg && pg->vertexBuffer != rhi::InvalidHandle && pg->indexBuffer != rhi::InvalidHandle)
+            {
+                ret += pg->ReleaseGeometryData();
+            }
+        }
+    }
+
+    return ret;
 }
 };
 };

@@ -1,19 +1,21 @@
-#include <QMessageBox>
-#include "SpeedTreeImport/SpeedTreeImportDialog.h"
 #if defined(__DAVAENGINE_SPEEDTREE__)
-    #include "SpeedTreeImporter.h"
-#endif
-#include "ui_treeimportdialog.h"
-#include "Qt/Main/mainwindow.h"
+
+#include "Classes/SpeedTreeModule/Private/SpeedTreeImportDialog.h"
+#include "SpeedTree/SpeedTreeImporter.h"
+
+#include "Classes/Qt/GlobalOperations.h"
+
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "GlobalOperations.h"
+#include "ui_treeimportdialog.h"
 
-#include "TArc/DataProcessing/DataContext.h"
 
-using namespace DAVA;
+#include <TArc/DataProcessing/DataContext.h>
+#include <QtTools/FileDialogs/FileDialog.h>
+
+#include <QMessageBox>
+#include <QWidget>
 
 SpeedTreeImportDialog::SpeedTreeImportDialog(const std::shared_ptr<GlobalOperations>& globlaOperations_, QWidget* parent /*= 0*/)
     : QDialog(parent)
@@ -52,7 +54,8 @@ void SpeedTreeImportDialog::OnCancel()
 
 void SpeedTreeImportDialog::OnOk()
 {
-#ifdef __DAVAENGINE_SPEEDTREE__
+    using namespace DAVA;
+
     sc2FolderPath = ui->sc2EditLine->text().toStdString();
     sc2FolderPath.MakeDirectoryPathname();
 
@@ -91,7 +94,6 @@ void SpeedTreeImportDialog::OnOk()
             globalOperations->CallAction(GlobalOperations::OpenScene, outFiles[i].GetAbsolutePathname());
         }
     }
-#endif
 }
 
 void SpeedTreeImportDialog::OnXMLSelect()
@@ -105,8 +107,8 @@ void SpeedTreeImportDialog::OnXMLSelect()
         return;
 
     xmlFiles.clear();
-    for (int32 i = 0; i < selectedFiles.size(); ++i)
-        xmlFiles.push_back(FilePath(selectedFiles.at(i).toStdString()));
+    for (DAVA::int32 i = 0; i < selectedFiles.size(); ++i)
+        xmlFiles.push_back(DAVA::FilePath(selectedFiles.at(i).toStdString()));
 
     if (sc2FolderPath.IsEmpty())
     {
@@ -136,3 +138,5 @@ void SpeedTreeImportDialog::SetSC2FolderValue(const QString& path)
     sc2FolderPath.MakeDirectoryPathname();
     ui->sc2EditLine->setText(QString(sc2FolderPath.GetAbsolutePathname().c_str()));
 }
+
+#endif //#if defined(__DAVAENGINE_SPEEDTREE__)
