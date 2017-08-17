@@ -25,7 +25,7 @@ void BeastTexture::InitWithFile(const DAVA::FilePath& filePath)
     }
 }
 
-DAVA_BEAST::ILBTextureHandle BeastTexture::GetILBTexture()
+ILBTextureHandle BeastTexture::GetILBTexture()
 {
     return texture;
 }

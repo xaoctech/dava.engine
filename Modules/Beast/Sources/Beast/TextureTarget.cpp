@@ -3,16 +3,16 @@
 #include "TextureTarget.h"
 #include "BeastDebug.h"
 
-TextureTarget::TextureTarget(DAVA_BEAST::ILBJobHandle job, DAVA::int32 size)
+TextureTarget::TextureTarget(ILBJobHandle job, DAVA::int32 size)
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBCreateTextureTarget(job, GENERATE_BEAST_NAME(TextureTarget), size, size, &handle));
+    BEAST_VERIFY(ILBCreateTextureTarget(job, GENERATE_BEAST_NAME(TextureTarget), size, size, &handle));
 }
 
 TextureTarget::~TextureTarget()
 {
 }
 
-DAVA_BEAST::ILBTargetHandle TextureTarget::GetHandle()
+ILBTargetHandle TextureTarget::GetHandle()
 {
     return handle;
 }

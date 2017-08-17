@@ -13,7 +13,7 @@
 #include "DAVAEngine.h"
 
 
-#include "SceneParser.h"
+#include "Beast/SceneParser.h"
 
 //Beast
 BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, BeastProxy::eBeastMode mode, QtWaitDialog* waitDialog_)

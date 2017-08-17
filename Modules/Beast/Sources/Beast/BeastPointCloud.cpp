@@ -9,7 +9,7 @@ BeastPointCloud::BeastPointCloud(const DAVA::String& name, BeastManager* manager
     ,
     cloudHandle(0)
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBCreatePointCloud(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &cloudHandle));
+    BEAST_VERIFY(ILBCreatePointCloud(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &cloudHandle));
 }
 
 BeastPointCloud::~BeastPointCloud()
@@ -22,35 +22,35 @@ void BeastPointCloud::AddBakeEntity(DAVA::Entity* entityNode)
     DAVA::Vector3 position = GetRenderObject(entityNode)->GetWorldBoundingBox().GetCenter();
     DAVA::Vector3 normal;
 
-    DAVA_BEAST::ILBVec3 point(position.x, position.y, position.z);
-    DAVA_BEAST::ILBVec3 norm(normal.x, normal.y, normal.z);
+    ILBVec3 point(position.x, position.y, position.z);
+    ILBVec3 norm(normal.x, normal.y, normal.z);
 
-    DAVA_BEAST::ILBAddPointCloudData(cloudHandle, &point, &norm, 1);
+    ILBAddPointCloudData(cloudHandle, &point, &norm, 1);
     bakeEntities.push_back(entityNode);
 }
 
 void BeastPointCloud::FinishCloud()
 {
-    DAVA_BEAST::ILBEndPointCloud(cloudHandle);
+    ILBEndPointCloud(cloudHandle);
 }
 
-DAVA_BEAST::ILBPointCloudHandle BeastPointCloud::GetPointCloudHandle()
+ILBPointCloudHandle BeastPointCloud::GetPointCloudHandle()
 {
     return cloudHandle;
 }
 
-DAVA_BEAST::ILBTargetHandle BeastPointCloud::GetCloudTarget() const
+ILBTargetHandle BeastPointCloud::GetCloudTarget() const
 {
     return cloudTarget;
 }
 
-void BeastPointCloud::SetTargets(DAVA_BEAST::ILBTargetHandle _target, DAVA_BEAST::ILBTargetEntityHandle _targetEntity)
+void BeastPointCloud::SetTargets(ILBTargetHandle _target, ILBTargetEntityHandle _targetEntity)
 {
     cloudTarget = _target;
     entityTarget = _targetEntity;
 }
 
-DAVA_BEAST::ILBTargetEntityHandle BeastPointCloud::GetEntityTarget() const
+ILBTargetEntityHandle BeastPointCloud::GetEntityTarget() const
 {
     return entityTarget;
 }

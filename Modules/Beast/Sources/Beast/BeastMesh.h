@@ -17,7 +17,7 @@ public:
 
     void InitWithLandscape(LandscapeGeometry* geometry, BeastMaterial* material);
 
-    DAVA_BEAST::ILBMeshHandle GetILBMesh() const;
+    ILBMeshHandle GetILBMesh() const;
     DAVA::int32 GetTextureCoordCount() const;
 
 private:
@@ -37,7 +37,7 @@ private:
     void AddUV(LandscapeGeometry* geometry);
 
 private:
-    DAVA_BEAST::ILBMeshHandle mesh = nullptr;
+    ILBMeshHandle mesh = nullptr;
     DAVA::int32 indecesCount = 0;
     DAVA::int32 textureCoordCount = 0;
 };

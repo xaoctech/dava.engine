@@ -21,9 +21,9 @@ void BeastMeshInstance::InitWithRenderBatchAndTransform(DAVA::RenderBatch* batch
 
         DVASSERT(buddyMesh);
 
-        DAVA_BEAST::ILBMatrix4x4 beastMatrix = ConvertDavaMatrix(transform);
-        BEAST_VERIFY(DAVA_BEAST::ILBCreateInstance(manager->GetILBScene(), buddyMesh->GetILBMesh(), STRING_TO_BEAST_STRING(resourceName), &beastMatrix, &meshInstanceHandle));
-        BEAST_VERIFY(DAVA_BEAST::ILBSetRenderStats(meshInstanceHandle, DAVA_BEAST::ILB_RS_DOUBLE_SIDED, DAVA_BEAST::ILB_RSOP_ENABLE));
+        ILBMatrix4x4 beastMatrix = ConvertDavaMatrix(transform);
+        BEAST_VERIFY(ILBCreateInstance(manager->GetILBScene(), buddyMesh->GetILBMesh(), STRING_TO_BEAST_STRING(resourceName), &beastMatrix, &meshInstanceHandle));
+        BEAST_VERIFY(ILBSetRenderStats(meshInstanceHandle, ILB_RS_DOUBLE_SIDED, ILB_RSOP_ENABLE));
         GetCastReceiveShadowOptions(renderBatch);
     }
 }
@@ -36,9 +36,9 @@ void BeastMeshInstance::InitWithLandscape(DAVA::Landscape* landscape, BeastMesh*
         renderBatch = landscape->GetRenderBatch(0);
         buddyMesh = beastMesh;
 
-        DAVA_BEAST::ILBMatrix4x4 beastMatrix = ConvertDavaMatrix(DAVA::Matrix4::IDENTITY);
-        BEAST_VERIFY(DAVA_BEAST::ILBCreateInstance(manager->GetILBScene(), beastMesh->GetILBMesh(), STRING_TO_BEAST_STRING(resourceName), &beastMatrix, &meshInstanceHandle));
-        BEAST_VERIFY(DAVA_BEAST::ILBSetRenderStats(meshInstanceHandle, DAVA_BEAST::ILB_RS_DOUBLE_SIDED, DAVA_BEAST::ILB_RSOP_ENABLE));
+        ILBMatrix4x4 beastMatrix = ConvertDavaMatrix(DAVA::Matrix4::IDENTITY);
+        BEAST_VERIFY(ILBCreateInstance(manager->GetILBScene(), beastMesh->GetILBMesh(), STRING_TO_BEAST_STRING(resourceName), &beastMatrix, &meshInstanceHandle));
+        BEAST_VERIFY(ILBSetRenderStats(meshInstanceHandle, ILB_RS_DOUBLE_SIDED, ILB_RSOP_ENABLE));
         GetCastReceiveShadowOptions(renderBatch);
     }
 }
@@ -47,25 +47,25 @@ void BeastMeshInstance::GetCastReceiveShadowOptions(DAVA::RenderBatch* batch)
 {
     DAVA::NMaterial* material = batch->GetMaterial();
 
-    DAVA_BEAST::int32 flags = 0;
+    int32 flags = 0;
     if (!material->GetEffectiveFlagValue(DAVA::NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER))
     {
-        flags |= DAVA_BEAST::ILB_RS_CAST_SHADOWS | DAVA_BEAST::ILB_RS_VISIBLE_FOR_GI;
+        flags |= ILB_RS_CAST_SHADOWS | ILB_RS_VISIBLE_FOR_GI;
     }
 
     if (!material->GetEffectiveFlagValue(DAVA::NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER))
     {
-        flags |= DAVA_BEAST::ILB_RS_RECEIVE_SHADOWS;
+        flags |= ILB_RS_RECEIVE_SHADOWS;
     }
 
     if (flags > 0)
     {
         // ** DISABLE ** selected flags, using ILB_RSOP_DISABLE
-        BEAST_VERIFY(DAVA_BEAST::ILBSetRenderStats(meshInstanceHandle, flags, DAVA_BEAST::ILB_RSOP_DISABLE));
+        BEAST_VERIFY(ILBSetRenderStats(meshInstanceHandle, flags, ILB_RSOP_DISABLE));
     }
 }
 
-DAVA_BEAST::ILBInstanceHandle BeastMeshInstance::GetILBMeshInstance()
+ILBInstanceHandle BeastMeshInstance::GetILBMeshInstance()
 {
     return meshInstanceHandle;
 }
@@ -95,22 +95,22 @@ BeastMesh* BeastMeshInstance::GetBuddyMesh()
     return buddyMesh;
 }
 
-DAVA_BEAST::int32 BeastMeshInstance::GetLightmapSize()
+int32 BeastMeshInstance::GetLightmapSize()
 {
     return lightmapSize;
 }
 
-void BeastMeshInstance::SetLightmapSize(DAVA_BEAST::int32 size)
+void BeastMeshInstance::SetLightmapSize(int32 size)
 {
     lightmapSize = size;
 }
 
-void BeastMeshInstance::SetLodLevel(DAVA_BEAST::int32 _lodLevel)
+void BeastMeshInstance::SetLodLevel(int32 _lodLevel)
 {
     lodLevel = _lodLevel;
 }
 
-DAVA_BEAST::int32 BeastMeshInstance::GetLodLevel()
+int32 BeastMeshInstance::GetLodLevel()
 {
     return lodLevel;
 }

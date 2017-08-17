@@ -2,7 +2,7 @@
 #define __BEAST_PROXY_IMPL__
 
 #include "Base/Singleton.h"
-#include "Beast/BeastProxy.h"
+#include "ResourceEditor/Classes/Beast/BeastProxy.h"
 
 class BeastManager;
 class BeastProxyImpl : public DAVA::Singleton<BeastProxy>

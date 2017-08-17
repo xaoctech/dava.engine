@@ -12,13 +12,13 @@ class TextureTarget
 public:
     DECLARE_BEAST_NAME(BeastManager);
 
-    TextureTarget(DAVA_BEAST::ILBJobHandle job, DAVA::int32 size);
+    TextureTarget(ILBJobHandle job, DAVA::int32 size);
     ~TextureTarget();
 
-    DAVA_BEAST::ILBTargetHandle GetHandle();
+    ILBTargetHandle GetHandle();
 
 private:
-    DAVA_BEAST::ILBTargetHandle handle;
+    ILBTargetHandle handle;
 };
 
 #endif //__BEAST_TEXTURE_TARGET__

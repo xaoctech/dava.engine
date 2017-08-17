@@ -18,7 +18,7 @@ void BeastLight::InitWithLight(DAVA::Entity* owner, DAVA::Light* _light)
         lightObject = _light;
 
         DAVA::Color nodeColor = lightObject->GetDiffuseColor();
-        linearRGB = DAVA_BEAST::ILBLinearRGB(nodeColor.r, nodeColor.g, nodeColor.b);
+        linearRGB = ILBLinearRGB(nodeColor.r, nodeColor.g, nodeColor.b);
         matrix = ConvertDavaMatrix(ownerNode->GetWorldTransform());
 
         switch (lightObject->GetType())
@@ -50,7 +50,7 @@ void BeastLight::InitWithLight(DAVA::Entity* owner, DAVA::Light* _light)
     }
 }
 
-DAVA_BEAST::ILBLightHandle BeastLight::GetILBLight()
+ILBLightHandle BeastLight::GetILBLight()
 {
     return light;
 }
@@ -59,42 +59,42 @@ void BeastLight::CreateSkyLight()
 {
     DAVA::Matrix4 davaMatrix;
     davaMatrix.Identity();
-    DAVA_BEAST::ILBMatrix4x4 matrix = ConvertDavaMatrix(davaMatrix);
+    ILBMatrix4x4 matrix = ConvertDavaMatrix(davaMatrix);
 
-    BEAST_VERIFY(DAVA_BEAST::ILBCreateSkyLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &matrix, &GetColor(), &light));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetCastShadows(light, GetCastShadows()));
+    BEAST_VERIFY(ILBCreateSkyLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &matrix, &GetColor(), &light));
+    BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
 }
 
 void BeastLight::CreateAmbientLight()
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBCreateAmbientLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
+    BEAST_VERIFY(ILBCreateAmbientLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
 }
 
 void BeastLight::CreateDirectionalLight()
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBCreateDirectionalLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetCastShadows(light, GetCastShadows()));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetShadowSamples(light, GetShadowSamples()));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetShadowAngle(light, GetShadowAngle()));
+    BEAST_VERIFY(ILBCreateDirectionalLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
+    BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
+    BEAST_VERIFY(ILBSetShadowSamples(light, GetShadowSamples()));
+    BEAST_VERIFY(ILBSetShadowAngle(light, GetShadowAngle()));
 }
 
 void BeastLight::CreatePointLight()
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBCreatePointLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetCastShadows(light, GetCastShadows()));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetShadowRadius(light, GetShadowRadius()));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
+    BEAST_VERIFY(ILBCreatePointLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
+    BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
+    BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
+    BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
 }
 
 void BeastLight::CreateSpotLight()
 {
-    BEAST_VERIFY(DAVA_BEAST::ILBCreateSpotLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetCastShadows(light, GetCastShadows()));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetShadowRadius(light, GetShadowRadius()));
-    BEAST_VERIFY(DAVA_BEAST::ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
+    BEAST_VERIFY(ILBCreateSpotLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
+    BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
+    BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
+    BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
 }
 
-const DAVA_BEAST::ILBLinearRGB& BeastLight::GetColor() const
+const ILBLinearRGB& BeastLight::GetColor() const
 {
     return linearRGB;
 }
@@ -109,7 +109,7 @@ bool BeastLight::GetCastShadows()
     return true;
 }
 
-const DAVA_BEAST::ILBMatrix4x4& BeastLight::GetMatrix() const
+const ILBMatrix4x4& BeastLight::GetMatrix() const
 {
     return matrix;
 }
@@ -124,7 +124,7 @@ void BeastLight::SetIntensity()
         intensity = props->GetFloat("editor.intensity", 1.f);
     }
 
-    BEAST_VERIFY(DAVA_BEAST::ILBSetLightIntensity(light, intensity));
+    BEAST_VERIFY(ILBSetLightIntensity(light, intensity));
 }
 
 DAVA::float32 BeastLight::GetShadowAngle()
@@ -182,23 +182,23 @@ DAVA::float32 BeastLight::GetFalloffExponent()
     return 1.f;
 }
 
-void BeastLight::UpdateLightParamsFromHandle(DAVA_BEAST::ILBLightHandle lightHandle)
+void BeastLight::UpdateLightParamsFromHandle(ILBLightHandle lightHandle)
 {
-    DAVA_BEAST::ILBStringHandle name1, name2;
-    DAVA_BEAST::ILBGetLightName(lightHandle, &name1);
-    DAVA_BEAST::ILBGetLightName(light, &name2);
+    ILBStringHandle name1, name2;
+    ILBGetLightName(lightHandle, &name1);
+    ILBGetLightName(light, &name2);
     DAVA::String davaName1 = ConvertBeastString(name1);
     DAVA::String davaName2 = ConvertBeastString(name2);
 
     if (davaName1 != davaName2)
         return;
 
-    DAVA_BEAST::ILBLinearRGB color;
-    BEAST_VERIFY(DAVA_BEAST::ILBGetLightColor(lightHandle, &color));
+    ILBLinearRGB color;
+    BEAST_VERIFY(ILBGetLightColor(lightHandle, &color));
     lightObject->SetDiffuseColor(DAVA::Color(color.r, color.g, color.b, 1.f));
 
-    DAVA_BEAST::ILBMatrix4x4 lightTransform;
-    BEAST_VERIFY(DAVA_BEAST::ILBGetLightTransform(lightHandle, &lightTransform));
+    ILBMatrix4x4 lightTransform;
+    BEAST_VERIFY(ILBGetLightTransform(lightHandle, &lightTransform));
     DAVA::Matrix4 davaTransform = ConvertBeastMatrix(lightTransform);
     GetTransformComponent(ownerNode)->SetLocalTransform(&davaTransform);
 
@@ -206,18 +206,18 @@ void BeastLight::UpdateLightParamsFromHandle(DAVA_BEAST::ILBLightHandle lightHan
     if (props)
     {
         DAVA::float32 intensity;
-        BEAST_VERIFY(DAVA_BEAST::ILBGetLightIntensity(lightHandle, &intensity));
+        BEAST_VERIFY(ILBGetLightIntensity(lightHandle, &intensity));
 
         if (lightObject->GetType() == DAVA::Light::TYPE_DIRECTIONAL)
         {
             DAVA::float32 shadowAngle;
-            BEAST_VERIFY(DAVA_BEAST::ILBGetShadowAngle(lightHandle, &shadowAngle));
+            BEAST_VERIFY(ILBGetShadowAngle(lightHandle, &shadowAngle));
             props->SetFloat("editor.staticlight.shadowangle", shadowAngle);
         }
         else if (lightObject->GetType() != DAVA::Light::TYPE_SKY)
         {
             DAVA::float32 falloffCutoff, falloffExponent;
-            BEAST_VERIFY(DAVA_BEAST::ILBGetLightMaxRangeFalloff(lightHandle, &falloffCutoff, &falloffExponent));
+            BEAST_VERIFY(ILBGetLightMaxRangeFalloff(lightHandle, &falloffCutoff, &falloffExponent));
             props->GetFloat("editor.staticlight.falloffcutoff", falloffCutoff);
             props->GetFloat("editor.staticlight.falloffexponent", falloffExponent);
         }
@@ -225,12 +225,12 @@ void BeastLight::UpdateLightParamsFromHandle(DAVA_BEAST::ILBLightHandle lightHan
         if (lightObject->GetType() == DAVA::Light::TYPE_POINT || lightObject->GetType() == DAVA::Light::TYPE_SPOT)
         {
             DAVA::float32 shadowRadius;
-            BEAST_VERIFY(DAVA_BEAST::ILBGetShadowRadius(lightHandle, &shadowRadius));
+            BEAST_VERIFY(ILBGetShadowRadius(lightHandle, &shadowRadius));
             props->GetFloat("editor.staticlight.shadowradius", shadowRadius);
         }
 
         DAVA::int32 shadowSamples;
-        BEAST_VERIFY(DAVA_BEAST::ILBGetLightShadowSamples(lightHandle, &shadowSamples));
+        BEAST_VERIFY(ILBGetLightShadowSamples(lightHandle, &shadowSamples));
 
         props->SetFloat("editor.intensity", intensity);
         props->GetInt32("editor.staticlight.shadowsamples", shadowSamples);

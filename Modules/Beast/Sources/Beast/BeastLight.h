@@ -12,9 +12,9 @@ class BeastLight : public BeastResource<BeastLight>
 {
 public:
     void InitWithLight(DAVA::Entity* node, DAVA::Light* lightObject);
-    void UpdateLightParamsFromHandle(DAVA_BEAST::ILBLightHandle lightHandle);
+    void UpdateLightParamsFromHandle(ILBLightHandle lightHandle);
 
-    DAVA_BEAST::ILBLightHandle GetILBLight();
+    ILBLightHandle GetILBLight();
 
 private:
     friend class BeastResource<BeastLight>;
@@ -28,8 +28,8 @@ private:
     void SetIntensity();
     bool GetCastShadows();
 
-    const DAVA_BEAST::ILBLinearRGB& GetColor() const;
-    const DAVA_BEAST::ILBMatrix4x4& GetMatrix() const;
+    const ILBLinearRGB& GetColor() const;
+    const ILBMatrix4x4& GetMatrix() const;
     DAVA::int32 GetShadowSamples();
     DAVA::float32 GetShadowAngle();
     DAVA::float32 GetShadowRadius();
@@ -37,11 +37,11 @@ private:
     DAVA::float32 GetFalloffExponent();
 
 private:
-    DAVA_BEAST::ILBLightHandle light = nullptr;
+    ILBLightHandle light = nullptr;
     DAVA::Light* lightObject = nullptr;
     DAVA::Entity* ownerNode = nullptr;
-    DAVA_BEAST::ILBMatrix4x4 matrix;
-    DAVA_BEAST::ILBLinearRGB linearRGB;
+    ILBMatrix4x4 matrix;
+    ILBLinearRGB linearRGB;
 };
 
 #endif //__BEAST_LIGHT__

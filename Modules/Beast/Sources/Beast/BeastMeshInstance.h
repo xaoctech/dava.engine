@@ -17,14 +17,14 @@ public:
     void InitWithRenderBatchAndTransform(DAVA::RenderBatch* batch, DAVA::int32 partIndex, const DAVA::Matrix4& transform);
     void InitWithLandscape(DAVA::Landscape* landscapeNode, BeastMesh* beastMesh);
 
-    DAVA_BEAST::ILBInstanceHandle GetILBMeshInstance();
-    DAVA_BEAST::int32 GetTextureCoordCount();
+    ILBInstanceHandle GetILBMeshInstance();
+    int32 GetTextureCoordCount();
 
     TextureTarget* GetTextureTarget();
     void SetTextureTarget(TextureTarget* val);
 
-    DAVA_BEAST::int32 GetLightmapSize();
-    void SetLightmapSize(DAVA_BEAST::int32 size);
+    int32 GetLightmapSize();
+    void SetLightmapSize(int32 size);
 
     BeastMesh* GetBuddyMesh();
 
@@ -33,8 +33,8 @@ public:
         return isLandscape;
     }
 
-    void SetLodLevel(DAVA_BEAST::int32 lodLevel);
-    DAVA_BEAST::int32 GetLodLevel();
+    void SetLodLevel(int32 lodLevel);
+    int32 GetLodLevel();
 
     void UseLightMap();
     bool IsUseLightmap();
@@ -49,7 +49,7 @@ private:
     void GetCastReceiveShadowOptions(DAVA::RenderBatch* batch);
 
 private:
-    DAVA_BEAST::ILBInstanceHandle meshInstanceHandle = nullptr;
+    ILBInstanceHandle meshInstanceHandle = nullptr;
     TextureTarget* textureTarget = nullptr;
     BeastMesh* buddyMesh = nullptr;
     DAVA::RenderBatch* renderBatch = nullptr;
