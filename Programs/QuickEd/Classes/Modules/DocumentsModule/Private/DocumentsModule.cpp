@@ -69,6 +69,7 @@ DocumentsModule::DocumentsModule()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PixelGridPreferences);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PreviewWidgetSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserAssetsSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PackageWidgetSettings);
 }
 
 DocumentsModule::~DocumentsModule() = default;
