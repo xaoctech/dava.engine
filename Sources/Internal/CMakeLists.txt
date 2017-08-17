@@ -119,7 +119,9 @@ set( DEFINITIONS_PRIVATE            -D_UNICODE
                                     -DUNICODE
                                     -D_CRT_SECURE_NO_DEPRECATE
                                     -D_CRT_NON_CONFORMING_SWPRINTFS
-                                    -DCURL_STATICLIB  )
+                                    -DCURL_STATICLIB
+                                    -DYAML_DECLARE_STATIC
+)
 
 # Define __STDC_FORMAT_MACROS for PRIdXX macros used in printf and friends
 set( DEFINITIONS_PRIVATE_LINUX      -D__STDC_FORMAT_MACROS=1)

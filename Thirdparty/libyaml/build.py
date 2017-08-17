@@ -63,8 +63,8 @@ def _build_win32(working_directory_path, root_project_path):
         root_project_path,
         'yaml.sln', 'yaml',
         'yaml.lib', 'yaml.lib',
-        'libyaml_wind.lib', 'libyaml_win.lib',
-        'libyaml_wind.lib', 'libyaml_win.lib')
+        'libyaml.lib', 'libyaml.lib',
+        'libyaml.lib', 'libyaml.lib')
 
     _copy_headers(source_folder_path, root_project_path)
 

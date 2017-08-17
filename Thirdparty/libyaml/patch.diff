@@ -1,7 +1,27 @@
-diff -ur ./libyaml_source_original/CMakeLists.txt ./libyaml_source/CMakeLists.txt
 --- ./libyaml_source_original/CMakeLists.txt	2016-08-29 02:56:34.000000000 +0300
-+++ ./libyaml_source/CMakeLists.txt	2016-09-22 10:28:09.862088000 +0300
-@@ -14,3 +14,6 @@
++++ ./libyaml_source/CMakeLists.txt	2017-08-16 18:57:40.162654700 +0300
+@@ -8,9 +8,27 @@
+ set (YAML_VERSION_PATCH 7)
+ set (YAML_VERSION_STRING "${YAML_VERSION_MAJOR}.${YAML_VERSION_MINOR}.${YAML_VERSION_PATCH}")
+ 
++if (MSVC)
++    # setup static linking with crt
++    set(CompilerFlags
++            CMAKE_CXX_FLAGS
++            CMAKE_CXX_FLAGS_DEBUG
++            CMAKE_CXX_FLAGS_RELEASE
++            CMAKE_C_FLAGS
++            CMAKE_C_FLAGS_DEBUG
++            CMAKE_C_FLAGS_RELEASE
++    )
++    foreach(CompilerFlag ${CompilerFlags})
++        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
++    endforeach()
++endif()
++
+ file (GLOB SRC src/*.c)
+ 
+ include_directories (include win32)
  add_definitions (-DHAVE_CONFIG_H -DYAML_DECLARE_STATIC)
  add_library (yaml STATIC ${SRC})
  
@@ -9,17 +29,3 @@ diff -ur ./libyaml_source_original/CMakeLists.txt ./libyaml_source/CMakeLists.tx
 +  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 +endif()
 \ No newline at end of file
-diff -ur ./libyaml_sources_original/src/api.c ./libyaml_sources/src/api.c
---- ./libyaml_source_original/src/api.c	2016-08-29 02:56:34.000000000 +0300
-+++ ./libyaml_source/src/api.c	2016-09-22 10:24:59.705080600 +0300
-@@ -63,7 +63,10 @@
-     if (!str)
-         return NULL;
- 
-+#pragma warning(push)
-+#pragma warning(disable : 4996)
-     return (yaml_char_t *)strdup((char *)str);
-+#pragma warning(pop)
- }
- 
- /*

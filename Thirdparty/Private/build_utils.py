@@ -76,8 +76,7 @@ def apply_patch(patch, working_dir = '.'):
         print_verbose(line)
     proc.wait()
     if proc.returncode != 0:
-        print "Failed with return code %s" % proc.returncode
-        raise
+        raise RuntimeError('Failed to apply patch with return code %s' % proc.returncode)
 
 
 def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
