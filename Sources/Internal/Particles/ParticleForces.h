@@ -6,6 +6,7 @@ namespace DAVA
 {
 class ParticleDragForce;
 class Vector3;
+class Entity;
 
 namespace ParticleForces
 {

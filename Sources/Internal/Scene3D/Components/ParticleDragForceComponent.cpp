@@ -1,5 +1,8 @@
 #include "Scene3D/Components/ParticleDragForceComponent.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+#include "Scene3D/Entity.h"
+
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(ParticleDragForceComponent)

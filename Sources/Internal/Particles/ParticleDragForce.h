@@ -2,10 +2,12 @@
 
 #include "Base/BaseObject.h"
 
+#include "Math/Vector.h"
+#include "Math/Matrix4.h"
+
 namespace DAVA
 {
 struct ParticleLayer;
-
 
 class ParticleDragForce : public BaseObject
 {
@@ -18,6 +20,7 @@ public:
     enum class eType
     {
         DRAG_FORCE
+        //lorentz force
     } type = eType::DRAG_FORCE;
 
     ParticleDragForce(ParticleLayer* parent);
