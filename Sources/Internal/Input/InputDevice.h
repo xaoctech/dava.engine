@@ -67,6 +67,5 @@ private:
 
 private:
     const uint32 id;
-    Vector<Window*> windows;
 };
 } // namespace DAVA

@@ -9,8 +9,8 @@ InputDevice::InputDevice(uint32 id)
 {
     Engine* engine = Engine::Instance();
 
-    Vector<Window*> activeWindows = engine->GetWindows();
-    for (Vector<Window*>::iterator it = activeWindows.begin(); it != activeWindows.end(); ++it)
+    const Vector<Window*>& activeWindows = engine->GetWindows();
+    for (Vector<Window*>::const_iterator it = activeWindows.begin(); it != activeWindows.end(); ++it)
     {
         OnWindowCreated(*it);
     }
@@ -26,24 +26,16 @@ InputDevice::~InputDevice()
     engine->windowCreated.Disconnect(this);
     engine->windowDestroyed.Disconnect(this);
 
-    for (Vector<Window*>::iterator it = windows.begin(); it != windows.end(); ++it)
+    const Vector<Window*>& activeWindows = engine->GetWindows();
+    for (Vector<Window*>::const_iterator it = activeWindows.begin(); it != activeWindows.end(); ++it)
     {
-        Window* window = *it;
-
-        DVASSERT(window != nullptr);
-
-        window->focusChanged.Disconnect(this);
-        window->sizeChanged.Disconnect(this);
+        OnWindowDestroyed(*it);
     }
 }
 
 void InputDevice::OnWindowCreated(Window* window)
 {
     DVASSERT(window != nullptr);
-
-    DVASSERT(std::find(windows.begin(), windows.end(), window) == windows.end());
-
-    windows.push_back(window);
 
     window->focusChanged.Connect(this, &InputDevice::OnWindowFocusChanged);
     window->sizeChanged.Connect(this, &InputDevice::OnWindowSizeChanged);
@@ -53,15 +45,8 @@ void InputDevice::OnWindowDestroyed(Window* window)
 {
     DVASSERT(window != nullptr);
 
-    Vector<Window*>::iterator it = std::find(windows.begin(), windows.end(), window);
-
-    if (it != windows.end())
-    {
-        window->focusChanged.Disconnect(this);
-        window->sizeChanged.Disconnect(this);
-
-        windows.erase(it);
-    }
+    window->focusChanged.Disconnect(this);
+    window->sizeChanged.Disconnect(this);
 }
 
 void InputDevice::OnWindowFocusChanged(Window* window, bool focused)
