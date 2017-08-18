@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
-#test
+
 set                   ( CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebinfo" CACHE STRING "limited configs" FORCE )
 
 project               ( ResourceEditor )
