@@ -94,7 +94,7 @@ if( WIN )
     set( DAVA_STATIC_LIBRARIES_WIN32_RELEASE
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/detours.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/FColladaVS2010.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/freetype246MT.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/freetype.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glew32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glut32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glutstatic.lib"
@@ -132,7 +132,7 @@ if( WIN )
     set( DAVA_STATIC_LIBRARIES_WIN32_DEBUG
                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/detours.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/FColladaVS2010.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/freetype246MT_D.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/freetype.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/glew32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/glut32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/glutstatic.lib"
