@@ -87,7 +87,7 @@ void MovieViewControl::SetRect(const Rect& rect)
 {
     if (javaMovieView != nullptr)
     {
-        Rect rc = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(rect);
+        Rect rc = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(rect);
         rc.dx = std::max(0.0f, rc.dx);
         rc.dy = std::max(0.0f, rc.dy);
 
