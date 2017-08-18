@@ -24,6 +24,11 @@ ZipTaskProcessor::TaskParams::~TaskParams()
     }
 }
 
+ZipTaskProcessor::ZipTaskProcessor(QObject* parent)
+    : QObject(parent)
+{
+}
+
 ZipTaskProcessor::~ZipTaskProcessor()
 {
     Q_ASSERT(currentTaskParams == nullptr);
@@ -224,4 +229,9 @@ QString ZipTaskProcessor::GetArchiverPath() const
     "/../Resources/7za";
 #endif //Q_OS_MAC Q_OS_WIN
     return processAddr;
+}
+
+std::size_t ZipTaskProcessor::GetTasksCount() const
+{
+    return currentTaskParams != nullptr ? 1 : 0;
 }

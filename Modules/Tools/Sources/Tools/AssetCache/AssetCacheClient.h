@@ -42,6 +42,9 @@ public:
     uint64 GetTimeoutMs() const;
     bool IsConnected() const;
 
+    void ClearStats();
+    void DumpStats() const;
+
 private:
     AssetCache::Error WaitRequest();
     AssetCache::Error CheckStatusSynchronously();
@@ -131,6 +134,22 @@ private:
         uint32 chunksOverall = 0;
     };
 
+    struct Stats
+    {
+        uint32 getRequestsCount = 0;
+        uint32 getRequestsFailedCount = 0;
+        uint32 getRequestsTimeoutCount = 0;
+        uint32 getRequestsSucceedCount = 0;
+        uint32 getRequestsNotFoundCount = 0;
+
+        uint32 addRequestsCount = 0;
+        uint32 addRequestsFailedCount = 0;
+        uint32 addRequestsTimeoutCount = 0;
+        uint32 addRequestsSucceedCount = 0;
+
+        uint32 incorrectPacketsCount = 0;
+    };
+
     AssetCache::ClientNetProxy client;
 
     uint64 timeoutMs = 60u * 1000u;
@@ -141,6 +160,7 @@ private:
     GetFilesRequest getFilesRequest;
     AddFilesRequest addFilesRequest;
 
+    Stats stats;
     std::atomic<bool> isActive;
 };
 

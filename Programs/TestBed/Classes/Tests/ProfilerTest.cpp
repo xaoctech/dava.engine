@@ -42,7 +42,7 @@ void ProfilerTest::LoadResources()
 
     ScopedPtr<Camera> camera(new Camera());
 
-    Size2i screenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
 
     float32 aspect = float32(screenSize.dy) / float32(screenSize.dx);
     camera->SetupPerspective(70.f, aspect, 0.5f, 2500.f);

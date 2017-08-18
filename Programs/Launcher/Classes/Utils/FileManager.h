@@ -19,9 +19,6 @@ public:
 
     QString GetTempDownloadFilePath(const QString& url) const;
 
-    //name CreateFile is already taken by windows
-    bool CreateFileFromRawData(const QByteArray& dataToWrite, const QString& filePath) const;
-
     QString GetApplicationDirectory(const QString& branchID, const QString& appID) const;
     QString GetBranchDirectory(const QString& branchID) const;
 
