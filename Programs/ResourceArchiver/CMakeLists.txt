@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
-#test
+
 project      ( ResourceArchiver )
 
 set          ( WARNINGS_AS_ERRORS true )
