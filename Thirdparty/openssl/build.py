@@ -98,9 +98,14 @@ def _build_win32(working_directory_path, root_project_path):
 
     # x86
     source_folder_path_x86 = _download_and_extract(working_directory_path, 'win32_x86')
-    build_utils.apply_patch(os.path.abspath('patch_win32.diff'), source_folder_path_x86)
+    shutil.copyfile('build-msvc.cmd',
+                    os.path.join(source_folder_path_x86, 'build-msvc.cmd'))
 
-    build_utils.run_process(['build-vc12.cmd'], process_cwd=source_folder_path_x86, shell=True)
+    build_utils.run_process(
+        'build-msvc.cmd',
+        process_cwd=source_folder_path_x86,
+        shell=True,
+        environment=build_utils.get_win32_vs_x86_env())
 
     libeay_path_x86_debug = os.path.join(source_folder_path_x86, 'out32.dbg/libeay32.lib')
     ssleay_path_x86_debug = os.path.join(source_folder_path_x86, 'out32.dbg/ssleay32.lib')
@@ -114,9 +119,14 @@ def _build_win32(working_directory_path, root_project_path):
 
     #x64
     source_folder_path_x64 = _download_and_extract(working_directory_path, 'win32_x64')
-    build_utils.apply_patch(os.path.abspath('patch_win32.diff'), source_folder_path_x64)
+    shutil.copyfile('build-msvc.cmd',
+                    os.path.join(source_folder_path_x64, 'build-msvc.cmd'))
 
-    build_utils.run_process('build-vc12.cmd x64', process_cwd=source_folder_path_x64, shell=True)
+    build_utils.run_process(
+        ['build-msvc.cmd', 'x64'],
+        process_cwd=source_folder_path_x64,
+        shell=True,
+        environment=build_utils.get_win32_vs_x64_env())
 
     libeay_path_x64_debug = os.path.join(source_folder_path_x64, 'out32.dbg/libeay32.lib')
     ssleay_path_x64_debug = os.path.join(source_folder_path_x64, 'out32.dbg/ssleay32.lib')
