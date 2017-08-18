@@ -563,10 +563,15 @@ def build_and_copy_libraries_win32_cmake(
         result_lib_name_x86_debug, result_lib_name_x86_release,
         result_lib_name_x64_debug, result_lib_name_x64_release,
         cmake_additional_args = [], target_lib_subdir = '',
-        output_libs_path = 'Libs/lib_CMake'):
+        output_libs_path = 'Libs/lib_CMake',
+        static_runtime=False):
     # Folders for the library to be built into
     build_x86_folder = os.path.join(gen_folder_path, 'build_win32_x86')
     build_x64_folder = os.path.join(gen_folder_path, 'build_win32_x64')
+
+    if static_runtime:
+        override_file=os.path.abspath(os.path.join(os.getcwd(), '../cmake/msvc_static_runtime.cmake'))
+        cmake_additional_args.append('-DCMAKE_USER_MAKE_RULES_OVERRIDE={}'.format(override_file))
 
     # Generate & build
     cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args)
