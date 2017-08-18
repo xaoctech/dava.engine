@@ -61,7 +61,7 @@ void InputDevice::OnWindowFocusChanged(Window* window, bool focused)
 void InputDevice::OnWindowSizeChanged(Window* window, Size2f, Size2f)
 {
     // Reset device state when window size changes
-    // To workaround cases when input events are not generated while window is changint its size
+    // To workaround cases when input events are not generated while window is changing its size
     // (e.g. when maximizing window in macOS)
     this->ResetState(window);
 }
