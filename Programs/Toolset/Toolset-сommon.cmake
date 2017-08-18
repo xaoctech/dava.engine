@@ -130,7 +130,7 @@ macro ( prepare_tools )
 endmacro()
 
 macro ( add_tool_single TARGET_NAME )
-    cmake_parse_arguments ( ARG "NO_UNITY_BUILD"  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE" "" ${ARGN} )
+    cmake_parse_arguments ( ARG "NO_UNITY_BUILD"  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS" "" ${ARGN} )
 
     list( APPEND SINGLE_TOOLS_LIST ${TARGET_NAME} )
 
@@ -138,6 +138,7 @@ macro ( add_tool_single TARGET_NAME )
     set( CUSTOM_DEPLOY_DIR_${TARGET_NAME}  ${ARG_CUSTOM_DEPLOY_DIR} )
     set( DEPLOY_DEFINE_${TARGET_NAME}      ${ARG_DEPLOY_DEFINE} )
     set( NO_UNITY_BUILD_${TARGET_NAME}     ${ARG_NO_UNITY_BUILD} )
+    set( DEPENDS_${TARGET_NAME}            ${ARG_DEPENDS} )
 
     if( ARG_ROOT_DIR )
         set( DEPEND_DIRS_${TARGET_NAME}  ${DEFAULT_DEPEND_DIRS} ${ARG_ROOT_DIR} )
@@ -148,7 +149,7 @@ macro ( add_tool_single TARGET_NAME )
 endmacro ()
 
 macro ( add_tool_package TARGET_NAME )
-    cmake_parse_arguments ( ARG "NO_UNITY_BUILD"  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE" "" ${ARGN} )
+    cmake_parse_arguments ( ARG "NO_UNITY_BUILD"  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS" "" ${ARGN} )
 
     list( APPEND PACKAGE_TOOLS_LIST ${TARGET_NAME} )
 
@@ -156,6 +157,7 @@ macro ( add_tool_package TARGET_NAME )
     set( CUSTOM_DEPLOY_DIR_${TARGET_NAME}  ${ARG_CUSTOM_DEPLOY_DIR} )
     set( DEPLOY_DEFINE_${TARGET_NAME}      ${ARG_DEPLOY_DEFINE} )
     set( NO_UNITY_BUILD_${TARGET_NAME}     ${ARG_NO_UNITY_BUILD} )
+    set( DEPENDS_${TARGET_NAME}            ${ARG_DEPENDS} )
 
     if( ARG_ROOT_DIR )
         set( DEPEND_DIRS_${TARGET_NAME}  ${DEFAULT_DEPEND_DIRS} ${ARG_ROOT_DIR} )
@@ -186,6 +188,13 @@ macro ( __add_tools TOOLS_LIST_NAME )
             list (FIND BUILD_TARGETS   ${TARGET_NAME} _index)
             if ( ${_index} EQUAL -1)
                 set( GENERATE false )
+                foreach( ITEM ${DEPENDS_${TARGET_NAME}} )
+                    list (FIND BUILD_TARGETS   ${ITEM} _index)
+                    if( NOT ${_index} EQUAL -1 )
+                        set( GENERATE true )
+                        break()
+                    endif()
+                endforeach()
             endif()
         endif()
 

@@ -46,9 +46,9 @@ add_tool_package     ( UIViewer        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/
 add_tool_package     ( ResourceEditor  DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 add_tool_package     ( QuickEd         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
-add_tool_package     ( ResourceArchiver )
-add_tool_package     ( ResourcePacker   )
-add_tool_package     ( ResourcePatcher  )
+add_tool_package     ( ResourceArchiver DEPENDS ResourceEditor )
+add_tool_package     ( ResourcePacker   DEPENDS ResourceEditor )
+add_tool_package     ( ResourcePatcher  DEPENDS ResourceEditor )
 
 add_tool_package     ( AssetCacheServer )
 add_tool_package     ( Dep )
