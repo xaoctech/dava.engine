@@ -27,8 +27,8 @@ DAVA_TESTCLASS (UITextSystemTest)
     UITextSystemTest()
     {
         RefPtr<UIScreen> screen(new UIScreen());
-        UIControlSystem::Instance()->SetScreen(screen.Get());
-        UIControlSystem::Instance()->Update();
+        GetEngineContext()->uiControlSystem->SetScreen(screen.Get());
+        GetEngineContext()->uiControlSystem->Update();
 
         newControl = new UIControl();
 
@@ -37,12 +37,12 @@ DAVA_TESTCLASS (UITextSystemTest)
 
     ~UITextSystemTest()
     {
-        UIControlSystem::Instance()->Reset();
+        GetEngineContext()->uiControlSystem->Reset();
     }
 
     void UpdateSystem()
     {
-        UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
+        UITextSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UITextSystem>();
         sys->Process(0.f);
     }
 
@@ -120,7 +120,7 @@ DAVA_TESTCLASS (UITextSystemTest)
 
         UpdateSystem();
 
-        UITextSystem* sys = UIControlSystem::Instance()->GetSystem<UITextSystem>();
+        UITextSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UITextSystem>();
 
         RefPtr<UITextComponent> copy(orig->Clone());
         TEST_VERIFY(orig->GetLink() != nullptr);
