@@ -15,8 +15,6 @@ endif()
 add_library(mongodb STATIC ${SOURCE_FILES})
 
 if(WIN32)
-  set ( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
-  set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 elseif(APPLE)
   if(IOS)
