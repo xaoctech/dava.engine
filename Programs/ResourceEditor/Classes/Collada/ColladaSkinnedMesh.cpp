@@ -212,7 +212,7 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
         }
     }
 
-    if (currentJoint == nullptr && parentJoint)
+    if (currentJoint == nullptr)
     {
         joints.emplace_back();
         Joint& joint = joints.back();
