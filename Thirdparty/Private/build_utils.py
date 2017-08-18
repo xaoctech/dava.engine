@@ -12,11 +12,13 @@ import build_config
 verbose = False
 output_folder_path = ''
 dava_folder_path = ''
+suppress_build_warnings=False   # Do not output compiler warning messages while building libraries
+                                # (currently supported only for Visual Studio projects)
 
 
 def print_verbose(msg):
     if verbose:
-        print msg
+        print msg.rstrip()
 
 
 def download(url, file_name):
@@ -85,6 +87,9 @@ def apply_patch(patch, working_dir = '.'):
 def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
     print "Building %s for %s (%s) ..." % (project, configuration, platform)
     args = [build_config.get_msbuild_path_win32(), project, "/m", "/p:Configuration="+configuration, '/p:Platform=' + platform]
+    if suppress_build_warnings:
+        args.append('/consoleloggerparameters:ErrorsOnly')
+
     if not toolset is None:
         args.append('/p:PlatformToolset=' + toolset)
     if (not target is None):
