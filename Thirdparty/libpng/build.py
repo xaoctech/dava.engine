@@ -63,6 +63,8 @@ def _patch_sources(source_folder_path, working_directory_path):
     # Apply fixes
     build_utils.apply_patch(
         os.path.abspath('patch.diff'), working_directory_path)
+    build_utils.apply_patch(
+        os.path.abspath('patch_static_runtime.diff'), working_directory_path)
 
     # Add configuration file to source folder
     # It is used to generate additional header & source files
@@ -85,8 +87,8 @@ def _build_win32(working_directory_path, root_project_path):
         root_project_path,
         'libpng.sln', 'png_static',
         'libpng16_staticd.lib', 'libpng16_static.lib',
-        'pnglib_wind.lib', 'pnglib_win.lib',
-        'pnglib_wind.lib', 'pnglib_win.lib',
+        'libpng.lib', 'libpng.lib',
+        'libpng.lib', 'libpng.lib',
         cmake_flags)
 
     _copy_headers(source_folder_path, root_project_path)

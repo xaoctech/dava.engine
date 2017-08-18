@@ -1,0 +1,25 @@
+diff -ur ./libpng_source_original/CMakeLists.txt ./libpng_source/CMakeLists.txt
+--- ./libpng_source_original/CMakeLists.txt	2016-06-09 06:44:58.000000000 +0300
++++ ./libpng_source/CMakeLists.txt	2017-08-18 09:49:13.698578900 +0300
+@@ -43,6 +43,21 @@
+ find_package(ZLIB REQUIRED)
+ include_directories(${ZLIB_INCLUDE_DIR})
+ 
++if (MSVC)
++    # setup static linking with crt
++    set(CompilerFlags
++            CMAKE_CXX_FLAGS
++            CMAKE_CXX_FLAGS_DEBUG
++            CMAKE_CXX_FLAGS_RELEASE
++            CMAKE_C_FLAGS
++            CMAKE_C_FLAGS_DEBUG
++            CMAKE_C_FLAGS_RELEASE
++    )
++    foreach(CompilerFlag ${CompilerFlags})
++        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
++    endforeach()
++endif()
++
+ if(NOT WIN32)
+   find_library(M_LIBRARY
+     NAMES m
