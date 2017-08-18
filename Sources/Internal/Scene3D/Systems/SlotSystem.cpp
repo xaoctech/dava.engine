@@ -465,7 +465,7 @@ void SlotSystem::AttachItemToSlot(Entity* rootEntity, FastName slotName, FastNam
     }
 }
 
-RefPtr<Entity> SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName)
+Entity* SlotSystem::AttachItemToSlot(SlotComponent* component, FastName itemName)
 {
     UnloadItem(component);
 
@@ -480,12 +480,12 @@ RefPtr<Entity> SlotSystem::AttachItemToSlot(SlotComponent* component, FastName i
                       component->GetSlotName().c_str());
         uint32 index = GetComponentIndex(component);
         SetState(nodes[index], eSlotState::LOADING_FAILED);
-        return RefPtr<Entity>();
+        return nullptr;
     }
 
-    RefPtr<Entity> slotRootEntity(new Entity());
+    Entity* slotRootEntity = new Entity();
     DVASSERT(externalEntityLoader != nullptr);
-    externalEntityLoader->Load(slotRootEntity, item->scenePath.GetAbsolutePathname(), [this, component, itemName](String&& message) {
+    externalEntityLoader->Load(RefPtr<Entity>::ConstructWithRetain(slotRootEntity), item->scenePath.GetAbsolutePathname(), [this, component, itemName](String&& message) {
         auto iter = std::find_if(nodes.begin(), nodes.end(), [component](const SlotNode& node) {
             return node.component == component;
         });
@@ -510,8 +510,8 @@ RefPtr<Entity> SlotSystem::AttachItemToSlot(SlotComponent* component, FastName i
             }
         }
     });
-    externalEntityLoader->AddEntity(component->GetEntity(), slotRootEntity.Get());
-    AttachEntityToSlotImpl(component, slotRootEntity.Get(), item->itemName, eSlotState::LOADING);
+    externalEntityLoader->AddEntity(component->GetEntity(), slotRootEntity);
+    AttachEntityToSlotImpl(component, slotRootEntity, item->itemName, eSlotState::LOADING);
     return slotRootEntity;
 }
 

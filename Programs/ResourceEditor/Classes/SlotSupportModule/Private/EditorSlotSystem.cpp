@@ -205,11 +205,11 @@ void EditorSlotSystem::WillClone(DAVA::Entity* originalEntity)
             {
                 AttachedItemInfo info;
                 info.component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
-                info.entity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(scene->slotSystem->LookUpLoadedEntity(info.component));
+                info.entity = scene->slotSystem->LookUpLoadedEntity(info.component);
                 info.itemName = info.component->GetLoadedItemName();
 
                 inClonedState[entity].push_back(info);
-                DetachEntity(info.component, info.entity.Get());
+                DetachEntity(info.component, info.entity);
             }
         }
     };
@@ -236,7 +236,7 @@ void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* new
         const DAVA::Vector<AttachedItemInfo> infos = iter->second;
         for (const AttachedItemInfo& info : infos)
         {
-            AttachEntity(info.component, info.entity.Get(), info.itemName);
+            AttachEntity(info.component, info.entity, info.itemName);
         }
         inClonedState.erase(iter);
     };
@@ -270,7 +270,7 @@ void EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::Entity
     Selection::Unlock();
 }
 
-DAVA::RefPtr<DAVA::Entity> EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName)
+DAVA::Entity* EditorSlotSystem::AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName)
 {
     Selection::Lock();
     SCOPE_EXIT
@@ -279,11 +279,12 @@ DAVA::RefPtr<DAVA::Entity> EditorSlotSystem::AttachEntity(DAVA::SlotComponent* c
     };
 
     DAVA::SlotSystem* slotSystem = GetScene()->slotSystem;
+    DAVA::Entity* result = nullptr;
     if (itemName == emptyItemName)
     {
         DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
         slotSystem->AttachEntityToSlot(component, newEntity.Get(), itemName);
-        return newEntity;
+        return newEntity.Get();
     }
     else
     {
