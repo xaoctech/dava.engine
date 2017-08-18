@@ -30,7 +30,7 @@ public:
     struct GfxDir
     {
         ResDir directory;
-        DAVA::Size2i resolution;
+        DAVA::float32 scale = 1.f;
     };
 
     struct Device
