@@ -7,21 +7,6 @@ include_directories("${PROJECT_SOURCE_DIR}/Sources/nvtt/squish")
 include_directories("${PROJECT_SOURCE_DIR}/../include/libpng")
 add_definitions(-DNV_NO_DEBUG)
 
-if (MSVC)
-    # setup static linking with crt
-    set(CompilerFlags
-            CMAKE_CXX_FLAGS
-            CMAKE_CXX_FLAGS_DEBUG
-            CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_C_FLAGS
-            CMAKE_C_FLAGS_DEBUG
-            CMAKE_C_FLAGS_RELEASE
-    )
-    foreach(CompilerFlag ${CompilerFlags})
-        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
-    endforeach()
-endif()
-
 set (SOURCE_FILES
     Sources/nvcore/Debug.cpp
     Sources/nvcore/Library.cpp

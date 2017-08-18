@@ -6,6 +6,7 @@ include_directories(./src)
 # Explicitly specify source files for lua static library
 set (SOURCE_FILES
     # core files
+    "src/bit.c"
     "src/lapi.c"
     "src/lcode.c"
     "src/ldebug.c"
@@ -38,21 +39,6 @@ set (SOURCE_FILES
     "src/linit.c"
 )
 add_library(lua STATIC ${SOURCE_FILES})
-
-if (MSVC)
-    # setup static linking with crt
-    set(CompilerFlags
-            CMAKE_CXX_FLAGS
-            CMAKE_CXX_FLAGS_DEBUG
-            CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_C_FLAGS
-            CMAKE_C_FLAGS_DEBUG
-            CMAKE_C_FLAGS_RELEASE
-    )
-    foreach(CompilerFlag ${CompilerFlags})
-        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
-    endforeach()
-endif() 
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)

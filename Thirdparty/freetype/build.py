@@ -14,8 +14,10 @@ def get_supported_targets(platform):
 
 
 def get_dependencies_for_target(target):
-    # TODO: Add zlib as dependency under win32 and win10
-    return []
+    if target in ['win32', 'win10']:
+        return ['zlib']
+    else:
+        return []
 
 
 def build_for_target(target, working_directory_path, root_project_path):
@@ -67,8 +69,6 @@ def _download_and_extract(working_directory_path):
 def _patch_sources(source_folder_path, working_directory_path):
     build_utils.apply_patch(
         os.path.abspath('patch.diff'), working_directory_path)
-    build_utils.apply_patch(
-        os.path.abspath('patch_static_runtime.diff'), working_directory_path)
 
 
 def _build_win32(working_directory_path, root_project_path):
@@ -89,7 +89,8 @@ def _build_win32(working_directory_path, root_project_path):
         'freetyped.lib', 'freetype.lib',
         'freetype.lib', 'freetype.lib',
         'freetype.lib', 'freetype.lib',
-        cmake_additional_args=_cmake_args(zlib_cmake_flags))
+        cmake_additional_args=_cmake_args(zlib_cmake_flags),
+        static_runtime=True)
 
     _copy_headers(source_folder_path, root_project_path)
 

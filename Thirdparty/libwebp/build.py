@@ -51,8 +51,6 @@ def _download_and_extract(working_directory_path):
 def _patch_sources(source_folder_path, working_directory_path):
     build_utils.apply_patch(
         os.path.abspath('patch.diff'), working_directory_path)
-    build_utils.apply_patch(
-        os.path.abspath('patch_win.diff'), working_directory_path)
 
 
 def _build_win32(working_directory_path, root_project_path):
@@ -66,7 +64,8 @@ def _build_win32(working_directory_path, root_project_path):
         'libwebp.sln', 'webp',
         'webp.lib', 'webp.lib',
         'libwebp.lib', 'libwebp.lib',
-        'libwebp.lib', 'libwebp.lib')
+        'libwebp.lib', 'libwebp.lib',
+        static_runtime=True)
 
     _copy_headers(source_folder_path, root_project_path)
 
