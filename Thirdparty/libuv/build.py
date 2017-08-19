@@ -33,22 +33,22 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'http://dist.libuv.org/dist/v1.9.1/libuv-v1.9.1.tar.gz'
+    return 'https://github.com/kkdaemon/libuv.git'
 
 
-def _download_and_extract(working_directory_path):
-    source_folder_path = os.path.join(working_directory_path, 'libuv_source')
+def _download(working_directory_path):
+    source_folder_path = os.path.join(working_directory_path, 'libuv')
 
-    url = get_download_info()
-    build_utils.download_and_extract(
-        url, working_directory_path,
-        source_folder_path,
-        build_utils.get_url_file_name_no_ext(url))
+    build_utils.run_process(
+        ['git', 'clone', '-b', 'winuap_support', get_download_info()],
+        process_cwd=working_directory_path,
+        shell=True)
 
     return source_folder_path
 
+
 def _build_win32(working_directory_path, root_project_path):
-    source_folder_path = _download_and_extract(working_directory_path)
+    source_folder_path = _download(working_directory_path)
 
     build_folder_path = os.path.join(working_directory_path, 'gen/build_win32')
     build_folder_path_x86 = os.path.join(build_folder_path, 'x86')
@@ -125,7 +125,7 @@ def _build_win32(working_directory_path, root_project_path):
         os.path.join(libs_win_root, 'x64/Debug/libuv.lib'))
     shutil.copyfile(
         lib_path_x64_release,
-        os.path.join(libs_win_root, 'x64/Release/uv.lib'))
+        os.path.join(libs_win_root, 'x64/Release/libuv.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
 

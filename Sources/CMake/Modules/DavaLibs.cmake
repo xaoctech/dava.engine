@@ -192,7 +192,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/theora_static.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/unibreak.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/uv.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libuv.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/zlib.lib" 
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/avcodec.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/avdevice.lib"
