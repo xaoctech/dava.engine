@@ -569,6 +569,7 @@ def build_and_copy_libraries_win32_cmake(
         result_lib_name_x64_debug, result_lib_name_x64_release,
         cmake_additional_args = [], target_lib_subdir = '',
         output_libs_path = 'Libs/lib_CMake',
+        output_lib_folder='win',
         static_runtime=False):
     # Folders for the library to be built into
     build_x86_folder = os.path.join(gen_folder_path, 'build_win32_x86')
@@ -590,10 +591,10 @@ def build_and_copy_libraries_win32_cmake(
     lib_path_x64_debug = os.path.join(build_x64_folder, os.path.join(target_lib_subdir, 'Debug', built_lib_name_debug))
     lib_path_x64_release = os.path.join(build_x64_folder, os.path.join(target_lib_subdir, 'Release', built_lib_name_release))
 
-    shutil.copyfile(lib_path_x86_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x86', 'Debug'), result_lib_name_x86_debug))
-    shutil.copyfile(lib_path_x86_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x86', 'Release'), result_lib_name_x86_release))
-    shutil.copyfile(lib_path_x64_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x64', 'Debug'), result_lib_name_x64_debug))
-    shutil.copyfile(lib_path_x64_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x64', 'Release'), result_lib_name_x64_release))
+    shutil.copyfile(lib_path_x86_debug, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x86', 'Debug'), result_lib_name_x86_debug))
+    shutil.copyfile(lib_path_x86_release, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x86', 'Release'), result_lib_name_x86_release))
+    shutil.copyfile(lib_path_x64_debug, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x64', 'Debug'), result_lib_name_x64_debug))
+    shutil.copyfile(lib_path_x64_release, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x64', 'Release'), result_lib_name_x64_release))
 
     return (build_x86_folder, build_x64_folder)
 

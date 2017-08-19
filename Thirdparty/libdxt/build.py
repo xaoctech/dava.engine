@@ -8,9 +8,9 @@ def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32']
     elif platform == 'darwin':
-        return ['macos', 'ios', 'android']
+        return ['macos']
     elif platform == 'linux':
-        return ['android', 'linux']
+        return ['linux']
     else:
         return []
 
