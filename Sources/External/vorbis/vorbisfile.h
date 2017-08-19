@@ -72,13 +72,7 @@ static int _ov_header_fseek_wrap(FILE *f,ogg_int64_t off,int whence){
  * we're using (the same one as the main application).
  */
 
-#ifdef __APPLE__
-#define _UNUSED __unused
-#else
-#define _UNUSED 
-#endif
-    
-static ov_callbacks OV_CALLBACKS_DEFAULT _UNUSED = {
+static ov_callbacks OV_CALLBACKS_DEFAULT = {
   (size_t (*)(void *, size_t, size_t, void *))  fread,
   (int (*)(void *, ogg_int64_t, int))           _ov_header_fseek_wrap,
   (int (*)(void *))                             fclose,

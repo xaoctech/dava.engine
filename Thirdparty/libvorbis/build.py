@@ -67,6 +67,7 @@ def _patch_sources(source_folder_path, working_directory_path, patch_postifx):
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
+    build_utils.apply_patch(os.path.abspath('patch_static_runtime.diff'), working_directory_path)
 
     ogg_include_path = os.path.abspath(
         os.path.join(
