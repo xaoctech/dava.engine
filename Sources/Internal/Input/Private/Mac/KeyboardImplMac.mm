@@ -194,7 +194,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                 UniChar unicodeString[maxLength];
                 UniCharCount realLength;
                 uint32 deadKeyState;
-                
+
                 OSStatus status = UCKeyTranslate(keyboardLayout,
                                                  i,
                                                  kUCKeyActionDown,
