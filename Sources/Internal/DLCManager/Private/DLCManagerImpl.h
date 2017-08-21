@@ -55,11 +55,12 @@ public:
         return true;
     }
 
-    void Close() override
+    bool Close() override
     {
         start = nullptr;
         current = nullptr;
         end = nullptr;
+        return true;
     }
 
     bool IsClosed() const override
@@ -279,7 +280,7 @@ private:
 
     String initErrorMsg;
     InitState initState = InitState::Starting;
-    std::unique_ptr<MemoryBufferWriter> memBufWriter;
+    std::shared_ptr<MemoryBufferWriter> memBufWriter;
     PackFormat::PackFile::FooterBlock initFooterOnServer; // temp superpack info for every new pack request or during initialization
     PackFormat::PackFile usedPackFile; // current superpack info
     Vector<uint8> buffer; // temp buff
