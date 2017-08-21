@@ -178,6 +178,8 @@ public:
 
     bool CountError(int32 errCode);
 
+    void FireNetworkReady(bool nextState);
+
 private:
     // initialization state functions
     void AskFooter();
@@ -207,7 +209,6 @@ private:
     PackRequest* CreateNewRequest(const String& requestedPackName);
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
-    void FireNetworkReady(bool nextState);
     void ClearResouces();
 
     enum class ScanState : uint32
