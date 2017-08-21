@@ -41,7 +41,7 @@ struct ComponentCreator : public StaticSingleton<ComponentCreator>
     const ReflectedType* componentType = nullptr;
 };
 
-const char* chooseComponentTypeString = "Choose component type";
+const char* chooseComponentTypeString = "Choose component type for Add";
 
 struct TypeInitializer : public StaticSingleton<ComponentCreator>
 {
@@ -114,6 +114,11 @@ class ComponentCreatorComponentValue : public BaseComponentValue
 {
 public:
     ComponentCreatorComponentValue() = default;
+
+    bool IsSpannedControl() const override
+    {
+        return true;
+    }
 
 protected:
     Any GetMultipleValue() const override
@@ -251,7 +256,7 @@ void REModifyPropertyExtension::ProduceCommand(const std::shared_ptr<DAVA::TArc:
 
             DAVA::VariantType value = DAVA::PrepareValueForKeyedArchive(newValue, currentValue->GetType());
             DVASSERT(value.GetType() != DAVA::VariantType::TYPE_NONE);
-            GetScene()->Exec(std::make_unique<KeyedArchiveReplaceValueCommand>(archive, node->field.key.Cast<DAVA::String>(), value));
+            GetScene()->Exec(std::make_unique<KeyeadArchiveSetValueCommand>(archive, node->field.key.Cast<DAVA::String>(), value));
         }
     }
     else
@@ -316,9 +321,12 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::Proper
                     String permanentName = GetValueReflectedType(ref)->GetPermanentName();
 
                     DAVA::Reflection::Field f(permanentName, Reflection(ref), nullptr);
-                    std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
-                    node->idPostfix = FastName(Format("%u", componentIndex));
-                    children.push_back(node);
+                    if (CanBeExposed(f))
+                    {
+                        std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
+                        node->idPostfix = FastName(Format("%u", componentIndex));
+                        children.push_back(node);
+                    }
                 }
             }
 

@@ -44,8 +44,8 @@ if     ( ANDROID )
 elseif ( LINUX )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14 --stdlib=libc++ -pthread -frtti" )
 
-    set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0" )
-    set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS} -O3" )
+    set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0 -D_DEBUG" )
+    set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG" )
 
 elseif ( IOS     )
     set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0" )
@@ -85,6 +85,7 @@ elseif ( MACOS )
     set( CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14" )
     set( CMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym" )    
     set( CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS "YES" )    
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
     set( CMAKE_OSX_DEPLOYMENT_TARGET "10.8" )
     set( OTHER_CODE_SIGN_FLAGS "--deep")

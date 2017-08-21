@@ -85,8 +85,13 @@ void SceneHelper::EnumerateEntityTextures(DAVA::Scene* forScene, DAVA::Entity* f
     DAVA::Set<DAVA::MaterialTextureInfo*> materialTextures;
     for (auto& mat : materials)
     {
-        DAVA::String materialName = mat->GetMaterialName().c_str();
-        DAVA::String parentName = mat->GetParent() ? mat->GetParent()->GetMaterialName().c_str() : DAVA::String();
+        DAVA::String materialName = mat->GetMaterialName().IsValid() ?
+        mat->GetMaterialName().c_str() :
+        DAVA::String();
+
+        DAVA::String parentName = mat->GetParent() && mat->GetParent()->GetMaterialName().IsValid() ?
+        mat->GetParent()->GetMaterialName().c_str() :
+        DAVA::String();
 
         if ((parentName.find("Particle") != DAVA::String::npos) || (materialName.find("Particle") != DAVA::String::npos))
         { //because particle materials has textures only after first start, so we have different result during scene life.
@@ -216,4 +221,16 @@ DAVA::Entity* SceneHelper::CloneEntityWithMaterials(DAVA::Entity* fromNode)
     }
 
     return newEntity;
+}
+
+bool SceneHelper::IsEntityChildRecursive(DAVA::Entity* root, DAVA::Entity* child)
+{
+    if (std::find(root->children.begin(), root->children.end(), child) != root->children.end())
+    {
+        return true;
+    }
+    else
+    {
+        return std::any_of(root->children.begin(), root->children.end(), [&](DAVA::Entity* ch) { return IsEntityChildRecursive(ch, child); });
+    }
 }

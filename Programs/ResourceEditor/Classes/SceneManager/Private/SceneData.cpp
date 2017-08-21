@@ -59,7 +59,23 @@ bool SceneData::IsSavingAllowed(QString* message /*= nullptr*/) const
     return false;
 }
 
+SceneEditor2* SceneData::GetScenePtr() const
+{
+    return scene.Get();
+}
+
+bool SceneData::IsHUDVisible() const
+{
+    if (scene.Get() == nullptr)
+    {
+        return false;
+    }
+
+    return scene->IsHUDVisible();
+}
+
 const char* SceneData::scenePropertyName = "Scene";
 const char* SceneData::sceneChangedPropertyName = "IsSceneChanged";
 const char* SceneData::scenePathPropertyName = "ScenePath";
 const char* SceneData::sceneLandscapeToolsPropertyName = "EnabledLandscapeTools";
+const char* SceneData::sceneHUDVisiblePropertyName = "sceneHUDVisiblePropertyName";

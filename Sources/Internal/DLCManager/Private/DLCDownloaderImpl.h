@@ -8,13 +8,6 @@
 
 namespace DAVA
 {
-/**
-  We have to share curl global initialization and cleanup
-  cause it is not thread safe and is using in several modules
-*/
-void CurlGlobalInit();
-void CurlGlobalDeinit();
-
 struct Buffer
 {
     void* ptr = nullptr;
@@ -59,7 +52,7 @@ struct DLCDownloader::Task
     List<IDownloaderSubTask*> subTasksReadyToWrite; // sorted list by subTaskIndex
     int lastCreateSubTaskIndex = -1;
     int lastWritenSubTaskIndex = -1;
-    std::unique_ptr<IWriter> writer;
+    std::shared_ptr<IWriter> writer;
     bool userWriter = false;
     ICurlEasyStorage& curlStorage;
 
@@ -70,13 +63,13 @@ struct DLCDownloader::Task
          const String& srcUrl,
          const String& dstPath,
          TaskType taskType,
-         IWriter* dstWriter,
+         std::shared_ptr<IWriter> dstWriter,
          int64 rangeOffset,
          int64 rangeSize,
          int32 timeout);
     ~Task();
 
-    void FlushWriterAndReset();
+    bool FlushWriterAndReset();
     void PrepareForDownloading();
     bool IsDone() const;
     bool NeedDownloadMoreData() const;
@@ -108,11 +101,11 @@ public:
 
     Task* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) override;
 
-    Task* StartTask(const String& srcUrl, IWriter& customWriter, Range range = EmptyRange) override;
+    Task* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) override;
 
     Task* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) override;
 
-    Task* ResumeTask(const String& srcUrl, IWriter& customWriter, Range range = EmptyRange) override;
+    Task* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) override;
 
     // Cancel download by ID (works for scheduled and current)
     void RemoveTask(Task* task) override;
@@ -138,7 +131,7 @@ private:
     Task* StartAnyTask(const String& srcUrl,
                        const String& dsrPath,
                        TaskType taskType,
-                       IWriter* dstWriter = nullptr,
+                       std::shared_ptr<IWriter> dstWriter,
                        Range range = EmptyRange);
 
     // [start] implement ICurlEasyStorage interface
@@ -180,6 +173,7 @@ private:
     CURLM* multiHandle = nullptr;
     Thread* downloadThread = nullptr;
     int numOfRunningSubTasks = 0;
+    int multiWaitRepeats = 0;
     // [end] variables
 
     Semaphore downloadSem; // to resume download thread

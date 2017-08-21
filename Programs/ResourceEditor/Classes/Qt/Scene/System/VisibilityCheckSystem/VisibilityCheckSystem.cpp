@@ -12,11 +12,11 @@
 #include "Math/MathHelpers.h"
 #include "Utils/Random.h"
 
-#include <Render/Renderer.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
-#include <Render/PixelFormatDescriptor.h>
-#include <Render/Highlevel/RenderSystem.h>
 #include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderSystem.h>
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/Renderer.h>
 
 namespace VCSInternal
 {
@@ -267,6 +267,8 @@ void VisibilityCheckSystem::Draw()
         if (renderer.reprojectionTexture)
             DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(520.f, 516.f, 256.f, 256.f));
     }
+
+    GetFinalGatherCamera()->SetupDynamicParameters(false, nullptr);
 }
 
 void VisibilityCheckSystem::InvalidateMaterials()

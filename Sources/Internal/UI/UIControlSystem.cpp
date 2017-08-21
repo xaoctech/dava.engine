@@ -27,7 +27,14 @@
 #include "Input/InputSystem.h"
 #include "UI/Update/UIUpdateSystem.h"
 #include "Debug/ProfilerOverlay.h"
+#include "DeviceManager/DeviceManager.h"
 #include "Engine/Engine.h"
+#include "Input/InputEvent.h"
+#include "Input/InputSystem.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
+#include "Input/TouchScreen.h"
+#include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 
 namespace DAVA
@@ -56,15 +63,6 @@ UIControlSystem::UIControlSystem()
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
-    popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
-    popupContainer->SetName("UIControlSystem_popupContainer");
-    popupContainer->SetInputEnabled(false);
-    popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
-    inputSystem->SetPopupContainer(popupContainer.Get());
-    styleSheetSystem->SetPopupContainer(popupContainer);
-    layoutSystem->SetPopupContainer(popupContainer);
-    renderSystem->SetPopupContainer(popupContainer);
-
     SetDoubleTapSettings(0.5f, 0.25f);
 }
 
@@ -74,20 +72,19 @@ UIControlSystem::~UIControlSystem()
     inputSystem->SetCurrentScreen(nullptr);
     styleSheetSystem->SetPopupContainer(RefPtr<UIControl>());
     styleSheetSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    styleSheetSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
     layoutSystem->SetPopupContainer(RefPtr<UIControl>());
     layoutSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    layoutSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
     renderSystem->SetPopupContainer(RefPtr<UIControl>());
     renderSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    renderSystem->SetCurrentScreenTransition(RefPtr<UIScreenTransition>());
 
     popupContainer->InvokeInactive();
+    popupContainer->SetScene(nullptr);
     popupContainer = nullptr;
 
     if (currentScreen.Valid())
     {
         currentScreen->InvokeInactive();
+        currentScreen->SetScene(nullptr);
         currentScreen = nullptr;
     }
 
@@ -104,13 +101,24 @@ UIControlSystem::~UIControlSystem()
     SafeDelete(vcs);
 }
 
-void UIControlSystem::SetScreen(UIScreen* _nextScreen, UIScreenTransition* _transition)
+void UIControlSystem::Init()
+{
+    popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
+    popupContainer->SetName("UIControlSystem_popupContainer");
+    popupContainer->SetInputEnabled(false);
+    popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
+    inputSystem->SetPopupContainer(popupContainer.Get());
+    styleSheetSystem->SetPopupContainer(popupContainer);
+    layoutSystem->SetPopupContainer(popupContainer);
+    renderSystem->SetPopupContainer(popupContainer);
+}
+
+void UIControlSystem::SetScreen(UIScreen* _nextScreen)
 {
     if (_nextScreen == currentScreen)
     {
         if (nextScreen != nullptr)
         {
-            nextScreenTransition = nullptr;
             nextScreen = nullptr;
         }
         return;
@@ -121,7 +129,6 @@ void UIControlSystem::SetScreen(UIScreen* _nextScreen, UIScreenTransition* _tran
         Logger::Warning("2 screen switches during one frame.");
     }
 
-    nextScreenTransition = _transition;
     nextScreen = _nextScreen;
 
     if (nextScreen == nullptr)
@@ -188,11 +195,6 @@ UIControl* UIControlSystem::GetPopupContainer() const
     return popupContainer.Get();
 }
 
-UIScreenTransition* UIControlSystem::GetScreenTransition() const
-{
-    return currentScreenTransition.Get();
-}
-
 void UIControlSystem::Reset()
 {
     inputSystem->SetCurrentScreen(nullptr);
@@ -235,12 +237,9 @@ void UIControlSystem::ProcessScreenLogic()
     if (screenLockCount == 0 && (nextScreen.Valid() || removeCurrentScreen))
     {
         RefPtr<UIScreen> nextScreenProcessed;
-        RefPtr<UIScreenTransition> nextScreenTransitionProcessed;
 
         nextScreenProcessed = nextScreen;
-        nextScreenTransitionProcessed = nextScreenTransition;
         nextScreen = nullptr; // functions called by this method can request another screen switch (for example, LoadResources)
-        nextScreenTransition = nullptr;
 
         LockInput();
 
@@ -248,20 +247,11 @@ void UIControlSystem::ProcessScreenLogic()
 
         NotifyListenersWillSwitch(nextScreenProcessed.Get());
 
-        if (nextScreenTransitionProcessed)
-        {
-            if (nextScreenTransitionProcessed->GetRect() != fullscreenRect)
-            {
-                nextScreenTransitionProcessed->SystemScreenSizeChanged(fullscreenRect);
-            }
-
-            nextScreenTransitionProcessed->StartTransition();
-            nextScreenTransitionProcessed->SetSourceScreen(currentScreen.Get());
-        }
         // if we have current screen we call events, unload resources for it group
         if (currentScreen)
         {
             currentScreen->InvokeInactive();
+            currentScreen->SetScene(nullptr);
 
             RefPtr<UIScreen> prevScreen = currentScreen;
             currentScreen = nullptr;
@@ -289,6 +279,7 @@ void UIControlSystem::ProcessScreenLogic()
 
         if (currentScreen)
         {
+            currentScreen->SetScene(this);
             currentScreen->InvokeActive(UIControl::eViewState::VISIBLE);
         }
         inputSystem->SetCurrentScreen(currentScreen.Get());
@@ -298,43 +289,10 @@ void UIControlSystem::ProcessScreenLogic()
 
         NotifyListenersDidSwitch(currentScreen.Get());
 
-        if (nextScreenTransitionProcessed)
-        {
-            nextScreenTransitionProcessed->SetDestinationScreen(currentScreen.Get());
-
-            LockSwitch();
-            LockInput();
-
-            currentScreenTransition = nextScreenTransitionProcessed;
-            currentScreenTransition->InvokeActive(UIControl::eViewState::VISIBLE);
-            styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
-            layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
-            renderSystem->SetCurrentScreenTransition(currentScreenTransition);
-        }
-
         UnlockInput();
 
         frameSkip = FRAME_SKIP;
         removeCurrentScreen = false;
-    }
-    else
-    if (currentScreenTransition)
-    {
-        if (currentScreenTransition->IsComplete())
-        {
-            currentScreenTransition->InvokeInactive();
-
-            RefPtr<UIScreenTransition> prevScreenTransitionProcessed = currentScreenTransition;
-            currentScreenTransition = nullptr;
-            styleSheetSystem->SetCurrentScreenTransition(currentScreenTransition);
-            layoutSystem->SetCurrentScreenTransition(currentScreenTransition);
-            renderSystem->SetCurrentScreenTransition(currentScreenTransition);
-
-            UnlockInput();
-            UnlockSwitch();
-
-            prevScreenTransitionProcessed->EndTransition();
-        }
     }
 
     /*
@@ -368,6 +326,11 @@ void UIControlSystem::Update()
         {
             system->Process(timeElapsed);
         }
+
+        for (auto& components : singleComponents)
+        {
+            components->ResetState();
+        }
     }
 }
 
@@ -390,9 +353,20 @@ void UIControlSystem::SwitchInputToControl(uint32 eventID, UIControl* targetCont
     return inputSystem->SwitchInputToControl(eventID, targetControl);
 }
 
+bool UIControlSystem::HandleInputEvent(const InputEvent& inputEvent)
+{
+    UIEvent uie = MakeUIEvent(inputEvent);
+    if (uie.phase != UIEvent::Phase::ERROR)
+    {
+        OnInput(&uie);
+        return true; // ????
+    }
+    return false;
+}
+
 void UIControlSystem::OnInput(UIEvent* newEvent)
 {
-    newEvent->point = UIControlSystem::Instance()->vcs->ConvertInputToVirtual(newEvent->physPoint);
+    newEvent->point = GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(newEvent->physPoint);
     newEvent->tapCount = CalculatedTapCount(newEvent);
 
     if (Replay::IsPlayback())
@@ -499,11 +473,6 @@ void UIControlSystem::ScreenSizeChanged(const Rect& newFullscreenRect)
     }
 
     fullscreenRect = newFullscreenRect;
-
-    if (currentScreenTransition.Valid())
-    {
-        currentScreenTransition->SystemScreenSizeChanged(fullscreenRect);
-    }
 
     if (currentScreen.Valid())
     {
@@ -676,7 +645,7 @@ void UIControlSystem::SetBiDiSupportEnabled(bool support)
 
 bool UIControlSystem::IsHostControl(const UIControl* control) const
 {
-    return (GetScreen() == control || GetPopupContainer() == control || GetScreenTransition() == control);
+    return (GetScreen() == control || GetPopupContainer() == control);
 }
 
 void UIControlSystem::RegisterControl(UIControl* control)
@@ -729,6 +698,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
+    system->SetScene(this);
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -757,9 +727,30 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
     {
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
+        systemPtr->SetScene(nullptr);
         return systemPtr;
     }
 
+    return nullptr;
+}
+
+void UIControlSystem::AddSingleComponent(std::unique_ptr<UISingleComponent> single)
+{
+    singleComponents.push_back(std::move(single));
+}
+
+std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const UISingleComponent* singleComponent)
+{
+    auto it = std::find_if(singleComponents.begin(), singleComponents.end(),
+                           [singleComponent](const std::unique_ptr<UISingleComponent>& ptr) {
+                               return ptr.get() == singleComponent;
+                           });
+    if (it != singleComponents.end())
+    {
+        std::unique_ptr<UISingleComponent> ptr(it->release());
+        singleComponents.erase(it);
+        return ptr;
+    }
     return nullptr;
 }
 
@@ -803,5 +794,165 @@ void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)
     DVASSERT((time > 0.0f) && (inch > 0.0f));
     doubleClickTime = time;
     doubleClickInchSquare = inch * inch;
+}
+
+UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
+{
+    UIEvent uie;
+    uie.phase = UIEvent::Phase::ERROR;
+    uie.timestamp = inputEvent.timestamp;
+    uie.window = inputEvent.window;
+
+    if (inputEvent.deviceType == eInputDeviceTypes::KEYBOARD)
+    {
+        uie.device = eInputDevices::KEYBOARD;
+        uie.key = inputEvent.elementId;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        if (inputEvent.keyboardEvent.charCode > 0)
+        {
+            uie.phase = inputEvent.keyboardEvent.charRepeated ? UIEvent::Phase::CHAR_REPEAT : UIEvent::Phase::CHAR;
+            uie.keyChar = inputEvent.keyboardEvent.charCode;
+        }
+        else
+        {
+            if (inputEvent.digitalState.IsReleased())
+            {
+                uie.phase = UIEvent::Phase::KEY_UP;
+            }
+            else
+            {
+                if (inputEvent.digitalState.IsJustPressed())
+                {
+                    uie.phase = UIEvent::Phase::KEY_DOWN;
+                }
+                else
+                {
+                    uie.phase = UIEvent::Phase::KEY_DOWN_REPEAT;
+                }
+            }
+        }
+    }
+    else if (IsMouseInputElement(inputEvent.elementId))
+    {
+        uie.device = eInputDevices::MOUSE;
+        uie.mouseButton = eMouseButtons::NONE;
+        uie.isRelative = inputEvent.mouseEvent.isRelative;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
+        AnalogElementState mousePosition = mouse->GetPosition();
+        AnalogElementState mouseWheelDelta = mouse->GetWheelDelta();
+
+        switch (inputEvent.elementId)
+        {
+        case eInputElements::MOUSE_LBUTTON:
+        case eInputElements::MOUSE_RBUTTON:
+        case eInputElements::MOUSE_MBUTTON:
+        case eInputElements::MOUSE_EXT1BUTTON:
+        case eInputElements::MOUSE_EXT2BUTTON:
+            uie.phase = inputEvent.digitalState.IsPressed() ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.mouseButton = static_cast<eMouseButtons>(inputEvent.elementId - eInputElements::MOUSE_LBUTTON + 1);
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            break;
+        case eInputElements::MOUSE_WHEEL:
+            uie.phase = UIEvent::Phase::WHEEL;
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            uie.wheelDelta = { mouseWheelDelta.x, mouseWheelDelta.y };
+            break;
+        case eInputElements::MOUSE_POSITION:
+            // TODO: Holy shit, how to make multiple DRAG UIEvents from single inputEvent
+            uie.mouseButton = TranslateMouseElementToButtons(mouse->GetFirstPressedButton());
+            uie.phase = uie.mouseButton == eMouseButtons::NONE ? UIEvent::Phase::MOVE : UIEvent::Phase::DRAG;
+            uie.physPoint = { mousePosition.x, mousePosition.y };
+            break;
+        default:
+            DVASSERT(0, "Unexpected mouse input element");
+            break;
+        }
+    }
+    else if (IsTouchInputElement(inputEvent.elementId))
+    {
+        uie.device = eInputDevices::TOUCH_SURFACE;
+        uie.modifiers = GetKeyboardModifierKeys();
+
+        const bool isDigitalEvent = IsTouchClickInputElement(inputEvent.elementId);
+
+        // UIEvent's touch id = touch index + 1 (since 0 means 'no touch' inside of UI system)
+
+        if (isDigitalEvent)
+        {
+            AnalogElementState analogState = inputEvent.device->GetAnalogElementState(GetTouchPositionElementFromClickElement(inputEvent.elementId));
+
+            uie.phase = inputEvent.digitalState.IsPressed() ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
+            uie.physPoint = { analogState.x, analogState.y };
+
+            uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_CLICK + 1;
+        }
+        else
+        {
+            uie.phase = UIEvent::Phase::DRAG;
+            uie.physPoint = { inputEvent.analogState.x, inputEvent.analogState.y };
+            uie.touchId = inputEvent.elementId - eInputElements::TOUCH_FIRST_POSITION + 1;
+        }
+    }
+
+    return uie;
+}
+
+eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
+{
+    eModifierKeys modifierKeys = eModifierKeys::NONE;
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard != nullptr)
+    {
+        DigitalElementState lctrl = keyboard->GetKeyState(eInputElements::KB_LCTRL);
+        DigitalElementState rctrl = keyboard->GetKeyState(eInputElements::KB_RCTRL);
+        if (lctrl.IsPressed() || rctrl.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::CONTROL;
+        }
+
+        DigitalElementState lshift = keyboard->GetKeyState(eInputElements::KB_LSHIFT);
+        DigitalElementState rshift = keyboard->GetKeyState(eInputElements::KB_RSHIFT);
+        if (lshift.IsPressed() || rshift.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::SHIFT;
+        }
+
+        DigitalElementState lalt = keyboard->GetKeyState(eInputElements::KB_LALT);
+        DigitalElementState ralt = keyboard->GetKeyState(eInputElements::KB_RALT);
+        if (lalt.IsPressed() || ralt.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::ALT;
+        }
+
+        DigitalElementState lcmd = keyboard->GetKeyState(eInputElements::KB_LCMD);
+        DigitalElementState rcmd = keyboard->GetKeyState(eInputElements::KB_RCMD);
+        if (lcmd.IsPressed() || rcmd.IsPressed())
+        {
+            modifierKeys |= eModifierKeys::COMMAND;
+        }
+    }
+    return modifierKeys;
+}
+
+eMouseButtons UIControlSystem::TranslateMouseElementToButtons(eInputElements element)
+{
+    switch (element)
+    {
+    case eInputElements::MOUSE_LBUTTON:
+        return eMouseButtons::LEFT;
+    case eInputElements::MOUSE_RBUTTON:
+        return eMouseButtons::RIGHT;
+    case eInputElements::MOUSE_MBUTTON:
+        return eMouseButtons::MIDDLE;
+    case eInputElements::MOUSE_EXT1BUTTON:
+        return eMouseButtons::EXTENDED1;
+    case eInputElements::MOUSE_EXT2BUTTON:
+        return eMouseButtons::EXTENDED2;
+    default:
+        return eMouseButtons::NONE;
+    }
 }
 }

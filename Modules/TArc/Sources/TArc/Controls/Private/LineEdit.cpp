@@ -55,7 +55,11 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
 
         if (textChanged)
         {
-            setText(QString::fromStdString(fieldValue.GetValue().Cast<String>()));
+            QString newText = QString::fromStdString(fieldValue.GetValue().Cast<String>());
+            if (newText != text())
+            {
+                setText(newText);
+            }
         }
     }
 
@@ -76,14 +80,26 @@ M::ValidationResult LineEdit::Validate(const Any& value) const
     Reflection field = model.GetField(GetFieldName(Fields::Text));
     DVASSERT(field.IsValid());
 
-    const M::Validator* validator = field.GetMeta<M::Validator>();
-    if (validator != nullptr)
-    {
-        return validator->Validate(value, field.GetValue());
-    }
-
     M::ValidationResult r;
     r.state = M::ValidationResult::eState::Valid;
+
+    const M::Validator* validator = GetFieldValue<const M::Validator*>(Fields::Validator, nullptr);
+    if (validator != nullptr)
+    {
+        r = validator->Validate(value, field.GetValue());
+    }
+
+    if (r.state == Metas::ValidationResult::eState::Invalid)
+    {
+        return r;
+    }
+
+    validator = field.GetMeta<M::Validator>();
+    if (validator != nullptr)
+    {
+        r = validator->Validate(value, field.GetValue());
+    }
+
     return r;
 }
 

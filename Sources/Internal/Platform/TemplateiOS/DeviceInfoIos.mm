@@ -226,6 +226,14 @@ String DeviceInfoPrivate::GetModel()
             model = "iPad 5th gen WiFi";
         if ([modelName hasPrefix:@"iPad6,12"])
             model = "iPad 5th gen Cellular";
+        if ([modelName hasPrefix:@"iPad7,1"])
+            model = "iPad Pro 12.9 2nd gen WiFi";
+        if ([modelName hasPrefix:@"iPad7,2"])
+            model = "iPad Pro 12.9 2nd gen Cellular";
+        if ([modelName hasPrefix:@"iPad7,3"])
+            model = "iPad Pro 10.5 WiFi";
+        if ([modelName hasPrefix:@"iPad7,4"])
+            model = "iPad Pro 10.5 Cellular";
 
         // iPod
         if ([modelName hasPrefix:@"iPod1,1"])

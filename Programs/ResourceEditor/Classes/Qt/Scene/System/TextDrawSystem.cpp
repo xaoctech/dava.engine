@@ -13,8 +13,8 @@ TextDrawSystem::TextDrawSystem(Scene* scene, SceneCameraSystem* _cameraSystem)
     : SceneSystem(scene)
     , cameraSystem(_cameraSystem)
 {
-    FilePath fntPath = FilePath("~res:/ResourceEditor/Fonts/korinna_df.fnt");
-    FilePath texPath = FilePath("~res:/ResourceEditor/Fonts/korinna_df.tex");
+    FilePath fntPath = FilePath("~res:/ResourceEditor/Fonts/DejaVuSans.fnt");
+    FilePath texPath = FilePath("~res:/ResourceEditor/Fonts/DejaVuSans.tex");
     font = GraphicFont::Create(fntPath, texPath);
     if (nullptr == font)
         return;
@@ -54,17 +54,21 @@ void TextDrawSystem::Draw()
     {
         for (const auto& textToDraw : textToDraw)
         {
-            WideString wStr = UTF8Utils::EncodeToWideString(textToDraw.text);
-            vertices.resize(4 * wStr.length());
+            float32 fSize = font->GetSize();
+            font->SetSize(textToDraw.fontSize);
+
+            vertices.resize(4 * textToDraw.text.length());
 
             float32 x = textToDraw.pos.x;
             float32 y = textToDraw.pos.y;
-            AdjustPositionBasedOnAlign(x, y, font->GetStringSize(wStr), textToDraw.align);
+            AdjustPositionBasedOnAlign(x, y, font->GetStringSize(textToDraw.text), textToDraw.align);
 
             int32 charactersDrawn = 0;
-            font->DrawStringToBuffer(wStr, static_cast<int>(x), static_cast<int>(y), vertices.data(), charactersDrawn);
+            font->DrawStringToBuffer(textToDraw.text, static_cast<int>(x), static_cast<int>(y), vertices.data(), charactersDrawn);
 
             PushNextBatch(textToDraw.color);
+
+            font->SetSize(fSize);
         }
     }
 
@@ -76,7 +80,7 @@ void TextDrawSystem::PushNextBatch(const Color& color)
     uint32 vertexCount = static_cast<uint32>(vertices.size());
     uint32 indexCount = 6 * vertexCount / 4;
 
-    RenderSystem2D::BatchDescriptor batchDescriptor;
+    BatchDescriptor2D batchDescriptor;
     batchDescriptor.singleColor = color;
     batchDescriptor.vertexCount = vertexCount;
     batchDescriptor.indexCount = DAVA::Min(TextBlockGraphicRender::GetSharedIndexBufferCapacity(), indexCount);
@@ -92,15 +96,17 @@ void TextDrawSystem::PushNextBatch(const Color& color)
     RenderSystem2D::Instance()->PushBatch(batchDescriptor);
 }
 
-void TextDrawSystem::DrawText(int32 x, int32 y, const String& text, const Color& color, Align align)
+void TextDrawSystem::DrawText(const DAVA::Vector2& pos2d, const DAVA::String& text, const DAVA::Color& color, Align align)
 {
-    DrawText(Vector2((float32)x, (float32)y), text, color);
+    DrawText(pos2d, UTF8Utils::EncodeToWideString(text), color, font->GetSize(), align);
 }
 
-void TextDrawSystem::DrawText(const Vector2& pos2d, const String& text, const Color& color, Align align)
+void TextDrawSystem::DrawText(const DAVA::Vector2& pos2d, const DAVA::WideString& text, const DAVA::Color& color, DAVA::float32 fontSize, Align align)
 {
     if ((pos2d.x >= 0.0f) && (pos2d.y >= 0.0f))
-        textToDraw.emplace_back(pos2d, text, color, align);
+    {
+        textToDraw.emplace_back(pos2d, text, color, align, fontSize);
+    }
 }
 
 void TextDrawSystem::AdjustPositionBasedOnAlign(float32& x, float32& y, const Size2i& sSize, Align align)

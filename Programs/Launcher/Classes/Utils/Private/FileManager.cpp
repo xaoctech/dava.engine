@@ -18,7 +18,7 @@ namespace FileManagerDetails
 {
 const QString tempSelfUpdateDir = "selfupdate/";
 const QString baseAppDir = "DAVATools/";
-const QString tempDir = baseAppDir + "/temp/";
+const QString tempDir = baseAppDir + "temp/";
 
 QStringList DeployDirectories()
 {
@@ -75,16 +75,31 @@ bool MoveEntry(const QFileInfo& fileInfo, const QString& newFilePath)
 }
 } //namespace FileManagerDetails
 
+QString FileManager::documentsDirectory;
+
 QString FileManager::GetDocumentsDirectory()
 {
-    QString docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
-    MakeDirectory(docDir);
-    return docDir;
+    return documentsDirectory;
 }
 
 FileManager::FileManager(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {
+#ifdef Q_OS_MAC
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/DAVAEngine/Launcher/";
+#else
+    documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVAProject/Launcher/";
+#endif
+    if (!QDir(documentsDirectory).exists())
+    {
+        QString oldDocDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/DAVALauncher/";
+        if (QDir(oldDocDir).exists())
+        {
+            QtHelpers::CopyRecursively(oldDocDir, documentsDirectory);
+        }
+    }
+    MakeDirectory(documentsDirectory);
+
     //by default we need to use launcher directory, because MoveFiles works only between single hard drive
     //but on os x we can start application in temp directory. In this case we need to use filesDirectory
     launcherDirectory = QtHelpers::GetApplicationDirPath();
@@ -274,28 +289,6 @@ void FileManager::MakeDirectory(const QString& path)
 {
     if (!QDir(path).exists())
         QDir().mkpath(path);
-}
-
-bool FileManager::CreateFileFromRawData(const QByteArray& dataToWrite, const QString& filePath) const
-{
-    using namespace std;
-    //we can not use QFile::write because of bug https://bugreports.qt.io/browse/QTBUG-57468
-    try
-    {
-        ofstream outfile(filePath.toStdString().c_str(), ofstream::out | ofstream::trunc | ofstream::binary);
-        if (outfile.is_open())
-        {
-            outfile.write(dataToWrite, dataToWrite.size());
-            outfile.close();
-            return outfile.good();
-        }
-        return false;
-    }
-    catch (const ofstream::failure& failure)
-    {
-        ErrorMessenger::LogMessage(QtWarningMsg, "can not write to file " + filePath + " the reason is " + failure.what());
-        return false;
-    }
 }
 
 void FileManager::SetFilesDirectory(const QString& newDirPath)

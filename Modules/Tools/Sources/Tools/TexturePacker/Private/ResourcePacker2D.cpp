@@ -141,7 +141,7 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
         }
     }
 
-    RecursiveTreeWalk(inputGfxDirectory, outputGfxDirectory, packAlgorithms);
+    PackRecursively(inputGfxDirectory, outputGfxDirectory, packAlgorithms);
 
     // Put latest md5 after convertation
     RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true);
@@ -278,7 +278,7 @@ uint32 ResourcePacker2D::GetMaxTextureSize() const
     return maxTextureSize;
 }
 
-void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
+void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
 {
     DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
 
@@ -417,6 +417,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                 }
 
                 DefinitionFile::Collection definitionFileList;
+                Vector<FilePath> justCopyList;
                 definitionFileList.reserve(fileList->GetCount());
                 for (uint32 fi = 0; fi < fileList->GetCount() && running; ++fi)
                 {
@@ -434,7 +435,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                         shouldAcceptFile = defFile->LoadPSD(fullname, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose);
                     }
-                    else if (isLightmapsPacking && fullname.IsEqualToExtension(".png"))
+                    else if (fullname.IsEqualToExtension(".png"))
                     {
                         shouldAcceptFile = true;
                         defFile->LoadPNG(fullname, processDir);
@@ -442,6 +443,10 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     else if (fullname.IsEqualToExtension(".pngdef"))
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(fullname, processDir);
+                    }
+                    else if (!IsFileIgnoredByName(ignoredFileNames, fullname.GetFilename()))
+                    {
+                        justCopyList.push_back(fullname);
                     }
 
                     if (shouldAcceptFile == false)
@@ -490,6 +495,16 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     }
                 }
 
+                for (FilePath& path : justCopyList)
+                {
+                    FilePath destPath(path);
+                    destPath.ReplaceDirectory(outputPath);
+                    if (!FileSystem::Instance()->CopyFile(path, destPath))
+                    {
+                        Logger::Error("Can't copy %s to %s", path.GetStringValue().c_str(), destPath.GetStringValue().c_str());
+                    }
+                }
+
                 packTime = SystemTimer::GetMs() - packTime;
 
                 if (Engine::Instance()->IsConsoleMode())
@@ -532,7 +547,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     FilePath output = outputPath + filename;
                     output.MakeDirectoryPathname();
 
-                    RecursiveTreeWalk(input, output, packAlgorithms, flagsToPass);
+                    PackRecursively(input, output, packAlgorithms, flagsToPass);
                 }
             }
         }

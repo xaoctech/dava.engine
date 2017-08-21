@@ -57,6 +57,7 @@ extern const QString menuFile;
 extern const QString menuEdit;
 extern const QString menuView;
 extern const QString menuHelp;
+extern const QString menuFind;
 }
 
 class ActionPlacementInfo

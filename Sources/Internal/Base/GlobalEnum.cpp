@@ -21,6 +21,7 @@
 #include "UI/UIWebView.h"
 #include "Render/RHI/rhi_Type.h"
 #include "Render/Highlevel/BillboardRenderObject.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 #include "Utils/BiDiHelper.h"
 
 using namespace DAVA;
@@ -112,21 +113,9 @@ ENUM_DECLARE(Light::eType)
 
 ENUM_DECLARE(Entity::EntityFlags)
 {
-    ENUM_ADD_DESCR(Entity::NODE_WORLD_MATRIX_ACTUAL, "NODE_WORLD_MATRIX_ACTUAL");
     ENUM_ADD_DESCR(Entity::NODE_VISIBLE, "NODE_VISIBLE");
-    ENUM_ADD_DESCR(Entity::NODE_UPDATABLE, "NODE_UPDATABLE");
-    ENUM_ADD_DESCR(Entity::NODE_IS_LOD_PART, "NODE_IS_LOD_PART");
-    ENUM_ADD_DESCR(Entity::NODE_LOCAL_MATRIX_IDENTITY, "NODE_LOCAL_MATRIX_IDENTITY");
-    ENUM_ADD_DESCR(Entity::BOUNDING_VOLUME_AABB, "BOUNDING_VOLUME_AABB");
-    ENUM_ADD_DESCR(Entity::BOUNDING_VOLUME_OOB, "BOUNDING_VOLUME_OOB");
-    ENUM_ADD_DESCR(Entity::BOUNDING_VOLUME_SPHERE, "BOUNDING_VOLUME_SPHERE");
-    ENUM_ADD_DESCR(Entity::NODE_CLIPPED_PREV_FRAME, "NODE_CLIPPED_PREV_FRAME");
-    ENUM_ADD_DESCR(Entity::NODE_CLIPPED_THIS_FRAME, "NODE_CLIPPED_THIS_FRAME");
-    ENUM_ADD_DESCR(Entity::NODE_INVALID, "NODE_INVALID");
     ENUM_ADD_DESCR(Entity::TRANSFORM_NEED_UPDATE, "TRANSFORM_NEED_UPDATE");
     ENUM_ADD_DESCR(Entity::TRANSFORM_DIRTY, "TRANSFORM_DIRTY");
-    ENUM_ADD_DESCR(Entity::NODE_DELETED, "NODE_DELETED");
-    ENUM_ADD_DESCR(Entity::SCENE_LIGHTS_MODIFIED, "SCENE_LIGHTS_MODIFIED");
 }
 
 ENUM_DECLARE(DeviceInfo::ePlatform)
@@ -185,6 +174,7 @@ ENUM_DECLARE(UIControlBackground::eDrawType)
     ENUM_ADD_DESCR(UIControlBackground::DRAW_STRETCH_BOTH, "DRAW_STRETCH_BOTH");
     ENUM_ADD_DESCR(UIControlBackground::DRAW_TILED, "DRAW_TILED");
     ENUM_ADD_DESCR(UIControlBackground::DRAW_TILED_MULTILAYER, "DRAW_TILED_MULTILAYER");
+    ENUM_ADD_DESCR(UIControlBackground::DRAW_BATCH, "DRAW_BATCH");
 }
 
 ENUM_DECLARE(eAlign)
@@ -414,4 +404,11 @@ ENUM_DECLARE(BillboardRenderObject::BillboardType)
 {
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_SPHERICAL, "Spherical");
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_CYLINDRICAL, "Cylindrical");
+}
+
+ENUM_DECLARE(GeoDecalManager::Mapping)
+{
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::PLANAR, "Planar");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::SPHERICAL, "Spherical");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::CYLINDRICAL, "Cylindrical");
 }

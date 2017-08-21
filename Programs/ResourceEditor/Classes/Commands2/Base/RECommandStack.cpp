@@ -24,6 +24,48 @@ void RECommandStack::Clear()
     SetCurrentIndex(EMPTY_INDEX);
 }
 
+void RECommandStack::Exec(std::unique_ptr<DAVA::Command>&& command)
+{
+    RECommandNotificationObject notifyObject;
+    if (DAVA::IsCommandBatch(command.get()))
+    {
+        notifyObject.batch = static_cast<const RECommandBatch*>(command.get());
+    }
+    else
+    {
+        notifyObject.command = static_cast<const RECommand*>(command.get());
+    }
+    notifyObject.redo = true;
+
+    REDependentCommandsHolder holder(notifyObject);
+    AccumulateDependentCommands(holder);
+
+    bool hasDependentCommands = (holder.preCommands.empty() == false) || (holder.postCommands.empty() == false);
+    bool singleCommandBatch = (commandBatch == nullptr) && hasDependentCommands;
+
+    if (singleCommandBatch == true)
+    {
+        BeginBatch(command->GetDescription(), 1);
+    }
+
+    for (std::unique_ptr<DAVA::Command>& cmd : holder.preCommands)
+    {
+        Exec(std::move(cmd));
+    }
+
+    CommandStack::Exec(std::move(command));
+
+    for (std::unique_ptr<DAVA::Command>& cmd : holder.postCommands)
+    {
+        Exec(std::move(cmd));
+    }
+
+    if (singleCommandBatch == true)
+    {
+        EndBatch();
+    }
+}
+
 void RECommandStack::SetChanged()
 {
     CommandStack::EmitCleanChanged(false);

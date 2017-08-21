@@ -39,7 +39,7 @@ void UIScreenManager::SetFirst(int screenId)
     if (screen.type == Screen::TYPE_SCREEN)
     {
         activeScreenId = screenId;
-        UIControlSystem::Instance()->SetScreen(static_cast<UIScreen*>(screen.value));
+        GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value));
     }
     else
     {
@@ -47,20 +47,20 @@ void UIScreenManager::SetFirst(int screenId)
     }
 }
 
-void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
+void UIScreenManager::SetScreen(int screenId)
 {
     Screen& screen = screens[screenId];
     if (screen.type == Screen::TYPE_SCREEN)
     {
         activeScreenId = screenId;
-        UIControlSystem::Instance()->SetScreen(static_cast<UIScreen*>(screen.value), transition);
+        GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value));
     }
 }
 
 void UIScreenManager::ResetScreen()
 {
     activeScreenId = -1;
-    UIControlSystem::Instance()->Reset();
+    GetEngineContext()->uiControlSystem->Reset();
 }
 
 void UIScreenManager::RegisterScreen(int screenId, UIScreen* screen)

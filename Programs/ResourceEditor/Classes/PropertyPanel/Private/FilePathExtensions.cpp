@@ -239,32 +239,35 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
     M::ValidationResult result;
 
     FilePath texturePath = value.Cast<FilePath>();
-    FilePath validDir = GetValidDir(true);
-    if (FilePath::ContainPath(texturePath, validDir) == false)
+    if (texturePath.IsEmpty() == false)
     {
-        result.state = M::ValidationResult::eState::Invalid;
-        result.message = Format("\"%s\" is wrong. It's allowed to select only from %s", texturePath.GetAbsolutePathname().c_str(), validDir.GetAbsolutePathname().c_str());
-        return result;
-    }
-
-    if (texturePath.GetExtension() != TextureDescriptor::GetDescriptorExtension())
-    {
-        result.state = M::ValidationResult::eState::Invalid;
-        const EngineContext* ctx = GetEngineContext();
-        if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+        FilePath validDir = GetValidDir(true);
+        if (FilePath::ContainPath(texturePath, validDir) == false)
         {
-            FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
-
-            const TexturesMap& texturesMap = Texture::GetTextureMap();
-            auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
-            if (found != texturesMap.end())
-            {
-                found->second->ReloadAs(Settings::GetGPUFormat());
-            }
-
-            result.fixedValue = FilePath(descriptorPath);
+            result.state = M::ValidationResult::eState::Invalid;
+            result.message = Format("\"%s\" is wrong. It's allowed to select only from %s", texturePath.GetAbsolutePathname().c_str(), validDir.GetAbsolutePathname().c_str());
+            return result;
         }
-        return result;
+
+        if (texturePath.GetExtension() != TextureDescriptor::GetDescriptorExtension())
+        {
+            result.state = M::ValidationResult::eState::Invalid;
+            const EngineContext* ctx = GetEngineContext();
+            if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+            {
+                FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
+
+                const TexturesMap& texturesMap = Texture::GetTextureMap();
+                auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
+                if (found != texturesMap.end())
+                {
+                    found->second->ReloadAs(Settings::GetGPUFormat());
+                }
+
+                result.fixedValue = FilePath(descriptorPath);
+            }
+            return result;
+        }
     }
 
     result.state = M::ValidationResult::eState::Valid;
@@ -318,30 +321,78 @@ DAVA::M::ValidationResult ValidateScene(const DAVA::Any& value, const DAVA::Any&
     return result;
 }
 
+DAVA::M::ValidationResult ValidateExistsFileInProject(const DAVA::Any& value, const DAVA::Any& oldValue)
+{
+    using namespace DAVA;
+
+    M::ValidationResult result;
+
+    FilePath filePath = value.Cast<FilePath>();
+    if (filePath.IsEmpty())
+    {
+        result.state = M::ValidationResult::eState::Valid;
+        return result;
+    }
+
+    FilePath validProjectDir = GetValidDir(false);
+
+    if (filePath.IsDirectoryPathname() == true)
+    {
+        result.state = M::ValidationResult::eState::Invalid;
+        result.message = Format("\"%s\" is wrong. Should be file", filePath.GetAbsolutePathname().c_str());
+        return result;
+    }
+
+    const DAVA::EngineContext* ctx = DAVA::GetEngineContext();
+
+    if (ctx->fileSystem->Exists(filePath) == false)
+    {
+        result.state = M::ValidationResult::eState::Invalid;
+        result.message = Format("\"%s\" is wrong. File doesn't exists", filePath.GetAbsolutePathname().c_str());
+        return result;
+    }
+
+    if (FilePath::ContainPath(filePath, validProjectDir) == false)
+    {
+        result.state = M::ValidationResult::eState::Invalid;
+        result.message = Format("\"%s\" is wrong. It's allowed to select only from %s", filePath.GetAbsolutePathname().c_str(), validProjectDir.GetAbsolutePathname().c_str());
+        return result;
+    }
+
+    result.state = M::ValidationResult::eState::Valid;
+    return result;
+}
+
 } // namespace PathValidatorsDetail
 
-DAVA::M::Validator CreateHeightMapValidator(DAVA::TArc::ContextAccessor* accessor)
+void InitFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
 {
     PathValidatorsDetail::PathValidatorInfo::Instance()->EnsureInited(accessor);
+}
+
+DAVA::M::Validator CreateHeightMapValidator()
+{
     return DAVA::M::Validator(PathValidatorsDetail::ValidateHeightMap);
 }
 
-DAVA::M::Validator CreateTextureValidator(DAVA::TArc::ContextAccessor* accessor)
+DAVA::M::Validator CreateTextureValidator()
 {
-    PathValidatorsDetail::PathValidatorInfo::Instance()->EnsureInited(accessor);
     return DAVA::M::Validator(PathValidatorsDetail::ValidateTexture);
 }
 
-DAVA::M::Validator CreateImageValidator(DAVA::TArc::ContextAccessor* accessor)
+DAVA::M::Validator CreateImageValidator()
 {
-    PathValidatorsDetail::PathValidatorInfo::Instance()->EnsureInited(accessor);
     return DAVA::M::Validator(PathValidatorsDetail::ValidateImage);
 }
 
-DAVA::M::Validator CreateSceneValidator(DAVA::TArc::ContextAccessor* accessor)
+DAVA::M::Validator CreateSceneValidator()
 {
-    PathValidatorsDetail::PathValidatorInfo::Instance()->EnsureInited(accessor);
     return DAVA::M::Validator(PathValidatorsDetail::ValidateScene);
+}
+
+DAVA::M::Validator CreateExistsFile()
+{
+    return DAVA::M::Validator(PathValidatorsDetail::ValidateExistsFileInProject);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -383,11 +434,10 @@ SceneFileMeta::SceneFileMeta(const DAVA::String& filters)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DAVA::Meta<HeightMapFileMeta, DAVA::Metas::File> CreateHeightMapFileMeta(DAVA::TArc::ContextAccessor* accessor)
+GenericFileMeta<HeightMapFileMeta> CreateHeightMapFileMeta()
 {
     using namespace PathValidatorsDetail;
     PathValidatorInfo* info = PathValidatorInfo::Instance();
-    info->EnsureInited(accessor);
 
     DAVA::String heightMapExt = DAVA::Heightmap::FileExtension();
     DAVA::String filters = DAVA::Format("All (*%s %s);;Heightmap (*%s);;%s", heightMapExt.c_str(), info->GetSourceFileString().c_str(),
@@ -395,11 +445,10 @@ DAVA::Meta<HeightMapFileMeta, DAVA::Metas::File> CreateHeightMapFileMeta(DAVA::T
     return DAVA::Meta<HeightMapFileMeta, DAVA::Metas::File>(filters);
 }
 
-DAVA::Meta<TextureFileMeta, DAVA::Metas::File> CreateTextureFileMeta(DAVA::TArc::ContextAccessor* accessor)
+GenericFileMeta<TextureFileMeta> CreateTextureFileMeta()
 {
     using namespace PathValidatorsDetail;
     PathValidatorInfo* info = PathValidatorInfo::Instance();
-    info->EnsureInited(accessor);
 
     DAVA::String textureExt = DAVA::TextureDescriptor::GetDescriptorExtension();
     DAVA::String filters = DAVA::Format("All (*%s %s);;TEX (*%s);;%s", textureExt.c_str(), info->GetSourceFileString().c_str(),
@@ -407,18 +456,16 @@ DAVA::Meta<TextureFileMeta, DAVA::Metas::File> CreateTextureFileMeta(DAVA::TArc:
     return DAVA::Meta<TextureFileMeta, DAVA::Metas::File>(filters);
 }
 
-DAVA::Meta<ImageFileMeta, DAVA::Metas::File> CreateImageFileMeta(DAVA::TArc::ContextAccessor* accessor)
+GenericFileMeta<ImageFileMeta> CreateImageFileMeta()
 {
     using namespace PathValidatorsDetail;
     PathValidatorInfo* info = PathValidatorInfo::Instance();
-    info->EnsureInited(accessor);
 
     DAVA::String filters = DAVA::Format("All (%s);;%s", info->GetSourceFileString().c_str(), info->GetSeparateSourceFileString().c_str());
     return DAVA::Meta<ImageFileMeta, DAVA::Metas::File>(filters);
 }
 
-DAVA::Meta<SceneFileMeta, DAVA::Metas::File> CreateSceneFileMeta(DAVA::TArc::ContextAccessor* accessor)
+GenericFileMeta<SceneFileMeta> CreateSceneFileMeta()
 {
-    PathValidatorsDetail::PathValidatorInfo::Instance()->EnsureInited(accessor);
     return DAVA::Meta<SceneFileMeta, DAVA::Metas::File>("All(*.sc2);; SC2(*.sc2);");
 }

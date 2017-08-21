@@ -213,6 +213,10 @@ void InsertAction(T* container, QAction* action, const InsertionParams& params)
             {
                 beforeAction = actions.at(actions.indexOf(beforeAction) + 1);
             }
+            else
+            {
+                beforeAction = nullptr;
+            }
         }
     }
 

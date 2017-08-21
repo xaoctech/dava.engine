@@ -52,6 +52,24 @@ inline String MakeUTF8String<char16>(const char16* value)
     return EncodeToUTF8(WideString(value));
 }
 
+/**
+Trim whitespace at begin and end of specified UTF8 string.
+Behavior depends by current system locale: http://en.cppreference.com/w/cpp/string/wide/iswspace
+*/
+String Trim(const String& str);
+
+/**
+Trim whitespace at begin of specified UTF8 string.
+Behavior depends by current system locale: http://en.cppreference.com/w/cpp/string/wide/iswspace
+*/
+String TrimLeft(const String& str);
+
+/**
+Trim whitespace at end of specified UTF8 string.
+Behavior depends by current system locale: http://en.cppreference.com/w/cpp/string/wide/iswspace
+*/
+String TrimRight(const String& str);
+
 } // namespace UTF8Utils
 
 //////////////////////////////////////////////////////////////////////////

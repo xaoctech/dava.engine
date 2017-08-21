@@ -19,8 +19,8 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/Themes.h>
 
-#include <QtTools/Utils/Themes/Themes.h>
 #include <QtTools/Utils/Utils.h>
 
 #include <Reflection/ReflectedTypeDB.h>
@@ -39,12 +39,12 @@ PropertiesModel::PropertiesModel(QObject* parent)
 {
     propertiesUpdater.SetUpdater(MakeFunction(this, &PropertiesModel::UpdateAllChangedProperties));
 
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetListener(this);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(this);
 }
 
 PropertiesModel::~PropertiesModel()
 {
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetListener(nullptr);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(nullptr);
 
     CleanUp();
     propertiesUpdater.Abort();

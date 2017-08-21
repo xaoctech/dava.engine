@@ -61,7 +61,7 @@ void FindInProjectModule::PostInit()
 
     connections.AddConnection(findInProjectAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindInProject));
 
-    ActionPlacementInfo placementInfo(CreateMenuPoint("Find", InsertionParams(InsertionParams::eInsertionMethod::AfterItem)));
+    TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, "Select Current Document in File System")));
     ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findInProjectAction);
 
     FindInProjectDetail::FindInProjectData* data = new FindInProjectDetail::FindInProjectData();

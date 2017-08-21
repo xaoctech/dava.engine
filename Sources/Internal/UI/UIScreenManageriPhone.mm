@@ -65,7 +65,7 @@ void UIScreenManager::SetFirst(int screenId)
             Logger::Error("ScreenManager::SetFirst no gl controller registered (use SetGLControllerId)");
         }
         activeScreenId = screenId;
-        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value);
+        GetEngineContext()->uiControlSystem->SetScreen((UIScreen*)screen.value);
     }
     else
     {
@@ -73,7 +73,7 @@ void UIScreenManager::SetFirst(int screenId)
     }
 }
 
-void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
+void UIScreenManager::SetScreen(int screenId)
 {
     Screen& screen = screens[screenId];
     if (screen.type == Screen::TYPE_CONTROLLER)
@@ -84,7 +84,7 @@ void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
             [[ScreenManagerImpl instance] setViewController:controller];
         }
         activeControllerId = screenId;
-        UIControlSystem::Instance()->SetScreen(nullptr);
+        GetEngineContext()->uiControlSystem->SetScreen(nullptr);
 
         activeScreenId = -1;
     }
@@ -103,14 +103,14 @@ void UIScreenManager::SetScreen(int screenId, UIScreenTransition* transition)
         }
         activeScreenId = screenId;
 
-        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value, transition);
+        GetEngineContext()->uiControlSystem->SetScreen((UIScreen*)screen.value);
     }
 }
 
 void UIScreenManager::ResetScreen()
 {
     activeScreenId = -1;
-    UIControlSystem::Instance()->Reset();
+    GetEngineContext()->uiControlSystem->Reset();
 }
 
 void UIScreenManager::RegisterController(int controllerId, void* controller)

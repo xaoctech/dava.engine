@@ -24,6 +24,7 @@ public:
         IsReadOnly = TBase::BaseFields::IsReadOnly,
         IsEnabled = TBase::BaseFields::IsEnabled,
         Range = TBase::BaseFields::Range, // Value should be castable to " const M::Range* "
+        ShowSpinArrows = TBase::BaseFields::ShowSpinArrows,
         Accuracy,
         FieldCount
     };
@@ -43,6 +44,7 @@ private:
     bool IsEqualValue(double v1, double v2) const override;
 
     QValidator::State TypeSpecificValidate(const QString& input) const override;
+    mutable bool sizeHintCalculation = false;
 };
 
 } // namespace TArc

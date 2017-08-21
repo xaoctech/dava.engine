@@ -14,6 +14,7 @@ public:
     static const DAVA::FastName General_ReloadParticlesOnPojectOpening;
     static const DAVA::FastName General_PreviewEnabled;
     static const DAVA::FastName General_OpenByDBClick;
+    static const DAVA::FastName General_OpenLastSceneOnLaunch;
     static const DAVA::FastName General_CompressionQuality;
     static const DAVA::FastName General_ShowErrorDialog;
 
@@ -80,6 +81,10 @@ public:
 
     static const DAVA::FastName Scene_Grab_Size_Width;
     static const DAVA::FastName Scene_Grab_Size_Height;
+
+    static const DAVA::FastName Scene_Slot_Box_Color;
+    static const DAVA::FastName Scene_Slot_Box_Edges_Color;
+    static const DAVA::FastName Scene_Slot_Pivot_Color;
 
     static const DAVA::FastName General_Mouse_InvertWheel;
     static const DAVA::FastName General_Mouse_WheelMoveCamera;

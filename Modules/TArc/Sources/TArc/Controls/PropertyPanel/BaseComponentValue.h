@@ -58,7 +58,7 @@ public:
     QWidget* AcquireEditorWidget(const QStyleOptionViewItem& option);
     void EnsureEditorCreated(QWidget* parent);
 
-    QString GetPropertyName() const;
+    virtual QString GetPropertyName() const;
     FastName GetID() const;
     int32 GetPropertiesNodeCount() const;
     std::shared_ptr<PropertyNode> GetPropertyNode(int32 index) const;

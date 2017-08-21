@@ -38,7 +38,7 @@ struct AnimatedPropertySetter
     void Animate(UIControl* control, const Reflection& ref, const T& startValue, const T& endValue) const
     {
         const int32 track = PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex;
-        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(AnimationManager::Instance()->FindPlayingAnimation(control, track));
+        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(GetEngineContext()->animationManager->FindPlayingAnimation(control, track));
 
         if (!currentAnimation || currentAnimation->GetEndValue() != endValue)
         {
@@ -112,11 +112,7 @@ void UIStyleSheetSystem::Process(float32 elapsedTime)
     if (!needUpdate)
         return;
 
-    if (currentScreenTransition.Valid())
-    {
-        ProcessControlHierarhy(currentScreenTransition.Get());
-    }
-    else if (currentScreen.Valid())
+    if (currentScreen.Valid())
     {
         ProcessControlHierarhy(currentScreen.Get());
     }
@@ -139,11 +135,6 @@ void UIStyleSheetSystem::ForceProcessControl(float32 elapsedTime, UIControl* con
 void UIStyleSheetSystem::SetCurrentScreen(const RefPtr<UIScreen>& screen)
 {
     currentScreen = screen;
-}
-
-void UIStyleSheetSystem::SetCurrentScreenTransition(const RefPtr<UIScreenTransition>& screenTransition)
-{
-    currentScreenTransition = screenTransition;
 }
 
 void UIStyleSheetSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)

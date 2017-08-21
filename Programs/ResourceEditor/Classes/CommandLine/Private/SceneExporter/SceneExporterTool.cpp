@@ -1,6 +1,7 @@
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
+#include "Project/ProjectManagerData.h"
 
 #include "Utils/SceneExporter/SceneExporter.h"
 #include "TArc/Utils/ModuleCollection.h"
@@ -18,6 +19,7 @@
 #include <Render/GPUFamilyDescriptor.h>
 #include <Render/Highlevel/Heightmap.h>
 #include <Time/DateTime.h>
+#include <Time/SystemTimer.h>
 #include <Utils/UTF8Utils.h>
 
 namespace SceneExporterToolDetail
@@ -59,21 +61,16 @@ void CollectObjectsFromFolder(const DAVA::FilePath& folderPathname, const DAVA::
 
 SceneExporter::eExportedObjectType GetObjectType(const DAVA::FilePath& pathname)
 {
-    static const DAVA::Vector<std::pair<SceneExporter::eExportedObjectType, DAVA::String>> objectDefinition =
-    {
-      { SceneExporter::OBJECT_TEXTURE, ".tex" },
-      { SceneExporter::OBJECT_SCENE, ".sc2" },
-      { SceneExporter::OBJECT_HEIGHTMAP, DAVA::Heightmap::FileExtension() },
-      { SceneExporter::OBJECT_EMITTER_CONFIG, ".yaml" },
-    };
+    const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT>& desc = SceneExporter::GetExportedObjectsDescriptions();
 
-    DVASSERT(static_cast<DAVA::int32>(objectDefinition.size()) == SceneExporter::OBJECT_COUNT);
-
-    for (const auto& def : objectDefinition)
+    for (const SceneExporter::ExportedObjectDesc& def : desc)
     {
-        if (pathname.IsEqualToExtension(def.second))
+        for (const DAVA::String& ext : def.extensions)
         {
-            return def.first;
+            if (pathname.IsEqualToExtension(ext))
+            {
+                return def.type;
+            }
         }
     }
 
@@ -247,6 +244,13 @@ bool SceneExporterTool::PostInitInternal()
     }
     exportingParams.dataSourceFolder.MakeDirectoryPathname();
 
+    dataSourceFolder = ProjectManagerData::GetDataSourcePath(exportingParams.dataSourceFolder);
+    if (dataSourceFolder.IsEmpty())
+    {
+        DAVA::Logger::Error("DataSource folder was not found");
+        return false;
+    }
+
     FilePath outputsFile = options.GetOption(OptionName::Output).AsString();
     if (outputsFile.IsEmpty() == false)
     { // new style of output params
@@ -345,6 +349,7 @@ bool SceneExporterTool::PostInitInternal()
 
 DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
 {
+    DAVA::FilePath::AddResourcesFolder(dataSourceFolder);
     DAVA::AssetCacheClient cacheClient;
 
     SceneExporter exporter;
@@ -364,6 +369,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
         else
         {
             useAssetCache = false;
+            cacheClient.Disconnect();
         }
     }
 
@@ -394,12 +400,17 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
         }
     }
 
+    DAVA::int64 packTime = DAVA::SystemTimer::GetMs();
     exporter.ExportObjects(exportedObjects);
+    packTime = DAVA::SystemTimer::GetMs() - packTime;
+    DAVA::Logger::Info("Export time: %.2lf sec", static_cast<DAVA::float64>(packTime) / 1000.0);
 
     if (useAssetCache)
     {
         cacheClient.Disconnect();
     }
+
+    DAVA::FilePath::RemoveResourcesFolder(dataSourceFolder);
 
     return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
 }

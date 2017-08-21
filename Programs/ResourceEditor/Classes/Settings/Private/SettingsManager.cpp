@@ -46,6 +46,7 @@ void SettingsManager::Init()
     CreateValue(Settings::General_ReloadParticlesOnPojectOpening, DAVA::VariantType(true));
     CreateValue(Settings::General_PreviewEnabled, DAVA::VariantType(false));
     CreateValue(Settings::General_OpenByDBClick, DAVA::VariantType(true));
+    CreateValue(Settings::General_OpenLastSceneOnLaunch, DAVA::VariantType(false));
     CreateValue(Settings::General_CompressionQuality, DAVA::VariantType(static_cast<DAVA::int32>(DAVA::TextureConverter::ECQ_DEFAULT)),
                 DAVA::InspDesc("Compression quality", GlobalEnumMap<DAVA::TextureConverter::eConvertQuality>::Instance()));
     CreateValue(Settings::General_ShowErrorDialog, DAVA::VariantType(true));
@@ -113,6 +114,10 @@ void SettingsManager::Init()
 
     CreateValue(Settings::Scene_Grab_Size_Width, DAVA::VariantType(1280));
     CreateValue(Settings::Scene_Grab_Size_Height, DAVA::VariantType(1024));
+
+    CreateValue(Settings::Scene_Slot_Box_Color, DAVA::VariantType(DAVA::Color(0.0f, 0.0f, 0.7f, 0.1f)));
+    CreateValue(Settings::Scene_Slot_Box_Edges_Color, DAVA::VariantType(DAVA::Color(0.5f, 0.2f, 0.0f, 1.0f)));
+    CreateValue(Settings::Scene_Slot_Pivot_Color, DAVA::VariantType(DAVA::Color(0.7f, 0.7f, 0.0f, 0.5f)));
 
     CreateValue(Settings::General_Mouse_WheelMoveCamera, DAVA::VariantType(true));
     CreateValue(Settings::General_Mouse_WheelMoveIntensity, DAVA::VariantType(180.0f));

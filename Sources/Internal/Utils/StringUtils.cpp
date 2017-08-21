@@ -8,6 +8,12 @@ namespace DAVA
 {
 namespace StringUtils
 {
+void GetLineBreaks(const String& string, Vector<uint8>& breaks, const char8* locale)
+{
+    breaks.resize(string.length(), LB_NOBREAK); // By default all characters not breakable
+    set_linebreaks_utf8(reinterpret_cast<const utf8_t*>(string.c_str()), string.length(), locale, reinterpret_cast<char*>(&breaks.front()));
+}
+
 void GetLineBreaks(const WideString& string, Vector<uint8>& breaks, const char8* locale)
 {
     breaks.resize(string.length(), LB_NOBREAK); // By default all characters not breakable

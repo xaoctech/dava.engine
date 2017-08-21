@@ -113,10 +113,10 @@ VertexDeclGLES2
             switch (layout.ElementSemantics(i))
             {
             case VS_POSITION:
-                strcpy(elem[elemCount].name, "attr_position");
+                sprintf(elem[elemCount].name, "attr_position%u", layout.ElementSemanticsIndex(i));
                 break;
             case VS_NORMAL:
-                strcpy(elem[elemCount].name, "attr_normal");
+                sprintf(elem[elemCount].name, "attr_normal%u", layout.ElementSemanticsIndex(i));
                 break;
             case VS_TEXCOORD:
                 sprintf(elem[elemCount].name, "attr_texcoord%u", layout.ElementSemanticsIndex(i));

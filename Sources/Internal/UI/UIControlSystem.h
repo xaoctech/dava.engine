@@ -1,14 +1,16 @@
 #pragma once
 
+#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Input/InputElements.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #include "UI/UIControl.h"
 #include "UI/UIEvent.h"
+#include "UI/Components/UISingleComponent.h"
 
 #define FRAME_SKIP 5
 
@@ -17,6 +19,8 @@
 */
 namespace DAVA
 {
+struct InputEvent;
+class Mouse;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;
@@ -51,15 +55,8 @@ public:
 		Also ControlSystem processed all user input events to the controls.
 	 */
 
-class UIControlSystem : public Singleton<UIControlSystem>
+class UIControlSystem final
 {
-protected:
-    ~UIControlSystem();
-    /**
-	 \brief Don't call this constructor!
-	 */
-    UIControlSystem();
-
 public:
     /**
 	 \brief Sets the requested screen as current.
@@ -68,7 +65,7 @@ public:
 	 \param[in] Screen you want to set as current
 	 \param[in] Transition you want to use for the screen setting.
 	 */
-    void SetScreen(UIScreen* newMainControl, UIScreenTransition* transition = 0);
+    void SetScreen(UIScreen* newMainControl);
 
     /**
 	 \brief Sets the requested screen as current.
@@ -99,8 +96,6 @@ public:
 	 \returns popup container
 	 */
     UIControl* GetPopupContainer() const;
-
-    UIScreenTransition* GetScreenTransition() const;
 
     /**
 	 \brief Disabled all controls inputs.
@@ -143,6 +138,9 @@ public:
 	 \brief Sets the current screen to 0 LOL.
 	 */
     void Reset();
+
+    bool HandleInputEvent(const InputEvent& inputEvent);
+
     /**
 	 \brief Calls by the system for input processing.
 	 */
@@ -288,6 +286,22 @@ public:
         return nullptr;
     }
 
+    void AddSingleComponent(std::unique_ptr<UISingleComponent> single);
+    std::unique_ptr<UISingleComponent> RemoveSingleComponent(const UISingleComponent* singleComponent);
+
+    template <typename T>
+    T* GetSingleComponent() const
+    {
+        for (auto& c : singleComponents)
+        {
+            if (IsPointerToExactClass<T>(c.get()))
+            {
+                return static_cast<T*>(c.get());
+            }
+        }
+        return nullptr;
+    }
+
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -301,6 +315,10 @@ public:
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
+    UIControlSystem();
+    ~UIControlSystem();
+    void Init();
+
     void ProcessScreenLogic();
 
     void NotifyListenersWillSwitch(UIScreen* screen);
@@ -308,9 +326,14 @@ private:
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
 
+    UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
+    eModifierKeys GetKeyboardModifierKeys() const;
+    static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
+
     friend class Private::EngineBackend;
 
     Vector<std::unique_ptr<UISystem>> systems;
+    Vector<std::unique_ptr<UISingleComponent>> singleComponents;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
@@ -322,8 +345,6 @@ private:
 
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIScreen> nextScreen;
-    RefPtr<UIScreenTransition> nextScreenTransition;
-    RefPtr<UIScreenTransition> currentScreenTransition;
     RefPtr<UIControl> popupContainer;
     Set<UIPopup*> popupsToRemove;
 
