@@ -8,7 +8,7 @@
 
 namespace DAVA
 {
-struct GeoDecalManager::DecalBuildInfo // : public GeoDecalManager::DecalConfig
+struct GeoDecalManager::DecalBuildInfo
 {
     AABBox3 boundingBox;
     PolygonGroup* polygonGroup = nullptr;
@@ -23,16 +23,6 @@ struct GeoDecalManager::DecalBuildInfo // : public GeoDecalManager::DecalConfig
     bool useCustomNormal = false;
     bool useCustomSpecular = false;
     bool useSkinning = false;
-    /*
-    DecalBuildInfo() = default;
-
-    DecalBuildInfo(const GeoDecalManager::DecalConfig& r)
-        : GeoDecalManager::DecalConfig(r)
-    {
-    }
-
-    DecalBuildInfo& operator = (const DecalBuildInfo&) = delete;
-    */
 };
 
 struct GeoDecalManager::DecalVertex
