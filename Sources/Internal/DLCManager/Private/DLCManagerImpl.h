@@ -285,7 +285,7 @@ private:
     InitState initState = InitState::Starting;
     int64 startInitializationTime = 0; // in milliseconds
     bool initTimeoutFired = false;
-    std::unique_ptr<MemoryBufferWriter> memBufWriter;
+    std::shared_ptr<MemoryBufferWriter> memBufWriter;
     PackFormat::PackFile::FooterBlock initFooterOnServer; // temp superpack info for every new pack request or during initialization
     PackFormat::PackFile usedPackFile; // current superpack info
     Vector<uint8> buffer; // temp buff
