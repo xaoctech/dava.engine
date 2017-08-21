@@ -96,7 +96,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
     .ConstructorByPointer()
     .Field("openLastScene", &GlobalSceneSettings::openLastScene)[DAVA::M::DisplayName("Open last opened scene on launch")]
     .Field("dragAndDropWithShift", &GlobalSceneSettings::dragAndDropWithShift)[DAVA::M::DisplayName("Drag'n'Drop with shift")]
-    .Field("rememberForceParameters", &GlobalSceneSettings::rememberForceParameters)[DAVA::M::DisplayName("Remember force parameters")]
     .Field("saveEmitters", &GlobalSceneSettings::saveEmitters)[DAVA::M::DisplayName("Save Emitters")]
     .Field("saveStaticOcclusion", &GlobalSceneSettings::saveStaticOcclusion)[DAVA::M::DisplayName("Save static occlusion")]
     .Field("defaultCustomColorIndex", &GlobalSceneSettings::defaultCustomColorIndex)[DAVA::M::DisplayName("Default custom color index")]

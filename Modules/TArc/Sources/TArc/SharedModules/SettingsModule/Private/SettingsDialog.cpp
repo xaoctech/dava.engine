@@ -166,22 +166,20 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     dlgLayout->addLayout(buttonsLayout);
     Reflection refModel = Reflection::Create(ReflectedObject(this));
     {
-        ReflectedButton::Params buttonParams(params.accessor, params.ui, DAVA::TArc::mainWindowKey);
-        buttonParams.fields[ReflectedButton::Fields::AutoRaise] = "autoRise";
-        buttonParams.fields[ReflectedButton::Fields::Text] = "resetToDefaultText";
-        buttonParams.fields[ReflectedButton::Fields::Clicked] = "resetToDefault";
-        ReflectedButton* button = new ReflectedButton(buttonParams, params.accessor, refModel, this);
+        ReflectedPushButton::Params buttonParams(params.accessor, params.ui, DAVA::TArc::mainWindowKey);
+        buttonParams.fields[ReflectedPushButton::Fields::Text] = "resetToDefaultText";
+        buttonParams.fields[ReflectedPushButton::Fields::Clicked] = "resetToDefault";
+        ReflectedPushButton* button = new ReflectedPushButton(buttonParams, params.accessor, refModel, this);
         buttonsLayout->AddControl(button);
     }
 
     buttonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     {
-        ReflectedButton::Params buttonParams(params.accessor, params.ui, DAVA::TArc::mainWindowKey);
-        buttonParams.fields[ReflectedButton::Fields::AutoRaise] = "autoRise";
-        buttonParams.fields[ReflectedButton::Fields::Text] = "acceptButtonText";
-        buttonParams.fields[ReflectedButton::Fields::Clicked] = "accept";
-        ReflectedButton* button = new ReflectedButton(buttonParams, params.accessor, refModel, this);
+        ReflectedPushButton::Params buttonParams(params.accessor, params.ui, DAVA::TArc::mainWindowKey);
+        buttonParams.fields[ReflectedPushButton::Fields::Text] = "acceptButtonText";
+        buttonParams.fields[ReflectedPushButton::Fields::Clicked] = "accept";
+        ReflectedPushButton* button = new ReflectedPushButton(buttonParams, params.accessor, refModel, this);
         buttonsLayout->AddControl(button);
     }
 
@@ -208,7 +206,6 @@ DAVA_REFLECTION_IMPL(SettingsDialog)
     ReflectionRegistrator<SettingsDialog>::Begin()
     .Method("resetToDefault", &SettingsDialog::OnResetPressed)
     .Method("accept", &SettingsDialog::accept)
-    .Field("autoRise", [](SettingsDialog*) { return false; }, nullptr)
     .Field("resetToDefaultText", [](SettingsDialog*) { return "Defaults"; }, nullptr)
     .Field("acceptButtonText", [](SettingsDialog*) { return "Ok"; }, nullptr)
     .End();

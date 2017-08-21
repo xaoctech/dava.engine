@@ -30,13 +30,12 @@ public:
     QColor GetHighligtedItemTextColor();
     QColor GetErrorColor();
 
-    DAVA_DEPRECATED(void SetTheme(DAVA::int64 themeValue)); // for settings convert only
+    void SetTheme(eTheme theme, QApplication* app);
 
 private:
     friend class ThemesModule;
     eTheme theme = eTheme::Dark;
 
-    void SetTheme(eTheme theme, QApplication* app);
     void ApplyLightTheme(QApplication* app);
     void ApplyDarkTheme(QApplication* app);
 

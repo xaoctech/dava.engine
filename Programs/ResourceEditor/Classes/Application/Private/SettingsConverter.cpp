@@ -7,6 +7,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Controls/ColorPicker/ColorPickerSettings.h>
 
+#include <Engine/PlatformApiQt.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Render/RenderBase.h>
 #include <Render/GPUFamilyDescriptor.h>
@@ -84,6 +85,9 @@ public:
         ColorPickerSettings* colorPickerSettings = ctx->GetData<ColorPickerSettings>();
         DVASSERT(colorPickerSettings);
 
+        ThemesSettings* themeSettings = ctx->GetData<ThemesSettings>();
+        DVASSERT(themeSettings);
+
 #define LOAD_SETTING(settingsVar, field, key, convertFn)\
         settingsVar->field = GetValue(key, settingsVar->field).convertFn()
 
@@ -114,7 +118,7 @@ public:
 
         LOAD_SETTING(generalSettings, useAssetCache, General_AssetCache_UseCache, AsBool);
         LOAD_SETTING(generalSettings, assetCacheIP, General_AssetCache_Ip, AsString);
-        LOAD_SETTING(generalSettings, assetCachePort, General_AssetCache_Port, AsUInt32);
+        generalSettings->assetCachePort = GetValue(General_AssetCache_Port, static_cast<DAVA::uint32>(generalSettings->assetCachePort)).AsUInt32();
         LOAD_SETTING(generalSettings, assetCacheTimeout, General_AssetCache_Timeout, AsUInt32);
 
         LOAD_SETTING(generalSettings, autoConversion, General_AutoConvertation, AsBool);
@@ -146,15 +150,14 @@ public:
         LOAD_SETTING(globalSceneSettings, debugBoxWaypointScale, Scene_DebugBoxWaypointScale, AsFloat);
         LOAD_SETTING(globalSceneSettings, dragAndDropWithShift, Scene_DragAndDropWithShift, AsBool);
         LOAD_SETTING(globalSceneSettings, autoSelectNewEntity, Scene_AutoselectNewEntities, AsBool);
-        LOAD_SETTING(globalSceneSettings, rememberForceParameters, Scene_RememberForceParameters, AsBool);
         LOAD_SETTING(globalSceneSettings, saveEmitters, Scene_SaveEmitters, AsBool);
         LOAD_SETTING(globalSceneSettings, saveStaticOcclusion, Scene_SaveStaticOcclusion, AsBool);
         LOAD_SETTING(globalSceneSettings, defaultCustomColorIndex, Scene_DefaultCustomColorIndex, AsUInt32);
         LOAD_SETTING(globalSceneSettings, drawSoundObjects, Scene_Sound_SoundObjectDraw, AsBool);
         LOAD_SETTING(globalSceneSettings, soundObjectBoxColor, Scene_Sound_SoundObjectBoxColor, AsColor);
         LOAD_SETTING(globalSceneSettings, soundObjectSphereColor, Scene_Sound_SoundObjectSphereColor, AsColor);
-        LOAD_SETTING(globalSceneSettings, grabSizeWidth, Scene_Grab_Size_Width, AsInt32);
-        LOAD_SETTING(globalSceneSettings, grabSizeHeight, Scene_Grab_Size_Height, AsInt32);
+        globalSceneSettings->grabSizeWidth = GetValue(Scene_Grab_Size_Width, static_cast<DAVA::int32>(globalSceneSettings->grabSizeWidth)).AsInt32();
+        globalSceneSettings->grabSizeHeight = GetValue(Scene_Grab_Size_Width, static_cast<DAVA::int32>(globalSceneSettings->grabSizeHeight)).AsInt32();
         LOAD_SETTING(globalSceneSettings, slotBoxColor, Scene_Slot_Box_Color, AsColor);
         LOAD_SETTING(globalSceneSettings, slotBoxEdgesColor, Scene_Slot_Box_Edges_Color, AsColor);
         LOAD_SETTING(globalSceneSettings, slotPivotColor, Scene_Slot_Pivot_Color, AsColor);
@@ -184,6 +187,14 @@ public:
         LOAD_SETTING(internalSettings, validateShowConsole, Internal_Validate_ShowConsole, AsBool);
 
 #undef LOAD_SETTING
+
+        {
+            auto iter = settingsMap2.find(DAVA::FastName("ThemeName"));
+            if (iter != settingsMap2.end())
+            {
+                themeSettings->SetTheme(static_cast<ThemesSettings::eTheme>(iter->second.AsInt64()), DAVA::PlatformApi::Qt::GetApplication());
+            }
+        }
 
         auto iter = settingsMap.find(FastName(Internal_LogWidget));
         if (iter != settingsMap.end())
@@ -300,7 +311,6 @@ private:
     const DAVA::String Scene_DebugBoxWaypointScale = "Scene/DebugBoxWaypointScale";
     const DAVA::String Scene_DragAndDropWithShift = "Scene/Drag&DropInTreeWithShift";
     const DAVA::String Scene_AutoselectNewEntities = "Scene/AutoselectNewEnities";
-    const DAVA::String Scene_RememberForceParameters = "Scene/RememberForceParameters";
     const DAVA::String Scene_SaveEmitters = "Scene/SaveEmittersWithScene";
     const DAVA::String Scene_SaveStaticOcclusion = "Scene/SaveAfterStaticOcclusion";
     const DAVA::String Scene_DefaultCustomColorIndex = "Scene/DefaultCustomColorIndex";

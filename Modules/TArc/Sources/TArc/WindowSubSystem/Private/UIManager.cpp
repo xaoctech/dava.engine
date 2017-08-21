@@ -863,7 +863,6 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
 
     int result = dlg->exec();
     pi.Set("geometry", dlg->geometry());
-    dlg->setParent(nullptr);
     return result;
 }
 

@@ -24,8 +24,7 @@ QString FindFileDialog::GetFilePath(DAVA::TArc::ContextAccessor* accessor, const
     }
     shown = true;
 
-    FindFileDialog dialog(fileSystemCache, extension, parent);
-    dialog.lastUsedPath = accessor->CreatePropertiesNode("FindFileDialog").Get<DAVA::String>("lastUsedPath");
+    FindFileDialog dialog(fileSystemCache, extension, accessor->CreatePropertiesNode("FindFileDialog").Get<DAVA::String>("lastUsedPath"), parent);
     dialog.setModal(true);
     int retCode = dialog.exec();
 
@@ -38,10 +37,13 @@ QString FindFileDialog::GetFilePath(DAVA::TArc::ContextAccessor* accessor, const
         if (fileInfo.isFile() && fileInfo.suffix().toLower() == extension.toLower())
         {
             dialog.lastUsedPath = filePath.toStdString();
-            return filePath;
         }
-        dialog.lastUsedPath = DAVA::String();
+        else
+        {
+            dialog.lastUsedPath = DAVA::String();
+        }
         accessor->CreatePropertiesNode("FindFileDialog").Set("lastUsedPath", dialog.lastUsedPath);
+        return filePath;
     }
     return QString();
 }
@@ -59,9 +61,10 @@ QAction* FindFileDialog::CreateFindInFilesAction(QWidget* parent)
     return findInFilesAction;
 }
 
-FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, QWidget* parent)
+FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, const DAVA::String& lastUsedPath_, QWidget* parent)
     : QDialog(parent, Qt::Popup)
     , ui(new Ui::FindFileDialog())
+    , lastUsedPath(lastUsedPath_)
 {
     QStringList files = projectStructure->GetFiles(extension);
 

@@ -9,8 +9,10 @@
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/Qt/QtByteArray.h>
 
+#include <Engine/PlatformApiQt.h>
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Logger/Logger.h>
@@ -160,7 +162,7 @@ public:
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "unnamed preferences" });
-            themeSettings->SetTheme(archive->GetInt64("ThemeName"));
+            themeSettings->SetTheme(static_cast<DAVA::TArc::ThemesSettings::eTheme>(archive->GetInt64("ThemeName")), DAVA::PlatformApi::Qt::GetApplication());
         }
     }
 

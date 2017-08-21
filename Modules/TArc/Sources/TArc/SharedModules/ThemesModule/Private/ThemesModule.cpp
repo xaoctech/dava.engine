@@ -41,15 +41,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ThemesSettings)
     .End();
 }
 
-void ThemesSettings::SetTheme(DAVA::int64 themeValue)
-{
-    theme = static_cast<eTheme>(themeValue);
-    if (theme != Dark && theme != Light)
-    {
-        theme = Dark;
-    }
-}
-
 void ThemesSettings::SetTheme(ThemesSettings::eTheme theme_, QApplication* app)
 {
     theme = theme_;

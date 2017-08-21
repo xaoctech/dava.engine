@@ -181,7 +181,7 @@ void LegacySupportModule::InitMainWindow()
     indexFieldDescr.fieldName = FastName("backgroundColorIndex");
 
     ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
-                                                              << "Grid Color"));
+                                                              << "menuGridColor"));
 
     for (DAVA::uint32 currentIndex = 0; currentIndex < 3; ++currentIndex)
     {

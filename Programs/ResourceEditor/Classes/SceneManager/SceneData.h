@@ -86,7 +86,6 @@ public:
     DAVA::float32 debugBoxWaypointScale = 1.0f;
     bool dragAndDropWithShift = false;
     bool autoSelectNewEntity = true;
-    bool rememberForceParameters = false;
     bool saveEmitters = false;
     bool saveStaticOcclusion = true;
     DAVA::uint32 defaultCustomColorIndex = 0;

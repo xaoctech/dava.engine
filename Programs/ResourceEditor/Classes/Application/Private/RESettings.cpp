@@ -48,7 +48,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeneralSettings)
     DAVA::M::DisplayName("Backend"), DAVA::M::Group("Renderer"), DAVA::M::EnumT<RenderingBackend>()]
     .Field("wheelMoveCamera", &GeneralSettings::wheelMoveCamera)[DAVA::M::DisplayName("Move camera on Wheel"), DAVA::M::Group("Mouse")]
     .Field("wheelMoveIntensity", &GeneralSettings::wheelMoveIntensity)[DAVA::M::DisplayName("Move intensity on Wheel"), DAVA::M::Group("Mouse")]
-    .Field("invertWheel", &GeneralSettings::wheelMoveCamera)[DAVA::M::DisplayName("Invert Wheel"), DAVA::M::Group("Mouse")]
+    .Field("invertWheel", &GeneralSettings::invertWheel)[DAVA::M::DisplayName("Invert Wheel"), DAVA::M::Group("Mouse")]
     .End();
 }
 
