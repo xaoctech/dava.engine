@@ -169,7 +169,7 @@ HUDContainer::HUDContainer(const ControlNode* node_)
     visibleProperty = node->GetRootProperty()->GetVisibleProperty();
     DVASSERT(nullptr != control && nullptr != visibleProperty);
 
-    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &HUDContainer::OnUpdate);
 }
 

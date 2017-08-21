@@ -38,7 +38,7 @@ struct AnimatedPropertySetter
     void Animate(UIControl* control, const Reflection& ref, const T& startValue, const T& endValue) const
     {
         const int32 track = PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex;
-        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(AnimationManager::Instance()->FindPlayingAnimation(control, track));
+        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(GetEngineContext()->animationManager->FindPlayingAnimation(control, track));
 
         if (!currentAnimation || currentAnimation->GetEndValue() != endValue)
         {

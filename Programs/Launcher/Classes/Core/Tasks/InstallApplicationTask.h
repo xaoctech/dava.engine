@@ -3,6 +3,8 @@
 #include "Core/Tasks/AsyncChainTask.h"
 #include "Data/ConfigParser.h"
 
+#include <QFile>
+
 struct InstallApplicationParams
 {
     QString branch;
@@ -44,4 +46,5 @@ private:
     QStringList applicationsToRestart;
 
     eState state = LOADING;
+    QFile fileToWrite;
 };

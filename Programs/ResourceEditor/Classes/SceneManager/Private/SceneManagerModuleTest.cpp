@@ -21,6 +21,8 @@
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/Core/ContextAccessor.h>
 
+#include <QtTools/Utils/QtDelayedExecutor.h>
+
 #include <Base/Any.h>
 #include <FileSystem/FilePath.h>
 #include <FileSystem/FileSystem.h>
@@ -179,7 +181,6 @@ private:
 
             SceneData::TSceneType scene = data->GetScene();
             TEST_VERIFY(scene);
-            scene->Update(0.16f);
 
             ScopedPtr<Entity> entity(new Entity());
             entity->SetName(SMTest::allEntitiesName);
@@ -190,18 +191,11 @@ private:
                 {
                     Any newComponent = cType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
                     Component* component = newComponent.Cast<Component*>();
-
-                    if (cType->GetPermanentName() == "SlotComponent")
-                    { // to prevent serialization crash
-                        SlotComponent* slot = static_cast<SlotComponent*>(component);
-                        slot->SetSlotName(FastName("slotName"));
-                        slot->SetJointName(FastName("jointName"));
-                    }
-
                     entity->AddComponent(component);
                 }
             }
 
+            scene->Update(0.16f);
             CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SMTest::testScenePath, scene.Get());
         }
 
@@ -250,15 +244,7 @@ private:
                     Component* component = newComponent.Cast<Component*>();
 
                     TEST_VERIFY(entity->GetComponentCount(component->GetType()) > 0);
-                    if (component->GetType() == Component::SLOT_COMPONENT)
-                    { // to prevent serialization crash
-                        SlotComponent* slot = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT));
-                        if (slot != nullptr)
-                        {
-                            TEST_VERIFY(slot->GetSlotName() == FastName("slotName"));
-                            TEST_VERIFY(slot->GetJointName() == FastName("jointName"));
-                        }
-                    }
+
                     delete component;
                 }
             }
@@ -386,21 +372,45 @@ private:
         CloseActiveScene();
     }
 
+    QtDelayedExecutor recentSceneDelayedExecutor;
+    DAVA::TArc::DataWrapper openResentSceneWrapper;
+    std::unique_ptr<OpenSavedSceneListener> recentSceneListener;
+
+    void OpenResentSceneFromMenuDelayed()
+    {
+        using namespace ::testing;
+
+        TEST_VERIFY(recentSceneListener);
+
+        EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(Return())
+        .WillOnce(Invoke([this]() {
+
+            testCompleted = true;
+
+            TEST_VERIFY(recentSceneListener->testSucceed);
+            recentSceneListener.reset();
+            CloseActiveScene();
+        }))
+        .WillRepeatedly(Return())
+        ;
+    }
+
     DAVA_TEST (OpenResentSceneFromMenu)
     {
         using namespace DAVA;
         using namespace DAVA::TArc;
         using namespace ::testing;
 
-        OpenSavedSceneListener listener;
-        listener.accessor = GetAccessor();
-        listener.componentTypes = componentTypes;
+        recentSceneListener.reset(new OpenSavedSceneListener());
+        recentSceneListener->accessor = GetAccessor();
+        recentSceneListener->componentTypes = componentTypes;
 
-        DataWrapper openSceneWrapper = GetAccessor()->CreateWrapper(ReflectedTypeDB::Get<SceneData>());
-        openSceneWrapper.SetListener(&listener);
+        openResentSceneWrapper = GetAccessor()->CreateWrapper(ReflectedTypeDB::Get<SceneData>());
+        openResentSceneWrapper.SetListener(recentSceneListener.get());
 
-        TEST_VERIFY(openSceneWrapper.HasData() == false);
-        if (openSceneWrapper.HasData() == false)
+        TEST_VERIFY(openResentSceneWrapper.HasData() == false);
+        if (openResentSceneWrapper.HasData() == false)
         {
             QWidget* wnd = GetWindow(DAVA::TArc::mainWindowKey);
             QMainWindow* mainWnd = qobject_cast<QMainWindow*>(wnd);
@@ -414,19 +424,11 @@ private:
 
             QAction* resentSceneAction = *actions.rbegin();
             TEST_VERIFY(resentSceneAction->text() == QString::fromStdString(FilePath(SMTest::testScenePath).GetAbsolutePathname()));
-            resentSceneAction->triggered(false);
 
             testCompleted = false;
-            EXPECT_CALL(*this, AfterWrappersSync())
-            .WillOnce(Return())
-            .WillOnce(Invoke([this, &listener]() {
+            resentSceneAction->triggered(false);
 
-                testCompleted = true;
-
-                TEST_VERIFY(listener.testSucceed);
-                CloseActiveScene();
-            }))
-            .WillRepeatedly(Return());
+            recentSceneDelayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &SceneManagerModuleTests::OpenResentSceneFromMenuDelayed));
         }
     }
 

@@ -110,9 +110,7 @@ void WindowNativeBridge::CloseWindow()
 
 void WindowNativeBridge::SetTitle(const char8* title)
 {
-    NSString* nsTitle = [NSString stringWithUTF8String:title];
-    [nswindow setTitle:nsTitle];
-    [nsTitle release];
+    [nswindow setTitle:[NSString stringWithUTF8String:title]];
 }
 
 void WindowNativeBridge::SetMinimumSize(float32 width, float32 height)

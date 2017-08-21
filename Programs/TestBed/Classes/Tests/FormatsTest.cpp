@@ -66,7 +66,7 @@ void FormatsTest::LoadResources()
     BaseScreen::LoadResources();
 
     DVASSERT(formatsGrid == nullptr);
-    const Size2i screenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    const Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     formatsGrid = new UIList(Rect(0, 0, static_cast<DAVA::float32>(screenSize.dx), static_cast<DAVA::float32>(screenSize.dy - 30.f)), UIList::ORIENTATION_VERTICAL);
     formatsGrid->SetDelegate(this);
     AddControl(formatsGrid);

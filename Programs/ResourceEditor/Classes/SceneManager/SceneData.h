@@ -22,10 +22,13 @@ public:
 
     bool IsSavingAllowed(QString* message = nullptr) const;
 
+    bool IsHUDVisible() const;
+
     static const char* scenePropertyName;
     static const char* sceneChangedPropertyName;
     static const char* scenePathPropertyName;
     static const char* sceneLandscapeToolsPropertyName;
+    static const char* sceneHUDVisiblePropertyName;
 
 private:
     friend class SceneManagerModule;
@@ -41,6 +44,7 @@ private:
         .Field(scenePathPropertyName, &SceneData::GetScenePath, nullptr)
         .Field(sceneLandscapeToolsPropertyName, &SceneData::GetEnabledLandscapeTools, nullptr)
         .Field("ScenePtr", &SceneData::GetScenePtr, nullptr)
+        .Field(sceneHUDVisiblePropertyName, &SceneData::IsHUDVisible, nullptr)
         .End();
     }
 };
