@@ -60,7 +60,7 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
     engine.PrimaryWindow()->draw.Connect(this, &UIViewerApp::Draw);
     engine.PrimaryWindow()->sizeChanged.Connect(this, &UIViewerApp::OnWindowSizeChanged);
 
-    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = DAVA::GetEngineContext()->uiControlSystem->vcs;
 
     const Size2i& physicalSize = vcs->GetPhysicalScreenSize();
     float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);

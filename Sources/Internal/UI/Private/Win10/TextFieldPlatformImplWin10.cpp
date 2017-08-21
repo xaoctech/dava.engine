@@ -661,7 +661,7 @@ void TextFieldPlatformImpl::OnGotFocus()
             // one of the following occurs:
             // 1. click on text field in multiline mode as it is always shown on screen
             // 2. tab navigation
-            UIControl* curFocused = UIControlSystem::Instance()->GetFocusedControl();
+            UIControl* curFocused = GetEngineContext()->uiControlSystem->GetFocusedControl();
             if (curFocused != uiTextField && FocusHelpers::CanFocusControl(uiTextField))
             {
                 uiTextField->SetFocused();
