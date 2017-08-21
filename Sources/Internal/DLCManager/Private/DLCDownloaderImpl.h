@@ -4,6 +4,7 @@
 #include "Concurrency/Thread.h"
 #include "Concurrency/Semaphore.h"
 
+#define CURL_STATICLIB
 #include <curl/curl.h>
 
 namespace DAVA
