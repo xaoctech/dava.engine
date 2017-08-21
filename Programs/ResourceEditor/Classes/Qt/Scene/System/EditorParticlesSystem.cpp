@@ -94,7 +94,7 @@ void EditorParticlesSystem::Draw()
     DAVA::Set<DAVA::ParticleDragForce*> selectedDragForces;
     for (DAVA::ParticleDragForce* force : selection.ObjectsOfType<DAVA::ParticleDragForce>())
     {
-        DrawDragForces(force);
+        DrawDragForces(nullptr, force);
     }
 
     for (auto entity : entities)
@@ -169,10 +169,15 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
     }
 
     DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
+    // static DAVA::float32 angle = 0.0f;
+    // angle += DAVA::SystemTimer::GetFrameDelta();
+    // DAVA::Matrix4 rot;
+    // rot.BuildRotation(DAVA::Vector3(0.0f, 1.0f, 0.0f), DAVA::DegToRad(angle));
     wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
+    // wMat *= rot;
 
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
+    drawer->DrawAABoxCornersTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
                                  DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
@@ -208,21 +213,23 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
                                                                DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
-void EditorParticlesSystem::DrawDragForces(DAVA::ParticleDragForce* force)
+void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
 {
     if (force->infinityRange)
         return;
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->shape == DAVA::ParticleDragForce::eShape::BOX)
     {
-        DAVA::Matrix4 wMat = DAVA::Matrix4::IDENTITY;
-        wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
-        DAVA::Vector3 size = force->boxSize;
+        auto layer = GetDragForceOwner(force);
+        auto ent = GetLayerOwner(layer);
 
-        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * size, 0.5f * size), wMat,
+        DAVA::Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
+        wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
+
+        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
             DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 
-        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * size, 0.5f * size), wMat,
+        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
             DAVA::Color(0.0f, 0.35f, 0.15f, 0.35f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
     }
     else if(force->shape == DAVA::ParticleDragForce::eShape::SPHERE)

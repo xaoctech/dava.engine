@@ -8,7 +8,7 @@ namespace DAVA
 {
 namespace ParticleForces
 {
-void ApplyDragForce(const Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt);
+void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
 
 void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt)
 {
@@ -20,47 +20,60 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& velocit
 }
 
 // POsition here in effect space directly!!!!!!!!!!!!!!
-bool CheckForceIntersection(const Entity* parent, const ParticleDragForce* force, const Vector3& position)
+bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force, const Vector3& effectSpacePosition)
 {
-    Vector3 fPos = force->position;
-    Vector3 transformedPos = TransformPerserveLength(fPos, DAVA::Matrix3(parent->GetWorldTransform()));
-    Vector3 center = parent->GetWorldTransform().GetTranslationVector() + transformedPos; // judy fPOs
-    if (force->shape == ParticleDragForce::eShape::BOX) // Effect align.
+    Vector3 center = force->position;
+    if (force->shape == ParticleDragForce::eShape::BOX)
     {
         Vector3 size = force->boxSize * 0.5f;
         Vector3 p1 = center - size;
         Vector3 p2 = center + size;
         AABBox3 box(p1, p2);
 
-        if (!box.IsInside(position))
+        if (box.IsInside(effectSpacePosition))
             return true;
     }
     else if (force->shape == ParticleDragForce::eShape::SPHERE)
     {
-        float32 distSqr = (center - position).SquareLength();
-        if (distSqr > force->radius * force->radius)
+        float32 distSqr = (center - effectSpacePosition).SquareLength();
+        if (distSqr <= force->radius * force->radius)
             return true;
     }
     return false;
 }
 
-void ApplyDragForce(const Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt)
+void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& velocityW, Vector3& acceleration, Vector3 position, float32 dt)
 {
-    if (!force->infinityRange && !CheckForceIntersection(parent, force, position))
+    const Matrix4& world = parent->GetWorldTransform();
+
+    Matrix4 local;
+    bool sucess = world.GetInverse(local); // todo: in transform
+    if (!force->infinityRange)
     {
-        return;
+        Vector3 effectPosition = position * local;
+        if (!IsPositionInForceShape(parent, force, effectPosition))
+        {
+            return;
+        }
     }
 
-    const Vector3& forceStrength = force->forcePower * dt;
+    Vector3 worldForce = force->forcePower * static_cast<Matrix3>(world);
+
+    Vector3 forceStrength = force->forcePower* dt;
+    Vector3 velocity = velocityW;
+    velocity = velocity * Matrix3(local);
+
+
     Vector3 velSqr = velocity * velocity;
     Vector3 dragForce = -forceStrength * velSqr * dt;
     //acceleration += dragForce;
     float32 vLen = velocity.Length();
     Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z)); // todo calculate all in effect space
     velocity *= v;
+    velocityW = velocity * Matrix3(world);
 }
 
-void ApplyLorentsForce(); // Vector in world is direction,
+void ApplyLorentzForce(); // Vector in world is direction,
 
 }
 }
