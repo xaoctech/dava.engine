@@ -78,18 +78,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 
 PreviewWidget::~PreviewWidget() = default;
 
-float PreviewWidget::GetScaleFromComboboxText() const
-{
-    // Firstly verify whether the value is already set.
-    QString curTextValue = scaleCombo->currentText();
-    curTextValue.remove('%');
-    curTextValue.remove(' ');
-    bool ok;
-    float scaleValue = curTextValue.toFloat(&ok);
-    DVASSERT(ok, "can not parse text to float");
-    return scaleValue / 100.0f;
-}
-
 void PreviewWidget::CreateActions()
 {
     QAction* importPackageAction = new QAction(tr("Import package"), this);
@@ -262,8 +250,6 @@ void PreviewWidget::InitUI()
     tabBar->setTabsClosable(true);
     tabBar->setUsesScrollButtons(true);
     vLayout->addWidget(tabBar);
-
-    vLayout->addWidget(findInDocumentWidget);
 
     QGridLayout* gridLayout = new QGridLayout();
     vLayout->addLayout(gridLayout);
