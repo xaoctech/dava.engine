@@ -8,8 +8,6 @@
 #include "Utils/UTF8Utils.h"
 #include "Utils/NSStringUtils.h"
 
-#include <algorithm>
-
 #import <Carbon/Carbon.h>
 
 namespace DAVA
@@ -198,15 +196,15 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                 uint32 deadKeyState;
                 
                 OSStatus status = UCKeyTranslate(keyboardLayout,
-                                            i,
-                                            kUCKeyActionDown,
-                                            0,
-                                            LMGetKbdType(),
-                                            kUCKeyTranslateNoDeadKeysMask,
-                                            &deadKeyState,
-                                            maxLength,
-                                            &realLength,
-                                            unicodeString);
+                                                 i,
+                                                 kUCKeyActionDown,
+                                                 0,
+                                                 LMGetKbdType(),
+                                                 kUCKeyTranslateNoDeadKeysMask,
+                                                 &deadKeyState,
+                                                 maxLength,
+                                                 &realLength,
+                                                 unicodeString);
                 
                 DVASSERT(status == 0);
 
