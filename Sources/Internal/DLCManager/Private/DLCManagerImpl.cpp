@@ -383,7 +383,7 @@ void DLCManagerImpl::Update(float frameDelta, bool inBackground)
             {
                 if (requestManager)
                 {
-                    if (hints.fireSignalsDuringBackground)
+                    if (hints.fireSignalsInBackground)
                     {
                         inBackground = false;
                     }
