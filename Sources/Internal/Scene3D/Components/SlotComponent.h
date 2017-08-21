@@ -70,6 +70,9 @@ public:
     */
     void SetSlotName(FastName name);
 
+    /** Set attachment transform */
+    void SetAttachmentTransform(const Matrix4& transform);
+
     /** Get attachment transform */
     const Matrix4& GetAttachmentTransform() const;
 
@@ -103,9 +106,8 @@ public:
 
 private:
     friend class SlotSystem;
-    void SetAttachmentTransform(const Matrix4& transform);
 
-    FastName slotName;
+    FastName slotName = FastName("");
     FastName templateName = FastName("");
 
     Matrix4 attachmentTransform;

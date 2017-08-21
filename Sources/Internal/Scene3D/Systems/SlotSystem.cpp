@@ -274,6 +274,28 @@ Vector<SlotSystem::ItemsCache::Item> SlotSystem::ItemsCache::GetItems(const File
     return result;
 }
 
+void SlotSystem::ItemsCache::InvalidateConfig(const FilePath& configPath)
+{
+    if (configPath.IsEmpty())
+    {
+        return;
+    }
+
+    String absolutePath = configPath.GetAbsolutePathname();
+    auto iter = cachedItems.find(absolutePath);
+    if (iter != cachedItems.end())
+    {
+        cachedItems.erase(iter);
+    }
+}
+
+bool SlotSystem::ItemsCache::IsConfigParsed(const FilePath& configPath) const
+{
+    String absolutePath = configPath.GetAbsolutePathname();
+    auto iter = cachedItems.find(absolutePath);
+    return iter != cachedItems.end();
+}
+
 bool SlotSystem::ItemsCache::ItemLess::operator()(const Item& item1, const Item& item2) const
 {
     return item1.itemName < item2.itemName;
@@ -318,6 +340,16 @@ void SlotSystem::SetSharedCache(std::shared_ptr<ItemsCache> cache)
 Vector<SlotSystem::ItemsCache::Item> SlotSystem::GetItems(const FilePath& configPath)
 {
     return sharedCache->GetItems(configPath);
+}
+
+void SlotSystem::InvalidateConfig(const FilePath& configPath)
+{
+    sharedCache->InvalidateConfig(configPath);
+}
+
+bool SlotSystem::IsConfigParsed(const FilePath& configPath) const
+{
+    return sharedCache->IsConfigParsed(configPath);
 }
 
 DAVA::Vector<SlotSystem::ItemsCache::Item> SlotSystem::ParseConfig(const FilePath& configPath)
@@ -527,9 +559,8 @@ Matrix4 SlotSystem::GetJointTransform(SlotComponent* component) const
         DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
         const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
         jointTransform = transform.orientation.GetMatrix();
-        jointTransform.SetTranslationVector(transform.position);
-
         jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
+        jointTransform.SetTranslationVector(transform.position);
     }
 
     return jointTransform;
@@ -546,11 +577,9 @@ DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
     DVASSERT(jointId != SkeletonComponent::INVALID_JOINT_INDEX);
     const SkeletonComponent::JointTransform& transform = skeleton->GetObjectSpaceTransform(jointId);
     Matrix4 jointTransform = transform.orientation.GetMatrix();
-    jointTransform.SetTranslationVector(transform.position);
-
     jointTransform *= Matrix4::MakeScale(Vector3(transform.scale, transform.scale, transform.scale));
-
-    return jointTransform * component->GetAttachmentTransform();
+    jointTransform.SetTranslationVector(transform.position);
+    return component->GetAttachmentTransform() * jointTransform;
 }
 
 void SlotSystem::SetScene(Scene* scene)

@@ -19,7 +19,7 @@ using namespace DAVA;
 
 void DAVA::RegisterDAVAClasses()
 {
-    //this code do nothing. Needed to compiler generate code from this cpp file
+    // this code do nothing. Needed to compiler generate code from this cpp file
     Logger* log = GetEngineContext()->logger;
     if (log)
         log->Log(Logger::LEVEL__DISABLE, "");
@@ -91,6 +91,7 @@ REGISTER_CLASS(PathComponent);
 REGISTER_CLASS(WASDControllerComponent);
 REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
+REGISTER_CLASS(GeoDecalComponent);
 REGISTER_CLASS(SlotComponent);
 REGISTER_CLASS(TextComponent);
 

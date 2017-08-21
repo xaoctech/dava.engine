@@ -2,6 +2,7 @@
 
 #if defined(__DAVAENGINE_QT__)
 
+#include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"
 #include "Engine/Window.h"
 #include "Engine/EngineContext.h"
@@ -9,11 +10,15 @@
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 #include "Engine/Private/Qt/WindowImplQt.h"
 
-#include "Input/InputSystem.h"
-#include "Render/RHI/rhi_Public.h"
+#include "DeviceManager/DeviceManager.h"
 
+#include "Input/InputSystem.h"
+#include "Input/Keyboard.h"
+
+#include "Render/RHI/rhi_Public.h"
 #include "Logger/Logger.h"
 #include "UI/UIEvent.h"
+#include "Time/SystemTimer.h"
 #include "Debug/DVAssert.h"
 
 #include <QApplication>
@@ -25,12 +30,12 @@ namespace DAVA
 class DavaQtApplyModifier
 {
 public:
-    void operator()(DAVA::KeyboardDevice& keyboard, const Qt::KeyboardModifiers& currentModifiers, Qt::KeyboardModifier qtModifier, DAVA::Key davaModifier)
+    void operator()(DAVA::Keyboard* keyboard, const Qt::KeyboardModifiers& currentModifiers, Qt::KeyboardModifier qtModifier, DAVA::eInputElements davaModifier)
     {
         if (true == (currentModifiers.testFlag(qtModifier)))
-            keyboard.OnKeyPressed(davaModifier);
+            keyboard->OnKeyPressed(davaModifier, GetPrimaryWindow(), SystemTimer::GetMs());
         else
-            keyboard.OnKeyUnpressed(davaModifier);
+            keyboard->OnKeyReleased(davaModifier, GetPrimaryWindow(), SystemTimer::GetMs());
     }
 };
 
@@ -228,11 +233,14 @@ void WindowImpl::OnFrame()
     // we miss key down event, so we have to check for SHIFT, ALT, CTRL
     // read about same problem http://stackoverflow.com/questions/23193038/how-to-detect-global-key-sequence-press-in-qt
     Qt::KeyboardModifiers modifiers = qApp->queryKeyboardModifiers();
-    KeyboardDevice& keyboard = engineBackend->GetContext()->inputSystem->GetKeyboard();
-    DavaQtApplyModifier mod;
-    mod(keyboard, modifiers, Qt::AltModifier, Key::LALT);
-    mod(keyboard, modifiers, Qt::ShiftModifier, Key::LSHIFT);
-    mod(keyboard, modifiers, Qt::ControlModifier, Key::LCTRL);
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard != nullptr)
+    {
+        DavaQtApplyModifier mod;
+        mod(keyboard, modifiers, Qt::AltModifier, eInputElements::KB_LALT);
+        mod(keyboard, modifiers, Qt::ShiftModifier, eInputElements::KB_LSHIFT);
+        mod(keyboard, modifiers, Qt::ControlModifier, eInputElements::KB_LCTRL);
+    }
 
     engineBackend->OnFrame();
 }
@@ -302,7 +310,6 @@ void WindowImpl::OnDragMoved(QDragMoveEvent* qtEvent)
 void WindowImpl::OnMouseDBClick(QMouseEvent* qtEvent)
 {
     OnMousePressed(qtEvent);
-    OnMouseReleased(qtEvent);
 }
 
 void WindowImpl::OnWheel(QWheelEvent* qtEvent)
@@ -364,37 +371,46 @@ void WindowImpl::OnNativeGesture(QNativeGestureEvent* qtEvent)
 
 void WindowImpl::OnKeyPressed(QKeyEvent* qtEvent)
 {
-    uint32 key = qtEvent->nativeVirtualKey();
+    uint32 virtualKey = qtEvent->nativeVirtualKey();
+    uint32 scancodeKey = 0;
+    
 #if defined(Q_OS_WIN)
     // How to distinguish left and right shift, control and alt: http://stackoverflow.com/a/15977613
     uint32 lparam = qtEvent->nativeModifiers();
-    uint32 scanCode = qtEvent->nativeScanCode();
+    scancodeKey = qtEvent->nativeScanCode();
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
-    if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
+    if (isExtended || (virtualKey == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
-        key |= 0x100;
+        // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+        // So, follow this convention and use the same mask
+        scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    if (key == 0)
+    // QtKeyEvent::nativeScancode does not work on macOS,
+    // QtKeyEvent::nativeVirtualKey and ConvertQtKeyToSystemScanCode return kVK_* value which is exactly what we need
+
+    if (virtualKey == 0)
     {
-        key = ConvertQtKeyToSystemScanCode(qtEvent->key());
+        virtualKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
     }
+
+    scancodeKey = virtualKey;
 #else
 #error "Unsupported platform"
 #endif
 
     bool isRepeated = qtEvent->isAutoRepeat();
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, key, modifierKeys, isRepeated));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_DOWN, scancodeKey, virtualKey, modifierKeys, isRepeated));
 
     QString text = qtEvent->text();
     if (!text.isEmpty())
     {
-        MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, modifierKeys, isRepeated);
+        MainDispatcherEvent e = MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_CHAR, 0, 0, modifierKeys, isRepeated);
         for (int i = 0, n = text.size(); i < n; ++i)
         {
             QCharRef charRef = text[i];
-            e.keyEvent.key = charRef.unicode();
+            e.keyEvent.keyVirtual = charRef.unicode();
             mainDispatcher->PostEvent(e);
         }
     }
@@ -407,27 +423,37 @@ void WindowImpl::OnKeyReleased(QKeyEvent* qtEvent)
     {
         return;
     }
-    uint32 key = qtEvent->nativeVirtualKey();
+
+    uint32 virtualKey = qtEvent->nativeVirtualKey();
+    uint32 scancodeKey = 0;
+    
 #if defined(Q_OS_WIN)
     // How to distinguish left and right shift, control and alt: http://stackoverflow.com/a/15977613
     uint32 lparam = qtEvent->nativeModifiers();
-    uint32 scanCode = qtEvent->nativeScanCode();
+    scancodeKey = qtEvent->nativeScanCode();
     bool isExtended = (HIWORD(lparam) & KF_EXTENDED) == KF_EXTENDED;
-    if (isExtended || (key == VK_SHIFT && ::MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
+    if (isExtended || (virtualKey == VK_SHIFT && ::MapVirtualKeyW(scancodeKey, MAPVK_VSC_TO_VK_EX) == VK_RSHIFT))
     {
-        key |= 0x100;
+        // Windows uses 0xE000 mask throughout its API to distinguish between extended and non-extended keys
+        // So, follow this convention and use the same mask
+        scancodeKey |= 0xE000;
     }
 #elif defined(Q_OS_OSX)
-    if (key == 0)
+    // QtKeyEvent::nativeScancode does not work on macOS,
+    // QtKeyEvent::nativeVirtualKey and ConvertQtKeyToSystemScanCode return kVK_* value which is exactly what we need
+
+    if (virtualKey == 0)
     {
-        key = ConvertQtKeyToSystemScanCode(qtEvent->key());
+        virtualKey = ConvertQtKeyToSystemScanCode(qtEvent->key());
     }
+
+    scancodeKey = virtualKey;
 #else
 #error "Unsupported platform"
 #endif
 
     eModifierKeys modifierKeys = GetModifierKeys();
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, key, modifierKeys, false));
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowKeyPressEvent(window, MainDispatcherEvent::KEY_UP, scancodeKey, qtEvent->nativeVirtualKey(), modifierKeys, false));
 }
 
 void WindowImpl::DoResizeWindow(float32 width, float32 height)

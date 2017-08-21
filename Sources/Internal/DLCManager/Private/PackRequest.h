@@ -4,6 +4,9 @@
 #include "DLCManager/DLCManager.h"
 #include "FileSystem/FilePath.h"
 #include "Compression/Compressor.h"
+#include "Utils/CRC32.h"
+
+#include <fstream>
 
 namespace DAVA
 {
@@ -37,6 +40,9 @@ public:
     /** return true when all files loaded and ready */
     bool IsDownloaded() const override;
 
+    // clear redundant data to free memory
+    void Finalize();
+
     void SetFileIndexes(Vector<uint32> fileIndexes_);
 
     /** this request depends on other, so other should be downloaded first */
@@ -50,10 +56,52 @@ private:
         Wait = 0,
         CheckLocalFile,
         LoadingPackFile, // download manager thread, wait on main thread
-        CheckHash, // on main thread (in future move to job manager)
         Ready, // on main thread
 
         Error
+    };
+
+    /**
+	   DVPLWriter - is class for optimization only. I try to do:
+	   1 - downloading of data
+	   2 - crc32 hash check
+	   3 - write footer
+	   all inside downloader thread.
+	   So DVPLWriter doing 2 task:
+	   1 - writing data to disk
+	   2 - checking data, moving files, and adding footer
+	*/
+    class DVPLWriter : public DLCDownloader::IWriter
+    {
+    public:
+        DVPLWriter(FilePath& localPath_, uint32 sizeCompressed_, uint32 sizeUncompressed_, uint32 crc32Compressed_, Compressor::Type compressionType_)
+            : localPath(localPath_)
+            , sizeCompressed(sizeCompressed_)
+            , sizeUncompressed(sizeUncompressed_)
+            , crc32Compressed(crc32Compressed_)
+            , compressionType(compressionType_)
+        {
+        }
+        bool OpenFile();
+        /** Save next buffer bytes into memory or file, on error return differs from parameter size */
+        uint64 Save(const void* ptr, uint64 size) override;
+        /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
+        uint64 GetSeekPos() override;
+        /** Truncate file(or buffer) to zero length, return false on error */
+        bool Truncate() override;
+        /** Close internal resource (file handle, socket, free memory) */
+        bool Close() override;
+        /** Check internal state */
+        bool IsClosed() const override;
+
+    private:
+        std::ofstream fout;
+        CRC32 crc32counter;
+        FilePath localPath;
+        const uint32 sizeCompressed;
+        const uint32 sizeUncompressed;
+        const uint32 crc32Compressed;
+        const Compressor::Type compressionType;
     };
 
     struct FileRequest
@@ -82,17 +130,16 @@ private:
         DLCDownloader::Task* task = nullptr;
         Compressor::Type compressionType = Compressor::Type::Lz4HC;
         Status status = Wait;
+        std::shared_ptr<DVPLWriter> dvplWriter;
     };
 
-    static void DeleteJustDownloadedFileAndStartAgain(FileRequest& fileRequest);
     void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
-    bool CheckFileHashState(FileRequest& fileRequest);
     bool UpdateFileRequests();
 
-    DLCManagerImpl* packManagerImpl = nullptr;
+    DLCManagerImpl* packManager = nullptr;
 
     Vector<FileRequest> requests;
     Vector<uint32> fileIndexes;
@@ -100,11 +147,13 @@ private:
     mutable Vector<uint32> dependencyCache;
 
     uint32 numOfDownloadedFile = 0;
+    uint64 totalDownloadedSize = 0;
 
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization
     bool delayedRequest = true;
     bool fileRequestsInitialized = false;
+    bool mutable isDownloaded = false;
 };
 
 } // end namespace DAVA
