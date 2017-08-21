@@ -8,7 +8,7 @@
 
 namespace DAVA
 {
-struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
+struct GeoDecalManager::DecalBuildInfo // : public GeoDecalManager::DecalConfig
 {
     AABBox3 boundingBox;
     PolygonGroup* polygonGroup = nullptr;
@@ -21,14 +21,18 @@ struct GeoDecalManager::DecalBuildInfo : public GeoDecalManager::DecalConfig
     int32 lodIndex = -1;
     int32 switchIndex = -1;
     bool useCustomNormal = false;
+    bool useCustomSpecular = false;
     bool useSkinning = false;
-
+    /*
     DecalBuildInfo() = default;
 
     DecalBuildInfo(const GeoDecalManager::DecalConfig& r)
         : GeoDecalManager::DecalConfig(r)
     {
     }
+
+    DecalBuildInfo& operator = (const DecalBuildInfo&) = delete;
+    */
 };
 
 struct GeoDecalManager::DecalVertex
@@ -185,10 +189,11 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     Matrix4 proj;
     proj.BuildOrtho(boxMin.x, boxMax.x, boxMin.y, boxMax.y, -boxMax.z, -boxMin.z, false);
 
-    DecalBuildInfo info = config;
+    DecalBuildInfo info;
     info.projectionAxis = dir;
     info.projectionSpaceTransform = view * proj;
-    info.useCustomNormal = FileSystem::Instance()->Exists(info.normal);
+    info.useCustomNormal = FileSystem::Instance()->Exists(config.normal);
+    info.useCustomSpecular = FileSystem::Instance()->Exists(config.specular);
     info.useSkinning = ro->GetType() == RenderObject::TYPE_SKINNED_MESH;
 
     if (info.useSkinning)
@@ -220,7 +225,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
             info.material = sourceBatch->GetMaterial();
             info.lodIndex = lodIndex;
             info.switchIndex = switchIndex;
-            BuildDecal(info, decalBatchProvider);
+            BuildDecal(info, config, decalBatchProvider);
         }
     }
     RegisterDecal(decal);
@@ -264,7 +269,7 @@ void GeoDecalManager::RemoveRenderObject(RenderObject* ro)
 #define MAX_CLIPPED_POLYGON_CAPACITY 9
 #define PLANE_THICKNESS_EPSILON 0.00001f
 
-void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, DecalVertex* points_tmp, Vector<uint8>& buffer)
+void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, const DecalConfig& config, DecalVertex* points, DecalVertex* points_tmp, Vector<uint8>& buffer)
 {
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
 
@@ -277,7 +282,7 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
     float maxU = 0.0f;
     for (uint32 i = 0; i < numPoints; ++i)
     {
-        if (info.mapping == Mapping::SPHERICAL)
+        if (config.mapping == Mapping::SPHERICAL)
         {
             Vector3 p = points[i].actualPoint;
             p.Normalize();
@@ -286,7 +291,7 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
             minU = std::min(minU, points[i].decalCoord.x);
             maxU = std::max(maxU, points[i].decalCoord.x);
         }
-        else if (info.mapping == Mapping::CYLINDRICAL)
+        else if (config.mapping == Mapping::CYLINDRICAL)
         {
             points[i].decalCoord.x = -std::atan2(points[i].actualPoint.y, points[i].actualPoint.x);
             points[i].decalCoord.y = points[i].actualPoint.z * 0.5f + 0.5f;
@@ -300,7 +305,7 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
         }
     }
 
-    if (info.mapping != Mapping::PLANAR)
+    if (config.mapping != Mapping::PLANAR)
     {
         bool edgeTriangle = std::abs(minU - maxU) >= PI;
         for (uint32 i = 0; i < numPoints; ++i)
@@ -316,8 +321,8 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
     {
         for (uint32 i = 0; i < numPoints; ++i)
         {
-            points[i].decalCoord.x = points[i].decalCoord.x * info.uvScale.x + info.uvOffset.x;
-            points[i].decalCoord.y = points[i].decalCoord.y * info.uvScale.y + info.uvOffset.y;
+            points[i].decalCoord.x = points[i].decalCoord.x * config.uvScale.x + config.uvOffset.x;
+            points[i].decalCoord.y = points[i].decalCoord.y * config.uvScale.y + config.uvOffset.y;
         }
         size_t offset = buffer.size();
         buffer.resize(offset + 3 * (numPoints - 2) * sizeof(DecalVertex));
@@ -331,7 +336,7 @@ void GeoDecalManager::AddVerticesToGeometry(const DecalBuildInfo& info, DecalVer
     }
 }
 
-void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer)
+void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, const DecalConfig& config, Vector<uint8>& buffer)
 {
     uint8 decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)] = {};
     DecalVertex* points = reinterpret_cast<DecalVertex*>(decalVertexData);
@@ -393,14 +398,14 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<u
             info.polygonGroup->GetBinormal(idx[2], points[2].binormal);
         }
         Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-        if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+        if ((config.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
         {
-            AddVerticesToGeometry(info, points, points_tmp, buffer);
+            AddVerticesToGeometry(info, config, points, points_tmp, buffer);
         }
     }
 }
 
-void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer)
+void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, const DecalConfig& config, Vector<uint8>& buffer)
 {
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
 
@@ -445,15 +450,15 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<
         if (Intersection::BoxTriangle(info.boundingBox, points[2].actualPoint, points[1].actualPoint, points[0].actualPoint))
         {
             Vector3 nrm = (points[1].actualPoint - points[0].actualPoint).CrossProduct(points[2].actualPoint - points[0].actualPoint);
-            if ((info.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
+            if ((config.mapping != Mapping::PLANAR) || (nrm.DotProduct(info.projectionAxis) < -std::numeric_limits<float>::epsilon()))
             {
-                AddVerticesToGeometry(info, points, points_tmp, buffer);
+                AddVerticesToGeometry(info, config, points, points_tmp, buffer);
             }
         }
     }
 }
 
-bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider* batchProvider)
+bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& config, RenderBatchProvider* batchProvider)
 {
     if (info.polygonGroup == nullptr)
         return false;
@@ -469,11 +474,11 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     buffer.reserve(3 * sizeof(DecalVertex) * info.polygonGroup->GetIndexCount());
     if ((geometryFormat & EVF_JOINTINDEX) == EVF_JOINTINDEX)
     {
-        GetSkinnedMeshGeometry(info, buffer);
+        GetSkinnedMeshGeometry(info, config, buffer);
     }
     else
     {
-        GetStaticMeshGeometry(info, buffer);
+        GetStaticMeshGeometry(info, config, buffer);
     }
 
     if (buffer.empty())
@@ -526,7 +531,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     std::transform(baseFXName.begin(), baseFXName.end(), baseFXName.begin(), ::tolower);
 
     String fxFileName = (baseFXName.find("normalizedblinnphong") != String::npos) ? "NormalizedBlinnPhongAllQualities.GeoDecal.material" : "GeoDecal.material";
-    FilePath fxName = (info.overridenMaterialsPath.IsEmpty() ? String("~res:/Materials/") : info.overridenMaterialsPath) + fxFileName;
+    FilePath fxName = (config.overridenMaterialsPath.IsEmpty() ? String("~res:/Materials/") : config.overridenMaterialsPath) + fxFileName;
 
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetParent(info.material);
@@ -546,13 +551,26 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
         material->AddFlag(NMaterialFlagName::FLAG_TILED_DECAL_MASK, 0);
     }
 
-    ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(info.albedo));
+    ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(config.albedo));
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, geoDecalTexture);
 
     if (info.useCustomNormal)
     {
-        ScopedPtr<Texture> customNormal(Texture::CreateFromFile(info.normal));
+        ScopedPtr<Texture> customNormal(Texture::CreateFromFile(config.normal));
         material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
+    }
+
+    if (info.useCustomSpecular)
+    {
+        static const float exactlyOne = 1.0f;
+        ScopedPtr<Texture> customSpecular(Texture::CreateFromFile(config.specular));
+        material->AddTexture(NMaterialTextureName::TEXTURE_SPECULAR, customSpecular);
+        material->AddFlag(NMaterialFlagName::FLAG_GEO_DECAL_SPECULAR, 1);
+        material->AddProperty(NMaterialParamName::PARAM_SPECULAR_SCALE, &exactlyOne, rhi::ShaderProp::TYPE_FLOAT1);
+    }
+    else
+    {
+        material->AddProperty(NMaterialParamName::PARAM_SPECULAR_SCALE, &config.specularScale, rhi::ShaderProp::TYPE_FLOAT1);
     }
 
     ScopedPtr<RenderBatch> batch(new RenderBatch());
@@ -561,7 +579,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, RenderBatchProvider
     batch->UpdateAABBoxFromSource();
     static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(batch, info.lodIndex, info.switchIndex);
 
-    if (info.debugOverlayEnabled)
+    if (config.debugOverlayEnabled)
     {
         /*
          * Process debug material
