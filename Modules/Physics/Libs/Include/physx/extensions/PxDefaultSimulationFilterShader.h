@@ -70,10 +70,18 @@ If the filtering equation is true, collision detection is enabled.
 class PxGroupsMask
 {
 public:
-	PX_INLINE	PxGroupsMask():bits0(0),bits1(0),bits2(0),bits3(0) {}
-	PX_INLINE	~PxGroupsMask() {}
-	
-	PxU16		bits0, bits1, bits2, bits3;
+    PX_INLINE PxGroupsMask()
+        : bits0(0)
+        , bits1(0)
+        , bits2(0)
+        , bits3(0)
+    {
+    }
+    PX_INLINE ~PxGroupsMask()
+    {
+    }
+
+    PxU16 bits0, bits1, bits2, bits3;
 };
 
 /**
@@ -83,16 +91,16 @@ public:
 */
 struct PxFilterOp
 {
-	enum Enum
-	{
-		PX_FILTEROP_AND,
-		PX_FILTEROP_OR,
-		PX_FILTEROP_XOR,
-		PX_FILTEROP_NAND,
-		PX_FILTEROP_NOR,
-		PX_FILTEROP_NXOR,
-		PX_FILTEROP_SWAP_AND
-	};
+    enum Enum
+    {
+        PX_FILTEROP_AND,
+        PX_FILTEROP_OR,
+        PX_FILTEROP_XOR,
+        PX_FILTEROP_NAND,
+        PX_FILTEROP_NOR,
+        PX_FILTEROP_NXOR,
+        PX_FILTEROP_SWAP_AND
+    };
 };
 
 /**
@@ -114,13 +122,13 @@ conditions are met:
 */
 
 PxFilterFlags PxDefaultSimulationFilterShader(
-	PxFilterObjectAttributes attributes0,
-	PxFilterData filterData0, 
-	PxFilterObjectAttributes attributes1,
-	PxFilterData filterData1,
-	PxPairFlags& pairFlags,
-	const void* constantBlock,
-	PxU32 constantBlockSize);
+PxFilterObjectAttributes attributes0,
+PxFilterData filterData0,
+PxFilterObjectAttributes attributes1,
+PxFilterData filterData1,
+PxPairFlags& pairFlags,
+const void* constantBlock,
+PxU32 constantBlockSize);
 
 /**
 	\brief Determines if collision detection is performed between a pair of groups

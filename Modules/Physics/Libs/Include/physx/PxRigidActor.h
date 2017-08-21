@@ -57,7 +57,7 @@ PxRigidActor objects specify the geometry of the object by defining a set of att
 class PxRigidActor : public PxActor
 {
 public:
-	/**
+    /**
 	\brief Deletes the rigid actor object.
 	
 	Also releases any shapes associated with the actor.
@@ -73,14 +73,13 @@ public:
 
 	@see PxActor::release()
 	*/
-	virtual		void			release() = 0;
+    virtual void release() = 0;
 
-
-/************************************************************************************************/
-/** @name Global Pose Manipulation
+    /************************************************************************************************/
+    /** @name Global Pose Manipulation
 */
 
-	/**
+    /**
 	\brief Retrieves the actors world space transform.
 
 	The getGlobalPose() method retrieves the actor's current actor space to world space transformation.
@@ -89,9 +88,9 @@ public:
 
 	@see PxRigidDynamic.setGlobalPose() PxRigidStatic.setGlobalPose()
 	*/
-	virtual		PxTransform 	getGlobalPose()		const = 0;
+    virtual PxTransform getGlobalPose() const = 0;
 
-	/**
+    /**
 	\brief Method for setting an actor's pose in the world.
 
 	This method instantaneously changes the actor space to world space transformation. 
@@ -116,15 +115,13 @@ public:
 
 	@see getGlobalPose()
 	*/
-	virtual		void			setGlobalPose(const PxTransform& pose, bool autowake = true) = 0;
+    virtual void setGlobalPose(const PxTransform& pose, bool autowake = true) = 0;
 
-
-/************************************************************************************************/
-/** @name Shapes
+    /************************************************************************************************/
+    /** @name Shapes
 */
 
-
-	/**
+    /**
 	\brief Creates a new shape with default properties and a list of materials and adds it to the list of shapes of this actor.
 	
 	This is equivalent to the following
@@ -155,9 +152,9 @@ public:
 	@see PxShape PxShape::release(), PxPhysics::createShape(), PxRigidActor::attachShape(), PxRigidActorExt::createExclusiveShape()
 	*/
 
-	PX_DEPRECATED virtual		PxShape*		createShape(const PxGeometry& geometry, PxMaterial*const* materials, PxU16 materialCount, PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE) = 0;
+    PX_DEPRECATED virtual PxShape* createShape(const PxGeometry& geometry, PxMaterial* const* materials, PxU16 materialCount, PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE) = 0;
 
-	/**
+    /**
 	\brief Creates a new shape with default properties and a single material adds it to the list of shapes of this actor.
 
 	This is equivalent to the following
@@ -187,13 +184,13 @@ public:
 	@see PxShape PxShape::release(), PxPhysics::createShape(), PxRigidActor::attachShape(), PxRigidActorExt::createExclusiveShape()
 	*/
 
-	PX_DEPRECATED PX_FORCE_INLINE	PxShape*	createShape(const PxGeometry& geometry, const PxMaterial& material, PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
-	{
-		PxMaterial* materialPtr = const_cast<PxMaterial*>(&material);
-		return createShape(geometry, &materialPtr, 1, shapeFlags);
-	}
+    PX_DEPRECATED PX_FORCE_INLINE PxShape* createShape(const PxGeometry& geometry, const PxMaterial& material, PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
+    {
+        PxMaterial* materialPtr = const_cast<PxMaterial*>(&material);
+        return createShape(geometry, &materialPtr, 1, shapeFlags);
+    }
 
-	/** attach a shared shape to an actor 
+    /** attach a shared shape to an actor 
 
 	This call will increment the reference count of the shape.
 
@@ -210,10 +207,9 @@ public:
 	\param[in] shape	the shape to attach.
 
 	*/
-	virtual void				attachShape(PxShape& shape) = 0;
+    virtual void attachShape(PxShape& shape) = 0;
 
-
-	/** detach a shape from an actor. 
+    /** detach a shape from an actor. 
 	
 	This will also decrement the reference count of the PxShape, and if the reference count is zero, will cause it to be deleted.
 
@@ -223,10 +219,9 @@ public:
 	\param[in] wakeOnLostTouch Specifies whether touching objects from the previous frame should get woken up in the next frame. Only applies to PxArticulation and PxRigidActor types.
 
 	*/
-	virtual void				detachShape(PxShape& shape, bool wakeOnLostTouch = true) = 0;
+    virtual void detachShape(PxShape& shape, bool wakeOnLostTouch = true) = 0;
 
-
-	/**
+    /**
 	\brief Returns the number of shapes assigned to the actor.
 
 	You can use #getShapes() to retrieve the shape pointers.
@@ -235,10 +230,9 @@ public:
 
 	@see PxShape getShapes()
 	*/
-	virtual		PxU32			getNbShapes()		const	= 0;
+    virtual PxU32 getNbShapes() const = 0;
 
-
-	/**
+    /**
 	\brief Retrieve all the shape pointers belonging to the actor.
 
 	These are the shapes used by the actor for collision detection.
@@ -254,13 +248,13 @@ public:
 
 	@see PxShape getNbShapes() PxShape::release()
 	*/
-	virtual		PxU32			getShapes(PxShape** userBuffer, PxU32 bufferSize, PxU32 startIndex=0)			const	= 0;
+    virtual PxU32 getShapes(PxShape** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-/************************************************************************************************/
-/** @name Constraints
+    /************************************************************************************************/
+    /** @name Constraints
 */
 
-	/**
+    /**
 	\brief Returns the number of constraint shaders attached to the actor.
 
 	You can use #getConstraints() to retrieve the constraint shader pointers.
@@ -269,10 +263,9 @@ public:
 
 	@see PxConstraint getConstraints()
 	*/
-	virtual		PxU32			getNbConstraints()		const	= 0;
+    virtual PxU32 getNbConstraints() const = 0;
 
-
-	/**
+    /**
 	\brief Retrieve all the constraint shader pointers belonging to the actor.
 
 	You can retrieve the number of constraint shader pointers by calling #getNbConstraints()
@@ -286,13 +279,24 @@ public:
 
 	@see PxConstraint getNbConstraints() PxConstraint::release()
 	*/
-	virtual		PxU32			getConstraints(PxConstraint** userBuffer, PxU32 bufferSize, PxU32 startIndex=0)		const	= 0;
+    virtual PxU32 getConstraints(PxConstraint** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
 protected:
-	PX_INLINE					PxRigidActor(PxType concreteType, PxBaseFlags baseFlags) : PxActor(concreteType, baseFlags) {}
-	PX_INLINE					PxRigidActor(PxBaseFlags baseFlags) : PxActor(baseFlags) {}
-	virtual						~PxRigidActor()	{}
-	virtual		bool			isKindOf(const char* name)	const	{	return !::strcmp("PxRigidActor", name) || PxActor::isKindOf(name); }
+    PX_INLINE PxRigidActor(PxType concreteType, PxBaseFlags baseFlags)
+        : PxActor(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxRigidActor(PxBaseFlags baseFlags)
+        : PxActor(baseFlags)
+    {
+    }
+    virtual ~PxRigidActor()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxRigidActor", name) || PxActor::isKindOf(name);
+    }
 };
 
 

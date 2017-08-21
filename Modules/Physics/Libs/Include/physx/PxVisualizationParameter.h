@@ -61,11 +61,11 @@ for further details.
 */
 struct PxVisualizationParameter
 {
-	enum Enum
-	{
-	/* RigidBody-related parameters  */
+    enum Enum
+    {
+        /* RigidBody-related parameters  */
 
-		/**
+        /**
 		\brief This overall visualization scale gets multiplied with the individual scales. Setting to zero ignores all visualizations. Default is 0.
 
 		The below settings permit the debug visualization of various simulation properties. 
@@ -90,24 +90,23 @@ struct PxVisualizationParameter
 		<b>Range:</b> [0, PX_MAX_F32)<br>
 		<b>Default:</b> 0
 		*/
-		eSCALE,
+        eSCALE,
 
-		
-		/**
+        /**
 		\brief Visualize the world axes.
 		*/
-		eWORLD_AXES,
-		
-	/* Body visualizations */
+        eWORLD_AXES,
 
-		/**
+        /* Body visualizations */
+
+        /**
 		\brief Visualize a bodies axes.
 
 		@see PxActor.globalPose PxActor
 		*/
-		eBODY_AXES,
-		
-		/**
+        eBODY_AXES,
+
+        /**
 		\brief Visualize a body's mass axes.
 
 		This visualization is also useful for visualizing the sleep state of bodies. Sleeping bodies are drawn in
@@ -116,202 +115,198 @@ struct PxVisualizationParameter
 
 		@see PxBodyDesc.massLocalPose PxActor
 		*/
-		eBODY_MASS_AXES,
-		
-		/**
+        eBODY_MASS_AXES,
+
+        /**
 		\brief Visualize the bodies linear velocity.
 
 		@see PxBodyDesc.linearVelocity PxActor
 		*/
-		eBODY_LIN_VELOCITY,
-		
-		/**
+        eBODY_LIN_VELOCITY,
+
+        /**
 		\brief Visualize the bodies angular velocity.
 
 		@see PxBodyDesc.angularVelocity PxActor
 		*/
-		eBODY_ANG_VELOCITY,
+        eBODY_ANG_VELOCITY,
 
-
-		/**
+        /**
 		\brief Visualize the bodies joint projection group.
 
 		@see PxBodyDesc.angularVelocity PxActor
 		*/
-		eBODY_JOINT_GROUPS,
+        eBODY_JOINT_GROUPS,
 
-	/* Contact visualisations */
+        /* Contact visualisations */
 
-		/**
+        /**
 		\brief  Visualize contact points. Will enable contact information.
 		*/
-		eCONTACT_POINT,
-		
-		/**
+        eCONTACT_POINT,
+
+        /**
 		\brief Visualize contact normals. Will enable contact information.
 		*/
-		eCONTACT_NORMAL,
-		
-		/**
+        eCONTACT_NORMAL,
+
+        /**
 		\brief  Visualize contact errors. Will enable contact information.
 		*/
-		eCONTACT_ERROR,
-		
-		/**
+        eCONTACT_ERROR,
+
+        /**
 		\brief Visualize Contact forces. Will enable contact information.
 		*/
-		eCONTACT_FORCE,
+        eCONTACT_FORCE,
 
-		
-		/**
+        /**
 		\brief Visualize actor axes.
 
 		@see PxRigidStatic PxRigidDynamic PxArticulationLink
 		*/
-		eACTOR_AXES,
+        eACTOR_AXES,
 
-		
-		/**
+        /**
 		\brief Visualize bounds (AABBs in world space)
 		*/
-		eCOLLISION_AABBS,
-		
-		/**
+        eCOLLISION_AABBS,
+
+        /**
 		\brief Shape visualization
 
 		@see PxShape
 		*/
-		eCOLLISION_SHAPES,
-		
-		/**
+        eCOLLISION_SHAPES,
+
+        /**
 		\brief Shape axis visualization
 
 		@see PxShape
 		*/
-		eCOLLISION_AXES,
+        eCOLLISION_AXES,
 
-		/**
+        /**
 		\brief Compound visualization (compound AABBs in world space)
 		*/
-		eCOLLISION_COMPOUNDS,
+        eCOLLISION_COMPOUNDS,
 
-		/**
+        /**
 		\brief Mesh & convex face normals
 
 		@see PxTriangleMesh PxConvexMesh
 		*/
-		eCOLLISION_FNORMALS,
-		
-		/**
+        eCOLLISION_FNORMALS,
+
+        /**
 		\brief Active edges for meshes
 
 		@see PxTriangleMesh
 		*/
-		eCOLLISION_EDGES,
+        eCOLLISION_EDGES,
 
-		/**
+        /**
 		\brief Static pruning structures
 		*/
-		eCOLLISION_STATIC,
+        eCOLLISION_STATIC,
 
-		/**
+        /**
 		\brief Dynamic pruning structures
 		*/
-		eCOLLISION_DYNAMIC,
+        eCOLLISION_DYNAMIC,
 
-		/**
+        /**
 		\brief Visualizes pairwise state.
 		*/
-		eDEPRECATED_COLLISION_PAIRS,
+        eDEPRECATED_COLLISION_PAIRS,
 
-		/**
+        /**
 		\brief Joint local axes
 		*/
-		eJOINT_LOCAL_FRAMES,
+        eJOINT_LOCAL_FRAMES,
 
-		/** 
+        /** 
 		\brief Joint limits
 		*/
-		eJOINT_LIMITS,
+        eJOINT_LIMITS,
 
+        /* ParticleSystem visualizations */
 
-	/* ParticleSystem visualizations */
-		
-		/**
+        /**
 		\brief Particle position visualization.
 		*/
-		ePARTICLE_SYSTEM_POSITION,
-		
-		/**
+        ePARTICLE_SYSTEM_POSITION,
+
+        /**
 		\brief Particle velocity visualization.
 		*/
-		ePARTICLE_SYSTEM_VELOCITY,
+        ePARTICLE_SYSTEM_VELOCITY,
 
-		/**
+        /**
 		\brief Particle collision normal visualization.
 		*/
-		ePARTICLE_SYSTEM_COLLISION_NORMAL,
-		
-		/**
+        ePARTICLE_SYSTEM_COLLISION_NORMAL,
+
+        /**
 		\brief ParticleSystem AABB visualization.
 		*/
-		ePARTICLE_SYSTEM_BOUNDS,
+        ePARTICLE_SYSTEM_BOUNDS,
 
-		/**
+        /**
 		\brief Particle grid visualization.
 		*/
-		ePARTICLE_SYSTEM_GRID,
-		
-		/**
+        ePARTICLE_SYSTEM_GRID,
+
+        /**
 		\brief Particle system broad phase bounds.
 		*/
-		ePARTICLE_SYSTEM_BROADPHASE_BOUNDS,
+        ePARTICLE_SYSTEM_BROADPHASE_BOUNDS,
 
-		/**
+        /**
 		\brief ParticleSystem maximum motion distance visualization.
 		*/
-		ePARTICLE_SYSTEM_MAX_MOTION_DISTANCE,
-	
-	/* Visualization subscene (culling box) */
+        ePARTICLE_SYSTEM_MAX_MOTION_DISTANCE,
 
-		/**
+        /* Visualization subscene (culling box) */
+
+        /**
 		\brief Debug visualization culling
 		*/
-		eCULL_BOX,
+        eCULL_BOX,
 
-		/**
+        /**
 		\brief Cloth fabric vertical sets
 		*/
-		eCLOTH_VERTICAL,    
-		/**
+        eCLOTH_VERTICAL,
+        /**
 		\brief Cloth fabric horizontal sets
 		*/
-		eCLOTH_HORIZONTAL,  
-		/**
+        eCLOTH_HORIZONTAL,
+        /**
 		\brief Cloth fabric bending sets
 		*/
-		eCLOTH_BENDING,     
-		/**
+        eCLOTH_BENDING,
+        /**
 		\brief Cloth fabric shearing sets
 		*/
-		eCLOTH_SHEARING,    
-		/**
+        eCLOTH_SHEARING,
+        /**
 		\brief Cloth virtual particles
 		*/
-		eCLOTH_VIRTUAL_PARTICLES,
+        eCLOTH_VIRTUAL_PARTICLES,
 
-		/**
+        /**
 		\brief MBP regions
 		*/
-		eMBP_REGIONS,
+        eMBP_REGIONS,
 
-		/**
+        /**
 		\brief This is not a parameter, it just records the current number of parameters (as maximum(PxVisualizationParameter)+1) for use in loops.
 		*/
-		eNUM_VALUES,
+        eNUM_VALUES,
 
-		eFORCE_DWORD = 0x7fffffff
-	};
+        eFORCE_DWORD = 0x7fffffff
+    };
 };
 
 #if !PX_DOXYGEN

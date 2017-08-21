@@ -63,8 +63,7 @@ class PxTriangle;
 class PxGeometryQuery
 {
 public:
-
-	/**
+    /**
 	\brief Sweep a specified geometry object in space and test for collision with a given object.
 
 	The following combinations are supported.
@@ -88,18 +87,17 @@ public:
 
 	@see PxSweepHit PxGeometry PxTransform
 	*/
-	PX_PHYSX_COMMON_API static bool sweep(const PxVec3& unitDir, 
-							const PxReal maxDist,
-							const PxGeometry& geom0,
-							const PxTransform& pose0,
-							const PxGeometry& geom1,
-							const PxTransform& pose1,
-							PxSweepHit& sweepHit,
-							PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
-							const PxReal inflation = 0.f);
+    PX_PHYSX_COMMON_API static bool sweep(const PxVec3& unitDir,
+                                          const PxReal maxDist,
+                                          const PxGeometry& geom0,
+                                          const PxTransform& pose0,
+                                          const PxGeometry& geom1,
+                                          const PxTransform& pose1,
+                                          PxSweepHit& sweepHit,
+                                          PxHitFlags hitFlags = PxHitFlag::eDEFAULT,
+                                          const PxReal inflation = 0.f);
 
-
-	/**
+    /**
 	\brief Overlap test for two geometry objects.
 
 	All combinations are supported except:
@@ -115,11 +113,10 @@ public:
 
 	@see PxGeometry PxTransform
 	*/
-	PX_PHYSX_COMMON_API static bool overlap(const PxGeometry& geom0, const PxTransform& pose0,
-											const PxGeometry& geom1, const PxTransform& pose1);
+    PX_PHYSX_COMMON_API static bool overlap(const PxGeometry& geom0, const PxTransform& pose0,
+                                            const PxGeometry& geom1, const PxTransform& pose1);
 
-
-	/**
+    /**
 	\brief Raycast test against a geometry object.
 
 	\param[in] origin The origin of the ray to test the geometry object against
@@ -134,16 +131,16 @@ public:
 
 	@see PxRaycastHit PxGeometry PxTransform
 	*/
-	PX_PHYSX_COMMON_API static PxU32 raycast(const PxVec3& origin,
-							const PxVec3& unitDir,
-							const PxGeometry& geom,
-							const PxTransform& pose,
-							PxReal maxDist,
-							PxHitFlags hitFlags,
-							PxU32 maxHits,
-							PxRaycastHit* PX_RESTRICT rayHits);
+    PX_PHYSX_COMMON_API static PxU32 raycast(const PxVec3& origin,
+                                             const PxVec3& unitDir,
+                                             const PxGeometry& geom,
+                                             const PxTransform& pose,
+                                             PxReal maxDist,
+                                             PxHitFlags hitFlags,
+                                             PxU32 maxHits,
+                                             PxRaycastHit* PX_RESTRICT rayHits);
 
-	/**
+    /**
 	\brief Compute minimum translational distance (MTD) between two geometry objects.
 
 	All combinations of geom objects are supported except:
@@ -173,11 +170,11 @@ public:
 
 	@see PxGeometry PxTransform
 	*/
-	PX_PHYSX_COMMON_API static bool		computePenetration(PxVec3& direction, PxF32& depth,
-											const PxGeometry& geom0, const PxTransform& pose0,
-											const PxGeometry& geom1, const PxTransform& pose1);
+    PX_PHYSX_COMMON_API static bool computePenetration(PxVec3& direction, PxF32& depth,
+                                                       const PxGeometry& geom0, const PxTransform& pose0,
+                                                       const PxGeometry& geom1, const PxTransform& pose1);
 
-	/**
+    /**
 	\brief Computes distance between a point and a geometry object.
 
 	Currently supported geometry objects: box, sphere, capsule, convex.
@@ -190,10 +187,9 @@ public:
 
 	@see PxGeometry PxTransform
 	*/
-	PX_PHYSX_COMMON_API static PxReal pointDistance(const PxVec3& point, const PxGeometry& geom, const PxTransform& pose, PxVec3* closestPoint=NULL);
+    PX_PHYSX_COMMON_API static PxReal pointDistance(const PxVec3& point, const PxGeometry& geom, const PxTransform& pose, PxVec3* closestPoint = NULL);
 
-
-	/**
+    /**
 	\brief get the bounds for a geometry object
 
 	\param[in] geom The geometry object
@@ -203,9 +199,9 @@ public:
 
 	@see PxGeometry PxTransform
 	*/
-	PX_PHYSX_COMMON_API static PxBounds3 getWorldBounds(const PxGeometry& geom, const PxTransform& pose, float inflation=1.01f);
+    PX_PHYSX_COMMON_API static PxBounds3 getWorldBounds(const PxGeometry& geom, const PxTransform& pose, float inflation = 1.01f);
 
-	/**
+    /**
 	\brief Checks if provided geometry is valid.
 
 	\param[in] geom The geometry object.
@@ -213,7 +209,7 @@ public:
 
 	@see PxGeometry PxSphereGeometry, PxCapsuleGeometry, PxBoxGeometry, PxConvexGeometry
 	*/
-	PX_PHYSX_COMMON_API static bool isValid(const PxGeometry& geom);
+    PX_PHYSX_COMMON_API static bool isValid(const PxGeometry& geom);
 };
 
 

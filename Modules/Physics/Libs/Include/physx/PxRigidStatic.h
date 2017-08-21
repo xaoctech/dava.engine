@@ -59,14 +59,27 @@ Instances of this class are created by calling #PxPhysics::createRigidStatic() a
 class PxRigidStatic : public PxRigidActor
 {
 public:
-	virtual		const char*		getConcreteTypeName() const { return "PxRigidStatic"; }
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxRigidStatic";
+    }
 
 protected:
-	PX_INLINE					PxRigidStatic(PxType concreteType, PxBaseFlags baseFlags) : PxRigidActor(concreteType, baseFlags) {}
-	PX_INLINE					PxRigidStatic(PxBaseFlags baseFlags) : PxRigidActor(baseFlags) {}
-	virtual						~PxRigidStatic() {}
-	virtual		bool			isKindOf(const char* name)	const { return !::strcmp("PxRigidStatic", name) || PxRigidActor::isKindOf(name); }
-
+    PX_INLINE PxRigidStatic(PxType concreteType, PxBaseFlags baseFlags)
+        : PxRigidActor(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxRigidStatic(PxBaseFlags baseFlags)
+        : PxRigidActor(baseFlags)
+    {
+    }
+    virtual ~PxRigidStatic()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxRigidStatic", name) || PxRigidActor::isKindOf(name);
+    }
 };
 
 #if !PX_DOXYGEN

@@ -55,11 +55,12 @@ public:
         return true;
     }
 
-    void Close() override
+    bool Close() override
     {
         start = nullptr;
         current = nullptr;
         end = nullptr;
+        return true;
     }
 
     bool IsClosed() const override

@@ -426,18 +426,6 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
         return filesCopied;
     };
 
-    auto parseSlotConfig = [this](const DAVA::Vector<ExportedObjectCollection>& expObjects)
-    {
-        for (const ExportedObject& obj : expObjects[OBJECT_SLOT_CONFIG])
-        {
-            DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + obj.relativePathname);
-            for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
-            {
-                objectsToExport[OBJECT_SCENE].push_back(ExportedObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder)));
-            }
-        }
-    };
-
     AssetCache::CacheItemKey cacheKey;
     if (cacheClient != nullptr && cacheClient->IsConnected())
     { //request Scene from cache
@@ -451,7 +439,6 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
 
             bool filesCopied = copyScene();
             bool objectsLoaded = SceneExporterDetails::LoadExportedObjects(linksPathname, objectsToExport);
-            parseSlotConfig(objectsToExport);
             return exportedToFolder && objectsLoaded && filesCopied;
         }
         else
@@ -473,8 +460,6 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
         {
             objectsToExport[i].insert(objectsToExport[i].end(), externalLinks[i].begin(), externalLinks[i].end());
         }
-
-        parseSlotConfig(externalLinks);
     }
 
     if (cacheClient != nullptr && cacheClient->IsConnected())
@@ -931,6 +916,18 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
         {
             alreadyExportedScenes.insert(fullScenePath);
             exportIsOk = ExportSceneObject(scenes[i]) && exportIsOk;
+        }
+    }
+
+    //export only slot objects
+    SceneExporterDetails::RemoveDuplicates(objectsToExport[OBJECT_SLOT_CONFIG]);
+    for (const ExportedObject& slot : objectsToExport[OBJECT_SLOT_CONFIG])
+    {
+        DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
+        for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+        {
+            ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
+            exportIsOk = ExportSceneObject(sceneObject) & exportIsOk;
         }
     }
 

@@ -11,12 +11,12 @@ struct Hash<FastName>
 {
     size_t operator()(const FastName& name) const
     {
-        return name.Index();
+        return std::hash<FastName>().operator()(name);
     }
 
     bool Compare(const FastName& name1, const FastName& name2) const
     {
-        return name1.Index() == name2.Index();
+        return name1 == name2;
     }
 };
 
@@ -75,25 +75,25 @@ struct Hash<FastNameSet>
     size_t operator()(const FastNameSet& set) const
     {
         size_t i = 0;
-        Vector<int> indices;
-        indices.resize(set.size());
+        Vector<const char*> data;
+        data.resize(set.size());
 
         FastNameSet::iterator it = set.begin();
         const FastNameSet::iterator& endIt = set.end();
         for (; it != endIt; ++it)
         {
             const FastName& key = it->first;
-            indices[i] = key.Index();
+            data[i] = key.c_str();
             i++;
         }
 
-        std::stable_sort(indices.begin(), indices.end());
+        std::stable_sort(data.begin(), data.end());
 
-        size_t keyCount = indices.size();
+        size_t keyCount = data.size();
         size_t hashVal = 2166136261u;
         for (i = 0; i < keyCount; ++i)
         {
-            hashVal += (hashVal * 16777619) ^ indices[i];
+            hashVal += (hashVal * 16777619) ^ reinterpret_cast<size_t>(data[i]);
         }
 
         return hashVal;

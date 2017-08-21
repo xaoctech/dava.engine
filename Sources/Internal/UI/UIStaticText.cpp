@@ -510,12 +510,12 @@ void UIStaticText::DrawLocalizationErrors(const UIGeometricData& geometricData, 
 
         //reduce size by 1 pixel from each size for polygon to fit into control hence +1.0f and -1.0f
         //getTextOffsetTL and getTextOffsetBR are in physical coordinates but draw is still in virtual
-        textGeomData.position += (x * UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(rendereTextBlock->getTextOffsetTL().x + 1.0f));
-        textGeomData.position += (y * UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(rendereTextBlock->getTextOffsetTL().y + 1.0f));
+        textGeomData.position += (x * GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(rendereTextBlock->getTextOffsetTL().x + 1.0f));
+        textGeomData.position += (y * GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(rendereTextBlock->getTextOffsetTL().y + 1.0f));
 
         textGeomData.size = Vector2(0.0f, 0.0f);
-        textGeomData.size.x += UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX((rendereTextBlock->getTextOffsetBR().x - rendereTextBlock->getTextOffsetTL().x) - 1.0f);
-        textGeomData.size.y += UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY((rendereTextBlock->getTextOffsetBR().y - rendereTextBlock->getTextOffsetTL().y) - 1.0f);
+        textGeomData.size.x += GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX((rendereTextBlock->getTextOffsetBR().x - rendereTextBlock->getTextOffsetTL().x) - 1.0f);
+        textGeomData.size.y += GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY((rendereTextBlock->getTextOffsetBR().y - rendereTextBlock->getTextOffsetTL().y) - 1.0f);
 
         DAVA::Polygon2 textPolygon;
         textGeomData.GetPolygon(textPolygon);

@@ -42,10 +42,10 @@ namespace physx
 {
 #endif
 
-	class PxCollectionExt
-	{
-	public:
-		/**
+class PxCollectionExt
+{
+public:
+    /**
 		\brief Removes and releases all object from a collection.
 		
 		The Collection itself is not released.
@@ -62,9 +62,9 @@ namespace physx
 		\param[in] collection to remove and release all object from.
 		\param[in] releaseExclusiveShapes if this parameter is set to false, release() will not be called on exclusive shapes.
 		*/
-		static void	releaseObjects(PxCollection& collection, bool releaseExclusiveShapes = true);
+    static void releaseObjects(PxCollection& collection, bool releaseExclusiveShapes = true);
 
-		/**
+    /**
 		\brief Removes objects of a given type from a collection, potentially adding them to another collection.
 
 		\param[in,out] collection Collection from which objects are removed
@@ -72,11 +72,10 @@ namespace physx
 		\param[in,out] to Optional collection to which the removed objects are added
 
 		@see PxCollection, PxConcreteType
-		*/	
-		static void remove(PxCollection& collection, PxType concreteType, PxCollection* to = NULL);
+		*/
+    static void remove(PxCollection& collection, PxType concreteType, PxCollection* to = NULL);
 
-
-		/**
+    /**
 		\brief Collects all objects in PxPhysics that are shareable across multiple scenes.
 
 		This function creates a new collection from all objects that are shareable across multiple 
@@ -90,9 +89,9 @@ namespace physx
 
 		@see PxCollection, PxPhysics
 		*/
-		static  PxCollection*	createCollection(PxPhysics& physics);
-	
-		/**
+    static PxCollection* createCollection(PxPhysics& physics);
+
+    /**
 		\brief Collects all objects from a PxScene.
 
 		This function creates a new collection from all objects that where added to the specified 
@@ -108,8 +107,8 @@ namespace physx
 
 		@see PxCollection, PxScene, PxSerialization.complete()
 		*/
-		static	PxCollection*	createCollection(PxScene& scene);
-	};
+    static PxCollection* createCollection(PxScene& scene);
+};
 
 #if !PX_DOXYGEN
 } // namespace physx

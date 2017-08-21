@@ -46,13 +46,21 @@ namespace physx
 Spheres are defined by their radius.
 \note The scaling of the sphere is expected to be baked into this value, there is no additional scaling parameter.
 */
-class PxSphereGeometry : public PxGeometry 
+class PxSphereGeometry : public PxGeometry
 {
 public:
-	PX_INLINE PxSphereGeometry() :							PxGeometry(PxGeometryType::eSPHERE), radius(0) {}
-	PX_INLINE PxSphereGeometry(PxReal ir) :					PxGeometry(PxGeometryType::eSPHERE), radius(ir) {}
+    PX_INLINE PxSphereGeometry()
+        : PxGeometry(PxGeometryType::eSPHERE)
+        , radius(0)
+    {
+    }
+    PX_INLINE PxSphereGeometry(PxReal ir)
+        : PxGeometry(PxGeometryType::eSPHERE)
+        , radius(ir)
+    {
+    }
 
-	/**
+    /**
 	\brief Returns true if the geometry is valid.
 
 	\return True if the current settings are valid
@@ -62,27 +70,25 @@ public:
 
 	@see PxRigidActor::createShape, PxPhysics::createShape
 	*/
-	PX_INLINE bool isValid() const;
+    PX_INLINE bool isValid() const;
 
 public:
-
-	/**
+    /**
 	\brief The radius of the sphere.
 	*/
-	PxReal radius;	
+    PxReal radius;
 };
-
 
 PX_INLINE bool PxSphereGeometry::isValid() const
 {
-	if (mType != PxGeometryType::eSPHERE)
-		return false;
-	if (!PxIsFinite(radius))
-		return false;
-	if (radius <= 0.0f)
-		return false;
+    if (mType != PxGeometryType::eSPHERE)
+        return false;
+    if (!PxIsFinite(radius))
+        return false;
+    if (radius <= 0.0f)
+        return false;
 
-	return true;
+    return true;
 }
 
 #if !PX_DOXYGEN

@@ -82,21 +82,21 @@ class PxStrideIterator
 {
 
 #if !PX_DOXYGEN
-	template <typename X>
-	struct StripConst
-	{
-		typedef X Type;
-	};
+    template <typename X>
+    struct StripConst
+    {
+        typedef X Type;
+    };
 
-	template <typename X>
-	struct StripConst<const X>
-	{
-		typedef X Type;
-	};
+    template <typename X>
+    struct StripConst<const X>
+    {
+        typedef X Type;
+    };
 #endif
 
-  public:
-	/**
+public:
+    /**
 	\brief Constructor.
 
 	Optionally takes a pointer to an element and a stride.
@@ -104,217 +104,220 @@ class PxStrideIterator
 	\param[in] ptr pointer to element, defaults to NULL.
 	\param[in] stride stride for accessing consecutive elements, defaults to the size of one element.
 	*/
-	explicit PX_INLINE PxStrideIterator(T* ptr = NULL, PxU32 stride = sizeof(T)) : mPtr(ptr), mStride(stride)
-	{
-		PX_ASSERT(mStride == 0 || sizeof(T) <= mStride);
-	}
+    explicit PX_INLINE PxStrideIterator(T* ptr = NULL, PxU32 stride = sizeof(T))
+        : mPtr(ptr)
+        , mStride(stride)
+    {
+        PX_ASSERT(mStride == 0 || sizeof(T) <= mStride);
+    }
 
-	/**
+    /**
 	\brief Copy constructor.
 
 	\param[in] strideIterator PxStrideIterator to be copied.
 	*/
-	PX_INLINE PxStrideIterator(const PxStrideIterator<typename StripConst<T>::Type>& strideIterator)
-	: mPtr(strideIterator.ptr()), mStride(strideIterator.stride())
-	{
-		PX_ASSERT(mStride == 0 || sizeof(T) <= mStride);
-	}
+    PX_INLINE PxStrideIterator(const PxStrideIterator<typename StripConst<T>::Type>& strideIterator)
+        : mPtr(strideIterator.ptr())
+        , mStride(strideIterator.stride())
+    {
+        PX_ASSERT(mStride == 0 || sizeof(T) <= mStride);
+    }
 
-	/**
+    /**
 	\brief Get pointer to element.
 	*/
-	PX_INLINE T* ptr() const
-	{
-		return mPtr;
-	}
+    PX_INLINE T* ptr() const
+    {
+        return mPtr;
+    }
 
-	/**
+    /**
 	\brief Get stride.
 	*/
-	PX_INLINE PxU32 stride() const
-	{
-		return mStride;
-	}
+    PX_INLINE PxU32 stride() const
+    {
+        return mStride;
+    }
 
-	/**
+    /**
 	\brief Indirection operator.
 	*/
-	PX_INLINE T& operator*() const
-	{
-		return *mPtr;
-	}
+    PX_INLINE T& operator*() const
+    {
+        return *mPtr;
+    }
 
-	/**
+    /**
 	\brief Dereferencing operator.
 	*/
-	PX_INLINE T* operator->() const
-	{
-		return mPtr;
-	}
+    PX_INLINE T* operator->() const
+    {
+        return mPtr;
+    }
 
-	/**
+    /**
 	\brief Indexing operator.
 	*/
-	PX_INLINE T& operator[](unsigned int i) const
-	{
-		return *byteAdd(mPtr, i * stride());
-	}
+    PX_INLINE T& operator[](unsigned int i) const
+    {
+        return *byteAdd(mPtr, i * stride());
+    }
 
-	/**
+    /**
 	\brief Pre-increment operator.
 	*/
-	PX_INLINE PxStrideIterator& operator++()
-	{
-		mPtr = byteAdd(mPtr, stride());
-		return *this;
-	}
+    PX_INLINE PxStrideIterator& operator++()
+    {
+        mPtr = byteAdd(mPtr, stride());
+        return *this;
+    }
 
-	/**
+    /**
 	\brief Post-increment operator.
 	*/
-	PX_INLINE PxStrideIterator operator++(int)
-	{
-		PxStrideIterator tmp = *this;
-		mPtr = byteAdd(mPtr, stride());
-		return tmp;
-	}
+    PX_INLINE PxStrideIterator operator++(int)
+    {
+        PxStrideIterator tmp = *this;
+        mPtr = byteAdd(mPtr, stride());
+        return tmp;
+    }
 
-	/**
+    /**
 	\brief Pre-decrement operator.
 	*/
-	PX_INLINE PxStrideIterator& operator--()
-	{
-		mPtr = byteSub(mPtr, stride());
-		return *this;
-	}
+    PX_INLINE PxStrideIterator& operator--()
+    {
+        mPtr = byteSub(mPtr, stride());
+        return *this;
+    }
 
-	/**
+    /**
 	\brief Post-decrement operator.
 	*/
-	PX_INLINE PxStrideIterator operator--(int)
-	{
-		PxStrideIterator tmp = *this;
-		mPtr = byteSub(mPtr, stride());
-		return tmp;
-	}
+    PX_INLINE PxStrideIterator operator--(int)
+    {
+        PxStrideIterator tmp = *this;
+        mPtr = byteSub(mPtr, stride());
+        return tmp;
+    }
 
-	/**
+    /**
 	\brief Addition operator.
 	*/
-	PX_INLINE PxStrideIterator operator+(unsigned int i) const
-	{
-		return PxStrideIterator(byteAdd(mPtr, i * stride()), stride());
-	}
+    PX_INLINE PxStrideIterator operator+(unsigned int i) const
+    {
+        return PxStrideIterator(byteAdd(mPtr, i * stride()), stride());
+    }
 
-	/**
+    /**
 	\brief Subtraction operator.
 	*/
-	PX_INLINE PxStrideIterator operator-(unsigned int i) const
-	{
-		return PxStrideIterator(byteSub(mPtr, i * stride()), stride());
-	}
+    PX_INLINE PxStrideIterator operator-(unsigned int i) const
+    {
+        return PxStrideIterator(byteSub(mPtr, i * stride()), stride());
+    }
 
-	/**
+    /**
 	\brief Addition compound assignment operator.
 	*/
-	PX_INLINE PxStrideIterator& operator+=(unsigned int i)
-	{
-		mPtr = byteAdd(mPtr, i * stride());
-		return *this;
-	}
+    PX_INLINE PxStrideIterator& operator+=(unsigned int i)
+    {
+        mPtr = byteAdd(mPtr, i * stride());
+        return *this;
+    }
 
-	/**
+    /**
 	\brief Subtraction compound assignment operator.
 	*/
-	PX_INLINE PxStrideIterator& operator-=(unsigned int i)
-	{
-		mPtr = byteSub(mPtr, i * stride());
-		return *this;
-	}
+    PX_INLINE PxStrideIterator& operator-=(unsigned int i)
+    {
+        mPtr = byteSub(mPtr, i * stride());
+        return *this;
+    }
 
-	/**
+    /**
 	\brief Iterator difference.
 	*/
-	PX_INLINE int operator-(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		int byteDiff = static_cast<int>(reinterpret_cast<const PxU8*>(mPtr) - reinterpret_cast<const PxU8*>(other.mPtr));
-		return byteDiff / static_cast<int>(stride());
-	}
+    PX_INLINE int operator-(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        int byteDiff = static_cast<int>(reinterpret_cast<const PxU8*>(mPtr) - reinterpret_cast<const PxU8*>(other.mPtr));
+        return byteDiff / static_cast<int>(stride());
+    }
 
-	/**
+    /**
 	\brief Equality operator.
 	*/
-	PX_INLINE bool operator==(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		return mPtr == other.mPtr;
-	}
+    PX_INLINE bool operator==(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        return mPtr == other.mPtr;
+    }
 
-	/**
+    /**
 	\brief Inequality operator.
 	*/
-	PX_INLINE bool operator!=(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		return mPtr != other.mPtr;
-	}
+    PX_INLINE bool operator!=(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        return mPtr != other.mPtr;
+    }
 
-	/**
+    /**
 	\brief Less than operator.
 	*/
-	PX_INLINE bool operator<(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		return mPtr < other.mPtr;
-	}
+    PX_INLINE bool operator<(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        return mPtr < other.mPtr;
+    }
 
-	/**
+    /**
 	\brief Greater than operator.
 	*/
-	PX_INLINE bool operator>(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		return mPtr > other.mPtr;
-	}
+    PX_INLINE bool operator>(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        return mPtr > other.mPtr;
+    }
 
-	/**
+    /**
 	\brief Less or equal than operator.
 	*/
-	PX_INLINE bool operator<=(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		return mPtr <= other.mPtr;
-	}
+    PX_INLINE bool operator<=(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        return mPtr <= other.mPtr;
+    }
 
-	/**
+    /**
 	\brief Greater or equal than operator.
 	*/
-	PX_INLINE bool operator>=(const PxStrideIterator& other) const
-	{
-		PX_ASSERT(isCompatible(other));
-		return mPtr >= other.mPtr;
-	}
+    PX_INLINE bool operator>=(const PxStrideIterator& other) const
+    {
+        PX_ASSERT(isCompatible(other));
+        return mPtr >= other.mPtr;
+    }
 
-  private:
-	PX_INLINE static T* byteAdd(T* ptr, PxU32 bytes)
-	{
-		return const_cast<T*>(reinterpret_cast<const T*>(reinterpret_cast<const PxU8*>(ptr) + bytes));
-	}
+private:
+    PX_INLINE static T* byteAdd(T* ptr, PxU32 bytes)
+    {
+        return const_cast<T*>(reinterpret_cast<const T*>(reinterpret_cast<const PxU8*>(ptr) + bytes));
+    }
 
-	PX_INLINE static T* byteSub(T* ptr, PxU32 bytes)
-	{
-		return const_cast<T*>(reinterpret_cast<const T*>(reinterpret_cast<const PxU8*>(ptr) - bytes));
-	}
+    PX_INLINE static T* byteSub(T* ptr, PxU32 bytes)
+    {
+        return const_cast<T*>(reinterpret_cast<const T*>(reinterpret_cast<const PxU8*>(ptr) - bytes));
+    }
 
-	PX_INLINE bool isCompatible(const PxStrideIterator& other) const
-	{
-		int byteDiff = static_cast<int>(reinterpret_cast<const PxU8*>(mPtr) - reinterpret_cast<const PxU8*>(other.mPtr));
-		return (stride() == other.stride()) && (abs(byteDiff) % stride() == 0);
-	}
+    PX_INLINE bool isCompatible(const PxStrideIterator& other) const
+    {
+        int byteDiff = static_cast<int>(reinterpret_cast<const PxU8*>(mPtr) - reinterpret_cast<const PxU8*>(other.mPtr));
+        return (stride() == other.stride()) && (abs(byteDiff) % stride() == 0);
+    }
 
-	T* mPtr;
-	PxU32 mStride;
+    T* mPtr;
+    PxU32 mStride;
 };
 
 /**
@@ -323,8 +326,8 @@ class PxStrideIterator
 template <typename T>
 PX_INLINE PxStrideIterator<T> operator+(int i, PxStrideIterator<T> it)
 {
-	it += i;
-	return it;
+    it += i;
+    return it;
 }
 
 /**
@@ -333,7 +336,7 @@ PX_INLINE PxStrideIterator<T> operator+(int i, PxStrideIterator<T> it)
 template <typename T>
 PX_INLINE PxStrideIterator<T> PxMakeIterator(T* ptr, PxU32 stride = sizeof(T))
 {
-	return PxStrideIterator<T>(ptr, stride);
+    return PxStrideIterator<T>(ptr, stride);
 }
 
 /**
@@ -342,7 +345,7 @@ PX_INLINE PxStrideIterator<T> PxMakeIterator(T* ptr, PxU32 stride = sizeof(T))
 template <typename T>
 PX_INLINE PxStrideIterator<const T> PxMakeIterator(const T* ptr, PxU32 stride = sizeof(T))
 {
-	return PxStrideIterator<const T>(ptr, stride);
+    return PxStrideIterator<const T>(ptr, stride);
 }
 
 #if !PX_DOXYGEN

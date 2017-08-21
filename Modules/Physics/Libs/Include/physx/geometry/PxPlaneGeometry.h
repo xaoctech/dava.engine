@@ -55,28 +55,29 @@ To generate a PxTransform from a PxPlane, use PxTransformFromPlaneEquation.
 
 @see PxShape.setGeometry() PxShape.getPlaneGeometry() PxTransformFromPlaneEquation 
 */
-class PxPlaneGeometry : public PxGeometry 
+class PxPlaneGeometry : public PxGeometry
 {
 public:
-	PX_INLINE PxPlaneGeometry() :	PxGeometry(PxGeometryType::ePLANE) {}
+    PX_INLINE PxPlaneGeometry()
+        : PxGeometry(PxGeometryType::ePLANE)
+    {
+    }
 
-	/**
+    /**
 	\brief Returns true if the geometry is valid.
 
 	\return True if the current settings are valid
 	*/
-	PX_INLINE bool isValid() const;
+    PX_INLINE bool isValid() const;
 };
-
 
 PX_INLINE bool PxPlaneGeometry::isValid() const
 {
-	if (mType != PxGeometryType::ePLANE)
-		return false;
+    if (mType != PxGeometryType::ePLANE)
+        return false;
 
-	return true;
+    return true;
 }
-
 
 /** \brief creates a transform from a plane equation, suitable for an actor transform for a PxPlaneGeometry
 
@@ -92,10 +93,9 @@ PX_FOUNDATION_API PxTransform PxTransformFromPlaneEquation(const PxPlane& plane)
 \return the plane
 */
 
-
 PX_INLINE PxPlane PxPlaneEquationFromTransform(const PxTransform& transform)
 {
-	return transform.transform(PxPlane(1.f,0.f,0.f,0.f));
+    return transform.transform(PxPlane(1.f, 0.f, 0.f, 0.f));
 }
 
 

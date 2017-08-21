@@ -47,9 +47,9 @@ namespace physx
 */
 struct PxHeightFieldFormat
 {
-	enum Enum
-	{
-		/**
+    enum Enum
+    {
+        /**
 		\brief Height field height data is 16 bit signed integers, followed by triangle materials. 
 		
 		Each sample is 32 bits wide arranged as follows:
@@ -69,8 +69,8 @@ struct PxHeightFieldFormat
 
 		@see PxHeightFieldDesc.format PxHeightFieldDesc.samples
 		*/
-		eS16_TM = (1 << 0)
-	};
+        eS16_TM = (1 << 0)
+    };
 };
 
 /** 
@@ -79,9 +79,9 @@ struct PxHeightFieldFormat
 */
 struct PxHeightFieldTessFlag
 {
-	enum Enum
-	{
-		/**
+    enum Enum
+    {
+        /**
 		\brief This flag determines which way each quad cell is subdivided.
 
 		The flag lowered indicates subdivision like this: (the 0th vertex is referenced by only one triangle)
@@ -120,19 +120,18 @@ struct PxHeightFieldTessFlag
 		
 		@see PxHeightFieldDesc.format PxHeightFieldDesc.samples
 		*/
-		e0TH_VERTEX_SHARED = (1 << 0)
-	};
+        e0TH_VERTEX_SHARED = (1 << 0)
+    };
 };
-
 
 /**
 \brief Enum with flag values to be used in PxHeightFieldDesc.flags.
 */
 struct PxHeightFieldFlag
 {
-	enum Enum
-	{
-		/**
+    enum Enum
+    {
+        /**
 		\brief Disable collisions with height field with boundary edges.
 		
 		Raise this flag if several terrain patches are going to be placed adjacent to each other, 
@@ -142,8 +141,8 @@ struct PxHeightFieldFlag
 
 		@see PxHeightFieldDesc.flags
 		*/
-		eNO_BOUNDARY_EDGES = (1 << 0)
-	};
+        eNO_BOUNDARY_EDGES = (1 << 0)
+    };
 };
 
 /**
@@ -151,8 +150,8 @@ struct PxHeightFieldFlag
 
 @see PxHeightFieldFlag
 */
-typedef PxFlags<PxHeightFieldFlag::Enum,PxU16> PxHeightFieldFlags;
-PX_FLAGS_OPERATORS(PxHeightFieldFlag::Enum,PxU16)
+typedef PxFlags<PxHeightFieldFlag::Enum, PxU16> PxHeightFieldFlags;
+PX_FLAGS_OPERATORS(PxHeightFieldFlag::Enum, PxU16)
 
 #if !PX_DOXYGEN
 } // namespace physx

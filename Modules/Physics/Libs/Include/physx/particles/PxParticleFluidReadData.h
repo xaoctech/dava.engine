@@ -51,10 +51,9 @@ Additionally to PxParticleReadData, the density can be read from the SDK.
 @see PxParticleReadData PxParticleFluid.lockParticleFluidReadData()
 */
 class PX_DEPRECATED PxParticleFluidReadData : public PxParticleReadData
-	{
-	public:
-
-	/**
+{
+public:
+    /**
 	\brief Particle density data.
 	
 	The density depends on how close particles are to each other. The density values are normalized such that:
@@ -71,14 +70,15 @@ class PX_DEPRECATED PxParticleFluidReadData : public PxParticleReadData
 	fluid has been simulated. Otherwise densityBuffer.ptr() is NULL. This also 
 	applies to particle fluids that are not assigned to a scene.
 	*/
-	PxStrideIterator<const PxF32> densityBuffer;
+    PxStrideIterator<const PxF32> densityBuffer;
 
-	/**
+    /**
 	\brief virtual destructor
 	*/
-	virtual ~PxParticleFluidReadData() {}
-
-	};
+    virtual ~PxParticleFluidReadData()
+    {
+    }
+};
 
 #if !PX_DOXYGEN
 } // namespace physx

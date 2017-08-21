@@ -42,7 +42,6 @@ namespace physx
 {
 #endif
 
-
 /**
 \brief Collection of flags describing the behavior of a rigid body.
 
@@ -51,10 +50,10 @@ namespace physx
 
 struct PxRigidBodyFlag
 {
-	enum Enum
-	{
+    enum Enum
+    {
 
-		/**
+        /**
 		\brief Enables kinematic mode for the actor.
 
 		Kinematic actors are special dynamic actors that are not 
@@ -75,9 +74,9 @@ struct PxRigidBodyFlag
 
 		@see PxRigidDynamic.setKinematicTarget()
 		*/
-		eKINEMATIC									= (1<<0),		//!< Enable kinematic mode for the body.
+        eKINEMATIC = (1 << 0), //!< Enable kinematic mode for the body.
 
-		/**
+        /**
 		\brief Use the kinematic target transform for scene queries.
 
 		If this flag is raised, then scene queries will treat the kinematic target transform as the current pose
@@ -86,9 +85,9 @@ struct PxRigidBodyFlag
 
 		@see PxRigidDynamic.setKinematicTarget()
 		*/
-		eUSE_KINEMATIC_TARGET_FOR_SCENE_QUERIES		= (1<<1),
+        eUSE_KINEMATIC_TARGET_FOR_SCENE_QUERIES = (1 << 1),
 
-		/**
+        /**
 		\brief Enables swept integration for the actor.
 
 		If this flag is raised and CCD is enabled on the scene, then this body will be simulated by the CCD system to ensure that collisions are not missed due to 
@@ -98,9 +97,9 @@ struct PxRigidBodyFlag
 		\note kinematic actors are incompatible with CCD so this flag will be cleared automatically when raised on a kinematic actor
 
 		*/
-		eENABLE_CCD					= (1<<2),		//!< Enable CCD for the body.
+        eENABLE_CCD = (1 << 2), //!< Enable CCD for the body.
 
-		/**
+        /**
 		\brief Enabled CCD in swept integration for the actor.
 
 		If this flag is raised and CCD is enabled, CCD interactions will simulate friction. By default, friction is disabled in CCD interactions because 
@@ -109,9 +108,9 @@ struct PxRigidBodyFlag
 
 		\note This flag requires PxRigidBodyFlag::eENABLE_CCD to be raised to have any effect.
 		*/
-		eENABLE_CCD_FRICTION			= (1<<3),
+        eENABLE_CCD_FRICTION = (1 << 3),
 
-		/**
+        /**
 		\brief Register a rigid body for reporting pose changes by the simulation at an early stage.
 
 		Sometimes it might be advantageous to get access to the new pose of a rigid body as early as possible and
@@ -121,13 +120,13 @@ struct PxRigidBodyFlag
 
 		@see PxSimulationEventCallback::onAdvance()
 		*/
-		eENABLE_POSE_INTEGRATION_PREVIEW 	= (1 << 4),
+        eENABLE_POSE_INTEGRATION_PREVIEW = (1 << 4),
 
-		/**
+        /**
 		\brief Register a rigid body to dynamicly adjust contact offset based on velocity. This can be used to achieve a CCD effect.
 		*/
-		eENABLE_SPECULATIVE_CCD 			= (1 << 5)
-	};
+        eENABLE_SPECULATIVE_CCD = (1 << 5)
+    };
 };
 
 /**
@@ -135,8 +134,8 @@ struct PxRigidBodyFlag
 
 @see PxRigidBodyFlag
 */
-typedef PxFlags<PxRigidBodyFlag::Enum,PxU8> PxRigidBodyFlags;
-PX_FLAGS_OPERATORS(PxRigidBodyFlag::Enum,PxU8)
+typedef PxFlags<PxRigidBodyFlag::Enum, PxU8> PxRigidBodyFlags;
+PX_FLAGS_OPERATORS(PxRigidBodyFlag::Enum, PxU8)
 
 /**
 \brief PxRigidBody is a base class shared between dynamic rigid body objects.
@@ -147,13 +146,13 @@ PX_FLAGS_OPERATORS(PxRigidBodyFlag::Enum,PxU8)
 class PxRigidBody : public PxRigidActor
 {
 public:
-	// Runtime modifications
+    // Runtime modifications
 
-/************************************************************************************************/
-/** @name Mass Manipulation
+    /************************************************************************************************/
+    /** @name Mass Manipulation
 */
 
-	/**
+    /**
 	\brief Sets the pose of the center of mass relative to the actor.	
 	
 	\note Changing this transform will not move the actor in the world!
@@ -167,20 +166,18 @@ public:
 
 	@see getCMassLocalPose() PxRigidBodyDesc.massLocalPose
 	*/
-	virtual		void			setCMassLocalPose(const PxTransform& pose) = 0;
+    virtual void setCMassLocalPose(const PxTransform& pose) = 0;
 
-
-	/**
+    /**
 	\brief Retrieves the center of mass pose relative to the actor frame.
 
 	\return The center of mass pose relative to the actor frame.
 
 	@see setCMassLocalPose() PxRigidBodyDesc.massLocalPose
 	*/
-	virtual		PxTransform 	getCMassLocalPose() const = 0;
+    virtual PxTransform getCMassLocalPose() const = 0;
 
-
-	/**
+    /**
 	\brief Sets the mass of a dynamic actor.
 	
 	The mass must be non-negative.
@@ -199,9 +196,9 @@ public:
 
 	@see getMass() PxRigidBodyDesc.mass setMassSpaceInertiaTensor()
 	*/
-	virtual		void			setMass(PxReal mass) = 0;
+    virtual void setMass(PxReal mass) = 0;
 
-	/**
+    /**
 	\brief Retrieves the mass of the actor.
 
 	\note A value of 0 is interpreted as infinite mass.
@@ -210,18 +207,18 @@ public:
 
 	@see setMass() PxRigidBodyDesc.mass setMassSpaceInertiaTensor()
 	*/
-	virtual		PxReal			getMass() const = 0;
+    virtual PxReal getMass() const = 0;
 
-	/**
+    /**
 	\brief Retrieves the inverse mass of the actor.
 
 	\return The inverse mass of this actor.
 
 	@see setMass() PxRigidBodyDesc.mass setMassSpaceInertiaTensor()
 	*/
-	virtual		PxReal			getInvMass() const = 0;
+    virtual PxReal getInvMass() const = 0;
 
-	/**
+    /**
 	\brief Sets the inertia tensor, using a parameter specified in mass space coordinates.
 	
 	Note that such matrices are diagonal -- the passed vector is the diagonal.
@@ -242,9 +239,9 @@ public:
 
 	@see PxRigidBodyDesc.massSpaceInertia getMassSpaceInertia() setMass() setCMassLocalPose()
 	*/
-	virtual		void			setMassSpaceInertiaTensor(const PxVec3& m) = 0;
+    virtual void setMassSpaceInertiaTensor(const PxVec3& m) = 0;
 
-	/**
+    /**
 	\brief  Retrieves the diagonal inertia tensor of the actor relative to the mass coordinate frame.
 
 	This method retrieves a mass frame inertia vector.
@@ -255,9 +252,9 @@ public:
 
 	@see PxRigidBodyDesc.massSpaceInertia setMassSpaceInertiaTensor() setMass() setCMassLocalPose()
 	*/
-	virtual		PxVec3			getMassSpaceInertiaTensor()			const = 0;
+    virtual PxVec3 getMassSpaceInertiaTensor() const = 0;
 
-	/**
+    /**
 	\brief  Retrieves the diagonal inverse inertia tensor of the actor relative to the mass coordinate frame.
 
 	This method retrieves a mass frame inverse inertia vector.
@@ -268,24 +265,22 @@ public:
 
 	@see PxRigidBodyDesc.massSpaceInertia setMassSpaceInertiaTensor() setMass() setCMassLocalPose()
 	*/
-	virtual		PxVec3			getMassSpaceInvInertiaTensor()			const = 0;
+    virtual PxVec3 getMassSpaceInvInertiaTensor() const = 0;
 
-
-/************************************************************************************************/
-/** @name Velocity
+    /************************************************************************************************/
+    /** @name Velocity
 */
 
-
-	/**
+    /**
 	\brief Retrieves the linear velocity of an actor.
 
 	\return The linear velocity of the actor.
 
 	@see PxRigidDynamic.setLinearVelocity() getAngularVelocity()
 	*/
-	virtual		PxVec3			getLinearVelocity()		const = 0;
+    virtual PxVec3 getLinearVelocity() const = 0;
 
-	/**
+    /**
 	\brief Sets the linear velocity of the actor.
 	
 	Note that if you continuously set the velocity of an actor yourself, 
@@ -304,21 +299,18 @@ public:
 
 	@see getLinearVelocity() setAngularVelocity()
 	*/
-	virtual		void			setLinearVelocity(const PxVec3& linVel, bool autowake = true ) = 0;
+    virtual void setLinearVelocity(const PxVec3& linVel, bool autowake = true) = 0;
 
-
-
-	/**
+    /**
 	\brief Retrieves the angular velocity of the actor.
 
 	\return The angular velocity of the actor.
 
 	@see PxRigidDynamic.setAngularVelocity() getLinearVelocity() 
 	*/
-	virtual		PxVec3			getAngularVelocity()	const = 0;
+    virtual PxVec3 getAngularVelocity() const = 0;
 
-
-	/**
+    /**
 	\brief Sets the angular velocity of the actor.
 	
 	Note that if you continuously set the angular velocity of an actor yourself, 
@@ -337,14 +329,13 @@ public:
 
 	@see getAngularVelocity() setLinearVelocity() 
 	*/
-	virtual		void			setAngularVelocity(const PxVec3& angVel, bool autowake = true ) = 0;
+    virtual void setAngularVelocity(const PxVec3& angVel, bool autowake = true) = 0;
 
-	
-/************************************************************************************************/
-/** @name Forces
+    /************************************************************************************************/
+    /** @name Forces
 */
 
-	/**
+    /**
 	\brief Applies a force (or impulse) defined in the global coordinate frame to the actor at its center of mass.
 	
 	<b>This will not induce a torque</b>.
@@ -374,9 +365,9 @@ public:
 
 	@see PxForceMode addTorque
 	*/
-	virtual		void			addForce(const PxVec3& force, PxForceMode::Enum mode = PxForceMode::eFORCE, bool autowake = true) = 0;
+    virtual void addForce(const PxVec3& force, PxForceMode::Enum mode = PxForceMode::eFORCE, bool autowake = true) = 0;
 
-	/**
+    /**
 	\brief Applies an impulsive torque defined in the global coordinate frame to the actor.
 
 	::PxForceMode determines if the torque is to be conventional or impulsive.
@@ -404,9 +395,9 @@ public:
 
 	@see PxForceMode addForce()
 	*/
-	virtual		void			addTorque(const PxVec3& torque, PxForceMode::Enum mode = PxForceMode::eFORCE, bool autowake = true) = 0;
+    virtual void addTorque(const PxVec3& torque, PxForceMode::Enum mode = PxForceMode::eFORCE, bool autowake = true) = 0;
 
-	/**
+    /**
 	\brief Clears the accumulated forces (sets the accumulated force back to zero).
 	
 	Each actor has an acceleration and a velocity change accumulator which are directly modified using the modes PxForceMode::eACCELERATION 
@@ -425,9 +416,9 @@ public:
 
 	@see PxForceMode addForce
 	*/
-	virtual		void			clearForce(PxForceMode::Enum mode = PxForceMode::eFORCE) = 0;
+    virtual void clearForce(PxForceMode::Enum mode = PxForceMode::eFORCE) = 0;
 
-	/**
+    /**
 	\brief Clears the impulsive torque defined in the global coordinate frame to the actor.
 
 	::PxForceMode determines if the cleared torque is to be conventional or impulsive.
@@ -446,9 +437,9 @@ public:
 
 	@see PxForceMode addTorque
 	*/
-	virtual		void			clearTorque(PxForceMode::Enum mode = PxForceMode::eFORCE) = 0;
+    virtual void clearTorque(PxForceMode::Enum mode = PxForceMode::eFORCE) = 0;
 
-	/**
+    /**
 	\brief Raises or clears a particular rigid body flag.
 	
 	See the list of flags #PxRigidBodyFlag
@@ -463,10 +454,10 @@ public:
 	@see PxRigidBodyFlag getRigidBodyFlags() 
 	*/
 
-	virtual		void				setRigidBodyFlag(PxRigidBodyFlag::Enum flag, bool value) = 0;
-	virtual		void				setRigidBodyFlags(PxRigidBodyFlags inFlags) = 0;
+    virtual void setRigidBodyFlag(PxRigidBodyFlag::Enum flag, bool value) = 0;
+    virtual void setRigidBodyFlags(PxRigidBodyFlags inFlags) = 0;
 
-	/**
+    /**
 	\brief Reads the PxRigidBody flags.
 	
 	See the list of flags #PxRigidBodyFlag
@@ -475,9 +466,9 @@ public:
 
 	@see PxRigidBodyFlag setRigidBodyFlag()
 	*/
-	virtual		PxRigidBodyFlags	getRigidBodyFlags()	const = 0;
+    virtual PxRigidBodyFlags getRigidBodyFlags() const = 0;
 
-	/**
+    /**
 	\brief Sets the CCD minimum advance coefficient.
 
 	The CCD minimum advance coefficient is a value in the range [0, 1] that is used to control the minimum amount of time a body is integrated when
@@ -498,9 +489,9 @@ public:
 	\param[in] advanceCoefficient The CCD min advance coefficient. <b>Range:</b> [0, 1] <b>Default:</b> 0.15
 	*/
 
-	virtual void setMinCCDAdvanceCoefficient(PxReal advanceCoefficient) = 0;
+    virtual void setMinCCDAdvanceCoefficient(PxReal advanceCoefficient) = 0;
 
-	/**
+    /**
 	\brief Gets the CCD minimum advance coefficient.
 
 	\return The value of the CCD min advance coefficient.
@@ -509,25 +500,23 @@ public:
 
 	*/
 
-	virtual PxReal getMinCCDAdvanceCoefficient() const = 0;
+    virtual PxReal getMinCCDAdvanceCoefficient() const = 0;
 
-
-	/**
+    /**
 	\brief Sets the maximum depenetration velocity permitted to be introduced by the solver.
 	This value controls how much velocity the solver can introduce to correct for penetrations in contacts. 
 	\param[in] biasClamp The maximum velocity to de-penetrate by <b>Range:</b> (0, PX_MAX_F32].
 	*/
-	virtual void setMaxDepenetrationVelocity(PxReal biasClamp) = 0;
+    virtual void setMaxDepenetrationVelocity(PxReal biasClamp) = 0;
 
-	/**
+    /**
 	\brief Returns the maximum depenetration velocity the solver is permitted to introduced.
 	This value controls how much velocity the solver can introduce to correct for penetrations in contacts. 
 	\return The maximum penetration bias applied by the solver.
 	*/
-	virtual PxReal getMaxDepenetrationVelocity() const = 0;
+    virtual PxReal getMaxDepenetrationVelocity() const = 0;
 
-
-	/**
+    /**
 	\brief Sets a limit on the impulse that may be applied at a contact. The maximum impulse at a contact between two dynamic or kinematic
 	bodies will be the minimum	of the two limit values. For a collision between a static and a dynamic body, the impulse is limited
 	by the value for the dynamic body.
@@ -536,23 +525,33 @@ public:
 
 	@see getMaxContactImpulse
 	*/
-	virtual void setMaxContactImpulse(PxReal maxImpulse) = 0;
+    virtual void setMaxContactImpulse(PxReal maxImpulse) = 0;
 
-	/**
+    /**
 	\brief Returns the maximum impulse that may be applied at a contact.
 
 	\return The maximum impulse that may be applied at a contact
 
 	@see setMaxContactImpulse
 	*/
-	virtual PxReal getMaxContactImpulse() const = 0;
-
+    virtual PxReal getMaxContactImpulse() const = 0;
 
 protected:
-	PX_INLINE					PxRigidBody(PxType concreteType, PxBaseFlags baseFlags) : PxRigidActor(concreteType, baseFlags) {}
-	PX_INLINE					PxRigidBody(PxBaseFlags baseFlags) : PxRigidActor(baseFlags) {}
-	virtual						~PxRigidBody()	{}
-	virtual		bool			isKindOf(const char* name)const	{	return !::strcmp("PxRigidBody", name) || PxRigidActor::isKindOf(name); }
+    PX_INLINE PxRigidBody(PxType concreteType, PxBaseFlags baseFlags)
+        : PxRigidActor(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxRigidBody(PxBaseFlags baseFlags)
+        : PxRigidActor(baseFlags)
+    {
+    }
+    virtual ~PxRigidBody()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxRigidBody", name) || PxRigidActor::isKindOf(name);
+    }
 };
 
 

@@ -57,12 +57,9 @@ class PxD6Joint;
 @see PxD6Joint
 */
 
-PxD6Joint*			PxD6JointCreate(PxPhysics& physics, 
-									PxRigidActor* actor0, const PxTransform& localFrame0, 
-									PxRigidActor* actor1, const PxTransform& localFrame1);
-
-
-
+PxD6Joint* PxD6JointCreate(PxPhysics& physics,
+                           PxRigidActor* actor0, const PxTransform& localFrame0,
+                           PxRigidActor* actor1, const PxTransform& localFrame1);
 
 /**
 \brief Used to specify one of the degrees of freedom of  a D6 joint.
@@ -72,18 +69,17 @@ PxD6Joint*			PxD6JointCreate(PxPhysics& physics,
 
 struct PxD6Axis
 {
-	enum Enum
-	{
-		eX      = 0,	//!< motion along the X axix
-		eY      = 1,	//!< motion along the Y axis
-		eZ      = 2,	//!< motion along the Z axis
-		eTWIST  = 3,	//!< motion around the X axis
-		eSWING1 = 4,	//!< motion around the Y axis
-		eSWING2 = 5,	//!< motion around the Z axis
-		eCOUNT	= 6
-	};
+    enum Enum
+    {
+        eX = 0, //!< motion along the X axix
+        eY = 1, //!< motion along the Y axis
+        eZ = 2, //!< motion along the Z axis
+        eTWIST = 3, //!< motion around the X axis
+        eSWING1 = 4, //!< motion around the Y axis
+        eSWING2 = 5, //!< motion around the Z axis
+        eCOUNT = 6
+    };
 };
-
 
 /**
 \brief Used to specify the range of motions allowed for a degree of freedom in a D6 joint.
@@ -92,14 +88,13 @@ struct PxD6Axis
 */
 struct PxD6Motion
 {
-	enum Enum
-	{
-		eLOCKED,	//!< The DOF is locked, it does not allow relative motion.
-		eLIMITED,	//!< The DOF is limited, it only allows motion within a specific range.
-		eFREE		//!< The DOF is free and has its full range of motion.
-	};
+    enum Enum
+    {
+        eLOCKED, //!< The DOF is locked, it does not allow relative motion.
+        eLIMITED, //!< The DOF is limited, it only allows motion within a specific range.
+        eFREE //!< The DOF is free and has its full range of motion.
+    };
 };
-
 
 /**
 \brief Used to specify which axes of a D6 joint are driven. 
@@ -119,16 +114,16 @@ which may only be used to drive all three angular degrees simultaneously.
 
 struct PxD6Drive
 {
-	enum Enum
-	{
-		eX			= 0,		//!< drive along the X-axis
-		eY			= 1,		//!< drive along the Y-axis
-		eZ			= 2,		//!< drive along the Z-axis
-		eSWING		= 3,		//!< drive of displacement from the X-axis
-		eTWIST		= 4,		//!< drive of the displacement around the X-axis
-		eSLERP		= 5,		//!< drive of all three angular degrees along a SLERP-path
-		eCOUNT		= 6
-	};
+    enum Enum
+    {
+        eX = 0, //!< drive along the X-axis
+        eY = 1, //!< drive along the Y-axis
+        eZ = 2, //!< drive along the Z-axis
+        eSWING = 3, //!< drive of displacement from the X-axis
+        eTWIST = 4, //!< drive of the displacement around the X-axis
+        eSLERP = 5, //!< drive of all three angular degrees along a SLERP-path
+        eCOUNT = 6
+    };
 };
 
 /** 
@@ -139,14 +134,13 @@ struct PxD6Drive
 
 struct PxD6JointDriveFlag
 {
-	enum Enum
-	{
-		eACCELERATION	= 1	//!< drive spring is for the acceleration at the joint (rather than the force) 
-	};
+    enum Enum
+    {
+        eACCELERATION = 1 //!< drive spring is for the acceleration at the joint (rather than the force)
+    };
 };
 typedef PxFlags<PxD6JointDriveFlag::Enum, PxU32> PxD6JointDriveFlags;
 PX_FLAGS_OPERATORS(PxD6JointDriveFlag::Enum, PxU32)
-
 
 /** 
 \brief parameters for configuring the drive model of a PxD6Joint
@@ -156,25 +150,29 @@ PX_FLAGS_OPERATORS(PxD6JointDriveFlag::Enum, PxU32)
 
 class PxD6JointDrive : public PxSpring
 {
-//= ATTENTION! =====================================================================================
-// Changing the data layout of this class breaks the binary serialization format.  See comments for 
-// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
-// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-// accordingly.
-//==================================================================================================
+    //= ATTENTION! =====================================================================================
+    // Changing the data layout of this class breaks the binary serialization format.  See comments for
+    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
+    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+    // accordingly.
+    //==================================================================================================
 
 public:
-	PxReal					forceLimit;			//!< the force limit of the drive - may be an impulse or a force depending on PxConstraintFlag::eDRIVE_LIMITS_ARE_FORCES
-	PxD6JointDriveFlags		flags;				//!< the joint drive flags 
+    PxReal forceLimit; //!< the force limit of the drive - may be an impulse or a force depending on PxConstraintFlag::eDRIVE_LIMITS_ARE_FORCES
+    PxD6JointDriveFlags flags; //!< the joint drive flags
 
-
-	/**
+    /**
 	\brief default constructor for PxD6JointDrive.
 	*/
 
-	PxD6JointDrive(): PxSpring(0,0), forceLimit(PX_MAX_F32), flags(0) {}
+    PxD6JointDrive()
+        : PxSpring(0, 0)
+        , forceLimit(PX_MAX_F32)
+        , flags(0)
+    {
+    }
 
-	/**
+    /**
 	\brief constructor a PxD6JointDrive.
 
 	\param[in] driveStiffness the stiffness of the drive spring.
@@ -183,25 +181,24 @@ public:
 	\param[in] isAcceleration whether the drive is an acceleration drive or a force drive
 	*/
 
+    PxD6JointDrive(PxReal driveStiffness, PxReal driveDamping, PxReal driveForceLimit, bool isAcceleration = false)
+        : PxSpring(driveStiffness, driveDamping)
+        , forceLimit(driveForceLimit)
+        , flags(isAcceleration ? PxU32(PxD6JointDriveFlag::eACCELERATION) : 0)
+    {
+    }
 
-	PxD6JointDrive(PxReal driveStiffness, PxReal driveDamping, PxReal driveForceLimit, bool isAcceleration = false)
-	: PxSpring(driveStiffness, driveDamping)
-	, forceLimit(driveForceLimit)
-	, flags(isAcceleration?PxU32(PxD6JointDriveFlag::eACCELERATION) : 0) 
-	{}
-
-	/** 
+    /** 
 	\brief returns true if the drive is valid
 	*/
 
-	bool isValid() const
-	{
-		return PxIsFinite(stiffness) && stiffness>=0 &&
-			   PxIsFinite(damping) && damping >=0 &&
-			   PxIsFinite(forceLimit) && forceLimit >=0;
-	}
+    bool isValid() const
+    {
+        return PxIsFinite(stiffness) && stiffness >= 0 &&
+        PxIsFinite(damping) && damping >= 0 &&
+        PxIsFinite(forceLimit) && forceLimit >= 0;
+    }
 };
-
 
 /**
  \brief A D6 joint is a general constraint between two actors.
@@ -238,8 +235,7 @@ public:
 class PxD6Joint : public PxJoint
 {
 public:
-
-	/**
+    /**
 	\brief Set the motion type around the specified axis.
 
 	Each axis may independently specify that the degree of freedom is locked (blocking relative movement
@@ -253,9 +249,9 @@ public:
 	@see getMotion() PxD6Axis PxD6Motion
 
 	*/
-	virtual void				setMotion(PxD6Axis::Enum axis, PxD6Motion::Enum type)			= 0;
+    virtual void setMotion(PxD6Axis::Enum axis, PxD6Motion::Enum type) = 0;
 
-	/**
+    /**
 	\brief Get the motion type around the specified axis.
 
 	@see setMotion() PxD6Axis PxD6Motion
@@ -265,28 +261,27 @@ public:
 
 	*/
 
-	virtual PxD6Motion::Enum	getMotion(PxD6Axis::Enum axis)			const					= 0;
+    virtual PxD6Motion::Enum getMotion(PxD6Axis::Enum axis) const = 0;
 
-	/**
+    /**
 	\brief get the twist angle of the joint
 	*/
 
-	virtual PxReal				getTwist()								const					= 0;
+    virtual PxReal getTwist() const = 0;
 
-	/**
+    /**
 	\brief get the swing angle of the joint from the Y axis
 	*/
 
-	virtual PxReal				getSwingYAngle()						const					= 0;
+    virtual PxReal getSwingYAngle() const = 0;
 
-	/**
+    /**
 	\brief get the swing angle of the joint from the Z axis
 	*/
 
-	virtual PxReal				getSwingZAngle()						const					= 0;
+    virtual PxReal getSwingZAngle() const = 0;
 
-
-	/**
+    /**
 	\brief Set the linear limit for the joint. 
 
 	A single limit constraints all linear limited degrees of freedom, forming a linear, circular 
@@ -296,9 +291,9 @@ public:
 
 	@see getLinearLimit() 
 	*/
-	virtual	void				setLinearLimit(const PxJointLinearLimit& limit)						= 0;
+    virtual void setLinearLimit(const PxJointLinearLimit& limit) = 0;
 
-	/**
+    /**
 	\brief Get the linear limit for the joint. 
 
 	\return the linear limit structure
@@ -306,10 +301,9 @@ public:
 	@see setLinearLimit() PxJointLinearLimit
 	*/
 
-	virtual	PxJointLinearLimit	getLinearLimit()						const					= 0;
+    virtual PxJointLinearLimit getLinearLimit() const = 0;
 
-
-	/**
+    /**
 	\brief Set the twist limit for the joint. 
 
 	The twist limit controls the range of motion around the twist axis. 
@@ -320,19 +314,18 @@ public:
 
 	@see getTwistLimit() PxJointAngularLimitPair
 	*/
-	virtual	void				setTwistLimit(const PxJointAngularLimitPair& limit)				= 0;
+    virtual void setTwistLimit(const PxJointAngularLimitPair& limit) = 0;
 
-
-	/**
+    /**
 	\brief Get the twist limit for the joint. 
 
 	\return the twist limit structure
 
 	@see setTwistLimit() PxJointAngularLimitPair
 	*/
-	virtual	PxJointAngularLimitPair	getTwistLimit()							const					= 0;
+    virtual PxJointAngularLimitPair getTwistLimit() const = 0;
 
-	/**
+    /**
 	\brief Set the swing cone limit for the joint. 
 
 	The cone limit is used if either or both swing axes are limited. The extents are 
@@ -343,18 +336,18 @@ public:
 
 	@see getLimitCone() PxJointLimitCone 
 	*/
-	virtual	void				setSwingLimit(const PxJointLimitCone& limit)						= 0;
+    virtual void setSwingLimit(const PxJointLimitCone& limit) = 0;
 
-	/**
+    /**
 	\brief Get the cone limit for the joint. 
 
 	\return the swing limit structure
 
 	@see setLimitCone() PxJointLimitCone
 	*/
-	virtual	PxJointLimitCone	getSwingLimit()							const					= 0;
+    virtual PxJointLimitCone getSwingLimit() const = 0;
 
-	/**
+    /**
 	\brief Set the drive parameters for the specified drive type.
 
 	\param[in] index the type of drive being specified
@@ -365,18 +358,18 @@ public:
 	<b>Default</b> The default drive spring and damping values are zero, the force limit is zero, and no flags are set.
 
 	*/
-	virtual void				setDrive(PxD6Drive::Enum index, const PxD6JointDrive& drive)		= 0;
+    virtual void setDrive(PxD6Drive::Enum index, const PxD6JointDrive& drive) = 0;
 
-	/**
+    /**
 	\brief Get the drive parameters for the specified drive type. 
 
 	\param[in] index the specified drive type
 
 	@see setDrive() PxD6JointDrive
 	*/
-	virtual PxD6JointDrive		getDrive(PxD6Drive::Enum index)	const							= 0;
+    virtual PxD6JointDrive getDrive(PxD6Drive::Enum index) const = 0;
 
-	/**
+    /**
 	\brief Set the drive goal pose 
 
 	The goal is relative to the constraint frame of actor[0]
@@ -387,18 +380,17 @@ public:
 
 	@see setDrivePosition()
 	*/
-	virtual void				setDrivePosition(const PxTransform& pose)						= 0;
+    virtual void setDrivePosition(const PxTransform& pose) = 0;
 
-	/**
+    /**
 	\brief Get the drive goal pose.
 
 	@see getDrivePosition()
 	*/
 
-	virtual PxTransform			getDrivePosition()						const					= 0;
+    virtual PxTransform getDrivePosition() const = 0;
 
-
-	/**
+    /**
 	\brief Set the target goal velocity for drive.
 
 	The velocity is measured in the constraint frame of actor[0]
@@ -409,10 +401,10 @@ public:
 	@see getDriveVelocity()
 	*/
 
-	virtual	void				setDriveVelocity(const PxVec3& linear,
-												 const PxVec3& angular)							= 0;
+    virtual void setDriveVelocity(const PxVec3& linear,
+                                  const PxVec3& angular) = 0;
 
-	/**
+    /**
 	\brief Get the target goal velocity for joint drive.
 
 	\param[in] linear The goal velocity for linear drive
@@ -421,11 +413,10 @@ public:
 	@see setDriveVelocity()
 	*/
 
-	virtual void				getDriveVelocity(PxVec3& linear,
-												 PxVec3& angular)		const					= 0;
-	
+    virtual void getDriveVelocity(PxVec3& linear,
+                                  PxVec3& angular) const = 0;
 
-	/**
+    /**
 	\brief Set the linear tolerance threshold for projection. Projection is enabled if PxConstraintFlag::ePROJECTION
 	is set for the joint.
 
@@ -444,10 +435,9 @@ public:
 	@see getProjectionLinearTolerance() PxJoint::setConstraintFlags() PxConstraintFlag::ePROJECTION
 	*/
 
-	virtual void				setProjectionLinearTolerance(PxReal tolerance)					= 0;
+    virtual void setProjectionLinearTolerance(PxReal tolerance) = 0;
 
-
-	/**
+    /**
 	\brief Get the linear tolerance threshold for projection.
 
 	\return the linear tolerance threshold
@@ -455,9 +445,9 @@ public:
 	@see setProjectionLinearTolerance()
 	*/
 
-	virtual PxReal				getProjectionLinearTolerance()			const					= 0;
+    virtual PxReal getProjectionLinearTolerance() const = 0;
 
-	/**
+    /**
 	\brief Set the angular tolerance threshold for projection. Projection is enabled if 
 	PxConstraintFlag::ePROJECTION is set for the joint.
 
@@ -479,9 +469,9 @@ public:
 	@see getProjectionAngularTolerance() PxJoint::setConstraintFlag() PxConstraintFlag::ePROJECTION
 	*/
 
-	virtual void				setProjectionAngularTolerance(PxReal tolerance)							= 0;
+    virtual void setProjectionAngularTolerance(PxReal tolerance) = 0;
 
-	/**
+    /**
 	\brief Get the angular tolerance threshold for projection.
 
 	\return tolerance the angular tolerance threshold in radians
@@ -489,34 +479,44 @@ public:
 	@see setProjectionAngularTolerance()
 	*/
 
-	virtual PxReal				getProjectionAngularTolerance()			const					= 0;
+    virtual PxReal getProjectionAngularTolerance() const = 0;
 
-	/**
+    /**
 	\brief Returns string name of PxD6Joint, used for serialization
 	*/
-	virtual	const char*			getConcreteTypeName() const { return "PxD6Joint"; }
-
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxD6Joint";
+    }
 
 protected:
+    //serialization
 
-	//serialization
-
-	/**
+    /**
 	\brief Constructor
 	*/
-	PX_INLINE					PxD6Joint(PxType concreteType, PxBaseFlags baseFlags) : PxJoint(concreteType, baseFlags) {}
+    PX_INLINE PxD6Joint(PxType concreteType, PxBaseFlags baseFlags)
+        : PxJoint(concreteType, baseFlags)
+    {
+    }
 
-	/**
+    /**
 	\brief Deserialization constructor
 	*/
-	PX_INLINE					PxD6Joint(PxBaseFlags baseFlags) : PxJoint(baseFlags) {}
+    PX_INLINE PxD6Joint(PxBaseFlags baseFlags)
+        : PxJoint(baseFlags)
+    {
+    }
 
-	/**
+    /**
 	\brief Returns whether a given type name matches with the type of this instance
 	*/
-	virtual	bool				isKindOf(const char* name) const { return !::strcmp("PxD6Joint", name) || PxJoint::isKindOf(name); }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxD6Joint", name) || PxJoint::isKindOf(name);
+    }
 
-	//~serialization
+    //~serialization
 };
 
 #if !PX_DOXYGEN

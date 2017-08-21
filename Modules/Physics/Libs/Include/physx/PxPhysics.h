@@ -31,7 +31,6 @@
 #ifndef PX_PHYSICS_NX_PHYSICS
 #define PX_PHYSICS_NX_PHYSICS
 
-
 /** \addtogroup physics
 @{
 */
@@ -79,17 +78,15 @@ You can get an instance of this class by calling PxCreateBasePhysics() or PxCrea
 class PxPhysics
 {
 public:
-
-	/** @name Basics
+    /** @name Basics
 	*/
-	//@{
-	
-	
+    //@{
 
-	virtual ~PxPhysics() {}
-	
-	
-	/**	
+    virtual ~PxPhysics()
+    {
+    }
+
+    /**	
 	\brief Destroys the instance it is called on.
 
 	Use this release method to destroy an instance of this class. Be sure
@@ -107,15 +104,15 @@ public:
 
 	@see PxCreatePhysics()
 	*/
-	virtual	void release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Retrieves the Foundation instance.
 	\return A reference to the Foundation object.
 	*/
-	virtual PxFoundation&		getFoundation() = 0;
-		
-	/**
+    virtual PxFoundation& getFoundation() = 0;
+
+    /**
 	\brief Creates an aggregate with the specified maximum size and selfCollision property.
 
 	\param[in] maxSize the maximum number of actors that may be placed in the aggregate.  This value must not exceed 128, otherwise NULL will be returned.
@@ -124,21 +121,20 @@ public:
 
 	@see PxAggregate
 	*/
-	virtual	PxAggregate*		createAggregate(PxU32 maxSize, bool enableSelfCollision)	= 0;
+    virtual PxAggregate* createAggregate(PxU32 maxSize, bool enableSelfCollision) = 0;
 
-	/**
+    /**
 	\brief Returns the simulation tolerance parameters.  
 	\return The current simulation tolerance parameters.  
 	*/
-	virtual const PxTolerancesScale&		getTolerancesScale() const = 0;
+    virtual const PxTolerancesScale& getTolerancesScale() const = 0;
 
-	
-	//@}
-	/** @name Meshes
+    //@}
+    /** @name Meshes
 	*/
-	//@{
+    //@{
 
-	/**
+    /**
 	\brief Creates a triangle mesh object.
 
 	This can then be instanced into #PxShape objects.
@@ -148,20 +144,18 @@ public:
 
 	@see PxTriangleMesh PxMeshPreprocessingFlag PxTriangleMesh.release() PxInputStream PxTriangleMeshFlag
 	*/
-	virtual PxTriangleMesh*    createTriangleMesh(PxInputStream& stream) = 0;
-	
+    virtual PxTriangleMesh* createTriangleMesh(PxInputStream& stream) = 0;
 
-
-	/**
+    /**
 	\brief Return the number of triangle meshes that currently exist.
 
 	\return Number of triangle meshes.
 
 	@see getTriangleMeshes()
 	*/
-	virtual PxU32				getNbTriangleMeshes() const = 0;
+    virtual PxU32 getNbTriangleMeshes() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of triangle mesh pointers to a user buffer.
 	
 	Returns the number of pointers written.
@@ -175,9 +169,9 @@ public:
 
 	@see getNbTriangleMeshes() PxTriangleMesh
 	*/
-	virtual	PxU32				getTriangleMeshes(PxTriangleMesh** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+    virtual PxU32 getTriangleMeshes(PxTriangleMesh** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-	/**
+    /**
 	\brief Creates a heightfield object from previously cooked stream.
 
 	This can then be instanced into #PxShape objects.
@@ -187,18 +181,18 @@ public:
 
 	@see PxHeightField PxHeightField.release() PxInputStream PxRegisterHeightFields PxRegisterUnifiedHeightFields
 	*/
-	virtual PxHeightField*		createHeightField(PxInputStream& stream) = 0;
+    virtual PxHeightField* createHeightField(PxInputStream& stream) = 0;
 
-	/**
+    /**
 	\brief Return the number of heightfields that currently exist.
 
 	\return Number of heightfields.
 
 	@see getHeightFields()
 	*/
-	virtual PxU32				getNbHeightFields() const = 0;
+    virtual PxU32 getNbHeightFields() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of heightfield pointers to a user buffer.
 	
 	Returns the number of pointers written.
@@ -212,9 +206,9 @@ public:
 
 	@see getNbHeightFields() PxHeightField
 	*/
-	virtual	PxU32				getHeightFields(PxHeightField** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+    virtual PxU32 getHeightFields(PxHeightField** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-	/**
+    /**
 	\brief Creates a convex mesh object.
 
 	This can then be instanced into #PxShape objects.
@@ -224,18 +218,18 @@ public:
 
 	@see PxConvexMesh PxConvexMesh.release() PxInputStream createTriangleMesh() PxConvexMeshGeometry PxShape
 	*/
-	virtual PxConvexMesh*		createConvexMesh(PxInputStream &stream)					= 0;
+    virtual PxConvexMesh* createConvexMesh(PxInputStream& stream) = 0;
 
-	/**
+    /**
 	\brief Return the number of convex meshes that currently exist.
 
 	\return Number of convex meshes.
 
 	@see getConvexMeshes()
 	*/
-	virtual PxU32				getNbConvexMeshes() const = 0;
+    virtual PxU32 getNbConvexMeshes() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of convex mesh pointers to a user buffer.
 	
 	Returns the number of pointers written.
@@ -249,11 +243,11 @@ public:
 
 	@see getNbConvexMeshes() PxConvexMesh
 	*/
-	virtual	PxU32				getConvexMeshes(PxConvexMesh** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+    virtual PxU32 getConvexMeshes(PxConvexMesh** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
 
 #if PX_USE_CLOTH_API
-	/**
+    /**
 	\brief Creates a cloth fabric object.
 
 	This can then be instanced into #PxCloth objects.
@@ -263,9 +257,9 @@ public:
 
 	@see PxClothFabric PxClothFabric.release() PxInputStream PxCloth PxRegisterCloth
 	*/
-	virtual PxClothFabric*		createClothFabric(PxInputStream& stream) = 0;
+    virtual PxClothFabric* createClothFabric(PxInputStream& stream) = 0;
 
-	/**
+    /**
 	\brief Creates a cloth fabric object from particle connectivity and restlength information.
 
 	\note The particle connectivity can be created using #PxClothFabricCooker in extensions.
@@ -277,18 +271,18 @@ public:
 
 	@see PxClothFabric PxClothFabric.release() PxCloth
 	*/
-	virtual PxClothFabric*		createClothFabric(const PxClothFabricDesc& desc) = 0;
+    virtual PxClothFabric* createClothFabric(const PxClothFabricDesc& desc) = 0;
 
-	/**
+    /**
 	\brief Return the number of cloth fabrics that currently exist.
 
 	\return Number of cloth fabrics.
 
 	@see getClothFabrics()
 	*/
-	virtual PxU32				getNbClothFabrics() const = 0;
+    virtual PxU32 getNbClothFabrics() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of cloth fabrics to a user buffer.
 	
 	Returns the number of pointers written.
@@ -301,15 +295,15 @@ public:
 
 	@see getNbClothFabrics() PxClothFabric
 	*/
-	virtual	PxU32				getClothFabrics(PxClothFabric** userBuffer, PxU32 bufferSize) const = 0;
+    virtual PxU32 getClothFabrics(PxClothFabric** userBuffer, PxU32 bufferSize) const = 0;
 #endif
 
-	//@}
-	/** @name Scenes
+    //@}
+    /** @name Scenes
 	*/
-	//@{
+    //@{
 
-	/**
+    /**
 	\brief Creates a scene.
 
 	\note Every scene uses a Thread Local Storage slot. This imposes a platform specific limit on the
@@ -320,18 +314,18 @@ public:
 
 	@see PxScene PxScene.release() PxSceneDesc
 	*/
-	virtual PxScene*			createScene(const PxSceneDesc& sceneDesc) = 0;
+    virtual PxScene* createScene(const PxSceneDesc& sceneDesc) = 0;
 
-	/**
+    /**
 	\brief Gets number of created scenes.
 
 	\return The number of scenes created.
 
 	@see getScene()
 	*/
-	virtual PxU32				getNbScenes()			const	= 0;
+    virtual PxU32 getNbScenes() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of scene pointers to a user buffer.
 	
 	Returns the number of pointers written.
@@ -345,14 +339,14 @@ public:
 
 	@see getNbScenes() PxScene
 	*/
-	virtual	PxU32				getScenes(PxScene** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
-	
-	//@}
-	/** @name Actors
-	*/
-	//@{
+    virtual PxU32 getScenes(PxScene** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-	/**
+    //@}
+    /** @name Actors
+	*/
+    //@{
+
+    /**
 	\brief Creates a static rigid actor with the specified pose and all other fields initialized
 	to their default values.
 	
@@ -361,11 +355,9 @@ public:
 	@see PxRigidStatic
 	*/
 
-	virtual PxRigidStatic*      createRigidStatic(const PxTransform& pose) = 0;
+    virtual PxRigidStatic* createRigidStatic(const PxTransform& pose) = 0;
 
-
-
-	/**
+    /**
 	\brief Creates a dynamic rigid actor with the specified pose and all other fields initialized
 	to their default values.
 	
@@ -374,11 +366,11 @@ public:
 	@see PxRigidDynamic
 	*/
 
-	virtual PxRigidDynamic*      createRigidDynamic(const PxTransform& pose) = 0;
+    virtual PxRigidDynamic* createRigidDynamic(const PxTransform& pose) = 0;
 
 
 #if PX_USE_PARTICLE_SYSTEM_API
-	/**
+    /**
 	\brief Creates a particle system. (deprecated)
 
 	\param maxParticles the maximum number of particles that may be placed in the particle system
@@ -389,9 +381,9 @@ public:
 
 	@see PxParticleSystem PxRegisterParticles
 	*/
-	PX_DEPRECATED virtual PxParticleSystem*	createParticleSystem(PxU32 maxParticles, bool perParticleRestOffset = false) = 0;
+    PX_DEPRECATED virtual PxParticleSystem* createParticleSystem(PxU32 maxParticles, bool perParticleRestOffset = false) = 0;
 
-	/**
+    /**
 	\brief Creates a particle fluid. (deprecated)
 	
 	\param maxParticles the maximum number of particles that may be placed in the particle fluid
@@ -402,12 +394,12 @@ public:
 
 	@see PxParticleFluid PxRegisterParticles
 	*/
-	PX_DEPRECATED virtual PxParticleFluid*	createParticleFluid(PxU32 maxParticles, bool perParticleRestOffset = false) = 0;
+    PX_DEPRECATED virtual PxParticleFluid* createParticleFluid(PxU32 maxParticles, bool perParticleRestOffset = false) = 0;
 #endif
 
 
 #if PX_USE_CLOTH_API
-	/**
+    /**
 	\brief Creates a cloth.
 
 	\param globalPose The world space transform of the cloth.
@@ -418,10 +410,10 @@ public:
 
 	@see PxCloth PxClothFabric PxClothFlags PxRegisterCloth
 	*/
-	virtual PxCloth*			createCloth(const PxTransform& globalPose, PxClothFabric& fabric, const PxClothParticle* particles, PxClothFlags flags) = 0;
+    virtual PxCloth* createCloth(const PxTransform& globalPose, PxClothFabric& fabric, const PxClothParticle* particles, PxClothFlags flags) = 0;
 #endif
 
-	/**
+    /**
 	\brief Creates a pruning structure from actors.
 
 	\note Every provided actor needs at least one shape with the eSCENE_QUERY_SHAPE flag set.
@@ -434,15 +426,14 @@ public:
 	\return Pruning structure created from given actors, or NULL if any of the actors did not comply with the above requirements.
 	@see PxActor PxPruningStructure
 	*/
-	virtual PxPruningStructure*	createPruningStructure(PxRigidActor*const* actors, PxU32 nbActors)	= 0;
-	
-	//@}
-	/** @name Shapes
-	*/
-	//@{
-	
+    virtual PxPruningStructure* createPruningStructure(PxRigidActor* const* actors, PxU32 nbActors) = 0;
 
-	/**
+    //@}
+    /** @name Shapes
+	*/
+    //@{
+
+    /**
 	\brief Creates a shape which may be attached to multiple actors
 	
 	The shape will be created with a reference count of 1.
@@ -457,17 +448,16 @@ public:
 	@see PxShape
 	*/
 
-	PX_FORCE_INLINE	PxShape*	createShape(	const PxGeometry& geometry, 
-												const PxMaterial& material, 
-												bool isExclusive = false, 
-												PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
-	{
-		PxMaterial* materialPtr = const_cast<PxMaterial*>(&material);
-		return createShape(geometry, &materialPtr, 1, isExclusive, shapeFlags);
-	}
+    PX_FORCE_INLINE PxShape* createShape(const PxGeometry& geometry,
+                                         const PxMaterial& material,
+                                         bool isExclusive = false,
+                                         PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
+    {
+        PxMaterial* materialPtr = const_cast<PxMaterial*>(&material);
+        return createShape(geometry, &materialPtr, 1, isExclusive, shapeFlags);
+    }
 
-
-	/**
+    /**
 	\brief Creates a shape which may be attached to multiple actors
 	
 	The shape will be created with a reference count of 1.
@@ -483,23 +473,22 @@ public:
 	@see PxShape
 	*/
 
-	virtual PxShape*			createShape(const PxGeometry& geometry, 
-											PxMaterial*const * materials, 
-											PxU16 materialCount, 
-											bool isExclusive = false,
-											PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE) = 0;
+    virtual PxShape* createShape(const PxGeometry& geometry,
+                                 PxMaterial* const* materials,
+                                 PxU16 materialCount,
+                                 bool isExclusive = false,
+                                 PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE) = 0;
 
-
-	/**
+    /**
 	\brief Return the number of shapes that currently exist.
 
 	\return Number of shapes.
 
 	@see getShapes()
 	*/
-	virtual PxU32				getNbShapes() const = 0;
+    virtual PxU32 getNbShapes() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of shape pointers to a user buffer.
 	
 	Returns the number of pointers written.
@@ -513,15 +502,14 @@ public:
 
 	@see getNbShapes() PxShape
 	*/
-	virtual	PxU32				getShapes(PxShape** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+    virtual PxU32 getShapes(PxShape** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-	//@}
-	/** @name Constraints and Articulations
+    //@}
+    /** @name Constraints and Articulations
 	*/
-	//@{
+    //@{
 
-
-	/**
+    /**
 	\brief Creates a constraint shader.
 
 	\note A constraint shader will get added automatically to the scene the two linked actors belong to. Either, but not both, of actor0 and actor1 may
@@ -537,25 +525,23 @@ public:
 
 	@see PxConstraint
 	*/
-	virtual PxConstraint*      createConstraint(PxRigidActor* actor0, PxRigidActor* actor1, PxConstraintConnector& connector, const PxConstraintShaderTable& shaders, PxU32 dataSize)		= 0;
+    virtual PxConstraint* createConstraint(PxRigidActor* actor0, PxRigidActor* actor1, PxConstraintConnector& connector, const PxConstraintShaderTable& shaders, PxU32 dataSize) = 0;
 
-
-	/**
+    /**
 	\brief Creates an articulation with all fields initialized to their default values.
 	
 	\return the new articulation
 
 	@see PxArticulation, PxRegisterArticulations
 	*/
-	virtual PxArticulation*      createArticulation() = 0;
+    virtual PxArticulation* createArticulation() = 0;
 
-	//@}
-	/** @name Materials
+    //@}
+    /** @name Materials
 	*/
-	//@{
+    //@{
 
-
-	/**
+    /**
 	\brief Creates a new material with default properties.
 
 	\return The new material.
@@ -566,19 +552,18 @@ public:
 
 	@see PxMaterial 
 	*/
-	virtual PxMaterial*        createMaterial(PxReal staticFriction, PxReal dynamicFriction, PxReal restitution)		= 0;
+    virtual PxMaterial* createMaterial(PxReal staticFriction, PxReal dynamicFriction, PxReal restitution) = 0;
 
-
-	/**
+    /**
 	\brief Return the number of materials that currently exist.
 
 	\return Number of materials.
 
 	@see getMaterials()
 	*/
-	virtual PxU32				getNbMaterials() const = 0;
+    virtual PxU32 getNbMaterials() const = 0;
 
-	/**
+    /**
 	\brief Writes the array of material pointers to a user buffer.
 	
 	Returns the number of pointers written.
@@ -592,14 +577,14 @@ public:
 
 	@see getNbMaterials() PxMaterial
 	*/
-	virtual	PxU32				getMaterials(PxMaterial** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+    virtual PxU32 getMaterials(PxMaterial** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-	//@}
-	/** @name Deletion Listeners
+    //@}
+    /** @name Deletion Listeners
 	*/
-	//@{
+    //@{
 
-	/**
+    /**
 	\brief Register a deletion listener. Listeners will be called whenever an object is deleted.
 
 	It is illegal to register or unregister a deletion listener while deletions are being processed.
@@ -614,9 +599,9 @@ public:
 
 	@see PxDeletionListener unregisterDeletionListener
 	*/
-	virtual void registerDeletionListener(PxDeletionListener& observer, const PxDeletionEventFlags& deletionEvents, bool restrictedObjectSet = false) = 0;
+    virtual void registerDeletionListener(PxDeletionListener& observer, const PxDeletionEventFlags& deletionEvents, bool restrictedObjectSet = false) = 0;
 
-	/**
+    /**
 	\brief Unregister a deletion listener. 
 
 	It is illegal to register or unregister a deletion listener while deletions are being processed.
@@ -625,9 +610,9 @@ public:
 
 	@see PxDeletionListener registerDeletionListener
 	*/
-	virtual void unregisterDeletionListener(PxDeletionListener& observer) = 0;
+    virtual void unregisterDeletionListener(PxDeletionListener& observer) = 0;
 
-	/**
+    /**
 	\brief Register specific objects for deletion events.
 
 	This method allows for a deletion listener to limit deletion events to specific objects only.
@@ -642,9 +627,9 @@ public:
 
 	@see PxDeletionListener unregisterDeletionListenerObjects
 	*/
-	virtual void registerDeletionListenerObjects(PxDeletionListener& observer, const PxBase* const* observables, PxU32 observableCount) = 0;
+    virtual void registerDeletionListenerObjects(PxDeletionListener& observer, const PxBase* const* observables, PxU32 observableCount) = 0;
 
-	/**
+    /**
 	\brief Unregister specific objects for deletion events.
 
 	This method allows to clear previously registered objects for a deletion listener (see #registerDeletionListenerObjects()).
@@ -659,9 +644,9 @@ public:
 
 	@see PxDeletionListener registerDeletionListenerObjects
 	*/
-	virtual void unregisterDeletionListenerObjects(PxDeletionListener& observer, const PxBase* const* observables, PxU32 observableCount) = 0;
+    virtual void unregisterDeletionListenerObjects(PxDeletionListener& observer, const PxBase* const* observables, PxU32 observableCount) = 0;
 
-	/**
+    /**
 	\brief Gets PxPhysics object insertion interface. 
 
 	The insertion interface is needed ie. for PxCooking::createTriangleMesh, this allows runtime mesh creation. This is not advised to do, please 
@@ -669,9 +654,9 @@ public:
 
 	@see PxCooking::createTriangleMesh PxCooking::createHeightfield
 	*/
-	virtual PxPhysicsInsertionCallback& getPhysicsInsertionCallback() = 0;
+    virtual PxPhysicsInsertionCallback& getPhysicsInsertionCallback() = 0;
 
-	//@}
+    //@}
 };
 
 #if !PX_DOXYGEN
@@ -729,9 +714,8 @@ Call PxRegisterHeightFields instead, which also registers unified heightfields.
 
 PX_DEPRECATED PX_INLINE void PX_CALL_CONV PxRegisterUnifiedHeightFields(physx::PxPhysics& physics)
 {
-	PxRegisterHeightFields(physics);
+    PxRegisterHeightFields(physics);
 }
-
 
 /**
 \brief Enables the usage of the cloth feature.  This function is called automatically inside PxCreatePhysics().
@@ -775,10 +759,10 @@ has been created already will result in an error message and NULL will be return
 @see PxPhysics, PxFoundation, PxTolerancesScale, PxProfileZoneManager, PxPvd
 */
 PX_C_EXPORT PX_PHYSX_CORE_API physx::PxPhysics* PX_CALL_CONV PxCreateBasePhysics(physx::PxU32 version,
-																			     physx::PxFoundation& foundation,
-																			     const physx::PxTolerancesScale& scale,																				 
-																			     bool trackOutstandingAllocations = false,
-																				 physx::PxPvd* pvd = NULL);
+                                                                                 physx::PxFoundation& foundation,
+                                                                                 const physx::PxTolerancesScale& scale,
+                                                                                 bool trackOutstandingAllocations = false,
+                                                                                 physx::PxPvd* pvd = NULL);
 
 /**
 \brief Creates an instance of the physics SDK.
@@ -808,21 +792,21 @@ with a call to ::PxRegisterUnifiedHeightFields().
 @see PxPhysics, PxCreateBasePhysics, PxRegisterArticulations, PxRegisterHeightFields, PxRegisterCloth, PxRegisterParticles 
 */
 PX_INLINE physx::PxPhysics* PxCreatePhysics(physx::PxU32 version,
-											physx::PxFoundation& foundation,
-											const physx::PxTolerancesScale& scale,											
-											bool trackOutstandingAllocations = false,
-											physx::PxPvd* pvd = NULL )
+                                            physx::PxFoundation& foundation,
+                                            const physx::PxTolerancesScale& scale,
+                                            bool trackOutstandingAllocations = false,
+                                            physx::PxPvd* pvd = NULL)
 {
-	physx::PxPhysics* physics = PxCreateBasePhysics(version, foundation, scale, trackOutstandingAllocations, pvd);
-	if(!physics)
-		return NULL;
+    physx::PxPhysics* physics = PxCreateBasePhysics(version, foundation, scale, trackOutstandingAllocations, pvd);
+    if (!physics)
+        return NULL;
 
-	PxRegisterArticulations(*physics);
-	PxRegisterHeightFields(*physics);
-	PxRegisterCloth(*physics);
-	PxRegisterParticles(*physics);
+    PxRegisterArticulations(*physics);
+    PxRegisterHeightFields(*physics);
+    PxRegisterCloth(*physics);
+    PxRegisterParticles(*physics);
 
-	return physics;
+    return physics;
 }
 
 /**

@@ -69,19 +69,19 @@ class PxBounds3;
 /** enum for empty constructor tag*/
 enum PxEMPTY
 {
-	PxEmpty
+    PxEmpty
 };
 
 /** enum for zero constructor tag for vectors and matrices */
 enum PxZERO
 {
-	PxZero
+    PxZero
 };
 
 /** enum for identity constructor flag for quaternions, transforms, and matrices */
 enum PxIDENTITY
 {
-	PxIdentity
+    PxIdentity
 };
 
 #if !PX_DOXYGEN
