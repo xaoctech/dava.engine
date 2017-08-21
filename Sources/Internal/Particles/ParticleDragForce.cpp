@@ -10,7 +10,7 @@ ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
 {
 }
 
-DAVA::ParticleDragForce* ParticleDragForce::Clone()
+ParticleDragForce* ParticleDragForce::Clone()
 {
     ParticleDragForce* dst = new ParticleDragForce(parentLayer);
     dst->parentLayer = parentLayer;

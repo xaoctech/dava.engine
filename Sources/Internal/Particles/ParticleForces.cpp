@@ -9,6 +9,8 @@ namespace DAVA
 namespace ParticleForces
 {
 void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
+void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
 
 void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt)
 {
@@ -50,30 +52,25 @@ void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& vel
     bool sucess = world.GetInverse(local); // todo: in transform
     if (!force->infinityRange)
     {
-        Vector3 effectPosition = position * local;
-        if (!IsPositionInForceShape(parent, force, effectPosition))
-        {
+        Vector3 positionInEffectsSpace = position * local;
+        if (!IsPositionInForceShape(parent, force, positionInEffectsSpace))
             return;
-        }
     }
-
-    Vector3 worldForce = force->forcePower * static_cast<Matrix3>(world);
 
     Vector3 forceStrength = force->forcePower* dt;
     Vector3 velocity = velocityW;
-    velocity = velocity * Matrix3(local);
+    velocity = velocity * Matrix3(local); // TODO: should be simpler.
 
-
-    Vector3 velSqr = velocity * velocity;
-    Vector3 dragForce = -forceStrength * velSqr * dt;
-    //acceleration += dragForce;
-    float32 vLen = velocity.Length();
     Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z)); // todo calculate all in effect space
     velocity *= v;
     velocityW = velocity * Matrix3(world);
 }
 
-void ApplyLorentzForce(); // Vector in world is direction,
+
+void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt)
+{}
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt)
+{}
 
 }
 }

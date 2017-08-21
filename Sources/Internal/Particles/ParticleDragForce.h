@@ -19,8 +19,10 @@ public:
     } shape = eShape::BOX;
     enum class eType
     {
-        DRAG_FORCE
-        //lorentz force
+        DRAG_FORCE,
+        LORENTZ_FORCE,
+        POINT_GRAVITY,
+        BOX_WRAP
     } type = eType::DRAG_FORCE;
 
     ParticleDragForce(ParticleLayer* parent);
