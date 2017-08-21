@@ -91,8 +91,8 @@ public:
 		    ErrorOrigin - errorType context for error
 			int32 - errnoValue POSIX error code
 			String& - extendedInfo string value depends on context of error:
-			    1. filePath in case FileIO
-				2. url to server in case InitTimeout
+			    1. filePath in case of FileIO
+				2. url to server in case of InitTimeout
 
 		If you receive FileIO error type requesting disabled before signal.
 		Suggest also to check for:
@@ -105,7 +105,7 @@ public:
 			ENFILE(too_many_files_open_in_system),
 			EMFILE(too_many_files_open)
 		If you receive InitTimeout error type check for:
-			EHOSTUNREACH(host_unreachable) - timeout connect to CDN
+			EHOSTUNREACH(host_unreachable) - connection to cdn timed out
 		*/
     Signal<ErrorOrigin /*errorType*/,
            int32 /*errnoValue*/,
