@@ -205,13 +205,13 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                                                  maxLength,
                                                  &realLength,
                                                  unicodeString);
-                
+
                 DVASSERT(status == 0);
 
                 NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
                 NSCharacterSet* charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
                 NSString* trimmedString = [string stringByTrimmingCharactersInSet:charactersToRemove];
-                
+
                 if ([trimmedString length] == 0)
                 {
                     // Non printable
