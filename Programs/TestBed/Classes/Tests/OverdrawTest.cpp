@@ -75,7 +75,7 @@ void OverdrawTest::LoadResources()
         font->SetSize(17.f);
     }
     DAVA::Rect screenRect = GetRect();
-    Size2i screenSize = DAVA::UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    Size2i screenSize = DAVA::GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     screenRect.dx = static_cast<float32>(screenSize.dx);
     screenRect.dy = static_cast<float32>(screenSize.dy);
     SetRect(screenRect);

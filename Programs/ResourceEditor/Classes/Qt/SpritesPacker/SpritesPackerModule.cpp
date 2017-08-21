@@ -12,6 +12,7 @@
 
 #include <Tools/AssetCache/AssetCacheClient.h>
 
+#include <Engine/Engine.h>
 #include <Job/JobManager.h>
 #include <Render/2D/Sprite.h>
 #include <Functional/Function.h>
@@ -39,7 +40,7 @@ SpritesPackerModule::~SpritesPackerModule()
         DisconnectCacheClient();
     }
 
-    DAVA::JobManager::Instance()->WaitWorkerJobs();
+    DAVA::GetEngineContext()->jobManager->WaitWorkerJobs();
 }
 
 void SpritesPackerModule::RepackWithDialog()
@@ -48,7 +49,7 @@ void SpritesPackerModule::RepackWithDialog()
     DVASSERT(data != nullptr);
     SetupSpritesPacker(data->GetProjectPath());
 
-    DAVA::JobManager::Instance()->CreateWorkerJob(DAVA::MakeFunction(this, &SpritesPackerModule::ConnectCacheClient));
+    DAVA::GetEngineContext()->jobManager->CreateWorkerJob(DAVA::MakeFunction(this, &SpritesPackerModule::ConnectCacheClient));
 
     ShowPackerDialog();
 
@@ -63,7 +64,7 @@ void SpritesPackerModule::RepackImmediately(const DAVA::FilePath& projectPath, D
     CreateWaitDialog(projectPath);
 
     DAVA::Function<void()> fn = DAVA::Bind(&SpritesPackerModule::ProcessSilentPacking, this, true, false, gpu, DAVA::TextureConverter::ECQ_DEFAULT);
-    DAVA::JobManager::Instance()->CreateWorkerJob(fn);
+    DAVA::GetEngineContext()->jobManager->CreateWorkerJob(fn);
 }
 
 void SpritesPackerModule::SetupSpritesPacker(const DAVA::FilePath& projectPath)
@@ -81,8 +82,8 @@ void SpritesPackerModule::ProcessSilentPacking(bool clearDirs, bool forceRepack,
     spritesPacker->ReloadSprites(clearDirs, forceRepack, gpu, quality);
     DisconnectCacheClient();
 
-    DAVA::JobManager::Instance()->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::CloseWaitDialog));
-    DAVA::JobManager::Instance()->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::ReloadObjects));
+    DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::CloseWaitDialog));
+    DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::ReloadObjects));
 }
 
 void SpritesPackerModule::ShowPackerDialog()
@@ -152,7 +153,7 @@ void SpritesPackerModule::DisconnectCacheClient()
         SetCacheClientForPacker();
 
         //we should destroy cache client on main thread
-        DAVA::JobManager::Instance()->CreateMainJob(DAVA::Bind(&SpritesPackerModule::DisconnectCacheClientInternal, this, disconnectingClient));
+        DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::Bind(&SpritesPackerModule::DisconnectCacheClientInternal, this, disconnectingClient));
     }
 }
 

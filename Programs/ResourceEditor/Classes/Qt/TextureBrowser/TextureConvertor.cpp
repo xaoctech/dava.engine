@@ -27,9 +27,9 @@ TextureConvertor::TextureConvertor()
     : jobIdCounter(1)
     , convertJobQueueSize(0)
     , waitingComletion(0)
-    , watcherThumbnail(DAVA::JobManager::Instance())
-    , watcherOriginal(DAVA::JobManager::Instance())
-    , watcherConverted(DAVA::JobManager::Instance())
+    , watcherThumbnail(DAVA::GetEngineContext()->jobManager)
+    , watcherOriginal(DAVA::GetEngineContext()->jobManager)
+    , watcherConverted(DAVA::GetEngineContext()->jobManager)
 {
     // slots will be called in connector(this) thread
     watcherConverted.Init(DAVA::MakeFunction(this, &TextureConvertor::GetConvertedThread), DAVA::MakeFunction(this, &TextureConvertor::ThreadConvertedFinished));

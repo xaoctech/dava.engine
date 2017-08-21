@@ -1,4 +1,5 @@
 #include "Logger/Logger.h"
+#include "Engine/Engine.h"
 #include "FileSystem/FileSystem.h"
 #include "Debug/DVAssert.h"
 #include <cstdarg>

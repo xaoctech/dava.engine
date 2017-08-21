@@ -38,12 +38,12 @@ PropertiesModel::PropertiesModel(QObject* parent)
 {
     propertiesUpdater.SetUpdater(MakeFunction(this, &PropertiesModel::UpdateAllChangedProperties));
 
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetListener(this);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(this);
 }
 
 PropertiesModel::~PropertiesModel()
 {
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetListener(nullptr);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(nullptr);
 
     CleanUp();
     propertiesUpdater.Abort();

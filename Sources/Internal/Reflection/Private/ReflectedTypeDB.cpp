@@ -29,8 +29,16 @@ void ReflectedTypeDB::SetMasterDB(ReflectedTypeDB* db)
 
 void ReflectedTypeDB::RegisterDBType(ReflectedType* r)
 {
-    GetLocalDB()->typeToReflectedTypeMap[r->type] = r;
-    GetLocalDB()->typeNameToReflectedTypeMap[String(r->type->GetName())] = r;
+    ReflectedTypeDB* db = GetLocalDB();
+    if (db->typeToReflectedTypeMap.find(r->type) == db->typeToReflectedTypeMap.end())
+    {
+        db->typeToReflectedTypeMap[r->type] = r;
+        db->typeNameToReflectedTypeMap[String(r->type->GetName())] = r;
+    }
+    else
+    {
+        //TODO: check incoming types for dll's
+    }
 }
 
 const ReflectedType* ReflectedTypeDB::GetByPointer(const void* ptr, const Type* derefType)
