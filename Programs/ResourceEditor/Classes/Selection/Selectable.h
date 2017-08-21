@@ -106,6 +106,7 @@ inline T* Selectable::Cast() const
     const DAVA::Type* castToType = DAVA::Type::Instance<T*>();
     if (DAVA::TypeInheritance::CanCast(objType, castToType) == false)
     {
+        DVASSERT(false);
         return nullptr;
     }
 
@@ -128,6 +129,10 @@ inline const DAVA::AABBox3& Selectable::GetBoundingBox() const
 
 inline DAVA::Entity* Selectable::AsEntity() const
 {
+    if (CanBeCastedTo<DAVA::Entity>() == false)
+    {
+        return nullptr;
+    }
     return Cast<DAVA::Entity>();
 }
 
