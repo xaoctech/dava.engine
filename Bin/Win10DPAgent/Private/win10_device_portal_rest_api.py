@@ -40,20 +40,29 @@ def __update_ws_url():
 TIMEOUT_ERROR_MSG = "Request timeout."
 TIMEOUT_INFO_MSG = "Consider increasing the timeout if device is a low-end one."
 CONNECTION_ERROR_MSG = "Connection failed."
-ERROR_INFO_MSG = "Check the URL ({}), network/usb connection and make sure that device is not in a sleep mode."
+CONNECTION_INFO_MSG = "Check the URL ({}), network/usb connection and make sure that device is not in a sleep mode."
+STATUS_CODE_ERROR_MSG = "Status code >= 400."
+STATUS_CODE_INFO_MSG = "Make sure that URL {} is right and device portal is installed on a device."
+
 
 def __req_helper(request, path, *args, **kwargs):
     try:
         response = request(RQ_URL + path, timeout = TIMEOUT, *args, **kwargs)
     except requests.exceptions.Timeout:
         print TIMEOUT_ERROR_MSG
-        print ERROR_INFO_MSG.format(URL)
+        print TIMEOUT_INFO_MSG
+        print CONNECTION_INFO_MSG.format(URL)
         raise
     except requests.exceptions.ConnectionError:
         print CONNECTION_ERROR_MSG
-        print ERROR_INFO_MSG.format(URL)
+        print CONNECTION_INFO_MSG.format(URL)
         raise
     else:
+        # This may happen if some kind of a web service is installed on a device, but it's not a device portal.
+        if response.status_code >= 400:
+            print STATUS_CODE_ERROR_MSG
+            print STATUS_CODE_INFO_MSG.format(URL)
+            raise ValueError("Status code >= 400 returned.")
         return response
 
 def _GET(path, *args, **kwargs):

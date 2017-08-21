@@ -1,11 +1,23 @@
 #### Win10dpa (list, deploy, attach, uninstall, stop)
-##### At the end of this file you can find python script 'example.py' that shows how to run basic deploy & attach scenario.  
+###### Only devices with anniversary update (>= 10.0.14393) are supported.
+###### At the end of this file you can find python script 'example.py' that shows how to run basic deploy & attach scenario.  
 <br>
 
 #### To install requirements run:
 ```
 pip install lxml requests requests_toolbelt websocket_client
 ```
+
+---
+
+<br>
+
+#### To install device portal on a device:
+Both on desktop and on mobile device you need to open "settings -> update and security -> for developers" and enable device portal. 
+If device portal switch turning off right after toggle, try to install latest system updates. If it doesn't help, contact your system administrator.  
+Authorithation is not supported, so turn it off.  
+
+On this screen you can find IP address and port to connect to as well.
 
 ---
 
