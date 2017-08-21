@@ -78,30 +78,32 @@ def _patch_sources(common_patch_name, patch_name, working_directory_path):
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources('patch_common.diff', 'patch_win32.diff', working_directory_path)
-    project_x86_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'vc12win32', 'PhysX.sln')
-    project_x64_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'vc12win64', 'PhysX.sln')
+    project_x86_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'vc14win32', 'PhysX.sln')
+    project_x64_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'vc14win64', 'PhysX.sln')
 
     binary_dst_path = os.path.join(root_project_path, 'Modules', 'Physics', 'Libs', 'Win32')
     x86_binary_dst_path = os.path.join(binary_dst_path, 'x86')
     x64_binary_dst_path = os.path.join(binary_dst_path, 'x64')
 
+    # Use toolset from solution file
     build_utils.build_vs(project_x86_path, 'debug')
     #build_utils.build_vs(project_x86_path, 'profile')
     #build_utils.build_vs(project_x86_path, 'checked')
     build_utils.build_vs(project_x86_path, 'release')
-    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Bin', 'vc12win32'), x86_binary_dst_path,  '.dll')
-    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'vc12win32'), x86_binary_dst_path,  '.lib')
-    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'bin', 'vc12win32'), x86_binary_dst_path,  '.dll')
-    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'vc12win32'), x86_binary_dst_path,  '.lib')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Bin', 'vc14win32'), x86_binary_dst_path,  '.dll')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'vc14win32'), x86_binary_dst_path,  '.lib')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'bin', 'vc14win32'), x86_binary_dst_path,  '.dll')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'vc14win32'), x86_binary_dst_path,  '.lib')
 
+    # Use toolset from solution file
     build_utils.build_vs(project_x64_path, 'debug', 'x64')
     #build_utils.build_vs(project_x64_path, 'profile', 'x64')
     #build_utils.build_vs(project_x64_path, 'checked', 'x64')
     build_utils.build_vs(project_x64_path, 'release', 'x64')
-    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Bin', 'vc12win64'), x64_binary_dst_path,  '.dll')
-    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'vc12win64'), x64_binary_dst_path,  '.lib')
-    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'bin', 'vc12win64'), x64_binary_dst_path,  '.dll')
-    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'vc12win64'), x64_binary_dst_path,  '.lib')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Bin', 'vc14win64'), x64_binary_dst_path,  '.dll')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'vc14win64'), x64_binary_dst_path,  '.lib')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'bin', 'vc14win64'), x64_binary_dst_path,  '.dll')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'vc14win64'), x64_binary_dst_path,  '.lib')
 
     _copy_headers(source_folder_path, root_project_path)
 
