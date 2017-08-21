@@ -114,19 +114,11 @@ if( WIN32 )
 	    endif()
 	endif()
 
-	if ( X64_MODE )
-        set( THIRD_PARTY_LIB_RELEASE  ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet/Bin/WIN64_release_bullet.lib )
-    	set( THIRD_PARTY_LIB_DEBUG    ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet/Bin/WIN64_debug_bullet.lib )
-	else ()
-        set( THIRD_PARTY_LIB_RELEASE  ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet/Bin/WIN32_release_bullet.lib )
-        set( THIRD_PARTY_LIB_DEBUG    ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet/Bin/WIN32_debug_bullet.lib )
-	endif()
-
+    set( THIRD_PARTY_LIB_RELEASE  ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/bullet.lib )
+    set( THIRD_PARTY_LIB_DEBUG    ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/bullet.lib )
 
 elseif( MACOS )
-    set( THIRD_PARTY_LIB_RELEASE  ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet/Bin/MACOS_release_bullet.a )    
-    set( THIRD_PARTY_LIB_DEBUG    ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet/Bin/MACOS_debug_bullet.a  )    
-
+    set( THIRD_PARTY_LIB ${DAVA_THIRD_PARTY_ROOT_PATH}/libbullet.a )    
 endif()
 
 set ( Generated          ${UI_APP_HDRS} ${RCC_APP_SRCS} )
