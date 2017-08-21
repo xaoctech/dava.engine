@@ -708,12 +708,11 @@ void PhysicsSystem::ReleaseShape(CollisionShapeComponent* component)
     DVASSERT(shape->isExclusive() == true);
 
     physx::PxActor* actor = shape->getActor();
-    if (actor == nullptr)
+    if (actor != nullptr)
     {
-        return;
+        actor->is<physx::PxRigidActor>()->detachShape(*shape);
     }
 
-    actor->is<physx::PxRigidActor>()->detachShape(*shape);
     component->ReleasePxShape();
 }
 
