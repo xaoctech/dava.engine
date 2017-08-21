@@ -8,6 +8,8 @@
 #include "Utils/UTF8Utils.h"
 #include "Utils/NSStringUtils.h"
 
+#include <algorithm>
+
 #import <Carbon/Carbon.h>
 
 namespace DAVA
@@ -194,22 +196,24 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                 UniChar unicodeString[maxLength];
                 UniCharCount realLength;
                 uint32 deadKeyState;
-                UCKeyTranslate(keyboardLayout,
-                               i,
-                               kUCKeyActionDown,
-                               0,
-                               LMGetKbdType(),
-                               kUCKeyTranslateNoDeadKeysMask,
-                               &deadKeyState,
-                               maxLength,
-                               &realLength,
-                               unicodeString);
+                
+                OSStatus status = UCKeyTranslate(keyboardLayout,
+                                            i,
+                                            kUCKeyActionDown,
+                                            0,
+                                            LMGetKbdType(),
+                                            kUCKeyTranslateNoDeadKeysMask,
+                                            &deadKeyState,
+                                            maxLength,
+                                            &realLength,
+                                            unicodeString);
+                
+                DVASSERT(status == 0);
 
                 NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
-
                 NSCharacterSet* charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
                 NSString* trimmedString = [string stringByTrimmingCharactersInSet:charactersToRemove];
-
+                
                 if ([trimmedString length] == 0)
                 {
                     // Non printable
@@ -217,7 +221,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                 }
                 else
                 {
-                    result = StringFromNSString([string uppercaseString]);
+                    result = StringFromNSString([trimmedString uppercaseString]);
                 }
             }
             else
