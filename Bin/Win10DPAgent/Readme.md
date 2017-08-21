@@ -15,7 +15,7 @@ pip install lxml requests requests_toolbelt websocket_client
 #### To install device portal on a device:
 Both on desktop and on mobile device you need to open "settings -> update and security -> for developers" and enable device portal. 
 If device portal switch turning off right after toggle, try to install latest system updates. If it doesn't help, contact your system administrator.  
-Authorithation is not supported, so turn it off.  
+Authorization is not supported, so turn it off.  
 
 On this screen you can find IP address and port to connect to as well.
 
