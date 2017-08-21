@@ -667,11 +667,12 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
                     for (Entity* e : pair.second)
                     {
                         auto roIter = mapping.find(e);
-                        DVASSERT(roIter != mapping.end());
-
-                        Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(e->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
-                        roIter->second->SetWorldTransformPtr(worldTransformPointer);
-                        GetScene()->renderSystem->MarkForUpdate(roIter->second);
+                        if (roIter != mapping.end())
+                        {
+                            Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(e->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+                            roIter->second->SetWorldTransformPtr(worldTransformPointer);
+                            GetScene()->renderSystem->MarkForUpdate(roIter->second);
+                        }
                     }
                 }
             }
