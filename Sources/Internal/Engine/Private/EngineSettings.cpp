@@ -10,13 +10,13 @@ namespace DAVA
 {
 struct EngineSettings::EngineSettingsDetails
 {
-    template <EngineSettings::eSetting ID, typename T>
+    template <eSetting ID, typename T>
     static void SetupSetting(ReflectionRegistrator<EngineSettings>& registrator, const char* name, const T& defaultValue, const T& rangeStart, const T& rangeEnd);
-    static void SetupSettingValue(EngineSettings::eSettingValue value, const char* name);
+    static void SetupSettingValue(eSettingValue value, const char* name);
 
-    static std::array<Any, EngineSettings::SETTING_COUNT> settingDefault;
-    static std::array<FastName, EngineSettings::SETTING_COUNT> settingName;
-    static std::array<FastName, EngineSettings::SETTING_VALUE_COUNT> settingValueName;
+    static std::array<Any, SETTING_COUNT> settingDefault;
+    static std::array<FastName, SETTING_COUNT> settingName;
+    static std::array<FastName, SETTING_VALUE_COUNT> settingValueName;
 };
 
 std::array<Any, EngineSettings::SETTING_COUNT> EngineSettings::EngineSettingsDetails::settingDefault;
@@ -29,6 +29,7 @@ DAVA_REFLECTION_IMPL(EngineSettings)
 
     //settings setup
     EngineSettingsDetails::SetupSetting<SETTING_LANDSCAPE_RENDERMODE, eSettingValue>(registrator, "Landscape.RenderMode", LANDSCAPE_MORPHING, LANDSCAPE_NO_INSTANCING, LANDSCAPE_MORPHING);
+    EngineSettingsDetails::SetupSetting<SETTING_PROFILE_DLC_MANAGER, bool>(registrator, "DlcManagerProfiling", false, false, false);
 
     //setting enum values setup
     EngineSettingsDetails::SetupSettingValue(LANDSCAPE_NO_INSTANCING, "Landscape.RenderMode.NoInstancing");
@@ -62,7 +63,7 @@ bool EngineSettings::Load(const FilePath& filepath)
         {
             for (uint32 i = 0; i < SETTING_COUNT; ++i)
             {
-                const FastName& settingName = EngineSettings::GetSettingName(eSetting(i));
+                const FastName& settingName = GetSettingName(eSetting(i));
                 const YamlNode* settingNode = rootNode->Get(settingName.c_str());
                 if (settingNode && settingNode->GetType() == YamlNode::TYPE_STRING)
                 {
@@ -107,7 +108,7 @@ EngineSettings::eSettingValue EngineSettings::GetSettingValueByName(const FastNa
             break;
     }
 
-    return EngineSettings::eSettingValue(i);
+    return eSettingValue(i);
 }
 
 //Details definition

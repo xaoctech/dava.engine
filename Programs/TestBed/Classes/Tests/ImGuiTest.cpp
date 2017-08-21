@@ -15,13 +15,13 @@ ImGuiTest::ImGuiTest(TestBed& app)
 
 void ImGuiTest::LoadResources()
 {
+    BaseScreen::LoadResources();
+
     GetOrCreateComponent<DAVA::UIUpdateComponent>();
     DAVA::UIControlBackground* bg = GetOrCreateComponent<DAVA::UIControlBackground>();
 
     bg->SetDrawType(DAVA::UIControlBackground::DRAW_FILL);
     bg->SetColor(backColor);
-
-    BaseScreen::LoadResources();
 }
 
 void ImGuiTest::Update(DAVA::float32 timeElapsed)
@@ -88,7 +88,7 @@ void ImGuiTest::ShowEngineSettings()
 
     for (const Reflection::Field& field : settingsFields)
     {
-        const String& fieldname = field.key.Get<String>();
+        FastName fieldname = field.key.Get<FastName>();
         const Type* fieldtype = field.ref.GetValueType()->Decay();
 
         if (fieldtype == Type::Instance<bool>())
