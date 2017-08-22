@@ -589,7 +589,7 @@ macro( setup_main_module )
 
                 if( WIN32 )
                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/DEBUG" )
-                    set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib /SAFESEH:NO" )
+                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SAFESEH:NO" )
 
                     # Generate debug info also in release builds
                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/DEBUG /SUBSYSTEM:WINDOWS" )
