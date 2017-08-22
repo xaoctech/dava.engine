@@ -453,13 +453,15 @@ void EditorSlotSystem::Draw()
                             t->boundingBoxSize.z - t->pivot.z);
                 AABBox3 box(min, max);
                 Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
-                DVASSERT(loadedEntity != nullptr);
-                Matrix4 transform = loadedEntity->GetWorldTransform();
-                rh->DrawAABoxTransformed(box, transform, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
-                rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
+                if (loadedEntity != nullptr)
+                {
+                    Matrix4 transform = loadedEntity->GetWorldTransform();
+                    rh->DrawAABoxTransformed(box, transform, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
+                    rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
 
-                Vector3 pivot = Vector3(0.0f, 0.0f, 0.0f) * transform;
-                rh->DrawIcosahedron(pivot, 0.3f, pivotColor, RenderHelper::DRAW_SOLID_DEPTH);
+                    Vector3 pivot = Vector3(0.0f, 0.0f, 0.0f) * transform;
+                    rh->DrawIcosahedron(pivot, 0.3f, pivotColor, RenderHelper::DRAW_SOLID_DEPTH);
+                }
             }
         }
     }
