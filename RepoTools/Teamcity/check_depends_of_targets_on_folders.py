@@ -8,8 +8,17 @@ import team_city_api
 import stash_api
 import common_tool
 
-# The script runs the teamcity-build or executes the command if the
-# changes in the pull-request affect the specified folder list
+##
+# Parameters -
+#    --framework_branch      Brunch / pull-requests
+#    --target_folders_list   List of folders and dependent programs in the format:
+#                            'Tool1':'Folder1+Folder2','Tool2':'Sources/Folder3+Module/Folder4'
+#
+# Output  -
+#    ALL_BUILD               Change affected all tools
+#    "Tool1;Tool2; .."       Change affected tools from the list
+#
+##
 
 def __parser_args():
     arg_parser = argparse.ArgumentParser()
@@ -19,7 +28,6 @@ def __parser_args():
 ##
     arg_parser.add_argument( '--framework_branch', required = True )
 ##
-    #'ResourceEditor':'Sources/Internal;Modules;Sources/CMake;Programs/ResourceEditor','QuickEd':'Sources/Internal;Modules;Sources/CMake;Programs/QuickEd'
     arg_parser.add_argument( '--target_folders_list', required = True  )
 ##
     return arg_parser.parse_args()
@@ -62,10 +70,11 @@ def check_depends_of_targets_on_folders( args  ):
             if next_target == True:
                 break;
 
+            realpath_dep_folder = os.path.realpath(path_dep_folder)
+
             for path_branch_folder in branch_changes:
                 path                = path_branch_folder['path']['parent']
                 path                = os.path.realpath( path )
-                realpath_dep_folder = os.path.realpath(path_dep_folder)
 
                 if realpath_dep_folder in path:
                     next_target = True
