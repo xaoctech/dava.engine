@@ -13,6 +13,7 @@ ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
 ParticleDragForce* ParticleDragForce::Clone()
 {
     ParticleDragForce* dst = new ParticleDragForce(parentLayer);
+    dst->isActive = isActive;
     dst->forceName = forceName;
     dst->shape = shape;
     dst->type = type;

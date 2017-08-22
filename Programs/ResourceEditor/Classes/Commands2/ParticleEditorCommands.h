@@ -427,6 +427,7 @@ class CommandUpdateParticleDragForce : public CommandAction
 public:
     struct ForceParams
     {
+        bool isActive = true;
         DAVA::String forceName;
         bool useInfinityRange = false;
         DAVA::float32 radius = 0.0f;

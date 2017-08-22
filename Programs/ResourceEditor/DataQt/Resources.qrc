@@ -66,6 +66,7 @@
         <file>QtIcons/emitter_particle.png</file>
         <file>QtIcons/force.png</file>
         <file>QtIcons/turtle.png</file>
+        <file>QtIcons/turtle_bnw.png</file>
         <file>QtIcons/remove_turtle.png</file>
         <file>QtIcons/external.png</file>
         <file>QtIcons/layer_particle.png</file>

@@ -29,6 +29,7 @@ public:
 
     ParticleDragForce* Clone();
 
+    bool isActive = true;
     String forceName = "DragForce";
     Matrix4 localMatrix;
 

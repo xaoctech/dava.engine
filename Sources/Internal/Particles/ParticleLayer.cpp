@@ -760,6 +760,12 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             dragForce->forceName = nameNode->AsString();
         }
 
+        forceDataName = Format("forceIsActive%d", i);
+        const YamlNode* activeNode = node->Get(forceDataName);
+        if (activeNode)
+        {
+            dragForce->isActive = activeNode->AsBool();
+        }
 
         forceDataName = Format("dragForcePosition%d", i);
         const YamlNode* positionNode = node->Get(forceDataName);
@@ -1238,6 +1244,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         String forceDataName = Format("forceName%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, currentForce->forceName);
+
+        forceDataName = Format("forceIsActive%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->isActive);
 
         forceDataName = Format("dragForcePosition%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->position);

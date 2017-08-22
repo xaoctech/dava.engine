@@ -43,6 +43,7 @@ private:
     QVBoxLayout* mainLayout = nullptr;
     ParticleVector3Widget* boxSize = nullptr;
     ParticleVector3Widget* forcePower = nullptr;
+    QCheckBox* isActive = nullptr;
     QCheckBox* infinityRange = nullptr;
     QWidget* radiusWidget = nullptr;
     EventFilterDoubleSpinBox* radiusSpin = nullptr;

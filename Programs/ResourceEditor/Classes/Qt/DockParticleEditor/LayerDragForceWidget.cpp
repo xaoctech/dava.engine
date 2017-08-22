@@ -1,11 +1,14 @@
 #include "Classes/Qt/DockParticleEditor/LayerDragForceWidget.h"
 
 #include <QVBoxLayout>
-
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QLabel>
 
 #include "Classes/Qt/DockParticleEditor/ParticleVector3Widget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+#include "Classes/Commands2/ParticleEditorCommands.h"
 
 #include <Particles/ParticleDragForce.h>
 
@@ -28,6 +31,10 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
 {
     mainLayout = new QVBoxLayout();
     setLayout(mainLayout);
+
+    isActive = new QCheckBox("Is active");
+    connect(isActive, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(isActive);
 
     forceNameEdit = new QLineEdit();
     mainLayout->addWidget(forceNameEdit);
@@ -83,13 +90,14 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forceIndex = forceIndex_;
     blockSignals = true;
 
-    ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
+    DAVA::ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
     infinityRange->setChecked(currForce->infinityRange);
+    isActive->setChecked(currForce->isActive);
     boxSize->SetValue(currForce->boxSize);
     forcePower->SetValue(currForce->forcePower);
     radiusSpin->setValue(currForce->radius);
-    boxSize->setVisible(currForce->shape == ParticleDragForce::eShape::BOX && !currForce->infinityRange);
-    radiusWidget->setVisible(currForce->shape == ParticleDragForce::eShape::SPHERE && !currForce->infinityRange);
+    boxSize->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::BOX && !currForce->infinityRange);
+    radiusWidget->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::SPHERE && !currForce->infinityRange);
     shapeComboBox->setVisible(!currForce->infinityRange);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
 
@@ -125,6 +133,7 @@ void LayerDragForceWidget::OnValueChanged()
 
     DAVA::ParticleDragForce::eShape shape = LayerDragForceWidgetDetail::shapeMap[shapeComboBox->currentIndex()].shape;
     CommandUpdateParticleDragForce::ForceParams params;
+    params.isActive = isActive->isChecked();
     params.forceName = forceNameEdit->text().toStdString();
     params.shape = shape;
     params.boxSize = boxSize->GetValue();
@@ -132,8 +141,8 @@ void LayerDragForceWidget::OnValueChanged()
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
 
-    boxSize->setVisible(shape == ParticleDragForce::eShape::BOX && !params.useInfinityRange);
-    radiusWidget->setVisible(shape == ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);
+    boxSize->setVisible(shape == DAVA::ParticleDragForce::eShape::BOX && !params.useInfinityRange);
+    radiusWidget->setVisible(shape == DAVA::ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);
     shapeComboBox->setVisible(!params.useInfinityRange);
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
 

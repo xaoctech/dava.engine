@@ -14,6 +14,8 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
 
 void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt)
 {
+    if (!force->isActive)
+        return;
     if (force->type == ParticleDragForce::eType::DRAG_FORCE)
     {
         ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt);

@@ -665,7 +665,14 @@ DAVA::ParticleDragForce* SceneTreeItemParticleDragForce::GetDragForce() const
 
 QString SceneTreeItemParticleDragForce::ItemName() const
 {
-    return "drag force";
+    QString ret;
+
+    if (object.ContainsObject())
+    {
+        ret = GetDragForce()->forceName.c_str();
+    }
+
+    return ret;
 }
 
 QVariant SceneTreeItemParticleDragForce::ItemData() const
@@ -675,7 +682,7 @@ QVariant SceneTreeItemParticleDragForce::ItemData() const
 
 const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
 {
-    return SharedIcon(":/QtIcons/turtle.png");
+    return GetDragForce()->isActive ? SharedIcon(":/QtIcons/turtle.png") : SharedIcon(":/QtIcons/turtle_bnw.png");
 }
 
 //////////////////////////////////////////////////////////////////////////
