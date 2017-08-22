@@ -5,6 +5,7 @@
 
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
+#include <Base/RefPtrUtils.h>
 #include <UI/DefaultUIPackageBuilder.h>
 #include <UI/UIControl.h>
 #include <UI/UIControlSystem.h>
@@ -66,10 +67,10 @@ DAVA_TESTCLASS (UISpineTest)
         UIControlSystem::Instance()->SetScreen(screen.Get());
         UIControlSystem::Instance()->Update();
 
-        spineControl = RefPtr<UIControl>::Construct(Rect(0, 0, 10, 10));
+        spineControl = MakeRef<UIControl>(Rect(0, 0, 10, 10));
         screen->AddControl(spineControl.Get());
 
-        attachedControl = RefPtr<UIControl>::Construct(Rect(UISpineTestConsts::ATTACHED_CONTROL_START_POSITION, Vector2(10, 10)));
+        attachedControl = MakeRef<UIControl>(Rect(UISpineTestConsts::ATTACHED_CONTROL_START_POSITION, Vector2(10, 10)));
         attachedControl->SetName(UISpineTestConsts::ATTACHED_CONTROL_NAME);
         spineControl->AddControl(attachedControl.Get());
 
