@@ -96,6 +96,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     mainBox->addWidget(forcesGroup);
     forcesGroup->setTitle("Forces");
     forcesGroup->setCheckable(false);
+    forcesGroup->setVisible(false);
 
     QVBoxLayout* forcesLayout = new QVBoxLayout();
     forcesGroup->setLayout(forcesLayout);

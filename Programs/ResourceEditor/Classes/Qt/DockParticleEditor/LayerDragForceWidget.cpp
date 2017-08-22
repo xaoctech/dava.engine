@@ -1,7 +1,11 @@
 #include "Classes/Qt/DockParticleEditor/LayerDragForceWidget.h"
 
+#include <QVBoxLayout>
+
+
 #include "Classes/Qt/DockParticleEditor/ParticleVector3Widget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
+#include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include <Particles/ParticleDragForce.h>
 
@@ -35,10 +39,10 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
         SLOT(OnValueChanged()));
     mainLayout->addWidget(shapeComboBox);
 
-    boxSize = new ParticleVector3Widget("Box size", Vector3::Zero);
+    boxSize = new ParticleVector3Widget("Box size", DAVA::Vector3::Zero);
     connect(boxSize, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
 
-    forcePower = new ParticleVector3Widget("Force power", Vector3::Zero);
+    forcePower = new ParticleVector3Widget("Force power", DAVA::Vector3::Zero);
     connect(forcePower, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
 
     radiusWidget = new QWidget();
