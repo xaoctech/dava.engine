@@ -48,14 +48,15 @@
         #include <GL/glew.h>
     #endif
 
-	#if defined(_WIN32)
-	#include <GL/glut.h>
-	#include <direct.h>
-	#define getcwd _getcwd
-
-	#elif defined(__APPLE__) || defined(MACOSX)
-	#include <GLUT/glut.h>
-	#endif
+    #if defined(_WIN32)
+// Disable automatic linking with glut library
+        #define GLUT_NO_LIB_PRAGMA
+        #include <GL/glut.h>
+        #include <direct.h>
+        #define getcwd _getcwd
+    #elif defined(__APPLE__) || defined(MACOSX)
+        #include <GLUT/glut.h>
+    #endif
 
 #endif // COLLADA_GLUT_RENDER
 
