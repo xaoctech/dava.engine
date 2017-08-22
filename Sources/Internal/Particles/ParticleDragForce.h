@@ -24,11 +24,12 @@ public:
         POINT_GRAVITY,
         BOX_WRAP
     } type = eType::DRAG_FORCE;
-
+    
     ParticleDragForce(ParticleLayer* parent);
 
     ParticleDragForce* Clone();
 
+    String forceName = "DragForce";
     Matrix4 localMatrix;
 
     Vector3 position;

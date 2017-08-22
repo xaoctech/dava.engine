@@ -12,6 +12,7 @@ class QCheckBox;
 class WheellIgnorantComboBox;
 class EventFilterDoubleSpinBox;
 class QLabel;
+class QLineEdit;
 
 class LayerDragForceWidget : public BaseParticleEditorContentWidget
 {
@@ -45,6 +46,7 @@ private:
     QCheckBox* infinityRange = nullptr;
     QWidget* radiusWidget = nullptr;
     EventFilterDoubleSpinBox* radiusSpin = nullptr;
+    QLineEdit* forceNameEdit = nullptr;
 
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;

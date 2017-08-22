@@ -27,8 +27,12 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     : BaseParticleEditorContentWidget(parent)
 {
     mainLayout = new QVBoxLayout();
-    
     setLayout(mainLayout);
+
+    forceNameEdit = new QLineEdit();
+    mainLayout->addWidget(forceNameEdit);
+    connect(forceNameEdit, SIGNAL(editingFinished()), this, SLOT(OnValueChanged()));
+
     shapeComboBox = new WheellIgnorantComboBox();
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
@@ -79,7 +83,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forceIndex = forceIndex_;
     blockSignals = true;
 
-    ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
+    ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];    
     infinityRange->setChecked(currForce->infinityRange);
     boxSize->SetValue(currForce->boxSize);
     forcePower->SetValue(currForce->forcePower);
@@ -87,6 +91,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     boxSize->setVisible(currForce->shape == ParticleDragForce::eShape::BOX && !currForce->infinityRange);
     radiusWidget->setVisible(currForce->shape == ParticleDragForce::eShape::SPHERE && !currForce->infinityRange);
     shapeComboBox->setVisible(!currForce->infinityRange);
+    forceNameEdit->setText(QString::fromStdString(currForce->forceName));
 
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
@@ -120,6 +125,7 @@ void LayerDragForceWidget::OnValueChanged()
 
     DAVA::ParticleDragForce::eShape shape = LayerDragForceWidgetDetail::shapeMap[shapeComboBox->currentIndex()].shape;
     CommandUpdateParticleDragForce::ForceParams params;
+    params.forceName = forceNameEdit->text().toStdString();
     params.shape = shape;
     params.boxSize = boxSize->GetValue();
     params.forcePower = forcePower->GetValue();

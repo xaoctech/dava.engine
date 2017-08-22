@@ -752,7 +752,16 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         ParticleDragForce* dragForce = new ParticleDragForce(this);
 
-        String forceDataName = Format("dragForcePosition%d", i);
+
+        String forceDataName = Format("forceName%d", i);
+        const YamlNode* nameNode = node->Get(forceDataName);
+        if (nameNode)
+        {
+            dragForce->forceName = nameNode->AsString();
+        }
+
+
+        forceDataName = Format("dragForcePosition%d", i);
         const YamlNode* positionNode = node->Get(forceDataName);
         if (positionNode)
         {
@@ -1227,7 +1236,10 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
     {
         ParticleDragForce* currentForce = dragForces[i];
 
-        String forceDataName = Format("dragForcePosition%d", i);
+        String forceDataName = Format("forceName%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, currentForce->forceName);
+
+        forceDataName = Format("dragForcePosition%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->position);
 
         forceDataName = Format("dragForceRotation%d", i);
