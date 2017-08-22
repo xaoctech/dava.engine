@@ -55,11 +55,12 @@ public:
         return true;
     }
 
-    void Close() override
+    bool Close() override
     {
         start = nullptr;
         current = nullptr;
         end = nullptr;
+        return true;
     }
 
     bool IsClosed() const override
@@ -173,6 +174,8 @@ public:
 
     DLCDownloader& GetDownloader() const;
 
+    bool CountError(int32 errCode);
+
 private:
     // initialization state functions
     void AskFooter();
@@ -277,7 +280,7 @@ private:
 
     String initErrorMsg;
     InitState initState = InitState::Starting;
-    std::unique_ptr<MemoryBufferWriter> memBufWriter;
+    std::shared_ptr<MemoryBufferWriter> memBufWriter;
     PackFormat::PackFile::FooterBlock initFooterOnServer; // temp superpack info for every new pack request or during initialization
     PackFormat::PackFile usedPackFile; // current superpack info
     Vector<uint8> buffer; // temp buff
@@ -294,6 +297,11 @@ private:
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+
+    // collect errno codes and count it, also remember last error code
+    size_t errorCounter = 0;
+    int32 prevErrorCode = 0;
+
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
 };

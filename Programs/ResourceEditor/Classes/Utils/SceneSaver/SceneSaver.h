@@ -42,6 +42,8 @@ private:
     void CopyAllParticlesEmitters(DAVA::ParticleEmitterInstance* instance);
     void CopyEmitterByPath(const DAVA::FilePath& emitterConfigPath);
     void CopyEmitter(DAVA::ParticleEmitter* emitter);
+    void ProcessSprite(DAVA::Sprite* sprite);
+
     DAVA::Set<DAVA::FilePath> EnumAlternativeEmittersFilepaths(const DAVA::FilePath& originalFilepath) const;
 
     void CopyCustomColorTexture(DAVA::Scene* scene, const DAVA::FilePath& sceneFolder);

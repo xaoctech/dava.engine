@@ -18,8 +18,8 @@ public:
 protected:
     void LoadResources() override;
     void UnloadResources() override;
-    bool SystemInput(DAVA::UIEvent* currentInput) override;
 
+    virtual void OnBackNavigation(DAVA::Window* window);
     virtual void OnExitButton(DAVA::BaseObject* obj, void* data, void* callerData);
 
     TestBed& app;

@@ -132,6 +132,8 @@ void FileSystemWidget::SetResourceDirectory(const QString& path)
     if (isAvailable)
     {
         model = new FileSystemModel(this);
+        connect(model, &QFileSystemModel::directoryLoaded, this, &FileSystemWidget::OnDirectoryLoaded);
+
         model->setFilter(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot);
         setFilterFixedString("");
         model->setNameFilterDisables(false);
@@ -155,8 +157,11 @@ void FileSystemWidget::SetResourceDirectory(const QString& path)
 
 void FileSystemWidget::SelectFile(const QString& filePath)
 {
-    DVASSERT(!filePath.isEmpty());
-    treeView->setCurrentIndex(model->index(filePath));
+    QModelIndex index = model->index(filePath);
+    //scrollTo will expand all collapsed indexes
+    treeView->scrollTo(index);
+    treeView->setCurrentIndex(index);
+    fileToSelect = filePath;
 }
 
 //refresh actions by menu invoke pos
@@ -429,5 +434,24 @@ void FileSystemWidget::OnProjectPathChanged(const DAVA::Any& projectPath)
         QString uiResourcesPath = QString::fromStdString(uiDirectory.GetStringValue());
 
         SetResourceDirectory(uiResourcesPath);
+    }
+}
+
+void FileSystemWidget::OnDirectoryLoaded(const QString& path)
+{
+    if (fileToSelect.isEmpty())
+    {
+        return;
+    }
+
+    QModelIndex index = model->index(fileToSelect);
+    QModelIndex parent = index.parent();
+    QString parentDir = model->filePath(parent);
+    if (path == parentDir)
+    {
+        //if not call sort before scrollTo fileSystemModel will sort items after we scroll to the unsortedItem
+        model->sort(0);
+        treeView->scrollTo(model->index(fileToSelect));
+        fileToSelect.clear();
     }
 }

@@ -70,7 +70,6 @@ public:
 
     // qt actions slots
 public slots:
-    void OnImportSpeedTreeXML();
     void RemoveSelection();
 
     void OnUndo();
@@ -118,6 +117,7 @@ public slots:
     void OnEmptyEntity();
     void OnAddWindEntity();
     void OnAddPathEntity();
+    void OnAddTextEntity();
 
     void OnUserNodeDialog();
     void OnSwitchEntityDialog();

@@ -4,6 +4,7 @@
 
 #include <Render/2D/Sprite.h>
 #include <Logger/Logger.h>
+#include <Time/SystemTimer.h>
 
 #include <QDir>
 #include <QDirIterator>
@@ -29,6 +30,7 @@ void SpritesPacker::ClearTasks()
 void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFamily gpu, const TextureConverter::eConvertQuality quality)
 {
     SetRunning(true);
+
     resourcePacker2D.SetRunning(true);
     for (const auto& task : tasks)
     {
@@ -46,12 +48,22 @@ void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFa
         resourcePacker2D.clearOutputDirectory = clearDirs;
         resourcePacker2D.SetConvertQuality(quality);
         resourcePacker2D.InitFolders(inputFilePath, outputFilePath);
+        DAVA::int64 packTime = SystemTimer::GetMs();
         resourcePacker2D.PackResources({ gpu });
+        packTime = SystemTimer::GetMs() - packTime;
+        Logger::Info("Sprites reload time: %.2lf sec", static_cast<float64>(packTime) / 1000.0);
         if (!resourcePacker2D.IsRunning())
         {
             break;
         }
     }
+
+    if (IsUsingCache())
+    {
+        cacheClient->DumpStats();
+        cacheClient->ClearStats();
+    }
+
     SetRunning(false);
 }
 
@@ -85,8 +97,9 @@ const DAVA::ResourcePacker2D& SpritesPacker::GetResourcePacker() const
     return resourcePacker2D;
 }
 
-void SpritesPacker::SetCacheClient(AssetCacheClient* cacheClient, const String& comment)
+void SpritesPacker::SetCacheClient(AssetCacheClient* cacheClient_, const String& comment)
 {
+    cacheClient = cacheClient_;
     resourcePacker2D.SetCacheClient(cacheClient, comment);
 }
 

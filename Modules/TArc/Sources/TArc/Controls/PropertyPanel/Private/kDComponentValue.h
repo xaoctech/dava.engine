@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
-#include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
 
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectedMeta.h>
@@ -48,7 +47,10 @@ private:
     const M::Range* Get5AxisRange() const;
     const M::Range* Get6AxisRange() const;
 
+    bool ShowSpinArrows() const;
+
     Array<std::unique_ptr<M::Range>, 6> ranges;
+    Array<std::unique_ptr<M::FloatNumberAccuracy>, 6> accuracy;
     Vector<typename TEditor::FieldDescriptor> fields;
 
     DAVA_VIRTUAL_REFLECTION(kDComponentValue, BaseComponentValue);

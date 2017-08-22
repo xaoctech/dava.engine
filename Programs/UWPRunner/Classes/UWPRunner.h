@@ -64,7 +64,6 @@ private:
     DAVA::String qtProfile;
     DAVA::RefPtr<DAVA::File> outputFile;
     bool succeed = false;
-    bool davaApplicationTerminated = false;
 };
 
 #endif // UWP_RUNNER_H

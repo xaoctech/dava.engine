@@ -11,11 +11,11 @@
 
 #include "Preset.h"
 
-#include "TArc/DataProcessing/DataContext.h"
+#include <TArc/Utils/Themes.h>
+#include <TArc/DataProcessing/DataContext.h>
 
 #include "QtTools/WidgetHelpers/SharedIcon.h"
 #include "QtTools/Utils/Utils.h"
-#include "QtTools/Utils/Themes/Themes.h"
 
 #include "QtHelpers/HelperFunctions.h"
 

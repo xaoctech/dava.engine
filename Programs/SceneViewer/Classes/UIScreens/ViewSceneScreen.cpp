@@ -2,8 +2,12 @@
 #include "SceneViewerApp.h"
 #include "Settings.h"
 
+#include <DocDirSetup/DocDirSetup.h>
+
 #include <Math/MathHelpers.h>
 #include <Render/2D/Sprite.h>
+#include <Input/Keyboard.h>
+#include <DeviceManager/DeviceManager.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Update/UIUpdateComponent.h>
 
@@ -253,7 +257,7 @@ void ViewSceneScreen::AddMenuControl()
 void ViewSceneScreen::AddFileDialogControl()
 {
     DVASSERT(!fileSystemDialog);
-    fileSystemDialog = new DAVA::UIFileSystemDialog("~res:/Fonts/korinna.ttf");
+    fileSystemDialog = new DAVA::UIFileSystemDialog("~res:/SceneViewer/Fonts/korinna.ttf");
     fileSystemDialog->SetDelegate(this);
     fileSystemDialog->SetExtensionFilter(".sc2");
     fileSystemDialog->SetOperationType(DAVA::UIFileSystemDialog::OPERATION_LOAD);
@@ -268,7 +272,7 @@ void ViewSceneScreen::AddJoypadControl()
 {
     DVASSERT(!moveJoyPAD);
     moveJoyPAD = new DAVA::UIJoypad(DAVA::Rect(10, GetRect().dy - 210.f, 200.f, 200.f));
-    DAVA::ScopedPtr<DAVA::Sprite> stickSprite(DAVA::Sprite::CreateFromSourceFile("~res:/UI/Joypad.png", true));
+    DAVA::ScopedPtr<DAVA::Sprite> stickSprite(DAVA::Sprite::CreateFromSourceFile("~res:/SceneViewer/UI/Joypad.png", true));
     moveJoyPAD->SetStickSprite(stickSprite, 0);
     AddControl(moveJoyPAD);
 }
@@ -354,7 +358,7 @@ void ViewSceneScreen::OnButtonSelectFromRes(DAVA::BaseObject* caller, void* para
 void ViewSceneScreen::OnButtonSelectFromDoc(DAVA::BaseObject* caller, void* param, void* callerData)
 {
     DVASSERT(fileSystemDialog);
-    fileSystemDialog->SetCurrentDir("~doc:/");
+    fileSystemDialog->SetCurrentDir(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
     fileSystemDialog->Show(this);
     menu->SetEnabled(false);
 }
@@ -416,8 +420,8 @@ void ViewSceneScreen::OnButtonReloadShaders(DAVA::BaseObject* caller, void* para
             material->InvalidateRenderVariants();
         }
 
-        const Map<uint64, NMaterial*>& particleInstances = scene->particleEffectSystem->GetMaterialInstances();
-        for (auto material : particleInstances)
+        const auto particleInstances = scene->particleEffectSystem->GetMaterialInstances();
+        for (auto& material : particleInstances)
         {
             material.second->InvalidateRenderVariants();
         }
@@ -470,23 +474,26 @@ void ViewSceneScreen::ProcessUserInput(DAVA::float32 timeElapsed)
     {
         using namespace DAVA;
 
-        KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD6))
-        //         cursorPosition.x += timeElapsed / 16.f;
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD4))
-        //         cursorPosition.x -= timeElapsed / 16.f;
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD8))
-        //         cursorPosition.y += timeElapsed / 16.f;
-        //     if (keyboard.IsKeyPressed(Key::NUMPAD2))
-        //         cursorPosition.y -= timeElapsed / 16.f;
-        if (keyboard.IsKeyPressed(Key::SPACE))
-            wasdSystem->SetMoveSpeed(30.f);
-        else
-            wasdSystem->SetMoveSpeed(10.f);
+        Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+        if (keyboard != nullptr)
+        {
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD6))
+            //         cursorPosition.x += timeElapsed / 16.f;
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD4))
+            //         cursorPosition.x -= timeElapsed / 16.f;
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD8))
+            //         cursorPosition.y += timeElapsed / 16.f;
+            //     if (keyboard.IsKeyPressed(Key::NUMPAD2))
+            //         cursorPosition.y -= timeElapsed / 16.f;
+            if (keyboard->GetKeyState(eInputElements::KB_SPACE).IsPressed())
+                wasdSystem->SetMoveSpeed(30.f);
+            else
+                wasdSystem->SetMoveSpeed(10.f);
+        }
 
         Camera* camera = scene->GetDrawCamera();
         Vector2 joypadPos = moveJoyPAD->GetDigitalPosition();
-        Vector3 cameraMoveOffset = (joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
+        Vector3 cameraMoveOffset = (-joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
 
         camera->SetPosition(camera->GetPosition() + cameraMoveOffset);
         camera->SetTarget(camera->GetTarget() + cameraMoveOffset);

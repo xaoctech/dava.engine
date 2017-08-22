@@ -4,8 +4,8 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
+#include "Input/InputElements.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #include "UI/UIControl.h"
@@ -19,6 +19,8 @@
 */
 namespace DAVA
 {
+struct InputEvent;
+class Mouse;
 class UIScreen;
 class UISystem;
 class UILayoutSystem;
@@ -53,15 +55,8 @@ public:
 		Also ControlSystem processed all user input events to the controls.
 	 */
 
-class UIControlSystem : public Singleton<UIControlSystem>
+class UIControlSystem final
 {
-protected:
-    ~UIControlSystem();
-    /**
-	 \brief Don't call this constructor!
-	 */
-    UIControlSystem();
-
 public:
     /**
 	 \brief Sets the requested screen as current.
@@ -143,6 +138,9 @@ public:
 	 \brief Sets the current screen to 0 LOL.
 	 */
     void Reset();
+
+    bool HandleInputEvent(const InputEvent& inputEvent);
+
     /**
 	 \brief Calls by the system for input processing.
 	 */
@@ -317,12 +315,20 @@ public:
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
+    UIControlSystem();
+    ~UIControlSystem();
+    void Init();
+
     void ProcessScreenLogic();
 
     void NotifyListenersWillSwitch(UIScreen* screen);
     void NotifyListenersDidSwitch(UIScreen* screen);
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
+
+    UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
+    eModifierKeys GetKeyboardModifierKeys() const;
+    static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
 
     friend class Private::EngineBackend;
 

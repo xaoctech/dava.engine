@@ -38,10 +38,6 @@
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
 
-#ifdef __DAVAENGINE_SPEEDTREE__
-#include "SpeedTreeImport/SpeedTreeImportDialog.h"
-#endif
-
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
 
@@ -65,10 +61,9 @@
 #include "Constants.h"
 #include "StringConstants.h"
 
-#include "Render/2D/Sprite.h"
-
 #include <Tools/TextureCompression/TextureConverter.h>
 
+#include <TArc/Utils/Themes.h>
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>
 
 #include "QtTools/ConsoleWidget/LogWidget.h"
@@ -77,21 +72,21 @@
 #include "QtTools/ConsoleWidget/LoggerOutputObject.h"
 #include "QtTools/FileDialogs/FileDialog.h"
 #include "QtTools/FileDialogs/FindFileDialog.h"
-#include "QtTools/Utils/Themes/Themes.h"
 #include "QtTools/WidgetHelpers/SharedIcon.h"
 
-#include "Engine/Engine.h"
-#include "Engine/PlatformApiQt.h"
-#include "Engine/Qt/RenderWidget.h"
-#include "Reflection/ReflectedType.h"
-
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/Waypoint/PathComponent.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene/System/EditorVegetationSystem.h"
-#include "Utils/StringFormat.h"
+#include <Engine/Engine.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Qt/RenderWidget.h>
+#include <Reflection/ReflectedType.h>
+#include <Render/2D/Sprite.h>
+#include <Scene3D/Components/ActionComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene/System/EditorVegetationSystem.h>
+#include <Utils/StringFormat.h>
 
 #include <QActionGroup>
 #include <QColorDialog>
@@ -541,11 +536,6 @@ void QtMainWindow::SetupDocks()
 
 void QtMainWindow::SetupActions()
 {
-// import
-#ifdef __DAVAENGINE_SPEEDTREE__
-    QObject::connect(ui->actionImportSpeedTreeXML, &QAction::triggered, this, &QtMainWindow::OnImportSpeedTreeXML);
-#endif //__DAVAENGINE_SPEEDTREE__
-
     QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
@@ -623,6 +613,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
     QObject::connect(ui->actionAddPath, SIGNAL(triggered()), this, SLOT(OnAddPathEntity()));
+    QObject::connect(ui->actionTextEntity, SIGNAL(triggered()), this, SLOT(OnAddTextEntity()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
@@ -892,13 +883,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2* scene, const RECommandNoti
 // ###################################################################################################
 // Mainwindow Qt actions
 // ###################################################################################################
-void QtMainWindow::OnImportSpeedTreeXML()
-{
-#ifdef __DAVAENGINE_SPEEDTREE__
-    SpeedTreeImportDialog importDialog(globalOperations, this);
-    importDialog.exec();
-#endif //__DAVAENGINE_SPEEDTREE__
-}
 
 void QtMainWindow::OnUndo()
 {
@@ -1300,6 +1284,18 @@ void QtMainWindow::OnUserNodeDialog()
     }
 }
 
+void QtMainWindow::OnAddTextEntity()
+{
+    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
+    if (sceneEditor)
+    {
+        DAVA::ScopedPtr<DAVA::Entity> textEntity(new DAVA::Entity());
+        textEntity->AddComponent(new DAVA::TextComponent());
+        textEntity->SetName("TextEntity");
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(textEntity, sceneEditor.Get())));
+    }
+}
+
 void QtMainWindow::OnParticleEffectDialog()
 {
     DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
@@ -1321,8 +1317,8 @@ void QtMainWindow::On2DCameraDialog()
         DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         DAVA::ScopedPtr<DAVA::Camera> camera(new DAVA::Camera());
 
-        DAVA::float32 w = DAVA::UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dx;
-        DAVA::float32 h = DAVA::UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dy;
+        DAVA::float32 w = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dx;
+        DAVA::float32 h = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dy;
         DAVA::float32 aspect = w / h;
         camera->SetupOrtho(w, aspect, 1, 1000);
         camera->SetPosition(DAVA::Vector3(0, 0, -10000));

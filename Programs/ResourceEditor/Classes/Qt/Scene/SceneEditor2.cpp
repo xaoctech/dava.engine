@@ -1,5 +1,6 @@
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
+#include "Scene/System/EditorParticlesSystem.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/Selection.h"
@@ -133,7 +134,7 @@ SceneEditor2::SceneEditor2()
     AddSystem(particlesSystem, MAKE_COMPONENT_MASK(DAVA::Component::PARTICLE_EFFECT_COMPONENT), 0, renderUpdateSystem);
 
     textDrawSystem = new TextDrawSystem(this, cameraSystem);
-    AddSystem(textDrawSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(textDrawSystem, 0, 0, renderUpdateSystem);
 
     editorLightSystem = new EditorLightSystem(this);
     AddSystem(editorLightSystem, MAKE_COMPONENT_MASK(DAVA::Component::LIGHT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);

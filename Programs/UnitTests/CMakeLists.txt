@@ -51,15 +51,15 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
     # we don't have physx for android x86, so skip this
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
-elseif (LINUX)
-    # for now physx is not supported for linux
 else()
     list ( APPEND DAVA_COMPONENTS "PhysicsModule" )
 endif()
 
 find_package( Steam REQUIRED )
 find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )
+find_package( LoggerService REQUIRED )
 find_package( EmbeddedWebServer REQUIRED )
+find_package( DocDirSetup REQUIRED )
 
 include_directories   ( "Classes" )
 
