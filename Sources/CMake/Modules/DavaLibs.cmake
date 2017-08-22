@@ -127,7 +127,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/sqlite3.lib"   )
 
     set( DAVA_STATIC_LIBRARIES_WIN32_DEBUG
-                      "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/detours.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/detours.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/FColladaVS2010.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/freetype.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/glew32.lib"
@@ -162,6 +162,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/sqlite3.lib" )
 
     set( DAVA_STATIC_LIBRARIES_WIN64_RELEASE
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/detours.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/FColladaVS2010.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/freetype.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glew32.lib"
@@ -197,6 +198,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/sqlite3.lib" )
 
     set( DAVA_STATIC_LIBRARIES_WIN64_DEBUG
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/detours.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/FColladaVS2010.lib"
