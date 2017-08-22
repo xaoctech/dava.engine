@@ -12,6 +12,7 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
+#include "Debug/ProfilerCPU.h"
 
 namespace DAVA
 {
@@ -179,6 +180,10 @@ public:
     bool CountError(int32 errCode);
 
     void FireNetworkReady(bool nextState);
+
+    ProfilerCPU profiler;
+    std::unique_ptr<ProfilerCPU::ScopedCounter> mainScopedCounter;
+    String firstCounter;
 
 private:
     // initialization state functions

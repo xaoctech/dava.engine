@@ -187,7 +187,7 @@ void ProfilerCPU::DumpLast(const char* counterName, uint32 counterCount, std::os
     CounterArray* array = GetCounterArray(snapshot);
     CounterArray::reverse_iterator it = array->rbegin(), itEnd = array->rend();
     Counter* lastDumpedCounter = nullptr;
-    for (; it != itEnd; it++)
+    for (; it != itEnd; ++it)
     {
         if (it->endTime != 0 && (strcmp(counterName, it->name) == 0))
         {
@@ -218,9 +218,10 @@ void ProfilerCPU::DumpAverage(const char* counterName, uint32 counterCount, std:
     stream << "=== Average time for " << counterCount << " counter(s):" << std::endl;
 
     CounterArray* array = GetCounterArray(snapshot);
-    CounterArray::reverse_iterator it = array->rbegin(), itEnd = array->rend();
+    CounterArray::reverse_iterator it = array->rbegin();
+    CounterArray::reverse_iterator itEnd = array->rend();
     ProfilerCPUDetails::CounterTreeNode* treeRoot = nullptr;
-    for (; it != itEnd; it++)
+    for (; it != itEnd; ++it)
     {
         if (it->endTime != 0 && (strcmp(counterName, it->name) == 0))
         {
@@ -249,7 +250,7 @@ void ProfilerCPU::DumpAverage(const char* counterName, uint32 counterCount, std:
         ProfilerCPUDetails::CounterTreeNode::SafeDeleteTree(treeRoot);
     }
 
-    stream << "================================================================" << std::endl;
+    stream << "================================================================\n";
     stream.flush();
 }
 
@@ -375,8 +376,8 @@ CounterTreeNode* CounterTreeNode::BuildTree(ProfilerCPU::CounterArray::iterator 
             }
             else
             {
-                auto found = std::find_if(node->childs.begin(), node->childs.end(), [&c](CounterTreeNode* node) {
-                    return (ProfilerCPUDetails::NameEquals(c.name, node->counterName));
+                auto found = std::find_if(node->childs.begin(), node->childs.end(), [&c](CounterTreeNode* nodeArg) {
+                    return (ProfilerCPUDetails::NameEquals(c.name, nodeArg->counterName));
                 });
 
                 if (found != node->childs.end())
@@ -456,10 +457,10 @@ void CounterTreeNode::DumpTree(const CounterTreeNode* node, std::ostream& stream
         stream << "  ";
     }
 
-    stream << node->counterName << " [" << (average ? node->counterTime / node->count : node->counterTime) << " us | x" << node->count << "]" << std::endl;
+    stream << node->counterName << " [" << (average ? node->counterTime / node->count : node->counterTime) << " us | x" << node->count << "]" << '\n';
 
-    for (CounterTreeNode* c : node->childs)
-        DumpTree(c, stream, average);
+    for (CounterTreeNode* child : node->childs)
+        DumpTree(child, stream, average);
 }
 
 void CounterTreeNode::SafeDeleteTree(CounterTreeNode*& node)
