@@ -12,7 +12,7 @@
 #include "Preferences/PreferencesStorage.h"
 #include "Deprecated/EditorConfig.h"
 
-#include "CommandLine/BeastCommandLineTool.h"
+#include "Classes/Beast/BeastCommandLineTool.h"
 #include "CommandLine/ConsoleHelpTool.h"
 #include "CommandLine/DumpTool.h"
 #include "CommandLine/SceneImageDump.h"
@@ -24,12 +24,6 @@
 #include "CommandLine/SceneSaverTool.h"
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/SceneValidationTool.h"
-
-#ifdef __DAVAENGINE_BEAST__
-#include "Beast/BeastProxyImpl.h"
-#else
-#include "Beast/BeastProxy.h"
-#endif //__DAVAENGINE_BEAST__
 
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
@@ -154,7 +148,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
 #endif
 
-    beastProxy = new BEAST_PROXY_TYPE();
     const char* settingsPath = "ResourceEditorSettings.archive";
     DAVA::FilePath localPrefrencesPath(engineContext->fileSystem->GetCurrentDocumentsDirectory() + settingsPath);
     PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
@@ -176,7 +169,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 void REApplication::Cleanup()
 {
     REGlobal::InitTArcCore(nullptr);
-    DAVA::SafeRelease(beastProxy);
     DAVA::SafeRelease(settingsManager);
 
     VisibilityCheckSystem::ReleaseCubemapRenderTargets();

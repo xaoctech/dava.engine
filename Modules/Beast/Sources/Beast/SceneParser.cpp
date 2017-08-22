@@ -8,7 +8,14 @@
 #include "Beast/BeastPointCloud.h"
 
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Entity.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/TextureDescriptor.h>
 #include <FileSystem/FileSystem.h>
+#include <Logger/Logger.h>
 
 SceneParser::SceneParser(BeastManager* _beastManager, DAVA::Function<void()> parsingCompletedCallback)
     : beastManager(_beastManager)

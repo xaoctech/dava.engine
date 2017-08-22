@@ -9,11 +9,19 @@
 #include <memory>
 #include <atomic>
 
+namespace DAVA
+{
+namespace TArc
+{
+class UI;
+}
+}
+
 class GlobalOperations;
 class ErrorDialogOutput final : public QtDelayedExecutor, public DAVA::LoggerOutput
 {
 public:
-    ErrorDialogOutput(const std::shared_ptr<GlobalOperations>& globalOperations);
+    ErrorDialogOutput(DAVA::TArc::UI* ui, const std::shared_ptr<GlobalOperations>& globalOperations);
 
     void Output(DAVA::Logger::eLogLevel ll, const DAVA::char8* text) override;
     void Disable();
@@ -33,4 +41,5 @@ private:
     std::atomic<bool> enabled;
 
     DAVA::Token waitDialogConnectionToken;
+    DAVA::TArc::UI* tarcUI = nullptr;
 };

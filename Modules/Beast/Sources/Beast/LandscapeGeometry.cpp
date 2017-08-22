@@ -1,4 +1,4 @@
-#include "LandscapeGeometry.h"
+#include "Beast/LandscapeGeometry.h"
 
 void LandscapeGeometry::ComputeNormals()
 {

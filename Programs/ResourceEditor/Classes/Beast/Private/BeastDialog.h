@@ -1,14 +1,13 @@
-#ifndef BEAST_DIALOG
-#define BEAST_DIALOG
+#pragma once
 
+#include "ui_BeastDialog.h"
+
+#include <Beast/BeastConstants.h>
+#include <Beast/BeastProxy.h>
 
 #include <QWidget>
 #include <QScopedPointer>
 #include <QPointer>
-
-#include "ui_BeastDialog.h"
-
-#include "Beast/BeastProxy.h"
 
 class SceneEditor2;
 class QEventLoop;
@@ -48,6 +47,3 @@ private:
 
     eBeastMode beastMode;
 };
-
-
-#endif // BEAST_DIALOG

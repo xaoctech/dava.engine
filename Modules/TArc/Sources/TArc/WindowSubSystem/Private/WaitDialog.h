@@ -2,6 +2,7 @@
 
 #include "TArc/DataProcessing/DataWrapper.h"
 #include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Utils/QtConnections.h"
 
 #include <QPointer>
 #include <QCursor>
@@ -9,6 +10,8 @@
 class QDialog;
 class QProgressBar;
 class QPlainTextEdit;
+class QPushButton;
+
 namespace DAVA
 {
 namespace TArc
@@ -17,21 +20,30 @@ class WaitDialog : public WaitHandle
 {
 public:
     WaitDialog(const WaitDialogParams& params, QWidget* parent);
-    ~WaitDialog();
+    ~WaitDialog() override;
 
     void Show();
     void SetMessage(const QString& msg) override;
     void SetRange(uint32 min, uint32 max) override;
     void SetProgressValue(uint32 progress) override;
+    bool WasCanceled() const override;
+
     void Update() override;
 
     DAVA::Signal<WaitHandle*> beforeDestroy;
 
 private:
+    void CanceledByMouse();
+
     QPointer<QDialog> dlg;
     QPointer<QProgressBar> progressBar;
     QPointer<QPlainTextEdit> messageLabel;
+    QPointer<QPushButton> cancelButton;
+
     QCursor originalCursor;
+    QtConnections connections;
+
+    bool wasCanceled = false;
 };
 } // namespace TArc
 } // namespace DAVA

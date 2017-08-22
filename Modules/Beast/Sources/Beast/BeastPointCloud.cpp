@@ -2,13 +2,13 @@
 #include "Beast/BeastManager.h"
 #include "Beast/BeastPointCloud.h"
 
+#include <Scene3D/Components/ComponentHelpers.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Scene3D/Entity.h>
 
 BeastPointCloud::BeastPointCloud(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
-    ,
-    cloudHandle(0)
+    , cloudHandle(0)
 {
     BEAST_VERIFY(ILBCreatePointCloud(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &cloudHandle));
 }
@@ -20,7 +20,7 @@ BeastPointCloud::~BeastPointCloud()
 
 void BeastPointCloud::AddBakeEntity(DAVA::Entity* entityNode)
 {
-    DAVA::Vector3 position = GetRenderObject(entityNode)->GetWorldBoundingBox().GetCenter();
+    DAVA::Vector3 position = DAVA::GetRenderObject(entityNode)->GetWorldBoundingBox().GetCenter();
     DAVA::Vector3 normal;
 
     ILBVec3 point(position.x, position.y, position.z);

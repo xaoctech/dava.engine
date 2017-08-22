@@ -1,4 +1,4 @@
-#include "CommandLine/BeastCommandLineTool.h"
+#include "Classes/Beast/BeastCommandLineTool.h"
 
 #if defined(__DAVAENGINE_BEAST__)
 

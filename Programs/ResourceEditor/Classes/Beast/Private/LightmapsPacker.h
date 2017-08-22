@@ -1,10 +1,8 @@
-#ifndef __LIGHTMAPS_PACKER_H__
-#define __LIGHTMAPS_PACKER_H__
+#pragma once
 
-#include "DAVAEngine.h"
-
-#include "LightmapAtlasingData.h"
 #include "SpriteResourcesPacker.h"
+
+#include <Beast/LightmapAtlasingData.h>
 
 class LightmapsPacker : public SpriteResourcesPacker
 {
@@ -19,5 +17,3 @@ private:
 private:
     DAVA::Vector<LightmapAtlasingData> atlasingData;
 };
-
-#endif //__LIGHTMAPS_PACKER_H__

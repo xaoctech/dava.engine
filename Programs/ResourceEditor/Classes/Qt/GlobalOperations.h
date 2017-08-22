@@ -21,7 +21,6 @@ public:
     virtual QWidget* GetGlobalParentWidget() const = 0;
 
     virtual void ShowWaitDialog(const DAVA::String& tittle, const DAVA::String& message, DAVA::uint32 min = 0, DAVA::uint32 max = 100) = 0;
-    virtual bool IsWaitDialogVisible() const = 0;
     virtual void HideWaitDialog() = 0;
 
     virtual void ForEachScene(const DAVA::Function<void(SceneEditor2*)>& functor) = 0;

@@ -1,77 +1,65 @@
-#include "BeastRunner.h"
-
 #if defined(__DAVAENGINE_BEAST__)
 
-#include "Scene3D/Scene.h"
+#include "Classes/Beast/Private/BeastRunner.h"
+#include "Classes/Beast/Private/LightmapsPacker.h"
 
-#include "Main/mainwindow.h"
-#include "Beast/BeastProxy.h"
-#include "Beast/LightmapsPacker.h"
 #include "Settings/SettingsManager.h"
 #include "Utils/SceneUtils/SceneUtils.h"
 
-#include "DAVAEngine.h"
+#include <Beast/SceneParser.h>
+#include <Beast/BeastProxy.h>
 
-
-#include "Beast/SceneParser.h"
+#include <Time/SystemTimer.h>
+#include <Scene3D/Scene.h>
+#include <FileSystem/FileSystem.h>
 
 //Beast
-BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, eBeastMode mode, QtWaitDialog* waitDialog_)
-    : workingScene(scene)
+BeastRunner::BeastRunner(BeastProxy* proxy, DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle_)
+    : beastProxy(proxy)
+    , workingScene(scene)
     , scenePath(scenePath_)
-    , waitDialog(waitDialog_)
+    , waitHandle(std::move(waitHandle_))
     , outputPath(outputPath_)
     , beastMode(mode)
 {
+    DVASSERT(beastProxy != nullptr);
+
     outputPath.MakeDirectoryPathname();
-    beastManager = BeastProxy::Instance()->CreateManager();
-    BeastProxy::Instance()->SetMode(beastManager, mode);
+    beastManager = beastProxy->CreateManager();
+    beastProxy->SetMode(beastManager, mode);
 }
 
 BeastRunner::~BeastRunner()
 {
-    BeastProxy::Instance()->SafeDeleteManager(&beastManager);
+    beastProxy->SafeDeleteManager(&beastManager);
 }
 
 void BeastRunner::RunUIMode()
 {
-    if (waitDialog != nullptr)
-    {
-        waitDialog->Show("Beast process", "Starting Beast", true, true);
-        waitDialog->SetRange(0, 100);
-        waitDialog->EnableCancel(false);
-    }
-
     Start();
 
     while (Process() == false)
     {
         if (cancelledManually)
         {
-            BeastProxy::Instance()->Cancel(beastManager);
+            beastProxy->Cancel(beastManager);
             break;
         }
-        else if (waitDialog != nullptr)
+        else if (waitHandle)
         {
-            waitDialog->SetValue(BeastProxy::Instance()->GetCurTaskProcess(beastManager));
-            waitDialog->SetMessage(BeastProxy::Instance()->GetCurTaskName(beastManager).c_str());
-            waitDialog->EnableCancel(true);
-            cancelledManually |= waitDialog->WasCanceled();
+            waitHandle->SetProgressValue(beastProxy->GetCurTaskProcess(beastManager));
+            waitHandle->SetMessage(beastProxy->GetCurTaskName(beastManager).c_str());
+            cancelledManually |= waitHandle->WasCanceled();
         }
 
         Sleep(15);
     }
 
-    if (waitDialog != nullptr)
-    {
-        waitDialog->EnableCancel(false);
-    }
+    Finish(cancelledManually || beastProxy->WasCancelled(beastManager));
 
-    Finish(cancelledManually || BeastProxy::Instance()->WasCancelled(beastManager));
-
-    if (waitDialog != nullptr)
+    if (waitHandle)
     {
-        waitDialog->Reset();
+        waitHandle.reset();
     }
 }
 
@@ -86,14 +74,14 @@ void BeastRunner::Start()
         DAVA::FileSystem::Instance()->CreateDirectory(outputPath, true);
     }
 
-    BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
-    BeastProxy::Instance()->Run(beastManager, workingScene);
+    beastProxy->SetLightmapsDirectory(beastManager, path);
+    beastProxy->Run(beastManager, workingScene);
 }
 
 bool BeastRunner::Process()
 {
-    BeastProxy::Instance()->Update(beastManager);
-    return BeastProxy::Instance()->IsJobDone(beastManager);
+    beastProxy->Update(beastManager);
+    return beastProxy->IsJobDone(beastManager);
 }
 
 void BeastRunner::Finish(bool canceled)
@@ -125,7 +113,7 @@ void BeastRunner::PackLightmaps()
     packer.CreateDescriptors();
     packer.ParseSpriteDescriptors();
 
-    BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
+    beastProxy->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
     DAVA::FileSystem::Instance()->MoveFile(scenePath.GetDirectory() + "temp_landscape_lightmap.png", outputDir + "landscape.png", true);
     DAVA::FileSystem::Instance()->DeleteDirectory(scenePath.GetDirectory() + "$process/");

@@ -1,21 +1,32 @@
 #pragma once
 
+#if defined(__DAVAENGINE_BEAST__)
+
 #include "Beast/BeastProxy.h"
 
-#if defined(__DAVAENGINE_BEAST__)
+#include <TArc/WindowSubSystem/UI.h>
+
+#include <FileSystem/FilePath.h>
+
+#include <memory>
 
 namespace DAVA
 {
 class Scene;
+
+namespace TArc
+{
+class WaitHandle;
+}
 }
 
 class BeastManager;
-class QtWaitDialog;
+class BeastProxy;
 
 class BeastRunner final
 {
 public:
-    BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, eBeastMode mode, QtWaitDialog* _waitDialog);
+    BeastRunner(BeastProxy* proxy, DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle);
     ~BeastRunner();
 
     void RunUIMode();
@@ -30,7 +41,10 @@ private:
 
 private:
     BeastManager* beastManager = nullptr;
-    QtWaitDialog* waitDialog = nullptr;
+    BeastProxy* beastProxy = nullptr;
+
+    std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle;
+
     DAVA::Scene* workingScene = nullptr;
     const DAVA::FilePath scenePath;
     DAVA::FilePath outputPath;

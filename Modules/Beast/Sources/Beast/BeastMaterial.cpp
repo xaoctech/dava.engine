@@ -1,7 +1,7 @@
-#include "BeastMaterial.h"
-#include "BeastTexture.h"
-#include "BeastDebug.h"
-#include "SceneParser.h"
+#include "Beast/BeastMaterial.h"
+#include "Beast/BeastTexture.h"
+#include "Beast/BeastDebug.h"
+#include "Beast/SceneParser.h"
 
 BeastMaterial::BeastMaterial(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)

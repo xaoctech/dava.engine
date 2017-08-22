@@ -1,6 +1,11 @@
+#include "Classes/Beast/BeastModule.h"
+
 #if defined(__DAVAENGINE_BEAST__)
 
-#include "Classes/BeastModule/BeastModule.h"
+#include "Classes/Beast/Private/BeastDialog.h"
+#include "Classes/Beast/Private/BeastRunner.h"
+
+#include "Classes/Application/REGlobal.h"
 
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
@@ -12,44 +17,108 @@
 
 #include <Reflection/ReflectionRegistrator.h>
 
+#include <QMessageBox>
+
 void BeastModule::PostInit()
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
 
-    //     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/text_component.png"), QString("Text Drawing Enabled"));
-    //     { // checked-unchecked and text
-    //         FieldDescriptor fieldDescr;
-    //         fieldDescr.fieldName = DAVA::FastName(TextModuleData::drawingEnabledPropertyName);
-    //         fieldDescr.type = DAVA::ReflectedTypeDB::Get<TextModuleData>();
-    //         action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-    //             return value.Get<bool>(false);
-    //         });
-    //         action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-    //             if (value.Get<bool>(false))
-    //                 return DAVA::String("Text Drawing Enabled");
-    //             return DAVA::String("Text Drawing Disabled");
-    //         });
-    //     }
-    //
-    //     { // enabled/disabled state
-    //         FieldDescriptor fieldDescr;
-    //         fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-    //         fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-    //         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-    //             return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
-    //         });
-    //     }
-    //
-    //     action->setShortcut(QKeySequence("Ctrl+F"));
-    //     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    //
-    //     connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&TextModule::ChangeDrawingState, this));
-    //
-    //     ActionPlacementInfo placementInfo;
-    //     placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
-    //
-    //     GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    QtAction* action = new QtAction(GetAccessor(), QString("Run Beast"));
+    { // enabled/disabled state
+        FieldDescriptor fieldDescr;
+        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        });
+    }
+
+    connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &BeastModule::OnBeastAndSave));
+
+    ActionPlacementInfo placementInfo;
+    placementInfo.AddPlacementPoint(CreateMenuPoint("Scene", { InsertionParams::eInsertionMethod::AfterItem, "actionInvalidateStaticOcclusion" }));
+
+    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+
+    beastProxy.reset(new BeastProxy());
+}
+
+void BeastModule::OnBeastAndSave()
+{
+    using namespace DAVA;
+
+    SceneData* sceneData = GetAccessor()->GetActiveContext()->GetData<SceneData>();
+    DVASSERT(sceneData != nullptr);
+    RefPtr<SceneEditor2> scene = sceneData->GetScene();
+    DVASSERT(scene);
+
+    if (scene->GetEnabledTools())
+    {
+        if (QMessageBox::Yes == QMessageBox::question(GetUI()->GetWindow(DAVA::TArc::mainWindowKey), "Starting Beast", "Disable landscape editor and start beasting?", (QMessageBox::Yes | QMessageBox::No), QMessageBox::No))
+        {
+            scene->DisableToolsInstantly(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+
+            bool success = !scene->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+            if (!success)
+            {
+                Logger::Error(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS.c_str());
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    InvokeOperation(REGlobal::SaveCurrentScene.ID);
+    if (!scene->IsLoaded() || scene->IsChanged())
+    {
+        return;
+    }
+
+    BeastDialog dlg(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    dlg.SetScene(scene.Get());
+    const bool run = dlg.Exec();
+    if (!run)
+        return;
+
+    RunBeast(dlg.GetPath(), dlg.GetMode());
+
+    scene->SetChanged();
+    InvokeOperation(REGlobal::SaveCurrentScene.ID);
+    scene->ClearAllCommands();
+}
+
+void BeastModule::RunBeast(const QString& outputPath, eBeastMode mode)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    SceneData* sceneData = GetAccessor()->GetActiveContext()->GetData<SceneData>();
+    DVASSERT(sceneData != nullptr);
+    RefPtr<SceneEditor2> scene = sceneData->GetScene();
+    DVASSERT(scene);
+
+    const DAVA::FilePath path = outputPath.toStdString();
+
+    WaitDialogParams waitDlgParams;
+    waitDlgParams.message = "Starting Beast";
+    waitDlgParams.needProgressBar = true;
+    waitDlgParams.cancelEnabled = true;
+    waitDlgParams.max = 100;
+    std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+    BeastRunner beast(beastProxy.get(), scene.Get(), scene->GetScenePath(), path, mode, std::move(waitHandle));
+    beast.RunUIMode();
+
+    if (mode == eBeastMode::MODE_LIGHTMAPS)
+    {
+        // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
+        delayedExecutor.DelayedExecute([this]() {
+            InvokeOperation(REGlobal::ReloadTexturesOperation.ID, Settings::GetGPUFormat());
+        });
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(BeastModule)

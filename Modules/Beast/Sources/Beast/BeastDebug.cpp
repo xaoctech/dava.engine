@@ -1,4 +1,4 @@
-#include "BeastDebug.h"
+#include "Beast/BeastDebug.h"
 
 DAVA::String ConvertBeastString(ILBStringHandle h)
 {

@@ -2,7 +2,8 @@
 
 #include "Classes/Qt/GlobalOperations.h"
 
-#include "TArc/Utils/AssertGuard.h"
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Utils/AssertGuard.h>
 
 #include "Concurrency/LockGuard.h"
 #include "Utils/StringFormat.h"
@@ -73,12 +74,14 @@ private:
     bool callstackPrinting = false;
 };
 
-ErrorDialogOutput::ErrorDialogOutput(const std::shared_ptr<GlobalOperations>& globalOperations_)
+ErrorDialogOutput::ErrorDialogOutput(DAVA::TArc::UI* ui, const std::shared_ptr<GlobalOperations>& globalOperations_)
     : ignoreHelper(new IgnoreHelper())
     , globalOperations(globalOperations_)
     , isJobStarted(false)
     , enabled(true)
+    , tarcUI(ui)
 {
+    DVASSERT(tarcUI != nullptr);
     errors.reserve(ErrorDialogDetail::maxErrorsPerDialog);
 }
 
@@ -110,7 +113,7 @@ void ErrorDialogOutput::ShowErrorDialog()
 {
     DVASSERT(isJobStarted == true);
 
-    if (globalOperations->IsWaitDialogVisible())
+    if (tarcUI->HasActiveWaitDalogues())
     {
         DVASSERT(waitDialogConnectionToken.IsEmpty());
         waitDialogConnectionToken = globalOperations->waitDialogClosed.Connect(this, &ErrorDialogOutput::ShowErrorDialog);

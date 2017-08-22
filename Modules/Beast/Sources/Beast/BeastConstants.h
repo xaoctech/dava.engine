@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
+#include <Base/BaseTypes.h>
 
 enum eBeastMode : DAVA::uint32
 {

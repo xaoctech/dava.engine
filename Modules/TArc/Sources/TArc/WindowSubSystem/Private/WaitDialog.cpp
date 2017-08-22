@@ -7,6 +7,7 @@
 #include <QPlainTextEdit>
 #include <QDialog>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QGridLayout>
 #include <QApplication>
 #include <QThread>
@@ -73,6 +74,21 @@ WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
         progressBar->setMaximum(params.max);
 
         layout->addWidget(progressBar, 3, 0, 1, 3);
+    }
+
+    if (params.cancelEnabled)
+    {
+        cancelButton = new QPushButton(QStringLiteral("Cancel"), dlg);
+        cancelButton->setObjectName(QStringLiteral("cancelButton"));
+        QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(cancelButton->sizePolicy().hasHeightForWidth());
+        cancelButton->setSizePolicy(sizePolicy);
+
+        connections.AddConnection(cancelButton, &QPushButton::clicked, MakeFunction(this, &WaitDialog::CanceledByMouse), WaitDialogDetail::GetConnectionType());
+
+        layout->addWidget(cancelButton, 4, 3, 1, 1);
     }
 
     dlg->setLayout(layout);
@@ -142,5 +158,24 @@ void WaitDialog::Update()
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
 }
+
+void WaitDialog::CanceledByMouse()
+{
+    wasCanceled = true;
+
+    if (dlg != nullptr && cancelButton != nullptr)
+    {
+        RenderContextGuard guard;
+        QMetaObject::invokeMethod(cancelButton.data(), "setEnabled", WaitDialogDetail::GetConnectionType(), Q_ARG(bool, false));
+
+        Update();
+    }
+}
+
+bool WaitDialog::WasCanceled() const
+{
+    return wasCanceled;
+}
+
 } // namespace TArc
 } // namespace DAVA

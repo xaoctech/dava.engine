@@ -1,6 +1,8 @@
 #pragma once
 
-#include "beastapi/beastapitypes.h"
+#include "Beast/BeastTypes.h"
+
+#include <Base/BaseTypes.h>
 #include "Utils/UTF8Utils.h"
 
 #define DECLARE_BEAST_NAME(name) \

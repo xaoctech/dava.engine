@@ -6,7 +6,6 @@
 #include "Classes/Qt/Tools/QtWaitDialog/QtWaitDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/GlobalOperations.h"
-#include "Classes/Beast/BeastProxy.h"
 
 #include <TArc/Models/RecentMenuItems.h>
 #include <TArc/DataProcessing/DataListener.h>
@@ -54,7 +53,6 @@ public:
     void WaitStart(const QString& title, const QString& message, int min, int max);
     void WaitSetMessage(const QString& messsage);
     void WaitSetValue(int value);
-    bool IsWaitDialogOnScreen() const;
     void WaitStop();
 
     void EnableGlobalTimeout(bool enable);
@@ -64,7 +62,6 @@ public:
     void CallAction(ID id, DAVA::Any&& args) override;
     QWidget* GetGlobalParentWidget() const override;
     void ShowWaitDialog(const DAVA::String& tittle, const DAVA::String& message, DAVA::uint32 min, DAVA::uint32 max) override;
-    bool IsWaitDialogVisible() const override;
     void HideWaitDialog() override;
     void ForEachScene(const DAVA::Function<void(SceneEditor2*)>& functor) override;
 
@@ -135,8 +132,6 @@ public slots:
 
     void OnConvertModifiedTextures();
 
-    void OnBeastAndSave();
-
     void OnBuildStaticOcclusion();
     void OnInavalidateStaticOcclusion();
 
@@ -185,7 +180,6 @@ protected:
 
     void StartGlobalInvalidateTimer();
 
-    void RunBeast(const QString& outputPath, eBeastMode mode);
 
     void SynchronizeStateWithUI();
 
@@ -209,7 +203,6 @@ private slots:
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;
-    QtWaitDialog* beastWaitDialog;
     QPointer<QDockWidget> dockActionEvent;
     QPointer<QDockWidget> dockConsole;
 
