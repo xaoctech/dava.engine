@@ -176,6 +176,21 @@ protected:
     DAVA::ParticleDragForce* selectedDrag = nullptr;
 };
 
+// CloneParticleDrag
+class CommandCloneParticleDrag : public CommandAction
+{
+public:
+    CommandCloneParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag);
+    void Redo() override;
+
+protected:
+    DAVA::ParticleLayer* selectedLayer = nullptr;
+    DAVA::ParticleDragForce* selectedDrag = nullptr;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
 class CommandUpdateEffect : public CommandAction
 {
 public:

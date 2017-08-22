@@ -83,7 +83,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forceIndex = forceIndex_;
     blockSignals = true;
 
-    ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];    
+    ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
     infinityRange->setChecked(currForce->infinityRange);
     boxSize->SetValue(currForce->boxSize);
     forcePower->SetValue(currForce->forcePower);

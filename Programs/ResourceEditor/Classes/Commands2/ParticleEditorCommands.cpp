@@ -651,3 +651,21 @@ void CommandSaveInnerParticleEmitterToYaml::Redo()
 
     instance->GetEmitter()->SaveToYaml(filePath);
 }
+
+CommandCloneParticleDrag::CommandCloneParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag)
+    : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_CLONE)
+    , selectedLayer(layer)
+    , selectedDrag(drag)
+{
+
+}
+
+void CommandCloneParticleDrag::Redo()
+{
+    if ((selectedLayer == nullptr) || (selectedDrag == nullptr))
+        return;
+
+    ScopedPtr<ParticleDragForce> clonedForce(selectedDrag->Clone());
+    clonedForce->forceName = selectedDrag->forceName + " Clone";
+    selectedLayer->AddDrag(clonedForce);
+}

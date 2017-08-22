@@ -706,22 +706,31 @@ private:
 
 class SceneTree::ParticleDragForceContextMenu : public SceneTree::BaseContextMenu
 {
+    //////////////////////////////////////////////////////////////////////////
     using TBase = BaseContextMenu;
 
 public:
-    ParticleDragForceContextMenu(SceneTree* treeWidget)
+    ParticleDragForceContextMenu(SceneTreeItemParticleDragForce* dragForce_, SceneTree* treeWidget)
         : TBase(treeWidget)
+        , dragForce(dragForce_)
     {
     }
 
 protected:
     void FillActions(QMenu& menu) override
     {
+        Connect(menu.addAction(SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleDragForceContextMenu::CloneForce);
         QString removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_turtle.png"), removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
     }
 
 private:
+    void CloneForce()
+    {
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandCloneParticleDrag(dragForce->layer, dragForce->GetDragForce())));
+        MarkStructureChanged();
+    }
+
     void RemoveDragForce()
     {
         RemoveCommandsHelper("Remove drag forces", SceneTreeItem::EIT_DragForce, [](SceneTreeItem* item)
@@ -731,6 +740,8 @@ private:
             return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleDrag(dragForceItem->layer, dragForce)), dragForce);
         });
     }
+
+    SceneTreeItemParticleDragForce* dragForce;
 };
 
 class SceneTree::ParticleEmitterContextMenu : public SceneTree::BaseContextMenu
@@ -1212,7 +1223,7 @@ void SceneTree::ShowContextMenu(const QPoint& pos)
         showMenuFn(ParticleInnerEmitterContextMenu(static_cast<SceneTreeItemParticleInnerEmitter*>(item), this));
         break;
     case SceneTreeItem::EIT_DragForce:
-        showMenuFn(ParticleDragForceContextMenu(this));
+        showMenuFn(ParticleDragForceContextMenu(static_cast<SceneTreeItemParticleDragForce*>(item), this));
         break;
     default:
         break;
