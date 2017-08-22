@@ -468,7 +468,7 @@ private:
         else
         {
             DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
-            if (scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
+            if (configPath.CanGet<DAVA::FilePath>() && scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
             {
                 RebuildItemsList();
             }
