@@ -10,6 +10,7 @@ class Entity;
 
 namespace ParticleForces
 {
-void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt);
+/** Modifies effect space velocity. */
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt);
 }
 }

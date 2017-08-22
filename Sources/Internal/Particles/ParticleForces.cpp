@@ -8,20 +8,19 @@ namespace DAVA
 {
 namespace ParticleForces
 {
-void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
-void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
-void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt);
+void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt);
+void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt);
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt);
 
-void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, const Vector3& position, float32 dt)
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt)
 {
     if (force->type == ParticleDragForce::eType::DRAG_FORCE)
     {
-        ApplyDragForce(parent, force, velocity, acceleration, position, dt);
+        ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt);
         return;
     }
 }
 
-// POsition here in effect space directly!!!!!!!!!!!!!!
 bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force, const Vector3& effectSpacePosition)
 {
     Vector3 center = force->position;
@@ -44,32 +43,24 @@ bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force
     return false;
 }
 
-void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& velocityW, Vector3& acceleration, Vector3 position, float32 dt)
+void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt)
 {
-    const Matrix4& world = parent->GetWorldTransform();
-
-    Matrix4 local;
-    bool sucess = world.GetInverse(local); // todo: in transform
     if (!force->infinityRange)
     {
-        Vector3 positionInEffectsSpace = position * local;
-        if (!IsPositionInForceShape(parent, force, positionInEffectsSpace))
+        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
             return;
     }
 
     Vector3 forceStrength = force->forcePower* dt;
-    Vector3 velocity = velocityW;
-    velocity = velocity * Matrix3(local); // TODO: should be simpler.
 
-    Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z)); // todo calculate all in effect space
-    velocity *= v;
-    velocityW = velocity * Matrix3(world);
+    Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z));
+    effectSpaceVelocity *= v;
 }
 
 
-void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt)
+void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt)
 {}
-void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& velocity, Vector3& acceleration, Vector3 position, float32 dt)
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt)
 {}
 
 }
