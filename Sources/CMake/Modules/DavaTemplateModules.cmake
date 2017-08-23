@@ -522,11 +522,17 @@ macro( setup_main_module )
             list( APPEND DYNAMIC_LIBRARIES_WIN_DEBUG   ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}_DEBUG} )
 
             foreach( CONFIGURE "_RELEASE" "_DEBUG" )
-                foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}${CONFIGURE}} )
+                foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}${CONFIGURE}} )
                     get_filename_component( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARY} ABSOLUTE )
                     get_filename_component( DYNAMIC_LIBRARY_DIR ${DYNAMIC_LIBRARY}  DIRECTORY )
                     append_property( MODULE_DYNAMIC_LIBRARIES_DIR${CONFIGURE} ${DYNAMIC_LIBRARY_DIR} )
                 endforeach()
+            endforeach()
+
+            foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}}  )
+                get_filename_component( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARY} ABSOLUTE )
+                get_filename_component( DYNAMIC_LIBRARY_DIR ${DYNAMIC_LIBRARY}  DIRECTORY )
+                append_property( MODULE_DYNAMIC_LIBRARIES_DIR ${DYNAMIC_LIBRARY_DIR} )
             endforeach()
 
         endif()      
