@@ -9,6 +9,8 @@ class Texture;
 class FilePath;
 }
 
+namespace Beast
+{
 class BeastTexture : public BeastResource<BeastTexture>
 {
 public:
@@ -22,3 +24,4 @@ private:
 
     friend class BeastResource<BeastTexture>;
 };
+}

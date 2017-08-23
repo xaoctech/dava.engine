@@ -13,7 +13,6 @@
 
 #include <memory>
 
-class BeastProxy;
 class BeastModule : public DAVA::TArc::ClientModule
 {
 protected:
@@ -21,12 +20,10 @@ protected:
 
 private:
     void OnBeastAndSave();
-    void RunBeast(const QString& outputPath, eBeastMode mode);
+    void RunBeast(const QString& outputPath, Beast::eBeastMode mode);
 
     DAVA::TArc::QtConnections connections;
     QtDelayedExecutor delayedExecutor;
-
-    std::unique_ptr<BeastProxy> beastProxy;
 
     DAVA_VIRTUAL_REFLECTION(BeastModule, DAVA::TArc::ClientModule);
 };

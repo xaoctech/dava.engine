@@ -3,6 +3,8 @@
 #include "Beast/BeastDebug.h"
 #include "Beast/SceneParser.h"
 
+namespace Beast
+{
 BeastMaterial::BeastMaterial(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
     ,
@@ -43,4 +45,5 @@ void BeastMaterial::AttachNormalMap(BeastTexture* beastTexture)
         BEAST_VERIFY(ILBSetMaterialTexture(material, ILB_CC_NORMAL, beastTexture->GetILBTexture()));
         BEAST_VERIFY(ILBSetChannelUVLayer(material, ILB_CC_NORMAL, CONST_STRING_TO_BEAST_STRING("2")));
     }
+}
 }

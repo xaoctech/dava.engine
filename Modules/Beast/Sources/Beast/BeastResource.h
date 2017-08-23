@@ -5,6 +5,8 @@
 #include <Base/BaseTypes.h>
 #include <Base/BaseObject.h>
 
+namespace Beast
+{
 class BeastManager;
 
 template <class T>
@@ -108,4 +110,5 @@ void* BeastResource<T>::StringToPointer(const DAVA::String& str)
     void* pointer;
     ss >> pointer;
     return pointer;
+}
 }

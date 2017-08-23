@@ -2,9 +2,10 @@
 
 #if defined(__DAVAENGINE_BEAST__)
 
-#include "Beast/BeastProxy.h"
-
 #include <TArc/WindowSubSystem/UI.h>
+
+#include <Beast/BeastConstants.h>
+#include <Beast/BeastManager.h>
 
 #include <FileSystem/FilePath.h>
 
@@ -20,14 +21,15 @@ class WaitHandle;
 }
 }
 
+namespace Beast
+{
 class BeastManager;
-class BeastProxy;
+}
 
 class BeastRunner final
 {
 public:
-    BeastRunner(BeastProxy* proxy, DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle);
-    ~BeastRunner();
+    BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, Beast::eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle);
 
     void RunUIMode();
 
@@ -40,8 +42,7 @@ private:
     DAVA::FilePath GetLightmapDirectoryPath() const;
 
 private:
-    BeastManager* beastManager = nullptr;
-    BeastProxy* beastProxy = nullptr;
+    std::unique_ptr<Beast::BeastManager> beastManager;
 
     std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle;
 
@@ -49,7 +50,7 @@ private:
     const DAVA::FilePath scenePath;
     DAVA::FilePath outputPath;
     DAVA::uint64 startTime = 0;
-    eBeastMode beastMode = eBeastMode::MODE_LIGHTMAPS;
+    Beast::eBeastMode beastMode = Beast::eBeastMode::MODE_LIGHTMAPS;
 
     bool cancelledManually = false;
 };

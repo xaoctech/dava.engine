@@ -13,7 +13,6 @@ class Scene;
 }
 
 class BeastRunner;
-class BeastProxy;
 class BeastCommandLineTool : public CommandLineModule
 {
 public:
@@ -30,8 +29,6 @@ private:
 
     BeastRunner* beastRunner = false;
     DAVA::Scene* scene = nullptr;
-
-    std::unique_ptr<BeastProxy> beastProxy;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(BeastCommandLineTool, CommandLineModule)
     {

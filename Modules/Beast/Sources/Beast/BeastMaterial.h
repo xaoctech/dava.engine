@@ -4,6 +4,8 @@
 #include "Beast/BeastResource.h"
 #include "Beast/BeastManager.h"
 
+namespace Beast
+{
 class BeastTexture;
 class BeastMaterial : public BeastResource<BeastMaterial>
 {
@@ -17,3 +19,4 @@ private:
 
     friend class BeastResource<BeastMaterial>;
 };
+}

@@ -5,6 +5,9 @@
 #include <Base/BaseTypes.h>
 #include "Utils/UTF8Utils.h"
 
+namespace Beast
+{
+
 #define DECLARE_BEAST_NAME(name) \
 	static DAVA::String GetBeastName() { return DAVA::String(#name); }
 
@@ -35,4 +38,5 @@ DAVA::String BeastNameGenerator::GenerateName()
     nameIndex++;
 
     return name;
+}
 }

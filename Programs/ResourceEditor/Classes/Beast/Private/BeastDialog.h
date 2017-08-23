@@ -3,7 +3,6 @@
 #include "ui_BeastDialog.h"
 
 #include <Beast/BeastConstants.h>
-#include <Beast/BeastProxy.h>
 
 #include <QWidget>
 #include <QScopedPointer>
@@ -12,8 +11,7 @@
 class SceneEditor2;
 class QEventLoop;
 
-class BeastDialog
-: public QWidget
+class BeastDialog : public QWidget
 {
     Q_OBJECT
 
@@ -24,7 +22,7 @@ public:
     void SetScene(SceneEditor2* scene);
     bool Exec(QWidget* parent = 0);
     QString GetPath() const;
-    eBeastMode GetMode() const;
+    Beast::eBeastMode GetMode() const;
 
 private slots:
     void OnStart();
@@ -45,5 +43,5 @@ private:
     SceneEditor2* scene;
     bool result;
 
-    eBeastMode beastMode;
+    Beast::eBeastMode beastMode = Beast::eBeastMode::MODE_LIGHTMAPS;
 };

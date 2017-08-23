@@ -1,5 +1,7 @@
 #include "Beast/BeastDebug.h"
 
+namespace Beast
+{
 DAVA::String ConvertBeastString(ILBStringHandle h)
 {
     int32 len = 0;
@@ -57,4 +59,5 @@ ILBMatrix4x4 ConvertDavaMatrixNoTranspose(const DAVA::Matrix4& davaMatrix)
     }
 
     return matrix;
+}
 }

@@ -1,20 +1,20 @@
-#include "LandscapeThumbnails.h"
+#include "Render/Highlevel/LandscapeThumbnails.h"
 #include "Concurrency/LockGuard.h"
 #include "Render/Renderer.h"
 #include "Render/ShaderCache.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderPassNames.h"
 
+namespace DAVA
+{
 namespace LandscapeThumbnails
 {
-using namespace DAVA;
-
 static RequestID RequestIDCounter = InvalidID + 1;
 
 class MaterialFlagsDisabler
 {
 public:
-    MaterialFlagsDisabler(const ScopedPtr<NMaterial>& material_, const DAVA::Vector<FastName>& flagNames)
+    MaterialFlagsDisabler(const ScopedPtr<NMaterial>& material_, const Vector<FastName>& flagNames)
         : material(material_)
     {
         flagsInfo.reserve(flagNames.size());
@@ -36,7 +36,7 @@ public:
             flagsInfo.push_back(info);
         }
 
-        material->PreBuildMaterial(DAVA::PASS_FORWARD);
+        material->PreBuildMaterial(PASS_FORWARD);
     }
 
 private:
@@ -48,7 +48,7 @@ private:
         bool hasFlag = false;
     };
 
-    DAVA::Vector<FlagInfo> flagsInfo;
+    Vector<FlagInfo> flagsInfo;
 };
 
 struct ThumbnailRequest
@@ -65,7 +65,7 @@ struct ThumbnailRequest
     rhi::HSyncObject so,
     Landscape* l,
     const ScopedPtr<NMaterial>& thumbnailMaterial,
-    const DAVA::Vector<FastName>& flagsToDisable,
+    const Vector<FastName>& flagsToDisable,
     Texture* tex,
     LandscapeThumbnails::Callback cb,
     RequestID requestId)
@@ -81,7 +81,7 @@ struct ThumbnailRequest
 
 struct Requests
 {
-    DAVA::Mutex mutex;
+    Mutex mutex;
     List<ThumbnailRequest> list;
 };
 
@@ -91,7 +91,7 @@ void OnCreateLandscapeTextureCompleted(rhi::HSyncObject syncObject)
 {
     List<ThumbnailRequest> completedRequests;
     {
-        DAVA::LockGuard<DAVA::Mutex> lock(requests.mutex);
+        LockGuard<Mutex> lock(requests.mutex);
         auto i = requests.list.begin();
         while (i != requests.list.end())
         {
@@ -115,7 +115,7 @@ void OnCreateLandscapeTextureCompleted(rhi::HSyncObject syncObject)
     }
 }
 
-RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handler)
+RequestID Create(Landscape* landscape, LandscapeThumbnails::Callback handler)
 {
     const uint32 TEXTURE_TILE_FULL_SIZE = 2048;
 
@@ -144,18 +144,18 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
     rhi::HSyncObject syncObject = rhi::CreateSyncObject();
     Texture* texture = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888);
     {
-        DAVA::Vector<FastName> flagsToDisable{ NMaterialFlagName::FLAG_VERTEXFOG,
-                                               NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING
+        Vector<FastName> flagsToDisable{ NMaterialFlagName::FLAG_VERTEXFOG,
+                                         NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING
         };
 
-        DAVA::LockGuard<DAVA::Mutex> lock(requests.mutex);
+        LockGuard<Mutex> lock(requests.mutex);
         requests.list.emplace_back(syncObject, landscape, thumbnailMaterial, flagsToDisable, texture, handler, requestID);
     }
     Renderer::RegisterSyncCallback(syncObject, MakeFunction(&OnCreateLandscapeTextureCompleted));
 
     const auto identityMatrix = &Matrix4::IDENTITY;
     Vector3 nullVector(0.0f, 0.0f, 0.0f);
-    DAVA::ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderDescriptorCache::ClearDynamicBindigs();
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, identityMatrix, (pointer_size)(identityMatrix));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEW, identityMatrix, (pointer_size)(identityMatrix));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJ, identityMatrix, (pointer_size)(identityMatrix));
@@ -192,7 +192,7 @@ RequestID Create(DAVA::Landscape* landscape, LandscapeThumbnails::Callback handl
 
 void CancelRequest(RequestID requestID)
 {
-    DAVA::LockGuard<DAVA::Mutex> lock(requests.mutex);
+    LockGuard<Mutex> lock(requests.mutex);
     for (ThumbnailRequest& rq : requests.list)
     {
         if (rq.requestID == requestID)
@@ -200,5 +200,6 @@ void CancelRequest(RequestID requestID)
             rq.cancelled = true;
         }
     }
+}
 }
 }

@@ -8,6 +8,8 @@
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Entity.h>
 
+namespace Beast
+{
 BeastLight::BeastLight(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
 {
@@ -238,4 +240,5 @@ void BeastLight::UpdateLightParamsFromHandle(ILBLightHandle lightHandle)
         props->SetFloat("editor.intensity", intensity);
         props->GetInt32("editor.staticlight.shadowsamples", shadowSamples);
     }
+}
 }

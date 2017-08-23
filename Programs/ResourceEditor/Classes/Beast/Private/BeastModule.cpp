@@ -40,8 +40,6 @@ void BeastModule::PostInit()
     placementInfo.AddPlacementPoint(CreateMenuPoint("Scene", { InsertionParams::eInsertionMethod::AfterItem, "actionInvalidateStaticOcclusion" }));
 
     GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
-
-    beastProxy.reset(new BeastProxy());
 }
 
 void BeastModule::OnBeastAndSave()
@@ -91,7 +89,7 @@ void BeastModule::OnBeastAndSave()
     scene->ClearAllCommands();
 }
 
-void BeastModule::RunBeast(const QString& outputPath, eBeastMode mode)
+void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -109,10 +107,10 @@ void BeastModule::RunBeast(const QString& outputPath, eBeastMode mode)
     waitDlgParams.cancelEnabled = true;
     waitDlgParams.max = 100;
     std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
-    BeastRunner beast(beastProxy.get(), scene.Get(), scene->GetScenePath(), path, mode, std::move(waitHandle));
+    BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, std::move(waitHandle));
     beast.RunUIMode();
 
-    if (mode == eBeastMode::MODE_LIGHTMAPS)
+    if (mode == Beast::eBeastMode::MODE_LIGHTMAPS)
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([this]() {

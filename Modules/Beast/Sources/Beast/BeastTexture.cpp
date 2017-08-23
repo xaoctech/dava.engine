@@ -5,6 +5,8 @@
 #include <Render/Texture.h>
 #include <Render/TextureDescriptor.h>
 
+namespace Beast
+{
 BeastTexture::BeastTexture(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
 {
@@ -29,4 +31,5 @@ void BeastTexture::InitWithFile(const DAVA::FilePath& filePath)
 ILBTextureHandle BeastTexture::GetILBTexture()
 {
     return texture;
+}
 }

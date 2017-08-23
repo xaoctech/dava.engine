@@ -13,6 +13,8 @@ class RenderBatch;
 class Landscape;
 }
 
+namespace Beast
+{
 class BeastMesh;
 class BeastMeshInstance : public BeastResource<BeastMeshInstance>
 {
@@ -64,3 +66,4 @@ private:
     bool useLightmap = false;
     bool isLandscape = false; // TODO: get rid of it, use subclass
 };
+}

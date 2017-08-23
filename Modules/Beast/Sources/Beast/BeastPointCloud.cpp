@@ -6,6 +6,8 @@
 #include <Render/Highlevel/RenderObject.h>
 #include <Scene3D/Entity.h>
 
+namespace Beast
+{
 BeastPointCloud::BeastPointCloud(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
     , cloudHandle(0)
@@ -64,4 +66,5 @@ DAVA::int32 BeastPointCloud::GetEntityCount()
 DAVA::Entity* BeastPointCloud::GetEntity(DAVA::int32 index)
 {
     return bakeEntities[index];
+}
 }

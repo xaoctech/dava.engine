@@ -17,6 +17,8 @@
 #include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
 
+namespace Beast
+{
 SceneParser::SceneParser(BeastManager* _beastManager, DAVA::Function<void()> parsingCompletedCallback)
     : beastManager(_beastManager)
     , sceneParsingCompleteCallback(parsingCompletedCallback)
@@ -27,10 +29,11 @@ SceneParser::~SceneParser()
 {
     ClearScene();
     DVASSERT(false);
-    //     if (thumbnailsRequestId != LandscapeThumbnails::InvalidID)
-    //     {
-    //         LandscapeThumbnails::CancelRequest(thumbnailsRequestId);
-    //     }
+
+    if (thumbnailsRequestId != DAVA::LandscapeThumbnails::InvalidID)
+    {
+        DAVA::LandscapeThumbnails::CancelRequest(thumbnailsRequestId);
+    }
 }
 
 MaxLodMaxSwitch SceneParser::FindMaxLod(DAVA::Entity* node)
@@ -409,8 +412,7 @@ void SceneParser::ParseLandscapeMaterial(DAVA::Landscape* landscape)
     {
         landscapeMaterial = BeastMaterial::CreateWithName(BeastMaterial::PointerToString(landscape), beastManager);
 
-        DVASSERT(false);
-        //        thumbnailsRequestId = LandscapeThumbnails::Create(landscape, DAVA::MakeFunction(this, &SceneParser::OnLandscapeImageCaptured));
+        thumbnailsRequestId = DAVA::LandscapeThumbnails::Create(landscape, DAVA::MakeFunction(this, &SceneParser::OnLandscapeImageCaptured));
     }
     else
     {
@@ -521,4 +523,5 @@ DAVA::FilePath SceneParser::GetTemporaryFolder()
 DAVA::FilePath SceneParser::GetLandscapeTemporaryFileName()
 {
     return GetTemporaryFolder() + "temp_landscape_color.png";
+}
 }

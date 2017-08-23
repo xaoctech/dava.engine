@@ -10,6 +10,8 @@ namespace DAVA
 class Entity;
 }
 
+namespace Beast
+{
 class BeastPointCloud : public BeastResource<BeastPointCloud>
 {
 public:
@@ -37,3 +39,4 @@ private:
 
     friend class BeastResource<BeastPointCloud>;
 };
+}

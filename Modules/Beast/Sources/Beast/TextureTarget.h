@@ -5,6 +5,8 @@
 
 #include <Base/BaseTypes.h>
 
+namespace Beast
+{
 class TextureTarget
 {
 public:
@@ -18,3 +20,4 @@ public:
 private:
     ILBTargetHandle handle;
 };
+}

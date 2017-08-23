@@ -4,6 +4,8 @@
 #include "Beast/BeastMaterial.h"
 #include "Beast/LandscapeGeometry.h"
 
+namespace Beast
+{
 BeastMesh::BeastMesh(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
 {
@@ -242,4 +244,5 @@ DAVA::int32 BeastMesh::GetTextureCoordCount() const
 bool BeastMesh::HasTangents(DAVA::PolygonGroup* polygonGroup)
 {
     return (polygonGroup->GetFormat() & DAVA::EVF_TANGENT ? true : false);
+}
 }

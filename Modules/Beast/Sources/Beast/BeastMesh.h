@@ -12,6 +12,8 @@ class RenderBatch;
 class PolygonGroup;
 }
 
+namespace Beast
+{
 class LandscapeGeometry;
 class BeastMesh : public BeastResource<BeastMesh>
 {
@@ -45,3 +47,4 @@ private:
     DAVA::int32 indecesCount = 0;
     DAVA::int32 textureCoordCount = 0;
 };
+}

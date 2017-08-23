@@ -7,31 +7,22 @@
 #include "Utils/SceneUtils/SceneUtils.h"
 
 #include <Beast/SceneParser.h>
-#include <Beast/BeastProxy.h>
 
 #include <Time/SystemTimer.h>
 #include <Scene3D/Scene.h>
 #include <FileSystem/FileSystem.h>
 
 //Beast
-BeastRunner::BeastRunner(BeastProxy* proxy, DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle_)
-    : beastProxy(proxy)
+BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, Beast::eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle_)
+    : beastManager(new Beast::BeastManager())
+    , waitHandle(std::move(waitHandle_))
     , workingScene(scene)
     , scenePath(scenePath_)
-    , waitHandle(std::move(waitHandle_))
     , outputPath(outputPath_)
     , beastMode(mode)
 {
-    DVASSERT(beastProxy != nullptr);
-
     outputPath.MakeDirectoryPathname();
-    beastManager = beastProxy->CreateManager();
-    beastProxy->SetMode(beastManager, mode);
-}
-
-BeastRunner::~BeastRunner()
-{
-    beastProxy->SafeDeleteManager(&beastManager);
+    beastManager->SetMode(beastMode);
 }
 
 void BeastRunner::RunUIMode()
@@ -42,20 +33,20 @@ void BeastRunner::RunUIMode()
     {
         if (cancelledManually)
         {
-            beastProxy->Cancel(beastManager);
+            beastManager->Cancel();
             break;
         }
         else if (waitHandle)
         {
-            waitHandle->SetProgressValue(beastProxy->GetCurTaskProcess(beastManager));
-            waitHandle->SetMessage(beastProxy->GetCurTaskName(beastManager).c_str());
+            waitHandle->SetProgressValue(beastManager->GetCurTaskProcess());
+            waitHandle->SetMessage(beastManager->GetCurTaskName().c_str());
             cancelledManually |= waitHandle->WasCanceled();
         }
 
         Sleep(15);
     }
 
-    Finish(cancelledManually || beastProxy->WasCancelled(beastManager));
+    Finish(cancelledManually || beastManager->WasCancelled());
 
     if (waitHandle)
     {
@@ -68,31 +59,31 @@ void BeastRunner::Start()
     startTime = DAVA::SystemTimer::GetMs();
 
     DAVA::FilePath path = GetLightmapDirectoryPath();
-    if (beastMode == eBeastMode::MODE_LIGHTMAPS)
+    if (beastMode == Beast::eBeastMode::MODE_LIGHTMAPS)
     {
         DAVA::FileSystem::Instance()->CreateDirectory(path, false);
         DAVA::FileSystem::Instance()->CreateDirectory(outputPath, true);
     }
 
-    beastProxy->SetLightmapsDirectory(beastManager, path);
-    beastProxy->Run(beastManager, workingScene);
+    beastManager->SetLightmapsDirectory(path.GetAbsolutePathname());
+    beastManager->Run(workingScene);
 }
 
 bool BeastRunner::Process()
 {
-    beastProxy->Update(beastManager);
-    return beastProxy->IsJobDone(beastManager);
+    beastManager->Update();
+    return beastManager->IsJobDone();
 }
 
 void BeastRunner::Finish(bool canceled)
 {
-    if (!canceled && beastMode == eBeastMode::MODE_LIGHTMAPS)
+    if (!canceled && beastMode == Beast::eBeastMode::MODE_LIGHTMAPS)
     {
         PackLightmaps();
     }
 
-    DAVA::FileSystem::Instance()->DeleteDirectory(SceneParser::GetTemporaryFolder());
-    if (beastMode == eBeastMode::MODE_LIGHTMAPS)
+    DAVA::FileSystem::Instance()->DeleteDirectory(Beast::SceneParser::GetTemporaryFolder());
+    if (beastMode == Beast::eBeastMode::MODE_LIGHTMAPS)
     {
         DAVA::FileSystem::Instance()->DeleteDirectory(GetLightmapDirectoryPath());
     }
@@ -113,7 +104,7 @@ void BeastRunner::PackLightmaps()
     packer.CreateDescriptors();
     packer.ParseSpriteDescriptors();
 
-    beastProxy->UpdateAtlas(beastManager, packer.GetAtlasingData());
+    beastManager->UpdateAtlas(packer.GetAtlasingData());
 
     DAVA::FileSystem::Instance()->MoveFile(scenePath.GetDirectory() + "temp_landscape_lightmap.png", outputDir + "landscape.png", true);
     DAVA::FileSystem::Instance()->DeleteDirectory(scenePath.GetDirectory() + "$process/");

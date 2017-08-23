@@ -11,6 +11,8 @@ class Scene;
 class RenderBatch;
 }
 
+namespace Beast
+{
 struct LightmapAtlasingData;
 
 class BeastMaterial;
@@ -95,3 +97,4 @@ private:
     DAVA::int32 switchIndex = 0;
     DAVA::int32 curTaskProgress = 0;
 };
+}

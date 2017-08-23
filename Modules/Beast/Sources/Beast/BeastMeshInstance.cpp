@@ -6,6 +6,8 @@
 
 #include <Render/Highlevel/Landscape.h>
 
+namespace Beast
+{
 BeastMeshInstance::BeastMeshInstance(const DAVA::String& name, BeastManager* manager)
     : BeastResource(name, manager)
 {
@@ -133,4 +135,5 @@ DAVA::String BeastMeshInstance::GetMeshInstancePointerString()
 DAVA::RenderBatch* BeastMeshInstance::GetRenderBatch()
 {
     return renderBatch;
+}
 }

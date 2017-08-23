@@ -7,15 +7,15 @@ namespace DAVA
 {
 class Landscape;
 class Texture;
-}
 
 namespace LandscapeThumbnails
 {
-using Callback = DAVA::Function<void(DAVA::Landscape*, DAVA::Texture*)>;
-using RequestID = DAVA::uint32;
+using Callback = Function<void(Landscape*, Texture*)>;
+using RequestID = uint32;
 
 const RequestID InvalidID = 0;
 
-RequestID Create(DAVA::Landscape*, Callback callback);
+RequestID Create(Landscape* landscape, Callback callback);
 void CancelRequest(RequestID);
-};
+}
+}

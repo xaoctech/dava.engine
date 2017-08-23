@@ -1,5 +1,7 @@
 #include "Beast/LandscapeGeometry.h"
 
+namespace Beast
+{
 void LandscapeGeometry::ComputeNormals()
 {
     normals.resize(vertices.size());
@@ -23,4 +25,5 @@ void LandscapeGeometry::ComputeNormals()
     {
         n.Normalize();
     }
+}
 }

@@ -8,7 +8,6 @@
 #include "Classes/Qt/MaterialEditor/MaterialEditor.h"
 #include "Classes/Qt/QualitySwitcher/QualitySwitcher.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
-#include "Classes/Qt/Scene/LandscapeThumbnails.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
@@ -80,6 +79,7 @@
 #include <Engine/Qt/RenderWidget.h>
 #include <Reflection/ReflectedType.h>
 #include <Render/2D/Sprite.h>
+#include <Render/Highlevel/LandscapeThumbnails.h>
 #include <Scene3D/Components/ActionComponent.h>
 #include <Scene3D/Components/TextComponent.h>
 #include <Scene3D/Components/Waypoint/PathComponent.h>
@@ -1515,7 +1515,7 @@ void QtMainWindow::OnSaveTiledTexture()
     DAVA::Landscape* landscape = FindLandscape(scene.Get());
     if (nullptr != landscape)
     {
-        LandscapeThumbnails::Create(landscape, MakeFunction(this, &QtMainWindow::OnTiledTextureRetreived));
+        DAVA::LandscapeThumbnails::Create(landscape, MakeFunction(this, &QtMainWindow::OnTiledTextureRetreived));
     }
 }
 

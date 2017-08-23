@@ -5,6 +5,7 @@
 #include <FileSystem/FilePath.h>
 #include <Math/Vector.h>
 #include <Math/Matrix4.h>
+#include <Render/Highlevel/LandscapeThumbnails.h>
 
 namespace DAVA
 {
@@ -18,6 +19,8 @@ class Texture;
 class LightComponent;
 }
 
+namespace Beast
+{
 struct MaxLodMaxSwitch
 {
     DAVA::int32 maxLodLevel = 0;
@@ -81,6 +84,6 @@ private:
     bool entitiesParsed = false;
     bool shouldCancel = false;
 
-    //TODO: restore it
-    //    LandscapeThumbnails::RequestID thumbnailsRequestId = LandscapeThumbnails::InvalidID;
+    DAVA::LandscapeThumbnails::RequestID thumbnailsRequestId = DAVA::LandscapeThumbnails::InvalidID;
 };
+}

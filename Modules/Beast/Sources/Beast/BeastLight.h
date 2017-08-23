@@ -12,6 +12,8 @@ class Entity;
 class Light;
 }
 
+namespace Beast
+{
 class BeastLight : public BeastResource<BeastLight>
 {
 public:
@@ -47,3 +49,4 @@ private:
     ILBMatrix4x4 matrix;
     ILBLinearRGB linearRGB;
 };
+}

@@ -17,7 +17,7 @@ void LightmapsPacker::ParseSpriteDescriptors()
             continue;
         }
 
-        LightmapAtlasingData data;
+        Beast::LightmapAtlasingData data;
 
         data.meshInstanceName = filePath.GetBasename();
 
@@ -73,7 +73,7 @@ DAVA::Vector2 LightmapsPacker::GetTextureSize(const DAVA::FilePath& filePath)
     return ret;
 }
 
-DAVA::Vector<LightmapAtlasingData>* LightmapsPacker::GetAtlasingData()
+DAVA::Vector<Beast::LightmapAtlasingData>* LightmapsPacker::GetAtlasingData()
 {
     return &atlasingData;
 }
