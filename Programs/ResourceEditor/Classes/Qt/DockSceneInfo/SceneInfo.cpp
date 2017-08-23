@@ -8,9 +8,10 @@
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Selection/SelectionData.h"
-#include "Classes/Application/RESettings.h"
+#include "Classes/Selection/Selection.h"
 #include "Classes/ImageTools/ImageTools.h"
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
 
