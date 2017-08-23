@@ -11,12 +11,12 @@ UIPopup::UIPopup(const Rect& rect)
 
 void UIPopup::Show()
 {
-    UIControlSystem::Instance()->AddPopup(this);
+    GetEngineContext()->uiControlSystem->AddPopup(this);
 }
 
 void UIPopup::Hide()
 {
     if (IsActive())
-        UIControlSystem::Instance()->RemovePopup(this);
+        GetEngineContext()->uiControlSystem->RemovePopup(this);
 }
 };

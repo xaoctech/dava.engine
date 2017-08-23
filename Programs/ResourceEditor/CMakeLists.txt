@@ -31,6 +31,7 @@ if (NOT PUBLIC_BUILD)
     if( WIN32 )
         find_package( Beast REQUIRED )
     endif()
+    find_package( SpeedTree REQUIRED )
 endif()
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
@@ -40,11 +41,6 @@ find_package( TArc REQUIRED )
 find_package( RemoteTool REQUIRED )
 # find_package( EditorPhysics REQUIRED )
 
-
-
-
-include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}" )
-include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}/Sources" )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR}/DavaTools/QtTools )
 
@@ -79,9 +75,6 @@ dava_add_definitions       (
 -DDAVA_QT
 )
 
-if (NOT PUBLIC_BUILD)
-    dava_add_definitions(-D__DAVAENGINE_SPEEDTREE__)
-endif()
 
 if (DEPLOY)
     dava_add_definitions(-DDEPLOY_BUILD)
@@ -109,7 +102,7 @@ endif()
 
 set ( Generated          ${UI_APP_HDRS} ${RCC_APP_SRCS} )
 
-define_source ( SOURCE "Classes" ${DAVA_SPEEDTREE_ROOT_DIR}/Sources "DataQt" GROUP_SOURCE Generated )
+define_source ( SOURCE "Classes" "DataQt" GROUP_SOURCE Generated )
 
 set( MIX_APP_DATA         "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                           "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )

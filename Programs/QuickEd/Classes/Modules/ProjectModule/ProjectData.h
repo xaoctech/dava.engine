@@ -34,6 +34,19 @@ public:
         DAVA::Size2i resolution;
     };
 
+    struct Device
+    {
+        DAVA::UnorderedMap<DAVA::FastName, DAVA::Any> params;
+    };
+
+    struct Blank
+    {
+        DAVA::FilePath path;
+        DAVA::String name;
+        DAVA::FastName controlName;
+        DAVA::FastName controlPath;
+    };
+
     ProjectData();
     ~ProjectData() override;
 
@@ -60,6 +73,9 @@ public:
     const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& GetPrototypes() const;
 
     const DAVA::String& GetDefaultLanguage() const;
+
+    const DAVA::Vector<Device>& GetDevices() const;
+    const DAVA::Vector<Blank>& GetBlanks() const;
 
     bool Save() const;
 
@@ -97,6 +113,9 @@ private:
     DAVA::Vector<GfxDir> gfxDirectories;
     DAVA::Vector<ResDir> libraryPackages;
     DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>> prototypes;
+
+    DAVA::Vector<Device> devicesForPreview;
+    DAVA::Vector<Blank> blanksForPreview;
 
     DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArc::DataNode);
 };

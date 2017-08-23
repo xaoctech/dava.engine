@@ -1,7 +1,10 @@
-#ifndef __RESOURCEEDITORQT__SPEEDTREEIMPORTDIALOG__
-#define __RESOURCEEDITORQT__SPEEDTREEIMPORTDIALOG__
+#pragma once
 
-#include "DAVAEngine.h"
+#if defined(__DAVAENGINE_SPEEDTREE__)
+
+#include <FileSystem/FilePath.h>
+#include <Base/BaseTypes.h>
+
 #include <QDialog>
 
 namespace Ui
@@ -38,4 +41,4 @@ private:
     std::shared_ptr<GlobalOperations> globalOperations;
 };
 
-#endif // __RESOURCEEDITORQT__SPEEDTREEIMPORTDIALOG__
+#endif // #if defined(__DAVAENGINE_SPEEDTREE__)
