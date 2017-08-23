@@ -14,6 +14,7 @@ ParticleDragForce* ParticleDragForce::Clone()
 {
     ParticleDragForce* dst = new ParticleDragForce(parentLayer);
     dst->isActive = isActive;
+    dst->timingType = timingType;
     dst->forceName = forceName;
     dst->shape = shape;
     dst->type = type;

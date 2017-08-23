@@ -17,6 +17,13 @@ public:
         BOX,
         SPHERE
     } shape = eShape::BOX;
+
+    enum class eTimingType
+    {
+        CONSTANT,
+        OVER_LAYER_LIFE,
+        OVER_PARTICLE_LIFE
+    } timingType = eTimingType::CONSTANT;
     enum class eType
     {
         DRAG_FORCE,

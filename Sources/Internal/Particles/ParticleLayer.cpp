@@ -9,6 +9,7 @@
 namespace DAVA
 {
 using ForceShape = ParticleDragForce::eShape;
+using ForceTimingType = ParticleDragForce::eTimingType;
 
 namespace ParticleLayerDetail
 {
@@ -19,8 +20,8 @@ struct ShapeMap
 };
 const ShapeMap shapeMap[] =
 {
-    { ParticleDragForce::eShape::BOX, "box" },
-    { ParticleDragForce::eShape::SPHERE, "sphere" }
+    { ForceShape::BOX, "box" },
+    { ForceShape::SPHERE, "sphere" }
 };
 
 int32 shapesCount = sizeof(shapeMap) / sizeof(*shapeMap);
@@ -48,6 +49,11 @@ String ForceShapeToString(ForceShape shapeType, const String& defaultLayerTypeNa
     }
     return defaultLayerTypeName;
 }
+
+struct ActionTypeMap
+{
+    ForceActionType
+};
 }
 
 const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
