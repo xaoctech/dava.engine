@@ -43,12 +43,8 @@ bool OverlayWidget::eventFilter(QObject* obj, QEvent* e)
             bool isVisible = static_cast<QtOverlayWidgetVisibilityChange*>(e)->IsVisible();
             executor.DelayedExecute([this, isVisible]()
                                     {
-                                        setVisible(isVisible);
-                                        UpdateGeometry();
-                                        if (isVisible == true)
-                                        {
-                                            activateWindow();
-                                        }
+                                        isContentVisible = isVisible;
+                                        SetVisible(isVisible);
                                     });
             return true;
         }
@@ -59,6 +55,22 @@ bool OverlayWidget::eventFilter(QObject* obj, QEvent* e)
         executor.DelayedExecute([this]()
                                 {
                                     UpdateGeometry();
+                                });
+    }
+
+    if (t == QEvent::Hide)
+    {
+        executor.DelayedExecute([this]()
+                                {
+                                    SetVisible(false);
+                                });
+    }
+
+    if (t == QEvent::Show && isContentVisible == true)
+    {
+        executor.DelayedExecute([this]()
+                                {
+                                    SetVisible(true);
                                 });
     }
 
@@ -73,6 +85,16 @@ void OverlayWidget::UpdateGeometry()
     QPoint pivot = parentW->mapToGlobal(r.topLeft());
     move(pivot);
     resize(r.size());
+}
+
+void OverlayWidget::SetVisible(bool isVisible)
+{
+    setVisible(isVisible);
+    UpdateGeometry();
+    if (isVisible == true)
+    {
+        activateWindow();
+    }
 }
 
 } // namespace TArc

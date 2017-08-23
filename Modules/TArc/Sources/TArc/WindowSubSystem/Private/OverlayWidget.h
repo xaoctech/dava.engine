@@ -19,11 +19,13 @@ protected:
 
 private:
     void UpdateGeometry();
+    void SetVisible(bool isVisible);
 
 private:
     std::shared_ptr<IGeometryProcessor> geometryProccessor;
     QtDelayedExecutor executor;
     QWidget* content = nullptr;
+    bool isContentVisible = false;
 };
 } // namespace TArc
 } // namespace DAVA
