@@ -32,7 +32,6 @@ namespace DAVA
     to derive it from BaseObject. 
   */
 
-class InspInfo;
 class KeyedArchive;
 
 class BaseObject : public InspBase
@@ -127,11 +126,6 @@ protected:
     }
 
     Atomic<int32> referenceCount;
-
-public:
-    INTROSPECTION(BaseObject,
-                  MEMBER(referenceCount, "referenceCount", I_SAVE)
-                  )
 };
 
 template <typename T>
