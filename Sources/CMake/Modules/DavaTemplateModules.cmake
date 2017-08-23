@@ -525,7 +525,7 @@ macro( setup_main_module )
                 foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}${CONFIGURE}} )
                     get_filename_component( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARY} ABSOLUTE )
                     get_filename_component( DYNAMIC_LIBRARY_DIR ${DYNAMIC_LIBRARY}  DIRECTORY )
-                    append_property( MODULE_DYNAMIC_LIBRARIES_DIR${CONFIGORE} ${DYNAMIC_LIBRARY_DIR} )  
+                    append_property( MODULE_DYNAMIC_LIBRARIES_DIR${CONFIGURE} ${DYNAMIC_LIBRARY_DIR} )
                 endforeach()
             endforeach()
 

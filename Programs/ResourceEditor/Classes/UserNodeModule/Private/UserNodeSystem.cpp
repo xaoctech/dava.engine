@@ -1,5 +1,7 @@
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
 
+#include "Classes/Qt/Scene/SceneEditor2.h"
+
 #include <FileSystem/KeyedArchive.h>
 #include <Debug/DVAssert.h>
 #include <Math/MathConstants.h>
