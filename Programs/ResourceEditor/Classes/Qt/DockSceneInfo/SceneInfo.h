@@ -3,7 +3,8 @@
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/PropertyEditorStateHelper.h"
-#include "QtTools/Updaters/LazyUpdater.h"
+
+#include <QtTools/Updaters/LazyUpdater.h>
 
 #include <QShowEvent>
 
@@ -139,5 +140,5 @@ protected:
 
     bool isUpToDate = false;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 };

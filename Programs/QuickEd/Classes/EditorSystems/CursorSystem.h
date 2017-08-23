@@ -2,9 +2,11 @@
 
 #include "EditorSystems/BaseEditorSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
+
+#include <TArc/Qt/QtString.h>
+
 #include <QMap>
 #include <QPixmap>
-#include <QString>
 #include <QCursor>
 
 namespace DAVA

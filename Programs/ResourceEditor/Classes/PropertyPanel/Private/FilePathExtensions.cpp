@@ -2,6 +2,8 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 
 #include <TArc/Core/FieldBinder.h>
 
@@ -251,6 +253,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
 
         if (texturePath.GetExtension() != TextureDescriptor::GetDescriptorExtension())
         {
+            CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
             result.state = M::ValidationResult::eState::Invalid;
             const EngineContext* ctx = GetEngineContext();
             if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
@@ -261,7 +264,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
                 auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
                 if (found != texturesMap.end())
                 {
-                    found->second->ReloadAs(Settings::GetGPUFormat());
+                    found->second->ReloadAs(settings->textureViewGPU);
                 }
 
                 result.fixedValue = FilePath(descriptorPath);
