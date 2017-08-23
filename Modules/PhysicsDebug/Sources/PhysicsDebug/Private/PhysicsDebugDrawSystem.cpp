@@ -585,7 +585,7 @@ void PhysicsDebugDrawSystem::UnregisterComponent(Entity* entity, Component* comp
             if (roInfo.ro != nullptr)
             {
                 GetScene()->GetRenderSystem()->RemoveFromRender(roInfo.ro);
-                DAVA::SafeRelease(roInfo.ro);
+                SafeRelease(roInfo.ro);
             }
             renderObjects.erase(iter);
         }
@@ -639,7 +639,7 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
         CollisionShapeComponent* shapeComponent = node.first;
         physx::PxShape* shape = shapeComponent->GetPxShape();
         DVASSERT(shape != nullptr);
-        DAVA::Color currentColor = GetColor(shape);
+        Color currentColor = GetColor(shape);
 
         for (uint32 i = 0; i < node.second.ro->GetRenderBatchCount(); ++i)
         {

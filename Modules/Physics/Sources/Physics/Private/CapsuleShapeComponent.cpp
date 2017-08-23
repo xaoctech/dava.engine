@@ -47,7 +47,7 @@ void CapsuleShapeComponent::SetRadius(float32 r)
     ScheduleUpdate();
 }
 
-DAVA::float32 CapsuleShapeComponent::GetHalfHeight() const
+float32 CapsuleShapeComponent::GetHalfHeight() const
 {
     return halfHeight;
 }

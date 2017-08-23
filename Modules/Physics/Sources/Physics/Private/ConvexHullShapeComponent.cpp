@@ -8,7 +8,7 @@
 
 namespace DAVA
 {
-DAVA::Component* ConvexHullShapeComponent::Clone(Entity* toEntity)
+Component* ConvexHullShapeComponent::Clone(Entity* toEntity)
 {
     ConvexHullShapeComponent* result = new ConvexHullShapeComponent();
     result->SetEntity(toEntity);

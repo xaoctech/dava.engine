@@ -31,7 +31,7 @@ physx::PxShape* CollisionShapeComponent::GetPxShape() const
     return shape;
 }
 
-const DAVA::FastName& CollisionShapeComponent::GetName() const
+const FastName& CollisionShapeComponent::GetName() const
 {
     return name;
 }
@@ -43,7 +43,7 @@ void CollisionShapeComponent::SetName(const FastName& name_)
     ScheduleUpdate();
 }
 
-const DAVA::Matrix4& CollisionShapeComponent::GetLocalPose() const
+const Matrix4& CollisionShapeComponent::GetLocalPose() const
 {
     return localPose;
 }
