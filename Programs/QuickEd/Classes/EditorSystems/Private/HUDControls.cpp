@@ -1,5 +1,4 @@
 #include "EditorSystems/HUDControls.h"
-#include <Modules/UpdateViewsSystemModule/UpdateViewsSystem.h>
 
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
@@ -168,9 +167,6 @@ HUDContainer::HUDContainer(const ControlNode* node_)
     control = node->GetControl();
     visibleProperty = node->GetRootProperty()->GetVisibleProperty();
     DVASSERT(nullptr != control && nullptr != visibleProperty);
-
-    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    updateSystem->beforeRender.Connect(this, &HUDContainer::OnUpdate);
 }
 
 void HUDContainer::InitFromGD(const UIGeometricData& gd)
@@ -224,12 +220,6 @@ void HUDContainer::InitFromGD(const UIGeometricData& gd)
             }
         }
     }
-}
-
-void HUDContainer::OnUpdate()
-{
-    auto controlGD = control->GetGeometricData();
-    InitFromGD(controlGD);
 }
 
 FrameControl::FrameControl(eType type_)
