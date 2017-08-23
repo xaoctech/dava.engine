@@ -26,7 +26,7 @@ const ShapeMap shapeMap[] =
 
 int32 shapesCount = sizeof(shapeMap) / sizeof(*shapeMap);
 
-ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultLayerType)
+ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultShape)
 {
     for (int32 i = 0; i < shapesCount; ++i)
     {
@@ -35,10 +35,10 @@ ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultLay
             return shapeMap[i].shape;
         }
     }
-    return defaultLayerType;
+    return defaultShape;
 }
 
-String ForceShapeToString(ForceShape shapeType, const String& defaultLayerTypeName)
+String ForceShapeToString(ForceShape shapeType, const String& defaultShapeName)
 {
     for (int32 i = 0; i < shapesCount; ++i)
     {
@@ -47,13 +47,42 @@ String ForceShapeToString(ForceShape shapeType, const String& defaultLayerTypeNa
             return shapeMap[i].shapeName;
         }
     }
-    return defaultLayerTypeName;
+    return defaultShapeName;
 }
 
-struct ActionTypeMap
+struct TimingTypeMap
 {
-    ForceActionType
+    ForceTimingType timingType;
+    String typeName;
 };
+const TimingTypeMap timingTypesMap[]
+{
+    { ForceTimingType::CONSTANT, "const" },
+    { ForceTimingType::OVER_LAYER_LIFE, "ovr_layer" },
+    { ForceTimingType::OVER_PARTICLE_LIFE, "ovr_prt" }
+};
+
+int32 timingTypesCount = sizeof(timingTypesMap) / sizeof(*timingTypesMap);
+
+ForceTimingType StringToForceTimingType(const String& typeName, ForceTimingType defaultTimingType) // TODO: template?
+{
+    for (int32 i = 0; i < timingTypesCount; ++i)
+    {
+        if (timingTypesMap[i].typeName == typeName)
+            return timingTypesMap[i].timingType;
+    }
+    return defaultTimingType;
+}
+
+String ForceTimingTypeToString(ForceTimingType timingType, const String& defaultTimingTypeName)
+{
+    for (int32 i = 0; i < timingTypesCount; ++i)
+    {
+        if (timingTypesMap[i].timingType == timingType)
+            return timingTypesMap[i].typeName;
+    }
+    return defaultTimingTypeName;
+}
 }
 
 const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
@@ -823,6 +852,14 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             dragForce->shape = ParticleLayerDetail::StringToForceShape(shapeName, ForceShape::BOX);
         }
 
+        forceDataName = Format("dragForceTimingType%d", i);
+        const YamlNode* timingNode = node->Get(forceDataName);
+        if (timingNode)
+        {
+            String name = timingNode->AsString();
+            dragForce->timingType = ParticleLayerDetail::StringToForceTimingType(name, ForceTimingType::CONSTANT);
+        }
+
         AddDrag(dragForce);
         dragForce->Release();
     }
@@ -1274,6 +1311,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("dragForceShape%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, ParticleLayerDetail::ForceShapeToString(currentForce->shape, "box"));
+
+        forceDataName = Format("dragForceTimingType%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, ParticleLayerDetail::ForceTimingTypeToString(currentForce->timingType, "const"));
     }
 }
 
