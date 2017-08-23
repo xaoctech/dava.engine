@@ -1,6 +1,6 @@
 #include "Classes/PropertyPanel/ComponentExtensions.h"
 #include "Classes/Commands2/RemoveComponentCommand.h"
-#include "Classes/Qt/DockProperties/ActionComponentEditor.h"
+#include "Classes/PropertyPanel/Private/ActionComponentEditor.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/SceneManager/SceneData.h"
 

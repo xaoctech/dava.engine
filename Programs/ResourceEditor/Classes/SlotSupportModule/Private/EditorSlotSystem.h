@@ -42,7 +42,7 @@ protected:
 
     void DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
     void AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, DAVA::FastName itemName);
-    DAVA::Entity* AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName);
+    DAVA::RefPtr<DAVA::Entity> AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName);
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
@@ -62,7 +62,7 @@ private:
     struct AttachedItemInfo
     {
         DAVA::SlotComponent* component = nullptr;
-        DAVA::Entity* entity = nullptr;
+        DAVA::RefPtr<DAVA::Entity> entity;
         DAVA::FastName itemName;
     };
 

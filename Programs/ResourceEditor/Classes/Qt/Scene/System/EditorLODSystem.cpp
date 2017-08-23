@@ -407,6 +407,11 @@ bool EditorLODSystem::CanDeleteLOD() const
             else
             {
                 RenderObject* ro = GetRenderObject(entity);
+                if (ro == nullptr)
+                {
+                    continue;
+                }
+
                 Set<int32> lodIndexes;
                 uint32 batchCount = ro->GetRenderBatchCount();
 

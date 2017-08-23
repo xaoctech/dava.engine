@@ -359,6 +359,7 @@ void PropertiesView::SetupUI()
 
 void PropertiesView::OnObjectsChanged(const Any& objects)
 {
+    currentIndexPath.clear();
     view->setRootIndex(QModelIndex());
     if (objects.IsEmpty())
     {

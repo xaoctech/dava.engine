@@ -6,7 +6,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include <TArc/Utils/Utils.h>
 
-SceneTreeItem::SceneTreeItem(eItemType _type, DAVA::BaseObject* object_)
+SceneTreeItem::SceneTreeItem(eItemType _type, const DAVA::Any& object_)
     : object(object_)
     , type(_type)
 {
@@ -14,7 +14,7 @@ SceneTreeItem::SceneTreeItem(eItemType _type, DAVA::BaseObject* object_)
 
 DAVA::BaseObject* SceneTreeItem::GetItemObject() const
 {
-    return static_cast<DAVA::BaseObject*>(object.GetContainedObject());
+    return object.Cast<DAVA::BaseObject>();
 }
 
 QVariant SceneTreeItem::data(int role) const

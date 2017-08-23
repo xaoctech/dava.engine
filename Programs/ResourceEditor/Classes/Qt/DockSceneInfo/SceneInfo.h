@@ -2,7 +2,7 @@
 
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "DockProperties/PropertyEditorStateHelper.h"
+#include "Tools/QtPropertyEditor/PropertyEditorStateHelper.h"
 
 #include <QtTools/Updaters/LazyUpdater.h>
 
