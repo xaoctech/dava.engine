@@ -63,7 +63,12 @@ WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
     palette.setColor(QPalette::Base, Qt::transparent);
     messageLabel->setPalette(palette);
 
-    layout->addWidget(messageLabel, 2, 1, 1, 2);
+    int32 columnSpan = 2;
+    if (params.needProgressBar && params.cancelEnabled)
+    {
+        ++columnSpan;
+    }
+    layout->addWidget(messageLabel, 2, 1, 1, columnSpan);
 
     if (params.needProgressBar)
     {
@@ -86,9 +91,14 @@ WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
         sizePolicy.setHeightForWidth(cancelButton->sizePolicy().hasHeightForWidth());
         cancelButton->setSizePolicy(sizePolicy);
 
-        connections.AddConnection(cancelButton, &QPushButton::clicked, MakeFunction(this, &WaitDialog::CanceledByMouse), WaitDialogDetail::GetConnectionType());
+        connections.AddConnection(cancelButton, &QPushButton::clicked, MakeFunction(this, &WaitDialog::CanceledByMouse));
 
-        layout->addWidget(cancelButton, 4, 3, 1, 1);
+        int32 column = 2;
+        if (params.needProgressBar)
+        {
+            ++column;
+        }
+        layout->addWidget(cancelButton, 3, column, 1, 1);
     }
 
     dlg->setLayout(layout);
