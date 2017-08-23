@@ -136,15 +136,29 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
                 Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
                 if (loadedEntity == nullptr)
                 {
+                    FastName itemNameInitialAttach;
+
                     Vector<SlotSystem::ItemsCache::Item> items = slotSystem->GetItems(component->GetConfigFilePath());
-                    if (items.empty())
+                    FastName templateName = component->GetTemplateName();
+                    if (templateName.IsValid())
+                    {
+                        auto iter = std::find_if(items.begin(), items.end(), [templateName](const SlotSystem::ItemsCache::Item& item) {
+                            return item.type == templateName;
+                        });
+
+                        if (iter != items.end())
+                        {
+                            itemNameInitialAttach = iter->itemName;
+                        }
+                    }
+                    if (itemNameInitialAttach.IsValid() == false)
                     {
                         RefPtr<Entity> newEntity(new Entity());
                         slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
                     }
                     else
                     {
-                        slotSystem->AttachItemToSlot(component, items.front().itemName);
+                        slotSystem->AttachItemToSlot(component, itemNameInitialAttach);
                     }
                 }
                 else
