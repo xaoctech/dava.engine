@@ -63,7 +63,6 @@ public:
     IMPL_PROPERTY(bool, DebugOverlayEnabled, debugOverlayEnabled);
 #undef IMPL_PROPERTY
 
-    INTROSPECTION_EXTEND(GeoDecalComponent, Component, NULL)
     DAVA_VIRTUAL_REFLECTION(GeoDecalComponent, Component);
 };
 

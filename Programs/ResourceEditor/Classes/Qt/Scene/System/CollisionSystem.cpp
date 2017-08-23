@@ -249,9 +249,9 @@ void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object)
     }
 }
 
-DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(Selectable::Object* object) const
+DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) const
 {
-    DVASSERT(object != nullptr);
+    DVASSERT(object.IsEmpty() == false);
 
     DAVA::AABBox3 aabox;
     if (objectToCollision.count(object) != 0)
@@ -276,12 +276,12 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(Selectable::Object* object) c
     return aabox;
 }
 
-void SceneCollisionSystem::AddCollisionObject(Selectable::Object* obj, CollisionBaseObject* collision)
+void SceneCollisionSystem::AddCollisionObject(const DAVA::Any& obj, CollisionBaseObject* collision)
 {
     if (collision == nullptr)
         return;
 
-    DVASSERT(obj != nullptr);
+    DVASSERT(obj.IsEmpty() == false);
     if (objectToCollision.count(obj) > 0)
     {
         DestroyFromObject(obj);
@@ -313,9 +313,10 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
         for (auto obj : objectsToRemove)
         {
             Selectable wrapper(obj);
-            EnumerateObjectHierarchy(wrapper, false, [this](Selectable::Object* object, CollisionBaseObject* collision) {
-                DestroyFromObject(object);
-            });
+            EnumerateObjectHierarchy(wrapper, false, [this](const DAVA::Any& object, CollisionBaseObject* collision)
+                                     {
+                                         DestroyFromObject(object);
+                                     });
         }
 
         for (auto obj : objectsToAdd)
@@ -388,7 +389,7 @@ void SceneCollisionSystem::Draw()
         for (const auto& item : selection.GetContent())
         {
             // get collision object for solid selected entity
-            DVASSERT(item.GetContainedObject() != nullptr);
+            DVASSERT(item.GetContainedObject().IsEmpty() == false);
             CollisionBaseObject* cObj = objectToCollision[item.GetContainedObject()];
             if (NULL != cObj && NULL != cObj->btObject)
             {
@@ -533,7 +534,7 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
-void SceneCollisionSystem::DestroyFromObject(Selectable::Object* entity)
+void SceneCollisionSystem::DestroyFromObject(const DAVA::Any& entity)
 {
     CollisionBaseObject* cObj = objectToCollision[entity];
     if (cObj != nullptr)
@@ -549,7 +550,7 @@ const SelectableGroup& SceneCollisionSystem::ClipObjectsToPlanes(const DAVA::Vec
     planeClippedObjects.Clear();
     for (const auto& object : objectToCollision)
     {
-        if ((object.first != nullptr) && (object.second != nullptr) &&
+        if ((object.first.IsEmpty() == false) && (object.second != nullptr) &&
             (object.second->ClassifyToPlanes(planes) == CollisionBaseObject::ClassifyPlanesResult::ContainsOrIntersects))
         {
             planeClippedObjects.Add(object.first, DAVA::AABBox3());
@@ -669,13 +670,13 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     else
     {
         DAVA::float32 scale = object.CanBeCastedTo<DAVA::ParticleEmitterInstance>() ? debugBoxParticleScale : debugBoxScale;
-        Selectable::Object* containedObject = object.GetContainedObject();
+        const DAVA::Any& containedObject = object.GetContainedObject();
         CollisionDetails::CollisionObj result = CollisionDetails::InitCollision<CollisionBox>(createCollision, containedObject, objectsCollWorld, object.GetWorldTransform().GetTranslationVector(), scale);
         callback(containedObject, result.collisionObject);
     }
 }
 
-DAVA::AABBox3 SceneCollisionSystem::GetUntransformedBoundingBox(Selectable::Object* entity) const
+DAVA::AABBox3 SceneCollisionSystem::GetUntransformedBoundingBox(const DAVA::Any& entity) const
 {
     return GetTransformedBoundingBox(Selectable(entity), DAVA::Matrix4::IDENTITY);
 }
@@ -686,7 +687,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetTransformedBoundingBox(const Selectable& 
     if (object.CanBeCastedTo<DAVA::Entity>())
     {
         // add childs boxes into entity box
-        auto entity = object.AsEntity();
+        DAVA::Entity* entity = object.AsEntity();
         for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); i++)
         {
             Selectable childEntity(entity->GetChild(i));

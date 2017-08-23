@@ -369,7 +369,6 @@ void QtMainWindow::SetupTitle(const DAVA::String& projectPath)
 void QtMainWindow::SetupMainMenu()
 {
     ui->Dock->addAction(ui->dockSceneInfo->toggleViewAction());
-    ui->Dock->addAction(ui->dockProperties->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditor->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
     ui->Dock->addAction(ui->dockSceneTree->toggleViewAction());
@@ -530,8 +529,6 @@ void QtMainWindow::SetupDocks()
         dockConsole->setObjectName(QString("dock_%1").arg(dockConsole->widget()->objectName()));
         addDockWidget(Qt::RightDockWidgetArea, dockConsole);
     }
-
-    ui->dockProperties->Init(ui.get(), globalOperations);
 }
 
 void QtMainWindow::SetupActions()
@@ -742,7 +739,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionRedo->setEnabled(enable);
 
     ui->dockLODEditor->setEnabled(enable);
-    ui->dockProperties->setEnabled(enable);
     ui->dockSceneTree->setEnabled(enable);
     ui->dockSceneInfo->setEnabled(enable);
 
@@ -2000,8 +1996,6 @@ void QtMainWindow::OnBuildStaticOcclusion()
         {
             REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
         }
-
-        ui->propertyEditor->ResetProperties();
     }
 
     delete waitOcclusionDlg;
@@ -2318,11 +2312,7 @@ void QtMainWindow::OnSnapCameraToLandscape(bool snap)
         toggleProcessed = scene->cameraSystem->SnapEditorCameraToLandscape(snap);
     }
 
-    if (toggleProcessed)
-    {
-        ui->propertyEditor->ResetProperties();
-    }
-    else
+    if (toggleProcessed == false)
     {
         ui->actionSnapCameraToLandscape->setChecked(!snap);
     }

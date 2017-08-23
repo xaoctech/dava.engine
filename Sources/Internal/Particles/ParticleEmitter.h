@@ -109,9 +109,6 @@ private:
 
     void ReleaseFromCache(const FilePath& name);
     static EmitterCacheMap emitterCache;
-
-public:
-    INTROSPECTION_EXTEND(ParticleEmitter, BaseObject, nullptr);
 };
 }
 
