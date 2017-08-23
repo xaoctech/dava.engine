@@ -85,11 +85,6 @@ private:
     Vector2 sprPivot;
     int32 frame = 0;
     eSpriteType spriteType = SPRITE_OBJECT;
-
-public:
-    INTROSPECTION_EXTEND(SpriteObject, RenderObject,
-                         NULL
-                         );
 };
 };
 

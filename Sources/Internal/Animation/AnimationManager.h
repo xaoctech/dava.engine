@@ -4,7 +4,6 @@
 //#define ANIMATIONS_DEBUG
 
 #include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
 #include "Scene2D/GameObject.h"
 #include "Animation/Animation.h"
 
@@ -15,7 +14,7 @@ namespace DAVA
 	\brief AnimationManager is the heart of our animation systems. It does all groundwork. 
 	You do not need it at all and SDK do everything to process animations in background. 
 */
-class AnimationManager : public Singleton<AnimationManager>
+class AnimationManager
 {
 public:
     /**

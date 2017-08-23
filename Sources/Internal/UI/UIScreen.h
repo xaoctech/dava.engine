@@ -28,8 +28,9 @@ protected:
 public:
     UIScreen(const Rect& rect = Rect(0.0f,
                                      0.0f,
-                                     static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx),
-                                     static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy)
+                                     static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx),
+                                     static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy)
+
                                      ));
 
     /* 

@@ -1,5 +1,6 @@
 #include "ColorPropertyDelegate.h"
-#include "QtTools/Utils/Utils.h"
+
+#include <TArc/Utils/Utils.h>
 
 #include <QToolButton>
 #include <QPainter>
@@ -47,7 +48,7 @@ void ColorPropertyDelegate::enumEditorActions(QWidget* parent, const QModelIndex
 void ColorPropertyDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
     DVASSERT(nullptr != lineEdit);
-    QColor color = ColorToQColor(index.data(Qt::EditRole).value<DAVA::Any>().Get<DAVA::Color>());
+    QColor color = DAVA::TArc::ColorToQColor(index.data(Qt::EditRole).value<DAVA::Any>().Get<DAVA::Color>());
     lineEdit->setText(QColorToHex(color));
     lineEdit->setProperty("color", color);
 }
@@ -60,7 +61,7 @@ bool ColorPropertyDelegate::setModelData(QWidget* editor, QAbstractItemModel* mo
     DVASSERT(nullptr != lineEdit);
 
     QColor newColor = HexToQColor(lineEdit->text());
-    DAVA::Any color(QColorToColor(newColor));
+    DAVA::Any color(DAVA::TArc::QColorToColor(newColor));
     QVariant colorVariant;
     colorVariant.setValue<DAVA::Any>(color);
     return model->setData(index, colorVariant, Qt::EditRole);
@@ -110,6 +111,6 @@ void ColorPropertyDelegate::OnTextChanged(const QString& text)
     if (valid)
     {
         QColor color(HexToQColor(text));
-        chooseColorAction->setIcon(CreateIconFromColor(color));
+        chooseColorAction->setIcon(DAVA::TArc::CreateIconFromColor(color));
     }
 }

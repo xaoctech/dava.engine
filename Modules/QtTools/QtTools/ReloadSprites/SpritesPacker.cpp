@@ -30,6 +30,7 @@ void SpritesPacker::ClearTasks()
 void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFamily gpu, const TextureConverter::eConvertQuality quality)
 {
     SetRunning(true);
+
     resourcePacker2D.SetRunning(true);
     for (const auto& task : tasks)
     {
@@ -56,6 +57,13 @@ void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFa
             break;
         }
     }
+
+    if (IsUsingCache())
+    {
+        cacheClient->DumpStats();
+        cacheClient->ClearStats();
+    }
+
     SetRunning(false);
 }
 
@@ -89,8 +97,9 @@ const DAVA::ResourcePacker2D& SpritesPacker::GetResourcePacker() const
     return resourcePacker2D;
 }
 
-void SpritesPacker::SetCacheClient(AssetCacheClient* cacheClient, const String& comment)
+void SpritesPacker::SetCacheClient(AssetCacheClient* cacheClient_, const String& comment)
 {
+    cacheClient = cacheClient_;
     resourcePacker2D.SetCacheClient(cacheClient, comment);
 }
 
