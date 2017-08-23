@@ -144,7 +144,16 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithClass(const FastName
 
 const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const FastName& controlName, const String& customClassName, const String& className)
 {
-    RefPtr<UIControl> control(ObjectFactory::Instance()->New<UIControl>(className));
+    RefPtr<UIControl> control;
+
+    if (ObjectFactory::Instance()->IsTypeRegistered(customClassName))
+    {
+        control.Set(ObjectFactory::Instance()->New<UIControl>(customClassName));
+    }
+    else
+    {
+        control.Set(ObjectFactory::Instance()->New<UIControl>(className));
+    }
 
     if (control.Valid())
     {

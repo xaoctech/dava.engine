@@ -64,8 +64,8 @@ DAVA_TESTCLASS (UISpineTest)
     UISpineTest()
     {
         RefPtr<UIScreen> screen(new UIScreen());
-        UIControlSystem::Instance()->SetScreen(screen.Get());
-        UIControlSystem::Instance()->Update();
+        GetEngineContext()->uiControlSystem->SetScreen(screen.Get());
+        GetEngineContext()->uiControlSystem->Update();
 
         spineControl = MakeRef<UIControl>(Rect(0, 0, 10, 10));
         screen->AddControl(spineControl.Get());
@@ -82,7 +82,7 @@ DAVA_TESTCLASS (UISpineTest)
 
     ~UISpineTest()
     {
-        UIControlSystem::Instance()->Reset();
+        GetEngineContext()->uiControlSystem->Reset();
     }
 
     void SetUp(const String& testName) override
