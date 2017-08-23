@@ -24,6 +24,18 @@ const ShapeMap shapeMap[] =
     { DAVA::ParticleDragForce::eShape::BOX, "Box" },
     { DAVA::ParticleDragForce::eShape::SPHERE, "Sphere" }
 };
+
+struct TimingMap
+{
+    DAVA::ParticleDragForce::eTimingType timingType;
+    QString name;
+};
+const TimingMap timingMap[] =
+{
+    { DAVA::ParticleDragForce::eTimingType::CONSTANT, "Constant" },
+    { DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
+    { DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life"}
+};
 }
 
 LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
@@ -40,6 +52,10 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     mainLayout->addWidget(forceNameEdit);
     connect(forceNameEdit, SIGNAL(editingFinished()), this, SLOT(OnValueChanged()));
 
+    shapeLabel = new QLabel("Shape:");
+    shapeLabel->setContentsMargins(0, 15, 0, 0);
+    mainLayout->addWidget(shapeLabel);
+
     shapeComboBox = new WheellIgnorantComboBox();
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
@@ -49,6 +65,19 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
         this,
         SLOT(OnValueChanged()));
     mainLayout->addWidget(shapeComboBox);
+
+    QLabel* timingLabel = new QLabel("Timing type:");
+    timingLabel->setContentsMargins(0, 15, 0, 0);
+    mainLayout->addWidget(timingLabel);
+    timingTypeComboBox = new WheellIgnorantComboBox();
+    DAVA::int32 timingTypes = sizeof(LayerDragForceWidgetDetail::timingMap) / sizeof(*LayerDragForceWidgetDetail::timingMap);
+    for (DAVA::int32 i = 0; i < timingTypes; ++i)
+        timingTypeComboBox->addItem(LayerDragForceWidgetDetail::timingMap[i].name);
+    connect(timingTypeComboBox, SIGNAL(currentIndexChanged(int)),
+        this,
+        SLOT(OnValueChanged()));
+
+    mainLayout->addWidget(timingTypeComboBox);
 
     boxSize = new ParticleVector3Widget("Box size", DAVA::Vector3::Zero);
     connect(boxSize, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
@@ -99,12 +128,24 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     boxSize->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::BOX && !currForce->infinityRange);
     radiusWidget->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::SPHERE && !currForce->infinityRange);
     shapeComboBox->setVisible(!currForce->infinityRange);
+    shapeLabel->setVisible(!currForce->infinityRange);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
 
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
         if (LayerDragForceWidgetDetail::shapeMap[i].shape == currForce->shape)
+        {
             shapeComboBox->setCurrentIndex(i);
+            break;
+        }
+
+    DAVA::int32 timingTypes = sizeof(LayerDragForceWidgetDetail::timingMap) / sizeof(*LayerDragForceWidgetDetail::timingMap);
+    for (DAVA::int32 i = 0; i < timingTypes; ++i)
+        if (LayerDragForceWidgetDetail::timingMap[i].timingType == currForce->timingType)
+        {
+            timingTypeComboBox->setCurrentIndex(i);
+            break;
+        }
 
     blockSignals = false;
 }
@@ -132,10 +173,13 @@ void LayerDragForceWidget::OnValueChanged()
         return;
 
     DAVA::ParticleDragForce::eShape shape = LayerDragForceWidgetDetail::shapeMap[shapeComboBox->currentIndex()].shape;
+    DAVA::ParticleDragForce::eTimingType timingType = LayerDragForceWidgetDetail::timingMap[timingTypeComboBox->currentIndex()].timingType;
+
     CommandUpdateParticleDragForce::ForceParams params;
     params.isActive = isActive->isChecked();
     params.forceName = forceNameEdit->text().toStdString();
     params.shape = shape;
+    params.timingType = timingType;
     params.boxSize = boxSize->GetValue();
     params.forcePower = forcePower->GetValue();
     params.useInfinityRange = infinityRange->isChecked();
@@ -144,11 +188,23 @@ void LayerDragForceWidget::OnValueChanged()
     boxSize->setVisible(shape == DAVA::ParticleDragForce::eShape::BOX && !params.useInfinityRange);
     radiusWidget->setVisible(shape == DAVA::ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);
     shapeComboBox->setVisible(!params.useInfinityRange);
+    shapeLabel->setVisible(!params.useInfinityRange);
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
 
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
         if (LayerDragForceWidgetDetail::shapeMap[i].shape == shape)
+        {
             shapeComboBox->setCurrentIndex(i);
+            break;
+        }
+
+    DAVA::int32 timingTypes = sizeof(LayerDragForceWidgetDetail::timingMap) / sizeof(*LayerDragForceWidgetDetail::timingMap);
+    for (DAVA::int32 i = 0; i < timingTypes; ++i)
+        if (LayerDragForceWidgetDetail::timingMap[i].timingType == timingType)
+        {
+            timingTypeComboBox->setCurrentIndex(i);
+            break;
+        }
 
     std::unique_ptr<CommandUpdateParticleDragForce> updateDragForceCmd(new CommandUpdateParticleDragForce(layer, forceIndex, std::move(params)));
 

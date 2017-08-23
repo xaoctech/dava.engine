@@ -336,6 +336,7 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.forcePower = force->forcePower;
         oldParams.shape = force->shape;
         oldParams.forceName = force->forceName;
+        oldParams.timingType = force->timingType;
     }
 }
 
@@ -361,6 +362,7 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
         force->shape = params.shape;
         force->infinityRange = params.useInfinityRange;
         force->forceName = params.forceName;
+        force->timingType = params.timingType;
     }
 }
 

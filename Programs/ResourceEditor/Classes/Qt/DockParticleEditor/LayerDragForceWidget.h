@@ -39,7 +39,9 @@ protected slots:
     void OnValueChanged();
 
 private:
+    QLabel* shapeLabel = nullptr;
     WheellIgnorantComboBox* shapeComboBox = nullptr;
+    WheellIgnorantComboBox* timingTypeComboBox = nullptr;
     QVBoxLayout* mainLayout = nullptr;
     ParticleVector3Widget* boxSize = nullptr;
     ParticleVector3Widget* forcePower = nullptr;

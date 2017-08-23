@@ -434,6 +434,7 @@ public:
         DAVA::Vector3 boxSize;
         DAVA::Vector3 forcePower;
         DAVA::ParticleDragForce::eShape shape = DAVA::ParticleDragForce::eShape::BOX;
+        DAVA::ParticleDragForce::eTimingType timingType = DAVA::ParticleDragForce::eTimingType::CONSTANT;
     };
 
     CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params);
