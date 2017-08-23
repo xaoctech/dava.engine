@@ -493,7 +493,7 @@ PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
         }
     }
 
-    log << __FUNCTION__ << " requestedPackName: " << requestedPackName << std::endl;
+    log << " requested: " << requestedPackName << std::endl;
 
     Vector<uint32> packIndexes = meta->GetFileIndexes(requestedPackName);
 
@@ -605,7 +605,7 @@ void DLCManagerImpl::AskFooter()
                 uint32 sizeofFooter = static_cast<uint32>(sizeof(initFooterOnServer));
 
                 memBufWriter.reset(new MemoryBufferWriter(&initFooterOnServer, sizeofFooter));
-                downloadTask = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, sizeofFooter));
+                downloadTask = downloader->StartTask(urlToSuperPack, memBufWriter, DLCDownloader::Range(downloadOffset, sizeofFooter));
                 if (nullptr == downloadTask)
                 {
                     DAVA_THROW(Exception, "can't start get_size task with url: " + urlToSuperPack);
@@ -864,7 +864,7 @@ void DLCManagerImpl::AskServerMeta()
 
     memBufWriter.reset(new MemoryBufferWriter(buffer.data(), buffer.size()));
 
-    downloadTask = downloader->StartTask(urlToSuperPack, *memBufWriter, DLCDownloader::Range(downloadOffset, downloadSize));
+    downloadTask = downloader->StartTask(urlToSuperPack, memBufWriter, DLCDownloader::Range(downloadOffset, downloadSize));
     if (nullptr == downloadTask)
     {
         DAVA_THROW(Exception, "can't start download task into memory buffer");
@@ -1206,7 +1206,7 @@ const DLCManager::IRequest* DLCManagerImpl::RequestPack(const String& packName)
 {
     DVASSERT(Thread::IsMainThread());
 
-    log << __FUNCTION__ << " packName: " << packName << std::endl;
+    log << "requested: " << packName << std::endl;
 
     auto itPreloaded = preloadedPacks.find(packName);
     if (end(preloadedPacks) != itPreloaded)
@@ -1346,12 +1346,12 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     for (size_t indexOfFile = 0; indexOfFile < size; ++indexOfFile)
     {
         const auto& fileData = files[indexOfFile];
-        uint64 fullFileSize = fileData.compressedSize + sizeof(LitePack::Footer);
-        progress.total += fullFileSize;
+        uint64 compressedSize = fileData.compressedSize;
+        progress.total += compressedSize;
 
         if (IsFileReady(indexOfFile))
         {
-            progress.alreadyDownloaded += fullFileSize;
+            progress.alreadyDownloaded += compressedSize;
         }
         else
         {
@@ -1359,7 +1359,7 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
             const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(fileData.metaIndex);
             if (requestManager->IsInQueue(packInfo.packName))
             {
-                progress.inQueue += fullFileSize;
+                progress.inQueue += compressedSize;
             }
         }
     }

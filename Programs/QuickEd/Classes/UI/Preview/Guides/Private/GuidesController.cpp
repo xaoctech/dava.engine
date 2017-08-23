@@ -26,7 +26,7 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
     , container(container_)
     , canvasDataAdapter(accessor)
 {
-    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &GuidesController::SyncGuidesWithValues);
 
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());

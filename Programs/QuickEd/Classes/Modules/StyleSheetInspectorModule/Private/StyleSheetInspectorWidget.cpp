@@ -87,7 +87,7 @@ void StyleSheetInspectorWidget::Update()
     }
 
     UIStyleSheetProcessDebugData debugData;
-    UIControlSystem::Instance()->GetStyleSheetSystem()->DebugControl(currentControl.Get(), &debugData);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->DebugControl(currentControl.Get(), &debugData);
 
     QFont boldFont;
     boldFont.setBold(true);
