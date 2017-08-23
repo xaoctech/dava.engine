@@ -28,7 +28,6 @@ SceneParser::SceneParser(BeastManager* _beastManager, DAVA::Function<void()> par
 SceneParser::~SceneParser()
 {
     ClearScene();
-    DVASSERT(false);
 
     if (thumbnailsRequestId != DAVA::LandscapeThumbnails::InvalidID)
     {
