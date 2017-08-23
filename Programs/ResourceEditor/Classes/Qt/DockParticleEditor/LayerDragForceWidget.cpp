@@ -85,6 +85,8 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     forcePower = new ParticleVector3Widget("Force power", DAVA::Vector3::Zero);
     connect(forcePower, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
 
+    forcePowerLabel = new QLabel("Force power:");
+    mainLayout->addWidget(forcePowerLabel);
     forcePowerTimeLine = new TimeLineWidget(this);
     mainLayout->addWidget(forcePowerTimeLine);
     connect(forcePowerTimeLine, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
@@ -137,6 +139,10 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     shapeComboBox->setVisible(!currForce->isInfinityRange);
     shapeLabel->setVisible(!currForce->isInfinityRange);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
+
+    forcePower->setVisible(currForce->timingType == DAVA::ParticleDragForce::eTimingType::CONSTANT);
+    forcePowerTimeLine->setVisible(currForce->timingType != DAVA::ParticleDragForce::eTimingType::CONSTANT);
+    forcePowerLabel->setVisible(currForce->timingType != DAVA::ParticleDragForce::eTimingType::CONSTANT);
 
     static const DAVA::Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
     static const DAVA::Vector<QString> legends{ "Force x", "Force y", "Force z" };
@@ -213,6 +219,10 @@ void LayerDragForceWidget::OnValueChanged()
     radiusWidget->setVisible(shape == DAVA::ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);
     shapeComboBox->setVisible(!params.useInfinityRange);
     shapeLabel->setVisible(!params.useInfinityRange);
+    forcePower->setVisible(timingType == DAVA::ParticleDragForce::eTimingType::CONSTANT);
+    forcePowerTimeLine->setVisible(timingType != DAVA::ParticleDragForce::eTimingType::CONSTANT);
+    forcePowerLabel->setVisible(timingType != DAVA::ParticleDragForce::eTimingType::CONSTANT);
+
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
 
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
