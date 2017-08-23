@@ -85,6 +85,10 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     forcePower = new ParticleVector3Widget("Force power", DAVA::Vector3::Zero);
     connect(forcePower, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
 
+    forcePowerTimeLine = new TimeLineWidget(this);
+    mainLayout->addWidget(forcePowerTimeLine);
+    connect(forcePowerTimeLine, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
+
     radiusWidget = new QWidget();
     mainLayout->addWidget(radiusWidget);
     QHBoxLayout* layout = new QHBoxLayout(radiusWidget);
@@ -112,6 +116,9 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
+    using LineWrapper = DAVA::PropLineWrapper<DAVA::Vector3>;
+    using LineHelper = DAVA::PropertyLineHelper;
+
     if (!layer_ || layer_->GetDragForces().size() <= forceIndex_ || blockSignals)
         return;
 
@@ -130,6 +137,13 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     shapeComboBox->setVisible(!currForce->isInfinityRange);
     shapeLabel->setVisible(!currForce->isInfinityRange);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
+
+    static const DAVA::Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
+    static const DAVA::Vector<QString> legends{ "Force x", "Force y", "Force z" };
+
+    forcePowerTimeLine->Init(0, 1, updateMinimized, true, false);
+    forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(currForce->forcePowerLine)).GetProps(), colors, legends);
+    forcePowerTimeLine->EnableLock(true);
 
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
     for (DAVA::int32 i = 0; i < shapeTypes; ++i)
@@ -161,7 +175,7 @@ void LayerDragForceWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps
         return;
 
     DAVA::KeyedArchive* props = new DAVA::KeyedArchive();
-    forceTimeLine->GetVisualState(props);
+    forcePowerTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("FORCE_PROPS", props);
     DAVA::SafeRelease(props);
 }
@@ -170,7 +184,7 @@ void LayerDragForceWidget::RestoreVisualState(DAVA::KeyedArchive* visualStatePro
 {
     if (!visualStateProps)
         return;
-    forceTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_PROPS"));
+    forcePowerTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_PROPS"));
 }
 
 void LayerDragForceWidget::OnValueChanged()
@@ -181,6 +195,9 @@ void LayerDragForceWidget::OnValueChanged()
     DAVA::ParticleDragForce::eShape shape = LayerDragForceWidgetDetail::shapeMap[shapeComboBox->currentIndex()].shape;
     DAVA::ParticleDragForce::eTimingType timingType = LayerDragForceWidgetDetail::timingMap[timingTypeComboBox->currentIndex()].timingType;
 
+    DAVA::PropLineWrapper<DAVA::Vector3> propForce;
+    forcePowerTimeLine->GetValues(propForce.GetPropsPtr());
+
     CommandUpdateParticleDragForce::ForceParams params;
     params.isActive = isActive->isChecked();
     params.forceName = forceNameEdit->text().toStdString();
@@ -190,6 +207,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.forcePower = forcePower->GetValue();
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
+    params.forcePowerLine = propForce.GetPropLine();
 
     boxSize->setVisible(shape == DAVA::ParticleDragForce::eShape::BOX && !params.useInfinityRange);
     radiusWidget->setVisible(shape == DAVA::ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);

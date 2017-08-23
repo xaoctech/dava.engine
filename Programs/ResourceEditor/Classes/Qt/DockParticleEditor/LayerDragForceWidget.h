@@ -50,7 +50,7 @@ private:
     QWidget* radiusWidget = nullptr;
     EventFilterDoubleSpinBox* radiusSpin = nullptr;
     QLineEdit* forceNameEdit = nullptr;
-    TimeLineWidget* forceTimeLine = nullptr;
+    TimeLineWidget* forcePowerTimeLine = nullptr;
 
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;
