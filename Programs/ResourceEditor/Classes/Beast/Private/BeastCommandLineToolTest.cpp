@@ -3,18 +3,19 @@
 #if defined(__DAVAENGINE_BEAST__)
 
 #include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
-#include "TArc/Testing/TArcUnitTests.h"
 
-#include "Base/BaseTypes.h"
-#include "FileSystem/FileSystem.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Material/NMaterial.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/SceneFileV2.h"
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
+
+#include <Base/BaseTypes.h>
+#include <FileSystem/FileSystem.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderBatch.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Material/NMaterial.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/SceneFileV2.h>
 
 namespace BCLTestDetail
 {
