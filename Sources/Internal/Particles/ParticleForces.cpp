@@ -47,7 +47,7 @@ bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force
 
 void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt)
 {
-    if (!force->infinityRange)
+    if (!force->isInfinityRange)
     {
         if (!IsPositionInForceShape(parent, force, effectSpacePosition))
             return;

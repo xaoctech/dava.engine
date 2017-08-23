@@ -820,7 +820,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         const YamlNode* rangeNode = node->Get(forceDataName);
         if (rangeNode)
         {
-            dragForce->infinityRange = rangeNode->AsBool();
+            dragForce->isInfinityRange = rangeNode->AsBool();
         }
 
         forceDataName = Format("dragForcePower%d", i);
@@ -859,6 +859,9 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             String name = timingNode->AsString();
             dragForce->timingType = ParticleLayerDetail::StringToForceTimingType(name, ForceTimingType::CONSTANT);
         }
+
+        RefPtr<PropertyLine<Vector3>> forcePowerLine = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("dragForceLine%d", i)));
+        dragForce->forcePowerLine = forcePowerLine;
 
         AddDrag(dragForce);
         dragForce->Release();
@@ -1298,7 +1301,7 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->rotation);
 
         forceDataName = Format("dragForceInfinityRange%d", i);
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->infinityRange);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->isInfinityRange);
 
         forceDataName = Format("dragForcePower%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePower);
@@ -1314,6 +1317,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("dragForceTimingType%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, ParticleLayerDetail::ForceTimingTypeToString(currentForce->timingType, "const"));
+
+        forceDataName = Format("dragForceLine%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePowerLine);
     }
 }
 
@@ -1365,6 +1371,10 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     {
         forces[i]->GetModifableLines(modifiables);
     }
+
+    size_t dragForcesCount = dragForces.size();
+    for (size_t i = 0; i < dragForcesCount; ++i)
+        dragForces[i]->GetModifableLines(modifiables);
 
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitter)
     {

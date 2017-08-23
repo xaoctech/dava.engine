@@ -4,6 +4,7 @@
 
 #include "Math/Vector.h"
 #include "Math/Matrix4.h"
+#include "Particles/ParticlePropertyLine.h"
 
 namespace DAVA
 {
@@ -24,6 +25,7 @@ public:
         OVER_LAYER_LIFE,
         OVER_PARTICLE_LIFE
     } timingType = eTimingType::CONSTANT;
+
     enum class eType
     {
         DRAG_FORCE,
@@ -45,9 +47,11 @@ public:
 
     Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
     Vector3 forcePower{ 1.0f, 1.0f, 1.0f };
+    RefPtr<PropertyLine<Vector3>> forcePowerLine;
     float32 radius = 1.0f;
 
-    bool infinityRange = true;
+    bool isInfinityRange = true;
+    void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
 public:
     INTROSPECTION_EXTEND(ParticleDragForce, BaseObject, nullptr)

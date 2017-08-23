@@ -120,15 +120,15 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     blockSignals = true;
 
     DAVA::ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
-    infinityRange->setChecked(currForce->infinityRange);
+    infinityRange->setChecked(currForce->isInfinityRange);
     isActive->setChecked(currForce->isActive);
     boxSize->SetValue(currForce->boxSize);
     forcePower->SetValue(currForce->forcePower);
     radiusSpin->setValue(currForce->radius);
-    boxSize->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::BOX && !currForce->infinityRange);
-    radiusWidget->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::SPHERE && !currForce->infinityRange);
-    shapeComboBox->setVisible(!currForce->infinityRange);
-    shapeLabel->setVisible(!currForce->infinityRange);
+    boxSize->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::BOX && !currForce->isInfinityRange);
+    radiusWidget->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::SPHERE && !currForce->isInfinityRange);
+    shapeComboBox->setVisible(!currForce->isInfinityRange);
+    shapeLabel->setVisible(!currForce->isInfinityRange);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
 
     DAVA::int32 shapeTypes = sizeof(LayerDragForceWidgetDetail::shapeMap) / sizeof(*LayerDragForceWidgetDetail::shapeMap);
@@ -159,12 +159,18 @@ void LayerDragForceWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps
 {
     if (!visualStateProps)
         return;
+
+    DAVA::KeyedArchive* props = new DAVA::KeyedArchive();
+    forceTimeLine->GetVisualState(props);
+    visualStateProps->SetArchive("FORCE_PROPS", props);
+    DAVA::SafeRelease(props);
 }
 
 void LayerDragForceWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps)
 {
     if (!visualStateProps)
         return;
+    forceTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_PROPS"));
 }
 
 void LayerDragForceWidget::OnValueChanged()

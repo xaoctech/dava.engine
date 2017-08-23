@@ -215,7 +215,7 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
 
 void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
 {
-    if (force->infinityRange)
+    if (force->isInfinityRange)
         return;
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->shape == DAVA::ParticleDragForce::eShape::BOX)
