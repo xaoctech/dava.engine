@@ -17,8 +17,10 @@
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/Utils.h>
 #include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
+#include <TArc/Controls/PropertyPanel/Private/TextComponentValue.h>
 
 #include <Scene3D/Systems/SlotSystem.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>
@@ -653,6 +655,15 @@ private:
     }
 };
 
+class SlotNameComponentValue : public DAVA::TArc::TextComponentValue
+{
+public:
+    bool IsReadOnly() const override
+    {
+        return DAVA::TArc::TextComponentValue::IsReadOnly() || GetAccessor()->GetGlobalContext()->GetData<SlotSystemSettings>()->autoGenerateSlotNames;
+    }
+};
+
 void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
 {
     if (parent->propertyType == SlotPreviewProperty ||
@@ -736,8 +747,49 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
         return std::make_unique<SlotTemplateComponentValue>();
     }
 
+    if (node->field.key == DAVA::SlotComponent::SlotNameFieldName)
+    {
+        DAVA::ReflectedObject obj = node->field.ref.GetDirectObject();
+        if (obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::SlotComponent>())
+        {
+            return std::make_unique<SlotNameComponentValue>();
+        }
+    }
+
     return EditorComponentExtension::GetEditor(node);
 }
+
+class GenerateUniqueName : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Unique slot name generated";
+        info.tooltip = "Generate unique slot name";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/rebuild_name.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::ReflectedObject slotObject = node->field.ref.GetDirectObject();
+        DAVA::SlotComponent* component = slotObject.GetPtr<DAVA::SlotComponent>();
+
+        DAVA::FastName name = EditorSlotSystem::GenerateUniqueSlotName(component);
+
+        return std::make_unique<SetFieldValueCommand>(node->field, name);
+    }
+
+private:
+    DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
+};
 
 class InvalidateSlotConfigCache : public DAVA::M::CommandProducer
 {
@@ -776,6 +828,14 @@ public:
 private:
     DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
 };
+
+DAVA::M::CommandProducerHolder CreateSlotNameCommandProvider()
+{
+    DAVA::M::CommandProducerHolder holder;
+    holder.AddCommandProducer(std::make_shared<GenerateUniqueName>());
+
+    return holder;
+}
 
 DAVA::M::CommandProducerHolder CreateSlotConfigCommandProvider()
 {

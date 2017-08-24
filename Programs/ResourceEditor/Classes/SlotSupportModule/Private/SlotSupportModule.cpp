@@ -17,6 +17,7 @@
 
 #include <Entity/Component.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include "../SlotSystemSettings.h"
 
 namespace SlotSupportModuleDetails
 {
@@ -51,6 +52,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotSupportModule)
     DAVA::ReflectionRegistrator<SlotSupportModule>::Begin()
     .ConstructorByPointer()
     .End();
+}
+
+SlotSupportModule::SlotSupportModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SlotSystemSettings);
 }
 
 void SlotSupportModule::OnContextCreated(DAVA::TArc::DataContext* context)

@@ -80,19 +80,9 @@ const char* SceneData::scenePathPropertyName = "ScenePath";
 const char* SceneData::sceneLandscapeToolsPropertyName = "EnabledLandscapeTools";
 const char* SceneData::sceneHUDVisiblePropertyName = "sceneHUDVisiblePropertyName";
 
-void GlobalSceneSettings::Load(const DAVA::TArc::PropertiesItem& settingsNode)
-{
-    ReflectedLoad(settingsNode);
-}
-
-void GlobalSceneSettings::Save(DAVA::TArc::PropertiesItem& settingsNode) const
-{
-    ReflectedSave(settingsNode);
-}
-
 DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
 {
-    DAVA::ReflectionRegistrator<GlobalSceneSettings>::Begin()[DAVA::M::DisplayName("Scene"), DAVA::M::SettingsSortKey(1)]
+    DAVA::ReflectionRegistrator<GlobalSceneSettings>::Begin()[DAVA::M::DisplayName("Scene"), DAVA::M::SettingsSortKey(90)]
     .ConstructorByPointer()
     .Field("openLastScene", &GlobalSceneSettings::openLastScene)[DAVA::M::DisplayName("Open last opened scene on launch")]
     .Field("dragAndDropWithShift", &GlobalSceneSettings::dragAndDropWithShift)[DAVA::M::DisplayName("Drag'n'Drop with shift")]
@@ -121,9 +111,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
     .Field("debugBoxUserScale", &GlobalSceneSettings::debugBoxUserScale)[DAVA::M::DisplayName("Box user scale"), DAVA::M::Group("Debug draw")]
     .Field("debugBoxParticleScale", &GlobalSceneSettings::debugBoxParticleScale)[DAVA::M::DisplayName("Box particle scale"), DAVA::M::Group("Debug draw")]
     .Field("debugBoxWaypointScale", &GlobalSceneSettings::debugBoxWaypointScale)[DAVA::M::DisplayName("Box waypoint scale"), DAVA::M::Group("Debug draw")]
-    .Field("slotBoxColor", &GlobalSceneSettings::slotBoxColor)[DAVA::M::DisplayName("Slot box color"), DAVA::M::Group("Debug draw")]
-    .Field("slotBoxEdgesColor", &GlobalSceneSettings::slotBoxEdgesColor)[DAVA::M::DisplayName("Slot edge color"), DAVA::M::Group("Debug draw")]
-    .Field("slotPivotColor", &GlobalSceneSettings::slotPivotColor)[DAVA::M::DisplayName("Slot pivot color"), DAVA::M::Group("Debug draw")]
     .Field("drawSoundObjects", &GlobalSceneSettings::drawSoundObjects)[DAVA::M::DisplayName("Draw sound objects"), DAVA::M::Group("Sound")]
     .Field("soundObjectBoxColor", &GlobalSceneSettings::soundObjectBoxColor)[DAVA::M::DisplayName("Sound box color"), DAVA::M::Group("Sound")]
     .Field("soundObjectSphereColor", &GlobalSceneSettings::soundObjectSphereColor)[DAVA::M::DisplayName("Sound sphere color"), DAVA::M::Group("Sound")]

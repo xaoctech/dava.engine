@@ -158,9 +158,6 @@ public:
         LOAD_SETTING(globalSceneSettings, soundObjectSphereColor, Scene_Sound_SoundObjectSphereColor, AsColor);
         globalSceneSettings->grabSizeWidth = GetValue(Scene_Grab_Size_Width, static_cast<DAVA::int32>(globalSceneSettings->grabSizeWidth)).AsInt32();
         globalSceneSettings->grabSizeHeight = GetValue(Scene_Grab_Size_Width, static_cast<DAVA::int32>(globalSceneSettings->grabSizeHeight)).AsInt32();
-        LOAD_SETTING(globalSceneSettings, slotBoxColor, Scene_Slot_Box_Color, AsColor);
-        LOAD_SETTING(globalSceneSettings, slotBoxEdgesColor, Scene_Slot_Box_Edges_Color, AsColor);
-        LOAD_SETTING(globalSceneSettings, slotPivotColor, Scene_Slot_Pivot_Color, AsColor);
 
         internalSettings->textureViewGPU = GetEnumValue(Internal_TextureViewGPU, internalSettings->textureViewGPU);
         internalSettings->spritesViewGPU = GetEnumValue(Internal_SpriteViewGPU, internalSettings->spritesViewGPU);
