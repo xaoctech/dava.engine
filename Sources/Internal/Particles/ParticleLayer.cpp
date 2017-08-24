@@ -18,21 +18,19 @@ struct ShapeMap
     ForceShape shape;
     String shapeName;
 };
-const ShapeMap shapeMap[] =
-{
+const Array<ShapeMap, 2> shapeMap =
+{{
     { ForceShape::BOX, "box" },
     { ForceShape::SPHERE, "sphere" }
-};
-
-int32 shapesCount = sizeof(shapeMap) / sizeof(*shapeMap);
+}};
 
 ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultShape)
 {
-    for (int32 i = 0; i < shapesCount; ++i)
+    for (const ShapeMap& shapeElem : shapeMap)
     {
-        if (shapeMap[i].shapeName == shapeTypeName)
+        if (shapeElem.shapeName == shapeTypeName)
         {
-            return shapeMap[i].shape;
+            return shapeElem.shape;
         }
     }
     return defaultShape;
@@ -40,11 +38,11 @@ ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultSha
 
 String ForceShapeToString(ForceShape shapeType, const String& defaultShapeName)
 {
-    for (int32 i = 0; i < shapesCount; ++i)
+    for (const ShapeMap& shapeElem : shapeMap)
     {
-        if (shapeMap[i].shape == shapeType)
+        if (shapeElem.shape == shapeType)
         {
-            return shapeMap[i].shapeName;
+            return shapeElem.shapeName;
         }
     }
     return defaultShapeName;
@@ -55,31 +53,29 @@ struct TimingTypeMap
     ForceTimingType timingType;
     String typeName;
 };
-const TimingTypeMap timingTypesMap[]
-{
+const Array<TimingTypeMap, 3> timingTypesMap =
+{{
     { ForceTimingType::CONSTANT, "const" },
     { ForceTimingType::OVER_LAYER_LIFE, "ovr_layer" },
     { ForceTimingType::OVER_PARTICLE_LIFE, "ovr_prt" }
-};
-
-int32 timingTypesCount = sizeof(timingTypesMap) / sizeof(*timingTypesMap);
+}};
 
 ForceTimingType StringToForceTimingType(const String& typeName, ForceTimingType defaultTimingType) // TODO: template?
 {
-    for (int32 i = 0; i < timingTypesCount; ++i)
+    for (const TimingTypeMap& e : timingTypesMap)
     {
-        if (timingTypesMap[i].typeName == typeName)
-            return timingTypesMap[i].timingType;
+        if (e.typeName == typeName)
+            return e.timingType;
     }
     return defaultTimingType;
 }
 
 String ForceTimingTypeToString(ForceTimingType timingType, const String& defaultTimingTypeName)
 {
-    for (int32 i = 0; i < timingTypesCount; ++i)
+    for (const TimingTypeMap& e : timingTypesMap)
     {
-        if (timingTypesMap[i].timingType == timingType)
-            return timingTypesMap[i].typeName;
+        if (e.timingType == timingType)
+            return e.typeName;
     }
     return defaultTimingTypeName;
 }
