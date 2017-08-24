@@ -144,17 +144,6 @@ public:
     uint32 loadedVersion = 0;
     void CollapseOldEffect(SerializationContext* serializationContext);
 
-    INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-                         MEMBER(repeatsCount, "repeatsCount", I_VIEW | I_EDIT | I_SAVE)
-                         MEMBER(stopWhenEmpty, "stopWhenEmpty", I_VIEW | I_EDIT | I_SAVE)
-                         MEMBER(effectDuration, "effectDuration", I_VIEW | I_EDIT | I_SAVE)
-                         MEMBER(clearOnRestart, "clearOnRestart", I_VIEW | I_EDIT | I_SAVE)
-
-                         PROPERTY("startFromTime", "Start From Time", GetStartFromTime, SetStartFromTime, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visibleReflection", "Visible Reflection", GetReflectionVisible, SetReflectionVisible, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visibleRefraction", "Visible Refraction", GetRefractionVisible, SetRefractionVisible, I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(ParticleEffectComponent, Component);
 };
 

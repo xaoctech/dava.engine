@@ -1,12 +1,12 @@
 #include "Scene/System/CollisionSystem/CollisionBox.h"
 
-CollisionBox::CollisionBox(Selectable::Object* object, btCollisionWorld* word, const DAVA::Vector3& position, DAVA::float32 boxSize)
+CollisionBox::CollisionBox(const DAVA::Any& object, btCollisionWorld* word, const DAVA::Vector3& position, DAVA::float32 boxSize)
     : CollisionBaseObject(object, word)
 {
     Initialize(object, word, position, DAVA::Vector3(boxSize, boxSize, boxSize));
 }
 
-CollisionBox::CollisionBox(Selectable::Object* object, btCollisionWorld* word, const DAVA::Vector3& position, const DAVA::Vector3& boxSize)
+CollisionBox::CollisionBox(const DAVA::Any& object, btCollisionWorld* word, const DAVA::Vector3& position, const DAVA::Vector3& boxSize)
     : CollisionBaseObject(object, word)
 {
     Initialize(object, word, position, boxSize);
@@ -22,7 +22,7 @@ CollisionBox::~CollisionBox()
     }
 }
 
-void CollisionBox::Initialize(Selectable::Object* object_, btCollisionWorld* world_, const DAVA::Vector3& position_, const DAVA::Vector3& boxSize_)
+void CollisionBox::Initialize(const DAVA::Any& object_, btCollisionWorld* world_, const DAVA::Vector3& position_, const DAVA::Vector3& boxSize_)
 {
     if (world_ != nullptr)
     {

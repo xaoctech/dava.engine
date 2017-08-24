@@ -355,7 +355,7 @@ void MovieViewControl::SetNativePositionAndSize(const Rect& rect)
 
 Rect MovieViewControl::VirtualToWindow(const Rect& srcRect) const
 {
-    VirtualCoordinatesSystem* coordSystem = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* coordSystem = GetEngineContext()->uiControlSystem->vcs;
     return coordSystem->ConvertVirtualToInput(srcRect);
 }
 
