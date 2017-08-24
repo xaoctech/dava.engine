@@ -1,10 +1,11 @@
 #pragma once
 
+#include <Base/BaseTypes.h>
+
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
 
 #include "MMNetProto.h"
 
-#include <Base/BaseTypes.h>
 #include <Network/NetService.h>
 #include <MemoryManager/MemoryManagerTypes.h>
 
