@@ -17,8 +17,8 @@ namespace LayerDragForceWidgetDetail
 {
 struct ShapeMap
 {
-    DAVA::ParticleDragForce::eShape shape;
-    QString shapeName;
+    DAVA::ParticleDragForce::eShape elemType;
+    QString name;
 };
 const Array<ShapeMap, 2> shapeMap =
 {{
@@ -28,7 +28,7 @@ const Array<ShapeMap, 2> shapeMap =
 
 struct TimingMap
 {
-    DAVA::ParticleDragForce::eTimingType timingType;
+    DAVA::ParticleDragForce::eTimingType elemType;
     QString name;
 };
 const Array<TimingMap, 3> timingMap =
@@ -37,6 +37,20 @@ const Array<TimingMap, 3> timingMap =
     { DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
     { DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life"}
 }};
+
+template <typename T, typename U, size_t sz>
+int ElementToIndex(T elem, const Array<U, sz> map)
+{
+    for (size_t i = 0; i < map.size(); ++i)
+    {
+        if (map[i].elemType == elem)
+        {
+            return static_cast<int>(i);
+        }
+    }
+
+    return -1;
+}
 }
 
 LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
@@ -98,7 +112,7 @@ void LayerDragForceWidget::BuildShapeSection()
 
     shapeComboBox = new WheellIgnorantComboBox();
     for (size_t i = 0; i < shapeMap.size(); ++i)
-        shapeComboBox->addItem(shapeMap[i].shapeName);
+        shapeComboBox->addItem(shapeMap[i].name);
     connect(shapeComboBox, SIGNAL(currentIndexChanged(int)),
         this,
         SLOT(OnValueChanged()));
@@ -186,23 +200,8 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(currForce->forcePowerLine)).GetProps(), colors, legends);
     forcePowerTimeLine->EnableLock(true);
 
-    for (size_t i = 0; i < shapeMap.size(); ++i)
-    {
-        if (shapeMap[i].shape == currForce->shape)
-        {
-            shapeComboBox->setCurrentIndex(static_cast<int>(i));
-            break;
-        }
-    }
-
-    for (size_t i = 0; i < timingMap.size(); ++i)
-    {
-        if (timingMap[i].timingType == currForce->timingType)
-        {
-            timingTypeComboBox->setCurrentIndex(static_cast<int>(i));
-            break;
-        }
-    }
+    shapeComboBox->setCurrentIndex(ElementToIndex(currForce->shape, shapeMap));
+    timingTypeComboBox->setCurrentIndex(ElementToIndex(currForce->timingType, timingMap));
 
     blockSignals = false;
 }
@@ -240,8 +239,8 @@ void LayerDragForceWidget::OnValueChanged()
     if (blockSignals)
         return;
 
-    Shape shape = shapeMap[shapeComboBox->currentIndex()].shape;
-    TimingType timingType = timingMap[timingTypeComboBox->currentIndex()].timingType;
+    Shape shape = shapeMap[shapeComboBox->currentIndex()].elemType;
+    TimingType timingType = timingMap[timingTypeComboBox->currentIndex()].elemType;
 
     PropLineWrapper<Vector3> propForce;
     forcePowerTimeLine->GetValues(propForce.GetPropsPtr());
@@ -259,23 +258,9 @@ void LayerDragForceWidget::OnValueChanged()
 
     UpdateVisibility(shape, timingType, params.useInfinityRange);
 
-    for (size_t i = 0; i < shapeMap.size(); ++i)
-    {
-        if (shapeMap[i].shape == shape)
-        {
-            shapeComboBox->setCurrentIndex(static_cast<int>(i));
-            break;
-        }
-    }
 
-    for (size_t i = 0; i < timingMap.size(); ++i)
-    {
-        if (timingMap[i].timingType == timingType)
-        {
-            timingTypeComboBox->setCurrentIndex(static_cast<int>(i));
-            break;
-        }
-    }
+    shapeComboBox->setCurrentIndex(ElementToIndex(shape, shapeMap));
+    timingTypeComboBox->setCurrentIndex(ElementToIndex(timingType, timingMap));
 
     std::unique_ptr<CommandUpdateParticleDragForce> updateDragForceCmd(new CommandUpdateParticleDragForce(layer, forceIndex, std::move(params)));
 
