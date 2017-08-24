@@ -20,6 +20,7 @@ DumpTool::DumpTool(const DAVA::Vector<DAVA::String>& commandLine)
 
     options.AddOption(OptionName::Links, VariantType(false), "Target for dumping is links");
     options.AddOption(OptionName::InDir, VariantType(String("")), "Path for Project/DataSource/3d/ folder");
+    options.AddOption(OptionName::ResourceDir, VariantType(String("")), "Path to resource dir");
     options.AddOption(OptionName::ProcessFile, VariantType(String("")), "Filename from DataSource/3d/ for dumping");
     options.AddOption(OptionName::QualityConfig, VariantType(String("")), "Full path for quality.yaml file");
     options.AddOption(OptionName::OutFile, VariantType(String("")), "Full path to file to write result of dumping");
@@ -37,14 +38,20 @@ bool DumpTool::PostInitInternal()
     }
     inFolder.MakeDirectoryPathname();
 
-    resourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+    resourceFolder = options.GetOption(OptionName::ResourceDir).AsString();
+
     if (resourceFolder.IsEmpty())
     {
-        resourceFolder = ProjectManagerData::GetDataPath(inFolder);
+        resourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+
         if (resourceFolder.IsEmpty())
         {
-            DAVA::Logger::Error("DataSource or Data folder was not found");
-            return false;
+            resourceFolder = ProjectManagerData::GetDataPath(inFolder);
+            if (resourceFolder.IsEmpty())
+            {
+                DAVA::Logger::Error("DataSource or Data folder was not found");
+                return false;
+            }
         }
     }
 

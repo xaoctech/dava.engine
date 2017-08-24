@@ -5,6 +5,8 @@ const DAVA::String OptionName::Output("-output");
 const DAVA::String OptionName::OutFile("-outfile");
 const DAVA::String OptionName::OutDir("-outdir");
 
+const DAVA::String OptionName::ResourceDir("-resourceDir");
+
 const DAVA::String OptionName::File("-file");
 const DAVA::String OptionName::ProcessFile("-processfile");
 
