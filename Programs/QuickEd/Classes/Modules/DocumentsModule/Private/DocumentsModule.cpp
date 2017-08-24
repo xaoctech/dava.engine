@@ -444,7 +444,10 @@ void DocumentsModule::DoGroupSelection()
 {
     CommandExecutor commandExecutor(GetAccessor(), GetUI());
     ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
-    GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    if (newGroupControl != nullptr)
+    {
+        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    }
 }
 
 void DocumentsModule::CreateViewActions()
