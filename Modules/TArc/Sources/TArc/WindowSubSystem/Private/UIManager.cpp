@@ -165,6 +165,11 @@ QAction* FindAction(QWidget* w, const QString& actionName)
 void InsertActionImpl(QMenu* menu, QAction* before, QAction* action)
 {
     menu->insertAction(before, action);
+    QLayout* layout = menu->layout();
+    if (layout != nullptr)
+    {
+        layout->invalidate();
+    }
 }
 
 void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
@@ -418,9 +423,17 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
         return;
     }
 
-    QAction* action = FindAction(currentLevelMenu, path.back());
-    currentLevelMenu->removeAction(action);
-    action->deleteLater();
+    QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(path.back());
+    if (menuToRemove != nullptr)
+    {
+        menuToRemove->deleteLater();
+    }
+    else
+    {
+        QAction* action = FindAction(currentLevelMenu, path.back());
+        currentLevelMenu->removeAction(action);
+        action->deleteLater();
+    }
 }
 
 void RemoveToolbarPoint(const QUrl& url, MainWindowInfo& windowInfo)

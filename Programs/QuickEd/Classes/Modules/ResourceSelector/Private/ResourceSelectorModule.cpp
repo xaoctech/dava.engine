@@ -3,9 +3,11 @@
 #include "Modules/ProjectModule/ProjectData.h"
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/DataProcessing/Common.h>
 #include <TArc/DataProcessing/SettingsNode.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
 
 #include <Engine/EngineContext.h>
@@ -24,7 +26,7 @@ public:
     {
         DAVA::ReflectionRegistrator<ResourceSelectorData>::Begin()
         .ConstructorByPointer()
-        .Field("preferredMode", &ResourceSelectorData::preferredMode)[M::HiddenField()]
+        .Field("preferredMode", &ResourceSelectorData::preferredMode)[DAVA::M::HiddenField()]
         .End();
     }
 };
@@ -86,12 +88,9 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
     UI* ui = GetUI();
     if (projectData == nullptr)
     { //project was closed
-        for (ActionDescriptor& descriptor : gfxActions)
-        {
-            ui->RemoveAction(descriptor.windowKey, descriptor.placement);
-        }
-
-        gfxActions.clear();
+        ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
+                                                                  << "Resources"));
+        ui->RemoveAction(DAVA::TArc::mainWindowKey, info);
     }
     else
     { //Project Opened
@@ -190,8 +189,6 @@ void ResourceSelectorModule::CreateAction(const QString& actionName, const QStri
     placementInfo.AddPlacementPoint(CreateMenuPoint(menuResources, { InsertionParams::eInsertionMethod::AfterItem, prevActionName }));
 
     GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
-
-    gfxActions.emplace_back(DAVA::TArc::mainWindowKey, placementInfo);
 }
 
 void ResourceSelectorModule::OnGraphicsSettingsChanged()
@@ -206,19 +203,21 @@ void ResourceSelectorModule::OnGraphicsSettingsChanged()
     DVASSERT(selectorData != nullptr);
 
     ProjectData* projectData = globalContext->GetData<ProjectData>();
-    DVASSERT(projectData != nullptr);
-    const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
-    int32 gfxCount = static_cast<int32>(gfxDirectories.size());
-    if (selectorData->preferredMode == gfxCount)
+    if (projectData != nullptr)
     {
-        const EngineContext* engineContext = GetEngineContext();
-        VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-
-        int32 index = vcs->GetDesirableResourceIndex();
-        if (resourceIndex != index)
+        const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
+        int32 gfxCount = static_cast<int32>(gfxDirectories.size());
+        if (selectorData->preferredMode == gfxCount)
         {
-            resourceIndex = index;
-            Sprite::ReloadSprites();
+            const EngineContext* engineContext = GetEngineContext();
+            VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
+
+            int32 index = vcs->GetDesirableResourceIndex();
+            if (resourceIndex != index)
+            {
+                resourceIndex = index;
+                Sprite::ReloadSprites();
+            }
         }
     }
 }

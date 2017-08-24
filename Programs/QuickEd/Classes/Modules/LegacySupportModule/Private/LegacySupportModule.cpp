@@ -16,6 +16,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/Qt/QtIcon.h>
 #include <TArc/DataProcessing/Common.h>
 
 #include <Tools/Version.h>

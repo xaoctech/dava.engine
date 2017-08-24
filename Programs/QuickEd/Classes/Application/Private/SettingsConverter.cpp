@@ -137,9 +137,12 @@ public:
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "PixelGridPreferences" });
-            pixelGridPreferences->gridColor = archive->GetColor("gridColor");
-            pixelGridPreferences->scaleToDisplay = archive->GetFloat("scaleToDisplay");
-            pixelGridPreferences->isVisible = archive->GetBool("isVisible");
+            if (archive != nullptr)
+            {
+                pixelGridPreferences->gridColor = archive->GetColor("gridColor");
+                pixelGridPreferences->scaleToDisplay = archive->GetFloat("scaleToDisplay");
+                pixelGridPreferences->isVisible = archive->GetBool("isVisible");
+            }
         }
 
         {
@@ -169,8 +172,11 @@ public:
     DAVA::KeyedArchive* GetArchive(const DAVA::Vector<DAVA::String>& path)
     {
         auto iter = unpackedArchive.find(path);
-        DVASSERT(iter != unpackedArchive.end());
-        return iter->second;
+        if (iter != unpackedArchive.end())
+        {
+            return iter->second;
+        }
+        return nullptr;
     }
 
 private:
