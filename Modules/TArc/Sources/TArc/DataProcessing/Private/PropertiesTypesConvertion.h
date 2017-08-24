@@ -1,5 +1,9 @@
 #pragma once
 
+#include "TArc/Qt/QtRect.h"
+#include "TArc/Qt/QtByteArray.h"
+#include "TArc/Qt/QtString.h"
+
 namespace DAVA
 {
 namespace TArc
@@ -8,6 +12,34 @@ template <>
 bool PropertiesItem::Impl::FromValue(const QJsonValue& value, const bool& defaultValue)
 {
     return value.toBool(defaultValue);
+}
+
+template <>
+int8 PropertiesItem::Impl::FromValue(const QJsonValue& value, const int8& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<int8>(value.toDouble(defaultValue));
+}
+
+template <>
+uint8 PropertiesItem::Impl::FromValue(const QJsonValue& value, const uint8& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<uint8>(value.toDouble(defaultValue));
+}
+
+template <>
+int16 PropertiesItem::Impl::FromValue(const QJsonValue& value, const int16& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<int16>(value.toDouble(defaultValue));
+}
+
+template <>
+uint16 PropertiesItem::Impl::FromValue(const QJsonValue& value, const uint16& defaultValue)
+{
+    //QJsonValue actually doesn't store int
+    return static_cast<uint16>(value.toDouble(defaultValue));
 }
 
 template <>
@@ -156,6 +188,30 @@ QJsonValue PropertiesItem::Impl::ToValue(const bool& value)
 }
 
 template <>
+QJsonValue PropertiesItem::Impl::ToValue(const int8& value)
+{
+    return QJsonValue(value);
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const uint8& value)
+{
+    return QJsonValue(static_cast<int32>(value));
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const int16& value)
+{
+    return QJsonValue(value);
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const uint16& value)
+{
+    return QJsonValue(static_cast<int32>(value));
+}
+
+template <>
 QJsonValue PropertiesItem::Impl::ToValue(const int32& value)
 {
     return QJsonValue(value);
@@ -166,6 +222,7 @@ QJsonValue PropertiesItem::Impl::ToValue(const uint32& value)
 {
     return QJsonValue(static_cast<int32>(value));
 }
+
 template <>
 QJsonValue PropertiesItem::Impl::ToValue(const int64& value)
 {

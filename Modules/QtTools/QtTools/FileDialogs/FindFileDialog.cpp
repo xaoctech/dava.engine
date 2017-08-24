@@ -1,8 +1,6 @@
 #include "QtTools/FileDialogs/FindFileDialog.h"
 #include "ui_FindFileDialog.h"
 
-#include "Preferences/PreferencesRegistrator.h"
-
 #include "Debug/DVAssert.h"
 #include "FileSystem/FilePath.h"
 
@@ -16,13 +14,7 @@
 #include <QAbstractItemView>
 #include <QKeyEvent>
 
-using namespace DAVA;
-
-REGISTER_PREFERENCES_ON_START(FindFileDialog,
-                              PREF_ARG("lastUsedPath", String())
-                              )
-
-QString FindFileDialog::GetFilePath(const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
+QString FindFileDialog::GetFilePath(DAVA::TArc::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
 {
     //Qt::Popup do not prevent us to show another dialog
     static bool shown = false;
@@ -32,7 +24,7 @@ QString FindFileDialog::GetFilePath(const FileSystemCache* fileSystemCache, cons
     }
     shown = true;
 
-    FindFileDialog dialog(fileSystemCache, extension, parent);
+    FindFileDialog dialog(fileSystemCache, extension, accessor->CreatePropertiesNode("FindFileDialog").Get<DAVA::String>("lastUsedPath"), parent);
     dialog.setModal(true);
     int retCode = dialog.exec();
 
@@ -45,9 +37,13 @@ QString FindFileDialog::GetFilePath(const FileSystemCache* fileSystemCache, cons
         if (fileInfo.isFile() && fileInfo.suffix().toLower() == extension.toLower())
         {
             dialog.lastUsedPath = filePath.toStdString();
-            return filePath;
         }
-        dialog.lastUsedPath = String();
+        else
+        {
+            dialog.lastUsedPath = DAVA::String();
+        }
+        accessor->CreatePropertiesNode("FindFileDialog").Set("lastUsedPath", dialog.lastUsedPath);
+        return filePath;
     }
     return QString();
 }
@@ -65,11 +61,11 @@ QAction* FindFileDialog::CreateFindInFilesAction(QWidget* parent)
     return findInFilesAction;
 }
 
-FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, QWidget* parent)
+FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, const DAVA::String& lastUsedPath_, QWidget* parent)
     : QDialog(parent, Qt::Popup)
     , ui(new Ui::FindFileDialog())
+    , lastUsedPath(lastUsedPath_)
 {
-    PreferencesStorage::Instance()->RegisterPreferences(this);
     QStringList files = projectStructure->GetFiles(extension);
 
     QStringList projectDirectories = projectStructure->GetTrackedDirectories();
@@ -94,11 +90,6 @@ FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QS
     {
         ui->lineEdit->setPlaceholderText(tr("Project not contains files with extension %1").arg(extension));
     }
-}
-
-FindFileDialog::~FindFileDialog()
-{
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
 }
 
 void FindFileDialog::Init(const QStringList& files)

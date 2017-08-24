@@ -11,17 +11,14 @@
 
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include "Classes/Settings/Settings.h"
-#include "Classes/Settings/SettingsManager.h"
-
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockDefine.h>
 #include <TArc/Testing/MockListener.h>
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/ContextAccessor.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <Base/Any.h>
 #include <FileSystem/FilePath.h>
@@ -360,19 +357,15 @@ private:
         TEST_VERIFY(openSceneWrapper.HasData() == false);
         if (openSceneWrapper.HasData() == false)
         {
-            bool oldValue = SettingsManager::GetValue(Settings::General_OpenLastSceneOnLaunch).AsBool();
-            SettingsManager::SetValue(Settings::General_OpenLastSceneOnLaunch, VariantType(true));
-
+            GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->openLastScene = true;
             InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
-
-            SettingsManager::SetValue(Settings::General_OpenLastSceneOnLaunch, VariantType(oldValue));
         }
 
         TEST_VERIFY(listener.testSucceed);
         CloseActiveScene();
     }
 
-    QtDelayedExecutor recentSceneDelayedExecutor;
+    DAVA::TArc::QtDelayedExecutor recentSceneDelayedExecutor;
     DAVA::TArc::DataWrapper openResentSceneWrapper;
     std::unique_ptr<OpenSavedSceneListener> recentSceneListener;
 

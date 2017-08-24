@@ -1,10 +1,10 @@
 #include "DockLODEditor/LODDistanceWidget.h"
 #include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
 
 #include "Utils/StringFormat.h"
 
 #include "Scene/System/EditorLODSystem.h"
+#include <TArc/Utils/Utils.h>
 
 #include <QLabel>
 #include <QLineEdit>
@@ -56,7 +56,7 @@ void LODDistanceWidget::CreateUI()
     deleteButton->setSizePolicy(sizePolicyButton);
     deleteButton->setMinimumSize(QSize(24, 24));
     deleteButton->setMaximumSize(QSize(24, 24));
-    deleteButton->setIcon(SharedIcon(":/QtIcons/remove.png"));
+    deleteButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/remove.png"));
     deleteButton->setToolTip("Remove geometry");
     deleteButton->setEnabled(active && canDelete);
     layout->addWidget(deleteButton);
@@ -89,7 +89,7 @@ void LODDistanceWidget::CreateUI()
     resetButton->setMaximumSize(QSize(24, 24));
     resetButton->setToolTip("Reset distance");
 
-    resetButton->setIcon(SharedIcon(":/QtIcons/reset.png"));
+    resetButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/reset.png"));
     layout->addWidget(resetButton);
 }
 

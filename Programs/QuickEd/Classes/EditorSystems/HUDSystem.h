@@ -2,7 +2,6 @@
 
 #include "EditorSystems/BaseEditorSystem.h"
 
-#include <Base/Introspection.h>
 #include <Math/Vector.h>
 
 namespace DAVA
@@ -16,8 +15,9 @@ class FieldBinder;
 
 class ControlContainer;
 class FrameControl;
+class ControlTransformationSettings;
 
-class HUDSystem : public DAVA::InspBase, public BaseEditorSystem
+class HUDSystem : public BaseEditorSystem
 {
 public:
     HUDSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
@@ -52,6 +52,9 @@ private:
     void UpdateHUDEnabled();
     void OnUpdate();
 
+    ControlTransformationSettings* GetSettings();
+    DAVA::TArc::ContextAccessor* GetAccessor();
+
     HUDAreaInfo activeAreaInfo;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
@@ -63,17 +66,5 @@ private:
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;
     SortedControlNodeSet sortedControlList;
     std::unique_ptr<ControlContainer> hoveredNodeControl;
-
-    bool showPivot;
-    bool showRotate;
-    DAVA::Vector2 minimumSelectionRectSize;
-
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-
-public:
-    INTROSPECTION(HUDSystem,
-                  MEMBER(showPivot, "Control Transformations/Can transform pivot", DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  MEMBER(showRotate, "Control Transformations/Can rotate control", DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  MEMBER(minimumSelectionRectSize, "Control Transformations/Minimum size of selection rect", DAVA::I_SAVE | DAVA::I_PREFERENCE)
-                  )
 };
