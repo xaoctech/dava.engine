@@ -8,18 +8,18 @@ namespace DAVA
 {
 namespace ParticleForces
 {
-void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife);
-void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife);
-void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife);
-Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife);
+void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
+void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
+Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 
-void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife)
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {
     if (!force->isActive)
         return;
     if (force->type == ParticleDragForce::eType::DRAG_FORCE)
     {
-        ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife);
+        ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
         return;
     }
 }
@@ -46,7 +46,7 @@ bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force
     return false;
 }
 
-void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife)
+void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {
     if (!force->isInfinityRange)
     {
@@ -54,21 +54,20 @@ void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& eff
             return;
     }
 
-    Vector3 forceStrength = force->forcePower* dt;
+    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife) * dt;
 
     Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z));
     effectSpaceVelocity *= v;
 }
 
 
-void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife)
+void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {}
-void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife)
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {}
 
-Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife)
+Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife)
 {
-
     if (force->timingType == ParticleDragForce::eTimingType::CONSTANT || force->forcePowerLine == nullptr)
         return force->forcePower;
 
@@ -76,7 +75,7 @@ Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife)
         return force->forcePowerLine->GetValue(particleOverLife);
 
     if (force->timingType == ParticleDragForce::eTimingType::OVER_LAYER_LIFE)
-        return force->forcePowerLine->GetValue(particleOverLife); // TODO
+        return force->forcePowerLine->GetValue(layerOverLife);
 
     return force->forcePower;
 }
