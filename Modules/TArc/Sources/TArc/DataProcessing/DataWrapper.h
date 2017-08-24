@@ -45,7 +45,6 @@ public:
 
 private:
     friend class DataWrappersProcessor;
-    friend class QtReflected;
     friend class DataListener;
     template <typename T>
     friend class DataEditor;

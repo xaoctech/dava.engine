@@ -1,5 +1,6 @@
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
 #include "TArc/Controls/PropertyPanel/Private/EmptyComponentValue.h"
+#include "TArc/Utils/ReflectionHelpers.h"
 
 namespace DAVA
 {
@@ -106,12 +107,13 @@ void ChildCreatorExtension::SetAllocator(std::shared_ptr<IChildAllocator> alloca
 
 bool ChildCreatorExtension::CanBeExposed(const Reflection::Field& field) const
 {
-    if (field.ref.GetMeta<M::HiddenField>() != nullptr)
+    if (field.ref.GetMeta<M::HiddenField>() != nullptr || GetTypeMeta<M::HiddenField>(field.ref.GetValue()) != nullptr)
     {
         return false;
     }
 
-    if (field.ref.GetMeta<M::DeveloperModeOnly>() != nullptr && IsDeveloperMode() == false)
+    bool hasDeveloperOnlyMeta = field.ref.GetMeta<M::DeveloperModeOnly>() || GetTypeMeta<M::DeveloperModeOnly>(field.ref.GetValue()) != nullptr;
+    if (hasDeveloperOnlyMeta == true && IsDeveloperMode() == false)
     {
         return false;
     }

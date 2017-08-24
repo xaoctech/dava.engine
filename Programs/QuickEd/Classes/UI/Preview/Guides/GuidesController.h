@@ -8,11 +8,9 @@
 
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <Base/Any.h>
-#include <Base/Introspection.h>
 #include <Math/Vector.h>
 #include <Math/Color.h>
 
@@ -36,32 +34,6 @@ class DocumentData;
 
 class QWidget;
 class QPropertyAnimation;
-
-class GuidesControllerPreferences : public DAVA::InspBase
-{
-public:
-    GuidesControllerPreferences();
-    ~GuidesControllerPreferences();
-
-    const DAVA::Color& GetGuidesColor() const;
-    void SetGuidesColor(const DAVA::Color& color);
-
-    const DAVA::Color& GetPreviewGuideColor() const;
-    void SetPreviewGuideColor(const DAVA::Color& color);
-
-    DAVA::Signal<const DAVA::Color&> previewGuideColorChanged;
-    DAVA::Signal<const DAVA::Color&> guidesColorChanged;
-
-private:
-    DAVA::Color guidesColor;
-    DAVA::Color previewGuideColor;
-
-public:
-    INTROSPECTION(GuidesControllerPreferences,
-                  PROPERTY("guideColor", "User graphic/guide color", GetGuidesColor, SetGuidesColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  PROPERTY("previewGuideColor", "User graphic/preview guide color", GetPreviewGuideColor, SetPreviewGuideColor, DAVA::I_SAVE | DAVA::I_VIEW | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  )
-};
 
 //this class realize Behavior pattern to have different behaviors for vertical and for horizontal guides
 class GuidesController : public QObject, public IRulerListener, DAVA::TArc::DataListener
@@ -134,8 +106,8 @@ private:
     bool IsGuidesEnabled() const;
     void SetGuidesEnabled(bool enabled);
 
-    void OnGuidesColorChanged(const DAVA::Color& color);
-    void OnPreviewGuideColorChanged(const DAVA::Color& color);
+    void OnGuidesColorChanged(const DAVA::Any& color);
+    void OnPreviewGuideColorChanged(const DAVA::Any& color);
 
     Guide CreateGuide(const DAVA::Color& color) const;
     void SetGuideColor(QWidget* guide, const DAVA::Color& color) const;
@@ -171,10 +143,8 @@ private:
     Guide previewGuide;
     QList<Guide> guides;
 
-    GuidesControllerPreferences preferences;
-
     //we can not use Show inside Update signal
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
