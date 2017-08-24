@@ -26,7 +26,6 @@ public:
 
     void BuildTimingSection();
 
-
     ~LayerDragForceWidget() = default;
 
     void Init(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::uint32 forceIndex, bool updateMinimized);

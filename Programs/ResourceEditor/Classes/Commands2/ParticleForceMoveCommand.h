@@ -36,4 +36,3 @@ public:
     DAVA::ParticleLayer* oldLayer;
     DAVA::ParticleLayer* newLayer;
 };
-

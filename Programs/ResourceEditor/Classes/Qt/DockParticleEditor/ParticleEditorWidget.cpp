@@ -272,7 +272,7 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
     }
     else if (obj.CanBeCastedTo<DAVA::ParticleDragForce>())
     {
-        DAVA::ParticleDragForce* force = obj.Cast<DAVA::ParticleDragForce>(); 
+        DAVA::ParticleDragForce* force = obj.Cast<DAVA::ParticleDragForce>();
         DAVA::ParticleLayer* layer = scene->particlesSystem->GetDragForceOwner(force);
         if (layer != nullptr)
         {

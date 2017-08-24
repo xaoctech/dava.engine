@@ -33,7 +33,7 @@ public:
         POINT_GRAVITY,
         BOX_WRAP
     } type = eType::DRAG_FORCE;
-    
+
     ParticleDragForce(ParticleLayer* parent);
 
     ParticleDragForce* Clone();

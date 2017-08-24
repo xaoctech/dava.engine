@@ -67,7 +67,7 @@ void LaunchModule::PostInit()
                                    {
                                        InvokeOperation(REGlobal::OpenLastProjectOperation.ID);
                                    });
-    UnpackHelpDoc(); 
+    UnpackHelpDoc();
     new FirstSceneCreator(this);
 }
 

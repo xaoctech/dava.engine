@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-
 ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
     : parentLayer(parent)
 {
@@ -37,5 +36,4 @@ void ParticleDragForce::GetModifableLines(List<ModifiablePropertyLineBase*>& mod
 {
     PropertyLineHelper::AddIfModifiable(forcePowerLine.Get(), modifiables);
 }
-
 }

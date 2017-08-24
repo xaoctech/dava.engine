@@ -49,7 +49,8 @@ void ParticleForceMoveCommand::Redo()
     }
 }
 
-ParticleDragForceMoveCommand::ParticleDragForceMoveCommand(DAVA::ParticleDragForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer) : RECommand(CMDID_PARTICLE_DRAG_FORCE_MOVE, "Move particle drag force")
+ParticleDragForceMoveCommand::ParticleDragForceMoveCommand(DAVA::ParticleDragForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer)
+    : RECommand(CMDID_PARTICLE_DRAG_FORCE_MOVE, "Move particle drag force")
     , force(force)
     , oldLayer(oldLayer)
     , newLayer(newLayer)

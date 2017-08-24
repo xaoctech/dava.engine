@@ -553,7 +553,6 @@ void CommandRemoveParticleEmitterForce::Redo()
     selectedLayer->RemoveForce(selectedForce);
 }
 
-
 CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_ADD)
     , selectedLayer(layer)
@@ -664,7 +663,6 @@ CommandCloneParticleDrag::CommandCloneParticleDrag(DAVA::ParticleLayer* layer, D
     , selectedLayer(layer)
     , selectedDrag(drag)
 {
-
 }
 
 void CommandCloneParticleDrag::Redo()

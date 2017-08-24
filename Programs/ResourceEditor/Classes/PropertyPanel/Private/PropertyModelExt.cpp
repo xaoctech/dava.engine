@@ -245,7 +245,8 @@ protected:
         wrapper.SetListener(nullptr);
         wrapper = GetDataProcessor()->CreateWrapper([this](const DAVA::TArc::DataContext*) {
             return DAVA::Reflection::Create(DAVA::ReflectedObject(this));
-        }, nullptr);
+        },
+                                                    nullptr);
         wrapper.SetListener(&dummyListener);
 
         widgetInited = false;
@@ -327,12 +328,12 @@ private:
     DAVA::TArc::QtConnections connections;
     DAVA::TArc::DataWrapper wrapper;
     DummnyListener dummyListener;
-    
+
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticlePropertyLineComponentValue, DAVA::TArc::BaseComponentValue)
     {
         DAVA::ReflectionRegistrator<ParticlePropertyLineComponentValue>::Begin()
-            .Field("updateValue", &ParticlePropertyLineComponentValue::UpdateValueHack, nullptr)
-            .End();
+        .Field("updateValue", &ParticlePropertyLineComponentValue::UpdateValueHack, nullptr)
+        .End();
     }
 };
 }

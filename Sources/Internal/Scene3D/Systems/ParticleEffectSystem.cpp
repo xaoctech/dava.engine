@@ -528,7 +528,6 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 {
                     currDForces[i] = group.layer->GetDragForces()[i];
                 }
-
             }
         }
 
@@ -912,7 +911,6 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
         effectSpacePosition = particle->position * invWorld;
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
     }
-
 
     for (uint32 i = 0; i < dForcesCount; ++i)
     {

@@ -21,10 +21,10 @@ struct ShapeMap
     QString name;
 };
 const Array<ShapeMap, 2> shapeMap =
-{{
-    { DAVA::ParticleDragForce::eShape::BOX, "Box" },
-    { DAVA::ParticleDragForce::eShape::SPHERE, "Sphere" }
-}};
+{ {
+{ DAVA::ParticleDragForce::eShape::BOX, "Box" },
+{ DAVA::ParticleDragForce::eShape::SPHERE, "Sphere" }
+} };
 
 struct TimingMap
 {
@@ -32,11 +32,11 @@ struct TimingMap
     QString name;
 };
 const Array<TimingMap, 3> timingMap =
-{{
-    { DAVA::ParticleDragForce::eTimingType::CONSTANT, "Constant" },
-    { DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
-    { DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life"}
-}};
+{ {
+{ DAVA::ParticleDragForce::eTimingType::CONSTANT, "Constant" },
+{ DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
+{ DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life" }
+} };
 
 template <typename T, typename U, size_t sz>
 int ElementToIndex(T elem, const Array<U, sz> map)
@@ -82,8 +82,8 @@ void LayerDragForceWidget::BuildTimingSection()
     for (size_t i = 0; i < timingMap.size(); ++i)
         timingTypeComboBox->addItem(timingMap[i].name);
     connect(timingTypeComboBox, SIGNAL(currentIndexChanged(int)),
-        this,
-        SLOT(OnValueChanged()));
+            this,
+            SLOT(OnValueChanged()));
 
     mainLayout->addWidget(timingTypeComboBox);
 
@@ -114,8 +114,8 @@ void LayerDragForceWidget::BuildShapeSection()
     for (size_t i = 0; i < shapeMap.size(); ++i)
         shapeComboBox->addItem(shapeMap[i].name);
     connect(shapeComboBox, SIGNAL(currentIndexChanged(int)),
-        this,
-        SLOT(OnValueChanged()));
+            this,
+            SLOT(OnValueChanged()));
     mainLayout->addWidget(shapeComboBox);
 
     boxSize = new ParticleVector3Widget("Box size", DAVA::Vector3::Zero);
@@ -257,7 +257,6 @@ void LayerDragForceWidget::OnValueChanged()
     params.forcePowerLine = propForce.GetPropLine();
 
     UpdateVisibility(shape, timingType, params.useInfinityRange);
-
 
     shapeComboBox->setCurrentIndex(ElementToIndex(shape, shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(timingType, timingMap));

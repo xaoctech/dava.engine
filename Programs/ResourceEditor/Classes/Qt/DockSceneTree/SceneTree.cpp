@@ -734,11 +734,11 @@ private:
     void RemoveDragForce()
     {
         RemoveCommandsHelper("Remove drag forces", SceneTreeItem::EIT_DragForce, [](SceneTreeItem* item)
-        {
-            SceneTreeItemParticleDragForce* dragForceItem = static_cast<SceneTreeItemParticleDragForce*>(item);
-            DAVA::ParticleDragForce* dragForce = dragForceItem->GetDragForce();
-            return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleDrag(dragForceItem->layer, dragForce)), dragForce);
-        });
+                             {
+                                 SceneTreeItemParticleDragForce* dragForceItem = static_cast<SceneTreeItemParticleDragForce*>(item);
+                                 DAVA::ParticleDragForce* dragForce = dragForceItem->GetDragForce();
+                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleDrag(dragForceItem->layer, dragForce)), dragForce);
+                             });
     }
 
     SceneTreeItemParticleDragForce* dragForce;

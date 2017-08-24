@@ -31,18 +31,18 @@ QString ConvertPSDPathToSprite(QString& pathToSprite)
     return pathToSprite.replace("/DataSource/", "/Data/");
 }
 
-void ClearLayout(QLayout *layout)
+void ClearLayout(QLayout* layout)
 {
-    QLayoutItem *item;
+    QLayoutItem* item;
     while ((item = layout->takeAt(0)) != nullptr)
     {
-        if (item->layout()) 
+        if (item->layout())
         {
             ClearLayout(item->layout());
             delete item->layout();
             item = nullptr;
         }
-        else if (item->widget()) 
+        else if (item->widget())
         {
             delete item->widget();
             item = nullptr;
@@ -549,7 +549,7 @@ void EmitterLayerWidget::InitForcesWidget()
     //{
     //    delete layout->takeAt(i);
     //}
-    
+
     // TODO loop up all forces in effectEntity and store names in availableForces
     /**/
     const Vector<std::pair<FastName, ParticleDragForceComponent*>>& layerForces = layer->GetForces();
@@ -563,21 +563,20 @@ void EmitterLayerWidget::InitForcesWidget()
     ParticleEffectComponent* component = GetEffect(GetActiveScene());
     Entity* effectEntity = component->GetEntity();
     int32 childrenCount = effectEntity->GetChildrenCount();
-    
+
     for (int32 i = 0; i < childrenCount; ++i)
     {
         Entity* child = effectEntity->GetChild(i);
         ParticleDragForceComponent* force = GetDragForceComponent(child);
         auto it = std::find_if(allForces.begin(), allForces.end(), [&child](const std::pair<FastName, ParticleDragForceComponent*> p)
-        {
-            return p.first == child->GetName();
-        });
+                               {
+                                   return p.first == child->GetName();
+                               });
         if (force != nullptr && it == allForces.end())
         {
             allForces.insert({ child->GetName(), force });
         }
     }
-
 
     for (size_t i = 0; i < layerForces.size(); ++i)
     {
@@ -592,14 +591,14 @@ void EmitterLayerWidget::InitForcesWidget()
         //comboboxItems.emplace_back(QString(forceName.c_str()));
         for (auto& currentForce : allForces)
         {
-            if (currentForce.first.IsValid() && currentForce.first != FastName("Undefined"))// && std::find(selectedForces.begin(), selectedForces.end(), availableForceName) == selectedForces.end())
+            if (currentForce.first.IsValid() && currentForce.first != FastName("Undefined")) // && std::find(selectedForces.begin(), selectedForces.end(), availableForceName) == selectedForces.end())
             {
                 comboboxItems.insert(QString(currentForce.first.c_str()));
             }
         }
         comboboxItems.insert(QString(forceName.c_str()));
 
-        for(const QString& itemName: comboboxItems)
+        for (const QString& itemName : comboboxItems)
         {
             comboBox->addItem(itemName);
         }
@@ -624,7 +623,6 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent
 {
     if ((instance_ == nullptr) || (layer_ == nullptr))
         return;
-
 
     layer = layer_;
     SetObjectsForScene(scene, effect_, instance_);
