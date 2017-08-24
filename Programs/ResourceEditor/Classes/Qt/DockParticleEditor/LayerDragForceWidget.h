@@ -3,6 +3,8 @@
 #include <DAVAEngine.h>
 
 #include <QWidget>
+
+#include <Particles/ParticleDragForce.h>
 #include "BaseParticleEditorContentWidget.h"
 
 class ParticleVector3Widget;
@@ -21,6 +23,10 @@ class LayerDragForceWidget : public BaseParticleEditorContentWidget
 
 public:
     explicit LayerDragForceWidget(QWidget* parent = nullptr);
+
+    void BuildTimingSection();
+
+
     ~LayerDragForceWidget() = default;
 
     void Init(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::uint32 forceIndex, bool updateMinimized);
@@ -40,20 +46,26 @@ protected slots:
     void OnValueChanged();
 
 private:
-    QLabel* shapeLabel = nullptr;
-    WheellIgnorantComboBox* shapeComboBox = nullptr;
-    WheellIgnorantComboBox* timingTypeComboBox = nullptr;
+    void BuildShapeSection();
+    void BuildCommonSection();
+    void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, bool isInfinityRange);
+
     QVBoxLayout* mainLayout = nullptr;
-    ParticleVector3Widget* boxSize = nullptr;
-    ParticleVector3Widget* forcePower = nullptr;
+    QLineEdit* forceNameEdit = nullptr;
     QCheckBox* isActive = nullptr;
     QCheckBox* infinityRange = nullptr;
+
+    QFrame* shapeSeparator = nullptr;
+    QLabel* shapeLabel = nullptr;
+    WheellIgnorantComboBox* shapeComboBox = nullptr;
+    ParticleVector3Widget* boxSize = nullptr;
     QWidget* radiusWidget = nullptr;
     EventFilterDoubleSpinBox* radiusSpin = nullptr;
-    QLineEdit* forceNameEdit = nullptr;
-    TimeLineWidget* forcePowerTimeLine = nullptr;
+
+    WheellIgnorantComboBox* timingTypeComboBox = nullptr;
     QLabel* forcePowerLabel = nullptr;
-    QFrame* shapeSeparator = nullptr;
+    ParticleVector3Widget* forcePower = nullptr;
+    TimeLineWidget* forcePowerTimeLine = nullptr;
 
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;
