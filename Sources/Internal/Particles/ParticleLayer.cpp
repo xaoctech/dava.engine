@@ -15,8 +15,8 @@ namespace ParticleLayerDetail
 {
 struct ShapeMap
 {
-    ForceShape shape;
-    String shapeName;
+    ForceShape elemType;
+    String name;
 };
 const Array<ShapeMap, 2> shapeMap =
 {{
@@ -24,34 +24,10 @@ const Array<ShapeMap, 2> shapeMap =
     { ForceShape::SPHERE, "sphere" }
 }};
 
-ForceShape StringToForceShape(const String& shapeTypeName, ForceShape defaultShape)
-{
-    for (const ShapeMap& shapeElem : shapeMap)
-    {
-        if (shapeElem.shapeName == shapeTypeName)
-        {
-            return shapeElem.shape;
-        }
-    }
-    return defaultShape;
-}
-
-String ForceShapeToString(ForceShape shapeType, const String& defaultShapeName)
-{
-    for (const ShapeMap& shapeElem : shapeMap)
-    {
-        if (shapeElem.shape == shapeType)
-        {
-            return shapeElem.shapeName;
-        }
-    }
-    return defaultShapeName;
-}
-
 struct TimingTypeMap
 {
-    ForceTimingType timingType;
-    String typeName;
+    ForceTimingType elemType;
+    String name;
 };
 const Array<TimingTypeMap, 3> timingTypesMap =
 {{
@@ -60,24 +36,27 @@ const Array<TimingTypeMap, 3> timingTypesMap =
     { ForceTimingType::OVER_PARTICLE_LIFE, "ovr_prt" }
 }};
 
-ForceTimingType StringToForceTimingType(const String& typeName, ForceTimingType defaultTimingType) // TODO: template?
+template <typename T, typename U, size_t sz>
+T StringToType(const String& typeName, T defaultVal, const Array<U, sz> map)
 {
-    for (const TimingTypeMap& e : timingTypesMap)
+    for (const auto& e : map)
     {
-        if (e.typeName == typeName)
-            return e.timingType;
+        if (e.name == typeName)
+            return e.elemType;
     }
-    return defaultTimingType;
+
+    return defaultVal;
 }
 
-String ForceTimingTypeToString(ForceTimingType timingType, const String& defaultTimingTypeName)
+template <typename T, typename U, size_t sz>
+String TypeToString(T type, const String& defaultName, const Array<U, sz> map)
 {
-    for (const TimingTypeMap& e : timingTypesMap)
+    for (const auto& e : map)
     {
-        if (e.timingType == timingType)
-            return e.typeName;
+        if (e.elemType == type)
+            return e.name;
     }
-    return defaultTimingTypeName;
+    return defaultName;
 }
 }
 
@@ -496,6 +475,7 @@ void ParticleLayer::SetAlphaRemap(const FilePath& spritePath_)
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
 {
+    using namespace ParticleLayerDetail;
     stripeSizeOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeSizeOverLifeProp"));
     stripeTextureTileOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeTextureTileOverLife"));
     stripeColorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("stripeColorOverLife"));
@@ -845,7 +825,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         if (shapeNode)
         {
             String shapeName = shapeNode->AsString();
-            dragForce->shape = ParticleLayerDetail::StringToForceShape(shapeName, ForceShape::BOX);
+            dragForce->shape = StringToType(shapeName, ForceShape::BOX, shapeMap);
         }
 
         forceDataName = Format("dragForceTimingType%d", i);
@@ -853,7 +833,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         if (timingNode)
         {
             String name = timingNode->AsString();
-            dragForce->timingType = ParticleLayerDetail::StringToForceTimingType(name, ForceTimingType::CONSTANT);
+            dragForce->timingType = StringToType(name, ForceTimingType::CONSTANT, timingTypesMap);
         }
 
         RefPtr<PropertyLine<Vector3>> forcePowerLine = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("dragForceLine%d", i)));
@@ -1272,6 +1252,7 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 
 void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 {
+    using namespace ParticleLayerDetail;
     int32 forceCount = static_cast<int32>(dragForces.size());
     if (forceCount == 0)
     {
@@ -1309,10 +1290,10 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->radius);
 
         forceDataName = Format("dragForceShape%d", i);
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, ParticleLayerDetail::ForceShapeToString(currentForce->shape, "box"));
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, TypeToString(currentForce->shape, "box", shapeMap));
 
         forceDataName = Format("dragForceTimingType%d", i);
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, ParticleLayerDetail::ForceTimingTypeToString(currentForce->timingType, "const"));
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, TypeToString(currentForce->timingType, "const", timingTypesMap));
 
         forceDataName = Format("dragForceLine%d", i);
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePowerLine);

@@ -237,6 +237,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
         DAVA::float32 radius = force->radius;
         drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.35f, 0.15f, 0.35f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
     }
 }
 
