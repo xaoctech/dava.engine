@@ -277,6 +277,12 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
             for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
             {
                 CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i));
+                auto iter = std::find(collisionComponents.begin(), collisionComponents.end(), component);
+                if (iter == collisionComponents.end())
+                {
+                    continue;
+                }
+
                 if (waitingComponents == nullptr)
                 {
                     waitingComponents = &waitRenderInfoComponents[entity];
