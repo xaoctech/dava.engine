@@ -13,6 +13,7 @@ class WheellIgnorantComboBox;
 class EventFilterDoubleSpinBox;
 class QLabel;
 class QLineEdit;
+class QFrame;
 
 class LayerDragForceWidget : public BaseParticleEditorContentWidget
 {
@@ -52,6 +53,7 @@ private:
     QLineEdit* forceNameEdit = nullptr;
     TimeLineWidget* forcePowerTimeLine = nullptr;
     QLabel* forcePowerLabel = nullptr;
+    QFrame* shapeSeparator = nullptr;
 
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;

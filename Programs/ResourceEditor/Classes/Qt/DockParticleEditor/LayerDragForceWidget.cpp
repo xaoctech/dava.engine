@@ -4,6 +4,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QLabel>
+#include <QFrame>
 
 #include "Classes/Qt/DockParticleEditor/ParticleVector3Widget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
@@ -52,8 +53,20 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     mainLayout->addWidget(forceNameEdit);
     connect(forceNameEdit, SIGNAL(editingFinished()), this, SLOT(OnValueChanged()));
 
+    infinityRange = new QCheckBox("Use infinity range");
+    connect(infinityRange, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(infinityRange);
+
+    shapeSeparator = new QFrame();
+    shapeSeparator->setFrameShape(QFrame::HLine);
+
+    //line->setFrameShadow(QFrame::Raised);
+    mainLayout->addWidget(shapeSeparator);
+
+    QFrame* line = new QFrame();
+    line->setFrameShape(QFrame::HLine);
+
     shapeLabel = new QLabel("Shape:");
-    shapeLabel->setContentsMargins(0, 15, 0, 0);
     mainLayout->addWidget(shapeLabel);
 
     shapeComboBox = new WheellIgnorantComboBox();
@@ -66,30 +79,9 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
         SLOT(OnValueChanged()));
     mainLayout->addWidget(shapeComboBox);
 
-    QLabel* timingLabel = new QLabel("Timing type:");
-    timingLabel->setContentsMargins(0, 15, 0, 0);
-    mainLayout->addWidget(timingLabel);
-    timingTypeComboBox = new WheellIgnorantComboBox();
-    DAVA::int32 timingTypes = sizeof(LayerDragForceWidgetDetail::timingMap) / sizeof(*LayerDragForceWidgetDetail::timingMap);
-    for (DAVA::int32 i = 0; i < timingTypes; ++i)
-        timingTypeComboBox->addItem(LayerDragForceWidgetDetail::timingMap[i].name);
-    connect(timingTypeComboBox, SIGNAL(currentIndexChanged(int)),
-        this,
-        SLOT(OnValueChanged()));
-
-    mainLayout->addWidget(timingTypeComboBox);
-
     boxSize = new ParticleVector3Widget("Box size", DAVA::Vector3::Zero);
     connect(boxSize, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
-
-    forcePower = new ParticleVector3Widget("Force power", DAVA::Vector3::Zero);
-    connect(forcePower, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
-
-    forcePowerLabel = new QLabel("Force power:");
-    mainLayout->addWidget(forcePowerLabel);
-    forcePowerTimeLine = new TimeLineWidget(this);
-    mainLayout->addWidget(forcePowerTimeLine);
-    connect(forcePowerTimeLine, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(boxSize);
 
     radiusWidget = new QWidget();
     mainLayout->addWidget(radiusWidget);
@@ -105,12 +97,30 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     connect(radiusSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
     radiusSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    mainLayout->addWidget(boxSize);
-    mainLayout->addWidget(forcePower);
+    mainLayout->addWidget(line);
 
-    infinityRange = new QCheckBox("Use infinity range");
-    connect(infinityRange, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
-    mainLayout->addWidget(infinityRange);
+    QLabel* timingLabel = new QLabel("Timing type:");
+    mainLayout->addWidget(timingLabel);
+    timingTypeComboBox = new WheellIgnorantComboBox();
+    DAVA::int32 timingTypes = sizeof(LayerDragForceWidgetDetail::timingMap) / sizeof(*LayerDragForceWidgetDetail::timingMap);
+    for (DAVA::int32 i = 0; i < timingTypes; ++i)
+        timingTypeComboBox->addItem(LayerDragForceWidgetDetail::timingMap[i].name);
+    connect(timingTypeComboBox, SIGNAL(currentIndexChanged(int)),
+        this,
+        SLOT(OnValueChanged()));
+
+    mainLayout->addWidget(timingTypeComboBox);
+
+    forcePower = new ParticleVector3Widget("Force power", DAVA::Vector3::Zero);
+    connect(forcePower, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
+
+    forcePowerLabel = new QLabel("Force power:");
+    mainLayout->addWidget(forcePowerLabel);
+    forcePowerTimeLine = new TimeLineWidget(this);
+    mainLayout->addWidget(forcePowerTimeLine);
+    connect(forcePowerTimeLine, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
+
+    mainLayout->addWidget(forcePower);
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     blockSignals = false;
@@ -138,6 +148,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     radiusWidget->setVisible(currForce->shape == DAVA::ParticleDragForce::eShape::SPHERE && !currForce->isInfinityRange);
     shapeComboBox->setVisible(!currForce->isInfinityRange);
     shapeLabel->setVisible(!currForce->isInfinityRange);
+    shapeSeparator->setVisible(!currForce->isInfinityRange);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
 
     forcePower->setVisible(currForce->timingType == DAVA::ParticleDragForce::eTimingType::CONSTANT);
@@ -219,6 +230,7 @@ void LayerDragForceWidget::OnValueChanged()
     radiusWidget->setVisible(shape == DAVA::ParticleDragForce::eShape::SPHERE && !params.useInfinityRange);
     shapeComboBox->setVisible(!params.useInfinityRange);
     shapeLabel->setVisible(!params.useInfinityRange);
+    shapeSeparator->setVisible(!params.useInfinityRange);
     forcePower->setVisible(timingType == DAVA::ParticleDragForce::eTimingType::CONSTANT);
     forcePowerTimeLine->setVisible(timingType != DAVA::ParticleDragForce::eTimingType::CONSTANT);
     forcePowerLabel->setVisible(timingType != DAVA::ParticleDragForce::eTimingType::CONSTANT);
