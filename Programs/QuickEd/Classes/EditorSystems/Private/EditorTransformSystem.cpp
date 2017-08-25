@@ -371,17 +371,8 @@ void EditorTransformSystem::PrepareDrag()
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
-    SelectedNodes selection = data->GetSelectedNodes();
+    selectedControlNodes = data->GetSelectedControls();
 
-    selectedControlNodes.clear();
-    for (PackageBaseNode* node : selection)
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (controlNode != nullptr)
-        {
-            selectedControlNodes.insert(controlNode);
-        }
-    }
     nodesToMoveInfos.clear();
     for (ControlNode* selectedControl : selectedControlNodes)
     {

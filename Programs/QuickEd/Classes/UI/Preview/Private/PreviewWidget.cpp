@@ -1,13 +1,18 @@
-#include "UI/Preview/PreviewWidget.h"
+#include "PreviewWidget.h"
+
 #include "Application/QEGlobal.h"
+
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "Modules/DocumentsModule/EditorData.h"
+#include "EditorSystems/EditorCanvas.h"
+#include "EditorSystems/CursorSystem.h"
+#include "EditorSystems/Data/EditorData.h"
 
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
 
+#include "UI/Find/Widgets/FindInDocumentWidget.h"
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -18,7 +23,7 @@
 
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
-#include "Modules/CanvasModule/CanvasData.h"
+#include "UI/Preview/Data/CanvasData.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -29,13 +34,11 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/OperationInvoker.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/DataProcessing/Common.h>
-#include <TArc/WindowSubSystem/QtAction.h>
 
 #include <QtTools/Updaters/ContinuousUpdater.h>
 
 #include <UI/UIControl.h>
-#include <UI/Text/UITextComponent.h>
+#include <UI/UIStaticText.h>
 #include <UI/UIControlSystem.h>
 #include <Engine/Engine.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -49,13 +52,13 @@
 #include <QComboBox>
 #include <QScrollBar>
 #include <QGridLayout>
+
 #include <QApplication>
 #include <QTimer>
-#include <QLabel>
 
 using namespace DAVA;
 
-PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
+PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget)
     : QFrame(nullptr)
     , accessor(accessor_)
     , invoker(invoker_)
@@ -65,21 +68,24 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , hScrollBarData(Vector2::AXIS_X, accessor)
     , vScrollBarData(Vector2::AXIS_Y, accessor)
     , canvasDataAdapter(accessor)
-    , systemsManager(systemsManager_)
 {
     InjectRenderWidget(renderWidget);
 
     InitUI();
 
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
+    editorDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
 
+FindInDocumentWidget* PreviewWidget::GetFindInDocumentWidget()
+{
+    return findInDocumentWidget;
+}
+
 void PreviewWidget::CreateActions()
 {
-    using namespace DAVA::TArc;
-
     QAction* importPackageAction = new QAction(tr("Import package"), this);
     importPackageAction->setShortcut(QKeySequence::New);
     importPackageAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -125,30 +131,38 @@ void PreviewWidget::CreateActions()
     selectAllAction->setShortcut(QKeySequence::SelectAll);
     selectAllAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(selectAllAction);
-    connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
 
-    FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-    fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
-
-    QtAction* focusNextChildAction = new QtAction(accessor, tr("Focus next child"), this);
+    focusNextChildAction = new QAction(tr("Focus next child"), this);
     focusNextChildAction->setShortcut(Qt::Key_Tab);
     focusNextChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusNextChildAction);
 
-    focusNextChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<bool>(false) == false;
-    });
-    connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
-
-    QtAction* focusPreviousChildAction = new QtAction(accessor, tr("Focus previous child"), this);
+    focusPreviousChildAction = new QAction(tr("Focus previous child"), this);
     focusPreviousChildAction->setShortcut(static_cast<int>(Qt::ShiftModifier | Qt::Key_Tab));
     focusPreviousChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusPreviousChildAction);
-    focusPreviousChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<bool>(false) == false;
-    });
-    connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
+}
+
+void PreviewWidget::OnEmulationModeChanged(bool emulationMode)
+{
+    systemsManager->SetEmulationMode(emulationMode);
+
+    if (emulationMode)
+    {
+        focusNextChildAction->setShortcut(0);
+        focusNextChildAction->setEnabled(false);
+
+        focusPreviousChildAction->setShortcut(0);
+        focusPreviousChildAction->setEnabled(false);
+    }
+    else
+    {
+        focusNextChildAction->setShortcut(Qt::Key_Tab);
+        focusNextChildAction->setEnabled(true);
+
+        focusPreviousChildAction->setShortcut(static_cast<int>(Qt::ShiftModifier | Qt::Key_Tab));
+        focusPreviousChildAction->setEnabled(true);
+    }
 }
 
 void PreviewWidget::OnIncrementScale()
@@ -195,6 +209,23 @@ void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
     vcs->RegisterAvailableResourceSize(width, height, "Gfx2");
 }
 
+void PreviewWidget::InitFromSystemsManager(EditorSystemsManager* systemsManager_)
+{
+    DVASSERT(nullptr == systemsManager);
+    systemsManager = systemsManager_;
+
+    connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
+    connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
+    connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
+
+    editorCanvas = new EditorCanvas(systemsManager, accessor);
+
+    systemsManager->AddEditorSystem(editorCanvas);
+
+    CursorSystem* cursorSystem = new CursorSystem(renderWidget, systemsManager, accessor);
+    systemsManager->AddEditorSystem(cursorSystem);
+}
+
 void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
 {
     DVASSERT(renderWidget_ != nullptr);
@@ -226,6 +257,10 @@ void PreviewWidget::InitUI()
     tabBar->setTabsClosable(true);
     tabBar->setUsesScrollButtons(true);
     vLayout->addWidget(tabBar);
+
+    findInDocumentWidget = new FindInDocumentWidget(this);
+
+    vLayout->addWidget(findInDocumentWidget);
 
     QGridLayout* gridLayout = new QGridLayout();
     vLayout->addLayout(gridLayout);
@@ -292,7 +327,6 @@ void PreviewWidget::InitUI()
         QAction* action = new QAction(nullptr);
         QWidget* container = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(container);
-        layout->setMargin(0);
         layout->addWidget(new QLabel(tr("Scale")));
         layout->addWidget(scaleCombo->ToWidgetCast());
         layout->addWidget(new QLabel(tr("%")));
@@ -380,8 +414,8 @@ bool PreviewWidget::CanChangeTextInControl(const ControlNode* node) const
 
     UIControl* control = node->GetControl();
 
-    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
-    return textComponent != nullptr;
+    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
+    return staticText != nullptr;
 }
 
 void PreviewWidget::OnMouseReleased(QMouseEvent* event)
@@ -455,7 +489,7 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
         QPoint pos = event->pos();
         DAVA::Vector2 davaPos(pos.x(), pos.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPos);
-        systemsManager->HighlightNode(node);
+        editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, node);
 
         if (nullptr != node)
         {
@@ -491,12 +525,12 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 
 void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 {
-    systemsManager->ClearHighlight();
+    editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, nullptr);
 }
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
-    systemsManager->ClearHighlight();
+    editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, nullptr);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))

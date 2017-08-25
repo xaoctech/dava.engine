@@ -3,24 +3,22 @@
 #include "Model/PackageHierarchy/PackageBaseNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 
-#include "Interfaces/EditorSystemsManagerInteface.h"
-
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
 
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <Functional/Signal.h>
-#include <UI/UIControl.h>
+
 #include <Math/Rect.h>
 #include <Math/Vector.h>
 
 namespace DAVA
 {
+class UIControl;
 class UIEvent;
 class UIGeometricData;
 class Any;
-
 namespace TArc
 {
 class ContextAccessor;
@@ -81,7 +79,7 @@ class EditorControlsView;
 class SelectionSystem;
 class HUDSystem;
 
-class EditorSystemsManager : public Interfaces::EditorSystemsManagerInterface
+class EditorSystemsManager
 {
     using StopPredicate = std::function<bool(const ControlNode*)>;
     static StopPredicate defaultStopPredicate;
@@ -118,21 +116,17 @@ public:
     eDisplayState GetDisplayState() const;
     HUDAreaInfo GetCurrentHUDArea() const;
 
-    //TODO: remove this function by moving systems to the separate modules
-    DAVA_DEPRECATED(void InitSystems());
+    void AddEditorSystem(BaseEditorSystem* system);
 
     void OnInput(DAVA::UIEvent* currentInput);
 
     template <class OutIt, class Predicate>
     void CollectControlNodes(OutIt destination, Predicate predicate, StopPredicate stopPredicate = defaultStopPredicate) const;
 
-    void HighlightNode(ControlNode* node);
-    void ClearHighlight();
+    void SetEmulationMode(bool emulationMode);
 
     ControlNode* GetControlNodeAtPoint(const DAVA::Vector2& point, bool canGoDeeper = false) const;
     DAVA::uint32 GetIndexOfNearestRootControl(const DAVA::Vector2& point) const;
-
-    void UpdateDisplayState();
 
     void SelectAll();
     void FocusNextChild();
@@ -140,9 +134,14 @@ public:
     void ClearSelection();
     void SelectNode(ControlNode* node);
 
+    DAVA::UIControl* GetRootControl() const;
+    DAVA::UIControl* GetScalableControl() const;
+    DAVA::UIControl* GetPixelGridControl() const;
+    DAVA::UIControl* GetDistanceLinesControl() const;
+    DAVA::UIControl* GetHUDControl() const;
+
     DAVA::Signal<const HUDAreaInfo& /*areaInfo*/> activeAreaChanged;
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
-    DAVA::Signal<ControlNode*> highlightNode;
     DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
     DAVA::Signal<ControlNode*, AbstractProperty*, const DAVA::Any&> propertyChanged;
     DAVA::Signal<bool> emulationModeChanged;
@@ -158,16 +157,13 @@ private:
     void SetDragState(eDragState dragState);
     void SetDisplayState(eDisplayState displayState);
 
-    void OnEmulationModeChanged(const DAVA::Any& emulationMode);
-
     void OnRootContolsChanged(const DAVA::Any& rootControls);
     void OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo);
-
-    void OnUpdate();
 
     template <class OutIt, class Predicate>
     void CollectControlNodesImpl(OutIt destination, Predicate predicate, StopPredicate stopPredicate, ControlNode* node) const;
 
+    void InitControls();
     void InitDAVAScreen();
 
     void OnDragStateChanged(eDragState currentState, eDragState previousState);
@@ -177,16 +173,16 @@ private:
 
     const SortedControlNodeSet& GetDisplayedRootControls() const;
 
-    //EditorSystemsManagerInteface
-    void RegisterEditorSystem(BaseEditorSystem* editorSystem) override;
-    void UnregisterEditorSystem(BaseEditorSystem* editorSystem) override;
-
     DAVA::RefPtr<DAVA::UIControl> rootControl;
     DAVA::RefPtr<DAVA::UIControl> inputLayerControl;
+    DAVA::RefPtr<DAVA::UIControl> scalableControl;
+    DAVA::RefPtr<DAVA::UIControl> pixelGridControl;
+    DAVA::RefPtr<DAVA::UIControl> distanceLinesControl;
+    DAVA::RefPtr<DAVA::UIControl> hudControl;
 
-    DAVA::Map<DAVA::uint32, BaseEditorSystem*> systems;
-    DAVA::Map<BaseEditorSystem*, DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>> systemsControls;
+    DAVA::List<std::unique_ptr<BaseEditorSystem>> systems;
 
+    EditorControlsView* controlViewPtr = nullptr; //weak pointer to canvas system;
     SelectionSystem* selectionSystemPtr = nullptr; // weak pointer to selection system
     HUDSystem* hudSystemPtr = nullptr;
 
