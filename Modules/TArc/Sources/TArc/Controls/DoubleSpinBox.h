@@ -2,11 +2,11 @@
 
 #include "TArc/Controls/ControlDescriptor.h"
 #include "TArc/Controls/Private/BaseSpinBox.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Base/BaseTypes.h>
 
 #include <QDoubleSpinBox>
-#include <QString>
 #include <QValidator>
 
 namespace DAVA

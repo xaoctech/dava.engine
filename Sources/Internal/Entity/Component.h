@@ -117,11 +117,6 @@ public:
 protected:
     Entity* entity = 0;
 
-public:
-    INTROSPECTION(Component,
-                  MEMBER(entity, "entity", I_SAVE)
-                  )
-
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };
 

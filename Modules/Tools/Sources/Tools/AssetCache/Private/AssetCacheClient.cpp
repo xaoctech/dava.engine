@@ -5,7 +5,6 @@
 #include <Concurrency/LockGuard.h>
 #include <Concurrency/Thread.h>
 #include <FileSystem/DynamicMemoryFile.h>
-#include <Preferences/PreferencesRegistrator.h>
 #include <Time/SystemTimer.h>
 #include <Utils/StringFormat.h>
 #include <Logger/Logger.h>
@@ -13,15 +12,6 @@
 
 namespace DAVA
 {
-namespace AssetCacheClientDetail
-{
-InspInfoRegistrator inspInfoRegistrator(AssetCacheClient::ConnectionParams::TypeInfo(), {
-                                                                                        PREF_ARG("ip", DAVA::AssetCache::GetLocalHost()),
-                                                                                        PREF_ARG("port", DAVA::AssetCache::ASSET_SERVER_PORT),
-                                                                                        PREF_ARG("timeoutms", DAVA::uint64(10 * 1000))
-                                                                                        });
-};
-
 AssetCacheClient::AssetCacheClient()
     : dispatcher([](const Function<void()>& fn) { fn(); })
     , client(&dispatcher)
@@ -535,16 +525,6 @@ void AssetCacheClient::ProcessNetwork()
     }
 }
 
-AssetCacheClient::ConnectionParams::ConnectionParams()
-{
-    PreferencesStorage::Instance()->RegisterPreferences(this);
-}
-
-AssetCacheClient::ConnectionParams::~ConnectionParams()
-{
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
-}
-
 void AssetCacheClient::ClearStats()
 {
     stats = Stats();
@@ -594,4 +574,4 @@ void AssetCacheClient::DumpStats() const
     }
 }
 
-} //END of DAVA
+} //namespace DAVA

@@ -43,11 +43,6 @@ private:
 
     bool isVisible = true;
 
-public:
-    INTROSPECTION_EXTEND(TextComponent, Component,
-                         nullptr
-                         );
-
     DAVA_VIRTUAL_REFLECTION(TextComponent, Component);
 };
 

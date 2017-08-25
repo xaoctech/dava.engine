@@ -53,6 +53,8 @@ public:
     void Set##Name(const T& value) { config.varName = value; ConfigChanged(); }
     IMPL_PROPERTY(FilePath, DecalAlbedo, albedo);
     IMPL_PROPERTY(FilePath, DecalNormal, normal);
+    IMPL_PROPERTY(FilePath, DecalSpecular, specular);
+    IMPL_PROPERTY(float, SpecularScale, specularScale);
     IMPL_PROPERTY(FilePath, OverridenMaterialsPath, overridenMaterialsPath);
     IMPL_PROPERTY(Vector3, Dimensions, dimensions);
     IMPL_PROPERTY(Vector2, UVScale, uvScale);
@@ -61,7 +63,6 @@ public:
     IMPL_PROPERTY(bool, DebugOverlayEnabled, debugOverlayEnabled);
 #undef IMPL_PROPERTY
 
-    INTROSPECTION_EXTEND(GeoDecalComponent, Component, NULL)
     DAVA_VIRTUAL_REFLECTION(GeoDecalComponent, Component);
 };
 

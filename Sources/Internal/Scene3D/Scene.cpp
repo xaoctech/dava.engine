@@ -16,6 +16,7 @@
 #include "Render/RenderOptions.h"
 #include "Render/Renderer.h"
 #include "Render/Texture.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -157,6 +158,12 @@ void EntityCache::ClearAll()
         SafeRelease(i.second);
     }
     cachedEntities.clear();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Scene)
+{
+    ReflectionRegistrator<Scene>::Begin()
+    .End();
 }
 
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
