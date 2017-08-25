@@ -22,7 +22,6 @@
 namespace DAVA
 {
 static const String timeoutString("dlcmanager_timeout");
-static const char* initDlcManagerCounter = "init_dlc_manager";
 
 DLCManager::~DLCManager() = default;
 DLCManager::IRequest::~IRequest() = default;
@@ -104,8 +103,8 @@ bool DLCManagerImpl::CountError(int32 errCode)
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : engine(*engine_)
-    , profiler(1024 * 16)
+    : profiler(1024 * 256) // TODO checking only reset to default
+    , engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -124,7 +123,6 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
 
                                                           });
 
-    profiler.Start();
 }
 
 void DLCManagerImpl::ClearResouces()
@@ -172,7 +170,7 @@ void DLCManagerImpl::ClearResouces()
         }
     }
 
-    downloader.reset(nullptr);
+    downloader.reset();
 
     fullSizeServerData = 0;
 
@@ -291,9 +289,9 @@ void DLCManagerImpl::CreateDownloader()
         downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
         downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
         downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
+        downloaderHints.profiler = &profiler;
 
-        downloader.reset(DLCDownloader::Create());
-        downloader->SetHints(downloaderHints);
+        downloader.reset(DLCDownloader::Create(downloaderHints));
     }
 }
 
@@ -301,14 +299,9 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
                                 const String& urlToServerSuperpack_,
                                 const Hints& hints_)
 {
-    mainScopedCounter.reset(new ProfilerCPU::ScopedCounter(initDlcManagerCounter, &profiler));
-
-    if (firstCounter.empty())
-    {
-        firstCounter = __FUNCTION__;
-    }
-
     DVASSERT(Thread::IsMainThread());
+
+    profiler.Start();
 
     bool isFirstTimeCall = (log.is_open() == false);
 
@@ -354,21 +347,6 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
 void DLCManagerImpl::Deinitialize()
 {
-    if (profiler.IsStarted())
-    {
-        mainScopedCounter.reset();
-        profiler.Stop();
-        FileSystem* fs = GetEngineContext()->fileSystem;
-        FilePath docPath = fs->GetPublicDocumentsPath();
-        String name = docPath.GetAbsolutePathname() + "/counter.txt";
-        std::ofstream file(name);
-        if (file)
-        {
-            Vector<TraceEvent> events = profiler.GetTrace(initDlcManagerCounter);
-            TraceEvent::DumpJSON(events, file);
-        }
-    }
-
     DVASSERT(Thread::IsMainThread());
 
     log << __FUNCTION__ << std::endl;
@@ -379,6 +357,20 @@ void DLCManagerImpl::Deinitialize()
     }
 
     ClearResouces();
+
+    if (profiler.IsStarted())
+    {
+        profiler.Stop();
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        FilePath docPath = fs->GetPublicDocumentsPath();
+        String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+        std::ofstream file(name);
+        if (file)
+        {
+            Vector<TraceEvent> events = profiler.GetTrace();
+            TraceEvent::DumpJSON(events, file);
+        }
+    }
 
     log.close();
 }

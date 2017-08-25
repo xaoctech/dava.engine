@@ -5,6 +5,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Concurrency/LockGuard.h"
 #include "Engine/Engine.h"
+#include "Debug/ProfilerCPU.h"
 
 namespace DAVA
 {
@@ -133,9 +134,9 @@ private:
     char* end = nullptr;
 };
 
-DLCDownloader* DLCDownloader::Create()
+DLCDownloader* DLCDownloader::Create(const Hints& hints_)
 {
-    return new DLCDownloaderImpl();
+    return new DLCDownloaderImpl(hints_);
 }
 
 void DLCDownloader::Destroy(DLCDownloader* downloader)
@@ -765,6 +766,10 @@ DLCDownloader::TaskStatus& DLCDownloader::TaskStatus::operator=(const TaskStatus
 
 void DLCDownloaderImpl::Initialize()
 {
+    if (hints.profiler == nullptr)
+    {
+        hints.profiler = &unusedProfiler;
+    }
     Context::CurlGlobalInit();
 
     multiHandle = curl_multi_init();
@@ -809,7 +814,8 @@ void DLCDownloaderImpl::Deinitialize()
     Context::CurlGlobalDeinit();
 }
 
-DLCDownloaderImpl::DLCDownloaderImpl()
+DLCDownloaderImpl::DLCDownloaderImpl(const Hints& hints_)
+    : hints(hints_)
 {
     Initialize();
 }
@@ -825,6 +831,8 @@ DLCDownloader::Task* DLCDownloaderImpl::StartAnyTask(const String& srcUrl,
                                                      std::shared_ptr<IWriter> dstWriter = std::shared_ptr<IWriter>(),
                                                      Range range)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (srcUrl.empty())
     {
         return nullptr;
@@ -897,6 +905,7 @@ DLCDownloader::Task* DLCDownloaderImpl::ResumeTask(const String& srcUrl, std::sh
 
 void DLCDownloaderImpl::RemoveTask(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     DVASSERT(task);
     if (task != nullptr)
     {
@@ -908,6 +917,7 @@ void DLCDownloaderImpl::RemoveTask(Task* task)
 
 void DLCDownloaderImpl::WaitTask(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     if (task != nullptr && task->status.state != TaskState::Finished)
     {
         Semaphore semaphore;
@@ -928,6 +938,7 @@ void DLCDownloaderImpl::WaitTask(Task* task)
 
 const DLCDownloader::TaskInfo& DLCDownloaderImpl::GetTaskInfo(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     if (task == nullptr)
     {
         DAVA_THROW(Exception, "task is nullptr");
@@ -937,6 +948,7 @@ const DLCDownloader::TaskInfo& DLCDownloaderImpl::GetTaskInfo(Task* task)
 
 const DLCDownloader::TaskStatus& DLCDownloaderImpl::GetTaskStatus(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     if (task == nullptr)
     {
         DAVA_THROW(Exception, "task is nullptr");
@@ -968,6 +980,8 @@ void DLCDownloaderImpl::SetHints(const Hints& h)
 
 void DLCDownloaderImpl::RemoveDeletedTasks()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (!removedList.empty())
     {
         LockGuard<Mutex> lock(mutexRemovedList);
@@ -1006,6 +1020,8 @@ void DLCDownloaderImpl::RemoveDeletedTasks()
 
 DLCDownloader::Task* DLCDownloaderImpl::AddOneMoreTask()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (inputList.empty())
     {
         return nullptr;
@@ -1298,6 +1314,8 @@ void DLCDownloader::Task::SetupGetSizeDownload()
 
 bool DLCDownloaderImpl::TakeNewTaskFromInputList()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     Task* task = AddOneMoreTask();
 
     if (task != nullptr)
@@ -1311,6 +1329,8 @@ bool DLCDownloaderImpl::TakeNewTaskFromInputList()
 
 void DLCDownloaderImpl::SignalOnFinishedWaitingTasks()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (!waitingTaskList.empty())
     {
         LockGuard<Mutex> lock(mutexWaitingList);
@@ -1334,6 +1354,8 @@ void DLCDownloaderImpl::SignalOnFinishedWaitingTasks()
 
 void DLCDownloaderImpl::AddNewTasks()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     LockGuard<Mutex> lock(mutexInputList);
     if (!inputList.empty() && GetFreeHandleCount() > 0)
     {
@@ -1350,6 +1372,8 @@ void DLCDownloaderImpl::AddNewTasks()
 
 void DLCDownloaderImpl::ConsumeSubTask(CURLMsg* curlMsg, CURL* easyHandle)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     IDownloaderSubTask& subTask = FindInMap(easyHandle);
     Task& task = subTask.GetTask();
 
@@ -1380,6 +1404,8 @@ void DLCDownloaderImpl::ConsumeSubTask(CURLMsg* curlMsg, CURL* easyHandle)
 
 void DLCDownloaderImpl::ProcessMessagesFromMulti()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     CURLMsg* curlMsg = nullptr;
 
     do
@@ -1410,6 +1436,8 @@ void DLCDownloaderImpl::ProcessMessagesFromMulti()
 
 void DLCDownloaderImpl::BalancingHandles()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (GetFreeHandleCount() > 0)
     {
         // find first not finished task
@@ -1524,8 +1552,12 @@ void DLCDownloaderImpl::Task::OnErrorHttpCode(long httpCode, Task& task, int32 l
 
 void DLCDownloaderImpl::DownloadThreadFunc()
 {
+    DVASSERT(hints.profiler != nullptr);
+
     try
     {
+        DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
         Thread* currentThread = Thread::Current();
         DVASSERT(currentThread != nullptr);
 
@@ -1535,8 +1567,10 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
         while (!currentThread->IsCancelling())
         {
+            DVASSERT(hints.profiler != &unusedProfiler); // TODO just check remove later
             if (!downloading)
             {
+                DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__ "_Waiting", hints.profiler);
                 downloadSem.Wait();
                 downloading = true;
             }
@@ -1586,6 +1620,8 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
 int DLCDownloaderImpl::CurlPerform()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     int stillRunning = 0;
 
     // from https://curl.haxx.se/libcurl/c/curl_multi_perform.html

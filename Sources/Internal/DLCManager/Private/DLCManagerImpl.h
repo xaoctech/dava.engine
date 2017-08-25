@@ -182,8 +182,6 @@ public:
     void FireNetworkReady(bool nextState);
 
     ProfilerCPU profiler;
-    std::unique_ptr<ProfilerCPU::ScopedCounter> mainScopedCounter;
-    String firstCounter;
 
 private:
     // initialization state functions
