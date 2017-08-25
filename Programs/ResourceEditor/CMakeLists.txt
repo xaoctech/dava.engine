@@ -45,7 +45,6 @@ endif()
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-
 include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/wrapper" )
 include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/beast/include" )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )

@@ -40,7 +40,6 @@ find_package( DavaFramework REQUIRED COMPONENTS "Sound"
 
 
 
-
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)
 include_directories   ( "Classes" )

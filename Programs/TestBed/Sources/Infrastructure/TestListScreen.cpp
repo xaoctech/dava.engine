@@ -25,7 +25,7 @@ void TestListScreen::LoadResources()
 {
     UIScreen::LoadResources();
 
-    Size2i screenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
 
     testsGrid = new UIList(Rect(), UIList::ORIENTATION_VERTICAL);
     testsGrid->SetDelegate(this);

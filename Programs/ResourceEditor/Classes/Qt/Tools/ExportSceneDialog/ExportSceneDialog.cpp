@@ -1,16 +1,15 @@
-#include "Tools/ExportSceneDialog/ExportSceneDialog.h"
-#include "Tools/Widgets/FilePathBrowser.h"
-
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
 
-#include "Settings/SettingsManager.h"
+#include <Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h>
+#include "Classes/Qt/Tools/Widgets/FilePathBrowser.h"
+
 #include <DavaTools/TextureCompression/TextureConverter.h>
 
-#include "Base/GlobalEnum.h"
-#include "Debug/DVAssert.h"
-
-#include "TArc/DataProcessing/DataContext.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <Base/GlobalEnum.h>
+#include <Debug/DVAssert.h>
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -141,8 +140,8 @@ void ExportSceneDialog::InitializeValues()
         gpuSelector[gpu]->setCheckState(Qt::Unchecked);
     }
 
-    DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
-    qualitySelector->setCurrentIndex(quality.AsInt32());
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    qualitySelector->setCurrentIndex(static_cast<int>(settings->compressionQuality));
     optimizeOnExport->setCheckState(Qt::Checked);
     useHDtextures->setCheckState(Qt::Unchecked);
 

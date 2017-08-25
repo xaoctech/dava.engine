@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SpeedTree/SpeedTreeImporter.h"
 
 #include "Debug/DVAssert.h"
@@ -8,8 +6,8 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Scene3D/Converters/SpeedTreeConverter.h"
 #include "Scene3D/Lod/LodComponent.h"
-#include "Tools/TexturePacker/DefinitionFile.h"
-#include "Tools/TexturePacker/TexturePacker.h"
+#include "DavaTools/TexturePacker/DefinitionFile.h"
+#include "DavaTools/TexturePacker/TexturePacker.h"
 //#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
 namespace DAVA

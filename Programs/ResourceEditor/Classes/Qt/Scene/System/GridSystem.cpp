@@ -1,10 +1,11 @@
-#include "Scene/System/GridSystem.h"
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Qt/Scene/System/GridSystem.h"
 
 // framework
-#include "Render/RenderHelper.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Scene3D/Scene.h"
+#include <Scene3D/Scene.h>
+#include <Render/RenderHelper.h>
+#include <Render/Highlevel/RenderSystem.h>
 
 #define LOWEST_GRID_STEP 0.1f
 #define LOWEST_GRID_SIZE 1.0f
@@ -16,8 +17,9 @@ SceneGridSystem::SceneGridSystem(DAVA::Scene* scene)
 
 void SceneGridSystem::Draw()
 {
-    const DAVA::float32 gridStep = SettingsManager::GetValue(Settings::Scene_GridStep).AsFloat();
-    const DAVA::float32 gridMax = SettingsManager::GetValue(Settings::Scene_GridSize).AsFloat();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    const DAVA::float32 gridStep = settings->gridStep;
+    const DAVA::float32 gridMax = settings->gridSize;
 
     if (gridStep >= LOWEST_GRID_STEP && gridMax >= LOWEST_GRID_SIZE)
     {

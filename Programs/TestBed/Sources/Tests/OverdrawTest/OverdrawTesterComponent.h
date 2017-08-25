@@ -39,10 +39,6 @@ private:
     DAVA::uint16 textureResolution = 2048;
 
     static const DAVA::uint8 addOverdrawPercent;
-
-public:
-    INTROSPECTION_EXTEND(OverdrawTesterComponent, Component,
-                         NULL);
 };
 
 OverdrawTesterRenderObject* OverdrawTesterComponent::GetRenderObject() const

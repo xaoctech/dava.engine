@@ -1,3 +1,19 @@
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
+
+#include "Classes/Qt/Main/mainwindow.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Deprecated/SceneValidator.h"
+#include "Classes/ImageTools/ImageTools.h"
+
+#include <DavaTools/TextureCompression/TextureConverter.h>
+
+#include <Render/Image/LibDdsHelper.h>
+#include <FileSystem/FileSystem.h>
+
+
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
@@ -7,27 +23,13 @@
 #include <QtConcurrent>
 #include <QImage>
 
-#include "Main/mainwindow.h"
-#include "TextureBrowser/TextureConvertor.h"
-#include "Deprecated/SceneValidator.h"
-
-#include <DavaTools/TextureCompression/TextureConverter.h>
-
-#include "Render/Image/LibDdsHelper.h"
-#include "FileSystem/FileSystem.h"
-
-#include "Main/QtUtils.h"
-#include "Scene/SceneHelper.h"
-#include "ImageTools/ImageTools.h"
-#include "Settings/SettingsManager.h"
-
 TextureConvertor::TextureConvertor()
     : jobIdCounter(1)
     , convertJobQueueSize(0)
     , waitingComletion(0)
-    , watcherThumbnail(DAVA::JobManager::Instance())
-    , watcherOriginal(DAVA::JobManager::Instance())
-    , watcherConverted(DAVA::JobManager::Instance())
+    , watcherThumbnail(DAVA::GetEngineContext()->jobManager)
+    , watcherOriginal(DAVA::GetEngineContext()->jobManager)
+    , watcherConverted(DAVA::GetEngineContext()->jobManager)
 {
     // slots will be called in connector(this) thread
     watcherConverted.Init(DAVA::MakeFunction(this, &TextureConvertor::GetConvertedThread), DAVA::MakeFunction(this, &TextureConvertor::ThreadConvertedFinished));
@@ -529,8 +531,8 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 
         if (convert)
         {
-            DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
-            outputPath = DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, static_cast<DAVA::TextureConverter::eConvertQuality>(quality.AsInt32()));
+            GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+            outputPath = DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, settings->compressionQuality);
         }
 
         DAVA::Vector<DAVA::Image*> davaImages;

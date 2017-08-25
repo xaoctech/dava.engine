@@ -1,9 +1,9 @@
-#include "TexturePathValidator.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
+#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
-#include "Classes/Settings/Settings.h"
-
-#include "FileSystem/FileSystem.h"
+#include <FileSystem/FileSystem.h>
 
 TexturePathValidator::TexturePathValidator(const QStringList& value)
     : PathValidator(value)
@@ -25,6 +25,7 @@ bool TexturePathValidator::ValidateInternal(const QVariant& v)
 
 void TexturePathValidator::FixupInternal(QVariant& v) const
 {
+    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
     if (v.type() == QVariant::String)
     {
         DAVA::FilePath texturePath = DAVA::FilePath(v.toString().toStdString());
@@ -36,7 +37,7 @@ void TexturePathValidator::FixupInternal(QVariant& v) const
             auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
             if (found != texturesMap.end())
             {
-                found->second->ReloadAs(Settings::GetGPUFormat());
+                found->second->ReloadAs(settings->textureViewGPU);
             }
 
             v = QVariant(QString::fromStdString(descriptorPath.GetAbsolutePathname()));

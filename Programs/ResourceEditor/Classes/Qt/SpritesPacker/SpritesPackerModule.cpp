@@ -2,28 +2,29 @@
 
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
-#include "Settings/Settings.h"
-#include "Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
 
-#include "Functional/Function.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/WindowSubSystem/UI.h>
+
+#include <QtTools/ReloadSprites/DialogReloadSprites.h>
+#include <QtTools/ReloadSprites/SpritesPacker.h>
 
 #include <DavaTools/AssetCache/AssetCacheClient.h>
-#include "QtTools/ReloadSprites/DialogReloadSprites.h"
-#include "QtTools/ReloadSprites/SpritesPacker.h"
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/WindowSubSystem/UI.h"
-
-#include "Job/JobManager.h"
-#include "Render/2D/Sprite.h"
+#include <Engine/Engine.h>
+#include <Job/JobManager.h>
+#include <Render/2D/Sprite.h>
+#include <Functional/Function.h>
 
 #include <QAction>
 #include <QDir>
 
-SpritesPackerModule::SpritesPackerModule(DAVA::TArc::UI* ui_)
+SpritesPackerModule::SpritesPackerModule(DAVA::TArc::UI* ui_, DAVA::TArc::ContextAccessor* accessor_)
     : QObject(nullptr)
     , spritesPacker(new SpritesPacker())
     , ui(ui_)
+    , accessor(accessor_)
 {
     qRegisterMetaType<DAVA::eGPUFamily>("DAVA::eGPUFamily");
     qRegisterMetaType<DAVA::TextureConverter::eConvertQuality>("DAVA::TextureConverter::eConvertQuality");
@@ -39,7 +40,7 @@ SpritesPackerModule::~SpritesPackerModule()
         DisconnectCacheClient();
     }
 
-    DAVA::JobManager::Instance()->WaitWorkerJobs();
+    DAVA::GetEngineContext()->jobManager->WaitWorkerJobs();
 }
 
 void SpritesPackerModule::RepackWithDialog()
@@ -48,7 +49,7 @@ void SpritesPackerModule::RepackWithDialog()
     DVASSERT(data != nullptr);
     SetupSpritesPacker(data->GetProjectPath());
 
-    DAVA::JobManager::Instance()->CreateWorkerJob(DAVA::MakeFunction(this, &SpritesPackerModule::ConnectCacheClient));
+    DAVA::GetEngineContext()->jobManager->CreateWorkerJob(DAVA::MakeFunction(this, &SpritesPackerModule::ConnectCacheClient));
 
     ShowPackerDialog();
 
@@ -63,7 +64,7 @@ void SpritesPackerModule::RepackImmediately(const DAVA::FilePath& projectPath, D
     CreateWaitDialog(projectPath);
 
     DAVA::Function<void()> fn = DAVA::Bind(&SpritesPackerModule::ProcessSilentPacking, this, true, false, gpu, DAVA::TextureConverter::ECQ_DEFAULT);
-    DAVA::JobManager::Instance()->CreateWorkerJob(fn);
+    DAVA::GetEngineContext()->jobManager->CreateWorkerJob(fn);
 }
 
 void SpritesPackerModule::SetupSpritesPacker(const DAVA::FilePath& projectPath)
@@ -81,14 +82,14 @@ void SpritesPackerModule::ProcessSilentPacking(bool clearDirs, bool forceRepack,
     spritesPacker->ReloadSprites(clearDirs, forceRepack, gpu, quality);
     DisconnectCacheClient();
 
-    DAVA::JobManager::Instance()->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::CloseWaitDialog));
-    DAVA::JobManager::Instance()->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::ReloadObjects));
+    DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::CloseWaitDialog));
+    DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::MakeFunction(this, &SpritesPackerModule::ReloadObjects));
 }
 
 void SpritesPackerModule::ShowPackerDialog()
 {
-    DialogReloadSprites dialogReloadSprites(spritesPacker.get(), ui->GetWindow(DAVA::TArc::mainWindowKey));
-    dialogReloadSprites.exec();
+    DialogReloadSprites dialogReloadSprites(accessor, spritesPacker.get(), nullptr);
+    ui->ShowModalDialog(DAVA::TArc::mainWindowKey, &dialogReloadSprites);
 }
 
 void SpritesPackerModule::CreateWaitDialog(const DAVA::FilePath& projectPath)
@@ -111,8 +112,7 @@ void SpritesPackerModule::ReloadObjects()
     const DAVA::Vector<DAVA::eGPUFamily>& gpus = spritesPacker->GetResourcePacker().requestedGPUs;
     if (gpus.empty() == false)
     {
-        DAVA::uint32 gpu = gpus[0];
-        SettingsManager::SetValue(Settings::Internal_SpriteViewGPU, DAVA::VariantType(gpu));
+        REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->spritesViewGPU = gpus[0];
     }
 
     emit SpritesReloaded();
@@ -121,11 +121,12 @@ void SpritesPackerModule::ReloadObjects()
 void SpritesPackerModule::ConnectCacheClient()
 {
     DVASSERT(cacheClient == nullptr);
-    if (SettingsManager::GetValue(Settings::General_AssetCache_UseCache).AsBool())
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    if (settings->useAssetCache == true)
     {
-        DAVA::String ipStr = SettingsManager::GetValue(Settings::General_AssetCache_Ip).AsString();
-        DAVA::uint16 port = static_cast<DAVA::uint16>(SettingsManager::GetValue(Settings::General_AssetCache_Port).AsUInt32());
-        DAVA::uint64 timeoutSec = SettingsManager::GetValue(Settings::General_AssetCache_Timeout).AsUInt32();
+        DAVA::String ipStr = settings->assetCacheIP;
+        DAVA::uint16 port = settings->assetCachePort;
+        DAVA::uint64 timeoutSec = settings->assetCacheTimeout;
 
         DAVA::AssetCacheClient::ConnectionParams params;
         params.ip = (ipStr.empty() ? DAVA::AssetCache::GetLocalHost() : ipStr);
@@ -152,7 +153,7 @@ void SpritesPackerModule::DisconnectCacheClient()
         SetCacheClientForPacker();
 
         //we should destroy cache client on main thread
-        DAVA::JobManager::Instance()->CreateMainJob(DAVA::Bind(&SpritesPackerModule::DisconnectCacheClientInternal, this, disconnectingClient));
+        DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::Bind(&SpritesPackerModule::DisconnectCacheClientInternal, this, disconnectingClient));
     }
 }
 

@@ -3,7 +3,6 @@
 #include "DavaTools/AssetCache/AssetCache.h"
 
 #include <Base/Introspection.h>
-#include <Preferences/PreferencesRegistrator.h>
 #include <FileSystem/DynamicMemoryFile.h>
 
 #include <atomic>
@@ -13,19 +12,12 @@ namespace DAVA
 class AssetCacheClient final : public AssetCache::ClientNetProxyListener
 {
 public:
-    struct ConnectionParams : InspBase
+    struct ConnectionParams
     {
-        ConnectionParams();
-        ~ConnectionParams();
+        ConnectionParams() = default;
         String ip = AssetCache::GetLocalHost();
         uint16 port = AssetCache::ASSET_SERVER_PORT;
         uint64 timeoutms = 60u * 1000u;
-
-        INTROSPECTION(ConnectionParams,
-                      MEMBER(ip, "Asset cache/Asset Cache IP", DAVA::I_PREFERENCE)
-                      MEMBER(port, "Asset cache/Asset Cache Port", DAVA::I_PREFERENCE)
-                      MEMBER(timeoutms, "Asset cache/Asset Cache Timeout (ms)", DAVA::I_PREFERENCE)
-                      )
     };
 
     AssetCacheClient();
@@ -41,6 +33,9 @@ public:
 
     uint64 GetTimeoutMs() const;
     bool IsConnected() const;
+
+    void ClearStats();
+    void DumpStats() const;
 
 private:
     AssetCache::Error WaitRequest();
@@ -131,6 +126,22 @@ private:
         uint32 chunksOverall = 0;
     };
 
+    struct Stats
+    {
+        uint32 getRequestsCount = 0;
+        uint32 getRequestsFailedCount = 0;
+        uint32 getRequestsTimeoutCount = 0;
+        uint32 getRequestsSucceedCount = 0;
+        uint32 getRequestsNotFoundCount = 0;
+
+        uint32 addRequestsCount = 0;
+        uint32 addRequestsFailedCount = 0;
+        uint32 addRequestsTimeoutCount = 0;
+        uint32 addRequestsSucceedCount = 0;
+
+        uint32 incorrectPacketsCount = 0;
+    };
+
     AssetCache::ClientNetProxy client;
 
     uint64 timeoutMs = 60u * 1000u;
@@ -141,6 +152,7 @@ private:
     GetFilesRequest getFilesRequest;
     AddFilesRequest addFilesRequest;
 
+    Stats stats;
     std::atomic<bool> isActive;
 };
 

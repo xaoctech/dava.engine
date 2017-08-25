@@ -51,6 +51,7 @@ signals:
     void RunningStateChanged(bool arg);
 
 private:
+    DAVA::AssetCacheClient* cacheClient = nullptr;
     std::atomic<bool> running;
 };
 

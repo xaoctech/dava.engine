@@ -1,15 +1,14 @@
-#include "Tools/LoggerOutput/ErrorDialogOutput.h"
-
+#include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
 #include "Classes/Qt/GlobalOperations.h"
 
-#include "TArc/Utils/AssertGuard.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 
-#include "Concurrency/LockGuard.h"
-#include "Utils/StringFormat.h"
+#include <TArc/Utils/AssertGuard.h>
 
-#include "Settings/SettingsManager.h"
-
-#include "Debug/DVAssertDefaultHandlers.h"
+#include <Concurrency/LockGuard.h>
+#include <Utils/StringFormat.h>
+#include <Debug/DVAssertDefaultHandlers.h>
 
 #include <QMessageBox>
 
@@ -29,8 +28,8 @@ class ErrorDialogOutput::IgnoreHelper
 public:
     bool ShouldIgnoreMessage(DAVA::Logger::eLogLevel ll, const DAVA::String& textMessage)
     {
-        bool enabled = (SettingsManager::Instance() != nullptr) ? SettingsManager::GetValue(Settings::General_ShowErrorDialog).AsBool() : false;
-        if ((ll < DAVA::Logger::LEVEL_ERROR) || !enabled)
+        GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+        if ((ll < DAVA::Logger::LEVEL_ERROR) || settings->showErrorDialog == false)
         {
             return true;
         }

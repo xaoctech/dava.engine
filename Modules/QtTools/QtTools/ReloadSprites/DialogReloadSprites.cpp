@@ -1,35 +1,32 @@
 #include "Base/GlobalEnum.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Preferences/PreferencesRegistrator.h"
 
 #include "QtTools/ReloadSprites/DialogReloadSprites.h"
 #include "QtTools/ReloadSprites/SpritesPacker.h"
 #include "QtTools/ConsoleWidget/LoggerOutputObject.h"
-#include "QtTools/WarningGuard/QtWarningsHandler.h"
 
 #include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Qt/QtByteArray.h>
 
-PUSH_QT_WARNING_SUPRESSOR
 #include "ui_DialogReloadSprites.h"
 #include <QTimer>
-POP_QT_WARNING_SUPRESSOR
 
-using namespace DAVA;
-
-REGISTER_PREFERENCES_ON_START(DialogReloadSprites,
-                              PREF_ARG("currentGPU", static_cast<uint8>(GPU_ORIGIN)),
-                              PREF_ARG("quality", static_cast<uint32>(TextureConverter::ECQ_VERY_HIGH)),
-                              PREF_ARG("forceRepackEnabled", false),
-                              PREF_ARG("consoleState", String()),
-                              PREF_ARG("consoleVisible", true)
-                              )
-
-DialogReloadSprites::DialogReloadSprites(SpritesPacker* packer, QWidget* parent)
+DialogReloadSprites::DialogReloadSprites(DAVA::TArc::ContextAccessor* accessor_, SpritesPacker* packer, QWidget* parent)
     : QDialog(parent)
     , ui(new Ui::DialogReloadSprites)
     , spritesPacker(packer)
+    , accessor(accessor_)
 {
     ui->setupUi(this);
+
+    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
+    DAVA::eGPUFamily currentGpu = item.Get("currentGpu", DAVA::GPU_ORIGIN);
+    DAVA::TextureConverter::eConvertQuality quality = item.Get("quality", DAVA::TextureConverter::ECQ_DEFAULT);
+    bool forceRepack = item.Get("forcreRepack", false);
+    bool showConsole = item.Get("showConsole", true);
+    QByteArray consoleState = item.Get("consoleState", QByteArray());
+
     DVASSERT(nullptr != spritesPacker);
     qRegisterMetaType<DAVA::eGPUFamily>("DAVA::eGPUFamily");
     qRegisterMetaType<DAVA::TextureConverter::eConvertQuality>("DAVA::TextureConverter::eConvertQuality");
@@ -52,7 +49,7 @@ DialogReloadSprites::DialogReloadSprites(SpritesPacker* packer, QWidget* parent)
     connect(ui->pushButton_start, &QPushButton::clicked, this, &DialogReloadSprites::OnStartClicked);
     connect(ui->checkBox_showConsole, &QCheckBox::toggled, this, &DialogReloadSprites::OnCheckboxShowConsoleToggled);
 
-    const auto& gpuMap = GlobalEnumMap<eGPUFamily>::Instance();
+    const auto& gpuMap = GlobalEnumMap<DAVA::eGPUFamily>::Instance();
     for (size_t i = 0; i < gpuMap->GetCount(); ++i)
     {
         int value;
@@ -64,8 +61,9 @@ DialogReloadSprites::DialogReloadSprites(SpritesPacker* packer, QWidget* parent)
         }
         ui->comboBox_targetGPU->addItem(gpuMap->ToString(value), value);
     }
+    ui->comboBox_targetGPU->setCurrentText(gpuMap->ToString(currentGpu));
 
-    const auto& qualityMap = GlobalEnumMap<TextureConverter::eConvertQuality>::Instance();
+    const auto& qualityMap = GlobalEnumMap<DAVA::TextureConverter::eConvertQuality>::Instance();
     for (size_t i = 0; i < qualityMap->GetCount(); ++i)
     {
         int value;
@@ -77,9 +75,10 @@ DialogReloadSprites::DialogReloadSprites(SpritesPacker* packer, QWidget* parent)
         }
         ui->comboBox_quality->addItem(qualityMap->ToString(value), value);
     }
-    ui->comboBox_quality->setCurrentText(qualityMap->ToString(TextureConverter::ECQ_DEFAULT));
-
-    PreferencesStorage::Instance()->RegisterPreferences(this);
+    ui->comboBox_quality->setCurrentText(qualityMap->ToString(quality));
+    ui->checkBox_showConsole->setChecked(showConsole);
+    ui->checkBox_repack->setChecked(forceRepack);
+    ui->logWidget->Deserialize(consoleState);
 }
 
 DialogReloadSprites::~DialogReloadSprites()
@@ -88,7 +87,13 @@ DialogReloadSprites::~DialogReloadSprites()
     {
         BlockingStop();
     }
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
+
+    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
+    item.Set("currentGpu", static_cast<DAVA::eGPUFamily>(ui->comboBox_targetGPU->currentData().value<int>()));
+    item.Set("quality", static_cast<DAVA::TextureConverter::eConvertQuality>(ui->comboBox_quality->currentData().value<int>()));
+    item.Set("forcreRepack", ui->checkBox_repack->isChecked());
+    item.Set("showConsole", ui->checkBox_showConsole->isChecked());
+    item.Set("consoleState", ui->logWidget->Serialize());
 }
 
 void DialogReloadSprites::OnStartClicked()
@@ -101,8 +106,8 @@ void DialogReloadSprites::OnStartClicked()
     }
     spritesPacker->moveToThread(&workerThread);
     workerThread.start();
-    auto gpuType = static_cast<eGPUFamily>(gpuData.toInt());
-    auto quality = static_cast<TextureConverter::eConvertQuality>(qualityData.toInt());
+    auto gpuType = static_cast<DAVA::eGPUFamily>(gpuData.toInt());
+    auto quality = static_cast<DAVA::TextureConverter::eConvertQuality>(qualityData.toInt());
     QMetaObject::invokeMethod(spritesPacker, "ReloadSprites", Qt::QueuedConnection, Q_ARG(bool, true), Q_ARG(bool, ui->checkBox_repack->isChecked()), Q_ARG(DAVA::eGPUFamily, gpuType), Q_ARG(DAVA::TextureConverter::eConvertQuality, quality));
 }
 
@@ -151,82 +156,6 @@ void DialogReloadSprites::closeEvent(QCloseEvent* event)
 {
     Q_UNUSED(event);
     BlockingStop();
-}
-
-uint8 DialogReloadSprites::GetCurrentGPU() const
-{
-    return ui->comboBox_targetGPU->currentData().toInt();
-}
-
-void DialogReloadSprites::SetCurrentGPU(uint8 gpu)
-{
-    for (int i = 0, k = ui->comboBox_targetGPU->count(); i < k; i++)
-    {
-        if (ui->comboBox_targetGPU->itemData(i).toInt() == gpu)
-        {
-            ui->comboBox_targetGPU->setCurrentIndex(i);
-        }
-    }
-}
-
-uint32 DialogReloadSprites::GetCurrentQuality() const
-{
-    return ui->comboBox_quality->currentData().toInt();
-}
-
-void DialogReloadSprites::SetCurrentQuality(uint32 quality)
-{
-    for (int i = 0, k = ui->comboBox_quality->count(); i < k; i++)
-    {
-        if (ui->comboBox_quality->itemData(i).toInt() == quality)
-        {
-            ui->comboBox_quality->setCurrentIndex(i);
-        }
-    }
-}
-
-String DialogReloadSprites::GetGeometry() const
-{
-    QByteArray geometry = saveGeometry().toBase64();
-    return geometry.toStdString();
-}
-
-void DialogReloadSprites::SetGeometry(const String& str)
-{
-    QByteArray geometry = QByteArray::fromStdString(str);
-    restoreGeometry(QByteArray::fromBase64(geometry));
-}
-
-bool DialogReloadSprites::IsForceRepackEnabled() const
-{
-    return ui->checkBox_repack->isChecked();
-}
-
-void DialogReloadSprites::EnableForceRepack(bool enabled)
-{
-    ui->checkBox_repack->setChecked(enabled);
-}
-
-String DialogReloadSprites::GetConsoleState() const
-{
-    QByteArray consoleState = ui->logWidget->Serialize().toBase64();
-    return consoleState.toStdString();
-}
-
-void DialogReloadSprites::SetConsoleState(const String& str)
-{
-    QByteArray consoleState = QByteArray::fromStdString(str);
-    ui->logWidget->Deserialize(QByteArray::fromBase64(consoleState));
-}
-
-bool DialogReloadSprites::IsConsoleVisible() const
-{
-    return ui->checkBox_showConsole->isChecked();
-}
-
-void DialogReloadSprites::SetConsoleVisible(bool visible)
-{
-    ui->checkBox_showConsole->setChecked(visible);
 }
 
 void DialogReloadSprites::BlockingStop()

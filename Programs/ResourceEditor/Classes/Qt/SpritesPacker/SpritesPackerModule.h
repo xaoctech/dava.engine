@@ -28,7 +28,7 @@ class SpritesPackerModule final : public QObject
     Q_OBJECT
 
 public:
-    SpritesPackerModule(DAVA::TArc::UI* ui);
+    SpritesPackerModule(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
     ~SpritesPackerModule() override;
 
     void RepackImmediately(const DAVA::FilePath& projectPath, DAVA::eGPUFamily gpu);
@@ -61,5 +61,6 @@ private:
     std::unique_ptr<SpritesPacker> spritesPacker;
     QAction* reloadSpritesAction = nullptr;
     DAVA::TArc::UI* ui = nullptr;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
     std::unique_ptr<DAVA::TArc::WaitHandle> waitDialogHandle;
 };

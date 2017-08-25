@@ -13,7 +13,6 @@
 
 namespace DAVA
 {
-class InspInfo;
 class Any;
 namespace TArc
 {
