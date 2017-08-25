@@ -22,11 +22,16 @@
 
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/SceneFile/VersionInfo.h>
+#include <Engine/PlatformApiQt.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>
 
 #include <QHBoxLayout>
+#include <QMimeData>
+#include <QApplication>
+#include <QClipboard>
 
 namespace PropertyPanel
 {
@@ -665,8 +670,118 @@ public:
     }
 };
 
+class PasteSlotComponentValue : public DAVA::TArc::BaseComponentValue
+{
+public:
+    DAVA::Any GetMultipleValue() const override
+    {
+        return DAVA::Any();
+    }
+
+    bool IsSpannedControl() const override
+    {
+        return true;
+    }
+
+    bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override
+    {
+        return false;
+    }
+
+    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    {
+        using namespace DAVA::TArc;
+        ReflectedPushButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ReflectedPushButton::Fields::Clicked] = "paste";
+        params.fields[ReflectedPushButton::Fields::Enabled] = "isEnabled";
+        params.fields[ReflectedPushButton::Fields::Text] = "text";
+
+        return new ReflectedPushButton(params, wrappersProcessor, model, parent);
+    }
+
+    static bool IsPasteAvailable()
+    {
+        QClipboard* clipboard = DAVA::PlatformApi::Qt::GetApplication()->clipboard();
+        const QMimeData* mimeData = clipboard->mimeData();
+        return mimeData->hasFormat("mime:/propertyPanel/slotComponent");
+    }
+
+private:
+    bool IsEnabled() const
+    {
+        return nodes.size() == 1;
+    }
+
+    void Paste()
+    {
+        auto showNotification = [&]()
+        {
+            DAVA::TArc::NotificationParams p;
+            p.message.message = "Clipboard doesn't contains slot component. Please copy slot to clipboard first";
+            p.message.type = Result::RESULT_ERROR;
+            p.title = "Slot can't be pasted";
+            GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, p);
+        };
+
+        QClipboard* clipboard = DAVA::PlatformApi::Qt::GetApplication()->clipboard();
+        const QMimeData* mimeData = clipboard->mimeData();
+        QByteArray slotArray = mimeData->data("mime:/propertyPanel/slotComponent");
+        if (slotArray.isEmpty() == true)
+        {
+            showNotification();
+            return;
+        }
+
+        DAVA::RefPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        if (archive->Load(reinterpret_cast<const DAVA::uint8*>(slotArray.data()), slotArray.size()) == false)
+        {
+            showNotification();
+            return;
+        }
+
+        DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        SceneData* sceneData = activeContext->GetData<SceneData>();
+        SceneData::TSceneType scene = sceneData->GetScene();
+        DAVA::FilePath scenePath = sceneData->GetScenePath();
+        DAVA::SerializationContext ctx;
+        ctx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
+        ctx.SetScene(scene.Get());
+        ctx.SetScenePath(scenePath.GetDirectory());
+        ctx.SetRootNodePath(scenePath);
+
+        DAVA::SlotComponent* newComponent = new DAVA::SlotComponent();
+        newComponent->Deserialize(archive.Get(), &ctx);
+
+        DAVA::TArc::ModifyExtension::MultiCommandInterface cmd = GetModifyInterface()->GetMultiCommandInterface("Paste slot component", 1);
+        DAVA::Entity* entity = nodes.front()->field.ref.GetValueObject().GetPtr<DAVA::Entity>();
+        cmd.Exec(std::make_unique<AddComponentCommand>(entity, newComponent));
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(PasteSlotComponentValue, DAVA::TArc::BaseComponentValue)
+    {
+        DAVA::ReflectionRegistrator<PasteSlotComponentValue>::Begin()
+        .Field("isEnabled", &PasteSlotComponentValue::IsEnabled, nullptr)
+        .Field("text", []() { return "Paste slot component"; }, nullptr)
+        .Method("paste", &PasteSlotComponentValue::Paste)
+        .End();
+    }
+};
+
 void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
 {
+    if (parent->propertyType == SlotPasteProperty)
+    {
+        return;
+    }
+
+    if (parent->propertyType == DAVA::TArc::PropertyNode::SelfRoot && PasteSlotComponentValue::IsPasteAvailable() == true)
+    {
+        DAVA::Reflection::Field f = parent->field;
+        std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), DAVA::TArc::PropertyNode::InvalidSortKey - 2, SlotPasteProperty);
+        children.push_back(previewNode);
+    }
+
     if (parent->propertyType == SlotPreviewProperty ||
         parent->propertyType == SlotTypeFilters ||
         parent->propertyType == SlotJointAttachment)
@@ -760,34 +875,13 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
         }
     }
 
+    if (node->propertyType == SlotPasteProperty)
+    {
+        return std::make_unique<PasteSlotComponentValue>();
+    }
+
     return EditorComponentExtension::GetEditor(node);
 }
-
-class CloneSlotComponent : public DAVA::M::CommandProducer
-{
-public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
-    {
-        return true;
-    }
-
-    Info GetInfo() const override
-    {
-        Info info;
-        info.description = "Slot component cloned";
-        info.tooltip = "Clone current component";
-        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone_inplace.png");
-
-        return info;
-    }
-
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
-    {
-        DAVA::SlotComponent* component = node->field.ref.GetValueObject().GetPtr<DAVA::SlotComponent>();
-        DAVA::Component* clonedComponent = component->Clone(nullptr);
-        return std::make_unique<AddComponentCommand>(component->GetEntity(), clonedComponent);
-    }
-};
 
 class GenerateUniqueName : public DAVA::M::CommandProducer
 {
@@ -851,14 +945,74 @@ public:
         }
         return nullptr;
     }
-
-private:
-    DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
 };
 
-std::shared_ptr<DAVA::M::CommandProducer> CreateCloneSlotProducer()
+class CopySlotProducer : public DAVA::M::CommandProducer
 {
-    return std::make_shared<CloneSlotComponent>();
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    bool OnlyForSingleSelection() const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Copy slot to clipboard";
+        info.tooltip = "Copy slot to clipboard";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone_inplace.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DVASSERT(params.accessor->GetActiveContext() != nullptr);
+        SceneData* data = params.accessor->GetActiveContext()->GetData<SceneData>();
+        SceneData::TSceneType scene = data->GetScene();
+        if (scene->IsLoaded() == false)
+        {
+            DAVA::TArc::NotificationParams p;
+            p.message.message = "You should save scene at least once first";
+            p.message.type = Result::RESULT_ERROR;
+            p.title = "Slot can't be copied";
+            params.ui->ShowNotification(DAVA::TArc::mainWindowKey, p);
+            return nullptr;
+        }
+
+        DAVA::FilePath scenePath = data->GetScenePath();
+        DAVA::SerializationContext ctx;
+        ctx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
+        ctx.SetScene(scene.Get());
+        ctx.SetScenePath(scenePath.GetDirectory());
+        ctx.SetRootNodePath(scenePath);
+
+        DAVA::SlotComponent* slotComponent = node->field.ref.GetValueObject().GetPtr<DAVA::SlotComponent>();
+        DAVA::RefPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        slotComponent->Serialize(archive.Get(), &ctx);
+
+        DAVA::uint32 archiveSize = archive->Save(nullptr, 0);
+        QByteArray byteArray;
+        byteArray.resize(archiveSize);
+        archive->Save(reinterpret_cast<uint8*>(byteArray.data()), archiveSize);
+
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setData("mime:/propertyPanel/slotComponent", byteArray);
+        QClipboard* clipboard = DAVA::PlatformApi::Qt::GetApplication()->clipboard();
+        clipboard->setMimeData(mimeData);
+
+        return nullptr;
+    }
+};
+
+std::shared_ptr<DAVA::M::CommandProducer> CreateCopySlotProducer()
+{
+    return std::make_shared<CopySlotProducer>();
 }
 
 DAVA::M::CommandProducerHolder CreateSlotNameCommandProvider()

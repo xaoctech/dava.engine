@@ -12,6 +12,7 @@ enum eREPropertyType
     SlotTypeFilters,
     SlotJointAttachment,
     SlotPreviewProperty,
-    SlotTemplateName
+    SlotTemplateName,
+    SlotPasteProperty
 };
 } // namespace PropertyPanel
