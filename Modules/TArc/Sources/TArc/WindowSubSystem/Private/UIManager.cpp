@@ -165,11 +165,6 @@ QAction* FindAction(QWidget* w, const QString& actionName)
 void InsertActionImpl(QMenu* menu, QAction* before, QAction* action)
 {
     menu->insertAction(before, action);
-    QLayout* layout = menu->layout();
-    if (layout != nullptr)
-    {
-        layout->invalidate();
-    }
 }
 
 void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)

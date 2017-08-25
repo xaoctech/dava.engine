@@ -85,54 +85,72 @@ public:
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "ColorControl" });
-            previewWidgetSettings->backgroundColor0 = archive->GetColor("backgroundColor0");
-            previewWidgetSettings->backgroundColor1 = archive->GetColor("backgroundColor1");
-            previewWidgetSettings->backgroundColor2 = archive->GetColor("backgroundColor2");
-            previewWidgetSettings->backgroundColorIndex = archive->GetUInt32("backgroundColorIndex");
+            if (archive != nullptr)
+            {
+                previewWidgetSettings->backgroundColor0 = archive->GetColor("backgroundColor0");
+                previewWidgetSettings->backgroundColor1 = archive->GetColor("backgroundColor1");
+                previewWidgetSettings->backgroundColor2 = archive->GetColor("backgroundColor2");
+                previewWidgetSettings->backgroundColorIndex = archive->GetUInt32("backgroundColorIndex");
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "SelectionSystem" });
-            selectionSettings->canFindCommonForSelection = archive->GetBool("canFindCommonForSelection");
+            if (archive != nullptr)
+            {
+                selectionSettings->canFindCommonForSelection = archive->GetBool("canFindCommonForSelection");
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "GuidesControllerPreferences" });
-            userAssetsSettings->guidesColor = archive->GetColor("guideColor");
-            userAssetsSettings->previewGuideColor = archive->GetColor("previewGuideColor");
+            if (archive != nullptr)
+            {
+                userAssetsSettings->guidesColor = archive->GetColor("guideColor");
+                userAssetsSettings->previewGuideColor = archive->GetColor("previewGuideColor");
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "HUDControlsPreferences" });
-            userAssetsSettings->pivotPointPath2 = archive->GetString("pivotPointPath2");
-            userAssetsSettings->borderRectPath2 = archive->GetString("borderRectPath2");
-            userAssetsSettings->selectionRectColor = archive->GetColor("selectionRectColor");
-            userAssetsSettings->cornerRectPath2 = archive->GetString("cornerRectPath2");
-            userAssetsSettings->hudRectColor = archive->GetColor("hudRectColor");
-            userAssetsSettings->highlightColor = archive->GetColor("highlightColor");
-            userAssetsSettings->rotatePath2 = archive->GetString("rotatePath2");
-            userAssetsSettings->magnetLinePath2 = archive->GetString("magnetLinePath2");
-            userAssetsSettings->magnetRectPath2 = archive->GetString("magnetRectPath2");
+            if (archive != nullptr)
+            {
+                userAssetsSettings->pivotPointPath2 = archive->GetString("pivotPointPath2");
+                userAssetsSettings->borderRectPath2 = archive->GetString("borderRectPath2");
+                userAssetsSettings->selectionRectColor = archive->GetColor("selectionRectColor");
+                userAssetsSettings->cornerRectPath2 = archive->GetString("cornerRectPath2");
+                userAssetsSettings->hudRectColor = archive->GetColor("hudRectColor");
+                userAssetsSettings->highlightColor = archive->GetColor("highlightColor");
+                userAssetsSettings->rotatePath2 = archive->GetString("rotatePath2");
+                userAssetsSettings->magnetLinePath2 = archive->GetString("magnetLinePath2");
+                userAssetsSettings->magnetRectPath2 = archive->GetString("magnetRectPath2");
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "HUDSystem" });
-            controlTransformation->minimumSelectionRectSize = archive->GetVector2("minimumSelectionRectSize");
-            controlTransformation->showPivot = archive->GetBool("showPivot");
-            controlTransformation->showRotate = archive->GetBool("showRotate");
+            if (archive != nullptr)
+            {
+                controlTransformation->minimumSelectionRectSize = archive->GetVector2("minimumSelectionRectSize");
+                controlTransformation->showPivot = archive->GetBool("showPivot");
+                controlTransformation->showRotate = archive->GetBool("showRotate");
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "EditorTransformSystem" });
-            controlTransformation->angleSegment = archive->GetFloat("angleSegment");
-            controlTransformation->shareOfSizeToMagnetPivot = archive->GetVector2("shareOfSizeToMagnetPivot");
-            controlTransformation->canMagnet = archive->GetBool("canMagnet");
-            controlTransformation->expandedmoveStepByKeyboard2 = archive->GetVector2("expandedmoveStepByKeyboard2");
-            controlTransformation->moveMagnetRange = archive->GetVector2("moveMagnetRange");
-            controlTransformation->shiftInverted = archive->GetBool("shiftInverted");
-            controlTransformation->moveStepByKeyboard2 = archive->GetVector2("moveStepByKeyboard2");
-            controlTransformation->pivotMagnetRange = archive->GetVector2("pivotMagnetRange");
-            controlTransformation->resizeMagnetRange = archive->GetVector2("resizeMagnetRange");
+            if (archive != nullptr)
+            {
+                controlTransformation->angleSegment = archive->GetFloat("angleSegment");
+                controlTransformation->shareOfSizeToMagnetPivot = archive->GetVector2("shareOfSizeToMagnetPivot");
+                controlTransformation->canMagnet = archive->GetBool("canMagnet");
+                controlTransformation->expandedmoveStepByKeyboard2 = archive->GetVector2("expandedmoveStepByKeyboard2");
+                controlTransformation->moveMagnetRange = archive->GetVector2("moveMagnetRange");
+                controlTransformation->shiftInverted = archive->GetBool("shiftInverted");
+                controlTransformation->moveStepByKeyboard2 = archive->GetVector2("moveStepByKeyboard2");
+                controlTransformation->pivotMagnetRange = archive->GetVector2("pivotMagnetRange");
+                controlTransformation->resizeMagnetRange = archive->GetVector2("resizeMagnetRange");
+            }
         }
 
         {
@@ -147,25 +165,34 @@ public:
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "FindFileDialog" });
-            accessor->CreatePropertiesNode("FindFileDialog").Set("lastUsedPath", archive->GetString("lastUsedPath"));
+            if (archive != nullptr)
+            {
+                accessor->CreatePropertiesNode("FindFileDialog").Set("lastUsedPath", archive->GetString("lastUsedPath"));
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "DialogReloadSprites" });
-            DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
-            item.Set("currentGpu", archive->GetVariant("currentGPU")->AsUInt8());
-            item.Set("quality", archive->GetUInt32("quality"));
-            item.Set("forcreRepack", archive->GetBool("forceRepackEnabled"));
-            item.Set("showConsole", archive->GetBool("consoleVisible"));
+            if (archive != nullptr)
+            {
+                DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
+                item.Set("currentGpu", archive->GetVariant("currentGPU")->AsUInt8());
+                item.Set("quality", archive->GetUInt32("quality"));
+                item.Set("forcreRepack", archive->GetBool("forceRepackEnabled"));
+                item.Set("showConsole", archive->GetBool("consoleVisible"));
 
-            DAVA::String consoleStateBase64 = archive->GetString("consoleState");
-            QByteArray consoleState = QByteArray::fromBase64(QByteArray(consoleStateBase64.c_str(), static_cast<int>(consoleStateBase64.size())));
-            item.Set("consoleState", consoleState);
+                DAVA::String consoleStateBase64 = archive->GetString("consoleState");
+                QByteArray consoleState = QByteArray::fromBase64(QByteArray(consoleStateBase64.c_str(), static_cast<int>(consoleStateBase64.size())));
+                item.Set("consoleState", consoleState);
+            }
         }
 
         {
             DAVA::KeyedArchive* archive = GetArchive({ "unnamed preferences" });
-            themeSettings->SetTheme(static_cast<DAVA::TArc::ThemesSettings::eTheme>(archive->GetInt64("ThemeName")), DAVA::PlatformApi::Qt::GetApplication());
+            if (archive != nullptr)
+            {
+                themeSettings->SetTheme(static_cast<DAVA::TArc::ThemesSettings::eTheme>(archive->GetInt64("ThemeName")), DAVA::PlatformApi::Qt::GetApplication());
+            }
         }
     }
 
