@@ -26,7 +26,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ResourceSelectorData, DAVA::TArc::SettingsNode)
     {
-        DAVA::ReflectionRegistrator<ResourceSelectorData>::Begin()
+        DAVA::ReflectionRegistrator<ResourceSelectorData>::Begin()[DAVA::M::HiddenField()]
         .ConstructorByPointer()
         .Field("preferredMode", &ResourceSelectorData::preferredMode)[DAVA::M::HiddenField()]
         .End();
