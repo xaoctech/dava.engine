@@ -79,7 +79,7 @@ def _build_win32(working_directory_path, root_project_path):
         'lua.lib', 'lua.lib',
         'liblua.lib', 'liblua.lib',
         'liblua.lib', 'liblua.lib',
-        static_runtime=True)
+        static_runtime=False)
 
     _copy_headers(source_folder_paths['lua'], root_project_path)
 
