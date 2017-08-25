@@ -117,7 +117,7 @@ struct WaitDialogParams
     uint32 min = 0; // if min and max value equal 0, than progress bar will be infinite
     uint32 max = 0;
     bool needProgressBar = true;
-    bool cancelEnabled = false;
+    bool cancelable = false;
 };
 
 class WaitHandle
