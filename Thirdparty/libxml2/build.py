@@ -99,8 +99,8 @@ def _build_win32(working_directory_path, root_project_path):
     libraries_win_root=os.path.join(root_project_path, 'Libs/lib_CMake/win')
     makefile_path=os.path.join(source_folder_path, 'win32')
 
-    cscript_debug=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MTd', 'debug=yes']
-    cscript_release=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MT', 'debug=no']
+    cscript_debug=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MDd', 'debug=yes']
+    cscript_release=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MD', 'debug=no']
     nmake_clean=['nmake', 'clean']
 
     # Generate makefile for debug build
