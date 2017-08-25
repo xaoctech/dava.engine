@@ -215,10 +215,10 @@ def cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_a
     sp.wait()
 
 
-def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator, sln_name, target, configuration, cmake_additional_args = []):
+def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator, sln_name, target, configuration, cmake_additional_args = [], msbuild_args=None):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
-    build_vs(os.path.join(output_folder_path, sln_name), 'Debug', configuration, target)
-    build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target)
+    build_vs(os.path.join(output_folder_path, sln_name), 'Debug', configuration, target, msbuild_args=msbuild_args)
+    build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target, msbuild_args=msbuild_args)
 
 
 def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_generator, project, target, cmake_additional_args = []):
@@ -575,6 +575,7 @@ def build_and_copy_libraries_win32_cmake(
         result_lib_name_x86_debug, result_lib_name_x86_release,
         result_lib_name_x64_debug, result_lib_name_x64_release,
         cmake_additional_args = [], target_lib_subdir = '',
+        msbuild_args=None,
         output_libs_path = 'Libs/lib_CMake',
         output_lib_folder='win',
         static_runtime=False):
@@ -587,8 +588,8 @@ def build_and_copy_libraries_win32_cmake(
         cmake_additional_args.append('-DCMAKE_USER_MAKE_RULES_OVERRIDE={}'.format(override_file))
 
     # Generate & build
-    cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args)
-    cmake_generate_build_vs(build_x64_folder, source_folder_path, build_config.get_cmake_generator_win32_x64(), solution_name, target_name, 'x64', cmake_additional_args)
+    cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args, msbuild_args)
+    cmake_generate_build_vs(build_x64_folder, source_folder_path, build_config.get_cmake_generator_win32_x64(), solution_name, target_name, 'x64', cmake_additional_args, msbuild_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure
