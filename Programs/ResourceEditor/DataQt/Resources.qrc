@@ -168,5 +168,6 @@
         <file>QtIcons/rspeaker_on.png</file>
         <file>QtIcons/text_component.png</file>
         <file>QtIcons/rebuild_name.png</file>
+        <file>QtIcons/clone_inplace.png</file>
     </qresource>
 </RCC>

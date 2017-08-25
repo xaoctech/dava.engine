@@ -44,6 +44,10 @@ public:
     static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component,
                                                  const DAVA::FastName& newTemplateName = DAVA::FastName(),
                                                  const DAVA::FastName& newEntityName = DAVA::FastName());
+    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component,
+                                                 DAVA::Entity* entity,
+                                                 const DAVA::FastName& newTemplateName = DAVA::FastName(),
+                                                 const DAVA::FastName& newEntityName = DAVA::FastName());
 
 protected:
     friend class AttachEntityToSlot;

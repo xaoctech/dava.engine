@@ -1,6 +1,7 @@
 #include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
 #include "Classes/PropertyPanel/PropertyPanelCommon.h"
 #include "Classes/Commands2/SlotCommands.h"
+#include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
@@ -762,6 +763,32 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
     return EditorComponentExtension::GetEditor(node);
 }
 
+class CloneSlotComponent : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Slot component cloned";
+        info.tooltip = "Clone current component";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone_inplace.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::SlotComponent* component = node->field.ref.GetValueObject().GetPtr<DAVA::SlotComponent>();
+        DAVA::Component* clonedComponent = component->Clone(nullptr);
+        return std::make_unique<AddComponentCommand>(component->GetEntity(), clonedComponent);
+    }
+};
+
 class GenerateUniqueName : public DAVA::M::CommandProducer
 {
 public:
@@ -789,9 +816,6 @@ public:
 
         return std::make_unique<SetFieldValueCommand>(node->field, name);
     }
-
-private:
-    DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
 };
 
 class InvalidateSlotConfigCache : public DAVA::M::CommandProducer
@@ -831,6 +855,11 @@ public:
 private:
     DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
 };
+
+std::shared_ptr<DAVA::M::CommandProducer> CreateCloneSlotProducer()
+{
+    return std::make_shared<CloneSlotComponent>();
+}
 
 DAVA::M::CommandProducerHolder CreateSlotNameCommandProvider()
 {

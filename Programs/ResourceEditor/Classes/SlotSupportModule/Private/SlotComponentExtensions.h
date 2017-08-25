@@ -18,6 +18,7 @@ public:
     std::unique_ptr<DAVA::TArc::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const override;
 };
 
+std::shared_ptr<DAVA::M::CommandProducer> CreateCloneSlotProducer();
 DAVA::M::CommandProducerHolder CreateSlotNameCommandProvider();
 DAVA::M::CommandProducerHolder CreateSlotConfigCommandProvider();
 }

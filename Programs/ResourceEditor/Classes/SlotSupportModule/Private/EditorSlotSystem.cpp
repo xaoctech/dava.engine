@@ -347,9 +347,15 @@ void EditorSlotSystem::LoadSlotsPreset(DAVA::Entity* entity, DAVA::RefPtr<DAVA::
 
 DAVA::FastName EditorSlotSystem::GenerateUniqueSlotName(DAVA::SlotComponent* component, const DAVA::FastName& newTemplateName, const DAVA::FastName& newEntityName)
 {
-    DAVA::Entity* entity = component->GetEntity();
-    FastName entityFName = newEntityName.IsValid() == true ? newEntityName : entity->GetName();
-    FastName templateFName = newTemplateName.IsValid() == true ? newTemplateName : component->GetTemplateName();
+    DVASSERT(component->GetEntity() != nullptr);
+    return GenerateUniqueSlotName(component, component->GetEntity(), newTemplateName, newEntityName);
+}
+
+DAVA::FastName EditorSlotSystem::GenerateUniqueSlotName(DAVA::SlotComponent* component, DAVA::Entity* entity,
+                                                        const DAVA::FastName& newTemplateName, const DAVA::FastName& newEntityName)
+{
+    DAVA::FastName entityFName = newEntityName.IsValid() == true ? newEntityName : entity->GetName();
+    DAVA::FastName templateFName = newTemplateName.IsValid() == true ? newTemplateName : component->GetTemplateName();
 
     DAVA::String entityName = entityFName.IsValid() == true ? entityFName.c_str() : "";
     DAVA::String templateName = templateFName.IsValid() == true ? templateFName.c_str() : "";
@@ -464,7 +470,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
                 f.key = DAVA::SlotComponent::SlotNameFieldName;
                 f.ref = componentRef.GetField(f.key);
                 DVASSERT(f.ref.IsValid());
-                holder.AddPostCommand(std::make_unique<SetFieldValueCommand>(f, GenerateUniqueSlotName(component, DAVA::FastName(), cmd->GetNewValue().Cast<FastName>())));
+                holder.AddPostCommand(std::make_unique<SetFieldValueCommand>(f, GenerateUniqueSlotName(component, DAVA::FastName(), cmd->GetNewValue().Cast<DAVA::FastName>())));
             }
         }
     };
@@ -496,7 +502,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
 
     auto loadDefaultItem = [&](DAVA::SlotComponent* component)
     {
-        FastName itemName = GetSuitableItemName(component);
+        DAVA::FastName itemName = GetSuitableItemName(component);
         if (itemName.IsValid() == false)
         {
             DAVA::RefPtr<DAVA::Entity> newEntity(new DAVA::Entity());
@@ -515,8 +521,19 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
         {
             SlotSystemSettings* settings = accessor->GetGlobalContext()->GetData<SlotSystemSettings>();
-            static_cast<DAVA::SlotComponent*>(component)->SetConfigFilePath(settings->lastConfigPath);
+            DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
+            slotComponent->SetConfigFilePath(settings->lastConfigPath);
             loadDefaultItem(static_cast<DAVA::SlotComponent*>(component));
+
+            if (autoGenerateName == true)
+            {
+                DAVA::Reflection componentRef = DAVA::Reflection::Create(DAVA::ReflectedObject(component));
+                DAVA::Reflection::Field f;
+                f.key = DAVA::SlotComponent::SlotNameFieldName;
+                f.ref = componentRef.GetField(f.key);
+                DVASSERT(f.ref.IsValid());
+                holder.AddPostCommand(std::make_unique<SetFieldValueCommand>(f, GenerateUniqueSlotName(slotComponent, cmd->GetEntity())));
+            }
         }
     };
 
