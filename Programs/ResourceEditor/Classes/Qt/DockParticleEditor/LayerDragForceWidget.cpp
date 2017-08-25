@@ -12,6 +12,7 @@
 #include "Classes/Commands2/ParticleEditorCommands.h"
 
 #include <Base/Array.h>
+#include <Base/Map.h>
 
 namespace LayerDragForceWidgetDetail
 {
@@ -20,7 +21,7 @@ struct ShapeMap
     DAVA::ParticleDragForce::eShape elemType;
     QString name;
 };
-const Array<ShapeMap, 2> shapeMap =
+const DAVA::Array<ShapeMap, 2> shapeMap =
 { {
 { DAVA::ParticleDragForce::eShape::BOX, "Box" },
 { DAVA::ParticleDragForce::eShape::SPHERE, "Sphere" }
@@ -31,12 +32,20 @@ struct TimingMap
     DAVA::ParticleDragForce::eTimingType elemType;
     QString name;
 };
-const Array<TimingMap, 3> timingMap =
+const DAVA::Array<TimingMap, 3> timingMap =
 { {
 { DAVA::ParticleDragForce::eTimingType::CONSTANT, "Constant" },
 { DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
 { DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life" }
 } };
+
+DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
+{
+    { DAVA::ParticleDragForce::eType::DRAG_FORCE, "Drag Force" },
+    { DAVA::ParticleDragForce::eType::LORENTZ_FORCE, "Lorentz Force" },
+    { DAVA::ParticleDragForce::eType::POINT_GRAVITY, "Point Gravity" },
+    { DAVA::ParticleDragForce::eType::BOX_WRAP, "Box Wrap" }
+};
 
 template <typename T, typename U, size_t sz>
 int ElementToIndex(T elem, const Array<U, sz> map)
@@ -81,6 +90,7 @@ void LayerDragForceWidget::BuildTimingSection()
     timingTypeComboBox = new WheellIgnorantComboBox();
     for (size_t i = 0; i < timingMap.size(); ++i)
         timingTypeComboBox->addItem(timingMap[i].name);
+
     connect(timingTypeComboBox, SIGNAL(currentIndexChanged(int)),
             this,
             SLOT(OnValueChanged()));
@@ -139,6 +149,12 @@ void LayerDragForceWidget::BuildShapeSection()
 
 void LayerDragForceWidget::BuildCommonSection()
 {
+    forceTypeLabel = new QLabel("OLOLABEL");
+    forceTypeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    forceTypeLabel->setContentsMargins(0, 15, 0, 15);
+    forceTypeLabel->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(forceTypeLabel);
+
     isActive = new QCheckBox("Is active");
     connect(isActive, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(isActive);
@@ -190,6 +206,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forcePower->SetValue(currForce->forcePower);
     radiusSpin->setValue(currForce->radius);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
+    forceTypeLabel->setText(forceTypes[currForce->type]);
 
     UpdateVisibility(currForce->shape, currForce->timingType, currForce->isInfinityRange);
 

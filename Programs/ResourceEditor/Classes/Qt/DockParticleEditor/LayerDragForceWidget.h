@@ -50,6 +50,7 @@ private:
     void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, bool isInfinityRange);
 
     QVBoxLayout* mainLayout = nullptr;
+    QLabel* forceTypeLabel = nullptr;
     QLineEdit* forceNameEdit = nullptr;
     QCheckBox* isActive = nullptr;
     QCheckBox* infinityRange = nullptr;
