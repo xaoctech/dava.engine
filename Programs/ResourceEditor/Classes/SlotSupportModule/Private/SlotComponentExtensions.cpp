@@ -717,7 +717,7 @@ private:
         auto showNotification = [&]()
         {
             DAVA::TArc::NotificationParams p;
-            p.message.message = "Clipboard doesn't contains slot component. Please copy slot to clipboard first";
+            p.message.message = "Clipboard doesn't contain slot component. Please copy slot to clipboard first";
             p.message.type = Result::RESULT_ERROR;
             p.title = "Slot can't be pasted";
             GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, p);

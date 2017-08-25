@@ -761,12 +761,12 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
     DAVA::uint32 subEntitiesCount = archive->GetUInt32("subEntitiesCount", 0);
     if (subEntitiesCount > 0)
     {
-        DAVA::UnorderedMap<DAVA::FastName, DAVA::Entity*> childEntities;
+        DAVA::UnorderedMap<DAVA::FastName, DAVA::Deque<DAVA::Entity*>> childEntities;
         for (DAVA::int32 childIndex = 0; childIndex < entity->GetChildrenCount(); ++childIndex)
         {
             DAVA::Entity* child = entity->GetChild(childIndex);
             DVASSERT(child->GetName().IsValid());
-            childEntities.emplace(child->GetName(), child);
+            childEntities[child->GetName()].push_back(child);
         }
 
         for (DAVA::uint32 subEntityIndex = 0; subEntityIndex < subEntitiesCount; ++subEntityIndex)
@@ -777,7 +777,9 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
             auto iter = childEntities.find(entityName);
             if (iter != childEntities.end())
             {
-                LoadSlotsPresetImpl(iter->second, DAVA::RefPtr<DAVA::KeyedArchive>::ConstructWithRetain(subEntityArch));
+                DAVA::Entity* e = iter->second.front();
+                iter->second.pop_front();
+                LoadSlotsPresetImpl(e, DAVA::RefPtr<DAVA::KeyedArchive>::ConstructWithRetain(subEntityArch));
             }
             else
             {
