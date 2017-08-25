@@ -11,6 +11,17 @@ using namespace DAVA;
 
 static const Set<String> ControlClassesWithoutChildren = { "UI3DView" };
 
+ControlNode* GetRootControlNode(ControlNode* node)
+{
+    PackageBaseNode* root = node;
+    while (nullptr != root && nullptr != root->GetParent() && nullptr != root->GetParent()->GetControl())
+    {
+        root = root->GetParent();
+    }
+
+    return dynamic_cast<ControlNode*>(root);
+}
+
 ControlNode::ControlNode(UIControl* control, bool recursively)
     : ControlsContainerNode(nullptr)
     , control(SafeRetain(control))

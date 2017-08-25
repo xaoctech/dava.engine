@@ -77,15 +77,39 @@ public:
     Signal<const IRequest&> requestUpdated;
     /** signal just before start loading request */
     Signal<const IRequest&> requestStartLoading;
+
+    /** this enumeration represents origin for error signal */
+    enum class ErrorOrigin
+    {
+        FileIO, //!< error with read, write, create, open etc... file or directory operation
+        InitTimeout //!< initialization timeout
+    };
+
     /**
-	    Tells that some file error occurred during downloading process.
-	    First parameter is a full path to the file which couldn't be created or written,
-		second parameter is an error code
-		(example: ENOSPC - No space left on device (POSIX.1).)
-		DLCManager requesting disabled before signal.
-		If you receive this signal first check available space on device.
+	    Tells that some error occurred during downloading process.
+		parameters:
+		    ErrorOrigin - errorType context for error
+			int32 - errnoValue POSIX error code
+			String& - extendedInfo string value depends on context of error:
+			    1. filePath in case of FileIO
+				2. url to server in case of InitTimeout
+
+		If you receive FileIO error type requesting disabled before signal.
+		Suggest also to check for:
+		    EBUSY(device_or_resource_busy),
+			ENAMETOOLONG(filename_too_long),
+			ENOSPC(no_space_on_device),
+			ENODEV(no_such_device),
+			EACCES(permission_denied),
+			EROFS(read_only_file_system),
+			ENFILE(too_many_files_open_in_system),
+			EMFILE(too_many_files_open)
+		If you receive InitTimeout error type check for:
+			EHOSTUNREACH(host_unreachable) - connection to cdn timed out
 		*/
-    Signal<const String&, int32> fileErrorOccured;
+    Signal<ErrorOrigin /*errorType*/,
+           int32 /*errnoValue*/,
+           const String& /*extendedInfo*/> error;
 
     /**
 	    User fills hints to internal implementation.
@@ -96,12 +120,15 @@ public:
         String logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
         String preloadedPacks = ""; //!< list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
         int64 limitRequestUpdateIterationMs = 4; //!< max time to update requestManager in milliseconds
+        uint32 maxSameErrorCounter = 10; //!< if for example EBUSY error occurred try same operation again while counter below this value
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
         uint32 maxFilesToDownload = 0; //!< user should fill this value default value average files count in Data
         uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
+        int64 timeoutForInitialization = 60; //!< timeout(sec) for initialization after which fire signal fileErrorOccured("dlcmanager_timeout", EHOSTUNREACH)
         uint32 skipCDNConnectAfterAttempts = 3; //!< if local metadata exists and CDN is not available use local files without CDN
         uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
         uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
+        bool fireSignalsInBackground = false; //!< if false, signals are accumulated and will be fired only when an app returns to foreground
     };
 
     /** Start complex initialization process. You can call it again if need.
@@ -119,6 +146,18 @@ public:
 
     virtual bool IsInitialized() const = 0;
 
+    /**
+	 InitStatus represents how initialization was done
+	*/
+    enum class InitStatus : uint32
+    {
+        InProgress, //!< initialization is not finished yet
+        FinishedWithLocalMeta, //!< couldn't download data from server during initialization and tried to use previously loaded local data
+        FinishedWithRemoteMeta //!< either downloaded data from server or used local data with the same version
+    };
+    /** return initialization status */
+    virtual InitStatus GetInitStatus() const = 0;
+
     virtual bool IsRequestingEnabled() const = 0;
 
     /** Return true if pack is already downloaded. */
@@ -126,7 +165,7 @@ public:
 
     /** Return size of pack with all it's dependent packs from local meta without downloading
 	    or 0 if manager is not initialized */
-    virtual uint64 GetPackSize(const String& packName);
+    virtual uint64 GetPackSize(const String& packName) const = 0;
 
     virtual void SetRequestingEnabled(bool value) = 0;
 
@@ -160,7 +199,7 @@ public:
         uint32 totalFiles = 0; //!< count files in superpack (easy for human to see difference on superpacks)
     };
     /** Check if manager is initialized and return info */
-    virtual Info GetInfo() const;
+    virtual Info GetInfo() const = 0;
 };
 
 } // end namespace DAVA

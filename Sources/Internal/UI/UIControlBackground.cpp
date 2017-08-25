@@ -164,13 +164,13 @@ void UIControlBackground::SetDrawType(UIControlBackground::eDrawType drawType)
     if (type != drawType)
     {
         ReleaseDrawData();
-    }
 
-    type = drawType;
+        type = drawType;
 
-    if (GetControl()) //workaround for standalone backgrounds
-    {
-        GetControl()->SetLayoutDirty();
+        if (GetControl()) //workaround for standalone backgrounds
+        {
+            GetControl()->SetLayoutDirty();
+        }
     }
 }
 

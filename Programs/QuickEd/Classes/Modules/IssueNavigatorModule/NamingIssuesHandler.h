@@ -36,7 +36,7 @@ private:
     };
     using DuplicationsIssuesMap = DAVA::UnorderedMap<FastName, DuplicationsIssue>;
 
-    void ValidateNameSymbolsCorrectnessRecursively(ControlsContainerNode* node);
+    void ValidateNameSymbolsCorrectnessForChildren(ControlsContainerNode* node);
     void ValidateNameSymbolsCorrectness(ControlNode* node);
     void ValidateNameUniqueness(ControlNode* node);
 
@@ -44,7 +44,7 @@ private:
     void CreateDuplicationsIssue(ControlNode* node);
     void AddToDuplicationsIssue(DuplicationsIssue& issue, ControlNode* node);
     void UpdateSymbolsIssue(DAVA::UnorderedMap<ControlNode*, DAVA::int32>::iterator& it);
-    void UpdateDuplicationsIssue(DAVA::UnorderedMap<ControlNode*, DAVA::int32>::iterator& it);
+    void UpdateDuplicationsIssue(DuplicationsIssuesMap::iterator& it);
 
     void RemoveSymbolsIssuesRecursively(ControlNode* node);
     void RemoveSymbolsIssue(ControlNode* node);

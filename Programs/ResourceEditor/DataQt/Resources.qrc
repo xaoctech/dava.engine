@@ -166,5 +166,6 @@
         <file>QtIcons/grab-image.png</file>
         <file>QtIcons/rspeaker_off.png</file>
         <file>QtIcons/rspeaker_on.png</file>
+        <file>QtIcons/text_component.png</file>
     </qresource>
 </RCC>

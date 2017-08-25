@@ -52,7 +52,7 @@ private slots:
     void OnActivated(const QModelIndex& index);
 
 private:
-    void ChangeIssueText(const DAVA::int32 issueId, const DAVA::int32 sectionId, int columnOfText, const DAVA::String& newText);
+    int GetIssueRow(const DAVA::int32 issueId, const DAVA::int32 sectionId);
     bool eventFilter(QObject* obj, QEvent* event) override;
 
     std::unique_ptr<Ui::IssueNavigatorWidget> ui;

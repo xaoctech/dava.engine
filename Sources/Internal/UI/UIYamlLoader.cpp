@@ -51,7 +51,7 @@ YamlNode* UIYamlLoader::CreateRootNode(const FilePath& yamlPathname)
     YamlParser* parser = YamlParser::Create(yamlPathname);
     if (!parser)
     {
-        Logger::Error("Failed to open yaml file: %s", yamlPathname.GetAbsolutePathname().c_str());
+        Logger::Error("Failed to open yaml file: %s", yamlPathname.GetStringValue().c_str());
         return NULL;
     }
     YamlNode* rootNode = SafeRetain(parser->GetRootNode());

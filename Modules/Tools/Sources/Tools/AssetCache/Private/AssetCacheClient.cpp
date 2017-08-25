@@ -1,25 +1,17 @@
 #include "Tools/AssetCache/AssetCacheClient.h"
+#include "Tools/AssetCache/ChunkSplitter.h"
 
-#include "FileSystem/FileSystem.h"
-#include "Concurrency/LockGuard.h"
-#include "Concurrency/Thread.h"
-#include "Preferences/PreferencesRegistrator.h"
-#include "Time/SystemTimer.h"
-#include "Utils/StringFormat.h"
-#include "Logger/Logger.h"
-#include "Network/NetCore.h"
+#include <FileSystem/FileSystem.h>
+#include <Concurrency/LockGuard.h>
+#include <Concurrency/Thread.h>
+#include <FileSystem/DynamicMemoryFile.h>
+#include <Time/SystemTimer.h>
+#include <Utils/StringFormat.h>
+#include <Logger/Logger.h>
+#include <Network/NetCore.h>
 
 namespace DAVA
 {
-namespace AssetCacheClientDetail
-{
-InspInfoRegistrator inspInfoRegistrator(AssetCacheClient::ConnectionParams::TypeInfo(), {
-                                                                                        PREF_ARG("ip", DAVA::AssetCache::GetLocalHost()),
-                                                                                        PREF_ARG("port", DAVA::AssetCache::ASSET_SERVER_PORT),
-                                                                                        PREF_ARG("timeoutms", DAVA::uint64(10 * 1000))
-                                                                                        });
-};
-
 AssetCacheClient::AssetCacheClient()
     : dispatcher([](const Function<void()>& fn) { fn(); })
     , client(&dispatcher)
@@ -31,6 +23,8 @@ AssetCacheClient::AssetCacheClient()
 
 AssetCacheClient::~AssetCacheClient()
 {
+    DumpStats();
+
     client.RemoveListener(this);
 
     DVASSERT(isActive == false);
@@ -39,9 +33,7 @@ AssetCacheClient::~AssetCacheClient()
 AssetCache::Error AssetCacheClient::ConnectSynchronously(const ConnectionParams& connectionParams)
 {
     isActive = true;
-    lightRequestTimeoutMs = connectionParams.timeoutms;
-    heavyRequestTimeoutMs = lightRequestTimeoutMs + (100u * 1000u);
-    currentTimeoutMs = lightRequestTimeoutMs;
+    timeoutMs = connectionParams.timeoutms;
 
     client.Connect(connectionParams.ip, AssetCache::ASSET_SERVER_PORT);
 
@@ -58,9 +50,9 @@ AssetCache::Error AssetCacheClient::ConnectSynchronously(const ConnectionParams&
             }
 
             uint64 deltaTime = SystemTimer::GetMs() - startTime;
-            if (((currentTimeoutMs > 0) && (deltaTime > currentTimeoutMs)) && (client.ChannelIsOpened() == false))
+            if (((timeoutMs > 0) && (deltaTime > timeoutMs)) && (client.ChannelIsOpened() == false))
             {
-                Logger::Error("Timeout on connecting to asset cache %s (%lld ms)", connectionParams.ip.c_str(), currentTimeoutMs);
+                Logger::Error("Timeout on connecting to asset cache %s (%lld ms)", connectionParams.ip.c_str(), timeoutMs);
                 isActive = false;
                 return AssetCache::Error::OPERATION_TIMEOUT;
             }
@@ -94,7 +86,7 @@ AssetCache::Error AssetCacheClient::CheckStatusSynchronously()
     bool requestSent = client.RequestServerStatus();
     if (requestSent)
     {
-        resultCode = WaitRequest(lightRequestTimeoutMs);
+        resultCode = WaitRequest();
     }
 
     {
@@ -107,22 +99,63 @@ AssetCache::Error AssetCacheClient::CheckStatusSynchronously()
 
 AssetCache::Error AssetCacheClient::AddToCacheSynchronously(const AssetCache::CacheItemKey& key, const AssetCache::CachedItemValue& value)
 {
+    uint64 dataSizeOverall = 0;
+    uint32 chunksOverall = 0;
     {
         LockGuard<Mutex> guard(requestLocker);
-        request = Request(AssetCache::PACKET_ADD_REQUEST, key);
+        request = Request(AssetCache::PACKET_ADD_CHUNK_REQUEST, key);
+        addFilesRequest.Reset();
+        value.Serialize(addFilesRequest.serializedData);
+        dataSizeOverall = addFilesRequest.serializedData->GetSize();
+        chunksOverall = AssetCache::ChunkSplitter::GetNumberOfChunks(dataSizeOverall);
+        addFilesRequest.chunksSent = 0;
     }
 
     AssetCache::Error resultCode = AssetCache::Error::CANNOT_SEND_REQUEST;
 
-    bool requestSent = client.RequestAddData(key, value);
-    if (requestSent)
+    for (uint32 currentChunk = 0; currentChunk < chunksOverall; ++currentChunk)
     {
-        resultCode = WaitRequest(heavyRequestTimeoutMs);
+        Vector<uint8> chunkData;
+        {
+            LockGuard<Mutex> guard(requestLocker);
+            request = Request(AssetCache::PACKET_ADD_CHUNK_REQUEST, key);
+            chunkData = AssetCache::ChunkSplitter::GetChunk(addFilesRequest.serializedData->GetDataVector(), currentChunk);
+        }
+
+        resultCode = AssetCache::Error::CANNOT_SEND_REQUEST;
+
+        bool requestSent = client.RequestAddNextChunk(key, dataSizeOverall, chunksOverall, currentChunk, chunkData);
+        if (requestSent)
+        {
+            resultCode = WaitRequest();
+        }
+
+        {
+            LockGuard<Mutex> guard(requestLocker);
+            request.Reset();
+        }
+
+        if (resultCode != AssetCache::Error::NO_ERRORS)
+        {
+            break;
+        }
     }
 
-    {
-        LockGuard<Mutex> guard(requestLocker);
-        request.Reset();
+    { //process stats
+        ++stats.addRequestsCount;
+        switch (resultCode)
+        {
+        case AssetCache::Error::NO_ERRORS:
+            ++stats.addRequestsSucceedCount;
+            break;
+        case AssetCache::Error::OPERATION_TIMEOUT:
+            ++stats.addRequestsTimeoutCount;
+            break;
+
+        default:
+            ++stats.addRequestsFailedCount;
+            break;
+        }
     }
 
     return resultCode;
@@ -134,20 +167,97 @@ AssetCache::Error AssetCacheClient::RequestFromCacheSynchronously(const AssetCac
 
     {
         LockGuard<Mutex> guard(requestLocker);
-        request = Request(AssetCache::PACKET_GET_REQUEST, key, value);
+        request = Request(AssetCache::PACKET_GET_CHUNK_REQUEST, key);
+        getFilesRequest.Reset();
     }
 
     AssetCache::Error resultCode = AssetCache::Error::CANNOT_SEND_REQUEST;
 
-    bool requestSent = client.RequestData(key);
+    bool requestSent = client.RequestGetNextChunk(key, 0);
     if (requestSent)
     {
-        resultCode = WaitRequest(heavyRequestTimeoutMs);
+        resultCode = WaitRequest();
     }
 
+    uint32 chunksOverall = 0;
     {
         LockGuard<Mutex> guard(requestLocker);
         request.Reset();
+        chunksOverall = getFilesRequest.chunksOverall;
+    }
+
+    if (resultCode == AssetCache::Error::NO_ERRORS)
+    {
+        DVASSERT(chunksOverall > 0);
+        for (uint32 currentChunk = 1; currentChunk < chunksOverall; ++currentChunk)
+        {
+            {
+                LockGuard<Mutex> guard(requestLocker);
+                request = Request(AssetCache::PACKET_GET_CHUNK_REQUEST, key);
+            }
+
+            resultCode = AssetCache::Error::CANNOT_SEND_REQUEST;
+
+            bool requestSent = client.RequestGetNextChunk(key, currentChunk);
+            if (requestSent)
+            {
+                resultCode = WaitRequest();
+            }
+
+            {
+                LockGuard<Mutex> guard(requestLocker);
+                request.Reset();
+            }
+
+            if (resultCode != AssetCache::Error::NO_ERRORS)
+            {
+                break;
+            }
+        }
+
+        if (resultCode == AssetCache::Error::NO_ERRORS)
+        {
+            LockGuard<Mutex> guard(requestLocker);
+            if (getFilesRequest.chunksReceived == getFilesRequest.chunksOverall && getFilesRequest.bytesRemaining == 0)
+            {
+                ScopedPtr<DynamicMemoryFile> f(DynamicMemoryFile::Create(std::move(getFilesRequest.receivedData), File::OPEN | File::READ, "receivedData"));
+                value->Deserialize(f);
+
+                const AssetCache::CachedItemValue::Description& description = value->GetDescription();
+                Logger::Info("Data got from cache. Generated %s on machine %s (%s)",
+                             description.creationDate.c_str(),
+                             description.machineName.c_str(),
+                             description.comment.c_str());
+            }
+            else
+            {
+                Logger::Error("Packet was not completely transferred. Chunks %u/%u, bytes remaining: %u",
+                              getFilesRequest.chunksReceived,
+                              getFilesRequest.chunksOverall,
+                              getFilesRequest.bytesRemaining);
+                resultCode = AssetCache::Error::CORRUPTED_DATA;
+            }
+        }
+    }
+
+    { //process stats
+        ++stats.getRequestsCount;
+        switch (resultCode)
+        {
+        case AssetCache::Error::NO_ERRORS:
+            ++stats.getRequestsSucceedCount;
+            break;
+        case AssetCache::Error::OPERATION_TIMEOUT:
+            ++stats.getRequestsTimeoutCount;
+            break;
+        case AssetCache::Error::NOT_FOUND_ON_SERVER:
+            ++stats.getRequestsNotFoundCount;
+            break;
+
+        default:
+            ++stats.getRequestsFailedCount;
+            break;
+        }
     }
 
     return resultCode;
@@ -165,7 +275,7 @@ AssetCache::Error AssetCacheClient::RemoveFromCacheSynchronously(const AssetCach
     bool requestSent = client.RequestRemoveData(key);
     if (requestSent)
     {
-        resultCode = WaitRequest(lightRequestTimeoutMs);
+        resultCode = WaitRequest();
     }
 
     {
@@ -188,7 +298,7 @@ AssetCache::Error AssetCacheClient::ClearCacheSynchronously()
     bool requestSent = client.RequestClearCache();
     if (requestSent)
     {
-        resultCode = WaitRequest(lightRequestTimeoutMs);
+        resultCode = WaitRequest();
     }
 
     {
@@ -199,10 +309,8 @@ AssetCache::Error AssetCacheClient::ClearCacheSynchronously()
     return resultCode;
 }
 
-AssetCache::Error AssetCacheClient::WaitRequest(uint64 timeoutMs)
+AssetCache::Error AssetCacheClient::WaitRequest()
 {
-    currentTimeoutMs = timeoutMs;
-
     uint64 startTime = SystemTimer::GetMs();
 
     Request currentRequest;
@@ -215,6 +323,11 @@ AssetCache::Error AssetCacheClient::WaitRequest(uint64 timeoutMs)
     {
         ProcessNetwork();
 
+        if (!isActive)
+        {
+            return AssetCache::Error::OPERATION_TIMEOUT;
+        }
+
         {
             LockGuard<Mutex> guard(requestLocker);
             currentRequest = request;
@@ -223,7 +336,7 @@ AssetCache::Error AssetCacheClient::WaitRequest(uint64 timeoutMs)
         uint64 deltaTime = SystemTimer::GetMs() - startTime;
         if (((timeoutMs > 0) && (deltaTime > timeoutMs)) && (currentRequest.recieved == false) && (currentRequest.processingRequest == false))
         {
-            Logger::Debug("Operation timeout: (%lld ms)", timeoutMs);
+            Logger::FrameworkDebug("Operation timeout: (%lld ms)", timeoutMs);
             return AssetCache::Error::OPERATION_TIMEOUT;
         }
     }
@@ -259,7 +372,8 @@ void AssetCacheClient::OnServerStatusReceived()
 void AssetCacheClient::OnAddedToCache(const AssetCache::CacheItemKey& key, bool added)
 {
     LockGuard<Mutex> guard(requestLocker);
-    if (request.requestID == AssetCache::PACKET_ADD_REQUEST && request.key == key)
+
+    if ((request.requestID == AssetCache::PACKET_ADD_CHUNK_REQUEST) && request.key == key)
     {
         request.result = (added) ? AssetCache::Error::NO_ERRORS : AssetCache::Error::SERVER_ERROR;
         request.recieved = true;
@@ -271,57 +385,57 @@ void AssetCacheClient::OnAddedToCache(const AssetCache::CacheItemKey& key, bool 
     }
 }
 
-void AssetCacheClient::OnReceivedFromCache(const AssetCache::CacheItemKey& key, const AssetCache::CachedItemValue& value)
+void AssetCacheClient::OnReceivedFromCache(const AssetCache::CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData)
 {
-    Request currentRequest;
-    {
-        LockGuard<Mutex> guard(requestLocker);
-        currentRequest = request;
-    }
+    LockGuard<Mutex> guard(requestLocker);
 
-    if (currentRequest.requestID == AssetCache::PACKET_GET_REQUEST && currentRequest.key == key)
+    if (request.requestID == AssetCache::PACKET_GET_CHUNK_REQUEST && request.key == key)
     {
-        auto DumpInfo = [](const AssetCache::CacheItemKey& key, const AssetCache::CachedItemValue& value)
+        if (getFilesRequest.chunksReceived == 0)
         {
-            const AssetCache::CachedItemValue::Description& description = value.GetDescription();
-            Logger::Info("Data got from cache. Generated %s on mashine %s (%s)",
-                         description.creationDate.c_str(),
-                         description.machineName.c_str(),
-                         description.comment.c_str());
-            Logger::Info("addingChain: %s, receivingChain: %s", description.addingChain.c_str(), description.receivingChain.c_str());
-        };
-
-        if (value.IsEmpty())
-        {
-            LockGuard<Mutex> guard(requestLocker);
-            request.result = AssetCache::Error::NOT_FOUND_ON_SERVER;
-            request.recieved = true;
-            request.processingRequest = false;
+            if (dataSize == 0 || numOfChunks == 0)
+            {
+                request.result = AssetCache::Error::NOT_FOUND_ON_SERVER;
+                request.recieved = true;
+                request.processingRequest = false;
+                return;
+            }
+            else
+            {
+                request.result = AssetCache::Error::NO_ERRORS;
+                getFilesRequest.chunksOverall = numOfChunks;
+                getFilesRequest.bytesRemaining = static_cast<size_t>(dataSize);
+                getFilesRequest.receivedData.resize(getFilesRequest.bytesRemaining);
+                Logger::FrameworkDebug("Received info: %u bytes, %u chunks", dataSize, numOfChunks);
+            }
         }
-        else if (value.IsValid() == false)
-        {
-            LockGuard<Mutex> guard(requestLocker);
-            request.result = AssetCache::Error::CORRUPTED_DATA;
-            request.recieved = true;
-            request.processingRequest = false;
 
-            DumpInfo(key, value);
+        if (chunkData.empty())
+        {
+            request.result = AssetCache::Error::NOT_FOUND_ON_SERVER;
+        }
+        else if (chunkNumber != getFilesRequest.chunksReceived)
+        {
+            Logger::Error("Wrong chunk: expected #%u, received #%u", getFilesRequest.chunksReceived, chunkNumber);
+            request.result = AssetCache::Error::WRONG_CHUNK;
+        }
+        else if (getFilesRequest.bytesRemaining < chunkData.size())
+        {
+            Logger::Error("Chunk #%u size is too big. Remaining bytes: %u, received chunk size: ", chunkNumber, getFilesRequest.bytesRemaining, chunkData.size());
+            request.result = AssetCache::Error::WRONG_CHUNK;
         }
         else
         {
-            { // mark request as recieved and processed
-                LockGuard<Mutex> guard(requestLocker);
-                request.result = AssetCache::Error::NO_ERRORS;
-                request.recieved = true;
-                request.processingRequest = true;
-
-                DVASSERT(request.value != nullptr, "Request object that waits for response of data, should have valid pointer to AssetCacheValue");
-                *(request.value) = value;
-
-                DumpInfo(key, value);
-                request.processingRequest = false;
-            }
+            request.result = AssetCache::Error::NO_ERRORS;
+            Memcpy(getFilesRequest.receivedData.data() + getFilesRequest.bytesReceived, chunkData.data(), chunkData.size());
+            getFilesRequest.bytesReceived += chunkData.size();
+            getFilesRequest.bytesRemaining -= chunkData.size();
+            ++(getFilesRequest.chunksReceived);
+            Logger::FrameworkDebug("Chunk #%u received: %u bytes. Overall received %u, remaining %u", chunkNumber, chunkData.size(), getFilesRequest.bytesReceived, getFilesRequest.bytesRemaining);
         }
+
+        request.recieved = true;
+        request.processingRequest = false;
     }
     else
     {
@@ -362,6 +476,7 @@ void AssetCacheClient::OnCacheCleared(bool cleared)
 void AssetCacheClient::OnIncorrectPacketReceived(AssetCache::IncorrectPacketType type)
 {
     LockGuard<Mutex> guard(requestLocker);
+    ++stats.incorrectPacketsCount;
     request.recieved = true;
     request.processingRequest = false;
 
@@ -410,14 +525,53 @@ void AssetCacheClient::ProcessNetwork()
     }
 }
 
-AssetCacheClient::ConnectionParams::ConnectionParams()
+void AssetCacheClient::ClearStats()
 {
-    PreferencesStorage::Instance()->RegisterPreferences(this);
+    stats = Stats();
 }
 
-AssetCacheClient::ConnectionParams::~ConnectionParams()
+void AssetCacheClient::DumpStats() const
 {
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
+    if (stats.getRequestsCount + stats.addRequestsCount > 0)
+    {
+        Logger::Info("======== AC STATS ========");
+        if (stats.getRequestsCount > 0)
+        {
+            Logger::Info("GET:");
+            Logger::Info("  all requests: %d", stats.getRequestsCount);
+
+            if (stats.getRequestsSucceedCount > 0)
+                Logger::Info("  got from cache: %d", stats.getRequestsSucceedCount);
+            if (stats.getRequestsNotFoundCount > 0)
+                Logger::Info("  not found: %d", stats.getRequestsNotFoundCount);
+            if (stats.getRequestsTimeoutCount > 0)
+                Logger::Info("  timeout: %d", stats.getRequestsTimeoutCount);
+            if (stats.getRequestsFailedCount > 0)
+                Logger::Info("  failed: %d", stats.getRequestsFailedCount);
+
+            DVASSERT(stats.getRequestsCount == (stats.getRequestsFailedCount + stats.getRequestsTimeoutCount + stats.getRequestsSucceedCount + stats.getRequestsNotFoundCount));
+        }
+
+        if (stats.addRequestsCount > 0)
+        {
+            Logger::Info("ADD:");
+            Logger::Info("  all requests: %d", stats.addRequestsCount);
+            if (stats.addRequestsSucceedCount > 0)
+                Logger::Info("  added: %d", stats.addRequestsSucceedCount);
+            if (stats.addRequestsTimeoutCount > 0)
+                Logger::Info("  timeout: %d", stats.addRequestsTimeoutCount);
+            if (stats.addRequestsFailedCount > 0)
+                Logger::Info("  failed: %d", stats.addRequestsFailedCount);
+
+            DVASSERT(stats.addRequestsCount == (stats.addRequestsFailedCount + stats.addRequestsTimeoutCount + stats.addRequestsSucceedCount));
+        }
+
+        if (stats.incorrectPacketsCount > 0)
+        {
+            Logger::Info("incorrectPacketsCount: %d", stats.incorrectPacketsCount);
+        }
+        Logger::Info("==========================");
+    }
 }
 
-} //END of DAVA
+} //namespace DAVA

@@ -15,3 +15,8 @@ void RunTaskProcessor::Terminate()
 {
     //run task is sync-only, so they can not be terminated
 }
+
+std::size_t RunTaskProcessor::GetTasksCount() const
+{
+    return 0;
+}

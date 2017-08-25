@@ -1,5 +1,13 @@
 #include "ParticleForce.h"
-using namespace DAVA;
+#include "Reflection/ReflectionRegistrator.h"
+
+namespace DAVA
+{
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleForce)
+{
+    ReflectionRegistrator<ParticleForce>::Begin()
+    .End();
+}
 
 // Particle Force class is needed to store Particle Force data.
 ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3>> force_, RefPtr<PropertyLine<float32>> forceOverLife_)
@@ -29,3 +37,5 @@ void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(forceOverLife.Get(), modifiables);
 }
+
+} // namespace DAVA

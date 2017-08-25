@@ -6,7 +6,6 @@
 #include "Scene3D/Scene.h"
 #include "Base/StaticSingleton.h"
 
-#include "Settings/SettingsManager.h"
 #include "Command/Command.h"
 
 #include "Scene/System/ModifSystem.h"
@@ -16,7 +15,6 @@
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/RulerToolSystem.h"
 #include "Scene/System/StructureSystem.h"
-#include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
@@ -41,6 +39,7 @@ class HoodSystem;
 class EditorLODSystem;
 class EditorStatisticsSystem;
 class EditorVegetationSystem;
+class EditorParticlesSystem;
 class FogSettingsChangedReceiver;
 class VisibilityCheckSystem;
 class RECommandStack;

@@ -25,6 +25,7 @@ endif()
 find_package( QT5 REQUIRED )
 find_package( DavaTools REQUIRED )
 find_package( QtHelpers REQUIRED )
+find_package( DocDirSetup REQUIRED )
 
 find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 "SpineModule"
@@ -33,8 +34,8 @@ find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 DAVA_DISABLE_AUTOTESTS 
                                                 DAVA_USE_RENDERSTATS )
 
-find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
+find_package( QtTools REQUIRED )
 find_package( RemoteTool REQUIRED )
 
 

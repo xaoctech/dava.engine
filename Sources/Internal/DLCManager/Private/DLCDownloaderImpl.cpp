@@ -100,12 +100,13 @@ public:
         return true;
     }
 
-    void Close() override
+    bool Close() override
     {
         delete[] buf;
         buf = nullptr;
         current = nullptr;
         end = nullptr;
+        return true;
     }
 
     bool IsClosed() const override
@@ -526,7 +527,7 @@ DLCDownloader::Task::Task(ICurlEasyStorage& storage_,
                           const String& srcUrl,
                           const String& dstPath,
                           TaskType taskType,
-                          IWriter* dstWriter,
+                          std::shared_ptr<IWriter> dstWriter,
                           int64 rangeOffset,
                           int64 rangeSize,
                           int32 timeout)
@@ -548,23 +549,23 @@ DLCDownloader::Task::Task(ICurlEasyStorage& storage_,
         status.sizeTotal = info.rangeSize;
     }
 
-    writer.reset(dstWriter);
-    if (writer)
+    if (dstWriter)
     {
+        writer = dstWriter;
         userWriter = true;
     }
 }
 
-void DLCDownloader::Task::FlushWriterAndReset()
+bool DLCDownloader::Task::FlushWriterAndReset()
 {
-    if (userWriter)
+    bool allGood = true;
+    if (writer && !writer->IsClosed())
     {
-        writer.release(); //-V530 user pass it by reference, just release it
+        allGood = writer->Close();
     }
-    else
-    {
-        writer.reset();
-    }
+    writer.reset();
+
+    return allGood;
 }
 
 DLCDownloader::Task::~Task()
@@ -728,9 +729,10 @@ struct DefaultWriter : DLCDownloader::IWriter
         return f->Truncate(0);
     }
 
-    void Close() override
+    bool Close() override
     {
         f.reset();
+        return true;
     }
 
     bool IsClosed() const override
@@ -820,7 +822,7 @@ DLCDownloaderImpl::~DLCDownloaderImpl()
 DLCDownloader::Task* DLCDownloaderImpl::StartAnyTask(const String& srcUrl,
                                                      const String& dstPath,
                                                      TaskType taskType,
-                                                     IWriter* dstWriter,
+                                                     std::shared_ptr<IWriter> dstWriter = std::shared_ptr<IWriter>(),
                                                      Range range)
 {
     if (srcUrl.empty())
@@ -878,9 +880,9 @@ DLCDownloader::Task* DLCDownloaderImpl::StartTask(const String& srcUrl, const St
     return StartAnyTask(srcUrl, dstPath, TaskType::FULL, nullptr, range);
 }
 
-DLCDownloader::Task* DLCDownloaderImpl::StartTask(const String& srcUrl, IWriter& customWriter, Range range)
+DLCDownloader::Task* DLCDownloaderImpl::StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range)
 {
-    return StartAnyTask(srcUrl, "", TaskType::FULL, &customWriter, range);
+    return StartAnyTask(srcUrl, "", TaskType::FULL, customWriter, range);
 }
 
 DLCDownloader::Task* DLCDownloaderImpl::ResumeTask(const String& srcUrl, const String& dstPath, Range range)
@@ -888,9 +890,9 @@ DLCDownloader::Task* DLCDownloaderImpl::ResumeTask(const String& srcUrl, const S
     return StartAnyTask(srcUrl, dstPath, TaskType::RESUME, nullptr, range);
 }
 
-DLCDownloader::Task* DLCDownloaderImpl::ResumeTask(const String& srcUrl, IWriter& customWriter, Range range)
+DLCDownloader::Task* DLCDownloaderImpl::ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range)
 {
-    return StartAnyTask(srcUrl, "", TaskType::RESUME, &customWriter, range);
+    return StartAnyTask(srcUrl, "", TaskType::RESUME, customWriter, range);
 }
 
 void DLCDownloaderImpl::RemoveTask(Task* task)
@@ -1363,8 +1365,15 @@ void DLCDownloaderImpl::ConsumeSubTask(CURLMsg* curlMsg, CURL* easyHandle)
 
         if (task.IsDone())
         {
-            task.FlushWriterAndReset();
-            task.status.state = TaskState::Finished;
+            bool allGood = task.FlushWriterAndReset();
+            if (allGood)
+            {
+                task.status.state = TaskState::Finished;
+            }
+            else
+            {
+                Task::OnErrorCurlErrno(errno, task, __LINE__);
+            }
         }
     }
 }

@@ -86,7 +86,8 @@ _configure_args = [
     'no-camellia',
     'no-comp',
     'no-hw',
-    'no-engine']
+    'no-engine',
+    'no-dso']
 
 _configure_args_win32 = "" # all configure args are in patch_win32.diff
 
@@ -248,7 +249,8 @@ def _build_macos(working_directory_path, root_project_path):
         source_folder_path,
         macos_configure_args,
         install_dir,
-        configure_exec_name='Configure')
+        configure_exec_name='Configure',
+        shell_prefix='perl')
 
     libssl_path = os.path.join(install_dir, 'lib/libssl.a')
     libcrypto_path = os.path.join(install_dir, 'lib/libcrypto.a')
@@ -275,6 +277,7 @@ def _build_ios(working_directory_path, root_project_path):
         ios_configure_args,
         install_dir_armv7,
         configure_exec_name='Configure',
+        shell_prefix='perl',
         env=_get_ios_env())
 
     install_dir_arm64 = os.path.join(
@@ -286,6 +289,7 @@ def _build_ios(working_directory_path, root_project_path):
         ios_configure_args,
         install_dir_arm64,
         configure_exec_name='Configure',
+        shell_prefix='perl',
         env=_get_ios_env())
 
     libssl_fat_path = os.path.join(
@@ -324,6 +328,7 @@ def _build_android(working_directory_path, root_project_path):
         _configure_args,
         install_dir_arm,
         configure_exec_name='config',
+        shell_prefix='perl',
         env=_get_android_env_arm(source_folder_path, root_project_path))
 
     install_dir_x86 = os.path.join(
@@ -333,6 +338,7 @@ def _build_android(working_directory_path, root_project_path):
         _configure_args,
         install_dir_x86,
         configure_exec_name='config',
+        shell_prefix='perl',
         env=_get_android_env_x86(source_folder_path, root_project_path))
 
     libssl_path_android_arm = os.path.join(
@@ -380,6 +386,7 @@ def _build_linux(working_directory_path, root_project_path):
         install_dir,
         env=env,
         configure_exec_name='Configure',
+        shell_prefix='perl',
         make_targets=['depend', 'all', 'install'],
         postclean=False)
 

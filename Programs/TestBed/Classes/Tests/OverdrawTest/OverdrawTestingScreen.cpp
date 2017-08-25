@@ -9,6 +9,7 @@
 #include "Base/Message.h"
 #include "Base/String.h"
 #include "Base/TemplateHelpers.h"
+#include "Engine/Engine.h"
 #include "Render/2D/FTFont.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Highlevel/Camera.h"
@@ -88,7 +89,7 @@ void OverdrawTestingScreen::LoadResources()
 
     ScopedPtr<Camera> camera(new Camera());
 
-    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = DAVA::GetEngineContext()->uiControlSystem->vcs;
 
     float32 aspect = static_cast<float32>(vcs->GetVirtualScreenSize().dy) / static_cast<float32>(vcs->GetVirtualScreenSize().dx);
     camera->SetupPerspective(70.f, aspect, 0.5f, 2500.f);
@@ -111,7 +112,7 @@ void OverdrawTestingScreen::LoadResources()
     overdrawTesterEntity->Release();
 
     Rect screenRect = GetRect();
-    Size2i screenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    Size2i screenSize = DAVA::GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     screenRect.dx = static_cast<float32>(screenSize.dx);
     screenRect.dy = static_cast<float32>(screenSize.dy);
     SetRect(screenRect);
@@ -161,7 +162,7 @@ void OverdrawTestingScreen::OnChangeChartHeightButtonClick(BaseObject* sender, v
 
 void OverdrawTestingScreen::AddButtons()
 {
-    Size2i size = DAVA::UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    Size2i size = DAVA::GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     frameTimeMinusButton = CreateButton({ 0, size.dy - buttonHeight, buttonWidth, buttonHeight }, Message(this, &OverdrawTestingScreen::OnChangeChartHeightButtonClick), L"-", -1);
     frameTimePlusButton = CreateButton({ buttonWidth, size.dy - buttonHeight, buttonWidth, buttonHeight }, Message(this, &OverdrawTestingScreen::OnChangeChartHeightButtonClick), L"+", 1);
 }

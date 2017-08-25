@@ -43,6 +43,7 @@ private:
     void RegisterOperations();
 
     /// Action and operation handlers
+    void CreateFirstScene();
     void CreateNewScene();
     void OpenScene();
     void OpenSceneQuckly();

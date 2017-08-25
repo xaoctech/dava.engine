@@ -1,27 +1,21 @@
-#ifndef __LOGMODEL_H__
-#define __LOGMODEL_H__
+#pragma once
 
-#include "Logger/Logger.h"
+#include <TArc/Qt/QtByteArray.h>
+
+#include <Logger/Logger.h>
 #include <functional>
 
-#include "QtTools/WarningGuard/QtWarningsHandler.h"
-PUSH_QT_WARNING_SUPRESSOR
 #include <QObject>
 #include <QAbstractListModel>
 #include <QSize>
 #include <QPixmap>
-POP_QT_WARNING_SUPRESSOR
 
 class QMutex;
 class QTimer;
 
-class LogModel
-: public QAbstractListModel
+class LogModel : public QAbstractListModel
 {
-    PUSH_QT_WARNING_SUPRESSOR
     Q_OBJECT
-    POP_QT_WARNING_SUPRESSOR
-
 public:
     enum Roles
     {
@@ -68,5 +62,3 @@ private:
     QTimer* syncTimer = nullptr;
     QSize rowSize;
 };
-
-#endif // __LOGMODEL_H__

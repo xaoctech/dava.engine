@@ -7,6 +7,12 @@
 #include "Base/StaticSingleton.h"
 #include "Scene3D/Entity.h"
 
+namespace DAVA
+{
+class ParticleEmitterInstance;
+struct ParticleLayer;
+}
+
 class SceneEditor2;
 class RECommandNotificationObject;
 class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>
@@ -14,7 +20,6 @@ class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>
     Q_OBJECT
 
 signals:
-    void ThemeChanged();
 
     // scene
     void Opened(SceneEditor2* scene);

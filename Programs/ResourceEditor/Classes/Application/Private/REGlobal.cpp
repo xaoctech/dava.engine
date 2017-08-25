@@ -64,13 +64,23 @@ DAVA::TArc::ModalMessageParams::Button ShowModalMessage(const DAVA::TArc::ModalM
     return ui->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
 }
 
+void ShowNotification(const DAVA::TArc::NotificationParams& params)
+{
+    DAVA::TArc::UI* ui = REGlobalDetails::GetUI();
+    DVASSERT(ui != nullptr);
+    if (ui != nullptr)
+    {
+        ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+    }
+}
+
 void InitTArcCore(DAVA::TArc::Core* core)
 {
     REGlobalDetails::coreInstance = core;
 }
 
 IMPL_OPERATION_ID(OpenLastProjectOperation);
-IMPL_OPERATION_ID(CreateNewSceneOperation);
+IMPL_OPERATION_ID(CreateFirstSceneOperation);
 IMPL_OPERATION_ID(OpenSceneOperation);
 IMPL_OPERATION_ID(AddSceneOperation);
 IMPL_OPERATION_ID(SaveCurrentScene);
