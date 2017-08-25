@@ -1016,6 +1016,15 @@ DAVA::Result CommandExecutor::CanGroupSelectedNodes(const SelectedNodes& selecte
         return Result(Result::RESULT_ERROR, "not allowed to insert into parent control");
     }
 
+    bool allCanBeMoved = std::all_of(selectedNodes.begin(), selectedNodes.end(), [](PackageBaseNode* node)
+                                     {
+                                         return node->CanRemove() == true;
+                                     });
+    if (!allCanBeMoved)
+    {
+        return Result(Result::RESULT_ERROR, "all selected nodes must be movable");
+    }
+
     return Result(Result::RESULT_SUCCESS);
 }
 
