@@ -20,6 +20,17 @@ macro( find_dava_module NAME  )
     endforeach()
 endmacro()
 
+macro( increase_modules_counter )
+    get_property( MODULES_COUNTER GLOBAL PROPERTY MODULES_COUNTER )
+    if( NOT MODULES_COUNTER )
+        set( MODULES_COUNTER 0 )
+    endif()
+
+    math( EXPR MODULES_COUNTER "${MODULES_COUNTER} + 1" )
+    set_property( GLOBAL PROPERTY MODULES_COUNTER ${MODULES_COUNTER} )
+
+endmacro() 
+
 macro ( add_module_subdirectory NAME SOURCE_DIR )
     cmake_parse_arguments ( ARG ""  "" "COMPONENTS;OPTIONS" ${ARGN} )
 
@@ -40,7 +51,9 @@ macro ( add_module_subdirectory NAME SOURCE_DIR )
         set( ${VALUE})
     endforeach()
     
-    add_subdirectory ( ${SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${NAME} )
+    increase_modules_counter()
+
+    add_subdirectory ( ${SOURCE_DIR} ${CMAKE_BINARY_DIR}/Modules/${MODULES_COUNTER} )
 
     foreach( VALUE ${MAIN_MODULE_VALUES} )
         set(  ${VALUE} ${${VALUE}_HASH} )
@@ -58,7 +71,9 @@ macro ( add_plugin NAME SOURCE_DIR )
         set_property( GLOBAL PROPERTY ${VALUE} )
     endforeach()
 
-    add_subdirectory ( ${SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${NAME} )
+    increase_modules_counter()
+
+    add_subdirectory ( ${SOURCE_DIR} ${CMAKE_BINARY_DIR}/Modules/${MODULES_COUNTER} )
 
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} )
         set(  ${VALUE} ${${VALUE}_HASH} )
