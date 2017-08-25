@@ -65,7 +65,7 @@ WaitDialog::WaitDialog(const WaitDialogParams& params_, QWidget* parent)
     messageLabel->setPalette(palette);
 
     int32 columnSpan = 2;
-    if (params.needProgressBar && params.cancelEnabled)
+    if (params.needProgressBar && params.cancelable)
     {
         ++columnSpan;
     }
