@@ -23,6 +23,7 @@ ParticleDragForce* ParticleDragForce::Clone()
         dst->forcePowerLine = forcePowerLine->Clone();
         dst->forcePowerLine->Release();
     }
+    dst->direction = direction;
     dst->isActive = isActive;
     dst->timingType = timingType;
     dst->forceName = forceName;

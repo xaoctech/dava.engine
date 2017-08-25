@@ -47,6 +47,7 @@ protected slots:
 private:
     void BuildShapeSection();
     void BuildCommonSection();
+    void BuilDirectionSection();
     void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, bool isInfinityRange);
 
     QVBoxLayout* mainLayout = nullptr;
@@ -69,6 +70,9 @@ private:
 
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;
+
+    QFrame* directionSeparator = nullptr;
+    ParticleVector3Widget* direction = nullptr;
 
     bool blockSignals = false;
 };

@@ -71,6 +71,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     BuildCommonSection();
     BuildShapeSection();
     BuildTimingSection();
+    BuilDirectionSection();
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     blockSignals = false;
@@ -184,6 +185,16 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     forcePowerLabel->setVisible(timingType != TimingType::CONSTANT);
 }
 
+void LayerDragForceWidget::BuilDirectionSection()
+{
+    directionSeparator = new QFrame();
+    directionSeparator->setFrameShape(QFrame::HLine);
+    mainLayout->addWidget(directionSeparator);
+    direction = new ParticleVector3Widget("Force direction", DAVA::Vector3::Zero);
+    connect(direction, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(direction);
+}
+
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
     using namespace DAVA;
@@ -207,6 +218,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     radiusSpin->setValue(currForce->radius);
     forceNameEdit->setText(QString::fromStdString(currForce->forceName));
     forceTypeLabel->setText(forceTypes[currForce->type]);
+    direction->SetValue(currForce->direction);
 
     UpdateVisibility(currForce->shape, currForce->timingType, currForce->isInfinityRange);
 
@@ -269,6 +281,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.timingType = timingType;
     params.boxSize = boxSize->GetValue();
     params.forcePower = forcePower->GetValue();
+    params.direction = direction->GetValue();
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
     params.forcePowerLine = propForce.GetPropLine();

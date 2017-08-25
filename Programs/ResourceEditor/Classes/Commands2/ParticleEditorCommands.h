@@ -443,6 +443,7 @@ public:
         DAVA::float32 radius = 0.0f;
         DAVA::Vector3 boxSize;
         DAVA::Vector3 forcePower;
+        DAVA::Vector3 direction;
         DAVA::ParticleDragForce::eShape shape = DAVA::ParticleDragForce::eShape::BOX;
         DAVA::ParticleDragForce::eTimingType timingType = DAVA::ParticleDragForce::eTimingType::CONSTANT;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> forcePowerLine;

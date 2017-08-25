@@ -46,6 +46,7 @@ public:
 
     Vector3 position;
     Vector3 rotation;
+    Vector3 direction{ 0.0f, 0.0f, 1.0f };
 
     Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
     Vector3 forcePower{ 1.0f, 1.0f, 1.0f };

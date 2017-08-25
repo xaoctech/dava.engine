@@ -1227,6 +1227,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("dragForceLine%d", i);
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePowerLine);
+
+        forceDataName = Format("forceDirection%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->direction);
     }
 }
 
@@ -1433,9 +1436,7 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         String forceDataName = Format("forceName%d", i);
         const YamlNode* nameNode = node->Get(forceDataName);
         if (nameNode)
-        {
             dragForce->forceName = nameNode->AsString();
-        }
 
         forceDataName = Format("forceType%d", i);
         const YamlNode* typeNode = node->Get(forceDataName);
@@ -1448,51 +1449,37 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         forceDataName = Format("forceIsActive%d", i);
         const YamlNode* activeNode = node->Get(forceDataName);
         if (activeNode)
-        {
             dragForce->isActive = activeNode->AsBool();
-        }
 
         forceDataName = Format("dragForcePosition%d", i);
         const YamlNode* positionNode = node->Get(forceDataName);
         if (positionNode)
-        {
             dragForce->position = positionNode->AsVector3();
-        }
 
         forceDataName = Format("dragForceRotation%d", i);
         const YamlNode* rotationNode = node->Get(forceDataName);
         if (rotationNode)
-        {
             dragForce->rotation = rotationNode->AsVector3();
-        }
 
         forceDataName = Format("dragForceInfinityRange%d", i);
         const YamlNode* rangeNode = node->Get(forceDataName);
         if (rangeNode)
-        {
             dragForce->isInfinityRange = rangeNode->AsBool();
-        }
 
         forceDataName = Format("dragForcePower%d", i);
         const YamlNode* powerNode = node->Get(forceDataName);
         if (powerNode)
-        {
             dragForce->forcePower = powerNode->AsVector3();
-        }
 
         forceDataName = Format("dragForceBoxSize%d", i);
         const YamlNode* sizeNode = node->Get(forceDataName);
         if (sizeNode)
-        {
             dragForce->boxSize = sizeNode->AsVector3();
-        }
 
         forceDataName = Format("dragForceRadius%d", i);
         const YamlNode* radiusNode = node->Get(forceDataName);
         if (radiusNode)
-        {
             dragForce->radius = radiusNode->AsFloat();
-        }
 
         forceDataName = Format("dragForceShape%d", i);
         const YamlNode* shapeNode = node->Get(forceDataName);
@@ -1509,6 +1496,10 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
             String name = timingNode->AsString();
             dragForce->timingType = StringToType(name, ForceTimingType::CONSTANT, timingTypesMap);
         }
+        forceDataName = Format("forceDirection%d", i);
+        const YamlNode* directionNode = node->Get(forceDataName);
+        if (directionNode)
+            dragForce->direction = directionNode->AsVector3();
 
         RefPtr<PropertyLine<Vector3>> forcePowerLine = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("dragForceLine%d", i)));
         dragForce->forcePowerLine = forcePowerLine;
