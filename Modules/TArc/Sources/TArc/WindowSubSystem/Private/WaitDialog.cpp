@@ -25,8 +25,9 @@ Qt::ConnectionType GetConnectionType()
 }
 } // namespace WaitDialogDetail
 
-WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
+WaitDialog::WaitDialog(const WaitDialogParams& params_, QWidget* parent)
     : dlg(new QDialog(parent, Qt::WindowFlags(Qt::Window | Qt::CustomizeWindowHint)))
+    , params(params_)
 {
     QGridLayout* layout = new QGridLayout(dlg);
     layout->setHorizontalSpacing(10);
@@ -81,7 +82,7 @@ WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
         layout->addWidget(progressBar, 3, 0, 1, 3);
     }
 
-    if (params.cancelEnabled)
+    if (params.cancelable)
     {
         cancelButton = new QPushButton(QStringLiteral("Cancel"), dlg);
         cancelButton->setObjectName(QStringLiteral("cancelButton"));
@@ -165,7 +166,12 @@ void WaitDialog::Update()
 {
     if (WaitDialogDetail::GetConnectionType() == Qt::DirectConnection)
     {
-        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+        QEventLoop::ProcessEventsFlags flags = QEventLoop::AllEvents;
+        if (params.cancelable == false)
+        {
+            flags |= QEventLoop::ExcludeUserInputEvents;
+        }
+        qApp->processEvents(flags);
     }
 }
 

@@ -43,6 +43,7 @@ private:
     QCursor originalCursor;
     QtConnections connections;
 
+    WaitDialogParams params;
     bool wasCanceled = false;
 };
 } // namespace TArc

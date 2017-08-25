@@ -104,7 +104,7 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     WaitDialogParams waitDlgParams;
     waitDlgParams.message = "Starting Beast";
     waitDlgParams.needProgressBar = true;
-    waitDlgParams.cancelEnabled = true;
+    waitDlgParams.cancelable = true;
     waitDlgParams.max = 100;
     std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
     BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, std::move(waitHandle));
