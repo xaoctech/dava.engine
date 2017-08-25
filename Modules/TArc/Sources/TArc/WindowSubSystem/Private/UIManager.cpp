@@ -433,6 +433,17 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
         QAction* action = FindAction(currentLevelMenu, path.back());
         currentLevelMenu->removeAction(action);
         action->deleteLater();
+
+        if (currentLevelMenu->isEmpty())
+        {
+            QMenu* parentMenu = qobject_cast<QMenu*>(currentLevelMenu->parent());
+            if (parentMenu != nullptr)
+            {
+                parentMenu->removeAction(currentLevelMenu->menuAction());
+            }
+
+            currentLevelMenu->deleteLater();
+        }
     }
 }
 

@@ -17,6 +17,8 @@
 
 namespace ResourceSelectorModuleDetails
 {
+const QList<QString> menuResources = QList<QString>{ "View", "Resources" };
+
 class ResourceSelectorData : public DAVA::TArc::SettingsNode
 {
 public:
@@ -88,9 +90,12 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
     UI* ui = GetUI();
     if (projectData == nullptr)
     { //project was closed
-        ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
-                                                                  << "Resources"));
-        ui->RemoveAction(DAVA::TArc::mainWindowKey, info);
+        for (const QString& actionName : gfxActionPlacementName)
+        {
+            ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources << actionName));
+            ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo);
+        }
+        gfxActionPlacementName.clear();
     }
     else
     { //Project Opened
@@ -98,22 +103,33 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
         const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
         if (gfxDirectories.empty() == false)
         {
-            QString prevActionName = "";
-
-            int32 count = static_cast<int32>(gfxDirectories.size());
-            for (int32 ia = 0; ia < count; ++ia)
-            {
-                const ProjectData::GfxDir& gfx = gfxDirectories[ia];
-                QString actionName = QString::fromStdString(GetNameFromGfxFolder(gfx.directory.relative));
-                CreateAction(actionName, prevActionName, ia);
-                prevActionName = actionName;
+            { // create menu Resources - container for Gfx Actions
+                QtAction* action = new QtAction(GetAccessor(), "Resources");
+                ActionPlacementInfo placementInfo;
+                placementInfo.AddPlacementPoint(CreateMenuPoint("View", { InsertionParams::eInsertionMethod::BeforeItem, "Toolbars" }));
+                GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
             }
 
-            CreateAction("Auto", prevActionName, count);
+            { // create actions in menu Resources
+                QString prevActionName = "";
 
-            ResourceSelectorData* selectorData = globalContext->GetData<ResourceSelectorData>();
-            DVASSERT(selectorData != nullptr);
-            OnGfxSelected(selectorData->preferredMode);
+                int32 count = static_cast<int32>(gfxDirectories.size());
+                for (int32 ia = 0; ia < count; ++ia)
+                {
+                    const ProjectData::GfxDir& gfx = gfxDirectories[ia];
+                    QString actionName = QString::fromStdString(GetNameFromGfxFolder(gfx.directory.relative));
+                    CreateAction(actionName, prevActionName, ia);
+                    prevActionName = actionName;
+                }
+
+                CreateAction("Auto", prevActionName, count);
+            }
+
+            { // Enable last selected settings
+                ResourceSelectorData* selectorData = globalContext->GetData<ResourceSelectorData>();
+                DVASSERT(selectorData != nullptr);
+                OnGfxSelected(selectorData->preferredMode);
+            }
         }
     }
 }
@@ -189,6 +205,8 @@ void ResourceSelectorModule::CreateAction(const QString& actionName, const QStri
     placementInfo.AddPlacementPoint(CreateMenuPoint(menuResources, { InsertionParams::eInsertionMethod::AfterItem, prevActionName }));
 
     GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+
+    gfxActionPlacementName.emplace_back(actionName);
 }
 
 void ResourceSelectorModule::OnGraphicsSettingsChanged()
