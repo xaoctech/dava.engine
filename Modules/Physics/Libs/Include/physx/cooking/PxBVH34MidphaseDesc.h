@@ -50,7 +50,7 @@ namespace physx
 */
 struct PxBVH34MidphaseDesc
 {
-	/**
+    /**
 	\brief Mesh cooking hint for max triangles per leaf limit. 
 	Less triangles per leaf produces larger meshes with better runtime performance 
 	and worse cooking performance. More triangles per leaf results in faster cooking speed and
@@ -59,32 +59,31 @@ struct PxBVH34MidphaseDesc
 	<b>Default value:</b> 4
 	<b>Range:</b> <4, 15>
 	*/
-	PxU32			numTrisPerLeaf;
+    PxU32 numTrisPerLeaf;
 
-	/**
+    /**
 	\brief Desc initialization to default value.
 	*/
     void setToDefault()
     {
-	    numTrisPerLeaf = 4;
+        numTrisPerLeaf = 4;
     }
 
-	/**
+    /**
 	\brief Returns true if the descriptor is valid.
 	\return true if the current settings are valid.
 	*/
-	bool isValid() const
-	{
-		if(numTrisPerLeaf < 4 || numTrisPerLeaf > 15)
-			return false;
-		return true;
-	}
+    bool isValid() const
+    {
+        if (numTrisPerLeaf < 4 || numTrisPerLeaf > 15)
+            return false;
+        return true;
+    }
 };
 
 #if !PX_DOXYGEN
 } // namespace physx
 #endif
 
-
-  /** @} */
+/** @} */
 #endif // PX_BVH_34_MIDPHASE_DESC_H

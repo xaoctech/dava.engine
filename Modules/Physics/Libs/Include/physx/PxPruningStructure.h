@@ -41,7 +41,6 @@ namespace physx
 {
 #endif
 
-
 /**
 \brief A precomputed pruning structure to accelerate scene queries against newly added actors.
 
@@ -58,16 +57,16 @@ doing queries against the newly added actors. This applies to both static and dy
 invalidate the pruning structure. Same happens if shape scene query flags change or shape gets removed from an actor.
 
 @see PxScene::addActors PxCollection
-*/	
+*/
 class PxPruningStructure : public PxBase
 {
 public:
-	/**
+    /**
 	\brief Release this object.
 	*/
-	virtual void				release() = 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Retrieve rigid actors in the pruning structure.
 
 	You can retrieve the number of rigid actor pointers by calling #getNbRigidActors()
@@ -79,9 +78,9 @@ public:
 
 	@see PxRigidActor
 	*/
-	virtual PxU32				getRigidActors(PxRigidActor** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const = 0;
+    virtual PxU32 getRigidActors(PxRigidActor** userBuffer, PxU32 bufferSize, PxU32 startIndex = 0) const = 0;
 
-	/**
+    /**
 	\brief Returns the number of rigid actors in the pruning structure.
 
 	You can use #getRigidActors() to retrieve the rigid actor pointers.
@@ -90,14 +89,29 @@ public:
 
 	@see PxRigidActor
 	*/
-	virtual PxU32				getNbRigidActors() const = 0;
+    virtual PxU32 getNbRigidActors() const = 0;
 
-	virtual	const char*			getConcreteTypeName() const	{ return "PxPruningStructure";	}
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxPruningStructure";
+    }
+
 protected:
-	PX_INLINE					PxPruningStructure(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags) {}
-	PX_INLINE					PxPruningStructure(PxBaseFlags baseFlags) : PxBase(baseFlags) {}
-	virtual						~PxPruningStructure()	{}
-	virtual		bool			isKindOf(const char* name)	const		{ return !::strcmp("PxPruningStructure", name) || PxBase::isKindOf(name); }
+    PX_INLINE PxPruningStructure(PxType concreteType, PxBaseFlags baseFlags)
+        : PxBase(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxPruningStructure(PxBaseFlags baseFlags)
+        : PxBase(baseFlags)
+    {
+    }
+    virtual ~PxPruningStructure()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxPruningStructure", name) || PxBase::isKindOf(name);
+    }
 };
 
 

@@ -474,6 +474,8 @@ public:
      */
     KeyedArchive& operator=(const KeyedArchive& arc);
 
+    INTROSPECTION(KeyedArchive, nullptr)
+
 private:
     template <typename T, typename M>
     void SetVariant(const String& key, const T& value, M setVariantMethod)
@@ -491,9 +493,6 @@ private:
 
     friend class KeyedArchiveStructureWrapper;
     UnderlyingMap objectMap;
-
-public:
-    INTROSPECTION_EXTEND(KeyedArchive, BaseObject, NULL);
 
     DAVA_VIRTUAL_REFLECTION(KeyedArchive, BaseObject);
 };

@@ -72,62 +72,62 @@ This allows for type safe manipulation for bitfields.
 template <typename enumtype, typename storagetype = uint32_t>
 class PxFlags
 {
-  public:
-	typedef storagetype InternalType;
+public:
+    typedef storagetype InternalType;
 
-	PX_CUDA_CALLABLE PX_INLINE explicit PxFlags(const PxEMPTY)
-	{
-	}
-	PX_CUDA_CALLABLE PX_INLINE PxFlags(void);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags(enumtype e);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags(const PxFlags<enumtype, storagetype>& f);
-	PX_CUDA_CALLABLE PX_INLINE explicit PxFlags(storagetype b);
+    PX_CUDA_CALLABLE PX_INLINE explicit PxFlags(const PxEMPTY)
+    {
+    }
+    PX_CUDA_CALLABLE PX_INLINE PxFlags(void);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags(const PxFlags<enumtype, storagetype>& f);
+    PX_CUDA_CALLABLE PX_INLINE explicit PxFlags(storagetype b);
 
-	PX_CUDA_CALLABLE PX_INLINE bool isSet(enumtype e) const;
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& set(enumtype e);
-	PX_CUDA_CALLABLE PX_INLINE bool operator==(enumtype e) const;
-	PX_CUDA_CALLABLE PX_INLINE bool operator==(const PxFlags<enumtype, storagetype>& f) const;
-	PX_CUDA_CALLABLE PX_INLINE bool operator==(bool b) const;
-	PX_CUDA_CALLABLE PX_INLINE bool operator!=(enumtype e) const;
-	PX_CUDA_CALLABLE PX_INLINE bool operator!=(const PxFlags<enumtype, storagetype>& f) const;
+    PX_CUDA_CALLABLE PX_INLINE bool isSet(enumtype e) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& set(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE bool operator==(enumtype e) const;
+    PX_CUDA_CALLABLE PX_INLINE bool operator==(const PxFlags<enumtype, storagetype>& f) const;
+    PX_CUDA_CALLABLE PX_INLINE bool operator==(bool b) const;
+    PX_CUDA_CALLABLE PX_INLINE bool operator!=(enumtype e) const;
+    PX_CUDA_CALLABLE PX_INLINE bool operator!=(const PxFlags<enumtype, storagetype>& f) const;
 
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator=(const PxFlags<enumtype, storagetype>& f);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator=(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator=(const PxFlags<enumtype, storagetype>& f);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator=(enumtype e);
 
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator|=(enumtype e);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator|=(const PxFlags<enumtype, storagetype>& f);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator|(enumtype e) const;
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator|(const PxFlags<enumtype, storagetype>& f) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator|=(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator|=(const PxFlags<enumtype, storagetype>& f);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator|(enumtype e) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator|(const PxFlags<enumtype, storagetype>& f) const;
 
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator&=(enumtype e);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator&=(const PxFlags<enumtype, storagetype>& f);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator&(enumtype e) const;
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator&(const PxFlags<enumtype, storagetype>& f) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator&=(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator&=(const PxFlags<enumtype, storagetype>& f);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator&(enumtype e) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator&(const PxFlags<enumtype, storagetype>& f) const;
 
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator^=(enumtype e);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator^=(const PxFlags<enumtype, storagetype>& f);
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator^(enumtype e) const;
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator^(const PxFlags<enumtype, storagetype>& f) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator^=(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype>& operator^=(const PxFlags<enumtype, storagetype>& f);
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator^(enumtype e) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator^(const PxFlags<enumtype, storagetype>& f) const;
 
-	PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator~(void) const;
+    PX_CUDA_CALLABLE PX_INLINE PxFlags<enumtype, storagetype> operator~(void) const;
 
-	PX_CUDA_CALLABLE PX_INLINE operator bool(void) const;
-	PX_CUDA_CALLABLE PX_INLINE operator uint8_t(void) const;
-	PX_CUDA_CALLABLE PX_INLINE operator uint16_t(void) const;
-	PX_CUDA_CALLABLE PX_INLINE operator uint32_t(void) const;
+    PX_CUDA_CALLABLE PX_INLINE operator bool(void) const;
+    PX_CUDA_CALLABLE PX_INLINE operator uint8_t(void) const;
+    PX_CUDA_CALLABLE PX_INLINE operator uint16_t(void) const;
+    PX_CUDA_CALLABLE PX_INLINE operator uint32_t(void) const;
 
-	PX_CUDA_CALLABLE PX_INLINE void clear(enumtype e);
+    PX_CUDA_CALLABLE PX_INLINE void clear(enumtype e);
 
-  public:
-	friend PX_INLINE PxFlags<enumtype, storagetype> operator&(enumtype a, PxFlags<enumtype, storagetype>& b)
-	{
-		PxFlags<enumtype, storagetype> out;
-		out.mBits = a & b.mBits;
-		return out;
-	}
+public:
+    friend PX_INLINE PxFlags<enumtype, storagetype> operator&(enumtype a, PxFlags<enumtype, storagetype>& b)
+    {
+        PxFlags<enumtype, storagetype> out;
+        out.mBits = a & b.mBits;
+        return out;
+    }
 
-  private:
-	storagetype mBits;
+private:
+    storagetype mBits;
 };
 
 #define PX_FLAGS_OPERATORS(enumtype, storagetype)                                                                      \
@@ -155,216 +155,216 @@ class PxFlags
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::PxFlags(void)
 {
-	mBits = 0;
+    mBits = 0;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::PxFlags(enumtype e)
 {
-	mBits = static_cast<storagetype>(e);
+    mBits = static_cast<storagetype>(e);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::PxFlags(const PxFlags<enumtype, storagetype>& f)
 {
-	mBits = f.mBits;
+    mBits = f.mBits;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::PxFlags(storagetype b)
 {
-	mBits = b;
+    mBits = b;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE bool PxFlags<enumtype, storagetype>::isSet(enumtype e) const
 {
-	return (mBits & static_cast<storagetype>(e)) == static_cast<storagetype>(e);
+    return (mBits & static_cast<storagetype>(e)) == static_cast<storagetype>(e);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::set(enumtype e)
 {
-	mBits = static_cast<storagetype>(e);
-	return *this;
+    mBits = static_cast<storagetype>(e);
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE bool PxFlags<enumtype, storagetype>::operator==(enumtype e) const
 {
-	return mBits == static_cast<storagetype>(e);
+    return mBits == static_cast<storagetype>(e);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE bool PxFlags<enumtype, storagetype>::operator==(const PxFlags<enumtype, storagetype>& f) const
 {
-	return mBits == f.mBits;
+    return mBits == f.mBits;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE bool PxFlags<enumtype, storagetype>::operator==(bool b) const
 {
-	return bool(*this) == b;
+    return bool(*this) == b;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE bool PxFlags<enumtype, storagetype>::operator!=(enumtype e) const
 {
-	return mBits != static_cast<storagetype>(e);
+    return mBits != static_cast<storagetype>(e);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE bool PxFlags<enumtype, storagetype>::operator!=(const PxFlags<enumtype, storagetype>& f) const
 {
-	return mBits != f.mBits;
+    return mBits != f.mBits;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::operator=(enumtype e)
 {
-	mBits = static_cast<storagetype>(e);
-	return *this;
+    mBits = static_cast<storagetype>(e);
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::operator=(const PxFlags<enumtype, storagetype>& f)
 {
-	mBits = f.mBits;
-	return *this;
+    mBits = f.mBits;
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::operator|=(enumtype e)
 {
-	mBits |= static_cast<storagetype>(e);
-	return *this;
+    mBits |= static_cast<storagetype>(e);
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::
 operator|=(const PxFlags<enumtype, storagetype>& f)
 {
-	mBits |= f.mBits;
-	return *this;
+    mBits |= f.mBits;
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::operator|(enumtype e) const
 {
-	PxFlags<enumtype, storagetype> out(*this);
-	out |= e;
-	return out;
+    PxFlags<enumtype, storagetype> out(*this);
+    out |= e;
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::
 operator|(const PxFlags<enumtype, storagetype>& f) const
 {
-	PxFlags<enumtype, storagetype> out(*this);
-	out |= f;
-	return out;
+    PxFlags<enumtype, storagetype> out(*this);
+    out |= f;
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::operator&=(enumtype e)
 {
-	mBits &= static_cast<storagetype>(e);
-	return *this;
+    mBits &= static_cast<storagetype>(e);
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::
 operator&=(const PxFlags<enumtype, storagetype>& f)
 {
-	mBits &= f.mBits;
-	return *this;
+    mBits &= f.mBits;
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::operator&(enumtype e) const
 {
-	PxFlags<enumtype, storagetype> out = *this;
-	out.mBits &= static_cast<storagetype>(e);
-	return out;
+    PxFlags<enumtype, storagetype> out = *this;
+    out.mBits &= static_cast<storagetype>(e);
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::
 operator&(const PxFlags<enumtype, storagetype>& f) const
 {
-	PxFlags<enumtype, storagetype> out = *this;
-	out.mBits &= f.mBits;
-	return out;
+    PxFlags<enumtype, storagetype> out = *this;
+    out.mBits &= f.mBits;
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::operator^=(enumtype e)
 {
-	mBits ^= static_cast<storagetype>(e);
-	return *this;
+    mBits ^= static_cast<storagetype>(e);
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>& PxFlags<enumtype, storagetype>::
 operator^=(const PxFlags<enumtype, storagetype>& f)
 {
-	mBits ^= f.mBits;
-	return *this;
+    mBits ^= f.mBits;
+    return *this;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::operator^(enumtype e) const
 {
-	PxFlags<enumtype, storagetype> out = *this;
-	out.mBits ^= static_cast<storagetype>(e);
-	return out;
+    PxFlags<enumtype, storagetype> out = *this;
+    out.mBits ^= static_cast<storagetype>(e);
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::
 operator^(const PxFlags<enumtype, storagetype>& f) const
 {
-	PxFlags<enumtype, storagetype> out = *this;
-	out.mBits ^= f.mBits;
-	return out;
+    PxFlags<enumtype, storagetype> out = *this;
+    out.mBits ^= f.mBits;
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype> PxFlags<enumtype, storagetype>::operator~(void) const
 {
-	PxFlags<enumtype, storagetype> out;
-	out.mBits = storagetype(~mBits);
-	return out;
+    PxFlags<enumtype, storagetype> out;
+    out.mBits = storagetype(~mBits);
+    return out;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::operator bool(void) const
 {
-	return mBits ? true : false;
+    return mBits ? true : false;
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::operator uint8_t(void) const
 {
-	return static_cast<uint8_t>(mBits);
+    return static_cast<uint8_t>(mBits);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::operator uint16_t(void) const
 {
-	return static_cast<uint16_t>(mBits);
+    return static_cast<uint16_t>(mBits);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE PxFlags<enumtype, storagetype>::operator uint32_t(void) const
 {
-	return static_cast<uint32_t>(mBits);
+    return static_cast<uint32_t>(mBits);
 }
 
 template <typename enumtype, typename storagetype>
 PX_INLINE void PxFlags<enumtype, storagetype>::clear(enumtype e)
 {
-	mBits &= ~static_cast<storagetype>(e);
+    mBits &= ~static_cast<storagetype>(e);
 }
 
 #if !PX_DOXYGEN

@@ -45,14 +45,14 @@ class PxMaterial;
 /**
 \brief Driving surface type. Each PxMaterial is associated with a corresponding PxVehicleDrivableSurfaceType.
 @see PxMaterial, PxVehicleDrivableSurfaceToTireFrictionPairs
-*/	
+*/
 struct PxVehicleDrivableSurfaceType
 {
-	enum
-	{
-		eSURFACE_TYPE_UNKNOWN=0xffffffff
-	};
-	PxU32 mType;
+    enum
+    {
+        eSURFACE_TYPE_UNKNOWN = 0xffffffff
+    };
+    PxU32 mType;
 };
 
 /**
@@ -62,15 +62,14 @@ struct PxVehicleDrivableSurfaceType
 class PxVehicleDrivableSurfaceToTireFrictionPairs
 {
 public:
+    friend class VehicleSurfaceTypeHashTable;
 
-	friend class VehicleSurfaceTypeHashTable;
+    enum
+    {
+        eMAX_NB_SURFACE_TYPES = 256
+    };
 
-	enum
-	{
-		eMAX_NB_SURFACE_TYPES=256
-	};
-
-	/**
+    /**
 	\brief Allocate the memory for a PxVehicleDrivableSurfaceToTireFrictionPairs instance
 	that can hold data for combinations of tire type and surface type with up to maxNbTireTypes types of tire and maxNbSurfaceTypes types of surface.
 	
@@ -81,10 +80,10 @@ public:
 
 	@see setup
 	*/
-	static PxVehicleDrivableSurfaceToTireFrictionPairs* allocate
-		(const PxU32 maxNbTireTypes, const PxU32 maxNbSurfaceTypes);
+    static PxVehicleDrivableSurfaceToTireFrictionPairs* allocate
+    (const PxU32 maxNbTireTypes, const PxU32 maxNbSurfaceTypes);
 
-	/**
+    /**
 	\brief Set up a PxVehicleDrivableSurfaceToTireFrictionPairs instance for combinations of nbTireTypes tire types and nbSurfaceTypes surface types.
 	
 	\param[in] nbTireTypes is the number of different types of tire.  This value must be less than or equal to maxNbTireTypes specified in allocate().
@@ -98,58 +97,63 @@ public:
 	\note A friction value of 1.0 will be assigned as default to each combination of tire and surface type.  To override this use setTypePairFriction.
 	@see release, setTypePairFriction, getTypePairFriction, PxVehicleTireData.mType
 	*/
-	void setup
-		(const PxU32 nbTireTypes, const PxU32 nbSurfaceTypes, 
-		 const PxMaterial** drivableSurfaceMaterials, const PxVehicleDrivableSurfaceType* drivableSurfaceTypes);
+    void setup
+    (const PxU32 nbTireTypes, const PxU32 nbSurfaceTypes,
+     const PxMaterial** drivableSurfaceMaterials, const PxVehicleDrivableSurfaceType* drivableSurfaceTypes);
 
-	/**
+    /**
 	\brief Deallocate a PxVehicleDrivableSurfaceToTireFrictionPairs instance
 	*/
-	void release();
+    void release();
 
-	/**
+    /**
 	\brief Set the friction for a specified pair of tire type and drivable surface type.
 
 	\param[in] surfaceType describes the surface type
 	\param[in] tireType describes the tire type.
 	\param[in] value describes the friction coefficient for the combination of surface type and tire type.
 	*/
-	void setTypePairFriction(const PxU32 surfaceType, const PxU32 tireType, const PxReal value);
+    void setTypePairFriction(const PxU32 surfaceType, const PxU32 tireType, const PxReal value);
 
-	/**
+    /**
 	\brief Return the friction for a specified combination of surface type and tire type.
 	\return The friction for a specified combination of surface type and tire type.
 	\note The final friction value used by the tire model is the value returned by getTypePairFriction
 	multiplied by the value computed from PxVehicleTireData::mFrictionVsSlipGraph
 	@see PxVehicleTireData::mFrictionVsSlipGraph
 	*/
-	PxReal getTypePairFriction(const PxU32 surfaceType, const PxU32 tireType) const;
+    PxReal getTypePairFriction(const PxU32 surfaceType, const PxU32 tireType) const;
 
-	/**
+    /**
 	\brief Return the maximum number of surface types
 	\return The maximum number of surface types
 	@see allocate
 	*/
-	PxU32 getMaxNbSurfaceTypes() const {return mMaxNbSurfaceTypes;}
+    PxU32 getMaxNbSurfaceTypes() const
+    {
+        return mMaxNbSurfaceTypes;
+    }
 
-	/**
+    /**
 	\brief Return the maximum number of tire types
 	\return The maximum number of tire types
 	@see allocate
 	*/
-	PxU32 getMaxNbTireTypes() const {return mMaxNbTireTypes;}
+    PxU32 getMaxNbTireTypes() const
+    {
+        return mMaxNbTireTypes;
+    }
 
 private:
-
-	/**
+    /**
 	\brief Ptr to base address of a 2d PxReal array with dimensions [mNbSurfaceTypes][mNbTireTypes]
 	
 	\note Each element of the array describes the maximum friction provided by a surface type-tire type combination.
 	eg the friction corresponding to a combination of surface type x and tire type y is  mPairs[x][y]
 	*/
-	PxReal* mPairs;					
+    PxReal* mPairs;
 
-	/** 
+    /** 
 	\brief Ptr to 1d array of material ptrs that is of length mNbSurfaceTypes.
 	
 	\note If the PxMaterial that touches the tire corresponds to mDrivableSurfaceMaterials[x] then the drivable surface
@@ -159,9 +163,9 @@ private:
 	\note If the PxMaterial that touches the tire is not found in mDrivableSurfaceMaterials then the friction is 
 	mPairs[0][y], assuming a tire type y.
 	*/
-	const PxMaterial** mDrivableSurfaceMaterials;
+    const PxMaterial** mDrivableSurfaceMaterials;
 
-	/**
+    /**
 	\brief Ptr to 1d array of PxVehicleDrivableSurfaceType that is of length mNbSurfaceTypes.
 	
 	\note If the PxMaterial that touches the tire is found in mDrivableSurfaceMaterials[x] then the drivable surface
@@ -171,49 +175,53 @@ private:
 	\note If the PxMaterial that touches the tire is not found in mDrivableSurfaceMaterials then the friction is 
 	mPairs[0][y], assuming a tire type y.
 	*/
-	PxVehicleDrivableSurfaceType* mDrivableSurfaceTypes;
+    PxVehicleDrivableSurfaceType* mDrivableSurfaceTypes;
 
-	/**
+    /**
 	\brief Number of different driving surface types.
 	
 	\note mDrivableSurfaceMaterials and mDrivableSurfaceTypes are both 1d arrays of length mMaxNbSurfaceTypes.
 	
 	\note mNbSurfaceTypes must be less than or equal to mMaxNbSurfaceTypes.
-	*/	
-	PxU32 mNbSurfaceTypes;			
+	*/
+    PxU32 mNbSurfaceTypes;
 
-	/**
+    /**
 	\brief Maximum number of different driving surface types.
 	
 	\note mMaxNbSurfaceTypes must be less than or equal to eMAX_NB_SURFACE_TYPES.
-	*/	
-	PxU32 mMaxNbSurfaceTypes;			
+	*/
+    PxU32 mMaxNbSurfaceTypes;
 
-	/**
+    /**
 	\brief Number of different tire types.
 	
 	\note Tire types stored in PxVehicleTireData.mType
-	*/	
-	PxU32 mNbTireTypes;			
+	*/
+    PxU32 mNbTireTypes;
 
-	/**
+    /**
 	\brief Maximum number of different tire types.
 	
 	\note Tire types stored in PxVehicleTireData.mType
-	*/	
-	PxU32 mMaxNbTireTypes;			
+	*/
+    PxU32 mMaxNbTireTypes;			
 
 
 #if !PX_P64_FAMILY
-	PxU32 mPad[1];
+    PxU32 mPad[1];
 #else
-	PxU32 mPad[2];
+    PxU32 mPad[2];
 #endif
 
-	PxVehicleDrivableSurfaceToTireFrictionPairs(){}
-	~PxVehicleDrivableSurfaceToTireFrictionPairs(){}
+    PxVehicleDrivableSurfaceToTireFrictionPairs()
+    {
+    }
+    ~PxVehicleDrivableSurfaceToTireFrictionPairs()
+    {
+    }
 };
-PX_COMPILE_TIME_ASSERT(0==(sizeof(PxVehicleDrivableSurfaceToTireFrictionPairs) & 15));
+PX_COMPILE_TIME_ASSERT(0 == (sizeof(PxVehicleDrivableSurfaceToTireFrictionPairs) & 15));
 
 #if !PX_DOXYGEN
 } // namespace physx

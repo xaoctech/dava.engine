@@ -54,31 +54,29 @@ for the duration of the enclosing scope:
 */
 class PxSceneReadLock
 {
-	PxSceneReadLock(const PxSceneReadLock&);
-	PxSceneReadLock& operator=(const PxSceneReadLock&);
+    PxSceneReadLock(const PxSceneReadLock&);
+    PxSceneReadLock& operator=(const PxSceneReadLock&);
 
 public:
-	
-	/**
+    /**
 	\brief Constructor
 	\param scene The scene to lock for reading
 	\param file Optional string for debugging purposes
 	\param line Optional line number for debugging purposes
 	*/
-	PxSceneReadLock(PxScene& scene, const char* file=NULL, PxU32 line=0)
-		: mScene(scene)
-	{
-		mScene.lockRead(file, line);
-	}
+    PxSceneReadLock(PxScene& scene, const char* file = NULL, PxU32 line = 0)
+        : mScene(scene)
+    {
+        mScene.lockRead(file, line);
+    }
 
-	~PxSceneReadLock()
-	{
-		mScene.unlockRead();
-	}
+    ~PxSceneReadLock()
+    {
+        mScene.unlockRead();
+    }
 
 private:
-
-	PxScene& mScene;
+    PxScene& mScene;
 };
 
 /**
@@ -93,31 +91,29 @@ for the duration of the enclosing scope:
 */
 class PxSceneWriteLock
 {
-	PxSceneWriteLock(const PxSceneWriteLock&);
-	PxSceneWriteLock& operator=(const PxSceneWriteLock&);
+    PxSceneWriteLock(const PxSceneWriteLock&);
+    PxSceneWriteLock& operator=(const PxSceneWriteLock&);
 
 public:
-
-	/**
+    /**
 	\brief Constructor
 	\param scene The scene to lock for writing
 	\param file Optional string for debugging purposes
 	\param line Optional line number for debugging purposes
 	*/
-	PxSceneWriteLock(PxScene& scene, const char* file=NULL, PxU32 line=0)
-		: mScene(scene)
-	{
-		mScene.lockWrite(file, line);
-	}
+    PxSceneWriteLock(PxScene& scene, const char* file = NULL, PxU32 line = 0)
+        : mScene(scene)
+    {
+        mScene.lockWrite(file, line);
+    }
 
-	~PxSceneWriteLock()
-	{
-		mScene.unlockWrite();
-	}
+    ~PxSceneWriteLock()
+    {
+        mScene.unlockWrite();
+    }
 
 private:
-
-	PxScene& mScene;
+    PxScene& mScene;
 };
 
 

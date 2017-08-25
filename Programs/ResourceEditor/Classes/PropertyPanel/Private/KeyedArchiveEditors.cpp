@@ -13,8 +13,7 @@
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Qt/QtSize.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
 
 #include <FileSystem/KeyedArchive.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -420,9 +419,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(KeyedArchiveEditor)
     .Field("choosedPreset", &KeyedArchiveEditor::GetChoosedPreset, &KeyedArchiveEditor::SetChoosedPreset)
     .Field("unchoosedPresetText", [](KeyedArchiveEditor* v) { return "Choose preset for Add"; }, nullptr)
     .Field("isPresetChoosed", &KeyedArchiveEditor::IsPresetChoosed, nullptr)
-    .Field("createPresetButtonIcon", [](KeyedArchiveEditor* v) { return SharedIcon(":/QtIcons/add_green.png"); }, nullptr)
+    .Field("createPresetButtonIcon", [](KeyedArchiveEditor* v) { return DAVA::TArc::SharedIcon(":/QtIcons/add_green.png"); }, nullptr)
     .Method("createPresetValue", &KeyedArchiveEditor::OnCreatePresetPropertyClicked)
-    .Field("createPropertyButtonIcon", [](KeyedArchiveEditor* v) { return SharedIcon(":/QtIcons/keyplus.png"); }, nullptr)
+    .Field("createPropertyButtonIcon", [](KeyedArchiveEditor* v) { return DAVA::TArc::SharedIcon(":/QtIcons/keyplus.png"); }, nullptr)
     .Field("buttonIconSize", [](KeyedArchiveEditor* v) { return DAVA::TArc::BaseComponentValue::toolButtonIconSize; }, nullptr)
     .Field("buttonAutoRise", [](KeyedArchiveEditor* v) { return false; }, nullptr)
     .Method("createPropertyValue", &KeyedArchiveEditor::OnCreatePropertyClicked)

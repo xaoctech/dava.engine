@@ -43,11 +43,11 @@ namespace physx
 /* Base class to handle assert failures */
 class PxAssertHandler
 {
-  public:
-	virtual ~PxAssertHandler()
-	{
-	}
-	virtual void operator()(const char* exp, const char* file, int line, bool& ignore) = 0;
+public:
+    virtual ~PxAssertHandler()
+    {
+    }
+    virtual void operator()(const char* exp, const char* file, int line, bool& ignore) = 0;
 };
 
 PX_FOUNDATION_API PxAssertHandler& PxGetAssertHandler();
@@ -78,7 +78,7 @@ PX_FOUNDATION_API void PxSetAssertHandler(PxAssertHandler& handler);
 #define PX_ALWAYS_ASSERT_MESSAGE(exp)                                                                                  \
 	{                                                                                                                  \
 		static bool _ignore = false;                                                                                   \
-		if(!_ignore)                                                                                                   \
+		if (!_ignore)                                                                                                   \
 			physx::PxGetAssertHandler()(exp, __FILE__, __LINE__, _ignore);                                             \
 	}
 #define PX_ASSERT_WITH_MESSAGE(exp, message)                                                                             \

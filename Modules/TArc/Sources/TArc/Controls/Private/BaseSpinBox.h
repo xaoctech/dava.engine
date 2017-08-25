@@ -4,12 +4,12 @@
 #include "TArc/Controls/Private/ValidationUtils.h"
 #include "TArc/Controls/CommonStrings.h"
 #include "TArc/Utils/QtConnections.h"
+#include "TArc/Qt/QtString.h"
 
 #include <QDoubleSpinBox>
 #include <QSpinBox>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QString>
 #include <QToolTip>
 
 namespace DAVA

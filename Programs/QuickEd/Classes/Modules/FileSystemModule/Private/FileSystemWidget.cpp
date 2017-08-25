@@ -4,10 +4,9 @@
 
 #include "Modules/LegacySupportModule/Private/Project.h"
 
-#include <TArc/Core/FieldBinder.h>
-
 #include <QtTools/FileDialogs/FileDialog.h>
-#include <QtTools/Utils/Utils.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/Core/FieldBinder.h>
 #include <QtHelpers/HelperFunctions.h>
 
 #include <Debug/DVAssert.h>

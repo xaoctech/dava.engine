@@ -1,18 +1,16 @@
-#include <QSet>
-#include <QPainter>
-#include <QImage>
-#include <QDebug>
-#include <QPalette>
-#include <QApplication>
-
 #include "MaterialItem.h"
 #include "MaterialModel.h"
 #include "Main/QtUtils.h"
 #include "TextureBrowser/TextureCache.h"
 
-#include <TArc/Utils/Themes.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <QSet>
+#include <QPainter>
+#include <QImage>
+#include <QDebug>
+#include <QPalette>
 
 namespace MaterialItemLocal
 {
@@ -69,7 +67,8 @@ QVariant MaterialItem::data(int role) const
         ret = QStandardItem::data(role);
         if (GetFlag(MaterialItem::IS_PART_OF_SELECTION))
         {
-            ret = QVariant::fromValue(Themes::GetHighligtedItemTextColor());
+            QColor color = REGlobal::GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetHighligtedItemTextColor();
+            ret = QVariant::fromValue(color);
         }
     }
     break;

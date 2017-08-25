@@ -27,8 +27,8 @@ DAVA_TESTCLASS (UIRichContentTest)
     UIRichContentTest()
     {
         RefPtr<UIScreen> screen(new UIScreen());
-        UIControlSystem::Instance()->SetScreen(screen.Get());
-        UIControlSystem::Instance()->Update();
+        GetEngineContext()->uiControlSystem->SetScreen(screen.Get());
+        GetEngineContext()->uiControlSystem->Update();
 
         DefaultUIPackageBuilder pkgBuilder;
         UIPackageLoader().LoadPackage("~res:/UI/UIRichContentTest.yaml", &pkgBuilder);
@@ -39,12 +39,12 @@ DAVA_TESTCLASS (UIRichContentTest)
 
     ~UIRichContentTest()
     {
-        UIControlSystem::Instance()->Reset();
+        GetEngineContext()->uiControlSystem->Reset();
     }
 
     void UpdateRichContentSystem()
     {
-        UIRichContentSystem* sys = UIControlSystem::Instance()->GetSystem<UIRichContentSystem>();
+        UIRichContentSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIRichContentSystem>();
         sys->Process(0.f);
     }
 

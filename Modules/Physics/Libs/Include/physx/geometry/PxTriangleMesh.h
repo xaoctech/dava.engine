@@ -63,14 +63,14 @@ namespace physx
 */
 struct PxMeshMidPhase
 {
-	enum Enum
-	{
-		eBVH33 = 0,		//!< Default midphase mesh structure, as used up to PhysX 3.3
-		eBVH34 = 1,		//!< New midphase mesh structure, introduced in PhysX 3.4
+    enum Enum
+    {
+        eBVH33 = 0, //!< Default midphase mesh structure, as used up to PhysX 3.3
+        eBVH34 = 1, //!< New midphase mesh structure, introduced in PhysX 3.4
 
-		eINVALID = 2,	//!< Invalid mesh midphase
-		eLAST = eINVALID
-	};
+        eINVALID = 2, //!< Invalid mesh midphase
+        eLAST = eINVALID
+    };
 };
 
 /**
@@ -80,11 +80,11 @@ Used in ::PxTriangleMeshFlags.
 */
 struct PxTriangleMeshFlag
 {
-	enum Enum
-	{
-		e16_BIT_INDICES	= (1<<1),	//!< The triangle mesh has 16bits vertex indices.
-		eADJACENCY_INFO	= (1<<2)	//!< The triangle mesh has adjacency information build.
-	};
+    enum Enum
+    {
+        e16_BIT_INDICES = (1 << 1), //!< The triangle mesh has 16bits vertex indices.
+        eADJACENCY_INFO = (1 << 2) //!< The triangle mesh has adjacency information build.
+    };
 };
 
 /**
@@ -92,8 +92,8 @@ struct PxTriangleMeshFlag
 
 @see PxTriangleMeshFlag
 */
-typedef PxFlags<PxTriangleMeshFlag::Enum,PxU8> PxTriangleMeshFlags;
-PX_FLAGS_OPERATORS(PxTriangleMeshFlag::Enum,PxU8)
+typedef PxFlags<PxTriangleMeshFlag::Enum, PxU8> PxTriangleMeshFlags;
+PX_FLAGS_OPERATORS(PxTriangleMeshFlag::Enum, PxU8)
 
 /**
 
@@ -126,23 +126,23 @@ once you have released all of its PxShape instances.
 
 class PxTriangleMesh : public PxBase
 {
-	public:
-	/**
+public:
+    /**
 	\brief Returns the number of vertices.
 	\return	number of vertices
 	@see getVertices()
 	*/
-	 virtual	PxU32				getNbVertices()									const	= 0;
+    virtual PxU32 getNbVertices() const = 0;
 
-	/**
+    /**
 	\brief Returns the vertices.
 	\return	array of vertices
 	@see getNbVertices()
 	*/
-	virtual	const PxVec3*			getVertices()									const	= 0;
+    virtual const PxVec3* getVertices() const = 0;
 
 #if PX_ENABLE_DYNAMIC_MESH_RTREE
-	/**
+    /**
 	\brief Returns all mesh vertices for modification.
 
 	This function will return the vertices of the mesh so that their positions can be changed in place.
@@ -161,9 +161,9 @@ class PxTriangleMesh : public PxBase
 	@see getNbVertices()
 	@see refitBVH()	
 	*/
-	virtual PxVec3*					getVerticesForModification() = 0;
+    virtual PxVec3* getVerticesForModification() = 0;
 
-	/**
+    /**
 	\brief Refits BVH for mesh vertices.
 
 	This function will refit the mesh BVH to correctly enclose the new positions updated by getVerticesForModification.
@@ -180,17 +180,17 @@ class PxTriangleMesh : public PxBase
 	@see getNbVertices()
 	@see getVerticesForModification()	
 	*/
-	virtual PxBounds3				refitBVH() = 0;
+    virtual PxBounds3 refitBVH() = 0;
 #endif // PX_ENABLE_DYNAMIC_MESH_RTREE
 
-	/**
+    /**
 	\brief Returns the number of triangles.
 	\return	number of triangles
 	@see getTriangles() getTrianglesRemap()
 	*/
-	virtual	PxU32					getNbTriangles()								const	= 0;
+    virtual PxU32 getNbTriangles() const = 0;
 
-	/**
+    /**
 	\brief Returns the triangle indices.
 
 	The indices can be 16 or 32bit depending on the number of triangles in the mesh.
@@ -201,9 +201,9 @@ class PxTriangleMesh : public PxBase
 	\return	array of triangles
 	@see getNbTriangles() getTriangleMeshFlags() getTrianglesRemap()
 	*/
-	virtual	const void*				getTriangles()									const	= 0;
+    virtual const void* getTriangles() const = 0;
 
-	/**
+    /**
 	\brief Reads the PxTriangleMesh flags.
 	
 	See the list of flags #PxTriangleMeshFlag
@@ -212,9 +212,9 @@ class PxTriangleMesh : public PxBase
 
 	@see PxTriangleMesh
 	*/
-	virtual	PxTriangleMeshFlags		getTriangleMeshFlags()							const = 0;
+    virtual PxTriangleMeshFlags getTriangleMeshFlags() const = 0;
 
-	/**
+    /**
 	\brief Returns the triangle remapping table.
 
 	The triangles are internally sorted according to various criteria. Hence the internal triangle order
@@ -226,17 +226,16 @@ class PxTriangleMesh : public PxBase
 	\return	the remapping table (or NULL if 'PxCookingParams::suppressTriangleMeshRemapTable' has been used)
 	@see getNbTriangles() getTriangles() PxCookingParams::suppressTriangleMeshRemapTable
 	*/
-	virtual	const PxU32*			getTrianglesRemap()							const	= 0;
+    virtual const PxU32* getTrianglesRemap() const = 0;
 
-
-	/**	
+    /**	
 	\brief Decrements the reference count of a triangle mesh and releases it if the new reference count is zero.	
 	
 	@see PxPhysics.createTriangleMesh()
 	*/
-	virtual void					release()											= 0;
+    virtual void release() = 0;
 
-	/**
+    /**
 	\brief Returns material table index of given triangle
 
 	This function takes a post cooking triangle index.
@@ -244,16 +243,16 @@ class PxTriangleMesh : public PxBase
 	\param[in] triangleIndex (internal) index of desired triangle
 	\return Material table index, or 0xffff if no per-triangle materials are used
 	*/
-	virtual	PxMaterialTableIndex	getTriangleMaterialIndex(PxTriangleID triangleIndex)	const	= 0;
+    virtual PxMaterialTableIndex getTriangleMaterialIndex(PxTriangleID triangleIndex) const = 0;
 
-	/**
+    /**
 	\brief Returns the local-space (vertex space) AABB from the triangle mesh.
 
 	\return	local-space bounds
 	*/
-	virtual	PxBounds3				getLocalBounds()							const	= 0;
+    virtual PxBounds3 getLocalBounds() const = 0;
 
-	/**
+    /**
 	\brief Returns the reference count for shared meshes.
 
 	At creation, the reference count of the mesh is 1. Every shape referencing this mesh increments the
@@ -261,21 +260,32 @@ class PxTriangleMesh : public PxBase
 
 	\return the current reference count.
 	*/
-	virtual PxU32					getReferenceCount()							const	= 0;
+    virtual PxU32 getReferenceCount() const = 0;
 
-	/**
+    /**
 	\brief Acquires a counted reference to a triangle mesh.
 
 	This method increases the reference count of the triangle mesh by 1. Decrement the reference count by calling release()
 	*/
-	virtual void					acquireReference()									= 0;
+    virtual void acquireReference() = 0;
 
 protected:
-	PX_INLINE						PxTriangleMesh(PxType concreteType, PxBaseFlags baseFlags) : PxBase(concreteType, baseFlags)	{}
-	PX_INLINE						PxTriangleMesh(PxBaseFlags baseFlags) : PxBase(baseFlags)										{}
-	virtual							~PxTriangleMesh() {}
+    PX_INLINE PxTriangleMesh(PxType concreteType, PxBaseFlags baseFlags)
+        : PxBase(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxTriangleMesh(PxBaseFlags baseFlags)
+        : PxBase(baseFlags)
+    {
+    }
+    virtual ~PxTriangleMesh()
+    {
+    }
 
-	virtual	bool					isKindOf(const char* name) const { return !::strcmp("PxTriangleMesh", name) || PxBase::isKindOf(name); }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxTriangleMesh", name) || PxBase::isKindOf(name);
+    }
 };
 
 /**
@@ -286,12 +296,23 @@ protected:
 */
 class PxBVH33TriangleMesh : public PxTriangleMesh
 {
-	public:
+public:
 protected:
-	PX_INLINE						PxBVH33TriangleMesh(PxType concreteType, PxBaseFlags baseFlags) : PxTriangleMesh(concreteType, baseFlags) {}
-	PX_INLINE						PxBVH33TriangleMesh(PxBaseFlags baseFlags) : PxTriangleMesh(baseFlags) {}
-	virtual							~PxBVH33TriangleMesh() {}
-	virtual	bool					isKindOf(const char* name) const { return !::strcmp("PxBVH33TriangleMesh", name) || PxTriangleMesh::isKindOf(name); }
+    PX_INLINE PxBVH33TriangleMesh(PxType concreteType, PxBaseFlags baseFlags)
+        : PxTriangleMesh(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxBVH33TriangleMesh(PxBaseFlags baseFlags)
+        : PxTriangleMesh(baseFlags)
+    {
+    }
+    virtual ~PxBVH33TriangleMesh()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxBVH33TriangleMesh", name) || PxTriangleMesh::isKindOf(name);
+    }
 };
 
 /**
@@ -302,12 +323,23 @@ protected:
 */
 class PxBVH34TriangleMesh : public PxTriangleMesh
 {
-	public:
+public:
 protected:
-	PX_INLINE						PxBVH34TriangleMesh(PxType concreteType, PxBaseFlags baseFlags) : PxTriangleMesh(concreteType, baseFlags) {}
-	PX_INLINE						PxBVH34TriangleMesh(PxBaseFlags baseFlags) : PxTriangleMesh(baseFlags) {}
-	virtual							~PxBVH34TriangleMesh() {}
-	virtual	bool					isKindOf(const char* name) const { return !::strcmp("PxBVH34TriangleMesh", name) || PxTriangleMesh::isKindOf(name); }
+    PX_INLINE PxBVH34TriangleMesh(PxType concreteType, PxBaseFlags baseFlags)
+        : PxTriangleMesh(concreteType, baseFlags)
+    {
+    }
+    PX_INLINE PxBVH34TriangleMesh(PxBaseFlags baseFlags)
+        : PxTriangleMesh(baseFlags)
+    {
+    }
+    virtual ~PxBVH34TriangleMesh()
+    {
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxBVH34TriangleMesh", name) || PxTriangleMesh::isKindOf(name);
+    }
 };
 
 #if !PX_DOXYGEN

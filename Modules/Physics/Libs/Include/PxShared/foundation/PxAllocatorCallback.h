@@ -51,15 +51,15 @@ or the physics processing thread(s).
 
 class PxAllocatorCallback
 {
-  public:
-	/**
+public:
+    /**
 	\brief destructor
 	*/
-	virtual ~PxAllocatorCallback()
-	{
-	}
+    virtual ~PxAllocatorCallback()
+    {
+    }
 
-	/**
+    /**
 	\brief Allocates size bytes of memory, which must be 16-byte aligned.
 
 	This method should never return NULL.  If you run out of memory, then
@@ -74,9 +74,9 @@ class PxAllocatorCallback
 	\param line			The source line which allocated the memory
 	\return				The allocated block of memory.
 	*/
-	virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) = 0;
+    virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) = 0;
 
-	/**
+    /**
 	\brief Frees memory previously allocated by allocate().
 
 	<b>Threading:</b> This function should be thread safe as it can be called in the context of the user thread
@@ -84,7 +84,7 @@ class PxAllocatorCallback
 
 	\param ptr Memory to free.
 	*/
-	virtual void deallocate(void* ptr) = 0;
+    virtual void deallocate(void* ptr) = 0;
 };
 
 #if !PX_DOXYGEN

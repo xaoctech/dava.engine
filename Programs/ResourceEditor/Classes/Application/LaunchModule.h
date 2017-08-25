@@ -1,8 +1,7 @@
 #pragma once
 
-#include "TArc/Core/ClientModule.h"
-
-#include "QtTools/Utils/QtDelayedExecutor.h"
+#include <TArc/Core/ClientModule.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class LaunchModule : public DAVA::TArc::ClientModule
 {
@@ -15,7 +14,7 @@ protected:
 
 private:
     class FirstSceneCreator;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(LaunchModule, DAVA::TArc::ClientModule)
     {

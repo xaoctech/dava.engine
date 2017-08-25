@@ -45,8 +45,7 @@ namespace physx
 class PxBroadPhaseExt
 {
 public:
-
-	/**
+    /**
 	\brief Creates regions for PxSceneDesc, from a global box.
 
 	This helper simply subdivides the given global box into a 2D grid of smaller boxes. Each one of those smaller boxes
@@ -64,7 +63,7 @@ public:
 
 	@see PxSceneDesc PxBroadPhaseType
 	*/
-	static	PxU32	createRegionsFromWorldBounds(PxBounds3* regions, const PxBounds3& globalBounds, PxU32 nbSubdiv, PxU32 upAxis=1);
+    static PxU32 createRegionsFromWorldBounds(PxBounds3* regions, const PxBounds3& globalBounds, PxU32 nbSubdiv, PxU32 upAxis = 1);
 };
 
 #if !PX_DOXYGEN

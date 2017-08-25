@@ -30,9 +30,11 @@ public:
         Mapping mapping = Mapping::PLANAR;
         FilePath albedo;
         FilePath normal;
+        FilePath specular;
         FilePath overridenMaterialsPath;
         Vector2 uvOffset;
         Vector2 uvScale = Vector2(1.0f, 1.0f);
+        float specularScale = 1.0f;
         bool debugOverlayEnabled = false;
 
         bool operator==(const DecalConfig&) const;
@@ -86,15 +88,15 @@ private:
     void RegisterDecal(Decal decal);
     void UnregisterDecal(Decal decal);
 
-    bool BuildDecal(const DecalBuildInfo& info, RenderBatchProvider* provider);
+    bool BuildDecal(const DecalBuildInfo& info, const DecalConfig& config, RenderBatchProvider* provider);
     void ClipToPlane(DecalVertex* p_vs, DecalVertex* p_vs_out, uint32* nb_p_vs, int32 sign, Vector3::eAxis axis, const Vector3& c_v);
     void ClipToBoundingBox(DecalVertex* p_vs, DecalVertex* p_out, uint32* nb_p_vs, const AABBox3& clipper);
     int32 Classify(int32 sign, Vector3::eAxis axis, const Vector3& c_v, const DecalVertex& p_v);
     void Lerp(float t, const DecalVertex& v1, const DecalVertex& v2, DecalVertex& result);
 
-    void GetStaticMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer);
-    void GetSkinnedMeshGeometry(const DecalBuildInfo& info, Vector<uint8>& buffer);
-    void AddVerticesToGeometry(const DecalBuildInfo& info, DecalVertex* points, DecalVertex* points_tmp, Vector<uint8>& buffer);
+    void GetStaticMeshGeometry(const DecalBuildInfo& info, const DecalConfig& config, Vector<uint8>& buffer);
+    void GetSkinnedMeshGeometry(const DecalBuildInfo& info, const DecalConfig& config, Vector<uint8>& buffer);
+    void AddVerticesToGeometry(const DecalBuildInfo& info, const DecalConfig& config, DecalVertex* points, DecalVertex* points_tmp, Vector<uint8>& buffer);
 
 private:
     Map<Decal, BuiltDecal> builtDecals;
@@ -103,14 +105,16 @@ private:
 
 inline bool GeoDecalManager::DecalConfig::operator==(const GeoDecalManager::DecalConfig& r) const
 {
-    return (dimensions == r.dimensions) && (albedo == r.albedo) && (normal == r.normal) && (mapping == r.mapping) &&
-    (uvOffset == r.uvOffset) && (uvScale == r.uvScale) && (debugOverlayEnabled == r.debugOverlayEnabled);
+    return (dimensions == r.dimensions) && (albedo == r.albedo) && (normal == r.normal) && (specular == r.specular) &&
+    (mapping == r.mapping) && (uvOffset == r.uvOffset) && (uvScale == r.uvScale) && (debugOverlayEnabled == r.debugOverlayEnabled) &&
+    (specularScale == r.specularScale);
 }
 
 inline bool GeoDecalManager::DecalConfig::operator!=(const GeoDecalManager::DecalConfig& r) const
 {
-    return (dimensions != r.dimensions) || (albedo != r.albedo) || (normal != r.normal) || (mapping != r.mapping) ||
-    (uvOffset != r.uvOffset) || (uvScale != r.uvScale) || (debugOverlayEnabled != r.debugOverlayEnabled);
+    return (dimensions != r.dimensions) || (albedo != r.albedo) || (normal != r.normal) || (specular != r.specular) ||
+    (mapping != r.mapping) || (uvOffset != r.uvOffset) || (uvScale != r.uvScale) || (debugOverlayEnabled != r.debugOverlayEnabled) ||
+    (specularScale != r.specularScale);
 }
 
 inline void GeoDecalManager::DecalConfig::invalidate()
@@ -118,5 +122,9 @@ inline void GeoDecalManager::DecalConfig::invalidate()
     dimensions = Vector3(0.0f, 0.0f, 0.0f);
     albedo = FilePath();
     normal = FilePath();
+    specular = FilePath();
+    mapping = Mapping::PLANAR;
+    uvOffset = Vector2(0.0f, 0.0f);
+    uvScale = Vector2(1.0f, 1.0f);
 }
 }

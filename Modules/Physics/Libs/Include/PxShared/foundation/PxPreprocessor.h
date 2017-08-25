@@ -81,7 +81,7 @@ Operating system defines, see http://sourceforge.net/p/predef/wiki/OperatingSyst
 #define PX_WIN32 1
 #elif defined(__ANDROID__)
 #define PX_ANDROID 1
-#elif defined(__linux__) || defined (__EMSCRIPTEN__) // note: __ANDROID__ implies __linux__
+#elif defined(__linux__) || defined(__EMSCRIPTEN__) // note: __ANDROID__ implies __linux__
 #define PX_LINUX 1
 #elif defined(__APPLE__) && (defined(__arm__) || defined(__arm64__))
 #define PX_IOS 1
@@ -100,7 +100,7 @@ Architecture defines, see http://sourceforge.net/p/predef/wiki/Architectures/
 */
 #if defined(__x86_64__) || defined(_M_X64) // ps4 compiler defines _M_X64 without value
 #define PX_X64 1
-#elif defined(__i386__) || defined(_M_IX86) || defined (__EMSCRIPTEN__)
+#elif defined(__i386__) || defined(_M_IX86) || defined(__EMSCRIPTEN__)
 #define PX_X86 1
 #elif defined(__arm64__) || defined(__aarch64__)
 #define PX_A64 1
@@ -116,7 +116,7 @@ Architecture defines, see http://sourceforge.net/p/predef/wiki/Architectures/
 SIMD defines
 */
 #if !defined(PX_SIMD_DISABLED)
-#if defined(__i386__) || defined(_M_IX86) || defined(__x86_64__) || defined(_M_X64) || (defined (__EMSCRIPTEN__) && defined(__SSE2__))
+#if defined(__i386__) || defined(_M_IX86) || defined(__x86_64__) || defined(_M_X64) || (defined(__EMSCRIPTEN__) && defined(__SSE2__))
 #define PX_SSE2 1
 #endif
 #if defined(_M_ARM) || defined(__ARM_NEON__) || defined(__ARM_NEON)
@@ -219,7 +219,7 @@ family shortcuts
 #define PX_WINDOWS_FAMILY (PX_WIN32 || PX_WIN64)
 #define PX_MICROSOFT_FAMILY (PX_XBOXONE || PX_WINDOWS_FAMILY)
 #define PX_LINUX_FAMILY (PX_LINUX || PX_ANDROID)
-#define PX_APPLE_FAMILY (PX_IOS || PX_OSX)                  // equivalent to #if __APPLE__
+#define PX_APPLE_FAMILY (PX_IOS || PX_OSX) // equivalent to #if __APPLE__
 #define PX_UNIX_FAMILY (PX_LINUX_FAMILY || PX_APPLE_FAMILY) // shortcut for unix/posix platforms
 #if defined(__EMSCRIPTEN__)
 #define PX_EMSCRIPTEN 1
@@ -265,7 +265,7 @@ DLL export macros
 #endif
 #endif
 
-#if PX_UNIX_FAMILY&& __GNUC__ >= 4
+#if PX_UNIX_FAMILY && __GNUC__ >= 4
 #define PX_UNIX_EXPORT __attribute__((visibility("default")))
 #else
 #define PX_UNIX_EXPORT
@@ -427,7 +427,7 @@ General defines
 */
 
 // static assert
-#if(defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))) || (PX_PS4) || (PX_APPLE_FAMILY) || (PX_NX) || (PX_CLANG && PX_ARM)
+#if (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))) || (PX_PS4) || (PX_APPLE_FAMILY) || (PX_NX) || (PX_CLANG && PX_ARM)
 #define PX_COMPILE_TIME_ASSERT(exp) typedef char PxCompileTimeAssert_Dummy[(exp) ? 1 : -1] __attribute__((unused))
 #else
 #define PX_COMPILE_TIME_ASSERT(exp) typedef char PxCompileTimeAssert_Dummy[(exp) ? 1 : -1]
@@ -474,20 +474,20 @@ PX_CUDA_CALLABLE PX_INLINE void PX_UNUSED(T const&)
 #if PX_PS4 || PX_APPLE_FAMILY || (PX_CLANG && !PX_ARM)
 struct PxPackValidation
 {
-	char _;
-	long a;
+    char _;
+    long a;
 };
 #elif PX_ANDROID || (PX_CLANG && PX_ARM)
 struct PxPackValidation
 {
-	char _;
-	double a;
+    char _;
+    double a;
 };
 #else
 struct PxPackValidation
 {
-	char _;
-	long long a;
+    char _;
+    long long a;
 };
 #endif
 #if !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
