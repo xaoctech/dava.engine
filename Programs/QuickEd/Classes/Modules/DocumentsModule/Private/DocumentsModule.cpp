@@ -11,7 +11,12 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
-#include "EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/SelectionSystem.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/ControlTransformationSettings.h"
+#include "Classes/EditorSystems/PixelGrid.h"
+#include "Classes/EditorSystems/EditorControlsView.h"
+#include "Classes/EditorSystems/UserAssetsSettings.h"
 
 #include "Application/QEGlobal.h"
 
@@ -43,6 +48,7 @@
 #include <Particles/ParticleEmitter.h>
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
+#include <Reflection/Reflection.h>
 
 #include <QAction>
 #include <QApplication>
@@ -56,7 +62,16 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
     .End();
 }
 
-DocumentsModule::DocumentsModule() = default;
+DocumentsModule::DocumentsModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SelectionSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ControlTransformationSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PixelGridPreferences);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PreviewWidgetSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserAssetsSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PackageWidgetSettings);
+}
+
 DocumentsModule::~DocumentsModule() = default;
 
 void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
@@ -222,7 +237,7 @@ void DocumentsModule::CreateDocumentsActions()
     using namespace DAVA;
     using namespace TArc;
 
-    const QString toolBarName("mainToolbar");
+    const QString toolBarName("Main Toolbar");
 
     const QString saveDocumentActionName("Save document");
     const QString saveAllDocumentsActionName("Force save all");
@@ -249,7 +264,7 @@ void DocumentsModule::CreateDocumentsActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "Close project" }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, "project actions separator" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -263,7 +278,7 @@ void DocumentsModule::CreateDocumentsActions()
         connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::SaveAllDocuments, this));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, saveDocumentActionName }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, saveDocumentActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -295,7 +310,7 @@ void DocumentsModule::CreateDocumentsActions()
         QAction* separator = new QAction(toolBarSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, saveAllDocumentsActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 }
@@ -308,7 +323,7 @@ void DocumentsModule::CreateUndoRedoActions()
     const QString undoActionName("Undo");
     const QString redoActionName("Redo");
 
-    const QString toolBarName("mainToolbar");
+    const QString toolBarName("Main Toolbar");
     const QString editMenuSeparatorName("undo redo separator");
 
     Function<Any(QString, const Any&)> makeActionName = [](QString baseName, const Any& actionText) {
@@ -347,7 +362,7 @@ void DocumentsModule::CreateUndoRedoActions()
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnUndo));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::BeforeItem }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, "documents separator" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -375,7 +390,7 @@ void DocumentsModule::CreateUndoRedoActions()
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnRedo));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, undoActionName }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, undoActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -385,7 +400,7 @@ void DocumentsModule::CreateUndoRedoActions()
         QAction* separator = new QAction(editMenuSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 }
@@ -674,7 +689,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     QString label = QObject::tr("Enter new text, please");
     bool ok;
-    QString inputText = MultilineTextInputDialog::GetMultiLineText(GetUI()->GetWindow(DAVA::TArc::mainWindowKey), label, label, QString::fromStdString(text), &ok);
+    QString inputText = MultilineTextInputDialog::GetMultiLineText(GetUI(), label, label, QString::fromStdString(text), &ok);
     if (ok)
     {
         ContextAccessor* accessor = GetAccessor();
@@ -1139,5 +1154,3 @@ void DocumentsModule::OnSelectInFileSystem()
     QString filePath = documentData->GetPackageAbsolutePath();
     InvokeOperation(QEGlobal::SelectFile.ID, filePath);
 }
-
-DECL_GUI_MODULE(DocumentsModule);

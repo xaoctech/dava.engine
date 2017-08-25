@@ -4,6 +4,9 @@
       <file>Resources/stop.png</file>
       <file>Resources/play.png</file>
       <file>Resources/pause.png</file>
+      <file>Resources/LightTheme.qss</file>
+      <file>Resources/DarkTheme.qss</file>
+      <file>Resources/settings.png</file>
       <file>ColorPicker/Private/Resources/dropper.png</file>
     </qresource>
 </RCC>

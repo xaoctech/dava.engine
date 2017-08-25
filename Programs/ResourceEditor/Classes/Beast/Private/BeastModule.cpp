@@ -6,6 +6,7 @@
 #include "Classes/Beast/Private/BeastRunner.h"
 
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
@@ -114,7 +115,7 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([this]() {
-            InvokeOperation(REGlobal::ReloadTexturesOperation.ID, Settings::GetGPUFormat());
+            InvokeOperation(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         });
     }
 }

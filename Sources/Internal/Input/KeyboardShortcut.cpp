@@ -1,6 +1,7 @@
 #include "KeyboardShortcut.h"
 
 #include "InputSystem.h"
+#include "Base/GlobalEnum.h"
 #include "Utils/StringUtils.h"
 #include "Utils/Utils.h"
 

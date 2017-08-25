@@ -1,11 +1,13 @@
 #pragma once
 
-#include "Concurrency/Mutex.h"
-#include "Logger/Logger.h"
-#include "Functional/Signal.h"
-#include "QtTools/Utils/QtDelayedExecutor.h"
+#include <TArc/Utils/QtDelayedExecutor.h>
+
+#include <Concurrency/Mutex.h>
+#include <Logger/Logger.h>
+#include <Functional/Signal.h>
 
 #include <QObject>
+
 #include <memory>
 #include <atomic>
 
@@ -18,7 +20,7 @@ class UI;
 }
 
 class GlobalOperations;
-class ErrorDialogOutput final : public QtDelayedExecutor, public DAVA::LoggerOutput
+class ErrorDialogOutput final : public DAVA::TArc::QtDelayedExecutor, public DAVA::LoggerOutput
 {
 public:
     ErrorDialogOutput(DAVA::TArc::UI* ui, const std::shared_ptr<GlobalOperations>& globalOperations);

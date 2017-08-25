@@ -4,9 +4,9 @@
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/Utils/Utils.h>
 
-SceneTreeItem::SceneTreeItem(eItemType _type, DAVA::BaseObject* object_)
+SceneTreeItem::SceneTreeItem(eItemType _type, const DAVA::Any& object_)
     : object(object_)
     , type(_type)
 {
@@ -14,7 +14,7 @@ SceneTreeItem::SceneTreeItem(eItemType _type, DAVA::BaseObject* object_)
 
 DAVA::BaseObject* SceneTreeItem::GetItemObject() const
 {
-    return static_cast<DAVA::BaseObject*>(object.GetContainedObject());
+    return object.Cast<DAVA::BaseObject>();
 }
 
 QVariant SceneTreeItem::data(int role) const
@@ -57,7 +57,7 @@ DAVA::uint32 SceneTreeItem::ItemType() const
 
 const QIcon& SceneTreeItem::ItemIcon() const
 {
-    return SharedIcon(":/QtIcons/node.png");
+    return DAVA::TArc::SharedIcon(":/QtIcons/node.png");
 }
 
 bool SceneTreeItem::IsAcceptedByFilter() const
@@ -125,6 +125,7 @@ QVariant SceneTreeItemEntity::ItemData() const
 
 const QIcon& SceneTreeItemEntity::ItemIcon() const
 {
+    using namespace DAVA::TArc;
     DAVA::Entity* entity = GetEntity();
 
     if (nullptr != entity)
@@ -470,7 +471,7 @@ QVariant SceneTreeItemParticleEmitter::ItemData() const
 
 const QIcon& SceneTreeItemParticleEmitter::ItemIcon() const
 {
-    return SharedIcon(":/QtIcons/emitter_particle.png");
+    return DAVA::TArc::SharedIcon(":/QtIcons/emitter_particle.png");
 }
 
 // =========================================================================================
@@ -586,7 +587,7 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
 
 const QIcon& SceneTreeItemParticleLayer::ItemIcon() const
 {
-    return SharedIcon(":/QtIcons/layer_particle.png");
+    return DAVA::TArc::SharedIcon(":/QtIcons/layer_particle.png");
 }
 
 // =========================================================================================
@@ -627,7 +628,7 @@ QVariant SceneTreeItemParticleForce::ItemData() const
 
 const QIcon& SceneTreeItemParticleForce::ItemIcon() const
 {
-    return SharedIcon(":/QtIcons/force.png");
+    return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
 }
 
 SceneTreeItemParticleInnerEmitter::SceneTreeItemParticleInnerEmitter(DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitter* emitter_,

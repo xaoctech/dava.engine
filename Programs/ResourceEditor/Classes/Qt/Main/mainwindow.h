@@ -12,8 +12,8 @@
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/WindowSubSystem/UI.h>
 
-#include <QtTools/Utils/ShortcutChecker.h>
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/ShortcutChecker.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <QMainWindow>
 #include <QDockWidget>
@@ -171,7 +171,6 @@ protected:
     bool eventFilter(QObject* object, QEvent* event) override;
     void SetupWidget();
     void SetupMainMenu();
-    void SetupThemeActions();
     void SetupToolBars();
     void SetupStatusBar();
     void SetupDocks();
@@ -242,12 +241,12 @@ private:
     ErrorDialogOutput* errorLoggerOutput = nullptr;
 
 #if defined(__DAVAENGINE_MACOS__)
-    ShortcutChecker shortcutChecker;
+    DAVA::TArc::ShortcutChecker shortcutChecker;
 #endif
 
     DAVA::TArc::UI* tarcUI = nullptr;
     std::unique_ptr<DAVA::TArc::WaitHandle> waitDialog;
     DAVA::TArc::DataWrapper projectDataWrapper;
     DAVA::TArc::DataWrapper selectionWrapper;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 };

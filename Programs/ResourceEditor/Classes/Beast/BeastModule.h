@@ -4,8 +4,7 @@
 
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <Beast/BeastConstants.h>
 
@@ -23,7 +22,7 @@ private:
     void RunBeast(const QString& outputPath, Beast::eBeastMode mode);
 
     DAVA::TArc::QtConnections connections;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     DAVA_VIRTUAL_REFLECTION(BeastModule, DAVA::TArc::ClientModule);
 };

@@ -47,11 +47,6 @@ public:
 private:
     uint32 curDebugFlags;
 
-public:
-    INTROSPECTION_EXTEND(DebugRenderComponent, Component,
-                         PROPERTY("curDebugFlags", "Debug Flags ", GetDebugFlags, SetDebugFlags, I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(DebugRenderComponent, Component);
 };
 };

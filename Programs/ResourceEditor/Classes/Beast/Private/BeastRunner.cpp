@@ -3,7 +3,6 @@
 #include "Classes/Beast/Private/BeastRunner.h"
 #include "Classes/Beast/Private/LightmapsPacker.h"
 
-#include "Settings/SettingsManager.h"
 #include "Utils/SceneUtils/SceneUtils.h"
 
 #include <Beast/SceneParser.h>
