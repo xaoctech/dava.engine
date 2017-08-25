@@ -41,7 +41,7 @@ public:
     ParticleDragForce* Clone();
 
     bool isActive = true;
-    String forceName = "DragForce";
+    String forceName = "Particle Force";
     Matrix4 localMatrix;
 
     Vector3 position;

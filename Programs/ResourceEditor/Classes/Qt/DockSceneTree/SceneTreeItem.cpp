@@ -510,7 +510,7 @@ DAVA::ParticleLayer* SceneTreeItemParticleLayer::GetLayer() const
 
 DAVA::ParticleLayer* SceneTreeItemParticleLayer::GetLayer(SceneTreeItem* item)
 {
-    DAVA::ParticleLayer* ret = NULL;
+    DAVA::ParticleLayer* ret = nullptr;
 
     if ((nullptr != item) && (item->ItemType() == SceneTreeItem::EIT_Layer))
     {
@@ -683,7 +683,18 @@ QVariant SceneTreeItemParticleDragForce::ItemData() const
 
 const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
 {
-    return GetDragForce()->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
+    DAVA::ParticleDragForce* force = GetDragForce();
+    if (force->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+    {
+        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
+    }
+    if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+    {
+        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico.png") : DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_red.png");
+    }
+
+
+    return DAVA::TArc::SharedIcon(":/QtIcons/turtle.png");
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,8 @@
 
 using namespace DAVA;
 
+void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType);
+
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* effect)
     : CommandAction(CMDID_PARTICLE_EFFECT_UPDATE)
     , particleEffect(effect)
@@ -560,9 +562,20 @@ CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleDrag::Redo()
 {
-    if (selectedLayer == nullptr)
-        return;
-    selectedLayer->AddDrag(new ParticleDragForce(selectedLayer));
+    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::DRAG_FORCE);
+}
+
+
+CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_LORENTZ_FORCE_ADD)
+    , selectedLayer(layer)
+{
+}
+
+
+void CommandAddParticleLorentzForce::Redo()
+{
+    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::LORENTZ_FORCE);
 }
 
 CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDragForce* drag)
@@ -673,3 +686,15 @@ void CommandCloneParticleDrag::Redo()
     clonedForce->forceName = selectedDrag->forceName + " Clone";
     selectedLayer->AddDrag(clonedForce);
 }
+
+void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType)
+{
+    if (layer == nullptr)
+        return;
+    ParticleDragForce* newForce = new ParticleDragForce(layer);
+    newForce->type = forceType;
+
+    layer->AddDrag(newForce);
+    SafeRelease(newForce);
+}
+

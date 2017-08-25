@@ -643,6 +643,7 @@ protected:
         menu.addSeparator();
         Connect(menu.addAction(SharedIcon(":/QtIcons/force.png"), QStringLiteral("Add Force")), this, &ParticleLayerContextMenu::AddForce);
         Connect(menu.addAction(SharedIcon(":/QtIcons/turtle.png"), QStringLiteral("Add Drag")), this, &ParticleLayerContextMenu::AddDrag);
+        Connect(menu.addAction(SharedIcon(":/QtIcons/vortex_ico.png"), QStringLiteral("Add Lorentz Force")), this, &ParticleLayerContextMenu::AddLorentzForce);
     }
 
 private:
@@ -671,6 +672,12 @@ private:
     void AddDrag()
     {
         GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleDrag(layerItem->GetLayer())));
+        MarkStructureChanged();
+    }
+
+    void AddLorentzForce()
+    {
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleLorentzForce(layerItem->GetLayer())));
         MarkStructureChanged();
     }
 
@@ -724,8 +731,19 @@ protected:
     void FillActions(QMenu& menu) override
     {
         Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleDragForceContextMenu::CloneForce);
-        QString removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
-        Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/remove_turtle.png"), removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
+        QString removeDragForce;
+        if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+            removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
+        else if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+            removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Lorentz Force") : QStringLiteral("Remove Lorentz Forces");
+
+        const QIcon* icon = nullptr;
+        if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+            icon = &DAVA::TArc::SharedIcon(":/QtIcons/remove_turtle.png");
+        if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+            icon = &DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_remove.png");
+
+        Connect(menu.addAction(*icon, removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
     }
 
 private:
@@ -737,7 +755,14 @@ private:
 
     void RemoveDragForce()
     {
-        RemoveCommandsHelper("Remove drag forces", SceneTreeItem::EIT_DragForce, [](SceneTreeItem* item)
+        DAVA::ParticleDragForce* force = dragForce->GetDragForce();
+        DAVA::String commandName;
+        if (force->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+            commandName = "Remove drag force";
+        else if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+            commandName = "Remove Lorentz force";
+
+        RemoveCommandsHelper(commandName, SceneTreeItem::EIT_DragForce, [](SceneTreeItem* item)
                              {
                                  SceneTreeItemParticleDragForce* dragForceItem = static_cast<SceneTreeItemParticleDragForce*>(item);
                                  DAVA::ParticleDragForce* dragForce = dragForceItem->GetDragForce();
@@ -1120,14 +1145,25 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_EMITTER_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_FORCE_REMOVE,
     CMDID_PARTICLE_EMITTER_DRAG_ADD,
+    CMDID_PARTICLE_EMITTER_LORENTZ_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_DRAG_REMOVE,
     CMDID_PARTICLE_EFFECT_EMITTER_REMOVE,
     CMDID_REFLECTED_FIELD_MODIFY,
+    } };
+    static const DAVA::Vector<DAVA::uint32> idsForTreeUpdate =
+    { {
+         CMDID_PARTICLE_DRAG_FORCE_UPDATE,
+         CMDID_PARTICLE_LAYER_UPDATE
     } };
 
     if (commandNotification.MatchCommandIDs(idsForUpdate))
     {
         UpdateModel();
+        treeUpdater->Update();
+    }
+
+    if (commandNotification.MatchCommandIDs(idsForTreeUpdate))
+    {
         treeUpdater->Update();
     }
 }
