@@ -117,7 +117,7 @@ bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 
 void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    //do nothing
+    DiscardUnsavedChanges();
 }
 
 void DocumentsModule::PostInit()
@@ -766,13 +766,18 @@ void DocumentsModule::CloseAllDocuments()
         params.buttons = ModalMessageParams::SaveAll | ModalMessageParams::NoToAll | ModalMessageParams::Cancel;
         params.icon = ModalMessageParams::Question;
         ModalMessageParams::Button button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
-        if (button == ModalMessageParams::Cancel)
-        {
-            return;
-        }
-        else if (button == ModalMessageParams::SaveAll)
+        if (button == ModalMessageParams::SaveAll)
         {
             hasUnsaved = (SaveAllDocuments() == false);
+        }
+        else if (button == ModalMessageParams::NoToAll)
+        {
+            DiscardUnsavedChanges();
+            hasUnsaved = false;
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -1001,6 +1006,15 @@ bool DocumentsModule::SaveCurrentDocument()
     DataContext* activeContext = accessor->GetActiveContext();
 
     return SaveDocument(activeContext->GetID());
+}
+
+void DocumentsModule::DiscardUnsavedChanges()
+{
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
+                                  {
+                                      DocumentData* data = context.GetData<DocumentData>();
+                                      data->commandStack->SetClean();
+                                  });
 }
 
 void DocumentsModule::OnFileChanged(const QString& path)

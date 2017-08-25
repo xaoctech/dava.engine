@@ -761,6 +761,7 @@ public:
             else if (resultButton == ModalMessageParams::NoToAll)
             {
                 controllerModule->RestoreOnWindowClose(key);
+                result = true;
             }
             else
             {
@@ -773,10 +774,14 @@ public:
 
     void OnWindowClosed(const WindowKey& key) override
     {
-        std::for_each(modules.begin(), modules.end(), [&key](std::unique_ptr<ClientModule>& module)
-                      {
-                          module->OnWindowClosed(key);
-                      });
+        controllerModule->OnWindowClosed(key);
+
+        std::for_each(modules.begin(), modules.end(), [&key, this](std::unique_ptr<ClientModule>& module) {
+            if (module.get() != controllerModule)
+            {
+                module->OnWindowClosed(key);
+            }
+        });
     }
 
     bool HasControllerModule() const

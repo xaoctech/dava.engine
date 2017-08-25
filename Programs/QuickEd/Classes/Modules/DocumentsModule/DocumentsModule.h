@@ -67,6 +67,7 @@ private:
     bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
     bool SaveAllDocuments();
     bool SaveCurrentDocument();
+    void DiscardUnsavedChanges();
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
 

@@ -64,7 +64,7 @@ void IssueNavigatorWidget::ChangePathToControl(DAVA::int32 sectionId_, DAVA::int
     if (row > -1)
     {
         QString path = QString::fromStdString(pathToControlMsg);
-        QStandardItem* item = model->item(row, 0);
+        QStandardItem* item = model->item(row, 1);
         item->setText(path);
 
         for (int column = 0; column < model->columnCount(); ++column)
