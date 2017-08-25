@@ -14,13 +14,15 @@ class ContextAccessor;
 }
 
 //lines have different behavior, so use base class to draw them
-struct DistanceLine
+class DistanceLine
 {
+public:
     virtual void Draw(DAVA::UIControl* canvas) = 0;
 };
 
-struct SolidLine : public DistanceLine
+class SolidLine : public DistanceLine
 {
+public:
     struct SolidLineParams
     {
         SolidLineParams(const DAVA::UIGeometricData& gd);
@@ -35,6 +37,7 @@ struct SolidLine : public DistanceLine
 
     SolidLine(const SolidLineParams& params);
 
+private:
     void Draw(DAVA::UIControl* canvas) override;
 
     void DrawEndLine(DAVA::UIControl* canvas);
@@ -47,4 +50,26 @@ struct SolidLine : public DistanceLine
     DAVA::RefPtr<DAVA::Font> font;
     const DAVA::UIGeometricData& parentGd;
     DAVA::eAlign direction;
+};
+
+class DotLine : public DistanceLine
+{
+public:
+    struct DotLineParams
+    {
+        DotLineParams(const DAVA::UIGeometricData& gd);
+        DAVA::TArc::ContextAccessor* accessor = nullptr;
+        DAVA::Vector2 startPoint;
+        DAVA::Vector2 endPoint;
+        const DAVA::UIGeometricData& gd;
+    };
+
+    DotLine(const DotLineParams& params);
+
+private:
+    void Draw(DAVA::UIControl* canvas) override;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::Vector2 startPoint;
+    DAVA::Vector2 endPoint;
+    const DAVA::UIGeometricData& parentGd;
 };

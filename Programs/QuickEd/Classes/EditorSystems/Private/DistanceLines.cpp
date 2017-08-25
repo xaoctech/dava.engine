@@ -7,6 +7,11 @@
 #include <UI/UIStaticText.h>
 #include <Utils/UTF8Utils.h>
 
+SolidLine::SolidLineParams::SolidLineParams(const DAVA::UIGeometricData& gd_)
+    : gd(gd_)
+{
+}
+
 SolidLine::SolidLine(const SolidLineParams& params)
     : accessor(params.accessor)
     , startPoint(params.startPoint)
@@ -19,8 +24,6 @@ SolidLine::SolidLine(const SolidLineParams& params)
 
 void SolidLine::Draw(DAVA::UIControl* canvas)
 {
-    using namespace DAVA;
-
     DrawSolidLine(canvas);
     DrawEndLine(canvas);
     DrawLineText(canvas);
@@ -31,7 +34,7 @@ void SolidLine::DrawSolidLine(DAVA::UIControl* canvas)
     using namespace DAVA;
 
     DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
-    RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithColor(preferences->linesColor, "distance line");
+    RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithColor(preferences->linesColor, "distance_line");
 
     Vector2 linePos(std::min(startPoint.x, endPoint.x), std::min(startPoint.y, endPoint.y));
     Vector2 lineSize(fabs(startPoint.x - endPoint.x), fabs(startPoint.y - endPoint.y));
@@ -46,7 +49,7 @@ void SolidLine::DrawEndLine(DAVA::UIControl* canvas)
 
     const Vector2 endLineLength = Vector2(8.0f, 8.0f) / parentGd.scale;
     DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
-    RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithColor(preferences->linesColor, "distance line ending");
+    RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithColor(preferences->linesColor, "distance_line_ending");
 
     if (direction == ALIGN_BOTTOM || direction == ALIGN_TOP)
     {
@@ -111,7 +114,29 @@ void SolidLine::DrawLineText(DAVA::UIControl* canvas)
     canvas->AddControl(textControl.Get());
 }
 
-SolidLine::SolidLineParams::SolidLineParams(const DAVA::UIGeometricData& gd_)
+DotLine::DotLineParams::DotLineParams(const DAVA::UIGeometricData& gd_)
     : gd(gd_)
 {
+}
+
+DotLine::DotLine(const DotLineParams& params)
+    : accessor(params.accessor)
+    , startPoint(params.startPoint)
+    , endPoint(params.endPoint)
+    , parentGd(params.gd)
+{
+}
+
+void DotLine::Draw(DAVA::UIControl* canvas)
+{
+    using namespace DAVA;
+
+    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithTexture(preferences->helpLinesTexture, "dot_distance_line");
+
+    Vector2 linePos(std::min(startPoint.x, endPoint.x), std::min(startPoint.y, endPoint.y));
+    Vector2 lineSize(fabs(startPoint.x - endPoint.x), fabs(startPoint.y - endPoint.y));
+    UIControlUtils::MapToScreen(Rect(linePos, lineSize), parentGd, lineControl);
+
+    canvas->AddControl(lineControl.Get());
 }

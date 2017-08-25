@@ -87,41 +87,43 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> ControlsLinesFactory::CreateLines() 
 
             Vector2 startPos;
             Vector2 endPos;
-            float32 highlightedRectMiddle = highlightedRect.GetPosition()[oppositeAxis] + highlightedRect.GetSize()[oppositeAxis] / 2.0f;
-            startPos[oppositeAxis] = highlightedRectMiddle;
-            endPos[oppositeAxis] = highlightedRectMiddle;
+            float32 selectedRectMiddle = selectedRect.GetPosition()[oppositeAxis] + selectedRect.GetSize()[oppositeAxis] / 2.0f;
+            startPos[oppositeAxis] = selectedRectMiddle;
+            endPos[oppositeAxis] = selectedRectMiddle;
 
             if (highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis] < selectedRect.GetPosition()[axis])
-            {
-                startPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
-                endPos[axis] = selectedRect.GetPosition()[axis];
+            { //if highlighted control at the left / top of the selected control
+
+                startPos[axis] = selectedRect.GetPosition()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
                 AddSolidLine(axis, startPos, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
             }
             else if (highlightedRect.GetPosition()[axis] > selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis])
             {
-                startPos[axis] = highlightedRect.GetPosition()[axis];
-                endPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
+                startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis];
                 AddSolidLine(axis, startPos, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
             }
             else
             {
-                {
-                    startPos[axis] = highlightedRect.GetPosition()[axis];
-                    endPos[axis] = selectedRect.GetPosition()[axis];
-                    AddSolidLine(axis, startPos, endPos, lines);
-                }
-                {
-                    startPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
-                    endPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
-                    AddSolidLine(axis, startPos, endPos, lines);
-                }
+                startPos[axis] = selectedRect.GetPosition()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis];
+                AddSolidLine(axis, startPos, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
+
+                startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
+                AddSolidLine(axis, startPos, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
             }
         }
     }
     return lines;
 }
 
-SolidLine::SolidLineParams ControlsLinesFactory::CreateParams(const DAVA::Vector2& startPoint, const DAVA::Vector2& endPos, DAVA::eAlign direction) const
+SolidLine::SolidLineParams ControlsLinesFactory::CreateSolidLineParams(const DAVA::Vector2& startPoint, const DAVA::Vector2& endPos, DAVA::eAlign direction) const
 {
     SolidLine::SolidLineParams params(parentGd);
     params.accessor = accessor;
@@ -132,11 +134,45 @@ SolidLine::SolidLineParams ControlsLinesFactory::CreateParams(const DAVA::Vector
     return params;
 }
 
+DotLine::DotLineParams ControlsLinesFactory::CreateDotLineParams(const DAVA::Vector2& startPoint, const DAVA::Vector2& endPos) const
+{
+    DotLine::DotLineParams params(parentGd);
+    params.accessor = accessor;
+    params.startPoint = startPoint;
+    params.endPoint = endPos;
+    return params;
+}
+
+void ControlsLinesFactory::SurroundWithDotLines(DAVA::Vector2::eAxis axis, const DAVA::Rect& rect, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const
+{
+    using namespace DAVA;
+
+    DAVA::Vector2 startPos = endPos;
+    if (rect.GetPosition()[axis] + rect.GetSize()[axis] < endPos[axis])
+    {
+        startPos[axis] = rect.GetPosition()[axis] + rect.GetSize()[axis];
+        AddDotLine(axis, startPos, endPos, lines);
+    }
+    else if (rect.GetPosition()[axis] > endPos[axis])
+    {
+        startPos[axis] = rect.GetPosition()[axis];
+        AddDotLine(axis, startPos, endPos, lines);
+    }
+}
+
 void ControlsLinesFactory::AddSolidLine(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const
 {
     if (startPos[axis] != endPos[axis])
     {
         DAVA::eAlign direction = DistanceLinesFactoryDetails::GetDirection(axis, startPos, endPos);
-        lines.push_back(std::make_unique<SolidLine>(CreateParams(startPos, endPos, direction)));
+        lines.push_back(std::make_unique<SolidLine>(CreateSolidLineParams(startPos, endPos, direction)));
+    }
+}
+
+void ControlsLinesFactory::AddDotLine(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const
+{
+    if (startPos[axis] != endPos[axis])
+    {
+        lines.push_back(std::make_unique<DotLine>(CreateDotLineParams(startPos, endPos)));
     }
 }
