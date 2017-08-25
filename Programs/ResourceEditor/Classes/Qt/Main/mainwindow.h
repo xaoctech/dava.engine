@@ -178,7 +178,6 @@ protected:
 
     void StartGlobalInvalidateTimer();
 
-
     void SynchronizeStateWithUI();
 
     static void SetActionCheckedSilently(QAction* action, bool checked);
