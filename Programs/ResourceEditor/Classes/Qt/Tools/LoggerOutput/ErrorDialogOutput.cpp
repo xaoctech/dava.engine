@@ -1,6 +1,5 @@
 #include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
 #include "Classes/Qt/GlobalOperations.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/REGlobal.h"
 
