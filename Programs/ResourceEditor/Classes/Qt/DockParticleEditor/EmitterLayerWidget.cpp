@@ -610,7 +610,7 @@ void EmitterLayerWidget::InitForcesWidget()
         QToolButton* removeButton = new QToolButton();
         removeButton->setProperty("comboBoxPtr", QVariant::fromValue(comboBox));
         removeButton->setAutoRaise(false);
-        removeButton->setIcon(SharedIcon(":/QtIcons/remove.png"));
+        removeButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/remove.png"));
         currentForceLayout->addWidget(removeButton);
         connect(removeButton, &QToolButton::clicked, this, &EmitterLayerWidget::OnRemoveForce);
     }

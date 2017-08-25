@@ -683,7 +683,7 @@ QVariant SceneTreeItemParticleDragForce::ItemData() const
 
 const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
 {
-    return GetDragForce()->isActive ? SharedIcon(":/QtIcons/turtle.png") : SharedIcon(":/QtIcons/turtle_bnw.png");
+    return GetDragForce()->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
 }
 
 //////////////////////////////////////////////////////////////////////////

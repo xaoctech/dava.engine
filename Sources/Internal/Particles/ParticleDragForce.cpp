@@ -1,9 +1,15 @@
 #include "Particles/ParticleDragForce.h"
 
-#include "Particles/ParticleLayer.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleDragForce)
+{
+    ReflectionRegistrator<ParticleDragForce>::Begin()
+        .End();
+}
+
 ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
     : parentLayer(parent)
 {

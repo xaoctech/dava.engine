@@ -6,6 +6,8 @@
 #include "Math/Matrix4.h"
 #include "Particles/ParticlePropertyLine.h"
 
+#include "Reflection/Reflection.h"
+
 namespace DAVA
 {
 struct ParticleLayer;
@@ -54,7 +56,7 @@ public:
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
 public:
-    INTROSPECTION_EXTEND(ParticleDragForce, BaseObject, nullptr)
+    DAVA_VIRTUAL_REFLECTION(ParticleDragForce, BaseObject);
 
 private:
     ParticleLayer* parentLayer = nullptr;

@@ -26,10 +26,6 @@ private:
     float32 someFloat = 0.0f;
 
 public:
-    INTROSPECTION_EXTEND(ParticleDragForceComponent, Component,
-                         MEMBER(someFloat, "someFloat", I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(ParticleDragForceComponent, Component);
 };
 }

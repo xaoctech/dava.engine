@@ -723,9 +723,9 @@ public:
 protected:
     void FillActions(QMenu& menu) override
     {
-        Connect(menu.addAction(SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleDragForceContextMenu::CloneForce);
+        Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleDragForceContextMenu::CloneForce);
         QString removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
-        Connect(menu.addAction(SharedIcon(":/QtIcons/remove_turtle.png"), removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
+        Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/remove_turtle.png"), removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
     }
 
 private:
