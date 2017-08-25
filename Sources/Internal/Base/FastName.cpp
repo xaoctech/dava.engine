@@ -61,6 +61,7 @@ void FastName::Init(const char* name)
 
         str = nameCopy;
     }
+    DVASSERT(strcmp(str, name) == 0);
 }
 
 template <>

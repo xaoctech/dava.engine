@@ -135,6 +135,7 @@ private:
     void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
+    bool CreateEmpryDvplFile(FileSystem* fs, PackRequest::FileRequest& fileRequest);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
     bool UpdateFileRequests();
 

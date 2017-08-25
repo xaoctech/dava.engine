@@ -101,7 +101,7 @@ ProfilerCPU::ScopedCounter::~ScopedCounter()
     // Potentially due to 'pseudo-thread-safe' (see ProfilerRingArray.h)
     // we can get invalid counter (only one, therefore there is 'if(started)' ).
     // We know it. But it performance reason.
-    if (profiler->started && endTime)
+    if (endTime != nullptr)
     {
         *endTime = ProfilerCPUDetails::TimeStampUs();
     }
@@ -128,7 +128,7 @@ void ProfilerCPU::Stop()
     started = false;
 }
 
-bool ProfilerCPU::IsStarted()
+bool ProfilerCPU::IsStarted() const
 {
     return started;
 }
@@ -165,7 +165,7 @@ uint64 ProfilerCPU::GetLastCounterTime(const char* counterName)
 {
     uint64 timeDelta = 0;
     CounterArray::reverse_iterator it = counters->rbegin(), itEnd = counters->rend();
-    for (; it != itEnd; it++)
+    for (; it != itEnd; ++it)
     {
         const Counter& c = *it;
         if (c.endTime != 0 && (strcmp(counterName, c.name) == 0))
@@ -262,13 +262,17 @@ Vector<TraceEvent> ProfilerCPU::GetTrace(int32 snapshot)
     Vector<TraceEvent> trace;
     for (const Counter& c : *array)
     {
-        if (!c.name)
+        if (!c.name || c.startTime == 0 || c.endTime == 0)
+        {
             continue;
+        }
 
-        trace.push_back({ FastName(c.name), c.startTime, c.endTime ? (c.endTime - c.startTime) : 0, c.threadID, 0, TraceEvent::PHASE_DURATION });
+        trace.push_back({ FastName(c.name), c.startTime, (c.endTime - c.startTime), c.threadID, 0, TraceEvent::PHASE_DURATION });
 
         if (c.frame)
+        {
             trace.back().args.push_back({ TRACE_ARG_FRAME, c.frame });
+        }
     }
 
     return trace;

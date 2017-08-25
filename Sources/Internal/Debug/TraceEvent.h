@@ -70,7 +70,7 @@ void TraceEvent::DumpJSON(const Container& trace, std::ostream& stream)
         "B", "E", "I", "X"
     };
 
-    stream << "{ \"traceEvents\": [" << std::endl;
+    stream << "{ \"traceEvents\": [\n";
 
     auto begin = trace.begin(), end = trace.end();
     for (auto it = begin; it != end; ++it)
@@ -78,7 +78,7 @@ void TraceEvent::DumpJSON(const Container& trace, std::ostream& stream)
         const TraceEvent& event = (*it);
 
         if (it != begin)
-            stream << "," << std::endl;
+            stream << ",\n";
 
         stream << "{ ";
         stream << "\"pid\": " << event.processID << ", ";
@@ -86,19 +86,22 @@ void TraceEvent::DumpJSON(const Container& trace, std::ostream& stream)
         stream << "\"ts\": " << event.timestamp << ", ";
 
         if (event.phase == PHASE_DURATION)
+        {
             stream << "\"dur\": " << event.duration << ", ";
+        }
 
         stream << "\"ph\": \"" << PHASE_STR[event.phase] << "\", ";
         stream << "\"name\": \"" << event.name.c_str() << "\"";
 
         for (const std::pair<FastName, uint32>& arg : event.args)
+        {
             stream << ", \"args\": { \"" << arg.first.c_str() << "\": " << arg.second << " }";
+        }
 
         stream << " }";
     }
 
-    stream << std::endl
-           << "] }" << std::endl;
+    stream << "\n] }" << std::endl;
 
     stream.flush();
 }

@@ -16,16 +16,16 @@ class ProfilerRingArray;
              Profiler allows to measure execution time of code-blocks from any thread. It's cheap in performance. If profiler not started - it's almost free.
              To use this profiler, at first, you have to place counters in interesting code blocks using set of DAVA_PROFILER_CPU_SCOPE defines listed below.
              Than you just start profiler. After that you can dump counted info or build trace to view it in Chromium Trace Viewer.
-            
+
              Any counter has string-name that must be passed to define and will be displayed in dump or trace. Time-measuring occurs in microseconds.
 
              Profiler is using ring array for counters so you are limited by count passed to ctor. If it's necessary to store counters data for later usage you can use snapshots.
              Snapshot - it just a copy of internal ring buffer. To make snapshot you have to stop profiler because it can be used by other thread.
              After snapshot was made you can dump counted info or build JSON-trace from it. Remember, that dumping or building trace is more expensive in performance than making snapshot.
-            
-             Engine has own global profiler. You can access it through static field `ProfilerCPU::globalProfiler`. 
+
+             Engine has own global profiler. You can access it through static field `ProfilerCPU::globalProfiler`.
              Some predefined counters are placed all over the engine. Predefined counters names are listed in `ProfilerCPUMarkerName` namespace (ProfilerMarkerNames.h).
-             You can add counters to global engine profiler or you can create own profiler and use it separately. 
+             You can add counters to global engine profiler or you can create own profiler and use it separately.
 
              The following define are used to place counters:
               - DAVA_PROFILER_CPU_SCOPE(name)                                           -- Add counter with to global engine profiler.
@@ -33,7 +33,7 @@ class ProfilerRingArray;
               - DAVA_PROFILER_CPU_SCOPE_CUSTOM(name, profiler)                          -- Add counter with to custom profiler.
               - DAVA_PROFILER_CPU_SCOPE_CUSTOM_WITH_FRAME_INDEX(name, profiler, index)  -- Mark counter by frame index and add to custom profiler.
 
-             Defines *_WITH_FRAME_INDEX mark counters by frame index. Frame index can be viewed later in TraceEvent args. Name of argument is `TRACE_ARG_FRAME`. 
+             Defines *_WITH_FRAME_INDEX mark counters by frame index. Frame index can be viewed later in TraceEvent args. Name of argument is `TRACE_ARG_FRAME`.
              For more information about trace events arguments see `TraceEvent`.
 
              Dump and trace considers hierarchy of counters. It's means that if counter A started after counter B and completed before B is completed (counters A and B placed in the same thread),
@@ -90,7 +90,7 @@ public:
     /**
         Returns is time measuring started
     */
-    bool IsStarted();
+    bool IsStarted() const;
 
     /**
         Looking by name last complete counter with `counterName` and return it duration in microseconds
@@ -115,7 +115,7 @@ public:
 
     /**
         Looking for a certain `counterCount` of last completed counters by `counterName` and dump it to `stream`.
-        You can dump output from snapshot or from current counters array counters. 
+        You can dump output from snapshot or from current counters array counters.
         In first case you have to pass `snapshotID`. In the second case you should stop profiler
     */
     void DumpLast(const char* counterName, uint32 counterCount, std::ostream& stream, int32 snapshotID = NO_SNAPSHOT_ID);
@@ -128,7 +128,7 @@ public:
     void DumpAverage(const char* counterName, uint32 counterCount, std::ostream& stream, int32 snapshot = NO_SNAPSHOT_ID);
 
     /**
-        Build and return trace of all available counters from snapshot with `snapshotID` or internal counters array. 
+        Build and return trace of all available counters from snapshot with `snapshotID` or internal counters array.
         Trace can be dumped to JSON Chromium Trace Viewer format
     */
     Vector<TraceEvent> GetTrace(int32 snapshotID = NO_SNAPSHOT_ID);

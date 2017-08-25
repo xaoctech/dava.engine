@@ -103,7 +103,7 @@ bool DLCManagerImpl::CountError(int32 errCode)
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : profiler(1024 * 256) // TODO checking only reset to default
+    : profiler(1024 * 1024) // TODO checking only reset to default
     , engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
@@ -188,6 +188,20 @@ DLCManagerImpl::~DLCManagerImpl()
     ClearResouces();
 
     profiler.Stop();
+
+    //#ifdef
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    FilePath docPath = fs->GetPublicDocumentsPath();
+    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+    std::ofstream file(name);
+    char buf[16 * 1024];
+    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+    if (file)
+    {
+        Vector<TraceEvent> events = profiler.GetTrace();
+        TraceEvent::DumpJSON(events, file);
+    }
+    //#endif
 }
 
 void DLCManagerImpl::TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_)
