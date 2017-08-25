@@ -6,6 +6,8 @@
 _win32_vs = "2017"
 _win10_vs = "2015"
 
+_win32_sdkver="10.0.14393.0"
+
 
 # ========================================================================
 
@@ -43,6 +45,10 @@ def get_msvc_toolset_name(vs_ver):
 
 def get_msvc_toolset_ver_win32():
     return get_msvc_toolset_name(_win32_vs)
+
+
+def get_msvc_sdk_version_win32():
+    return _win32_sdkver
 
 
 # Get these from registry?

@@ -513,11 +513,11 @@ def get_autotools_android_x86_env(toolchain_path, enable_stl=False):
     return env
 
 def get_win32_vs_x86_env():
-    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86')
+    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86', build_config.get_msvc_sdk_version_win32())
 
 
 def get_win32_vs_x64_env():
-    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86_amd64')
+    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'amd64', build_config.get_msvc_sdk_version_win32())
 
 
 def get_win10_vs_x86_env():
@@ -532,10 +532,13 @@ def get_win10_vs_arm_env():
     return _get_vs_env(build_config._get_vs_vc_path_win10(), 'x86_arm')
 
 
-def _get_vs_env(vs_path, arch):
+def _get_vs_env(vs_path, arch, sdk_ver=None):
     vsvars_path = '{}/vcvarsall.bat'.format(vs_path)
 
-    cmd = [vsvars_path, arch, '&', 'set']
+    if sdk_ver is not None:
+        cmd = [vsvars_path, arch, sdk_ver, '&', 'set']
+    else:
+        cmd = [vsvars_path, arch, '&', 'set']
     sp = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     output = sp.communicate()[0]
     output = output.split("\r\n")
