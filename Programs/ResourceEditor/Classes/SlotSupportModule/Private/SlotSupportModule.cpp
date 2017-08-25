@@ -3,6 +3,7 @@
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
 #include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
 #include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
+#include "Classes/SlotSupportModule/SlotSystemSettings.h"
 
 #include "Classes/Interfaces/PropertyPanelInterface.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
@@ -17,7 +18,6 @@
 
 #include <Entity/Component.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include "../SlotSystemSettings.h"
 
 namespace SlotSupportModuleDetails
 {
