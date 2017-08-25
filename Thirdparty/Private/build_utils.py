@@ -84,7 +84,7 @@ def apply_patch(patch, working_dir = '.'):
         raise RuntimeError('Failed to apply patch with return code %s' % proc.returncode)
 
 
-def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
+def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None, msbuild_args=None):
     print "Building %s for %s (%s) ..." % (project, configuration, platform)
     args = [build_config.get_msbuild_path_win32(), project, "/m", "/p:Configuration="+configuration, '/p:Platform=' + platform]
     if suppress_build_warnings:
@@ -96,6 +96,10 @@ def build_vs(project, configuration, platform='Win32', target = None, toolset = 
         args.append('/target:' + target)
     if (not env is None):
         args.append('/p:useenv=true')
+
+    if msbuild_args is not None:
+        args.extend(msbuild_args)
+
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
     for line in proc.stdout:
         print_verbose(line)
