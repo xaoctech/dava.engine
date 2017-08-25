@@ -6,7 +6,6 @@
 #include <Base/BaseTypes.h>
 #include <Reflection/Reflection.h>
 
-
 namespace DAVA
 {
 class UISpineSystem;
