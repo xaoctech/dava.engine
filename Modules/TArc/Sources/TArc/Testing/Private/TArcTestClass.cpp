@@ -3,6 +3,8 @@
 #include "TArc/Core/ControllerModule.h"
 #include "TArc/WindowSubSystem/UI.h"
 #include "TArc/Utils/DebuggerDetection.h"
+#include "TArc/SharedModules/SettingsModule/SettingsModule.h"
+#include "TArc/SharedModules/ThemesModule/ThemesModule.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -145,6 +147,11 @@ void TestClass::Init()
         mockInvoker.reset(new MockInvoker());
         core->SetInvokeListener(mockInvoker.get());
 
+        core->PostInit();
+
+        InitColorPickerOptions(false);
+        core->CreateModule<DAVA::TArc::SettingsModule>();
+        core->CreateModule<DAVA::TArc::ThemesModule>();
         CreateTestedModules();
         if (!core->HasControllerModule())
         {

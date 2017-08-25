@@ -24,6 +24,8 @@
 
 #include <Utils/Utils.h>
 #include <QObject>
+#include "SceneManager/SceneData.h"
+#include "Application/REGlobal.h"
 
 const DAVA::FastName EditorSlotSystem::emptyItemName = DAVA::FastName("Empty");
 
@@ -432,9 +434,10 @@ void EditorSlotSystem::Draw()
     SlotTemplatesData* data = accessor->GetGlobalContext()->GetData<SlotTemplatesData>();
     Scene* scene = GetScene();
 
-    Color boxColor = data->GetBoxColor();
-    Color boxEdgeColor = data->GetBoxEdgesColor();
-    Color pivotColor = data->GetPivotColor();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    Color boxColor = settings->slotBoxColor;
+    Color boxEdgeColor = settings->slotBoxEdgesColor;
+    Color pivotColor = settings->slotPivotColor;
 
     RenderHelper* rh = scene->GetRenderSystem()->GetDebugDrawer();
     for (Entity* entity : entities)

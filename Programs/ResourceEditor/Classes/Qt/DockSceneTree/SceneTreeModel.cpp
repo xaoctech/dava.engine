@@ -17,7 +17,7 @@
 
 //mime data
 #include "Tools/MimeData/MimeDataHelper2.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/Utils/Utils.h>
 
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/)
     : QStandardItemModel(parent)
@@ -123,14 +123,14 @@ QVector<QIcon> SceneTreeModel::GetCustomIcons(const QModelIndex& index) const
     {
         if (entity->GetLocked())
         {
-            ret.push_back(SharedIcon(":/QtIcons/locked.png"));
+            ret.push_back(DAVA::TArc::SharedIcon(":/QtIcons/locked.png"));
         }
 
         if (NULL != GetCamera(entity))
         {
             if (curScene->GetCurrentCamera() == GetCamera(entity))
             {
-                ret.push_back(SharedIcon(":/QtIcons/eye.png"));
+                ret.push_back(DAVA::TArc::SharedIcon(":/QtIcons/eye.png"));
             }
         }
     }

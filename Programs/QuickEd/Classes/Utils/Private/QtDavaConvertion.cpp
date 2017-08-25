@@ -1,11 +1,12 @@
 #include "Utils/QtDavaConvertion.h"
-#include "QtTools/Utils/Utils.h"
-#include <Base/Introspection.h>
+
+#include <TArc/Utils/Utils.h>
+#include <TArc/Qt/QtString.h>
+
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Utils/StringFormat.h>
 #include <Utils/UTF8Utils.h>
-#include <QString>
 #include <QColor>
 #include <QVariant>
 #include <QVector2D>
