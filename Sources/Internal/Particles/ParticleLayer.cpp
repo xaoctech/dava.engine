@@ -6,8 +6,16 @@
 #include "Logger/Logger.h"
 #include "Particles/ParticleDragForce.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleLayer)
+{
+    ReflectionRegistrator<ParticleLayer>::Begin()
+        .End();
+}
+
 using ForceShape = ParticleDragForce::eShape;
 using ForceTimingType = ParticleDragForce::eTimingType;
 using ForceType = ParticleDragForce::eType;

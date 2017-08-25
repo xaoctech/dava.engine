@@ -36,6 +36,8 @@ public:
 
     QString GetSelectedBranchID() const;
 
+    void ShowDebugString(const QString& str);
+
 signals:
     void RefreshClicked();
     void RunClicked(int row);
@@ -84,4 +86,6 @@ private:
     ApplicationManager* appManager = nullptr;
 
     Receiver receiver;
+
+    QBuffer newsDataBuffer;
 };

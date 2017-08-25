@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Classes/Selection/Selectable.h"
+#include <Reflection/Reflection.h>
 
 namespace DAVA
 {
@@ -11,21 +12,21 @@ class ParticleDragForce;
 class EntityTransformProxy : public Selectable::TransformProxy
 {
 public:
-    const DAVA::Matrix4& GetWorldTransform(Selectable::Object* object) override;
-    const DAVA::Matrix4& GetLocalTransform(Selectable::Object* object) override;
-    void SetLocalTransform(Selectable::Object* object, const DAVA::Matrix4& matrix) override;
-    bool SupportsTransformType(Selectable::Object* object, Selectable::TransformType) const override;
-    bool TransformDependsFromObject(Selectable::Object* dependant, Selectable::Object* dependsOn) const override;
+    const DAVA::Matrix4& GetWorldTransform(const DAVA::Any& object) override;
+    const DAVA::Matrix4& GetLocalTransform(const DAVA::Any& object) override;
+    void SetLocalTransform(DAVA::Any& object, const DAVA::Matrix4& matrix) override;
+    bool SupportsTransformType(const DAVA::Any& object, Selectable::TransformType) const override;
+    bool TransformDependsFromObject(const DAVA::Any& dependant, const DAVA::Any& dependsOn) const override;
 };
 
 class EmitterTransformProxy : public Selectable::TransformProxy
 {
 public:
-    const DAVA::Matrix4& GetWorldTransform(Selectable::Object* object) override;
-    const DAVA::Matrix4& GetLocalTransform(Selectable::Object* object) override;
-    void SetLocalTransform(Selectable::Object* object, const DAVA::Matrix4& matrix) override;
-    bool SupportsTransformType(Selectable::Object* object, Selectable::TransformType) const override;
-    bool TransformDependsFromObject(Selectable::Object* dependant, Selectable::Object* dependsOn) const override;
+    const DAVA::Matrix4& GetWorldTransform(const DAVA::Any& object) override;
+    const DAVA::Matrix4& GetLocalTransform(const DAVA::Any& object) override;
+    void SetLocalTransform(DAVA::Any& object, const DAVA::Matrix4& matrix) override;
+    bool SupportsTransformType(const DAVA::Any& object, Selectable::TransformType) const override;
+    bool TransformDependsFromObject(const DAVA::Any& dependant, const DAVA::Any& dependsOn) const override;
 };
 
 class DragForceTransformProxy : public Selectable::TransformProxy

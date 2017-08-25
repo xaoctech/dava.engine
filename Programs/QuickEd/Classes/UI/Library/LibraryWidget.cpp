@@ -20,15 +20,11 @@ LibraryWidget::LibraryWidget(QWidget* parent)
 
 LibraryWidget::~LibraryWidget() = default;
 
-void LibraryWidget::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+void LibraryWidget::Setup(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor_)
 {
     accessor = accessor_;
+    libraryModel->Setup(ui, accessor);
     BindFields();
-}
-
-void LibraryWidget::SetUI(DAVA::TArc::UI* ui)
-{
-    libraryModel->SetUI(ui);
 }
 
 void LibraryWidget::OnPackageChanged(const DAVA::Any& packageValue)

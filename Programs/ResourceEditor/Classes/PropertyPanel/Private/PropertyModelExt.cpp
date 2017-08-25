@@ -13,8 +13,7 @@
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>

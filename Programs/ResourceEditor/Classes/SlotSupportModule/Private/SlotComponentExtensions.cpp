@@ -15,9 +15,8 @@
 #include <TArc/Controls/ListView.h>
 #include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/Utils/Utils.h>
 #include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
 
 #include <Scene3D/Systems/SlotSystem.h>
 #include <FileSystem/FilePath.h>
@@ -221,11 +220,11 @@ private:
         .Field("filtersList", &SlotTypeFiltersComponentValue::GetTypeFilters, nullptr)
         .Field("currentFilter", &SlotTypeFiltersComponentValue::GetCurrentFilter, &SlotTypeFiltersComponentValue::SetCurrentFilter)
         .Field("autoRise", [](SlotTypeFiltersComponentValue*) { return false; }, nullptr)
-        .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
+        .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
         .Field("addButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Add type filter"; }, nullptr)
         .Field("addButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->filters.size() < DAVA::SlotComponent::MAX_FILTERS_COUNT; }, nullptr)
         .Method("addTypeFilter", &SlotTypeFiltersComponentValue::AddTypeFilter)
-        .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
+        .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
         .Field("removeButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Remove selected type filter"; }, nullptr)
         .Field("removeButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->currentFilter.empty() == false; }, nullptr)
         .Method("removeTypeFilter", &SlotTypeFiltersComponentValue::RemoveTypeFilter)
@@ -468,7 +467,7 @@ private:
         else
         {
             DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
-            if (scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
+            if (configPath.CanGet<DAVA::FilePath>() && scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
             {
                 RebuildItemsList();
             }
@@ -753,7 +752,7 @@ public:
         Info info;
         info.description = "Slot config reloading";
         info.tooltip = "Reload config from disk";
-        info.icon = SharedIcon(":/QtIcons/reloadtextures.png");
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png");
 
         return info;
     }

@@ -1,29 +1,20 @@
-#ifndef CHECKABLECOMBOBOX_H
-#define CHECKABLECOMBOBOX_H
+#pragma once
 
-#include "QtTools/WarningGuard/QtWarningsHandler.h"
-PUSH_QT_WARNING_SUPRESSOR
 #include <QComboBox>
 #include <QStandardItemModel>
-POP_QT_WARNING_SUPRESSOR
 
 class ComboBoxModel : public QStandardItemModel
 {
-    PUSH_QT_WARNING_SUPRESSOR
     Q_OBJECT
-    POP_QT_WARNING_SUPRESSOR
 
 public:
     ComboBoxModel(QObject* parent = nullptr);
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 };
 
-class CheckableComboBox
-: public QComboBox
+class CheckableComboBox : public QComboBox
 {
-    PUSH_QT_WARNING_SUPRESSOR
     Q_OBJECT
-    POP_QT_WARNING_SUPRESSOR
 
 signals:
     void done();
@@ -48,5 +39,3 @@ private:
 
     QString textHint;
 };
-
-#endif // CHECKABLECOMBOBOX_H

@@ -1,36 +1,36 @@
 #include "DAVAEngine.h"
-#include "DockSceneInfo/SceneInfo.h"
-#include "Classes/Settings/SettingsManager.h"
-#include "Qt/Main/QtUtils.h"
-#include "Qt/Scene/SceneSignals.h"
-#include "Qt/Scene/SceneEditor2.h"
-#include "Qt/Scene/SceneHelper.h"
-#include "Qt/Scene/System/EditorStatisticsSystem.h"
-#include "Qt/Scene/System/EditorVegetationSystem.h"
+#include "Classes/Qt/DockSceneInfo/SceneInfo.h"
+#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Qt/Scene/System/EditorStatisticsSystem.h"
+#include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/Selection/Selection.h"
+#include "Classes/ImageTools/ImageTools.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
 
-#include "ImageTools/ImageTools.h"
-#include "Commands2/Base/RECommandNotificationObject.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Core/FieldBinder.h>
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/Core/FieldBinder.h"
-
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Render/TextureDescriptor.h"
-#include "Render/Material/NMaterialNames.h"
-
-#include "Render/VisibilityQueryResults.h"
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Render/TextureDescriptor.h>
+#include <Render/Texture.h>
+#include <Render/Material/NMaterialNames.h>
+#include <Render/VisibilityQueryResults.h>
+#include <Render/2D/Sprite.h>
+#include <Base/BaseTypes.h>
 
 #include <QHeaderView>
 #include <QTimer>
 #include <QPalette>
 #include <QApplication>
-
-using namespace DAVA;
 
 namespace SceneInfoDetail
 {
@@ -45,21 +45,29 @@ SceneInfo::SceneInfo(QWidget* parent /* = 0 */)
     , treeStateHelper(this, curModel)
     , infoUpdated(DAVA::MakeFunction(this, &SceneInfo::RefreshAllData))
 {
+    using namespace DAVA;
     // global scene manager signals
     SceneSignals* signalDispatcher = SceneSignals::Instance();
     connect(signalDispatcher, &SceneSignals::Activated, this, &SceneInfo::SceneActivated);
     connect(signalDispatcher, &SceneSignals::Deactivated, this, &SceneInfo::SceneDeactivated);
     connect(signalDispatcher, &SceneSignals::StructureChanged, this, &SceneInfo::SceneStructureChanged);
     connect(signalDispatcher, &SceneSignals::CommandExecuted, this, &SceneInfo::OnCommmandExecuted);
-    connect(signalDispatcher, &SceneSignals::ThemeChanged, this, &SceneInfo::OnThemeChanged);
     connect(signalDispatcher, &SceneSignals::QualityChanged, this, &SceneInfo::OnQualityChanged);
 
-    selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    fieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
     {
         DAVA::TArc::FieldDescriptor fieldDescr;
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
         fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
-        selectionFieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &SceneInfo::OnSelectionChanged));
+        fieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &SceneInfo::OnSelectionChanged));
+    }
+    {
+        DAVA::TArc::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::TArc::ThemesSettings>();
+        fieldDescr.fieldName = DAVA::FastName("currentTheme");
+        fieldBinder->BindField(fieldDescr, [this](const DAVA::Any&) {
+            OnThemeChanged();
+        });
     }
 
     // MainWindow actions
@@ -82,7 +90,7 @@ SceneInfo::SceneInfo(QWidget* parent /* = 0 */)
 
 SceneInfo::~SceneInfo()
 {
-    VariantType v(header()->sectionSize(0));
+    DAVA::VariantType v(header()->sectionSize(0));
     posSaver.SaveValue("splitPos", v);
 }
 
@@ -119,15 +127,15 @@ void SceneInfo::RefreshSceneGeneralInfo()
 {
     QtPropertyData* header = GetInfoHeader("General Scene Info");
 
-    SetChild("Entities Count", (uint32)nodesAtScene.size(), header);
+    SetChild("Entities Count", static_cast<DAVA::uint32>(nodesAtScene.size()), header);
     SetChild("Emitters Count", emittersCount, header);
 
-    SetChild("All Textures Size", QString::fromStdString(SizeInBytesToString((float32)(sceneTexturesSize + particleTexturesSize))), header);
-    SetChild("Material Textures Size", QString::fromStdString(SizeInBytesToString((float32)sceneTexturesSize)), header);
-    SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString((float32)particleTexturesSize)), header);
+    SetChild("All Textures Size", QString::fromStdString(SizeInBytesToString(static_cast<DAVA::float32>(sceneTexturesSize + particleTexturesSize))), header);
+    SetChild("Material Textures Size", QString::fromStdString(SizeInBytesToString(static_cast<DAVA::float32>(sceneTexturesSize))), header);
+    SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString(static_cast<DAVA::float32>(particleTexturesSize))), header);
 
     SetChild("Sprites Count", spritesCount, header);
-    SetChild("Particle Textures Count", (uint32)particleTextures.size(), header);
+    SetChild("Particle Textures Count", static_cast<DAVA::uint32>(particleTextures.size()), header);
 }
 
 void SceneInfo::Initialize3DDrawSection()
@@ -150,6 +158,7 @@ void SceneInfo::Initialize3DDrawSection()
 
 void SceneInfo::Refresh3DDrawInfo()
 {
+    using namespace DAVA;
     if (!activeScene)
         return;
     QtPropertyData* header = GetInfoHeader("DrawInfo");
@@ -210,9 +219,9 @@ void SceneInfo::InitializeLODSectionInFrame()
 {
     QtPropertyData* header = CreateInfoHeader("LOD in Frame");
 
-    for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
+    for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
+        AddChild(DAVA::Format("Objects LOD%d Triangles", i).c_str(), header);
     }
 
     AddChild("All LOD Triangles", header);
@@ -225,9 +234,9 @@ void SceneInfo::InitializeLODSectionForSelection()
 {
     QtPropertyData* header = CreateInfoHeader("LOD Info for Selected Entities");
 
-    for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
+    for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        AddChild(Format("Objects LOD%d Triangles", i).c_str(), header);
+        AddChild(DAVA::Format("Objects LOD%d Triangles", i).c_str(), header);
     }
 
     AddChild("All LOD Triangles", header);
@@ -237,6 +246,7 @@ void SceneInfo::InitializeLODSectionForSelection()
 
 void SceneInfo::RefreshLODInfoInFrame()
 {
+    using namespace DAVA;
     QtPropertyData* header = GetInfoHeader("LOD in Frame");
 
     EditorStatisticsSystem* statisticsSystem = GetCurrentEditorStatisticsSystem();
@@ -274,6 +284,7 @@ void SceneInfo::RefreshLODInfoInFrame()
 
 void SceneInfo::RefreshLODInfoForSelection()
 {
+    using namespace DAVA;
     QtPropertyData* header = GetInfoHeader("LOD Info for Selected Entities");
 
     EditorStatisticsSystem* statisticsSystem = GetCurrentEditorStatisticsSystem();
@@ -307,15 +318,17 @@ void SceneInfo::RefreshLODInfoForSelection()
     }
 }
 
-uint32 SceneInfo::CalculateTextureSize(const TexturesMap& textures)
+DAVA::uint32 SceneInfo::CalculateTextureSize(const DAVA::TexturesMap& textures)
 {
+    using namespace DAVA;
     ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
 
     String projectPath = data->GetProjectPath().GetAbsolutePathname();
     uint32 textureSize = 0;
 
-    eGPUFamily requestedGPU = static_cast<eGPUFamily>(SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32());
+    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    eGPUFamily requestedGPU = settings->textureViewGPU;
 
     TexturesMap::const_iterator endIt = textures.end();
     for (TexturesMap::const_iterator it = textures.begin(); it != endIt; ++it)
@@ -384,6 +397,7 @@ void SceneInfo::ClearSelectionData()
 
 void SceneInfo::CollectParticlesData()
 {
+    using namespace DAVA;
     Set<Sprite*> sprites;
 
     emittersCount = 0;
@@ -412,6 +426,7 @@ void SceneInfo::CollectParticlesData()
 
 void SceneInfo::ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Sprite*>& sprites)
 {
+    using namespace DAVA;
     if (sprite == nullptr)
         return;
     sprites.insert(sprite);
@@ -425,10 +440,11 @@ void SceneInfo::ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Spri
 
 DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entity, bool onlyVisibleBatches)
 {
+    using namespace DAVA;
     if (GetLodComponent(entity))
         return 0;
 
-    DAVA::uint32 triangles = 0;
+    uint32 triangles = 0;
 
     RenderObject* ro = GetRenderObject(entity);
     if (ro && ro->GetType() != RenderObject::TYPE_PARTICLE_EMITTER)
@@ -454,7 +470,7 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entit
     return triangles;
 }
 
-void SceneInfo::CollectTexture(TexturesMap& textures, const FilePath& name, Texture* tex)
+void SceneInfo::CollectTexture(DAVA::TexturesMap& textures, const DAVA::FilePath& name, DAVA::Texture* tex)
 {
     if (!name.IsEmpty() && tex)
     {
@@ -672,8 +688,9 @@ void SceneInfo::CollectSelectedRenderObjects(const SelectableGroup* selected)
     }
 }
 
-void SceneInfo::CollectSelectedRenderObjectsRecursivly(Entity* entity)
+void SceneInfo::CollectSelectedRenderObjectsRecursivly(DAVA::Entity* entity)
 {
+    using namespace DAVA;
     DVASSERT(entity != nullptr);
 
     RenderObject* renderObject = GetRenderObject(entity);
@@ -690,6 +707,7 @@ void SceneInfo::CollectSelectedRenderObjectsRecursivly(Entity* entity)
 
 void SceneInfo::CollectSpeedInfo(const SelectableGroup* forGroup)
 {
+    using namespace DAVA;
     speedTreesInfo.clear();
 
     for (auto entity : forGroup->ObjectsOfType<DAVA::Entity>())
@@ -702,6 +720,7 @@ void SceneInfo::CollectSpeedInfo(const SelectableGroup* forGroup)
 
 SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* renderObject)
 {
+    using namespace DAVA;
     DVASSERT(renderObject != nullptr);
 
     SpeedTreeInfo info;
@@ -851,6 +870,7 @@ void SceneInfo::InitializeVegetationInfoSection()
 
 void SceneInfo::RefreshVegetationInfoSection()
 {
+    using namespace DAVA;
     if (activeScene != NULL)
     {
         DAVA::Vector<DAVA::VegetationRenderObject*> activeVegetationObjects;
@@ -1023,6 +1043,7 @@ void SceneInfo::RefreshVegetationInfoSection()
 
 void SceneInfo::InitializeLayersSection()
 {
+    using namespace DAVA;
     QtPropertyData* header = CreateInfoHeader("Fragments Info");
 
     for (int32 i = 0; i < VisibilityQueryResults::QUERY_INDEX_COUNT; ++i)
@@ -1034,6 +1055,7 @@ void SceneInfo::InitializeLayersSection()
 
 void SceneInfo::RefreshLayersSection()
 {
+    using namespace DAVA;
     if (activeScene)
     {
         const RenderStats& renderStats = activeScene->GetRenderStats();

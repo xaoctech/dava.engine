@@ -40,7 +40,7 @@ public:
         EIDR_Data,
     };
 
-    SceneTreeItem(eItemType type, DAVA::BaseObject* object_);
+    SceneTreeItem(eItemType type, const DAVA::Any& object_);
     virtual ~SceneTreeItem() = default;
 
     QVariant data(int role) const;

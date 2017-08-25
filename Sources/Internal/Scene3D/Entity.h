@@ -322,15 +322,6 @@ private:
     friend class Scene;
     friend class SceneFileV2;
 
-public:
-    INTROSPECTION_EXTEND(Entity, BaseObject,
-                         PROPERTY("ID", "ID", GetID, SetID, I_VIEW | I_SAVE)
-                         MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visible", "Visible", GetVisible, SetVisible, I_VIEW | I_EDIT)
-                         COLLECTION(components, "components", I_VIEW)
-                         )
-
     static const char* componentFieldString;
 };
 

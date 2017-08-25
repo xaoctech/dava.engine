@@ -17,7 +17,7 @@
 
 //mime data
 #include "Tools/MimeData/MimeDataHelper2.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/Utils/Utils.h>
 
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/)
     : QStandardItemModel(parent)
@@ -123,14 +123,14 @@ QVector<QIcon> SceneTreeModel::GetCustomIcons(const QModelIndex& index) const
     {
         if (entity->GetLocked())
         {
-            ret.push_back(SharedIcon(":/QtIcons/locked.png"));
+            ret.push_back(DAVA::TArc::SharedIcon(":/QtIcons/locked.png"));
         }
 
         if (NULL != GetCamera(entity))
         {
             if (curScene->GetCurrentCamera() == GetCamera(entity))
             {
-                ret.push_back(SharedIcon(":/QtIcons/eye.png"));
+                ret.push_back(DAVA::TArc::SharedIcon(":/QtIcons/eye.png"));
             }
         }
     }
@@ -175,7 +175,7 @@ int SceneTreeModel::GetCustomFlags(const QModelIndex& index) const
     return ret;
 }
 
-QModelIndex SceneTreeModel::GetIndex(Selectable::Object* object) const
+QModelIndex SceneTreeModel::GetIndex(const DAVA::Any& object) const
 {
     auto i = indexesCache.find(object);
     return (i == indexesCache.end()) ? QModelIndex() : i->second;
@@ -332,7 +332,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
             for (int i = 0; i < emittersV.size(); ++i)
             {
                 emittersGroup.push_back(static_cast<DAVA::ParticleEmitterInstance*>(emittersV[i]));
-                QModelIndex emitterIndex = GetIndex((DAVA::ParticleEmitter*)emittersV[i]);
+                QModelIndex emitterIndex = GetIndex(emittersV[i]);
                 DAVA::ParticleEffectComponent* oldEffect = GetEffectComponent(SceneTreeItemEntity::GetEntity(GetItem(emitterIndex.parent())));
                 effectsGroup.push_back(oldEffect);
             }
@@ -369,7 +369,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
             for (int i = 0; i < layersV.size(); ++i)
             {
                 layersGroup.push_back((DAVA::ParticleLayer*)layersV[i]);
-                QModelIndex emitterIndex = GetIndex((DAVA::ParticleLayer*)layersV[i]);
+                QModelIndex emitterIndex = GetIndex(layersV[i]);
                 DAVA::ParticleEmitterInstance* oldEmitter = SceneTreeItemParticleEmitter::GetEmitterInstance(GetItem(emitterIndex.parent()));
                 emittersGroup.push_back(oldEmitter);
             }
@@ -394,7 +394,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
 
             for (int i = 0; i < forcesV.size(); ++i)
             {
-                QModelIndex forceIndex = GetIndex((DAVA::ParticleForce*)forcesV[i]);
+                QModelIndex forceIndex = GetIndex(forcesV[i]);
                 DAVA::ParticleLayer* oldLayer = SceneTreeItemParticleLayer::GetLayer(GetItem(forceIndex.parent()));
 
                 forcesGroup.push_back((DAVA::ParticleForce*)forcesV[i]);
@@ -474,7 +474,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData* data, Qt::DropAction act
 
                 for (int i = 0; i < entities.size(); ++i)
                 {
-                    DAVA::Entity* entity = (DAVA::Entity*)entities[i];
+                    DAVA::Entity* entity = entities[i];
                     QModelIndex entityIndex = GetIndex(entity);
 
                     // 1. we don't accept drops if it has locked items
