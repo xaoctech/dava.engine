@@ -24,10 +24,6 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_win32(working_directory_path, root_project_path)
     elif target == 'macos':
         _build_macos(working_directory_path, root_project_path)
-    elif target == 'ios':
-        _build_ios(working_directory_path, root_project_path)
-    elif target == 'android':
-        _build_android(working_directory_path, root_project_path)
     elif target == 'linux':
         _build_linux(working_directory_path, root_project_path)
 
@@ -48,7 +44,7 @@ def _build_win32(working_directory_path, root_project_path):
         "dxt.lib", "dxt.lib",
         "libdxt.lib", "libdxt.lib",
         "libdxt.lib", "libdxt.lib",
-        static_runtime=True)
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -57,18 +53,8 @@ def _build_macos(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
 
     # TODO: implement macos
+    raise RuntimeError('Building for macos is not implemented. Do it yourself')
 
-
-def _build_ios(working_directory_path, root_project_path):
-    source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
-
-    # TODO: implement ios
-
-
-def _build_android(working_directory_path, root_project_path):
-    source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
-
-    # TODO: implement android
 
 def _build_linux(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
