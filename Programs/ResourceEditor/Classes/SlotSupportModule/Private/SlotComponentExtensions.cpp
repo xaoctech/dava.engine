@@ -708,11 +708,14 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
         }
 
         {
-            DAVA::Reflection::Field f;
-            f.key = DAVA::FastName("Type Filters");
-            f.ref = parent->field.ref;
-            std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotTypeFilters);
-            children.push_back(previewNode);
+            if (IsDeveloperMode() == true)
+            {
+                DAVA::Reflection::Field f;
+                f.key = DAVA::FastName("Type Filters");
+                f.ref = parent->field.ref;
+                std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotTypeFilters);
+                children.push_back(previewNode);
+            }
         }
 
         {

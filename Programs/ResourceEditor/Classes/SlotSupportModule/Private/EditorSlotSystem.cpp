@@ -645,7 +645,7 @@ void EditorSlotSystem::Draw()
                     rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
 
                     Vector3 pivot = Vector3(0.0f, 0.0f, 0.0f) * transform;
-                    rh->DrawIcosahedron(pivot, 0.3f, pivotColor, RenderHelper::DRAW_SOLID_DEPTH);
+                    rh->DrawIcosahedron(pivot, settings->pivotPointSize, pivotColor, RenderHelper::DRAW_SOLID_DEPTH);
                 }
             }
         }
