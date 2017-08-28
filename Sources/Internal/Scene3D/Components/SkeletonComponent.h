@@ -49,14 +49,6 @@ public:
 
         bool operator==(const JointConfig& other) const;
 
-        INTROSPECTION(JointConfig,
-                      MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(position, "Position", I_SAVE | I_VIEW | I_EDIT)
-                      //MEMBER(orientation, "Orientation", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(scale, "Scale", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(bbox, "Bounding box", I_SAVE | I_VIEW | I_EDIT)
-                      );
-
         DAVA_VIRTUAL_REFLECTION(JointConfig, InspBase);
     };
 
@@ -113,11 +105,6 @@ private:
 
     uint16 startJoint; //first joint in the list that was updated this frame - cache this value to optimize processing
     bool configUpdated = true;
-
-public:
-    INTROSPECTION_EXTEND(SkeletonComponent, Component,
-                         COLLECTION(configJoints, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
-                         );
 
     DAVA_VIRTUAL_REFLECTION(SkeletonComponent, Component);
 };

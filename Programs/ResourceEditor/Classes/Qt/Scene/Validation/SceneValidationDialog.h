@@ -1,11 +1,8 @@
 #pragma once
 
 #include "Base/Introspection.h"
-#include "QtTools/WarningGuard/QtWarningsHandler.h"
 
-PUSH_QT_WARNING_SUPRESSOR
 #include <QDialog>
-POP_QT_WARNING_SUPRESSOR
 
 namespace Ui
 {
@@ -19,9 +16,7 @@ class Scene;
 
 class SceneValidationDialog : public QDialog
 {
-    PUSH_QT_WARNING_SUPRESSOR
     Q_OBJECT
-    POP_QT_WARNING_SUPRESSOR
 public:
     explicit SceneValidationDialog(DAVA::Scene* scene, QWidget* parent = nullptr);
 

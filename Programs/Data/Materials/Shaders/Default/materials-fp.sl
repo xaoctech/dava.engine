@@ -135,6 +135,9 @@ fragment_out
 
 #if PIXEL_LIT
     uniform sampler2D normalmap;
+    #if (GEO_DECAL_SPECULAR)
+        uniform sampler2D specularmap;
+    #endif
     [material][a] property float  inSpecularity               = 1.0;    
     [material][a] property float3 metalFresnelReflectance     = float3(0.5,0.5,0.5);
     [material][a] property float  normalScale                 = 1.0;
@@ -364,6 +367,14 @@ fragment_out fp_main( fragment_in input )
 
     // DRAW PHASE
 
+    #if VERTEX_LIT || PIXEL_LIT
+        #if (GEO_DECAL_SPECULAR)
+            float specularSample = FP_A8(tex2D(specularmap, input.geoDecalCoord));
+        #else
+            float specularSample = textureColor0.a;
+        #endif
+    #endif
+
     #if VERTEX_LIT
     
         #if BLINN_PHONG
@@ -388,7 +399,7 @@ fragment_out fp_main( fragment_in input )
             #endif
 
             #if VIEW_SPECULAR
-                color += half3((input.varSpecularColor * textureColor0.a) * lightColor0);
+                color += half3((input.varSpecularColor * specularSample) * lightColor0);
             #endif
     
         #elif NORMALIZED_BLINN_PHONG
@@ -423,7 +434,7 @@ fragment_out fp_main( fragment_in input )
             #endif
     
             #if VIEW_SPECULAR
-                float glossiness = pow(5000.0, inGlossiness * textureColor0.a);
+                float glossiness = pow(5000.0, inGlossiness * specularSample);
                 float specularNorm = (glossiness + 2.0) / 8.0;
                 float3 spec = float3(input.varSpecularColor.xyz * pow(float(input.varSpecularColor.w), glossiness) * specularNorm);
                                                      
@@ -490,10 +501,8 @@ fragment_out fp_main( fragment_in input )
             #endif
         
             #if VIEW_SPECULAR
-                //float glossiness = inGlossiness * 0.999;
-                //glossiness = 200.0 * glossiness / (1.0 - glossiness);                
-                float glossiness = inGlossiness * textureColor0.a;
-                float glossPower = pow(5000.0, glossiness); //textureColor0.a;
+                float glossiness = inGlossiness * specularSample;
+                float glossPower = pow(5000.0, glossiness);
                        
                 #if GOTANDA
                     float specCutoff = 1.0 - NdotL;

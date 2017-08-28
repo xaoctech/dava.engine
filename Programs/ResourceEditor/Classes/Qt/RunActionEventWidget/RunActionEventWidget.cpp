@@ -6,7 +6,6 @@
 
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Scene/SceneEditor2.h"
-#include "Settings/SettingsManager.h"
 
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/Selection.h"
@@ -17,6 +16,7 @@
 #include <QStringList>
 #include <QSet>
 #include <QCompleter>
+#include "Application/RESettings.h"
 
 namespace
 {
@@ -60,7 +60,7 @@ RunActionEventWidget::RunActionEventWidget(QWidget* parent)
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(sceneActivated(SceneEditor2*)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(sceneDeactivated(SceneEditor2*)));
 
-    const DAVA::ActionComponent::Action::eEvent eventType = static_cast<DAVA::ActionComponent::Action::eEvent>(SettingsManager::Instance()->GetValue(settingsType).AsUInt32());
+    const DAVA::ActionComponent::Action::eEvent eventType = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->runActionEventType;
     ui->eventType->setCurrentIndex(editorIdMap[eventType]);
 }
 
@@ -73,7 +73,7 @@ void RunActionEventWidget::OnTypeChanged()
     DVASSERT(editorindex < ui->stackedWidget->count());
 
     ui->stackedWidget->setCurrentIndex(editorindex);
-    SettingsManager::Instance()->SetValue(settingsType, DAVA::VariantType(eventTypeId));
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->runActionEventType = static_cast<DAVA::ActionComponent::Action::eEvent>(eventTypeId);
 }
 
 void RunActionEventWidget::OnInvoke()
