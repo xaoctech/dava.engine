@@ -50,10 +50,14 @@ struct ForceTypeMap
     ForceType elemType;
     String name;
 };
-const Array<ForceTypeMap, 3> forceTypesMap =
+const Array<ForceTypeMap, 6> forceTypesMap =
 { {
 { ForceType::DRAG_FORCE, "drag" },
-{ ForceType::LORENTZ_FORCE, "lorentz" }
+{ ForceType::LORENTZ_FORCE, "lorentz" },
+{ ForceType::POINT_GRAVITY, "pointgr"},
+{ ForceType::BOX_WRAP, "boxwr"},
+{ ForceType::GRAVITY, "grav" },
+{ ForceType::WIND, "wind"}
 } };
 
 template <typename T, typename U, size_t sz>

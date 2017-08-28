@@ -215,6 +215,30 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
 
 void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
 {
+    if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+    {
+        DAVA::float32 scale = 1.0f;
+        HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;
+        if (hoodSystem != nullptr)
+        {
+            scale = hoodSystem->GetScale();
+        }
+        auto layer = GetDragForceOwner(force);
+        auto ent = GetLayerOwner(layer);
+
+        DAVA::float32 arrowSize = scale;
+        DAVA::float32 arrowBaseSize = 5.0f;
+        Vector3 emitterVector = force->direction;
+
+        DAVA::Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
+        emitterVector = emitterVector * Matrix3(wMat);
+        emitterVector *= arrowBaseSize * scale;
+        Vector3 center = force->position * wMat;
+
+        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
+            DAVA::Color(0.7f, 0.7f, 0.0f, 0.35f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+    }
+
     if (force->isInfinityRange)
         return;
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();

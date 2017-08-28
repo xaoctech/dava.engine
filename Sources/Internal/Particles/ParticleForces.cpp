@@ -22,6 +22,10 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
         ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
         return;
     }
+    if (force->type == ParticleDragForce::eType::LORENTZ_FORCE)
+    {
+        ApplyLorentzForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
+    }
 }
 
 bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force, const Vector3& effectSpacePosition)
@@ -62,6 +66,17 @@ void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& eff
 
 void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {
+    if (effectSpaceVelocity.DotProduct(force->direction) < EPSILON)
+        return;
+    if (!force->isInfinityRange)
+    {
+        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+            return;
+    }
+
+    Vector3 forceDir = force->direction.CrossProduct(effectSpaceVelocity);
+    forceDir.Normalize();
+    effectSpaceVelocity += force->forcePower * forceDir;
 }
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {

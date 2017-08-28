@@ -33,7 +33,9 @@ public:
         DRAG_FORCE,
         LORENTZ_FORCE,
         POINT_GRAVITY,
-        BOX_WRAP
+        BOX_WRAP,
+        GRAVITY,
+        WIND
     } type = eType::DRAG_FORCE;
 
     ParticleDragForce(ParticleLayer* parent);
