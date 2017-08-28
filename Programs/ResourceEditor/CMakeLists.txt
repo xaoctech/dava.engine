@@ -19,12 +19,6 @@ if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
     set( DEPLOY_BEAST_DIR ${DEPLOY_DIR} )
 endif()
 
-set ( DAVA_COREV2 1 )
-
-dava_add_definitions       (
--D__DAVAENGINE_COREV2__
-)
-
 list(APPEND DAVA_COMPONENTS "Sound")
 list(APPEND DAVA_COMPONENTS "Physics")
 list(APPEND DAVA_COMPONENTS "PhysicsDebug")
@@ -48,7 +42,7 @@ find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 find_package( TArc REQUIRED )
 find_package( QtTools REQUIRED )
 find_package( RemoteTool REQUIRED )
-# find_package( EditorPhysics REQUIRED )
+find_package( EditorPhysics REQUIRED )
 
 
 include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/wrapper" )
