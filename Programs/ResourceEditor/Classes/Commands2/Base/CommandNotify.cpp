@@ -1,6 +1,5 @@
 #include "Commands2/Base/CommandNotify.h"
 
-
 CommandNotifyProvider::~CommandNotifyProvider()
 {
     SafeRelease(curNotify);
