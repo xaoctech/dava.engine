@@ -32,6 +32,7 @@
 #include <Functional/Function.h>
 #include <Base/FastName.h>
 #include <Base/Any.h>
+#include <Base/String.h>
 #include <Base/GlobalEnum.h>
 
 #include <QList>
@@ -457,8 +458,8 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     }
 
     // Undo/Redo
-    Function<Any(String, const Any&)> makeUndoRedoText = [](String prefix, const Any& v) {
-        String descr = v.Cast<String>("");
+    DAVA::Function<DAVA::Any(DAVA::String, const DAVA::Any&)> makeUndoRedoText = [](DAVA::String prefix, const DAVA::Any& v) {
+        DAVA::String descr = v.Cast<DAVA::String>("");
         if (descr.empty() == false)
         {
             return prefix + ": " + descr;
@@ -468,7 +469,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     };
     {
         QtAction* undo = new QtAction(accessor, QIcon(":/QtIcons/edit_undo.png"), QStringLiteral("Undo"));
-        undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const Any& v) {
+        undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const DAVA::Any& v) {
             return v.Cast<bool>(false);
         });
         undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
@@ -492,7 +493,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
 
     {
         QtAction* redo = new QtAction(accessor, QIcon(":/QtIcons/edit_redo.png"), QStringLiteral("Redo"));
-        redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const Any& v) {
+        redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const DAVA::Any& v) {
             return v.Cast<bool>(false);
         });
         redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
