@@ -53,6 +53,7 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     textureListModel = new TextureListModel();
     textureListImagesDelegate = new TextureListDelegate();
     QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorChanged, this, &TextureBrowser::textureDescriptorChanged);
+    QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorReload, this, &TextureBrowser::textureDescriptorReload);
 
     textureListSortModes["File size"] = TextureListModel::SortByFileSize;
     textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
@@ -1106,6 +1107,18 @@ void TextureBrowser::textureViewChanged(int index)
 void TextureBrowser::clearFilter()
 {
     ui->textureFilterEdit->setText("");
+}
+
+void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor)
+{
+    DAVA::Texture* texture = textureListModel->getTexture(descriptor);
+    if (NULL != texture)
+    {
+        texture->Reload();
+        TextureCache::Instance()->clearOriginal(descriptor);
+        TextureCache::Instance()->clearThumbnail(descriptor);
+    }
+    setTexture(textureListModel->getTexture(descriptor), descriptor);
 }
 
 void TextureBrowser::textureDescriptorChanged(DAVA::TextureDescriptor* descriptor)
