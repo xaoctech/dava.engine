@@ -36,8 +36,9 @@ find_dava_module( DocDirSetup )
 find_dava_module( QtTools )
 find_dava_module( TArc )
 find_dava_module( RemoteTool )
-
-#find_dava_module( EditorPhysics )
+find_dava_module( EditorPhysics )
+find_dava_module( PhysicsModule )
+find_dava_module( PhysicsDebugModule )
 
 if (NOT PUBLIC_BUILD)
     find_dava_module( SpeedTree )

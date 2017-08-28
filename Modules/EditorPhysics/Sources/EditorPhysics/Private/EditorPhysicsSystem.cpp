@@ -67,7 +67,10 @@ void EditorPhysicsSystem::Process(DAVA::float32 timeElapsed)
     {
         for (auto& node : transformMap)
         {
-            node.first->SetLocked(true);
+            if (node.first->GetLocked() == false)
+            {
+                node.first->SetLocked(true);
+            }
         }
     }
 }
@@ -133,7 +136,7 @@ void EditorPhysicsSystem::RestoreTransform()
         if (component != nullptr)
         {
             physx::PxRigidDynamic* actor = component->GetPxActor()->is<physx::PxRigidDynamic>();
-            if (actor != nullptr)
+            if (actor != nullptr && actor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false)
             {
                 actor->setLinearVelocity(physx::PxVec3(0.0f, 0.0f, 0.0f));
                 actor->setAngularVelocity(physx::PxVec3(0.0f, 0.0f, 0.0f));
