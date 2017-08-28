@@ -126,9 +126,9 @@ void DebugDrawModule::PostInit()
     sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
     sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
 
-    QList<QString> menuPath;
-    menuPath << "Scene"
-             << "Collision Type";
+    QList<QString> menuCollisionPath, menuScenePath;
+    menuScenePath << "Scene";
+    menuCollisionPath << menuScenePath << "Collision Type";
 
     //Create menu
     bool separatorInserted = false;
@@ -151,7 +151,7 @@ void DebugDrawModule::PostInit()
         connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&DebugDrawModule::ChangeObject, this, type));
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(menuPath));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(menuCollisionPath));
 
         ui->AddAction(mainWindowKey, placementInfo, action);
 
@@ -164,26 +164,34 @@ void DebugDrawModule::PostInit()
 
     //switches with different lods
     {
+        QIcon switchesWithDifferentLodsIcon = QIcon(":/QtIcons/switches_with_different_lods.png");
         QtAction* action = new QtAction(accessor, "SwitchesWithDifferentLods");
+        action->setIcon(switchesWithDifferentLodsIcon);
 
         QToolButton* switchesWithDifferentLodsBtn = new QToolButton();
-        switchesWithDifferentLodsBtn->setIcon(QIcon(":/QtIcons/switches_with_different_lods.png"));
+        switchesWithDifferentLodsBtn->setIcon(switchesWithDifferentLodsIcon);
         switchesWithDifferentLodsBtn->setAutoRaise(false);
         switchesWithDifferentLodsBtn->setToolTip("Switches with Different LODs");
 
         AttachWidgetToAction(action, switchesWithDifferentLodsBtn);
 
-        ActionPlacementInfo placementInfo(CreateToolbarPoint("DebugDrawToolbar"));
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("DebugDrawToolbar"));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(menuScenePath, upperMenuInsertion));
+
         ui->AddAction(mainWindowKey, placementInfo, action);
         connections.AddConnection(switchesWithDifferentLodsBtn, &QToolButton::clicked, DAVA::MakeFunction(this, &DebugDrawModule::OnSwitchWithDifferentLODs));
+        connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &DebugDrawModule::OnSwitchWithDifferentLODs));
     }
 
     //hanging objects
     {
+        QIcon hangingIcon = QIcon(":/QtIcons/hangingobjects.png");
         QtAction* action = new QtAction(accessor, "HangingObjects");
+        action->setIcon(hangingIcon);
 
         ToolButtonWithWidget* hangingBtn = new ToolButtonWithWidget();
-        hangingBtn->setIcon(QIcon(":/QtIcons/hangingobjects.png"));
+        hangingBtn->setIcon(hangingIcon);
         hangingBtn->setAutoRaise(false);
         hangingBtn->setToolTip("Hanging Objects");
 
@@ -220,11 +228,14 @@ void DebugDrawModule::PostInit()
 
         AttachWidgetToAction(action, hangingBtn);
 
-        ActionPlacementInfo placementInfo(CreateToolbarPoint("DebugDrawToolbar"));
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("DebugDrawToolbar"));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(menuScenePath, upperMenuInsertion));
 
         ui->AddAction(mainWindowKey, placementInfo, action);
         connections.AddConnection(hangingObjectsWidget, &HangingObjectsHeight::HeightChanged, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjectsHeight));
         connections.AddConnection(hangingBtn, &ToolButtonWithWidget::clicked, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjects));
+        connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &DebugDrawModule::OnHangingObjects));
     }
 
     //scene objects tool bar
@@ -242,6 +253,8 @@ void DebugDrawModule::PostInit()
 
         ui->AddAction(mainWindowKey, placementInfo, action);
     }
+
+    ui->AddAction(mainWindowKey, ActionPlacementInfo(CreateMenuPoint(menuScenePath, upperMenuInsertion)), new QtActionSeparator("separatorDebugDrawBegin"));
 }
 
 void DebugDrawModule::OnHangingObjectsHeight(double value)
