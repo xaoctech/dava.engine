@@ -241,6 +241,11 @@ void RestoreSceneParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& sceneDir
         DAVA::Map<DAVA::FastName, DAVA::Vector<DAVA::Component*>>& componentsMap = params->componentsMap[type];
         DAVA::Vector<DAVA::Component*>& components = componentsMap[DAVA::FastName(entity->GetFullName())];
 
+        if (components.empty() == true)
+        {
+            continue;
+        }
+
         DAVA::uint32 componentsCount = entity->GetComponentCount(type);
         DAVA::Vector<DAVA::Component*> componentsToRemove;
         componentsToRemove.reserve(componentsCount);
