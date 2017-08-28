@@ -190,8 +190,6 @@ protected:
 
     void RemoveSystems();
 
-    bool wasChanged; //deprecated
-
     void Setup3DDrawing();
 
     DAVA::uint32 framesCount = 0;
@@ -206,11 +204,6 @@ private:
 
         void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
         void Notify(const RECommandNotificationObject& commandNotification) override;
-        void CleanChanged(bool clean) override;
-        void CanUndoChanged(bool canUndo) override;
-        void CanRedoChanged(bool canRedo) override;
-        void UndoTextChanged(const DAVA::String& undoText) override;
-        void RedoTextChanged(const DAVA::String& redoText) override;
 
     private:
         SceneEditor2* editor = nullptr;

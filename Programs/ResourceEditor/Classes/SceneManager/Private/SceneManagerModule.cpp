@@ -456,6 +456,58 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         ui->AddAction(mainWindowKey, placementInfo, action);
     }
 
+    // Undo/Redo
+    {
+        QtAction* undo = new QtAction(accessor, QIcon(":/QtIcons/edit_undo.png"), QStringLiteral("Undo"));
+        undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const Any& v) {
+            return v.Cast<bool>(false);
+        });
+
+        undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), [](const Any& v) {
+            return v.Cast<String>("");
+        });
+        undo->setShortcutContext(Qt::ApplicationShortcut);
+        undo->setAutoRepeat(false);
+        undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+
+        connections.AddConnection(undo, &QAction::triggered, [this]() {
+            ContextAccessor* accessor = GetAccessor();
+            DVASSERT(accessor->GetActiveContext() != nullptr);
+            accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Undo();
+        });
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::BeforeItem }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("mainToolBar", { InsertionParams::eInsertionMethod::AfterItem, "saveSeparator" }));
+        ui->AddAction(mainWindowKey, placementInfo, undo);
+    }
+
+    {
+        QtAction* redo = new QtAction(accessor, QIcon(":/QtIcons/edit_redo.png"), QStringLiteral("Redo"));
+        redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const Any& v) {
+            return v.Cast<bool>(false);
+        });
+        redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), [](const Any& v) {
+            return v.Cast<String>("");
+        });
+
+        redo->setShortcutContext(Qt::ApplicationShortcut);
+        redo->setAutoRepeat(false);
+        redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+
+        connections.AddConnection(redo, &QAction::triggered, [this]()
+                                  {
+                                      ContextAccessor* accessor = GetAccessor();
+                                      DVASSERT(accessor->GetActiveContext() != nullptr);
+                                      accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Redo();
+                                  });
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("mainToolBar", { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));
+        ui->AddAction(mainWindowKey, placementInfo, redo);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Menu View
     // GPU
