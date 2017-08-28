@@ -24,8 +24,6 @@ public:
     virtual void HideWaitDialog() = 0;
 
     virtual void ForEachScene(const DAVA::Function<void(SceneEditor2*)>& functor) = 0;
-
-    DAVA::Signal<> waitDialogClosed;
 };
 
 class WaitDialogGuard

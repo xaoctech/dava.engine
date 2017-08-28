@@ -108,7 +108,6 @@ public:
     GlobalOperationsProxy(GlobalOperations* globalOperations_)
         : globalOperations(globalOperations_)
     {
-        globalOperations->waitDialogClosed.Connect(&waitDialogClosed, &DAVA::Signal<>::Emit);
     }
 
     void Reset()
@@ -206,10 +205,8 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     globalData->SetGlobalOperations(globalOperations);
     globalContext->CreateData(std::move(globalData));
 
-    errorLoggerOutput = new ErrorDialogOutput(tarcUI, globalOperations);
+    errorLoggerOutput = new ErrorDialogOutput(tarcUI);
     DAVA::Logger::AddCustomOutput(errorLoggerOutput);
-
-    tarcUI->lastWaitDialogWasClosed.Connect(&waitDialogClosed, &DAVA::Signal<>::Emit);
 
     new LandscapeEditorShortcutManager(this);
     PathDescriptor::InitializePathDescriptors();
