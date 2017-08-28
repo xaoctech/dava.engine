@@ -1556,8 +1556,6 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
     try
     {
-        //DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
-
         Thread* currentThread = Thread::Current();
         DVASSERT(currentThread != nullptr);
 
@@ -1567,7 +1565,6 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
         while (!currentThread->IsCancelling())
         {
-            DVASSERT(hints.profiler != &unusedProfiler); // TODO just check remove later
             if (!downloading)
             {
                 DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__ "_Waiting", hints.profiler);
