@@ -7,8 +7,8 @@
 #include <QFileInfo>
 #include <QKeyEvent>
 
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <QtTools/FileDialogs/FileDialog.h>
+#include <TArc/Utils/Utils.h>
 
 namespace
 {
@@ -164,7 +164,7 @@ void FilePathBrowser::InitButtons()
 
     QAction* browse = new QAction(this);
     browse->setToolTip("Browse...");
-    browse->setIcon(SharedIcon(":/QtIcons/openscene.png"));
+    browse->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/openscene.png"));
     connect(browse, SIGNAL(triggered()), SLOT(OnBrowse()));
     addAction(browse);
 }

@@ -4,6 +4,7 @@
 #include "TArc/WindowSubSystem/Private/WaitDialog.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
+#include "TArc/Qt/QtByteArray.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>
@@ -213,6 +214,10 @@ void InsertAction(T* container, QAction* action, const InsertionParams& params)
             if (beforeActionIndex + 1 < actions.size())
             {
                 beforeAction = actions.at(actions.indexOf(beforeAction) + 1);
+            }
+            else
+            {
+                beforeAction = nullptr;
             }
         }
     }
@@ -828,6 +833,38 @@ QString UIManager::GetExistingDirectory(const WindowKey& windowKey, const Direct
         impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, dirPath);
     }
     return dirPath;
+}
+
+int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
+{
+    DVASSERT(dlg != nullptr);
+    DVASSERT(dlg->parent() == nullptr);
+    UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
+    if (windowInfo != nullptr)
+    {
+        dlg->setParent(windowInfo->window.data());
+    }
+
+    dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
+    dlg->setModal(true);
+
+    QString dialogName = dlg->objectName();
+    if (dialogName.isEmpty() == true)
+    {
+        dialogName = dlg->windowTitle();
+    }
+
+    PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+    QRect dialogRect = pi.Get("geometry", QRect());
+    if (dialogRect.isValid())
+    {
+        dlg->setGeometry(dialogRect);
+        dlg->move(dialogRect.topLeft());
+    }
+
+    int result = dlg->exec();
+    pi.Set("geometry", dlg->geometry());
+    return result;
 }
 
 ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)

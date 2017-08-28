@@ -1,8 +1,8 @@
 #pragma once
 
+#include "TArc/Qt/QtString.h"
 #include <Base/BaseTypes.h>
 
-#include <QString>
 #include <QUrl>
 
 class QAction;

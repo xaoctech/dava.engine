@@ -152,14 +152,12 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
     {
         using namespace ScrollBarTestDetails;
         QScrollBar* scrollBar = LookupSingleWidget<QScrollBar>(wndKey, "ScrollBar_value");
-        int val = scrollBar->value();
 
         ScrollBarTestModule* module = Holder::moduleInstance;
         TEST_VERIFY(scrollBar->value() == module->model.value);
         TEST_VERIFY(scrollBar->minimum() == module->model.minimum);
         TEST_VERIFY(scrollBar->maximum() == module->model.maximum);
         TEST_VERIFY(scrollBar->pageStep() == module->model.pageStep);
-        val = scrollBar->value();
 
         // simulate scrollBar value lower than minimum
         QTestEventList events;
@@ -167,7 +165,6 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
         for (int i = 0; i < 4; ++i) // 3 (current value) - 4 (single step value) == 1
             ButtonClick(events, true, scrollBar);
         events.simulate(scrollBar);
-        val = scrollBar->value();
 
         TEST_VERIFY(scrollBar->value() == scrollBar->minimum());
         TEST_VERIFY(scrollBar->value() == module->model.value);
@@ -176,7 +173,6 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
         events.clear();
         ButtonClick(events, false, scrollBar);
         events.simulate(scrollBar);
-        val = scrollBar->value();
         TEST_VERIFY(scrollBar->value() == module->model.minimum + 1);
         TEST_VERIFY(scrollBar->value() == module->model.value);
 

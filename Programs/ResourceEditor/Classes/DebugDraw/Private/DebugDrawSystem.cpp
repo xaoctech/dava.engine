@@ -7,16 +7,12 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
 #include "Classes/Selection/Selection.h"
-#include "Scene/SceneEditor2.h"
-#include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
-
-#include "Classes/Deprecated/EditorConfig.h"
-#include "Classes/Deprecated/SceneValidator.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Deprecated/EditorConfig.h"
 
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
 #include <Render/Highlevel/GeometryOctTree.h>
-
 
 #define DAVA_ALLOW_OCTREE_DEBUG 0
 
@@ -288,9 +284,9 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
 
 void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
 {
-    SettingsManager* settings = SettingsManager::Instance();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
 
-    if (!settings->GetValue(Settings::Scene_Sound_SoundObjectDraw).AsBool())
+    if (settings->drawSoundObjects == false)
         return;
 
     DAVA::SoundComponent* sc = GetSoundComponent(entity);
@@ -304,7 +300,7 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
         {
             localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
 
-            DAVA::Color soundColor = settings->GetValue(Settings::Scene_Sound_SoundObjectBoxColor).AsColor();
+            DAVA::Color soundColor = settings->soundObjectBoxColor;
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, ClampToUnityRange(soundColor), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
         }
     }
@@ -312,9 +308,8 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity* entity)
 
 void DebugDrawSystem::DrawSelectedSoundNode(DAVA::Entity* entity)
 {
-    SettingsManager* settings = SettingsManager::Instance();
-
-    if (!settings->GetValue(Settings::Scene_Sound_SoundObjectDraw).AsBool())
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    if (settings->drawSoundObjects == false)
         return;
 
     DAVA::SoundComponent* sc = GetSoundComponent(entity);
@@ -335,8 +330,7 @@ void DebugDrawSystem::DrawSelectedSoundNode(DAVA::Entity* entity)
             DAVA::SoundEvent* sEvent = sc->GetSoundEvent(i);
             DAVA::float32 distance = sEvent->GetMaxDistance();
 
-            DAVA::Color soundColor = settings->GetValue(Settings::Scene_Sound_SoundObjectSphereColor).AsColor();
-
+            DAVA::Color soundColor = settings->soundObjectSphereColor;
             sceneEditor->GetRenderSystem()->GetDebugDrawer()->DrawIcosahedron(position, distance,
                                                                               ClampToUnityRange(soundColor), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 

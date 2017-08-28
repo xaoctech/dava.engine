@@ -6,7 +6,6 @@
 #include "Scene3D/Scene.h"
 #include "Base/StaticSingleton.h"
 
-#include "Settings/SettingsManager.h"
 #include "Command/Command.h"
 
 #include "Scene/System/ModifSystem.h"

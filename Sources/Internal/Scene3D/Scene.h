@@ -7,6 +7,7 @@
 #include "Entity/SingletonComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Reflection/Reflection.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
@@ -278,6 +279,7 @@ protected:
     } fixedUpdate;
 
     friend class Entity;
+    DAVA_VIRTUAL_REFLECTION(Scene, Entity);
 };
 
 template <class T>

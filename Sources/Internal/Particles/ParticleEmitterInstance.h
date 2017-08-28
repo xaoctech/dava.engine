@@ -1,7 +1,7 @@
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_INSTANCE_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_INSTANCE_H__
+#pragma once
 
 #include "Particles/ParticleEmitter.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -33,8 +33,7 @@ private:
     Vector3 spawnPosition;
     bool isInnerEmitter = false;
 
-public:
-    INTROSPECTION_EXTEND(ParticleEmitterInstance, BaseObject, nullptr)
+    DAVA_VIRTUAL_REFLECTION(ParticleEmitterInstance, BaseObject);
 };
 
 inline ParticleEmitter* ParticleEmitterInstance::GetEmitter() const
@@ -82,4 +81,3 @@ inline void ParticleEmitterInstance::SetOwner(ParticleEffectComponent* owner_)
     owner = owner_;
 }
 }
-#endif // __DAVAENGINE_PARTICLE_EMITTER_INSTANCE_H__

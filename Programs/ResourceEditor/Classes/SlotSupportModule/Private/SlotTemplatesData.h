@@ -22,10 +22,6 @@ public:
     const Template* GetTemplate(DAVA::FastName name) const;
     DAVA::Vector<Template> GetTemplates() const;
 
-    DAVA::Color GetBoxColor() const;
-    DAVA::Color GetBoxEdgesColor() const;
-    DAVA::Color GetPivotColor() const;
-
 private:
     friend class SlotSupportModule;
     void Clear();

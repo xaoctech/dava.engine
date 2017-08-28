@@ -1,21 +1,18 @@
-#include "Scene/SceneEditor2.h"
-#include "Scene/SceneSignals.h"
-#include "Scene/System/EditorParticlesSystem.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/Selection.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 
-#include "Settings/SettingsManager.h"
-#include "Deprecated/SceneValidator.h"
-#include "Commands2/Base/RECommandStack.h"
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Commands2/CustomColorsCommands2.h"
-#include "Commands2/HeightmapEditorCommands2.h"
-#include "Commands2/TilemaskEditorCommands.h"
-#include "Commands2/LandscapeToolsToggleCommand.h"
-#include "Utils/SceneExporter/SceneExporter.h"
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/Utils/RenderContextGuard.h"
+#include "Classes/Deprecated/SceneValidator.h"
+#include "Classes/Commands2/Base/RECommandStack.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/CustomColorsCommands2.h"
+#include "Classes/Commands2/HeightmapEditorCommands2.h"
+#include "Classes/Commands2/TilemaskEditorCommands.h"
+#include "Classes/Commands2/LandscapeToolsToggleCommand.h"
+#include "Classes/Utils/SceneExporter/SceneExporter.h"
 
 #include "Classes/Qt/Scene/System/GridSystem.h"
 #include "Classes/Qt/Scene/System/CameraSystem.h"
@@ -26,6 +23,9 @@
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <TArc/Utils/RenderContextGuard.h>
 
 // framework
 #include <Debug/DVAssert.h>
@@ -176,7 +176,7 @@ SceneEditor2::SceneEditor2()
 
 SceneEditor2::~SceneEditor2()
 {
-    RenderContextGuard guard;
+    DAVA::TArc::RenderContextGuard guard;
     commandStack.reset();
     RemoveSystems();
 
@@ -185,7 +185,7 @@ SceneEditor2::~SceneEditor2()
 
 DAVA::SceneFileV2::eError SceneEditor2::LoadScene(const DAVA::FilePath& path)
 {
-    RenderContextGuard guard;
+    DAVA::TArc::RenderContextGuard guard;
     DAVA::SceneFileV2::eError ret = Scene::LoadScene(path);
     if (ret == DAVA::SceneFileV2::ERROR_NO_ERROR)
     {
@@ -214,7 +214,7 @@ DAVA::SceneFileV2::eError SceneEditor2::LoadScene(const DAVA::FilePath& path)
 
 DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bool saveForGame /*= false*/)
 {
-    RenderContextGuard guard;
+    DAVA::TArc::RenderContextGuard guard;
     bool cameraLightState = false;
     if (editorLightSystem != nullptr)
     {

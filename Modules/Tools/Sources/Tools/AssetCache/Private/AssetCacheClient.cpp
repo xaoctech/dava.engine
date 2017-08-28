@@ -5,7 +5,6 @@
 #include <Concurrency/LockGuard.h>
 #include <Concurrency/Thread.h>
 #include <FileSystem/DynamicMemoryFile.h>
-#include <Preferences/PreferencesRegistrator.h>
 #include <Time/SystemTimer.h>
 #include <Utils/StringFormat.h>
 #include <Logger/Logger.h>
@@ -13,15 +12,6 @@
 
 namespace DAVA
 {
-namespace AssetCacheClientDetail
-{
-InspInfoRegistrator inspInfoRegistrator(AssetCacheClient::ConnectionParams::TypeInfo(), {
-                                                                                        PREF_ARG("ip", DAVA::AssetCache::GetLocalHost()),
-                                                                                        PREF_ARG("port", DAVA::AssetCache::ASSET_SERVER_PORT),
-                                                                                        PREF_ARG("timeoutms", DAVA::uint64(10 * 1000))
-                                                                                        });
-};
-
 AssetCacheClient::AssetCacheClient()
     : dispatcher([](const Function<void()>& fn) { fn(); })
     , client(&dispatcher)
@@ -33,6 +23,8 @@ AssetCacheClient::AssetCacheClient()
 
 AssetCacheClient::~AssetCacheClient()
 {
+    DumpStats();
+
     client.RemoveListener(this);
 
     DVASSERT(isActive == false);
@@ -149,6 +141,23 @@ AssetCache::Error AssetCacheClient::AddToCacheSynchronously(const AssetCache::Ca
         }
     }
 
+    { //process stats
+        ++stats.addRequestsCount;
+        switch (resultCode)
+        {
+        case AssetCache::Error::NO_ERRORS:
+            ++stats.addRequestsSucceedCount;
+            break;
+        case AssetCache::Error::OPERATION_TIMEOUT:
+            ++stats.addRequestsTimeoutCount;
+            break;
+
+        default:
+            ++stats.addRequestsFailedCount;
+            break;
+        }
+    }
+
     return resultCode;
 }
 
@@ -228,6 +237,26 @@ AssetCache::Error AssetCacheClient::RequestFromCacheSynchronously(const AssetCac
                               getFilesRequest.bytesRemaining);
                 resultCode = AssetCache::Error::CORRUPTED_DATA;
             }
+        }
+    }
+
+    { //process stats
+        ++stats.getRequestsCount;
+        switch (resultCode)
+        {
+        case AssetCache::Error::NO_ERRORS:
+            ++stats.getRequestsSucceedCount;
+            break;
+        case AssetCache::Error::OPERATION_TIMEOUT:
+            ++stats.getRequestsTimeoutCount;
+            break;
+        case AssetCache::Error::NOT_FOUND_ON_SERVER:
+            ++stats.getRequestsNotFoundCount;
+            break;
+
+        default:
+            ++stats.getRequestsFailedCount;
+            break;
         }
     }
 
@@ -343,6 +372,7 @@ void AssetCacheClient::OnServerStatusReceived()
 void AssetCacheClient::OnAddedToCache(const AssetCache::CacheItemKey& key, bool added)
 {
     LockGuard<Mutex> guard(requestLocker);
+
     if ((request.requestID == AssetCache::PACKET_ADD_CHUNK_REQUEST) && request.key == key)
     {
         request.result = (added) ? AssetCache::Error::NO_ERRORS : AssetCache::Error::SERVER_ERROR;
@@ -446,6 +476,7 @@ void AssetCacheClient::OnCacheCleared(bool cleared)
 void AssetCacheClient::OnIncorrectPacketReceived(AssetCache::IncorrectPacketType type)
 {
     LockGuard<Mutex> guard(requestLocker);
+    ++stats.incorrectPacketsCount;
     request.recieved = true;
     request.processingRequest = false;
 
@@ -494,14 +525,53 @@ void AssetCacheClient::ProcessNetwork()
     }
 }
 
-AssetCacheClient::ConnectionParams::ConnectionParams()
+void AssetCacheClient::ClearStats()
 {
-    PreferencesStorage::Instance()->RegisterPreferences(this);
+    stats = Stats();
 }
 
-AssetCacheClient::ConnectionParams::~ConnectionParams()
+void AssetCacheClient::DumpStats() const
 {
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
+    if (stats.getRequestsCount + stats.addRequestsCount > 0)
+    {
+        Logger::Info("======== AC STATS ========");
+        if (stats.getRequestsCount > 0)
+        {
+            Logger::Info("GET:");
+            Logger::Info("  all requests: %d", stats.getRequestsCount);
+
+            if (stats.getRequestsSucceedCount > 0)
+                Logger::Info("  got from cache: %d", stats.getRequestsSucceedCount);
+            if (stats.getRequestsNotFoundCount > 0)
+                Logger::Info("  not found: %d", stats.getRequestsNotFoundCount);
+            if (stats.getRequestsTimeoutCount > 0)
+                Logger::Info("  timeout: %d", stats.getRequestsTimeoutCount);
+            if (stats.getRequestsFailedCount > 0)
+                Logger::Info("  failed: %d", stats.getRequestsFailedCount);
+
+            DVASSERT(stats.getRequestsCount == (stats.getRequestsFailedCount + stats.getRequestsTimeoutCount + stats.getRequestsSucceedCount + stats.getRequestsNotFoundCount));
+        }
+
+        if (stats.addRequestsCount > 0)
+        {
+            Logger::Info("ADD:");
+            Logger::Info("  all requests: %d", stats.addRequestsCount);
+            if (stats.addRequestsSucceedCount > 0)
+                Logger::Info("  added: %d", stats.addRequestsSucceedCount);
+            if (stats.addRequestsTimeoutCount > 0)
+                Logger::Info("  timeout: %d", stats.addRequestsTimeoutCount);
+            if (stats.addRequestsFailedCount > 0)
+                Logger::Info("  failed: %d", stats.addRequestsFailedCount);
+
+            DVASSERT(stats.addRequestsCount == (stats.addRequestsFailedCount + stats.addRequestsTimeoutCount + stats.addRequestsSucceedCount));
+        }
+
+        if (stats.incorrectPacketsCount > 0)
+        {
+            Logger::Info("incorrectPacketsCount: %d", stats.incorrectPacketsCount);
+        }
+        Logger::Info("==========================");
+    }
 }
 
-} //END of DAVA
+} //namespace DAVA

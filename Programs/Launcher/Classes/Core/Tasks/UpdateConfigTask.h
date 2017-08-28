@@ -5,6 +5,8 @@
 #include <QUrl>
 #include <QString>
 
+class QIODevice;
+
 class UpdateConfigTask : public AsyncChainTask
 {
 public:
@@ -16,5 +18,5 @@ private:
 
     void OnFinished(const BaseTask* task) override;
 
-    std::vector<QUrl> urls;
+    std::map<QUrl, QIODevice*> buffers;
 };
