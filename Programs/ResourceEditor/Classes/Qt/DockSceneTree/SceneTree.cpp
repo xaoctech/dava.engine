@@ -363,6 +363,24 @@ protected:
                 menu.addSeparator();
                 Connect(menu.addAction(SharedIcon(":/QtIconsTextureDialog/filter.png"), QStringLiteral("Set name as filter")), this, &EntityContextMenu::SetEntityNameAsFilter);
             }
+
+            if (entity != nullptr)
+            {
+                Connect(menu.addAction(QStringLiteral("Reload Textures...")), [scene, entity]
+                        {
+                            SceneHelper::TextureCollector collector;
+                            SceneHelper::EnumerateEntityTextures(scene, entity, collector);
+                            DAVA::TexturesMap& textures = collector.GetTextures();
+
+                            CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+                            DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
+
+                            for (auto& tex : textures)
+                            {
+                                tex.second->ReloadAs(gpuFormat);
+                            }
+                        });
+            }
         }
     }
 
