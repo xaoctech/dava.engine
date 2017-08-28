@@ -102,9 +102,15 @@ bool DLCManagerImpl::CountError(int32 errCode)
     return errorCounter >= hints.maxSameErrorCounter;
 }
 
+bool DLCManagerImpl::IsEngineSettingsForDLCProfilingEnabled() const
+{
+    EngineSettings* engineSettings = engine.GetContext()->settings;
+    Any value = engineSettings->GetSetting<EngineSettings::SETTING_PROFILE_DLC_MANAGER>();
+    return value.Get<bool>(false);
+}
+
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : profiler(1024 * 1024) // TODO checking only reset to default
-    , engine(*engine_)
+    : engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -115,14 +121,41 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                     {
                                         Update(frameDelta, true);
                                     });
-    engine.GetContext()->settings->settingChanged.Connect(this, [this](EngineSettings::eSetting settings)
+
+    if (IsEngineSettingsForDLCProfilingEnabled())
+    {
+        profiler.Start(hints.profilerSamplerCounts);
+    }
+    engine.GetContext()->settings->settingChanged.Connect(this, [this](EngineSettings::eSetting value)
                                                           {
-                                                              // TODO check dlc_manager
-                                                              Any value = engine.GetContext()->settings->GetSetting<EngineSettings::SETTING_PROFILE_DLC_MANAGER>();
-                                                              bool enableDlcPrifiling = value.Get<bool>(false);
-
+                                                              OnSettingsChanged(value);
                                                           });
+}
 
+void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
+{
+    if (EngineSettings::SETTING_PROFILE_DLC_MANAGER == value)
+    {
+        if (IsEngineSettingsForDLCProfilingEnabled())
+        {
+            profiler.Start(hints.profilerSamplerCounts);
+        }
+        else
+        {
+            profiler.Stop();
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            FilePath docPath = fs->GetPublicDocumentsPath();
+            String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+            std::ofstream file(name);
+            char buf[16 * 1024];
+            file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+            if (file)
+            {
+                Vector<TraceEvent> events = profiler.GetTrace();
+                TraceEvent::DumpJSON(events, file);
+            }
+        }
+    }
 }
 
 void DLCManagerImpl::ClearResouces()
@@ -186,22 +219,6 @@ DLCManagerImpl::~DLCManagerImpl()
     engine.backgroundUpdate.Disconnect(this);
 
     ClearResouces();
-
-    profiler.Stop();
-
-    //#ifdef
-    FileSystem* fs = GetEngineContext()->fileSystem;
-    FilePath docPath = fs->GetPublicDocumentsPath();
-    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-    std::ofstream file(name);
-    char buf[16 * 1024];
-    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
-    if (file)
-    {
-        Vector<TraceEvent> events = profiler.GetTrace();
-        TraceEvent::DumpJSON(events, file);
-    }
-    //#endif
 }
 
 void DLCManagerImpl::TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_)

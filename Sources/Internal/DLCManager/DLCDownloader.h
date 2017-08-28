@@ -54,7 +54,7 @@ public:
     struct Hints;
     /** Create new instance of DLCDownloader. You can customize it with
 	    ```DLCDownloader::SetHints(const Hints)``` right after creation. */
-    static DLCDownloader* Create(const Hints& hints);
+    static DLCDownloader* Create(const Hints& hints = Hints());
     /** Destroy downloader instance */
     static void Destroy(DLCDownloader* downloader);
 

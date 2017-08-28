@@ -2,9 +2,12 @@
 
 #include "Base/BaseTypes.h"
 #include "Debug/TraceEvent.h"
+#include "Concurrency/Mutex.h"
 #include <iosfwd>
 
+#ifndef PROFILER_CPU_ENABLED
 #define PROFILER_CPU_ENABLED 1
+#endif
 
 namespace DAVA
 {
@@ -47,6 +50,17 @@ class ProfilerRingArray;
                    Counter3 [15 us | x1]
                  ================================================================
                \endcode
+
+			 Dump everything using:
+			   \code
+			   std::ofstream file("tmp.json");
+			   if (file)
+			   {
+			       profiler.Stop();
+			       Vector<TraceEvent> events = profiler.GetTrace();
+			       TraceEvent::DumpJSON(events, file);
+			   }
+			   \endcode
 */
 class ProfilerCPU
 {
@@ -54,7 +68,7 @@ public:
     static const FastName TRACE_ARG_FRAME; ///< Name of frame index argument of generated TraceEvent
 
     struct Counter;
-    using CounterArray = ProfilerRingArray<ProfilerCPU::Counter>;
+    using CounterArray = ProfilerRingArray<Counter>;
 
     /**
         Scoped counter to measure executing time of code block.
@@ -74,13 +88,13 @@ public:
     static const int32 NO_SNAPSHOT_ID = -1; ///< Value used to dump or build trace from current counters array
     static ProfilerCPU* const globalProfiler; ///< Global Engine Profiler
 
-    ProfilerCPU(uint32 countersCount = 2048);
+    ProfilerCPU() = default;
     ~ProfilerCPU();
 
     /**
         Start time measuring
     */
-    void Start();
+    void Start(uint32 numCounters = 2048);
 
     /**
         Stop time measuring
@@ -95,7 +109,7 @@ public:
     /**
         Looking by name last complete counter with `counterName` and return it duration in microseconds
     */
-    uint64 GetLastCounterTime(const char* counterName);
+    uint64 GetLastCounterTime(const char* counterName) const;
 
     /**
         Make snapshot and return their ID. Snapshot is just a copy of counters array.
@@ -118,20 +132,20 @@ public:
         You can dump output from snapshot or from current counters array counters.
         In first case you have to pass `snapshotID`. In the second case you should stop profiler
     */
-    void DumpLast(const char* counterName, uint32 counterCount, std::ostream& stream, int32 snapshotID = NO_SNAPSHOT_ID);
+    void DumpLast(const char* counterName, uint32 counterCount, std::ostream& stream, int32 snapshotID = NO_SNAPSHOT_ID) const;
 
     /**
         Looking for a certain `counterCount` of last completed counters by `counterName` and dump it average durations to `stream` considering hierarchy.
         You can dump output from snapshot or from current counters array counters.
         In first case you have to pass `snapshotID`. In the second case you should stop profiler
     */
-    void DumpAverage(const char* counterName, uint32 counterCount, std::ostream& stream, int32 snapshot = NO_SNAPSHOT_ID);
+    void DumpAverage(const char* counterName, uint32 counterCount, std::ostream& stream, int32 snapshot = NO_SNAPSHOT_ID) const;
 
     /**
         Build and return trace of all available counters from snapshot with `snapshotID` or internal counters array.
         Trace can be dumped to JSON Chromium Trace Viewer format
     */
-    Vector<TraceEvent> GetTrace(int32 snapshotID = NO_SNAPSHOT_ID);
+    Vector<TraceEvent> GetTrace(int32 snapshotID = NO_SNAPSHOT_ID) const;
 
     /**
         Looking last completed counter by `counterName` and `desiredFrameIndex`. Frame index is desired so it will used counter marked with <= index for build trace.
@@ -140,14 +154,15 @@ public:
 
         Gotten trace can be dumped to JSON Chromium Trace Viewer format
     */
-    Vector<TraceEvent> GetTrace(const char* counterName, uint32 desiredFrameIndex = 0, int32 snapshotID = NO_SNAPSHOT_ID);
+    Vector<TraceEvent> GetTrace(const char* counterName, uint32 desiredFrameIndex = 0, int32 snapshotID = NO_SNAPSHOT_ID) const;
 
-protected:
-    CounterArray* GetCounterArray(int32 snapshot);
+private:
+    const CounterArray* GetCounterArray(int32 snapshot) const;
 
-    CounterArray* counters;
+    CounterArray* counters = nullptr;
     Vector<CounterArray*> snapshots;
-    bool started = false;
+    Mutex safeCounters;
+    bool isStarted = false;
 
     friend class ScopedCounter;
 };

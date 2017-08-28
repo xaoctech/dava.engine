@@ -54,19 +54,19 @@ public:
     {
         return elements[head++ & mask];
     }
-    iterator begin()
+    iterator begin() const
     {
         return iterator(elements, (head & mask), mask);
     }
-    iterator end()
+    iterator end() const
     {
         return iterator(elements, (head & mask) | (mask + 1), mask);
     }
-    reverse_iterator rbegin()
+    reverse_iterator rbegin() const
     {
         return reverse_iterator(elements, ((head - 1) & mask) | (mask + 1), mask);
     }
-    reverse_iterator rend()
+    reverse_iterator rend() const
     {
         return reverse_iterator(elements, (head - 1) & mask, mask);
     }

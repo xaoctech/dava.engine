@@ -12,6 +12,7 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
+#include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
 
 namespace DAVA
@@ -178,7 +179,6 @@ public:
     DLCDownloader& GetDownloader() const;
 
     bool CountError(int32 errCode);
-
     void FireNetworkReady(bool nextState);
 
     ProfilerCPU profiler;
@@ -213,6 +213,8 @@ private:
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
+    void OnSettingsChanged(EngineSettings::eSetting value);
+    bool IsEngineSettingsForDLCProfilingEnabled() const;
 
     enum class ScanState : uint32
     {

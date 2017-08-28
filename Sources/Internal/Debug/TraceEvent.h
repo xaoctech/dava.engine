@@ -2,9 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include <type_traits>
-#include <iosfwd>
 #include "FileSystem/FileSystem.h"
+#include <iosfwd>
 
 namespace DAVA
 {
@@ -49,16 +48,16 @@ struct TraceEvent
 template <class Container>
 void TraceEvent::DumpJSON(const Container& trace, const FilePath& filePath)
 {
-    DAVA::FileSystem::Instance()->CreateDirectory(filePath.GetDirectory(), true);
-    DAVA::FileSystem::Instance()->DeleteFile(filePath);
-    DAVA::File* json = DAVA::File::Create(filePath, DAVA::File::CREATE | DAVA::File::WRITE);
+    FileSystem* fs = FileSystem::Instance();
+    fs->CreateDirectory(filePath.GetDirectory(), true);
+    fs->DeleteFile(filePath);
+    ScopedPtr<File> json(File::Create(filePath, File::CREATE | File::WRITE));
     if (json)
     {
         std::stringstream stream;
         DumpJSON<Container>(trace, stream);
         json->WriteNonTerminatedString(stream.str());
     }
-    SafeRelease(json);
 }
 
 template <class Container>
@@ -101,7 +100,7 @@ void TraceEvent::DumpJSON(const Container& trace, std::ostream& stream)
         stream << " }";
     }
 
-    stream << "\n] }" << std::endl;
+    stream << "\n] }\n";
 
     stream.flush();
 }
