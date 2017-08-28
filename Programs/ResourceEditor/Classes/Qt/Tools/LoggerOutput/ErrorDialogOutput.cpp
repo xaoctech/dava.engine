@@ -1,17 +1,16 @@
 #include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
 #include "Classes/Qt/GlobalOperations.h"
-
-#include "Classes/Application/REGlobal.h"
 #include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 
-#include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/AssertGuard.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <Concurrency/LockGuard.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <Debug/MessageBox.h>
+#include <Engine/PlatformApiQt.h>
 #include <Utils/StringFormat.h>
-
-#include <QMessageBox>
 
 namespace ErrorDialogDetail
 {
@@ -174,7 +173,7 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         errors.clear();
     }
 
-    QMessageBox::critical(globalOperations->GetGlobalParentWidget(), title.c_str(), errorMessage.c_str());
+    DAVA::Debug::MessageBox(title, errorMessage, { "Close" });
 }
 
 void ErrorDialogOutput::Disable()
