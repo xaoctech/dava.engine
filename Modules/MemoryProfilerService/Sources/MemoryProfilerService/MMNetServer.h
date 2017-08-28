@@ -1,5 +1,7 @@
 #pragma once
 
+#include <DAVAConfig.h>
+
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
 
 #include "MMNetProto.h"
