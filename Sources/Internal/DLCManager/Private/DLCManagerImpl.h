@@ -119,7 +119,9 @@ public:
 
     bool IsInitialized() const override;
 
-    InitState GetInitState() const;
+    InitState GetInternalInitState() const;
+
+    InitStatus GetInitStatus() const override;
 
     const String& GetLastErrorMessage() const;
 
@@ -131,7 +133,7 @@ public:
 
     bool IsPackDownloaded(const String& packName) override;
 
-    uint64 GetPackSize(const String& packName) override;
+    uint64 GetPackSize(const String& packName) const override;
 
     const IRequest* RequestPack(const String& requestedPackName) override;
 
@@ -176,6 +178,8 @@ public:
 
     bool CountError(int32 errCode);
 
+    void FireNetworkReady(bool nextState);
+
 private:
     // initialization state functions
     void AskFooter();
@@ -197,7 +201,7 @@ private:
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
-    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes);
+    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
 
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
@@ -205,7 +209,6 @@ private:
     PackRequest* CreateNewRequest(const String& requestedPackName);
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
-    void FireNetworkReady(bool nextState);
     void ClearResouces();
 
     enum class ScanState : uint32
@@ -278,8 +281,11 @@ private:
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
 
+    List<InitState> skipedStates; // if we can't download from server but have local meta, we can skip some state and use already downloaded meta
     String initErrorMsg;
     InitState initState = InitState::Starting;
+    int64 startInitializationTime = 0; // in milliseconds
+    bool initTimeoutFired = false;
     std::shared_ptr<MemoryBufferWriter> memBufWriter;
     PackFormat::PackFile::FooterBlock initFooterOnServer; // temp superpack info for every new pack request or during initialization
     PackFormat::PackFile usedPackFile; // current superpack info
