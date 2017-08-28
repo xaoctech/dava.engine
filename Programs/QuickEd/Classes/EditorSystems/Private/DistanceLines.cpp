@@ -7,19 +7,38 @@
 #include <UI/UIStaticText.h>
 #include <Utils/UTF8Utils.h>
 
-SolidLine::SolidLineParams::SolidLineParams(const DAVA::UIGeometricData& gd_)
+namespace DistanceLinesDetails
+{
+//control highlight is drawed inside of control
+//in some params.directions line can be under highlight
+void FixLinePosition(DAVA::Vector2& pos, const DAVA::UIGeometricData& gd, DAVA::eAlign direction)
+{
+    using namespace DAVA;
+    if (direction == ALIGN_BOTTOM)
+    {
+        pos.y -= 1.0f / gd.scale.y;
+    }
+    else if (direction == ALIGN_RIGHT)
+    {
+        pos.x -= 1.0f / gd.scale.x;
+    }
+}
+}
+
+LineParams::LineParams(const DAVA::UIGeometricData& gd_)
     : gd(gd_)
 {
 }
 
-SolidLine::SolidLine(const SolidLineParams& params)
-    : accessor(params.accessor)
-    , startPoint(params.startPoint)
-    , endPoint(params.endPoint)
-    , font(params.font)
-    , parentGd(params.gd)
-    , direction(params.direction)
+DistanceLine::DistanceLine(const LineParams& params)
+    : params(params)
 {
+}
+
+SolidLine::SolidLine(const LineParams& params_)
+    : DistanceLine(params_)
+{
+    DistanceLinesDetails::FixLinePosition(params.endPoint, params.gd, params.direction);
 }
 
 void SolidLine::Draw(DAVA::UIControl* canvas)
@@ -33,12 +52,12 @@ void SolidLine::DrawSolidLine(DAVA::UIControl* canvas)
 {
     using namespace DAVA;
 
-    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithColor(preferences->linesColor, "distance_line");
 
-    Vector2 linePos(std::min(startPoint.x, endPoint.x), std::min(startPoint.y, endPoint.y));
-    Vector2 lineSize(fabs(startPoint.x - endPoint.x), fabs(startPoint.y - endPoint.y));
-    UIControlUtils::MapToScreen(Rect(linePos, lineSize), parentGd, lineControl);
+    Vector2 linePos(std::min(params.startPoint.x, params.endPoint.x), std::min(params.startPoint.y, params.endPoint.y));
+    Vector2 lineSize(fabs(params.startPoint.x - params.endPoint.x), fabs(params.startPoint.y - params.endPoint.y));
+    UIControlUtils::MapLineToScreen(params.axis, Rect(linePos, lineSize), params.gd, lineControl);
 
     canvas->AddControl(lineControl.Get());
 }
@@ -47,26 +66,16 @@ void SolidLine::DrawEndLine(DAVA::UIControl* canvas)
 {
     using namespace DAVA;
 
-    const Vector2 endLineLength = Vector2(8.0f, 8.0f) / parentGd.scale;
-    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    const Vector2 endLineLength = Vector2(8.0f, 8.0f);
+    DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithColor(preferences->linesColor, "distance_line_ending");
 
-    if (direction == ALIGN_BOTTOM || direction == ALIGN_TOP)
-    {
-        Vector2 linePos(endPoint.x - endLineLength.dx / 2.0f, endPoint.y);
-        Vector2 lineSize(endLineLength.dy, 0.0f);
-        UIControlUtils::MapToScreen(Rect(linePos, lineSize), parentGd, lineControl);
-    }
-    else if (direction == ALIGN_LEFT || direction == ALIGN_RIGHT)
-    {
-        Vector2 linePos(endPoint.x, endPoint.y - endLineLength.dx / 2.0f);
-        Vector2 lineSize(0.0f, endLineLength.dy);
-        UIControlUtils::MapToScreen(Rect(linePos, lineSize), parentGd, lineControl);
-    }
-    else
-    {
-        DVASSERT("wrong direction value");
-    }
+    Vector2 linePos = params.endPoint;
+    Vector2 lineSize;
+    lineSize[params.oppositeAxis] = endLineLength[params.oppositeAxis] / params.gd.scale[params.oppositeAxis];
+    lineSize[params.axis] = 0.0f;
+    linePos[params.oppositeAxis] -= lineSize[params.oppositeAxis] / 2.0f;
+    UIControlUtils::MapLineToScreen(params.oppositeAxis, Rect(linePos, lineSize), params.gd, lineControl);
 
     canvas->AddControl(lineControl.Get());
 }
@@ -75,55 +84,47 @@ void SolidLine::DrawLineText(DAVA::UIControl* canvas)
 {
     using namespace DAVA;
 
-    float32 length = (endPoint - startPoint).Length();
+    float32 length = fabs((params.endPoint - params.startPoint)[params.axis]);
 
     RefPtr<UIStaticText> textControl(new UIStaticText());
     textControl->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
     textControl->SetTextPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_FORCED);
-    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     textControl->SetTextColor(preferences->textColor);
-    textControl->SetFont(font.Get());
+    textControl->SetFont(params.font.Get());
 
     String text = Format("%.0f", length);
 
     textControl->SetUtf8Text(text);
 
-    Font::StringMetrics metrics = font->GetStringMetrics(UTF8Utils::EncodeToWideString(text));
+    Font::StringMetrics metrics = params.font->GetStringMetrics(UTF8Utils::EncodeToWideString(text));
     Vector2 size(metrics.width, metrics.height);
+    size /= params.gd.scale;
 
-    float32 maxLength = 13;
-    float32 offset = 2;
-    Vector2::eAxis axis = direction == ALIGN_TOP || direction == ALIGN_BOTTOM ? Vector2::AXIS_X : Vector2::AXIS_Y;
-    Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
+    //margin around text
+    Vector2 margin = Vector2(3.0f, 3.0f) / params.gd.scale;
     Vector2 pos;
-    if (length > maxLength)
+
+    if (length > (size[params.axis] + margin[params.axis]))
     {
-        pos[axis] = direction == ALIGN_TOP || direction == ALIGN_RIGHT ?
-        startPoint[axis] + offset :
-        startPoint[axis] - size[axis] - offset;
-        pos[oppositeAxis] = (startPoint[oppositeAxis] + endPoint[oppositeAxis]) / 2.0f - size[oppositeAxis] / 2.0f;
+        pos[params.oppositeAxis] = params.direction == ALIGN_TOP || params.direction == ALIGN_RIGHT ?
+        params.startPoint[params.oppositeAxis] + margin[params.oppositeAxis] :
+        params.startPoint[params.oppositeAxis] - size[params.oppositeAxis] - margin[params.oppositeAxis];
+        pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f - size[params.axis] / 2.0f;
     }
     else
     {
-        pos[axis] = startPoint[axis] - (size[axis] / 2.0f);
-        pos[oppositeAxis] = direction == ALIGN_BOTTOM || direction == ALIGN_RIGHT ?
-        endPoint[oppositeAxis] + offset :
-        endPoint[oppositeAxis] - size[oppositeAxis] - offset;
+        pos[params.oppositeAxis] = params.startPoint[params.oppositeAxis] - (size[params.oppositeAxis] / 2.0f);
+        pos[params.axis] = params.direction == ALIGN_BOTTOM || params.direction == ALIGN_RIGHT ?
+        params.endPoint[params.axis] + margin[params.axis] :
+        params.endPoint[params.axis] - size[params.axis] - margin[params.axis];
     }
-    UIControlUtils::MapToScreen(Rect(pos, size), parentGd, textControl);
+    UIControlUtils::MapRectToScreen(Rect(pos, size), params.gd, textControl);
     canvas->AddControl(textControl.Get());
 }
 
-DotLine::DotLineParams::DotLineParams(const DAVA::UIGeometricData& gd_)
-    : gd(gd_)
-{
-}
-
-DotLine::DotLine(const DotLineParams& params)
-    : accessor(params.accessor)
-    , startPoint(params.startPoint)
-    , endPoint(params.endPoint)
-    , parentGd(params.gd)
+DotLine::DotLine(const LineParams& params)
+    : DistanceLine(params)
 {
 }
 
@@ -131,12 +132,12 @@ void DotLine::Draw(DAVA::UIControl* canvas)
 {
     using namespace DAVA;
 
-    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     RefPtr<UIControl> lineControl = UIControlUtils::CreateLineWithTexture(preferences->helpLinesTexture, "dot_distance_line");
 
-    Vector2 linePos(std::min(startPoint.x, endPoint.x), std::min(startPoint.y, endPoint.y));
-    Vector2 lineSize(fabs(startPoint.x - endPoint.x), fabs(startPoint.y - endPoint.y));
-    UIControlUtils::MapToScreen(Rect(linePos, lineSize), parentGd, lineControl);
+    Vector2 linePos(std::min(params.startPoint.x, params.endPoint.x), std::min(params.startPoint.y, params.endPoint.y));
+    Vector2 lineSize(fabs(params.startPoint.x - params.endPoint.x), fabs(params.startPoint.y - params.endPoint.y));
+    UIControlUtils::MapLineToScreen(params.axis, Rect(linePos, lineSize), params.gd, lineControl);
 
     canvas->AddControl(lineControl.Get());
 }

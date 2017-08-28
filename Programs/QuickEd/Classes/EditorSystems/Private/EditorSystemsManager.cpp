@@ -277,13 +277,13 @@ void EditorSystemsManager::InitControls()
     pixelGridControl->SetName(FastName("pixel grid control"));
     rootControl->AddControl(pixelGridControl.Get());
 
-    distanceLinesControl.Set(new UIControl());
-    distanceLinesControl->SetName(FastName("distanceLinesControl"));
-    rootControl->AddControl(distanceLinesControl.Get());
-
     hudControl.Set(new UIControl());
     hudControl->SetName(FastName("HUD_control"));
     rootControl->AddControl(hudControl.Get());
+
+    distanceLinesControl.Set(new UIControl());
+    distanceLinesControl->SetName(FastName("distanceLinesControl"));
+    rootControl->AddControl(distanceLinesControl.Get());
 }
 
 void EditorSystemsManager::InitDAVAScreen()
