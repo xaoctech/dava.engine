@@ -1,8 +1,8 @@
 #pragma once
 
 #include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Utils/QtDelayedExecutor.h"
 
-#include <QtTools/Utils/QtDelayedExecutor.h>
 #include <QFrame>
 
 namespace DAVA

@@ -12,8 +12,7 @@
 #include "TArc/Utils/Private/CrashDumpHandler.h"
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
-
-#include "QtTools/Utils/QtDelayedExecutor.h"
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"
@@ -79,11 +78,15 @@ public:
         return engine.IsConsoleMode();
     }
 
-    virtual void OnLoopStarted()
+    void PostInit()
     {
         FileSystem* fileSystem = GetEngineContext()->fileSystem;
         DVASSERT(fileSystem != nullptr);
         propertiesHolder.reset(new PropertiesHolder("TArcProperties", fileSystem->GetCurrentDocumentsDirectory()));
+    }
+
+    virtual void OnLoopStarted()
+    {
     }
 
     virtual void OnLoopStopped()
@@ -184,6 +187,11 @@ public:
     {
         DVASSERT(propertiesHolder != nullptr);
         return propertiesHolder->CreateSubHolder(nodeName);
+    }
+
+    const PropertiesHolder& GetPropertiesHolder() override
+    {
+        return *propertiesHolder.get();
     }
 
     const EngineContext* GetEngineContext() override
@@ -928,6 +936,11 @@ void Core::SetInvokeListener(OperationInvoker* proxyInvoker)
     GuiImpl* guiImpl = dynamic_cast<GuiImpl*>(impl.get());
     DVASSERT(guiImpl != nullptr);
     guiImpl->SetInvokeListener(proxyInvoker);
+}
+
+void Core::PostInit()
+{
+    impl->PostInit();
 }
 
 } // namespace TArc

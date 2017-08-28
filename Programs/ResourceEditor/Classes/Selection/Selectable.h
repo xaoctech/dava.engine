@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Scene3D/Entity.h"
+#include <TArc/Utils/ReflectionHelpers.h>
+#include <Reflection/ReflectedType.h>
+#include <Base/TypeInheritance.h>
+#include <Base/Type.h>
 #include <type_traits>
 
 class Selectable
 {
 public:
-    using Object = DAVA::InspBase;
-
     enum class TransformPivot : DAVA::uint32
     {
         ObjectCenter,
@@ -26,11 +28,11 @@ public:
     {
     public:
         virtual ~TransformProxy() = default;
-        virtual const DAVA::Matrix4& GetWorldTransform(Object* object) = 0;
-        virtual const DAVA::Matrix4& GetLocalTransform(Object* object) = 0;
-        virtual void SetLocalTransform(Object* object, const DAVA::Matrix4& matrix) = 0;
-        virtual bool SupportsTransformType(Object* object, TransformType transformType) const = 0;
-        virtual bool TransformDependsFromObject(Object* dependant, Object* dependsOn) const = 0;
+        virtual const DAVA::Matrix4& GetWorldTransform(const DAVA::Any& object) = 0;
+        virtual const DAVA::Matrix4& GetLocalTransform(const DAVA::Any& object) = 0;
+        virtual void SetLocalTransform(DAVA::Any& object, const DAVA::Matrix4& matrix) = 0;
+        virtual bool SupportsTransformType(const DAVA::Any& object, TransformType transformType) const = 0;
+        virtual bool TransformDependsFromObject(const DAVA::Any& dependant, const DAVA::Any& dependsOn) const = 0;
     };
 
     template <typename CLASS, typename PROXY>
@@ -39,7 +41,7 @@ public:
 
 public:
     Selectable() = default;
-    explicit Selectable(Object* baseObject);
+    explicit Selectable(const DAVA::Any& object);
     Selectable(const Selectable& other);
     Selectable(Selectable&& other);
 
@@ -59,7 +61,7 @@ public:
     template <typename T>
     T* Cast() const;
 
-    Object* GetContainedObject() const;
+    const DAVA::Any& GetContainedObject() const;
     DAVA::Entity* AsEntity() const;
 
     const DAVA::AABBox3& GetBoundingBox() const;
@@ -75,33 +77,47 @@ public:
     bool ContainsObject() const;
 
 private:
-    static void AddConcreteProxy(DAVA::MetaInfo* classInfo, TransformProxy* proxy);
-    static TransformProxy* GetTransformProxyForClass(const DAVA::MetaInfo* classInfo);
+    static void AddConcreteProxy(const DAVA::Type* classInfo, TransformProxy* proxy);
+    static TransformProxy* GetTransformProxyForClass(const DAVA::Any& object);
 
 private:
-    Object* object = nullptr;
+    DAVA::Any object;
     DAVA::AABBox3 boundingBox;
 };
 
 template <typename T>
 bool Selectable::CanBeCastedTo() const
 {
-    DVASSERT(object != nullptr);
-    return object->GetTypeInfo()->Type() == DAVA::MetaInfo::Instance<T>();
+    DVASSERT(ContainsObject() == true);
+    DVASSERT(object.GetType()->IsPointer());
+    const DAVA::ReflectedType* t = DAVA::TArc::GetValueReflectedType(object);
+    DVASSERT(t != nullptr);
+    return DAVA::TypeInheritance::CanCast(t->GetType()->Pointer(), DAVA::Type::Instance<T*>());
 }
 
 template <typename T>
 inline T* Selectable::Cast() const
 {
-    DVASSERT(object != nullptr);
-    if (CanBeCastedTo<T>())
+    DVASSERT(ContainsObject() == true);
+    DVASSERT(object.GetType()->IsPointer());
+    const DAVA::ReflectedType* t = DAVA::TArc::GetValueReflectedType(object);
+    DVASSERT(t != nullptr);
+    const DAVA::Type* objType = t->GetType()->Pointer();
+    const DAVA::Type* castToType = DAVA::Type::Instance<T*>();
+    if (DAVA::TypeInheritance::CanCast(objType, castToType) == false)
     {
-        return static_cast<T*>(object);
+        DVASSERT(false);
+        return nullptr;
     }
-    return nullptr;
+
+    void* inPtr = object.Get<void*>();
+    void* outPtr = nullptr;
+    bool casted = DAVA::TypeInheritance::Cast(objType, castToType, inPtr, &outPtr);
+    DVASSERT(casted == true);
+    return reinterpret_cast<T*>(outPtr);
 }
 
-inline Selectable::Object* Selectable::GetContainedObject() const
+inline const DAVA::Any& Selectable::GetContainedObject() const
 {
     return object;
 }
@@ -113,6 +129,10 @@ inline const DAVA::AABBox3& Selectable::GetBoundingBox() const
 
 inline DAVA::Entity* Selectable::AsEntity() const
 {
+    if (CanBeCastedTo<DAVA::Entity>() == false)
+    {
+        return nullptr;
+    }
     return Cast<DAVA::Entity>();
 }
 
@@ -121,10 +141,10 @@ inline void Selectable::AddTransformProxyForClass()
 {
     static_assert(std::is_base_of<Selectable::TransformProxy, PROXY>::value,
                   "Transform proxy should be derived from Selectable::TransformProxy");
-    AddConcreteProxy(DAVA::MetaInfo::Instance<CLASS>(), new PROXY());
+    AddConcreteProxy(DAVA::Type::Instance<CLASS>(), new PROXY());
 }
 
 inline bool Selectable::ContainsObject() const
 {
-    return object != nullptr;
+    return object.IsEmpty() == false;
 }
