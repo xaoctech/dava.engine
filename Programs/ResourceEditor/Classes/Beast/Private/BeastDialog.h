@@ -1,5 +1,8 @@
 #pragma once
 
+#if defined(__DAVAENGINE_BEAST__)
+
+
 #include "ui_BeastDialog.h"
 
 #include <Beast/BeastConstants.h>
@@ -45,3 +48,5 @@ private:
 
     Beast::eBeastMode beastMode = Beast::eBeastMode::MODE_LIGHTMAPS;
 };
+
+#endif //#if defined(__DAVAENGINE_BEAST__)

@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(__DAVAENGINE_BEAST__)
+
 #include "SpriteResourcesPacker.h"
 
 #include <Beast/LightmapAtlasingData.h>
@@ -17,3 +19,5 @@ private:
 private:
     DAVA::Vector<Beast::LightmapAtlasingData> atlasingData;
 };
+
+#endif //#if defined(__DAVAENGINE_BEAST__)

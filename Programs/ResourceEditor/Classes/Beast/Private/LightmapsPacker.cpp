@@ -1,6 +1,8 @@
-#include "LightmapsPacker.h"
+#if defined(__DAVAENGINE_BEAST__)
 
-#include "Qt/Main/QtUtils.h"
+#include "Classes/Beast/Private/LightmapsPacker.h"
+
+#include "Classes/Qt/Main/QtUtils.h"
 
 void LightmapsPacker::ParseSpriteDescriptors()
 {
@@ -98,3 +100,5 @@ void LightmapsPacker::CreateDescriptors()
 
     fileList->Release();
 }
+
+#endif //#if defined(__DAVAENGINE_BEAST__)
