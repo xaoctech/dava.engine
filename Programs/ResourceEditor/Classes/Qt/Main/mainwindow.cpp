@@ -16,7 +16,6 @@
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/Validation/SceneValidationDialog.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
 #include "Classes/Qt/TextureBrowser/TextureBrowser.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
@@ -34,13 +33,10 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/REGlobalOperationsData.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
-
-#ifdef __DAVAENGINE_SPEEDTREE__
-#include "SpeedTreeImport/SpeedTreeImportDialog.h"
-#endif
 
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
@@ -64,34 +60,31 @@
 
 #include "Constants.h"
 #include "StringConstants.h"
-
-#include "Render/2D/Sprite.h"
-
 #include <Tools/TextureCompression/TextureConverter.h>
 
-#include <TArc/Utils/Themes.h>
+#include <QtTools/ConsoleWidget/LogWidget.h>
+#include <QtTools/ConsoleWidget/LogModel.h>
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <QtTools/ConsoleWidget/LoggerOutputObject.h>
+#include <QtTools/FileDialogs/FileDialog.h>
+#include <QtTools/FileDialogs/FindFileDialog.h>
+
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>
+#include <TArc/Utils/Utils.h>
 
-#include "QtTools/ConsoleWidget/LogWidget.h"
-#include "QtTools/ConsoleWidget/LogModel.h"
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/ConsoleWidget/LoggerOutputObject.h"
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/FileDialogs/FindFileDialog.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
-
-#include "Engine/Engine.h"
-#include "Engine/PlatformApiQt.h"
-#include "Engine/Qt/RenderWidget.h"
-#include "Reflection/ReflectedType.h"
-
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/Waypoint/PathComponent.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene/System/EditorVegetationSystem.h"
-#include "Utils/StringFormat.h"
+#include <Engine/Engine.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Qt/RenderWidget.h>
+#include <Reflection/ReflectedType.h>
+#include <Render/2D/Sprite.h>
+#include <Scene3D/Components/ActionComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene/System/EditorVegetationSystem.h>
+#include <Utils/StringFormat.h>
 
 #include <QActionGroup>
 #include <QColorDialog>
@@ -241,7 +234,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
 
     SetupDocks();
     SetupMainMenu();
-    SetupThemeActions();
     SetupToolBars();
     SetupActions();
 
@@ -277,8 +269,7 @@ QtMainWindow::~QtMainWindow()
     LogWidget* logWidget = qobject_cast<LogWidget*>(dockConsole->widget());
     QByteArray dataToSave = logWidget->Serialize();
 
-    DAVA::VariantType var(reinterpret_cast<const DAVA::uint8*>(dataToSave.data()), dataToSave.size());
-    SettingsManager::Instance()->SetValue(Settings::Internal_LogWidget, var);
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->logWidgetState = dataToSave;
 
     DAVA::SafeDelete(addSwitchEntityDialog);
 
@@ -374,7 +365,6 @@ void QtMainWindow::SetupTitle(const DAVA::String& projectPath)
 void QtMainWindow::SetupMainMenu()
 {
     ui->Dock->addAction(ui->dockSceneInfo->toggleViewAction());
-    ui->Dock->addAction(ui->dockProperties->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditor->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
     ui->Dock->addAction(ui->dockSceneTree->toggleViewAction());
@@ -383,31 +373,6 @@ void QtMainWindow::SetupMainMenu()
 
     ui->Dock->addAction(dockActionEvent->toggleViewAction());
     ui->Dock->addAction(dockConsole->toggleViewAction());
-}
-
-void QtMainWindow::SetupThemeActions()
-{
-    QMenu* themesMenu = ui->menuTheme;
-    QActionGroup* actionGroup = new QActionGroup(this);
-    for (const QString& theme : Themes::ThemesNames())
-    {
-        QAction* action = new QAction(theme, themesMenu);
-        actionGroup->addAction(action);
-        action->setCheckable(true);
-        if (theme == Themes::GetCurrentThemeStr())
-        {
-            action->setChecked(true);
-        }
-        themesMenu->addAction(action);
-    }
-    connect(actionGroup, &QActionGroup::triggered, [](QAction* action)
-            {
-                if (action->isChecked())
-                {
-                    Themes::SetCurrentTheme(action->text());
-                    SceneSignals::Instance()->ThemeChanged();
-                }
-            });
 }
 
 void QtMainWindow::SetupToolBars()
@@ -526,33 +491,22 @@ void QtMainWindow::SetupDocks()
         connect(loggerOutput, &LoggerOutputObject::OutputReady, logWidget, &LogWidget::AddMessage, Qt::DirectConnection);
 
         connect(logWidget, &LogWidget::ItemClicked, this, &QtMainWindow::OnConsoleItemClicked);
-        const auto var = SettingsManager::Instance()->GetValue(Settings::Internal_LogWidget);
-
-        const QByteArray arr(reinterpret_cast<const char*>(var.AsByteArray()), var.AsByteArraySize());
-        logWidget->Deserialize(arr);
+        logWidget->Deserialize(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->logWidgetState);
         dockConsole = new QDockWidget(logWidget->windowTitle(), this);
         dockConsole->setWidget(logWidget);
         dockConsole->setObjectName(QString("dock_%1").arg(dockConsole->widget()->objectName()));
         addDockWidget(Qt::RightDockWidgetArea, dockConsole);
     }
-
-    ui->dockProperties->Init(ui.get(), globalOperations);
 }
 
 void QtMainWindow::SetupActions()
 {
-// import
-#ifdef __DAVAENGINE_SPEEDTREE__
-    QObject::connect(ui->actionImportSpeedTreeXML, &QAction::triggered, this, &QtMainWindow::OnImportSpeedTreeXML);
-#endif //__DAVAENGINE_SPEEDTREE__
-
     QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
 
-    bool gizmoEnabled = SettingsManager::GetValue(Settings::Internal_GizmoEnabled).AsBool();
-    OnEditorGizmoToggle(gizmoEnabled);
+    OnEditorGizmoToggle(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->gizmoEnabled);
     QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
 
     QObject::connect(ui->actionLightmapCanvas, SIGNAL(toggled(bool)), this, SLOT(OnViewLightmapCanvas(bool)));
@@ -565,8 +519,7 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionEnableDisableShadows, &QAction::toggled, this, &QtMainWindow::OnEnableDisableShadows);
 
-    bool toEnableSounds = SettingsManager::GetValue(Settings::Internal_EnableSounds).AsBool();
-    EnableSounds(toEnableSounds);
+    EnableSounds(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->enableSound);
     QObject::connect(ui->actionEnableSounds, &QAction::toggled, this, &QtMainWindow::EnableSounds);
 
     // scene undo/redo
@@ -623,6 +576,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
     QObject::connect(ui->actionAddPath, SIGNAL(triggered()), this, SLOT(OnAddPathEntity()));
+    QObject::connect(ui->actionTextEntity, SIGNAL(triggered()), this, SLOT(OnAddTextEntity()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
@@ -751,7 +705,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionRedo->setEnabled(enable);
 
     ui->dockLODEditor->setEnabled(enable);
-    ui->dockProperties->setEnabled(enable);
     ui->dockSceneTree->setEnabled(enable);
     ui->dockSceneInfo->setEnabled(enable);
 
@@ -892,13 +845,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2* scene, const RECommandNoti
 // ###################################################################################################
 // Mainwindow Qt actions
 // ###################################################################################################
-void QtMainWindow::OnImportSpeedTreeXML()
-{
-#ifdef __DAVAENGINE_SPEEDTREE__
-    SpeedTreeImportDialog importDialog(globalOperations, this);
-    importDialog.exec();
-#endif //__DAVAENGINE_SPEEDTREE__
-}
 
 void QtMainWindow::OnUndo()
 {
@@ -921,7 +867,7 @@ void QtMainWindow::OnRedo()
 void QtMainWindow::OnEditorGizmoToggle(bool show)
 {
     ui->actionShowEditorGizmo->setChecked(show);
-    SettingsManager::Instance()->SetValue(Settings::Internal_GizmoEnabled, DAVA::VariantType(show));
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->gizmoEnabled = show;
     DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (scene.Get() != nullptr)
     {
@@ -932,10 +878,7 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 void QtMainWindow::OnViewLightmapCanvas(bool show)
 {
     bool showCanvas = ui->actionLightmapCanvas->isChecked();
-    if (showCanvas != SettingsManager::GetValue(Settings::Internal_MaterialsShowLightmapCanvas).AsBool())
-    {
-        SettingsManager::SetValue(Settings::Internal_MaterialsShowLightmapCanvas, DAVA::VariantType(showCanvas));
-    }
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialShowLightmapCanvas = showCanvas;
 
     DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (scene.Get() != nullptr)
@@ -977,12 +920,7 @@ void QtMainWindow::OnEnableDisableShadows(bool enable)
 void QtMainWindow::EnableSounds(bool toEnable)
 {
     ui->actionEnableSounds->setChecked(toEnable);
-
-    if (toEnable != SettingsManager::GetValue(Settings::Internal_EnableSounds).AsBool())
-    {
-        SettingsManager::SetValue(Settings::Internal_EnableSounds, DAVA::VariantType(toEnable));
-    }
-
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->enableSound = toEnable;
     DAVA::SoundSystem::Instance()->Mute(!toEnable);
 }
 
@@ -1300,6 +1238,18 @@ void QtMainWindow::OnUserNodeDialog()
     }
 }
 
+void QtMainWindow::OnAddTextEntity()
+{
+    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
+    if (sceneEditor)
+    {
+        DAVA::ScopedPtr<DAVA::Entity> textEntity(new DAVA::Entity());
+        textEntity->AddComponent(new DAVA::TextComponent());
+        textEntity->SetName("TextEntity");
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(textEntity, sceneEditor.Get())));
+    }
+}
+
 void QtMainWindow::OnParticleEffectDialog()
 {
     DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
@@ -1321,8 +1271,8 @@ void QtMainWindow::On2DCameraDialog()
         DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         DAVA::ScopedPtr<DAVA::Camera> camera(new DAVA::Camera());
 
-        DAVA::float32 w = DAVA::UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dx;
-        DAVA::float32 h = DAVA::UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dy;
+        DAVA::float32 w = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dx;
+        DAVA::float32 h = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dy;
         DAVA::float32 aspect = w / h;
         camera->SetupOrtho(w, aspect, 1, 1000);
         camera->SetPosition(DAVA::Vector3(0, 0, -10000));
@@ -1392,8 +1342,7 @@ void QtMainWindow::LoadViewState(SceneEditor2* scene)
 {
     if (nullptr != scene)
     {
-        bool viewLMCanvas = SettingsManager::GetValue(Settings::Internal_MaterialsShowLightmapCanvas).AsBool();
-        ui->actionLightmapCanvas->setChecked(viewLMCanvas);
+        ui->actionLightmapCanvas->setChecked(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialShowLightmapCanvas);
 
         auto options = DAVA::Renderer::GetOptions();
         ui->actionEnableDisableShadows->setChecked(options->IsOptionEnabled(DAVA::RenderOptions::SHADOWVOLUME_DRAW));
@@ -1462,7 +1411,7 @@ void QtMainWindow::LoadEditorLightState(SceneEditor2* scene)
 
 void QtMainWindow::LoadMaterialLightViewMode()
 {
-    int curViewMode = SettingsManager::GetValue(Settings::Internal_MaterialsLightViewMode).AsInt32();
+    int curViewMode = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialLightViewMode;
 
     ui->actionAlbedo->setChecked((bool)(curViewMode & EditorMaterialSystem::LIGHTVIEW_ALBEDO));
     ui->actionAmbient->setChecked((bool)(curViewMode & EditorMaterialSystem::LIGHTVIEW_AMBIENT));
@@ -1588,13 +1537,13 @@ void QtMainWindow::OnConvertModifiedTextures()
             continue;
         }
 
-        DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
+        DAVA::TextureConverter::eConvertQuality quality = REGlobal::GetGlobalContext()->GetData<GeneralSettings>()->compressionQuality;
 
         DAVA::Vector<DAVA::eGPUFamily> updatedGPUs = it->second;
         WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
         foreach (DAVA::eGPUFamily gpu, updatedGPUs)
         {
-            DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, static_cast<DAVA::TextureConverter::eConvertQuality>(quality.AsInt32()));
+            DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, quality);
 
             DAVA::TexturesMap texturesMap = DAVA::Texture::GetTextureMap();
             DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
@@ -1703,7 +1652,7 @@ void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mo
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([]() {
-            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, Settings::GetGPUFormat());
+            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         });
     }
 
@@ -1999,13 +1948,10 @@ void QtMainWindow::OnBuildStaticOcclusion()
     {
         scene->MarkAsChanged();
 
-        bool needSaveScene = SettingsManager::GetValue(Settings::Scene_SaveStaticOcclusion).AsBool();
-        if (needSaveScene)
+        if (REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->saveStaticOcclusion)
         {
             REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
         }
-
-        ui->propertyEditor->ResetProperties();
     }
 
     delete waitOcclusionDlg;
@@ -2135,11 +2081,7 @@ void QtMainWindow::OnMaterialLightViewChanged(bool)
     if (ui->actionSpecular->isChecked())
         newMode |= EditorMaterialSystem::LIGHTVIEW_SPECULAR;
 
-    if (newMode != SettingsManager::GetValue(Settings::Internal_MaterialsLightViewMode).AsInt32())
-    {
-        SettingsManager::SetValue(Settings::Internal_MaterialsLightViewMode, DAVA::VariantType(newMode));
-    }
-
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialLightViewMode = static_cast<EditorMaterialSystem::MaterialLightViewMode>(newMode);
     if (MainWindowDetails::GetCurrentScene().Get() != nullptr)
     {
         MainWindowDetails::GetCurrentScene()->materialSystem->SetLightViewMode(newMode);
@@ -2201,7 +2143,8 @@ void QtMainWindow::OnAddPathEntity()
 
 bool QtMainWindow::LoadAppropriateTextureFormat()
 {
-    DAVA::eGPUFamily gpuFormat = Settings::GetGPUFormat();
+    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
     if (gpuFormat != DAVA::GPU_ORIGIN)
     {
         int answer = ShowQuestion("Inappropriate texture format",
@@ -2215,7 +2158,7 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
         REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, DAVA::eGPUFamily::GPU_ORIGIN);
     }
 
-    return Settings::GetGPUFormat() == DAVA::GPU_ORIGIN;
+    return settings->textureViewGPU == DAVA::GPU_ORIGIN;
 }
 
 void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
@@ -2322,11 +2265,7 @@ void QtMainWindow::OnSnapCameraToLandscape(bool snap)
         toggleProcessed = scene->cameraSystem->SnapEditorCameraToLandscape(snap);
     }
 
-    if (toggleProcessed)
-    {
-        ui->propertyEditor->ResetProperties();
-    }
-    else
+    if (toggleProcessed == false)
     {
         ui->actionSnapCameraToLandscape->setChecked(!snap);
     }
@@ -2428,7 +2367,7 @@ void QtMainWindow::CallAction(ID id, DAVA::Any&& args)
         OnMaterialEditor(args.Cast<DAVA::NMaterial*>());
         break;
     case GlobalOperations::ReloadTexture:
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, Settings::GetGPUFormat());
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         break;
     default:
         DVASSERT(false, DAVA::Format("Not implemented action : %d", static_cast<DAVA::int32>(id)).c_str());

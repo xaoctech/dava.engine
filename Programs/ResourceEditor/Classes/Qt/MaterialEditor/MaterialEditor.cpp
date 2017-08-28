@@ -12,10 +12,10 @@
 
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Selection/SelectionData.h"
 
 #include "Classes/Qt/Main/QtUtils.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
@@ -24,11 +24,11 @@
 
 #include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
-#include "TArc/Core/FieldBinder.h"
+#include <QtTools/FileDialogs/FileDialog.h>
+#include <QtTools/Updaters/LazyUpdater.h>
 
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/Updaters/LazyUpdater.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Base/Introspection.h>
 #include <Functional/Function.h>
@@ -47,6 +47,8 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QBoxLayout>
+#include "Render/Texture.h"
+#include "Scene/SceneHelper.h"
 
 namespace UIName
 {
@@ -181,6 +183,7 @@ public:
         UpdateAllAddRemoveButtons(propertiesRoot.get());
         UpdateAllAddRemoveButtons(illuminationRoot.get());
         UpdateAllAddRemoveButtons(texturesRoot.get());
+        CreateReloadTextureButton(texturesRoot.get());
 
         FillInvalidTextures(texturesRoot.get(), materials);
 
@@ -224,7 +227,7 @@ public:
         if (memberFlags & DAVA::I_EDIT)
         {
             editEnabled = true;
-            addRemoveButton->setIcon(SharedIcon(":/QtIcons/cminus.png"));
+            addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
             addRemoveButton->setToolTip(QStringLiteral("Remove property"));
 
             // isn't set in parent or shader
@@ -238,7 +241,7 @@ public:
         {
             editEnabled = false;
             bgColor = QBrush(QColor(0, 0, 0, 25));
-            addRemoveButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+            addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
             addRemoveButton->setToolTip(QStringLiteral("Add property"));
         }
 
@@ -270,6 +273,39 @@ private:
         QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnAddRemoveButton);
 
         return button;
+    }
+
+    void CreateReloadTextureButton(QtPropertyData* data)
+    {
+        QtPropertyDataInspDynamic* dynamicData = dynamic_cast<QtPropertyDataInspDynamic*>(data);
+        if (nullptr != dynamicData)
+        {
+            bool buttonAlreadyExists = false;
+            QString reloadButtonName = QStringLiteral("reloadTexture");
+            for (int i = 0; i < data->GetButtonsCount(); ++i)
+            {
+                QtPropertyToolButton* btn = data->GetButton(i);
+                if (btn->objectName() == reloadButtonName)
+                {
+                    buttonAlreadyExists = true;
+                    break;
+                }
+            }
+
+            if (buttonAlreadyExists == false)
+            {
+                QtPropertyToolButton* button = data->AddButton();
+                button->setObjectName(QStringLiteral("reloadTexture"));
+                button->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png"));
+                button->setIconSize(QSize(14, 14));
+                QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnReloadTexture);
+            }
+        }
+
+        for (int i = 0; i < data->ChildCount(); ++i)
+        {
+            CreateReloadTextureButton(data->ChildGet(i));
+        }
     }
 
     std::unique_ptr<QtPropertyData> CreateHeader(const DAVA::FastName& sectionName)
@@ -347,7 +383,7 @@ private:
                 QtPropertyToolButton* addRemoveButton = textureSlot->AddButton();
                 addRemoveButton->setObjectName("dynamicAddRemoveButton");
                 addRemoveButton->setIconSize(QSize(14, 14));
-                addRemoveButton->setIcon(SharedIcon(":/QtIcons/cminus.png"));
+                addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
                 addRemoveButton->setToolTip(QStringLiteral("Remove property"));
                 QObject::connect(addRemoveButton, &QAbstractButton::clicked, editor, &MaterialEditor::removeInvalidTexture);
 
@@ -932,7 +968,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
             ui->templateBox->setCurrentIndex(-1);
             ui->templateBox->setEnabled(false);
             ui->templateButton->setEnabled(false);
-            ui->templateButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+            ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
         }
         else
         {
@@ -978,11 +1014,11 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
 
                 if (hasLocalFxName)
                 {
-                    ui->templateButton->setIcon(SharedIcon(":/QtIcons/cminus.png"));
+                    ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
                 }
                 else
                 {
-                    ui->templateButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+                    ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
                 }
 
                 if (parentMaterial == nullptr || parentMaterial == globalMaterial || isAssignableFx == false)
@@ -1003,7 +1039,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
         ui->templateBox->setCurrentIndex(-1);
         ui->templateBox->setEnabled(false);
         ui->templateButton->setEnabled(false);
-        ui->templateButton->setIcon(SharedIcon(":/QtIcons/cplus.png"));
+        ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
     }
 }
 
@@ -1082,6 +1118,33 @@ void MaterialEditor::OnAddRemoveButton()
 
             data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
             PropertiesBuilder(this).UpdateAddRemoveButtonState(data);
+        }
+    }
+}
+
+void MaterialEditor::OnReloadTexture()
+{
+    QtPropertyToolButton* btn = dynamic_cast<QtPropertyToolButton*>(QObject::sender());
+    if (nullptr != btn)
+    {
+        QtPropertyDataInspDynamic* data = static_cast<QtPropertyDataInspDynamic*>(btn->GetPropertyData());
+        if (nullptr != data)
+        {
+            DAVA::VariantType value = data->dynamicInfo->MemberValueGet(data->ddata, data->name);
+            DAVA::FilePath path = value.AsFilePath();
+            DAVA::Texture* texture = DAVA::Texture::Get(path);
+            if (texture != nullptr)
+            {
+                texture->ReloadAs(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
+
+                DAVA::Set<DAVA::NMaterial*> materials;
+                SceneHelper::EnumerateMaterials(activeScene, materials);
+                for (auto mat : materials)
+                {
+                    if (mat->ContainsTexture(texture))
+                        mat->InvalidateTextureBindings();
+                }
+            }
         }
     }
 }

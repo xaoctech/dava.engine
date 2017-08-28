@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <QSignalBlocker>
 
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
 #include "Deprecated/SceneValidator.h"
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
@@ -37,15 +37,15 @@
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
 
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/Updaters/LazyUpdater.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <QtTools/Updaters/LazyUpdater.h>
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/Utils/ScopedValueGuard.h"
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/Utils/Utils.h>
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/ScopedValueGuard.h>
+#include <TArc/Core/FieldBinder.h>
 
-#include "FileSystem/VariantType.h"
+#include <FileSystem/VariantType.h>
 
 #include <QShortcut>
 
@@ -77,7 +77,8 @@ void SaveEmitter(SceneEditor2* scene, DAVA::ParticleEffectComponent* component, 
     DAVA::FilePath yamlPath = emitter->configPath;
     if (askFileName)
     {
-        DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastSaveEmitterDir).AsFilePath();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        DAVA::FilePath defaultPath = settings->emitterSaveDir;
         QString particlesPath = defaultPath.IsEmpty() ? GetParticlesConfigPath() : QString::fromStdString(defaultPath.GetAbsolutePathname());
 
         DAVA::FileSystem::Instance()->CreateDirectory(DAVA::FilePath(particlesPath.toStdString()), true); //to ensure that folder is created
@@ -92,8 +93,7 @@ void SaveEmitter(SceneEditor2* scene, DAVA::ParticleEffectComponent* component, 
         }
 
         yamlPath = DAVA::FilePath(filePath.toStdString());
-
-        SettingsManager::SetValue(Settings::Internal_ParticleLastSaveEmitterDir, DAVA::VariantType(yamlPath.GetDirectory()));
+        settings->emitterSaveDir = yamlPath.GetDirectory();
     }
 
     scene->Exec(commandCreator(yamlPath));
@@ -172,7 +172,7 @@ protected:
 
     struct RemoveInfo
     {
-        RemoveInfo(std::unique_ptr<DAVA::Command>&& command_, Selectable::Object* selectedObject_)
+        RemoveInfo(std::unique_ptr<DAVA::Command>&& command_, const DAVA::Any& selectedObject_)
             : command(std::move(command_))
             , selectedObject(selectedObject_)
         {
@@ -185,7 +185,7 @@ protected:
         }
 
         std::unique_ptr<DAVA::Command> command;
-        Selectable::Object* selectedObject;
+        DAVA::Any selectedObject;
     };
 
     void RemoveCommandsHelper(const DAVA::String& text, SceneTreeItem::eItemType type, const DAVA::Function<RemoveInfo(SceneTreeItem*)>& callback)
@@ -294,6 +294,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         SceneEditor2* scene = GetScene();
 
         const SelectableGroup& selection = Selection::GetSelection();
@@ -396,6 +397,7 @@ protected:
 private:
     void FillCameraActions(QMenu& menu)
     {
+        using namespace DAVA::TArc;
         Connect(menu.addAction(SharedIcon(":/QtIcons/eye.png"), QStringLiteral("Look from")), this, &EntityContextMenu::SetCurrentCamera);
         Connect(menu.addAction(SharedIcon(":/QtIcons/camera.png"), QStringLiteral("Set custom draw camera")), this, &EntityContextMenu::SetCustomDrawCamera);
         Connect(menu.addAction(SharedIcon(":/QtIcons/grab-image.png"), QStringLiteral("Grab image")), this, &EntityContextMenu::GrabImage);
@@ -560,8 +562,8 @@ private:
         params.scene = scene;
         params.cameraToGrab = GetCamera(entityItem->GetEntity());
         DVASSERT(params.cameraToGrab.Get() != nullptr);
-        params.imageSize = DAVA::Size2i(SettingsManager::GetValue(Settings::Scene_Grab_Size_Width).AsInt32(),
-                                        SettingsManager::GetValue(Settings::Scene_Grab_Size_Height).AsInt32());
+        GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+        params.imageSize = DAVA::Size2i(settings->grabSizeWidth, settings->grabSizeHeight);
         params.outputFile = filePath.toStdString();
 
         SceneImageGrabber::GrabImage(params);
@@ -662,6 +664,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         Connect(menu.addAction(SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Layer")), this, &ParticleLayerContextMenu::CloneLayer);
         QString removeLayerText = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Layer") : QStringLiteral("Remove Layers");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_layer.png"), removeLayerText), this, &ParticleLayerContextMenu::RemoveLayer);
@@ -709,6 +712,7 @@ public:
 protected:
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Forces") : QStringLiteral("Remove Force");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleForceContextMenu::RemoveForce);
     }
@@ -749,6 +753,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         if (IsRemovable())
         {
             QString removeEmitterText = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove emitter") : QStringLiteral("Remove emitters");
@@ -780,7 +785,8 @@ protected:
 
     void LoadEmitterFromYaml()
     {
-        DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastLoadEmitterDir).AsFilePath();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        DAVA::FilePath defaultPath = settings->emitterLoadDir;
         QString particlesPath = defaultPath.IsEmpty() ? SceneTreeDetails::GetParticlesConfigPath() : QString::fromStdString(defaultPath.GetAbsolutePathname());
 
         QString selectedPath = FileDialog::getOpenFileName(nullptr, QStringLiteral("Open Particle Emitter Yaml file"), particlesPath, QStringLiteral("YAML File (*.yaml)"));
@@ -788,7 +794,7 @@ protected:
         if (selectedPath.isEmpty() == false)
         {
             DAVA::FilePath yamlPath = selectedPath.toStdString();
-            SettingsManager::SetValue(Settings::Internal_ParticleLastLoadEmitterDir, DAVA::VariantType(yamlPath.GetDirectory()));
+            settings->emitterLoadDir = yamlPath.GetDirectory();
 
             GetScene()->Exec(CreateLoadCommand(yamlPath));
             MarkStructureChanged();
@@ -997,7 +1003,8 @@ void SceneTree::dragMoveEvent(QDragMoveEvent* event)
 {
     QTreeView::dragMoveEvent(event);
 
-    if (SettingsManager::GetValue(Settings::Scene_DragAndDropWithShift).AsBool() && ((event->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    if (settings->dragAndDropWithShift == true && ((event->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
     {
         event->setDropAction(Qt::IgnoreAction);
         event->accept();
@@ -1379,8 +1386,9 @@ void SceneTree::SyncSelectionFromTree()
         QModelIndexList indexList = selectionModel()->selection().indexes();
         for (int i = 0; i < indexList.size(); ++i)
         {
-            auto item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i]));
-            group.Add(item->GetItemObject(), curScene->collisionSystem->GetUntransformedBoundingBox(item->GetItemObject()));
+            SceneTreeItem* item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i]));
+            DAVA::Any object(item->GetItemObject());
+            group.Add(object, curScene->collisionSystem->GetUntransformedBoundingBox(object));
         }
         Selection::SetSelection(group);
     }

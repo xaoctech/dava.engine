@@ -3,17 +3,17 @@
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
+#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
-#include "Scene/System/EditorParticlesSystem.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -67,6 +67,7 @@ public:
 SceneManagerModule::SceneManagerModule()
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneData);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GlobalSceneSettings);
 }
 
 SceneManagerModule::~SceneManagerModule() = default;
@@ -75,12 +76,10 @@ void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)
 {
     DAVA::Renderer::SetDesiredFPS(60);
 
-    DAVA::uint32 val = SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32();
-    DAVA::eGPUFamily family = static_cast<DAVA::eGPUFamily>(val);
+    DAVA::eGPUFamily family = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU;
     DAVA::Texture::SetGPULoadingOrder({ family });
 
     QtMainWindow* wnd = qobject_cast<QtMainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
-    DVASSERT(wnd != nullptr);
     if (wnd != nullptr)
     {
         wnd->OnRenderingInitialized();
@@ -180,7 +179,7 @@ void SceneManagerModule::PostInit()
     ProjectManagerData* projectData = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(projectData != nullptr);
 
-    connections.AddConnection(projectData->GetSpritesModules(), &SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles));
+    connections.AddConnection(projectData->GetSpritesModules(), &SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
 
     DAVA::TArc::UI* ui = GetUI();
 
@@ -207,7 +206,7 @@ void SceneManagerModule::PostInit()
         return v.CanCast<DAVA::FilePath>() && !v.Cast<DAVA::FilePath>().IsEmpty();
     };
     params.getMaximumCount = []() {
-        return SettingsManager::GetValue(Settings::General_RecentFilesCount).AsInt32();
+        return 5;
     };
     params.insertionParams.method = InsertionParams::eInsertionMethod::AfterItem;
     params.insertionParams.item = QString("importSeparator");
@@ -262,7 +261,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
             return value.CanCast<DAVA::FilePath>() && !value.Cast<DAVA::FilePath>().IsEmpty();
         });
 
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::CreateNewScene, this));
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::CreateNewScene, this), Qt::QueuedConnection);
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::BeforeItem, "menuImport" }));
@@ -270,7 +269,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
 
         ui->AddAction(mainWindowKey, placementInfo, action);
 
-        RegisterOperation(REGlobal::CreateNewSceneOperation.ID, this, &SceneManagerModule::CreateNewScene);
+        RegisterOperation(REGlobal::CreateFirstSceneOperation.ID, this, &SceneManagerModule::CreateFirstScene);
     }
 
     // Open Scene action
@@ -286,7 +285,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
             return value.CanCast<DAVA::FilePath>() && !value.Cast<DAVA::FilePath>().IsEmpty();
         });
 
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::OpenScene, this));
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::OpenScene, this), Qt::QueuedConnection);
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "New Scene" }));
@@ -325,7 +324,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
                                              return false;
                                          });
 
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::OpenSceneQuckly, this));
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::OpenSceneQuckly, this), Qt::QueuedConnection);
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "Open Scene" }));
@@ -403,7 +402,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "saveSeparator" }));
 
-        connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &SceneManagerModule::ExportScene));
+        connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &SceneManagerModule::ExportScene), Qt::QueuedConnection);
 
         ui->AddAction(mainWindowKey, placementInfo, action);
     }
@@ -429,7 +428,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
 
         {
             QAction* action = new QAction(QStringLiteral("Only Original Textures"), nullptr);
-            connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::SaveSceneToFolder, this, false));
+            connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::SaveSceneToFolder, this, false), Qt::QueuedConnection);
 
             ActionPlacementInfo placementInfo;
             placementInfo.AddPlacementPoint(CreateMenuPoint(menusPath));
@@ -438,7 +437,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
 
         {
             QAction* action = new QAction(QStringLiteral("With Compressed Textures"), nullptr);
-            connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::SaveSceneToFolder, this, true));
+            connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::SaveSceneToFolder, this, true), Qt::QueuedConnection);
 
             ActionPlacementInfo placementInfo;
             placementInfo.AddPlacementPoint(CreateMenuPoint(menusPath));
@@ -501,7 +500,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
                                          {
                                              return v.CanCast<DAVA::eGPUFamily>() && v.Cast<DAVA::eGPUFamily>() == gpu;
                                          });
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadTextures, this, gpu));
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadTextures, this, gpu), Qt::QueuedConnection);
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placement, action);
         gpuFormatActions.push_back(action);
@@ -539,7 +538,8 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         connections.AddConnection(action, &QAction::triggered, [this]()
                                   {
                                       ReloadTextures(DAVA::Texture::GetPrimaryGPUForLoading());
-                                  });
+                                  },
+                                  Qt::QueuedConnection);
 
         FieldDescriptor sceneFieldDescr;
         sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -583,6 +583,31 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(REGlobal::AddSceneOperation.ID, this, &SceneManagerModule::AddSceneByPath);
     RegisterOperation(REGlobal::SaveCurrentScene.ID, this, static_cast<void (SceneManagerModule::*)()>(&SceneManagerModule::SaveScene));
     RegisterOperation(REGlobal::ReloadTexturesOperation.ID, this, &SceneManagerModule::ReloadTextures);
+}
+
+void SceneManagerModule::CreateFirstScene()
+{
+    if (GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->openLastScene == true)
+    {
+        using namespace DAVA;
+        Vector<String> recentScenes = recentItems->Get();
+        if (recentScenes.empty() == false)
+        {
+            FilePath lastOpenedScene = recentScenes[0];
+
+            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            DVASSERT(data != nullptr);
+            FilePath projectPath = data->GetProjectPath();
+
+            if (FilePath::ContainPath(lastOpenedScene, projectPath))
+            {
+                OpenSceneByPath(lastOpenedScene);
+                return;
+            }
+        }
+    }
+
+    CreateNewScene();
 }
 
 void SceneManagerModule::CreateNewScene()
@@ -632,7 +657,7 @@ void SceneManagerModule::OpenSceneQuckly()
     DAVA::FileSystem* fileSystem = GetAccessor()->GetEngineContext()->fileSystem;
     if (fileSystem->Exists(cachedPath))
     {
-        QString path = FindFileDialog::GetFilePath(sceneFilesCache.get(), "sc2", GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+        QString path = FindFileDialog::GetFilePath(GetAccessor(), sceneFilesCache.get(), "sc2", GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
         if (!path.isEmpty())
         {
             OpenSceneByPath(DAVA::FilePath(path.toStdString()));
@@ -890,10 +915,9 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
     using namespace DAVA::TArc;
     if (SaveTileMaskInAllScenes())
     {
-        SettingsManager::SetValue(Settings::Internal_TextureViewGPU, DAVA::VariantType(static_cast<DAVA::uint32>(gpu)));
+        CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+        settings->textureViewGPU = gpu;
         DAVA::Texture::SetGPULoadingOrder({ gpu });
-
-        DAVA::eGPUFamily gpu = static_cast<DAVA::eGPUFamily>(SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32());
 
         SceneHelper::TextureCollector collector;
         DAVA::Set<DAVA::NMaterial*> allSceneMaterials;
@@ -1181,7 +1205,7 @@ bool SceneManagerModule::SaveSceneImpl(DAVA::RefPtr<SceneEditor2> scene, const D
         return false;
     }
 
-    if (SettingsManager::GetValue(Settings::Scene_SaveEmitters).AsBool() == true)
+    if (GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->saveEmitters == true)
     {
         scene->SaveEmitters(DAVA::MakeFunction(this, &SceneManagerModule::SaveEmitterFallback));
     }
@@ -1231,7 +1255,8 @@ DAVA::FilePath SceneManagerModule::GetSceneSavePath(const DAVA::RefPtr<SceneEdit
 
 DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName)
 {
-    DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastSaveEmitterDir).AsFilePath();
+    CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+    DAVA::FilePath defaultPath = settings->emitterSaveDir;
     if (defaultPath.IsEmpty())
     {
         ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
@@ -1254,7 +1279,7 @@ DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entit
     DAVA::FilePath result(savePath.toStdString());
     if (!result.IsEmpty())
     {
-        SettingsManager::SetValue(Settings::Internal_ParticleLastSaveEmitterDir, DAVA::VariantType(result));
+        settings->emitterSaveDir = result;
     }
 
     return result;

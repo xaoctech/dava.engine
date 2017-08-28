@@ -19,15 +19,9 @@ if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
     set( DEPLOY_BEAST_DIR ${DEPLOY_DIR} )
 endif()
 
-set ( DAVA_COREV2 1 )
-
-dava_add_definitions       (
--D__DAVAENGINE_COREV2__
-)
-
 list(APPEND DAVA_COMPONENTS "Sound")
-# list(APPEND DAVA_COMPONENTS "PhysicsModule")
-# list(APPEND DAVA_COMPONENTS "PhysicsDebugModule")
+list(APPEND DAVA_COMPONENTS "PhysicsModule")
+list(APPEND DAVA_COMPONENTS "PhysicsDebugModule")
 list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
 list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
 list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
@@ -37,18 +31,20 @@ find_package( DavaTools REQUIRED )
 find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
 find_package( QtHelpers REQUIRED )
+find_package( DocDirSetup REQUIRED )
+
+if (NOT PUBLIC_BUILD)
+    find_package( SpeedTree REQUIRED )
+endif()
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
+find_package( QtTools REQUIRED )
 find_package( RemoteTool REQUIRED )
-# find_package( EditorPhysics REQUIRED )
+find_package( EditorPhysics REQUIRED )
 
-#
 
-include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}" )
-include_directories   ( "${DAVA_SPEEDTREE_ROOT_DIR}/Sources" )
 include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/wrapper" )
 include_directories   ( "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/beast/include" )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
@@ -85,9 +81,6 @@ dava_add_definitions       (
 -DDAVA_QT
 )
 
-if (NOT PUBLIC_BUILD)
-    dava_add_definitions(-D__DAVAENGINE_SPEEDTREE__)
-endif()
 
 if (DEPLOY)
     dava_add_definitions(-DDEPLOY_BUILD)
@@ -130,8 +123,7 @@ endif()
 
 set ( Generated          ${UI_APP_HDRS} ${RCC_APP_SRCS} )
 
-define_source ( SOURCE "Classes" ${BEAST_WRAPPER} ${DAVA_SPEEDTREE_ROOT_DIR}/Sources "DataQt"
-                GROUP_SOURCE Generated )
+define_source ( SOURCE "Classes" ${BEAST_WRAPPER} "DataQt" GROUP_SOURCE Generated )
 
 set( MIX_APP_DATA         "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                           "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )

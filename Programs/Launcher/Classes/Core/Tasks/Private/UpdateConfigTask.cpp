@@ -5,10 +5,17 @@
 
 #include "Gui/MainWindow.h"
 
-UpdateConfigTask::UpdateConfigTask(ApplicationManager* appManager, const std::vector<QUrl>& urls_)
+#include <QBuffer>
+
+UpdateConfigTask::UpdateConfigTask(ApplicationManager* appManager, const std::vector<QUrl>& urls)
     : AsyncChainTask(appManager)
-    , urls(urls_)
 {
+    for (const QUrl& url : urls)
+    {
+        QBuffer* buffer = new QBuffer(this);
+        buffer->open(QIODevice::ReadWrite);
+        buffers[url] = buffer;
+    }
 }
 
 QString UpdateConfigTask::GetDescription() const
@@ -20,7 +27,7 @@ void UpdateConfigTask::Run()
 {
     appManager->GetRemoteConfig()->Clear();
     QString description = QObject::tr("Downloading configuration");
-    std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, urls);
+    std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, buffers);
     Q_ASSERT(task != nullptr);
     appManager->AddTaskWithNotifier(std::move(task), notifier);
 }
@@ -38,10 +45,12 @@ void UpdateConfigTask::OnFinished(const BaseTask* task)
         Q_ASSERT(task->GetTaskType() == BaseTask::DOWNLOAD_TASK);
 
         const DownloadTask* downloadTask = static_cast<const DownloadTask*>(task);
-        for (const QByteArray& data : downloadTask->GetLoadedData())
+        for (auto& bufferItem : buffers)
         {
+            QBuffer* buffer = static_cast<QBuffer*>(bufferItem.second);
+            Q_ASSERT(buffer->size() > 0);
             //old code, need to be refactored
-            if (remoteConfig->ParseJSON(data, this))
+            if (remoteConfig->ParseJSON(buffer->data(), this))
             {
                 QString webPageUrl = remoteConfig->GetWebpageURL();
                 if (webPageUrl.isEmpty() == false)

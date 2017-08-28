@@ -5,7 +5,7 @@
 #include <TArc/Models/RecentMenuItems.h>
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class ProjectManagerData;
 class ProjectManagerModule : public DAVA::TArc::ClientModule
@@ -33,7 +33,7 @@ private:
 private:
     std::unique_ptr<RecentMenuItems> recentProjects;
     DAVA::TArc::QtConnections connections;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
     std::unique_ptr<ProjectResources> projectResources;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerModule, DAVA::TArc::ClientModule)

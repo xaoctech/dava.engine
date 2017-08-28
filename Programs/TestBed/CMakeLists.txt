@@ -34,8 +34,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
-    list ( APPEND DAVA_COMPONENTS "PhysicsDebug" )
+    list ( APPEND DAVA_COMPONENTS "PhysicsModule" )
+    list ( APPEND DAVA_COMPONENTS "PhysicsDebugModule" )
 endif()
 
 if (DAVA_PLATFORM_QT)
@@ -59,9 +59,10 @@ endif()
 
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
+find_package( LoggerService REQUIRED )
+find_package( MemoryProfilerService REQUIRED )
 find_package( EmbeddedWebServer REQUIRED )
-
-
+find_package( DocDirSetup REQUIRED )
 include_directories   ( "Classes" )
 include_directories   ( "Classes/Infrastructure" )
 

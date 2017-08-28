@@ -55,16 +55,16 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
 
             switch (packet->type)
             {
-            case PACKET_ADD_REQUEST:
+            case PACKET_ADD_CHUNK_REQUEST:
             {
-                AddRequestPacket* p = static_cast<AddRequestPacket*>(packet.get());
-                listener->OnAddToCache(channel, p->key, std::forward<CachedItemValue>(p->value));
+                AddChunkRequestPacket* p = static_cast<AddChunkRequestPacket*>(packet.get());
+                listener->OnAddChunkToCache(channel, p->key, p->dataSize, p->numOfChunks, p->chunkNumber, p->chunkData);
                 return;
             }
-            case PACKET_GET_REQUEST:
+            case PACKET_GET_CHUNK_REQUEST:
             {
-                GetRequestPacket* p = static_cast<GetRequestPacket*>(packet.get());
-                listener->OnRequestedFromCache(channel, p->key);
+                GetChunkRequestPacket* p = static_cast<GetChunkRequestPacket*>(packet.get());
+                listener->OnChunkRequestedFromCache(channel, p->key, p->chunkNumber);
                 return;
             }
             case PACKET_REMOVE_REQUEST:
@@ -91,7 +91,7 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
             }
             default:
             {
-                Logger::Error("[AssetCache::ServerNetProxy::%s] Unexpected packet type: %d", __FUNCTION__, packet->type);
+                Logger::Error("%s: Unexpected packet type: %d", __FUNCTION__, packet->type);
                 break;
             }
             }
@@ -99,7 +99,7 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
     }
     else
     {
-        Logger::Error("[AssetCache::ServerNetProxy::%s] Empty packet is received.", __FUNCTION__);
+        Logger::Error("%s: Empty packet is received.", __FUNCTION__);
     }
 }
 
@@ -149,11 +149,11 @@ bool ServerNetProxy::SendCleared(Net::IChannel* channel, bool cleared)
     return false;
 }
 
-bool ServerNetProxy::SendData(Net::IChannel* channel, const CacheItemKey& key, const CachedItemValue& value)
+bool ServerNetProxy::SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData)
 {
     if (channel)
     {
-        GetResponsePacket packet(key, value);
+        GetChunkResponsePacket packet(key, dataSize, numOfChunks, chunkNumber, chunkData);
         return packet.SendTo(channel);
     }
 

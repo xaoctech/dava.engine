@@ -15,7 +15,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Utils/KeyboardProxy.h>
+#include <TArc/Utils/Utils.h>
 
 #include <UI/UIControl.h>
 #include <UI/Input/UIModalInputComponent.h>
@@ -122,6 +122,13 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
         lastMousePos = currentInput->point;
     }
 
+    if (currentInput->device == eInputDevices::MOUSE && currentInput->tapCount > 0)
+    {
+        // From a series of clicks from mouse we should detect double clicks only.
+        // Therefore third click should be interpreted as first click again, fourth click should be double click etc.
+        currentInput->tapCount = (currentInput->tapCount % 2) ? 1 : 2;
+    }
+
     eDragState newState = NoDrag;
     for (auto it = systems.rbegin(); it != systems.rend(); ++it)
     {
@@ -162,7 +169,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!Utils::IsKeyPressed(eModifierKeys::ALT))
+    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::ALT))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }

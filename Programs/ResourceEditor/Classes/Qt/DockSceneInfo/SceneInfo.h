@@ -2,8 +2,9 @@
 
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "DockProperties/PropertyEditorStateHelper.h"
-#include "QtTools/Updaters/LazyUpdater.h"
+#include "Tools/QtPropertyEditor/PropertyEditorStateHelper.h"
+
+#include <QtTools/Updaters/LazyUpdater.h>
 
 #include <QShowEvent>
 
@@ -27,6 +28,13 @@ class EditorStatisticsSystem;
 class SceneInfo : public QtPropertyEditor
 {
     Q_OBJECT
+
+protected:
+    struct SpeedTreeInfo
+    {
+        DAVA::Vector3 leafsSquareAbsolute;
+        DAVA::Vector3 leafsSquareRelative;
+    };
 
 public:
     SceneInfo(QWidget* parent = 0);
@@ -58,6 +66,8 @@ private:
     void InitializeLODSectionInFrame();
     void InitializeLODSectionForSelection();
 
+    void InitializeSpeedTreeInfoSelection();
+
     void InitializeVegetationInfoSection();
 
     void InitializeLayersSection();
@@ -66,6 +76,7 @@ private:
     void Refresh3DDrawInfo();
     void RefreshLODInfoInFrame();
     void RefreshLODInfoForSelection();
+    void RefreshSpeedTreeInfoSelection();
 
     void RefreshVegetationInfoSection();
 
@@ -90,6 +101,7 @@ private:
     void CollectSceneData();
     void CollectParticlesData();
     void ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Sprite*>& sprites);
+    void CollectSpeedInfo(const SelectableGroup* forGroup);
     void CollectSelectedRenderObjects(const SelectableGroup* selected);
     void CollectSelectedRenderObjectsRecursivly(DAVA::Entity* entity);
 
@@ -98,6 +110,8 @@ private:
     static DAVA::uint32 CalculateTextureSize(const DAVA::TexturesMap& textures);
 
     static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entity, bool onlyVisibleBatches);
+
+    static SpeedTreeInfo GetSpeedTreeInfo(DAVA::SpeedTreeObject* renderObject);
 
 protected:
     QtPosSaver posSaver;
@@ -110,6 +124,8 @@ protected:
     DAVA::TexturesMap particleTextures;
 
     DAVA::Vector<DAVA::DataNode*> dataNodesAtScene;
+
+    DAVA::Vector<SpeedTreeInfo> speedTreesInfo;
 
     DAVA::uint32 sceneTexturesSize = 0;
     DAVA::uint32 particleTexturesSize = 0;
@@ -124,5 +140,5 @@ protected:
 
     bool isUpToDate = false;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 };

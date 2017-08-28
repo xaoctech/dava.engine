@@ -1,7 +1,7 @@
 #include "RulerWidget.h"
 
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/Utils/Themes.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
 #include <QtTools/Updaters/LazyUpdater.h>
 
@@ -176,9 +176,10 @@ void RulerWidget::UpdateDoubleBufferImage()
     doubleBuffer = QPixmap(size());
     doubleBuffer.fill();
 
-    QColor rulerBackgroundColor = Themes::GetRulerWidgetBackgroungColor();
+    DAVA::TArc::ThemesSettings* themeSettings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
+    QColor rulerBackgroundColor = themeSettings->GetRulerWidgetBackgroungColor();
 
-    const QColor rulerTicksColor = Themes::GetRulerTextColor();
+    const QColor rulerTicksColor = themeSettings->GetRulerTextColor();
     static const int rulerFontSize = 10;
 
     static const int borderWidth = 2;

@@ -8,8 +8,7 @@
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class FindInDocumentController;
 class PreviewWidget;
@@ -94,7 +93,7 @@ private:
     friend class FindInDocumentController;
     std::unique_ptr<FindInDocumentController> findInDocumentController;
 
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
 

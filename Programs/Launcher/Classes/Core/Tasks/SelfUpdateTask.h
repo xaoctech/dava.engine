@@ -2,6 +2,8 @@
 
 #include "Core/Tasks/AsyncChainTask.h"
 
+#include <QFile>
+
 class ApplicationQuitController;
 
 class SelfUpdateTask : public AsyncChainTask
@@ -27,5 +29,6 @@ private:
 
     ApplicationQuitController* quitController = nullptr;
     QString url;
+    QFile fileToWrite;
     eState state = LOADING;
 };

@@ -16,6 +16,16 @@ public:
         systemIsEnabled = true;
     }
 
+    virtual void DisableSystem()
+    {
+        systemIsEnabled = false;
+    }
+
+    bool IsSystemEnabled() const
+    {
+        return systemIsEnabled;
+    }
+
 protected:
     virtual void Draw()
     {

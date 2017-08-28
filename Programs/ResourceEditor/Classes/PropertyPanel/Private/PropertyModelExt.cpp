@@ -12,8 +12,7 @@
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
@@ -41,7 +40,7 @@ struct ComponentCreator : public StaticSingleton<ComponentCreator>
     const ReflectedType* componentType = nullptr;
 };
 
-const char* chooseComponentTypeString = "Choose component type";
+const char* chooseComponentTypeString = "Choose component type for Add";
 
 struct TypeInitializer : public StaticSingleton<ComponentCreator>
 {
@@ -114,6 +113,11 @@ class ComponentCreatorComponentValue : public BaseComponentValue
 {
 public:
     ComponentCreatorComponentValue() = default;
+
+    bool IsSpannedControl() const override
+    {
+        return true;
+    }
 
 protected:
     Any GetMultipleValue() const override
@@ -316,9 +320,12 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::Proper
                     String permanentName = GetValueReflectedType(ref)->GetPermanentName();
 
                     DAVA::Reflection::Field f(permanentName, Reflection(ref), nullptr);
-                    std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
-                    node->idPostfix = FastName(Format("%u", componentIndex));
-                    children.push_back(node);
+                    if (CanBeExposed(f))
+                    {
+                        std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
+                        node->idPostfix = FastName(Format("%u", componentIndex));
+                        children.push_back(node);
+                    }
                 }
             }
 

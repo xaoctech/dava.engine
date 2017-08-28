@@ -3,6 +3,7 @@
 
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
+#include <DeviceManager/DeviceManager.h>
 #include <Input/InputSystem.h>
 #include <UI/Render/UIDebugRenderComponent.h>
 
@@ -103,7 +104,7 @@ void FullscreenTest::LoadResources()
     scene->LoadScene("~res:/3d/Objects/monkey.sc2");
 
     ScopedPtr<Camera> camera(new Camera());
-    VirtualCoordinatesSystem* vcs = DAVA::UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = DAVA::GetEngineContext()->uiControlSystem->vcs;
     float32 aspect = static_cast<float32>(vcs->GetVirtualScreenSize().dy) / vcs->GetVirtualScreenSize().dx;
     camera->SetupPerspective(70.f, aspect, 0.5f, 2500.f);
     camera->SetLeft(Vector3(1, 0, 0));
@@ -330,24 +331,30 @@ void FullscreenTest::OnPinningClick(DAVA::BaseObject* sender, void* data, void* 
     UpdateMode();
 }
 
-bool FullscreenTest::OnToggleFullscreen(DAVA::UIEvent* uie)
+bool FullscreenTest::OnToggleFullscreen(const DAVA::InputEvent& inputEvent)
 {
-    if (uie->phase == UIEvent::Phase::KEY_UP)
+    if (inputEvent.deviceType == eInputDevices::KEYBOARD && inputEvent.keyboardEvent.charCode == 0)
     {
-        Window* window = GetPrimaryWindow();
-        if ((uie->key == Key::ENTER || uie->key == Key::NUMPADENTER) && (uie->modifiers & eModifierKeys::ALT) == eModifierKeys::ALT)
+        if (inputEvent.digitalState.IsJustReleased())
         {
-            eFullscreen mode = window->GetFullscreen();
-            mode = mode == eFullscreen::On ? eFullscreen::Off : eFullscreen::On;
-            window->SetFullscreenAsync(mode);
-        }
-        else if (uie->key == Key::KEY_P && uie->modifiers == eModifierKeys::NONE)
-        {
-            eCursorCapture mode = window->GetCursorCapture();
-            mode = mode == eCursorCapture::OFF ? eCursorCapture::PINNING : eCursorCapture::OFF;
-            window->SetCursorCapture(mode);
+            Window* window = GetPrimaryWindow();
+
+            const bool altPressed = inputEvent.device->GetDigitalElementState(eInputElements::KB_LALT).IsPressed() || inputEvent.device->GetDigitalElementState(eInputElements::KB_RALT).IsPressed();
+            if ((inputEvent.elementId == eInputElements::KB_ENTER || inputEvent.elementId == eInputElements::KB_NUMPAD_ENTER) && altPressed)
+            {
+                eFullscreen mode = window->GetFullscreen();
+                mode = mode == eFullscreen::On ? eFullscreen::Off : eFullscreen::On;
+                window->SetFullscreenAsync(mode);
+            }
+            else if (inputEvent.elementId == eInputElements::KB_P)
+            {
+                eCursorCapture mode = window->GetCursorCapture();
+                mode = mode == eCursorCapture::OFF ? eCursorCapture::PINNING : eCursorCapture::OFF;
+                window->SetCursorCapture(mode);
+            }
         }
     }
+
     return false;
 }
 

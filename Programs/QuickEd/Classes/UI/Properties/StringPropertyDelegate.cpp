@@ -4,8 +4,9 @@
 #include "DAVAEngine.h"
 #include "PropertiesModel.h"
 #include "Utils/QtDavaConvertion.h"
-#include "QtTools/Utils/Utils.h"
 #include "PropertiesTreeItemDelegate.h"
+
+#include <TArc/Utils/Utils.h>
 
 StringPropertyDelegate::StringPropertyDelegate(PropertiesTreeItemDelegate* delegate)
     : BasePropertyDelegate(delegate)
@@ -39,7 +40,7 @@ void StringPropertyDelegate::setEditorData(QWidget* rawEditor, const QModelIndex
             stringValue = WideStringToQString(value.Get<DAVA::WideString>());
         }
     }
-    UnescapeString(stringValue);
+    DAVA::TArc::UnescapeString(stringValue);
 
     editor->blockSignals(true);
     editor->setText(stringValue);
@@ -55,7 +56,7 @@ bool StringPropertyDelegate::setModelData(QWidget* rawEditor, QAbstractItemModel
 
     DAVA::Any value = index.data(Qt::EditRole).value<DAVA::Any>();
 
-    QString stringValue = EscapeString(editor->text());
+    QString stringValue = DAVA::TArc::EscapeString(editor->text());
     if (value.CanGet<DAVA::String>())
     {
         value.Set<DAVA::String>(QStringToString(stringValue));

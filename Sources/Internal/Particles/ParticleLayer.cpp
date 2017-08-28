@@ -5,8 +5,15 @@
 #include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleLayer)
+{
+    ReflectionRegistrator<ParticleLayer>::Begin()
+    .End();
+}
 const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 {
   { TYPE_SINGLE_PARTICLE, "single" },
@@ -379,8 +386,8 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
 void ParticleLayer::SetSprite(const FilePath& path)
 {
     spritePath = path;
-    DVASSERT(type != TYPE_SUPEREMITTER_PARTICLES);
-    sprite.reset(Sprite::Create(spritePath));
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        sprite.reset(Sprite::Create(spritePath));
 }
 
 void ParticleLayer::SetPivotPoint(Vector2 pivot)
@@ -393,22 +400,22 @@ void ParticleLayer::SetPivotPoint(Vector2 pivot)
 void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
 {
     flowmapPath = spritePath_;
-    DVASSERT(type != TYPE_SUPEREMITTER_PARTICLES);
-    flowmap.reset(Sprite::Create(flowmapPath));
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        flowmap.reset(Sprite::Create(flowmapPath));
 }
 
 void ParticleLayer::SetNoise(const FilePath& spritePath_)
 {
     noisePath = spritePath_;
-    DVASSERT(type != TYPE_SUPEREMITTER_PARTICLES);
-    noise.reset(Sprite::Create(noisePath));
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        noise.reset(Sprite::Create(noisePath));
 }
 
 void ParticleLayer::SetAlphaRemap(const FilePath& spritePath_)
 {
     alphaRemapPath = spritePath_;
-    DVASSERT(type != TYPE_SUPEREMITTER_PARTICLES);
-    alphaRemapSprite.reset(Sprite::Create(alphaRemapPath));
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        alphaRemapSprite.reset(Sprite::Create(alphaRemapPath));
 }
 
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)

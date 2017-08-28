@@ -12,11 +12,10 @@
 #include "Classes/Commands2/Base/RECommandBatch.h"
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
 
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/Utils/Utils.h>
 
-#include "QtTools/WidgetHelpers/SharedIcon.h"
-
-#include "Entity/Component.h"
+#include <Entity/Component.h>
 
 #include <QDragMoveEvent>
 #include <QDragEnterEvent>
@@ -137,7 +136,7 @@ void MaterialTree::ShowContextMenu(const QPoint& pos)
 {
     QMenu contextMenu(this);
 
-    contextMenu.addAction(SharedIcon(":/QtIcons/zoom.png"), "Select entities", this, SLOT(OnSelectEntities()));
+    contextMenu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/zoom.png"), "Select entities", this, SLOT(OnSelectEntities()));
 
     emit ContextMenuPrepare(&contextMenu);
     contextMenu.exec(mapToGlobal(pos));

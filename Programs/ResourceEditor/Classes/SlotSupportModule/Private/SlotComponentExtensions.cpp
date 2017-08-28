@@ -15,12 +15,13 @@
 #include <TArc/Controls/ListView.h>
 #include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Utils/ReflectionHelpers.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
 
 #include <Scene3D/Systems/SlotSystem.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>
+#include <Base/Any.h>
 
 #include <QHBoxLayout>
 
@@ -219,11 +220,11 @@ private:
         .Field("filtersList", &SlotTypeFiltersComponentValue::GetTypeFilters, nullptr)
         .Field("currentFilter", &SlotTypeFiltersComponentValue::GetCurrentFilter, &SlotTypeFiltersComponentValue::SetCurrentFilter)
         .Field("autoRise", [](SlotTypeFiltersComponentValue*) { return false; }, nullptr)
-        .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
+        .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
         .Field("addButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Add type filter"; }, nullptr)
         .Field("addButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->filters.size() < DAVA::SlotComponent::MAX_FILTERS_COUNT; }, nullptr)
         .Method("addTypeFilter", &SlotTypeFiltersComponentValue::AddTypeFilter)
-        .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
+        .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
         .Field("removeButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Remove selected type filter"; }, nullptr)
         .Field("removeButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->currentFilter.empty() == false; }, nullptr)
         .Method("removeTypeFilter", &SlotTypeFiltersComponentValue::RemoveTypeFilter)
@@ -462,6 +463,14 @@ private:
             configPath = currentConfig;
             filters = currentFilters;
             RebuildItemsList();
+        }
+        else
+        {
+            DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
+            if (configPath.CanGet<DAVA::FilePath>() && scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
+            {
+                RebuildItemsList();
+            }
         }
     }
 
@@ -728,5 +737,51 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
     }
 
     return EditorComponentExtension::GetEditor(node);
+}
+
+class InvalidateSlotConfigCache : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Slot config reloading";
+        info.tooltip = "Reload config from disk";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::TArc::DataContext* ctx = params.accessor->GetActiveContext();
+        DVASSERT(ctx != nullptr);
+
+        DAVA::Any value = node->field.ref.GetValue();
+        if (value.CanCast<DAVA::FilePath>())
+        {
+            DAVA::FilePath path = value.Cast<DAVA::FilePath>();
+            SceneData* data = ctx->GetData<SceneData>();
+            DVASSERT(data != nullptr);
+            data->GetScene()->slotSystem->InvalidateConfig(path);
+        }
+        return nullptr;
+    }
+
+private:
+    DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
+};
+
+DAVA::M::CommandProducerHolder CreateSlotConfigCommandProvider()
+{
+    DAVA::M::CommandProducerHolder holder;
+    holder.AddCommandProducer(std::make_shared<InvalidateSlotConfigCache>());
+
+    return holder;
 }
 }
