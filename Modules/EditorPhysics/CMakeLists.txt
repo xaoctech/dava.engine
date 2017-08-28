@@ -1,4 +1,4 @@
-set( NAME_MODULE EditorPhycis )
+set( NAME_MODULE EditorPhysics )
 
 set( MODULE_TYPE STATIC )
 
