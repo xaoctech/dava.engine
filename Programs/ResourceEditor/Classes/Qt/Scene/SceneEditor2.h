@@ -123,7 +123,6 @@ public:
     void BeginBatch(const DAVA::String& text, DAVA::uint32 commandsCount = 1);
     void EndBatch();
 
-    void ActivateCommandStack();
     void Exec(std::unique_ptr<DAVA::Command>&& command);
     void RemoveCommands(DAVA::uint32 commandId);
 

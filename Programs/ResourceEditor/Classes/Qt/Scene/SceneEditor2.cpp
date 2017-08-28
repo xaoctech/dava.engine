@@ -446,7 +446,7 @@ DAVA::String SceneEditor2::GetUndoText() const
     const DAVA::Command* undoCommand = commandStack->GetUndoCommand();
     if (undoCommand != nullptr)
     {
-        return "Undo: " + undoCommand->GetDescription();
+        return undoCommand->GetDescription();
     }
     return DAVA::String();
 }
@@ -456,7 +456,7 @@ DAVA::String SceneEditor2::GetRedoText() const
     const DAVA::Command* redoCommand = commandStack->GetRedoCommand();
     if (redoCommand != nullptr)
     {
-        return "Redo: " + redoCommand->GetDescription();
+        return redoCommand->GetDescription();
     }
     return DAVA::String();
 }
@@ -485,11 +485,6 @@ void SceneEditor2::BeginBatch(const DAVA::String& text, DAVA::uint32 commandsCou
 void SceneEditor2::EndBatch()
 {
     commandStack->EndBatch();
-}
-
-void SceneEditor2::ActivateCommandStack()
-{
-    commandStack->Activate();
 }
 
 void SceneEditor2::Exec(std::unique_ptr<DAVA::Command>&& command)

@@ -63,7 +63,7 @@ void RECommandStack::Exec(std::unique_ptr<DAVA::Command>&& command)
 
 void RECommandStack::SetChanged()
 {
-    CommandStack::EmitCleanChanged(false);
+    CommandStack::SetCleanState(false);
 }
 
 void RECommandStack::RemoveCommands(DAVA::uint32 commandId)
@@ -89,12 +89,6 @@ void RECommandStack::RemoveCommands(DAVA::uint32 commandId)
             }
         }
     }
-}
-
-void RECommandStack::Activate()
-{
-    canUndoChanged.Emit(CanUndo());
-    canRedoChanged.Emit(CanRedo());
 }
 
 bool RECommandStack::IsUncleanCommandExists(DAVA::uint32 commandId) const

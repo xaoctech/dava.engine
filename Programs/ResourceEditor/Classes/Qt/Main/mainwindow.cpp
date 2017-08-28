@@ -646,7 +646,6 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SceneActivated(SceneEditor2* scene)
 {
-    scene->ActivateCommandStack();
     EnableSceneActions(true);
 
     LoadViewState(scene);

@@ -457,15 +457,23 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     }
 
     // Undo/Redo
+    Function<Any(String, const Any&)> makeUndoRedoText = [](String prefix, const Any& v) {
+        String descr = v.Cast<String>("");
+        if (descr.empty() == false)
+        {
+            return prefix + ": " + descr;
+        }
+
+        return prefix;
+    };
     {
         QtAction* undo = new QtAction(accessor, QIcon(":/QtIcons/edit_undo.png"), QStringLiteral("Undo"));
         undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const Any& v) {
             return v.Cast<bool>(false);
         });
+        undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
+        undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
 
-        undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), [](const Any& v) {
-            return v.Cast<String>("");
-        });
         undo->setShortcutContext(Qt::ApplicationShortcut);
         undo->setAutoRepeat(false);
         undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
@@ -487,20 +495,18 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const Any& v) {
             return v.Cast<bool>(false);
         });
-        redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), [](const Any& v) {
-            return v.Cast<String>("");
-        });
+        redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
+        redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
 
         redo->setShortcutContext(Qt::ApplicationShortcut);
         redo->setAutoRepeat(false);
         redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
 
-        connections.AddConnection(redo, &QAction::triggered, [this]()
-                                  {
-                                      ContextAccessor* accessor = GetAccessor();
-                                      DVASSERT(accessor->GetActiveContext() != nullptr);
-                                      accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Redo();
-                                  });
+        connections.AddConnection(redo, &QAction::triggered, [this]() {
+            ContextAccessor* accessor = GetAccessor();
+            DVASSERT(accessor->GetActiveContext() != nullptr);
+            accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Redo();
+        });
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));

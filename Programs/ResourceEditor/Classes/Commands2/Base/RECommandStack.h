@@ -16,8 +16,6 @@ public:
     void SetChanged();
     void RemoveCommands(DAVA::uint32 commandId);
 
-    void Activate();
-
     bool IsUncleanCommandExists(DAVA::uint32 commandId) const;
 
 private:
