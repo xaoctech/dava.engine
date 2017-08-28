@@ -67,6 +67,23 @@ private:
 private:
     struct Impl;
     std::shared_ptr<Impl> impl;
+
+    class DataWrapperWeak
+    {
+    public:
+        DataWrapperWeak() = default;
+        DataWrapperWeak(const DataWrapper wrapper)
+            : impl(wrapper.impl)
+        {
+        }
+
+        std::weak_ptr<Impl> impl;
+    };
+
+    DataWrapper(const DataWrapperWeak& weak)
+        : impl(weak.impl.lock())
+    {
+    }
 };
 
 template <typename T>
