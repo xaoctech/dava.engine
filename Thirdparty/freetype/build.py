@@ -90,7 +90,7 @@ def _build_win32(working_directory_path, root_project_path):
         'freetype.lib', 'freetype.lib',
         'freetype.lib', 'freetype.lib',
         cmake_additional_args=_cmake_args(zlib_cmake_flags),
-        static_runtime=True)
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 

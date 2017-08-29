@@ -45,7 +45,7 @@ def _download_and_extract(working_directory_path):
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    build_utils.apply_patch(os.path.abspath('patch_debug_build.diff'), working_directory_path)
+    build_utils.apply_patch(os.path.abspath('patch_debug_and_dynamic_runtime.diff'), working_directory_path)
 
     # Build only detours library excluding examples
     makefile_path=os.path.join(source_folder_path, 'src')
@@ -53,6 +53,7 @@ def _build_win32(working_directory_path, root_project_path):
     # x86 debug build
     env=build_utils.get_win32_vs_x86_env()
     env['DETOURS_TARGET_PROCESSOR']='X86'
+    env['DETOURS_RUNTIME']='DYNAMIC'
     env['DETOURS_BUILD_MODE']='DEBUG'
     env['DETOURS_CONFIG']='.debug'
     build_utils.run_process(
@@ -64,6 +65,7 @@ def _build_win32(working_directory_path, root_project_path):
     # x86 release build
     env=build_utils.get_win32_vs_x86_env()
     env['DETOURS_TARGET_PROCESSOR']='X86'
+    env['DETOURS_RUNTIME']='DYNAMIC'
     env['DETOURS_BUILD_MODE']='RELEASE'
     env['DETOURS_CONFIG']='.release'
     build_utils.run_process(
@@ -75,6 +77,7 @@ def _build_win32(working_directory_path, root_project_path):
     # x64 debug build
     env=build_utils.get_win32_vs_x64_env()
     env['DETOURS_TARGET_PROCESSOR']='X64'
+    env['DETOURS_RUNTIME']='DYNAMIC'
     env['DETOURS_BUILD_MODE']='DEBUG'
     env['DETOURS_CONFIG']='.debug'
     build_utils.run_process(
@@ -86,6 +89,7 @@ def _build_win32(working_directory_path, root_project_path):
     # x64 release build
     env=build_utils.get_win32_vs_x64_env()
     env['DETOURS_TARGET_PROCESSOR']='X64'
+    env['DETOURS_RUNTIME']='DYNAMIC'
     env['DETOURS_BUILD_MODE']='RELEASE'
     env['DETOURS_CONFIG']='.release'
     build_utils.run_process(

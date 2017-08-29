@@ -27,15 +27,6 @@ def build_for_target(target, working_directory_path, root_project_path):
 def get_download_info():
     return 'Libs/bullet'
 
-def _download(working_directory_path, root_project_path):
-    # bullet source files are inside dava.engine
-    # Copy source files to shadow directory before building
-    source_path = os.path.join(root_project_path, get_download_info())
-    target_path = os.path.join(working_directory_path, 'bullet')
-    shutil.copytree(source_path, target_path)
-
-    return target_path
-
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, get_download_info())
@@ -49,38 +40,9 @@ def _build_win32(working_directory_path, root_project_path):
             'bullet.lib', 'bullet.lib',
             'bullet.lib', 'bullet.lib',
             'bullet.lib', 'bullet.lib',
-            static_runtime=True))
-"""
-    _copy_headers(source_folder_path, build_x86_folder, root_project_path)
+            static_runtime=False))
 
-    # Copy created configuration header to root folder
-    # Required to use source folder as include path
-    # TODO: get rid of this and copy to Libs/Include directly
-    shutil.copyfile(
-        os.path.join(build_x86_folder, 'zconf.h'),
-        os.path.join(source_folder_path, 'zconf.h'))
-
-    vc_solution_path = os.path.join(source_folder_path, 'FCollada')
-    vc_solution_file = os.path.join(vc_solution_path, 'FColladaVS2010.sln')
-
-    toolset=build_config.get_msvc_toolset_ver_win32()
-    build_utils.build_vs(vc_solution_file, 'Debug', 'Win32', 'FColladaVS2010', toolset)
-    build_utils.build_vs(vc_solution_file, 'Release', 'Win32', 'FColladaVS2010', toolset)
-    build_utils.build_vs(vc_solution_file, 'Debug', 'x64', 'FColladaVS2010', toolset)
-    build_utils.build_vs(vc_solution_file, 'Release', 'x64', 'FColladaVS2010', toolset)
-
-    shutil.copyfile(os.path.join(vc_solution_path, 'Output/Debug Win32/FColladaVS2010.lib'),
-                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x86/Debug/FColladaVS2010.lib'))
-    shutil.copyfile(os.path.join(vc_solution_path, 'Output/Release Win32/FColladaVS2010.lib'),
-                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x86/Release/FColladaVS2010.lib'))
-    shutil.copyfile(os.path.join(vc_solution_path, 'Output/Debug x64/FColladaVS2010.lib'),
-                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x64/Debug/FColladaVS2010.lib'))
-    shutil.copyfile(os.path.join(vc_solution_path, 'Output/Release x64/FColladaVS2010.lib'),
-                    os.path.join(root_project_path, 'Libs/lib_CMake/win/x64/Release/FColladaVS2010.lib'))
-"""
 
 def _build_macos(working_directory_path, root_project_path):
     # TODO: build macos
-    pass
-
-
+    raise RuntimeError('Building for macos is not implemented. Do it yourself')

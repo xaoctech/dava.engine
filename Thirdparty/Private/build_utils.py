@@ -84,7 +84,7 @@ def apply_patch(patch, working_dir = '.'):
         raise RuntimeError('Failed to apply patch with return code %s' % proc.returncode)
 
 
-def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
+def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None, msbuild_args=None):
     print "Building %s for %s (%s) ..." % (project, configuration, platform)
     args = [build_config.get_msbuild_path_win32(), project, "/m", "/p:Configuration="+configuration, '/p:Platform=' + platform]
     if suppress_build_warnings:
@@ -96,6 +96,10 @@ def build_vs(project, configuration, platform='Win32', target = None, toolset = 
         args.append('/target:' + target)
     if (not env is None):
         args.append('/p:useenv=true')
+
+    if msbuild_args is not None:
+        args.extend(msbuild_args)
+
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
     for line in proc.stdout:
         print_verbose(line)
@@ -211,10 +215,10 @@ def cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_a
     sp.wait()
 
 
-def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator, sln_name, target, configuration, cmake_additional_args = []):
+def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator, sln_name, target, configuration, cmake_additional_args = [], msbuild_args=None):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
-    build_vs(os.path.join(output_folder_path, sln_name), 'Debug', configuration, target)
-    build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target)
+    build_vs(os.path.join(output_folder_path, sln_name), 'Debug', configuration, target, msbuild_args=msbuild_args)
+    build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target, msbuild_args=msbuild_args)
 
 
 def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_generator, project, target, cmake_additional_args = []):
@@ -513,11 +517,11 @@ def get_autotools_android_x86_env(toolchain_path, enable_stl=False):
     return env
 
 def get_win32_vs_x86_env():
-    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86')
+    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86', build_config.get_msvc_sdk_version_win32())
 
 
 def get_win32_vs_x64_env():
-    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86_amd64')
+    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'amd64', build_config.get_msvc_sdk_version_win32())
 
 
 def get_win10_vs_x86_env():
@@ -532,10 +536,13 @@ def get_win10_vs_arm_env():
     return _get_vs_env(build_config._get_vs_vc_path_win10(), 'x86_arm')
 
 
-def _get_vs_env(vs_path, arch):
+def _get_vs_env(vs_path, arch, sdk_ver=None):
     vsvars_path = '{}/vcvarsall.bat'.format(vs_path)
 
-    cmd = [vsvars_path, arch, '&', 'set']
+    if sdk_ver is not None:
+        cmd = [vsvars_path, arch, sdk_ver, '&', 'set']
+    else:
+        cmd = [vsvars_path, arch, '&', 'set']
     sp = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     output = sp.communicate()[0]
     output = output.split("\r\n")
@@ -568,6 +575,7 @@ def build_and_copy_libraries_win32_cmake(
         result_lib_name_x86_debug, result_lib_name_x86_release,
         result_lib_name_x64_debug, result_lib_name_x64_release,
         cmake_additional_args = [], target_lib_subdir = '',
+        msbuild_args=None,
         output_libs_path = 'Libs/lib_CMake',
         output_lib_folder='win',
         static_runtime=False):
@@ -580,8 +588,8 @@ def build_and_copy_libraries_win32_cmake(
         cmake_additional_args.append('-DCMAKE_USER_MAKE_RULES_OVERRIDE={}'.format(override_file))
 
     # Generate & build
-    cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args)
-    cmake_generate_build_vs(build_x64_folder, source_folder_path, build_config.get_cmake_generator_win32_x64(), solution_name, target_name, 'x64', cmake_additional_args)
+    cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args, msbuild_args)
+    cmake_generate_build_vs(build_x64_folder, source_folder_path, build_config.get_cmake_generator_win32_x64(), solution_name, target_name, 'x64', cmake_additional_args, msbuild_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure

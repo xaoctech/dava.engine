@@ -59,7 +59,7 @@ def _build_win32(working_directory_path, root_project_path):
             'zlib.lib', 'zlib.lib',
             'zlib.lib', 'zlib.lib',
             cmake_additional_args=['-DBUILD_SHARED_LIBS=0'],
-            static_runtime=True))
+            static_runtime=False))
 
     _copy_headers(source_folder_path, build_x86_folder, root_project_path)
 

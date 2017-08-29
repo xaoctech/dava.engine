@@ -65,7 +65,7 @@ def _build_win32(working_directory_path, root_project_path):
         'mongodb.lib', 'mongodb.lib',
         'libmongodb.lib', 'libmongodb.lib',
         'libmongodb.lib', 'libmongodb.lib',
-        static_runtime=True)
+        static_runtime=False)
 
     _copy_headers(os.path.join(source_folder_path, 'src'), root_project_path)
 

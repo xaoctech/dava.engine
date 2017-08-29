@@ -63,7 +63,7 @@ def _build_win32(working_directory_path, root_project_path):
         'spine.lib', 'spine.lib',
         output_libs_path='Modules/Spine/Libs',
         output_lib_folder='Win32',
-        static_runtime=True)
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 

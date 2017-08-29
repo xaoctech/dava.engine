@@ -58,7 +58,7 @@ def _build_win32(working_directory_path, root_project_path):
         'yaml.lib', 'yaml.lib',
         'libyaml.lib', 'libyaml.lib',
         'libyaml.lib', 'libyaml.lib',
-        static_runtime=True)
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 
