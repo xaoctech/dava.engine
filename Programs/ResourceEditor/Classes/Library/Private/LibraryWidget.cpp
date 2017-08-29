@@ -366,7 +366,7 @@ void LibraryWidget::OnAddModel()
 
 void LibraryWidget::OnEditModel()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit EditSceneRequested(fileInfo.absoluteFilePath().toStdString());
@@ -374,7 +374,7 @@ void LibraryWidget::OnEditModel()
 
 void LibraryWidget::OnConvertDae()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEConvertionRequested(fileInfo.absoluteFilePath().toStdString());
@@ -382,7 +382,7 @@ void LibraryWidget::OnConvertDae()
 
 void LibraryWidget::OnConvertAnimationsDae()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEAnimationConvertionRequested(fileInfo.absoluteFilePath().toStdString());
@@ -390,7 +390,7 @@ void LibraryWidget::OnConvertAnimationsDae()
 
 void LibraryWidget::OnRevealAtFolder()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     QtHelpers::ShowInOSFileManager(fileInfo.absoluteFilePath());
