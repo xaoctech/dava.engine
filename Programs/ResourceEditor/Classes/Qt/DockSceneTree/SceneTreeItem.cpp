@@ -696,6 +696,10 @@ const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/gravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/gravity_red.png");
     }
+    else if (force->type == DAVA::ParticleDragForce::eType::WIND)
+    {
+        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/wind_p.png") : DAVA::TArc::SharedIcon(":/QtIcons/wind_p_red.png");
+    }
 
     return DAVA::TArc::SharedIcon(":/QtIcons/turtle.png");
 }

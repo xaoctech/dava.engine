@@ -184,6 +184,16 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
+class CommandAddParticleWind : public CommandAction
+{
+public:
+    CommandAddParticleWind(DAVA::ParticleLayer* layer);
+    void Redo() override;
+
+protected:
+    DAVA::ParticleLayer* selectedLayer = nullptr;
+};
+
 // Remove particle drag
 class CommandRemoveParticleDrag : public CommandAction
 {

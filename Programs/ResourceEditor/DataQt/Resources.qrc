@@ -74,6 +74,9 @@
         <file>QtIcons/gravity.png</file>
         <file>QtIcons/gravity_red.png</file>
         <file>QtIcons/gravity_remove.png</file>
+        <file>QtIcons/wind_p.png</file>
+        <file>QtIcons/wind_p_red.png</file>
+        <file>QtIcons/wind_p_remove.png</file>
         <file>QtIcons/external.png</file>
         <file>QtIcons/layer_particle.png</file>
         <file>QtIcons/node.png</file>
