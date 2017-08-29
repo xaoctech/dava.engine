@@ -44,6 +44,10 @@ def _download(working_directory_path):
         ['git', 'clone', get_download_info()],
         process_cwd=working_directory_path,
         shell=True)
+    build_utils.run_process(
+        ['git', 'checkout', 'tags/release-1.8.0'],
+        process_cwd=source_folder_path,
+        shell=True)
 
     return source_folder_path
 
