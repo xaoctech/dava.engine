@@ -1,6 +1,6 @@
 #include "UI/Preview/Guides/GuidesController.h"
 #include "UI/Preview/Guides/GuideLabel.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"

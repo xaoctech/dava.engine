@@ -14,11 +14,13 @@ class ContextAccessor;
 class BaseEditorSystem
 {
 public:
-    BaseEditorSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
+    BaseEditorSystem(DAVA::TArc::ContextAccessor* accessor);
+
     virtual ~BaseEditorSystem() = default;
 
 protected:
-    EditorSystemsManager* systemsManager = nullptr;
+    const EditorSystemsManager* GetSystemsManager() const;
+    EditorSystemsManager* GetSystemsManager();
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
 private:
@@ -37,4 +39,6 @@ private:
     //invalidate caches or prepare to work depending on states
     virtual void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState);
     virtual void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState);
+    virtual DAVA::Map<int, DAVA::UIControl*> GetCanvasControls() const;
+    virtual void DeleteControls();
 };

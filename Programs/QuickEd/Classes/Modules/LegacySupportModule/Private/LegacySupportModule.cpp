@@ -7,11 +7,11 @@
 
 #include "Classes/Application/SettingsConverter.h"
 #include "Classes/Application/QEGlobal.h"
-#include "Classes/EditorSystems/EditorControlsView.h"
 
 #include "UI/mainwindow.h"
 #include "UI/ProjectView.h"
 #include "UI/Find/Filters/PrototypeUsagesFilter.h"
+#include "UI/Preview/PreviewWidgetSettings.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -173,8 +173,6 @@ void LegacySupportModule::InitMainWindow()
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
     ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
-
-    PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
 
     FieldDescriptor indexFieldDescr;
     indexFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();

@@ -9,15 +9,10 @@
 #include <QPixmap>
 #include <QCursor>
 
-namespace DAVA
-{
-class RenderWidget;
-}
-
 class CursorSystem final : public BaseEditorSystem
 {
 public:
-    explicit CursorSystem(DAVA::RenderWidget* renderWidget, EditorSystemsManager* doc, DAVA::TArc::ContextAccessor* accessor);
+    explicit CursorSystem(DAVA::TArc::ContextAccessor* accessor);
     ~CursorSystem() override = default;
 
 private:
@@ -29,6 +24,4 @@ private:
     QPixmap CreatePixmap(const QString& address) const;
 
     static QMap<QString, QPixmap> cursorpixes;
-
-    DAVA::RenderWidget* renderWidget = nullptr;
 };

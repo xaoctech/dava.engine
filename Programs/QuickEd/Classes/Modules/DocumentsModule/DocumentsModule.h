@@ -35,7 +35,6 @@ protected:
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
 private:
-    void InitEditorSystems();
     void InitCentralWidget();
     void InitGlobalData();
 
@@ -71,6 +70,8 @@ private:
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
 
+    void OnEmulationModeChanged(bool mode);
+
     //previewWidget helper functions
     void ChangeControlText(ControlNode* node);
 
@@ -88,7 +89,6 @@ private:
     void OnSelectInFileSystem();
 
     PreviewWidget* previewWidget = nullptr;
-    std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
 
     friend class FindInDocumentController;

@@ -1,6 +1,6 @@
 #include "Input/InputSystem.h"
 
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 
 #include "Classes/EditorSystems/EditorTransformSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
@@ -198,10 +198,10 @@ void CreateMagnetLinesForPivot(DAVA::Vector<MagnetLineInfo>& magnetLines, DAVA::
 }
 }
 
-EditorTransformSystem::EditorTransformSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
-    : BaseEditorSystem(parent, accessor)
+EditorTransformSystem::EditorTransformSystem(DAVA::TArc::ContextAccessor* accessor)
+    : BaseEditorSystem(accessor)
 {
-    systemsManager->activeAreaChanged.Connect(this, &EditorTransformSystem::OnActiveAreaChanged);
+    GetSystemsManager()->activeAreaChanged.Connect(this, &EditorTransformSystem::OnActiveAreaChanged);
 }
 
 EditorTransformSystem::~EditorTransformSystem() = default;
@@ -240,7 +240,7 @@ void EditorTransformSystem::OnActiveAreaChanged(const HUDAreaInfo& areaInfo)
 EditorSystemsManager::eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput)
 {
     using namespace DAVA;
-    EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
     if (dragState == EditorSystemsManager::Transform)
     {
         if (currentInput->device == eInputDevices::MOUSE
@@ -255,7 +255,7 @@ EditorSystemsManager::eDragState EditorTransformSystem::RequireNewState(DAVA::UI
         }
     }
 
-    HUDAreaInfo areaInfo = systemsManager->GetCurrentHUDArea();
+    HUDAreaInfo areaInfo = GetSystemsManager()->GetCurrentHUDArea();
     if (areaInfo.area != HUDAreaInfo::NO_AREA
         && currentInput->phase == UIEvent::Phase::DRAG
         && currentInput->mouseButton == eMouseButtons::LEFT
@@ -276,7 +276,7 @@ bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
         return false;
     }
 
-    EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
     if (dragState == EditorSystemsManager::Transform || currentInput->device == eInputDevices::KEYBOARD)
     {
         return true;
@@ -390,7 +390,7 @@ void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
-    Vector2 delta = systemsManager->GetMouseDelta();
+    Vector2 delta = GetSystemsManager()->GetMouseDelta();
     switch (activeArea)
     {
     case HUDAreaInfo::FRAME_AREA:
@@ -497,7 +497,7 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(DAVA::Vector2 mouseDe
             UIControl* control = node->GetControl();
             Vector<MagnetLineInfo> magnets;
             deltaPosition = AdjustMoveToNearestBorder(deltaPosition, magnets, gd, control);
-            systemsManager->magnetLinesChanged.Emit(magnets);
+            GetSystemsManager()->magnetLinesChanged.Emit(magnets);
         };
         const UIGeometricData* gd = nodeInfo->parentGD;
 
@@ -912,7 +912,7 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(DAVA::Vect
     {
         magnets.clear();
     }
-    systemsManager->magnetLinesChanged.Emit(magnets);
+    GetSystemsManager()->magnetLinesChanged.Emit(magnets);
 
     return adjustedSize;
 }
@@ -1086,7 +1086,7 @@ DAVA::Vector2 EditorTransformSystem::AdjustPivotToNearestArea(DAVA::Vector2& del
             delta = Rotate(deltaPivot * controlSize, controlGeometricData.angle);
         }
     }
-    systemsManager->magnetLinesChanged.Emit(magnetLines);
+    GetSystemsManager()->magnetLinesChanged.Emit(magnetLines);
     return finalPivot;
 }
 

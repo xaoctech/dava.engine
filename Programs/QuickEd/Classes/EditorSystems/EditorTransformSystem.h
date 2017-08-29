@@ -23,7 +23,7 @@ class Command;
 class EditorTransformSystem : public BaseEditorSystem
 {
 public:
-    explicit EditorTransformSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
+    explicit EditorTransformSystem(DAVA::TArc::ContextAccessor* accessor);
     ~EditorTransformSystem() override;
 
     static DAVA::Vector2 GetMinimumSize();

@@ -1,6 +1,6 @@
 #include "UI/Preview/ScaleComboBoxAdapter.h"
 
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
@@ -50,7 +50,8 @@ const DAVA::Vector<DAVA::float32>& ScaleComboBoxAdapter::GetScales() const
     }
     else
     {
-        return activeContext->GetData<CanvasData>()->GetPredefinedScales();
+        CanvasData* canvasData = activeContext->GetData<CanvasData>();
+        return canvasData->GetPredefinedScales();
     }
 }
 

@@ -1,7 +1,7 @@
+#include "Modules/CanvasModule/EditorCanvas.h"
+#include "Modules/CanvasModule/CanvasModuleData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 
-#include "EditorSystems/EditorCanvas.h"
-
-#include "UI/Preview/Data/CanvasData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
@@ -12,14 +12,17 @@
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
 
-EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
-    : BaseEditorSystem(parent, accessor)
+EditorCanvas::EditorCanvas(DAVA::TArc::ContextAccessor* accessor)
+    : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
 {
-    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    UpdateViewsSystem* updateSystem = GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &EditorCanvas::UpdateMovableControlState);
 
-    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DataContext*) { return Reflection::Create(&canvasDataAdapter); });
 }
 
 bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -37,7 +40,7 @@ bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
     {
         return true;
     }
-    return (systemsManager->GetDragState() == EditorSystemsManager::DragScreen &&
+    return (GetSystemsManager()->GetDragState() == EditorSystemsManager::DragScreen &&
             (currentInput->mouseButton == eMouseButtons::LEFT || currentInput->mouseButton == eMouseButtons::MIDDLE));
 }
 
@@ -93,10 +96,27 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
         else
         {
             Vector2 position = canvasDataAdapter.GetPosition();
-            Vector2 delta = systemsManager->GetMouseDelta();
+            Vector2 delta = GetSystemsManager()->GetMouseDelta();
             canvasDataAdapter.SetPosition(position - delta);
         }
     }
+}
+
+DAVA::Map<int, DAVA::UIControl*> EditorCanvas::GetCanvasControls() const
+{
+    CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
+    return { { 0, canvasModuleData->canvas.Get() } };
+}
+
+void EditorCanvas::DeleteControls()
+{
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
+    if (updateSystem != nullptr)
+    {
+        updateSystem->beforeRender.Disconnect(this);
+    }
+    CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
+    canvasModuleData->canvas = nullptr;
 }
 
 EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* currentInput)
@@ -156,33 +176,34 @@ DAVA::float32 EditorCanvas::GetScaleFromWheelEvent(DAVA::int32 ticksCount) const
 void EditorCanvas::OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition)
 {
     using namespace DAVA;
-
+    CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
+    UIControl* canvas = canvasModuleData->canvas.Get();
     //right now we scale and move the same UIControl
     //because there is no reason to have another UIControl for moving only
-    UIControl* movableControl = systemsManager->GetScalableControl();
     if (movableControlPosition.CanGet<Vector2>())
     {
         Vector2 position = movableControlPosition.Get<Vector2>();
-        movableControl->SetPosition(position);
+        canvas->SetPosition(position);
     }
     else
     {
-        movableControl->SetPosition(Vector2(0.0f, 0.0f));
+        canvas->SetPosition(Vector2(0.0f, 0.0f));
     }
 }
 
 void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
 {
     using namespace DAVA;
-    UIControl* scalableControl = systemsManager->GetScalableControl();
+    CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
+    UIControl* canvas = canvasModuleData->canvas.Get();
     if (scaleValue.CanGet<float32>())
     {
         float32 scale = scaleValue.Get<float32>();
-        scalableControl->SetScale(Vector2(scale, scale));
+        canvas->SetScale(Vector2(scale, scale));
     }
     else
     {
-        scalableControl->SetScale(Vector2(1.0f, 1.0f));
+        canvas->SetScale(Vector2(1.0f, 1.0f));
     }
 }
 

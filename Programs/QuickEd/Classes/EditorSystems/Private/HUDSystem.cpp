@@ -123,19 +123,22 @@ class HUDControl : public UIControl
     }
 };
 
-HUDSystem::HUDSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
-    : BaseEditorSystem(parent, accessor)
+HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
+    : BaseEditorSystem(accessor)
     , sortedControlList(CompareByLCA)
 {
-    systemsManager->highlightNode.Connect(this, &HUDSystem::OnHighlightNode);
-    systemsManager->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
+    GetSystemsManager()->highlightNode.Connect(this, &HUDSystem::OnHighlightNode);
+    GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 
     InitFieldBinder();
+
+    hudControl.Set(new DAVA::UIControl());
+    hudControl->SetName("hud_control");
 }
 
 HUDSystem::~HUDSystem()
 {
-    DVASSERT(systemsManager->GetDragState() != EditorSystemsManager::SelectByRect);
+    DVASSERT(GetSystemsManager()->GetDragState() != EditorSystemsManager::SelectByRect);
 }
 
 void HUDSystem::InitFieldBinder()
@@ -164,7 +167,7 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
         {
             if (nullptr != controlNode && nullptr != controlNode->GetControl())
             {
-                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, systemsManager->GetHUDControl());
+                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, hudControl.Get());
                 sortedControlList.insert(controlNode);
             }
         }
@@ -172,7 +175,7 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
 
     UpdateAreasVisibility();
     ProcessCursor(hoveredPoint, SEARCH_BACKWARD);
-    ControlNode* node = systemsManager->GetControlNodeAtPoint(hoveredPoint);
+    ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
     OnHighlightNode(node);
 }
 
@@ -191,7 +194,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
         ProcessCursor(hoveredPoint, searchOrder);
         break;
     case UIEvent::Phase::DRAG:
-        if (systemsManager->GetDragState() == EditorSystemsManager::SelectByRect)
+        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::SelectByRect)
         {
             Vector2 point(pressedPoint);
             Vector2 size(hoveredPoint - pressedPoint);
@@ -207,7 +210,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
             }
 
             selectionRectControl->SetRect(Rect(point, size));
-            systemsManager->selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
+            GetSystemsManager()->selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
         break;
     default:
@@ -219,7 +222,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
         )
     {
         HUDAreaInfo::eArea activeArea = activeAreaInfo.area;
-        ControlNode* node = systemsManager->GetControlNodeAtPoint(hoveredPoint);
+        ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
         if (activeArea == HUDAreaInfo::NO_AREA || (activeArea == HUDAreaInfo::FRAME_AREA && node != activeAreaInfo.owner))
         {
             OnHighlightNode(node);
@@ -234,10 +237,9 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
 void HUDSystem::OnHighlightNode(ControlNode* node)
 {
     using namespace DAVA::TArc;
-    UIControl* hudControl = systemsManager->GetHUDControl();
     if (hoveredNodeControl != nullptr)
     {
-        hoveredNodeControl->RemoveFromParent(hudControl);
+        hoveredNodeControl->RemoveFromParent(hudControl.Get());
         hoveredNodeControl = nullptr;
     }
 
@@ -256,14 +258,12 @@ void HUDSystem::OnHighlightNode(ControlNode* node)
         UIControl* targetControl = node->GetControl();
         DVASSERT(hoveredNodeControl == nullptr);
         hoveredNodeControl = CreateHighlightRect(node, GetAccessor());
-        hoveredNodeControl->AddToParent(hudControl);
+        hoveredNodeControl->AddToParent(hudControl.Get());
     }
 }
 
 void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 {
-    UIControl* hudControl = systemsManager->GetHUDControl();
-
     static const float32 extraSizeValue = 50.0f;
     DVASSERT(magnetControls.size() == magnetTargetControls.size());
 
@@ -343,7 +343,7 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 
 void HUDSystem::ProcessCursor(const Vector2& pos, eSearchOrder searchOrder)
 {
-    if (systemsManager->GetDragState() == EditorSystemsManager::SelectByRect)
+    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::SelectByRect)
     {
         return;
     }
@@ -394,7 +394,7 @@ void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
     if (activeAreaInfo.area != areaInfo.area || activeAreaInfo.owner != areaInfo.owner)
     {
         activeAreaInfo = areaInfo;
-        systemsManager->activeAreaChanged.Emit(activeAreaInfo);
+        GetSystemsManager()->activeAreaChanged.Emit(activeAreaInfo);
     }
 }
 
@@ -423,13 +423,12 @@ void HUDSystem::UpdateAreasVisibility()
 
 void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState)
 {
-    UIControl* hudControl = systemsManager->GetHUDControl();
     switch (currentState)
     {
     case EditorSystemsManager::SelectByRect:
         DVASSERT(selectionRectControl == nullptr);
         selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT, accessor));
-        selectionRectControl->AddToParent(hudControl);
+        selectionRectControl->AddToParent(hudControl.Get());
         break;
     case EditorSystemsManager::Transform:
         OnHighlightNode(nullptr);
@@ -445,7 +444,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
     {
     case EditorSystemsManager::SelectByRect:
         DVASSERT(selectionRectControl != nullptr);
-        selectionRectControl->RemoveFromParent(hudControl);
+        selectionRectControl->RemoveFromParent(hudControl.Get());
         selectionRectControl = nullptr;
         break;
     case EditorSystemsManager::Transform:
@@ -464,25 +463,34 @@ void HUDSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState, Edito
     UpdateHUDEnabled();
 }
 
+DAVA::Map<int, DAVA::UIControl*> HUDSystem::GetCanvasControls() const
+{
+    return { { 2, hudControl.Get() } };
+}
+
+void HUDSystem::DeleteControls()
+{
+    hudControl = nullptr;
+}
+
 bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
 {
     using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
-    UIControl* hudControl = systemsManager->GetHUDControl();
-    if (hudControl->GetParent() == nullptr || activeContext == nullptr)
+    if (hudControl->IsVisible() == false || activeContext == nullptr)
     {
         return false;
     }
-    EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
-    EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+    EditorSystemsManager::eDisplayState displayState = GetSystemsManager()->GetDisplayState();
+    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
     return (displayState == EditorSystemsManager::Edit || displayState == EditorSystemsManager::Preview)
     && dragState != EditorSystemsManager::Transform;
 }
 
 EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput)
 {
-    EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
     if (currentInput->device != eInputDevices::MOUSE || dragState == EditorSystemsManager::Transform || dragState == EditorSystemsManager::DragScreen)
     {
         return EditorSystemsManager::NoDrag;
@@ -508,7 +516,7 @@ EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* curre
             DVASSERT(node->GetControl() != nullptr);
             return visibleProp->GetVisibleInEditor() && node->GetControl()->IsPointInside(point);
         };
-        systemsManager->CollectControlNodes(std::back_inserter(nodesUnderPoint), predicate);
+        GetSystemsManager()->CollectControlNodes(std::back_inserter(nodesUnderPoint), predicate);
         bool noHudableControls = nodesUnderPoint.empty() || (nodesUnderPoint.size() == 1 && nodesUnderPoint.front()->GetParent()->GetControl() == nullptr);
 
         if (noHudableControls)
@@ -534,17 +542,9 @@ void HUDSystem::ClearMagnetLines()
 
 void HUDSystem::UpdateHUDEnabled()
 {
-    UIControl* hudControl = systemsManager->GetHUDControl();
-    bool enabled = systemsManager->GetDragState() != EditorSystemsManager::DragScreen
-    && systemsManager->GetDisplayState() == EditorSystemsManager::Edit;
-    if (enabled)
-    {
-        systemsManager->GetRootControl()->AddControl(hudControl);
-    }
-    else
-    {
-        systemsManager->GetRootControl()->RemoveControl(hudControl);
-    }
+    bool enabled = GetSystemsManager()->GetDragState() != EditorSystemsManager::DragScreen
+    && GetSystemsManager()->GetDisplayState() == EditorSystemsManager::Edit;
+    hudControl->SetVisibilityFlag(enabled);
 }
 
 ControlTransformationSettings* HUDSystem::GetSettings()

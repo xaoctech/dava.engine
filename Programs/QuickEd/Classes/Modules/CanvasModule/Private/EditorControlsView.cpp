@@ -1,4 +1,5 @@
-#include "EditorSystems/EditorControlsView.h"
+#include "Modules/CanvasModule/EditorControlsView.h"
+
 #include "EditorSystems/EditorSystemsManager.h"
 
 #include "Model/PackageHierarchy/PackageBaseNode.h"
@@ -8,7 +9,8 @@
 
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
+#include "UI/Preview/PreviewWidgetSettings.h"
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataListener.h>
@@ -23,17 +25,6 @@
 #include <Base/BaseTypes.h>
 
 using namespace DAVA;
-
-DAVA_VIRTUAL_REFLECTION_IMPL(PreviewWidgetSettings)
-{
-    DAVA::ReflectionRegistrator<PreviewWidgetSettings>::Begin()[DAVA::M::DisplayName("Preview widget"), DAVA::M::SettingsSortKey(70)]
-    .ConstructorByPointer()
-    .Field("backgroundColor0", &PreviewWidgetSettings::backgroundColor0)[DAVA::M::DisplayName("Background color 0")]
-    .Field("backgroundColor1", &PreviewWidgetSettings::backgroundColor1)[DAVA::M::DisplayName("Background color 1")]
-    .Field("backgroundColor2", &PreviewWidgetSettings::backgroundColor2)[DAVA::M::DisplayName("Background color 2")]
-    .Field("backgroundColorIndex", &PreviewWidgetSettings::backgroundColorIndex)[DAVA::M::DisplayName("Background color index"), DAVA::M::HiddenField()]
-    .End();
-}
 
 namespace EditorControlsViewDetails
 {
@@ -341,13 +332,12 @@ bool BackgroundController::IsPropertyAffectBackground(AbstractProperty* property
     return std::find(std::begin(matchedNames), std::end(matchedNames), name) != std::end(matchedNames);
 }
 
-EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
-    : BaseEditorSystem(parent, accessor)
+EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::ContextAccessor* accessor)
+    : BaseEditorSystem(accessor)
     , controlsCanvas(new UIControl())
-    , canvasParent(canvasParent_)
     , packageListenerProxy(this, accessor)
 {
-    canvasParent->AddControl(controlsCanvas.Get());
+    canvas->AddControl(controlsCanvas.Get());
     controlsCanvas->SetName(FastName("controls_canvas"));
 
     InitFieldBinder();
@@ -362,7 +352,10 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
 
 EditorControlsView::~EditorControlsView()
 {
-    canvasParent->RemoveControl(controlsCanvas.Get());
+}
+
+void EditorControlsView::DeleteControls()
+{
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
@@ -426,7 +419,7 @@ void EditorControlsView::ControlPropertyWasChanged(ControlNode* node, AbstractPr
         return;
     }
 
-    if (systemsManager->GetDragState() != EditorSystemsManager::Transform)
+    if (GetSystemsManager()->GetDragState() != EditorSystemsManager::Transform)
     {
         if (BackgroundController::IsPropertyAffectBackground(property))
         {
@@ -452,7 +445,7 @@ void EditorControlsView::BeforeRendering()
 {
     if (needRecalculateBgrBeforeRender)
     {
-        if (systemsManager->GetDragState() == EditorSystemsManager::Transform)
+        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::Transform)
         { // do not recalculate while control is dragged
             return;
         }

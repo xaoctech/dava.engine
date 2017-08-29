@@ -1,11 +1,13 @@
-#include "Classes/Application/SettingsConverter.h"
-#include "Classes/EditorSystems/ControlTransformationSettings.h"
-#include "Classes/EditorSystems/UserAssetsSettings.h"
-#include "Classes/EditorSystems/EditorControlsView.h"
-#include "Classes/EditorSystems/PixelGrid.h"
-#include "Classes/EditorSystems/SelectionSystem.h"
+#include "Application/SettingsConverter.h"
+#include "EditorSystems/ControlTransformationSettings.h"
+#include "EditorSystems/UserAssetsSettings.h"
+#include "EditorSystems/SelectionSystem.h"
 
-#include "Classes/Modules/PreferencesModule/PreferencesData.h"
+#include "Modules/CanvasModule/EditorControlsView.h"
+#include "Modules/PreferencesModule/PreferencesData.h"
+#include "Modules/PixelGridModule/PixelGrid.h"
+
+#include "UI/Preview/PreviewWidgetSettings.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>

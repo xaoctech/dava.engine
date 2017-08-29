@@ -20,7 +20,7 @@ class ControlTransformationSettings;
 class HUDSystem : public BaseEditorSystem
 {
 public:
-    HUDSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
+    HUDSystem(DAVA::TArc::ContextAccessor* accessor);
     ~HUDSystem() override;
 
 private:
@@ -31,12 +31,15 @@ private:
     };
     struct HUD;
 
-    void InitFieldBinder();
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
     void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
+    DAVA::Map<int, DAVA::UIControl*> GetCanvasControls() const override;
+    void DeleteControls() override;
+
+    void InitFieldBinder();
 
     void OnSelectionChanged(const DAVA::Any& selection);
     void OnHighlightNode(ControlNode* node);
@@ -67,4 +70,6 @@ private:
     SortedControlNodeSet sortedControlList;
     std::unique_ptr<ControlContainer> hoveredNodeControl;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+
+    DAVA::RefPtr<DAVA::UIControl> hudControl;
 };
