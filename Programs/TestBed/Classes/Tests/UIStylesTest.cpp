@@ -3,6 +3,7 @@
 #include <Time/SystemTimer.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/Input/UIActionBindingComponent.h>
+#include "UI/Update/UIUpdateComponent.h"
 #include <Utils/StringFormat.h>
 
 using namespace DAVA;
@@ -13,6 +14,7 @@ static const FastName STYLE_OFF = FastName("off");
 UIStylesTest::UIStylesTest(TestBed& app)
     : BaseScreen(app, "UIStylesTest")
 {
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void UIStylesTest::LoadResources()

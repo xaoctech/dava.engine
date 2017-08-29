@@ -113,6 +113,14 @@ void StaticTextTest::LoadResources()
     inputText->GetOrCreateComponent<UIFocusComponent>();
     AddControl(inputText);
 
+    debugLabel = new UIStaticText(Rect(20, 470, 400, 70));
+    debugLabel->SetFont(font);
+    debugLabel->SetTextColor(Color::White);
+    debugLabel->SetText(L"TextBlock Debug:\n");
+    debugLabel->SetTextAlign(ALIGN_LEFT);
+    debugLabel->SetMultiline(true);
+    AddControl(debugLabel);
+
     label = new UIStaticText(Rect(450, 5, 200, 20));
     label->SetFont(font);
     label->SetTextColor(Color::White);
@@ -208,6 +216,7 @@ void StaticTextTest::SetPreviewText(const DAVA::WideString& text)
         previewText->SetText(text);
     else
         previewText->SetText(text, NO_REQUIRED_SIZE);
+    UpdateDebugLabel();
 }
 
 void StaticTextTest::SetPreviewAlign(DAVA::int32 align)
@@ -218,6 +227,7 @@ void StaticTextTest::SetPreviewAlign(DAVA::int32 align)
     {
         btn->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(btn->GetTag() == align ? GREEN : RED);
     }
+    UpdateDebugLabel();
 }
 
 void StaticTextTest::SetPreviewFitting(DAVA::int32 fitting)
@@ -227,6 +237,7 @@ void StaticTextTest::SetPreviewFitting(DAVA::int32 fitting)
     {
         btn->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(btn->GetTag() == fitting ? GREEN : RED);
     }
+    UpdateDebugLabel();
 }
 
 void StaticTextTest::SetPreviewRequiredTextSize(bool enable)
@@ -235,6 +246,7 @@ void StaticTextTest::SetPreviewRequiredTextSize(bool enable)
     SetPreviewText(previewText->GetText());
     requireTextSizeButton->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(needRequiredSize ? GREEN : RED);
     requireTextSizeButton->SetStateText(0xFF, needRequiredSize ? L"On" : L"Off");
+    UpdateDebugLabel();
 }
 
 void StaticTextTest::SetPreviewMultiline(int32 multilineType)
@@ -244,6 +256,7 @@ void StaticTextTest::SetPreviewMultiline(int32 multilineType)
     {
         btn->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(btn->GetTag() == multilineType ? GREEN : RED);
     }
+    UpdateDebugLabel();
 }
 
 UIButton* StaticTextTest::CreateButton(const WideString& caption, const Rect& rect, int32 tag, DAVA::Font* font, const DAVA::Message& msg)
@@ -280,4 +293,28 @@ void StaticTextTest::OnMultilineButtonClick(BaseObject* sender, void* data, void
 {
     UIButton* btn = DynamicTypeCheck<UIButton*>(sender);
     SetPreviewMultiline(btn->GetTag());
+}
+
+void StaticTextTest::UpdateDebugLabel()
+{
+    String fitting = "NONE";
+    switch (previewText->GetTextBlock()->GetFittingOptionUsed())
+    {
+    case TextBlock::eFitType::FITTING_ENLARGE:
+        fitting = "ENLARGE";
+        break;
+    case TextBlock::eFitType::FITTING_REDUCE:
+        fitting = "REDUCE";
+        break;
+    case TextBlock::eFitType::FITTING_REDUCE | TextBlock::eFitType::FITTING_ENLARGE:
+        fitting = "ENLARGE|REDUCE";
+        break;
+    case TextBlock::eFitType::FITTING_POINTS:
+        fitting = "POINTS";
+        break;
+    }
+
+    String croped = previewText->GetTextBlock()->IsVisualTextCroped() ? "true " : "false";
+
+    debugLabel->SetUtf8Text(Format("TextBlock Debug:\nIsVisualTextCroped: %s\nFittingOptionUsed: %s", croped.c_str(), fitting.c_str()));
 }

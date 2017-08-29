@@ -37,7 +37,7 @@
 #include <QtTools/Updaters/ContinuousUpdater.h>
 
 #include <UI/UIControl.h>
-#include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
 #include <UI/UIControlSystem.h>
 #include <Engine/Engine.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -413,8 +413,8 @@ bool PreviewWidget::CanChangeTextInControl(const ControlNode* node) const
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    return staticText != nullptr;
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    return textComponent != nullptr;
 }
 
 void PreviewWidget::OnMouseReleased(QMouseEvent* event)
