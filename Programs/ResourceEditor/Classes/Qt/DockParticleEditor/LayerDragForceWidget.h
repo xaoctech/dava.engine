@@ -48,7 +48,8 @@ private:
     void BuildShapeSection();
     void BuildCommonSection();
     void BuilDirectionSection();
-    void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, bool isInfinityRange);
+    void BuildGravitySection();
+    void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange);
 
     QVBoxLayout* mainLayout = nullptr;
     QLabel* forceTypeLabel = nullptr;
@@ -63,6 +64,8 @@ private:
     QWidget* radiusWidget = nullptr;
     EventFilterDoubleSpinBox* radiusSpin = nullptr;
 
+    QLabel* timingLabel = nullptr;
+    QFrame* timingTypeSeparator = nullptr;
     WheellIgnorantComboBox* timingTypeComboBox = nullptr;
     QLabel* forcePowerLabel = nullptr;
     ParticleVector3Widget* forcePower = nullptr;
@@ -74,7 +77,14 @@ private:
     QFrame* directionSeparator = nullptr;
     ParticleVector3Widget* direction = nullptr;
 
+    QFrame* gravitySeparator = nullptr;
+    QLabel* gravityLabel = nullptr;
+    EventFilterDoubleSpinBox* gravitySpin = nullptr;
+    QWidget* gravityWidget = nullptr;
+
     bool blockSignals = false;
+
+    DAVA::ParticleDragForce* selectedForce = nullptr;
 };
 
 inline DAVA::ParticleLayer* LayerDragForceWidget::GetLayer() const

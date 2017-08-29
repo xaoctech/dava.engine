@@ -70,6 +70,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     setLayout(mainLayout);
 
     BuildCommonSection();
+    BuildGravitySection();
     BuildShapeSection();
     BuildTimingSection();
     BuilDirectionSection();
@@ -82,11 +83,11 @@ void LayerDragForceWidget::BuildTimingSection()
 {
     using namespace LayerDragForceWidgetDetail;
 
-    QFrame* line = new QFrame();
-    line->setFrameShape(QFrame::HLine);
-    mainLayout->addWidget(line);
+    timingTypeSeparator = new QFrame();
+    timingTypeSeparator->setFrameShape(QFrame::HLine);
+    mainLayout->addWidget(timingTypeSeparator);
 
-    QLabel* timingLabel = new QLabel("Timing type:");
+    timingLabel = new QLabel("Timing type:");
     mainLayout->addWidget(timingLabel);
 
     timingTypeComboBox = new WheellIgnorantComboBox();
@@ -170,20 +171,34 @@ void LayerDragForceWidget::BuildCommonSection()
     mainLayout->addWidget(infinityRange);
 }
 
-void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, bool isInfinityRange)
+void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange)
 {
     using Shape = DAVA::ParticleDragForce::eShape;
     using TimingType = DAVA::ParticleDragForce::eTimingType;
+    using ForceType = DAVA::ParticleDragForce::eType;
+    bool isGravity = forceType == ForceType::GRAVITY;
 
-    boxSize->setVisible(shape == Shape::BOX && !isInfinityRange);
-    radiusWidget->setVisible(shape == Shape::SPHERE && !isInfinityRange);
-    shapeComboBox->setVisible(!isInfinityRange);
-    shapeLabel->setVisible(!isInfinityRange);
-    shapeSeparator->setVisible(!isInfinityRange);
+    boxSize->setVisible(shape == Shape::BOX && !isInfinityRange && !isGravity);
+    radiusWidget->setVisible(shape == Shape::SPHERE && !isInfinityRange && !isGravity);
+    shapeComboBox->setVisible(!isInfinityRange && !isGravity);
+    shapeLabel->setVisible(!isInfinityRange && !isGravity);
+    shapeSeparator->setVisible(!isInfinityRange && !isGravity);
 
-    forcePower->setVisible(timingType == TimingType::CONSTANT);
-    forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT);
-    forcePowerLabel->setVisible(timingType != TimingType::CONSTANT);
+    forcePower->setVisible(timingType == TimingType::CONSTANT && !isGravity);
+    forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT && !isGravity);
+    forcePowerLabel->setVisible(timingType != TimingType::CONSTANT && !isGravity);
+
+    direction->setVisible(forceType == ForceType::LORENTZ_FORCE && !isGravity);
+    directionSeparator->setVisible(forceType == ForceType::LORENTZ_FORCE && !isGravity);
+
+    // Gravity
+    infinityRange->setVisible(!isGravity);
+    gravitySeparator->setVisible(isGravity);
+    gravityLabel->setVisible(isGravity);
+    gravitySpin->setVisible(isGravity);
+    timingTypeComboBox->setVisible(!isGravity);
+    timingTypeSeparator->setVisible(!isGravity);
+    timingLabel->setVisible(!isGravity);
 }
 
 void LayerDragForceWidget::BuilDirectionSection()
@@ -194,6 +209,27 @@ void LayerDragForceWidget::BuilDirectionSection()
     direction = new ParticleVector3Widget("Force direction", DAVA::Vector3::Zero);
     connect(direction, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(direction);
+}
+
+void LayerDragForceWidget::BuildGravitySection()
+{
+    gravityWidget = new QWidget(this);
+    gravitySeparator = new QFrame(gravityWidget);
+    gravitySeparator->setFrameShape(QFrame::HLine);
+    mainLayout->addWidget(gravitySeparator);
+
+    QHBoxLayout* layout = new QHBoxLayout(this);
+    gravityLabel = new QLabel("Gravity force:");
+    gravitySpin = new EventFilterDoubleSpinBox();
+    gravitySpin->setMinimum(-100000000000000000000.0);
+    gravitySpin->setMaximum(100000000000000000000.0);
+    gravitySpin->setSingleStep(0.001);
+    gravitySpin->setDecimals(4);
+    connect(gravitySpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    gravitySpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    layout->addWidget(gravityLabel);
+    layout->addWidget(gravitySpin);
+    mainLayout->addLayout(layout);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -211,27 +247,28 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forceIndex = forceIndex_;
     blockSignals = true;
 
-    ParticleDragForce* currForce = layer->GetDragForces()[forceIndex];
-    infinityRange->setChecked(currForce->isInfinityRange);
-    isActive->setChecked(currForce->isActive);
-    boxSize->SetValue(currForce->boxSize);
-    forcePower->SetValue(currForce->forcePower);
-    radiusSpin->setValue(currForce->radius);
-    forceNameEdit->setText(QString::fromStdString(currForce->forceName));
-    forceTypeLabel->setText(forceTypes[currForce->type]);
-    direction->SetValue(currForce->direction);
+    selectedForce = layer->GetDragForces()[forceIndex];
+    infinityRange->setChecked(selectedForce->isInfinityRange);
+    isActive->setChecked(selectedForce->isActive);
+    boxSize->SetValue(selectedForce->boxSize);
+    forcePower->SetValue(selectedForce->forcePower);
+    radiusSpin->setValue(selectedForce->radius);
+    forceNameEdit->setText(QString::fromStdString(selectedForce->forceName));
+    forceTypeLabel->setText(forceTypes[selectedForce->type]);
+    direction->SetValue(selectedForce->direction);
+    gravitySpin->setValue(selectedForce->forcePower.z);
 
-    UpdateVisibility(currForce->shape, currForce->timingType, currForce->isInfinityRange);
+    UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
     static const Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
     static const Vector<QString> legends{ "Force x", "Force y", "Force z" };
 
     forcePowerTimeLine->Init(0, 1, updateMinimized, true, false);
-    forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(currForce->forcePowerLine)).GetProps(), colors, legends);
+    forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(selectedForce->forcePowerLine)).GetProps(), colors, legends);
     forcePowerTimeLine->EnableLock(true);
 
-    shapeComboBox->setCurrentIndex(ElementToIndex(currForce->shape, shapeMap));
-    timingTypeComboBox->setCurrentIndex(ElementToIndex(currForce->timingType, timingMap));
+    shapeComboBox->setCurrentIndex(ElementToIndex(selectedForce->shape, shapeMap));
+    timingTypeComboBox->setCurrentIndex(ElementToIndex(selectedForce->timingType, timingMap));
 
     blockSignals = false;
 }
@@ -265,6 +302,7 @@ void LayerDragForceWidget::OnValueChanged()
     using namespace LayerDragForceWidgetDetail;
     using Shape = ParticleDragForce::eShape;
     using TimingType = ParticleDragForce::eTimingType;
+    using ForceType = ParticleDragForce::eType;
 
     if (blockSignals)
         return;
@@ -287,7 +325,10 @@ void LayerDragForceWidget::OnValueChanged()
     params.radius = radiusSpin->value();
     params.forcePowerLine = propForce.GetPropLine();
 
-    UpdateVisibility(shape, timingType, params.useInfinityRange);
+    if (selectedForce->type == ForceType::GRAVITY)
+        params.forcePower.z = gravitySpin->value();
+
+    UpdateVisibility(shape, timingType, selectedForce->type, params.useInfinityRange);
 
     shapeComboBox->setCurrentIndex(ElementToIndex(shape, shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(timingType, timingMap));
