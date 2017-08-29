@@ -34,7 +34,7 @@ private:
         DAVA::int32 issueId = 0;
         DAVA::UnorderedSet<ControlNode*> controls;
     };
-    using DuplicationsIssuesMap = DAVA::UnorderedMap<FastName, DuplicationsIssue>;
+    using DuplicationsIssuesMap = DAVA::UnorderedMap<DAVA::FastName, DuplicationsIssue>;
 
     void ValidateNameSymbolsCorrectnessForChildren(ControlsContainerNode* node);
     void ValidateNameSymbolsCorrectness(ControlNode* node);
