@@ -45,7 +45,6 @@ void ProjectModule::PostInit()
 void ProjectModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
 {
     CloseProject();
-    DVASSERT(GetAccessor()->GetContextCount() == 0);
 }
 
 void ProjectModule::CreateActions()
