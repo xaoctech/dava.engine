@@ -1112,13 +1112,13 @@ void TextureBrowser::clearFilter()
 void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor)
 {
     DAVA::Texture* texture = textureListModel->getTexture(descriptor);
-    if (NULL != texture)
+    if (nullptr != texture)
     {
         texture->Reload();
         TextureCache::Instance()->clearOriginal(descriptor);
         TextureCache::Instance()->clearThumbnail(descriptor);
+        setTexture(texture, descriptor);
     }
-    setTexture(textureListModel->getTexture(descriptor), descriptor);
 }
 
 void TextureBrowser::textureDescriptorChanged(DAVA::TextureDescriptor* descriptor)

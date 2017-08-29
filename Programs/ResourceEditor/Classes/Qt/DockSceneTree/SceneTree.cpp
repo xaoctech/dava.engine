@@ -366,20 +366,23 @@ protected:
 
             if (entity != nullptr)
             {
-                Connect(menu.addAction(QStringLiteral("Reload Textures...")), [scene, entity]
-                        {
-                            SceneHelper::TextureCollector collector;
-                            SceneHelper::EnumerateEntityTextures(scene, entity, collector);
-                            DAVA::TexturesMap& textures = collector.GetTextures();
+                SceneHelper::TextureCollector collector;
+                SceneHelper::EnumerateEntityTextures(scene, entity, collector);
+                DAVA::TexturesMap& textures = collector.GetTextures();
 
-                            CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
-                            DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
-
-                            for (auto& tex : textures)
+                if (textures.empty() == false)
+                {
+                    Connect(menu.addAction(QStringLiteral("Reload Textures...")), [textures]
                             {
-                                tex.second->ReloadAs(gpuFormat);
-                            }
-                        });
+                                CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+                                DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
+
+                                for (auto& tex : textures)
+                                {
+                                    tex.second->ReloadAs(gpuFormat);
+                                }
+                            });
+                }
             }
         }
     }

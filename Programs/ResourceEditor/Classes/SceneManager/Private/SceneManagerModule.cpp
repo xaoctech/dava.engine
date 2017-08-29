@@ -963,14 +963,6 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
             TextureCache::Instance()->ClearCache();
         }
 
-        if (!allSceneMaterials.empty())
-        {
-            for (auto m : allSceneMaterials)
-            {
-                m->InvalidateTextureBindings();
-            }
-        }
-
         accessor->ForEachContext([](DataContext& ctx)
                                  {
                                      SceneData* data = ctx.GetData<SceneData>();
