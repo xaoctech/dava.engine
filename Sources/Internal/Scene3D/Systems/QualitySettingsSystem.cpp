@@ -628,8 +628,6 @@ size_t QualitySettingsSystem::GetMaterialQualityGroupCount() const
 
 FastName QualitySettingsSystem::GetMaterialQualityGroupName(size_t index) const
 {
-    DVASSERT(index < materialGroups.size());
-
     if (index < materialGroups.size())
     {
         return std::next(materialGroups.begin(), index)->first;
