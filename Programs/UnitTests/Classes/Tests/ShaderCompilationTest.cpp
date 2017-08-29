@@ -13,8 +13,11 @@ DAVA_TESTCLASS (ShaderCompilationTest)
         TEST_VERIFY(TestMaterial(NMaterialName::TEXTURE_LIGHTMAP_OPAQUE));
 
         TEST_VERIFY(TestMaterial(NMaterialName::TILE_MASK));
-        TEST_VERIFY(TestMaterial(NMaterialName::TILE_MASK, { NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING }));
-        TEST_VERIFY(TestMaterial(NMaterialName::TILE_MASK, { NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING }));
+        if (rhi::DeviceCaps().isInstancingSupported && rhi::DeviceCaps().isVertexTextureUnitsSupported)
+        {
+            TEST_VERIFY(TestMaterial(NMaterialName::TILE_MASK, { NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING }));
+            TEST_VERIFY(TestMaterial(NMaterialName::TILE_MASK, { NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING }));
+        }
 
         TEST_VERIFY(TestMaterial(NMaterialName::WATER_PER_PIXEL_REAL_REFLECTIONS));
         TEST_VERIFY(TestMaterial(NMaterialName::WATER_PER_PIXEL_CUBEMAP_ALPHABLEND));
