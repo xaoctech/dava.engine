@@ -1,62 +1,58 @@
 
 #include "Scene3D/Scene.h"
-#include "Render/Texture.h"
-#include "Render/3D/StaticMesh.h"
-#include "Render/Image/Image.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/RenderOptions.h"
-#include "Render/MipmapReplacer.h"
 
-#include "Time/SystemTimer.h"
-#include "FileSystem/FileSystem.h"
-
-#include "Scene3D/SceneFileV2.h"
-#include "Scene3D/DataNode.h"
-#include "Render/Highlevel/Light.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/RenderSystem.h"
-
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Systems/TransformSystem.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-#include "Scene3D/Lod/LodComponent.h"
-#include "Scene3D/Lod/LodSystem.h"
-#include "Scene3D/Systems/DebugRenderSystem.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/ParticleEffectSystem.h"
-#include "Scene3D/Systems/UpdateSystem.h"
-#include "Scene3D/Systems/LightUpdateSystem.h"
-#include "Scene3D/Systems/SwitchSystem.h"
-#include "Scene3D/Systems/ActionUpdateSystem.h"
-#include "Scene3D/Systems/WindSystem.h"
-#include "Scene3D/Systems/WaveSystem.h"
-#include "Scene3D/Systems/SkeletonSystem.h"
-#include "Scene3D/Systems/AnimationSystem.h"
-#include "Scene3D/Systems/LandscapeSystem.h"
-#include "Scene3D/Systems/SoundUpdateSystem.h"
-#include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
-#include "Scene3D/Systems/GeoDecalSystem.h"
-#include "Scene3D/Systems/SlotSystem.h"
-
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-
+#include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Concurrency/Thread.h"
-
-#include "Sound/SoundSystem.h"
-
-#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
-
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Systems/FoliageSystem.h"
-
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "UI/UIEvent.h"
+#include "FileSystem/FileSystem.h"
+#include "Render/3D/StaticMesh.h"
+#include "Render/Highlevel/Landscape.h"
+#include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/RenderPass.h"
-
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Image/Image.h"
+#include "Render/MipmapReplacer.h"
+#include "Render/RenderOptions.h"
 #include "Render/Renderer.h"
+#include "Render/Texture.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/DataNode.h"
+#include "Scene3D/Lod/LodComponent.h"
+#include "Scene3D/Lod/LodSystem.h"
+#include "Scene3D/SceneFileV2.h"
+#include "Scene3D/Systems/ActionUpdateSystem.h"
+#include "Scene3D/Systems/AnimationSystem.h"
+#include "Scene3D/Systems/DebugRenderSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
+#include "Scene3D/Systems/GeoDecalSystem.h"
+#include "Scene3D/Systems/LandscapeSystem.h"
+#include "Scene3D/Systems/LightUpdateSystem.h"
+#include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
+#include "Scene3D/Systems/ParticleEffectSystem.h"
+#include "Scene3D/Systems/RenderUpdateSystem.h"
+#include "Scene3D/Systems/SkeletonSystem.h"
+#include "Scene3D/Systems/SlotSystem.h"
+#include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
+#include "Scene3D/Systems/StaticOcclusionSystem.h"
+#include "Scene3D/Systems/SwitchSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
+#include "Scene3D/Systems/UpdateSystem.h"
+#include "Scene3D/Systems/WaveSystem.h"
+#include "Scene3D/Systems/WindSystem.h"
+#include "Sound/SoundSystem.h"
+#include "Time/SystemTimer.h"
+#include "UI/UIEvent.h"
+#include "Utils/Utils.h"
+
+#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
+#include "PhysicsDebug/PhysicsDebugDrawSystem.h"
+#endif
 
 #include <functional>
 
@@ -164,6 +160,12 @@ void EntityCache::ClearAll()
     cachedEntities.clear();
 }
 
+DAVA_VIRTUAL_REFLECTION_IMPL(Scene)
+{
+    ReflectionRegistrator<Scene>::Begin()
+    .End();
+}
+
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     : Entity()
     , systemsMask(_systemsMask)
@@ -243,6 +245,10 @@ void Scene::CreateSystems()
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
     }
+#endif
+
+#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
+    AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
 
     if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
@@ -406,6 +412,12 @@ Scene::~Scene()
         SafeDelete(systems[k]);
     systems.clear();
 
+    for (SingletonComponent* s : singletonComponents)
+    {
+        SafeDelete(s);
+    }
+    singletonComponents.clear();
+
     SafeDelete(transformSingleComponent);
 
     systemsToProcess.clear();
@@ -561,6 +573,17 @@ bool Scene::RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system)
     }
 
     return false;
+}
+
+void Scene::AddSingletonComponent(SingletonComponent* component)
+{
+    DVASSERT(GetSingletonComponent<std::remove_pointer<decltype(component)>::type>() == nullptr);
+    singletonComponents.push_back(component);
+}
+
+void Scene::RemoveSingletonComponent(SingletonComponent* component)
+{
+    FindAndRemoveExchangingWithLast(singletonComponents, component);
 }
 
 Scene* Scene::GetScene()

@@ -32,7 +32,6 @@ namespace DAVA
     to derive it from BaseObject. 
   */
 
-class InspInfo;
 class KeyedArchive;
 
 class BaseObject : public InspBase
@@ -127,11 +126,6 @@ protected:
     }
 
     Atomic<int32> referenceCount;
-
-public:
-    INTROSPECTION(BaseObject,
-                  MEMBER(referenceCount, "referenceCount", I_SAVE)
-                  )
 };
 
 template <typename T>
@@ -208,20 +202,20 @@ public:
     ObjectRegistrator(const String& name, CreateObjectFunc func, const std::type_info& typeinfo, uint32 size);
     ObjectRegistrator(const String& name, CreateObjectFunc func, const std::type_info& typeinfo, uint32 size, const String& alias);
 };
-	
+};
+
 #define REGISTER_CLASS(class_name) \
 static void* Create##class_name()\
 {\
 return new class_name();\
 };\
-static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name));
+static DAVA::ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name));
 
 #define REGISTER_CLASS_WITH_ALIAS(class_name, alias) \
 static void* Create##class_name()\
 {\
 return new class_name();\
 };\
-static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name), alias);
-};
+static DAVA::ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name), alias);
 
 #endif // __DAVAENGINE_BASEOBJECT_H__

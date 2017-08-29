@@ -135,50 +135,44 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
         scrollBar->setFocus(Qt::MouseFocusReason);
     }
 
-    void ButtonClick(QTestEventList & list, bool isUpButton, QScrollBar* scrollBar)
+    void ButtonClick(QTestEventList & list, bool isUp, QScrollBar* scrollBar)
     {
         QStyleOptionSlider opt;
         opt.initFrom(scrollBar);
 
         QStyle* style = scrollBar->style();
-        QRect rD = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarSubLine, scrollBar);
-        QRect rU = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarAddLine, scrollBar);
-        QRect r = style->subControlRect(QStyle::CC_ScrollBar, &opt, (isUpButton == true) ? QStyle::SC_ScrollBarAddLine : QStyle::SC_ScrollBarSubLine, scrollBar);
+        QRect r = style->subControlRect(QStyle::CC_ScrollBar, &opt, (isUp == true) ? QStyle::SC_ScrollBarSubLine : QStyle::SC_ScrollBarAddLine, scrollBar);
+        r.adjust(1, 1, -1, -1);
 
-        list.addMouseClick(Qt::LeftButton, Qt::KeyboardModifier(), r.center());
+        QPoint pt = (isUp == true) ? r.topLeft() : r.bottomRight();
+        list.addMouseClick(Qt::LeftButton, Qt::KeyboardModifier(), pt);
     }
 
     DAVA_TEST (RangedValueFieldTest)
     {
-        int val;
-
         using namespace ScrollBarTestDetails;
         QScrollBar* scrollBar = LookupSingleWidget<QScrollBar>(wndKey, "ScrollBar_value");
-        val = scrollBar->value();
 
         ScrollBarTestModule* module = Holder::moduleInstance;
         TEST_VERIFY(scrollBar->value() == module->model.value);
         TEST_VERIFY(scrollBar->minimum() == module->model.minimum);
         TEST_VERIFY(scrollBar->maximum() == module->model.maximum);
         TEST_VERIFY(scrollBar->pageStep() == module->model.pageStep);
-        val = scrollBar->value();
 
         // simulate scrollBar value lower than minimum
         QTestEventList events;
         SetFocus(scrollBar);
         for (int i = 0; i < 4; ++i) // 3 (current value) - 4 (single step value) == 1
-            ButtonClick(events, false, scrollBar);
+            ButtonClick(events, true, scrollBar);
         events.simulate(scrollBar);
-        val = scrollBar->value();
 
         TEST_VERIFY(scrollBar->value() == scrollBar->minimum());
         TEST_VERIFY(scrollBar->value() == module->model.value);
         TEST_VERIFY(scrollBar->value() == module->model.minimum);
 
         events.clear();
-        ButtonClick(events, true, scrollBar);
+        ButtonClick(events, false, scrollBar);
         events.simulate(scrollBar);
-        val = scrollBar->value();
         TEST_VERIFY(scrollBar->value() == module->model.minimum + 1);
         TEST_VERIFY(scrollBar->value() == module->model.value);
 
@@ -195,14 +189,14 @@ DAVA_TARC_TESTCLASS(ScrollBarTests)
 
         QTestEventList events;
         SetFocus(scrollBar);
-        ButtonClick(events, false, scrollBar);
+        ButtonClick(events, true, scrollBar);
         events.simulate(scrollBar);
         TEST_VERIFY(scrollBar->value() == readOnlyValue);
         TEST_VERIFY(scrollBar->value() == module->model.value);
 
         events.clear();
         SetFocus(scrollBar);
-        ButtonClick(events, true, scrollBar);
+        ButtonClick(events, false, scrollBar);
         events.simulate(scrollBar);
         TEST_VERIFY(scrollBar->value() == readOnlyValue);
         TEST_VERIFY(scrollBar->value() == module->model.value);

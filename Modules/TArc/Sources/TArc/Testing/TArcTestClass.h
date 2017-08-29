@@ -3,8 +3,7 @@
 #include "TArc/Core/Core.h"
 #include "TArc/Testing/MockInvoker.h"
 #include "TArc/Utils/QtConnections.h"
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 #include <UnitTests/TestClass.h>
 #include <UnitTests/UnitTests.h>
