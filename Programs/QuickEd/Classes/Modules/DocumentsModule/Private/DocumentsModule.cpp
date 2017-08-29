@@ -26,6 +26,7 @@
 #include "UI/Preview/PreviewWidget.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
+#include "UI/UIControl.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -41,7 +42,7 @@
 #include <Base/Any.h>
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
-#include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
 #include <UI/Render/UIRenderSystem.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
@@ -110,19 +111,14 @@ bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key
     return HasUnsavedDocuments() == false;
 }
 
-void DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    using namespace DAVA;
-    using namespace TArc;
-    ContextAccessor* accessor = GetAccessor();
-    accessor->ForEachContext([this](DataContext& context) {
-        SaveDocument(context.GetID());
-    });
+    return SaveAllDocuments();
 }
 
 void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    //do nothing
+    DiscardUnsavedChanges();
 }
 
 void DocumentsModule::PostInit()
@@ -658,14 +654,12 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
     DocumentData* data = activeContext->GetData<DocumentData>();
     const PackageNode* package = data->GetPackageNode();
     String controlPathStr = controlPath.toStdString();
-    ControlNode* node = package->GetPrototypes()->FindControlNodeByPath(controlPathStr);
-    if (node == nullptr)
+    Set<PackageBaseNode*> foundNodes;
+    package->GetPrototypes()->FindAllNodesByPath(controlPathStr, foundNodes);
+    package->GetPackageControlsNode()->FindAllNodesByPath(controlPathStr, foundNodes);
+    if (!foundNodes.empty())
     {
-        node = package->GetPackageControlsNode()->FindControlNodeByPath(controlPathStr);
-    }
-    if (node != nullptr)
-    {
-        data->SetSelectedNodes({ node });
+        data->SetSelectedNodes(foundNodes);
     }
 }
 
@@ -678,8 +672,8 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    DVASSERT(staticText != nullptr);
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    DVASSERT(textComponent != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
@@ -700,13 +694,18 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
         stack->BeginBatch("change text by user");
         AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("multiline");
         DVASSERT(multilineProperty != nullptr);
-        UIStaticText::eMultiline multilineType = multilineProperty->GetValue().Cast<UIStaticText::eMultiline>();
-        if (inputText.contains('\n') && multilineType == UIStaticText::MULTILINE_DISABLED)
+
+        // Update "multiline" property if need
+        if (inputText.contains('\n'))
         {
-            std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-            command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
-            data->ExecCommand(std::move(command));
+            if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
+            {
+                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+                command->AddNodePropertyValue(node, multilineProperty, Any(UITextComponent::MULTILINE_ENABLED));
+                data->ExecCommand(std::move(command));
+            }
         }
+
         std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
         command->AddNodePropertyValue(node, textProperty, Any(inputText.toStdString()));
         data->ExecCommand(std::move(command));
@@ -773,16 +772,25 @@ void DocumentsModule::CloseAllDocuments()
         params.buttons = ModalMessageParams::SaveAll | ModalMessageParams::NoToAll | ModalMessageParams::Cancel;
         params.icon = ModalMessageParams::Question;
         ModalMessageParams::Button button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
-        if (button == ModalMessageParams::Cancel)
+        if (button == ModalMessageParams::SaveAll)
+        {
+            hasUnsaved = (SaveAllDocuments() == false);
+        }
+        else if (button == ModalMessageParams::NoToAll)
+        {
+            DiscardUnsavedChanges();
+            hasUnsaved = false;
+        }
+        else
         {
             return;
         }
-        else if (button == ModalMessageParams::SaveAll)
-        {
-            SaveAllDocuments();
-        }
     }
-    DeleteAllDocuments();
+
+    if (!hasUnsaved)
+    {
+        DeleteAllDocuments();
+    }
 }
 
 void DocumentsModule::DeleteAllDocuments()
@@ -971,9 +979,8 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     if (serializer.HasErrors())
     {
         ModalMessageParams params;
-        params.title = QObject::tr("Can't save");
-        params.message = QObject::tr("Next Erros were occurred during serialization:\n");
-        params.message.append(QString::fromStdString(serializer.GetResults().GetResultMessages()));
+        params.title = QString::fromStdString(DAVA::Format("Can't save %s", data->package->GetPath().GetFilename().c_str()));
+        params.message = QString::fromStdString(serializer.GetResults().GetResultMessages());
 
         params.buttons = ModalMessageParams::Ok;
         params.icon = ModalMessageParams::Warning;
@@ -988,21 +995,32 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     return true;
 }
 
-void DocumentsModule::SaveAllDocuments()
+bool DocumentsModule::SaveAllDocuments()
 {
-    GetAccessor()->ForEachContext([this](DAVA::TArc::DataContext& context)
+    bool savedOk = true;
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
                                   {
-                                      SaveDocument(context.GetID());
+                                      savedOk = SaveDocument(context.GetID()) && savedOk;
                                   });
+    return savedOk;
 }
 
-void DocumentsModule::SaveCurrentDocument()
+bool DocumentsModule::SaveCurrentDocument()
 {
     using namespace DAVA::TArc;
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
 
-    SaveDocument(activeContext->GetID());
+    return SaveDocument(activeContext->GetID());
+}
+
+void DocumentsModule::DiscardUnsavedChanges()
+{
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
+                                  {
+                                      DocumentData* data = context.GetData<DocumentData>();
+                                      data->commandStack->SetClean();
+                                  });
 }
 
 void DocumentsModule::OnFileChanged(const QString& path)
