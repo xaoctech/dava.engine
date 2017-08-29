@@ -109,9 +109,12 @@ def build_vs(project, configuration, platform='Win32', target = None, toolset = 
         raise RuntimeError('msbuild failed with return code %s' % proc.returncode)
 
 
-def build_xcode_target(project, target, configuration):
+def build_xcode_target(project, target, configuration, xcodebuild_args):
     print "Building %s for %s ..." % (project, configuration)
-    proc = subprocess.Popen(["xcodebuild", "-project", project, "-target", target, "-configuration", configuration, "build"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    args=["xcodebuild", "-project", project, "-target", target, "-configuration", configuration, "build"]
+    if xcodebuild_args is not None:
+        args.extend(xcodebuild_args)
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     for line in proc.stdout:
         print_verbose(line)
     proc.wait()
@@ -120,9 +123,12 @@ def build_xcode_target(project, target, configuration):
         raise
 
 
-def build_xcode_alltargets(project, configuration):
+def build_xcode_alltargets(project, configuration, xcodebuild_args):
     print "Building %s for %s ..." % (project, configuration)
-    proc = subprocess.Popen(["xcodebuild", "-project", project, "-alltargets", "-configuration", configuration, "build"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    args=["xcodebuild", "-project", project, "-alltargets", "-configuration", configuration, "build"]
+    if xcodebuild_args is not None:
+        args.extend(xcodebuild_args)
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     for line in proc.stdout:
         print_verbose(line)
     proc.wait()
@@ -221,9 +227,10 @@ def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator
     build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target, msbuild_args=msbuild_args)
 
 
-def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_generator, project, target, cmake_additional_args = []):
+def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_generator, project, target, cmake_additional_args = [], xcodebuild_args=None):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
-    build_xcode_target(os.path.join(output_folder_path, project), target, 'Release')
+    build_xcode_target(os.path.join(output_folder_path, project), target, 'Release', xcodebuild_args)
+
 
 def cmake_generate_build_make(output_folder_path, src_folder_path, cmake_generator, target, cmake_additional_args = []):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
@@ -659,7 +666,10 @@ def build_and_copy_libraries_macos_cmake(
         output_libs_path='Libs/lib_CMake'):
     build_folder_macos = os.path.join(gen_folder_path, 'build_macos')
 
-    cmake_generate_build_xcode(build_folder_macos, source_folder_path, build_config.get_cmake_generator_macos(), project_name, target_name, cmake_additional_args)
+    xcodebuild_args=[
+        'MACOSX_DEPLOYMENT_TARGET='+build_config.get_macos_deployment_target(),
+    ]
+    cmake_generate_build_xcode(build_folder_macos, source_folder_path, build_config.get_cmake_generator_macos(), project_name, target_name, cmake_additional_args, xcodebuild_args=xcodebuild_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure

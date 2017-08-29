@@ -44,5 +44,13 @@ def _build_win32(working_directory_path, root_project_path):
 
 
 def _build_macos(working_directory_path, root_project_path):
-    # TODO: build macos
-    raise RuntimeError('Building for macos is not implemented. Do it yourself')
+    source_folder_path=os.path.join(root_project_path, get_download_info())
+
+    build_utils.build_and_copy_libraries_macos_cmake(
+        os.path.join(working_directory_path, 'gen'),
+        source_folder_path,
+        root_project_path,
+        'bullet.xcodeproj', 'bullet',
+        'libbullet.a',
+        'libbullet.a')
+

@@ -24,8 +24,6 @@ file(GLOB_RECURSE SRC_FILES
     "*.h"
 )
 
-if (MSVC)
-    auto_source_groups("main" "${SRC_FILES}")
-endif()
+auto_source_groups("main" "${SRC_FILES}")
 
 add_library(${PROJECT_NAME} STATIC ${SRC_FILES})

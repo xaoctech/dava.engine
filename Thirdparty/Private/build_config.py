@@ -8,6 +8,7 @@ _win10_vs = "2015"
 
 _win32_sdkver="10.0.14393.0"
 
+_macos_deployment_target="10.8"
 
 # ========================================================================
 
@@ -143,6 +144,10 @@ def get_cmake_generator_win10_arm():
 
 def get_cmake_generator_macos():
     return 'Xcode'
+
+
+def get_macos_deployment_target():
+    return _macos_deployment_target
 
 
 def get_cmake_generator_linux():
