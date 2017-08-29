@@ -51,24 +51,25 @@ class DLCDownloader
 {
 public:
     virtual ~DLCDownloader();
-    struct Hints;
-    /** Create new instance of DLCDownloader. You can customize it with
-	    ```DLCDownloader::SetHints(const Hints)``` right after creation. */
-    static DLCDownloader* Create(const Hints& hints = Hints());
-    /** Destroy downloader instance */
-    static void Destroy(DLCDownloader* downloader);
-
     /**
-		You can customize some internal parameters before start requesting
-		tasks.
-	*/
+     You can customize some internal parameters before start requesting
+     tasks.
+     */
     struct Hints
     {
+        Hints()
+        {
+        } // fix for clang++
         int32 numOfMaxEasyHandles = 8; //!< How many curl easy handles will be used
         int32 chunkMemBuffSize = 512 * 1024; //!< Max buffer size per one download operation per curl easy handler
         int32 timeout = 30; //!< Timeout in seconds for curl easy handlers to wait on connect, dns request etc.
         ProfilerCPU* profiler = nullptr; //!< performance checking
     };
+    /** Create new instance of DLCDownloader. You can customize it with
+	    ```DLCDownloader::SetHints(const Hints)``` right after creation. */
+    static DLCDownloader* Create(const Hints& hints = Hints());
+    /** Destroy downloader instance */
+    static void Destroy(DLCDownloader* downloader);
 
     /**
 		Task can be in one of next states.

@@ -1567,7 +1567,7 @@ void DLCDownloaderImpl::DownloadThreadFunc()
         {
             if (!downloading)
             {
-                DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__ "_Waiting", hints.profiler);
+                DAVA_PROFILER_CPU_SCOPE_CUSTOM("DownloadThreadFunc_Waiting", hints.profiler);
                 downloadSem.Wait();
                 downloading = true;
             }

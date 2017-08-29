@@ -110,6 +110,7 @@ private:
         uint32 mask = 0;
     };
 
+public:
     class iterator final : public base_iterator
     {
     public:
@@ -216,6 +217,7 @@ private:
         }
     };
 
+private:
     T* elements = nullptr;
     uint32 elementsCount = 0;
     uint32 mask = 0;
