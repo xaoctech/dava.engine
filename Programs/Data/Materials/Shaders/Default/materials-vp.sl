@@ -546,8 +546,8 @@ vertex_out vp_main( vertex_in input )
         float3 t = inTangent;
         float3 b = inBinormal;
 
-        float4 indices = jIndices;
-        float4 weights = jWeights;
+        float4 indices = input.index;
+        float4 weights = input.weight;
         for(int i = 0; i < SOFT_SKINNING; ++i)
         {
             float4 jointQuaternion = jointQuaternions[int(indices.x)];
