@@ -55,11 +55,6 @@ protected:
 
     const Matrix4* invWorldTransform = nullptr;
 
-public:
-    INTROSPECTION_EXTEND(SpeedTreeObject, RenderObject,
-                         PROPERTY("lightSmoothing", "Light Smoothing", GetLightSmoothing, SetLightSmoothing, I_SAVE | I_EDIT | I_VIEW)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(SpeedTreeObject, RenderObject);
 
     friend class SpeedTreeUpdateSystem;

@@ -68,6 +68,7 @@ const FastName NMaterialName::WATER_ALL_QUALITIES = FastName("~res:/Materials/Wa
 
 const FastName NMaterialTextureName::TEXTURE_ALBEDO("albedo");
 const FastName NMaterialTextureName::TEXTURE_NORMAL("normalmap");
+const FastName NMaterialTextureName::TEXTURE_SPECULAR("specularmap");
 const FastName NMaterialTextureName::TEXTURE_DETAIL("detail");
 const FastName NMaterialTextureName::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterialTextureName::TEXTURE_DECAL("decal");
@@ -86,7 +87,7 @@ const FastName NMaterialTextureName::TEXTURE_DYNAMIC_REFRACTION("dynamicRefracti
 const FastName NMaterialTextureName::TEXTURE_PARTICLES_HEATMAP("heatMap");
 const FastName NMaterialTextureName::TEXTURE_PARTICLES_RT("particlesRT");
 
-//params
+// params
 
 const FastName NMaterialParamName::PARAM_LIGHT_POSITION0("lightPosition0");
 const FastName NMaterialParamName::PARAM_PROP_AMBIENT_COLOR("ambientColor");
@@ -127,6 +128,7 @@ const FastName NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM("shadowColor");
 const FastName NMaterialParamName::DEPRECATED_LANDSCAPE_TEXTURE_0_TILING("texture0Tiling");
 const FastName NMaterialParamName::PARAM_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
 const FastName NMaterialParamName::FORCED_SHADOW_DIRECTION_PARAM("forcedShadowDirection");
+const FastName NMaterialParamName::PARAM_SPECULAR_SCALE("inSpecularity");
 
 //flags
 const FastName NMaterialFlagName::FLAG_BLENDING = FastName("BLENDING");
@@ -202,6 +204,7 @@ const FastName NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION = FastName("FORCE
 
 const FastName NMaterialFlagName::FLAG_PARTICLES_DEBUG_SHOW_HEATMAP = FastName("HEATMAP");
 const FastName NMaterialFlagName::FLAG_GEO_DECAL = FastName("GEO_DECAL");
+const FastName NMaterialFlagName::FLAG_GEO_DECAL_SPECULAR = FastName("GEO_DECAL_SPECULAR");
 
 //quality
 const FastName NMaterialQualityName::QUALITY_FLAG_NAME = FastName("Quality");

@@ -16,6 +16,7 @@
 #include "Render/RenderOptions.h"
 #include "Render/Renderer.h"
 #include "Render/Texture.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
@@ -50,6 +51,10 @@
 #include "Time/SystemTimer.h"
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
+
+#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
+#include "PhysicsDebug/PhysicsDebugDrawSystem.h"
+#endif
 
 #include <functional>
 
@@ -157,6 +162,12 @@ void EntityCache::ClearAll()
     cachedEntities.clear();
 }
 
+DAVA_VIRTUAL_REFLECTION_IMPL(Scene)
+{
+    ReflectionRegistrator<Scene>::Begin()
+    .End();
+}
+
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     : Entity()
     , systemsMask(_systemsMask)
@@ -236,6 +247,10 @@ void Scene::CreateSystems()
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
     }
+#endif
+
+#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
+    AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
 
     if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)

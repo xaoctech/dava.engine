@@ -1,11 +1,9 @@
 #include "LogDelegate.h"
 
-PUSH_QT_WARNING_SUPRESSOR
 #include <QAbstractItemView>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QMenu>
-POP_QT_WARNING_SUPRESSOR
 
 LogDelegate::LogDelegate(QAbstractItemView* _view, QObject* parent)
     : QStyledItemDelegate(parent)

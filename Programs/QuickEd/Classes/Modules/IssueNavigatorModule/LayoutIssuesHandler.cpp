@@ -19,12 +19,12 @@ LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_,
     , widget(widget_)
     , accessor(accessor_)
 {
-    UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 }
 
 LayoutIssuesHandler::~LayoutIssuesHandler()
 {
-    UIControlSystem::Instance()->GetLayoutSystem()->RemoveListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
 void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)

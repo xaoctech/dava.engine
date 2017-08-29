@@ -15,7 +15,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Utils/KeyboardProxy.h>
+#include <TArc/Utils/Utils.h>
 
 #include <UI/UIControl.h>
 #include <UI/Input/UIModalInputComponent.h>
@@ -169,7 +169,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!Utils::IsKeyPressed(eModifierKeys::ALT))
+    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::ALT))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }

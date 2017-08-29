@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QtTools/Utils/QtDelayedExecutor.h"
+#include <TArc/Utils/QtDelayedExecutor.h>
 #include <Functional/Function.h>
 
 class QTimer;
@@ -26,6 +26,6 @@ private:
     Updater updater;
     Stopper stopper;
     std::unique_ptr<QTimer> timer;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
     bool needUpdate = false;
 };

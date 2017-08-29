@@ -34,12 +34,6 @@ struct RenderBatchWithOptions : public InspBase
 
     bool operator==(const RenderBatchWithOptions& other) const;
 
-    INTROSPECTION(RenderBatchWithOptions,
-                  MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW)
-                  MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW)
-                  MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW)
-                  );
-
     DAVA_VIRTUAL_REFLECTION(RenderBatchWithOptions, InspBase);
 };
 
@@ -51,8 +45,6 @@ public:
     }
     virtual const Vector<RenderBatchWithOptions> GetRenderBatches() const = 0;
 
-public:
-    INTROSPECTION(RenderBatchProvider, NULL);
     DAVA_VIRTUAL_REFLECTION(RenderBatchProvider, BaseObject);
 };
 
@@ -277,13 +269,6 @@ public:
         {
             z = _z;
         };
-
-        INTROSPECTION(VoxelCoord,
-                      PROPERTY("level", "level", GetLevel, SetLevel, I_VIEW | I_EDIT)
-                      PROPERTY("x", "x", GetX, SetX, I_VIEW | I_EDIT)
-                      PROPERTY("y", "y", GetY, SetY, I_VIEW | I_EDIT)
-                      PROPERTY("z", "z", GetZ, SetZ, I_VIEW | I_EDIT)
-                      );
     };
     std::vector<VoxelCoord> inVisCopy;
 
@@ -316,30 +301,6 @@ protected:
     uint32 removeIndex = static_cast<uint32>(-1);
     uint16 treeNodeIndex = QuadTree::INVALID_TREE_NODE_INDEX;
     uint16 staticOcclusionIndex = INVALID_STATIC_OCCLUSION_INDEX;
-
-public:
-    INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-                         MEMBER(type, "Type", I_SAVE | I_VIEW)
-
-                         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(debugFlags, "Debug Flags", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(removeIndex, "Remove index", I_SAVE)
-                         MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("lodIndex", "Lod Index", GetLodIndex, SetLodIndex, I_VIEW | I_EDIT)
-                         PROPERTY("switchIndex", "Switch Index", GetSwitchIndex, SetSwitchIndex, I_VIEW | I_EDIT)
-
-                         PROPERTY("visibleReflection", "Visible Reflection", GetReflectionVisible, SetReflectionVisible, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("visibleRefraction", "Visible Refraction", GetRefractionVisible, SetRefractionVisible, I_SAVE | I_VIEW | I_EDIT)
-
-                         MEMBER(treeNodeIndex, "Tree Node Index", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(inVisibilityNodeCount, "Visibility Node Count", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(inVisCopy, "Visibility Nodes", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(renderBatchArray, "Render Batches", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(renderBatchProviders, "Render Batch Providers", I_SAVE | I_VIEW | I_EDIT)
-                         COLLECTION(activeRenderBatchArray, "Active Batches", I_VIEW)
-                         );
 
     DAVA_VIRTUAL_REFLECTION(RenderObject, BaseObject);
 };

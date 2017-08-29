@@ -1,16 +1,17 @@
 #pragma once
 
-#include <QtTools/Utils/QtEventIds.h>
-
 #include <Base/BaseTypes.h>
 
+#include <QEvent>
+
+#define QT_EVENT_TYPE(x) (static_cast<QEvent::Type>(x))
 namespace DAVA
 {
 namespace TArc
 {
 enum class EventsTable : DAVA::int32
 {
-    Start = static_cast<DAVA::int32>(QtToolsEventsTable::End),
+    DelayedExecute = QEvent::User + 100, // 100 events is reserved for PlatformQt implementation
     End
 };
 } // namespace TArc

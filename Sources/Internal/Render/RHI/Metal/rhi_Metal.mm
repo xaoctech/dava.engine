@@ -177,6 +177,14 @@ void Metal_InitContext()
         _Metal_DrawableDispatchSemaphore = new DAVA::Semaphore(_Metal_DrawableDispatchSemaphoreFrameCount);
     }
 
+    NSString* minPromotionSysVer = @"10.3";
+    if ([currSysVer compare:minPromotionSysVer options:NSNumericSearch] != NSOrderedAscending)
+    {
+        ::UIScreen* screen = [ ::UIScreen mainScreen];
+        int maxFPS = [screen maximumFramesPerSecond];
+        MutableDeviceCaps::Get().maxFPS = uint32(maxFPS);
+    }
+
     DAVA::uint32 maxTextureSize = 4096u;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
     if ([_Metal_Device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily1_v2] || [_Metal_Device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v2])

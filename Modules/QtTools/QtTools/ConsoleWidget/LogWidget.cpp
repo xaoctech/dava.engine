@@ -3,29 +3,27 @@
 #include "LogFilterModel.h"
 #include "LogDelegate.h"
 
-#include "QtTools/WidgetHelpers/SharedIcon.h"
-
-#include "Debug/DVAssert.h"
-#include "Base/GlobalEnum.h"
-
-PUSH_QT_WARNING_SUPRESSOR
 #include "ui_LogWidget.h"
+
+#include <TArc/Utils/Utils.h>
+#include <Debug/DVAssert.h>
+#include <Base/GlobalEnum.h>
+
 #include <QDebug>
 #include <QClipboard>
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QThread>
-POP_QT_WARNING_SUPRESSOR
 
 LogWidget::LogWidget(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::LogWidget)
 {
     ui->setupUi(this);
-    ui->toolButton_clearFilter->setIcon(SharedIcon(":/QtTools/Icons/reset.png"));
+    ui->toolButton_clearFilter->setIcon(DAVA::TArc::SharedIcon(":/QtTools/Icons/reset.png"));
     ui->toolButton_clearFilter->setToolTip(tr("Clear filter string"));
 
-    ui->toolButton_clearConsole->setIcon(SharedIcon(":/QtTools/Icons/clear.png"));
+    ui->toolButton_clearConsole->setIcon(DAVA::TArc::SharedIcon(":/QtTools/Icons/clear.png"));
     ui->toolButton_clearConsole->setToolTip(tr("Clear console window"));
 
     logModel = new LogModel(this);
