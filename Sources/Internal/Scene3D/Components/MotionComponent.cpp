@@ -1,4 +1,5 @@
 #include "Animation/AnimationClip.h"
+#include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlParser.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"

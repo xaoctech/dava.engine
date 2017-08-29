@@ -9,6 +9,7 @@
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/SkeletonAnimation/Motion.h"
 
 namespace DAVA
 {

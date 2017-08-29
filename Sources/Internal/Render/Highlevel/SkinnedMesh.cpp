@@ -109,10 +109,8 @@ void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 
 void SkinnedMesh::PrepareToRender(Camera* camera)
 {
-    if (!jointTargets.empty())
+    if (!jointTargets.empty() && skeletonFinalJointTransforms != nullptr)
     {
-        DVASSERT(skeletonFinalJointTransforms);
-
         for (RenderBatch* b : activeRenderBatchArray)
         {
             auto found = jointTargets.find(b);

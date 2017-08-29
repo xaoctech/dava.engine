@@ -2,12 +2,14 @@
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
+#include "Base/FastNameMap.h"
 #include "Reflection/Reflection.h"
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
 
 namespace DAVA
 {
 class BlendTree;
+class SkeletonComponent;
 class YamlNode;
 class Motion
 {
