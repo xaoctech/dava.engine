@@ -85,6 +85,7 @@ def _build_win32(working_directory_path, root_project_path):
 def _build_macos(working_directory_path, root_project_path):
     source_folder_path = _download(working_directory_path)
     _patch_sources(source_folder_path)
+
     build_utils.build_and_copy_libraries_macos_cmake(
         os.path.join(source_folder_path, '_build'),
         source_folder_path,
