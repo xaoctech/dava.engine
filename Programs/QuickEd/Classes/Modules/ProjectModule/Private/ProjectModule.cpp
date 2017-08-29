@@ -45,12 +45,11 @@ void ProjectModule::PostInit()
 void ProjectModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
 {
     CloseProject();
-    DVASSERT(GetAccessor()->GetContextCount() == 0);
 }
 
 void ProjectModule::CreateActions()
 {
-    const QString toolBarName("mainToolbar");
+    const QString toolBarName("Main Toolbar");
     const QString fileMenuName("File");
 
     const QString newProjectActionName("New project");
@@ -67,7 +66,7 @@ void ProjectModule::CreateActions()
         connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&ProjectModule::OnNewProject, this));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::BeforeItem }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::BeforeItem }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -79,7 +78,7 @@ void ProjectModule::CreateActions()
         connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&ProjectModule::OnOpenProject, this));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, newProjectActionName }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, newProjectActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -98,7 +97,7 @@ void ProjectModule::CreateActions()
         connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&ProjectModule::CloseProject, this));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, openProjectActionName }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, openProjectActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -116,6 +115,7 @@ void ProjectModule::CreateActions()
         separator->setObjectName("project actions separator");
         separator->setSeparator(true);
         DAVA::TArc::ActionPlacementInfo placementInfo(DAVA::TArc::CreateMenuPoint("File", DAVA::TArc::InsertionParams(InsertionParams::eInsertionMethod::AfterItem, recentProjectsActionName)));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 
@@ -378,5 +378,3 @@ namespace ProjectModuleTesting
 {
 IMPL_OPERATION_ID(CreateProjectOperation);
 }
-
-DECL_GUI_MODULE(ProjectModule);

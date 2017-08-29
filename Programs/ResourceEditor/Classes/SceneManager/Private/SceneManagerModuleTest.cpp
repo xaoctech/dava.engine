@@ -11,17 +11,14 @@
 
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include "Classes/Settings/Settings.h"
-#include "Classes/Settings/SettingsManager.h"
-
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockDefine.h>
 #include <TArc/Testing/MockListener.h>
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/ContextAccessor.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <Base/Any.h>
 #include <FileSystem/FilePath.h>
@@ -181,7 +178,6 @@ private:
 
             SceneData::TSceneType scene = data->GetScene();
             TEST_VERIFY(scene);
-            scene->Update(0.16f);
 
             ScopedPtr<Entity> entity(new Entity());
             entity->SetName(SMTest::allEntitiesName);
@@ -192,18 +188,11 @@ private:
                 {
                     Any newComponent = cType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
                     Component* component = newComponent.Cast<Component*>();
-
-                    if (cType->GetPermanentName() == "SlotComponent")
-                    { // to prevent serialization crash
-                        SlotComponent* slot = static_cast<SlotComponent*>(component);
-                        slot->SetSlotName(FastName("slotName"));
-                        slot->SetJointUID(FastName("jointName"));
-                    }
-
                     entity->AddComponent(component);
                 }
             }
 
+            scene->Update(0.16f);
             CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SMTest::testScenePath, scene.Get());
         }
 
@@ -252,15 +241,7 @@ private:
                     Component* component = newComponent.Cast<Component*>();
 
                     TEST_VERIFY(entity->GetComponentCount(component->GetType()) > 0);
-                    if (component->GetType() == Component::SLOT_COMPONENT)
-                    { // to prevent serialization crash
-                        SlotComponent* slot = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT));
-                        if (slot != nullptr)
-                        {
-                            TEST_VERIFY(slot->GetSlotName() == FastName("slotName"));
-                            TEST_VERIFY(slot->GetJointUID() == FastName("jointName"));
-                        }
-                    }
+
                     delete component;
                 }
             }
@@ -376,19 +357,15 @@ private:
         TEST_VERIFY(openSceneWrapper.HasData() == false);
         if (openSceneWrapper.HasData() == false)
         {
-            bool oldValue = SettingsManager::GetValue(Settings::General_OpenLastSceneOnLaunch).AsBool();
-            SettingsManager::SetValue(Settings::General_OpenLastSceneOnLaunch, VariantType(true));
-
+            GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->openLastScene = true;
             InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
-
-            SettingsManager::SetValue(Settings::General_OpenLastSceneOnLaunch, VariantType(oldValue));
         }
 
         TEST_VERIFY(listener.testSucceed);
         CloseActiveScene();
     }
 
-    QtDelayedExecutor recentSceneDelayedExecutor;
+    DAVA::TArc::QtDelayedExecutor recentSceneDelayedExecutor;
     DAVA::TArc::DataWrapper openResentSceneWrapper;
     std::unique_ptr<OpenSavedSceneListener> recentSceneListener;
 

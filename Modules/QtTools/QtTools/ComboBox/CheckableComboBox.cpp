@@ -1,11 +1,9 @@
 #include "CheckableComboBox.h"
 
-PUSH_QT_WARNING_SUPRESSOR
 #include <QAbstractItemView>
 #include <QListView>
 #include <QEvent>
 #include <QStylePainter>
-POP_QT_WARNING_SUPRESSOR
 
 ComboBoxModel::ComboBoxModel(QObject* parent)
     : QStandardItemModel(parent)

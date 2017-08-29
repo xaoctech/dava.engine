@@ -59,6 +59,13 @@ public:
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         STATIC_BODY_COMPONENT,
         DYNAMIC_BODY_COMPONENT,
+        BOX_SHAPE_COMPONENT,
+        CAPSULE_SHAPE_COMPONENT,
+        SPHERE_SHAPE_COMPONENT,
+        PLANE_SHAPE_COMPONENT,
+        MESH_SHAPE_COMPONENT,
+        CONVEX_HULL_SHAPE_COMPONENT,
+        HEIGHT_FIELD_SHAPE_COMPONENT,
 #endif
 
         NON_EXPORTABLE_COMPONENTS, // everything below NON_EXPORTABLE_COMPONENTS will be serialized but won't be exported
@@ -110,11 +117,6 @@ public:
 
 protected:
     Entity* entity = 0;
-
-public:
-    INTROSPECTION(Component,
-                  MEMBER(entity, "entity", I_SAVE)
-                  )
 
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };

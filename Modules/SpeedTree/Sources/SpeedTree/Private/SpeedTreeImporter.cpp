@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SpeedTree/SpeedTreeImporter.h"
 
 #include "Debug/DVAssert.h"
@@ -442,8 +440,11 @@ SpeedTreeImporter::AtlasData SpeedTreeImporter::PackLeafsTextures(const FastName
     DefinitionFile::Collection definitionFileList;
     for (const FilePath& texturePath : texturesToPack)
     {
-        definitionFileList.emplace_back(new DefinitionFile());
-        definitionFileList.back()->LoadPNG(texturePath, tempProcessDir);
+        DAVA::RefPtr<DefinitionFile> defFile(new DefinitionFile());
+        if (defFile->LoadPNG(texturePath, tempProcessDir))
+        {
+            definitionFileList.push_back(defFile);
+        }
     }
 
     if (!definitionFileList.empty())

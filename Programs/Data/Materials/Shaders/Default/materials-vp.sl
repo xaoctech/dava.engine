@@ -280,36 +280,18 @@ inline float3 FresnelShlickVec3( float NdotL, float3 Cspec )
 
 #if SOFT_SKINNING
 
-inline float3 JointTransformTangent( float3 tangent, float4 jIndices, float4 jWeights)
+inline float3 JointTransformTangent( float3 tangent, float4 quaternion, float jWeight)
 {
-    float4 indices = jIndices;
-    float4 weights = jWeights;
-    for(int i = 0; i < SOFT_SKINNING; ++i)
-    {
-        int jIndex = int(indices.x);
-        float4 jQ = jointQuaternions[jIndex];
-
-        float3 tmp = 2.0 * cross(jQ.xyz, tangent);
-        tangent += (jQ.w * tmp + cross(jQ.xyz, tmp)) * weights.x;
-        
-        indices = indices.yzwx;
-        weights = weights.yzwx;
-    }
-
-    return tangent;
+    float3 tmp = 2.0 * cross(quaternion.xyz, tangent);
+    return tangent + (quaternion.w * tmp + cross(quaternion.xyz, tmp)) * jWeight;
 }
 
 #elif HARD_SKINNING
 
-inline float3 JointTransformTangent( float3 tangent, float jointIndex )
+inline float3 JointTransformTangent( float3 tangent, float4 quaternion )
 {
-    int jIndex = int(jointIndex);
-    float4 jQ = jointQuaternions[jIndex];
-
-    float3 tmp = 2.0 * cross(jQ.xyz, tangent);
-    tangent += jQ.w * tmp + cross(jQ.xyz, tmp);
-
-    return tangent;
+    float3 tmp = 2.0 * cross(quaternion.xyz, tangent);
+    return tangent + quaternion.w * tmp + cross(quaternion.xyz, tmp);
 }
 
 #endif
@@ -559,17 +541,42 @@ vertex_out vp_main( vertex_in input )
     float3  inBinormal  = input.binormal;
     
     #if SOFT_SKINNING
-        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, input.index, input.weight), 1.0), worldViewInvTransposeMatrix ).xyz );
+
+        float3 n = inNormal;
+        float3 t = inTangent;
+        float3 b = inBinormal;
+
+        float4 indices = input.index;
+        float4 weights = input.weight;
+        for(int i = 0; i < SOFT_SKINNING; ++i)
+        {
+            float4 jointQuaternion = jointQuaternions[int(indices.x)];
+
+            n = JointTransformTangent(n, jointQuaternion, weights.x);
+            t = JointTransformTangent(t, jointQuaternion, weights.x);
+            b = JointTransformTangent(b, jointQuaternion, weights.x);
+
+            indices = indices.yzwx;
+            weights = weights.yzwx;
+        }
+
+        n = normalize( mul( float4(n, 1.0), worldViewInvTransposeMatrix ).xyz );
+        t = normalize( mul( float4(t, 1.0), worldViewInvTransposeMatrix ).xyz );
+        b = normalize( mul( float4(b, 1.0), worldViewInvTransposeMatrix ).xyz );
+
     #elif HARD_SKINNING
-        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, input.index), 1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, input.index), 1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, input.index), 1.0), worldViewInvTransposeMatrix ).xyz );
+
+        float4 jointQuaternion = jointQuaternions[int(input.index)];
+        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, jointQuaternion), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, jointQuaternion), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, jointQuaternion), 1.0), worldViewInvTransposeMatrix ).xyz );
+
     #else
+
         float3 n = normalize( mul( float4(inNormal,1.0), worldViewInvTransposeMatrix ).xyz );
         float3 t = normalize( mul( float4(inTangent,1.0), worldViewInvTransposeMatrix ).xyz );
         float3 b = normalize( mul( float4(inBinormal,1.0), worldViewInvTransposeMatrix ).xyz );
+
     #endif       
     
     // transform light and half angle vectors by tangent basis

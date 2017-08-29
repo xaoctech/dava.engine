@@ -22,6 +22,7 @@ const char* UI_DRAW = "UI::Draw";
 const char* UI_UPDATE_SYSTEM = "UIUpdateSystem";
 const char* UI_LAYOUT_SYSTEM = "UILayoutSystem";
 const char* UI_STYLE_SHEET_SYSTEM = "UIStyleSheetSystem";
+const char* UI_TEXT_SYSTEM = "UITextSystem";
 const char* UI_RENDER_SYSTEM = "UIRenderSystem";
 
 const char* UI_TEXTBLOCK_RECALC_PARAMS = "UI::TextBlock::CalculateParams";

@@ -72,6 +72,14 @@ public:
     static const FastName DEBUG_DRAW_PARTICLES_NO_DEPTH;
 
     static const FastName WATER_ALL_QUALITIES;
+
+    static const FastName WATER_PER_PIXEL_REAL_REFLECTIONS;
+    static const FastName WATER_PER_PIXEL_CUBEMAP_ALPHABLEND;
+    static const FastName WATER_PER_VERTEX_CUBEMAP_DECAL;
+
+    static const FastName NORMALIZED_BLINN_PHONG_PER_PIXEL_OPAQUE;
+    static const FastName NORMALIZED_BLINN_PHONG_PER_PIXEL_FAST_OPAQUE;
+    static const FastName NORMALIZED_BLINN_PHONG_PER_VERTEX_OPAQUE;
 };
 
 class NMaterialTextureName
@@ -79,6 +87,7 @@ class NMaterialTextureName
 public:
     static const FastName TEXTURE_ALBEDO;
     static const FastName TEXTURE_NORMAL;
+    static const FastName TEXTURE_SPECULAR;
     static const FastName TEXTURE_DETAIL;
     static const FastName TEXTURE_LIGHTMAP;
     static const FastName TEXTURE_DECAL;
@@ -142,6 +151,7 @@ public:
     static const FastName DEPRECATED_LANDSCAPE_TEXTURE_0_TILING;
     static const FastName PARAM_TREE_LEAF_COLOR_MUL;
     static const FastName FORCED_SHADOW_DIRECTION_PARAM;
+    static const FastName PARAM_SPECULAR_SCALE;
 };
 
 class NMaterialFlagName
@@ -219,6 +229,7 @@ public:
     static const FastName FLAG_PARTICLES_DEBUG_SHOW_HEATMAP;
 
     static const FastName FLAG_GEO_DECAL;
+    static const FastName FLAG_GEO_DECAL_SPECULAR;
 
     static const FastName FLAG_FORCED_SHADOW_DIRECTION;
 

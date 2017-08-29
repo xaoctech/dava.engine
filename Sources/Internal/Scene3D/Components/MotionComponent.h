@@ -46,9 +46,6 @@ protected:
     Map<FastName, float32> parameters;
     //////////////////////////////////////////////////////////////////////////
 
-public:
-    INTROSPECTION_EXTEND(MotionComponent, Component, nullptr);
-
     friend class MotionSystem;
 };
 

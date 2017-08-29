@@ -172,7 +172,7 @@ void UITextField::OnFocused()
 
 void UITextField::SetFocused()
 {
-    UIControlSystem::Instance()->SetFocusedControl(this);
+    GetEngineContext()->uiControlSystem->SetFocusedControl(this);
 }
 
 void UITextField::OnFocusLost()
@@ -261,16 +261,6 @@ void UITextField::SetTextUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign)
 #else
     textFieldImpl->SetTextUseRtlAlign(useRtlAlign == TextBlock::RTL_USE_BY_CONTENT);
 #endif
-}
-
-void UITextField::SetTextUseRtlAlignFromInt(int32 value)
-{
-    SetTextUseRtlAlign(static_cast<TextBlock::eUseRtlAlign>(value));
-}
-
-int32 UITextField::GetTextUseRtlAlignAsInt() const
-{
-    return static_cast<TextBlock::eUseRtlAlign>(GetTextUseRtlAlign());
 }
 
 void UITextField::SetFontSize(float32 size)
@@ -392,7 +382,7 @@ void UITextField::Input(UIEvent* currentInput)
     textFieldImpl->Input(currentInput);
 
 #else
-    if (this != UIControlSystem::Instance()->GetFocusedControl())
+    if (this != GetEngineContext()->uiControlSystem->GetFocusedControl())
         return;
 
     if (currentInput->phase == UIEvent::Phase::ENDED)

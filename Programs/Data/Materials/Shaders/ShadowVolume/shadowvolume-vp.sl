@@ -33,15 +33,10 @@ vertex_out
 
 #if HARD_SKINNING
 
-inline float3 JointTransformTangent( float3 tangent, float jointIndex )
+inline float3 JointTransformTangent( float3 tangent, float4 quaternion )
 {
-    int jIndex = int(jointIndex);
-    float4 jQ = jointQuaternions[jIndex];
-
-    float3 tmp = 2.0 * cross(jQ.xyz, tangent);
-    tangent += jQ.w * tmp + cross(jQ.xyz, tmp);
-
-    return tangent;
+    float3 tmp = 2.0 * cross(quaternion.xyz, tangent);
+    return tangent + quaternion.w * tmp + cross(quaternion.xyz, tmp);
 }
 
 #endif
@@ -70,7 +65,7 @@ vertex_out vp_main( vertex_in input )
         float3 tmp = 2.0 * cross(jQ.xyz, in_pos.xyz);
         position = float4(jP.xyz + (in_pos.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0);
         
-        normal = normalize( mul( JointTransformTangent(in_normal, input.index), normalMatrix ) );
+        normal = normalize( mul( JointTransformTangent(in_normal, jQ), normalMatrix ) );
     }
 #else
     position = float4(in_pos.x, in_pos.y, in_pos.z, 1.0);

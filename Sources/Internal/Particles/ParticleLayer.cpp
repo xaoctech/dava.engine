@@ -5,8 +5,15 @@
 #include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleLayer)
+{
+    ReflectionRegistrator<ParticleLayer>::Begin()
+    .End();
+}
 const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 {
   { TYPE_SINGLE_PARTICLE, "single" },

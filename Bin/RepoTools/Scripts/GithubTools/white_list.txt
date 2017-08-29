@@ -1,4 +1,9 @@
-.git
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# File name: white_list.txt                                             #
+# This file contains a list of paths to load into the GitHub repository #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+.git # Example comment for path/dir/file
 Bin/cmake
 Bin/CMake.app
 Bin/doxygen

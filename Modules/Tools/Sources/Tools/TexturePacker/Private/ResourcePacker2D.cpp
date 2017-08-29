@@ -424,9 +424,8 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                     if (fileList->IsDirectory(fi))
                         continue;
 
-                    definitionFileList.emplace_back(new DefinitionFile());
+                    DAVA::RefPtr<DefinitionFile> defFile(new DefinitionFile());
 
-                    DefinitionFile::Pointer& defFile = definitionFileList.back();
                     bool shouldAcceptFile = false;
 
                     FilePath fullname = fileList->GetPathname(fi);
@@ -437,8 +436,7 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                     }
                     else if (fullname.IsEqualToExtension(".png"))
                     {
-                        shouldAcceptFile = true;
-                        defFile->LoadPNG(fullname, processDir);
+                        shouldAcceptFile = defFile->LoadPNG(fullname, processDir);
                     }
                     else if (fullname.IsEqualToExtension(".pngdef"))
                     {
@@ -449,9 +447,9 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                         justCopyList.push_back(fullname);
                     }
 
-                    if (shouldAcceptFile == false)
+                    if (shouldAcceptFile)
                     {
-                        definitionFileList.pop_back();
+                        definitionFileList.push_back(defFile);
                     }
                 }
 
