@@ -130,8 +130,9 @@ bool SceneManagerModule::ControlWindowClosing(const DAVA::TArc::WindowKey& key, 
     return true;
 }
 
-void SceneManagerModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool SceneManagerModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
+    return true;
 }
 
 void SceneManagerModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
