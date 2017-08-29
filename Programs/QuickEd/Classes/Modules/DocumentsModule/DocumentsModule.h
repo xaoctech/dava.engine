@@ -25,7 +25,7 @@ public:
 protected:
     void OnRenderSystemInitialized(DAVA::Window* window) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void PostInit() override;
@@ -65,8 +65,9 @@ private:
 
     bool HasUnsavedDocuments() const;
     bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
-    void SaveAllDocuments();
-    void SaveCurrentDocument();
+    bool SaveAllDocuments();
+    bool SaveCurrentDocument();
+    void DiscardUnsavedChanges();
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
 
