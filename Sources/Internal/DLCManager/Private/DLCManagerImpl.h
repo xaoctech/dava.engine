@@ -23,7 +23,7 @@ public:
     MemoryBufferWriter(void* buff, size_t size)
     {
         DVASSERT(buff != nullptr);
-        DVASSERT(size > 0);
+        DVASSERT(size >= 0); // buffer may be empty for empty file
 
         start = static_cast<char*>(buff);
         current = start;

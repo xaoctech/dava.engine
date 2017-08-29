@@ -58,7 +58,7 @@ public:
 
     explicit BufferWriter(int64 size)
     {
-        if (size > 0)
+        if (size >= 0)
         {
             buf = new char[static_cast<uint32>(size)];
             current = buf;
@@ -257,7 +257,7 @@ struct DownloadChunkSubTask : IDownloaderSubTask
         , size(size_)
         , chunkBuf(size_)
     {
-        if (offset >= 0 && size <= 0)
+        if (offset >= 0 && size < 0) // size can be zero for empty file request
         {
             DVASSERT(false);
             Logger::Error("incorrect offset or size");
@@ -351,7 +351,11 @@ struct DownloadChunkSubTask : IDownloaderSubTask
     {
         if (curlMsg->data.result != CURLE_OK)
         {
-            if (curlMsg->data.result == CURLE_PARTIAL_FILE && task.status.sizeDownloaded == task.info.rangeSize)
+            if (curlMsg->data.result == CURLE_WRITE_ERROR && task.status.sizeDownloaded == task.info.rangeSize && task.status.sizeDownloaded == 0)
+            {
+                // all good
+            }
+            else if (curlMsg->data.result == CURLE_PARTIAL_FILE && task.status.sizeDownloaded == task.info.rangeSize)
             {
                 // all good
             }
@@ -1232,9 +1236,17 @@ void DLCDownloader::Task::SetupFullDownload()
         // we already know size to download
         restOffset = info.rangeOffset;
         restSize = info.rangeSize;
-        const int chunkSize = curlStorage.GetChunkSize();
-
-        GenerateChunkSubRequests(chunkSize);
+        if (restSize == 0)
+        {
+            // generate empty request
+            IDownloaderSubTask* subTask = new DownloadChunkSubTask(*this, restOffset, restSize);
+            subTasksWorking.push_back(subTask);
+        }
+        else
+        {
+            const int chunkSize = curlStorage.GetChunkSize();
+            GenerateChunkSubRequests(chunkSize);
+        }
     }
     else
     {
