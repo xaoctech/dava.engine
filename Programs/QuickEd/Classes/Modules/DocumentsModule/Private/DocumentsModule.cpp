@@ -135,7 +135,7 @@ void DocumentsModule::PostInit()
 
     RegisterOperations();
     CreateDocumentsActions();
-    CreateUndoRedoActions();
+    CreateEditActions();
     CreateViewActions();
     CreateFindActions();
 }
@@ -311,7 +311,7 @@ void DocumentsModule::CreateDocumentsActions()
     }
 }
 
-void DocumentsModule::CreateUndoRedoActions()
+void DocumentsModule::CreateEditActions()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -399,6 +399,30 @@ void DocumentsModule::CreateUndoRedoActions()
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
+
+    // Group
+    {
+        const QString groupActionName("Group");
+
+        QtAction* action = new QtAction(accessor, groupActionName, nullptr);
+        action->setShortcutContext(Qt::WindowShortcut);
+        action->setShortcut(QKeySequence("Ctrl+G"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
+                                         {
+                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
 }
 
 void DocumentsModule::OnUndo()
@@ -425,6 +449,16 @@ void DocumentsModule::OnRedo()
     DocumentData* data = context->GetData<DocumentData>();
     DVASSERT(data != nullptr);
     data->commandStack->Redo();
+}
+
+void DocumentsModule::DoGroupSelection()
+{
+    CommandExecutor commandExecutor(GetAccessor(), GetUI());
+    ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
+    if (newGroupControl != nullptr)
+    {
+        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    }
 }
 
 void DocumentsModule::CreateViewActions()

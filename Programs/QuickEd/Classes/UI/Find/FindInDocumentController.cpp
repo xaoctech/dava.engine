@@ -36,11 +36,11 @@ FindInDocumentController::FindInDocumentController(DocumentsModule* documentsMod
     findInDocumentAction->SetStateUpdationFunction(TArc::QtAction::Enabled, packageFieldDescr, actionUpdater);
 
     TArc::QtAction* findNextAction = new TArc::QtAction(accessor, QObject::tr("Find Next"), this);
-    findNextAction->setShortcut(QKeySequence::FindNext);
+    findNextAction->setShortcut(QKeySequence("F3"));
     findNextAction->SetStateUpdationFunction(TArc::QtAction::Enabled, packageFieldDescr, actionUpdater);
 
     TArc::QtAction* findPreviousAction = new TArc::QtAction(accessor, QObject::tr("Find Previous"), this);
-    findPreviousAction->setShortcut(QKeySequence::FindPrevious);
+    findPreviousAction->setShortcut(QKeySequence("Shift+F3"));
     findPreviousAction->SetStateUpdationFunction(TArc::QtAction::Enabled, packageFieldDescr, actionUpdater);
 
     QObject::connect(findInDocumentWidget, &FindInDocumentWidget::OnFindFilterReady, this, &FindInDocumentController::SetFilter);

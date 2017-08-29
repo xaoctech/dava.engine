@@ -43,9 +43,11 @@ private:
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
+
+    void DoGroupSelection();
 
     //View
     void CreateViewActions();
