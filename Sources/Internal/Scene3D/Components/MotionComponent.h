@@ -35,9 +35,6 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
-public:
-    INTROSPECTION_EXTEND(MotionComponent, Component, nullptr);
-
     friend class MotionSystem;
 };
 

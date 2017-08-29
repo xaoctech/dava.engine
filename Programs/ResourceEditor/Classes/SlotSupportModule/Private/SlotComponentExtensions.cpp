@@ -274,7 +274,7 @@ private:
                                      {
                                          for (DAVA::uint32 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             const SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
+                                             const DAVA::SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
                                              joints.emplace(joint.uid.c_str(), joint.name.c_str());
                                          }
                                      }
@@ -287,7 +287,7 @@ private:
                                      {
                                          for (DAVA::uint32 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             const SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
+                                             const DAVA::SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
                                              joints.emplace(joint.uid.c_str(), joint.name.c_str());
                                          }
                                      }
