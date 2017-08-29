@@ -43,6 +43,7 @@ DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
 {
     { DAVA::ParticleDragForce::eType::DRAG_FORCE, "Drag Force" },
     { DAVA::ParticleDragForce::eType::LORENTZ_FORCE, "Lorentz Force" },
+    { DAVA::ParticleDragForce::eType::GRAVITY, "Gravity" },
     { DAVA::ParticleDragForce::eType::POINT_GRAVITY, "Point Gravity" },
     { DAVA::ParticleDragForce::eType::BOX_WRAP, "Box Wrap" }
 };

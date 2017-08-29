@@ -71,6 +71,9 @@
         <file>QtIcons/vortex_ico.png</file>
         <file>QtIcons/vortex_ico_remove.png</file>
         <file>QtIcons/vortex_ico_red.png</file>
+        <file>QtIcons/gravity.png</file>
+        <file>QtIcons/gravity_red.png</file>
+        <file>QtIcons/gravity_remove.png</file>
         <file>QtIcons/external.png</file>
         <file>QtIcons/layer_particle.png</file>
         <file>QtIcons/node.png</file>

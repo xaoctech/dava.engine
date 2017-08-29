@@ -11,20 +11,30 @@ namespace ParticleForces
 void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
+void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt);
+
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 
-void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown)
 {
+    using ForceType = ParticleDragForce::eType;
+
     if (!force->isActive)
         return;
-    if (force->type == ParticleDragForce::eType::DRAG_FORCE)
+    if (force->type == ForceType::DRAG_FORCE)
     {
         ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
         return;
     }
-    if (force->type == ParticleDragForce::eType::LORENTZ_FORCE)
+    if (force->type == ForceType::LORENTZ_FORCE)
     {
         ApplyLorentzForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
+        return;
+    }
+    if (force->type == ForceType::GRAVITY)
+    {
+        ApplyGravity(force, effectSpaceVelocity, effectSpaceDown, dt);
+        return;
     }
 }
 
@@ -81,6 +91,11 @@ void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& 
     }
     Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife) * dt;
     effectSpaceVelocity += forceStrength * forceDir;
+}
+
+void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt)
+{
+    effectSpaceVelocity += effectSpaceDown * force->forcePower.z * dt;
 }
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)

@@ -215,6 +215,9 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
 
 void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
 {
+    if (force->type == DAVA::ParticleDragForce::eType::GRAVITY)
+        return;
+
     if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
     {
         DAVA::float32 scale = 1.0f;

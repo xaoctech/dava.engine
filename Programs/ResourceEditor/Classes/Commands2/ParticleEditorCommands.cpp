@@ -574,10 +574,20 @@ CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLay
 {
 }
 
-
 void CommandAddParticleLorentzForce::Redo()
 {
     AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::LORENTZ_FORCE);
+}
+
+CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_GRAVITY_ADD)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticleGravity::Redo()
+{
+    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::GRAVITY);
 }
 
 CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDragForce* drag)
