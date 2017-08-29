@@ -35,8 +35,9 @@ protected:
         return true;
     }
 
-    void SaveOnWindowClose(const WindowKey& key) override
+    bool SaveOnWindowClose(const WindowKey& key) override
     {
+        return true;
     }
 
     void RestoreOnWindowClose(const WindowKey& key) override

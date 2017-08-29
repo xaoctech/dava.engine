@@ -378,9 +378,9 @@ RefPtr<PolygonGroup> CreateTriangleMeshPolygonGroup(const physx::PxTriangleMeshG
 
     for (physx::PxU32 i = 0; i < triangleCount; ++i)
     {
-        physx::PxU32 i0 = indices16Bits ? ((physx::PxU16*)indicesPtr)[3 * i] : ((physx::PxU32*)indicesPtr)[3 * i];
-        physx::PxU32 i1 = indices16Bits ? ((physx::PxU16*)indicesPtr)[3 * i + 1] : ((physx::PxU32*)indicesPtr)[3 * i + 1];
-        physx::PxU32 i2 = indices16Bits ? ((physx::PxU16*)indicesPtr)[3 * i + 2] : ((physx::PxU32*)indicesPtr)[3 * i + 2];
+        physx::PxU32 i0 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i];
+        physx::PxU32 i1 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i + 1] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i + 1];
+        physx::PxU32 i2 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i + 2] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i + 2];
 
         Vector3 v0 = PhysicsMath::PxVec3ToVector3(verticesPtr[i0]);
         Vector3 v1 = PhysicsMath::PxVec3ToVector3(verticesPtr[i1]);

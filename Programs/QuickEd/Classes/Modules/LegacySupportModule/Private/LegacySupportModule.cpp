@@ -42,6 +42,8 @@ void LegacySupportModule::PostInit()
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     documentDataWrapper.SetListener(this);
 
+    RegisterOperation(QEGlobal::SelectAndRename.ID, this, &LegacySupportModule::OnSelectAndRename);
+
     InitMainWindow();
 }
 
@@ -243,6 +245,16 @@ void LegacySupportModule::OnFindPrototypeInstances()
             InvokeOperation(QEGlobal::FindInProject.ID, filter);
         }
     }
+}
+
+void LegacySupportModule::OnSelectAndRename(ControlNode* control)
+{
+    QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
+    DVASSERT(mainWindow != nullptr);
+    PackageWidget* packageWidget = mainWindow->GetPackageWidget();
+
+    packageWidget->OnSelectAndRename(control);
 }
 
 void LegacySupportModule::OnSelectionInPackageChanged(const SelectedNodes& selection)

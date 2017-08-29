@@ -263,16 +263,6 @@ void UITextField::SetTextUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign)
 #endif
 }
 
-void UITextField::SetTextUseRtlAlignFromInt(int32 value)
-{
-    SetTextUseRtlAlign(static_cast<TextBlock::eUseRtlAlign>(value));
-}
-
-int32 UITextField::GetTextUseRtlAlignAsInt() const
-{
-    return static_cast<TextBlock::eUseRtlAlign>(GetTextUseRtlAlign());
-}
-
 void UITextField::SetFontSize(float32 size)
 {
     textFieldImpl->SetFontSize(size);

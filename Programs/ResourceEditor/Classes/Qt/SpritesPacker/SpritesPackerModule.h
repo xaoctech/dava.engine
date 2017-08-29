@@ -15,6 +15,7 @@ namespace TArc
 {
 class UI;
 class WaitHandle;
+class ContextAccessor;
 }
 }
 
