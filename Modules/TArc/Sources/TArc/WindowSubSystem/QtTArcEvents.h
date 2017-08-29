@@ -12,6 +12,7 @@ namespace TArc
 enum class EventsTable : DAVA::int32
 {
     DelayedExecute = QEvent::User + 100, // 100 events is reserved for PlatformQt implementation
+    OverlayWidgetVisibilityChange,
     End
 };
 } // namespace TArc

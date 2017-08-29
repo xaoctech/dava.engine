@@ -93,9 +93,6 @@ private:
     std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
 
-    friend class FindInDocumentController;
-    std::unique_ptr<FindInDocumentController> findInDocumentController;
-
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
