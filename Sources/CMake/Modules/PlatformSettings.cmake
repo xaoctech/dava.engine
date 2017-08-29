@@ -86,20 +86,12 @@ elseif ( MACOS )
     set( CMAKE_EXE_LINKER_FLAGS "-ObjC" )
 
 elseif ( WIN32 )
-    #dynamic runtime on windows store
+    # dynamic runtime on windows
+    set ( CRT_TYPE_DEBUG "/MDd" )
+    set ( CRT_TYPE_RELEASE "/MD" )
     if ( WINDOWS_UAP )
-        set ( CRT_TYPE_DEBUG "/MDd" )
-        set ( CRT_TYPE_RELEASE "/MD" )
         #consume windows runtime extension (C++/CX)
         set ( ADDITIONAL_CXX_FLAGS "/ZW")
-    else ()
-        if (USE_DYNAMIC_CRT)
-            set ( CRT_TYPE_DEBUG "/MDd" )
-            set ( CRT_TYPE_RELEASE "/MD" )
-        else()
-            set ( CRT_TYPE_DEBUG "/MTd" )
-            set ( CRT_TYPE_RELEASE "/MT" )
-        endif()
     endif ()
 
     # ignorance of linker warnings
