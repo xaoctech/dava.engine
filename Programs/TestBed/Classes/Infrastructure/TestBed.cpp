@@ -15,6 +15,7 @@
 #include <UI/Render/UIRenderSystem.h>
 
 #include "Infrastructure/TestListScreen.h"
+#include "Tests/TextSystemTest.h"
 #include "Tests/NotificationTest.h"
 #include "Tests/UIScrollViewTest.h"
 #include "Tests/SpeedLoadImagesTest.h"
@@ -48,6 +49,7 @@
 #include "Tests/AnyPerformanceTest.h"
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
+#include "Tests/UIStylesTest.h"
 #include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
 
@@ -414,10 +416,12 @@ void TestBed::RegisterTests()
 #endif
 
     new WindowTest(*this);
+    new UIStylesTest(*this);
     new RichTextTest(*this);
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     new PhysicsTest(*this);
 #endif
+    new TextSystemTest(*this);
     new SpineTest(*this);
     new SkeletonAnimationTest(*this);
     //$UNITTEST_CTOR

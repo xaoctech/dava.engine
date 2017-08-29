@@ -41,23 +41,23 @@ void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis 
             const DocumentData* data = accessor->GetActiveContext()->GetData<DocumentData>();
             DVASSERT(data != nullptr);
 
-            String pathToControl = control->GetName().c_str();
+            String pathToControl = control->GetName().c_str(); // UIControlHelpers::GetControlPath() should be used after DF-14277 implementing
 
-            UIControl* p = control->GetParent();
-            while (p != nullptr)
+            auto GetParentControl = [&](const UIControl* control) -> UIControl*
             {
-                String n = "";
-                if (p->GetName().IsValid())
-                {
-                    n = p->GetName().c_str();
-                }
-                pathToControl = n + "/" + pathToControl;
+                return IsRootControl(control) ? nullptr : control->GetParent();
+            };
 
-                if (IsRootControl(p))
+            for (UIControl* parentControl = GetParentControl(control);
+                 parentControl != nullptr;
+                 parentControl = GetParentControl(parentControl))
+            {
+                String name = "";
+                if (parentControl->GetName().IsValid())
                 {
-                    break;
+                    name = parentControl->GetName().c_str();
                 }
-                p = p->GetParent();
+                pathToControl = name + "/" + pathToControl;
             }
 
             Issue issue;
