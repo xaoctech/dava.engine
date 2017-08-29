@@ -248,6 +248,8 @@ if( WIN )
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glew32.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcr120.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcp120.dll"
+                                      "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcp140.dll"
+                                      "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/vcruntime140.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.dll")
 
     set( DAVA_DYNAMIC_LIBRARIES_WIN64 ${DAVA_DYNAMIC_LIBRARIES_WIN32} )
