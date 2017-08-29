@@ -153,13 +153,13 @@ RequestID Create(Landscape* landscape, LandscapeThumbnails::Callback handler)
     }
     Renderer::RegisterSyncCallback(syncObject, MakeFunction(&OnCreateLandscapeTextureCompleted));
 
-    const auto identityMatrix = &Matrix4::IDENTITY;
+    const Matrix4* identityMatrix = &Matrix4::IDENTITY;
     Vector3 nullVector(0.0f, 0.0f, 0.0f);
     ShaderDescriptorCache::ClearDynamicBindigs();
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, identityMatrix, (pointer_size)(identityMatrix));
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEW, identityMatrix, (pointer_size)(identityMatrix));
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJ, identityMatrix, (pointer_size)(identityMatrix));
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_CAMERA_POS, &nullVector, (pointer_size)(&nullVector));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, identityMatrix, reinterpret_cast<pointer_size>(identityMatrix));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEW, identityMatrix, reinterpret_cast<pointer_size>(identityMatrix));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJ, identityMatrix, reinterpret_cast<pointer_size>(identityMatrix));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_CAMERA_POS, &nullVector, reinterpret_cast<pointer_size>(&nullVector));
 
     rhi::Packet packet = {};
     packet.vertexStreamCount = 1;
