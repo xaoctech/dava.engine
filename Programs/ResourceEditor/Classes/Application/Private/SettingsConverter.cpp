@@ -6,14 +6,12 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Controls/ColorPicker/ColorPickerSettings.h>
-#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
 #include <Engine/PlatformApiQt.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Render/RenderBase.h>
 #include <Render/GPUFamilyDescriptor.h>
 #include <Base/BaseTypes.h>
-#include <Base/FastNameMap.h>
 
 namespace SettingsConverterDetail
 {
@@ -56,7 +54,7 @@ public:
                         }
                         else
                         {
-                            settingsMap2.Insert(DAVA::FastName(valueNode.first), *valueNode.second);
+                            settingsMap2[DAVA::FastName(valueNode.first)] = *valueNode.second;
                         }
                     }
                 };
@@ -252,8 +250,8 @@ private:
         return srcValue;
     }
 
-    DAVA::FastNameMap<DAVA::VariantType> settingsMap;
-    DAVA::FastNameMap<DAVA::VariantType> settingsMap2;
+    DAVA::UnorderedMap<DAVA::FastName, DAVA::VariantType> settingsMap;
+    DAVA::UnorderedMap<DAVA::FastName, DAVA::VariantType> settingsMap2;
 
     const DAVA::String settingsFilePath = "~doc:/ResourceEditorOptions.archive";
     const DAVA::String settingsFilePath2 = "~doc:/ResourceEditorSettings.archive";

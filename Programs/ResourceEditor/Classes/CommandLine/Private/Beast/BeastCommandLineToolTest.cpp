@@ -63,7 +63,7 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
                 //test material
                 if (material != nullptr)
                 {
-                    const HashMap<FastName, MaterialTextureInfo*>& textures = material->GetLocalTextures();
+                    const UnorderedMap<FastName, MaterialTextureInfo*>& textures = material->GetLocalTextures();
                     for (auto& tx : textures)
                     {
                         if (tx.first == FastName("lightmap"))
