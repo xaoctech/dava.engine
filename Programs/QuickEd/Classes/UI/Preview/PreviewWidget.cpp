@@ -50,9 +50,9 @@
 #include <QComboBox>
 #include <QScrollBar>
 #include <QGridLayout>
-
 #include <QApplication>
 #include <QTimer>
+#include <QLabel>
 
 using namespace DAVA;
 

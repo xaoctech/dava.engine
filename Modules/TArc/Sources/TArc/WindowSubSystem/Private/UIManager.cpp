@@ -2,6 +2,8 @@
 
 #include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/WindowSubSystem/Private/WaitDialog.h"
+#include "TArc/WindowSubSystem/Private/DockPanel.h"
+#include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
 #include "TArc/Qt/QtByteArray.h"
