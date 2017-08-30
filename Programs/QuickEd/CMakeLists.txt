@@ -32,8 +32,7 @@ find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 DAVA_PLATFORM_QT 
                                                 DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
                                                 DAVA_DISABLE_AUTOTESTS 
-                                                DAVA_USE_RENDERSTATS
-                                                DAVA_STRICTEST_UICONTROLS_NAMING)
+                                                DAVA_USE_RENDERSTATS)
 
 find_package( TArc REQUIRED )
 find_package( QtTools REQUIRED )
