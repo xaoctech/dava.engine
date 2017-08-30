@@ -66,6 +66,10 @@ void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
         DVASSERT(stateResult.CanCast<String>());
         setText(QString::fromStdString(stateResult.Cast<String>()));
         break;
+    case Tooltip:
+        DVASSERT(stateResult.CanCast<String>());
+        setToolTip(QString::fromStdString(stateResult.Cast<String>()));
+        break;
     case Icon:
         if (stateResult.CanCast<QIcon>())
         {
