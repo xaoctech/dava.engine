@@ -30,10 +30,11 @@ private:
     void OnListInDvpkClicked(BaseObject* sender, void* data, void* callerData);
     void OnExitButton(BaseObject* obj, void* data, void* callerData) override;
 
-    void WriteErrorOnDevice(const DAVA::String& filePath, DAVA::int32 errVal);
+    void WriteErrorOnDevice(DAVA::DLCManager::ErrorOrigin errType, DAVA::int32 errVal, const DAVA::String& filePath);
     void OnRequestUpdated(const DAVA::DLCManager::IRequest& request);
     void OnNetworkReady(bool isReady);
     void OnInitializeFinished(size_t numDownloaded, size_t numTotalFiles);
+    void OnErrorSignal(DAVA::DLCManager::ErrorOrigin errType, DAVA::int32 errnoVal, const DAVA::String& msg);
 
     DAVA::Engine& engine;
 

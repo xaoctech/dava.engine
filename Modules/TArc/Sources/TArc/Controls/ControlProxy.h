@@ -92,7 +92,7 @@ public:
 
     void ForceUpdate() override
     {
-        OnDataChanged(wrapper, Vector<Any>());
+        wrapper.Sync(true);
     }
 
     void TearDown() override

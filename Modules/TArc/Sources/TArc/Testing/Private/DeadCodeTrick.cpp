@@ -7,6 +7,7 @@
 #include "TArc/Testing/Private/Selftests/ComponentStructureWrapperTest.h"
 #include "TArc/Testing/Private/Selftests/ContextHierarchyTest.h"
 #include "TArc/Testing/Private/Selftests/DataListenerTest.h"
+#include "TArc/Testing/Private/Selftests/DataWrapperTests.h"
 #include "TArc/Testing/Private/Selftests/DoubleSpinBoxTests.h"
 #include "TArc/Testing/Private/Selftests/FieldBinderTest.h"
 #include "TArc/Testing/Private/Selftests/FilePathEditTest.h"

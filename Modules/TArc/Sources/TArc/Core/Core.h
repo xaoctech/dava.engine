@@ -76,6 +76,8 @@ public:
     DAVA_DEPRECATED(const CoreInterface* GetCoreInterface() const);
     DAVA_DEPRECATED(UI* GetUI());
 
+    void PostInit();
+
 private:
     // in testing environment Core shouldn't connect to Engine signals.
     // TArcTestClass wrap signals and call Core method directly

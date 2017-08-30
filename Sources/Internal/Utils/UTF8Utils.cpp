@@ -5,6 +5,8 @@
 
 #include <utf8.h>
 
+#include <cwctype>
+
 namespace DAVA
 {
 
@@ -58,5 +60,68 @@ String UTF8Utils::EncodeToUTF8(const WideString& wstring)
 
     return result;
 };
+
+String UTF8Utils::Trim(const String& str)
+{
+    return UTF8Utils::TrimLeft(UTF8Utils::TrimRight(str));
+}
+
+String UTF8Utils::TrimLeft(const String& str)
+{
+    String::const_iterator begin = str.begin();
+    String::const_iterator end = str.end();
+    String::const_iterator it = begin;
+    try
+    {
+        while (it != end)
+        {
+            uint32_t code = utf8::next(it, end);
+            if (std::iswspace(static_cast<wint_t>(code)))
+            {
+                begin = it;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return String(begin, end);
+    }
+    catch (const utf8::exception& e)
+    {
+        String msg = "UTF8 Trim begin error: " + String(e.what());
+        Logger::Warning(msg.c_str());
+        DAVA_THROW(Exception, msg);
+    }
+}
+
+String UTF8Utils::TrimRight(const String& str)
+{
+    String::const_iterator begin = str.begin();
+    String::const_iterator end = str.end();
+    String::const_iterator it = end;
+    try
+    {
+        while (it != begin)
+        {
+            uint32_t code = utf8::prior(it, begin);
+            if (std::iswspace(static_cast<wint_t>(code)))
+            {
+                end = it;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return String(begin, end);
+    }
+    catch (const utf8::exception& e)
+    {
+        String msg = "UTF8 Trim end error: " + String(e.what());
+        Logger::Warning(msg.c_str());
+        DAVA_THROW(Exception, msg);
+    }
+}
 
 } // namespace DAVA

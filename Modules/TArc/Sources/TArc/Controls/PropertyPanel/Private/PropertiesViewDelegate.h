@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 #include <QStyledItemDelegate>
 #include <QPersistentModelIndex>

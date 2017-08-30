@@ -34,8 +34,8 @@ find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 DAVA_DISABLE_AUTOTESTS 
                                                 DAVA_USE_RENDERSTATS )
 
-find_package( QtTools REQUIRED )
 find_package( TArc REQUIRED )
+find_package( QtTools REQUIRED )
 find_package( RemoteTool REQUIRED )
 
 

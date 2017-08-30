@@ -1,10 +1,10 @@
 #include "GradientPickerWidget.h"
 
-#include "Main/QtUtils.h"
-#include "QtTools/Utils/Utils.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
 #include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
+#include <TArc/Utils/Utils.h>
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -35,7 +35,7 @@ GradientPickerWidget::GradientPickerWidget(QWidget* parent)
     setMaximumHeight(WIDGET_MAX_HEIGHT);
     setMouseTracking(true);
 
-    backgroundBrush.setColor(ColorToQColor(BACKGROUND_COLOR));
+    backgroundBrush.setColor(DAVA::TArc::ColorToQColor(BACKGROUND_COLOR));
     backgroundBrush.setStyle(Qt::SolidPattern);
 
     tiledPixmap = QPixmap(TILED_RECT_SIZE, TILED_RECT_SIZE);

@@ -6,6 +6,7 @@
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Layouts/LayoutFormula.h"
+#include "UI/Text/UITextComponent.h"
 
 #include "UI/UIControl.h"
 
@@ -343,12 +344,57 @@ float32 SizeMeasuringAlgorithm::CalculateLastChild() const
 float32 SizeMeasuringAlgorithm::CalculateContent() const
 {
     Vector2 constraints(-1.0f, -1.0f);
-    if (data.GetControl()->IsHeightDependsOnWidth() && axis == Vector2::AXIS_Y)
+    if (IsHeightDependsOnWidth() && axis == Vector2::AXIS_Y)
     {
         constraints.x = data.GetSize(Vector2::AXIS_X);
     }
 
-    return data.GetControl()->GetContentPreferredSize(constraints).data[axis];
+    return GetContentPreferredSize(constraints).data[axis];
+}
+
+Vector2 SizeMeasuringAlgorithm::GetContentPreferredSize(const Vector2& constraints) const
+{
+    UIControl* control = data.GetControl();
+    UITextComponent* txt = control->GetComponent<UITextComponent>();
+    if (txt)
+    {
+        DVASSERT(!txt->IsModified());
+        return txt->GetLink()->GetTextBlock()->GetPreferredSizeForWidth(constraints.x);
+    }
+    UIControlBackground* bg = control->GetComponent<UIControlBackground>();
+    if (bg != nullptr && bg->GetSprite() != nullptr)
+    {
+        if (constraints.dx > 0)
+        {
+            Vector2 size;
+            size.dx = constraints.dx;
+            size.dy = bg->GetSprite()->GetHeight() * size.dx / bg->GetSprite()->GetWidth();
+            return size;
+        }
+        else
+        {
+            return bg->GetSprite()->GetSize();
+        }
+    }
+    return Vector2(0.0f, 0.0f);
+}
+
+bool SizeMeasuringAlgorithm::IsHeightDependsOnWidth() const
+{
+    UIControl* control = data.GetControl();
+    UITextComponent* txt = control->GetComponent<UITextComponent>();
+    if (txt)
+    {
+        return txt->GetMultiline() != UITextComponent::eTextMultiline::MULTILINE_DISABLED;
+    }
+    UIControlBackground* bg = control->GetComponent<UIControlBackground>();
+    if (bg == nullptr || bg->GetSprite() == nullptr)
+    {
+        return false;
+    }
+
+    UIControlBackground::eDrawType dt = bg->GetDrawType();
+    return dt == UIControlBackground::DRAW_SCALE_PROPORTIONAL || dt == UIControlBackground::DRAW_SCALE_PROPORTIONAL_ONE;
 }
 
 float32 SizeMeasuringAlgorithm::GetSize(const ControlLayoutData& data) const

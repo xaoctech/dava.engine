@@ -49,8 +49,6 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
     # we don't have physx for android x86, so skip this
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
-elseif (LINUX)
-    # for now physx is not supported for linux
 else()
     list ( APPEND DAVA_COMPONENTS "Physics" )
 endif()
