@@ -237,6 +237,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
 
         DAVA::Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
         emitterVector = emitterVector * Matrix3(wMat);
+        emitterVector.Normalize();
         emitterVector *= arrowBaseSize * scale;
         Vector3 center = force->position * wMat;
 
