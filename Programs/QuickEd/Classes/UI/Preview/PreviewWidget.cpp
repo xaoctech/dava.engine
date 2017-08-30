@@ -11,7 +11,6 @@
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
 
-#include "UI/Find/Widgets/FindInDocumentWidget.h"
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -78,11 +77,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 }
 
 PreviewWidget::~PreviewWidget() = default;
-
-FindInDocumentWidget* PreviewWidget::GetFindInDocumentWidget()
-{
-    return findInDocumentWidget;
-}
 
 void PreviewWidget::CreateActions()
 {
@@ -256,10 +250,6 @@ void PreviewWidget::InitUI()
     tabBar->setTabsClosable(true);
     tabBar->setUsesScrollButtons(true);
     vLayout->addWidget(tabBar);
-
-    findInDocumentWidget = new FindInDocumentWidget(this);
-
-    vLayout->addWidget(findInDocumentWidget);
 
     QGridLayout* gridLayout = new QGridLayout();
     vLayout->addLayout(gridLayout);
