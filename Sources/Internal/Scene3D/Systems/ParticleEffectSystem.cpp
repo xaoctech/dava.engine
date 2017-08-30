@@ -917,7 +917,8 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     for (uint32 i = 0; i < dForcesCount; ++i)
         ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown);
 
-    particle->speed = effectSpaceSpeed * Matrix3(world);
+    if (dForcesCount > 0)
+        particle->speed = effectSpaceSpeed * Matrix3(world);
 
     particle->speed += acceleration * dt;
 

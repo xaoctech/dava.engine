@@ -467,6 +467,8 @@ public:
         DAVA::ParticleDragForce::eShape shape = DAVA::ParticleDragForce::eShape::BOX;
         DAVA::ParticleDragForce::eTimingType timingType = DAVA::ParticleDragForce::eTimingType::CONSTANT;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> forcePowerLine;
+        DAVA::float32 windFrequency = 0.0f;
+        DAVA::float32 windTurbulence = 0.0f;
     };
 
     CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params);

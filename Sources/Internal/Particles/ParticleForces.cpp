@@ -12,6 +12,7 @@ void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& eff
 void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt);
+void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 
@@ -34,6 +35,11 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
     if (force->type == ForceType::GRAVITY)
     {
         ApplyGravity(force, effectSpaceVelocity, effectSpaceDown, dt);
+        return;
+    }
+    if (force->type == ForceType::WIND)
+    {
+        ApplyWind(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
         return;
     }
 }
@@ -98,6 +104,16 @@ void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, 
     effectSpaceVelocity += effectSpaceDown * force->forcePower.z * dt;
 }
 
+void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
+{
+    if (!force->isInfinityRange)
+    {
+        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+            return;
+    }
+    effectSpaceVelocity += force->direction * dt;
+}
+
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {
 }
@@ -115,5 +131,6 @@ Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, 
 
     return force->forcePower;
 }
+
 }
 }

@@ -75,6 +75,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     BuildShapeSection();
     BuildTimingSection();
     BuilDirectionSection();
+    BuildWindSection();
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     blockSignals = false;
@@ -178,6 +179,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     using TimingType = DAVA::ParticleDragForce::eTimingType;
     using ForceType = DAVA::ParticleDragForce::eType;
     bool isGravity = forceType == ForceType::GRAVITY;
+    bool isWind = forceType == ForceType::WIND;
+    bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND;
 
     boxSize->setVisible(shape == Shape::BOX && !isInfinityRange && !isGravity);
     radiusWidget->setVisible(shape == Shape::SPHERE && !isInfinityRange && !isGravity);
@@ -189,8 +192,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT && !isGravity);
     forcePowerLabel->setVisible(timingType != TimingType::CONSTANT && !isGravity);
 
-    direction->setVisible(forceType == ForceType::LORENTZ_FORCE && !isGravity);
-    directionSeparator->setVisible(forceType == ForceType::LORENTZ_FORCE && !isGravity);
+    direction->setVisible(isDirectionalForce);
+    directionSeparator->setVisible(isDirectionalForce);
 
     // Gravity
     infinityRange->setVisible(!isGravity);
@@ -200,6 +203,13 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     timingTypeComboBox->setVisible(!isGravity);
     timingTypeSeparator->setVisible(!isGravity);
     timingLabel->setVisible(!isGravity);
+
+    // Wind
+    windSeparator->setVisible(isWind);
+    windFreqLabel->setVisible(isWind);
+    windFreqSpin->setVisible(isWind);
+    windTurbLabel->setVisible(isWind);
+    windTurbSpin->setVisible(isWind);
 }
 
 void LayerDragForceWidget::BuilDirectionSection()
@@ -233,6 +243,39 @@ void LayerDragForceWidget::BuildGravitySection()
     mainLayout->addLayout(layout);
 }
 
+void LayerDragForceWidget::BuildWindSection()
+{
+    windSeparator = new QFrame();
+    windSeparator->setFrameShape(QFrame::HLine);
+    mainLayout->addWidget(windSeparator);
+
+    QHBoxLayout* freqLayout = new QHBoxLayout(this);
+    windFreqLabel = new QLabel("Wind frequency:");
+    windFreqSpin = new EventFilterDoubleSpinBox();
+    windFreqSpin->setMinimum(-100000000000000000000.0);
+    windFreqSpin->setMaximum(100000000000000000000.0);
+    windFreqSpin->setSingleStep(0.001);
+    windFreqSpin->setDecimals(4);
+    connect(windFreqSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    windFreqSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    freqLayout->addWidget(windFreqLabel);
+    freqLayout->addWidget(windFreqSpin);
+    mainLayout->addLayout(freqLayout);
+
+    QHBoxLayout* turbLayout = new QHBoxLayout(this);
+    windTurbLabel = new QLabel("Wind turbulence:");
+    windTurbSpin = new EventFilterDoubleSpinBox();
+    windTurbSpin->setMinimum(-100000000000000000000.0);
+    windTurbSpin->setMaximum(100000000000000000000.0);
+    windTurbSpin->setSingleStep(0.001);
+    windTurbSpin->setDecimals(4);
+    connect(windTurbSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    windTurbSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    turbLayout->addWidget(windTurbLabel);
+    turbLayout->addWidget(windTurbSpin);
+    mainLayout->addLayout(turbLayout);
+}
+
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
     using namespace DAVA;
@@ -258,6 +301,8 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forceTypeLabel->setText(forceTypes[selectedForce->type]);
     direction->SetValue(selectedForce->direction);
     gravitySpin->setValue(selectedForce->forcePower.z);
+    windTurbSpin->setValue(selectedForce->windTurbulence);
+    windFreqSpin->setValue(selectedForce->windFrequency);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -325,6 +370,8 @@ void LayerDragForceWidget::OnValueChanged()
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
     params.forcePowerLine = propForce.GetPropLine();
+    params.windFrequency = windFreqSpin->value();
+    params.windTurbulence = windTurbSpin->value();
 
     if (selectedForce->type == ForceType::GRAVITY)
         params.forcePower.z = gravitySpin->value();

@@ -215,10 +215,12 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
 
 void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
 {
-    if (force->type == DAVA::ParticleDragForce::eType::GRAVITY)
+    using ForceType = DAVA::ParticleDragForce::eType;
+
+    if (force->type == ForceType::GRAVITY)
         return;
 
-    if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+    if (force->type == ForceType::LORENTZ_FORCE || force->type == ForceType::WIND)
     {
         DAVA::float32 scale = 1.0f;
         HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;

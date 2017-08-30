@@ -1234,6 +1234,12 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("forceDirection%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->direction);
+
+        forceDataName = Format("forceWindFreq%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->windFrequency);
+
+        forceDataName = Format("forceWindTurb%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->windTurbulence);
     }
 }
 
@@ -1500,10 +1506,21 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
             String name = timingNode->AsString();
             dragForce->timingType = StringToType(name, ForceTimingType::CONSTANT, timingTypesMap);
         }
+        
         forceDataName = Format("forceDirection%d", i);
         const YamlNode* directionNode = node->Get(forceDataName);
         if (directionNode)
             dragForce->direction = directionNode->AsVector3();
+
+        forceDataName = Format("forceWindFreq%d", i);
+        const YamlNode* windFreqNode = node->Get(forceDataName);
+        if (windFreqNode)
+            dragForce->windFrequency = windFreqNode->AsFloat();
+
+        forceDataName = Format("forceWindTurb%d", i);
+        const YamlNode* windTurbNode = node->Get(forceDataName);
+        if (windTurbNode)
+            dragForce->windTurbulence = windTurbNode->AsFloat();
 
         RefPtr<PropertyLine<Vector3>> forcePowerLine = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("dragForceLine%d", i)));
         dragForce->forcePowerLine = forcePowerLine;

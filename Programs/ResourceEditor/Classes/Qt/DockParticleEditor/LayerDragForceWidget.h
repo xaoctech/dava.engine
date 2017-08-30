@@ -49,6 +49,7 @@ private:
     void BuildCommonSection();
     void BuilDirectionSection();
     void BuildGravitySection();
+    void BuildWindSection();
     void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange);
 
     QVBoxLayout* mainLayout = nullptr;
@@ -81,6 +82,12 @@ private:
     QLabel* gravityLabel = nullptr;
     EventFilterDoubleSpinBox* gravitySpin = nullptr;
     QWidget* gravityWidget = nullptr;
+
+    QFrame* windSeparator = nullptr;
+    QLabel* windFreqLabel = nullptr;
+    EventFilterDoubleSpinBox* windFreqSpin = nullptr;
+    QLabel* windTurbLabel = nullptr;
+    EventFilterDoubleSpinBox* windTurbSpin = nullptr;
 
     bool blockSignals = false;
 
