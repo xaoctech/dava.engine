@@ -15,8 +15,7 @@
 #include <io.h>
 #include <direct.h>
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/FileListAndroid.h"
-#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
+#include "Engine/Private/Android/AssetsManagerAndroid.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #elif defined(__DAVAENGINE_LINUX__)

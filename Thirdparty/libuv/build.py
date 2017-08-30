@@ -47,7 +47,6 @@ def _download_and_extract(working_directory_path):
 
     return source_folder_path
 
-
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
 
@@ -181,7 +180,15 @@ def _build_ios(working_directory_path, root_project_path):
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
 
-    env_arm = build_utils.get_autotools_android_arm_env(root_project_path)
+    additional_defines = ' -D__ANDROID__ -DHAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC=1'
+
+    # ARM
+    toolchain_path_arm = build_utils.android_ndk_get_toolchain_arm()
+
+    env_arm = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
+    env_arm['CFLAGS'] = env_arm['CFLAGS'] + additional_defines
+    env_arm['CPPFLAGS'] = env_arm['CPPFLAGS'] + additional_defines
+
     install_dir_android_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
     build_utils.run_process(
@@ -195,7 +202,13 @@ def _build_android(working_directory_path, root_project_path):
          '--enable-static'],
         install_dir_android_arm, env=env_arm)
 
-    env_x86 = build_utils.get_autotools_android_x86_env(root_project_path)
+    # x86    
+    toolchain_path_x86 = build_utils.android_ndk_get_toolchain_x86()
+
+    env_x86 = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
+    env_x86['CFLAGS'] = env_x86['CFLAGS'] + additional_defines
+    env_x86['CPPFLAGS'] = env_x86['CPPFLAGS'] + additional_defines
+
     install_dir_android_x86 = os.path.join(
         working_directory_path, 'gen/install_android_x86')
     build_utils.run_process(
