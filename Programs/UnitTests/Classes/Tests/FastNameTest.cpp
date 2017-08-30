@@ -3,8 +3,6 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 
-#include <limits>
-
 using namespace DAVA;
 
 DAVA_TESTCLASS (FastNameTest)
