@@ -1067,7 +1067,8 @@ void SceneInfo::RefreshLayersSection()
         for (int32 i = 0; i < VisibilityQueryResults::QUERY_INDEX_COUNT; ++i)
         {
             FastName queryName = VisibilityQueryResults::GetQueryIndexName(static_cast<VisibilityQueryResults::eQueryIndex>(i));
-            uint32 fragmentStats = renderStats.visibilityQueryResults.count(queryName) ? renderStats.visibilityQueryResults[queryName] : 0U;
+            UnorderedMap<FastName, uint32>::const_iterator it = renderStats.visibilityQueryResults.find(queryName);
+            uint32 fragmentStats = it != renderStats.visibilityQueryResults.end() ? it->second : 0U;
 
             String str = Format("%d / %.2f%%", fragmentStats, (fragmentStats * 100.0) / viewportSize);
             SetChild(queryName.c_str(), str.c_str(), header);

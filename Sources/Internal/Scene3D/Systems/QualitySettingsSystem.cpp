@@ -761,7 +761,7 @@ int32 QualitySettingsSystem::GetOptionsCount() const
 
 FastName QualitySettingsSystem::GetOptionName(int32 index) const
 {
-    DVASSERT(index >= 0 && index < qualityOptions.size());
+    DVASSERT(index >= 0);
 
     if (static_cast<size_t>(index) < qualityOptions.size())
     {
