@@ -214,7 +214,7 @@ private:
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
-    bool IsEngineSettingsForDLCProfilingEnabled() const;
+    bool IsProfilingEnabled() const;
 
     enum class ScanState : uint32
     {

@@ -148,6 +148,8 @@ private:
 
     uint64 totalDownloadedSize = 0;
 
+    DLCDownloader::TaskError prevTaskError;
+
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization
     bool delayedRequest = true;

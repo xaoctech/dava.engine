@@ -11,7 +11,7 @@ namespace DAVA
 struct EngineSettings::EngineSettingsDetails
 {
     template <eSetting ID, typename T>
-    static void SetupSetting(ReflectionRegistrator<EngineSettings>& registrator, const char* name, const T& defaultValue, const T& rangeStart, const T& rangeEnd);
+    static void SetupSetting(ReflectionRegistrator<EngineSettings>& registrator, const char* name, const T& defaultValue = T(), const T& rangeStart = T(), const T& rangeEnd = T());
     static void SetupSettingValue(eSettingValue value, const char* name);
 
     static std::array<Any, SETTING_COUNT> settingDefault;
@@ -29,7 +29,7 @@ DAVA_REFLECTION_IMPL(EngineSettings)
 
     //settings setup
     EngineSettingsDetails::SetupSetting<SETTING_LANDSCAPE_RENDERMODE, eSettingValue>(registrator, "Landscape.RenderMode", LANDSCAPE_MORPHING, LANDSCAPE_NO_INSTANCING, LANDSCAPE_MORPHING);
-    EngineSettingsDetails::SetupSetting<SETTING_PROFILE_DLC_MANAGER, bool>(registrator, "DlcManagerProfiling", false, false, false);
+    EngineSettingsDetails::SetupSetting<SETTING_PROFILE_DLC_MANAGER, bool>(registrator, "DlcManagerProfiling");
 
     //setting enum values setup
     EngineSettingsDetails::SetupSettingValue(LANDSCAPE_NO_INSTANCING, "Landscape.RenderMode.NoInstancing");
@@ -121,15 +121,19 @@ void EngineSettings::EngineSettingsDetails::SetupSetting(ReflectionRegistrator<E
     settingName[ID] = FastName(name);
 
     if (rangeStart != rangeEnd)
-        registrator.Field(EngineSettings::GetSettingName(ID).c_str(), &EngineSettings::GetSettingRefl<ID, T>, &EngineSettings::SetSettingRefl<ID, T>)[Meta<EngineSettings::SettingRange<T>>(rangeStart, rangeEnd)];
+    {
+        registrator.Field(GetSettingName(ID).c_str(), &EngineSettings::GetSettingRefl<ID, T>, &EngineSettings::SetSettingRefl<ID, T>)[Meta<SettingRange<T>>(rangeStart, rangeEnd)];
+    }
     else
-        registrator.Field(EngineSettings::GetSettingName(ID).c_str(), &EngineSettings::GetSettingRefl<ID, T>, &EngineSettings::SetSettingRefl<ID, T>);
+    {
+        registrator.Field(GetSettingName(ID).c_str(), &EngineSettings::GetSettingRefl<ID, T>, &EngineSettings::SetSettingRefl<ID, T>);
+    }
 }
 
-void EngineSettings::EngineSettingsDetails::SetupSettingValue(EngineSettings::eSettingValue value, const char* name)
+void EngineSettings::EngineSettingsDetails::SetupSettingValue(eSettingValue value, const char* name)
 {
     DVASSERT(value < EngineSettings::SETTING_VALUE_COUNT);
     settingValueName[value] = FastName(name);
 }
 
-} // ns DAVA
+} // end namespace DAVA
