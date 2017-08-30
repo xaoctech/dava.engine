@@ -358,12 +358,6 @@ protected:
                 Connect(particleEffectMenu->addAction(SharedIcon(":/QtIcons/restart.png"), QStringLiteral("Restart")), this, &EntityContextMenu::RestartEffect);
             }
 
-            if (selectionSize == 1)
-            {
-                menu.addSeparator();
-                Connect(menu.addAction(SharedIcon(":/QtIconsTextureDialog/filter.png"), QStringLiteral("Set name as filter")), this, &EntityContextMenu::SetEntityNameAsFilter);
-            }
-
             if (entity != nullptr)
             {
                 SceneHelper::TextureCollector collector;
@@ -374,15 +368,23 @@ protected:
                 {
                     Connect(menu.addAction(QStringLiteral("Reload Textures...")), [textures]
                             {
-                                CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
-                                DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
+                                DAVA::Vector<DAVA::Texture*> reloadTextures;
 
                                 for (auto& tex : textures)
                                 {
-                                    tex.second->ReloadAs(gpuFormat);
+                                    reloadTextures.push_back(tex.second);
                                 }
+
+                                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+
                             });
                 }
+            }
+
+            if (selectionSize == 1)
+            {
+                menu.addSeparator();
+                Connect(menu.addAction(SharedIcon(":/QtIconsTextureDialog/filter.png"), QStringLiteral("Set name as filter")), this, &EntityContextMenu::SetEntityNameAsFilter);
             }
         }
     }

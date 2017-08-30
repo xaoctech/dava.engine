@@ -140,6 +140,15 @@ void TextureBrowser::closeEvent(QCloseEvent* e)
     Close();
 }
 
+void TextureBrowser::UpdateTexture(DAVA::Texture* texture)
+{
+    if (curTexture == texture)
+    {
+        DAVA::TextureDescriptor* descriptor = texture->GetDescriptor();
+        setTexture(texture, descriptor);
+    }
+}
+
 void TextureBrowser::setTexture(DAVA::Texture* texture, DAVA::TextureDescriptor* descriptor)
 {
     curTexture = texture;
@@ -630,20 +639,11 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
         // or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
         if (!DAVA::GPUFamilyDescriptor::IsGPUForDevice(gpu) || gpu == curEditorImageGPUForTextures)
         {
-            texture->ReloadAs(curEditorImageGPUForTextures);
-            UpdateSceneMaterialsWithTexture(texture);
-        }
-    }
-}
+            DAVA::Vector<DAVA::Texture*> reloadTextures;
+            reloadTextures.push_back(texture);
 
-void TextureBrowser::UpdateSceneMaterialsWithTexture(DAVA::Texture* texture)
-{
-    DAVA::Set<DAVA::NMaterial*> materials;
-    SceneHelper::EnumerateMaterials(curScene, materials);
-    for (auto mat : materials)
-    {
-        if (mat->ContainsTexture(texture))
-            mat->InvalidateTextureBindings();
+            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+        }
     }
 }
 
@@ -1114,9 +1114,10 @@ void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor
     DAVA::Texture* texture = textureListModel->getTexture(descriptor);
     if (nullptr != texture)
     {
-        texture->Reload();
-        TextureCache::Instance()->clearOriginal(descriptor);
-        TextureCache::Instance()->clearThumbnail(descriptor);
+        DAVA::Vector<DAVA::Texture*> reloadTextures;
+        reloadTextures.push_back(texture);
+
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
         setTexture(texture, descriptor);
     }
 }

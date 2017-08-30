@@ -5,6 +5,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/TextureBrowser/TextureBrowser.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
@@ -500,7 +501,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
                                          {
                                              return v.CanCast<DAVA::eGPUFamily>() && v.Cast<DAVA::eGPUFamily>() == gpu;
                                          });
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadTextures, this, gpu), Qt::QueuedConnection);
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadTexturesAll, this, gpu), Qt::QueuedConnection);
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placement, action);
         gpuFormatActions.push_back(action);
@@ -537,7 +538,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/reloadtextures.png"), QString(""));
         connections.AddConnection(action, &QAction::triggered, [this]()
                                   {
-                                      ReloadTextures(DAVA::Texture::GetPrimaryGPUForLoading());
+                                      ReloadTexturesAll(DAVA::Texture::GetPrimaryGPUForLoading());
                                   },
                                   Qt::QueuedConnection);
 
@@ -582,7 +583,8 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(REGlobal::OpenSceneOperation.ID, this, &SceneManagerModule::OpenSceneByPath);
     RegisterOperation(REGlobal::AddSceneOperation.ID, this, &SceneManagerModule::AddSceneByPath);
     RegisterOperation(REGlobal::SaveCurrentScene.ID, this, static_cast<void (SceneManagerModule::*)()>(&SceneManagerModule::SaveScene));
-    RegisterOperation(REGlobal::ReloadTexturesOperation.ID, this, &SceneManagerModule::ReloadTextures);
+    RegisterOperation(REGlobal::ReloadTexturesAllOperation.ID, this, &SceneManagerModule::ReloadTexturesAll);
+    RegisterOperation(REGlobal::ReloadTextures.ID, this, &SceneManagerModule::ReloadTextures);
 }
 
 void SceneManagerModule::CreateFirstScene()
@@ -888,7 +890,7 @@ void SceneManagerModule::ExportScene()
 
         scene->Export(exportingParams);
 
-        ReloadTextures(DAVA::Texture::GetPrimaryGPUForLoading());
+        ReloadTexturesAll(DAVA::Texture::GetPrimaryGPUForLoading());
     }
 }
 
@@ -910,7 +912,42 @@ void SceneManagerModule::CloseAllScenes(bool needSavingReqiest)
     }
 }
 
-void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
+void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
+{
+    using namespace DAVA::TArc;
+
+    CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+
+    DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::RefPtr<SceneEditor2> scene = activeContext->GetData<SceneData>()->scene;
+
+    DAVA::Set<DAVA::NMaterial*> materials;
+    SceneHelper::EnumerateMaterials(scene.Get(), materials);
+
+    for (unsigned i = 0; i < textures.size(); i++)
+    {
+        DAVA::Texture* tex = textures[i];
+
+        DAVA::TextureDescriptor* descriptor = tex->GetDescriptor();
+
+        tex->ReloadAs(gpuFormat);
+        TextureCache::Instance()->clearOriginal(descriptor);
+        TextureCache::Instance()->clearThumbnail(descriptor);
+
+        for (auto mat : materials)
+        {
+            if (mat->ContainsTexture(tex))
+                mat->InvalidateTextureBindings();
+        }
+
+        TextureBrowser::Instance()->UpdateTexture(tex);
+    }
+}
+
+void SceneManagerModule::ReloadTexturesAll(DAVA::eGPUFamily gpu)
 {
     using namespace DAVA::TArc;
     if (SaveTileMaskInAllScenes())

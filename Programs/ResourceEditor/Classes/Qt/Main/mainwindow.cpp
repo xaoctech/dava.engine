@@ -1652,7 +1652,7 @@ void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mo
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([]() {
-            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
+            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesAllOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         });
     }
 
@@ -2155,7 +2155,7 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
             return false;
         }
 
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, DAVA::eGPUFamily::GPU_ORIGIN);
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesAllOperation.ID, DAVA::eGPUFamily::GPU_ORIGIN);
     }
 
     return settings->textureViewGPU == DAVA::GPU_ORIGIN;
@@ -2367,7 +2367,7 @@ void QtMainWindow::CallAction(ID id, DAVA::Any&& args)
         OnMaterialEditor(args.Cast<DAVA::NMaterial*>());
         break;
     case GlobalOperations::ReloadTexture:
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesAllOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         break;
     default:
         DVASSERT(false, DAVA::Format("Not implemented action : %d", static_cast<DAVA::int32>(id)).c_str());
