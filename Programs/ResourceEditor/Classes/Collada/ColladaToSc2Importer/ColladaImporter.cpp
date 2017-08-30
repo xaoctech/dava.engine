@@ -460,29 +460,6 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                 ColladaSceneNode* colladaNode = pair.first;
                 const ColladaAnimation::ColladaAnimatinData& animationData = pair.second;
 
-                //SceneNodeAnimationKey* animationKeysCopy = nullptr;
-                //bake parents transform to root-joint animation
-                /* TODO: *Skinning*
-                if ((colladaNode->originalNode->GetJointFlag()) && (colladaNode->parent != nullptr) && !(colladaNode->parent->originalNode->GetJointFlag()))
-                {
-                    animationKeysCopy = new SceneNodeAnimationKey[animationKeysCount];
-
-                    Matrix4 parentTransform = colladaNode->parent->AccumulateTransformUptoFarParent(colladaScene->rootNode);
-                    Matrix4 keyTransform;
-                    for (uint32 k = 0; k < animationKeysCount; ++k)
-                    {
-                        SceneNodeAnimationKey& key = animationKeys[k];
-                        key.GetMatrix(keyTransform);
-
-                        SceneNodeAnimationKey& keyCopy = animationKeysCopy[k];
-                        keyCopy.time = key.time;
-                        (keyTransform * parentTransform).Decomposition(keyCopy.translation, keyCopy.scale, keyCopy.rotation);
-                    }
-
-                    animationKeys = animationKeysCopy;
-                }
-                */
-
                 String nodeUID = String(colladaNode->originalNode->GetDaeId().c_str());
                 String nodeName = UTF8Utils::EncodeToUTF8(colladaNode->originalNode->GetName().c_str());
 
