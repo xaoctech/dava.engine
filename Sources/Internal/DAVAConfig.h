@@ -20,6 +20,9 @@
 
 //#define LOCALIZATION_DEBUG // enable graphic debugging info for displaying of text
 
+// do the most strict checking of UIControls names. Space and colon symbols will not be allowed
+//#define STRICTEST_UICONTROLS_NAMING
+
 // This flag allows to enable profiling stats
 //#define __DAVAENGINE_ENABLE_DEBUG_STATS__
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)

@@ -3,6 +3,7 @@
 #include "UI/UIList.h"
 #include "UI/UIScrollView.h"
 #include "Utils/Utils.h"
+#include "DAVAConfig.h"
 
 namespace UIControlHelpersDetails
 {
@@ -36,7 +37,17 @@ bool IsAllowedSymbol(char ch)
         return (ch >= '0' && ch <= '9');
     };
 
-    return IsLatinChar(ch) || IsDigit(ch) || ch == '.' || ch == '-' || ch == '_';
+    auto IsOtherAllowedChar = [](char ch) -> bool
+    {
+#ifdef STRICTEST_UICONTROLS_NAMING
+        static const UnorderedSet<char> allowedChars = { '.', '-', '_' };
+#else
+        static const UnorderedSet<char> allowedChars = { '.', '-', '_', ' ', ':' };
+#endif
+        return allowedChars.find(ch) != allowedChars.end();
+    };
+
+    return IsLatinChar(ch) || IsDigit(ch) || IsOtherAllowedChar(ch);
 }
 
 bool ContainsOnlyAllowedSymbols(const String& str)
