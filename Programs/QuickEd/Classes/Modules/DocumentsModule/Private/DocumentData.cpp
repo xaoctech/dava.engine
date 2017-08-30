@@ -19,6 +19,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentData)
     .Field(selectionPropertyName.c_str(), &DocumentData::GetSelectedNodes, &DocumentData::SetSelectedNodes)
     .Field(displayedRootControlsPropertyName.c_str(), &DocumentData::GetDisplayedRootControls, &DocumentData::SetDisplayedRootControls)
     .Field(guidesPropertyName.c_str(), &DocumentData::GetGuides, nullptr)
+    .Field(nodeToAddOnClickPropertyName.c_str(), &DocumentData::GetNodeToAddOnClick, &DocumentData::SetNodeToAddOnClick)
     .End();
 }
 
@@ -134,6 +135,16 @@ bool DocumentData::IsDocumentExists() const
 PackageBaseNode* DocumentData::GetCurrentNode() const
 {
     return currentNode;
+}
+
+ControlNode* DocumentData::GetNodeToAddOnClick() const
+{
+    return nodeToAddOnClick;
+}
+
+void DocumentData::SetNodeToAddOnClick(ControlNode* node)
+{
+    nodeToAddOnClick = node;
 }
 
 QString DocumentData::GetUndoText() const
@@ -268,6 +279,7 @@ DAVA::FastName DocumentData::currentNodePropertyName{ "current node" };
 DAVA::FastName DocumentData::selectionPropertyName{ "selection" };
 DAVA::FastName DocumentData::displayedRootControlsPropertyName{ "displayed root controls" };
 DAVA::FastName DocumentData::guidesPropertyName{ "guides" };
+DAVA::FastName DocumentData::nodeToAddOnClickPropertyName{ "node to add" };
 
 template <>
 bool DAVA::AnyCompare<PackageNode::Guides>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)

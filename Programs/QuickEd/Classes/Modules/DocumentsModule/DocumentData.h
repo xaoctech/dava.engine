@@ -53,6 +53,9 @@ public:
 
     PackageBaseNode* GetCurrentNode() const;
 
+    ControlNode* GetNodeToAddOnClick() const;
+    void SetNodeToAddOnClick(ControlNode* node);
+
     DAVA_DEPRECATED(void RefreshLayout());
     DAVA_DEPRECATED(void RefreshAllControlProperties());
 
@@ -66,6 +69,7 @@ public:
     static DAVA::FastName selectionPropertyName;
     static DAVA::FastName displayedRootControlsPropertyName;
     static DAVA::FastName guidesPropertyName;
+    static DAVA::FastName nodeToAddOnClickPropertyName;
 
 private:
     friend class DocumentsModule;
@@ -83,6 +87,8 @@ private:
     PackageBaseNode* currentNode = nullptr;
     //we store this variable for cases when we select multiple controls from bottom to top and than deselect them one by one
     DAVA::List<PackageBaseNode*> currentNodesHistory;
+
+    ControlNode* nodeToAddOnClick = nullptr;
 
     SortedControlNodeSet displayedRootControls;
 

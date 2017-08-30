@@ -27,7 +27,6 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
     void PostInit() override;
     void InitUI();
     void BindFields();
-    void RegisterOperations();
 
     void AddControlsMenus(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
     void RemoveControlsMenus();
@@ -40,12 +39,13 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
 
     void ClearActions(ActionsMap&);
 
-    void AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, ActionsMap& actionsMap);
-    void AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, ActionsMap& actionsMap);
+    void AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap);
+    void AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap);
     void RemoveControlAction(ControlNode* node, ActionsMap& actionsMap);
 
     void OnPackageChanged(const DAVA::Any& package);
     void OnProjectPathChanged(const DAVA::Any& projectPath);
+    void OnControlCreateTriggered(ControlNode* node);
 
     // PackageListener
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
@@ -60,7 +60,11 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
     DAVA::TArc::QtConnections connections;
     LibraryWidget* libraryWidget = nullptr;
 
-    static QString toolbarName;
+    static QString controlsToolbarName;
+
+    QMenu* otherControlsToolMenu = nullptr;
+    QMenu* prototypesToolMenu = nullptr;
+    QMenu* importedPrototypesToolMenu = nullptr;
 
     PackageNode* currentPackageNode = nullptr;
 

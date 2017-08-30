@@ -39,6 +39,7 @@ struct InsertionParams
 QUrl CreateMenuPoint(const QString& menuName, const InsertionParams& params = InsertionParams());
 QUrl CreateMenuPoint(QList<QString> menusPath, const InsertionParams& params = InsertionParams());
 QUrl CreateToolbarPoint(const QString& toolbarName, const InsertionParams& params = InsertionParams());
+QUrl CreateToolbarMenuPoint(const QString& toolbarName, QList<QString> menusPath, const InsertionParams& params = InsertionParams());
 QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor = 0, const InsertionParams& params = InsertionParams());
 
 /// You can attach widget to Action. This widget will be used to appear action on toolbar or in status bar

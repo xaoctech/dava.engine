@@ -182,6 +182,13 @@ void UIPreviewModule::PostInit()
     using namespace DAVA::TArc;
 
     {
+        // create menu bar action "UIPreview", insert before "Help"
+        QAction* menubarItem = new QAction(QStringLiteral("UIPreview"), nullptr);
+        ActionPlacementInfo itemPlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
+        GetUI()->AddAction(mainWindowKey, itemPlacement, menubarItem);
+    }
+
+    {
         QtAction* action = new QtAction(GetAccessor(), QString("Run UIViewer"));
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &UIPreviewModule::RunUIViewer));
         FieldDescriptor fieldDescr;
@@ -192,7 +199,7 @@ void UIPreviewModule::PostInit()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint("UIPreview", { InsertionParams::eInsertionMethod::AfterItem }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint("UIPreview"));
         GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
@@ -207,7 +214,7 @@ void UIPreviewModule::PostInit()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint("UIPreview", { InsertionParams::eInsertionMethod::AfterItem }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint("UIPreview"));
         GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
@@ -222,7 +229,7 @@ void UIPreviewModule::PostInit()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint("UIPreview", { InsertionParams::eInsertionMethod::AfterItem }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint("UIPreview"));
         GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 }

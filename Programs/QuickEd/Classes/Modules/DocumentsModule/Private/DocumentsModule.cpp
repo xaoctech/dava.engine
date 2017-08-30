@@ -1,8 +1,9 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
-#include "Modules/LegacySupportModule/Private/Project.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CanvasData.h"
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
+#include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/Private/CreatingControlsSystem.h"
+#include "Modules/LegacySupportModule/Private/Project.h"
+#include "UI/Preview/Data/CanvasData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -167,6 +168,8 @@ void DocumentsModule::InitEditorSystems()
     DVASSERT(nullptr == systemsManager);
     systemsManager.reset(new EditorSystemsManager(GetAccessor()));
     systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
+
+    systemsManager->AddEditorSystem(new CreatingControlsSystem(systemsManager.get(), GetAccessor(), GetUI()));
 }
 
 void DocumentsModule::InitCentralWidget()
@@ -179,7 +182,7 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager.get());
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, systemsManager.get());
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -188,7 +191,7 @@ void DocumentsModule::InitCentralWidget()
     ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget);
 
     //legacy part. Remove it when package will be refactored
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
 
     QObject::connect(mainWindow, &MainWindow::EmulationModeChanged, previewWidget, &PreviewWidget::OnEmulationModeChanged);
     QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);

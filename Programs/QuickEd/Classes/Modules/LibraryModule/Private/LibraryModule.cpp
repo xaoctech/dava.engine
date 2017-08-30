@@ -4,6 +4,9 @@
 #include "Modules/ProjectModule/ProjectData.h"
 #include "Application/QEGlobal.h"
 
+#include <QToolButton>
+#include <QMenu>
+
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/ModuleCollection.h>
@@ -15,13 +18,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LibraryModule)
     .End();
 }
 
-QString LibraryModule::toolbarName = "Library Controls Toolbar";
+QString LibraryModule::controlsToolbarName = "Library Controls Toolbar";
 
 void LibraryModule::PostInit()
 {
     InitUI();
     BindFields();
-    RegisterOperations();
 }
 
 void LibraryModule::InitUI()
@@ -39,19 +41,12 @@ void LibraryModule::InitUI()
 
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, controlsToolbarName);
 
-    //QToolBar* toolbar = mainWindowInfo.window->findChild<QToolBar*>(toolbarName);
-
-    //     QToolButton* button = new QToolButton();
-    //     button->setAutoRaise(true);
-    //     button->setText("other");
-    //     //button->setIcon(QIcon(":/TArc/Resources/openfile.png"));
-    //     button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    //     button->setObjectName("otherControlsToolButton");
-
-    //ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
-    //GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    // create menu bar action "Controls", insert before "Help"
+    QAction* controlsMenu = new QAction(QStringLiteral("Controls"), nullptr);
+    ActionPlacementInfo controlsMenuPlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
+    GetUI()->AddAction(mainWindowKey, controlsMenuPlacement, controlsMenu);
 }
 
 void LibraryModule::BindFields()
@@ -73,11 +68,6 @@ void LibraryModule::BindFields()
         fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &LibraryModule::OnPackageChanged));
     }
-}
-
-void LibraryModule::RegisterOperations()
-{
-    //RegisterOperation(QEGlobal::SelectFile.ID, widget, &LibraryWidget::SelectFile);
 }
 
 void LibraryModule::OnPackageChanged(const DAVA::Any& package)
@@ -126,16 +116,27 @@ void LibraryModule::OnProjectPathChanged(const DAVA::Any& projectPath)
     libraryWidget->SetLibraryPackages(libraryPackages);
 }
 
+void LibraryModule::OnControlCreateTriggered(ControlNode* node)
+{
+    using namespace DAVA::TArc;
+    const DataContext* ctx = GetAccessor()->GetActiveContext();
+    DocumentData* documentData = ctx->GetData<DocumentData>();
+    DVASSERT(documentData != nullptr);
+
+    documentData->SetNodeToAddOnClick(node);
+}
+
 DAVA::Vector<DAVA::RefPtr<PackageNode>> LibraryModule::LoadLibraryPackages(ProjectData* projectData)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
 
+    const EngineContext* engineContext = GetEngineContext();
+
     DAVA::Vector<DAVA::RefPtr<PackageNode>> libraryPackages;
 
     for (const ProjectData::LibrarySection& section : projectData->GetLibrarySections())
     {
-        const EngineContext* engineContext = GetEngineContext();
         QuickEdPackageBuilder builder(engineContext);
         PackageNode* package = nullptr;
         if (UIPackageLoader(projectData->GetPrototypes()).LoadPackage(section.packagePath.absolute, &builder))
@@ -194,17 +195,9 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
 
                 ActionInfo actionInfo;
                 actionInfo.action = new QtAction(accessor, QIcon(controlIconPath), controlName);
-                //connections.AddConnection(action, &QAction::triggered, Bind(&LibraryModule::OnToCreate, this));
-
-                //         FieldDescriptor fieldDescr;
-                //         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-                //         fieldDescr.fieldName = FastName(DocumentData::canSavePropertyName);
-                //         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-                //             return fieldValue.Cast<bool>(false);
-                //         });
-
                 actionInfo.placement.AddPlacementPoint(CreateMenuPoint("Controls"));
-                actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(toolbarName));
+                actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(controlsToolbarName));
+                connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, controlNode));
                 ui->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
 
                 controlsActions.emplace(controlNode, std::move(actionInfo));
@@ -223,17 +216,29 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
     const Vector<ProjectData::LibrarySection> librarySections = projectData->GetLibrarySections();
     for (const ProjectData::LibrarySection& section : librarySections)
     {
-        QString sectionName = QString::fromStdString(section.packagePath.absolute.GetBasename());
-        QString sectionIconPath = QString::fromStdString(section.iconPath.absolute.GetAbsolutePathname());
-        QUrl menuPoint = section.pinned ? CreateMenuPoint(QList<QString>() << "Controls" << sectionName) : CreateMenuPoint(QList<QString>() << "Controls"
-                                                                                                                                            << "Other" << sectionName);
-
         auto pkgFound = std::find_if(libraryPackages.begin(), libraryPackages.end(), [&section](const RefPtr<PackageNode>& pkg)
                                      {
                                          return (pkg->GetPath() == section.packagePath.absolute);
                                      });
         if (pkgFound != libraryPackages.end())
         {
+            QString sectionName = QString::fromStdString(section.packagePath.absolute.GetBasename());
+            QString sectionIconPath = QString::fromStdString(section.iconPath.absolute.GetAbsolutePathname());
+
+            QUrl menuPoint;
+            QUrl toolbarMenuPoint;
+            if (section.pinned == true)
+            {
+                menuPoint = CreateMenuPoint(QStringList() << "Controls" << sectionName);
+                toolbarMenuPoint = CreateToolbarMenuPoint(controlsToolbarName, QStringList() << sectionName);
+            }
+            else
+            {
+                menuPoint = CreateMenuPoint(QStringList() << "Controls"
+                                                          << "Other" << sectionName);
+                toolbarMenuPoint = CreateToolbarMenuPoint(controlsToolbarName, QStringList() << "Other" << sectionName);
+            }
+
             PackageControlsNode* packageControls = pkgFound->Get()->GetPackageControlsNode();
             for (ControlNode* node : *packageControls)
             {
@@ -243,17 +248,9 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
 
                 ActionInfo actionInfo;
                 actionInfo.action = new QtAction(accessor, QIcon(iconPath), controlName);
-                //connections.AddConnection(action, &QAction::triggered, Bind(&LibraryModule::OnToCreate, this));
-
-                //         FieldDescriptor fieldDescr;
-                //         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-                //         fieldDescr.fieldName = FastName(DocumentData::canSavePropertyName);
-                //         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-                //             return fieldValue.Cast<bool>(false);
-                //         });
-
                 actionInfo.placement.AddPlacementPoint(menuPoint);
-                //placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, "project actions separator" }));
+                actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
+                connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, node));
 
                 ui->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
                 controlsActions.emplace(node, std::move(actionInfo));
@@ -267,7 +264,7 @@ void LibraryModule::RemoveControlsMenus()
     ClearActions(controlsActions);
 }
 
-void LibraryModule::AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, LibraryModule::ActionsMap& actionsMap)
+void LibraryModule::AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap)
 {
     QString iconPath = IconHelper::GetCustomIconPath();
     QString controlName = QString::fromStdString(controlNode->GetName());
@@ -275,27 +272,19 @@ void LibraryModule::AddControlAction(ControlNode* controlNode, const QUrl& menuP
     ActionInfo actionInfo;
     actionInfo.action = new DAVA::TArc::QtAction(GetAccessor(), QIcon(iconPath), controlName);
     actionInfo.placement.AddPlacementPoint(menuPoint);
-    //connections.AddConnection(action, &QAction::triggered, Bind(&LibraryModule::OnToCreate, this));
-
-    //         FieldDescriptor fieldDescr;
-    //         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-    //         fieldDescr.fieldName = FastName(DocumentData::canSavePropertyName);
-    //         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-    //             return fieldValue.Cast<bool>(false);
-    //         });
-
-    //placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, "project actions separator" }));
+    actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
+    connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, controlNode));
     GetUI()->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
     actionsMap.emplace(controlNode, std::move(actionInfo));
 }
 
-void LibraryModule::AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, LibraryModule::ActionsMap& actionsMap)
+void LibraryModule::AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap)
 {
     if (controls != nullptr)
     {
         for (ControlNode* prototypeNode : *controls)
         {
-            AddControlAction(prototypeNode, menuPoint, actionsMap);
+            AddControlAction(prototypeNode, menuPoint, toolbarMenuPoint, actionsMap);
         }
     }
 };
@@ -304,8 +293,10 @@ void LibraryModule::AddPrototypesMenus(PackageNode* packageNode)
 {
     QUrl menuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Controls"
                                                                   << "Prototypes");
+    QUrl toolbarMenuPoint = DAVA::TArc::CreateToolbarMenuPoint(controlsToolbarName, QList<QString>() << "Prototypes");
+
     PackageControlsNode* prototypes = packageNode->GetPrototypes();
-    AddPackageControlsActions(prototypes, menuPoint, prototypesActions);
+    AddPackageControlsActions(prototypes, menuPoint, toolbarMenuPoint, prototypesActions);
 
     ImportedPackagesNode* importedPackages = packageNode->GetImportedPackagesNode();
     if (importedPackages != nullptr)
@@ -319,11 +310,14 @@ void LibraryModule::AddPrototypesMenus(PackageNode* packageNode)
 
 void LibraryModule::AddImportedPackageControlsActions(const PackageNode* package)
 {
+    QList<QString> path({ "Controls", "Prototypes", QString::fromStdString(package->GetName()) });
+    QUrl menuPoint = DAVA::TArc::CreateMenuPoint(path);
+
+    path.pop_front();
+    QUrl toolbarMenuPoint = DAVA::TArc::CreateToolbarMenuPoint(controlsToolbarName, path);
+
     PackageControlsNode* prototypes = package->GetPrototypes();
-    QUrl menuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Controls"
-                                                                  << "Prototypes"
-                                                                  << "Imported Prototypes" << QString::fromStdString(package->GetName()));
-    AddPackageControlsActions(prototypes, menuPoint, prototypesActions);
+    AddPackageControlsActions(prototypes, menuPoint, toolbarMenuPoint, prototypesActions);
 }
 
 void LibraryModule::RemoveImportedPackageControlsActions(const PackageNode* package)
@@ -371,7 +365,8 @@ void LibraryModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* de
     {
         QUrl menuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Controls"
                                                                       << "Prototypes");
-        AddControlAction(node, menuPoint, prototypesActions);
+        QUrl toolbarMenuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Prototypes");
+        AddControlAction(node, menuPoint, toolbarMenuPoint, prototypesActions);
     }
 }
 
