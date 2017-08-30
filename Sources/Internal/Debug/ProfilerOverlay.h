@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Debug/Private/RingArray.h"
 #include "Debug/TraceEvent.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {
