@@ -102,13 +102,6 @@ DAVA_TESTCLASS (FastNameTest)
 
         const char* s = "test";
 
-        fn1 = FastName(s);
-        fn2 = FastName(s + 1);
-
-        TEST_VERIFY(fn1 != fn2);
-        TEST_VERIFY(!(fn1 == fn2));
-        TEST_VERIFY(fn1 < fn2);
-
         fn1 = fn2;
         FastName fn3 = fn2;
 
