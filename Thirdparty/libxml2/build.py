@@ -50,7 +50,7 @@ def _download_and_extract(working_directory_path):
     return source_folder_path
 
 
-def _patch_sources_android(source_folder_path):
+def _patch_sources_android(source_folder_path, working_directory_path):
     try:
         if source_folder_path in _patch_sources_android.cache:
             return
@@ -58,9 +58,9 @@ def _patch_sources_android(source_folder_path):
         _patch_sources_android.cache = []
         pass
 
-    # Glob.h is required for android since Android NDK doesn't include one
-    # Glob.o will be compiled and added to linker input
-    shutil.copyfile('glob.h', os.path.join(source_folder_path, 'glob.h'))
+    build_utils.apply_patch(
+        os.path.abspath('patch_android.diff'),
+        working_directory_path)
 
     _patch_sources_android.cache.append(source_folder_path)
 
@@ -178,7 +178,7 @@ def _build_macos(working_directory_path, root_project_path):
         working_directory_path, 'gen/install_macos')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=x86_64-apple-darwin', '--disable-shared', '--enable-static'],
+        ['--host=x86_64-apple-darwin', '--disable-shared', '--enable-static', '--without-lzma', '--without-python'],
         install_dir_macos,
         env=build_utils.get_autotools_macos_env())
 
@@ -196,7 +196,7 @@ def _build_ios(working_directory_path, root_project_path):
     install_dir_ios = os.path.join(working_directory_path, 'gen/install_ios')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=armv7-apple-darwin', '--disable-shared', '--enable-static'],
+        ['--host=armv7-apple-darwin', '--disable-shared', '--enable-static', '--without-lzma', '--without-python'],
         install_dir_ios,
         env=build_utils.get_autotools_ios_env())
 
@@ -210,42 +210,39 @@ def _build_ios(working_directory_path, root_project_path):
 
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources_android(source_folder_path)
-
-    # Libxml tests requires glob header to be available,
-    # but android ndk doesn't include one
-    # To work around this, glob.c & glob.h are included
-    # glob.c should be compiled with according ndk compiler,
-    # and added to linker input
-    # Files are taken from this discussion:
-    # https://groups.google.com/forum/#!topic/android-ndk/vSH6MWPD0Vk
+    _patch_sources_android(source_folder_path, working_directory_path)
 
     gen_folder_path = os.path.join(working_directory_path, 'gen')
-    glob_obj_file_path = os.path.join(gen_folder_path, 'glob.o')
     if not os.path.exists(gen_folder_path):
         os.makedirs(gen_folder_path)
 
-    arm_env = build_utils.get_autotools_android_arm_env(root_project_path)
-    install_dir_android_arm = os.path.join(
-        working_directory_path, 'gen/install_android_arm')
-    _compile_glob(arm_env, glob_obj_file_path)
-    arm_env['LIBS'] = glob_obj_file_path
+    # ARM
+    toolchain_path_arm = build_utils.android_ndk_get_toolchain_arm()
+
+    arm_env = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
+    install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
     build_utils.build_with_autotools(
         source_folder_path,
         ['--host=arm-linux-androideabi',
          '--disable-shared',
-         '--enable-static'],
+         '--enable-static',
+         '--without-lzma',
+         '--without-python'],
         install_dir_android_arm,
         env=arm_env)
 
-    x86_env = build_utils.get_autotools_android_x86_env(root_project_path)
-    install_dir_android_x86 = os.path.join(
-        working_directory_path, 'gen/install_android_x86')
-    _compile_glob(x86_env, glob_obj_file_path)
-    x86_env['LIBS'] = glob_obj_file_path
+    # x86
+    toolchain_path_x86 = build_utils.android_ndk_get_toolchain_x86()
+
+    x86_env = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
+    install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=i686-linux-android', '--disable-shared', '--enable-static'],
+        ['--host=i686-linux-android',
+         '--disable-shared',
+         '--enable-static',
+         '--without-lzma',
+         '--without-python'],
         install_dir_android_x86,
         env=x86_env)
 
@@ -284,12 +281,6 @@ def _build_linux(working_directory_path, root_project_path):
         os.path.join(root_project_path, 'Libs/lib_CMake/linux/libxml.a'))
 
     _copy_headers_from_install(install_dir, root_project_path)
-
-
-def _compile_glob(env, output_file_path):
-    cmd = [env['CC'], '-c', '-I.', 'glob.c', '-o', output_file_path]
-    cmd.extend(env['CFLAGS'].split())
-    build_utils.run_process(cmd, environment=env)
 
 
 def _copy_headers_from_install(install_folder_path, root_project_path):

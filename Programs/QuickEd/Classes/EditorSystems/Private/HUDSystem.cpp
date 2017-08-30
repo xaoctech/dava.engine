@@ -69,7 +69,7 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem, UIControl* hudCont
     , hudControl(hudControl_)
     , container(new HUDContainer(node_))
 {
-    container->SetName(String("Container for HUD controls of node ") + node_->GetName());
+    container->SetName(String("Container_for_HUD_controls_of_node"));
     DAVA::Vector<HUDAreaInfo::eArea> areas;
     if (node->GetParent() != nullptr && node->GetParent()->GetControl() != nullptr)
     {
@@ -295,13 +295,13 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
         for (size_type i = 0; i < count; ++i)
         {
             RefPtr<UIControl> lineControl(new UIControl());
-            lineControl->SetName(FastName("magnet line control"));
+            lineControl->SetName(FastName("magnet_line_control"));
             ::SetupHUDMagnetLineControl(lineControl.Get(), accessor);
             hudControl->AddControl(lineControl.Get());
             magnetControls.emplace_back(lineControl);
 
             RefPtr<UIControl> rectControl(new UIControl());
-            rectControl->SetName(FastName("rect of target control which we magnet to"));
+            rectControl->SetName(FastName("rect_of_target_control_which_we_magnet_to"));
             ::SetupHUDMagnetRectControl(rectControl.Get(), accessor);
             hudControl->AddControl(rectControl.Get());
             magnetTargetControls.emplace_back(rectControl);
