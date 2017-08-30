@@ -68,6 +68,11 @@ void UIProxy::ClearMessage(const WindowKey& windowKey)
     globalUI->ClearMessage(windowKey);
 }
 
+int UIProxy::ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog)
+{
+    return globalUI->ShowModalDialog(parentWindow, dialog);
+}
+
 ModalMessageParams::Button UIProxy::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)
 {
     return globalUI->ShowModalMessage(windowKey, params);

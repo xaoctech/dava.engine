@@ -1,15 +1,8 @@
 #include "Classes/ParticleSystem/ParticleDebugDrawModule.h"
-
-#include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
-
-#include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/Selection/SelectableGroup.h"
-
-#include "Base/BaseTypes.h"
-#include "Scene3D/Entity.h"
-#include "Render/Highlevel/RenderObject.h"
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -20,6 +13,11 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataNode.h>
+
+#include <Base/BaseTypes.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Systems/ParticleEffectDebugDrawSystem.h>
+#include <Render/Highlevel/RenderObject.h>
 
 #include <QWidget>
 #include <QAction>
@@ -173,7 +171,9 @@ void ParticleDebugDrawModule::UpdateSceneSystem()
     ContextAccessor* accessor = GetAccessor();
     ParticleDebugDrawData* data = GetAccessor()->GetGlobalContext()->GetData<ParticleDebugDrawData>();
 
-    accessor->ForEachContext([data](DataContext& ctx)
+    GeneralSettings* settings = accessor->GetGlobalContext()->GetData<GeneralSettings>();
+
+    accessor->ForEachContext([data, settings](DataContext& ctx)
                              {
                                  SceneData::TSceneType scene = ctx.GetData<SceneData>()->GetScene();
                                  DAVA::ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = scene->GetParticleEffectDebugDrawSystem();
@@ -182,7 +182,7 @@ void ParticleDebugDrawModule::UpdateSceneSystem()
                                      particleEffectDebugDrawSystem->SetDrawMode(data->drawMode);
                                      particleEffectDebugDrawSystem->SetIsDrawOnlySelected(data->drawOnlySelected);
                                      particleEffectDebugDrawSystem->SetSelectedParticles(data->selectedParticles);
-                                     particleEffectDebugDrawSystem->SetAlphaThreshold(SettingsManager::GetValue(Settings::General_ParticleEditor_ParticleDebugAlphaTheshold).AsFloat());
+                                     particleEffectDebugDrawSystem->SetAlphaThreshold(settings->particleDebugAlphaTheshold);
                                  }
                              });
 }

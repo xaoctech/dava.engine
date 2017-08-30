@@ -72,7 +72,7 @@ DAVA_TESTCLASS (JobManagerTest)
 
         while (thread->GetState() != Thread::STATE_ENDED)
         {
-            JobManager::Instance()->Update();
+            GetEngineContext()->jobManager->Update();
         }
 
         thread->Join();
@@ -99,7 +99,7 @@ DAVA_TESTCLASS (JobManagerTest)
             {
                 // calculate in main thread
                 Function<void()> fn = std::bind(&testCalc, &data->mainThreadVar);
-                uint32 id = JobManager::Instance()->CreateMainJob(fn);
+                uint32 id = GetEngineContext()->jobManager->CreateMainJob(fn);
 
                 if (j == n)
                 {
@@ -107,7 +107,7 @@ DAVA_TESTCLASS (JobManagerTest)
                 }
             }
 
-            JobManager::Instance()->WaitMainJobID(jobId);
+            GetEngineContext()->jobManager->WaitMainJobID(jobId);
 
             for (uint32 j = 0; j < count; ++j)
             {
@@ -119,10 +119,10 @@ DAVA_TESTCLASS (JobManagerTest)
         TestJobOwner* jobOwner = new TestJobOwner(&data->ownedMainJobsVar);
         for (uint32 i = 0; i < JOBS_COUNT; ++i)
         {
-            JobManager::Instance()->CreateMainJob(MakeFunction(MakeSharedObject(jobOwner), &TestJobOwner::AnyFunction));
+            GetEngineContext()->jobManager->CreateMainJob(MakeFunction(MakeSharedObject(jobOwner), &TestJobOwner::AnyFunction));
         }
         jobOwner->Release();
-        JobManager::Instance()->WaitMainJobs();
+        GetEngineContext()->jobManager->WaitMainJobs();
     }
 }
 ;

@@ -1,5 +1,4 @@
-#ifndef __UI_EDITOR_LIBRARY_MODEL_H__
-#define __UI_EDITOR_LIBRARY_MODEL_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
@@ -18,6 +17,7 @@ namespace DAVA
 namespace TArc
 {
 class UI;
+class ContextAccessor;
 }
 }
 
@@ -34,7 +34,7 @@ public:
     LibraryModel(QObject* parent = nullptr);
     ~LibraryModel() override;
 
-    void SetUI(DAVA::TArc::UI* ui);
+    void Setup(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
     void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -70,6 +70,5 @@ private:
     DAVA::Vector<DAVA::RefPtr<ControlNode>> defaultControls;
 
     DAVA::TArc::UI* ui = nullptr;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
 };
-
-#endif // __UI_EDITOR_LIBRARY_MODEL_H__

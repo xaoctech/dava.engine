@@ -1,14 +1,13 @@
 #pragma once
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/Qt/QtString.h>
 
 #include <Base/Result.h>
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <Math/Math2D.h>
 #include <FileSystem/FilePath.h>
-
-#include <QString>
 
 namespace DAVA
 {
@@ -46,6 +45,19 @@ public:
         DAVA::Size2i resolution;
     };
 
+    struct Device
+    {
+        DAVA::UnorderedMap<DAVA::FastName, DAVA::Any> params;
+    };
+
+    struct Blank
+    {
+        DAVA::FilePath path;
+        DAVA::String name;
+        DAVA::FastName controlName;
+        DAVA::FastName controlPath;
+    };
+
     ProjectData();
     ~ProjectData() override;
 
@@ -74,6 +86,9 @@ public:
 
     const DAVA::String& GetDefaultLanguage() const;
 
+    const DAVA::Vector<Device>& GetDevices() const;
+    const DAVA::Vector<Blank>& GetBlanks() const;
+
     bool Save() const;
 
     static DAVA::FastName projectPathPropertyName;
@@ -98,6 +113,7 @@ private:
     void ParseLibraryV1(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
     void ParsePrototypes(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
     void ParseTextsDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseDevices(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
     void ParseGfxDirectories(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
     void ParseConvertedResourceDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
 
@@ -133,6 +149,9 @@ private:
     DAVA::Vector<PinnedControl> pinnedControls;
     DAVA::Vector<LibrarySection> librarySections;
     DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>> prototypes;
+
+    DAVA::Vector<Device> devicesForPreview;
+    DAVA::Vector<Blank> blanksForPreview;
 
     DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArc::DataNode);
 };

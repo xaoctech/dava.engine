@@ -31,8 +31,17 @@ void SelfUpdateTask::Run()
         return;
     }
 
+    QString filePath = fileManager->GetTempDownloadFilePath(url);
+    fileToWrite.setFileName(filePath);
+    if (fileToWrite.open(QIODevice::WriteOnly) == false)
+    {
+        SetError(QObject::tr("Can not create file %1!").arg(filePath));
+        emit Finished();
+        return;
+    }
+
     QString description = QObject::tr("Loading new launcher");
-    std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, url);
+    std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, url, &fileToWrite);
     appManager->AddTaskWithNotifier(std::move(task), notifier);
 }
 
@@ -68,16 +77,14 @@ void SelfUpdateTask::OnFinished(const BaseTask* task)
 
 void SelfUpdateTask::OnLoaded(const BaseTask* task)
 {
-    Q_ASSERT(task->GetTaskType() == BaseTask::DOWNLOAD_TASK);
-    const DownloadTask* downloadTask = static_cast<const DownloadTask*>(task);
-    Q_ASSERT(downloadTask->GetLoadedData().empty() == false);
+    fileToWrite.close();
+
     FileManager* fileManager = appManager->GetFileManager();
-    //replace this code later with "Create file while loading"
     QString filePath = fileManager->GetTempDownloadFilePath(url);
-    bool archiveCreated = fileManager->CreateFileFromRawData(downloadTask->GetLoadedData().front(), filePath);
-    if (archiveCreated == false)
+
+    if (fileToWrite.size() <= 0)
     {
-        SetError(QObject::tr("Can not create archive %1!").arg(filePath));
+        SetError(QObject::tr("Failed to write file %1!").arg(filePath));
         emit Finished();
         return;
     }

@@ -46,6 +46,7 @@ void QualitySettingsSystem::Load(const FilePath& path)
             materialGroups.clear();
             soundQualities.clear();
             landscapeQualities.clear();
+            anisotropyQualities.clear();
             msaaQualities.clear();
 
             // materials

@@ -239,7 +239,7 @@ public:
 
     void Input(UIEvent* currentInput) override;
 
-    void Draw(const UIGeometricData& geometricData) override;
+    void Update(float32 timeElapsed) override;
 
     void SetParentColor(const Color& parentColor) override;
     UIButton* Clone() override;
@@ -319,6 +319,8 @@ private:
     UIStaticText* CreateDefaultTextBlock() const;
 
     void UpdateStateTextControlSize();
+
+    void UpdateSelectedTextBlock();
 
 public:
 };

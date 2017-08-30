@@ -312,13 +312,39 @@ const pack_meta_data& PackArchive::GetMeta() const
     return *pack_meta;
 }
 
+PackArchive::info PackArchive::GetInfo() const
+{
+    info result;
+
+    const pack_format::pack_file::footer_block& footer = pack_file.footer;
+
+    result.infoCrc32 = footer.info_crc32;
+    result.metaCrc32 = footer.meta_data_crc32;
+    result.totalFiles = footer.info.num_files;
+
+    return result;
+}
+
 std::string PackArchive::PrintMeta() const
 {
     using namespace std;
     stringstream ss;
+
+    info inf = GetInfo();
+
+    stringstream info_ss;
+
+    info_ss << "DVPK info\n"
+            << left << setw(18) << "info_crc32: "
+            << "0x" << hex << setfill('0') << setw(8) << right << inf.infoCrc32 << setfill(' ') << '\n'
+            << left << setw(18) << "meta_data_crc32: "
+            << "0x" << hex << setfill('0') << setw(8) << right << inf.metaCrc32 << setfill(' ') << '\n'
+            << left << setw(18) << "total_files: " << dec << setfill(' ') << inf.totalFiles << '\n';
+
     if (HasMeta())
     {
         const pack_meta_data& meta = GetMeta();
+
         size_t numFiles = meta.get_num_files();
 
         // find out max filename
@@ -354,9 +380,15 @@ std::string PackArchive::PrintMeta() const
         << " |";
 
         string header = table_header.str();
+
+        std::string separator_line = string(header.length(), '-');
+
+        info_ss << separator_line << '\n';
+
+        ss << info_ss.rdbuf();
         ss << "FILES\n"
            << header << '\n'
-           << string(header.length(), '-') << '\n';
+           << separator_line << '\n';
 
         const string compression_types[] = { "none", "lz4", "lz4hc", "deflate" };
 
@@ -378,7 +410,7 @@ std::string PackArchive::PrintMeta() const
                << "0x" << setw(12) << hex << file_data.original_crc32 << " | "
                << setw(14) << dec << file_data.start_position << '\n';
         }
-        ss << string(header.length(), '-') << '\n'
+        ss << separator_line << '\n'
            << "END-FILES\n";
 
         size_t numPacks = meta.get_num_packs();
@@ -411,9 +443,11 @@ std::string PackArchive::PrintMeta() const
 
         header = table_header.str();
 
+        separator_line = string(header.length(), '-');
+
         ss << "PACKS\n"
            << header << '\n'
-           << string(header.length(), '-') << '\n';
+           << separator_line << '\n';
 
         size_t numbers_in_max_pack = std::to_string(numPacks).size();
         for (unsigned indexOfPack = 0; indexOfPack < numPacks; ++indexOfPack)
@@ -426,7 +460,7 @@ std::string PackArchive::PrintMeta() const
                << packName << " | " << setw(max_dep_name)
                << dependencies << '\n';
         }
-        ss << string(header.length(), '-')
+        ss << separator_line
            << "END-PACKS\n";
 
         ss << "START-DEPENDENCY\n";
@@ -438,8 +472,9 @@ std::string PackArchive::PrintMeta() const
                      << " | "
                      << "all-dependency-indexes |";
         header = table_header.str();
+        separator_line = string(header.length(), '-');
         ss << header << '\n';
-        ss << string(header.length(), '-') << '\n';
+        ss << separator_line << '\n';
 
         for (unsigned indexOfPack = 0; indexOfPack < numPacks; ++indexOfPack)
         {

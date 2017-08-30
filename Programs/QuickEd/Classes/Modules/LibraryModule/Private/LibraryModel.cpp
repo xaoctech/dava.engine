@@ -1,8 +1,5 @@
 #include "LibraryModel.h"
 
-#include <QIcon>
-#include <QMimeData>
-
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ImportedPackagesNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -21,8 +18,12 @@
 #include "Utils/QtDavaConvertion.h"
 #include "UI/IconHelper.h"
 
-#include <TArc/Utils/Themes.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Core/ContextAccessor.h>
+
+#include <QIcon>
+#include <QMimeData>
 
 using namespace DAVA;
 
@@ -92,9 +93,10 @@ LibraryModel::LibraryModel(QObject* parent)
 
 LibraryModel::~LibraryModel() = default;
 
-void LibraryModel::SetUI(DAVA::TArc::UI* ui_)
+void LibraryModel::Setup(DAVA::TArc::UI* ui_, DAVA::TArc::ContextAccessor* accessor_)
 {
     ui = ui_;
+    accessor = accessor_;
 }
 
 void LibraryModel::SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& packages)
@@ -225,7 +227,8 @@ QVariant LibraryModel::data(const QModelIndex& index, int role) const
         QStandardItem* item = itemFromIndex(index);
         if (item->parent() == nullptr)
         {
-            return Themes::GetViewLineAlternateColor();
+            DAVA::TArc::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
+            return settings->GetViewLineAlternateColor();
         }
     }
     return QStandardItemModel::data(index, role);

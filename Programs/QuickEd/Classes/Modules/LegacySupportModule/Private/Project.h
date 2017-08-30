@@ -8,7 +8,6 @@
 #include <TArc/Core/OperationInvoker.h>
 
 #include <Base/Result.h>
-#include <Preferences/PreferencesRegistrator.h>
 
 #include <QObject>
 #include <QVector>

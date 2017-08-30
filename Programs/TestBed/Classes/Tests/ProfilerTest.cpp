@@ -4,7 +4,9 @@
 #include "UI/UIStaticText.h"
 #include "UI/UIButton.h"
 #include "UI/UIControlSystem.h"
+#include "UI/Update/UIUpdateComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
+#include <UI/Layouts/UISizePolicyComponent.h>
 #include "Render/2D/Font.h"
 #include "Scene3D/Scene.h"
 #include "Debug/ProfilerOverlay.h"
@@ -13,6 +15,7 @@
 #include "Debug/ProfilerMarkerNames.h"
 #include "Debug/ProfilerUtils.h"
 #include "Engine/Engine.h"
+
 #include <sstream>
 
 using namespace DAVA;
@@ -27,6 +30,7 @@ static const char* PROFILER_TEST_DUMP_JSON_PATH = "~doc:/TestBed/profiler_test_d
 ProfilerTest::ProfilerTest(TestBed& app)
     : BaseScreen(app, "ProfilerTest")
 {
+    GetOrCreateComponent<UIUpdateComponent>();
 }
 
 void ProfilerTest::LoadResources()
@@ -38,7 +42,7 @@ void ProfilerTest::LoadResources()
 
     ScopedPtr<Camera> camera(new Camera());
 
-    Size2i screenSize = UIControlSystem::Instance()->vcs->GetVirtualScreenSize();
+    Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
 
     float32 aspect = float32(screenSize.dy) / float32(screenSize.dx);
     camera->SetupPerspective(70.f, aspect, 0.5f, 2500.f);
@@ -107,6 +111,7 @@ void ProfilerTest::LoadResources()
     dumpText = CreateStaticText(Rect(0.f, 0.f, 500.f, 400.f), L"Dump Text", dumpFont, Color(0.f, 1.f, 0.f, 1.f));
     dumpText->SetMultilineType(UIStaticText::MULTILINE_ENABLED);
     dumpText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    dumpText->GetOrCreateComponent<UISizePolicyComponent>()->SetVerticalPolicy(UISizePolicyComponent::eSizePolicy::PERCENT_OF_CONTENT);
     dumpScrollView->AddControlToContainer(dumpText);
     dumpScrollView->RecalculateContentSize();
 
@@ -227,8 +232,9 @@ void ProfilerTest::DumpAverageToUI(DAVA::ProfilerCPU* profiler, DAVA::int32 snap
     std::stringstream stream;
     profiler->DumpAverage(marker, 10, stream, snapshotID);
 
-    dumpText->SetText(UTF8Utils::EncodeToWideString(stream.str()));
-    dumpText->SetSize(dumpText->GetContentPreferredSize(dumpText->GetSize()));
+    dumpText->SetUtf8Text(stream.str());
+    dumpText->UpdateLayout();
+
     dumpScrollView->RecalculateContentSize();
     dumpScrollView->SetVerticalScrollPosition(0.f);
 

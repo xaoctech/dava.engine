@@ -46,7 +46,7 @@ ApplicationManager::ApplicationManager(ApplicationQuitController* quitController
     , commandsSender(new AppsCommandsSender(this))
     , baManagerClient(new BAManagerClient(this))
     , configRefresher(new ConfigRefresher(this))
-    , urlsHolder(new UrlsHolder(this))
+    , urlsHolder(new UrlsHolder())
     , mainWindow(new MainWindow(this))
     , taskManager(new TaskManager(this))
 {
@@ -69,6 +69,16 @@ ApplicationManager::ApplicationManager(ApplicationQuitController* quitController
     AddTaskWithBaseReceivers<LoadLocalConfigTask>(localConfigFilePath);
 
     ::LoadPreferences(fileManager, urlsHolder, baManagerClient, configRefresher);
+
+    //Debug key to dump memory
+    connect(new QShortcut(Qt::Key_H, mainWindow), &QShortcut::activated, [this]() {
+        QString debugStr = QString("total objects size: %1, mainWindow size: %2, tasks count: %3")
+                           .arg(findChildren<QObject*>().size())
+                           .arg(mainWindow->findChildren<QObject*>().size())
+                           .arg(taskManager->GetTasksCount());
+        ErrorMessenger::LogMessage(QtDebugMsg, debugStr);
+        mainWindow->ShowDebugString(debugStr);
+    });
 }
 
 ApplicationManager::~ApplicationManager()
@@ -130,12 +140,14 @@ void ApplicationManager::OpenPreferencesEditor()
 
 void ApplicationManager::CheckUpdates()
 {
+#ifndef __DAVAENGINE_DEBUG__
     //check self-update
     if (remoteConfig.GetLauncherVersion() != localConfig.GetLauncherVersion())
     {
         AddTaskWithBaseReceivers<SelfUpdateTask>(quitController, remoteConfig.GetLauncherURL());
         return;
     }
+#endif //__DAVAENGINE_DEBUG__
 
     //check applications update
     int branchCount = remoteConfig.GetBranchCount();

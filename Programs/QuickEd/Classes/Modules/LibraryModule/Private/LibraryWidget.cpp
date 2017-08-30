@@ -14,7 +14,7 @@ LibraryWidget::LibraryWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::
 {
     InitUI();
     treeView->setModel(libraryModel);
-    libraryModel->SetUI(ui);
+    libraryModel->Setup(ui, accessor);
 }
 
 LibraryWidget::~LibraryWidget() = default;
