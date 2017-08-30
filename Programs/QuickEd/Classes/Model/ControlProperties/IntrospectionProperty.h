@@ -36,6 +36,8 @@ public:
 
     void DisableResetFeature();
 
+    bool IsReadOnly() const override;
+
 protected:
     void ApplyValue(const DAVA::Any& value) override;
 
@@ -43,6 +45,7 @@ protected:
     DAVA::BaseObject* object = nullptr;
     DAVA::Reflection reflection;
     DAVA::int32 flags;
+    bool forceReadOnly = false;
 
 private:
     void SetLayoutSourceRectValue(const DAVA::Any& value);

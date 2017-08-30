@@ -15,6 +15,8 @@
 #include <UI/UIScrollViewContainer.h>
 #include <UI/UISlider.h>
 #include <UI/UISwitch.h>
+#include <UI/Text/UITextComponent.h>
+#include <UI/UITextField.h>
 
 using namespace DAVA;
 
@@ -24,6 +26,7 @@ const String INTROSPECTION_PROPERTY_NAME_SIZE("size");
 const String INTROSPECTION_PROPERTY_NAME_POSITION("position");
 const String INTROSPECTION_PROPERTY_NAME_TEXT("text");
 const String INTROSPECTION_PROPERTY_NAME_FONT("font");
+const String INTROSPECTION_PROPERTY_NAME_FONT_NAME("fontName");
 const String INTROSPECTION_PROPERTY_NAME_CLASSES("classes");
 const String INTROSPECTION_PROPERTY_NAME_VISIBLE("visible");
 }
@@ -101,6 +104,13 @@ IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const D
             }
         }
     }
+
+    // If "UITextField" has helper component "UITextComponent" mark all properties as "ReadOnly".
+    UITextComponent* text = CastIfEqual<UITextComponent*>(anObject);
+    if (text)
+    {
+        forceReadOnly = dynamic_cast<UITextField*>(text->GetControl()) != nullptr;
+    }
 }
 
 IntrospectionProperty::~IntrospectionProperty()
@@ -114,9 +124,9 @@ IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, const D
     {
         return new LocalizedTextValueProperty(object, name, ref, sourceProperty, cloneType);
     }
-    else if (name == INTROSPECTION_PROPERTY_NAME_FONT)
+    else if (name == INTROSPECTION_PROPERTY_NAME_FONT || name == INTROSPECTION_PROPERTY_NAME_FONT_NAME)
     {
-        return new FontValueProperty(object, name, ref, sourceProperty, cloneType);
+        return new FontValueProperty(object, componentType, name, ref, sourceProperty, cloneType);
     }
     else if (name == INTROSPECTION_PROPERTY_NAME_VISIBLE)
     {
@@ -183,6 +193,11 @@ Any IntrospectionProperty::GetValue() const
 void IntrospectionProperty::DisableResetFeature()
 {
     flags &= ~EF_CAN_RESET;
+}
+
+bool IntrospectionProperty::IsReadOnly() const
+{
+    return forceReadOnly || ValueProperty::IsReadOnly();
 }
 
 void IntrospectionProperty::ApplyValue(const DAVA::Any& value)

@@ -20,7 +20,14 @@ struct FieldDescriptor
         , fieldName(fieldName_)
     {
     }
+
+    bool IsEmpty() const;
 };
+
+inline bool FieldDescriptor::IsEmpty() const
+{
+    return type == nullptr || fieldName.IsValid() == false;
+}
 
 template <typename T>
 FieldDescriptor MakeFieldDescriptor(const FastName& fieldName)
