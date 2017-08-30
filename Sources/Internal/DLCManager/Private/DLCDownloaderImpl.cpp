@@ -1469,10 +1469,6 @@ void DLCDownloaderImpl::BalancingHandles()
 
 void DLCDownloaderImpl::Task::OnErrorCurlMulti(int32 multiCode, Task& task, int32 line)
 {
-    if (task.status.error.errorHappened)
-    {
-        return; // error info already filled
-    }
     task.status.error.errorHappened = true;
     // do now overwrite previous same type error
     if (task.status.error.curlMErr == 0) // CURLM_OK == 0
@@ -1497,10 +1493,6 @@ void DLCDownloaderImpl::Task::OnErrorCurlMulti(int32 multiCode, Task& task, int3
 }
 void DLCDownloaderImpl::Task::OnErrorCurlEasy(int32 easyCode, Task& task, int32 line)
 {
-    if (task.status.error.errorHappened)
-    {
-        return; // error info already filled
-    }
     task.status.error.errorHappened = true;
     // do now overwrite previous same type error
     if (task.status.error.curlErr == 0) // CURLE_OK == 0
@@ -1524,10 +1516,6 @@ void DLCDownloaderImpl::Task::OnErrorCurlEasy(int32 easyCode, Task& task, int32 
 }
 void DLCDownloaderImpl::Task::OnErrorCurlErrno(int32 errnoVal, Task& task, int32 line)
 {
-    if (task.status.error.errorHappened)
-    {
-        return; // error info already filled
-    }
     task.status.error.errorHappened = true;
     // do now overwrite previous same type error
     if (task.status.error.fileErrno == 0)
