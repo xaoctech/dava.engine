@@ -32,7 +32,7 @@ public:
                 const DAVA::KeyedArchive::UnderlyingMap& values = toLoad->GetArchieveData();
                 for (const auto& valueNode : values)
                 {
-                    settingsMap[DAVA::FastName(valueNode.first)] = CustomTextureViewGPULoad(valueNode.first, *valueNode.second);
+                    settingsMap.emplace(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
                 }
             }
 

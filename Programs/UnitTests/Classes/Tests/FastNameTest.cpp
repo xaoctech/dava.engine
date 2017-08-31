@@ -3,9 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Concurrency/Thread.h"
-
-#include <string>
-#include <atomic>
+#include "Concurrency/SyncBarrier.h"
 
 using namespace DAVA;
 
@@ -121,39 +119,20 @@ DAVA_TESTCLASS (FastNameTest)
     DAVA_TEST (ConcurrentConstructorTest)
     {
         const size_t threadsNum = 24;
-        const size_t stringsNum = 768;
-
-        Vector<String> strings;
-        strings.reserve(stringsNum);
-
-        for (size_t i = 0; i < stringsNum; ++i)
-        {
-            strings.emplace_back(std::to_string(i));
-        }
+        const size_t testsNum = 768;
 
         Array<Thread*, threadsNum> threads;
-        Array<Vector<FastName>, threadsNum> fnToThread;
+        Vector<Array<FastName, threadsNum>> fns(testsNum);
 
-        Vector<std::atomic<const char*>> firstPtr(stringsNum);
-        for (size_t i = 0; i < firstPtr.size(); ++i)
-        {
-            firstPtr[i].store(nullptr);
-        }
-
-        for (auto& fnToThread : fnToThread)
-        {
-            fnToThread.reserve(strings.size());
-        }
+        SyncBarrier barrier(threadsNum);
 
         for (size_t i = 0; i < threads.size(); ++i)
         {
-            threads[i] = Thread::Create([i, &strings, &fnToThread, &firstPtr]() {
-                for (size_t j = 0; j < strings.size(); ++j)
+            threads[i] = Thread::Create([i, &fns, &barrier]() {
+                for (size_t j = 0; j < fns.size(); ++j)
                 {
-                    fnToThread[i].emplace_back(strings[j]);
-                    const char* expected = nullptr;
-                    const char* desired = fnToThread[i].back().c_str();
-                    firstPtr[j].compare_exchange_strong(expected, desired);
+                    fns[j][i] = FastName(std::to_string(j));
+                    barrier.Wait();
                 }
             });
             threads[i]->Start();
@@ -164,13 +143,13 @@ DAVA_TESTCLASS (FastNameTest)
             thread->Join();
         }
 
-        for (size_t i = 0; i < threads.size(); ++i)
+        for (size_t i = 0; i < testsNum; ++i)
         {
-            for (size_t j = 0; j < stringsNum; ++j)
+            for (size_t j = 1; j < threadsNum; ++j)
             {
-                TEST_VERIFY(firstPtr[j] == fnToThread[i][j].c_str());
-                TEST_VERIFY(strcmp(strings[j].c_str(), fnToThread[i][j].c_str()) == 0);
+                TEST_VERIFY(fns[i][j - 1].c_str() == fns[i][j].c_str());
             }
+            TEST_VERIFY(strcmp(fns[i].back().c_str(), std::to_string(i).c_str()) == 0);
         }
     }
 };

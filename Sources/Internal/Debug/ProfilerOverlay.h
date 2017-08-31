@@ -129,14 +129,8 @@ protected:
         };
         using HistoryArray = RingArray<HistoryInstance>;
 
-        MarkerHistory()
-            : values(MARKER_HISTORY_LENGTH)
-            , updatesCount(0U)
-        {
-        }
-
-        HistoryArray values;
-        uint32 updatesCount;
+        HistoryArray values = HistoryArray(MARKER_HISTORY_LENGTH);
+        uint32 updatesCount = 0U;
     };
 
     struct TraceData
