@@ -97,6 +97,7 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
     , allowLodDegrade(false)
     , is2DMode(_is2DMode)
 {
+    ParticleForces::Init();
     if (scene) //for 2d particles there would be no scene
     {
         scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
@@ -915,7 +916,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     }
 
     for (uint32 i = 0; i < dForcesCount; ++i)
-        ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown);
+        ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle);
 
     if (dForcesCount > 0)
         particle->speed = effectSpaceSpeed * Matrix3(world);

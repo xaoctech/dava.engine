@@ -57,6 +57,7 @@ public:
 
     float32 windFrequency = 0.0f;
     float32 windTurbulence = 0.0f;
+    float32 windBias = 1.0f;
 
     bool isInfinityRange = true;
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);

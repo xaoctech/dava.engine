@@ -38,6 +38,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->radius = radius;
     dst->windFrequency = windFrequency;
     dst->windTurbulence = windTurbulence;
+    dst->windBias = windBias;
 
     return dst;
 }

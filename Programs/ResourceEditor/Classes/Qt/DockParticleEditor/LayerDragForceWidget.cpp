@@ -210,6 +210,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     windFreqSpin->setVisible(isWind);
     windTurbLabel->setVisible(isWind);
     windTurbSpin->setVisible(isWind);
+    windBiasLabel->setVisible(isWind);
+    windBiasSpin->setVisible(isWind);
 }
 
 void LayerDragForceWidget::BuilDirectionSection()
@@ -262,6 +264,19 @@ void LayerDragForceWidget::BuildWindSection()
     freqLayout->addWidget(windFreqSpin);
     mainLayout->addLayout(freqLayout);
 
+    QHBoxLayout* biasLayout = new QHBoxLayout(this);
+    windBiasLabel = new QLabel("Wind bias:");
+    windBiasSpin = new EventFilterDoubleSpinBox();
+    windBiasSpin->setMinimum(-100000000000000000000.0);
+    windBiasSpin->setMaximum(100000000000000000000.0);
+    windBiasSpin->setSingleStep(0.001);
+    windBiasSpin->setDecimals(4);
+    connect(windBiasSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    windBiasSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    biasLayout->addWidget(windBiasLabel);
+    biasLayout->addWidget(windBiasSpin);
+    mainLayout->addLayout(biasLayout);
+
     QHBoxLayout* turbLayout = new QHBoxLayout(this);
     windTurbLabel = new QLabel("Wind turbulence:");
     windTurbSpin = new EventFilterDoubleSpinBox();
@@ -303,6 +318,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     gravitySpin->setValue(selectedForce->forcePower.z);
     windTurbSpin->setValue(selectedForce->windTurbulence);
     windFreqSpin->setValue(selectedForce->windFrequency);
+    windBiasSpin->setValue(selectedForce->windBias);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -372,6 +388,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.forcePowerLine = propForce.GetPropLine();
     params.windFrequency = windFreqSpin->value();
     params.windTurbulence = windTurbSpin->value();
+    params.windBias = windBiasSpin->value();
 
     if (selectedForce->type == ForceType::GRAVITY)
         params.forcePower.z = gravitySpin->value();
