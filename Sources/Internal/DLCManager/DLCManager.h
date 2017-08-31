@@ -174,6 +174,8 @@ public:
 
     virtual bool IsPackInQueue(const String& packName) = 0;
 
+    virtual bool IsAnyPackInQueue() const;
+
     /** Update request queue to first download dependency of selected request
         and then request itself */
     virtual void SetRequestPriority(const IRequest* request) = 0;
@@ -185,7 +187,7 @@ public:
     {
         uint64 total = 0; //!< in bytes
         uint64 alreadyDownloaded = 0; //!< in bytes
-        uint64 inQueue = 0; //!< in bytes
+        uint64 inQueue = 0; //!< in bytes (deprecated)
         bool isRequestingEnabled = false; //!< current state of requesting
     };
 
