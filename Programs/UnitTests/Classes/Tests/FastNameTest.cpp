@@ -2,9 +2,9 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Concurrency/Thread.h"
 
 #include <string>
-#include <thread>
 #include <atomic>
 
 using namespace DAVA;
@@ -131,7 +131,7 @@ DAVA_TESTCLASS (FastNameTest)
             strings.emplace_back(std::to_string(i));
         }
 
-        Array<std::thread, threadsNum> threads;
+        Array<Thread*, threadsNum> threads;
         Array<Vector<FastName>, threadsNum> fnToThread;
 
         Vector<std::atomic<const char*>> firstPtr(stringsNum);
@@ -147,7 +147,7 @@ DAVA_TESTCLASS (FastNameTest)
 
         for (size_t i = 0; i < threads.size(); ++i)
         {
-            threads[i] = std::thread([i, &strings, &fnToThread, &firstPtr]() {
+            threads[i] = Thread::Create([i, &strings, &fnToThread, &firstPtr]() {
                 for (size_t j = 0; j < strings.size(); ++j)
                 {
                     fnToThread[i].emplace_back(strings[j]);
@@ -156,11 +156,12 @@ DAVA_TESTCLASS (FastNameTest)
                     firstPtr[j].compare_exchange_strong(expected, desired);
                 }
             });
+            threads[i]->Start();
         }
 
         for (auto& thread : threads)
         {
-            thread.join();
+            thread->Join();
         }
 
         for (size_t i = 0; i < threads.size(); ++i)
