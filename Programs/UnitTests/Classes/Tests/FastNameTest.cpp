@@ -166,10 +166,10 @@ DAVA_TESTCLASS (FastNameTest)
 
         for (size_t i = 0; i < threads.size(); ++i)
         {
-            for (size_t j = 0; j < firstPtr.size(); ++j)
+            for (size_t j = 0; j < stringsNum; ++j)
             {
                 TEST_VERIFY(firstPtr[j] == fnToThread[i][j].c_str());
-                TEST_VERIFY(strcmp(firstPtr[j], fnToThread[i][j].c_str()) == 0);
+                TEST_VERIFY(strcmp(strings[j].c_str(), fnToThread[i][j].c_str()) == 0);
             }
         }
     }
