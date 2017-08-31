@@ -498,7 +498,7 @@ public:
         Impl::OnLoopStarted();
 
         PlatformApi::Qt::GetApplication()->setWindowIcon(QIcon(":/icons/appIcon.ico"));
-        uiManager.reset(new UIManager(this, propertiesHolder->CreateSubHolder("UIManager")));
+        uiManager.reset(new UIManager(this, this, propertiesHolder->CreateSubHolder("UIManager")));
         DVASSERT(controllerModule != nullptr, "Controller Module hasn't been registered");
         for (std::unique_ptr<ClientModule>& module : modules)
         {
@@ -756,11 +756,12 @@ public:
             ModalMessageParams::Button resultButton = uiManager->ShowModalMessage(key, params);
             if (resultButton == ModalMessageParams::SaveAll)
             {
-                controllerModule->SaveOnWindowClose(key);
+                result = controllerModule->SaveOnWindowClose(key);
             }
             else if (resultButton == ModalMessageParams::NoToAll)
             {
                 controllerModule->RestoreOnWindowClose(key);
+                result = true;
             }
             else
             {
@@ -773,10 +774,14 @@ public:
 
     void OnWindowClosed(const WindowKey& key) override
     {
-        std::for_each(modules.begin(), modules.end(), [&key](std::unique_ptr<ClientModule>& module)
-                      {
-                          module->OnWindowClosed(key);
-                      });
+        controllerModule->OnWindowClosed(key);
+
+        std::for_each(modules.begin(), modules.end(), [&key, this](std::unique_ptr<ClientModule>& module) {
+            if (module.get() != controllerModule)
+            {
+                module->OnWindowClosed(key);
+            }
+        });
     }
 
     bool HasControllerModule() const

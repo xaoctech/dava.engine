@@ -104,3 +104,4 @@ Bin/Toolset/
 Programs/UnitTests/android-studio/gradle/wrapper/
 Programs/UnitTests/android-studio/gradlew
 Programs/UnitTests/android-studio/gradlew.bat
+Programs/TestBed/Platforms/Android/TestBed/assets/

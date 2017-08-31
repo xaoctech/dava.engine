@@ -1,7 +1,7 @@
 #include "TArc/Utils/Private/CrashDumpHandler.h"
-#include "TArc/Utils/DebuggerDetection.h"
 
 #include <Base/Platform.h>
+#include <Debug/DebuggerDetection.h>
 #if defined(__DAVAENGINE_WIN32__)
     #include <imagehlp.h>
 #endif

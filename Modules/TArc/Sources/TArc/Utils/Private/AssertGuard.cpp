@@ -1,6 +1,5 @@
 #include "TArc/Utils/AssertGuard.h"
 #include "TArc/Utils/ScopedValueGuard.h"
-#include "TArc/Utils/DebuggerDetection.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 #include "TArc/Utils/AssertGuardMacOSHack.h"
@@ -83,20 +82,20 @@ public:
         Assert::FailBehaviour behaviour = Assert::FailBehaviour::Default;
         switch (mode)
         {
-        case eApplicationMode::CONSOLE_MODE:
-            behaviour = Assert::DefaultLoggerHandler(assertInfo);
-            break;
         case eApplicationMode::GUI_MODE:
             Assert::DefaultLoggerHandler(assertInfo);
             behaviour = Assert::DefaultDialogBoxHandler(assertInfo);
             break;
+
+        case eApplicationMode::CONSOLE_MODE:
         case eApplicationMode::TEST_MODE:
             behaviour = Assert::DefaultLoggerHandler(assertInfo);
-            if (IsDebuggerPresent())
+            if (Assert::FailBehaviour::Halt != behaviour)
             {
-                behaviour = Assert::FailBehaviour::Halt;
+                behaviour = Assert::DefaultDebuggerBreakHandler(assertInfo);
             }
             break;
+
         default:
             break;
         }
