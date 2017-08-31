@@ -8,7 +8,6 @@
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
 
-#include "UI/Find/Widgets/FindInDocumentWidget.h"
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -36,7 +35,7 @@
 #include <QtTools/Updaters/ContinuousUpdater.h>
 
 #include <UI/UIControl.h>
-#include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
 #include <UI/UIControlSystem.h>
 #include <Engine/Engine.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -50,9 +49,9 @@
 #include <QComboBox>
 #include <QScrollBar>
 #include <QGridLayout>
-
 #include <QApplication>
 #include <QTimer>
+#include <QLabel>
 
 using namespace DAVA;
 
@@ -76,11 +75,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 }
 
 PreviewWidget::~PreviewWidget() = default;
-
-FindInDocumentWidget* PreviewWidget::GetFindInDocumentWidget()
-{
-    return findInDocumentWidget;
-}
 
 void PreviewWidget::CreateActions()
 {
@@ -231,10 +225,6 @@ void PreviewWidget::InitUI()
     tabBar->setTabsClosable(true);
     tabBar->setUsesScrollButtons(true);
     vLayout->addWidget(tabBar);
-
-    findInDocumentWidget = new FindInDocumentWidget(this);
-
-    vLayout->addWidget(findInDocumentWidget);
 
     QGridLayout* gridLayout = new QGridLayout();
     vLayout->addLayout(gridLayout);
@@ -389,8 +379,8 @@ bool PreviewWidget::CanChangeTextInControl(const ControlNode* node) const
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    return staticText != nullptr;
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    return textComponent != nullptr;
 }
 
 void PreviewWidget::OnMouseReleased(QMouseEvent* event)

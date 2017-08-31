@@ -27,6 +27,7 @@
 #include "UI/Preview/PreviewWidgetSettings.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
+#include "UI/UIControl.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -42,7 +43,7 @@
 #include <Base/Any.h>
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
-#include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
 #include <UI/Render/UIRenderSystem.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
@@ -133,7 +134,7 @@ void DocumentsModule::PostInit()
 
     RegisterOperations();
     CreateDocumentsActions();
-    CreateUndoRedoActions();
+    CreateEditActions();
     CreateViewActions();
     CreateFindActions();
 
@@ -204,8 +205,6 @@ void DocumentsModule::InitCentralWidget()
     QObject::connect(previewWidget, &PreviewWidget::CopyRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnCopy);
     QObject::connect(previewWidget, &PreviewWidget::PasteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnPaste);
     QObject::connect(previewWidget, &PreviewWidget::DuplicateRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDuplicate);
-
-    findInDocumentController.reset(new FindInDocumentController(this, mainWindow, previewWidget->GetFindInDocumentWidget()));
 }
 
 void DocumentsModule::InitGlobalData()
@@ -314,7 +313,7 @@ void DocumentsModule::CreateDocumentsActions()
     }
 }
 
-void DocumentsModule::CreateUndoRedoActions()
+void DocumentsModule::CreateEditActions()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -357,6 +356,7 @@ void DocumentsModule::CreateUndoRedoActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::undoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnUndo));
         ActionPlacementInfo placementInfo;
@@ -385,6 +385,7 @@ void DocumentsModule::CreateUndoRedoActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::redoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnRedo));
         ActionPlacementInfo placementInfo;
@@ -401,6 +402,30 @@ void DocumentsModule::CreateUndoRedoActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+    }
+
+    // Group
+    {
+        const QString groupActionName("Group");
+
+        QtAction* action = new QtAction(accessor, groupActionName, nullptr);
+        action->setShortcutContext(Qt::WindowShortcut);
+        action->setShortcut(QKeySequence("Ctrl+G"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
+                                         {
+                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 }
 
@@ -428,6 +453,16 @@ void DocumentsModule::OnRedo()
     DocumentData* data = context->GetData<DocumentData>();
     DVASSERT(data != nullptr);
     data->commandStack->Redo();
+}
+
+void DocumentsModule::DoGroupSelection()
+{
+    CommandExecutor commandExecutor(GetAccessor(), GetUI());
+    ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
+    if (newGroupControl != nullptr)
+    {
+        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    }
 }
 
 void DocumentsModule::CreateViewActions()
@@ -679,8 +714,8 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    DVASSERT(staticText != nullptr);
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    DVASSERT(textComponent != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
@@ -701,13 +736,18 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
         stack->BeginBatch("change text by user");
         AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("multiline");
         DVASSERT(multilineProperty != nullptr);
-        UIStaticText::eMultiline multilineType = multilineProperty->GetValue().Cast<UIStaticText::eMultiline>();
-        if (inputText.contains('\n') && multilineType == UIStaticText::MULTILINE_DISABLED)
+
+        // Update "multiline" property if need
+        if (inputText.contains('\n'))
         {
-            std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-            command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
-            data->ExecCommand(std::move(command));
+            if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
+            {
+                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+                command->AddNodePropertyValue(node, multilineProperty, Any(UITextComponent::MULTILINE_ENABLED));
+                data->ExecCommand(std::move(command));
+            }
         }
+
         std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
         command->AddNodePropertyValue(node, textProperty, Any(inputText.toStdString()));
         data->ExecCommand(std::move(command));
