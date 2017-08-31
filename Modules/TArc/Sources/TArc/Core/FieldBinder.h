@@ -18,6 +18,7 @@ public:
     ~FieldBinder();
 
     void BindField(const FieldDescriptor& fieldDescr, const Function<void(const Any&)>& fn);
+    void SetValue(const FieldDescriptor& fieldDescr, const Any& v);
 
 private:
     class Impl;

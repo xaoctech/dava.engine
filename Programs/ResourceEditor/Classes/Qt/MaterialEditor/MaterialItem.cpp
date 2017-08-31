@@ -2,11 +2,11 @@
 #include "Classes/Qt/MaterialEditor/MaterialModel.h"
 #include "Classes/Qt/Main/QtUtils.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
-
 #include "Classes/Application/REGlobal.h"
 
 #include <TArc/Utils/Utils.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/DataProcessing/DataContext.h>
 
 #include <QSet>
 #include <QPainter>

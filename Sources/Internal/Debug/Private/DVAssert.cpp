@@ -3,7 +3,6 @@
 
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Mutex.h"
-
 #include "Logger/Logger.h"
 
 #include <csignal>
@@ -54,10 +53,15 @@ void RemoveHandler(const Handler handler)
 }
 }
 
-#if defined(__DAVAENGINE_POSIX__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_LINUX__)
 void RaiseSigTrap()
 {
-    raise(SIGTRAP);
+    std::raise(SIGTRAP);
+}
+#elif defined(__DAVAENGINE_ANDROID__)
+void RaiseSigTrap()
+{
+    std::raise(SIGINT);
 }
 #endif
 

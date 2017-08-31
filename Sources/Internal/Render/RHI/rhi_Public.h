@@ -71,6 +71,8 @@ struct RenderDeviceCaps
     uint32 maxAnisotropy = 1;
     uint32 maxSamples = 1;
     uint32 maxTextureSize = 2048;
+    uint32 maxFPS = 60;
+
     char deviceDescription[128];
 
     bool is32BitIndicesSupported = false;

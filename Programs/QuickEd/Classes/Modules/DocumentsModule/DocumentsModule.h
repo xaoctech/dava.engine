@@ -25,7 +25,7 @@ public:
 protected:
     void OnRenderSystemInitialized(DAVA::Window* window) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void PostInit() override;
@@ -43,9 +43,11 @@ private:
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
+
+    void DoGroupSelection();
 
     //View
     void CreateViewActions();
@@ -65,8 +67,9 @@ private:
 
     bool HasUnsavedDocuments() const;
     bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
-    void SaveAllDocuments();
-    void SaveCurrentDocument();
+    bool SaveAllDocuments();
+    bool SaveCurrentDocument();
+    void DiscardUnsavedChanges();
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
 
@@ -89,9 +92,6 @@ private:
     PreviewWidget* previewWidget = nullptr;
     std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
-
-    friend class FindInDocumentController;
-    std::unique_ptr<FindInDocumentController> findInDocumentController;
 
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
 

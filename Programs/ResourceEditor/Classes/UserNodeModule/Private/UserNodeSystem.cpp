@@ -1,4 +1,5 @@
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
