@@ -79,6 +79,9 @@ void MotionSystem::Process(float32 timeElapsed)
 
     for (MotionComponent* motionComponent : msc->startAnimation)
     {
+        if (motionComponent->simpleMotion->IsPlaying())
+            continue;
+
         motionComponent->simpleMotion->Start();
         triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_STARTED);
 
