@@ -116,8 +116,14 @@ Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat in
     {
         const PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
         Image* targetImage = Image::Create(sourceImage->width, sourceImage->height, targetFormat);
-        ImageConvert::ConvertFloatFormats(sourceImage->width, sourceImage->height, inputFormat, targetFormat, sourceImage->data, targetImage->data);
-        outputImages.emplace_back(targetImage);
+        if (ImageConvert::ConvertFloatFormats(sourceImage->width, sourceImage->height, inputFormat, targetFormat, sourceImage->data, targetImage->data))
+        {
+            outputImages.emplace_back(targetImage);
+        }
+        else
+        {
+            SafeRelease(targetImage);
+        }
         SafeRelease(sourceImage);
     }
     sourceImages.clear();

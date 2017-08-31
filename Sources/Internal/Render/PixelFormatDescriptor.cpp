@@ -131,7 +131,8 @@ void PixelFormatDescriptor::GetFloatFormatInfo(uint32 width, PixelFormat format,
 {
     static const DAVA::Map<DAVA::PixelFormat, std::pair<uint32, uint32>> mapping =
     {
-      { FORMAT_R16F, { 1, 2 } }, { FORMAT_R32F, { 1, 4 } },
+      { FORMAT_R16F, { 1, 2 } },
+      { FORMAT_R32F, { 1, 4 } },
       { FORMAT_RG16F, { 2, 2 } },
       { FORMAT_RG32F, { 2, 4 } },
       { FORMAT_RGB16F, { 3, 2 } },
@@ -140,7 +141,7 @@ void PixelFormatDescriptor::GetFloatFormatInfo(uint32 width, PixelFormat format,
       { FORMAT_RGBA32F, { 4, 4 } },
     };
     auto i = mapping.find(format);
-    DVASSERT(i != mapping.end(), "Invalid input format provided to ConvertFloatFormats");
+    DVASSERT(i != mapping.end(), "Unsupported input format supplied to GetFloatFormatInfo");
     channels = i->second.first;
     channelSize = i->second.second;
     pitch = ImageUtils::GetPitchInBytes(width, format);

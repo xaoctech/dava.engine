@@ -947,6 +947,6 @@ bool DownscaleTwiceBillinear(PixelFormat inFormat, PixelFormat outFormat,
 
 void ResizeRGBA8Billinear(const uint32* inPixels, uint32 w, uint32 h, uint32* outPixels, uint32 w2, uint32 h2);
 
-void ConvertFloatFormats(uint32 width, uint32 height, PixelFormat inFormat, PixelFormat outFormat, void* inData, void* outData);
+bool ConvertFloatFormats(uint32 width, uint32 height, PixelFormat inFormat, PixelFormat outFormat, void* inData, void* outData);
 };
 };
