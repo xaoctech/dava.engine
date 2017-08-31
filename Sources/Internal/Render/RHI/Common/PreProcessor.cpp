@@ -448,7 +448,10 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         }
 
                         if (!evaluator.HasVariable(name))
-                            evaluator.SetVariable(name, float(atof(value)));
+                        {
+                            if (!ProcessDefine(name, value))
+                                return false;
+                        }
 
                         if (nv != -1)
                         {
