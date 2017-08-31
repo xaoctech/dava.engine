@@ -78,9 +78,21 @@ PVRConverter::~PVRConverter()
 {
 }
 
-Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat inputFormat, PixelFormat targetFormat, bool generateMipmaps)
+Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat inputFormat, const TextureDescriptor::Compression* compression, bool generateMipmaps)
 {
     Vector<Image*> outputImages;
+
+    if ((compression->compressToHeight != 0) && (compression->compressToWidth != 0))
+    {
+        for (Image* sourceImage : sourceImages)
+        {
+            if (!sourceImage->ResizeImage(compression->compressToWidth, compression->compressToHeight))
+            {
+                Logger::Error("Failed to resize source images");
+                return outputImages;
+            }
+        }
+    }
 
     if (generateMipmaps)
     {
@@ -102,6 +114,7 @@ Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat in
 
     for (Image* sourceImage : sourceImages)
     {
+        const PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
         Image* targetImage = Image::Create(sourceImage->width, sourceImage->height, targetFormat);
         ImageConvert::ConvertFloatFormats(sourceImage->width, sourceImage->height, inputFormat, targetFormat, sourceImage->data, targetImage->data);
         outputImages.emplace_back(targetImage);
@@ -115,7 +128,6 @@ Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat in
 FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo)
 {
     const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
-    const PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
     const FilePath sourcePathname = descriptor.GetSourceTexturePathname();
 
     Vector<Image*> sourceImages;
@@ -126,7 +138,7 @@ FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, 
         return FilePath();
     }
 
-    Vector<Image*> targetImages = ProcessFloatImageSet(sourceImages, sourceInfo.format, targetFormat, descriptor.GetGenerateMipMaps());
+    Vector<Image*> targetImages = ProcessFloatImageSet(sourceImages, sourceInfo.format, compression, descriptor.GetGenerateMipMaps());
 
     FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
     eErrorCode saveResult = LibPVRHelper().Save(outputName, targetImages);
@@ -145,7 +157,6 @@ FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, 
 FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo)
 {
     const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
-    const PixelFormat targetFormat = static_cast<PixelFormat>(compression->format);
 
     Vector<FilePath> faces;
     descriptor.GenerateFacePathnames(CUBEMAP_TMP_DIR, PVRTOOL_FACE_SUFFIXES, faces);
@@ -155,7 +166,7 @@ FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descript
     {
         Vector<Image*> sourceImages;
         ImageSystem::Load(face, sourceImages);
-        imagesToSave.emplace_back(ProcessFloatImageSet(sourceImages, sourceInfo.format, targetFormat, descriptor.GetGenerateMipMaps()));
+        imagesToSave.emplace_back(ProcessFloatImageSet(sourceImages, sourceInfo.format, compression, descriptor.GetGenerateMipMaps()));
     }
 
     FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
@@ -336,7 +347,7 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
     DVASSERT(convertedImages.empty() == false);
 
     FilePath convertedTexturePath = GetConvertedTexturePath(descriptor, gpuFamily);
-    if (ImageSystem::Save(convertedTexturePath, convertedImages, convertedImages.front()->format) != eErrorCode::SUCCESS)
+    if (convertedImages.empty() || (ImageSystem::Save(convertedTexturePath, convertedImages, convertedImages.front()->format) != eErrorCode::SUCCESS))
     {
         return FilePath();
     }
