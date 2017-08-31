@@ -479,6 +479,8 @@ struct UIManager::Impl : public QObject
 
     Map<ClientModule*, ModuleResources> moduleResourcesMap;
 
+    Vector<KeyBindableAction> keyBindableActions;
+
     Impl(UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
         : managerDelegate(delegate)
         , propertiesHolder(std::move(givenPropertiesHolder))
@@ -671,9 +673,66 @@ protected:
 UIManager::UIManager(Delegate* delegate, PropertiesItem&& holder)
     : impl(new Impl(delegate, std::move(holder)))
 {
+    PropertiesItem item = impl->propertiesHolder.CreateSubHolder("keyBindableActions");
+    DAVA::int32 blocksCount = item.Get<DAVA::int32>("blocksCount");
+    for (DAVA::int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockIndex));
+        QString blockName = blockHolder.Get<QString>("blockName");
+        DAVA::int32 actionsCount = blockHolder.Get<DAVA::int32>("actionsCount");
+        for (DAVA::int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", actionIndex));
+
+            KeyBindableAction bindableAction;
+            bindableAction.blockName = blockName;
+            bindableAction.actionName = actionHolder.Get<QString>("actionName");
+            bindableAction.context = actionHolder.Get<Qt::ShortcutContext>("actionContext");
+
+            DAVA::int32 sequencesCount = actionHolder.Get<DAVA::int32>("actionSequencesCount");
+            for (int sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                bindableAction.sequences.push_back(QKeySequence::fromString(sequenceHolder.Get<QString>("keySequence")));
+            }
+
+            impl->keyBindableActions.push_back(bindableAction);
+        }
+    }
 }
 
-UIManager::~UIManager() = default;
+UIManager::~UIManager()
+{
+    PropertiesItem item = impl->propertiesHolder.CreateSubHolder("keyBindableActions");
+    Map<QString, Vector<KeyBindableAction>> sortedActions;
+    for (const KeyBindableAction& action : impl->keyBindableActions)
+    {
+        sortedActions[action.blockName].push_back(action);
+    }
+
+    item.Set("blocksCount", static_cast<DAVA::int32>(sortedActions.size()));
+    DAVA::int32 blockCounter = 0;
+    for (const auto& blockPair : sortedActions)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockCounter++));
+        blockHolder.Set("blockName", blockPair.first);
+        blockHolder.Set("actionsCount", static_cast<DAVA::int32>(blockPair.second.size()));
+        for (size_t i = 0; i < blockPair.second.size(); ++i)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<DAVA::int32>(i)));
+            const KeyBindableAction& action = blockPair.second[i];
+            actionHolder.Set("actionName", action.actionName);
+            actionHolder.Set("actionContext", action.context);
+
+            actionHolder.Set("actionSequencesCount", static_cast<DAVA::int32>(action.sequences.size()));
+            for (int sequenceIndex = 0; sequenceIndex < action.sequences.size(); ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                sequenceHolder.Set("keySequence", action.sequences[sequenceIndex].toString());
+            }
+        }
+    }
+}
 
 void UIManager::InitializationFinished()
 {
@@ -732,6 +791,8 @@ void UIManager::AddAction(const WindowKey& windowKey, const ActionPlacementInfo&
 
     UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
     UIManagerDetail::AddAction(windowInfo, placement, action);
+
+    RegisterAction(action);
 }
 
 void UIManager::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement)
@@ -892,6 +953,25 @@ void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationP
 
 void UIManager::InjectWindow(const WindowKey& windowKey, QMainWindow* window)
 {
+    QList<QAction*> actions = window->findChildren<QAction*>();
+    foreach (QAction* action, actions)
+    {
+        QVariant block = action->property("blockName");
+        if (block.canConvert<QString>())
+        {
+            QString blockName = block.value<QString>();
+
+            KeyBindableActionInfo info;
+            info.blockName = blockName;
+            info.context = action->shortcutContext();
+            info.defaultShortcuts = action->shortcuts();
+
+            MakeActionKeyBindable(action, info);
+        }
+
+        RegisterAction(action);
+    }
+
     UIManagerDetail::MainWindowInfo windowInfo;
     windowInfo.window = window;
     windowInfo.menuBar = window->findChild<QMenuBar*>();
@@ -936,6 +1016,49 @@ void UIManager::ModuleDestroyed(ClientModule* module)
         }
 
         impl->moduleResourcesMap.erase(iter);
+    }
+}
+
+const DAVA::Vector<DAVA::TArc::KeyBindableAction>& UIManager::GetKeyBindableActions() const
+{
+    return impl->keyBindableActions;
+}
+
+void UIManager::RegisterAction(QAction* action)
+{
+    KeyBindableActionInfo info;
+    if (GetActionKeyBindableInfo(action, info))
+    {
+        auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [&action, &info](const KeyBindableAction& keyBindAction) {
+            if (keyBindAction.actionName == action->objectName() &&
+                keyBindAction.blockName == info.blockName)
+            {
+                DVASSERT(keyBindAction.action == nullptr);
+                return true;
+            }
+
+            return false;
+        });
+
+        KeyBindableAction* bindaleAction = nullptr;
+        if (iter != impl->keyBindableActions.end())
+        {
+            bindaleAction = &(*iter);
+        }
+        else
+        {
+            impl->keyBindableActions.push_back(KeyBindableAction());
+            bindaleAction = &impl->keyBindableActions.back();
+            bindaleAction->actionName = action->objectName();
+            bindaleAction->blockName = info.blockName;
+            bindaleAction->context = info.context;
+            bindaleAction->sequences = info.defaultShortcuts;
+        }
+
+        DVASSERT(bindaleAction->action == nullptr);
+        bindaleAction->action = action;
+        action->setShortcutContext(bindaleAction->context);
+        action->setShortcuts(bindaleAction->sequences);
     }
 }
 

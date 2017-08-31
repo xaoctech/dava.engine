@@ -5,6 +5,7 @@
 #include <Base/BaseTypes.h>
 
 #include <QUrl>
+#include <QKeySequence>
 
 class QAction;
 class QWidget;
@@ -45,5 +46,15 @@ QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor = 0, const Inse
 /// You can attach widget to Action. This widget will be used to appear action on toolbar or in status bar
 void AttachWidgetToAction(QAction* action, QWidget* widget);
 QWidget* GetAttachedWidget(QAction* action);
+
+struct KeyBindableActionInfo
+{
+    QString blockName;
+    Qt::ShortcutContext context = Qt::WidgetShortcut;
+    QList<QKeySequence> defaultShortcuts;
+};
+
+void MakeActionKeyBindable(QAction* action, const KeyBindableActionInfo& info);
+bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info);
 } // namespace TArc
 } // namespace DAVA

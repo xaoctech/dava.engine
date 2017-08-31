@@ -48,15 +48,6 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
    </layout>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -88,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>1149</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="path" stdset="0">
@@ -738,6 +729,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
    </property>
   </action>
   <action name="actionHeightMapEditor">

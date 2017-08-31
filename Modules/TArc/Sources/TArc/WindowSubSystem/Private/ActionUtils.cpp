@@ -140,5 +140,64 @@ DAVA::TArc::InsertionParams InsertionParams::Create(const QUrl& url)
     return params;
 }
 
+void MakeActionKeyBindable(QAction* action, const KeyBindableActionInfo& info)
+{
+    QUrl url;
+    url.setScheme("actionbindablebinfo");
+    url.setPath(info.blockName);
+
+    QList<QPair<QString, QString>> items;
+    items.push_back(qMakePair(QString("context"), QString::number(static_cast<int>(info.context))));
+    items.push_back(qMakePair(QString("defSequencesCount"), QString::number(info.defaultShortcuts.size())));
+    for (int i = 0; i < info.defaultShortcuts.size(); ++i)
+    {
+        QString sequence = info.defaultShortcuts[i].toString();
+        items.push_back(qMakePair(QString("shortcut_%1").arg(i), sequence));
+    }
+
+    QUrlQuery query;
+    query.setQueryItems(items);
+    url.setQuery(query);
+
+    action->setProperty("keyBindableInfo", QVariant::fromValue(url));
+}
+
+bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info)
+{
+    QVariant value = action->property("keyBindableInfo");
+    if (value.canConvert<QUrl>() == false)
+    {
+        return false;
+    }
+
+    QUrl url = value.value<QUrl>();
+    if (url.scheme() != "actionbindablebinfo")
+    {
+        return false;
+    }
+
+    info.blockName = url.path();
+
+    QUrlQuery query(url.query());
+    {
+        bool parsed = false;
+        int context = query.queryItemValue("context").toInt(&parsed);
+        if (parsed == true)
+        {
+            info.context = static_cast<Qt::ShortcutContext>(context);
+        }
+    }
+    int defSequencesCount = query.queryItemValue("defSequencesCount").toInt();
+    info.defaultShortcuts.reserve(defSequencesCount);
+    for (int i = 0; i < defSequencesCount; ++i)
+    {
+        QString sequence = query.queryItemValue(QString("shortcut_%1").arg(i));
+        QKeySequence keySequence = QKeySequence::fromString(sequence);
+        info.defaultShortcuts.push_back(keySequence);
+    }
+
+    return true;
+}
+
 } // namespace TArc
 } // namespace DAVA

@@ -11,6 +11,15 @@ namespace TArc
 {
 class PropertiesItem;
 
+struct KeyBindableAction
+{
+    QString blockName;
+    QString actionName;
+    Qt::ShortcutContext context = Qt::WidgetShortcut;
+    QList<QKeySequence> sequences;
+    QPointer<QAction> action;
+};
+
 class UIManager final : public UI
 {
 public:
@@ -48,8 +57,13 @@ public:
     DAVA_DEPRECATED(void InjectWindow(const WindowKey& windowKey, QMainWindow* window) override);
     void ModuleDestroyed(ClientModule* module);
 
+    const Vector<KeyBindableAction>& GetKeyBindableActions() const;
+
 protected:
     void SetCurrentModule(ClientModule* module) override;
+
+private:
+    void RegisterAction(QAction* action);
 
 private:
     struct Impl;
