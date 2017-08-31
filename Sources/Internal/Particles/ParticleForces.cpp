@@ -3,6 +3,7 @@
 #include "Particles/ParticleDragForce.h"
 #include "Scene3D/Entity.h"
 #include "Math/MathHelpers.h"
+#include "Particles/Particle.h"
 
 namespace DAVA
 {
