@@ -3,6 +3,10 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 
+#include <string>
+#include <thread>
+#include <atomic>
+
 using namespace DAVA;
 
 DAVA_TESTCLASS (FastNameTest)
@@ -112,5 +116,60 @@ DAVA_TESTCLASS (FastNameTest)
         TEST_VERIFY(fn1 == fn3);
         TEST_VERIFY(!(fn1 != fn3));
         TEST_VERIFY(!(fn1 < fn3));
+    }
+
+    DAVA_TEST (ConcurrentConstructorTest)
+    {
+        const size_t threadsNum = 24;
+        const size_t stringsNum = 768;
+
+        Vector<String> strings;
+        strings.reserve(stringsNum);
+
+        for (size_t i = 0; i < stringsNum; ++i)
+        {
+            strings.emplace_back(std::to_string(i));
+        }
+
+        Array<std::thread, threadsNum> threads;
+        Array<Vector<FastName>, threadsNum> fnToThread;
+
+        Vector<std::atomic<const char*>> firstPtr(stringsNum);
+        for (size_t i = 0; i < firstPtr.size(); ++i)
+        {
+            firstPtr[i].store(nullptr);
+        }
+
+        for (auto& fnToThread : fnToThread)
+        {
+            fnToThread.reserve(strings.size());
+        }
+
+        for (size_t i = 0; i < threads.size(); ++i)
+        {
+            threads[i] = std::thread([i, &strings, &fnToThread, &firstPtr]() {
+                for (size_t j = 0; j < strings.size(); ++j)
+                {
+                    fnToThread[i].emplace_back(strings[j]);
+                    const char* expected = nullptr;
+                    const char* desired = fnToThread[i].back().c_str();
+                    firstPtr[j].compare_exchange_strong(expected, desired);
+                }
+            });
+        }
+
+        for (auto& thread : threads)
+        {
+            thread.join();
+        }
+
+        for (size_t i = 0; i < threads.size(); ++i)
+        {
+            for (size_t j = 0; j < firstPtr.size(); ++j)
+            {
+                TEST_VERIFY(firstPtr[j] == fnToThread[i][j].c_str());
+                TEST_VERIFY(strcmp(firstPtr[j], fnToThread[i][j].c_str()) == 0);
+            }
+        }
     }
 };

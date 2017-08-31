@@ -642,7 +642,7 @@ size_t QualitySettingsSystem::GetMaterialQualityCount(const FastName& group) con
 
     auto it = materialGroups.find(group);
 
-    if (materialGroups.count(group) > 0)
+    if (it != materialGroups.end())
     {
         ret = it->second.qualities.size();
     }
