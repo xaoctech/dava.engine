@@ -9,6 +9,7 @@ set(PhysicsDebugRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PhysicsRootDir "${PhysicsDebugRootDir}/../Physics")
 set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__")
 
+set(INCLUDES Sources)
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR}
                      "${PhysicsRootDir}/Libs/include/physx"
                      "${PhysicsRootDir}/Libs/include/PxShared")

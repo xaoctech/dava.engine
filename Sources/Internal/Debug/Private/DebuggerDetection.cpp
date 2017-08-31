@@ -1,4 +1,4 @@
-#include "TArc/Utils/DebuggerDetection.h"
+#include "Debug/DebuggerDetection.h"
 
 #if defined(__DAVAENGINE_WIN32__)
 #include <Base/Platform.h>
@@ -10,8 +10,6 @@
 #endif
 
 namespace DAVA
-{
-namespace TArc
 {
 bool IsDebuggerPresent()
 {
@@ -37,5 +35,4 @@ bool IsDebuggerPresent()
 #endif
 }
 
-} // namespace TArc
 } // namespace DAVA

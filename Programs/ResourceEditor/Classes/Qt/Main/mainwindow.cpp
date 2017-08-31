@@ -378,10 +378,6 @@ void QtMainWindow::SetupMainMenu()
 
 void QtMainWindow::SetupToolBars()
 {
-    QObject::connect(SceneSignals::Instance(), &SceneSignals::CanUndoStateChanged, ui->actionUndo, &QAction::setEnabled);
-    connect(SceneSignals::Instance(), &SceneSignals::CanRedoStateChanged, ui->actionRedo, &QAction::setEnabled);
-    connect(SceneSignals::Instance(), &SceneSignals::UndoTextChanged, this, &QtMainWindow::UpdateUndoActionText);
-    connect(SceneSignals::Instance(), &SceneSignals::RedoTextChanged, this, &QtMainWindow::UpdateRedoActionText);
     QAction* actionMainToolBar = ui->mainToolBar->toggleViewAction();
     QAction* actionModifToolBar = ui->modificationToolBar->toggleViewAction();
     QAction* actionLandscapeToolbar = ui->landscapeToolBar->toggleViewAction();
@@ -523,10 +519,6 @@ void QtMainWindow::SetupActions()
     EnableSounds(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->enableSound);
     QObject::connect(ui->actionEnableSounds, &QAction::toggled, this, &QtMainWindow::EnableSounds);
 
-    // scene undo/redo
-    QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
-    QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
-
     // quality
     QObject::connect(ui->actionCustomQuality, SIGNAL(triggered()), this, SLOT(OnCustomQuality()));
 
@@ -655,7 +647,6 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SceneActivated(SceneEditor2* scene)
 {
-    scene->ActivateCommandStack();
     EnableSceneActions(true);
 
     LoadViewState(scene);
@@ -681,11 +672,6 @@ void QtMainWindow::SceneActivated(SceneEditor2* scene)
         if (scene->cameraSystem)
             ui->actionSnapCameraToLandscape->setChecked(scene->cameraSystem->IsEditorCameraSnappedToLandscape());
     }
-    ui->actionUndo->setEnabled(scene->CanUndo());
-    ui->actionRedo->setEnabled(scene->CanRedo());
-
-    UpdateUndoActionText(scene->GetUndoText());
-    UpdateRedoActionText(scene->GetRedoText());
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2* scene)
@@ -702,9 +688,6 @@ void QtMainWindow::EnableProjectActions(bool enable)
 
 void QtMainWindow::EnableSceneActions(bool enable)
 {
-    ui->actionUndo->setEnabled(enable);
-    ui->actionRedo->setEnabled(enable);
-
     ui->dockLODEditor->setEnabled(enable);
     ui->dockSceneTree->setEnabled(enable);
     ui->dockSceneInfo->setEnabled(enable);
@@ -2403,20 +2386,6 @@ void QtMainWindow::ForEachScene(const DAVA::Function<void(SceneEditor2*)>& funct
                                                 SceneData* data = ctx.GetData<SceneData>();
                                                 functor(data->GetScene().Get());
                                             });
-}
-
-void QtMainWindow::UpdateUndoActionText(const DAVA::String& text)
-{
-    QString actionText = text.empty() ? "Undo" : "Undo: " + QString::fromStdString(text);
-    ui->actionUndo->setText(actionText);
-    ui->actionUndo->setToolTip(actionText);
-}
-
-void QtMainWindow::UpdateRedoActionText(const DAVA::String& text)
-{
-    QString actionText = text.empty() ? "Redo" : "Redo: " + QString::fromStdString(text);
-    ui->actionRedo->setText(actionText);
-    ui->actionRedo->setToolTip(actionText);
 }
 
 void QtMainWindow::OnValidateScene()

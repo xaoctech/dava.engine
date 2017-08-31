@@ -20,17 +20,16 @@ endif()
 # Uncomment to use local resources for android
 # dava_add_definitions(-DUSE_LOCAL_RESOURCES)
 
-set ( DAVA_COMPONENTS "DAVA_DISABLE_AUTOTESTS" )
-find_dava_module( "Sample" )
+set ( DAVA_COMPONENTS  "DAVA_DISABLE_AUTOTESTS" )
+find_dava_module( SampleModule )
 
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" )
-    find_dava_module( "Spine" )
-
+    find_dava_module( Sound )
+    find_dava_module( Spine )
 endif()
-if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    find_dava_module( "CEFWebview" )
 
+if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
+    find_dava_module( CEFWebview )
 endif ()
 
 # add physics
@@ -39,9 +38,8 @@ if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
 elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
     # we don't have physx for win uap arm, so skip this
 else()
-    find_dava_module( "Physics" )
-    find_dava_module( "PhysicsDebug" )
-
+    find_dava_module( Physics )
+    find_dava_module( PhysicsDebug )
 endif()
 
 if (DAVA_PLATFORM_QT)
@@ -60,7 +58,7 @@ dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 
 if( NOT WINDOWS_UAP AND ( MACOS OR WIN32 ) )
-    add_plugin( SamplePlugin "${DAVA_MODULES_DIR}/SamplePlugin" )
+    #add_plugin( SamplePlugin "${DAVA_MODULES_DIR}/SamplePlugin" COMPONENTS  ${DAVA_COMPONENTS} )
 endif()
 
 

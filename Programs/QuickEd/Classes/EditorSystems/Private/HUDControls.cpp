@@ -116,7 +116,7 @@ HUDContainer::HUDContainer(const ControlNode* node_)
     , node(node_)
 {
     DVASSERT(nullptr != node);
-    drawable->SetName(FastName(String("HudContainer of ") + node->GetName().c_str()));
+    drawable->SetName(FastName("HudContainer_of_control"));
     control = node->GetControl();
     visibleProperty = node->GetRootProperty()->GetVisibleProperty();
     DVASSERT(nullptr != control && nullptr != visibleProperty);
@@ -188,7 +188,7 @@ FrameControl::FrameControl(eType type_, DAVA::TArc::ContextAccessor* accessor)
     : ControlContainer(HUDAreaInfo::FRAME_AREA)
     , type(type_)
 {
-    drawable->SetName(FastName("Frame Control"));
+    drawable->SetName(FastName("Frame_Control"));
 
     switch (type)
     {
@@ -210,7 +210,7 @@ FrameControl::FrameControl(eType type_, DAVA::TArc::ContextAccessor* accessor)
         FrameControl::eBorder border = static_cast<FrameControl::eBorder>(i);
 
         RefPtr<UIControl> control(new UIControl());
-        control->SetName(FastName(String("border of ") + drawable->GetName().c_str()));
+        control->SetName(FastName(String("border_of_") + drawable->GetName().c_str()));
         UIControlBackground* background = control->GetOrCreateComponent<UIControlBackground>();
         background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
         background->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -278,7 +278,7 @@ FrameRectControl::FrameRectControl(const HUDAreaInfo::eArea area_, DAVA::TArc::C
 {
     UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
 
-    drawable->SetName(FastName("Frame Rect Control"));
+    drawable->SetName(FastName("Frame_Rect_Control"));
     UIControlBackground* background = drawable->GetOrCreateComponent<UIControlBackground>();
     FilePath spritePath;
     switch (area)
@@ -345,7 +345,7 @@ PivotPointControl::PivotPointControl(DAVA::TArc::ContextAccessor* accessor)
     : ControlContainer(HUDAreaInfo::PIVOT_POINT_AREA)
 {
     UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
-    drawable->SetName(FastName("pivot point control"));
+    drawable->SetName(FastName("pivot_point_control"));
     UIControlBackground* background = drawable->GetOrCreateComponent<UIControlBackground>();
     ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(settings->pivotPointPath2, true, false));
     background->SetSprite(sprite, 0);
@@ -364,7 +364,7 @@ RotateControl::RotateControl(DAVA::TArc::ContextAccessor* accessor)
     : ControlContainer(HUDAreaInfo::ROTATE_AREA)
 {
     UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
-    drawable->SetName(FastName("rotate control"));
+    drawable->SetName(FastName("rotate_control"));
     UIControlBackground* background = drawable->GetOrCreateComponent<UIControlBackground>();
     ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(settings->rotatePath2, true, false));
     background->SetSprite(sprite, 0);
@@ -393,7 +393,7 @@ void SetupHUDMagnetLineControl(UIControl* control, DAVA::TArc::ContextAccessor* 
     ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(settings->magnetLinePath2));
     background->SetSprite(sprite, 0);
     background->SetDrawType(UIControlBackground::DRAW_TILED);
-    control->SetName("Magnet line");
+    control->SetName("Magnet_line");
 }
 
 void SetupHUDMagnetRectControl(UIControl* parentControl, DAVA::TArc::ContextAccessor* accessor)
@@ -409,9 +409,9 @@ void SetupHUDMagnetRectControl(UIControl* parentControl, DAVA::TArc::ContextAcce
         ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(settings->magnetRectPath2));
         background->SetSprite(sprite, 0);
         background->SetDrawType(UIControlBackground::DRAW_TILED);
-        control->SetName("magnet rect border");
+        control->SetName("magnet_rect_border");
 
-        control->SetName(FastName(String("border of magnet rect")));
+        control->SetName(FastName(String("border_of_magnet_rect")));
         parentControl->AddControl(control.Get());
     }
 }
@@ -419,9 +419,9 @@ void SetupHUDMagnetRectControl(UIControl* parentControl, DAVA::TArc::ContextAcce
 std::unique_ptr<ControlContainer> CreateHighlightRect(const ControlNode* node, DAVA::TArc::ContextAccessor* accessor)
 {
     std::unique_ptr<ControlContainer> container(new HUDContainer(node));
-    container->SetName("HUD rect container");
+    container->SetName("HUD_rect_container");
     std::unique_ptr<ControlContainer> frame(new FrameControl(FrameControl::HIGHLIGHT, accessor));
-    frame->SetName("HUD rect frame control");
+    frame->SetName("HUD_rect_frame_control");
     container->AddChild(std::move(frame));
 
     container->InitFromGD(node->GetControl()->GetGeometricData());
