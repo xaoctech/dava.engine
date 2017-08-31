@@ -43,9 +43,11 @@ private:
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
+
+    void DoGroupSelection();
 
     //View
     void CreateViewActions();
@@ -90,9 +92,6 @@ private:
     PreviewWidget* previewWidget = nullptr;
     std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
-
-    friend class FindInDocumentController;
-    std::unique_ptr<FindInDocumentController> findInDocumentController;
 
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
 

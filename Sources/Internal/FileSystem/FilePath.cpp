@@ -11,6 +11,8 @@
 #include <unistd.h>
 #endif
 
+// #define USE_LOCAL_RESOURCES
+
 namespace DAVA
 {
 Vector<FilePath> FilePath::resourceFolders;
