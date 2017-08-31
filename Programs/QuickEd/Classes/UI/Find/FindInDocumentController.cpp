@@ -8,20 +8,24 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/WindowSubSystem/AlignedGeometryProcessor.h>
 #include <QApplication>
 
-using namespace DAVA;
-
-FindInDocumentController::FindInDocumentController(DocumentsModule* documentsModule_, MainWindow* mainWindow, FindInDocumentWidget* findInDocumentWidget_)
+FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor_)
     : QObject()
-    , documentsModule(documentsModule_)
-    , findInDocumentWidget(findInDocumentWidget_)
-    , packageListenerProxy(this, documentsModule_->GetAccessor())
+    , accessor(accessor_)
+    , packageListenerProxy(this, accessor)
     , findResultsUpdater(300)
 {
-    TArc::UI* ui = documentsModule->GetUI();
+    using namespace DAVA;
+    using namespace DAVA::TArc;
 
-    TArc::ContextAccessor* accessor = documentsModule->GetAccessor();
+    findInDocumentWidget = new FindInDocumentWidget();
+    findInDocumentWidget->show();
+    OverCentralPanelInfo info;
+    info.geometryProcessor.reset(new AlignedGeometryProcessor(static_cast<DAVA::eAlign>(DAVA::ALIGN_TOP | DAVA::ALIGN_RIGHT), QPoint(30, 60)));
+    PanelKey key("FindInDocuments", info);
+    ui->AddView(DAVA::TArc::mainWindowKey, key, findInDocumentWidget);
 
     TArc::FieldDescriptor packageFieldDescr;
     packageFieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -66,25 +70,22 @@ FindInDocumentController::FindInDocumentController(DocumentsModule* documentsMod
     findResultsUpdater.SetStopper([this]() {
         return context.filter == nullptr;
     });
-
-    findInDocumentWidget->hide();
 }
 
 void FindInDocumentController::ShowFindInDocumentWidget()
 {
-    TArc::ContextAccessor* accessor = documentsModule->GetAccessor();
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext != nullptr)
     {
         findInDocumentWidget->Reset();
-        findInDocumentWidget->show();
+        DAVA::TArc::ShowOverCentralPanel(findInDocumentWidget);
         findInDocumentWidget->setFocus();
     }
 }
 
 void FindInDocumentController::HideFindInDocumentWidget()
 {
-    findInDocumentWidget->hide();
+    DAVA::TArc::HideOverCentralPanel(findInDocumentWidget);
 }
 
 void FindInDocumentController::SelectNextFindResult()
@@ -99,7 +100,7 @@ void FindInDocumentController::SelectPreviousFindResult()
 
 void FindInDocumentController::FindAll()
 {
-    documentsModule->InvokeOperation(QEGlobal::FindInDocument.ID, context.filter);
+    emit FindInDocumentRequest(context.filter);
 }
 
 void FindInDocumentController::SetFilter(std::shared_ptr<FindFilter> filter)
@@ -111,6 +112,8 @@ void FindInDocumentController::SetFilter(std::shared_ptr<FindFilter> filter)
 
 void FindInDocumentController::Find()
 {
+    using namespace DAVA;
+
     context.results.clear();
     context.currentSelection = -1;
 
@@ -125,7 +128,6 @@ void FindInDocumentController::Find()
                          }
                      });
 
-    TArc::ContextAccessor* accessor = documentsModule->GetAccessor();
     TArc::DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext != nullptr)
     {
@@ -148,8 +150,10 @@ void FindInDocumentController::FindIfActive()
     }
 }
 
-void FindInDocumentController::MoveSelection(int32 step)
+void FindInDocumentController::MoveSelection(DAVA::int32 step)
 {
+    using namespace DAVA;
+
     if (!context.results.empty())
     {
         context.currentSelection += step;
@@ -163,14 +167,13 @@ void FindInDocumentController::MoveSelection(int32 step)
             context.currentSelection = 0;
         }
 
-        TArc::ContextAccessor* accessor = documentsModule->GetAccessor();
         TArc::DataContext* activeContext = accessor->GetActiveContext();
         DVASSERT(activeContext != nullptr);
         DocumentData* data = activeContext->GetData<DocumentData>();
 
         const QString& path = data->GetPackageAbsolutePath();
         const QString& name = QString::fromStdString(context.results[context.currentSelection]);
-        documentsModule->InvokeOperation(QEGlobal::SelectControl.ID, path, name);
+        emit SelectControlRequest(path, name);
     }
     else
     {

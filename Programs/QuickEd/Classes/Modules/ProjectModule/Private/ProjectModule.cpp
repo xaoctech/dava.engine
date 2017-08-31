@@ -321,10 +321,10 @@ void ProjectModule::RegisterFolders()
     DAVA::FileSystem* fileSystem = engineContext->fileSystem;
     if (fileSystem->IsDirectory(projectData->GetAdditionalResourceDirectory().absolute))
     {
-        FilePath::AddResourcesFolder(projectData->GetAdditionalResourceDirectory().absolute);
+        FilePath::AddTopResourcesFolder(projectData->GetAdditionalResourceDirectory().absolute);
     }
 
-    FilePath::AddResourcesFolder(projectData->GetConvertedResourceDirectory().absolute);
+    FilePath::AddTopResourcesFolder(projectData->GetConvertedResourceDirectory().absolute);
     FilePath::AddResourcesFolder(projectData->GetResourceDirectory().absolute);
 }
 

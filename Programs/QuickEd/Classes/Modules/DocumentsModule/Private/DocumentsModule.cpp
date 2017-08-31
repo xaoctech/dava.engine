@@ -209,8 +209,6 @@ void DocumentsModule::InitCentralWidget()
     QObject::connect(previewWidget, &PreviewWidget::CopyRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnCopy);
     QObject::connect(previewWidget, &PreviewWidget::PasteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnPaste);
     QObject::connect(previewWidget, &PreviewWidget::DuplicateRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDuplicate);
-
-    findInDocumentController.reset(new FindInDocumentController(this, mainWindow, previewWidget->GetFindInDocumentWidget()));
 }
 
 void DocumentsModule::InitGlobalData()
@@ -354,6 +352,7 @@ void DocumentsModule::CreateEditActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::undoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnUndo));
         ActionPlacementInfo placementInfo;
@@ -382,6 +381,7 @@ void DocumentsModule::CreateEditActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::redoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnRedo));
         ActionPlacementInfo placementInfo;
