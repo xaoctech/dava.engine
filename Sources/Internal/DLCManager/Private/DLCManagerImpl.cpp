@@ -102,7 +102,7 @@ bool DLCManagerImpl::CountError(int32 errCode)
     return errorCounter >= hints.maxSameErrorCounter;
 }
 
-bool DLCManagerImpl::IsEngineSettingsForDLCProfilingEnabled() const
+bool DLCManagerImpl::IsProfilingEnabled() const
 {
     EngineSettings* engineSettings = engine.GetContext()->settings;
     Any value = engineSettings->GetSetting<EngineSettings::SETTING_PROFILE_DLC_MANAGER>();
@@ -122,7 +122,7 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                         Update(frameDelta, true);
                                     });
 
-    if (IsEngineSettingsForDLCProfilingEnabled())
+    if (IsProfilingEnabled())
     {
         profiler.Start(hints.profilerSamplerCounts);
     }
@@ -136,7 +136,7 @@ void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
 {
     if (EngineSettings::SETTING_PROFILE_DLC_MANAGER == value)
     {
-        if (IsEngineSettingsForDLCProfilingEnabled())
+        if (IsProfilingEnabled())
         {
             profiler.Start(hints.profilerSamplerCounts);
         }
