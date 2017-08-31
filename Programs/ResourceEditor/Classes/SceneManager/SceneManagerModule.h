@@ -54,7 +54,7 @@ private:
     void SaveSceneToFolder(bool compressedTextures);
     void ExportScene();
     void CloseAllScenes(bool needSavingReqiest);
-    void ReloadTexturesAll(DAVA::eGPUFamily gpu);
+    void ReloadAllTextures(DAVA::eGPUFamily gpu);
     void ReloadTextures(DAVA::Vector<DAVA::Texture*> textures);
 
     /// Fields value handlers

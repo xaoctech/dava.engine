@@ -501,7 +501,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
                                          {
                                              return v.CanCast<DAVA::eGPUFamily>() && v.Cast<DAVA::eGPUFamily>() == gpu;
                                          });
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadTexturesAll, this, gpu), Qt::QueuedConnection);
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadAllTextures, this, gpu), Qt::QueuedConnection);
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placement, action);
         gpuFormatActions.push_back(action);
@@ -538,7 +538,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/reloadtextures.png"), QString(""));
         connections.AddConnection(action, &QAction::triggered, [this]()
                                   {
-                                      ReloadTexturesAll(DAVA::Texture::GetPrimaryGPUForLoading());
+                                      ReloadAllTextures(DAVA::Texture::GetPrimaryGPUForLoading());
                                   },
                                   Qt::QueuedConnection);
 
@@ -583,7 +583,7 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(REGlobal::OpenSceneOperation.ID, this, &SceneManagerModule::OpenSceneByPath);
     RegisterOperation(REGlobal::AddSceneOperation.ID, this, &SceneManagerModule::AddSceneByPath);
     RegisterOperation(REGlobal::SaveCurrentScene.ID, this, static_cast<void (SceneManagerModule::*)()>(&SceneManagerModule::SaveScene));
-    RegisterOperation(REGlobal::ReloadTexturesAllOperation.ID, this, &SceneManagerModule::ReloadTexturesAll);
+    RegisterOperation(REGlobal::ReloadAllTextures.ID, this, &SceneManagerModule::ReloadAllTextures);
     RegisterOperation(REGlobal::ReloadTextures.ID, this, &SceneManagerModule::ReloadTextures);
 }
 
@@ -890,7 +890,7 @@ void SceneManagerModule::ExportScene()
 
         scene->Export(exportingParams);
 
-        ReloadTexturesAll(DAVA::Texture::GetPrimaryGPUForLoading());
+        ReloadAllTextures(DAVA::Texture::GetPrimaryGPUForLoading());
     }
 }
 
@@ -927,10 +927,8 @@ void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
     DAVA::Set<DAVA::NMaterial*> materials;
     SceneHelper::EnumerateMaterials(scene.Get(), materials);
 
-    for (unsigned i = 0; i < textures.size(); i++)
+    for (DAVA::Texture* tex : textures)
     {
-        DAVA::Texture* tex = textures[i];
-
         DAVA::TextureDescriptor* descriptor = tex->GetDescriptor();
 
         tex->ReloadAs(gpuFormat);
@@ -947,7 +945,7 @@ void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
     }
 }
 
-void SceneManagerModule::ReloadTexturesAll(DAVA::eGPUFamily gpu)
+void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 {
     using namespace DAVA::TArc;
     if (SaveTileMaskInAllScenes())
