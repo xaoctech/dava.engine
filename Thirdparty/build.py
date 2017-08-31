@@ -224,11 +224,15 @@ if __name__ == "__main__":
 
     args = parse_args()
 
+    build_utils.verbose = args.verbose
+    build_utils.output_folder_path = output_path
+    build_utils.dava_folder_path = os.path.abspath('..')
+
     targets_to_process = all_targets if args.target == 'all' else [args.target]
 
     # Check that Android NDK is configured
     if 'android' in targets_to_process:
-        ndk_path = build_utils.get_android_ndk_path('..')
+        ndk_path = build_utils.get_android_ndk_path()
         if ndk_path is None or not os.path.isdir(ndk_path):
             print ('Android target is specified, but Android NDK folder '
                    'couldn\'t be found (required for CMake). '
@@ -249,8 +253,6 @@ if __name__ == "__main__":
             print ('Couldn\'t import builder module for library named \'{}\', '
                    'misprint?\nAborting').format(lib)
             sys.exit()
-
-    build_utils.verbose = args.verbose
 
     # Process
 
