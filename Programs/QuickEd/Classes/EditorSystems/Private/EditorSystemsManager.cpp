@@ -427,7 +427,6 @@ void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
             allControls.insert(controlsPair);
         }
     }
-    
 
     systems.push_back(editorSystem);
     systemsControls[editorSystem] = newControls;
@@ -441,7 +440,7 @@ void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem
     auto iter = systemsControls.find(editorSystem);
     DVASSERT(iter != systemsControls.end());
     CanvasControls canvasControls = systemsControls[editorSystem];
-    
+
     for (const auto& controlsPair : canvasControls)
     {
         rootControl->RemoveControl(controlsPair.second.Get());

@@ -14,7 +14,7 @@ public:
 private:
     friend class BaseEditorSystem;
     friend class DocumentsModule;
-    
+
     const EditorSystemsManager* GetSystemsManager() const;
 
     std::unique_ptr<EditorSystemsManager> systemsManager;

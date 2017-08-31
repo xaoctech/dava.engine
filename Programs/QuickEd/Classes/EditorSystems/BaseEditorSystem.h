@@ -25,7 +25,7 @@ protected:
         GRID_CANVAS,
         HUD_CANVAS
     };
-        
+
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
     DAVA::TArc::ContextAccessor* accessor = nullptr;
