@@ -116,7 +116,6 @@ struct FSMTest02
 
             auto currentProgress = dlcManager.GetProgress();
             TEST_VERIFY(currentProgress.alreadyDownloaded <= currentProgress.total);
-            TEST_VERIFY(currentProgress.inQueue == progressAfterInit.inQueue);
 
             waitSecondConnect -= dt;
             if (waitSecondConnect <= 0.f)
@@ -134,10 +133,9 @@ struct FSMTest02
         {
             auto currentProgress = dlcManager.GetProgress();
             TEST_VERIFY(currentProgress.alreadyDownloaded <= currentProgress.total);
-            TEST_VERIFY(currentProgress.inQueue <= progressAfterInit.inQueue);
             progressAfterInit = currentProgress;
 
-            if (currentProgress.inQueue == 0)
+            if (!dlcManager.IsAnyPackInQueue())
             {
                 auto r0 = dlcManager.RequestPack("0");
                 TEST_VERIFY(r0->IsDownloaded());
@@ -161,7 +159,7 @@ struct FSMTest02
             auto prog = dlcManager.GetProgress();
 
             Logger::Error("time > timeout (%f > %f)", time, timeout);
-            Logger::Error("timeout: total: %llu in_queue: %llu downloaded: %lld", prog.total, prog.inQueue, prog.alreadyDownloaded);
+            Logger::Error("timeout: total: %llu downloaded: %lld", prog.total, prog.alreadyDownloaded);
 
             FilePath logPath(DLCManager::Hints().logFilePath);
             String path = logPath.GetAbsolutePathname();
