@@ -70,12 +70,130 @@ String FormatNodeNames(const DAVA::Vector<T*>& nodes)
 
     return list;
 }
+
+bool IsNameExists(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
+{
+    auto isEqual = [&name](ControlNode* siblingControl)
+    {
+        return (siblingControl->GetName() == name);
+    };
+
+    return std::any_of(dest->begin(), dest->end(), isEqual) || (siblingContainer != nullptr && std::any_of(siblingContainer->begin(), siblingContainer->end(), isEqual));
+}
+
+void SplitName(const String& name, String& nameMainPart, uint32& namePostfix)
+{
+    size_t underlinePos = name.rfind('_');
+    if (underlinePos != String::npos && (underlinePos + 1) < name.size())
+    {
+        char anySymbol; // dummy symbol indicating that there are some symbols after %u in name string
+        int res = sscanf(name.data() + underlinePos + 1, "%u%c", &namePostfix, &anySymbol);
+        if (res == 1)
+        {
+            nameMainPart = name.substr(0, underlinePos);
+            return;
+        }
+    }
+
+    nameMainPart = name;
+    namePostfix = 0;
+}
+
+String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
+{
+    String nameMainPart;
+    uint32 namePostfixCounter = 0;
+    SplitName(name, nameMainPart, namePostfixCounter);
+
+    for (++namePostfixCounter; namePostfixCounter <= UINT32_MAX; ++namePostfixCounter)
+    {
+        String newName = Format("%s_%u", nameMainPart.c_str(), namePostfixCounter);
+        if (!IsNameExists(newName, dest, siblingContainer))
+        {
+            return newName;
+        }
+    }
+
+    DAVA::Logger::Warning("Can't produce unique name: reaching uint32 max");
+    return name;
+}
+
+void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package, const ControlsContainerNode* dest)
+{
+    ControlsContainerNode* siblingTopContainer = nullptr;
+
+    if (dest->GetParent() == package)
+    {
+        ControlsContainerNode* topPrototypes = static_cast<ControlsContainerNode*>(package->GetPrototypes());
+        if (dest == topPrototypes) // If we are inserting into top controls container, then prototypes scope will also be taking into account.
+        {
+            siblingTopContainer = static_cast<ControlsContainerNode*>(package->GetPackageControlsNode());
+        }
+        else // Vice versa, if we are inserting into top prototypes container, then top controls scope will also be taking into account
+        {
+            siblingTopContainer = topPrototypes;
+        }
+    }
+
+    String origName = control->GetName();
+    if (IsNameExists(origName, dest, siblingTopContainer))
+    {
+        String newName = ProduceUniqueName(origName, dest, siblingTopContainer);
+        control->GetControl()->SetName(newName);
+    }
+}
+Vector<ControlNode*> ToControlNodesVector(const SelectedNodes& selectedNodes)
+{
+    Vector<ControlNode*> controlNodes;
+    controlNodes.reserve(selectedNodes.size());
+    for (PackageBaseNode* node : selectedNodes)
+    {
+        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+        if (controlNode)
+        {
+            controlNodes.push_back(controlNode);
+        }
+    }
+    return controlNodes;
+}
+
+Rect GetConstraintBox(const Vector<ControlNode*> nodes)
+{
+    UIControl* firstControl = nodes.front()->GetControl();
+    Rect constraintBox(firstControl->GetRect());
+
+    std::for_each(std::next(nodes.begin()), nodes.end(), [&constraintBox](ControlNode* node)
+                  {
+                      constraintBox = constraintBox.Combine(node->GetControl()->GetRect());
+                  });
+    return constraintBox;
+}
+
+void ShiftPositionsRelativeToBox(const Vector<ControlNode*>& nodes, const Rect& constraintBox, DocumentData* data)
+{
+    const Vector2& constraintPos = constraintBox.GetPosition();
+    for (ControlNode* node : nodes)
+    {
+        Vector2 newPositionValue = node->GetControl()->GetPosition() - constraintPos;
+
+        std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+        RootProperty* rootProperty = node->GetRootProperty();
+        AbstractProperty* positionProperty = rootProperty->FindPropertyByName("position");
+        command->AddNodePropertyValue(node, positionProperty, newPositionValue);
+        data->ExecCommand(std::move(command));
+    }
+}
 }
 
 CommandExecutor::CommandExecutor(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_)
     : accessor(accessor_)
     , ui(ui_)
 {
+    DVASSERT(accessor != nullptr);
+    DVASSERT(ui != nullptr);
+
+    DAVA::RefPtr<UIControl> sampleControl(new UIControl);
+    sampleGroupNode.Set(ControlNode::CreateFromControl(sampleControl.Get()));
 }
 
 void CommandExecutor::AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::FilePath> packagePaths, const PackageNode* package)
@@ -282,12 +400,13 @@ void CommandExecutor::RemoveStyleSelector(StyleSheetNode* node, DAVA::int32 sele
     }
 }
 
-ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex)
+void CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
-    ResultList resultList;
     if (dest->CanInsertControl(control, destIndex))
     {
         DocumentData* data = GetDocumentData();
+        CommandExecutorDetails::EnsureControlNameIsUnique(control, data->GetPackageNode(), dest);
+
         data->BeginBatch(Format("Insert Control %s(%s)", control->GetName().c_str(), control->GetClassName().c_str()));
         InsertControlImpl(control, dest, destIndex);
         data->EndBatch();
@@ -296,7 +415,6 @@ ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContaine
     {
         Logger::Warning("%s", String("Can not insert control!" + PointerSerializer::FromPointer(control)).c_str());
     }
-    return resultList;
 }
 
 Vector<ControlNode*> CommandExecutor::InsertInstances(const DAVA::Vector<ControlNode*>& controls, ControlsContainerNode* dest, DAVA::int32 destIndex)
@@ -351,7 +469,7 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
         for (const RefPtr<ControlNode>& copy : nodesToCopy)
         {
             copiedNodes.push_back(copy.Get());
-            InsertControlImpl(copy.Get(), dest, index);
+            InsertControl(copy.Get(), dest, index);
             index++;
         }
         nodesToCopy.clear();
@@ -361,7 +479,7 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
     return copiedNodes;
 }
 
-Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex)
+DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
@@ -665,13 +783,65 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
     return createdNodes;
 }
 
+ControlNode* CommandExecutor::GroupSelectedNodes() const
+{
+    using namespace DAVA;
+    using namespace CommandExecutorDetails;
+
+    DocumentData* data = GetDocumentData();
+    const SelectedNodes& selectedNodes = data->GetSelectedNodes();
+    Vector<ControlNode*> selectedControlNodes;
+
+    Result result = CanGroupSelectedNodes(selectedNodes);
+
+    if (result.type != Result::RESULT_ERROR)
+    {
+        selectedControlNodes = ToControlNodesVector(data->GetSelectedNodes());
+        if (data->GetSelectedNodes().size() != selectedControlNodes.size())
+        {
+            result = Result(Result::RESULT_ERROR, "only controls can be grouped");
+        }
+    }
+
+    if (result.type == Result::RESULT_ERROR)
+    {
+        DAVA::TArc::NotificationParams params;
+        params.title = "Can't group selected nodes";
+        params.message = result;
+        ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+        return nullptr;
+    }
+
+    data->BeginBatch("Group controls");
+
+    Rect constraintBox = GetConstraintBox(selectedControlNodes);
+    ShiftPositionsRelativeToBox(selectedControlNodes, constraintBox, data);
+
+    ScopedPtr<UIControl> control(new UIControl(constraintBox));
+    control->SetName("Group");
+    ControlNode* newGroupControl = ControlNode::CreateFromControl(control);
+
+    ControlNode* parent = dynamic_cast<ControlNode*>(selectedControlNodes.front()->GetParent());
+    InsertControl(newGroupControl, parent, parent->GetCount());
+    MoveControls(selectedControlNodes, newGroupControl, 0);
+
+    AbstractProperty* postionProperty = newGroupControl->GetRootProperty()->FindPropertyByName("position");
+    AbstractProperty* sizeProperty = newGroupControl->GetRootProperty()->FindPropertyByName("size");
+    newGroupControl->GetRootProperty()->SetProperty(postionProperty, Any(newGroupControl->GetControl()->GetPosition()));
+    newGroupControl->GetRootProperty()->SetProperty(sizeProperty, Any(newGroupControl->GetControl()->GetSize()));
+
+    data->EndBatch();
+
+    return newGroupControl;
+}
+
 void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package)
 {
     DocumentData* data = GetDocumentData();
     data->ExecCommand<InsertImportedPackageCommand>(importedPackage, package->GetImportedPackagesNode()->GetCount());
 }
 
-void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex)
+void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     DocumentData* data = GetDocumentData();
     data->ExecCommand<InsertControlCommand>(control, dest, destIndex);
@@ -689,7 +859,7 @@ void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerN
     }
 }
 
-void CommandExecutor::RemoveControlImpl(ControlNode* node)
+void CommandExecutor::RemoveControlImpl(ControlNode* node) const
 {
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
     if (src)
@@ -711,7 +881,7 @@ void CommandExecutor::RemoveControlImpl(ControlNode* node)
     }
 }
 
-bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex)
+bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     node->Retain();
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
@@ -816,6 +986,46 @@ bool CommandExecutor::IsNodeInHierarchy(const PackageBaseNode* node) const
         p = p->GetParent();
     }
     return false;
+}
+
+DAVA::Result CommandExecutor::CanGroupSelectedNodes(const SelectedNodes& selectedNodes) const
+{
+    if (selectedNodes.size() < 2)
+    {
+        return Result(Result::RESULT_ERROR, "2 or more nodes should be selected");
+    }
+
+    PackageBaseNode* commonParent = (*selectedNodes.begin())->GetParent();
+    ControlNode* commonParentControl = dynamic_cast<ControlNode*>(commonParent);
+    if (commonParentControl == nullptr)
+    {
+        return Result(Result::RESULT_ERROR, "only children of controls can be grouped");
+    }
+
+    bool allHaveCommonParent = std::all_of(std::next(selectedNodes.begin()), selectedNodes.end(), [commonParent](PackageBaseNode* node)
+                                           {
+                                               return node->GetParent() == commonParent;
+                                           });
+    if (!allHaveCommonParent)
+    {
+        return Result(Result::RESULT_ERROR, "all selected nodes should have same parent");
+    }
+
+    if (!commonParent->CanInsertControl(sampleGroupNode.Get(), commonParent->GetCount()))
+    {
+        return Result(Result::RESULT_ERROR, "not allowed to insert into parent control");
+    }
+
+    bool allCanBeMoved = std::all_of(selectedNodes.begin(), selectedNodes.end(), [](PackageBaseNode* node)
+                                     {
+                                         return node->CanRemove() == true;
+                                     });
+    if (!allCanBeMoved)
+    {
+        return Result(Result::RESULT_ERROR, "all selected nodes must be movable");
+    }
+
+    return Result(Result::RESULT_SUCCESS);
 }
 
 bool CommandExecutor::IsControlNodesHasSameParentControlNode(const ControlNode* n1, const ControlNode* n2)

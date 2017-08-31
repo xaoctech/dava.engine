@@ -9,7 +9,6 @@
 #include "Commands2/KeyedArchiveCommand.h"
 #include "Commands2/CustomColorsCommands2.h"
 #include "Scene/SceneSignals.h"
-#include "Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
 #include "Main/QtUtils.h"
 
@@ -293,11 +292,14 @@ void CustomColorsSystem::SetColor(DAVA::int32 colorIndex)
         return;
     }
 
-    DAVA::Vector<DAVA::Color> customColors = data->GetEditorConfig()->GetColorPropertyValues("LandscapeCustomColors");
-    if (colorIndex >= 0 && colorIndex < static_cast<DAVA::int32>(customColors.size()))
+    if (data->GetEditorConfig() != nullptr)
     {
-        drawColor = customColors[colorIndex];
-        this->colorIndex = colorIndex;
+        DAVA::Vector<DAVA::Color> customColors = data->GetEditorConfig()->GetColorPropertyValues("LandscapeCustomColors");
+        if (colorIndex >= 0 && colorIndex < static_cast<DAVA::int32>(customColors.size()))
+        {
+            drawColor = customColors[colorIndex];
+            this->colorIndex = colorIndex;
+        }
     }
 }
 

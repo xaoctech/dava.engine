@@ -19,7 +19,7 @@ namespace DefinitionFileLocal
 bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bit_depth);
 }
 
-void DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& pathToProcess)
+bool DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& pathToProcess)
 {
     DVASSERT(pathToProcess.IsDirectoryPathname());
 
@@ -30,19 +30,24 @@ void DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& pathToPr
     frameCount = 1;
 
     PngImageExt image;
-    image.Read(corespondingPngImage);
-    spriteWidth = image.GetWidth();
-    spriteHeight = image.GetHeight();
+    bool read = image.Read(corespondingPngImage);
+    if (read)
+    {
+        spriteWidth = image.GetWidth();
+        spriteHeight = image.GetHeight();
 
-    frameNames.resize(frameCount);
-    frameRects.resize(frameCount);
-    frameRects[0].x = 0;
-    frameRects[0].y = 0;
-    frameRects[0].dx = spriteWidth;
-    frameRects[0].dy = spriteHeight;
+        frameNames.resize(frameCount);
+        frameRects.resize(frameCount);
+        frameRects[0].x = 0;
+        frameRects[0].y = 0;
+        frameRects[0].dx = spriteWidth;
+        frameRects[0].dy = spriteHeight;
 
-    FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(pathToProcess, nameWithoutExt, 0);
-    FileSystem::Instance()->CopyFile(_filename, fileWrite);
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(pathToProcess, nameWithoutExt, 0);
+        FileSystem::Instance()->CopyFile(_filename, fileWrite);
+    }
+
+    return read;
 }
 
 bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& pathToProcess)

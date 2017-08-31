@@ -16,19 +16,27 @@ public:
 
 private:
     friend class DataWrapper;
-    void AddWrapper(DataWrapper wrapper);
-    void RemoveWrapper(DataWrapper wrapper);
+    friend class MockListener;
+    void AddWrapper(DataWrapper::DataWrapperWeak weak);
+    void RemoveWrapper(DataWrapper::DataWrapperWeak weak);
+    void RemoveEmptyWrappers();
 
 private:
+    struct DataWrapperNode
+    {
+        void* id = nullptr;
+        DataWrapper::DataWrapperWeak weak;
+    };
+
     struct DataWrapperLess
     {
-        bool operator()(const DataWrapper& w1, const DataWrapper& w2) const
+        bool operator()(const DataWrapperNode& w1, const DataWrapperNode& w2) const
         {
-            return w1.impl < w2.impl;
+            return w1.id < w2.id;
         }
     };
 
-    Set<DataWrapper, DataWrapperLess> wrappers;
+    Set<DataWrapperNode, DataWrapperLess> wrappers;
 };
 } // namespace TArc
 } // namespace DAVA

@@ -1,8 +1,6 @@
 #include "EditorSystems/EditorControlsView.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "Preferences/PreferencesRegistrator.h"
-
 #include "Model/PackageHierarchy/PackageBaseNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -13,82 +11,77 @@
 #include "UI/Preview/Data/CanvasData.h"
 
 #include <TArc/Core/FieldBinder.h>
+#include <TArc/DataProcessing/DataListener.h>
 
 #include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
-#include <Base/Introspection.h>
 #include <UI/UIControl.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/UIControlSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Base/BaseTypes.h>
 
 using namespace DAVA;
 
+DAVA_VIRTUAL_REFLECTION_IMPL(PreviewWidgetSettings)
+{
+    DAVA::ReflectionRegistrator<PreviewWidgetSettings>::Begin()[DAVA::M::DisplayName("Preview widget"), DAVA::M::SettingsSortKey(70)]
+    .ConstructorByPointer()
+    .Field("backgroundColor0", &PreviewWidgetSettings::backgroundColor0)[DAVA::M::DisplayName("Background color 0")]
+    .Field("backgroundColor1", &PreviewWidgetSettings::backgroundColor1)[DAVA::M::DisplayName("Background color 1")]
+    .Field("backgroundColor2", &PreviewWidgetSettings::backgroundColor2)[DAVA::M::DisplayName("Background color 2")]
+    .Field("backgroundColorIndex", &PreviewWidgetSettings::backgroundColorIndex)[DAVA::M::DisplayName("Background color index"), DAVA::M::HiddenField()]
+    .End();
+}
+
 namespace EditorControlsViewDetails
 {
-class ColorControl : public UIControl
+class GridControl : public UIControl, DAVA::TArc::DataListener
 {
 public:
-    ColorControl();
-    ~ColorControl() override;
-
-private:
-    uint32 GetBackgroundColorIndex() const;
-    void SetBackgroundColorIndex(uint32 index);
-
-    Color GetBackgroundColor0() const;
-    void SetBackgroundColor0(const Color& color);
-
-    Color GetBackgroundColor1() const;
-    void SetBackgroundColor1(const Color& color);
-
-    Color GetBackgroundColor2() const;
-    void SetBackgroundColor2(const Color& color);
-
-    Color backgroundColor0;
-    Color backgroundColor1;
-    Color backgroundColor2;
-    uint32 backgroundColorIndex = 0;
-
-public:
-    INTROSPECTION_EXTEND(ColorControl, UIControl,
-                         PROPERTY("backgroundColor0", "Preview Widget/Background color 0", GetBackgroundColor0, SetBackgroundColor0, I_VIEW | I_EDIT | I_SAVE | I_PREFERENCE)
-                         PROPERTY("backgroundColor1", "Preview Widget/Background color 1", GetBackgroundColor1, SetBackgroundColor1, I_VIEW | I_EDIT | I_SAVE | I_PREFERENCE)
-                         PROPERTY("backgroundColor2", "Preview Widget/Background color 2", GetBackgroundColor2, SetBackgroundColor2, I_VIEW | I_EDIT | I_SAVE | I_PREFERENCE)
-                         PROPERTY("backgroundColorIndex", "Preview Widget/Background color index", GetBackgroundColorIndex, SetBackgroundColorIndex, I_SAVE | I_PREFERENCE)
-                         )
-};
-
-REGISTER_PREFERENCES_ON_START(ColorControl,
-                              PREF_ARG("backgroundColor0", Color::Transparent),
-                              PREF_ARG("backgroundColor1", Color(1.0f, 1.0f, 1.0f, 1.0f)),
-                              PREF_ARG("backgroundColor2", Color(0.0f, 0.0f, 0.0f, 1.0f)),
-                              PREF_ARG("backgroundColorIndex", static_cast<uint32>(0))
-                              )
-
-class GridControl : public UIControl
-{
-public:
-    GridControl();
-    ~GridControl() override = default;
+    GridControl(DAVA::TArc::ContextAccessor* accessor);
+    ~GridControl() override;
     void SetSize(const Vector2& size) override;
+
+protected:
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Vector<Any>& fields) override;
 
 private:
     void Draw(const UIGeometricData& geometricData) override;
+    void UpdateColorControlBackground();
     ScopedPtr<UIControl> colorControl;
+
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::DataWrapper wrapper;
 };
 
-GridControl::GridControl()
-    : colorControl(new ColorControl)
+GridControl::GridControl(DAVA::TArc::ContextAccessor* accessor_)
+    : colorControl(new UIControl)
+    , accessor(accessor_)
 {
-    UIControlBackground* background = GetOrCreateComponent<UIControlBackground>();
-    background->SetDrawType(UIControlBackground::DRAW_TILED);
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/GrayGrid.png"));
-    background->SetSprite(sprite, 0);
-    colorControl->SetName("Color control");
+    {
+        UIControlBackground* background = GetOrCreateComponent<UIControlBackground>();
+        background->SetDrawType(UIControlBackground::DRAW_TILED);
+        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/QuickEd/UI/GrayGrid.png"));
+        background->SetSprite(sprite, 0);
+        colorControl->SetName("Color_control");
+    }
 
-    UIControl::AddControl(colorControl);
+    {
+        UIControlBackground* background = colorControl->GetOrCreateComponent<UIControlBackground>();
+        background->SetDrawType(UIControlBackground::DRAW_FILL);
+        UIControl::AddControl(colorControl);
+    }
+
+    UpdateColorControlBackground();
+    wrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreviewWidgetSettings>());
+    wrapper.SetListener(this);
+}
+
+GridControl::~GridControl()
+{
+    wrapper.SetListener(nullptr);
 }
 
 void GridControl::SetSize(const Vector2& size)
@@ -110,93 +103,39 @@ void GridControl::Draw(const UIGeometricData& geometricData)
     }
 }
 
-ColorControl::ColorControl()
+void GridControl::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Vector<Any>& fields)
 {
-    UIControlBackground* background = GetOrCreateComponent<UIControlBackground>();
-    background->SetDrawType(UIControlBackground::DRAW_FILL);
-    PreferencesStorage::Instance()->RegisterPreferences(this);
+    DVASSERT(wrapper == this->wrapper);
+    UpdateColorControlBackground();
 }
 
-ColorControl::~ColorControl()
+void GridControl::UpdateColorControlBackground()
 {
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
-}
-
-Color ColorControl::GetBackgroundColor0() const
-{
-    return backgroundColor0;
-}
-
-void ColorControl::SetBackgroundColor0(const Color& color)
-{
-    backgroundColor0 = color;
-    if (backgroundColorIndex == 0)
-    {
-        GetBackground()->SetColor(backgroundColor0);
-    }
-}
-
-Color ColorControl::GetBackgroundColor1() const
-{
-    return backgroundColor1;
-}
-
-void ColorControl::SetBackgroundColor1(const Color& color)
-{
-    backgroundColor1 = color;
-    if (backgroundColorIndex == 1)
-    {
-        GetBackground()->SetColor(backgroundColor1);
-    }
-}
-
-Color ColorControl::GetBackgroundColor2() const
-{
-    return backgroundColor2;
-}
-
-void ColorControl::SetBackgroundColor2(const Color& color)
-{
-    backgroundColor2 = color;
-    if (backgroundColorIndex == 2)
-    {
-        GetBackground()->SetColor(backgroundColor2);
-    }
-}
-
-uint32 ColorControl::GetBackgroundColorIndex() const
-{
-    return backgroundColorIndex;
-}
-
-void ColorControl::SetBackgroundColorIndex(uint32 index)
-{
-    Color color;
-    backgroundColorIndex = index;
-    switch (index)
+    PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+    DAVA::Color color = DAVA::Color::Transparent;
+    switch (settings->backgroundColorIndex)
     {
     case 0:
-        color = backgroundColor0;
+        color = settings->backgroundColor0;
         break;
     case 1:
-        color = backgroundColor1;
+        color = settings->backgroundColor1;
         break;
     case 2:
-        color = backgroundColor2;
+        color = settings->backgroundColor2;
         break;
     default:
-        DVASSERT(false, "unsupported background index");
-        return;
-    }
-    GetBackground()->SetColor(color);
+        DVASSERT(false);
+        break;
+    };
+    colorControl->GetBackground()->SetColor(color);
 }
-
 } //EditorControlsViewDetails
 
 class BackgroundController final
 {
 public:
-    BackgroundController(UIControl* nestedControl);
+    BackgroundController(UIControl* nestedControl, DAVA::TArc::ContextAccessor* accessor);
     ~BackgroundController();
     UIControl* GetGridControl() const;
     bool IsNestedControl(const UIControl* control) const;
@@ -223,8 +162,8 @@ private:
     UIControl* nestedControl = nullptr;
 };
 
-BackgroundController::BackgroundController(UIControl* nestedControl_)
-    : gridControl(new EditorControlsViewDetails::GridControl())
+BackgroundController::BackgroundController(UIControl* nestedControl_, DAVA::TArc::ContextAccessor* accessor)
+    : gridControl(new EditorControlsViewDetails::GridControl(accessor))
     , counterpoiseControl(new UIControl())
     , positionHolderControl(new UIControl())
     , nestedControl(nestedControl_)
@@ -232,9 +171,9 @@ BackgroundController::BackgroundController(UIControl* nestedControl_)
     DVASSERT(nullptr != nestedControl);
     String name = nestedControl->GetName().c_str();
     name = name.empty() ? "unnamed" : name;
-    gridControl->SetName(FastName("Grid control of " + name));
-    counterpoiseControl->SetName(FastName("counterpoise of " + name));
-    positionHolderControl->SetName(FastName("Position holder of " + name));
+    gridControl->SetName(FastName("Grid_control_of_nestedControl"));
+    counterpoiseControl->SetName(FastName("counterpoise_of_nestedControl"));
+    positionHolderControl->SetName(FastName("Position_holder_of_nestedControl"));
     gridControl->AddControl(positionHolderControl.Get());
     positionHolderControl->AddControl(counterpoiseControl.Get());
     counterpoiseControl->AddControl(nestedControl);
@@ -409,22 +348,22 @@ EditorControlsView::EditorControlsView(UIControl* canvasParent_, EditorSystemsMa
     , packageListenerProxy(this, accessor)
 {
     canvasParent->AddControl(controlsCanvas.Get());
-    controlsCanvas->SetName(FastName("controls canvas"));
+    controlsCanvas->SetName(FastName("controls_canvas"));
 
     InitFieldBinder();
 
     canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
-    UIControlSystem::Instance()->GetLayoutSystem()->AddListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 
-    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &EditorControlsView::BeforeRendering);
 }
 
 EditorControlsView::~EditorControlsView()
 {
     canvasParent->RemoveControl(controlsCanvas.Get());
-    UIControlSystem::Instance()->GetLayoutSystem()->RemoveListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
 void EditorControlsView::InitFieldBinder()
@@ -531,7 +470,7 @@ void EditorControlsView::BeforeRendering()
 
 BackgroundController* EditorControlsView::CreateControlBackground(PackageBaseNode* node)
 {
-    BackgroundController* backgroundController(new BackgroundController(node->GetControl()));
+    BackgroundController* backgroundController(new BackgroundController(node->GetControl(), accessor));
     backgroundController->contentSizeChanged.Connect(this, &EditorControlsView::Layout);
     backgroundController->rootControlPosChanged.Connect(this, &EditorControlsView::OnRootControlPosChanged);
     gridControls.emplace_back(backgroundController);

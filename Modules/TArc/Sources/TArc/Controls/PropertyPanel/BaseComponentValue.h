@@ -6,13 +6,12 @@
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Qt/QtRect.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Reflection/Reflection.h>
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
-
-#include <QString>
-#include <QRect>
 
 class QLayout;
 class QWidget;

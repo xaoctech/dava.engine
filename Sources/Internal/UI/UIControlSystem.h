@@ -4,7 +4,6 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/Singleton.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Input/InputElements.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
@@ -26,6 +25,7 @@ class UIScreen;
 class UISystem;
 class UILayoutSystem;
 class UIStyleSheetSystem;
+class UITextSystem;
 class UIFocusSystem;
 class UIInputSystem;
 class UIScreenshoter;
@@ -56,15 +56,8 @@ public:
 		Also ControlSystem processed all user input events to the controls.
 	 */
 
-class UIControlSystem : public Singleton<UIControlSystem>
+class UIControlSystem final
 {
-protected:
-    ~UIControlSystem();
-    /**
-	 \brief Don't call this constructor!
-	 */
-    UIControlSystem();
-
 public:
     /**
 	 \brief Sets the requested screen as current.
@@ -310,6 +303,7 @@ public:
         return nullptr;
     }
 
+    UITextSystem* GetTextSystem() const;
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -323,6 +317,10 @@ public:
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
+    UIControlSystem();
+    ~UIControlSystem();
+    void Init();
+
     void ProcessScreenLogic();
 
     void NotifyListenersWillSwitch(UIScreen* screen);
@@ -338,6 +336,8 @@ private:
 
     Vector<std::unique_ptr<UISystem>> systems;
     Vector<std::unique_ptr<UISingleComponent>> singleComponents;
+
+    UITextSystem* textSystem = nullptr;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;

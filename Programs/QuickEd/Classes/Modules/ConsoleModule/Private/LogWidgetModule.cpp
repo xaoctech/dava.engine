@@ -2,12 +2,13 @@
 #include "Modules/SpritesPacker/SpritesPackerData.h"
 #include "Application/QEGlobal.h"
 
-#include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Utils/ModuleCollection.h>
-
 #include <QtTools/ConsoleWidget/LoggerOutputObject.h>
 #include <QtTools/ConsoleWidget/LogWidget.h>
 #include <QtTools/ReloadSprites/SpritesPacker.h>
+
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Qt/QtByteArray.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LogWidgetModule)
 {

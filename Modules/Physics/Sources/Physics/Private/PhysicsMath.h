@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Math/Matrix4.h>
+#include <Math/Quaternion.h>
+#include <Math/Color.h>
 #include <Base/BaseTypes.h>
 
 #include <physx/PxPhysicsAPI.h>
@@ -52,6 +54,11 @@ inline physx::PxVec3 Vector3ToPxVec3(const Vector3& in)
 inline Vector3 PxVec3ToVector3(const physx::PxVec3& in)
 {
     return Vector3(in.x, in.y, in.z);
+}
+
+inline physx::PxQuat QuaternionToPxQuat(const Quaternion& in)
+{
+    return physx::PxQuat(in.x, in.y, in.z, in.w);
 }
 
 inline Color PxColorToColor(const physx::PxU32 color)

@@ -46,7 +46,7 @@ TestCore::TestCore(Engine& e_)
     e.update.Connect(this, &TestCore::Update);
 
     bool result = AvoidTestsStriping();
-    DAVA::Logger::Info("Avoid tests stripint result %d", result);
+    DAVA::Logger::Info("Avoid tests striping result %d", result);
 }
 
 TestCore::~TestCore()

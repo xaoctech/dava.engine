@@ -250,15 +250,15 @@ private:
     bool needRebuildVariants = true;
 
 public:
-    INTROSPECTION_EXTEND(NMaterial, DataNode,
-                         PROPERTY("materialName", "Material name", GetMaterialName, SetMaterialName, I_VIEW | I_EDIT)
-                         PROPERTY("configName", "Config name", GetCurrentConfigName, SetCurrentConfigName, I_VIEW | I_EDIT)
-                         PROPERTY("configId", "Current config", GetCurrentConfigIndex, SetCurrentConfigIndex, I_VIEW | I_EDIT)
-                         PROPERTY("fxName", "FX Name", GetLocalFXName, SetFXName, I_VIEW | I_EDIT)
-                         PROPERTY("qualityGroup", "Quality group", GetQualityGroup, SetQualityGroup, I_VIEW | I_EDIT)
-                         DYNAMIC(localFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_EDIT | I_VIEW)
-                         DYNAMIC(localProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_EDIT | I_VIEW)
-                         DYNAMIC(localTextures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_EDIT | I_VIEW))
+    INTROSPECTION(NMaterial,
+                  PROPERTY("materialName", "Material name", GetMaterialName, SetMaterialName, I_VIEW | I_EDIT)
+                  PROPERTY("configName", "Config name", GetCurrentConfigName, SetCurrentConfigName, I_VIEW | I_EDIT)
+                  PROPERTY("configId", "Current config", GetCurrentConfigIndex, SetCurrentConfigIndex, I_VIEW | I_EDIT)
+                  PROPERTY("fxName", "FX Name", GetLocalFXName, SetFXName, I_VIEW | I_EDIT)
+                  PROPERTY("qualityGroup", "Quality group", GetQualityGroup, SetQualityGroup, I_VIEW | I_EDIT)
+                  DYNAMIC(localFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_EDIT | I_VIEW)
+                  DYNAMIC(localProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_EDIT | I_VIEW)
+                  DYNAMIC(localTextures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_EDIT | I_VIEW))
 };
 
 void NMaterialProperty::SetPropertyValue(const float32* newValue)

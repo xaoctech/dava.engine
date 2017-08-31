@@ -25,6 +25,7 @@ public:
         Enabled, // call back should return Any that can be casted to bool
         Checked,
         Text, // DAVA::String
+        Tooltip, // DAVA::String
         Icon // DAVA::String
     };
 
