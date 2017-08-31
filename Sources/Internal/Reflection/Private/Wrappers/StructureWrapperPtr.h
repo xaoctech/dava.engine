@@ -10,7 +10,7 @@
 namespace DAVA
 {
 template <typename T>
-class StructureWrapperPtr final : public StructureWrapperDefault
+class StructureWrapperPtr : public StructureWrapperDefault
 {
 public:
     static_assert(std::is_pointer<T>::value, "StructureWrapperPtr should be used as structure wrapper only for pointer fields.");
