@@ -105,9 +105,10 @@ Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat in
                 generatedImages.insert(generatedImages.end(), mipMaps.begin(), mipMaps.end());
             }
         }
+
+        // release original images and replace them with generated ones
         for (Image* image : sourceImages)
             SafeRelease(image);
-
         sourceImages.swap(generatedImages);
     }
     outputImages.reserve(sourceImages.size());
@@ -124,27 +125,26 @@ Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat in
         {
             SafeRelease(targetImage);
         }
-        SafeRelease(sourceImage);
     }
-    sourceImages.clear();
 
     return outputImages;
 }
 
 FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo)
 {
-    const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
-    const FilePath sourcePathname = descriptor.GetSourceTexturePathname();
-
     Vector<Image*> sourceImages;
-    ImageSystem::Load(sourcePathname, sourceImages);
+    ImageSystem::Load(descriptor.GetSourceTexturePathname(), sourceImages);
     if (sourceImages.empty())
     {
         Logger::Error("Failed to convert float texture to PVR file. Failed to load source image");
         return FilePath();
     }
 
+    const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
     Vector<Image*> targetImages = ProcessFloatImageSet(sourceImages, sourceInfo.format, compression, descriptor.GetGenerateMipMaps());
+
+    for (Image* image : sourceImages)
+        SafeRelease(image);
 
     FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
     eErrorCode saveResult = LibPVRHelper().Save(outputName, targetImages);
@@ -162,8 +162,6 @@ FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, 
 
 FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo)
 {
-    const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
-
     Vector<FilePath> faces;
     descriptor.GenerateFacePathnames(CUBEMAP_TMP_DIR, PVRTOOL_FACE_SUFFIXES, faces);
     Vector<Vector<Image*>> imagesToSave;
@@ -172,7 +170,16 @@ FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descript
     {
         Vector<Image*> sourceImages;
         ImageSystem::Load(face, sourceImages);
+        if (sourceImages.empty())
+        {
+            Logger::Error("Failed to convert float texture to PVR file. Failed to load source image");
+            return FilePath();
+        }
+
+        const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
         imagesToSave.emplace_back(ProcessFloatImageSet(sourceImages, sourceInfo.format, compression, descriptor.GetGenerateMipMaps()));
+        for (Image* image : sourceImages)
+            SafeRelease(image);
     }
 
     FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
