@@ -36,8 +36,8 @@ private:
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
     void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
-    DAVA::Map<int, DAVA::UIControl*> GetCanvasControls() const override;
-    void DeleteControls() override;
+    CanvasControls CreateCanvasControls() const override;
+    void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
     void InitFieldBinder();
 

@@ -20,8 +20,8 @@ private:
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
-    DAVA::Map<int, DAVA::UIControl*> GetCanvasControls() const override;
-    void DeleteControls() override;
+    CanvasControls CreateCanvasControls() const override;
+    void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
     void InitFieldBinder();
     DAVA::float32 GetScaleFromWheelEvent(DAVA::int32 ticksCount) const;

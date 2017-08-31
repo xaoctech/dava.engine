@@ -19,6 +19,13 @@ public:
     virtual ~BaseEditorSystem() = default;
 
 protected:
+    enum eCanvas
+    {
+        DISPLAY_CANVAS,
+        GRID_CANVAS,
+        HUD_CANVAS
+    };
+        
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
     DAVA::TArc::ContextAccessor* accessor = nullptr;
@@ -39,6 +46,6 @@ private:
     //invalidate caches or prepare to work depending on states
     virtual void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState);
     virtual void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState);
-    virtual DAVA::Map<int, DAVA::UIControl*> GetCanvasControls() const;
-    virtual void DeleteControls();
+    virtual CanvasControls CreateCanvasControls() const;
+    virtual void DeleteCanvasControls(const CanvasControls& canvasControls);
 };

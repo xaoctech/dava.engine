@@ -53,11 +53,11 @@ void BaseEditorSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState
 {
 }
 
-DAVA::Map<int, DAVA::UIControl*> BaseEditorSystem::GetCanvasControls() const
+CanvasControls BaseEditorSystem::CreateCanvasControls() const
 {
-    return DAVA::Map<int, DAVA::UIControl*>();
+    return CanvasControls();
 }
 
-void BaseEditorSystem::DeleteControls()
+void BaseEditorSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
 }

@@ -30,8 +30,8 @@ public:
     ~PixelGrid() override;
 
 private:
-    DAVA::Map<int, DAVA::UIControl*> GetCanvasControls() const override;
-    void DeleteControls() override;
+    CanvasControls CreateCanvasControls() const override;
+    void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
     void InitControls();
 

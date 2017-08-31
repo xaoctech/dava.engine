@@ -463,12 +463,12 @@ void HUDSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState, Edito
     UpdateHUDEnabled();
 }
 
-DAVA::Map<int, DAVA::UIControl*> HUDSystem::GetCanvasControls() const
+CanvasControls HUDSystem::CreateCanvasControls() const
 {
-    return { { 2, hudControl.Get() } };
+    return { { HUD_CANVAS, hudControl } };
 }
 
-void HUDSystem::DeleteControls()
+void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
     hudControl = nullptr;
 }

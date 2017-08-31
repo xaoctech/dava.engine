@@ -396,40 +396,41 @@ void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
     dragStateChanged.Connect(editorSystem, &BaseEditorSystem::OnDragStateChanged);
     displayStateChanged.Connect(editorSystem, &BaseEditorSystem::OnDisplayStateChanged);
 
-    DAVA::Map<int, DAVA::UIControl*> allControls;
-    for (const auto& iter : systems)
+    CanvasControls newControls = editorSystem->CreateCanvasControls();
+    CanvasControls allControls;
+    for (const auto& iter : systemsControls)
     {
-        DAVA::Map<int, DAVA::UIControl*> controls = iter->GetCanvasControls();
-        allControls.insert(controls.begin(), controls.end());
+        allControls.insert(iter.second.begin(), iter.second.end());
     }
     if (allControls.empty())
     {
         //map iterators is already sorted
-        for (const auto& controlsPair : editorSystem->GetCanvasControls())
+        for (const auto& controlsPair : newControls)
         {
-            rootControl->AddControl(controlsPair.second);
+            rootControl->AddControl(controlsPair.second.Get());
         }
     }
     else
     {
-        for (const auto& controlsPair : editorSystem->GetCanvasControls())
+        for (const auto& controlsPair : editorSystem->CreateCanvasControls())
         {
             DVASSERT(allControls.find(controlsPair.first) == allControls.end());
             const auto& greaterPair = allControls.lower_bound(controlsPair.first);
             if (greaterPair == allControls.end())
             {
-                rootControl->AddControl(controlsPair.second);
+                rootControl->AddControl(controlsPair.second.Get());
             }
             else
             {
-                rootControl->InsertChildBelow(controlsPair.second, greaterPair->second);
+                rootControl->InsertChildBelow(controlsPair.second.Get(), greaterPair->second.Get());
             }
             allControls.insert(controlsPair);
         }
     }
+    
 
-    //TODO: don't store systems
-    systems.emplace_back(editorSystem);
+    systems.push_back(editorSystem);
+    systemsControls[editorSystem] = newControls;
 }
 
 void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem)
@@ -437,12 +438,14 @@ void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem
     dragStateChanged.Disconnect(editorSystem);
     displayStateChanged.Disconnect(editorSystem);
 
-    //TODO: uncomment this line when systems will hold raw pointers only
-    const auto& controlsMap = editorSystem->GetCanvasControls();
-    for (const auto& controlsPair : controlsMap)
+    auto iter = systemsControls.find(editorSystem);
+    DVASSERT(iter != systemsControls.end());
+    CanvasControls canvasControls = systemsControls[editorSystem];
+    
+    for (const auto& controlsPair : canvasControls)
     {
-        rootControl->RemoveControl(controlsPair.second);
+        rootControl->RemoveControl(controlsPair.second.Get());
     }
-    editorSystem->DeleteControls();
+    editorSystem->DeleteCanvasControls(canvasControls);
     systems.remove(editorSystem);
 }

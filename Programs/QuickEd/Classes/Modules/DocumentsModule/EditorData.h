@@ -9,13 +9,14 @@ class EditorData : public DAVA::TArc::DataNode
 public:
     EditorData();
     ~EditorData() override;
-
-    const EditorSystemsManager* GetSystemsManager() const;
     static DAVA::FastName emulationModePropertyName;
 
 private:
     friend class BaseEditorSystem;
     friend class DocumentsModule;
+    
+    const EditorSystemsManager* GetSystemsManager() const;
+
     std::unique_ptr<EditorSystemsManager> systemsManager;
     bool emulationMode = false;
 

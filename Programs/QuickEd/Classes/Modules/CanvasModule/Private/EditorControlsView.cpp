@@ -354,7 +354,7 @@ EditorControlsView::~EditorControlsView()
 {
 }
 
-void EditorControlsView::DeleteControls()
+void EditorControlsView::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }

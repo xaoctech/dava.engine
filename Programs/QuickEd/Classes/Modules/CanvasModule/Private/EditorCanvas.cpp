@@ -102,13 +102,13 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
     }
 }
 
-DAVA::Map<int, DAVA::UIControl*> EditorCanvas::GetCanvasControls() const
+CanvasControls EditorCanvas::CreateCanvasControls() const
 {
     CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
-    return { { 0, canvasModuleData->canvas.Get() } };
+    return { { DISPLAY_CANVAS, canvasModuleData->canvas } };
 }
 
-void EditorCanvas::DeleteControls()
+void EditorCanvas::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
     UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     if (updateSystem != nullptr)
