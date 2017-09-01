@@ -13,59 +13,7 @@
 #include <FileSystem/FilePath.h>
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include <Render/Material/NMaterialNames.h>
-#include <Render/Material/NMaterial.h>
-#include <Render/Highlevel/RenderObject.h>
-#include <Scene3D/Scene.h>
-#include <Scene3D/SceneFileV2.h>
-#include <Scene3D/Components/ComponentHelpers.h>
 
-namespace UserNodeModuleDetails
-{
-DAVA::RenderObject* CreateRenderObject()
-{
-    using namespace DAVA;
-
-    FilePath scenePath = UserNodeModule::GetBotSpawnPath();
-
-    ScopedPtr<Scene> scene(new Scene());
-    SceneFileV2::eError result = scene->LoadScene(scenePath);
-    if (result == SceneFileV2::ERROR_NO_ERROR)
-    {
-        Vector<Entity*> entities;
-        scene->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
-        if (entities.size() == 1)
-        {
-            RenderObject* ro = GetRenderObject(entities[0]);
-            if (ro != nullptr)
-            {
-                uint32 count = ro->GetRenderBatchCount();
-                for (uint32 i = 0; i < count; ++i)
-                {
-                    NMaterial* mat = ro->GetRenderBatch(i)->GetMaterial();
-                    if (mat != nullptr)
-                    {
-                        if (mat->HasLocalFlag(NMaterialFlagName::FLAG_FLATCOLOR) == false)
-                        {
-                            mat->AddFlag(NMaterialFlagName::FLAG_FLATCOLOR, 1);
-                        }
-
-                        if (mat->HasLocalProperty(NMaterialParamName::PARAM_FLAT_COLOR) == false)
-                        {
-                            mat->AddProperty(NMaterialParamName::PARAM_FLAT_COLOR, Color().color, rhi::ShaderProp::TYPE_FLOAT4);
-                        }
-                    }
-                }
-            }
-
-            return SafeRetain(ro);
-        }
-    }
-
-    Logger::Error("[%s] Can't open scene %s properly", __FUNCTION__, scenePath.GetStringValue().c_str());
-    return nullptr;
-}
-}
 
 DAVA::FilePath UserNodeModule::GetBotSpawnPath()
 {
@@ -117,17 +65,12 @@ void UserNodeModule::PostInit()
 
 void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
-    if (spawnObject.get() == nullptr)
-    { //we cannot create scene at post init, so I call it here
-        spawnObject = UserNodeModuleDetails::CreateRenderObject();
-    }
-
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
 
     std::unique_ptr<UserNodeData> userData = std::make_unique<UserNodeData>();
-    userData->system.reset(new UserNodeSystem(scene, spawnObject.get()));
+    userData->system.reset(new UserNodeSystem(scene, GetBotSpawnPath()));
     userData->system->DisableSystem();
     scene->AddSystem(userData->system.get(), MAKE_COMPONENT_MASK(DAVA::Component::USER_COMPONENT), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 

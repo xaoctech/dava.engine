@@ -4,13 +4,11 @@
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/QtConnections.h>
 
-
 #include <Reflection/Reflection.h>
 #include <Base/ScopedPtr.h>
 
 namespace DAVA
 {
-class RenderObject;
 class FilePath;
 }
 
@@ -31,7 +29,6 @@ private:
 
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
-    DAVA::ScopedPtr<DAVA::RenderObject> spawnObject;
     DAVA::TArc::QtConnections connections;
 
     DAVA_VIRTUAL_REFLECTION(UserNodeModule, DAVA::TArc::ClientModule);
