@@ -109,28 +109,63 @@ void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 
 void SkinnedMesh::PrepareToRender(Camera* camera)
 {
-    if (!jointTargets.empty())
+    if (!jointTargets.empty() && skeletonFinalJointTransforms)
     {
-        DVASSERT(skeletonFinalJointTransforms);
-
         for (RenderBatch* b : activeRenderBatchArray)
-        {
-            auto found = jointTargets.find(b);
-            if (found == jointTargets.end())
-                continue;
-
-            const JointTargets& targets = found->second;
-            JointTargetsData& data = jointTargetsData[b];
-            for (uint32 j = 0; j < data.jointsDataCount; ++j)
-            {
-                uint32 transformIndex = targets[j];
-                DVASSERT(transformIndex < skeletonJointCount);
-
-                const JointTransform& finalTransform = skeletonFinalJointTransforms[transformIndex];
-                data.positions[j] = Vector4(Vector3(finalTransform.position.data), finalTransform.scale);
-                data.quaternions[j] = Vector4(finalTransform.orientation.data);
-            }
-        }
+            PrepareJointTargetsData(b);
     }
+}
+
+void SkinnedMesh::PrepareJointTargetsData(RenderBatch* batch)
+{
+    DVASSERT(skeletonFinalJointTransforms != nullptr);
+
+    auto found = jointTargets.find(batch);
+    if (found == jointTargets.end())
+        return;
+
+    const JointTargets& targets = found->second;
+    JointTargetsData& data = jointTargetsData[batch];
+    for (uint32 j = 0; j < data.jointsDataCount; ++j)
+    {
+        uint32 transformIndex = targets[j];
+        DVASSERT(transformIndex < skeletonJointCount);
+
+        const JointTransform& finalTransform = skeletonFinalJointTransforms[transformIndex];
+        data.positions[j] = Vector4(Vector3(finalTransform.position.data), finalTransform.scale);
+        data.quaternions[j] = Vector4(finalTransform.orientation.data);
+    }
+}
+
+void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
+{
+    DVASSERT(uint32(targets.size()) <= MAX_TARGET_JOINTS);
+
+    jointTargets[batch] = targets;
+
+    JointTargetsData& data = jointTargetsData[batch];
+    data.positions.resize(targets.size());
+    data.quaternions.resize(targets.size());
+    data.jointsDataCount = uint32(targets.size());
+}
+
+SkinnedMesh::JointTargets SkinnedMesh::GetJointTargets(RenderBatch* batch)
+{
+    auto found = jointTargets.find(batch);
+    if (found != jointTargets.end())
+        return found->second;
+
+    return JointTargets();
+}
+
+SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
+{
+    PrepareJointTargetsData(batch);
+
+    auto found = jointTargetsData.find(batch);
+    if (found != jointTargetsData.end())
+        return found->second;
+
+    return SkinnedMesh::JointTargetsData();
 }
 }

@@ -49,6 +49,8 @@ public:
     JointTargetsData GetJointTargetsData(RenderBatch* batch);
 
 protected:
+    void PrepareJointTargetsData(RenderBatch* batch);
+
     HashMap<RenderBatch*, JointTargets> jointTargets;
     HashMap<RenderBatch*, JointTargetsData> jointTargetsData;
 
@@ -60,34 +62,6 @@ inline void SkinnedMesh::SetFinalJointTransformsPtr(const JointTransform* transf
 {
     skeletonFinalJointTransforms = transformsPtr;
     skeletonJointCount = jointCount;
-}
-
-inline void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
-{
-    DVASSERT(uint32(targets.size()) <= MAX_TARGET_JOINTS);
-
-    jointTargets[batch] = targets;
-
-    JointTargetsData& data = jointTargetsData[batch];
-    data.positions.resize(targets.size());
-    data.quaternions.resize(targets.size());
-    data.jointsDataCount = uint32(targets.size());
-}
-
-inline SkinnedMesh::JointTargets SkinnedMesh::GetJointTargets(RenderBatch* batch)
-{
-    if (jointTargets.count(batch))
-        return jointTargets[batch];
-    else
-        return JointTargets();
-}
-
-inline SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
-{
-    if (jointTargetsData.count(batch))
-        return jointTargetsData[batch];
-    else
-        return SkinnedMesh::JointTargetsData();
 }
 
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)

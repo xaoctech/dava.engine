@@ -22,7 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent::Joint)
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonComponent)
 {
-    ReflectionRegistrator<SkeletonComponent>::Begin()
+    ReflectionRegistrator<SkeletonComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::CantBeDeletedManualyComponent()]
     .Field("joints", &SkeletonComponent::jointsArray)[M::DisplayName("Joints")]
     .Field("drawSkeleton", &SkeletonComponent::drawSkeleton)[M::DisplayName("Draw Skeleton")]
     .End();
