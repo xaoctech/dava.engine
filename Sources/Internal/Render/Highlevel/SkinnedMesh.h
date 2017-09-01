@@ -24,6 +24,13 @@ public:
 
     using JointTargets = Vector<int32>; // Vector index is joint target, value - skeleton joint index.
 
+    struct JointTargetsData
+    {
+        Vector<Vector4> positions;
+        Vector<Vector4> quaternions;
+        uint32 jointsDataCount = 0;
+    };
+
     SkinnedMesh();
 
     RenderObject* Clone(RenderObject* newObject) override;
@@ -39,14 +46,11 @@ public:
 
     void SetJointTargets(RenderBatch* batch, const JointTargets& jointTargets);
     JointTargets GetJointTargets(RenderBatch* batch);
+    JointTargetsData GetJointTargetsData(RenderBatch* batch);
 
 protected:
-    struct JointTargetsData
-    {
-        Vector<Vector4> positions;
-        Vector<Vector4> quaternions;
-        uint32 jointsDataCount = 0;
-    };
+    void PrepareJointTargetsData(RenderBatch* batch);
+
     HashMap<RenderBatch*, JointTargets> jointTargets;
     HashMap<RenderBatch*, JointTargetsData> jointTargetsData;
 
@@ -58,26 +62,6 @@ inline void SkinnedMesh::SetFinalJointTransformsPtr(const JointTransform* transf
 {
     skeletonFinalJointTransforms = transformsPtr;
     skeletonJointCount = jointCount;
-}
-
-inline void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
-{
-    DVASSERT(uint32(targets.size()) <= MAX_TARGET_JOINTS);
-
-    jointTargets[batch] = targets;
-
-    JointTargetsData& data = jointTargetsData[batch];
-    data.positions.resize(targets.size());
-    data.quaternions.resize(targets.size());
-    data.jointsDataCount = uint32(targets.size());
-}
-
-inline SkinnedMesh::JointTargets SkinnedMesh::GetJointTargets(RenderBatch* batch)
-{
-    if (jointTargets.count(batch))
-        return jointTargets[batch];
-    else
-        return JointTargets();
 }
 
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)

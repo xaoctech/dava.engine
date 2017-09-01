@@ -37,14 +37,6 @@ public:
 
         bool operator==(const Joint& other) const;
 
-        INTROSPECTION(Joint,
-                      MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(uid, "UID", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(parentIndex, "Parent Index", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(bbox, "Bounding box", I_SAVE | I_VIEW | I_EDIT)
-                      MEMBER(bindTransformInv, "invBindPos", I_SAVE | I_VIEW | I_EDIT)
-                      );
-
         DAVA_VIRTUAL_REFLECTION(Joint, InspBase);
     };
 
@@ -94,12 +86,6 @@ private:
     bool configUpdated = true;
     bool drawSkeleton = false;
 
-public:
-    INTROSPECTION_EXTEND(SkeletonComponent, Component,
-                         COLLECTION(jointsArray, "Root Joints", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(drawSkeleton, "Draw Skeleton", I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(SkeletonComponent, Component);
 
     friend class SkeletonSystem;
@@ -111,7 +97,7 @@ inline uint32 SkeletonComponent::GetJointIndex(const FastName& uid) const
     if (jointMap.end() != it)
         return it->second;
     else
-        return uint32(INVALID_JOINT_INDEX);
+        return INVALID_JOINT_INDEX;
 }
 
 inline uint32 SkeletonComponent::GetJointsCount() const

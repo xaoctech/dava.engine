@@ -6,28 +6,27 @@
 #include <QUrl>
 #include <QByteArray>
 
+class QIODevice;
+
 class DownloadTask final : public BaseTask
 {
 public:
-    DownloadTask(ApplicationManager* appManager, const QString& description, const std::vector<QUrl>& urls);
-    DownloadTask(ApplicationManager* appManager, const QString& description, const QUrl url);
+    DownloadTask(ApplicationManager* appManager, const QString& description, const std::map<QUrl, QIODevice*>& buffers);
+    DownloadTask(ApplicationManager* appManager, const QString& description, const QUrl& url, QIODevice* writeBuffer);
 
     QString GetDescription() const override;
     eTaskType GetTaskType() const override;
 
-    //change it to std::vector<std::pair<QIODevice*, QUrl>> later
-    const std::vector<QByteArray>& GetLoadedData() const;
-    void AddLoadedData(const QByteArray& data);
+    void AddLoadedData(const QUrl& url, const QByteArray& data);
 
-    const std::vector<QUrl>& GetUrls() const;
+    std::vector<QUrl> GetUrls() const;
 
     bool IsCancelled() const;
     void SetCancelled(bool cancelled);
 
 protected:
     QString description;
-    std::vector<QUrl> urls;
-    std::vector<QByteArray> loadedData;
+    std::map<QUrl, QIODevice*> buffers;
 
     bool isCancelled = false;
 };

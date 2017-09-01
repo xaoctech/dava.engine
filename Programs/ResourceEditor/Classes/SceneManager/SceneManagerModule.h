@@ -28,7 +28,7 @@ protected:
     void OnRenderSystemInitialized(DAVA::Window* w) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
     bool ControlWindowClosing(const DAVA::TArc::WindowKey& key, QCloseEvent* event) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
@@ -43,6 +43,7 @@ private:
     void RegisterOperations();
 
     /// Action and operation handlers
+    void CreateFirstScene();
     void CreateNewScene();
     void OpenScene();
     void OpenSceneQuckly();

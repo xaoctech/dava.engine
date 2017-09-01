@@ -1,21 +1,18 @@
-#include "Scene/SceneEditor2.h"
-#include "Scene/SceneSignals.h"
-#include "Scene/System/EditorParticlesSystem.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/Selection.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 
-#include "Settings/SettingsManager.h"
-#include "Deprecated/SceneValidator.h"
-#include "Commands2/Base/RECommandStack.h"
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Commands2/CustomColorsCommands2.h"
-#include "Commands2/HeightmapEditorCommands2.h"
-#include "Commands2/TilemaskEditorCommands.h"
-#include "Commands2/LandscapeToolsToggleCommand.h"
-#include "Utils/SceneExporter/SceneExporter.h"
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/Utils/RenderContextGuard.h"
+#include "Classes/Deprecated/SceneValidator.h"
+#include "Classes/Commands2/Base/RECommandStack.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/CustomColorsCommands2.h"
+#include "Classes/Commands2/HeightmapEditorCommands2.h"
+#include "Classes/Commands2/TilemaskEditorCommands.h"
+#include "Classes/Commands2/LandscapeToolsToggleCommand.h"
+#include "Classes/Utils/SceneExporter/SceneExporter.h"
 
 #include "Classes/Qt/Scene/System/GridSystem.h"
 #include "Classes/Qt/Scene/System/CameraSystem.h"
@@ -26,6 +23,9 @@
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <TArc/Utils/RenderContextGuard.h>
 
 // framework
 #include <Debug/DVAssert.h>
@@ -134,13 +134,10 @@ SceneEditor2::SceneEditor2()
     AddSystem(particlesSystem, MAKE_COMPONENT_MASK(DAVA::Component::PARTICLE_EFFECT_COMPONENT), 0, renderUpdateSystem);
 
     textDrawSystem = new TextDrawSystem(this, cameraSystem);
-    AddSystem(textDrawSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(textDrawSystem, 0, 0, renderUpdateSystem);
 
     editorLightSystem = new EditorLightSystem(this);
     AddSystem(editorLightSystem, MAKE_COMPONENT_MASK(DAVA::Component::LIGHT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
-
-    debugDrawSystem = new DebugDrawSystem(this);
-    AddSystem(debugDrawSystem, 0);
 
     beastSystem = new BeastSystem(this);
     AddSystem(beastSystem, 0);
@@ -173,13 +170,11 @@ SceneEditor2::SceneEditor2()
     AddSystem(editorVegetationSystem, MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT), 0);
 
     SceneSignals::Instance()->EmitOpened(this);
-
-    wasChanged = false;
 }
 
 SceneEditor2::~SceneEditor2()
 {
-    RenderContextGuard guard;
+    DAVA::TArc::RenderContextGuard guard;
     commandStack.reset();
     RemoveSystems();
 
@@ -188,7 +183,7 @@ SceneEditor2::~SceneEditor2()
 
 DAVA::SceneFileV2::eError SceneEditor2::LoadScene(const DAVA::FilePath& path)
 {
-    RenderContextGuard guard;
+    DAVA::TArc::RenderContextGuard guard;
     DAVA::SceneFileV2::eError ret = Scene::LoadScene(path);
     if (ret == DAVA::SceneFileV2::ERROR_NO_ERROR)
     {
@@ -217,7 +212,7 @@ DAVA::SceneFileV2::eError SceneEditor2::LoadScene(const DAVA::FilePath& path)
 
 DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bool saveForGame /*= false*/)
 {
-    RenderContextGuard guard;
+    DAVA::TArc::RenderContextGuard guard;
     bool cameraLightState = false;
     if (editorLightSystem != nullptr)
     {
@@ -260,7 +255,6 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
         isLoaded = true;
 
         // mark current position in command stack as clean
-        wasChanged = false;
         commandStack->SetClean();
     }
 
@@ -490,11 +484,6 @@ void SceneEditor2::EndBatch()
     commandStack->EndBatch();
 }
 
-void SceneEditor2::ActivateCommandStack()
-{
-    commandStack->Activate();
-}
-
 void SceneEditor2::Exec(std::unique_ptr<DAVA::Command>&& command)
 {
     if (command)
@@ -536,7 +525,7 @@ bool SceneEditor2::IsHUDVisible() const
 
 bool SceneEditor2::IsChanged() const
 {
-    return ((!commandStack->IsClean()) || wasChanged);
+    return !commandStack->IsClean();
 }
 
 void SceneEditor2::SetChanged()
@@ -636,34 +625,6 @@ void SceneEditor2::EditorCommandNotify::Notify(const RECommandNotificationObject
         editor->EditorCommandProcess(commandNotification);
         SceneSignals::Instance()->EmitCommandExecuted(editor, commandNotification);
     }
-}
-
-void SceneEditor2::EditorCommandNotify::CleanChanged(bool clean)
-{
-    if (nullptr != editor)
-    {
-        SceneSignals::Instance()->EmitModifyStatusChanged(editor, !clean);
-    }
-}
-
-void SceneEditor2::EditorCommandNotify::CanUndoChanged(bool canUndo)
-{
-    SceneSignals::Instance()->CanUndoStateChanged(canUndo);
-}
-
-void SceneEditor2::EditorCommandNotify::CanRedoChanged(bool canRedo)
-{
-    SceneSignals::Instance()->CanRedoStateChanged(canRedo);
-}
-
-void SceneEditor2::EditorCommandNotify::UndoTextChanged(const DAVA::String& undoText)
-{
-    SceneSignals::Instance()->UndoTextChanged(undoText);
-}
-
-void SceneEditor2::EditorCommandNotify::RedoTextChanged(const DAVA::String& redoText)
-{
-    SceneSignals::Instance()->RedoTextChanged(redoText);
 }
 
 const DAVA::RenderStats& SceneEditor2::GetRenderStats() const
@@ -850,7 +811,6 @@ void SceneEditor2::RemoveSystems()
     materialSystem = nullptr;
     visibilityCheckSystem = nullptr;
     cameraSystem = nullptr;
-    debugDrawSystem = nullptr;
     editorLODSystem = nullptr;
     particlesSystem = nullptr;
     hoodSystem = nullptr;
@@ -872,11 +832,7 @@ void SceneEditor2::RemoveSystems()
 
 void SceneEditor2::MarkAsChanged()
 {
-    if (!wasChanged)
-    {
-        wasChanged = true;
-        SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
-    }
+    commandStack->SetChanged();
 }
 
 void SceneEditor2::Setup3DDrawing()

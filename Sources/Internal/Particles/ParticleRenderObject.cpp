@@ -277,7 +277,7 @@ void ParticleRenderObject::AppendRenderBatch(NMaterial* material, uint32 indexCo
     targetBatch->indexBuffer = iBuffer;
     targetBatch->startIndex = startIndex;
     targetBatch->vertexLayoutId = vertexLayout;
-    activeRenderBatchArray.push_back(targetBatch);
+    activeRenderBatchArray.emplace_back(targetBatch);
     currRenderBatchId++;
 }
 

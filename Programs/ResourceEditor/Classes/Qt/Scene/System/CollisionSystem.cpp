@@ -1,32 +1,32 @@
-#include "Base/AlignedAllocator.h"
-#include "Math/AABBox3.h"
-#include "Functional/Function.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/CollisionSystem/CollisionRenderObject.h"
-#include "Scene/System/CollisionSystem/CollisionLandscape.h"
-#include "Scene/System/CollisionSystem/CollisionBox.h"
-#include "Scene/System/CameraSystem.h"
-#include "Scene/SceneEditor2.h"
-
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Commands2/TransformCommand.h"
-#include "Commands2/ParticleEditorCommands.h"
-#include "Commands2/EntityParentChangeCommand.h"
-#include "Commands2/CreatePlaneLODCommand.h"
-#include "Commands2/DeleteLODCommand.h"
-#include "Commands2/InspMemberModifyCommand.h"
-#include "Commands2/ConvertToBillboardCommand.h"
-
-#include "Settings/SettingsManager.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Application/REGlobal.h"
+#include "Classes/Commands2/SetFieldValueCommand.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/TransformCommand.h"
+#include "Classes/Commands2/ParticleEditorCommands.h"
+#include "Classes/Commands2/EntityParentChangeCommand.h"
+#include "Classes/Commands2/CreatePlaneLODCommand.h"
+#include "Classes/Commands2/DeleteLODCommand.h"
+#include "Classes/Commands2/InspMemberModifyCommand.h"
+#include "Classes/Commands2/ConvertToBillboardCommand.h"
 
 #include "Classes/Selection/Selection.h"
 
-// framework
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Scene.h"
-#include "Commands2/SetFieldValueCommand.h"
+#include "Classes/Qt/Scene/System/CollisionSystem.h"
+#include "Classes/Qt/Scene/System/CollisionSystem/CollisionRenderObject.h"
+#include "Classes/Qt/Scene/System/CollisionSystem/CollisionLandscape.h"
+#include "Classes/Qt/Scene/System/CollisionSystem/CollisionBox.h"
+#include "Classes/Qt/Scene/System/CameraSystem.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/SlotSystem.h>
+#include <Math/AABBox3.h>
+#include <Functional/Function.h>
+#include <Base/AlignedAllocator.h>
 
 #define SIMPLE_COLLISION_BOX_SIZE 1.0f
 
@@ -63,6 +63,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene* scene)
     landCollWorld->setDebugDrawer(landDebugDrawer);
 
     scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
 }
 
 SceneCollisionSystem::~SceneCollisionSystem()
@@ -70,6 +71,7 @@ SceneCollisionSystem::~SceneCollisionSystem()
     if (GetScene())
     {
         GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+        GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
     }
 
     for (const auto& etc : objectToCollision)
@@ -247,9 +249,9 @@ void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object)
     }
 }
 
-DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(Selectable::Object* object) const
+DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) const
 {
-    DVASSERT(object != nullptr);
+    DVASSERT(object.IsEmpty() == false);
 
     DAVA::AABBox3 aabox;
     if (objectToCollision.count(object) != 0)
@@ -274,12 +276,12 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(Selectable::Object* object) c
     return aabox;
 }
 
-void SceneCollisionSystem::AddCollisionObject(Selectable::Object* obj, CollisionBaseObject* collision)
+void SceneCollisionSystem::AddCollisionObject(const DAVA::Any& obj, CollisionBaseObject* collision)
 {
     if (collision == nullptr)
         return;
 
-    DVASSERT(obj != nullptr);
+    DVASSERT(obj.IsEmpty() == false);
     if (objectToCollision.count(obj) > 0)
     {
         DestroyFromObject(obj);
@@ -311,7 +313,7 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
         for (auto obj : objectsToRemove)
         {
             Selectable wrapper(obj);
-            EnumerateObjectHierarchy(wrapper, false, [this](Selectable::Object* object, CollisionBaseObject* collision)
+            EnumerateObjectHierarchy(wrapper, false, [this](const DAVA::Any& object, CollisionBaseObject* collision)
                                      {
                                          DestroyFromObject(object);
                                      });
@@ -333,7 +335,7 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
     // reset ray cache on new frame
     rayIntersectCached = false;
 
-    drawMode = SettingsManager::GetValue(Settings::Scene_CollisionDrawMode).AsInt32();
+    drawMode = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->collisionDrawMode;
     if (drawMode & CS_DRAW_LAND_COLLISION)
     {
         DAVA::Vector3 tmp;
@@ -387,7 +389,7 @@ void SceneCollisionSystem::Draw()
         for (const auto& item : selection.GetContent())
         {
             // get collision object for solid selected entity
-            DVASSERT(item.GetContainedObject() != nullptr);
+            DVASSERT(item.GetContainedObject().IsEmpty() == false);
             CollisionBaseObject* cObj = objectToCollision[item.GetContainedObject()];
             if (NULL != cObj && NULL != cObj->btObject)
             {
@@ -482,6 +484,11 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
         UpdateCollisionObject(Selectable(component->GetEntity()));
         break;
     }
+    case DAVA::EventSystem::GEO_DECAL_CHANGED:
+    {
+        UpdateCollisionObject(Selectable(component->GetEntity()));
+        break;
+    }
     default:
         break;
     }
@@ -527,7 +534,7 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
-void SceneCollisionSystem::DestroyFromObject(Selectable::Object* entity)
+void SceneCollisionSystem::DestroyFromObject(const DAVA::Any& entity)
 {
     CollisionBaseObject* cObj = objectToCollision[entity];
     if (cObj != nullptr)
@@ -543,7 +550,7 @@ const SelectableGroup& SceneCollisionSystem::ClipObjectsToPlanes(const DAVA::Vec
     planeClippedObjects.Clear();
     for (const auto& object : objectToCollision)
     {
-        if ((object.first != nullptr) && (object.second != nullptr) &&
+        if ((object.first.IsEmpty() == false) && (object.second != nullptr) &&
             (object.second->ClassifyToPlanes(planes) == CollisionBaseObject::ClassifyPlanesResult::ContainsOrIntersects))
         {
             planeClippedObjects.Add(object.first, DAVA::AABBox3());
@@ -563,8 +570,8 @@ namespace CollisionDetails
 {
 struct CollisionObj
 {
-    bool isValid = false;
     CollisionBaseObject* collisionObject = nullptr;
+    bool isValid = false;
 };
 
 template <typename T, class... Args>
@@ -574,24 +581,31 @@ CollisionObj InitCollision(bool createCollision, Args... args)
     result.isValid = true;
     if (createCollision)
     {
-        result.collisionObject = new T(args...);
+        result.collisionObject = new T(std::forward<Args>(args)...);
     }
-
     return result;
 }
 }
 
 void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bool createCollision, const TCallBack& callback)
 {
-    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxScale).AsFloat();
-    DAVA::float32 debugBoxParticleScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxParticleScale).AsFloat();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+
+    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
+    DAVA::float32 debugBoxParticleScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxParticleScale;
     if (object.CanBeCastedTo<DAVA::Entity>())
     {
         CollisionDetails::CollisionObj result;
         DAVA::Entity* entity = object.AsEntity();
 
-        DAVA::float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxUserScale).AsFloat();
-        DAVA::float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * SettingsManager::GetValue(Settings::Scene_DebugBoxWaypointScale).AsFloat();
+        if (entity != nullptr && entity->GetParent() != nullptr)
+        {
+            if (GetScene()->slotSystem->LookUpSlot(entity->GetParent()) != nullptr)
+                return;
+        }
+
+        DAVA::float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxUserScale;
+        DAVA::float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxWaypointScale;
 
         DAVA::Landscape* landscape = DAVA::GetLandscape(entity);
         if (landscape != nullptr)
@@ -606,8 +620,13 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 EnumerateObjectHierarchy(Selectable(particleEffect->GetEmitterInstance(i)), createCollision, callback);
             }
-
             result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxParticleScale);
+        }
+
+        DAVA::GeoDecalComponent* geoDecalComponent = DAVA::GetGeoDecalComponent(entity);
+        if ((result.isValid == false) && (geoDecalComponent != nullptr))
+        {
+            result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), geoDecalComponent->GetDimensions());
         }
 
         DAVA::RenderObject* renderObject = DAVA::GetRenderObject(entity);
@@ -636,6 +655,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         {
             if ((entity->GetComponent(DAVA::Component::SOUND_COMPONENT) != nullptr) ||
                 (entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) != nullptr) ||
+                (entity->GetComponent(DAVA::Component::TEXT_COMPONENT) != nullptr) ||
                 (entity->GetComponent(DAVA::Component::WIND_COMPONENT) != nullptr))
             {
                 result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxScale);
@@ -658,13 +678,13 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     else
     {
         DAVA::float32 scale = object.CanBeCastedTo<DAVA::ParticleEmitterInstance>() ? debugBoxParticleScale : debugBoxScale;
-        Selectable::Object* containedObject = object.GetContainedObject();
+        const DAVA::Any& containedObject = object.GetContainedObject();
         CollisionDetails::CollisionObj result = CollisionDetails::InitCollision<CollisionBox>(createCollision, containedObject, objectsCollWorld, object.GetWorldTransform().GetTranslationVector(), scale);
         callback(containedObject, result.collisionObject);
     }
 }
 
-DAVA::AABBox3 SceneCollisionSystem::GetUntransformedBoundingBox(Selectable::Object* entity) const
+DAVA::AABBox3 SceneCollisionSystem::GetUntransformedBoundingBox(const DAVA::Any& entity) const
 {
     return GetTransformedBoundingBox(Selectable(entity), DAVA::Matrix4::IDENTITY);
 }
@@ -675,7 +695,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetTransformedBoundingBox(const Selectable& 
     if (object.CanBeCastedTo<DAVA::Entity>())
     {
         // add childs boxes into entity box
-        auto entity = object.AsEntity();
+        DAVA::Entity* entity = object.AsEntity();
         for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); i++)
         {
             Selectable childEntity(entity->GetChild(i));

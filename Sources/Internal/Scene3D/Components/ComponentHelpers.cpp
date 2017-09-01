@@ -13,6 +13,7 @@
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/GeoDecalComponent.h"
 #include "Scene3D/Components/Waypoint/WaypointComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
@@ -27,6 +28,7 @@
 #include "Scene3D/Components/Waypoint/PathComponent.h"
 #include "Scene3D/Components/Waypoint/EdgeComponent.h"
 #include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
+#include "Scene3D/Components/GeoDecalComponent.h"
 
 namespace DAVA
 {
@@ -449,6 +451,16 @@ StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const En
     if (fromEntity)
     {
         return (static_cast<StaticOcclusionDebugDrawComponent*>(fromEntity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT)));
+    }
+
+    return nullptr;
+}
+
+GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity)
+{
+    if (fromEntity)
+    {
+        return (static_cast<GeoDecalComponent*>(fromEntity->GetComponent(Component::GEO_DECAL_COMPONENT)));
     }
 
     return nullptr;

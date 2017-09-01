@@ -3,10 +3,7 @@
 #include "Classes/Library/Private/LibraryData.h"
 #include "Classes/Library/Private/LibraryWidget.h"
 #include "Classes/Application/REGlobal.h"
-#include "Classes/Qt/Actions/DAEConverter.h"
-
-#include "Classes/Settings/SettingsManager.h"
-#include "Classes/Settings/Settings.h"
+#include "Classes/Library/Private/DAEConverter.h"
 
 #include "Classes/FBX/FBXImporter.h"
 
@@ -19,6 +16,7 @@
 #include <FileSystem/FilePath.h>
 #include <Functional/Function.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include "Application/RESettings.h"
 
 LibraryModule::~LibraryModule()
 {
@@ -51,7 +49,8 @@ void LibraryModule::PostInit()
 
 void LibraryModule::OnSelectedPathChanged(const DAVA::Any& selectedPathValue)
 {
-    if (SettingsManager::GetValue(Settings::General_PreviewEnabled).AsBool() == true)
+    GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<GeneralSettings>();
+    if (settings->previewEnabled == true)
     {
         DAVA::FilePath selectedPath;
         if (selectedPathValue.CanGet<DAVA::FilePath>())
@@ -151,7 +150,8 @@ void LibraryModule::OnDoubleClicked(const DAVA::FilePath& scenePathname)
 {
     HidePreview();
 
-    if (SettingsManager::GetValue(Settings::General_OpenByDBClick).AsBool() && scenePathname.IsEqualToExtension(".sc2"))
+    GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<GeneralSettings>();
+    if (scenePathname.IsEqualToExtension(".sc2"))
     {
         OnEditSceneRequested(scenePathname);
     }

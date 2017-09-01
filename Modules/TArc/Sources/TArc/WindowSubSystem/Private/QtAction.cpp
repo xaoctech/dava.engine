@@ -66,13 +66,32 @@ void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
         DVASSERT(stateResult.CanCast<String>());
         setText(QString::fromStdString(stateResult.Cast<String>()));
         break;
-    case Icon:
+    case Tooltip:
         DVASSERT(stateResult.CanCast<String>());
-        setIcon(QIcon(QString::fromStdString(stateResult.Cast<String>())));
+        setToolTip(QString::fromStdString(stateResult.Cast<String>()));
+        break;
+    case Icon:
+        if (stateResult.CanCast<QIcon>())
+        {
+            setIcon(stateResult.Cast<QIcon>());
+        }
+        else
+        {
+            DVASSERT(stateResult.CanCast<String>());
+            setIcon(QIcon(QString::fromStdString(stateResult.Cast<String>())));
+        }
+        break;
     default:
         DVASSERT(false);
         break;
     }
+}
+
+QtActionSeparator::QtActionSeparator(const QString& name, QObject* parent)
+    : QAction(parent)
+{
+    setObjectName(name);
+    setSeparator(true);
 }
 
 } // namespace TArc

@@ -16,7 +16,7 @@ EditorCanvas::EditorCanvas(EditorSystemsManager* parent, DAVA::TArc::ContextAcce
     : BaseEditorSystem(parent, accessor)
     , canvasDataAdapter(accessor)
 {
-    UpdateViewsSystem* updateSystem = DAVA::UIControlSystem::Instance()->GetSystem<UpdateViewsSystem>();
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &EditorCanvas::UpdateMovableControlState);
 
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
@@ -119,7 +119,7 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
             setMouseButtonOnInput(currentInput, false);
         }
     }
-    else if (currentInput->device == eInputDevices::KEYBOARD && currentInput->key == Key::SPACE)
+    else if (currentInput->device == eInputDevices::KEYBOARD && currentInput->key == eInputElements::KB_SPACE)
     {
         //we cant use isKeyPressed here, because DAVA update keyboard state after sending Key_Up event
         //if we will press key on dock widget and hold it -> DAVA will receive only KEY_REPEAT event without KEY_DOWN

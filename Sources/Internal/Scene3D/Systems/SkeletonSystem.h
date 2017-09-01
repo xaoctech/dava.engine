@@ -23,11 +23,11 @@ public:
     void ImmediateEvent(Component* component, uint32 event) override;
     void Process(float32 timeElapsed) override;
 
+    void UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh* skinnedMeshObject);
     void DrawSkeletons(RenderHelper* drawer);
 
 private:
     void UpdateJointTransforms(SkeletonComponent* skeleton);
-    void UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh* skinnedMeshObject);
 
     void RebuildSkeleton(SkeletonComponent* skeleton);
 

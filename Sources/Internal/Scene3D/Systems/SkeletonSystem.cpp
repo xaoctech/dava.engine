@@ -185,7 +185,8 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh*
     //set data to SkinnedMesh
     skinnedMeshObject->SetFinalJointTransformsPtr(skeleton->finalTransforms.data(), skeleton->GetJointsCount());
     skinnedMeshObject->SetBoundingBox(resBox); //TODO: *Skinning* decide on bbox calculation
-    GetScene()->renderSystem->MarkForUpdate(skinnedMeshObject);
+
+    GetScene()->GetRenderSystem()->MarkForUpdate(skinnedMeshObject);
 }
 
 void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
