@@ -316,6 +316,7 @@ void PreviewWidget::InitUI()
         QAction* action = new QAction(nullptr);
         QWidget* container = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(container);
+        layout->setMargin(0);
         layout->addWidget(new QLabel(tr("Scale")));
         layout->addWidget(scaleCombo->ToWidgetCast());
         layout->addWidget(new QLabel(tr("%")));
