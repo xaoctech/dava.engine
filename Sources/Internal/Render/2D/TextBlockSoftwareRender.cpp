@@ -1,4 +1,6 @@
 #include "Render/2D/TextBlockSoftwareRender.h"
+#include "Engine/Engine.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/RHI/rhi_Public.h"
 #include "Render/Renderer.h"
 #include "UI/UIControlSystem.h"

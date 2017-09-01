@@ -12,6 +12,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UICustomUpdateDeltaComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UICustomUpdateDeltaComponent);
+
 UICustomUpdateDeltaComponent::UICustomUpdateDeltaComponent() = default;
 UICustomUpdateDeltaComponent::~UICustomUpdateDeltaComponent() = default;
 

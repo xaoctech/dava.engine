@@ -6,7 +6,7 @@
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/BatchDescriptor2D.h"
 #include "Render/RenderBase.h"
-#include "UI/UIControlBackground.h"
+//#include "UI/UIControlBackground.h"
 
 namespace DAVA
 {
@@ -159,11 +159,11 @@ public:
 
     void Init();
 
-    void Draw(Sprite* sprite, Sprite::DrawState* drawState, const Color& color);
-    void DrawStretched(Sprite* sprite, Sprite::DrawState* drawState, Vector2 streatchCap, UIControlBackground::eDrawType type, const UIGeometricData& gd, StretchDrawData** pStreachData, const Color& color);
-    void DrawTiled(Sprite* sprite, Sprite::DrawState* drawState, const Vector2& streatchCap, const UIGeometricData& gd, TiledDrawData** pTiledData, const Color& color);
+    void Draw(Sprite* sprite, SpriteDrawState* drawState, const Color& color);
+    void DrawStretched(Sprite* sprite, SpriteDrawState* drawState, Vector2 streatchCap, int32 type, const UIGeometricData& gd, StretchDrawData** pStreachData, const Color& color);
+    void DrawTiled(Sprite* sprite, SpriteDrawState* drawState, const Vector2& streatchCap, const UIGeometricData& gd, TiledDrawData** pTiledData, const Color& color);
     void DrawTiledMultylayer(Sprite* mask, Sprite* detail, Sprite* gradient, Sprite* contour,
-                             Sprite::DrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledMultilayerData** pTileData, const Color& color);
+                             SpriteDrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledMultilayerData** pTileData, const Color& color);
 
     void SetViewMatrix(const Matrix4& viewMatrix);
 
@@ -314,7 +314,7 @@ public:
 
 private:
     void UpdateVirtualToPhysicalMatrix(bool);
-    bool IsPreparedSpriteOnScreen(Sprite::DrawState* drawState);
+    bool IsPreparedSpriteOnScreen(SpriteDrawState* drawState);
     void Setup2DMatrices();
 
     void AddPacket(rhi::Packet& packet);
@@ -356,7 +356,7 @@ private:
     int32 spriteVertexCount = 0;
     int32 spriteIndexCount = 0;
 
-    Sprite::DrawState defaultSpriteDrawState;
+    SpriteDrawState defaultSpriteDrawState;
 
     bool spriteClipping = true;
 

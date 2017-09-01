@@ -40,6 +40,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <FileSystem/YamlParser.h>
 #include <UI/UIControl.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>

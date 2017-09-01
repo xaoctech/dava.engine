@@ -7,6 +7,7 @@
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiIos.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
 
 namespace DAVA

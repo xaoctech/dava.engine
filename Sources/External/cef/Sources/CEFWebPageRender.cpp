@@ -1,8 +1,10 @@
 #include "CEFWebPageRender.h"
 #include "Platform/DeviceInfo.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Renderer.h"
 #include "Render/TextureDescriptor.h"
 #include "Time/SystemTimer.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 
 #include "Engine/Engine.h"
@@ -28,7 +30,7 @@ struct CEFColor
 };
 
 CEFWebPageRender::CEFWebPageRender(Window* w, float32 k)
-    : contentBackground(new UIControlBackground)
+    : contentBackground(new UIControlBackground())
     , window(w)
     , scale(k)
 {

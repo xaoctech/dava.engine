@@ -15,7 +15,7 @@ class ModuleManager;
 class SampleModuleUIComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(SampleModuleUIComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(SampleModuleUIComponent);
+    DECLARE_UI_COMPONENT(SampleModuleUIComponent);
 
     UIComponent* Clone() const override
     {

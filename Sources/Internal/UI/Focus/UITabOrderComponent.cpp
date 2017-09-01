@@ -11,6 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITabOrderComponent)
     .Field("tab", &UITabOrderComponent::GetTabOrder, &UITabOrderComponent::SetTabOrder)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UITabOrderComponent);
 
 UITabOrderComponent::UITabOrderComponent()
 {

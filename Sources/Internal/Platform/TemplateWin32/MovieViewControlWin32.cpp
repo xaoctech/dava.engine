@@ -7,8 +7,12 @@
 
 #include "Render/Image/Image.h"
 #include "Platform/TemplateWin32/FfmpegPlayer.h"
+#include "Render/2D/Sprite.h"
+#include "Render/2D/Sprite.h"
 #include "Render/PixelFormatDescriptor.h"
+#include "Render/Texture.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlBackground.h"
 
 namespace DAVA
 {
