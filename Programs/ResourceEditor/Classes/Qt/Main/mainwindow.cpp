@@ -377,10 +377,6 @@ void QtMainWindow::SetupMainMenu()
 
 void QtMainWindow::SetupToolBars()
 {
-    QObject::connect(SceneSignals::Instance(), &SceneSignals::CanUndoStateChanged, ui->actionUndo, &QAction::setEnabled);
-    connect(SceneSignals::Instance(), &SceneSignals::CanRedoStateChanged, ui->actionRedo, &QAction::setEnabled);
-    connect(SceneSignals::Instance(), &SceneSignals::UndoTextChanged, this, &QtMainWindow::UpdateUndoActionText);
-    connect(SceneSignals::Instance(), &SceneSignals::RedoTextChanged, this, &QtMainWindow::UpdateRedoActionText);
     QAction* actionMainToolBar = ui->mainToolBar->toggleViewAction();
     QAction* actionModifToolBar = ui->modificationToolBar->toggleViewAction();
     QAction* actionLandscapeToolbar = ui->landscapeToolBar->toggleViewAction();
@@ -389,7 +385,6 @@ void QtMainWindow::SetupToolBars()
     ui->Toolbars->addAction(actionModifToolBar);
     ui->Toolbars->addAction(actionLandscapeToolbar);
     ui->Toolbars->addAction(ui->sceneToolBar->toggleViewAction());
-    ui->Toolbars->addAction(ui->testingToolBar->toggleViewAction());
     ui->Toolbars->addAction(ui->cameraToolBar->toggleViewAction());
 
     // modification widget
@@ -406,46 +401,6 @@ void QtMainWindow::SetupToolBars()
         ui->mainToolBar->addWidget(setLightViewMode);
         setLightViewMode->setToolButtonStyle(Qt::ToolButtonIconOnly);
         setLightViewMode->setAutoRaise(false);
-    }
-
-    //hanging objects
-    {
-        HangingObjectsHeight* hangingObjectsWidget = new HangingObjectsHeight(this);
-        QObject::connect(hangingObjectsWidget, SIGNAL(HeightChanged(double)), this, SLOT(OnHangingObjectsHeight(double)));
-
-        ToolButtonWithWidget* hangingBtn = new ToolButtonWithWidget();
-        hangingBtn->setDefaultAction(ui->actionHangingObjects);
-        hangingBtn->SetWidget(hangingObjectsWidget);
-        hangingBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-        hangingBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-        ui->testingToolBar->addWidget(hangingBtn);
-        hangingBtn->setAutoRaise(false);
-    }
-
-    // outline by object type
-    {
-        objectTypesWidget = new QComboBox();
-        //objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-        //objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-
-        const QList<QAction*> actions = ui->menuObjectTypes->actions();
-        QActionGroup* group = new QActionGroup(ui->menuObjectTypes);
-
-        auto endIt = actions.end();
-        for (auto it = actions.begin(); it != endIt; ++it)
-        {
-            if ((*it)->isSeparator())
-                continue;
-
-            objectTypesWidget->addItem((*it)->icon(), (*it)->text());
-            group->addAction(*it);
-        }
-
-        objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE + 1);
-        QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
-
-        ui->sceneToolBar->addSeparator();
-        ui->sceneToolBar->addWidget(objectTypesWidget);
     }
 }
 
@@ -521,10 +476,6 @@ void QtMainWindow::SetupActions()
 
     EnableSounds(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->enableSound);
     QObject::connect(ui->actionEnableSounds, &QAction::toggled, this, &QtMainWindow::EnableSounds);
-
-    // scene undo/redo
-    QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
-    QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
 
     // quality
     QObject::connect(ui->actionCustomQuality, SIGNAL(triggered()), this, SLOT(OnCustomQuality()));
@@ -627,21 +578,6 @@ void QtMainWindow::SetupActions()
     connect(ui->actionCreateTestHardSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestHardSkinnedObject()));
     connect(ui->actionCreateTestSoftSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestSoftSkinnedObject()));
 
-    ui->actionObjectTypesOff->setData(ResourceEditor::ESOT_NONE);
-    ui->actionNoObject->setData(ResourceEditor::ESOT_NO_COLISION);
-    ui->actionTree->setData(ResourceEditor::ESOT_TREE);
-    ui->actionBush->setData(ResourceEditor::ESOT_BUSH);
-    ui->actionFragileProj->setData(ResourceEditor::ESOT_FRAGILE_PROJ);
-    ui->actionFragileProjInv->setData(ResourceEditor::ESOT_FRAGILE_PROJ_INV);
-    ui->actionFalling->setData(ResourceEditor::ESOT_FALLING);
-    ui->actionBuilding->setData(ResourceEditor::ESOT_BUILDING);
-    ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
-    ui->actionSpeedTree->setData(ResourceEditor::ESOT_SPEED_TREE);
-
-    QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction*)), this, SLOT(OnObjectsTypeChanged(QAction*)));
-    QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
-    QObject::connect(ui->actionSwitchesWithDifferentLODs, SIGNAL(triggered(bool)), this, SLOT(OnSwitchWithDifferentLODs(bool)));
-
     QObject::connect(ui->actionBatchProcess, SIGNAL(triggered(bool)), this, SLOT(OnBatchProcessScene()));
 
     QObject::connect(ui->actionSnapCameraToLandscape, SIGNAL(triggered(bool)), this, SLOT(OnSnapCameraToLandscape(bool)));
@@ -655,37 +591,26 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SceneActivated(SceneEditor2* scene)
 {
-    scene->ActivateCommandStack();
     EnableSceneActions(true);
 
     LoadViewState(scene);
     LoadModificationState(scene);
     LoadEditorLightState(scene);
     LoadLandscapeEditorState(scene);
-    LoadObjectTypes(scene);
-    LoadHangingObjects(scene);
 
     OnMaterialLightViewChanged(true);
     OnViewLightmapCanvas(true);
 
     UpdateModificationActionsState();
 
-    ui->actionSwitchesWithDifferentLODs->setChecked(false);
     ui->actionSnapCameraToLandscape->setChecked(false);
     if (nullptr != scene)
     {
         scene->SetHUDVisible(ui->actionShowEditorGizmo->isChecked());
-        if (scene->debugDrawSystem)
-            ui->actionSwitchesWithDifferentLODs->setChecked(scene->debugDrawSystem->SwithcesWithDifferentLODsModeEnabled());
 
         if (scene->cameraSystem)
             ui->actionSnapCameraToLandscape->setChecked(scene->cameraSystem->IsEditorCameraSnappedToLandscape());
     }
-    ui->actionUndo->setEnabled(scene->CanUndo());
-    ui->actionRedo->setEnabled(scene->CanRedo());
-
-    UpdateUndoActionText(scene->GetUndoText());
-    UpdateRedoActionText(scene->GetRedoText());
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2* scene)
@@ -702,9 +627,6 @@ void QtMainWindow::EnableProjectActions(bool enable)
 
 void QtMainWindow::EnableSceneActions(bool enable)
 {
-    ui->actionUndo->setEnabled(enable);
-    ui->actionRedo->setEnabled(enable);
-
     ui->dockLODEditor->setEnabled(enable);
     ui->dockSceneTree->setEnabled(enable);
     ui->dockSceneInfo->setEnabled(enable);
@@ -747,8 +669,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 
     ui->actionBeastAndSave->setEnabled(enable);
 
-    ui->actionHangingObjects->setEnabled(enable);
-
     ui->Edit->setEnabled(enable);
     ui->menuCreateNode->setEnabled(enable);
     ui->Scene->setEnabled(enable);
@@ -756,8 +676,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 
     ui->sceneToolBar->setEnabled(enable);
     ui->actionConvertModifiedTextures->setEnabled(enable);
-
-    ui->actionSwitchesWithDifferentLODs->setEnabled(enable);
 
     ui->actionSnapCameraToLandscape->setEnabled(enable);
     ui->actionHeightmap_Delta_Tool->setEnabled(enable);
@@ -1998,44 +1916,6 @@ void QtMainWindow::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const D
     }
 }
 
-void QtMainWindow::OnObjectsTypeChanged(QAction* action)
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType)action->data().toInt();
-    if (objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
-    {
-        scene->debugDrawSystem->SetRequestedObjectType(objectType);
-    }
-
-    bool wasBlocked = objectTypesWidget->blockSignals(true);
-    objectTypesWidget->setCurrentIndex(objectType + 1);
-    objectTypesWidget->blockSignals(wasBlocked);
-}
-
-void QtMainWindow::OnObjectsTypeChanged(int type)
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType)(type - 1);
-    if (objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
-    {
-        scene->debugDrawSystem->SetRequestedObjectType(objectType);
-    }
-}
-
-void QtMainWindow::LoadObjectTypes(SceneEditor2* scene)
-{
-    if (!scene)
-        return;
-    ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
-    objectTypesWidget->setCurrentIndex(objectType + 1);
-}
-
 void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
 {
     if (MainWindowDetails::GetCurrentScene() != scene)
@@ -2044,29 +1924,6 @@ void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLa
     }
 
     ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
-}
-
-void QtMainWindow::OnHangingObjects()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    scene->debugDrawSystem->EnableHangingObjectsMode(ui->actionHangingObjects->isChecked());
-}
-
-void QtMainWindow::LoadHangingObjects(SceneEditor2* scene)
-{
-    ui->actionHangingObjects->setChecked(scene->debugDrawSystem->HangingObjectsModeEnabled());
-    if (hangingObjectsWidget)
-    {
-        hangingObjectsWidget->SetHeight(DebugDrawSystem::HANGING_OBJECTS_HEIGHT);
-    }
-}
-
-void QtMainWindow::OnHangingObjectsHeight(double value)
-{
-    DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32)value;
 }
 
 void QtMainWindow::OnMaterialLightViewChanged(bool)
@@ -2160,29 +2017,6 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
     }
 
     return settings->textureViewGPU == DAVA::GPU_ORIGIN;
-}
-
-void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    scene->debugDrawSystem->EnableSwithcesWithDifferentLODsMode(checked);
-
-    if (checked)
-    {
-        DAVA::Set<DAVA::FastName> entitiNames;
-        SceneValidator::FindSwitchesWithDifferentLODs(scene.Get(), entitiNames);
-
-        DAVA::Set<DAVA::FastName>::iterator it = entitiNames.begin();
-        DAVA::Set<DAVA::FastName>::iterator endIt = entitiNames.end();
-        while (it != endIt)
-        {
-            DAVA::Logger::Info("Entity %s has different lods count.", it->c_str());
-            ++it;
-        }
-    }
 }
 
 void QtMainWindow::DebugVersionInfo()
@@ -2403,20 +2237,6 @@ void QtMainWindow::ForEachScene(const DAVA::Function<void(SceneEditor2*)>& funct
                                                 SceneData* data = ctx.GetData<SceneData>();
                                                 functor(data->GetScene().Get());
                                             });
-}
-
-void QtMainWindow::UpdateUndoActionText(const DAVA::String& text)
-{
-    QString actionText = text.empty() ? "Undo" : "Undo: " + QString::fromStdString(text);
-    ui->actionUndo->setText(actionText);
-    ui->actionUndo->setToolTip(actionText);
-}
-
-void QtMainWindow::UpdateRedoActionText(const DAVA::String& text)
-{
-    QString actionText = text.empty() ? "Redo" : "Redo: " + QString::fromStdString(text);
-    ui->actionRedo->setText(actionText);
-    ui->actionRedo->setToolTip(actionText);
 }
 
 void QtMainWindow::OnValidateScene()
