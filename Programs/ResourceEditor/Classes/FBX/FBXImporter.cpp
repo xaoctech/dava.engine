@@ -75,6 +75,7 @@ Vector3 ToVector3(const FbxVector4& fbxVector);
 const char* GetFBXTexturePath(const FbxProperty& textureProperty);
 FastName GenerateJointUID(const FbxSkeleton* node);
 
+FbxAMatrix GetGeometricTransform(const FbxNode* pNode);
 const FbxSkeleton* GetSkeletonAttribute(const FbxNode* fbxNode);
 const FbxSkeleton* FindSkeletonRoot(const FbxSkeleton* fbxNode);
 SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluences>* controlPointsInfluences, uint32* outMaxInfluenceCount);
@@ -247,18 +248,18 @@ void ProcessMesh(const FbxMesh* fbxMesh, Entity* entity)
 
                 int32 vIndex = fbxMesh->GetPolygonVertex(p, v);
                 const FbxVector4& coords = fbxMesh->GetControlPointAt(vIndex);
-                vertex.position = Vector3(coords[0], coords[1], coords[2]);
+                vertex.position = ToVector3(coords);
 
                 if (hasNormal)
                 {
                     fbxMesh->GetPolygonVertexNormal(p, v, tmpNormal);
-                    vertex.normal = Vector3(tmpNormal[0], tmpNormal[1], tmpNormal[2]);
+                    vertex.normal = ToVector3(tmpNormal);
                 }
 
                 for (int32 t = 0; t < uvCount; ++t)
                 {
                     fbxMesh->GetPolygonVertexUV(p, v, uvNames[t], tmpUV, tmpUnmapped);
-                    vertex.texCoord[t] = Vector2(tmpUV[0], -tmpUV[1]);
+                    vertex.texCoord[t] = Vector2(float32(tmpUV[0]), -float32(tmpUV[1]));
                 }
 
                 if (hasSkinning)
@@ -421,7 +422,6 @@ NMaterial* RetrieveMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVer
     {
         NMaterial* material = new NMaterial();
         material->SetFXName(NMaterialName::TEXTURED_OPAQUE);
-        material->SetMaterialName(FastName(fbxMaterial->GetName()));
 
         if (maxVertexInfluence > 0)
         {
@@ -431,16 +431,25 @@ NMaterial* RetrieveMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVer
                 material->AddFlag(NMaterialFlagName::FLAG_SOFT_SKINNING, maxVertexInfluence);
         }
 
-        Vector<std::pair<const char*, FastName>> texturesToImport = {
-            { FbxSurfaceMaterial::sDiffuse, NMaterialTextureName::TEXTURE_ALBEDO },
-            { FbxSurfaceMaterial::sNormalMap, NMaterialTextureName::TEXTURE_NORMAL }
-        };
-
-        for (auto& tex : texturesToImport)
+        if (fbxMaterial != nullptr)
         {
-            const char* texturePath = GetFBXTexturePath(fbxMaterial->FindProperty(tex.first));
-            if (texturePath)
-                material->AddTexture(tex.second, Texture::CreateFromFile(FilePath(texturePath)));
+            material->SetMaterialName(FastName(fbxMaterial->GetName()));
+
+            Vector<std::pair<const char*, FastName>> texturesToImport = {
+                { FbxSurfaceMaterial::sDiffuse, NMaterialTextureName::TEXTURE_ALBEDO },
+                { FbxSurfaceMaterial::sNormalMap, NMaterialTextureName::TEXTURE_NORMAL }
+            };
+
+            for (auto& tex : texturesToImport)
+            {
+                const char* texturePath = GetFBXTexturePath(fbxMaterial->FindProperty(tex.first));
+                if (texturePath)
+                    material->AddTexture(tex.second, Texture::CreateFromFile(FilePath(texturePath)));
+            }
+        }
+        else
+        {
+            material->SetMaterialName(FastName("UNNAMED"));
         }
 
         found = materialCache.emplace(std::make_pair(fbxMaterial, maxVertexInfluence), material).first;
@@ -565,7 +574,7 @@ Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix)
 
 Vector3 ToVector3(const FbxVector4& fbxVector)
 {
-    return Vector3(fbxVector[0], fbxVector[1], fbxVector[2]);
+    return Vector3(float32(fbxVector[0]), float32(fbxVector[1]), float32(fbxVector[2]));
 }
 
 const char* GetFBXTexturePath(const FbxProperty& textureProperty)
@@ -595,6 +604,15 @@ FastName GenerateJointUID(const FbxSkeleton* joint)
     return FastName(Format("%llu", joint->GetUniqueID()).c_str());
 }
 
+FbxAMatrix GetGeometricTransform(const FbxNode* pNode)
+{
+    const FbxVector4 lT = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
+    const FbxVector4 lR = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+    const FbxVector4 lS = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
+
+    return FbxAMatrix(lT, lR, lS);
+}
+
 const FbxSkeleton* GetSkeletonAttribute(const FbxNode* fbxNode)
 {
     if (fbxNode == nullptr)
@@ -618,7 +636,7 @@ const FbxSkeleton* FindSkeletonRoot(const FbxSkeleton* fbxSkeleton)
 
     while (fbxSkeleton != nullptr && !fbxSkeleton->IsSkeletonRoot())
     {
-        fbxSkeleton = GetSkeletonAttribute(fbxSkeleton->GetNode());
+        fbxSkeleton = GetSkeletonAttribute(fbxSkeleton->GetNode()->GetParent());
     }
 
     return fbxSkeleton;
@@ -646,7 +664,7 @@ SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluence
     Map<const FbxSkeleton*, std::pair<Matrix4, Matrix4>> linksTransforms; // [bindTransform, bindTransformInv]
     Map<const FbxSkeleton*, AABBox3> linksBBox;
 
-    FbxAMatrix linkTransform;
+    FbxAMatrix linkTransform, nodeTransform;
     Matrix4 bindTransform, bindTransformInv;
 
     *outMaxInfluenceCount = 0;
@@ -654,15 +672,20 @@ SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluence
 
     for (int32 c = 0; c < clusterCount; ++c)
     {
-        const FbxCluster* cluster = fbxSkin->GetCluster(c);
+        FbxCluster* cluster = fbxSkin->GetCluster(c);
         const FbxSkeleton* linkedJoint = GetSkeletonAttribute(cluster->GetLink());
 
         if (skeletonRoot == nullptr)
             skeletonRoot = FindSkeletonRoot(linkedJoint);
 
+        cluster->GetTransformMatrix(nodeTransform);
         cluster->GetTransformLinkMatrix(linkTransform);
-        bindTransform = ToMatrix4(linkTransform);
-        bindTransform.GetInverse(bindTransformInv);
+
+        nodeTransform *= GetGeometricTransform(fbxMesh->GetNode());
+        linkTransform *= GetGeometricTransform(cluster->GetLink());
+
+        bindTransformInv = ToMatrix4(linkTransform.Inverse() * nodeTransform);
+        bindTransform = ToMatrix4(cluster->GetLink()->EvaluateLocalTransform());
 
         if (cluster->GetLinkMode() != FbxCluster::eNormalize)
         {
@@ -673,9 +696,9 @@ SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluence
         int32 indicesCount = cluster->GetControlPointIndicesCount();
         for (int32 i = 0; i < indicesCount; ++i)
         {
-            uint32 jointIndex = std::distance(fbxJoints.begin(), std::find_if(fbxJoints.begin(), fbxJoints.end(), [&linkedJoint](const FBXJoint& item) {
-                                                  return (item.joint == linkedJoint);
-                                              }));
+            uint32 jointIndex = uint32(std::distance(fbxJoints.begin(), std::find_if(fbxJoints.begin(), fbxJoints.end(), [&linkedJoint](const FBXJoint& item) {
+                                                         return (item.joint == linkedJoint);
+                                                     })));
 
             int32 controlPointIndex = cluster->GetControlPointIndices()[i];
             float32 controlPointWeight = float32(cluster->GetControlPointWeights()[i]);
@@ -703,8 +726,8 @@ SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluence
 
         joint.parentIndex = fbxJoint.parentIndex;
         joint.name = FastName(fbxJoint.joint->GetNode()->GetName());
-        joint.uid = GenerateJointUID(fbxJoint.joint);
-        joint.bbox = linksBBox[fbxJoint.joint];
+        joint.uid = FastName("node-" + String(fbxJoint.joint->GetNode()->GetName())); // GenerateJointUID(fbxJoint.joint);
+        joint.bbox = (linksBBox.find(fbxJoint.joint) != linksBBox.end()) ? linksBBox[fbxJoint.joint] : AABBox3(Vector3(), 0.f);
 
         joint.bindTransform = linksTransforms[fbxJoint.joint].first;
         joint.bindTransformInv = linksTransforms[fbxJoint.joint].second;
