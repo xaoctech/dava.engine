@@ -17,7 +17,6 @@
 #include "Scene/System/StructureSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
-#include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/EditorMaterialSystem.h"
 #include "Scene/System/WayEditSystem.h"
@@ -79,7 +78,6 @@ public:
     EditorParticlesSystem* particlesSystem = nullptr;
     EditorLightSystem* editorLightSystem = nullptr;
     TextDrawSystem* textDrawSystem = nullptr;
-    DebugDrawSystem* debugDrawSystem = nullptr;
     BeastSystem* beastSystem = nullptr;
     DAVA::StaticOcclusionBuildSystem* staticOcclusionBuildSystem = nullptr;
     EditorMaterialSystem* materialSystem = nullptr;
@@ -123,7 +121,6 @@ public:
     void BeginBatch(const DAVA::String& text, DAVA::uint32 commandsCount = 1);
     void EndBatch();
 
-    void ActivateCommandStack();
     void Exec(std::unique_ptr<DAVA::Command>&& command);
     void RemoveCommands(DAVA::uint32 commandId);
 
@@ -190,8 +187,6 @@ protected:
 
     void RemoveSystems();
 
-    bool wasChanged; //deprecated
-
     void Setup3DDrawing();
 
     DAVA::uint32 framesCount = 0;
@@ -206,11 +201,6 @@ private:
 
         void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
         void Notify(const RECommandNotificationObject& commandNotification) override;
-        void CleanChanged(bool clean) override;
-        void CanUndoChanged(bool canUndo) override;
-        void CanRedoChanged(bool canRedo) override;
-        void UndoTextChanged(const DAVA::String& undoText) override;
-        void RedoTextChanged(const DAVA::String& redoText) override;
 
     private:
         SceneEditor2* editor = nullptr;

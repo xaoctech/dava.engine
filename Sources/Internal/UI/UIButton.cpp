@@ -7,6 +7,7 @@
 #include "FileSystem/VariantType.h"
 #include "Render/2D/FontManager.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
@@ -26,6 +27,8 @@ UIButton::UIButton(const Rect& rect)
     , selectedTextBlock(NULL)
     , oldControlState(0)
 {
+    GetOrCreateComponent<UIUpdateComponent>();
+
     UIControlBackground* bg = GetOrCreateComponent<UIControlBackground>();
     for (int32 i = 0; i < DRAW_STATE_COUNT; i++)
     {
@@ -278,8 +281,7 @@ void UIButton::SetStateTextColorInheritType(int32 state, UIControlBackground::eC
         if (state & 0x01)
         {
             UIStaticText* staticText = GetOrCreateTextBlock(static_cast<eButtonDrawState>(i));
-            staticText->GetTextBackground()->SetColorInheritType(colorInheritType);
-            staticText->GetShadowBackground()->SetColorInheritType(colorInheritType);
+            staticText->SetTextColorInheritType(colorInheritType);
         }
 
         state >>= 1;
@@ -293,8 +295,7 @@ void UIButton::SetStateTextPerPixelAccuracyType(int32 state, UIControlBackground
         if (state & 0x01)
         {
             UIStaticText* staticText = GetOrCreateTextBlock(static_cast<eButtonDrawState>(i));
-            staticText->GetTextBackground()->SetPerPixelAccuracyType(pixelAccuracyType);
-            staticText->GetShadowBackground()->SetPerPixelAccuracyType(pixelAccuracyType);
+            staticText->SetTextPerPixelAccuracyType(pixelAccuracyType);
         }
 
         state >>= 1;
@@ -422,20 +423,31 @@ void UIButton::Input(UIEvent* currentInput)
     currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_SOFT); // Drag is not handled - see please DF-2508.
 }
 
-void UIButton::Draw(const UIGeometricData& geometricData)
+void UIButton::Update(float32 timeElapsed)
 {
     if (oldControlState != GetState())
     {
         oldControlState = GetState();
-        selectedTextBlock = GetActualTextBlockForState(GetState());
+        UpdateSelectedTextBlock();
         UIControl::SetBackground(GetActualBackgroundForState(GetState()));
     }
+}
 
-    UIControl::Draw(geometricData);
-
-    if (selectedTextBlock)
+void UIButton::UpdateSelectedTextBlock()
+{
+    UIStaticText* control = GetActualTextBlockForState(GetState());
+    if (selectedTextBlock != control)
     {
-        selectedTextBlock->Draw(geometricData);
+        if (selectedTextBlock)
+        {
+            RemoveControl(selectedTextBlock);
+        }
+        selectedTextBlock = control;
+        if (control)
+        {
+            control->SetInputEnabled(false, false);
+            AddControl(control);
+        }
     }
 }
 
@@ -568,7 +580,7 @@ void UIButton::SetTextBlock(eButtonDrawState drawState, UIStaticText* newTextBlo
 {
     SafeRelease(stateTexts[drawState]);
     stateTexts[drawState] = SafeRetain(newTextBlock);
-    selectedTextBlock = GetActualTextBlockForState(GetState());
+    UpdateSelectedTextBlock();
 }
 
 void UIButton::UpdateStateTextControlSize()

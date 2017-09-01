@@ -148,16 +148,8 @@ public slots:
     void OnNotPassableTerrain();
     void OnWayEditor();
 
-    void OnObjectsTypeChanged(QAction* action);
-    void OnObjectsTypeChanged(int type);
-
-    void OnHangingObjects();
-    void OnHangingObjectsHeight(double value);
-
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
-
-    void OnSwitchWithDifferentLODs(bool checked);
 
     void OnGenerateHeightDelta();
 
@@ -202,9 +194,6 @@ private slots:
     void DebugVersionInfo();
     void OnConsoleItemClicked(const QString& data);
 
-    void UpdateUndoActionText(const DAVA::String& text);
-    void UpdateRedoActionText(const DAVA::String& text);
-
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     QtWaitDialog* beastWaitDialog;
@@ -229,8 +218,6 @@ private:
     void LoadModificationState(SceneEditor2* scene);
     void LoadEditorLightState(SceneEditor2* scene);
     void LoadLandscapeEditorState(SceneEditor2* scene);
-    void LoadObjectTypes(SceneEditor2* scene);
-    void LoadHangingObjects(SceneEditor2* scene);
     void LoadMaterialLightViewMode();
 
     // Landscape editor specific

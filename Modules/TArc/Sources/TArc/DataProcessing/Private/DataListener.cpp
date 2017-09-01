@@ -6,7 +6,12 @@ namespace TArc
 {
 DataListener::~DataListener()
 {
-    Vector<DataWrapper> wrappersCopy(wrappers.begin(), wrappers.end());
+    Vector<DataWrapper> wrappersCopy;
+    for (const DataWrapperNode& node : wrappers)
+    {
+        wrappersCopy.push_back(DataWrapper(node.weak));
+    }
+
     wrappers.clear();
     for (DataWrapper& wrapper : wrappersCopy)
     {
@@ -14,14 +19,38 @@ DataListener::~DataListener()
     }
 }
 
-void DataListener::AddWrapper(DataWrapper wrapper)
+void DataListener::AddWrapper(DataWrapper::DataWrapperWeak weak)
 {
-    wrappers.emplace(wrapper);
+    RemoveEmptyWrappers();
+    DataWrapperNode node;
+    node.id = weak.impl.lock().get();
+    node.weak = weak;
+    wrappers.emplace(node);
 }
 
-void DataListener::RemoveWrapper(DataWrapper wrapper)
+void DataListener::RemoveWrapper(DataWrapper::DataWrapperWeak weak)
 {
-    wrappers.erase(wrapper);
+    RemoveEmptyWrappers();
+    DataWrapperNode node;
+    node.id = weak.impl.lock().get();
+    node.weak = weak;
+    wrappers.erase(node);
+}
+
+void DataListener::RemoveEmptyWrappers()
+{
+    auto iter = wrappers.begin();
+    while (iter != wrappers.end())
+    {
+        if (iter->weak.impl.lock() == nullptr)
+        {
+            iter = wrappers.erase(iter);
+        }
+        else
+        {
+            ++iter;
+        }
+    }
 }
 
 } // namespace TArc

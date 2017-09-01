@@ -1,4 +1,5 @@
 #include "TArc/WindowSubSystem/ActionUtils.h"
+#include "TArc/Controls/ControlProxy.h"
 
 #include "Debug/DVAssert.h"
 #include "Base/BaseTypes.h"
@@ -86,6 +87,11 @@ QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor, const Insertio
 void AttachWidgetToAction(QAction* action, QWidget* widget)
 {
     action->setData(QVariant::fromValue(widget));
+}
+
+void AttachWidgetToAction(QAction* action, ControlProxy* control)
+{
+    AttachWidgetToAction(action, control->ToWidgetCast());
 }
 
 QWidget* GetAttachedWidget(QAction* action)

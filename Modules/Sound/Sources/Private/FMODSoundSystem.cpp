@@ -111,7 +111,7 @@ FMODSoundSystem::FMODSoundSystem(Engine* e)
     // It will register as a listener by itself in a constructor
     // We remember 'unregister' method to call it in SoundSystem's destructor
 
-    JNI::JavaClass fmodActivityListenerClass("com/dava/engine/FmodActivityListener");
+    JNI::JavaClass fmodActivityListenerClass("com/dava/modules/sound/FmodActivityListener");
     fmodActivityListenerUnregisterMethod = fmodActivityListenerClass.GetMethod<void>("unregister");
 
     jmethodID fmodActivityListenerConstructor = env->GetMethodID(fmodActivityListenerClass, "<init>", "()V");

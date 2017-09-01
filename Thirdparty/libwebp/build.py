@@ -33,7 +33,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.5.1.tar.gz'
+    return 'https://github.com/webmproject/libwebp/archive/v0.5.1.tar.gz'
 
 
 def _download_and_extract(working_directory_path):
@@ -43,7 +43,7 @@ def _download_and_extract(working_directory_path):
         url,
         working_directory_path,
         source_folder_path,
-        build_utils.get_url_file_name_no_ext(url))
+        'libwebp-0.5.1')
     return source_folder_path
 
 
@@ -127,7 +127,7 @@ def _build_android(working_directory_path, root_project_path):
         root_project_path,
         'libwebp.a',
         'libwebp.a',
-        arm_abi='armeabi-v7a with NEON')
+        arm_abi='armeabi-v7a')
 
     _copy_headers(source_folder_path, root_project_path)
 
