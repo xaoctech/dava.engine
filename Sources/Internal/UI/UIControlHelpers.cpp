@@ -24,7 +24,7 @@ bool IsReservedName(const FastName& name)
     return (RESERVED_NAMES.find(name) != RESERVED_NAMES.end());
 }
 
-bool IsAllowedSymbol(char ch)
+bool IsAllowedSymbol(char ch, UIControlHelpers::NameCheckStrictness strictness)
 {
     auto IsLatinChar = [](char ch) -> bool
     {
@@ -36,12 +36,25 @@ bool IsAllowedSymbol(char ch)
         return (ch >= '0' && ch <= '9');
     };
 
-    return IsLatinChar(ch) || IsDigit(ch) || ch == '.' || ch == '-' || ch == '_';
+    auto IsOtherAllowedChar = [](char ch) -> bool
+    {
+        static const UnorderedSet<char> allowedChars = { '.', '-', '_', ' ', ':' };
+        return allowedChars.find(ch) != allowedChars.end();
+    };
+
+    auto IsOtherAllowedCharStrict = [](char ch) -> bool
+    {
+        static const UnorderedSet<char> allowedChars = { '.', '-', '_' };
+        return allowedChars.find(ch) != allowedChars.end();
+    };
+
+    bool strict = (strictness == UIControlHelpers::NameCheckStrictness::StrictCheck);
+    return IsLatinChar(ch) || IsDigit(ch) || (strict ? IsOtherAllowedCharStrict(ch) : IsOtherAllowedChar(ch));
 }
 
-bool ContainsOnlyAllowedSymbols(const String& str)
+bool ContainsOnlyAllowedSymbols(const String& str, UIControlHelpers::NameCheckStrictness strictness)
 {
-    return std::all_of(str.begin(), str.end(), IsAllowedSymbol);
+    return std::all_of(str.begin(), str.end(), Bind(&IsAllowedSymbol, _1, strictness));
 }
 }
 
@@ -275,10 +288,10 @@ void UIControlHelpers::ScrollToControlWithAnimation(DAVA::UIControl* control, fl
     }
 }
 
-bool UIControlHelpers::IsControlNameValid(const FastName& controlName)
+bool UIControlHelpers::IsControlNameValid(const FastName& controlName, NameCheckStrictness strictness)
 {
     using namespace UIControlHelpersDetails;
-    return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str());
+    return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str(), strictness);
 }
 
 void UIControlHelpers::ScrollToRect(DAVA::UIControl* control, const Rect& rect, float32 animationTime, bool toTopLeftForBigControls)
