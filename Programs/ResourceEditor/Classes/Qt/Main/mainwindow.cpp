@@ -715,7 +715,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionModifyScale->setEnabled(enable);
     ui->actionModifyPlaceOnLandscape->setEnabled(enable);
     ui->actionModifySnapToLandscape->setEnabled(enable);
-    ui->actionConvertToShadow->setEnabled(enable);
     ui->actionPivotCenter->setEnabled(enable);
     ui->actionPivotCommon->setEnabled(enable);
     ui->actionCenterPivotPoint->setEnabled(enable);

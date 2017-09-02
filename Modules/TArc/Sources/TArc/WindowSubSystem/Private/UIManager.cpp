@@ -10,6 +10,9 @@
 #include <Base/Any.h>
 #include <Debug/DVAssert.h>
 #include <Utils/StringFormat.h>
+#include <FileSystem/FileSystem.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 #include <QPointer>
 #include <QMainWindow>
@@ -35,6 +38,9 @@ namespace UIManagerDetail
 String WINDOW_GEOMETRY_KEY("geometry");
 String WINDOW_STATE_KEY("state");
 String FILE_DIR_KEY("fileDialogDir");
+String DEFAULT_SCHEME_NAME("default");
+String KEY_BINDINGS_SCHEMES("keyBindingSchemes");
+String KEY_BINDING_ACTIONS("keyBindableActions");
 
 static Vector<std::pair<QMessageBox::StandardButton, ModalMessageParams::Button>> buttonsConvertor =
 {
@@ -673,65 +679,18 @@ protected:
 UIManager::UIManager(Delegate* delegate, PropertiesItem&& holder)
     : impl(new Impl(delegate, std::move(holder)))
 {
-    PropertiesItem item = impl->propertiesHolder.CreateSubHolder("keyBindableActions");
-    DAVA::int32 blocksCount = item.Get<DAVA::int32>("blocksCount");
-    for (DAVA::int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
+    FilePath schemesDir = FilePath::FilepathInDocuments(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->Exists(schemesDir.MakeDirectoryPathname()) == false)
     {
-        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockIndex));
-        QString blockName = blockHolder.Get<QString>("blockName");
-        DAVA::int32 actionsCount = blockHolder.Get<DAVA::int32>("actionsCount");
-        for (DAVA::int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
-        {
-            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", actionIndex));
-
-            KeyBindableAction bindableAction;
-            bindableAction.blockName = blockName;
-            bindableAction.actionName = actionHolder.Get<QString>("actionName");
-            bindableAction.context = actionHolder.Get<Qt::ShortcutContext>("actionContext");
-
-            DAVA::int32 sequencesCount = actionHolder.Get<DAVA::int32>("actionSequencesCount");
-            for (int sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
-            {
-                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
-                bindableAction.sequences.push_back(QKeySequence::fromString(sequenceHolder.Get<QString>("keySequence")));
-            }
-
-            impl->keyBindableActions.push_back(bindableAction);
-        }
+        fs->CreateDirectory(schemesDir, false);
     }
+    LoadScheme();
 }
 
 UIManager::~UIManager()
 {
-    PropertiesItem item = impl->propertiesHolder.CreateSubHolder("keyBindableActions");
-    Map<QString, Vector<KeyBindableAction>> sortedActions;
-    for (const KeyBindableAction& action : impl->keyBindableActions)
-    {
-        sortedActions[action.blockName].push_back(action);
-    }
-
-    item.Set("blocksCount", static_cast<DAVA::int32>(sortedActions.size()));
-    DAVA::int32 blockCounter = 0;
-    for (const auto& blockPair : sortedActions)
-    {
-        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockCounter++));
-        blockHolder.Set("blockName", blockPair.first);
-        blockHolder.Set("actionsCount", static_cast<DAVA::int32>(blockPair.second.size()));
-        for (size_t i = 0; i < blockPair.second.size(); ++i)
-        {
-            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<DAVA::int32>(i)));
-            const KeyBindableAction& action = blockPair.second[i];
-            actionHolder.Set("actionName", action.actionName);
-            actionHolder.Set("actionContext", action.context);
-
-            actionHolder.Set("actionSequencesCount", static_cast<DAVA::int32>(action.sequences.size()));
-            for (int sequenceIndex = 0; sequenceIndex < action.sequences.size(); ++sequenceIndex)
-            {
-                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
-                sequenceHolder.Set("keySequence", action.sequences[sequenceIndex].toString());
-            }
-        }
-    }
+    SaveScheme();
 }
 
 void UIManager::InitializationFinished()
@@ -943,7 +902,7 @@ ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKe
     return Convert(resultButton);
 }
 
-void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationParams& params)
+void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const
 {
     using namespace UIManagerDetail;
 
@@ -960,6 +919,11 @@ void UIManager::InjectWindow(const WindowKey& windowKey, QMainWindow* window)
         if (block.canConvert<QString>())
         {
             QString blockName = block.value<QString>();
+            QVariant actionName = action->property("actionName");
+            if (actionName.canConvert<QString>())
+            {
+                action->setObjectName(actionName.value<QString>());
+            }
 
             KeyBindableActionInfo info;
             info.blockName = blockName;
@@ -1024,6 +988,182 @@ const DAVA::Vector<DAVA::TArc::KeyBindableAction>& UIManager::GetKeyBindableActi
     return impl->keyBindableActions;
 }
 
+String UIManager::GetCurrentScheme() const
+{
+    String currentScheme;
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        currentScheme = schemesHolder.Get<String>("currentScheme");
+        if (currentScheme.empty())
+        {
+            currentScheme = UIManagerDetail::DEFAULT_SCHEME_NAME;
+            schemesHolder.Set("currentScheme", currentScheme);
+        }
+    }
+
+    return currentScheme;
+}
+
+void UIManager::SetCurrentScheme(const String& schemeName)
+{
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        schemesHolder.Set("currentScheme", schemeName);
+    }
+    LoadScheme();
+}
+
+Vector<String> UIManager::GetKeyBindingsSchemeNames() const
+{
+    Vector<String> schemes;
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        DAVA::int32 schemesCount = schemesHolder.Get<DAVA::int32>("schemesCount");
+        schemes.reserve(schemesCount + 1);
+
+        for (DAVA::int32 i = 0; i < schemesCount; ++i)
+        {
+            schemes.push_back(schemesHolder.Get<String>(Format("scheme_%d", i)));
+        }
+    }
+
+    auto iter = std::find(schemes.begin(), schemes.end(), UIManagerDetail::DEFAULT_SCHEME_NAME);
+    if (iter == schemes.end())
+    {
+        schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
+        SaveSchemeNames(schemes);
+    }
+
+    return schemes;
+}
+
+void UIManager::AddScheme(const String& schemeName)
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    DVASSERT(std::find(schemes.begin(), schemes.end(), schemeName) == schemes.end());
+
+    schemes.push_back(schemeName);
+    SaveSchemeNames(schemes);
+}
+
+void UIManager::RemoveScheme(const String& schemeName)
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
+    DVASSERT(iter != schemes.end());
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    fs->DeleteFile(BuildSchemePath(schemeName));
+
+    schemes.erase(iter);
+    if (schemes.empty())
+    {
+        schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
+    }
+    SaveSchemeNames(schemes);
+    SetCurrentScheme(schemes.front());
+}
+
+String UIManager::ImportScheme(const FilePath& path)
+{
+    PropertiesHolder holder(path.GetFilename(), path.GetDirectory());
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    String schemeName = item.Get<String>("schemeName");
+    if (schemeName.empty())
+    {
+        NotificationParams p;
+        p.title = "Import scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "Key Binding scheme file is invalid";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+        return schemeName;
+    }
+
+    DAVA::int32 index = 0;
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    String newSchemeName = schemeName;
+    while (true)
+    {
+        auto iter = std::find(schemes.begin(), schemes.end(), newSchemeName);
+        if (iter == schemes.end())
+        {
+            schemeName = newSchemeName;
+            break;
+        }
+
+        newSchemeName = Format("%s_%d", schemeName.c_str(), ++index);
+    }
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->CopyFile(path, BuildSchemePath(schemeName)))
+    {
+        AddScheme(schemeName);
+    }
+    else
+    {
+        schemeName = String("");
+        NotificationParams p;
+        p.title = "Import scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "File can't be copied";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+    }
+
+    return schemeName;
+}
+
+void UIManager::ExportScheme(const FilePath& path, const String& schemeName) const
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
+    DVASSERT(iter != schemes.end());
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->CopyFile(BuildSchemePath(schemeName), path) == false)
+    {
+        NotificationParams p;
+        p.title = "Export scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "File can't be copied";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+    }
+}
+
+void UIManager::AddShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->sequences.push_back(shortcut);
+    iter->action->setShortcuts(iter->sequences);
+}
+
+void UIManager::RemoveShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->sequences.removeAll(shortcut);
+    iter->action->setShortcuts(iter->sequences);
+}
+
+void UIManager::SetActionContext(QPointer<QAction> action, Qt::ShortcutContext context)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->context = context;
+    iter->action->setShortcutContext(iter->context);
+}
+
 void UIManager::RegisterAction(QAction* action)
 {
     KeyBindableActionInfo info;
@@ -1033,32 +1173,140 @@ void UIManager::RegisterAction(QAction* action)
             if (keyBindAction.actionName == action->objectName() &&
                 keyBindAction.blockName == info.blockName)
             {
-                DVASSERT(keyBindAction.action == nullptr);
                 return true;
             }
 
             return false;
         });
 
-        KeyBindableAction* bindaleAction = nullptr;
+        KeyBindableAction* bindableAction = nullptr;
         if (iter != impl->keyBindableActions.end())
         {
-            bindaleAction = &(*iter);
+            bindableAction = &(*iter);
         }
         else
         {
             impl->keyBindableActions.push_back(KeyBindableAction());
-            bindaleAction = &impl->keyBindableActions.back();
-            bindaleAction->actionName = action->objectName();
-            bindaleAction->blockName = info.blockName;
-            bindaleAction->context = info.context;
-            bindaleAction->sequences = info.defaultShortcuts;
+            bindableAction = &impl->keyBindableActions.back();
+            bindableAction->actionName = action->objectName();
+            bindableAction->blockName = info.blockName;
+            bindableAction->context = info.context;
+            bindableAction->sequences = info.defaultShortcuts;
         }
 
-        DVASSERT(bindaleAction->action == nullptr);
-        bindaleAction->action = action;
-        action->setShortcutContext(bindaleAction->context);
-        action->setShortcuts(bindaleAction->sequences);
+        bindableAction->action = action;
+        bindableAction->defaultContext = info.context;
+        bindableAction->defaultSequences = info.defaultShortcuts;
+        action->setShortcutContext(bindableAction->context);
+        action->setShortcuts(bindableAction->sequences);
+    }
+}
+
+void UIManager::LoadScheme()
+{
+    Vector<QAction*> actions;
+    for (KeyBindableAction& action : impl->keyBindableActions)
+    {
+        action.sequences = action.defaultSequences;
+        action.context = action.defaultContext;
+        if (action.action != nullptr)
+        {
+            action.action->setShortcutContext(action.defaultContext);
+            action.action->setShortcuts(action.defaultSequences);
+            actions.push_back(action.action.data());
+        }
+    }
+
+    impl->keyBindableActions.clear();
+    FilePath schemePath = BuildSchemePath(GetCurrentScheme());
+    PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    DAVA::int32 blocksCount = item.Get<DAVA::int32>("blocksCount");
+    for (DAVA::int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockIndex));
+        QString blockName = blockHolder.Get<QString>("blockName");
+        DAVA::int32 actionsCount = blockHolder.Get<DAVA::int32>("actionsCount");
+        for (DAVA::int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", actionIndex));
+
+            KeyBindableAction bindableAction;
+            bindableAction.blockName = blockName;
+            bindableAction.actionName = actionHolder.Get<QString>("actionName");
+            bindableAction.context = actionHolder.Get<Qt::ShortcutContext>("actionContext");
+
+            DAVA::int32 sequencesCount = actionHolder.Get<DAVA::int32>("actionSequencesCount");
+            for (int sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                bindableAction.sequences.push_back(QKeySequence::fromString(sequenceHolder.Get<QString>("keySequence")));
+            }
+
+            impl->keyBindableActions.push_back(bindableAction);
+        }
+    }
+
+    for (QAction* action : actions)
+    {
+        RegisterAction(action);
+    }
+}
+
+void UIManager::SaveScheme() const
+{
+    FilePath schemePath = BuildSchemePath(GetCurrentScheme());
+    PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
+
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    item.Set("schemeName", schemePath.GetBasename());
+    Map<QString, Vector<KeyBindableAction>> sortedActions;
+    for (const KeyBindableAction& action : impl->keyBindableActions)
+    {
+        if (action.action != nullptr)
+        {
+            sortedActions[action.blockName].push_back(action);
+        }
+    }
+
+    item.Set("blocksCount", static_cast<DAVA::int32>(sortedActions.size()));
+    DAVA::int32 blockCounter = 0;
+    for (const auto& blockPair : sortedActions)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockCounter++));
+        blockHolder.Set("blockName", blockPair.first);
+        blockHolder.Set("actionsCount", static_cast<DAVA::int32>(blockPair.second.size()));
+        for (size_t i = 0; i < blockPair.second.size(); ++i)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<DAVA::int32>(i)));
+            const KeyBindableAction& action = blockPair.second[i];
+            actionHolder.Set("actionName", action.actionName);
+            actionHolder.Set("actionContext", action.context);
+
+            actionHolder.Set("actionSequencesCount", static_cast<DAVA::int32>(action.sequences.size()));
+            for (int sequenceIndex = 0; sequenceIndex < action.sequences.size(); ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                sequenceHolder.Set("keySequence", action.sequences[sequenceIndex].toString());
+            }
+        }
+    }
+}
+
+FilePath UIManager::BuildSchemePath(const String& scheme) const
+{
+    return FilePath::FilepathInDocuments(Format("%s/%s", UIManagerDetail::KEY_BINDINGS_SCHEMES.c_str(), scheme.c_str()));
+}
+
+void UIManager::SaveSchemeNames(const Vector<String>& schemes) const
+{
+    PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+    DAVA::int32 schemesCount = static_cast<DAVA::int32>(schemes.size());
+    schemesHolder.Set("schemesCount", schemesCount);
+
+    for (DAVA::int32 i = 0; i < schemesCount; ++i)
+    {
+        schemesHolder.Set(Format("scheme_%d", i), schemes[i]);
     }
 }
 

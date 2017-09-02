@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1149</width>
-    <height>807</height>
+    <height>774</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -79,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>1149</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="path" stdset="0">
@@ -559,7 +559,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>71</height>
+          <height>77</height>
          </rect>
         </property>
        </widget>
@@ -678,7 +678,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>72</height>
+          <height>77</height>
          </rect>
         </property>
        </widget>
@@ -733,6 +733,9 @@
    <property name="blockName" stdset="0">
     <string>Editor</string>
    </property>
+   <property name="actionName" stdset="0">
+    <string>Material Editor</string>
+   </property>
   </action>
   <action name="actionHeightMapEditor">
    <property name="checkable">
@@ -747,6 +750,12 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Height Map Editor</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
    </property>
   </action>
   <action name="actionTileMapEditor">
@@ -763,6 +772,12 @@
    <property name="shortcut">
     <string>Ctrl+T</string>
    </property>
+   <property name="actionName" stdset="0">
+    <string>Tile Mask Editor</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
+   </property>
   </action>
   <action name="actionTextureConverter">
    <property name="icon">
@@ -774,6 +789,12 @@
    </property>
    <property name="shortcut">
     <string>Alt+T</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Texture converter</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
    </property>
   </action>
   <action name="actionIPhone">
@@ -830,6 +851,12 @@
    <property name="shortcut">
     <string>Ctrl+A</string>
    </property>
+   <property name="actionName" stdset="0">
+    <string>Not Passable Landscape</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
+   </property>
   </action>
   <action name="actionRulerTool">
    <property name="checkable">
@@ -844,6 +871,12 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Ruler Tool</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
    </property>
   </action>
   <action name="actionParticleEffectNode">
@@ -877,6 +910,12 @@
    <property name="shortcut">
     <string notr="true">Q</string>
    </property>
+   <property name="actionName" stdset="0">
+    <string>Move</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Scene Modification</string>
+   </property>
   </action>
   <action name="actionModifyRotate">
    <property name="checkable">
@@ -891,6 +930,12 @@
    </property>
    <property name="shortcut">
     <string>E</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Rotate</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Scene Modification</string>
    </property>
   </action>
   <action name="actionModifyScale">
@@ -907,6 +952,12 @@
    <property name="shortcut">
     <string>R</string>
    </property>
+   <property name="actionName" stdset="0">
+    <string>Scale</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Scene Modification</string>
+   </property>
   </action>
   <action name="actionModifyPlaceOnLandscape">
    <property name="enabled">
@@ -921,6 +972,12 @@
    </property>
    <property name="shortcut">
     <string>P</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Place On Landscape</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Scene Modification</string>
    </property>
   </action>
   <action name="actionModifySnapToLandscape">
@@ -1055,18 +1112,6 @@
     <string>Remove entity</string>
    </property>
   </action>
-  <action name="actionConvertToShadow">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/shadow.png</normaloff>:/QtIcons/shadow.png</iconset>
-   </property>
-   <property name="text">
-    <string>Convert To Shadow</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+C</string>
-   </property>
-  </action>
   <action name="actionEnableCameraLight">
    <property name="checkable">
     <bool>true</bool>
@@ -1080,6 +1125,12 @@
    </property>
    <property name="shortcut">
     <string>Alt+L</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Camera Light</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
    </property>
   </action>
   <action name="actionHelp">
@@ -1326,6 +1377,12 @@
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Show Editor Gizmo</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Editor</string>
    </property>
   </action>
   <action name="actionExpandSceneTree">
@@ -1785,6 +1842,12 @@
    <property name="shortcut">
     <string>Alt+Shift+V</string>
    </property>
+   <property name="actionName" stdset="0">
+    <string>Enable/Disable</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Visibility System</string>
+   </property>
   </action>
   <action name="actionFixCurrentFrame">
    <property name="text">
@@ -1793,6 +1856,12 @@
    <property name="shortcut">
     <string>Alt+V</string>
    </property>
+   <property name="blockName" stdset="0">
+    <string>Visibility System</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Fix Current Frame</string>
+   </property>
   </action>
   <action name="actionReleaseCurrentFrame">
    <property name="text">
@@ -1800,6 +1869,12 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+V</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Release Fixed Frame</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Visibility System</string>
    </property>
   </action>
   <action name="actionRefreshVisibilitySystem">
@@ -1812,6 +1887,12 @@
    </property>
    <property name="shortcut">
     <string>Alt+R</string>
+   </property>
+   <property name="actionName" stdset="0">
+    <string>Refresh</string>
+   </property>
+   <property name="blockName" stdset="0">
+    <string>Visibility System</string>
    </property>
   </action>
   <action name="actionToggleUseInstancing">

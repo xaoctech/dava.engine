@@ -50,7 +50,7 @@ QWidget* GetAttachedWidget(QAction* action);
 struct KeyBindableActionInfo
 {
     QString blockName;
-    Qt::ShortcutContext context = Qt::WidgetShortcut;
+    Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
     QList<QKeySequence> defaultShortcuts;
 };
 

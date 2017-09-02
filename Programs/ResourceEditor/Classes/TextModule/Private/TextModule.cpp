@@ -13,6 +13,7 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 
 #include <Reflection/ReflectionRegistrator.h>
+#include <Engine/PlatformApiQt.h>
 
 #include <QShortcut>
 
@@ -45,8 +46,13 @@ void TextModule::PostInit()
         });
     }
 
-    action->setShortcut(QKeySequence("Ctrl+F"));
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    KeyBindableActionInfo info;
+    info.blockName = "Editor";
+    info.context = Qt::WidgetWithChildrenShortcut;
+    info.defaultShortcuts.push_back(QKeySequence("Ctrl+F"));
+    MakeActionKeyBindable(action, info);
+
+    PlatformApi::Qt::GetRenderWidget()->addAction(action);
 
     connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&TextModule::ChangeDrawingState, this));
 

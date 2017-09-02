@@ -216,7 +216,7 @@ public:
     virtual void ClearMessage(const WindowKey& windowKey) = 0;
     virtual int ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog) = 0;
     virtual ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) = 0;
-    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) = 0;
+    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const = 0;
 
     virtual QString GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;
     virtual QString GetSaveFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;

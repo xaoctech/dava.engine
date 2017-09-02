@@ -2,6 +2,7 @@
 #include "MaterialModel.h"
 #include "Main/QtUtils.h"
 #include "TextureBrowser/TextureCache.h"
+#include "Classes/Application/REGLobal.h"
 
 #include <TArc/Utils/Utils.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>

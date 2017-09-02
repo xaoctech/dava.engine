@@ -6,6 +6,7 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Controls/ColorPicker/ColorPickerSettings.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
 #include <Engine/PlatformApiQt.h>
 #include <FileSystem/KeyedArchive.h>
