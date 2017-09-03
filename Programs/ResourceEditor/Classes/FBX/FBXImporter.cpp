@@ -70,6 +70,8 @@ void ProcessSkeletonsRecursive(const FbxNode* fbxSkeleton);
 void CollectSkeletonNodes(const FbxSkeleton* joint, Vector<FBXJoint>* fbxJoints, const FbxSkeleton* parentJoint = nullptr, uint32 depth = 0);
 void ProcessSkeletonHierarchy(const FbxSkeleton* fbxSkeleton);
 
+void ProcessAnimations(FbxScene* fbxScene);
+
 Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix);
 Vector3 ToVector3(const FbxVector4& fbxVector);
 const char* GetFBXTexturePath(const FbxProperty& textureProperty);
@@ -524,6 +526,103 @@ void ProcessSkeletonHierarchy(const FbxSkeleton* fbxSkeleton)
     }
 
     linkedSkeletons.emplace(fbxSkeleton, std::move(fbxJoints));
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+using FBXAnimationKey = std::pair<float32, Vector3>;
+
+struct FBXAnimationChannelData
+{
+    Vector<FBXAnimationKey> animationKeys;
+    AnimationTrack::eChannelTarget trackTarget = AnimationTrack::CHANNEL_TARGET_COUNT;
+};
+
+struct FBXNodeAnimationData
+{
+    FbxNode* fbxNode = nullptr;
+    Vector<FBXAnimationChannelData> animationTrackData;
+};
+
+FBXNodeAnimationData GetNodeAnimationData(FbxNode* fbxNode, FbxAnimLayer* fbxAnimLayer)
+{
+    FBXNodeAnimationData result;
+    result.fbxNode = fbxNode;
+
+    FbxAnimCurve* fbxAnimCurve[3] = {}; //x, y, z curves
+    Set<FbxTime> keyTimes;
+
+    //TODO: for rotation and scale
+    fbxAnimCurve[0] = fbxNode->LclTranslation.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
+    fbxAnimCurve[1] = fbxNode->LclTranslation.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+    fbxAnimCurve[2] = fbxNode->LclTranslation.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+
+    for (FbxAnimCurve* curve : fbxAnimCurve)
+    {
+        if (curve)
+        {
+            int keyCount = curve->KeyGetCount();
+            for (int keyIndex = 0; keyIndex < keyCount; keyIndex++)
+                keyTimes.insert(curve->KeyGet(keyIndex).GetTime());
+        }
+    }
+
+    if (!keyTimes.empty())
+    {
+        result.animationTrackData.emplace_back();
+        FBXAnimationChannelData& channelData = result.animationTrackData.back();
+
+        for (const FbxTime& t : keyTimes)
+        {
+            channelData.trackTarget = AnimationTrack::CHANNEL_TARGET_POSITION;
+
+            Vector3 keyValue;
+            for (int32 c = 0; c < 3; ++c)
+                keyValue.data[c] = (fbxAnimCurve[c] != nullptr) ? fbxAnimCurve[c]->Evaluate(t) : fbxNode->LclTranslation.EvaluateValue(t)[c];
+
+            channelData.animationKeys.emplace_back(std::make_pair(float32(t.GetSecondDouble()), keyValue));
+        }
+    }
+
+    return result;
+}
+
+void ProcessNodeAnimationRecursive(FbxNode* fbxNode, FbxAnimLayer* fbxAnimLayer, Vector<FBXNodeAnimationData>* outNodesAnimations)
+{
+    DVASSERT(fbxNode != nullptr);
+
+    FBXNodeAnimationData nodeAnimationData = GetNodeAnimationData(fbxNode, fbxAnimLayer);
+    if (!nodeAnimationData.animationTrackData.empty())
+        outNodesAnimations->emplace_back(std::move(nodeAnimationData));
+
+    int childrenCount = fbxNode->GetChildCount();
+    for (int child = 0; child < childrenCount; child++)
+        ProcessNodeAnimationRecursive(fbxNode->GetChild(child), fbxAnimLayer, outNodesAnimations);
+}
+
+void ProcessAnimations(FbxScene* fbxScene)
+{
+    int animationStackCount = fbxScene->GetSrcObjectCount<FbxAnimStack>();
+    for (int as = 0; as < fbxScene->GetSrcObjectCount<FbxAnimStack>(); as++)
+    {
+        FbxAnimStack* animationStack = fbxScene->GetSrcObject<FbxAnimStack>(as);
+        String animationStackName = animationStack->GetName();
+
+        int animationLayersCount = animationStack->GetMemberCount<FbxAnimLayer>();
+        if (animationLayersCount > 0)
+        {
+            if (animationLayersCount > 1)
+            {
+                Logger::Warning("[FBXImporter] FBX animation '%s' contains more than one animation layer. Import only first layer", animationStackName.c_str());
+            }
+
+            Vector<FBXNodeAnimationData> nodesAnimations;
+            FbxAnimLayer* animationLayer = animationStack->GetMember<FbxAnimLayer>(0);
+            ProcessNodeAnimationRecursive(fbxScene->GetRootNode(), animationLayer, &nodesAnimations);
+        }
+
+        //TODO: save animation clip here
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
