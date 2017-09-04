@@ -77,7 +77,7 @@ void NMaterialStateDynamicPropertiesInsp::FindMaterialPropertiesRecursive(NMater
           { NMaterialParamName::PARAM_LIGHTMAP_SIZE, { 1, rhi::ShaderProp::TYPE_FLOAT1, &NMaterial::DEFAULT_LIGHTMAP_SIZE } },
         };
 
-        // 'insert' with same key will not update value of the element, so do 'insert' in reverse order to allow overrites from code above.
+        // 'insert' with same key will not update value of the element, so do 'insert' in reverse order to allow overrides from code above.
         propsMap.insert(NOT_SHADER_PROPS.rbegin(), NOT_SHADER_PROPS.rend());
     }
 
