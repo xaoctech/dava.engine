@@ -131,9 +131,6 @@ HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 
     InitFieldBinder();
-
-    hudControl.Set(new DAVA::UIControl());
-    hudControl->SetName("hud_control");
 }
 
 HUDSystem::~HUDSystem()
@@ -463,8 +460,13 @@ void HUDSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState, Edito
     UpdateHUDEnabled();
 }
 
-CanvasControls HUDSystem::CreateCanvasControls() const
+CanvasControls HUDSystem::CreateCanvasControls()
 {
+    DVASSERT(hudControl.Valid() == false);
+
+    hudControl.Set(new DAVA::UIControl());
+    hudControl->SetName("hud_control");
+
     return { { HUD_CANVAS, hudControl } };
 }
 

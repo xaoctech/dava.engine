@@ -20,7 +20,7 @@ private:
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
-    CanvasControls CreateCanvasControls() const override;
+    CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
     void InitFieldBinder();

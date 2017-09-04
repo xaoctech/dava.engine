@@ -215,11 +215,11 @@ void DocumentsModule::InitGlobalData()
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
 
-    std::unique_ptr<DocumentsWatcherData> watherData(new DocumentsWatcherData());
-    connections.AddConnection(watherData->watcher.get(), &QFileSystemWatcher::fileChanged, MakeFunction(this, &DocumentsModule::OnFileChanged));
+    std::unique_ptr<DocumentsWatcherData> watcherData(new DocumentsWatcherData());
+    connections.AddConnection(watcherData->watcher.get(), &QFileSystemWatcher::fileChanged, MakeFunction(this, &DocumentsModule::OnFileChanged));
     QApplication* app = PlatformApi::Qt::GetApplication();
     connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
-    globalContext->CreateData(std::move(watherData));
+    globalContext->CreateData(std::move(watcherData));
 
     std::unique_ptr<EditorData> editorData(new EditorData());
     editorData->systemsManager = std::make_unique<EditorSystemsManager>(GetAccessor());

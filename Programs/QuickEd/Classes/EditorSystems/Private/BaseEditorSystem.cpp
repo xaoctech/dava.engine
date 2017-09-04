@@ -53,7 +53,7 @@ void BaseEditorSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState
 {
 }
 
-CanvasControls BaseEditorSystem::CreateCanvasControls() const
+CanvasControls BaseEditorSystem::CreateCanvasControls()
 {
     return CanvasControls();
 }

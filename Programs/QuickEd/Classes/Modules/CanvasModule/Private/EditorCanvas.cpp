@@ -102,7 +102,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
     }
 }
 
-CanvasControls EditorCanvas::CreateCanvasControls() const
+CanvasControls EditorCanvas::CreateCanvasControls()
 {
     CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
     return { { DISPLAY_CANVAS, canvasModuleData->canvas } };

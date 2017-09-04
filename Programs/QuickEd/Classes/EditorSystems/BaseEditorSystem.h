@@ -21,6 +21,7 @@ public:
     virtual ~BaseEditorSystem() = default;
 
 protected:
+    //A client module can declare one or more own types and use them later, but can not use any other values
     enum eCanvas
     {
         DISPLAY_CANVAS,
@@ -48,6 +49,6 @@ private:
     //invalidate caches or prepare to work depending on states
     virtual void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState);
     virtual void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState);
-    virtual CanvasControls CreateCanvasControls() const;
+    virtual CanvasControls CreateCanvasControls();
     virtual void DeleteCanvasControls(const CanvasControls& canvasControls);
 };

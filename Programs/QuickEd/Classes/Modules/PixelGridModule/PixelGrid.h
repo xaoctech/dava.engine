@@ -30,7 +30,7 @@ public:
     ~PixelGrid() override;
 
 private:
-    CanvasControls CreateCanvasControls() const override;
+    CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
     void InitControls();

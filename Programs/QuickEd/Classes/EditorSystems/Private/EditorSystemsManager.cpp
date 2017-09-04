@@ -428,7 +428,7 @@ void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem
 
     auto iter = systemsControls.find(editorSystem);
     DVASSERT(iter != systemsControls.end());
-    CanvasControls canvasControls = systemsControls[editorSystem];
+    const CanvasControls& canvasControls = systemsControls[editorSystem];
 
     for (const auto& controlsPair : canvasControls)
     {
@@ -436,4 +436,5 @@ void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem
     }
     editorSystem->DeleteCanvasControls(canvasControls);
     systems.remove(editorSystem);
+    systemsControls.erase(editorSystem);
 }
