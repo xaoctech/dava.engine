@@ -109,7 +109,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/unibreak.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/zlib.lib"   
@@ -141,7 +141,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/TextureConverterD.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/unibreak.lib"  
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/zlib.lib" 
@@ -206,7 +206,7 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib32.lib"
+                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/TextureConverter_d.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/unibreak.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/zlib.lib"
@@ -250,6 +250,7 @@ if( WIN )
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcp120.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcp140.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/vcruntime140.dll"
+                                      "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.dll")
 
     set( DAVA_DYNAMIC_LIBRARIES_WIN64 ${DAVA_DYNAMIC_LIBRARIES_WIN32} )
