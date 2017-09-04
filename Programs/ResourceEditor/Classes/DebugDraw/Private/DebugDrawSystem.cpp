@@ -1,13 +1,14 @@
-#include "Scene/System/DebugDrawSystem.h"
-#include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
-#include "Scene/SceneEditor2.h"
-#include "Deprecated/EditorConfig.h"
-#include "Deprecated/SceneValidator.h"
-#include "Classes/Project/ProjectManagerData.h"
+
+#include "Classes/DebugDraw/Private/DebugDrawSystem.h"
+
 #include "Classes/Application/REGlobal.h"
+#include "Classes/DebugDraw/Private/DebugDrawSystem.h"
+#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/SceneManager/SceneData.h"
+#include "Deprecated/EditorConfig.h"
 
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
@@ -15,7 +16,7 @@
 
 #define DAVA_ALLOW_OCTREE_DEBUG 0
 
-DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.001f;
+const DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT = 0.001f;
 
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
@@ -25,6 +26,11 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene* scene)
     collSystem = sc->collisionSystem;
 
     DVASSERT(NULL != collSystem);
+
+    drawComponentFunctionsMap[DAVA::Component::SOUND_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawSoundNode);
+    drawComponentFunctionsMap[DAVA::Component::WIND_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
+    drawComponentFunctionsMap[DAVA::Component::GEO_DECAL_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
+    drawComponentFunctionsMap[DAVA::Component::LIGHT_COMPONENT] = DAVA::Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
 }
 
 DebugDrawSystem::~DebugDrawSystem()
@@ -56,36 +62,98 @@ ResourceEditor::eSceneObjectType DebugDrawSystem::GetRequestedObjectType() const
     return objectType;
 }
 
-void DebugDrawSystem::Draw()
+void DebugDrawSystem::AddEntity(DAVA::Entity* entity)
 {
-    Draw(GetScene());
+    entities.push_back(entity);
+
+    for (uint32 type = 0; type < DAVA::Component::COMPONENT_COUNT; ++type)
+    {
+        for (uint32 index = 0, count = entity->GetComponentCount(type); index < count; ++index)
+        {
+            Component* component = entity->GetComponent(type, index);
+            RegisterComponent(entity, component);
+        }
+    }
 }
 
-void DebugDrawSystem::Draw(DAVA::Entity* entity)
+void DebugDrawSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (nullptr != entity)
+    DAVA::FindAndRemoveExchangingWithLast(entities, entity);
+
+    for (auto& it : entitiesComponentMap)
     {
+        DAVA::FindAndRemoveExchangingWithLast(it.second, entity);
+    }
+}
+
+void DebugDrawSystem::RegisterComponent(Entity* entity, Component* component)
+{
+    Component::eType type = static_cast<Component::eType>(component->GetType());
+
+    auto it = drawComponentFunctionsMap.find(type);
+
+    if (it != drawComponentFunctionsMap.end())
+    {
+        DAVA::Vector<DAVA::Entity*>& array = entitiesComponentMap[type];
+
+        auto it = find_if(array.begin(), array.end(), [entity](const DAVA::Entity* obj) { return entity == obj; });
+
+        if (it == array.end())
+        {
+            array.push_back(entity);
+        }
+    }
+}
+
+void DebugDrawSystem::UnregisterComponent(Entity* entity, Component* component)
+{
+    Component::eType type = static_cast<Component::eType>(component->GetType());
+
+    auto it = entitiesComponentMap.find(type);
+
+    if (it != entitiesComponentMap.end() && entity->GetComponentCount(component->GetType()) == 1)
+    {
+        DAVA::FindAndRemoveExchangingWithLast(it->second, entity);
+    }
+}
+
+void DebugDrawSystem::DrawComponent(Component::eType type, const Function<void(DAVA::Entity*)>& func)
+{
+    auto it = entitiesComponentMap.find(type);
+
+    if (it != entitiesComponentMap.end())
+    {
+        DAVA::Vector<DAVA::Entity*>& array = it->second;
+
+        for (DAVA::Entity* entity : array)
+        {
+            func(entity);
+        }
+    }
+}
+
+void DebugDrawSystem::Draw()
+{
+    for (auto& it : drawComponentFunctionsMap)
+    {
+        DrawComponent(it.first, it.second);
+    }
+
+    for (DAVA::Entity* entity : entities)
+    { //drawing methods do not use data from components
+        DrawObjectBoxesByType(entity);
+        DrawHangingObjects(entity);
+        DrawSwitchesWithDifferentLods(entity);
+        DrawDebugOctTree(entity);
+
+        //draw selected objects
         const SelectableGroup& selection = Selection::GetSelection();
         bool isSelected = selection.ContainsObject(entity);
 
-        DrawObjectBoxesByType(entity);
-        DrawLightNode(entity, isSelected);
-        DrawHangingObjects(entity);
-        DrawSwitchesWithDifferentLods(entity);
-        DrawWindNode(entity);
-        DrawSwitchesWithDifferentLods(entity);
-        DrawSoundNode(entity);
-        DrawDecals(entity);
-        DrawDebugOctTree(entity);
-
         if (isSelected)
         {
+            DrawLightNode(entity, true);
             DrawSelectedSoundNode(entity);
-        }
-
-        for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
-        {
-            Draw(entity->GetChild(i));
         }
     }
 }
@@ -368,7 +436,7 @@ void DebugDrawSystem::GetLowestVertexes(const RenderBatchesWithTransforms& batch
         {
             DAVA::Vector3 pos;
             polygonGroup->GetCoord(v, pos);
-            if (scale * (pos.z - minZ) <= HANGING_OBJECTS_HEIGHT)
+            if (scale * (pos.z - minZ) <= hangingObjectsHeight)
             {
                 vertexes.push_back(pos * batch.second);
             }

@@ -36,7 +36,7 @@ find_package( DavaFramework REQUIRED COMPONENTS "Sound"
                                                 DAVA_PLATFORM_QT 
                                                 DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
                                                 DAVA_DISABLE_AUTOTESTS 
-                                                DAVA_USE_RENDERSTATS )
+                                                DAVA_USE_RENDERSTATS)
 
 
 
