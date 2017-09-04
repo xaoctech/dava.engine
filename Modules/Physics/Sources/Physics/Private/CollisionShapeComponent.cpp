@@ -31,7 +31,7 @@ physx::PxShape* CollisionShapeComponent::GetPxShape() const
     return shape;
 }
 
-const DAVA::FastName& CollisionShapeComponent::GetName() const
+const FastName& CollisionShapeComponent::GetName() const
 {
     return name;
 }
@@ -40,10 +40,10 @@ void CollisionShapeComponent::SetName(const FastName& name_)
 {
     DVASSERT(name_.IsValid());
     name = name_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
-const DAVA::Matrix4& CollisionShapeComponent::GetLocalPose() const
+const Matrix4& CollisionShapeComponent::GetLocalPose() const
 {
     return localPose;
 }
@@ -51,7 +51,7 @@ const DAVA::Matrix4& CollisionShapeComponent::GetLocalPose() const
 void CollisionShapeComponent::SetLocalPose(const Matrix4& localPose_)
 {
     localPose = localPose_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 bool CollisionShapeComponent::GetOverrideMass() const
@@ -62,7 +62,7 @@ bool CollisionShapeComponent::GetOverrideMass() const
 void CollisionShapeComponent::SetOverrideMass(bool override)
 {
     overrideMass = override;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 float32 CollisionShapeComponent::GetMass() const
@@ -75,7 +75,7 @@ void CollisionShapeComponent::SetMass(float32 mass_)
     if (overrideMass == true)
     {
         mass = mass_;
-        SheduleUpdate();
+        ScheduleUpdate();
     }
 }
 
@@ -94,15 +94,16 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     DVASSERT(name.IsValid());
     shape->setName(name.c_str());
     shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+    shape->acquireReference();
 
 #if defined(__DAVAENGINE_DEBUG__)
     CheckShapeType();
 #endif
 
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
-void CollisionShapeComponent::CopyFields(CollisionShapeComponent* component)
+void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* component) const
 {
     component->name = name;
     component->localPose = localPose;
@@ -110,7 +111,7 @@ void CollisionShapeComponent::CopyFields(CollisionShapeComponent* component)
     component->mass = mass;
 }
 
-void CollisionShapeComponent::SheduleUpdate()
+void CollisionShapeComponent::ScheduleUpdate()
 {
     if (shape != nullptr)
     {
@@ -118,7 +119,7 @@ void CollisionShapeComponent::SheduleUpdate()
         DVASSERT(entity != nullptr);
         Scene* scene = entity->GetScene();
         DVASSERT(scene != nullptr);
-        scene->physicsSystem->SheduleUpdate(this);
+        scene->physicsSystem->ScheduleUpdate(this);
     }
 }
 

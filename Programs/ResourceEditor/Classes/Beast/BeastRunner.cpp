@@ -7,7 +7,6 @@
 #include "Main/mainwindow.h"
 #include "Beast/BeastProxy.h"
 #include "Beast/LightmapsPacker.h"
-#include "Settings/SettingsManager.h"
 #include "Utils/SceneUtils/SceneUtils.h"
 
 #include "DAVAEngine.h"

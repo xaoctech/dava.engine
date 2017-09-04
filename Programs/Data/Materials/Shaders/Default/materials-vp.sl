@@ -21,8 +21,20 @@ vertex_in
         #endif
     #endif
 
-    #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
+    #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || ALPHA_MASK
     float2 texcoord1 : TEXCOORD1;
+    #endif
+
+    #if FRAME_BLEND
+    float3 texcoord1 : TEXCOORD1; // uv1.xy + time
+    #endif
+
+    #if PARTICLES_FLOWMAP
+        float4 texcoord2 : TEXCOORD2; // Flow speed and flow offset.
+    #endif
+
+    #if PARTICLES_NOISE
+        float3 texcoord3 : TEXCOORD3; // Noise uv and scale.
     #endif
 
     #if VERTEX_COLOR
@@ -46,16 +58,18 @@ vertex_in
     #endif
     #endif
     
+    #if PARTICLES_FRESNEL_TO_ALPHA || PARTICLES_ALPHA_REMAP || PARTICLES_PERSPECTIVE_MAPPING
+        float3 texcoord5 : TEXCOORD5;  // x - fresnel. y - alpha remap. z - perspective mapping w.
+    #endif
+
     #if WIND_ANIMATION
     float flexibility : TEXCOORD5;
     #endif
 
-    #if FRAME_BLEND
-    float texcoord3 : TEXCOORD3;
+    #if GEO_DECAL
+    float4 geoDecalCoord : TEXCOORD3;
     #endif
 };
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // vprog-output
@@ -64,11 +78,14 @@ vertex_out
 {
     float4  position : SV_POSITION;
 
-
     #if MATERIAL_SKYBOX
     float3 varTexCoord0 : TEXCOORD0;
     #elif MATERIAL_TEXTURE || TILED_DECAL_MASK
+        #if PARTICLES_PERSPECTIVE_MAPPING
+            float3 varTexCoord0 : TEXCOORD0;
+        #else
     float2 varTexCoord0 : TEXCOORD0;
+    #endif
     #endif
 
     #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
@@ -83,6 +100,9 @@ vertex_out
     float2 varDecalTileTexCoord : TEXCOORD2;
     #endif
     
+    #if PARTICLES_FLOWMAP
+        float2 varParticleFlowTexCoord : TEXCOORD2;
+    #endif
     
     #if VERTEX_LIT
         [lowp] half varDiffuseColor : COLOR0;
@@ -109,18 +129,30 @@ vertex_out
         [lowp] half4 varFog : TEXCOORD5;
     #endif
 
+    #if PARTICLES_NOISE
+        #if PARTICLES_FRESNEL_TO_ALPHA
+            float4 varTexcoord6 : TEXCOORD6; // Noise uv and scale. Fresnel a.
+        #else
+            float3 varTexcoord6 : TEXCOORD6; // Noise uv and scale.
+        #endif
+    #elif PARTICLES_FRESNEL_TO_ALPHA
+        float varTexcoord6 : TEXCOORD6; // Fresnel a.
+    #endif 
 
-    #if FRAME_BLEND
-        [lowp] half varTime : TEXCOORD3;
+    #if FRAME_BLEND && PARTICLES_ALPHA_REMAP
+        half2 varTexcoord3 : TEXCOORD3;
+    #elif FRAME_BLEND || PARTICLES_ALPHA_REMAP
+        half varTexcoord3 : TEXCOORD3;
     #endif
 
-    #if FLOWMAP
+    #if FLOWMAP || PARTICLES_FLOWMAP
         [lowp] float3 varFlowData : TEXCOORD4;
     #endif
 
+    #if GEO_DECAL
+        float2 geoDecalCoord : TEXCOORD6;
+    #endif
 };
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // properties
@@ -199,7 +231,6 @@ vertex_out
     #else
         [auto][sh] property float4 sphericalHarmonics;
     #endif
-    
 #endif
 
 #if TILED_DECAL_MASK
@@ -223,7 +254,7 @@ vertex_out
 [auto][a] property float4x4 worldMatrix;
 #endif
 
-#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP
+#if WAVE_ANIMATION || TEXTURE0_ANIMATION_SHIFT || FLOWMAP || PARTICLES_FLOWMAP
 [auto][a] property float globalTime;
 #endif
 
@@ -232,30 +263,25 @@ vertex_out
 [material][a] property float flowAnimOffset = 0;
 #endif
 
-inline float
-FresnelShlick( float NdotL, float Cspec )
+inline float FresnelShlick( float NdotL, float Cspec )
 {
     float fresnel_exponent = 5.0;
     return (1.0 - Cspec) * pow(1.0 - NdotL, fresnel_exponent) + Cspec;
 }
 
-inline float3
-FresnelShlickVec3( float NdotL, float3 Cspec )
+inline float3 FresnelShlickVec3( float NdotL, float3 Cspec )
 {
     float fresnel_exponent = 5.0;
     return (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent)) + Cspec;
 }
 
-inline float3
-JointTransformTangent( float3 inVec, float4 jointQuaternion )
+inline float3 JointTransformTangent( float3 inVec, float4 jointQuaternion )
 {
     float3 t = 2.0 * cross( jointQuaternion.xyz, inVec );
     return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
 }
 
-
-inline float4
-Wave( float time, float4 pos, float2 uv )
+inline float4 Wave( float time, float4 pos, float2 uv )
 {
 //  float time = globalTime;
 //  vec4 pos = inPosition;
@@ -284,10 +310,8 @@ Wave( float time, float4 pos, float2 uv )
     off.z = pos.z;// + cos3 * fx * 0.5;
     off.w = pos.w;
 #endif
-    
     return off;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // main
@@ -303,11 +327,24 @@ vertex_out vp_main( vertex_in input )
     float4  weightedVertexQuaternion = jointQuaternions[index];
 #endif
 
+#if FLOWMAP || PARTICLES_FLOWMAP
 #if FLOWMAP
-    float scaledTime = globalTime * flowAnimSpeed;
+        float flowSpeed = flowAnimSpeed;
+        float flowOffset = flowAnimOffset;
+    #else
+        float flowSpeed = input.texcoord2.z;
+        float flowOffset = input.texcoord2.w;
+        output.varParticleFlowTexCoord = input.texcoord2.xy;
+    #endif
+
+    float scaledTime = globalTime * flowSpeed;
     float2 flowPhases = frac(float2(scaledTime, scaledTime+0.5))-float2(0.5, 0.5);
     float flowBlend = abs(flowPhases.x*2.0);
-    output.varFlowData = float3(flowPhases * flowAnimOffset, flowBlend);
+    output.varFlowData = float3(flowPhases * flowOffset, flowBlend);
+#endif
+
+#if PARTICLES_NOISE
+    output.varTexcoord6.xyz = input.texcoord3.xyz;
 #endif
 
 #if MATERIAL_SKYBOX
@@ -413,7 +450,6 @@ vertex_out vp_main( vertex_in input )
     
     toLightDir = normalize(toLightDir);
     
-    
     #if BLINN_PHONG
         
         output.varDiffuseColor = max(0.0, dot(normal, toLightDir));
@@ -450,6 +486,13 @@ vertex_out vp_main( vertex_in input )
     
 #endif // VERTEX_LIT
 
+#if PARTICLES_FRESNEL_TO_ALPHA
+    #if PARTICLES_NOISE
+        output.varTexcoord6.w = input.texcoord5.x;
+    #else
+        output.varTexcoord6 = input.texcoord5.x;
+    #endif 
+#endif
 
 #if PIXEL_LIT
 
@@ -508,9 +551,7 @@ vertex_out vp_main( vertex_in input )
 //    varLightPosition.y = dot (lightPosition0.xyz, b);
 //    varLightPosition.z = dot (lightPosition0.xyz, n);
     
-
 #endif // PIXEL_LIT
-
 
 #if VERTEX_FOG
     
@@ -606,23 +647,24 @@ vertex_out vp_main( vertex_in input )
 #endif
 
 #if MATERIAL_SKYBOX || MATERIAL_TEXTURE || TILED_DECAL_MASK
-    output.varTexCoord0 = input.texcoord0;
+    output.varTexCoord0.xy = input.texcoord0;
+    #if PARTICLES_PERSPECTIVE_MAPPING
+        output.varTexCoord0.z = input.texcoord5.z;
+    #endif
 #endif    
 
 #if MATERIAL_TEXTURE
     #if TEXTURE0_SHIFT_ENABLED
-        output.varTexCoord0 += texture0Shift;
+        output.varTexCoord0.xy += texture0Shift;
     #endif
 
-        
     #if TEXTURE0_ANIMATION_SHIFT
-        output.varTexCoord0 += frac(tex0ShiftPerSecond * globalTime);
+        output.varTexCoord0.xy += frac(tex0ShiftPerSecond * globalTime);
     #endif
-
 #endif
 
 #if TILED_DECAL_MASK
-    float2 resDecalTexCoord = output.varTexCoord0 * decalTileCoordScale + decalTileCoordOffset;    
+    float2 resDecalTexCoord = output.varTexCoord0.xy * decalTileCoordScale + decalTileCoordOffset;    
     #if TILE_DECAL_ROTATION
         resDecalTexCoord = float2(resDecalTexCoord.x+resDecalTexCoord.y, resDecalTexCoord.y-resDecalTexCoord.x);
     #endif
@@ -630,33 +672,39 @@ vertex_out vp_main( vertex_in input )
 #endif
     
 #if MATERIAL_DETAIL
-    output.varDetailTexCoord = output.varTexCoord0 * detailTileCoordScale;
+    output.varDetailTexCoord = output.varTexCoord0.xy * detailTileCoordScale;
 #endif
 
-
 #if MATERIAL_DECAL || ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE ) || FRAME_BLEND || ALPHA_MASK
-    
-    #if SETUP_LIGHTMAP        
-        output.varTexCoord1 = input.texcoord1;
-    #elif ( MATERIAL_LIGHTMAP  && VIEW_DIFFUSE )
-        output.varTexCoord1 = uvScale*input.texcoord1 + uvOffset;
+    #if ( MATERIAL_LIGHTMAP && VIEW_DIFFUSE && !SETUP_LIGHTMAP )
+        output.varTexCoord1 = uvScale*input.texcoord1.xy + uvOffset;
     #else
-        output.varTexCoord1 = input.texcoord1;
+        output.varTexCoord1 = input.texcoord1.xy;
     #endif
 #endif
 
-
 #if FRAME_BLEND
-    output.varTime = input.texcoord3;
+    #if PARTICLES_ALPHA_REMAP
+        output.varTexcoord3.x = input.texcoord1.z;
+        output.varTexcoord3.y = input.texcoord5.y;
+    #else
+        output.varTexcoord3 = input.texcoord1.z;
+    #endif
+#elif PARTICLES_ALPHA_REMAP
+    output.varTexcoord3 = input.texcoord5.y;
 #endif
 
 #if FORCE_2D_MODE
     output.position.z=0.0;
 #endif
 
+#if (GEO_DECAL)
+    // apply constant bias to prevent z-fighting on decals
+    // possible improvement : calculate offset based on near/far plane
+    // todo : check on various GPUs
+    output.position.z -= output.position.w / 65535.0;
+    output.geoDecalCoord = input.geoDecalCoord.xy;
+#endif
+
     return output;
 }
-
-
-
-

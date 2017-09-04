@@ -40,7 +40,7 @@ public:
     /*
     creates scene
     */
-    explicit SceneBuilder(const FilePath& scenePathname);
+    explicit SceneBuilder(const FilePath& scenePathname, Scene* scene = nullptr);
 
     /*
     saves scene into scenePathname passed to constructor
@@ -50,7 +50,7 @@ public:
     /*
     creates scene with all objects that can be added with SceneBuilder: camera, box etc.
     */
-    static void CreateFullScene(const FilePath& scenePathname);
+    static void CreateFullScene(const FilePath& scenePathname, DAVA::Scene* scene = nullptr);
 
     enum R2OMode
     {
@@ -66,6 +66,7 @@ public:
     Entity* AddVegetation(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddLights(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddStaticOcclusion(R2OMode mode = WITHOUT_REF_TO_OWNER);
+    Entity* AddEntityWithTestedComponents(R2OMode mode = WITHOUT_REF_TO_OWNER);
 
     /*
     adds 'reference to owner' scene to passed `entity`

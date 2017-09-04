@@ -160,6 +160,18 @@ PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
+    bodyComponents.reserve(2);
+    bodyComponents.push_back(Component::STATIC_BODY_COMPONENT);
+    bodyComponents.push_back(Component::DYNAMIC_BODY_COMPONENT);
+
+    shapeComponents.reserve(7);
+    shapeComponents.push_back(Component::BOX_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::CAPSULE_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::SPHERE_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::PLANE_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::MESH_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
 }
 
 void PhysicsModule::Init()
@@ -200,6 +212,16 @@ void PhysicsModule::Init()
 
 void PhysicsModule::Shutdown()
 {
+    if (defaultMaterial != nullptr)
+    {
+        defaultMaterial->release();
+    }
+
+    if (cpuDispatcher != nullptr)
+    {
+        cpuDispatcher->release();
+    }
+
     cooking->release();
     physics->release();
     PhysicsModuleDetail::ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
@@ -235,7 +257,10 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config, phy
     sceneDesc.filterShader = filterShader;
     sceneDesc.simulationEventCallback = callback;
 
-    PxDefaultCpuDispatcher* cpuDispatcher = PxDefaultCpuDispatcherCreate(config.threadCount);
+    if (cpuDispatcher == nullptr)
+    {
+        cpuDispatcher = PxDefaultCpuDispatcherCreate(config.threadCount);
+    }
     DVASSERT(cpuDispatcher);
     sceneDesc.cpuDispatcher = cpuDispatcher;
 
@@ -430,6 +455,16 @@ physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
     }
 
     return defaultMaterial;
+}
+
+const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
+{
+    return bodyComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
+{
+    return shapeComponents;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)

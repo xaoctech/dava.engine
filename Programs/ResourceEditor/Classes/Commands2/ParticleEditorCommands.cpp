@@ -2,7 +2,6 @@
 #include "Commands2/RECommandIDs.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
 #include "Main/QtUtils.h"
@@ -183,7 +182,7 @@ void CommandUpdateParticleLayer::Redo()
     layer->layerName = layerName;
     layer->degradeStrategy = degradeStrategy;
     layer->isDisabled = isDisabled;
-    layer->inheritPosition = inheritPosition;
+    layer->SetInheritPosition(inheritPosition);
     layer->isLong = isLong;
     layer->scaleVelocityBase = scaleVelocityBase;
     layer->scaleVelocityFactor = scaleVelocityFactor;

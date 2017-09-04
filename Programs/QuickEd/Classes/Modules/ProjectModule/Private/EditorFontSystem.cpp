@@ -1,10 +1,10 @@
 #include "EditorFontSystem.h"
-#include "QtTools/Utils/Utils.h"
+#include <TArc/Utils/Utils.h>
 
-#include "UI/UIYamlLoader.h"
-#include "Engine/Engine.h"
+#include <UI/UIYamlLoader.h>
+#include <Engine/Engine.h>
 
-#include "DAVAEngine.h"
+#include <DAVAEngine.h>
 
 using namespace DAVA;
 

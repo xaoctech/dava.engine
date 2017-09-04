@@ -13,7 +13,7 @@
 ScenePreviewControl::ScenePreviewControl(const DAVA::Rect& rect)
     : UI3DView(rect)
 {
-    SetName(DAVA::FastName("Preview 3D View"));
+    SetName(DAVA::FastName("Preview_3D_View"));
 
     SetBasePriority(-100);
     SetInputEnabled(true, true);

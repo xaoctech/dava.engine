@@ -14,7 +14,7 @@ class ContextAccessor;
 class BaseEditorSystem
 {
 public:
-    explicit BaseEditorSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
+    BaseEditorSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
     virtual ~BaseEditorSystem() = default;
 
 protected:

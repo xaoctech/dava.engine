@@ -1,8 +1,8 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "UI/Preview/Data/CanvasData.h"
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
-#include "Modules/DocumentsModule/Private/EditorCanvasData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -11,7 +11,12 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
-#include "EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/SelectionSystem.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/ControlTransformationSettings.h"
+#include "Classes/EditorSystems/PixelGrid.h"
+#include "Classes/EditorSystems/EditorControlsView.h"
+#include "Classes/EditorSystems/UserAssetsSettings.h"
 
 #include "Application/QEGlobal.h"
 
@@ -21,6 +26,7 @@
 #include "UI/Preview/PreviewWidget.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
+#include "UI/UIControl.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -36,12 +42,14 @@
 #include <Base/Any.h>
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
-#include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
+#include <UI/Render/UIRenderSystem.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Particles/ParticleEmitter.h>
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
+#include <Reflection/Reflection.h>
 
 #include <QAction>
 #include <QApplication>
@@ -55,7 +63,16 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
     .End();
 }
 
-DocumentsModule::DocumentsModule() = default;
+DocumentsModule::DocumentsModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SelectionSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ControlTransformationSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PixelGridPreferences);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PreviewWidgetSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserAssetsSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PackageWidgetSettings);
+}
+
 DocumentsModule::~DocumentsModule() = default;
 
 void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
@@ -94,19 +111,14 @@ bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key
     return HasUnsavedDocuments() == false;
 }
 
-void DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    using namespace DAVA;
-    using namespace TArc;
-    ContextAccessor* accessor = GetAccessor();
-    accessor->ForEachContext([this](DataContext& context) {
-        SaveDocument(context.GetID());
-    });
+    return SaveAllDocuments();
 }
 
 void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    //do nothing
+    DiscardUnsavedChanges();
 }
 
 void DocumentsModule::PostInit()
@@ -116,14 +128,16 @@ void DocumentsModule::PostInit()
 
     packageListenerProxy.Init(this, GetAccessor());
 
-    InitWatcher();
+    InitGlobalData();
+
     InitEditorSystems();
     InitCentralWidget();
 
     RegisterOperations();
     CreateDocumentsActions();
-    CreateUndoRedoActions();
+    CreateEditActions();
     CreateViewActions();
+    CreateFindActions();
 }
 
 void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
@@ -176,7 +190,7 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, renderWidget, systemsManager.get());
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager.get());
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -195,11 +209,9 @@ void DocumentsModule::InitCentralWidget()
     QObject::connect(previewWidget, &PreviewWidget::CopyRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnCopy);
     QObject::connect(previewWidget, &PreviewWidget::PasteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnPaste);
     QObject::connect(previewWidget, &PreviewWidget::DuplicateRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDuplicate);
-
-    findInDocumentController.reset(new FindInDocumentController(this, mainWindow, previewWidget->GetFindInDocumentWidget()));
 }
 
-void DocumentsModule::InitWatcher()
+void DocumentsModule::InitGlobalData()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -219,7 +231,7 @@ void DocumentsModule::CreateDocumentsActions()
     using namespace DAVA;
     using namespace TArc;
 
-    const QString toolBarName("mainToolbar");
+    const QString toolBarName("Main Toolbar");
 
     const QString saveDocumentActionName("Save document");
     const QString saveAllDocumentsActionName("Force save all");
@@ -246,7 +258,7 @@ void DocumentsModule::CreateDocumentsActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "Close project" }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, "project actions separator" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -260,7 +272,7 @@ void DocumentsModule::CreateDocumentsActions()
         connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::SaveAllDocuments, this));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, saveDocumentActionName }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, saveDocumentActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -292,12 +304,12 @@ void DocumentsModule::CreateDocumentsActions()
         QAction* separator = new QAction(toolBarSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, saveAllDocumentsActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 }
 
-void DocumentsModule::CreateUndoRedoActions()
+void DocumentsModule::CreateEditActions()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -305,7 +317,7 @@ void DocumentsModule::CreateUndoRedoActions()
     const QString undoActionName("Undo");
     const QString redoActionName("Redo");
 
-    const QString toolBarName("mainToolbar");
+    const QString toolBarName("Main Toolbar");
     const QString editMenuSeparatorName("undo redo separator");
 
     Function<Any(QString, const Any&)> makeActionName = [](QString baseName, const Any& actionText) {
@@ -340,11 +352,12 @@ void DocumentsModule::CreateUndoRedoActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::undoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnUndo));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::BeforeItem }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, "documents separator" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -368,11 +381,12 @@ void DocumentsModule::CreateUndoRedoActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::redoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnRedo));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, undoActionName }));
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName, { InsertionParams::eInsertionMethod::AfterItem, undoActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -382,8 +396,32 @@ void DocumentsModule::CreateUndoRedoActions()
         QAction* separator = new QAction(editMenuSeparatorName, nullptr);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateToolbarPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, redoActionName }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+    }
+
+    // Group
+    {
+        const QString groupActionName("Group");
+
+        QtAction* action = new QtAction(accessor, groupActionName, nullptr);
+        action->setShortcutContext(Qt::WindowShortcut);
+        action->setShortcut(QKeySequence("Ctrl+G"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
+                                         {
+                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 }
 
@@ -413,6 +451,16 @@ void DocumentsModule::OnRedo()
     data->commandStack->Redo();
 }
 
+void DocumentsModule::DoGroupSelection()
+{
+    CommandExecutor commandExecutor(GetAccessor(), GetUI());
+    ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
+    if (newGroupControl != nullptr)
+    {
+        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    }
+}
+
 void DocumentsModule::CreateViewActions()
 {
     using namespace DAVA;
@@ -438,11 +486,18 @@ void DocumentsModule::CreateViewActions()
 
     //Zoom in
     {
-        QAction* action = new QAction(zoomInActionName, nullptr);
+        QtAction* action = new QtAction(accessor, zoomInActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcuts(QList<QKeySequence>()
                              << QKeySequence("Ctrl+=")
                              << QKeySequence("Ctrl++"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnIncrementScale));
         ActionPlacementInfo placementInfo;
@@ -453,9 +508,16 @@ void DocumentsModule::CreateViewActions()
 
     //Zoom out
     {
-        QAction* action = new QAction(zoomOutActionName, nullptr);
+        QtAction* action = new QtAction(accessor, zoomOutActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+-"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnDecrementScale));
 
@@ -467,14 +529,47 @@ void DocumentsModule::CreateViewActions()
 
     //Actual zoom
     {
-        QAction* action = new QAction(actualZoomActionName, nullptr);
+        QtAction* action = new QtAction(accessor, actualZoomActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+0"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::SetActualScale));
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomOutActionName }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+}
+
+void DocumentsModule::CreateFindActions()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    UI* ui = GetUI();
+    {
+        QtAction* action = new QtAction(accessor, "Select Current Document in File System");
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
+        });
+
+        connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::OnSelectInFileSystem, this));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFind, { InsertionParams::eInsertionMethod::AfterItem }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -512,7 +607,7 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new EditorCanvasData());
+            initialData.emplace_back(new CanvasData());
             id = contextManager->CreateContext(std::move(initialData));
         }
     }
@@ -593,14 +688,12 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
     DocumentData* data = activeContext->GetData<DocumentData>();
     const PackageNode* package = data->GetPackageNode();
     String controlPathStr = controlPath.toStdString();
-    ControlNode* node = package->GetPrototypes()->FindControlNodeByPath(controlPathStr);
-    if (node == nullptr)
+    Set<PackageBaseNode*> foundNodes;
+    package->GetPrototypes()->FindAllNodesByPath(controlPathStr, foundNodes);
+    package->GetPackageControlsNode()->FindAllNodesByPath(controlPathStr, foundNodes);
+    if (!foundNodes.empty())
     {
-        node = package->GetPackageControlsNode()->FindControlNodeByPath(controlPathStr);
-    }
-    if (node != nullptr)
-    {
-        data->SetSelectedNodes({ node });
+        data->SetSelectedNodes(foundNodes);
     }
 }
 
@@ -613,8 +706,8 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    DVASSERT(staticText != nullptr);
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    DVASSERT(textComponent != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
@@ -624,7 +717,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     QString label = QObject::tr("Enter new text, please");
     bool ok;
-    QString inputText = MultilineTextInputDialog::GetMultiLineText(GetUI()->GetWindow(DAVA::TArc::mainWindowKey), label, label, QString::fromStdString(text), &ok);
+    QString inputText = MultilineTextInputDialog::GetMultiLineText(GetUI(), label, label, QString::fromStdString(text), &ok);
     if (ok)
     {
         ContextAccessor* accessor = GetAccessor();
@@ -635,13 +728,18 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
         stack->BeginBatch("change text by user");
         AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("multiline");
         DVASSERT(multilineProperty != nullptr);
-        UIStaticText::eMultiline multilineType = multilineProperty->GetValue().Cast<UIStaticText::eMultiline>();
-        if (inputText.contains('\n') && multilineType == UIStaticText::MULTILINE_DISABLED)
+
+        // Update "multiline" property if need
+        if (inputText.contains('\n'))
         {
-            std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-            command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
-            data->ExecCommand(std::move(command));
+            if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
+            {
+                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+                command->AddNodePropertyValue(node, multilineProperty, Any(UITextComponent::MULTILINE_ENABLED));
+                data->ExecCommand(std::move(command));
+            }
         }
+
         std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
         command->AddNodePropertyValue(node, textProperty, Any(inputText.toStdString()));
         data->ExecCommand(std::move(command));
@@ -708,16 +806,25 @@ void DocumentsModule::CloseAllDocuments()
         params.buttons = ModalMessageParams::SaveAll | ModalMessageParams::NoToAll | ModalMessageParams::Cancel;
         params.icon = ModalMessageParams::Question;
         ModalMessageParams::Button button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
-        if (button == ModalMessageParams::Cancel)
+        if (button == ModalMessageParams::SaveAll)
+        {
+            hasUnsaved = (SaveAllDocuments() == false);
+        }
+        else if (button == ModalMessageParams::NoToAll)
+        {
+            DiscardUnsavedChanges();
+            hasUnsaved = false;
+        }
+        else
         {
             return;
         }
-        else if (button == ModalMessageParams::SaveAll)
-        {
-            SaveAllDocuments();
-        }
     }
-    DeleteAllDocuments();
+
+    if (!hasUnsaved)
+    {
+        DeleteAllDocuments();
+    }
 }
 
 void DocumentsModule::DeleteAllDocuments()
@@ -906,9 +1013,8 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     if (serializer.HasErrors())
     {
         ModalMessageParams params;
-        params.title = QObject::tr("Can't save");
-        params.message = QObject::tr("Next Erros were occurred during serialization:\n");
-        params.message.append(QString::fromStdString(serializer.GetResults().GetResultMessages()));
+        params.title = QString::fromStdString(DAVA::Format("Can't save %s", data->package->GetPath().GetFilename().c_str()));
+        params.message = QString::fromStdString(serializer.GetResults().GetResultMessages());
 
         params.buttons = ModalMessageParams::Ok;
         params.icon = ModalMessageParams::Warning;
@@ -923,21 +1029,32 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     return true;
 }
 
-void DocumentsModule::SaveAllDocuments()
+bool DocumentsModule::SaveAllDocuments()
 {
-    GetAccessor()->ForEachContext([this](DAVA::TArc::DataContext& context)
+    bool savedOk = true;
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
                                   {
-                                      SaveDocument(context.GetID());
+                                      savedOk = SaveDocument(context.GetID()) && savedOk;
                                   });
+    return savedOk;
 }
 
-void DocumentsModule::SaveCurrentDocument()
+bool DocumentsModule::SaveCurrentDocument()
 {
     using namespace DAVA::TArc;
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
 
-    SaveDocument(activeContext->GetID());
+    return SaveDocument(activeContext->GetID());
+}
+
+void DocumentsModule::DiscardUnsavedChanges()
+{
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
+                                  {
+                                      DocumentData* data = context.GetData<DocumentData>();
+                                      data->commandStack->SetClean();
+                                  });
 }
 
 void DocumentsModule::OnFileChanged(const QString& path)
@@ -1078,4 +1195,14 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     }
 }
 
-DECL_GUI_MODULE(DocumentsModule);
+void DocumentsModule::OnSelectInFileSystem()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* context = GetAccessor()->GetActiveContext();
+    DVASSERT(context != nullptr);
+    DocumentData* documentData = context->GetData<DocumentData>();
+    QString filePath = documentData->GetPackageAbsolutePath();
+    InvokeOperation(QEGlobal::SelectFile.ID, filePath);
+}

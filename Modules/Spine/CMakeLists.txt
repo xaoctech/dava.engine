@@ -1,19 +1,17 @@
-
-set( NAME_MODULE SpineModule )
-
+set( NAME_MODULE Spine )
 set( MODULE_TYPE STATIC )
 
-set( INCLUDES ${CMAKE_CURRENT_LIST_DIR}/Sources )
+set( HPP_FILES_RECURSE Sources/*.h )
+set( CPP_FILES_RECURSE Sources/*.cpp )
 
-set( INCLUDES_PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Libs/include
-                      ${CMAKE_CURRENT_LIST_DIR}/Sources
+set( SpineRootDir "${CMAKE_CURRENT_SOURCE_DIR}" )
+
+set( INCLUDES ${SpineRootDir}/Sources )
+
+set( INCLUDES_PRIVATE ${SpineRootDir}/Libs/include
                       ${DAVA_ENGINE_DIR} )
 
-set( MODULE_INITIALIZATION_CODE Sources/SpineModule.h )
-#set( MODULE_INITIALIZATION_NAMESPACE Spine )
-
-set( HPP_FILES_RECURSE *.h )
-set( CPP_FILES_RECURSE *.cpp )
+set( MODULE_INITIALIZATION_CODE Sources/Spine/SpineModule.h )
 
 set( LIBRARIES_SPINE ${CMAKE_CURRENT_LIST_DIR}/Libs )
 

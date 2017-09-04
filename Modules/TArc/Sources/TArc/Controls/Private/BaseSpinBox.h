@@ -4,12 +4,12 @@
 #include "TArc/Controls/Private/ValidationUtils.h"
 #include "TArc/Controls/CommonStrings.h"
 #include "TArc/Utils/QtConnections.h"
+#include "TArc/Qt/QtString.h"
 
 #include <QDoubleSpinBox>
 #include <QSpinBox>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QString>
 #include <QToolTip>
 
 namespace DAVA
@@ -25,7 +25,8 @@ public:
         Value,
         IsReadOnly,
         IsEnabled,
-        Range
+        Range,
+        ShowSpinArrows,
     };
 
     using BaseParams = typename ControlProxyImpl<TBase>::BaseParams;
@@ -64,6 +65,8 @@ protected:
     };
 
     Stack<ControlState> stateHistory;
+
+    QAbstractSpinBox::ButtonSymbols validStateButtonSymbol = QAbstractSpinBox::UpDownArrows;
 
 private:
     QString textFromValue(TEditableType val) const override;

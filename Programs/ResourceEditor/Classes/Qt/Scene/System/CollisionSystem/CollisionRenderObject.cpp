@@ -18,7 +18,7 @@ CollisionRenderObject::CollisionRenderObject(DAVA::Entity* entity, btCollisionWo
         int batchLodIndex = 0;
         int batchSwitchIndex = 0;
         DAVA::RenderBatch* batch = renderObject->GetRenderBatch(i, batchLodIndex, batchSwitchIndex);
-        int vertexCount = batch->GetPolygonGroup()->GetVertexCount();
+        int vertexCount = (batch->GetPolygonGroup() != nullptr) ? batch->GetPolygonGroup()->GetVertexCount() : 0;
         if ((vertexCount > maxVertexCount) && (curSwitchIndex == batchSwitchIndex))
         {
             bestLodIndex = batchLodIndex;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/NetworkHelpers/ChannelListenerDispatched.h>
+#include <NetworkHelpers/ChannelListenerDispatched.h>
 
 #include <Network/PeerDesription.h>
 #include <Network/NetService.h>

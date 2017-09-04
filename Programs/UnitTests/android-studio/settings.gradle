@@ -1,3 +1,0 @@
-include ':AndroidFramework'
-project(':AndroidFramework').projectDir = file('../../AndroidFrameworkStudio')
-include ':unit_tests'

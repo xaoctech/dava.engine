@@ -5,9 +5,9 @@
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/QtConnections.h"
+#include "TArc/Qt/QtString.h"
 
 #include <QComboBox>
-#include <QString>
 
 class QPaintEvent;
 class QEvent;

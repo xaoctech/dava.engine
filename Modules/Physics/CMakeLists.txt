@@ -1,4 +1,4 @@
-set(NAME_MODULE PhysicsModule )
+set(NAME_MODULE Physics )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
@@ -12,7 +12,7 @@ set(INCLUDES "${PhysicsRootDir}/Sources"
              "${PhysicsRootDir}/Libs/include/physx"
              "${PhysicsRootDir}/Libs/include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
-set( MODULE_INITIALIZATION_CODE Sources/Physics/PhysicsModule.h )
+set(MODULE_INITIALIZATION_CODE Sources/Physics/PhysicsModule.h )
 set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
 set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
 
@@ -445,6 +445,108 @@ set(ANDROID_STATIC_LIBS
                             "${LibsPath}/Android/armeabi-v7a/libPhysX3.a"
                             "-Wl,--end-group")
 
+
+set(LINUX_STATIC_DEBUG_LIBS "${LibsPath}/Linux/libLowLevelDEBUG.a"
+                            "${LibsPath}/Linux/libLowLevelAABBDEBUG.a"
+                            "${LibsPath}/Linux/libLowLevelClothDEBUG.a"
+                            "${LibsPath}/Linux/libLowLevelDynamicsDEBUG.a"
+                            "${LibsPath}/Linux/libLowLevelParticlesDEBUG.a"
+                            "${LibsPath}/Linux/libPhysX3ExtensionsDEBUG.a"
+                            "${LibsPath}/Linux/libPhysX3VehicleDEBUG.a"
+                            "${LibsPath}/Linux/libPsFastXmlDEBUG.a"
+                            "${LibsPath}/Linux/libPxTaskDEBUG.a"
+                            "${LibsPath}/Linux/libSceneQueryDEBUG.a"
+                            "${LibsPath}/Linux/libSimulationControllerDEBUG.a"
+                            "${LibsPath}/Linux/libPhysX3DEBUG_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematicDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CommonDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CookingDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPxFoundationDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDKDEBUG_x64.so")
+
+set(LINUX_DYNAMIC_DEBUG_LIBS "${LibsPath}/Linux/libPhysX3DEBUG_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematicDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CommonDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CookingDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPxFoundationDEBUG_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDKDEBUG_x64.so")
+
+set(LINUX_STATIC_CHECKED_LIBS "${LibsPath}/Linux/libLowLevelCHECKED.a"
+                            "${LibsPath}/Linux/libLowLevelAABBCHECKED.a"
+                            "${LibsPath}/Linux/libLowLevelClothCHECKED.a"
+                            "${LibsPath}/Linux/libLowLevelDynamicsCHECKED.a"
+                            "${LibsPath}/Linux/libLowLevelParticlesCHECKED.a"
+                            "${LibsPath}/Linux/libPhysX3ExtensionsCHECKED.a"
+                            "${LibsPath}/Linux/libPhysX3VehicleCHECKED.a"
+                            "${LibsPath}/Linux/libPsFastXmlCHECKED.a"
+                            "${LibsPath}/Linux/libPxTaskCHECKED.a"
+                            "${LibsPath}/Linux/libSceneQueryCHECKED.a"
+                            "${LibsPath}/Linux/libSimulationControllerCHECKED.a"
+                            "${LibsPath}/Linux/libPhysX3CHECKED_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematicCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CommonCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CookingCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPxFoundationCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDKCHECKED_x64.so")
+
+set(LINUX_DYNAMIC_CHECKED_LIBS "${LibsPath}/Linux/libPhysX3CHECKED_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematicCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CommonCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CookingCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPxFoundationCHECKED_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDKCHECKED_x64.so")
+
+
+set(LINUX_STATIC_PROFILE_LIBS "${LibsPath}/Linux/libLowLevelPROFILE.a"
+                            "${LibsPath}/Linux/libLowLevelAABBPROFILE.a"
+                            "${LibsPath}/Linux/libLowLevelClothPROFILE.a"
+                            "${LibsPath}/Linux/libLowLevelDynamicsPROFILE.a"
+                            "${LibsPath}/Linux/libLowLevelParticlesPROFILE.a"
+                            "${LibsPath}/Linux/libPhysX3ExtensionsPROFILE.a"
+                            "${LibsPath}/Linux/libPhysX3VehiclePROFILE.a"
+                            "${LibsPath}/Linux/libPsFastXmlPROFILE.a"
+                            "${LibsPath}/Linux/libPxTaskPROFILE.a"
+                            "${LibsPath}/Linux/libSceneQueryPROFILE.a"
+                            "${LibsPath}/Linux/libSimulationControllerPROFILE.a"
+                            "${LibsPath}/Linux/libPhysX3PROFILE_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematicPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CommonPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CookingPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPxFoundationPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDKPROFILE_x64.so")
+
+set(LINUX_DYNAMIC_PROFILE_LIBS "${LibsPath}/Linux/libPhysX3PROFILE_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematicPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CommonPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CookingPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPxFoundationPROFILE_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDKPROFILE_x64.so")
+
+set(LINUX_STATIC_RELEASE_LIBS "${LibsPath}/Linux/libLowLevel.a"
+                            "${LibsPath}/Linux/libLowLevelAABB.a"
+                            "${LibsPath}/Linux/libLowLevelCloth.a"
+                            "${LibsPath}/Linux/libLowLevelDynamics.a"
+                            "${LibsPath}/Linux/libLowLevelParticles.a"
+                            "${LibsPath}/Linux/libPhysX3Extensions.a"
+                            "${LibsPath}/Linux/libPhysX3Vehicle.a"
+                            "${LibsPath}/Linux/libPsFastXml.a"
+                            "${LibsPath}/Linux/libPxTask.a"
+                            "${LibsPath}/Linux/libSceneQuery.a"
+                            "${LibsPath}/Linux/libSimulationController.a"
+                             "${LibsPath}/Linux/libPhysX3_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematic_x64.so"
+                             "${LibsPath}/Linux/libPhysX3Common_x64.so"
+                             "${LibsPath}/Linux/libPhysX3Cooking_x64.so"
+                             "${LibsPath}/Linux/libPxFoundation_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDK_x64.so")
+
+set(LINUX_DYNAMIC_RELEASE_LIBS "${LibsPath}/Linux/libPhysX3_x64.so"
+                             "${LibsPath}/Linux/libPhysX3CharacterKinematic_x64.so"
+                             "${LibsPath}/Linux/libPhysX3Common_x64.so"
+                             "${LibsPath}/Linux/libPhysX3Cooking_x64.so"
+                             "${LibsPath}/Linux/libPxFoundation_x64.so"
+                             "${LibsPath}/Linux/libPxPvdSDK_x64.so")
+
 set(STATIC_LIBRARIES_WIN32_RELEASE "${WIN32_STATIC_RELEASE_LIBS}")
 set(DYNAMIC_LIBRARIES_WIN32_RELEASE "${WIN32_DYNAMIC_RELEASE_LIBS}")
 
@@ -470,7 +572,13 @@ set(STATIC_LIBRARIES_IOS_RELEASE "${IOS_STATIC_RELEASE_LIBS}")
 set(STATIC_LIBRARIES_IOS_DEBUG "${IOS_STATIC_DEBUG_LIBS}")
 
 set(STATIC_LIBRARIES_ANDROID_RELEASE "${ANDROID_STATIC_LIBS}")
-set(STATIC_LIBRARIES_ANDOIRD_DEBUG "${ANDROID_STATIC_LIBS}")
+set(STATIC_LIBRARIES_ANDROID_DEBUG "${ANDROID_STATIC_LIBS}")
+
+set(STATIC_LIBRARIES_LINUX_RELEASE "${LINUX_STATIC_RELEASE_LIBS}")
+set(DYNAMIC_LIBRARIES_LINUX_RELEASE "${LINUX_DYNAMIC_RELEASE_LIBS}")
+
+set(STATIC_LIBRARIES_LINUX_DEBUG "${LINUX_STATIC_DEBUG_LIBS}")
+set(DYNAMIC_LIBRARIES_LINUX_DEBUG "${LINUX_DYNAMIC_DEBUG_LIBS}")
 
 set(BINARY_WIN32_DIR_RELEASE "${LibsPath}/Win32/x86")
 set(BINARY_WIN32_DIR_RELWITHDEB "${LibsPath}/Win32/x86")

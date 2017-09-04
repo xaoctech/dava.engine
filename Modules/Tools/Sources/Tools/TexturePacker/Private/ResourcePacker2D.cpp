@@ -141,7 +141,7 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
         }
     }
 
-    RecursiveTreeWalk(inputGfxDirectory, outputGfxDirectory, packAlgorithms);
+    PackRecursively(inputGfxDirectory, outputGfxDirectory, packAlgorithms);
 
     // Put latest md5 after convertation
     RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true);
@@ -278,7 +278,7 @@ uint32 ResourcePacker2D::GetMaxTextureSize() const
     return maxTextureSize;
 }
 
-void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
+void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
 {
     DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
 
@@ -424,9 +424,8 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     if (fileList->IsDirectory(fi))
                         continue;
 
-                    definitionFileList.emplace_back(new DefinitionFile());
+                    DAVA::RefPtr<DefinitionFile> defFile(new DefinitionFile());
 
-                    DefinitionFile::Pointer& defFile = definitionFileList.back();
                     bool shouldAcceptFile = false;
 
                     FilePath fullname = fileList->GetPathname(fi);
@@ -437,8 +436,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     }
                     else if (fullname.IsEqualToExtension(".png"))
                     {
-                        shouldAcceptFile = true;
-                        defFile->LoadPNG(fullname, processDir);
+                        shouldAcceptFile = defFile->LoadPNG(fullname, processDir);
                     }
                     else if (fullname.IsEqualToExtension(".pngdef"))
                     {
@@ -449,9 +447,9 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                         justCopyList.push_back(fullname);
                     }
 
-                    if (shouldAcceptFile == false)
+                    if (shouldAcceptFile)
                     {
-                        definitionFileList.pop_back();
+                        definitionFileList.push_back(defFile);
                     }
                 }
 
@@ -547,7 +545,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath& inputPath, const FilePa
                     FilePath output = outputPath + filename;
                     output.MakeDirectoryPathname();
 
-                    RecursiveTreeWalk(input, output, packAlgorithms, flagsToPass);
+                    PackRecursively(input, output, packAlgorithms, flagsToPass);
                 }
             }
         }

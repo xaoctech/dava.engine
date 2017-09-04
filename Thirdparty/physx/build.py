@@ -6,8 +6,12 @@ import build_utils
 def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32', 'win10', 'android']
-    else:
+    elif platform == 'darwin':
         return ['macos', 'ios', 'android']
+    elif platform == 'linux':
+        return ['android', 'linux']
+    else:
+        return []
 
 
 def get_dependencies_for_target(target):
@@ -25,6 +29,8 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_ios(working_directory_path, root_project_path)
     elif target == 'android':
         _build_android(working_directory_path, root_project_path)
+    elif target == 'linux':
+        _build_linux(working_directory_path, root_project_path)
 
 
 def get_download_info():
@@ -131,6 +137,23 @@ def _build_ios(working_directory_path, root_project_path):
     _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'ios64'), binary_dst_path, '.a')
     _copy_headers(source_folder_path, root_project_path)
 
+def _build_linux(working_directory_path, root_project_path):
+    source_folder_path = _download_and_extract(working_directory_path)
+    _patch_sources('patch_common.diff', 'patch_linux.diff', working_directory_path)
+
+    project_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'linux64')
+    build_utils.run_process("make debug", process_cwd=project_path, shell=True)
+    build_utils.run_process("make release", process_cwd=project_path, shell=True)
+    #build_utils.run_process("make profile", process_cwd=project_path, shell=True)
+    #build_utils.run_process("make checked", process_cwd=project_path, shell=True)
+
+    binary_dst_path = os.path.join(root_project_path, 'Modules', 'Physics', 'Libs', 'Linux')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Lib', 'linux64'), binary_dst_path, '.a')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'lib', 'linux64'), binary_dst_path, '.a')
+    _copy_libs(os.path.join(source_folder_path, 'PhysX_3.4', 'Bin', 'linux64'), binary_dst_path, '.so')
+    _copy_libs(os.path.join(source_folder_path, 'PxShared', 'bin', 'linux64'), binary_dst_path, '.so')
+    _copy_headers(source_folder_path, root_project_path)
+
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources('patch_common.diff', '', working_directory_path)
@@ -160,16 +183,16 @@ def _build_android(working_directory_path, root_project_path):
     build_android_armeabiv7a_folder = os.path.join(working_directory_path, 'gen', 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(working_directory_path, 'gen', 'build_android_x86')
     toolchain_filepath = os.path.join(root_project_path, 'Sources/CMake/Toolchains/android.toolchain.cmake')
-    android_ndk_folder_path = build_utils.get_android_ndk_path(root_project_path)
+    android_ndk_folder_path = build_utils.get_android_ndk_path()
 
-    build_utils.cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_dir, toolchain_filepath,
+    build_utils.cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_dir,
                                          android_ndk_folder_path, 'armeabi-v7a',
                                          ['-DFRAMEWORK_ROOT_PATH=' + root_project_path])
 
     binary_dst_path = os.path.join(root_project_path, 'Modules', 'Physics', 'Libs', 'Android')
     _copy_libs(build_android_armeabiv7a_folder, os.path.join(binary_dst_path, 'armeabi-v7a'), '.a', True)
 
-    #build_utils.cmake_generate_build_ndk(build_android_x86_folder, source_dir, toolchain_filepath,
+    #build_utils.cmake_generate_build_ndk(build_android_x86_folder, source_dir,
     #                                     android_ndk_folder_path, 'x86',
     #                                     ['-DFRAMEWORK_ROOT_PATH=' + root_project_path, '-Wno-dev'])
     _copy_headers(source_folder_path, root_project_path)
