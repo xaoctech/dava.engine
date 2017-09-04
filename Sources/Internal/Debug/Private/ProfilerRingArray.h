@@ -134,7 +134,7 @@ public:
     {
     public:
         iterator(T* data, uint32 _index, uint32 _mask)
-            : base_iterator(data, _index, _mask)
+            : base_iterator<T>(data, _index, _mask)
         {
         }
         iterator(const reverse_iterator& it)
@@ -187,7 +187,7 @@ public:
     {
     public:
         const_iterator(const T* data, uint32 _index, uint32 _mask)
-            : base_iterator(data, _index, _mask)
+            : base_iterator<const T>(data, _index, _mask)
         {
         }
         const_iterator(const const_reverse_iterator& it)
@@ -230,7 +230,7 @@ public:
         }
         const_iterator operator--(int)
         {
-            iterator prev = *this;
+            const_iterator prev = *this;
             --(*this);
             return prev;
         }
