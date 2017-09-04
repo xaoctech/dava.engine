@@ -137,9 +137,6 @@ SceneEditor2::SceneEditor2()
     editorLightSystem = new EditorLightSystem(this);
     AddSystem(editorLightSystem, MAKE_COMPONENT_MASK(DAVA::Component::LIGHT_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
 
-    debugDrawSystem = new DebugDrawSystem(this);
-    AddSystem(debugDrawSystem, 0);
-
     beastSystem = new BeastSystem(this);
     AddSystem(beastSystem, 0);
 
@@ -171,8 +168,6 @@ SceneEditor2::SceneEditor2()
     AddSystem(editorVegetationSystem, MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT), 0);
 
     SceneSignals::Instance()->EmitOpened(this);
-
-    wasChanged = false;
 }
 
 SceneEditor2::~SceneEditor2()
@@ -258,7 +253,6 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
         isLoaded = true;
 
         // mark current position in command stack as clean
-        wasChanged = false;
         commandStack->SetClean();
     }
 
@@ -488,11 +482,6 @@ void SceneEditor2::EndBatch()
     commandStack->EndBatch();
 }
 
-void SceneEditor2::ActivateCommandStack()
-{
-    commandStack->Activate();
-}
-
 void SceneEditor2::Exec(std::unique_ptr<DAVA::Command>&& command)
 {
     if (command)
@@ -534,7 +523,7 @@ bool SceneEditor2::IsHUDVisible() const
 
 bool SceneEditor2::IsChanged() const
 {
-    return ((!commandStack->IsClean()) || wasChanged);
+    return !commandStack->IsClean();
 }
 
 void SceneEditor2::SetChanged()
@@ -634,34 +623,6 @@ void SceneEditor2::EditorCommandNotify::Notify(const RECommandNotificationObject
         editor->EditorCommandProcess(commandNotification);
         SceneSignals::Instance()->EmitCommandExecuted(editor, commandNotification);
     }
-}
-
-void SceneEditor2::EditorCommandNotify::CleanChanged(bool clean)
-{
-    if (nullptr != editor)
-    {
-        SceneSignals::Instance()->EmitModifyStatusChanged(editor, !clean);
-    }
-}
-
-void SceneEditor2::EditorCommandNotify::CanUndoChanged(bool canUndo)
-{
-    SceneSignals::Instance()->CanUndoStateChanged(canUndo);
-}
-
-void SceneEditor2::EditorCommandNotify::CanRedoChanged(bool canRedo)
-{
-    SceneSignals::Instance()->CanRedoStateChanged(canRedo);
-}
-
-void SceneEditor2::EditorCommandNotify::UndoTextChanged(const DAVA::String& undoText)
-{
-    SceneSignals::Instance()->UndoTextChanged(undoText);
-}
-
-void SceneEditor2::EditorCommandNotify::RedoTextChanged(const DAVA::String& redoText)
-{
-    SceneSignals::Instance()->RedoTextChanged(redoText);
 }
 
 const DAVA::RenderStats& SceneEditor2::GetRenderStats() const
@@ -848,7 +809,6 @@ void SceneEditor2::RemoveSystems()
     materialSystem = nullptr;
     visibilityCheckSystem = nullptr;
     cameraSystem = nullptr;
-    debugDrawSystem = nullptr;
     editorLODSystem = nullptr;
     particlesSystem = nullptr;
     hoodSystem = nullptr;
@@ -870,11 +830,7 @@ void SceneEditor2::RemoveSystems()
 
 void SceneEditor2::MarkAsChanged()
 {
-    if (!wasChanged)
-    {
-        wasChanged = true;
-        SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
-    }
+    commandStack->SetChanged();
 }
 
 void SceneEditor2::Setup3DDrawing()

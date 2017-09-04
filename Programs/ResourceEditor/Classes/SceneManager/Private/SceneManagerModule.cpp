@@ -1,3 +1,4 @@
+#include "Classes/Constants.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
@@ -32,6 +33,7 @@
 #include <Functional/Function.h>
 #include <Base/FastName.h>
 #include <Base/Any.h>
+#include <Base/String.h>
 #include <Base/GlobalEnum.h>
 
 #include <QList>
@@ -480,6 +482,64 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "Save To Folder With Children" }));
         ui->AddAction(mainWindowKey, placementInfo, action);
+    }
+
+    // Undo/Redo
+    DAVA::Function<DAVA::Any(DAVA::String, const DAVA::Any&)> makeUndoRedoText = [](DAVA::String prefix, const DAVA::Any& v) {
+        DAVA::String descr = v.Cast<DAVA::String>("");
+        if (descr.empty() == false)
+        {
+            return prefix + ": " + descr;
+        }
+
+        return prefix;
+    };
+    {
+        QtAction* undo = new QtAction(accessor, QIcon(":/QtIcons/edit_undo.png"), QStringLiteral("Undo"));
+        undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const DAVA::Any& v) {
+            return v.Cast<bool>(false);
+        });
+        undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
+        undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
+
+        undo->setShortcutContext(Qt::ApplicationShortcut);
+        undo->setAutoRepeat(false);
+        undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+
+        connections.AddConnection(undo, &QAction::triggered, [this]() {
+            ContextAccessor* accessor = GetAccessor();
+            DVASSERT(accessor->GetActiveContext() != nullptr);
+            accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Undo();
+        });
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::BeforeItem }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("mainToolBar", { InsertionParams::eInsertionMethod::AfterItem, "saveSeparator" }));
+        ui->AddAction(mainWindowKey, placementInfo, undo);
+    }
+
+    {
+        QtAction* redo = new QtAction(accessor, QIcon(":/QtIcons/edit_redo.png"), QStringLiteral("Redo"));
+        redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const DAVA::Any& v) {
+            return v.Cast<bool>(false);
+        });
+        redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
+        redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
+
+        redo->setShortcutContext(Qt::ApplicationShortcut);
+        redo->setAutoRepeat(false);
+        redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+
+        connections.AddConnection(redo, &QAction::triggered, [this]() {
+            ContextAccessor* accessor = GetAccessor();
+            DVASSERT(accessor->GetActiveContext() != nullptr);
+            accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Redo();
+        });
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("mainToolBar", { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));
+        ui->AddAction(mainWindowKey, placementInfo, redo);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

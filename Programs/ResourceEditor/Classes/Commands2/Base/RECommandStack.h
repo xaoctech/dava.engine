@@ -16,8 +16,6 @@ public:
     void SetChanged();
     void RemoveCommands(DAVA::uint32 commandId);
 
-    void Activate();
-
     bool IsUncleanCommandExists(DAVA::uint32 commandId) const;
 
 private:
@@ -27,7 +25,4 @@ private:
 
     void OnCommandExecuted(const DAVA::Command* cmd, bool redo);
     void ExecInternal(std::unique_ptr<DAVA::Command>&& command, bool isSingleCommand) override;
-
-    void OnUndoCommandChanged(const DAVA::Command* command);
-    void OnRedoCommandChanged(const DAVA::Command* command);
 };

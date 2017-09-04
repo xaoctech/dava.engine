@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 
 #include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Core/ContextAccessor.h"
+
+#include <Base/BaseTypes.h>
 
 #include <QPointer>
 #include <QAction>
@@ -35,7 +37,7 @@ public:
         virtual bool WindowCloseRequested(const WindowKey& key) = 0;
         virtual void OnWindowClosed(const WindowKey& key) = 0;
     };
-    UIManager(Delegate* delegate, PropertiesItem&& holder);
+    UIManager(ContextAccessor* accessor, Delegate* delegate, PropertiesItem&& holder);
     ~UIManager();
 
     void InitializationFinished();

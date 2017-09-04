@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TArc/DataProcessing/DataWrapper.h"
+#include "TArc/DataProcessing/Common.h"
 #include "TArc/Qt/QtString.h"
 
 #include <Functional/Function.h>
@@ -80,11 +81,34 @@ struct DockPanelInfo
     ActionPlacementInfo actionPlacementInfo;
     bool tabbed = true;
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
+
+    enum class Fields
+    {
+        Title, // QString
+        IsActive // bool
+    };
+    Map<Fields, FieldDescriptor> descriptors;
 };
 
 struct CentralPanelInfo
 {
 };
+
+class IGeometryProcessor
+{
+public:
+    // Result is a rectangle, where "rectangle.topLeft" point is a pivot for widget and
+    // "rectangle.size" is a new size for widget
+    virtual QRect GetWidgetGeometry(QWidget* parent, QWidget* content) const = 0;
+};
+
+struct OverCentralPanelInfo
+{
+    std::shared_ptr<IGeometryProcessor> geometryProcessor;
+};
+
+void ShowOverCentralPanel(QWidget* view);
+void HideOverCentralPanel(QWidget* view);
 
 class PanelKey
 {
@@ -93,11 +117,13 @@ public:
     {
         DockPanel,
         CentralPanel,
+        OverCentralPanel,
         TypesCount
     };
 
     PanelKey(const QString& viewName, const DockPanelInfo& info);
     PanelKey(const QString& viewName, const CentralPanelInfo& info);
+    PanelKey(const QString& viewName, const OverCentralPanelInfo& info);
 
     const QString& GetViewName() const;
     Type GetType() const;

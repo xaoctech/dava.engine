@@ -42,6 +42,8 @@ public:
 
 private:
     void CalculateTriangles();
+    void ClipSelection(DAVA::Camera* camera, DAVA::Vector<DAVA::RenderObject*>& selection,
+                       DAVA::Vector<DAVA::RenderObject*>& visibilityArray, DAVA::uint32 visibilityCriteria);
 
     //signals
     void EmitInvalidateUI(DAVA::uint32 flags);
