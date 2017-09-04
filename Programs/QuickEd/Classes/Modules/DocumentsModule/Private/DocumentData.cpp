@@ -169,20 +169,10 @@ void DocumentData::RefreshDisplayedRootControls()
     SortedControlNodeSet newDisplayedRootControls(CompareByLCA);
     for (PackageBaseNode* selectedNode : selection.selectedNodes)
     {
-        if (dynamic_cast<ControlNode*>(selectedNode) == nullptr)
-        {
-            continue;
-        }
-        PackageBaseNode* root = selectedNode;
-        while (nullptr != root->GetParent() && nullptr != root->GetParent()->GetControl())
-        {
-            root = root->GetParent();
-        }
+        ControlNode* root = GetRootControlNode(dynamic_cast<ControlNode*>(selectedNode));
         if (nullptr != root)
         {
-            ControlNode* rootControl = dynamic_cast<ControlNode*>(root);
-            DVASSERT(rootControl != nullptr);
-            newDisplayedRootControls.insert(rootControl);
+            newDisplayedRootControls.insert(root);
         }
     }
     if (newDisplayedRootControls.empty() == false)

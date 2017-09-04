@@ -124,6 +124,7 @@ public:
     }
 
 private:
+    friend class FieldBinder;
     const ReflectedType* type = nullptr;
     UnorderedMap<FastName, Vector<Function<void(const Any&)>>> listeners;
     ContextAccessor* accessor = nullptr;
@@ -158,6 +159,17 @@ void FieldBinder::BindField(const FieldDescriptor& fieldDescr, const Function<vo
 
     impl->listeners.emplace_back(fieldDescr.type, impl->accessor);
     impl->listeners.back().BindField(fieldDescr.fieldName, fn);
+}
+
+void FieldBinder::SetValue(const FieldDescriptor& fieldDescr, const Any& v)
+{
+    for (UniversalDataListener& listener : impl->listeners)
+    {
+        if (listener.GetType() == fieldDescr.type)
+        {
+            listener.wrapper.SetFieldValue(fieldDescr.fieldName, v);
+        }
+    }
 }
 
 } // namespace TArc

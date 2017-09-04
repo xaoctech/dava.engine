@@ -51,46 +51,46 @@ namespace physx
 class PxSimulationStatistics
 {
 public:
-	/**
+    /**
 	\brief Identifies each type of broadphase volume.
 	@see nbBroadPhaseAdds nbBroadPhaseRemoves
 	*/
-	enum VolumeType
-	{
-		/**
+    enum VolumeType
+    {
+        /**
 		\brief A volume belonging to a rigid body object
 		@see PxRigidStatic PxRigidDynamic PxArticulationLink
 		*/
-		eRIGID_BODY,
+        eRIGID_BODY,
 
-		/**
+        /**
 		\brief A volume belonging to a particle system (deprecated)
 		\deprecated The PhysX particle feature has been deprecated in PhysX version 3.4
 		@see PxParticleSystem PxParticleFluid
 		*/
-		ePARTICLE_SYSTEM PX_DEPRECATED,
+        ePARTICLE_SYSTEM PX_DEPRECATED,
 
-		/**
+        /**
 		\brief A volume belonging to a cloth
 		@see PxCloth
 		*/
-		eCLOTH,
+        eCLOTH,
 
-		eVOLUME_COUNT
-	};
+        eVOLUME_COUNT
+    };
 
-	/**
+    /**
 	\brief Different types of rigid body collision pair statistics.
 	@see getRbPairStats
 	*/
-	enum RbPairStatsType
-	{
-		/**
+    enum RbPairStatsType
+    {
+        /**
 		\brief Shape pairs processed as discrete contact pairs for the current simulation step.
 		*/
-		eDISCRETE_CONTACT_PAIRS,
+        eDISCRETE_CONTACT_PAIRS,
 
-		/**
+        /**
 		\brief Shape pairs processed as swept integration pairs for the current simulation step.
 
 		\note Counts the pairs for which special CCD (continuous collision detection) work was actually done and NOT the number of pairs which were configured for CCD. 
@@ -98,96 +98,95 @@ public:
 
 		@see PxPairFlag::eDETECT_CCD_CONTACT,
 		*/
-		eCCD_PAIRS,
+        eCCD_PAIRS,
 
-		/**
+        /**
 		\brief Shape pairs processed with user contact modification enabled for the current simulation step.
 
 		@see PxContactModifyCallback
 		*/
-		eMODIFIED_CONTACT_PAIRS,
+        eMODIFIED_CONTACT_PAIRS,
 
-		/**
+        /**
 		\brief Trigger shape pairs processed for the current simulation step.
 
 		@see PxShapeFlag::eTRIGGER_SHAPE
 		*/
-		eTRIGGER_PAIRS
-	};
+        eTRIGGER_PAIRS
+    };
 
-
-//objects:
-	/**
+    //objects:
+    /**
 	\brief Number of active PxConstraint objects (joints etc.) for the current simulation step.
 	*/
-	PxU32   nbActiveConstraints;
+    PxU32 nbActiveConstraints;
 
-	/**
+    /**
 	\brief Number of active dynamic bodies for the current simulation step.
 
 	\note Does not include active kinematic bodies
 	*/
-	PxU32   nbActiveDynamicBodies;
+    PxU32 nbActiveDynamicBodies;
 
-	/**
+    /**
 	\brief Number of active kinematic bodies for the current simulation step.
 	
 	\note Kinematic deactivation occurs at the end of the frame after the last call to PxRigidDynamic::setKinematicTarget() was called so kinematics that are
 	deactivated in a given frame will be included by this counter.
 	*/
-	PxU32   nbActiveKinematicBodies;
+    PxU32 nbActiveKinematicBodies;
 
-	/**
+    /**
 	\brief Number of static bodies for the current simulation step.
 	*/
-	PxU32	nbStaticBodies;
+    PxU32 nbStaticBodies;
 
-	/**
+    /**
 	\brief Number of dynamic bodies for the current simulation step.
 
 	\note Includes inactive and kinematic bodies, and articulation links
 	*/
-	PxU32   nbDynamicBodies;
+    PxU32 nbDynamicBodies;
 
-	/**
+    /**
 	\brief Number of shapes of each geometry type.
 	*/
 
-	PxU32	nbShapes[PxGeometryType::eGEOMETRY_COUNT];
+    PxU32 nbShapes[PxGeometryType::eGEOMETRY_COUNT];
 
-	/**
+    /**
 	\brief Number of aggregates in the scene.
 	*/
-	PxU32	nbAggregates;
-	
-	/**
+    PxU32 nbAggregates;
+
+    /**
 	\brief Number of articulations in the scene.
 	*/
-	PxU32	nbArticulations;
+    PxU32 nbArticulations;
 
-//solver:
-	/**
+    //solver:
+    /**
 	\brief The number of 1D axis constraints(joints+contact) present in the current simulation step.
 	*/
-	PxU32	nbAxisSolverConstraints;
+    PxU32 nbAxisSolverConstraints;
 
-	/**
+    /**
 	\brief The size (in bytes) of the compressed contact stream in the current simulation step
 	*/
-	PxU32   compressedContactSize;
+    PxU32 compressedContactSize;
 
-	/**
+    /**
 	\brief The total required size (in bytes) of the contact constraints in the current simulation step
 	*/
-	PxU32   requiredContactConstraintMemory;
+    PxU32 requiredContactConstraintMemory;
 
-	/**
+    /**
 	\brief The peak amount of memory (in bytes) that was allocated for constraints (this includes joints) in the current simulation step
 	*/
-	PxU32   peakConstraintMemory;
+    PxU32 peakConstraintMemory;
 
-//broadphase:
-	/**
+    //broadphase:
+    /**
 	\brief Get number of broadphase volumes of a certain type added for the current simulation step.
 
 	\param[in] type The volume type for which to get the number
@@ -195,18 +194,18 @@ public:
 
 	@see VolumeType
 	*/
-	PxU32 getNbBroadPhaseAdds(VolumeType type) const
-	{
-		if (type != eVOLUME_COUNT)
-			return nbBroadPhaseAdds[type];
-		else
-		{
-			PX_ASSERT(false);
-			return 0;
-		}
-	}
+    PxU32 getNbBroadPhaseAdds(VolumeType type) const
+    {
+        if (type != eVOLUME_COUNT)
+            return nbBroadPhaseAdds[type];
+        else
+        {
+            PX_ASSERT(false);
+            return 0;
+        }
+    }
 
-	/**
+    /**
 	\brief Get number of broadphase volumes of a certain type removed for the current simulation step.
 
 	\param[in] type The volume type for which to get the number
@@ -214,19 +213,19 @@ public:
 
 	@see VolumeType
 	*/
-	PxU32 getNbBroadPhaseRemoves(VolumeType type) const
-	{
-		if (type != eVOLUME_COUNT)
-			return nbBroadPhaseRemoves[type];
-		else
-		{
-			PX_ASSERT(false);
-			return 0;
-		}
-	}
+    PxU32 getNbBroadPhaseRemoves(VolumeType type) const
+    {
+        if (type != eVOLUME_COUNT)
+            return nbBroadPhaseRemoves[type];
+        else
+        {
+            PX_ASSERT(false);
+            return 0;
+        }
+    }
 
-//collisions:
-	/**
+    //collisions:
+    /**
 	\brief Get number of shape collision pairs of a certain type processed for the current simulation step.
 
 	There is an entry for each geometry pair type.
@@ -239,143 +238,164 @@ public:
 	\param[in] g1 The geometry type of the other pair object
 	\return Number of processed pairs of the specified geometry types.
 	*/
-	PxU32 getRbPairStats(RbPairStatsType pairType, PxGeometryType::Enum g0, PxGeometryType::Enum g1) const
-	{
-		PX_ASSERT_WITH_MESSAGE(	(pairType >= eDISCRETE_CONTACT_PAIRS) &&
-								(pairType <= eTRIGGER_PAIRS),
-								"Invalid pairType in PxSimulationStatistics::getRbPairStats");
+    PxU32 getRbPairStats(RbPairStatsType pairType, PxGeometryType::Enum g0, PxGeometryType::Enum g1) const
+    {
+        PX_ASSERT_WITH_MESSAGE((pairType >= eDISCRETE_CONTACT_PAIRS) &&
+                               (pairType <= eTRIGGER_PAIRS),
+                               "Invalid pairType in PxSimulationStatistics::getRbPairStats");
 
-		if (g0 >= PxGeometryType::eGEOMETRY_COUNT || g1 >= PxGeometryType::eGEOMETRY_COUNT)
-		{
-			PX_ASSERT(false);
-			return 0;
-		}
+        if (g0 >= PxGeometryType::eGEOMETRY_COUNT || g1 >= PxGeometryType::eGEOMETRY_COUNT)
+        {
+            PX_ASSERT(false);
+            return 0;
+        }
 
-		PxU32 nbPairs = 0;
-		switch(pairType)
-		{
-			case eDISCRETE_CONTACT_PAIRS:
-				nbPairs = nbDiscreteContactPairs[g0][g1];
-				break;
-			case eCCD_PAIRS:
-				nbPairs = nbCCDPairs[g0][g1];
-				break;
-			case eMODIFIED_CONTACT_PAIRS:
-				nbPairs = nbModifiedContactPairs[g0][g1];
-				break;
-			case eTRIGGER_PAIRS:
-				nbPairs = nbTriggerPairs[g0][g1];
-				break;
-		}
-		return nbPairs;
-	}
+        PxU32 nbPairs = 0;
+        switch (pairType)
+        {
+        case eDISCRETE_CONTACT_PAIRS:
+            nbPairs = nbDiscreteContactPairs[g0][g1];
+            break;
+        case eCCD_PAIRS:
+            nbPairs = nbCCDPairs[g0][g1];
+            break;
+        case eMODIFIED_CONTACT_PAIRS:
+            nbPairs = nbModifiedContactPairs[g0][g1];
+            break;
+        case eTRIGGER_PAIRS:
+            nbPairs = nbTriggerPairs[g0][g1];
+            break;
+        }
+        return nbPairs;
+    }
 
-	/**
+    /**
 	\brief Total number of (non CCD) pairs reaching narrow phase
 	*/
-	PxU32	nbDiscreteContactPairsTotal;
+    PxU32 nbDiscreteContactPairsTotal;
 
-	/**
+    /**
 	\brief Total number of (non CCD) pairs for which contacts are successfully cached (<=nbDiscreteContactPairsTotal)
 	\note This includes pairs for which no contacts are generated, it still counts as a cache hit.
 	*/
-	PxU32	nbDiscreteContactPairsWithCacheHits;
+    PxU32 nbDiscreteContactPairsWithCacheHits;
 
-	/**
+    /**
 	\brief Total number of (non CCD) pairs for which at least 1 contact was generated (<=nbDiscreteContactPairsTotal)
 	*/
-	PxU32	nbDiscreteContactPairsWithContacts;
+    PxU32 nbDiscreteContactPairsWithContacts;
 
-	/**
+    /**
 	\brief Number of new pairs found by BP this frame
 	*/
-	PxU32	nbNewPairs;
+    PxU32 nbNewPairs;
 
-	/**
+    /**
 	\brief Number of lost pairs from BP this frame
 	*/
-	PxU32	nbLostPairs;
+    PxU32 nbLostPairs;
 
-	/**
+    /**
 	\brief Number of new touches found by NP this frame
 	*/
-	PxU32	nbNewTouches;
+    PxU32 nbNewTouches;
 
-	/**
+    /**
 	\brief Number of lost touches from NP this frame
 	*/
-	PxU32	nbLostTouches;
+    PxU32 nbLostTouches;
 
-	/**
+    /**
 	\brief Number of partitions used by the solver this frame
 	*/
-	PxU32	nbPartitions;
+    PxU32 nbPartitions;
 
-	PxSimulationStatistics() :
-		nbActiveConstraints					(0),
-		nbActiveDynamicBodies				(0),
-		nbActiveKinematicBodies				(0),
-		nbStaticBodies						(0),
-		nbDynamicBodies						(0),
-		nbAggregates						(0),
-		nbArticulations						(0),
-		nbAxisSolverConstraints				(0),
-		compressedContactSize				(0),
-		requiredContactConstraintMemory		(0),
-		peakConstraintMemory				(0),
-		nbDiscreteContactPairsTotal			(0),
-		nbDiscreteContactPairsWithCacheHits	(0),
-		nbDiscreteContactPairsWithContacts	(0),
-		nbNewPairs							(0),
-		nbLostPairs							(0),
-		nbNewTouches						(0),
-		nbLostTouches						(0),
-		nbPartitions						(0),
-		particlesGpuMeshCacheSize			(0),
-		particlesGpuMeshCacheUsed			(0),
-		particlesGpuMeshCacheHitrate		(0.0f)
-	{
-		for(PxU32 i=0; i < eVOLUME_COUNT; i++)
-		{
-			nbBroadPhaseAdds[i] = 0;
-			nbBroadPhaseRemoves[i] = 0;
-		}
+    PxSimulationStatistics()
+        :
+        nbActiveConstraints(0)
+        ,
+        nbActiveDynamicBodies(0)
+        ,
+        nbActiveKinematicBodies(0)
+        ,
+        nbStaticBodies(0)
+        ,
+        nbDynamicBodies(0)
+        ,
+        nbAggregates(0)
+        ,
+        nbArticulations(0)
+        ,
+        nbAxisSolverConstraints(0)
+        ,
+        compressedContactSize(0)
+        ,
+        requiredContactConstraintMemory(0)
+        ,
+        peakConstraintMemory(0)
+        ,
+        nbDiscreteContactPairsTotal(0)
+        ,
+        nbDiscreteContactPairsWithCacheHits(0)
+        ,
+        nbDiscreteContactPairsWithContacts(0)
+        ,
+        nbNewPairs(0)
+        ,
+        nbLostPairs(0)
+        ,
+        nbNewTouches(0)
+        ,
+        nbLostTouches(0)
+        ,
+        nbPartitions(0)
+        ,
+        particlesGpuMeshCacheSize(0)
+        ,
+        particlesGpuMeshCacheUsed(0)
+        ,
+        particlesGpuMeshCacheHitrate(0.0f)
+    {
+        for (PxU32 i = 0; i < eVOLUME_COUNT; i++)
+        {
+            nbBroadPhaseAdds[i] = 0;
+            nbBroadPhaseRemoves[i] = 0;
+        }
 
-		for(PxU32 i=0; i < PxGeometryType::eGEOMETRY_COUNT; i++)
-		{
-			for(PxU32 j=0; j < PxGeometryType::eGEOMETRY_COUNT; j++)
-			{
-				nbDiscreteContactPairs[i][j] = 0;
-				nbModifiedContactPairs[i][j] = 0;
-				nbCCDPairs[i][j] = 0;
-				nbTriggerPairs[i][j] = 0;
-			}
-		}
+        for (PxU32 i = 0; i < PxGeometryType::eGEOMETRY_COUNT; i++)
+        {
+            for (PxU32 j = 0; j < PxGeometryType::eGEOMETRY_COUNT; j++)
+            {
+                nbDiscreteContactPairs[i][j] = 0;
+                nbModifiedContactPairs[i][j] = 0;
+                nbCCDPairs[i][j] = 0;
+                nbTriggerPairs[i][j] = 0;
+            }
+        }
 
-		for(PxU32 i=0; i < PxGeometryType::eGEOMETRY_COUNT; i++)
-		{
-			nbShapes[i] = 0;
-		}
-	}
+        for (PxU32 i = 0; i < PxGeometryType::eGEOMETRY_COUNT; i++)
+        {
+            nbShapes[i] = 0;
+        }
+    }
 
+    //
+    // We advise to not access these members directly. Use the provided accessor methods instead.
+    //
+    //broadphase:
+    PxU32 nbBroadPhaseAdds[eVOLUME_COUNT];
+    PxU32 nbBroadPhaseRemoves[eVOLUME_COUNT];
 
-	//
-	// We advise to not access these members directly. Use the provided accessor methods instead.
-	//
-//broadphase:
-	PxU32	nbBroadPhaseAdds[eVOLUME_COUNT];
-	PxU32	nbBroadPhaseRemoves[eVOLUME_COUNT];
+    //collisions:
+    PxU32 nbDiscreteContactPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
+    PxU32 nbCCDPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
+    PxU32 nbModifiedContactPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
+    PxU32 nbTriggerPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
 
-//collisions:
-	PxU32   nbDiscreteContactPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
-	PxU32   nbCCDPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
-	PxU32   nbModifiedContactPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
-	PxU32   nbTriggerPairs[PxGeometryType::eGEOMETRY_COUNT][PxGeometryType::eGEOMETRY_COUNT];
-
-//triangle mesh cache statistics
-	PxU32	particlesGpuMeshCacheSize;
-	PxU32	particlesGpuMeshCacheUsed;
-	PxReal	particlesGpuMeshCacheHitrate;
+    //triangle mesh cache statistics
+    PxU32 particlesGpuMeshCacheSize;
+    PxU32 particlesGpuMeshCacheUsed;
+    PxReal particlesGpuMeshCacheHitrate;
 };
 
 #if !PX_DOXYGEN

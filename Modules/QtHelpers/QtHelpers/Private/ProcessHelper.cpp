@@ -11,30 +11,40 @@
 #include <QStringList>
 
 #ifdef Q_OS_MAC
-void ProcessHelper::RunProcess(const QString& path)
+bool ProcessHelper::RunProcess(const QString& path)
 {
-    QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+    return QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
 }
 
-void ProcessHelper::OpenApplication(const QString& path)
+bool ProcessHelper::OpenApplication(const QString& path, const QStringList& args)
 {
-    QProcess::startDetached("open", QStringList() << "-n" << path, path);
+    QStringList arguments;
+    arguments << "-n";
+    arguments << path;
+
+    if (args.empty() == false)
+    {
+        arguments << "--args";
+        arguments << args;
+    }
+
+    return QProcess::startDetached("open", arguments, path);
 }
 
 #endif
 
 #ifdef Q_OS_WIN
 
-void ProcessHelper::RunProcess(const QString& path)
+bool ProcessHelper::RunProcess(const QString& path)
+{
+    return OpenApplication(path, QStringList());
+}
+
+bool ProcessHelper::OpenApplication(const QString& path, const QStringList& args)
 {
     int lastPos = path.lastIndexOf('/');
     QString workingDir = path.left(lastPos);
-    QProcess::startDetached(path, QStringList(), workingDir);
-}
-
-void ProcessHelper::OpenApplication(const QString& path)
-{
-    RunProcess(path);
+    return QProcess::startDetached(path, args, workingDir);
 }
 
 namespace ProcessHelperDetails

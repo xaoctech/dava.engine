@@ -52,8 +52,7 @@ namespace physx
 class PxRigidActorExt
 {
 public:
-
-	/**
+    /**
 	\brief Creates a new shape with default properties and a list of materials and adds it to the list of shapes of this actor.
 	
 	This is equivalent to the following
@@ -83,19 +82,19 @@ public:
 	@see PxShape PxShape::release(), PxPhysics::createShape(), PxRigidActor::attachShape()
 	*/
 
-	static PxShape* createExclusiveShape(PxRigidActor& actor, const PxGeometry& geometry, PxMaterial*const* materials, PxU16 materialCount, 
-								         PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
-	{
-		PxShape* shape = PxGetPhysics().createShape(geometry, materials, materialCount, true, shapeFlags);
-		if(shape)
-		{
-			actor.attachShape(*shape);	// attach can fail, if e.g. we try and attach a trimesh simulation shape to a dynamic actor
-			shape->release();		// if attach fails, we hold the only counted reference, and so this cleans up properly
-		}
-		return shape;
-	}
-	
-	/**
+    static PxShape* createExclusiveShape(PxRigidActor& actor, const PxGeometry& geometry, PxMaterial* const* materials, PxU16 materialCount,
+                                         PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
+    {
+        PxShape* shape = PxGetPhysics().createShape(geometry, materials, materialCount, true, shapeFlags);
+        if (shape)
+        {
+            actor.attachShape(*shape); // attach can fail, if e.g. we try and attach a trimesh simulation shape to a dynamic actor
+            shape->release(); // if attach fails, we hold the only counted reference, and so this cleans up properly
+        }
+        return shape;
+    }
+
+    /**
 	\brief Creates a new shape with default properties and a single material adds it to the list of shapes of this actor.
 
 	This is equivalent to the following
@@ -124,13 +123,12 @@ public:
 	@see PxShape PxShape::release(), PxPhysics::createShape(), PxRigidActor::attachShape()
 	*/
 
-	static PX_FORCE_INLINE	PxShape*	createExclusiveShape(PxRigidActor& actor, const PxGeometry& geometry, const PxMaterial& material, 
-													         PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
-	{
-		PxMaterial* materialPtr = const_cast<PxMaterial*>(&material);
-		return createExclusiveShape(actor, geometry, &materialPtr, 1, shapeFlags);
-	}
-
+    static PX_FORCE_INLINE PxShape* createExclusiveShape(PxRigidActor& actor, const PxGeometry& geometry, const PxMaterial& material,
+                                                         PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE)
+    {
+        PxMaterial* materialPtr = const_cast<PxMaterial*>(&material);
+        return createExclusiveShape(actor, geometry, &materialPtr, 1, shapeFlags);
+    }
 };
 
 #if !PX_DOXYGEN

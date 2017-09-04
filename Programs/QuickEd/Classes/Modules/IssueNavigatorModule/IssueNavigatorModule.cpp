@@ -2,6 +2,7 @@
 
 #include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 #include "Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
+#include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
@@ -34,6 +35,7 @@ void IssueNavigatorModule::PostInit()
 
     DAVA::int32 sectionId = 0;
     layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));
+    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), sectionId++, widget));
 }
 
 void IssueNavigatorModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)

@@ -73,7 +73,6 @@ class PxClothFabric;
 class PxCloth;
 class PxClothParticleData;
 
-
 class PxMaterial;
 
 class PxScene;

@@ -17,4 +17,6 @@ public:
     //stop any active process
     //inherited processor must add a error to task to mark it unfinished
     virtual void Terminate() = 0;
+
+    virtual std::size_t GetTasksCount() const = 0;
 };

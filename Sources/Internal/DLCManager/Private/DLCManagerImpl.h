@@ -12,6 +12,8 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
+#include "Engine/EngineSettings.h"
+#include "Debug/ProfilerCPU.h"
 
 namespace DAVA
 {
@@ -55,11 +57,12 @@ public:
         return true;
     }
 
-    void Close() override
+    bool Close() override
     {
         start = nullptr;
         current = nullptr;
         end = nullptr;
+        return true;
     }
 
     bool IsClosed() const override
@@ -118,7 +121,9 @@ public:
 
     bool IsInitialized() const override;
 
-    InitState GetInitState() const;
+    InitState GetInternalInitState() const;
+
+    InitStatus GetInitStatus() const override;
 
     const String& GetLastErrorMessage() const;
 
@@ -130,7 +135,7 @@ public:
 
     bool IsPackDownloaded(const String& packName) override;
 
-    uint64 GetPackSize(const String& packName) override;
+    uint64 GetPackSize(const String& packName) const override;
 
     const IRequest* RequestPack(const String& requestedPackName) override;
 
@@ -174,6 +179,9 @@ public:
     DLCDownloader& GetDownloader() const;
 
     bool CountError(int32 errCode);
+    void FireNetworkReady(bool nextState);
+
+    ProfilerCPU profiler;
 
 private:
     // initialization state functions
@@ -196,7 +204,7 @@ private:
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
-    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes);
+    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
 
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
@@ -204,8 +212,9 @@ private:
     PackRequest* CreateNewRequest(const String& requestedPackName);
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
-    void FireNetworkReady(bool nextState);
     void ClearResouces();
+    void OnSettingsChanged(EngineSettings::eSetting value);
+    bool IsProfilingEnabled() const;
 
     enum class ScanState : uint32
     {
@@ -277,9 +286,12 @@ private:
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
 
+    List<InitState> skipedStates; // if we can't download from server but have local meta, we can skip some state and use already downloaded meta
     String initErrorMsg;
     InitState initState = InitState::Starting;
-    std::unique_ptr<MemoryBufferWriter> memBufWriter;
+    int64 startInitializationTime = 0; // in milliseconds
+    bool initTimeoutFired = false;
+    std::shared_ptr<MemoryBufferWriter> memBufWriter;
     PackFormat::PackFile::FooterBlock initFooterOnServer; // temp superpack info for every new pack request or during initialization
     PackFormat::PackFile usedPackFile; // current superpack info
     Vector<uint8> buffer; // temp buff

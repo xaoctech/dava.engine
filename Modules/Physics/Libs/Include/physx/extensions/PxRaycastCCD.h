@@ -41,12 +41,12 @@ namespace physx
 {
 #endif
 
-	class PxScene;
-	class PxShape;
-	class PxRigidDynamic;
-	class RaycastCCDManagerInternal;
+class PxScene;
+class PxShape;
+class PxRigidDynamic;
+class RaycastCCDManagerInternal;
 
-	/**
+/**
 	\brief Raycast-CCD manager.
 
 	Raycast-CCD is a simple and potentially cheaper alternative to the SDK's built-in continuous collision detection algorithm.
@@ -65,13 +65,13 @@ namespace physx
 	scene-query shapes associated with them. That is, if the objects in the scene only use PxShapeFlag::eSIMULATION_SHAPE
 	(and no PxShapeFlag::eSCENE_QUERY_SHAPE), then the raycast-CCD system will not work.
 	*/
-	class RaycastCCDManager
-	{
-		public:
-					RaycastCCDManager(PxScene* scene);
-					~RaycastCCDManager();
+class RaycastCCDManager
+{
+public:
+    RaycastCCDManager(PxScene* scene);
+    ~RaycastCCDManager();
 
-			/**
+    /**
 			\brief Register dynamic object for raycast CCD.
 
 			\param[in] actor	object's actor
@@ -79,18 +79,18 @@ namespace physx
 
 			\return True if success
 			*/
-			bool	registerRaycastCCDObject(PxRigidDynamic* actor, PxShape* shape);
+    bool registerRaycastCCDObject(PxRigidDynamic* actor, PxShape* shape);
 
-			/**
+    /**
 			\brief Perform raycast CCD. Call this after your simulate/fetchResults calls.
 
 			\param[in] doDynamicDynamicCCD	True to enable dynamic-vs-dynamic CCD (more expensive, not always needed)
 			*/
-			void	doRaycastCCD(bool doDynamicDynamicCCD);
+    void doRaycastCCD(bool doDynamicDynamicCCD);
 
-		private:
-			RaycastCCDManagerInternal*	mImpl;
-	};
+private:
+    RaycastCCDManagerInternal* mImpl;
+};
 
 #if !PX_DOXYGEN
 } // namespace physx

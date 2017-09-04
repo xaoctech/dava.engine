@@ -126,7 +126,7 @@ DAVA::Vector<OverdrawTesterRenderObject::QuadVertex> OverdrawTesterRenderObject:
     xEnd = xEnd < threshold ? xEnd : 1.0f;
 
     // Try to keep 2pix - 1tex ratio.
-    Size2i size = DAVA::UIControlSystem::Instance()->vcs->GetPhysicalScreenSize();
+    Size2i size = DAVA::GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
 
     float32 maxX = size.dx * 0.5f / textureResolution;
     float32 maxY = size.dy * 0.5f / textureResolution;

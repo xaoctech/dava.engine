@@ -59,31 +59,30 @@ class PxRigidDynamic;
 */
 struct PxVehicleDriveTankWheelOrder
 {
-	enum Enum
-	{
-		eFRONT_LEFT=0,
-		eFRONT_RIGHT,
-		e1ST_FROM_FRONT_LEFT,
-		e1ST_FROM_FRONT_RIGHT,
-		e2ND_FROM_FRONT_LEFT,
-		e2ND_FROM_FRONT_RIGHT,
-		e3RD_FROM_FRONT_LEFT,
-		e3RD_FROM_FRONT_RIGHT,
-		e4TH_FROM_FRONT_LEFT,
-		e4TH_FROM_FRONT_RIGHT,
-		e5TH_FROM_FRONT_LEFT,
-		e5TH_FROM_FRONT_RIGHT,
-		e6TH_FROM_FRONT_LEFT,
-		e6TH_FROM_FRONT_RIGHT,
-		e7TH_FROM_FRONT_LEFT,
-		e7TH_FROM_FRONT_RIGHT,
-		e8TH_FROM_FRONT_LEFT,
-		e8TH_FROM_FRONT_RIGHT,
-		e9TH_FROM_FRONT_LEFT,
-		e9TH_FROM_FRONT_RIGHT
-	};
+    enum Enum
+    {
+        eFRONT_LEFT = 0,
+        eFRONT_RIGHT,
+        e1ST_FROM_FRONT_LEFT,
+        e1ST_FROM_FRONT_RIGHT,
+        e2ND_FROM_FRONT_LEFT,
+        e2ND_FROM_FRONT_RIGHT,
+        e3RD_FROM_FRONT_LEFT,
+        e3RD_FROM_FRONT_RIGHT,
+        e4TH_FROM_FRONT_LEFT,
+        e4TH_FROM_FRONT_RIGHT,
+        e5TH_FROM_FRONT_LEFT,
+        e5TH_FROM_FRONT_RIGHT,
+        e6TH_FROM_FRONT_LEFT,
+        e6TH_FROM_FRONT_RIGHT,
+        e7TH_FROM_FRONT_LEFT,
+        e7TH_FROM_FRONT_RIGHT,
+        e8TH_FROM_FRONT_LEFT,
+        e8TH_FROM_FRONT_RIGHT,
+        e9TH_FROM_FRONT_LEFT,
+        e9TH_FROM_FRONT_RIGHT
+    };
 };
-
 
 /**
 \brief The control inputs for a PxVehicleDriveTank.
@@ -105,15 +104,15 @@ the tank will turn to the left.
 
 struct PxVehicleDriveTankControl
 {
-	enum Enum
-	{
-		eANALOG_INPUT_ACCEL=0,
-		eANALOG_INPUT_BRAKE_LEFT,	
-		eANALOG_INPUT_BRAKE_RIGHT,	
-		eANALOG_INPUT_THRUST_LEFT,	
-		eANALOG_INPUT_THRUST_RIGHT,	
-		eMAX_NB_DRIVETANK_ANALOG_INPUTS
-	};
+    enum Enum
+    {
+        eANALOG_INPUT_ACCEL = 0,
+        eANALOG_INPUT_BRAKE_LEFT,
+        eANALOG_INPUT_BRAKE_RIGHT,
+        eANALOG_INPUT_THRUST_LEFT,
+        eANALOG_INPUT_THRUST_RIGHT,
+        eMAX_NB_DRIVETANK_ANALOG_INPUTS
+    };
 };
 
 /**
@@ -137,31 +136,28 @@ thrust to the right wheels.
 */
 struct PxVehicleDriveTankControlModel
 {
-	enum Enum
-	{
-		eSTANDARD=0,
-		eSPECIAL
-	};
+    enum Enum
+    {
+        eSTANDARD = 0,
+        eSPECIAL
+    };
 };
-
 
 /**
 \brief Data structure with instanced dynamics data and configuration data of a tank.
 */
 class PxVehicleDriveTank : public PxVehicleDrive
 {
-//= ATTENTION! =====================================================================================
-// Changing the data layout of this class breaks the binary serialization format.  See comments for 
-// PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData 
-// function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
-// accordingly.
-//==================================================================================================
+    //= ATTENTION! =====================================================================================
+    // Changing the data layout of this class breaks the binary serialization format.  See comments for
+    // PX_BINARY_SERIAL_VERSION.  If a modification is required, please adjust the getBinaryMetaData
+    // function.  If the modification is made on a custom branch, please change PX_BINARY_SERIAL_VERSION
+    // accordingly.
+    //==================================================================================================
 public:
+    friend class PxVehicleUpdate;
 
-	friend class PxVehicleUpdate;
-
-
-	/**
+    /**
 	\brief Allocate a PxVehicleTankDrive instance for a tank with nbWheels
 
 	\param[in] nbWheels is the number of wheels on the vehicle.
@@ -172,15 +168,15 @@ public:
 
 	@see free, setup
 	*/
-	static PxVehicleDriveTank* allocate(const PxU32 nbWheels);
+    static PxVehicleDriveTank* allocate(const PxU32 nbWheels);
 
-	/**
+    /**
 	\brief Deallocate a PxVehicleDriveTank instance.
 	@see allocate
 	*/
-	void free();
+    void free();
 
-	/**
+    /**
 	\brief Set up a tank using simulation data for the wheels and drive model.
 	\param[in] physics is a PxPhysics instance that is needed to create special vehicle constraints that are maintained by the vehicle.
 	\param[in] vehActor is a PxRigidDynamic instance that is used to represent the tank in the PhysX SDK.
@@ -193,12 +189,12 @@ public:
 	\note The wheels must be arranged according to PxVehicleDriveTankWheelOrder; that is, 
 	the even wheels are on the left side of the tank and the odd wheels are on the right side of the tank. 
 	*/
-	void setup
-		(PxPhysics* physics, PxRigidDynamic* vehActor, 
-		 const PxVehicleWheelsSimData& wheelsData, const PxVehicleDriveSimData& driveData,
-		 const PxU32 nbDrivenWheels);
+    void setup
+    (PxPhysics* physics, PxRigidDynamic* vehActor,
+     const PxVehicleWheelsSimData& wheelsData, const PxVehicleDriveSimData& driveData,
+     const PxU32 nbDrivenWheels);
 
-	/**
+    /**
 	\brief Allocate and set up a tank using simulation data for the wheels and drive model.
 	\param[in] physics is a PxPhysics instance that is needed to create special vehicle constraints that are maintained by the tank.
 	\param[in] vehActor is a PxRigidDynamic instance that is used to represent the tank in the PhysX SDK.
@@ -209,69 +205,84 @@ public:
 	\return The instantiated vehicle.
 	@see allocate, free, setToRestState, PxVehicleWheelsSimData::setWheelShapeMapping
 	*/
-	static PxVehicleDriveTank* create
-		(PxPhysics* physics, PxRigidDynamic* vehActor, 
-		 const PxVehicleWheelsSimData& wheelsData, const PxVehicleDriveSimData& driveData,
-		 const PxU32 nbDrivenWheels);
+    static PxVehicleDriveTank* create
+    (PxPhysics* physics, PxRigidDynamic* vehActor,
+     const PxVehicleWheelsSimData& wheelsData, const PxVehicleDriveSimData& driveData,
+     const PxU32 nbDrivenWheels);
 
-	/**
+    /**
 	\brief Set the control model used by the tank.
 	\note eDRIVE_MODEL_STANDARD: turning achieved by braking on one side, accelerating on the other side.
 	\note eDRIVE_MODEL_SPECIAL: turning achieved by accelerating forwards on one side, accelerating backwards on the other side.
 	\note The default value is eDRIVE_MODEL_STANDARD
 	*/
-	void setDriveModel(const PxVehicleDriveTankControlModel::Enum driveModel)
-	{
-		mDriveModel=driveModel;
-	}
+    void setDriveModel(const PxVehicleDriveTankControlModel::Enum driveModel)
+    {
+        mDriveModel = driveModel;
+    }
 
-	/**
+    /**
 	\brief Return the control model used by the tank.
 	*/
-	PxVehicleDriveTankControlModel::Enum getDriveModel() const {return mDriveModel;}
+    PxVehicleDriveTankControlModel::Enum getDriveModel() const
+    {
+        return mDriveModel;
+    }
 
-	/**
+    /**
 	\brief Set a vehicle to its rest state.  Aside from the rigid body transform, this will set the vehicle and rigid body 
 	to the state they were in immediately after setup or create.
 	\note Calling setToRestState invalidates the cached raycast hit planes under each wheel meaning that suspension line
 	raycasts need to be performed at least once with PxVehicleSuspensionRaycasts before calling PxVehicleUpdates. 
 	@see setup, create, PxVehicleSuspensionRaycasts, PxVehicleUpdates
 	*/
-	void setToRestState();
+    void setToRestState();
 
-	/**
+    /**
 	\brief Simulation data that models vehicle components
 	@see setup, create
 	*/
-	PxVehicleDriveSimData mDriveSimData;
+    PxVehicleDriveSimData mDriveSimData;
 
 private:
-	/**
+    /**
 	\brief Test if the instanced dynamics and configuration data has legal values.
 	*/
-	bool isValid() const;
+    bool isValid() const;
 
-	/**
+    /**
 	\brief Drive model
 	@see setDriveModel, getDriveModel, PxVehicleDriveTankControlModel
 	*/
-	PxVehicleDriveTankControlModel::Enum mDriveModel;
+    PxVehicleDriveTankControlModel::Enum mDriveModel;
 
-	PxU32 mPad[3];
+    PxU32 mPad[3];
 
-//serialization
+    //serialization
 public:
-											PxVehicleDriveTank(PxBaseFlags baseFlags) : PxVehicleDrive(baseFlags)			{}
-	static		PxVehicleDriveTank*			createObject(PxU8*& address, PxDeserializationContext& context);
-	static		void						getBinaryMetaData(PxOutputStream& stream);
-	virtual		const char*					getConcreteTypeName()		const	{	return "PxVehicleDriveTank";	}
-	virtual		bool						isKindOf(const char* name)	const	{	return !::strcmp("PxVehicleDriveTank", name) || PxBase::isKindOf(name); }
+    PxVehicleDriveTank(PxBaseFlags baseFlags)
+        : PxVehicleDrive(baseFlags)
+    {
+    }
+    static PxVehicleDriveTank* createObject(PxU8*& address, PxDeserializationContext& context);
+    static void getBinaryMetaData(PxOutputStream& stream);
+    virtual const char* getConcreteTypeName() const
+    {
+        return "PxVehicleDriveTank";
+    }
+    virtual bool isKindOf(const char* name) const
+    {
+        return !::strcmp("PxVehicleDriveTank", name) || PxBase::isKindOf(name);
+    }
+
 protected:
-											PxVehicleDriveTank();
-											~PxVehicleDriveTank(){}
-//~serialization
+    PxVehicleDriveTank();
+    ~PxVehicleDriveTank()
+    {
+    }
+    //~serialization
 };
-PX_COMPILE_TIME_ASSERT(0==(sizeof(PxVehicleDriveTank) & 15));
+PX_COMPILE_TIME_ASSERT(0 == (sizeof(PxVehicleDriveTank) & 15));
 
 #if !PX_DOXYGEN
 } // namespace physx

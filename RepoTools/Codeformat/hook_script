@@ -36,7 +36,7 @@ for file in `git diff-index --cached --name-only HEAD | grep -E "Modules|Program
 		# collect only file, that are
 		# matched specified extensions 
 		case "$file" in
-			*.cpp | *.h | *.mm)
+			*.cpp | *.h | *.mm | *.unittest)
 				files="$files $file"
 			;;
 			*)

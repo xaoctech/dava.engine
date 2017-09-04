@@ -8,18 +8,18 @@
 
 #include "Classes/Qt/Main/QtUtils.h"
 
-#include "TArc/Core/FieldBinder.h"
-#include "TArc/Core/ContextAccessor.h"
-#include "TArc/Utils/QtConnections.h"
-#include "TArc/WindowSubSystem/QtAction.h"
-#include "TArc/DataProcessing/Common.h"
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Utils/QtConnections.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/DataProcessing/Common.h>
 
-#include "QtTools/Utils/Utils.h"
-#include "QtHelpers/HelperFunctions.h"
+#include <TArc/Utils/Utils.h>
+#include <QtHelpers/HelperFunctions.h>
 
-#include "Reflection/ReflectedType.h"
-#include "Render/Image/ImageFormatInterface.h"
-#include "Render/RenderBase.h"
+#include <Reflection/ReflectedType.h>
+#include <Render/Image/ImageFormatInterface.h>
+#include <Render/RenderBase.h>
 
 #include <QToolBar>
 #include <QLineEdit>

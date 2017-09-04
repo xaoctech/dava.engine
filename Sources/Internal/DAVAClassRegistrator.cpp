@@ -6,7 +6,13 @@
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/StaticBodyComponent.h>
 #include <Physics/DynamicBodyComponent.h>
-#include <Physics/CollisionComponent.h>
+#include <Physics/BoxShapeComponent.h>
+#include <Physics/CapsuleShapeComponent.h>
+#include <Physics/SphereShapeComponent.h>
+#include <Physics/PlaneShapeComponent.h>
+#include "Physics/ConvexHullShapeComponent.h"
+#include <Physics/MeshShapeComponent.h>
+#include <Physics/HeightFieldShapeComponent.h>
 #endif
 
 using namespace DAVA;
@@ -88,5 +94,11 @@ REGISTER_CLASS(TextComponent);
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 REGISTER_CLASS(StaticBodyComponent);
 REGISTER_CLASS(DynamicBodyComponent);
-REGISTER_CLASS(CollisionComponent);
+REGISTER_CLASS(BoxShapeComponent);
+REGISTER_CLASS(CapsuleShapeComponent);
+REGISTER_CLASS(SphereShapeComponent);
+REGISTER_CLASS(PlaneShapeComponent);
+REGISTER_CLASS(ConvexHullShapeComponent);
+REGISTER_CLASS(MeshShapeComponent);
+REGISTER_CLASS(HeightFieldShapeComponent);
 #endif

@@ -55,12 +55,18 @@ namespace physx
 */
 struct PX_DEPRECATED PxTriangleMeshCacheStatistics
 {
-	PxU32	bytesTotal;			//!< Size of  the tri mesh cache in bytes
-	PxU32	bytesUsed;			//!< Number of bytes used for caching of current frame
-	PxU32	bytesUsedMax;		//!< Maximum amount of cache memory used since "setTriangleMeshCacheSizeHint" was called
-	PxReal	percentageHitrate;	//!< Hit rates % of current frame
+    PxU32 bytesTotal; //!< Size of  the tri mesh cache in bytes
+    PxU32 bytesUsed; //!< Number of bytes used for caching of current frame
+    PxU32 bytesUsedMax; //!< Maximum amount of cache memory used since "setTriangleMeshCacheSizeHint" was called
+    PxReal percentageHitrate; //!< Hit rates % of current frame
 
-	PxTriangleMeshCacheStatistics() : bytesTotal(0), bytesUsed(0), bytesUsedMax(0), percentageHitrate(0.0f) {}
+    PxTriangleMeshCacheStatistics()
+        : bytesTotal(0)
+        , bytesUsed(0)
+        , bytesUsedMax(0)
+        , percentageHitrate(0.0f)
+    {
+    }
 };
 
 /**
@@ -70,8 +76,7 @@ struct PX_DEPRECATED PxTriangleMeshCacheStatistics
 class PX_DEPRECATED PxParticleGpu
 {
 public:
-
-	/**
+    /**
 	\brief Mirrors a triangle mesh onto the GPU memory corresponding to the given CUDA context manager, used for collision with GPU accelerated particle systems.
 
 	Meshes are automatically mirrored on contact with particles. With this method, the mirroring can be explicitly triggered.
@@ -82,9 +87,9 @@ public:
 
 	@see PxParticleBaseFlag.eGPU
 	*/
-	PX_PHYSX_CORE_API static bool createTriangleMeshMirror(const class PxTriangleMesh& triangleMesh, PxCudaContextManager& contextManager);
-	
-	/**
+    PX_PHYSX_CORE_API static bool createTriangleMeshMirror(const class PxTriangleMesh& triangleMesh, PxCudaContextManager& contextManager);
+
+    /**
 	\brief Removes a mirrored triangle mesh from the GPU memory corresponding to the given CUDA context manager.
 
 	Removing the mirror fails if any particle system is still in contact with the mesh.
@@ -94,9 +99,9 @@ public:
 
 	@see PxParticleBaseFlag.eGPU
 	*/
-	PX_PHYSX_CORE_API static void releaseTriangleMeshMirror(const class PxTriangleMesh& triangleMesh, PxCudaContextManager* contextManager = NULL);
-	
-	/**
+    PX_PHYSX_CORE_API static void releaseTriangleMeshMirror(const class PxTriangleMesh& triangleMesh, PxCudaContextManager* contextManager = NULL);
+
+    /**
 	\brief Mirrors a height field onto the GPU memory corresponding to the given CUDA context manager, used for collision with GPU accelerated particle systems.
 
 	Height fields are automatically mirrored on contact with particles. With this method, the mirroring can be explicitly triggered.
@@ -107,9 +112,9 @@ public:
 
 	@see PxParticleBaseFlag.eGPU
 	*/
-	PX_PHYSX_CORE_API static bool createHeightFieldMirror(const class PxHeightField& heightField, PxCudaContextManager& contextManager);
-	
-	/**
+    PX_PHYSX_CORE_API static bool createHeightFieldMirror(const class PxHeightField& heightField, PxCudaContextManager& contextManager);
+
+    /**
 	\brief Removes a mirrored height field from the GPU memory corresponding to the given CUDA context manager.
 
 	Removing the mirror fails if any particle system is still in contact with the height field.
@@ -119,9 +124,9 @@ public:
 
 	@see PxParticleBaseFlag.eGPU
 	*/
-	PX_PHYSX_CORE_API static void releaseHeightFieldMirror(const class PxHeightField& heightField, PxCudaContextManager* contextManager = NULL);
-	
-	/**
+    PX_PHYSX_CORE_API static void releaseHeightFieldMirror(const class PxHeightField& heightField, PxCudaContextManager* contextManager = NULL);
+
+    /**
 	\brief Mirrors a convex mesh onto the GPU memory corresponding to the given CUDA context manager, used for collision with GPU accelerated particle systems.
 
 	Meshes are automatically mirrored on contact with particles. With this method, the mirroring can be explicitly triggered.
@@ -132,9 +137,9 @@ public:
 
 	@see PxParticleBaseFlag.eGPU
 	*/
-	PX_PHYSX_CORE_API static bool createConvexMeshMirror(const class PxConvexMesh& convexMesh, PxCudaContextManager& contextManager);
-	
-	/**
+    PX_PHYSX_CORE_API static bool createConvexMeshMirror(const class PxConvexMesh& convexMesh, PxCudaContextManager& contextManager);
+
+    /**
 	\brief Removes a mirrored height field from the GPU memory corresponding to the given CUDA context manager.
 
 	Removing the mirror fails if any particle system is still in contact with the convex mesh.
@@ -144,9 +149,9 @@ public:
 
 	@see PxParticleBaseFlag.eGPU
 	*/
-	PX_PHYSX_CORE_API static void releaseConvexMeshMirror(const class PxConvexMesh& convexMesh, PxCudaContextManager* contextManager = NULL);
+    PX_PHYSX_CORE_API static void releaseConvexMeshMirror(const class PxConvexMesh& convexMesh, PxCudaContextManager* contextManager = NULL);
 
-	/**
+    /**
 	\brief Explicitly flush the cuda push buffer when the number of kernel launches is equal to cudaFlushCount.
 
 	By explicitly flushing the cuda push buffer, the kernel launch latencies can potentially be reduced.
@@ -158,9 +163,9 @@ public:
 	\param[in] scene which explicit flushing is applied.
 	\param[in] cudaFlushCount is the count down counter for explicit flushing.
 	*/
-	PX_PHYSX_CORE_API static void setExplicitCudaFlushCountHint(const class PxScene& scene, PxU32 cudaFlushCount);
+    PX_PHYSX_CORE_API static void setExplicitCudaFlushCountHint(const class PxScene& scene, PxU32 cudaFlushCount);
 
-	/**
+    /**
 	\brief Sets the triangle mesh cache size for particles collision. This feature is not supported on Tesla and Fermi.
 
 	Sets the amount of memory for triangle mesh cache. The optimal size depends on the scene (i.e. triangle mesh density and particle distribution).
@@ -170,9 +175,9 @@ public:
 	\param[in] size is the amount of memory (in bytes).
 	\return false if cache memory isn't allocated, true otherwise.
 	*/
-	PX_PHYSX_CORE_API static bool setTriangleMeshCacheSizeHint(const class PxScene& scene, PxU32 size);
+    PX_PHYSX_CORE_API static bool setTriangleMeshCacheSizeHint(const class PxScene& scene, PxU32 size);
 
-	/**
+    /**
 	\brief Gets the triangle mesh cache statistics. This feature is not supported on Tesla and Fermi.
 
 	Gets the usage statistics for the triangle mesh cache.
@@ -182,8 +187,7 @@ public:
 
 	@see PxTriangleMeshCacheStatistics 
 	*/
-	PX_PHYSX_CORE_API static PxTriangleMeshCacheStatistics getTriangleMeshCacheStatistics(const class PxScene& scene);
-
+    PX_PHYSX_CORE_API static PxTriangleMeshCacheStatistics getTriangleMeshCacheStatistics(const class PxScene& scene);
 };
 
 #if !PX_DOXYGEN

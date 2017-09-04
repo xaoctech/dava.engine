@@ -38,13 +38,13 @@
 namespace physx
 {
 #endif
-	
+
 struct PxClothMeshQuadifierImpl;
 
 class PxClothMeshQuadifier
 {
 public:
-	/**
+    /**
 	\brief Convert triangles of PxClothMeshDesc to quads.
 	\details In PxCloth, quad dominant mesh representations are preferable to pre-triangulated versions.
 	In cases where the mesh has been already triangulated, this class provides a meachanism to
@@ -52,8 +52,8 @@ public:
 	\see PxClothFabricCooker
 	\param desc The cloth mesh descriptor prepared for cooking
 	*/
-	PxClothMeshQuadifier(const PxClothMeshDesc &desc);
-	~PxClothMeshQuadifier();
+    PxClothMeshQuadifier(const PxClothMeshDesc& desc);
+    ~PxClothMeshQuadifier();
 
     /** 
 	\brief Returns a mesh descriptor with some triangle pairs converted to quads.
@@ -62,8 +62,7 @@ public:
     PxClothMeshDesc getDescriptor() const;
 
 private:
-	PxClothMeshQuadifierImpl* mImpl;
-
+    PxClothMeshQuadifierImpl* mImpl;
 };
 
 #if !PX_DOXYGEN

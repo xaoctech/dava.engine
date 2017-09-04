@@ -52,18 +52,18 @@ namespace physx
  */
 struct PxClothFlag
 {
-	enum Enum
-	{
-		eDEFAULT           = 0,      //!< default value
-		eCUDA			   = (1<<0), //!< use CUDA to simulate cloth
-		eGPU PX_DEPRECATED = eCUDA,  //!< \deprecated Deprecated, use eCUDA instead
-		eSWEPT_CONTACT	   = (1<<2), //!< use swept contact (continuous collision)
-		eSCENE_COLLISION   = (1<<3), //!< collide against rigid body shapes in scene
-		eCOUNT			   = 4	     // internal use only
-	};
+    enum Enum
+    {
+        eDEFAULT = 0, //!< default value
+        eCUDA = (1 << 0), //!< use CUDA to simulate cloth
+        eGPU PX_DEPRECATED = eCUDA, //!< \deprecated Deprecated, use eCUDA instead
+        eSWEPT_CONTACT = (1 << 2), //!< use swept contact (continuous collision)
+        eSCENE_COLLISION = (1 << 3), //!< collide against rigid body shapes in scene
+        eCOUNT = 4 // internal use only
+    };
 };
 
-typedef PxFlags<PxClothFlag::Enum,PxU16> PxClothFlags;
+typedef PxFlags<PxClothFlag::Enum, PxU16> PxClothFlags;
 PX_FLAGS_OPERATORS(PxClothFlag::Enum, PxU16)
 
 /**
@@ -76,15 +76,20 @@ PX_FLAGS_OPERATORS(PxClothFlag::Enum, PxU16)
 */
 struct PxClothParticle
 {
-	PxVec3 pos;			//!< position of the particle (in cloth local space)
-	PxReal invWeight;	//!< inverse mass of the particle. If set to 0, the particle is fully constrained.
+    PxVec3 pos; //!< position of the particle (in cloth local space)
+    PxReal invWeight; //!< inverse mass of the particle. If set to 0, the particle is fully constrained.
 
-	/**
+    /**
 	\brief Default constructor, performs no initialization.
 	*/
-	PxClothParticle() {}
-	PxClothParticle(const PxVec3& pos_, PxReal invWeight_) 
-		: pos(pos_), invWeight(invWeight_){}
+    PxClothParticle()
+    {
+    }
+    PxClothParticle(const PxVec3& pos_, PxReal invWeight_)
+        : pos(pos_)
+        , invWeight(invWeight_)
+    {
+    }
 };
 
 /**
@@ -94,15 +99,20 @@ struct PxClothParticle
 */
 struct PxClothParticleMotionConstraint
 {
-	PxVec3 pos;			//!< Center of the motion constraint sphere (in cloth local space)
-	PxReal radius;		//!< Maximum distance the particle can move away from the sphere center.
+    PxVec3 pos; //!< Center of the motion constraint sphere (in cloth local space)
+    PxReal radius; //!< Maximum distance the particle can move away from the sphere center.
 
-	/**
+    /**
 	\brief Default constructor, performs no initialization.
 	*/
-	PxClothParticleMotionConstraint() {}
-	PxClothParticleMotionConstraint(const PxVec3& p, PxReal r) 
-		: pos(p), radius(r){}
+    PxClothParticleMotionConstraint()
+    {
+    }
+    PxClothParticleMotionConstraint(const PxVec3& p, PxReal r)
+        : pos(p)
+        , radius(r)
+    {
+    }
 };
 
 /**
@@ -112,15 +122,20 @@ struct PxClothParticleMotionConstraint
 */
 struct PxClothParticleSeparationConstraint
 {
-	PxVec3 pos;			//!< Center of the constraint sphere (in cloth local space)
-	PxReal radius;		//!< Radius of the constraint sphere such that the particle stay outside of this sphere.
+    PxVec3 pos; //!< Center of the constraint sphere (in cloth local space)
+    PxReal radius; //!< Radius of the constraint sphere such that the particle stay outside of this sphere.
 
-	/**
+    /**
 	\brief Default constructor, performs no initialization.
 	*/
-	PxClothParticleSeparationConstraint() {}
-	PxClothParticleSeparationConstraint(const PxVec3& p, PxReal r) 
-		: pos(p), radius(r){}
+    PxClothParticleSeparationConstraint()
+    {
+    }
+    PxClothParticleSeparationConstraint(const PxVec3& p, PxReal r)
+        : pos(p)
+        , radius(r)
+    {
+    }
 };
 
 #if !PX_DOXYGEN

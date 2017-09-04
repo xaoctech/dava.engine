@@ -56,7 +56,6 @@ This function is used in the release implementation of PxSerializationRegistry a
 */
 PX_C_EXPORT PX_PHYSX_CORE_API void PX_CALL_CONV PxUnregisterPhysicsSerializers(physx::PxSerializationRegistry& sr);
 
-
 /**
 \brief Adds collected objects to PxPhysics.
 

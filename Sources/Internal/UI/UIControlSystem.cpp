@@ -36,6 +36,7 @@
 #include "Input/TouchScreen.h"
 #include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
+#include "UI/Text/UITextSystem.h"
 
 namespace DAVA
 {
@@ -45,6 +46,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
+    AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem
     AddSystem(std::make_unique<UILayoutSystem>());
     AddSystem(std::make_unique<UIScrollSystem>());
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
@@ -53,6 +55,7 @@ UIControlSystem::UIControlSystem()
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
+    textSystem = GetSystem<UITextSystem>();
     layoutSystem = GetSystem<UILayoutSystem>();
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
@@ -62,16 +65,6 @@ UIControlSystem::UIControlSystem()
     vcs->EnableReloadResourceOnResize(true);
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
-
-    popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
-    popupContainer->SetScene(this);
-    popupContainer->SetName("UIControlSystem_popupContainer");
-    popupContainer->SetInputEnabled(false);
-    popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
-    inputSystem->SetPopupContainer(popupContainer.Get());
-    styleSheetSystem->SetPopupContainer(popupContainer);
-    layoutSystem->SetPopupContainer(popupContainer);
-    renderSystem->SetPopupContainer(popupContainer);
 
     SetDoubleTapSettings(0.5f, 0.25f);
 }
@@ -103,12 +96,25 @@ UIControlSystem::~UIControlSystem()
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
+    textSystem = nullptr;
     layoutSystem = nullptr;
     updateSystem = nullptr;
     renderSystem = nullptr;
 
     systems.clear();
     SafeDelete(vcs);
+}
+
+void UIControlSystem::Init()
+{
+    popupContainer.Set(new UIControl(Rect(0, 0, 1, 1)));
+    popupContainer->SetName("UIControlSystem_popupContainer");
+    popupContainer->SetInputEnabled(false);
+    popupContainer->InvokeActive(UIControl::eViewState::VISIBLE);
+    inputSystem->SetPopupContainer(popupContainer.Get());
+    styleSheetSystem->SetPopupContainer(popupContainer);
+    layoutSystem->SetPopupContainer(popupContainer);
+    renderSystem->SetPopupContainer(popupContainer);
 }
 
 void UIControlSystem::SetScreen(UIScreen* _nextScreen)
@@ -364,7 +370,7 @@ bool UIControlSystem::HandleInputEvent(const InputEvent& inputEvent)
 
 void UIControlSystem::OnInput(UIEvent* newEvent)
 {
-    newEvent->point = UIControlSystem::Instance()->vcs->ConvertInputToVirtual(newEvent->physPoint);
+    newEvent->point = GetEngineContext()->uiControlSystem->vcs->ConvertInputToVirtual(newEvent->physPoint);
     newEvent->tapCount = CalculatedTapCount(newEvent);
 
     if (Replay::IsPlayback())
@@ -752,6 +758,11 @@ std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const 
     return nullptr;
 }
 
+UITextSystem* UIControlSystem::GetTextSystem() const
+{
+    return textSystem;
+}
+
 UILayoutSystem* UIControlSystem::GetLayoutSystem() const
 {
     return layoutSystem;
@@ -906,28 +917,28 @@ eModifierKeys UIControlSystem::GetKeyboardModifierKeys() const
     {
         DigitalElementState lctrl = keyboard->GetKeyState(eInputElements::KB_LCTRL);
         DigitalElementState rctrl = keyboard->GetKeyState(eInputElements::KB_RCTRL);
-        if (lctrl.IsPressed() | rctrl.IsPressed())
+        if (lctrl.IsPressed() || rctrl.IsPressed())
         {
             modifierKeys |= eModifierKeys::CONTROL;
         }
 
         DigitalElementState lshift = keyboard->GetKeyState(eInputElements::KB_LSHIFT);
         DigitalElementState rshift = keyboard->GetKeyState(eInputElements::KB_RSHIFT);
-        if (lshift.IsPressed() | rshift.IsPressed())
+        if (lshift.IsPressed() || rshift.IsPressed())
         {
             modifierKeys |= eModifierKeys::SHIFT;
         }
 
         DigitalElementState lalt = keyboard->GetKeyState(eInputElements::KB_LALT);
         DigitalElementState ralt = keyboard->GetKeyState(eInputElements::KB_RALT);
-        if (lalt.IsPressed() | ralt.IsPressed())
+        if (lalt.IsPressed() || ralt.IsPressed())
         {
             modifierKeys |= eModifierKeys::ALT;
         }
 
         DigitalElementState lcmd = keyboard->GetKeyState(eInputElements::KB_LCMD);
         DigitalElementState rcmd = keyboard->GetKeyState(eInputElements::KB_RCMD);
-        if (lcmd.IsPressed() | rcmd.IsPressed())
+        if (lcmd.IsPressed() || rcmd.IsPressed())
         {
             modifierKeys |= eModifierKeys::COMMAND;
         }
