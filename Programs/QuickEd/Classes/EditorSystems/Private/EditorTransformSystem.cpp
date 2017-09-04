@@ -943,24 +943,6 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorder(DAVA::Vector2 deltaSiz
             {
                 continue;
             }
-            std::function<bool(const MagnetLine&)> removePredicate = [directions, transformPosition](const MagnetLine& line) -> bool {
-                bool needRemove = true;
-                if (directions[line.axis] == POSITIVE_DIRECTION)
-                {
-                    needRemove = line.targetPosition <= transformPosition[line.axis] || line.controlPosition <= transformPosition[line.axis];
-                }
-                else
-                {
-                    needRemove = line.targetPosition >= transformPosition[line.axis] || line.controlPosition >= transformPosition[line.axis];
-                }
-                return needRemove;
-            };
-
-            magnetLines.erase(std::remove_if(magnetLines.begin(), magnetLines.end(), removePredicate));
-            if (magnetLines.empty())
-            {
-                continue;
-            }
 
             std::function<bool(const MagnetLine&, const MagnetLine&)> predicate = [transformPoint, directions](const MagnetLine& left, const MagnetLine& right) -> bool {
                 float32 shareLeft = left.controlSharePos - transformPoint[left.axis];
