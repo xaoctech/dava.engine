@@ -2,6 +2,8 @@
 
 #include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/WindowSubSystem/Private/WaitDialog.h"
+#include "TArc/WindowSubSystem/Private/DockPanel.h"
+#include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
 #include "TArc/Qt/QtByteArray.h"
@@ -178,6 +180,7 @@ void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
     {
         QToolButton* toolButton = qobject_cast<QToolButton*>(w);
         bool autoRise = (toolButton != nullptr) ? toolButton->autoRaise() : false;
+        w->setMaximumHeight(24);
         toolbar->insertWidget(before, w);
         if (toolButton != nullptr)
         {
@@ -485,6 +488,8 @@ struct UIManager::Impl : public QObject
     Array<Function<void(const PanelKey&, const WindowKey&, QWidget*)>, PanelKey::TypesCount> addFunctions;
     UnorderedMap<WindowKey, UIManagerDetail::MainWindowInfo> windows;
     PropertiesItem propertiesHolder;
+    ContextAccessor* accessor = nullptr;
+
     bool initializationFinished = false;
     Set<WaitHandle*> activeWaitDialogues;
     ClientModule* currentModule = nullptr;
@@ -498,12 +503,14 @@ struct UIManager::Impl : public QObject
 
     Map<ClientModule*, ModuleResources> moduleResourcesMap;
 
-    Impl(UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
+    Impl(ContextAccessor* accessor_, UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
         : managerDelegate(delegate)
         , propertiesHolder(std::move(givenPropertiesHolder))
+        , accessor(accessor_)
     {
         addFunctions[PanelKey::DockPanel] = MakeFunction(this, &UIManager::Impl::AddDockPanel);
         addFunctions[PanelKey::CentralPanel] = MakeFunction(this, &UIManager::Impl::AddCentralPanel);
+        addFunctions[PanelKey::OverCentralPanel] = MakeFunction(this, &UIManager::Impl::AddOverCentralPanel);
     }
 
     ~Impl()
@@ -596,11 +603,12 @@ protected:
 
     QDockWidget* CreateDockWidget(const DockPanelInfo& dockPanelInfo, UIManagerDetail::MainWindowInfo& mainWindowInfo, QMainWindow* mainWindow)
     {
-        DVASSERT(dockPanelInfo.title.isEmpty() == false, "Provide correct value of DockPanelInfo::title");
         const QString& text = dockPanelInfo.title;
 
-        QDockWidget* dockWidget = new QDockWidget(text, mainWindow);
-        dockWidget->setObjectName(text);
+        DockPanel::Params params;
+        params.accessor = accessor;
+        params.descriptors = dockPanelInfo.descriptors;
+        DockPanel* dockWidget = new DockPanel(params, text, mainWindow);
 
         QAction* dockWidgetAction = dockWidget->toggleViewAction();
 
@@ -619,6 +627,8 @@ protected:
         QMainWindow* mainWindow = mainWindowInfo.window;
         DVASSERT(mainWindow != nullptr);
         QDockWidget* newDockWidget = CreateDockWidget(info, mainWindowInfo, mainWindow);
+        DVASSERT(key.GetViewName().isEmpty() == false, "Provide correct value of PanelKey::viewName");
+        newDockWidget->setObjectName(key.GetViewName());
         newDockWidget->layout()->setContentsMargins(0, 0, 0, 0);
         newDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
 
@@ -685,10 +695,20 @@ protected:
 
         tabWidget->addTab(widget, widget->objectName());
     }
+
+    void AddOverCentralPanel(const PanelKey& key, const WindowKey& windowKey, QWidget* widget)
+    {
+        UIManagerDetail::MainWindowInfo& mainWindowInfo = FindOrCreateWindow(windowKey);
+        QMainWindow* mainWindow = mainWindowInfo.window;
+        QWidget* centralWidget = mainWindow->centralWidget();
+
+        const OverCentralPanelInfo& info = key.GetInfo().Get<OverCentralPanelInfo>();
+        new OverlayWidget(info, widget, centralWidget);
+    }
 };
 
-UIManager::UIManager(Delegate* delegate, PropertiesItem&& holder)
-    : impl(new Impl(delegate, std::move(holder)))
+UIManager::UIManager(ContextAccessor* accessor, Delegate* delegate, PropertiesItem&& holder)
+    : impl(new Impl(accessor, delegate, std::move(holder)))
 {
 }
 

@@ -11,6 +11,7 @@ class Color;
 class RenderSystem2D;
 class UIControlBackground;
 class UIDebugRenderComponent;
+class UITextComponent;
 class UIScreen;
 class UIScreenTransition;
 class UIScreenshoter;
@@ -49,6 +50,8 @@ private:
     void DebugRender(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
     void RenderDebugRect(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
     void RenderPivotPoint(const UIDebugRenderComponent* component, const UIGeometricData& geometricData);
+
+    void RenderText(const UIControl* control, const UITextComponent* component, const UIGeometricData& geometricData, const Color& parentColor);
 
     RenderSystem2D* renderSystem2D = nullptr;
     UIGeometricData baseGeometricData;

@@ -6,6 +6,7 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Controls/ColorPicker/ColorPickerSettings.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
 #include <Engine/PlatformApiQt.h>
 #include <FileSystem/KeyedArchive.h>
@@ -85,7 +86,7 @@ public:
         ColorPickerSettings* colorPickerSettings = ctx->GetData<ColorPickerSettings>();
         DVASSERT(colorPickerSettings);
 
-        ThemesSettings* themeSettings = ctx->GetData<ThemesSettings>();
+        DAVA::TArc::ThemesSettings* themeSettings = ctx->GetData<DAVA::TArc::ThemesSettings>();
         DVASSERT(themeSettings);
 
 #define LOAD_SETTING(settingsVar, field, key, convertFn)\

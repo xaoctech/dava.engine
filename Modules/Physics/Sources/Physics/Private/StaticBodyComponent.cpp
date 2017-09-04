@@ -17,6 +17,7 @@ Component* StaticBodyComponent::Clone(Entity* toEntity)
     StaticBodyComponent* result = new StaticBodyComponent();
     result->SetEntity(toEntity);
 
+    CopyFieldsIntoClone(result);
     return result;
 }
 
@@ -33,7 +34,7 @@ void StaticBodyComponent::Deserialize(KeyedArchive* archive, SerializationContex
 #if defined(__DAVAENGINE_DEBUG__)
 void StaticBodyComponent::ValidateActorType() const
 {
-    DVASSERT(actor->is<physx::PxRigidStatic>());
+    DVASSERT(GetPxActor()->is<physx::PxRigidStatic>());
 }
 #endif
 
