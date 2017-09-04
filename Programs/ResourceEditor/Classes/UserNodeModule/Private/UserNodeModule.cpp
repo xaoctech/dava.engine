@@ -14,7 +14,6 @@
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
 
-
 DAVA::FilePath UserNodeModule::GetBotSpawnPath()
 {
     return "~res:/ResourceEditor/3DObjects/Botspawn/tanksbox.sc2";
