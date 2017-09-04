@@ -18,7 +18,7 @@ if (NOT LINUX)
     list ( APPEND DAVA_COMPONENTS "Sound"  )
     find_dava_module( "Spine" )
 endif()
-if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
+if ( WIN32 AND NOT WIN_UAP)
     find_dava_module( "CEFWebview" )
 endif ()
 

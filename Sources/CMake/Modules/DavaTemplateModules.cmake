@@ -260,7 +260,29 @@ macro( setup_main_module )
             set( USE_PARENT_DEFINITIONS true )
         endif()
 
+
 #####
+
+        if(  NOT USE_PARENT_DEFINITIONS  )
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT} )
+
+        else()
+
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT} )
+
+            load_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT}
+                GLOBAL_DEFINITIONS  ) 
+
+        endif()
+
+        set( DEFINITIONS_BACKUP ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURENT}} )
+
         #"FIND LIBRARY"
         foreach( NAME ${FIND_SYSTEM_LIBRARY} ${FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}} )
             FIND_LIBRARY( ${NAME}_LIBRARY  ${NAME} )
@@ -292,6 +314,17 @@ macro( setup_main_module )
             list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${PACKAGE_${NAME}_STATIC_LIBRARIES} )
         endforeach()
 
+
+        load_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURENT} )
+
+        set( PACKAGES_DEFINITIONS  ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURENT}} )
+
+        if( DEFINITIONS_BACKUP )
+            list(REMOVE_ITEM PACKAGES_DEFINITIONS "${DEFINITIONS_BACKUP}" )
+        endif()
+
 #####
         if (${MODULE_TYPE} STREQUAL "STATIC"  )
             append_property(EXTERNAL_TEST_FOLDERS ${CMAKE_CURRENT_LIST_DIR})
@@ -301,9 +334,6 @@ macro( setup_main_module )
                 save_property( PROPERTY_LIST CPP_FILES_EXECUTE )
             endif()
 
-            get_property( GLOBAL_DEFINITIONS_PROP GLOBAL PROPERTY GLOBAL_DEFINITIONS )
-            get_property( DEFINITIONS_PROP GLOBAL PROPERTY DEFINITIONS )
-            get_property( DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT} GLOBAL PROPERTY DEFINITIONS_${DAVA_PLATFORM_CURENT} )
 
             if( COVERAGE AND MACOS )
                 set( COVERAGE_STRING "COVERAGE" )
@@ -318,11 +348,11 @@ macro( setup_main_module )
 
                 list( APPEND MODULE_CACHE ${DEFINITIONS} 
                                           ${DEFINITIONS_${DAVA_PLATFORM_CURENT}} 
-                                          ${DEFINITIONS_PROP} 
-                                          ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} 
-                                          ${GLOBAL_DEFINITIONS_PROP} 
                                         )
-
+            else()
+                list( APPEND MODULE_CACHE ${PACKAGES_DEFINITIONS} 
+                                          ${PACKAGES_DEFINITIONS_${DAVA_PLATFORM_CURENT}} 
+                                        )
             endif()
 
             if( MODULE_CACHE )
@@ -478,7 +508,7 @@ macro( setup_main_module )
         list( APPEND ALL_SRC_HEADER_FILE_ONLY  ${PROJECT_HEADER_FILE_ONLY} )
 
         set_project_files_properties( "${ALL_SRC}" )
-
+        
         #"SAVE PROPERTY"
         save_property( PROPERTY_LIST 
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}          
