@@ -377,7 +377,7 @@ void ActionManagmentDialog::OnActionSelected(const QItemSelection& selected, con
 {
     QModelIndexList indexes = selected.indexes();
     const KeyBindableAction* action = nullptr;
-    if (indexes.size() == 3)
+    if (indexes.isEmpty() == false)
     {
         action = shortcutsModel->GetKeyBindableAction(indexes.front());
     }

@@ -6,9 +6,12 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
+#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/SceneManager/SceneData.h"
-#include "Deprecated/EditorConfig.h"
+#include "Classes/Deprecated/EditorConfig.h"
+#include "Classes/Deprecated/SceneValidator.h"
 
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
@@ -66,11 +69,11 @@ void DebugDrawSystem::AddEntity(DAVA::Entity* entity)
 {
     entities.push_back(entity);
 
-    for (uint32 type = 0; type < DAVA::Component::COMPONENT_COUNT; ++type)
+    for (DAVA::uint32 type = 0; type < DAVA::Component::COMPONENT_COUNT; ++type)
     {
-        for (uint32 index = 0, count = entity->GetComponentCount(type); index < count; ++index)
+        for (DAVA::uint32 index = 0, count = entity->GetComponentCount(type); index < count; ++index)
         {
-            Component* component = entity->GetComponent(type, index);
+            DAVA::Component* component = entity->GetComponent(type, index);
             RegisterComponent(entity, component);
         }
     }
@@ -86,9 +89,9 @@ void DebugDrawSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
-void DebugDrawSystem::RegisterComponent(Entity* entity, Component* component)
+void DebugDrawSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    Component::eType type = static_cast<Component::eType>(component->GetType());
+    DAVA::Component::eType type = static_cast<DAVA::Component::eType>(component->GetType());
 
     auto it = drawComponentFunctionsMap.find(type);
 
@@ -105,9 +108,9 @@ void DebugDrawSystem::RegisterComponent(Entity* entity, Component* component)
     }
 }
 
-void DebugDrawSystem::UnregisterComponent(Entity* entity, Component* component)
+void DebugDrawSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    Component::eType type = static_cast<Component::eType>(component->GetType());
+    DAVA::Component::eType type = static_cast<DAVA::Component::eType>(component->GetType());
 
     auto it = entitiesComponentMap.find(type);
 
@@ -117,7 +120,7 @@ void DebugDrawSystem::UnregisterComponent(Entity* entity, Component* component)
     }
 }
 
-void DebugDrawSystem::DrawComponent(Component::eType type, const Function<void(DAVA::Entity*)>& func)
+void DebugDrawSystem::DrawComponent(DAVA::Component::eType type, const DAVA::Function<void(DAVA::Entity*)>& func)
 {
     auto it = entitiesComponentMap.find(type);
 

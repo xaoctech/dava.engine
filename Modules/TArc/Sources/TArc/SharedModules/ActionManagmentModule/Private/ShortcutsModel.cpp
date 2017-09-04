@@ -127,7 +127,7 @@ QModelIndex ShortcutsModel::GetIndex(const QString& blockName, QPointer<QAction>
 
 int ShortcutsModel::columnCount(const QModelIndex& parent) const
 {
-    return 3;
+    return 4;
 }
 
 int ShortcutsModel::rowCount(const QModelIndex& parent) const
@@ -151,7 +151,7 @@ int ShortcutsModel::rowCount(const QModelIndex& parent) const
 
 QVariant ShortcutsModel::data(const QModelIndex& index, int role) const
 {
-    if (role == Qt::ForegroundRole && index.column() == 2)
+    if (role == Qt::ForegroundRole && index.column() == 3)
     {
         return QColor(Qt::red);
     }
@@ -200,6 +200,11 @@ QVariant ShortcutsModel::data(const QModelIndex& index, int role) const
             return result;
         }
         case 2:
+        {
+            const EnumMap* contextMap = GlobalEnumMap<Qt::ShortcutContext>::Instance();
+            return QString(contextMap->ToString(n.action.context));
+        }
+        case 3:
         {
             return n.conflitsWith;
         }
@@ -257,6 +262,8 @@ QVariant ShortcutsModel::headerData(int section, Qt::Orientation orientation, in
     case 1:
         return "Shortcut";
     case 2:
+        return "Context";
+    case 3:
         return "Conflicts with";
     }
 

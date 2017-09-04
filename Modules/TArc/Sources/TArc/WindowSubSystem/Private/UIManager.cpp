@@ -715,10 +715,7 @@ UIManager::UIManager(ContextAccessor* accessor, Delegate* delegate, PropertiesIt
     LoadScheme();
 }
 
-UIManager::~UIManager()
-{
-    SaveScheme();
-}
+UIManager::~UIManager() = default;
 
 void UIManager::InitializationFinished()
 {
@@ -1174,6 +1171,7 @@ void UIManager::AddShortcut(const QKeySequence& shortcut, QPointer<QAction> acti
     DVASSERT(iter != impl->keyBindableActions.end());
     iter->sequences.push_back(shortcut);
     iter->action->setShortcuts(iter->sequences);
+    SaveScheme();
 }
 
 void UIManager::RemoveShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
@@ -1186,6 +1184,7 @@ void UIManager::RemoveShortcut(const QKeySequence& shortcut, QPointer<QAction> a
     DVASSERT(iter != impl->keyBindableActions.end());
     iter->sequences.removeAll(shortcut);
     iter->action->setShortcuts(iter->sequences);
+    SaveScheme();
 }
 
 void UIManager::SetActionContext(QPointer<QAction> action, Qt::ShortcutContext context)
@@ -1198,6 +1197,7 @@ void UIManager::SetActionContext(QPointer<QAction> action, Qt::ShortcutContext c
     DVASSERT(iter != impl->keyBindableActions.end());
     iter->context = context;
     iter->action->setShortcutContext(iter->context);
+    SaveScheme();
 }
 
 void UIManager::RegisterAction(QAction* action)
