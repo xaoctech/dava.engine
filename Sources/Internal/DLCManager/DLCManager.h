@@ -94,7 +94,7 @@ public:
 			    1. filePath in case of FileIO
 				2. url to server in case of InitTimeout
 
-		Requesting NOT disabled before signal. You can disable requesting
+		Requesting is NOT disabled before emitting the signal. You can disable requesting
 		with SetRequestingEnabled() inside your signal handler callback.
 		Suggest also to check for:
 		    EBUSY(device_or_resource_busy),
@@ -106,7 +106,7 @@ public:
 			ENFILE(too_many_files_open_in_system),
 			EMFILE(too_many_files_open)
 		If you receive InitTimeout error type check for:
-			EHOSTUNREACH(host_unreachable) - connection to cdn timed out
+			EHOSTUNREACH(host_unreachable) - connection to CDN timed out
 		*/
     Signal<ErrorOrigin /*errorType*/,
            int32 /*errnoValue*/,

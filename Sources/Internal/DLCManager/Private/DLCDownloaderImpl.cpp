@@ -984,8 +984,6 @@ void DLCDownloaderImpl::SetHints(const Hints& h)
 
 void DLCDownloaderImpl::RemoveDeletedTasks()
 {
-    //DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
-
     if (!removedList.empty())
     {
         LockGuard<Mutex> lock(mutexRemovedList);
@@ -1024,8 +1022,6 @@ void DLCDownloaderImpl::RemoveDeletedTasks()
 
 DLCDownloader::Task* DLCDownloaderImpl::AddOneMoreTask()
 {
-    //DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
-
     if (inputList.empty())
     {
         return nullptr;
@@ -1366,8 +1362,6 @@ void DLCDownloaderImpl::SignalOnFinishedWaitingTasks()
 
 void DLCDownloaderImpl::AddNewTasks()
 {
-    //DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
-
     LockGuard<Mutex> lock(mutexInputList);
     if (!inputList.empty() && GetFreeHandleCount() > 0)
     {
@@ -1448,8 +1442,6 @@ void DLCDownloaderImpl::ProcessMessagesFromMulti()
 
 void DLCDownloaderImpl::BalancingHandles()
 {
-    //DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
-
     if (GetFreeHandleCount() > 0)
     {
         // find first not finished task

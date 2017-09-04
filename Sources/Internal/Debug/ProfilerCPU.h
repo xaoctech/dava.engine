@@ -161,7 +161,7 @@ private:
 
     CounterArray* counters = nullptr;
     Vector<CounterArray*> snapshots;
-    Mutex safeCounters;
+    Mutex mutex;
     bool isStarted = false;
 
     friend class ScopedCounter;
