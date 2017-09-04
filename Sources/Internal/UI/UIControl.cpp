@@ -297,12 +297,7 @@ void UIControl::SetName(const FastName& name_)
         return;
     }
 
-#if defined(__DAVAENGINE_DEBUG__)
-    if (!UIControlHelpers::IsControlNameValid(name_))
-    {
-        DVASSERT(false, Format("Control name '%s' contains incorrect symbols", name_.c_str()).c_str());
-    }
-#endif
+    DVASSERT(UIControlHelpers::IsControlNameValid(name_), Format("Control name '%s' contains incorrect symbols", name_.c_str()).c_str());
 
     name = name_;
 

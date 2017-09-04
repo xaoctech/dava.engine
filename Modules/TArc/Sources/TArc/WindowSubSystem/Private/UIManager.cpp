@@ -2,6 +2,8 @@
 
 #include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/WindowSubSystem/Private/WaitDialog.h"
+#include "TArc/WindowSubSystem/Private/DockPanel.h"
+#include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
 #include "TArc/Qt/QtByteArray.h"
@@ -178,6 +180,7 @@ void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
     {
         QToolButton* toolButton = qobject_cast<QToolButton*>(w);
         bool autoRise = (toolButton != nullptr) ? toolButton->autoRaise() : false;
+        w->setMaximumHeight(24);
         toolbar->insertWidget(before, w);
         if (toolButton != nullptr)
         {
