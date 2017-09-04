@@ -28,8 +28,6 @@ class FieldBinder;
 }
 }
 
-using CanvasControls = DAVA::Map<DAVA::uint32, DAVA::RefPtr<DAVA::UIControl>>;
-
 struct HUDAreaInfo
 {
     enum eArea
@@ -185,7 +183,7 @@ private:
     DAVA::RefPtr<DAVA::UIControl> inputLayerControl;
 
     DAVA::List<BaseEditorSystem*> systems;
-    DAVA::Map<BaseEditorSystem*, CanvasControls> systemsControls;
+    DAVA::Map<BaseEditorSystem*, DAVA::Map<DAVA::uint32, DAVA::RefPtr<DAVA::UIControl>>> systemsControls;
 
     SelectionSystem* selectionSystemPtr = nullptr; // weak pointer to selection system
     HUDSystem* hudSystemPtr = nullptr;

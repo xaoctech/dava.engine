@@ -402,30 +402,19 @@ void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
     {
         allControls.insert(iter.second.begin(), iter.second.end());
     }
-    if (allControls.empty())
+    for (const auto& controlsPair : newControls)
     {
-        //map iterators is already sorted
-        for (const auto& controlsPair : newControls)
+        DVASSERT(allControls.find(controlsPair.first) == allControls.end());
+        const auto& greaterPair = allControls.lower_bound(controlsPair.first);
+        if (greaterPair == allControls.end())
         {
             rootControl->AddControl(controlsPair.second.Get());
         }
-    }
-    else
-    {
-        for (const auto& controlsPair : editorSystem->CreateCanvasControls())
+        else
         {
-            DVASSERT(allControls.find(controlsPair.first) == allControls.end());
-            const auto& greaterPair = allControls.lower_bound(controlsPair.first);
-            if (greaterPair == allControls.end())
-            {
-                rootControl->AddControl(controlsPair.second.Get());
-            }
-            else
-            {
-                rootControl->InsertChildBelow(controlsPair.second.Get(), greaterPair->second.Get());
-            }
-            allControls.insert(controlsPair);
+            rootControl->InsertChildBelow(controlsPair.second.Get(), greaterPair->second.Get());
         }
+        allControls.insert(controlsPair);
     }
 
     systems.push_back(editorSystem);

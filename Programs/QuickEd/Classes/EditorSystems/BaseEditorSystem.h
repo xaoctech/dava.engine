@@ -11,6 +11,8 @@ class ContextAccessor;
 }
 }
 
+using CanvasControls = DAVA::Map<DAVA::uint32, DAVA::RefPtr<DAVA::UIControl>>;
+
 class BaseEditorSystem
 {
 public:
