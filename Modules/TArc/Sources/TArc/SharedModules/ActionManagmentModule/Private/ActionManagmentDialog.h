@@ -4,8 +4,10 @@
 #include <Reflection/Reflection.h>
 
 #include <QDialog>
+#include <QPointer>
 
 class QItemSelectionModel;
+class QItemSelection;
 class QTreeView;
 
 namespace DAVA
@@ -61,6 +63,7 @@ private:
     String currentSequence;
     Set<String> sequences;
     Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
+    bool isSelectedActionReadOnly = false;
 
     QKeySequence shortcutText;
 

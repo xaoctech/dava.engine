@@ -83,6 +83,12 @@ QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor, const Insertio
     return url;
 }
 
+QUrl CreateInvisiblePoint()
+{
+    QUrl url = ActionUtilsDetail::CreateUrl(invisibleScheme, "", InsertionParams());
+    return url;
+}
+
 void AttachWidgetToAction(QAction* action, QWidget* widget)
 {
     action->setData(QVariant::fromValue(widget));
@@ -148,6 +154,7 @@ void MakeActionKeyBindable(QAction* action, const KeyBindableActionInfo& info)
 
     QList<QPair<QString, QString>> items;
     items.push_back(qMakePair(QString("context"), QString::number(static_cast<int>(info.context))));
+    items.push_back(qMakePair(QString("readonly"), QString::number(info.readOnly == false ? 0 : 1)));
     items.push_back(qMakePair(QString("defSequencesCount"), QString::number(info.defaultShortcuts.size())));
     for (int i = 0; i < info.defaultShortcuts.size(); ++i)
     {
@@ -187,6 +194,7 @@ bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info)
             info.context = static_cast<Qt::ShortcutContext>(context);
         }
     }
+    info.readOnly = query.queryItemValue("readonly").toInt() == 0 ? false : true;
     int defSequencesCount = query.queryItemValue("defSequencesCount").toInt();
     info.defaultShortcuts.reserve(defSequencesCount);
     for (int i = 0; i < defSequencesCount; ++i)

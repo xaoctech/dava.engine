@@ -9,11 +9,13 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Base/GlobalEnum.h>
 
+#include <QAction>
 #include <QInputDialog>
 #include <QTreeView>
 #include <QGridLayout>
 #include <QHeaderView>
 #include <QItemSelectionModel>
+#include <QItemSelection>
 #include <QKeyEvent>
 
 ENUM_DECLARE(Qt::ShortcutContext)
@@ -313,6 +315,11 @@ void ActionManagmentDialog::RemoveSequence()
 
 bool ActionManagmentDialog::CanBeAssigned() const
 {
+    if (isSelectedActionReadOnly == true)
+    {
+        return false;
+    }
+
     bool modifFound = false;
     bool keyFound = false;
     for (int i = 0; i < shortcutText.count(); ++i)
@@ -378,6 +385,7 @@ void ActionManagmentDialog::OnActionSelected(const QItemSelection& selected, con
     selectedAction = nullptr;
     currentSequence = String();
     selectedBlockName = QString();
+    isSelectedActionReadOnly = false;
     sequences.clear();
 
     if (action != nullptr)
@@ -393,6 +401,7 @@ void ActionManagmentDialog::OnActionSelected(const QItemSelection& selected, con
         selectedBlockName = action->blockName;
         context = action->context;
         selectedAction = action->action;
+        isSelectedActionReadOnly = action->isReadOnly;
     }
 }
 
@@ -424,15 +433,15 @@ DAVA_REFLECTION_IMPL(ActionManagmentDialog)
     .Field("emptySequenceText", [](ActionManagmentDialog* obj) { return ""; }, nullptr)
     .Field("sequencesReadOnly", [](ActionManagmentDialog* obj) { return obj->sequences.empty() == true; }, nullptr)
     // remove shortcut
-    .Field("removeSequenceEnabled", [](ActionManagmentDialog* obj) { return obj->currentSequence.empty() == false; }, nullptr)
+    .Field("removeSequenceEnabled", [](ActionManagmentDialog* obj) { return obj->currentSequence.empty() == false && obj->isSelectedActionReadOnly == false; }, nullptr)
     .Field("removeSequenceText", [](ActionManagmentDialog*) { return "Remove"; }, nullptr)
     .Method("removeSequence", &ActionManagmentDialog::RemoveSequence)
     // context combobox
     .Field("currentContext", &ActionManagmentDialog::GetContext, &ActionManagmentDialog::SetContext)[M::EnumT<Qt::ShortcutContext>()]
-    .Field("contextReadOnly", [](ActionManagmentDialog* obj) { return obj->selectedAction == nullptr; }, nullptr)
+    .Field("contextReadOnly", [](ActionManagmentDialog* obj) { return obj->selectedAction == nullptr || obj->isSelectedActionReadOnly == true; }, nullptr)
     //  Shortcut line edit
     .Field("shortcutText", &ActionManagmentDialog::GetShortcutText, &ActionManagmentDialog::SetShortcutText)
-    .Field("shortcutEnabled", [](ActionManagmentDialog* obj) { return obj->selectedAction != nullptr; }, nullptr)
+    .Field("shortcutEnabled", [](ActionManagmentDialog* obj) { return obj->selectedAction != nullptr && obj->isSelectedActionReadOnly == false; }, nullptr)
     // assign button
     .Field("assignButtonText", [](ActionManagmentDialog*) { return "Assign"; }, nullptr)
     .Field("assignButtonEnabled", &ActionManagmentDialog::CanBeAssigned, nullptr)

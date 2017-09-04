@@ -143,7 +143,7 @@ int ShortcutsModel::rowCount(const QModelIndex& parent) const
         QString blockName = blocks[parent.row()];
         auto iter = actions.find(blockName);
         DVASSERT(iter != actions.end());
-        return iter->second.size();
+        return static_cast<int>(iter->second.size());
     }
 
     return 0;

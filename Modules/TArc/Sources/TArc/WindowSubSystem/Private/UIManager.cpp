@@ -389,6 +389,13 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
         {
             AddStatusbarPoint(url, action, windowInfo);
         }
+        else if (scheme == invisibleScheme)
+        {
+            if (action->parent() == nullptr)
+            {
+                action->setParent(windowInfo.window);
+            }
+        }
         else
         {
             DVASSERT(false);
@@ -733,6 +740,15 @@ void UIManager::AddView(const WindowKey& windowKey, const PanelKey& panelKey, QW
     DVASSERT(impl->addFunctions[type] != nullptr);
 
     impl->addFunctions[type](panelKey, windowKey, widget);
+    QList<QAction*> actions = widget->findChildren<QAction*>();
+    foreach (QAction* action, actions)
+    {
+        if (action->objectName().isEmpty())
+        {
+            action->setObjectName(action->text());
+        }
+        RegisterAction(action);
+    }
 
     UIManagerDetail::MainWindowInfo& mainWindowInfo = impl->FindOrCreateWindow(windowKey);
     QMainWindow* window = mainWindowInfo.window;
@@ -1192,6 +1208,7 @@ void UIManager::RegisterAction(QAction* action)
             bindableAction->blockName = info.blockName;
             bindableAction->context = info.context;
             bindableAction->sequences = info.defaultShortcuts;
+            bindableAction->isReadOnly = info.readOnly;
         }
 
         bindableAction->action = action;

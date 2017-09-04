@@ -93,7 +93,6 @@
 #include <QMessageBox>
 #include <QMetaObject>
 #include <QMetaType>
-#include <QShortcut>
 #include <QList>
 
 #define CHECK_GLOBAL_OPERATIONS(retValue) \

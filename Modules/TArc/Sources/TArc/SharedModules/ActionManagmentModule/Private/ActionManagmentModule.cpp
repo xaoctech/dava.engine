@@ -17,13 +17,14 @@ void ActionManagmentModule::PostInit()
 {
     executor.DelayedExecute([this]() {
         UI* ui = GetUI();
+        ContextAccessor* accessor = GetAccessor();
         ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"));
         QAction* action = new QAction("Key bindings", nullptr);
         ui->AddAction(mainWindowKey, placementInfo, action);
 
-        connections.AddConnection(action, &QAction::triggered, [this]() {
-            ActionManagmentDialog dlg(GetAccessor(), static_cast<UIManager*>(static_cast<UIProxy*>(GetUI())->GetGlobalUI()));
-            GetUI()->ShowModalDialog(mainWindowKey, &dlg);
+        connections.AddConnection(action, &QAction::triggered, [accessor, ui]() {
+            ActionManagmentDialog dlg(accessor, static_cast<UIManager*>(static_cast<UIProxy*>(ui)->GetGlobalUI()));
+            ui->ShowModalDialog(mainWindowKey, &dlg);
         });
     });
 }

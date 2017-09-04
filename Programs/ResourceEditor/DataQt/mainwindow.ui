@@ -79,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>1149</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="path" stdset="0">
@@ -559,7 +559,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>77</height>
+          <height>69</height>
          </rect>
         </property>
        </widget>
@@ -678,7 +678,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>77</height>
+          <height>69</height>
          </rect>
         </property>
        </widget>
@@ -694,11 +694,6 @@
    </property>
    <property name="text">
     <string>Light</string>
-   </property>
-  </action>
-  <action name="actionServiceNode">
-   <property name="text">
-    <string>Service Node</string>
    </property>
   </action>
   <action name="actionCamera">
@@ -795,26 +790,6 @@
    </property>
    <property name="blockName" stdset="0">
     <string>Editor</string>
-   </property>
-  </action>
-  <action name="actionIPhone">
-   <property name="text">
-    <string>iPhone</string>
-   </property>
-  </action>
-  <action name="actionRetina">
-   <property name="text">
-    <string>Retina</string>
-   </property>
-  </action>
-  <action name="actionIPad">
-   <property name="text">
-    <string>iPad</string>
-   </property>
-  </action>
-  <action name="actionDefault">
-   <property name="text">
-    <string>Default</string>
    </property>
   </action>
   <action name="actionParticleEmitter">
@@ -1052,21 +1027,6 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionFavoritesEdit">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/star.png</normaloff>:/QtIcons/star.png</iconset>
-   </property>
-   <property name="text">
-    <string>Favorites edit</string>
-   </property>
-   <property name="toolTip">
-    <string>Favorites edit</string>
-   </property>
-  </action>
   <action name="actionModifyReset">
    <property name="icon">
     <iconset resource="Resources.qrc">
@@ -1074,18 +1034,6 @@
    </property>
    <property name="text">
     <string>ModifyReset</string>
-   </property>
-  </action>
-  <action name="actionAddNewComponent">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/addcomponent.png</normaloff>:/QtIcons/addcomponent.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add new component</string>
    </property>
   </action>
   <action name="actionAddNewEntity">
@@ -1248,16 +1196,6 @@
     <string>Run Beast</string>
    </property>
   </action>
-  <action name="actionAddActionComponent">
-   <property name="text">
-    <string>Add Action Component</string>
-   </property>
-  </action>
-  <action name="actionAddLodComponent">
-   <property name="text">
-    <string>Add Lod Component</string>
-   </property>
-  </action>
   <action name="actionNoObject">
    <property name="checkable">
     <bool>true</bool>
@@ -1320,16 +1258,6 @@
    </property>
    <property name="text">
     <string>Invisible Wall</string>
-   </property>
-  </action>
-  <action name="actionAddSoundComponent">
-   <property name="text">
-    <string>Add Sound Component</string>
-   </property>
-  </action>
-  <action name="actionRemoveSoundComponent">
-   <property name="text">
-    <string>Remove Sound Component</string>
    </property>
   </action>
   <action name="actionHangingObjects">
@@ -1409,19 +1337,9 @@
     <string>Collapse all.</string>
    </property>
   </action>
-  <action name="actionAddStaticOcclusionComponent">
-   <property name="text">
-    <string>Add Static Occlusion Component</string>
-   </property>
-  </action>
   <action name="actionBuildStaticOcclusion">
    <property name="text">
     <string>Build Static Occlusion</string>
-   </property>
-  </action>
-  <action name="actionAddQualitySettingsComponent">
-   <property name="text">
-    <string>Add Quality Settings Component</string>
    </property>
   </action>
   <action name="actionSpeedTree">
@@ -1629,25 +1547,12 @@
     <string>Unlock Transform</string>
    </property>
   </action>
-  <action name="actionAddWaveComponent">
-   <property name="text">
-    <string>Add Wave Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Wave Component</string>
-   </property>
-  </action>
   <action name="actionUndefinedCollision">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>Undefined Collision</string>
-   </property>
-  </action>
-  <action name="action123">
-   <property name="text">
-    <string>123</string>
    </property>
   </action>
   <action name="actionInvalidateStaticOcclusion">
@@ -1683,14 +1588,6 @@
     <string>BatchProcess</string>
    </property>
   </action>
-  <action name="actionAddSkeletonComponent">
-   <property name="text">
-    <string>Add Skeleton Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Skeleton Component</string>
-   </property>
-  </action>
   <action name="actionCreateTestSkinnedObject">
    <property name="text">
     <string>Create Test Skinned Object</string>
@@ -1720,42 +1617,6 @@
     <string>Add Path</string>
    </property>
   </action>
-  <action name="actionAddPathComponent">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/path.png</normaloff>:/QtIcons/path.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Path Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Path Component</string>
-   </property>
-  </action>
-  <action name="actionAddWASDComponent">
-   <property name="text">
-    <string>Add WASD Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add WASD Component</string>
-   </property>
-  </action>
-  <action name="actionAddRotationComponent">
-   <property name="text">
-    <string>Add Rotation Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Rotation Component</string>
-   </property>
-  </action>
-  <action name="actionAddSnapToLandscapeComponent">
-   <property name="text">
-    <string>Add Snap to Landscape Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Snap to Landscape Component</string>
-   </property>
-  </action>
   <action name="actionSnapCameraToLandscape">
    <property name="checkable">
     <bool>true</bool>
@@ -1781,11 +1642,6 @@
     <string>Replace Textures mipmaps</string>
    </property>
   </action>
-  <action name="action22">
-   <property name="text">
-    <string>22</string>
-   </property>
-  </action>
   <action name="actionEnableDisableShadows">
    <property name="checkable">
     <bool>true</bool>
@@ -1806,14 +1662,6 @@
   <action name="actionDumpSprites">
    <property name="text">
     <string>Sprites</string>
-   </property>
-  </action>
-  <action name="actionAddVisibilityComponent">
-   <property name="text">
-    <string>Add Visbility Check Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Visibility Component</string>
    </property>
   </action>
   <action name="actionForceFirstLODonLandscape">
@@ -1900,11 +1748,6 @@
     <string>Toggle Use Instancing by Landscape</string>
    </property>
   </action>
-  <action name="actionGenerate_Assert">
-   <property name="text">
-    <string>Generate Assert</string>
-   </property>
-  </action>
   <action name="actionEnableSounds">
    <property name="checkable">
     <bool>true</bool>
@@ -1927,15 +1770,6 @@
    </property>
    <property name="toolTip">
     <string>Perform some routine checks under scene objects</string>
-   </property>
-  </action>
-  <action name="actionAddGeoDecalComponent">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/mipmap.png</normaloff>:/QtIcons/mipmap.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Geo Decal Component</string>
    </property>
   </action>
   <action name="actionTextEntity">

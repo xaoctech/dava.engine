@@ -15,8 +15,6 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Engine/PlatformApiQt.h>
 
-#include <QShortcut>
-
 void TextModule::PostInit()
 {
     using namespace DAVA;

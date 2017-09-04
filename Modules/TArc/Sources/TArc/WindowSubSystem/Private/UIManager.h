@@ -4,6 +4,9 @@
 
 #include "TArc/WindowSubSystem/UI.h"
 
+#include <QPointer>
+#include <QAction>
+
 class QMainWindow;
 namespace DAVA
 {
@@ -20,6 +23,7 @@ struct KeyBindableAction
     QList<QKeySequence> sequences;
     QList<QKeySequence> defaultSequences;
     QPointer<QAction> action;
+    bool isReadOnly = false;
 };
 
 class UIManager final : public UI
