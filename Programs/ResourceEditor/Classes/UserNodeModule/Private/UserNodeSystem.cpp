@@ -2,7 +2,9 @@
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include <FileSystem/KeyedArchive.h>
+#include <FileSystem/FilePath.h>
 #include <Debug/DVAssert.h>
+#include <Logger/Logger.h>
 #include <Math/MathConstants.h>
 #include <Render/Material/NMaterialNames.h>
 #include <Render/Material/NMaterial.h>
@@ -11,13 +13,59 @@
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Utils.h>
 
-UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, DAVA::RenderObject* object)
-    : SceneSystem(scene)
-    , sourceObject(DAVA::SafeRetain(object))
+namespace UserNodeSystemDetails
 {
+DAVA::RenderObject* CreateRenderObject(const DAVA::FilePath& scenePath)
+{
+    using namespace DAVA;
+
+    ScopedPtr<Scene> scene(new Scene());
+    SceneFileV2::eError result = scene->LoadScene(scenePath);
+    if (result == SceneFileV2::ERROR_NO_ERROR)
+    {
+        Vector<Entity*> entities;
+        scene->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
+        if (entities.size() == 1)
+        {
+            RenderObject* ro = GetRenderObject(entities[0]);
+            if (ro != nullptr)
+            {
+                uint32 count = ro->GetRenderBatchCount();
+                for (uint32 i = 0; i < count; ++i)
+                {
+                    NMaterial* mat = ro->GetRenderBatch(i)->GetMaterial();
+                    if (mat != nullptr)
+                    {
+                        if (mat->HasLocalFlag(NMaterialFlagName::FLAG_FLATCOLOR) == false)
+                        {
+                            mat->AddFlag(NMaterialFlagName::FLAG_FLATCOLOR, 1);
+                        }
+
+                        if (mat->HasLocalProperty(NMaterialParamName::PARAM_FLAT_COLOR) == false)
+                        {
+                            mat->AddProperty(NMaterialParamName::PARAM_FLAT_COLOR, Color().color, rhi::ShaderProp::TYPE_FLOAT4);
+                        }
+                    }
+                }
+            }
+
+            return SafeRetain(ro);
+        }
+    }
+
+    Logger::Error("[%s] Can't open scene %s properly", __FUNCTION__, scenePath.GetStringValue().c_str());
+    return nullptr;
+}
+}
+
+UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, const DAVA::FilePath& scenePath)
+    : SceneSystem(scene)
+{
+    sourceObject = UserNodeSystemDetails::CreateRenderObject(scenePath);
     if (sourceObject != nullptr)
     {
         using namespace DAVA;
