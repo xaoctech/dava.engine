@@ -56,7 +56,10 @@ class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 class CollisionSingleComponent;
+#endif
 
 class UIEvent;
 class RenderPass;
@@ -185,7 +188,9 @@ public:
 #endif
 
     TransformSingleComponent* transformSingleComponent = nullptr;
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     CollisionSingleComponent* collisionSingleComponent = nullptr;
+#endif
 
     void AddSingletonComponent(SingletonComponent* component);
     template <class T>

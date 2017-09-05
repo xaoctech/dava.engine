@@ -19,7 +19,6 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/CollisionSingleComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Lod/LodComponent.h"
@@ -53,6 +52,7 @@
 
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
+#include "Scene3D/Components/SingleComponents/CollisionSingleComponent.h"
 #endif
 
 #include <functional>
@@ -422,7 +422,9 @@ Scene::~Scene()
     singletonComponents.clear();
 
     SafeDelete(transformSingleComponent);
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     SafeDelete(collisionSingleComponent);
+#endif
 
     systemsToProcess.clear();
     systemsToInput.clear();
@@ -456,10 +458,12 @@ void Scene::UnregisterEntity(Entity* entity)
         transformSingleComponent->EraseEntity(entity);
     }
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (collisionSingleComponent)
     {
         collisionSingleComponent->RemoveCollisionsWithEntity(entity);
     }
+#endif
 
     for (auto& system : systems)
     {
