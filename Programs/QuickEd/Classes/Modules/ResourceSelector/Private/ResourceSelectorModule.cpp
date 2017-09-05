@@ -1,5 +1,4 @@
 #include "Modules/ResourceSelector/ResourceSelectorModule.h"
-
 #include "Modules/ProjectModule/ProjectData.h"
 
 #include <TArc/Core/ContextAccessor.h>
@@ -14,6 +13,8 @@
 #include <UI/UIControlSystem.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Utils/Random.h>
+
+#include <memory>
 
 namespace ResourceSelectorModuleDetails
 {
@@ -160,31 +161,33 @@ void ResourceSelectorModule::OnGfxSelected(DAVA::int32 gfxMode)
 
     const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
     int32 gfxCount = static_cast<int32>(gfxDirectories.size());
+    if (gfxMode > gfxCount)
+    {
+        DVASSERT(false);
+        return;
+    }
+
+    vcs->UnregisterAllAvailableResourceSizes();
     if (gfxMode < gfxCount)
     {
-        vcs->UnregisterAllAvailableResourceSizes();
-
         String name = GetNameFromGfxFolder(gfxDirectories[gfxMode].directory.relative);
         vcs->RegisterAvailableResourceSize(currentSize.dx, currentSize.dy, name);
-
-        Sprite::ReloadSprites();
     }
     else if (gfxMode == gfxCount)
     {
-        vcs->UnregisterAllAvailableResourceSizes();
-
         for (const ProjectData::GfxDir& dir : gfxDirectories)
         {
             String name = GetNameFromGfxFolder(dir.directory.relative);
             vcs->RegisterAvailableResourceSize(static_cast<int32>(currentSize.dx * dir.scale), static_cast<int32>(currentSize.dy * dir.scale), name);
         }
+    }
 
-        Sprite::ReloadSprites();
-    }
-    else
-    {
-        DVASSERT(false);
-    }
+    WaitDialogParams waitDlgParams;
+    waitDlgParams.message = "Sprite Reloading";
+    waitDlgParams.needProgressBar = false;
+    std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+
+    Sprite::ReloadSprites();
 }
 
 void ResourceSelectorModule::CreateAction(const QString& actionName, const QString& prevActionName, DAVA::int32 gfxMode)
@@ -238,6 +241,12 @@ void ResourceSelectorModule::OnGraphicsSettingsChanged()
             if (resourceIndex != index)
             {
                 resourceIndex = index;
+
+                WaitDialogParams waitDlgParams;
+                waitDlgParams.message = "Sprite Reloading";
+                waitDlgParams.needProgressBar = false;
+                std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+
                 Sprite::ReloadSprites();
             }
         }
