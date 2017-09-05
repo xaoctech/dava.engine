@@ -69,6 +69,7 @@ public:
     void MakeScreenShot();
     bool GetIsScreenShotSaving() const;
     void ClickSystemBack();
+    void EmulatePressKey(uint32 key);
     void PressEscape();
 
     // DB Master-Helper relations
