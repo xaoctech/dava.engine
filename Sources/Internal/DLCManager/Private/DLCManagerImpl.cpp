@@ -110,6 +110,7 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
+    , profiler(1024 * 16)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -123,7 +124,7 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
 
     if (IsProfilingEnabled())
     {
-        profiler.Start(hints.profilerSamplerCounts);
+        profiler.Start();
     }
     engine.GetContext()->settings->settingChanged.Connect(this, [this](EngineSettings::eSetting value)
                                                           {
@@ -137,7 +138,7 @@ void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
     {
         if (IsProfilingEnabled())
         {
-            profiler.Start(hints.profilerSamplerCounts);
+            profiler.Start();
         }
         else
         {

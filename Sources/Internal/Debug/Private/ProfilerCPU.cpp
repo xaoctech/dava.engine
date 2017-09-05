@@ -103,19 +103,26 @@ ProfilerCPU::ScopedCounter::~ScopedCounter()
     }
 }
 
+ProfilerCPU::ProfilerCPU(uint32 numCounters_)
+    : numCounters(numCounters_)
+{
+}
+
 ProfilerCPU::~ProfilerCPU()
 {
     DeleteSnapshots();
     SafeDelete(counters);
 }
 
-void ProfilerCPU::Start(uint32 numCounters)
+void ProfilerCPU::Start()
 {
     LockGuard<Mutex> lock(safeCounters);
     if (isStarted == false)
     {
-        SafeDelete(counters);
-        counters = new CounterArray(numCounters);
+        if (counters == nullptr)
+        {
+            counters = new CounterArray(numCounters);
+        }
         isStarted = true;
     }
 }
