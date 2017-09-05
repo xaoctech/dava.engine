@@ -130,7 +130,7 @@ physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
     // - PxFilterData.word1 is a bitmask for encoding type of object
     // - PxFilterData.word2 is a bitmask for encoding types of objects this object collides with
     // - PxFilterData.word3 is not used right now
-    // Type of a shape and types it collides with can be set using CollisionShapeComponent::SetCollisionFilterData method
+    // Type of a shape and types it collides with can be set using CollisionShapeComponent::SetTypeMask and CollisionShapeComponent::SetTypeMaskToCollideWith methods
 
     if ((filterData0.word1 & filterData1.word2) == 0 &&
         (filterData1.word1 & filterData0.word2) == 0)
