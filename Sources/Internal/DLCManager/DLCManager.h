@@ -173,7 +173,11 @@ public:
     /** return nullptr if can't find pack */
     virtual const IRequest* RequestPack(const String& packName) = 0;
 
+    /** return true if pack currently is in download queue */
     virtual bool IsPackInQueue(const String& packName) = 0;
+
+    /** return true if download queue is not empty */
+    virtual bool IsAnyPackInQueue() const;
 
     /** Update request queue to first download dependency of selected request
         and then request itself */
@@ -186,7 +190,7 @@ public:
     {
         uint64 total = 0; //!< in bytes
         uint64 alreadyDownloaded = 0; //!< in bytes
-        uint64 inQueue = 0; //!< in bytes
+        uint64 inQueue = 0; //!< in bytes (deprecated)
         bool isRequestingEnabled = false; //!< current state of requesting
     };
 

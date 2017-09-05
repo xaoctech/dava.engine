@@ -17,7 +17,6 @@
 #include "Debug/ProfilerCPU.h"
 
 #include <iomanip>
-#include <algorithm>
 
 namespace DAVA
 {
@@ -1439,45 +1438,28 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     using namespace DAVA;
     using namespace PackFormat;
 
-    Progress progress;
-
     if (!IsInitialized())
     {
         lastProgress.isRequestingEnabled = false;
         return lastProgress;
     }
 
-    progress.isRequestingEnabled = true;
-
-    const Vector<PackFile::FilesTableBlock::FilesData::Data>& files = usedPackFile.filesTable.data.files;
-    const size_t size = files.size();
-    for (size_t indexOfFile = 0; indexOfFile < size; ++indexOfFile)
+    // count total only once
+    if (lastProgress.total == 0)
     {
-        const auto& fileData = files[indexOfFile];
-        uint64 compressedSize = fileData.compressedSize;
-        progress.total += compressedSize;
-
-        if (IsFileReady(indexOfFile))
+        const Vector<PackFile::FilesTableBlock::FilesData::Data>& files = usedPackFile.filesTable.data.files;
+        for (const auto& fileData : files)
         {
-            progress.alreadyDownloaded += compressedSize;
-        }
-        else
-        {
-            // is current file is downloading in requestManager queue?
-            const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(fileData.metaIndex);
-            if (requestManager->IsInQueue(packInfo.packName))
-            {
-                progress.inQueue += compressedSize;
-            }
+            lastProgress.total += fileData.compressedSize;
         }
     }
 
-    lastProgress.total = progress.total;
-    lastProgress.alreadyDownloaded = progress.alreadyDownloaded;
-    lastProgress.inQueue = progress.inQueue;
-    lastProgress.isRequestingEnabled = progress.isRequestingEnabled;
+    // inQueue, - calculated in runtime in PackRequest
+    // alreadyDownloaded, - calculated in runtime in PackRequest
 
-    return progress;
+    lastProgress.isRequestingEnabled = true;
+
+    return lastProgress;
 }
 
 DLCManager::Info DLCManager::GetInfo() const
@@ -1552,6 +1534,20 @@ PackRequest* DLCManagerImpl::FindRequest(const String& requestedPackName) const
     }
 
     return nullptr;
+}
+
+bool DLCManager::IsAnyPackInQueue() const
+{
+    return false;
+}
+
+bool DLCManagerImpl::IsAnyPackInQueue() const
+{
+    if (IsInitialized())
+    {
+        return !requestManager->Empty();
+    }
+    return false;
 }
 
 bool DLCManagerImpl::IsPackInQueue(const String& packName)
@@ -1721,7 +1717,7 @@ void DLCManagerImpl::ThreadScanFunc()
                 entry->compressedSize + sizeof(PackFormat::LitePack::Footer) == info.sizeOnDevice)
             {
                 size_t fileIndex = std::distance(&pack.filesTable.data.files[0], entry);
-                scanFileReady[fileIndex] = true;
+                SetFileIsReady(fileIndex, info.compressedSize);
             }
             else
             {
