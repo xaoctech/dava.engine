@@ -22,6 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
     .Field("configPath", &MotionComponent::GetConfigPath, &MotionComponent::SetConfigPath)[M::DisplayName("Motion Config")]
+    .Field("playbackRate", &MotionComponent::playbackRate)[M::DisplayName("Playback Rate"), M::Range(0.f, 1.f, 0.1f)]
     .Field("parameters", &MotionComponent::parameters)[M::DisplayName("parameters")]
     .Field("motions", &MotionComponent::motions)[M::DisplayName("Motions")]
     .End();

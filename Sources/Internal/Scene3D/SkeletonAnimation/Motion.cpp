@@ -31,8 +31,7 @@ ENUM_DECLARE(DAVA::Motion::eTransitionSync)
 {
     ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_IMMIDIATE, "Immidiate");
     ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_END, "WaitEnd");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_TIME, "WaitTime");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_MARKER, "WaitMark");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_PHASE_END, "WaitPhaseTime");
     ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_PERCENTAGE, "Percent");
     ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_PERCENTAGE_INVERSE, "PercentInv");
 };
@@ -85,14 +84,20 @@ void Motion::UpdateAndEvaluateStatePose(float32 dTime, State* state, SkeletonPos
     DVASSERT(state != nullptr);
     DVASSERT(pose != nullptr);
 
-    float32 duration = state->blendTree->EvaluatePhaseDuration(state->boundParams);
-
     float32& phase = state->animationPhase;
-    phase += dTime / duration;
-    if (phase >= 1.f)
-        phase -= 1.f;
+    uint32& phaseIndex = state->animationPhaseIndex;
 
-    state->blendTree->EvaluatePose(phase, state->boundParams, pose);
+    float32 duration = state->blendTree->EvaluatePhaseDuration(phaseIndex, state->boundParams);
+    phase += dTime / duration;
+    if (phase >= 1.f) //TODO: *Skinning* fix phase calculation on change phaseIndex
+    {
+        phase -= 1.f;
+        ++phaseIndex;
+        if (phaseIndex == uint32(state->blendTree->GetPhasesCount()))
+            phaseIndex = 0;
+    }
+
+    state->blendTree->EvaluatePose(phaseIndex, phase, state->boundParams, pose);
 }
 
 void Motion::Update(float32 dTime)
@@ -107,7 +112,17 @@ void Motion::Update(float32 dTime)
 
     if (currentTransition == nullptr && currentState != nullptr)
     {
+        uint32 prevPhase = currentState->animationPhaseIndex;
         UpdateAndEvaluateStatePose(dTime, currentState, &currentPose);
+
+        if (prevPhase != currentState->animationPhaseIndex)
+        {
+            //TODO: *Skinning* trigger sync-point event
+            if (prevPhase < uint32(currentState->phaseNames.size()))
+            {
+                FastName phaseName = currentState->phaseNames[prevPhase];
+            }
+        }
     }
 }
 
@@ -118,9 +133,10 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
 
     if (currentState != nullptr)
     {
+        currentState->animationPhaseIndex = 0u;
         currentState->animationPhase = 0.f;
         currentPose.Reset();
-        currentState->blendTree->EvaluatePose(0.f, currentState->boundParams, &currentPose);
+        currentState->blendTree->EvaluatePose(0, 0.f, currentState->boundParams, &currentPose);
     }
 }
 
@@ -155,8 +171,9 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
         for (uint32 s = 0; s < statesCount; ++s)
         {
             State& state = motion->states[s];
+            const YamlNode* stateNode = statesNode->Get(s);
 
-            const YamlNode* stateIDNode = statesNode->Get(s)->Get("state-id");
+            const YamlNode* stateIDNode = stateNode->Get("state-id");
             if (stateIDNode != nullptr && stateIDNode->GetType() == YamlNode::TYPE_STRING)
             {
                 state.id = stateIDNode->AsFastName(); //temporary for debug
@@ -164,7 +181,7 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                 motion->statesMap[motion->statesIDs.back()] = &state;
             }
 
-            const YamlNode* blendTreeNode = statesNode->Get(s)->Get("blend-tree");
+            const YamlNode* blendTreeNode = stateNode->Get("blend-tree");
             if (blendTreeNode != nullptr)
             {
                 state.blendTree = BlendTree::LoadFromYaml(blendTreeNode);
@@ -173,6 +190,23 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                 state.boundParams.resize(treeParams.size());
 
                 parameters.insert(treeParams.begin(), treeParams.end());
+            }
+
+            const YamlNode* phasesNode = stateNode->Get("phases");
+            if (phasesNode != nullptr)
+            {
+                if (phasesNode->GetType() == YamlNode::TYPE_STRING)
+                {
+                    state.phaseNames.emplace_back(phasesNode->AsFastName());
+                }
+                else if (phasesNode->GetType() == YamlNode::TYPE_ARRAY)
+                {
+                    uint32 phasesCount = phasesNode->GetCount();
+                    for (uint32 sp = 0; sp < phasesCount; ++sp)
+                    {
+                        state.phaseNames.emplace_back(phasesNode->Get(sp)->AsFastName());
+                    }
+                }
             }
         }
 

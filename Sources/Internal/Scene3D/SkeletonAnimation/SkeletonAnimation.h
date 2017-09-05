@@ -14,8 +14,9 @@ public:
     ~SkeletonAnimation();
 
     void BindSkeleton(const SkeletonComponent* skeleton, SkeletonPose* outInitialPose = nullptr);
-    void EvaluatePose(float32 phase, SkeletonPose* outPose, Vector3* offset = nullptr);
-    float32 GetPhaseDuration() const;
+    void EvaluatePose(float32 localTime, SkeletonPose* outPose, Vector3* offset = nullptr);
+
+    float32 GetDuration() const;
 
 protected:
     static JointTransform ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state);
@@ -25,6 +26,7 @@ protected:
 
     AnimationClip* animationClip = nullptr;
 
+    Vector<float32> syncPoints;
     uint32 maxJointIndex = 0;
 };
 

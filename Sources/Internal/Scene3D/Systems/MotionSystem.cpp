@@ -49,7 +49,7 @@ void MotionSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_MOTION_SYSTEM);
 
-    Vector<std::pair<MotionComponent*, FastName>> triggeredEvents;
+    Vector<std::pair<MotionComponent*, MotionSingleComponent::AnimationPhaseInfo>> endedPhases;
 
     MotionSingleComponent* msc = GetScene()->motionSingleComponent;
     for (MotionComponent* motionComponent : msc->reloadConfig)
@@ -115,7 +115,7 @@ void MotionSystem::Process(float32 timeElapsed)
     }
 
     msc->Clear();
-    msc->eventTriggered = triggeredEvents;
+    msc->animationPhaseEnd = endedPhases;
 }
 
 void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime)
@@ -130,7 +130,7 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
         for (uint32 m = 0; m < motionCount; ++m)
         {
             Motion* motion = motionComponent->GetMotion(m);
-            motion->Update(dTime);
+            motion->Update(dTime * motionComponent->playbackRate);
 
             const SkeletonPose& pose = motion->GetCurrentSkeletonPose();
             Motion::eMotionBlend blendMode = motion->GetBlendMode();

@@ -44,8 +44,7 @@ public:
     {
         TRANSITION_SYNC_IMMIDIATE,
         TRANSITION_SYNC_WAIT_END,
-        TRANSITION_SYNC_WAIT_TIME,
-        TRANSITION_SYNC_WAIT_MARKER,
+        TRANSITION_SYNC_WAIT_PHASE_END,
         TRANSITION_SYNC_PERCENTAGE,
         TRANSITION_SYNC_PERCENTAGE_INVERSE,
 
@@ -100,8 +99,12 @@ protected:
         BlendTree* blendTree = nullptr;
         FastNameMap<Transition*> transitions;
 
+        uint32 animationPhaseIndex = 0u;
         float32 animationPhase = 0.f;
         Vector<const float32*> boundParams;
+
+        //TODO: *Skinning* move it to BlendTree ?
+        Vector<FastName> phaseNames;
     };
 
     static void UpdateAndEvaluateStatePose(float32 dTime, State* state, SkeletonPose* pose);

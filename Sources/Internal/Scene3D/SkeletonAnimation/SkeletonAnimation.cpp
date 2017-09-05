@@ -51,7 +51,7 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
     }
 }
 
-void SkeletonAnimation::EvaluatePose(float32 phase, SkeletonPose* outPose, Vector3* offset)
+void SkeletonAnimation::EvaluatePose(float32 localTime, SkeletonPose* outPose, Vector3* offset)
 {
     DVASSERT(outPose);
     outPose->SetJointCount(maxJointIndex + 1);
@@ -63,14 +63,13 @@ void SkeletonAnimation::EvaluatePose(float32 phase, SkeletonPose* outPose, Vecto
         const AnimationTrack* track = boundTracks[t].second;
         AnimationTrack::State* state = &animationStates[t];
 
-        float32 localTime = phase * animationClip->GetDuration();
         track->Evaluate(localTime, state);
 
         outPose->SetTransform(jointIndex, ConstructJointTransform(track, state));
     }
 }
 
-float32 SkeletonAnimation::GetPhaseDuration() const
+float32 SkeletonAnimation::GetDuration() const
 {
     return animationClip->GetDuration();
 }
