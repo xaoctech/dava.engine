@@ -28,6 +28,9 @@ struct Action final
     /** Id of the action */
     FastName actionId;
 
+    /** Id of the device whose event triggered the action. This field is always non-null. */
+    InputDevice* triggeredDevice;
+
     /**
         If the action was triggered using `AnalogBinding`, this field contains state of the element which triggered the action.
         If the action was triggered using `DigitalBinding`, this field contains value taken from `DigitalBinding::outputAnalogState` field (user-specified).
@@ -50,6 +53,27 @@ struct ActionSet final
 
     /** List of bindings to analog elements. */
     Vector<AnalogBinding> analogBindings;
+};
+
+struct AnalogActionState final
+{
+    /** Add descr. */
+    bool active;
+
+    /** Add descr. */
+    float x;
+    float y;
+    float z;
+
+    AnalogActionState() = default;
+
+    AnalogActionState(bool active, AnalogElementState state)
+        : active(active)
+        , x(state.x)
+        , y(state.y)
+        , z(state.z)
+    {
+    }
 };
 
 // TODO: do we need fabric methods for easier creation of Digital/Analog binding instances?
@@ -115,6 +139,13 @@ public:
 
     /** Unbind all the sets. */
     void UnbindAllSets();
+
+public:
+    /** Add descr. */
+    bool ActionSystem::GetDigitalActionState(FastName actionId) const;
+
+    /** Add descr. */
+    AnalogActionState ActionSystem::GetAnalogActionState(FastName actionId) const;
 
 public:
     /** Emits when an action is triggered. */

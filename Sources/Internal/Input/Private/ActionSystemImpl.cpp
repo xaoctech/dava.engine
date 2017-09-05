@@ -59,7 +59,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
         {
             BoundActionSet& boundSet = *iter;
 
-            // If set is bound to to specific devices
+            // If set is bound to specific devices
             if (boundSet.devices.size() > 0)
             {
                 // Unbind it
@@ -86,17 +86,51 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
     boundSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
     boundSet.devices = devices;
 
-    boundSets.push_back(boundSet);
+    for (const auto& digitalBinding : set.digitalBindings)
+    {
+        digitalActionsStates[digitalBinding.actionId] = {};
+    }
+
+    for (const auto& analogBinding : set.analogBindings)
+    {
+        analogActionsStates[analogBinding.actionId] = {};
+    }
+
+    boundSets.emplace_back(std::move(boundSet));
 }
 
 void ActionSystemImpl::UnbindAllSets()
 {
     boundSets.clear();
+    analogActionsStates.clear();
+    digitalActionsStates.clear();
+}
+
+bool ActionSystemImpl::GetDigitalActionState(const FastName& actionId) const
+{
+    auto it = digitalActionsStates.find(actionId);
+
+    DVASSERT(it != digitalActionsStates.end());
+
+    return it->second;
+}
+
+AnalogActionState ActionSystemImpl::GetAnalogActionState(const FastName actionId) const
+{
+    auto it = analogActionsStates.find(actionId);
+
+    DVASSERT(it != analogActionsStates.end());
+
+    return it->second;
 }
 
 // Helper function to check if specified states are active
-bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
+// Return 'nullptr' if at least one control is not in the state which is required and random InputDevice pointer otherwise
+// This is kinda dirty, but that saves us an extra cycle in 'OnUpdate' method
+InputDevice* ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
+    InputDevice* ret = nullptr;
+
     for (size_t i = 0; i < ActionSystem::MAX_DIGITAL_STATES_COUNT; ++i)
     {
         eInputElements elementId = elements[i];
@@ -108,11 +142,11 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSyst
         }
 
         const DigitalElementState requiredState = states[i];
-        bool requiredStateMatches = false;
+        ret = nullptr;
 
         for (const uint32 deviceId : devices)
         {
-            const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
+            InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
             if (device != nullptr)
             {
                 if (device->IsElementSupported(elementId))
@@ -120,21 +154,21 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSyst
                     const DigitalElementState state = device->GetDigitalElementState(elementId);
                     if (CompareDigitalStates(requiredState, state))
                     {
-                        requiredStateMatches = true;
+                        ret = device;
                         break;
                     }
                 }
             }
         }
 
-        if (!requiredStateMatches)
+        if (ret == nullptr)
         {
             // At least one control is not in the state which is required, stop
-            return false;
+            return nullptr;
         }
     }
 
-    return true;
+    return ret;
 }
 
 bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredState, const DigitalElementState& state)
@@ -179,17 +213,18 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                     continue;
                 }
 
-                const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
+                InputDevice* triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
 
-                if (triggered)
+                analogActionsStates[binding.actionId] = { triggered != nullptr, event.analogState };
+
+                if (triggered != nullptr)
                 {
                     Action action;
                     action.actionId = binding.actionId;
                     action.analogState = event.analogState;
+                    action.triggeredDevice = event.device;
 
                     actionSystem->ActionTriggered.Emit(action);
-
-                    return false; // TODO
                 }
             }
         }
@@ -214,6 +249,7 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
         for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
         {
             DigitalBinding const& binding = *it;
+            digitalActionsStates[binding.actionId] = false;
 
             // Check if we already triggered a binding that used some elements from current binding
             // If we did, skip it
@@ -235,13 +271,14 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 
             // Trigger if all elements are in required state
 
-            const bool triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
+            InputDevice* triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
 
-            if (triggered)
+            if (triggered != nullptr)
             {
                 Action action;
                 action.actionId = binding.actionId;
                 action.analogState = binding.outputAnalogState;
+                action.triggeredDevice = triggered;
 
                 // Remember elements that triggered that
                 for (eInputElements digitalElement : binding.digitalElements)
@@ -254,6 +291,7 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
                     elementsTriggeredActions.insert(digitalElement);
                 }
 
+                digitalActionsStates[binding.actionId] = true;
                 actionSystem->ActionTriggered.Emit(action);
             }
         }
