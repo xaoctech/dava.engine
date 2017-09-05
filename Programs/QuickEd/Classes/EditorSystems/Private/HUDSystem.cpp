@@ -125,7 +125,6 @@ class HUDControl : public UIControl
 
 HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
-    , sortedControlList(CompareByLCA)
 {
     GetSystemsManager()->highlightNode.Connect(this, &HUDSystem::OnHighlightNode);
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
@@ -154,7 +153,6 @@ void HUDSystem::InitFieldBinder()
 
 void HUDSystem::OnSelectionChanged(const Any& selection)
 {
-    sortedControlList.clear();
     hudMap.clear();
 
     for (auto node : selection.Cast<SelectedNodes>(SelectedNodes()))
@@ -165,7 +163,6 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
             if (nullptr != controlNode && nullptr != controlNode->GetControl())
             {
                 hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, hudControl.Get());
-                sortedControlList.insert(controlNode);
             }
         }
     }
@@ -361,7 +358,7 @@ HUDAreaInfo HUDSystem::GetControlArea(const Vector2& pos, eSearchOrder searchOrd
     }
     for (uint32 i = HUDAreaInfo::AREAS_BEGIN; i < HUDAreaInfo::AREAS_COUNT; ++i)
     {
-        for (const auto& iter : sortedControlList)
+        for (const auto& iter : GetSortedControlList())
         {
             ControlNode* node = dynamic_cast<ControlNode*>(iter);
             DVASSERT(nullptr != node);
@@ -397,6 +394,7 @@ void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
 
 void HUDSystem::UpdateAreasVisibility()
 {
+    SortedControlNodeSet sortedControlList = GetSortedControlList();
     bool showAreas = sortedControlList.size() == 1;
 
     for (const auto& iter : sortedControlList)
@@ -557,4 +555,31 @@ ControlTransformationSettings* HUDSystem::GetSettings()
 DAVA::TArc::ContextAccessor* HUDSystem::GetAccessor()
 {
     return accessor;
+}
+
+SortedControlNodeSet HUDSystem::GetSortedControlList() const
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    SortedControlNodeSet sortedControls(CompareByLCA);
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return sortedControls;
+    }
+
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    const SelectedNodes& selectedNodes = documentData->GetSelectedNodes();
+
+    for (PackageBaseNode* node : selectedNodes)
+    {
+        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+        if (nullptr != controlNode && nullptr != controlNode->GetControl())
+        {
+            sortedControls.insert(controlNode);
+        }
+    }
+    return sortedControls;
 }

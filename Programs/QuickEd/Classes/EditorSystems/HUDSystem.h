@@ -55,6 +55,8 @@ private:
 
     void UpdateHUDEnabled();
 
+    SortedControlNodeSet GetSortedControlList() const;
+
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
 
@@ -67,7 +69,6 @@ private:
     std::unique_ptr<FrameControl> selectionRectControl;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetControls;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;
-    SortedControlNodeSet sortedControlList;
     std::unique_ptr<ControlContainer> hoveredNodeControl;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 

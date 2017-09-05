@@ -22,8 +22,11 @@ CanvasModule::CanvasModule()
 void CanvasModule::PostInit()
 {
     std::unique_ptr<CanvasModuleData> data = std::make_unique<CanvasModuleData>();
-    data->editorCanvas = std::make_unique<EditorCanvas>(GetAccessor());
+    //EditorControlsView must be initialized first
+    //because on every frame EditorControlsView calculates size of canvas
+    //then this size is used by EditorCanvas
     data->controlsView = std::make_unique<EditorControlsView>(data->canvas.Get(), GetAccessor());
+    data->editorCanvas = std::make_unique<EditorCanvas>(GetAccessor());
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
