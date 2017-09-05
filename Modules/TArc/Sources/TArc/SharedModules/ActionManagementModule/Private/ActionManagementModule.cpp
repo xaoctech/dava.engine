@@ -1,11 +1,11 @@
-#include "TArc/SharedModules/ActionManagmentModule/ActionManagmentModule.h"
+#include "TArc/SharedModules/ActionManagementModule/ActionManagementModule.h"
 #include "TArc/WindowSubSystem/UI.h"
 #include "TArc/WindowSubSystem/Private/UIProxy.h"
 #include "TArc/WindowSubSystem/Private/UIManager.h"
 #include "TArc/WindowSubSystem/QtAction.h"
 #include "TArc/WindowSubSystem/ActionUtils.h"
 
-#include "TArc/SharedModules/ActionManagmentModule/Private/ActionManagmentDialog.h"
+#include "TArc/SharedModules/ActionManagementModule/Private/ActionManagementDialog.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -13,7 +13,7 @@ namespace DAVA
 {
 namespace TArc
 {
-void ActionManagmentModule::PostInit()
+void ActionManagementModule::PostInit()
 {
     executor.DelayedExecute([this]() {
         UI* ui = GetUI();
@@ -23,15 +23,15 @@ void ActionManagmentModule::PostInit()
         ui->AddAction(mainWindowKey, placementInfo, action);
 
         connections.AddConnection(action, &QAction::triggered, [accessor, ui]() {
-            ActionManagmentDialog dlg(accessor, static_cast<UIManager*>(static_cast<UIProxy*>(ui)->GetGlobalUI()));
+            ActionManagementDialog dlg(accessor, static_cast<UIManager*>(static_cast<UIProxy*>(ui)->GetGlobalUI()));
             ui->ShowModalDialog(mainWindowKey, &dlg);
         });
     });
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(ActionManagmentModule)
+DAVA_VIRTUAL_REFLECTION_IMPL(ActionManagementModule)
 {
-    ReflectionRegistrator<ActionManagmentModule>::Begin()
+    ReflectionRegistrator<ActionManagementModule>::Begin()
     .ConstructorByPointer()
     .End();
 }

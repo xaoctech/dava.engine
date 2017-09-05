@@ -186,6 +186,7 @@ bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info)
     QUrl url = value.value<QUrl>();
     if (url.scheme() != "actionbindablebinfo")
     {
+        DVASSERT(false);
         return false;
     }
 

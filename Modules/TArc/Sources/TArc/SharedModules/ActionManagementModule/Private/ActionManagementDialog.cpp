@@ -1,5 +1,5 @@
-#include "TArc/SharedModules/ActionManagmentModule/Private/ActionManagmentDialog.h"
-#include "TArc/SharedModules/ActionManagmentModule/Private/ShortcutsModel.h"
+#include "TArc/SharedModules/ActionManagementModule/Private/ActionManagementDialog.h"
+#include "TArc/SharedModules/ActionManagementModule/Private/ShortcutsModel.h"
 #include "TArc/WindowSubSystem/Private/UIManager.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Controls/ComboBox.h"
@@ -29,7 +29,7 @@ namespace DAVA
 {
 namespace TArc
 {
-ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManager* ui_)
+ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIManager* ui_)
     : accessor(accessor_)
     , ui(ui_)
 {
@@ -49,7 +49,7 @@ ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManag
         params.fields[ReflectedButton::Fields::IconSize] = "iconSize";
         params.fields[ReflectedButton::Fields::Tooltip] = "addToolTip";
         params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
-        params.fields[ReflectedButton::Fields::Clicked] = "addScheme";
+        params.fields[ReflectedButton::Fields::Clicked] = "AddKeyBindingsScheme";
         schemesLayout->AddControl(new ReflectedButton(params, accessor, model, this));
     }
     {
@@ -58,7 +58,7 @@ ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManag
         params.fields[ReflectedButton::Fields::IconSize] = "iconSize";
         params.fields[ReflectedButton::Fields::Tooltip] = "removeToolTip";
         params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
-        params.fields[ReflectedButton::Fields::Clicked] = "removeScheme";
+        params.fields[ReflectedButton::Fields::Clicked] = "RemoveKeyBindingsScheme";
         params.fields[ReflectedButton::Fields::Enabled] = "removeButtonEnabled";
         schemesLayout->AddControl(new ReflectedButton(params, accessor, model, this));
     }
@@ -68,7 +68,7 @@ ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManag
         params.fields[ReflectedButton::Fields::IconSize] = "iconSize";
         params.fields[ReflectedButton::Fields::Tooltip] = "importToolTip";
         params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
-        params.fields[ReflectedButton::Fields::Clicked] = "importScheme";
+        params.fields[ReflectedButton::Fields::Clicked] = "ImportKeyBindingsScheme";
         schemesLayout->AddControl(new ReflectedButton(params, accessor, model, this));
     }
     {
@@ -77,7 +77,7 @@ ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManag
         params.fields[ReflectedButton::Fields::IconSize] = "iconSize";
         params.fields[ReflectedButton::Fields::Tooltip] = "exportToolTip";
         params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
-        params.fields[ReflectedButton::Fields::Clicked] = "exportScheme";
+        params.fields[ReflectedButton::Fields::Clicked] = "ExportKeyBindingsScheme";
         schemesLayout->AddControl(new ReflectedButton(params, accessor, model, this));
     }
     layout->addLayout(schemesLayout);
@@ -132,7 +132,7 @@ ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManag
 
     QItemSelectionModel* selectionModel = new QItemSelectionModel(shortcutsModel);
     treeView->setSelectionModel(selectionModel);
-    connections.AddConnection(selectionModel, &QItemSelectionModel::selectionChanged, MakeFunction(this, &ActionManagmentDialog::OnActionSelected));
+    connections.AddConnection(selectionModel, &QItemSelectionModel::selectionChanged, MakeFunction(this, &ActionManagementDialog::OnActionSelected));
 
     UpdateSchemes();
     treeView->expandAll();
@@ -141,13 +141,10 @@ ActionManagmentDialog::ActionManagmentDialog(ContextAccessor* accessor_, UIManag
     treeView->resizeColumnToContents(0);
 }
 
-bool ActionManagmentDialog::eventFilter(QObject* obj, QEvent* e)
+bool ActionManagementDialog::eventFilter(QObject* obj, QEvent* e)
 {
     QEvent::Type t = e->type();
-    bool processed = false;
-    switch (t)
-    {
-    case QEvent::KeyPress:
+    if (t == QEvent::KeyPress)
     {
         int key = 0;
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
@@ -179,33 +176,24 @@ bool ActionManagmentDialog::eventFilter(QObject* obj, QEvent* e)
         }
 
         shortcutText = QKeySequence(key);
-        processed = true;
-    }
-    break;
-    default:
-        break;
-    }
-
-    if (processed == true)
-    {
         return true;
     }
 
     return QDialog::eventFilter(obj, e);
 }
 
-String ActionManagmentDialog::GetCurrentScheme() const
+String ActionManagementDialog::GetCurrentKeyBindingsScheme() const
 {
-    return ui->GetCurrentScheme();
+    return ui->GetCurrentKeyBindingsScheme();
 }
 
-void ActionManagmentDialog::SetCurrentScheme(const String& scheme)
+void ActionManagementDialog::SetCurrentKeyBindingsScheme(const String& scheme)
 {
-    ui->SetCurrentScheme(scheme);
+    ui->SetCurrentKeyBindingsScheme(scheme);
     UpdateSchemes();
 }
 
-void ActionManagmentDialog::AddScheme()
+void ActionManagementDialog::AddKeyBindingsScheme()
 {
     QInputDialog dlg;
     dlg.setObjectName("newSchemeNameDlg");
@@ -237,19 +225,19 @@ void ActionManagmentDialog::AddScheme()
     if (newSchemeName.isEmpty() == false)
     {
         String schemeToAdd = newSchemeName.toStdString();
-        ui->AddScheme(schemeToAdd);
-        ui->SetCurrentScheme(schemeToAdd);
+        ui->AddKeyBindingsScheme(schemeToAdd);
+        ui->SetCurrentKeyBindingsScheme(schemeToAdd);
         UpdateSchemes();
     }
 }
 
-void ActionManagmentDialog::RemoveScheme()
+void ActionManagementDialog::RemoveKeyBindingsScheme()
 {
-    ui->RemoveScheme(ui->GetCurrentScheme());
+    ui->RemoveKeyBindingsScheme(ui->GetCurrentKeyBindingsScheme());
     UpdateSchemes();
 }
 
-void ActionManagmentDialog::ImportScheme()
+void ActionManagementDialog::ImportKeyBindingsScheme()
 {
     FileDialogParams params;
     params.title = "Import key bindings scheme";
@@ -260,12 +248,12 @@ void ActionManagmentDialog::ImportScheme()
         return;
     }
 
-    String schemeName = ui->ImportScheme(FilePath(fileName.toStdString()));
-    ui->SetCurrentScheme(schemeName);
+    String schemeName = ui->ImportKeyBindingsScheme(FilePath(fileName.toStdString()));
+    ui->SetCurrentKeyBindingsScheme(schemeName);
     UpdateSchemes();
 }
 
-void ActionManagmentDialog::ExportScheme()
+void ActionManagementDialog::ExportKeyBindingsScheme()
 {
     FileDialogParams params;
     params.title = "Import key bindings scheme";
@@ -276,10 +264,10 @@ void ActionManagmentDialog::ExportScheme()
         return;
     }
 
-    ui->ExportScheme(FilePath(fileName.toStdString()), ui->GetCurrentScheme());
+    ui->ExportKeyBindingsScheme(FilePath(fileName.toStdString()), ui->GetCurrentKeyBindingsScheme());
 }
 
-void ActionManagmentDialog::UpdateSchemes()
+void ActionManagementDialog::UpdateSchemes()
 {
     Vector<QString> expandedBlocks;
     int rows = shortcutsModel->rowCount(QModelIndex());
@@ -306,14 +294,14 @@ void ActionManagmentDialog::UpdateSchemes()
     treeView->selectionModel()->select(selectedIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 }
 
-void ActionManagmentDialog::RemoveSequence()
+void ActionManagementDialog::RemoveSequence()
 {
     QKeySequence sequence = QKeySequence::fromString(QString::fromStdString(currentSequence), QKeySequence::NativeText);
     ui->RemoveShortcut(sequence, selectedAction);
     UpdateSchemes();
 }
 
-bool ActionManagmentDialog::CanBeAssigned() const
+bool ActionManagementDialog::CanBeAssigned() const
 {
     if (isSelectedActionReadOnly == true)
     {
@@ -342,28 +330,28 @@ bool ActionManagmentDialog::CanBeAssigned() const
     return modifFound == true && keyFound == true;
 }
 
-String ActionManagmentDialog::GetShortcutText() const
+String ActionManagementDialog::GetShortcutText() const
 {
     return shortcutText.toString(QKeySequence::NativeText).toStdString();
 }
 
-void ActionManagmentDialog::SetShortcutText(const String&)
+void ActionManagementDialog::SetShortcutText(const String&)
 {
 }
 
-void ActionManagmentDialog::AssignShortcut()
+void ActionManagementDialog::AssignShortcut()
 {
     ui->AddShortcut(shortcutText, selectedAction);
     shortcutText = QKeySequence();
     UpdateSchemes();
 }
 
-Qt::ShortcutContext ActionManagmentDialog::GetContext() const
+Qt::ShortcutContext ActionManagementDialog::GetContext() const
 {
     return context;
 }
 
-void ActionManagmentDialog::SetContext(Qt::ShortcutContext v)
+void ActionManagementDialog::SetContext(Qt::ShortcutContext v)
 {
     context = v;
     if (selectedAction != nullptr)
@@ -373,7 +361,7 @@ void ActionManagmentDialog::SetContext(Qt::ShortcutContext v)
     }
 }
 
-void ActionManagmentDialog::OnActionSelected(const QItemSelection& selected, const QItemSelection&)
+void ActionManagementDialog::OnActionSelected(const QItemSelection& selected, const QItemSelection&)
 {
     QModelIndexList indexes = selected.indexes();
     const KeyBindableAction* action = nullptr;
@@ -405,47 +393,47 @@ void ActionManagmentDialog::OnActionSelected(const QItemSelection& selected, con
     }
 }
 
-DAVA_REFLECTION_IMPL(ActionManagmentDialog)
+DAVA_REFLECTION_IMPL(ActionManagementDialog)
 {
-    ReflectionRegistrator<ActionManagmentDialog>::Begin()
+    ReflectionRegistrator<ActionManagementDialog>::Begin()
     // schemes combobox
-    .Field("schemes", &ActionManagmentDialog::schemes)
-    .Field("currentScheme", &ActionManagmentDialog::GetCurrentScheme, &ActionManagmentDialog::SetCurrentScheme)
+    .Field("schemes", &ActionManagementDialog::schemes)
+    .Field("currentScheme", &ActionManagementDialog::GetCurrentKeyBindingsScheme, &ActionManagementDialog::SetCurrentKeyBindingsScheme)
     // add, remove, import, export buttons
-    .Field("iconSize", [](ActionManagmentDialog*) { return QSize(16, 16); }, nullptr)
-    .Field("autoRaise", [](ActionManagmentDialog*) { return false; }, nullptr)
-    .Field("addIcon", [](ActionManagmentDialog*) { return QIcon(":/TArc/Resources/cplus.png"); }, nullptr)
-    .Field("addToolTip", [](ActionManagmentDialog*) { return "Create new key binding scheme"; }, nullptr)
-    .Field("removeIcon", [](ActionManagmentDialog*) { return QIcon(":/TArc/Resources/cminus.png"); }, nullptr)
-    .Field("removeToolTip", [](ActionManagmentDialog*) { return "Delete current key binding scheme"; }, nullptr)
-    .Field("removeButtonEnabled", [](ActionManagmentDialog* obj) { return obj->schemes.size() > 1; }, nullptr)
-    .Field("importIcon", [](ActionManagmentDialog*) { return QIcon(":/TArc/Resources/import.png"); }, nullptr)
-    .Field("importToolTip", [](ActionManagmentDialog*) { return "Import key binding scheme"; }, nullptr)
-    .Field("exportIcon", [](ActionManagmentDialog*) { return QIcon(":/TArc/Resources/export.png"); }, nullptr)
-    .Field("exportToolTip", [](ActionManagmentDialog*) { return "Export current key binding scheme"; }, nullptr)
-    .Method("addScheme", &ActionManagmentDialog::AddScheme)
-    .Method("removeScheme", &ActionManagmentDialog::RemoveScheme)
-    .Method("importScheme", &ActionManagmentDialog::ImportScheme)
-    .Method("exportScheme", &ActionManagmentDialog::ExportScheme)
+    .Field("iconSize", [](ActionManagementDialog*) { return QSize(16, 16); }, nullptr)
+    .Field("autoRaise", [](ActionManagementDialog*) { return false; }, nullptr)
+    .Field("addIcon", [](ActionManagementDialog*) { return QIcon(":/TArc/Resources/cplus.png"); }, nullptr)
+    .Field("addToolTip", [](ActionManagementDialog*) { return "Create new key binding scheme"; }, nullptr)
+    .Field("removeIcon", [](ActionManagementDialog*) { return QIcon(":/TArc/Resources/cminus.png"); }, nullptr)
+    .Field("removeToolTip", [](ActionManagementDialog*) { return "Delete current key binding scheme"; }, nullptr)
+    .Field("removeButtonEnabled", [](ActionManagementDialog* obj) { return obj->schemes.size() > 1; }, nullptr)
+    .Field("importIcon", [](ActionManagementDialog*) { return QIcon(":/TArc/Resources/import.png"); }, nullptr)
+    .Field("importToolTip", [](ActionManagementDialog*) { return "Import key binding scheme"; }, nullptr)
+    .Field("exportIcon", [](ActionManagementDialog*) { return QIcon(":/TArc/Resources/export.png"); }, nullptr)
+    .Field("exportToolTip", [](ActionManagementDialog*) { return "Export current key binding scheme"; }, nullptr)
+    .Method("AddKeyBindingsScheme", &ActionManagementDialog::AddKeyBindingsScheme)
+    .Method("RemoveKeyBindingsScheme", &ActionManagementDialog::RemoveKeyBindingsScheme)
+    .Method("ImportKeyBindingsScheme", &ActionManagementDialog::ImportKeyBindingsScheme)
+    .Method("ExportKeyBindingsScheme", &ActionManagementDialog::ExportKeyBindingsScheme)
     // shortcuts combobox
-    .Field("currentSequence", &ActionManagmentDialog::currentSequence)
-    .Field("sequences", &ActionManagmentDialog::sequences)
-    .Field("emptySequenceText", [](ActionManagmentDialog* obj) { return ""; }, nullptr)
-    .Field("sequencesReadOnly", [](ActionManagmentDialog* obj) { return obj->sequences.empty() == true; }, nullptr)
+    .Field("currentSequence", &ActionManagementDialog::currentSequence)
+    .Field("sequences", &ActionManagementDialog::sequences)
+    .Field("emptySequenceText", [](ActionManagementDialog* obj) { return ""; }, nullptr)
+    .Field("sequencesReadOnly", [](ActionManagementDialog* obj) { return obj->sequences.empty() == true; }, nullptr)
     // remove shortcut
-    .Field("removeSequenceEnabled", [](ActionManagmentDialog* obj) { return obj->currentSequence.empty() == false && obj->isSelectedActionReadOnly == false; }, nullptr)
-    .Field("removeSequenceText", [](ActionManagmentDialog*) { return "Remove"; }, nullptr)
-    .Method("removeSequence", &ActionManagmentDialog::RemoveSequence)
+    .Field("removeSequenceEnabled", [](ActionManagementDialog* obj) { return obj->currentSequence.empty() == false && obj->isSelectedActionReadOnly == false; }, nullptr)
+    .Field("removeSequenceText", [](ActionManagementDialog*) { return "Remove"; }, nullptr)
+    .Method("removeSequence", &ActionManagementDialog::RemoveSequence)
     // context combobox
-    .Field("currentContext", &ActionManagmentDialog::GetContext, &ActionManagmentDialog::SetContext)[M::EnumT<Qt::ShortcutContext>()]
-    .Field("contextReadOnly", [](ActionManagmentDialog* obj) { return obj->selectedAction == nullptr || obj->isSelectedActionReadOnly == true; }, nullptr)
+    .Field("currentContext", &ActionManagementDialog::GetContext, &ActionManagementDialog::SetContext)[M::EnumT<Qt::ShortcutContext>()]
+    .Field("contextReadOnly", [](ActionManagementDialog* obj) { return obj->selectedAction == nullptr || obj->isSelectedActionReadOnly == true; }, nullptr)
     //  Shortcut line edit
-    .Field("shortcutText", &ActionManagmentDialog::GetShortcutText, &ActionManagmentDialog::SetShortcutText)
-    .Field("shortcutEnabled", [](ActionManagmentDialog* obj) { return obj->selectedAction != nullptr && obj->isSelectedActionReadOnly == false; }, nullptr)
+    .Field("shortcutText", &ActionManagementDialog::GetShortcutText, &ActionManagementDialog::SetShortcutText)
+    .Field("shortcutEnabled", [](ActionManagementDialog* obj) { return obj->selectedAction != nullptr && obj->isSelectedActionReadOnly == false; }, nullptr)
     // assign button
-    .Field("assignButtonText", [](ActionManagmentDialog*) { return "Assign"; }, nullptr)
-    .Field("assignButtonEnabled", &ActionManagmentDialog::CanBeAssigned, nullptr)
-    .Method("assignShortcut", &ActionManagmentDialog::AssignShortcut)
+    .Field("assignButtonText", [](ActionManagementDialog*) { return "Assign"; }, nullptr)
+    .Field("assignButtonEnabled", &ActionManagementDialog::CanBeAssigned, nullptr)
+    .Method("assignShortcut", &ActionManagementDialog::AssignShortcut)
     .End();
 }
 

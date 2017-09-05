@@ -41,7 +41,7 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
-#include <TArc/SharedModules/ActionManagmentModule/ActionManagmentModule.h>
+#include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
 
 #include <DocDirSetup/DocDirSetup.h>
 
@@ -224,7 +224,7 @@ void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
 
     tarcCore->CreateModule<DAVA::TArc::SettingsModule>();
     tarcCore->CreateModule<DAVA::TArc::ThemesModule>();
-    tarcCore->CreateModule<DAVA::TArc::ActionManagmentModule>();
+    tarcCore->CreateModule<DAVA::TArc::ActionManagementModule>();
     tarcCore->CreateModule<ReflectionExtensionsModule>();
     tarcCore->CreateModule<REModule>();
     tarcCore->CreateModule<ProjectManagerModule>();

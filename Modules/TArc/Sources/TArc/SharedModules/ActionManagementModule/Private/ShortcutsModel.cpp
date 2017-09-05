@@ -1,4 +1,4 @@
-#include "TArc/SharedModules/ActionManagmentModule/Private/ShortcutsModel.h"
+#include "TArc/SharedModules/ActionManagementModule/Private/ShortcutsModel.h"
 
 namespace DAVA
 {
@@ -20,8 +20,8 @@ void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
         }
 
         sortedBlocks.insert(action.blockName);
-        Set<QString> conflictsWith;
-        foreach (QKeySequence seq1, action.sequences)
+        QString conflitsWith;
+        foreach (const QKeySequence& seq1, action.sequences)
         {
             for (size_t j = 0; j < actionsData.size(); ++j)
             {
@@ -36,33 +36,28 @@ void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
                     continue;
                 }
 
-                foreach (QKeySequence seq2, conflicted.sequences)
+                foreach (const QKeySequence& seq2, conflicted.sequences)
                 {
                     if (seq1.matches(seq2) == QKeySequence::ExactMatch)
                     {
-                        conflictsWith.insert(QString("%1.%2").arg(conflicted.blockName).arg(conflicted.actionName));
+                        QString conflictedAction = QString("%1.%2").arg(conflicted.blockName).arg(conflicted.actionName);
+                        if (conflitsWith.isEmpty())
+                        {
+                            conflitsWith = conflictedAction;
+                        }
+                        else
+                        {
+                            conflitsWith = QString("%1;%2").arg(conflitsWith).arg(conflictedAction);
+                        }
                         break;
                     }
                 }
             }
         }
 
-        QString conflitsWithValue;
-        for (QString s : conflictsWith)
-        {
-            if (conflitsWithValue.isEmpty())
-            {
-                conflitsWithValue = s;
-            }
-            else
-            {
-                conflitsWithValue = QString("%1;%2").arg(conflitsWithValue).arg(s);
-            }
-        }
-
         Node node;
         node.action = action;
-        node.conflitsWith = conflitsWithValue;
+        node.conflictsWith = conflitsWith;
         actions[action.blockName].push_back(node);
     }
 
@@ -90,7 +85,7 @@ const KeyBindableAction* ShortcutsModel::GetKeyBindableAction(const QModelIndex&
     return &(iter->second[index.row()].action);
 }
 
-QModelIndex ShortcutsModel::GetIndex(const QString& blockName)
+QModelIndex ShortcutsModel::GetIndex(const QString& blockName) const
 {
     if (blockName.isEmpty())
     {
@@ -103,7 +98,7 @@ QModelIndex ShortcutsModel::GetIndex(const QString& blockName)
     return createIndex(row, 0, static_cast<quintptr>(-1));
 }
 
-QModelIndex ShortcutsModel::GetIndex(const QString& blockName, QPointer<QAction> action)
+QModelIndex ShortcutsModel::GetIndex(const QString& blockName, QPointer<QAction> action) const
 {
     if (blockName.isEmpty())
     {
@@ -206,7 +201,7 @@ QVariant ShortcutsModel::data(const QModelIndex& index, int role) const
         }
         case 3:
         {
-            return n.conflitsWith;
+            return n.conflictsWith;
         }
         default:
             break;

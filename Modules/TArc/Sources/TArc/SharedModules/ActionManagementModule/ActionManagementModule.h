@@ -10,7 +10,7 @@ namespace DAVA
 {
 namespace TArc
 {
-class ActionManagmentModule : public ClientModule
+class ActionManagementModule : public ClientModule
 {
 protected:
     void PostInit() override;
@@ -19,7 +19,7 @@ private:
     QtConnections connections;
     QtDelayedExecutor executor;
 
-    DAVA_VIRTUAL_REFLECTION(ActionManagmentModule, ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ActionManagementModule, ClientModule);
 };
 } // namespace TArc
 } // namespace DAVA

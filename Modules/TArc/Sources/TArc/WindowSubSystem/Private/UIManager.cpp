@@ -1016,12 +1016,12 @@ void UIManager::ModuleDestroyed(ClientModule* module)
     }
 }
 
-const DAVA::Vector<DAVA::TArc::KeyBindableAction>& UIManager::GetKeyBindableActions() const
+const Vector<KeyBindableAction>& UIManager::GetKeyBindableActions() const
 {
     return impl->keyBindableActions;
 }
 
-String UIManager::GetCurrentScheme() const
+String UIManager::GetCurrentKeyBindingsScheme() const
 {
     String currentScheme;
     {
@@ -1037,7 +1037,7 @@ String UIManager::GetCurrentScheme() const
     return currentScheme;
 }
 
-void UIManager::SetCurrentScheme(const String& schemeName)
+void UIManager::SetCurrentKeyBindingsScheme(const String& schemeName)
 {
     {
         PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
@@ -1051,10 +1051,10 @@ Vector<String> UIManager::GetKeyBindingsSchemeNames() const
     Vector<String> schemes;
     {
         PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
-        DAVA::int32 schemesCount = schemesHolder.Get<DAVA::int32>("schemesCount");
+        int32 schemesCount = schemesHolder.Get<int32>("schemesCount");
         schemes.reserve(schemesCount + 1);
 
-        for (DAVA::int32 i = 0; i < schemesCount; ++i)
+        for (int32 i = 0; i < schemesCount; ++i)
         {
             schemes.push_back(schemesHolder.Get<String>(Format("scheme_%d", i)));
         }
@@ -1070,7 +1070,7 @@ Vector<String> UIManager::GetKeyBindingsSchemeNames() const
     return schemes;
 }
 
-void UIManager::AddScheme(const String& schemeName)
+void UIManager::AddKeyBindingsScheme(const String& schemeName)
 {
     Vector<String> schemes = GetKeyBindingsSchemeNames();
     DVASSERT(std::find(schemes.begin(), schemes.end(), schemeName) == schemes.end());
@@ -1079,7 +1079,7 @@ void UIManager::AddScheme(const String& schemeName)
     SaveSchemeNames(schemes);
 }
 
-void UIManager::RemoveScheme(const String& schemeName)
+void UIManager::RemoveKeyBindingsScheme(const String& schemeName)
 {
     Vector<String> schemes = GetKeyBindingsSchemeNames();
     auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
@@ -1094,10 +1094,10 @@ void UIManager::RemoveScheme(const String& schemeName)
         schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
     }
     SaveSchemeNames(schemes);
-    SetCurrentScheme(schemes.front());
+    SetCurrentKeyBindingsScheme(schemes.front());
 }
 
-String UIManager::ImportScheme(const FilePath& path)
+String UIManager::ImportKeyBindingsScheme(const FilePath& path)
 {
     PropertiesHolder holder(path.GetFilename(), path.GetDirectory());
     PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
@@ -1112,7 +1112,7 @@ String UIManager::ImportScheme(const FilePath& path)
         return schemeName;
     }
 
-    DAVA::int32 index = 0;
+    int32 index = 0;
     Vector<String> schemes = GetKeyBindingsSchemeNames();
     String newSchemeName = schemeName;
     while (true)
@@ -1130,7 +1130,7 @@ String UIManager::ImportScheme(const FilePath& path)
     FileSystem* fs = GetEngineContext()->fileSystem;
     if (fs->CopyFile(path, BuildSchemePath(schemeName)))
     {
-        AddScheme(schemeName);
+        AddKeyBindingsScheme(schemeName);
     }
     else
     {
@@ -1145,7 +1145,7 @@ String UIManager::ImportScheme(const FilePath& path)
     return schemeName;
 }
 
-void UIManager::ExportScheme(const FilePath& path, const String& schemeName) const
+void UIManager::ExportKeyBindingsScheme(const FilePath& path, const String& schemeName) const
 {
     Vector<String> schemes = GetKeyBindingsSchemeNames();
     auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
@@ -1206,13 +1206,7 @@ void UIManager::RegisterAction(QAction* action)
     if (GetActionKeyBindableInfo(action, info))
     {
         auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [&action, &info](const KeyBindableAction& keyBindAction) {
-            if (keyBindAction.actionName == action->objectName() &&
-                keyBindAction.blockName == info.blockName)
-            {
-                return true;
-            }
-
-            return false;
+            return keyBindAction.actionName == action->objectName() && keyBindAction.blockName == info.blockName;
         });
 
         KeyBindableAction* bindableAction = nullptr;
@@ -1255,16 +1249,16 @@ void UIManager::LoadScheme()
     }
 
     impl->keyBindableActions.clear();
-    FilePath schemePath = BuildSchemePath(GetCurrentScheme());
+    FilePath schemePath = BuildSchemePath(GetCurrentKeyBindingsScheme());
     PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
     PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
-    DAVA::int32 blocksCount = item.Get<DAVA::int32>("blocksCount");
-    for (DAVA::int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
+    int32 blocksCount = item.Get<int32>("blocksCount");
+    for (int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
     {
         PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockIndex));
         QString blockName = blockHolder.Get<QString>("blockName");
-        DAVA::int32 actionsCount = blockHolder.Get<DAVA::int32>("actionsCount");
-        for (DAVA::int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
+        int32 actionsCount = blockHolder.Get<int32>("actionsCount");
+        for (int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
         {
             PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", actionIndex));
 
@@ -1273,8 +1267,8 @@ void UIManager::LoadScheme()
             bindableAction.actionName = actionHolder.Get<QString>("actionName");
             bindableAction.context = actionHolder.Get<Qt::ShortcutContext>("actionContext");
 
-            DAVA::int32 sequencesCount = actionHolder.Get<DAVA::int32>("actionSequencesCount");
-            for (int sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
+            int32 sequencesCount = actionHolder.Get<int32>("actionSequencesCount");
+            for (int32 sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
             {
                 PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
                 bindableAction.sequences.push_back(QKeySequence::fromString(sequenceHolder.Get<QString>("keySequence")));
@@ -1292,7 +1286,7 @@ void UIManager::LoadScheme()
 
 void UIManager::SaveScheme() const
 {
-    FilePath schemePath = BuildSchemePath(GetCurrentScheme());
+    FilePath schemePath = BuildSchemePath(GetCurrentKeyBindingsScheme());
     PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
 
     PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
@@ -1306,21 +1300,21 @@ void UIManager::SaveScheme() const
         }
     }
 
-    item.Set("blocksCount", static_cast<DAVA::int32>(sortedActions.size()));
-    DAVA::int32 blockCounter = 0;
+    item.Set("blocksCount", static_cast<int32>(sortedActions.size()));
+    int32 blockCounter = 0;
     for (const auto& blockPair : sortedActions)
     {
         PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockCounter++));
         blockHolder.Set("blockName", blockPair.first);
-        blockHolder.Set("actionsCount", static_cast<DAVA::int32>(blockPair.second.size()));
+        blockHolder.Set("actionsCount", static_cast<int32>(blockPair.second.size()));
         for (size_t i = 0; i < blockPair.second.size(); ++i)
         {
-            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<DAVA::int32>(i)));
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<int32>(i)));
             const KeyBindableAction& action = blockPair.second[i];
             actionHolder.Set("actionName", action.actionName);
             actionHolder.Set("actionContext", action.context);
 
-            actionHolder.Set("actionSequencesCount", static_cast<DAVA::int32>(action.sequences.size()));
+            actionHolder.Set("actionSequencesCount", static_cast<int32>(action.sequences.size()));
             for (int sequenceIndex = 0; sequenceIndex < action.sequences.size(); ++sequenceIndex)
             {
                 PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
@@ -1338,10 +1332,10 @@ FilePath UIManager::BuildSchemePath(const String& scheme) const
 void UIManager::SaveSchemeNames(const Vector<String>& schemes) const
 {
     PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
-    DAVA::int32 schemesCount = static_cast<DAVA::int32>(schemes.size());
+    int32 schemesCount = static_cast<int32>(schemes.size());
     schemesHolder.Set("schemesCount", schemesCount);
 
-    for (DAVA::int32 i = 0; i < schemesCount; ++i)
+    for (int32 i = 0; i < schemesCount; ++i)
     {
         schemesHolder.Set(Format("scheme_%d", i), schemes[i]);
     }

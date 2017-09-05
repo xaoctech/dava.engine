@@ -13,7 +13,7 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
-#include <TArc/SharedModules/ActionManagmentModule/ActionManagmentModule.h>
+#include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 
 #include <DocDirSetup/DocDirSetup.h>
@@ -146,7 +146,7 @@ void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 
     tarcCore->CreateModule<SettingsModule>();
     tarcCore->CreateModule<ThemesModule>();
-    tarcCore->CreateModule<ActionManagmentModule>();
+    tarcCore->CreateModule<ActionManagementModule>();
     tarcCore->CreateModule<LegacySupportModule>();
     tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<ProjectModule>();

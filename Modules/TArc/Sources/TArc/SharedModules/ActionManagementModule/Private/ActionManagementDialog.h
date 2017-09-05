@@ -17,22 +17,22 @@ namespace TArc
 class UIManager;
 class ContextAccessor;
 class ShortcutsModel;
-class ActionManagmentDialog : public QDialog
+class ActionManagementDialog : public QDialog
 {
 public:
-    ActionManagmentDialog(ContextAccessor* accessor, UIManager* ui);
+    ActionManagementDialog(ContextAccessor* accessor, UIManager* ui);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* e) override;
 
 private:
-    String GetCurrentScheme() const;
-    void SetCurrentScheme(const String& scheme);
+    String GetCurrentKeyBindingsScheme() const;
+    void SetCurrentKeyBindingsScheme(const String& scheme);
 
-    void AddScheme();
-    void RemoveScheme();
-    void ImportScheme();
-    void ExportScheme();
+    void AddKeyBindingsScheme();
+    void RemoveKeyBindingsScheme();
+    void ImportKeyBindingsScheme();
+    void ExportKeyBindingsScheme();
 
     void UpdateSchemes();
 
@@ -67,7 +67,7 @@ private:
 
     QKeySequence shortcutText;
 
-    DAVA_REFLECTION(ActionManagmentDialog);
+    DAVA_REFLECTION(ActionManagementDialog);
 };
 } // namespace TArc
 } // namespace DAVA

@@ -65,13 +65,13 @@ public:
     DAVA_DEPRECATED(void InjectWindow(const WindowKey& windowKey, QMainWindow* window) override);
     void ModuleDestroyed(ClientModule* module);
 
-    String GetCurrentScheme() const;
-    void SetCurrentScheme(const String& schemeName);
+    String GetCurrentKeyBindingsScheme() const;
+    void SetCurrentKeyBindingsScheme(const String& schemeName);
     Vector<String> GetKeyBindingsSchemeNames() const;
-    void AddScheme(const String& schemeName);
-    void RemoveScheme(const String& schemeName);
-    String ImportScheme(const FilePath& path);
-    void ExportScheme(const FilePath& path, const String& schemeName) const;
+    void AddKeyBindingsScheme(const String& schemeName);
+    void RemoveKeyBindingsScheme(const String& schemeName);
+    String ImportKeyBindingsScheme(const FilePath& path);
+    void ExportKeyBindingsScheme(const FilePath& path, const String& schemeName) const;
 
     const Vector<KeyBindableAction>& GetKeyBindableActions() const;
     void AddShortcut(const QKeySequence& shortcut, QPointer<QAction> action);
