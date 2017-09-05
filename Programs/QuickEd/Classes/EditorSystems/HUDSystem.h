@@ -39,6 +39,9 @@ private:
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
+    DAVA::int32 GetUpdateOrder() const override;
+    void OnUpdate() override;
+
     void InitFieldBinder();
 
     void OnSelectionChanged(const DAVA::Any& selection);
@@ -53,7 +56,6 @@ private:
 
     void UpdateAreasVisibility();
     void UpdateHUDEnabled();
-    void OnUpdate();
 
     SortedControlNodeSet GetSortedControlList() const;
 
@@ -63,7 +65,7 @@ private:
     HUDAreaInfo activeAreaInfo;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
-    DAVA::Vector2 hoveredPoint;
+    DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);
 
     DAVA::Map<ControlNode*, std::unique_ptr<HUD>> hudMap;
     std::unique_ptr<FrameControl> selectionRectControl;

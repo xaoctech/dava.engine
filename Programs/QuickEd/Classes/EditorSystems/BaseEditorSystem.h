@@ -29,6 +29,9 @@ protected:
         HUD_CANVAS
     };
 
+    //some systems can process OnUpdate from UpdateViewsSystem
+    //order of update is metter, because without it canvas views will be in invalid state during the frame
+
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
     DAVA::TArc::ContextAccessor* accessor = nullptr;
@@ -51,4 +54,9 @@ private:
     virtual void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState);
     virtual CanvasControls CreateCanvasControls();
     virtual void DeleteCanvasControls(const CanvasControls& canvasControls);
+
+    //return order of update
+    //-1 is reserverd, 0 wil be updated first
+    virtual DAVA::int32 GetUpdateOrder() const;
+    virtual void OnUpdate();
 };

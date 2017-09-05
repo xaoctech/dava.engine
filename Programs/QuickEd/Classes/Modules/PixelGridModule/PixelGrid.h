@@ -32,13 +32,14 @@ public:
 private:
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
+    DAVA::int32 GetUpdateOrder() const override;
+    void OnUpdate() override;
 
     void InitControls();
 
     void OnVisualSettingsChanged(const DAVA::Any&);
 
     bool CanShowGrid() const;
-    void UpdateGrid();
 
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
     DAVA::RefPtr<DAVA::UIControl> hLinesContainer;

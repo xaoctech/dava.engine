@@ -8,7 +8,6 @@
 #include "Model/ControlProperties/RootProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 #include "Modules/CanvasModule/CanvasData.h"
 #include "UI/Preview/PreviewWidgetSettings.h"
 
@@ -340,14 +339,9 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::Cont
     canvas->AddControl(controlsCanvas.Get());
     controlsCanvas->SetName(FastName("controls_canvas"));
 
-    InitFieldBinder();
-
     canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
-
-    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    updateSystem->beforeRender.Connect(this, &EditorControlsView::BeforeRendering);
 }
 
 EditorControlsView::~EditorControlsView()
@@ -357,18 +351,6 @@ EditorControlsView::~EditorControlsView()
 void EditorControlsView::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
-}
-
-void EditorControlsView::InitFieldBinder()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    fieldBinder.reset(new FieldBinder(accessor));
-    FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-    fieldDescr.fieldName = FastName(DocumentData::displayedRootControlsPropertyName);
-    fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorControlsView::OnRootContolsChanged));
 }
 
 void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*currentState*/, EditorSystemsManager::eDragState previousState)
@@ -441,8 +423,22 @@ void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl
     }
 }
 
-void EditorControlsView::BeforeRendering()
+DAVA::int32 EditorControlsView::GetUpdateOrder() const
 {
+    //this system must be updated first
+    return 0;
+}
+
+void EditorControlsView::OnUpdate()
+{
+    static SortedControlNodeSet displayedControls;
+    SortedControlNodeSet newDisplayedControls = GetDisplayedControls();
+    if (displayedControls != newDisplayedControls)
+    {
+        OnRootContolsChanged(newDisplayedControls, displayedControls);
+        displayedControls = newDisplayedControls;
+    }
+
     if (needRecalculateBgrBeforeRender)
     {
         if (GetSystemsManager()->GetDragState() == EditorSystemsManager::Transform)
@@ -545,21 +541,26 @@ void EditorControlsView::Layout()
     OnRootControlPosChanged();
 }
 
-void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
+void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRootControls, const SortedControlNodeSet& oldRootControls)
 {
-    SortedControlNodeSet newRootControls = newRootControlsValue.Cast<SortedControlNodeSet>(SortedControlNodeSet());
-    Set<ControlNode*> sortedRootControls(newRootControls.begin(), newRootControls.end());
     Set<ControlNode*> newNodes;
     Set<ControlNode*> deletedNodes;
-    if (!rootControls.empty())
+    if (!oldRootControls.empty())
     {
-        std::set_difference(rootControls.begin(), rootControls.end(), sortedRootControls.begin(), sortedRootControls.end(), std::inserter(deletedNodes, deletedNodes.end()));
+        std::set_difference(oldRootControls.begin(),
+                            oldRootControls.end(),
+                            newRootControls.begin(),
+                            newRootControls.end(),
+                            std::inserter(deletedNodes, deletedNodes.end()));
     }
-    if (!sortedRootControls.empty())
+    if (!newRootControls.empty())
     {
-        std::set_difference(sortedRootControls.begin(), sortedRootControls.end(), rootControls.begin(), rootControls.end(), std::inserter(newNodes, newNodes.end()));
+        std::set_difference(newRootControls.begin(),
+                            newRootControls.end(),
+                            oldRootControls.begin(),
+                            oldRootControls.end(),
+                            std::inserter(newNodes, newNodes.end()));
     }
-    rootControls = sortedRootControls;
 
     for (auto iter = deletedNodes.begin(); iter != deletedNodes.end(); ++iter)
     {
@@ -572,7 +573,7 @@ void EditorControlsView::OnRootContolsChanged(const Any& newRootControlsValue)
         controlsCanvas->RemoveControl(findIt->get()->GetGridControl());
         gridControls.erase(findIt);
     }
-    DVASSERT(newRootControls.size() == rootControls.size());
+
     for (auto iter = newRootControls.begin(); iter != newRootControls.end(); ++iter)
     {
         ControlNode* node = *iter;
@@ -603,4 +604,19 @@ void EditorControlsView::OnRootControlPosChanged()
         //force show 0, 0 at top left corner if many root controls displayed
         canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, Vector2(0.0f, 0.0f));
     }
+}
+
+SortedControlNodeSet EditorControlsView::GetDisplayedControls() const
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (nullptr == activeContext)
+    {
+        return SortedControlNodeSet(CompareByLCA);
+    }
+
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    return documentData->GetDisplayedRootControls();
 }

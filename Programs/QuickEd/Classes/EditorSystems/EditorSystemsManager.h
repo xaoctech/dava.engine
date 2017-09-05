@@ -163,6 +163,8 @@ private:
     void OnRootContolsChanged(const DAVA::Any& rootControls);
     void OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo);
 
+    void OnUpdate();
+
     template <class OutIt, class Predicate>
     void CollectControlNodesImpl(OutIt destination, Predicate predicate, StopPredicate stopPredicate, ControlNode* node) const;
 

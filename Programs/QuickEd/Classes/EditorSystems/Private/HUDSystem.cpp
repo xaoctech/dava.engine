@@ -1,5 +1,4 @@
 #include "EditorSystems/HUDSystem.h"
-#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
@@ -132,14 +131,10 @@ HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 
     InitFieldBinder();
-
-    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    updateSystem->beforeRender.Connect(this, &HUDSystem::OnUpdate);
 }
 
 HUDSystem::~HUDSystem()
 {
-    DVASSERT(GetSystemsManager()->GetDragState() != EditorSystemsManager::SelectByRect);
 }
 
 void HUDSystem::InitFieldBinder()
@@ -158,23 +153,13 @@ void HUDSystem::InitFieldBinder()
 
 void HUDSystem::OnSelectionChanged(const Any& selection)
 {
-
-    for (auto node : selection.Cast<SelectedNodes>(SelectedNodes()))
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (controlNode != nullptr)
-        {
-            if (nullptr != controlNode && nullptr != controlNode->GetControl())
-            {
-                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, hudControl.Get());
-            }
-        }
-    }
-
     UpdateAreasVisibility();
     ProcessCursor(hoveredPoint, SEARCH_BACKWARD);
-    ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
-    OnHighlightNode(node);
+}
+
+DAVA::int32 HUDSystem::GetUpdateOrder() const
+{
+    return 10;
 }
 
 void HUDSystem::OnUpdate()
@@ -211,7 +196,7 @@ void HUDSystem::OnUpdate()
         {
             if (hudMap.find(controlNode) == hudMap.end())
             {
-                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, systemsManager->GetHUDControl());
+                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, hudControl.Get());
             }
         }
     }
@@ -221,14 +206,28 @@ void HUDSystem::OnUpdate()
         const UIGeometricData& controlGD = hudPair.first->GetControl()->GetGeometricData();
         hudPair.second->container->InitFromGD(controlGD);
     }
+
+    //DAVA::Logger::Warning("hovered point %f %f", hoveredPoint.x, hoveredPoint.y);
+    if (hoveredPoint == Vector2(-1.0f, -1.0f))
+    {
+        OnHighlightNode(nullptr);
+    }
+    else
+    {
+        ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
+        OnHighlightNode(node);
+    }
 }
 
 void HUDSystem::ProcessInput(UIEvent* currentInput)
 {
     bool findPivot = hudMap.size() == 1 && DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL) && DAVA::TArc::IsKeyPressed(eModifierKeys::ALT);
     eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
-    hoveredPoint = currentInput->point;
     UIEvent::Phase phase = currentInput->phase;
+    if (currentInput->point.x > 0.0f && currentInput->point.y > 0.0f)
+    {
+        hoveredPoint = currentInput->point;
+    }
 
     switch (phase)
     {
@@ -259,22 +258,6 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
         break;
     default:
         break;
-    }
-    if (phase == UIEvent::Phase::MOVE
-        || phase == UIEvent::Phase::WHEEL
-        || phase == UIEvent::Phase::ENDED
-        )
-    {
-        HUDAreaInfo::eArea activeArea = activeAreaInfo.area;
-        ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
-        if (activeArea == HUDAreaInfo::NO_AREA || (activeArea == HUDAreaInfo::FRAME_AREA && node != activeAreaInfo.owner))
-        {
-            OnHighlightNode(node);
-        }
-        else
-        {
-            OnHighlightNode(nullptr);
-        }
     }
 }
 
@@ -474,9 +457,6 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         DVASSERT(selectionRectControl == nullptr);
         selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT, accessor));
         selectionRectControl->AddToParent(hudControl.Get());
-        break;
-    case EditorSystemsManager::Transform:
-        OnHighlightNode(nullptr);
         break;
     case EditorSystemsManager::DragScreen:
         UpdateHUDEnabled();

@@ -3,7 +3,6 @@
 #include "Modules/CanvasModule/CanvasData.h"
 
 #include "UI/Preview/Data/CentralWidgetData.h"
-#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -18,9 +17,6 @@ EditorCanvas::EditorCanvas(DAVA::TArc::ContextAccessor* accessor)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
-
-    UpdateViewsSystem* updateSystem = GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    updateSystem->beforeRender.Connect(this, &EditorCanvas::UpdateMovableControlState);
 
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DataContext*) { return Reflection::Create(&canvasDataAdapter); });
 }
@@ -110,13 +106,20 @@ CanvasControls EditorCanvas::CreateCanvasControls()
 
 void EditorCanvas::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
-    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    if (updateSystem != nullptr)
-    {
-        updateSystem->beforeRender.Disconnect(this);
-    }
     CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
     canvasModuleData->canvas = nullptr;
+}
+
+DAVA::int32 EditorCanvas::GetUpdateOrder() const
+{
+    //must be updated right after EditorControlsView to correct controls positions
+    return 1;
+}
+
+void EditorCanvas::OnUpdate()
+{
+    OnMovableControlPositionChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::movableControlPositionPropertyName));
+    OnScaleChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
 }
 
 EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* currentInput)
@@ -205,10 +208,4 @@ void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
     {
         canvas->SetScale(Vector2(1.0f, 1.0f));
     }
-}
-
-void EditorCanvas::UpdateMovableControlState()
-{
-    OnMovableControlPositionChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::movableControlPositionPropertyName));
-    OnScaleChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
 }

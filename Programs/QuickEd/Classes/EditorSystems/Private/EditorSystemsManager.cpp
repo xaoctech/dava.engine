@@ -3,6 +3,7 @@
 #include "Modules/CanvasModule/CanvasModuleData.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
 #include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -74,6 +75,9 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
     InitDAVAScreen();
 
     InitFieldBinder();
+
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &EditorSystemsManager::OnUpdate);
 }
 
 EditorSystemsManager::~EditorSystemsManager()
@@ -282,6 +286,26 @@ void EditorSystemsManager::OnRootContolsChanged(const DAVA::Any& rootControlsVal
 void EditorSystemsManager::OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo)
 {
     currentHUDArea = areaInfo;
+}
+
+void EditorSystemsManager::OnUpdate()
+{
+    using namespace DAVA;
+    Map<int, BaseEditorSystem*> systemsToUpdate;
+    for (BaseEditorSystem* system : systems)
+    {
+        int32 order = system->GetUpdateOrder();
+        if (order != -1)
+        {
+            DVASSERT(systemsToUpdate.find(order) == systemsToUpdate.end());
+            systemsToUpdate[order] = system;
+        }
+    }
+
+    for (const auto& orderAndSystem : systemsToUpdate)
+    {
+        orderAndSystem.second->OnUpdate();
+    }
 }
 
 void EditorSystemsManager::InitDAVAScreen()

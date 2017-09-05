@@ -22,6 +22,8 @@ private:
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
+    DAVA::int32 GetUpdateOrder() const override;
+    void OnUpdate() override;
 
     void InitFieldBinder();
     DAVA::float32 GetScaleFromWheelEvent(DAVA::int32 ticksCount) const;
