@@ -3,6 +3,7 @@
 #include "Debug/DVAssert.h"
 #include "Base/BaseTypes.h"
 #include "Time/SystemTimer.h"
+#include "Debug/ProfilerCPU.h"
 
 namespace DAVA
 {
@@ -29,6 +30,8 @@ void RequestManager::Stop()
 
 void RequestManager::FireStartLoadingWhileInactiveSignals()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &packManager.profiler);
+
     if (!requestStartedWhileInactive.empty())
     {
         for (const String& pack : requestStartedWhileInactive)
@@ -46,6 +49,8 @@ void RequestManager::FireStartLoadingWhileInactiveSignals()
 
 void RequestManager::FireUpdateWhileInactiveSignals()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &packManager.profiler);
+
     if (!requestUpdatedWhileInactive.empty())
     {
         for (const String& pack : requestUpdatedWhileInactive)
@@ -63,6 +68,7 @@ void RequestManager::FireUpdateWhileInactiveSignals()
 
 void RequestManager::FireStartLoadingSignal(PackRequest& request, bool inBackground)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &packManager.profiler);
     // if error happened and no space on device, requesting
     // may be already be disabled, so we need check it out
     if (packManager.IsRequestingEnabled())
@@ -81,6 +87,7 @@ void RequestManager::FireStartLoadingSignal(PackRequest& request, bool inBackgro
 
 void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &packManager.profiler);
     // if error happened and no space on device, requesting
     // may be already be disabled, so we need check it out
     if (packManager.IsRequestingEnabled())
@@ -104,6 +111,8 @@ void RequestManager::FireUpdateSignal(PackRequest& request, bool inBackground)
 
 void RequestManager::OneUpdateIteration(bool inBackground)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &packManager.profiler);
+
     isQueueChanged = false;
 
     PackRequest* request = Top();
@@ -150,6 +159,8 @@ void RequestManager::OneUpdateIteration(bool inBackground)
 
 void RequestManager::Update(bool inBackground)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &packManager.profiler);
+
     if (!inBackground)
     {
         FireStartLoadingWhileInactiveSignals();

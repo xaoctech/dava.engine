@@ -290,7 +290,7 @@ void SceneInfo::RefreshLODInfoForSelection()
     EditorStatisticsSystem* statisticsSystem = GetCurrentEditorStatisticsSystem();
     if (statisticsSystem != nullptr)
     {
-        const auto& triangles = statisticsSystem->GetTriangles(eEditorMode::MODE_SELECTION, true);
+        const auto& triangles = statisticsSystem->GetTriangles(eEditorMode::MODE_SELECTION, false);
 
         uint32 lodTriangles = 0;
         for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)

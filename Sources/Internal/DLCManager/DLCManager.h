@@ -128,6 +128,7 @@ public:
         uint32 skipCDNConnectAfterAttempts = 3; //!< if local metadata exists and CDN is not available use local files without CDN
         uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
         uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
+        uint32 profilerSamplerCounts = 1024 * 2; //!< number of counters in profiler ring buffer
         bool fireSignalsInBackground = false; //!< if false, signals are accumulated and will be fired only when an app returns to foreground
     };
 
