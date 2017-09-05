@@ -111,7 +111,7 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
-    , profiler(1024 * 10)
+    , profiler(1024 * 16)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
