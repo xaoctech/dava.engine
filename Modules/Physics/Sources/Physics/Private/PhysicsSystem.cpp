@@ -123,10 +123,22 @@ physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
 {
     PX_UNUSED(attributes0);
     PX_UNUSED(attributes1);
-    PX_UNUSED(filterData0);
-    PX_UNUSED(filterData1);
     PX_UNUSED(constantBlockSize);
     PX_UNUSED(constantBlock);
+
+    // PxFilterData for a shape is used this way:
+    // - PxFilterData.word0 is used for engine-specific features (i.e. for CCD)
+    // - PxFilterData.word1 is a bitmask for encoding type of object
+    // - PxFilterData.word2 is a bitmask for encoding types of objects this object collides with
+    // - PxFilterData.word3 is not used right now
+    // Type of a shape and types it collides with can be set using CollisionShapeComponent::SetCollisionFilterData method
+
+    if ((filterData0.word1 & filterData1.word2) == 0 &&
+        (filterData1.word1 & filterData0.word2) == 0)
+    {
+        // If these types of objects do not collide, ignore this pair unless filter data for either of them changes
+        return physx::PxFilterFlag::eSUPPRESS;
+    }
 
     pairFlags =
     physx::PxPairFlag::eCONTACT_DEFAULT | // default collision processing
@@ -169,16 +181,26 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
     {
         const physx::PxContactPair& pair = pairs[i];
 
-        Vector<CollisionPoint> davaContactPoints(pair.contactCount);
-
         if (pair.contactCount > 0)
         {
-            // Extract physx points
-            Vector<physx::PxContactPairPoint> physxContactPoints(pair.contactCount);
-            pair.extractContacts(&physxContactPoints[0], pair.contactCount);
+            if ((pair.flags & physx::PxContactPairFlag::eREMOVED_SHAPE_0) ||
+                (pair.flags & physx::PxContactPairFlag::eREMOVED_SHAPE_1))
+            {
+                // Either first or second shape has been removed from the scene
+                // Do not report such contacts
+                continue;
+            }
 
-            // Convert each contact points from physx structure to our structure
-            for (size_t j = 0; j < pair.contactCount; ++j)
+            // Extract physx points
+            static const size_t MAX_CONTACT_POINTS_COUNT = 10;
+            static physx::PxContactPairPoint physxContactPoints[MAX_CONTACT_POINTS_COUNT];
+            const size_t contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
+            DVASSERT(contactPointsCount > 0);
+
+            Vector<CollisionPoint> davaContactPoints(contactPointsCount);
+
+            // Convert each contact point from physx structure to engine structure
+            for (size_t j = 0; j < contactPointsCount; ++j)
             {
                 CollisionPoint& davaPoint = davaContactPoints[j];
                 physx::PxContactPairPoint& physxPoint = physxContactPoints[j];
@@ -186,13 +208,16 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
                 davaPoint.position = PhysicsMath::PxVec3ToVector3(physxPoint.position);
                 davaPoint.impulse = PhysicsMath::PxVec3ToVector3(physxPoint.impulse);
             }
+
+            CollisionShapeComponent* firstCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[0]->userData);
+            DVASSERT(firstCollisionComponent != nullptr);
+
+            CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
+            DVASSERT(secondCollisionComponent != nullptr);
+
+            // Register collision
+            targetCollisionSingleComponent->collisions.push_back({ firstCollisionComponent->GetEntity(), secondCollisionComponent->GetEntity(), std::move(davaContactPoints) });
         }
-
-        CollisionShapeComponent* firstCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[0]->userData);
-        CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
-
-        // Register collision
-        targetCollisionSingleComponent->collisions.push_back({ firstCollisionComponent->GetEntity(), secondCollisionComponent->GetEntity(), std::move(davaContactPoints) });
     }
 }
 
