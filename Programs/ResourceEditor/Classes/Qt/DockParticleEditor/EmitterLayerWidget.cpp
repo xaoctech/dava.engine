@@ -3,7 +3,6 @@
 #include "Commands2/ParticleLayerCommands.h"
 
 #include "TextureBrowser/TextureConvertor.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "ImageTools/ImageTools.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
@@ -1584,7 +1583,6 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeFadeDistanceFromTopSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 
-    connect(stripeTextureTileTimeLine, SIGNAL(valueChanged()), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
     connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
 }

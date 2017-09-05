@@ -3,18 +3,23 @@
 
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystemModule.h"
 #include "Modules/LegacySupportModule/LegacySupportModule.h"
+#include "Modules/DocumentsModule/DocumentsModule.h"
+#include "Modules/ProjectModule/ProjectModule.h"
 #include "Classes/Application/ReflectionExtensions.h"
+
+#include <QtTools/InitQtTools.h>
 
 #include <TArc/Core/Core.h>
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/SharedModules/SettingsModule/SettingsModule.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 
 #include <DocDirSetup/DocDirSetup.h>
 
 #include <Render/Renderer.h>
 #include <Tools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
-
-#include <Preferences/PreferencesStorage.h>
 
 #include <UI/UIControlSystem.h>
 #include <UI/Input/UIInputSystem.h>
@@ -99,17 +104,13 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
 
     UIInputSystem* inputSystem = uiControlSystem->GetInputSystem();
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::UP), UIInputSystem::ACTION_FOCUS_UP);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::DOWN), UIInputSystem::ACTION_FOCUS_DOWN);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_LEFT), UIInputSystem::ACTION_FOCUS_LEFT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_RIGHT), UIInputSystem::ACTION_FOCUS_RIGHT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_UP), UIInputSystem::ACTION_FOCUS_UP);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_DOWN), UIInputSystem::ACTION_FOCUS_DOWN);
 
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::TAB), UIInputSystem::ACTION_FOCUS_NEXT);
-    inputSystem->BindGlobalShortcut(KeyboardShortcut(Key::TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
-
-    const char* settingsPath = "QuickEdSettings.archive";
-    FilePath localPrefrencesPath(fs->GetCurrentDocumentsDirectory() + settingsPath);
-    PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB), UIInputSystem::ACTION_FOCUS_NEXT);
+    inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_TAB, eModifierKeys::SHIFT), UIInputSystem::ACTION_FOCUS_PREV);
 
     engineContext->logger->Log(Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
 
@@ -138,11 +139,23 @@ QString QEApplication::GetInstanceKey() const
 
 void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 {
-    Q_INIT_RESOURCE(QtToolsResources);
-    tarcCore->CreateModule<UpdateViewsSystemModule>();
-    tarcCore->CreateModule<LegacySupportModule>();
+    using namespace DAVA::TArc;
+    InitColorPickerOptions(true);
+    InitQtTools();
 
-    for (const DAVA::ReflectedType* type : DAVA::TArc::ModuleCollection::Instance()->GetGuiModules())
+    ActionPlacementInfo info;
+    info.AddPlacementPoint(CreateMenuPoint(QList<QString>() << "Tools", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "ToolsSeparator")));
+    info.AddPlacementPoint(CreateToolbarPoint("Main Toolbar"));
+    tarcCore->CreateModule<SettingsModule>(info, QString("Preferences"));
+
+    InsertionParams params(InsertionParams::eInsertionMethod::AfterItem, "Dock");
+    tarcCore->CreateModule<ThemesModule>(params);
+    tarcCore->CreateModule<LegacySupportModule>();
+    tarcCore->CreateModule<UpdateViewsSystemModule>();
+    tarcCore->CreateModule<ProjectModule>();
+    tarcCore->CreateModule<DocumentsModule>();
+
+    for (const DAVA::ReflectedType* type : ModuleCollection::Instance()->GetGuiModules())
     {
         tarcCore->CreateModule(type);
     }

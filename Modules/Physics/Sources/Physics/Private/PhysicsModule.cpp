@@ -109,27 +109,6 @@ void BuildPhysxMeshInfo(const Vector<PolygonGroup*>& polygons, Vector<physx::PxV
 }
 }
 
-// TODO: move after merging with collision single component branch,
-// since it's made specifically for vehicles
-physx::PxFilterFlags FilterShader
-(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
- physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
- physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
-{
-    PX_UNUSED(attributes0);
-    PX_UNUSED(attributes1);
-    PX_UNUSED(constantBlock);
-    PX_UNUSED(constantBlockSize);
-
-    if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
-        return physx::PxFilterFlag::eSUPPRESS;
-
-    pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
-    pairFlags |= physx::PxPairFlags(physx::PxU16(filterData0.word2 | filterData1.word2));
-
-    return physx::PxFilterFlags();
-}
-
 class PhysicsModule::PhysicsAllocator : public physx::PxAllocatorCallback
 {
 public:
@@ -287,7 +266,7 @@ void PhysicsModule::Deallocate(void* ptr)
     allocator->deallocate(ptr);
 }
 
-physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) const
+physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config, physx::PxSimulationFilterShader filterShader, physx::PxSimulationEventCallback* callback) const
 {
     using namespace physx;
 
@@ -296,6 +275,8 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) con
     PxSceneDesc sceneDesc(physics->getTolerancesScale());
     sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVE_ACTORS;
     sceneDesc.gravity = PhysicsMath::Vector3ToPxVec3(config.gravity);
+    sceneDesc.filterShader = filterShader;
+    sceneDesc.simulationEventCallback = callback;
 
     if (cpuDispatcher == nullptr)
     {
@@ -303,8 +284,6 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) con
     }
     DVASSERT(cpuDispatcher);
     sceneDesc.cpuDispatcher = cpuDispatcher;
-
-    sceneDesc.filterShader = FilterShader;
 
     PxScene* scene = physics->createScene(sceneDesc);
     DVASSERT(scene);

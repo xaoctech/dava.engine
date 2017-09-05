@@ -1,19 +1,20 @@
+#include "Classes/Constants.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
+#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
-#include "Scene/System/EditorParticlesSystem.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -32,6 +33,7 @@
 #include <Functional/Function.h>
 #include <Base/FastName.h>
 #include <Base/Any.h>
+#include <Base/String.h>
 #include <Base/GlobalEnum.h>
 
 #include <QList>
@@ -67,6 +69,7 @@ public:
 SceneManagerModule::SceneManagerModule()
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneData);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GlobalSceneSettings);
 }
 
 SceneManagerModule::~SceneManagerModule() = default;
@@ -75,12 +78,10 @@ void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)
 {
     DAVA::Renderer::SetDesiredFPS(60);
 
-    DAVA::uint32 val = SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32();
-    DAVA::eGPUFamily family = static_cast<DAVA::eGPUFamily>(val);
+    DAVA::eGPUFamily family = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU;
     DAVA::Texture::SetGPULoadingOrder({ family });
 
     QtMainWindow* wnd = qobject_cast<QtMainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
-    DVASSERT(wnd != nullptr);
     if (wnd != nullptr)
     {
         wnd->OnRenderingInitialized();
@@ -130,8 +131,9 @@ bool SceneManagerModule::ControlWindowClosing(const DAVA::TArc::WindowKey& key, 
     return true;
 }
 
-void SceneManagerModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool SceneManagerModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
+    return true;
 }
 
 void SceneManagerModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
@@ -207,7 +209,7 @@ void SceneManagerModule::PostInit()
         return v.CanCast<DAVA::FilePath>() && !v.Cast<DAVA::FilePath>().IsEmpty();
     };
     params.getMaximumCount = []() {
-        return SettingsManager::GetValue(Settings::General_RecentFilesCount).AsInt32();
+        return 5;
     };
     params.insertionParams.method = InsertionParams::eInsertionMethod::AfterItem;
     params.insertionParams.item = QString("importSeparator");
@@ -270,7 +272,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
 
         ui->AddAction(mainWindowKey, placementInfo, action);
 
-        RegisterOperation(REGlobal::CreateNewSceneOperation.ID, this, &SceneManagerModule::CreateNewScene);
+        RegisterOperation(REGlobal::CreateFirstSceneOperation.ID, this, &SceneManagerModule::CreateFirstScene);
     }
 
     // Open Scene action
@@ -457,6 +459,64 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         ui->AddAction(mainWindowKey, placementInfo, action);
     }
 
+    // Undo/Redo
+    DAVA::Function<DAVA::Any(DAVA::String, const DAVA::Any&)> makeUndoRedoText = [](DAVA::String prefix, const DAVA::Any& v) {
+        DAVA::String descr = v.Cast<DAVA::String>("");
+        if (descr.empty() == false)
+        {
+            return prefix + ": " + descr;
+        }
+
+        return prefix;
+    };
+    {
+        QtAction* undo = new QtAction(accessor, QIcon(":/QtIcons/edit_undo.png"), QStringLiteral("Undo"));
+        undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const DAVA::Any& v) {
+            return v.Cast<bool>(false);
+        });
+        undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
+        undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
+
+        undo->setShortcutContext(Qt::ApplicationShortcut);
+        undo->setAutoRepeat(false);
+        undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+
+        connections.AddConnection(undo, &QAction::triggered, [this]() {
+            ContextAccessor* accessor = GetAccessor();
+            DVASSERT(accessor->GetActiveContext() != nullptr);
+            accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Undo();
+        });
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::BeforeItem }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("mainToolBar", { InsertionParams::eInsertionMethod::AfterItem, "saveSeparator" }));
+        ui->AddAction(mainWindowKey, placementInfo, undo);
+    }
+
+    {
+        QtAction* redo = new QtAction(accessor, QIcon(":/QtIcons/edit_redo.png"), QStringLiteral("Redo"));
+        redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const DAVA::Any& v) {
+            return v.Cast<bool>(false);
+        });
+        redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
+        redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
+
+        redo->setShortcutContext(Qt::ApplicationShortcut);
+        redo->setAutoRepeat(false);
+        redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+
+        connections.AddConnection(redo, &QAction::triggered, [this]() {
+            ContextAccessor* accessor = GetAccessor();
+            DVASSERT(accessor->GetActiveContext() != nullptr);
+            accessor->GetActiveContext()->GetData<SceneData>()->GetScene()->Redo();
+        });
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint("mainToolBar", { InsertionParams::eInsertionMethod::AfterItem, "Undo" }));
+        ui->AddAction(mainWindowKey, placementInfo, redo);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Menu View
     // GPU
@@ -586,6 +646,31 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(REGlobal::ReloadTexturesOperation.ID, this, &SceneManagerModule::ReloadTextures);
 }
 
+void SceneManagerModule::CreateFirstScene()
+{
+    if (GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->openLastScene == true)
+    {
+        using namespace DAVA;
+        Vector<String> recentScenes = recentItems->Get();
+        if (recentScenes.empty() == false)
+        {
+            FilePath lastOpenedScene = recentScenes[0];
+
+            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            DVASSERT(data != nullptr);
+            FilePath projectPath = data->GetProjectPath();
+
+            if (FilePath::ContainPath(lastOpenedScene, projectPath))
+            {
+                OpenSceneByPath(lastOpenedScene);
+                return;
+            }
+        }
+    }
+
+    CreateNewScene();
+}
+
 void SceneManagerModule::CreateNewScene()
 {
     using namespace DAVA::TArc;
@@ -633,7 +718,7 @@ void SceneManagerModule::OpenSceneQuckly()
     DAVA::FileSystem* fileSystem = GetAccessor()->GetEngineContext()->fileSystem;
     if (fileSystem->Exists(cachedPath))
     {
-        QString path = FindFileDialog::GetFilePath(sceneFilesCache.get(), "sc2", GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+        QString path = FindFileDialog::GetFilePath(GetAccessor(), sceneFilesCache.get(), "sc2", GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
         if (!path.isEmpty())
         {
             OpenSceneByPath(DAVA::FilePath(path.toStdString()));
@@ -891,10 +976,9 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
     using namespace DAVA::TArc;
     if (SaveTileMaskInAllScenes())
     {
-        SettingsManager::SetValue(Settings::Internal_TextureViewGPU, DAVA::VariantType(static_cast<DAVA::uint32>(gpu)));
+        CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+        settings->textureViewGPU = gpu;
         DAVA::Texture::SetGPULoadingOrder({ gpu });
-
-        DAVA::eGPUFamily gpu = static_cast<DAVA::eGPUFamily>(SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsUInt32());
 
         SceneHelper::TextureCollector collector;
         DAVA::Set<DAVA::NMaterial*> allSceneMaterials;
@@ -1182,7 +1266,7 @@ bool SceneManagerModule::SaveSceneImpl(DAVA::RefPtr<SceneEditor2> scene, const D
         return false;
     }
 
-    if (SettingsManager::GetValue(Settings::Scene_SaveEmitters).AsBool() == true)
+    if (GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->saveEmitters == true)
     {
         scene->SaveEmitters(DAVA::MakeFunction(this, &SceneManagerModule::SaveEmitterFallback));
     }
@@ -1232,7 +1316,8 @@ DAVA::FilePath SceneManagerModule::GetSceneSavePath(const DAVA::RefPtr<SceneEdit
 
 DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName)
 {
-    DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastSaveEmitterDir).AsFilePath();
+    CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+    DAVA::FilePath defaultPath = settings->emitterSaveDir;
     if (defaultPath.IsEmpty())
     {
         ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
@@ -1255,7 +1340,7 @@ DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entit
     DAVA::FilePath result(savePath.toStdString());
     if (!result.IsEmpty())
     {
-        SettingsManager::SetValue(Settings::Internal_ParticleLastSaveEmitterDir, DAVA::VariantType(result));
+        settings->emitterSaveDir = result;
     }
 
     return result;

@@ -9,7 +9,7 @@
 
 namespace DAVA
 {
-DAVA::Component* HeightFieldShapeComponent::Clone(Entity* toEntity)
+Component* HeightFieldShapeComponent::Clone(Entity* toEntity)
 {
     HeightFieldShapeComponent* result = new HeightFieldShapeComponent();
     result->SetEntity(toEntity);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Semaphore.h"
+#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
 #include <atomic>
 

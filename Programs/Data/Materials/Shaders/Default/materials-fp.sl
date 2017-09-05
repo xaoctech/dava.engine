@@ -5,12 +5,12 @@
 // fprog-input
 
 fragment_in
-{
+{    
     #if MATERIAL_TEXTURE
         #if PARTICLES_PERSPECTIVE_MAPPING
             float3 varTexCoord0 : TEXCOORD0;
         #else
-            float2 varTexCoord0 : TEXCOORD0;
+        float2 varTexCoord0 : TEXCOORD0;
         #endif
     #elif MATERIAL_SKYBOX
         float3 varTexCoord0 : TEXCOORD0;
@@ -39,16 +39,16 @@ fragment_in
         #elif NORMALIZED_BLINN_PHONG
             [lowp] half4 varSpecularColor : TEXCOORD4;
         #endif
-
+    
     #elif PIXEL_LIT
-
+        
         #if FAST_NORMALIZATION
         [lowp] half3 varHalfVec : COLOR0;
         #endif
         [lowp] half3 varToLightVec : COLOR1;
         float3 varToCameraVec : TEXCOORD7;
     #endif
-
+    
     #if FLOWMAP || PARTICLES_FLOWMAP
         float3 varFlowData : TEXCOORD4;
     #endif
@@ -59,7 +59,7 @@ fragment_in
 
     #if VERTEX_FOG
         [lowp] half4 varFog : TEXCOORD5;
-    #endif
+    #endif           
 
      #if PARTICLES_NOISE
         #if PARTICLES_FRESNEL_TO_ALPHA
@@ -69,7 +69,11 @@ fragment_in
         #endif
     #elif PARTICLES_FRESNEL_TO_ALPHA
         float varTexcoord6 : TEXCOORD6; // Fresnel a.
-    #endif 
+    #endif
+
+    #if GEO_DECAL
+        float2 geoDecalCoord : TEXCOORD6;
+    #endif
 
     #if FRAME_BLEND && PARTICLES_ALPHA_REMAP
         half2 varTexcoord3 : TEXCOORD3;
@@ -122,18 +126,21 @@ fragment_out
 #endif
 
 #if MATERIAL_TEXTURE && ALPHATEST && ALPHATESTVALUE
-    [material][a] property float alphatestThreshold = 0.0;
+    [material][a] property float alphatestThreshold           = 0.0;
 #endif
 
 #if MATERIAL_TEXTURE && ALPHASTEPVALUE && ALPHABLEND
-    [material][a] property float alphaStepValue = 0.5;
+    [material][a] property float alphaStepValue               = 0.5;
 #endif
 
 #if PIXEL_LIT
     uniform sampler2D normalmap;
-    [material][a] property float  inSpecularity = 1.0;
-    [material][a] property float3 metalFresnelReflectance = float3(0.5,0.5,0.5);
-    [material][a] property float  normalScale = 1.0;
+    #if (GEO_DECAL_SPECULAR)
+        uniform sampler2D specularmap;
+    #endif
+    [material][a] property float  inSpecularity               = 1.0;    
+    [material][a] property float3 metalFresnelReflectance     = float3(0.5,0.5,0.5);
+    [material][a] property float  normalScale                 = 1.0;
 #endif
 
 
@@ -168,7 +175,7 @@ fragment_out
 
 #if PARTICLE_DEBUG_SHOW_ALPHA
     [material][a] property float particleAlphaThreshold = 0.2f;
-    [material][a] property float4 particleDebugShowAlphaColor = float4(0.0f, 0.0f, 1.0f, 0.4f);
+    [material][a] property float4 particleDebugShowAlphaColor =  float4(0.0f, 0.0f, 1.0f, 0.4f);
 #endif
 
 inline float FresnelShlick( float NdotL, float Cspec )
@@ -188,17 +195,22 @@ inline float3 FresnelShlickVec3( float NdotL, float3 Cspec )
 
 fragment_out fp_main( fragment_in input )
 {
-    fragment_out output;
+    fragment_out    output;
 
     #if VERTEX_FOG
-        float varFogAmoung = float(input.varFog.a);
-        float3 varFogColor = float3(input.varFog.rgb);
+        float   varFogAmoung = float(input.varFog.a);
+        float3  varFogColor  = float3(input.varFog.rgb);
     #endif
-
+    
     // FETCH PHASE
-    #if MATERIAL_TEXTURE
+    #if GEO_DECAL
 
+        half4 textureColor0 = half4(tex2D(albedo, input.geoDecalCoord));
+    
+    #elif MATERIAL_TEXTURE
+    
         #if PIXEL_LIT || ALPHATEST || ALPHABLEND || VERTEX_LIT
+
             #if FLOWMAP || PARTICLES_FLOWMAP
                 #if FLOWMAP
                     float2 flowtc = input.varTexCoord0.xy;
@@ -231,15 +243,15 @@ fragment_out fp_main( fragment_in input )
                     half4 textureColor0 = half4(tex2D( albedo, albedoUv ));
                 #endif
             #endif
-
+            
             #if ALPHA_MASK 
                 textureColor0.a *= FP_A8(tex2D( alphamask, input.varTexCoord1 ));
-            #endif
+            #endif          
 
             #if PARTICLES_ALPHA_REMAP
                 #if FRAME_BLEND
                     float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3.y));
-                #else
+                #else                           
                     float4 remap = tex2D(alphaRemapTex, float2(half(textureColor0.a), input.varTexcoord3));
                 #endif
                 textureColor0.a = remap.r;
@@ -264,10 +276,9 @@ fragment_out fp_main( fragment_in input )
                 #else
                     half3 textureColor0 = half3(tex2D( albedo, input.varTexCoord0 ).rgb);
                 #endif
-                
             #endif
         #endif
-
+        
         #if FRAME_BLEND
             half4 blendFrameColor = half4(tex2D( albedo, input.varTexCoord1 ));
             #if PARTICLES_ALPHA_REMAP
@@ -277,7 +288,7 @@ fragment_out fp_main( fragment_in input )
             #endif
             textureColor0 = lerp( textureColor0, blendFrameColor, varTime );
         #endif
-
+    
     #elif MATERIAL_SKYBOX
         half4 textureColor0 = half4(texCUBE( cubemap, input.varTexCoord0 ));
     #endif
@@ -285,7 +296,7 @@ fragment_out fp_main( fragment_in input )
     #if FLATALBEDO
         textureColor0 *= flatColor;
     #endif
-
+    
     #if MATERIAL_TEXTURE
         #if ALPHATEST
             float alpha = textureColor0.a;
@@ -298,21 +309,20 @@ fragment_out fp_main( fragment_in input )
                 if( alpha < 0.5 ) discard;
             #endif
         #endif
-
+        
         #if ALPHASTEPVALUE && ALPHABLEND
             textureColor0.a = half(step(alphaStepValue, float(textureColor0.a)));
-        #endif
         #endif
     #endif
 
     #if MATERIAL_DECAL
         half3 textureColor1 = half3(tex2D( decal, input.varTexCoord1 ).rgb);
     #endif
-
+    
     #if MATERIAL_LIGHTMAP  && VIEW_DIFFUSE
         half3 textureColor1 = half3(tex2D( lightmap, input.varTexCoord1 ).rgb);
     #endif
-
+    
     #if MATERIAL_DETAIL
         half3 detailTextureColor = half3(tex2D( detail, input.varDetailTexCoord ).rgb);
     #endif
@@ -321,10 +331,10 @@ fragment_out fp_main( fragment_in input )
         #if SETUP_LIGHTMAP
             half3 lightGray = float3(0.75,0.75,0.75);
             half3 darkGray = float3(0.25,0.25,0.25);
-
+    
             bool isXodd;
-            bool isYodd;
-
+            bool isYodd;            
+            
             if(frac(floor(input.varTexCoord1.x*lightmapSize)/2.0) == 0.0)
             {
                 isXodd = true;
@@ -333,7 +343,7 @@ fragment_out fp_main( fragment_in input )
             {
                 isXodd = false;
             }
-
+            
             if(frac(floor(input.varTexCoord1.y*lightmapSize)/2.0) == 0.0)
             {
                 isYodd = true;
@@ -342,7 +352,7 @@ fragment_out fp_main( fragment_in input )
             {
                 isYodd = false;
             }
-
+    
             if((isXodd && isYodd) || (!isXodd && !isYodd))
             {
                 textureColor1 = lightGray;
@@ -357,10 +367,18 @@ fragment_out fp_main( fragment_in input )
 
     // DRAW PHASE
 
+    #if VERTEX_LIT || PIXEL_LIT
+        #if (GEO_DECAL_SPECULAR)
+            float specularSample = FP_A8(tex2D(specularmap, input.geoDecalCoord));
+        #else
+            float specularSample = textureColor0.a;
+        #endif
+    #endif
+
     #if VERTEX_LIT
-
+    
         #if BLINN_PHONG
-
+            
             half3 color = half3(0.0,0.0,0.0);
             #if VIEW_AMBIENT
                 color += half3(lightAmbientColor0);
@@ -381,17 +399,17 @@ fragment_out fp_main( fragment_in input )
             #endif
 
             #if VIEW_SPECULAR
-                color += half3((input.varSpecularColor * textureColor0.a) * lightColor0);
+                color += half3((input.varSpecularColor * specularSample) * lightColor0);
             #endif
-
+    
         #elif NORMALIZED_BLINN_PHONG
-
+   
             half3 color = half3(0.0,0.0,0.0);
             
             #if VIEW_AMBIENT && !MATERIAL_LIGHTMAP
                 color += half3(lightAmbientColor0);
             #endif
-
+        
             #if VIEW_DIFFUSE
                 #if MATERIAL_LIGHTMAP
                     #if VIEW_ALBEDO
@@ -404,7 +422,7 @@ fragment_out fp_main( fragment_in input )
                     color += half3(input.varDiffuseColor * lightColor0);
                 #endif
             #endif
-
+        
             #if VIEW_ALBEDO
                 #if TILED_DECAL_MASK
                     half maskSample = FP_A8(tex2D( decalmask, input.varTexCoord0 ));
@@ -414,29 +432,29 @@ fragment_out fp_main( fragment_in input )
                     color *= textureColor0.rgb;
                 #endif
             #endif
-
+    
             #if VIEW_SPECULAR
-                float glossiness = pow(5000.0, inGlossiness * textureColor0.a);
+                float glossiness = pow(5000.0, inGlossiness * specularSample);
                 float specularNorm = (glossiness + 2.0) / 8.0;
                 float3 spec = float3(input.varSpecularColor.xyz * pow(float(input.varSpecularColor.w), glossiness) * specularNorm);
-
+                                                     
                 #if MATERIAL_LIGHTMAP
                     color += half3(spec * (textureColor1.rgb / 2.0) * lightColor0);
                 #else
                     color += half3(spec * lightColor0);
                 #endif
             #endif
-
+    
         #endif
 
 
     #elif PIXEL_LIT
-
+        
         // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
         float3 normal = 2.0 * tex2D( normalmap, input.varTexCoord0 ).rgb - 1.0;
         normal.xy *= normalScale;
-        normal = normalize (normal);
-
+        normal = normalize (normal);        
+    
         #if !FAST_NORMALIZATION
             float3 toLightNormalized = float3(normalize(input.varToLightVec.xyz));
             float3 toCameraNormalized = float3(normalize(input.varToCameraVec));
@@ -452,15 +470,15 @@ fragment_out fp_main( fragment_in input )
             // Kwasi normalization :-)
             // compute diffuse lighting
             float3 normalizedHalf = float3(normalize(input.varHalfVec.xyz));
-
+            
             float NdotL = max (dot (normal, float3(input.varToLightVec.xyz)), 0.0);
             float NdotH = max (dot (normal, normalizedHalf), 0.0);
             float LdotH = max (dot (float3(input.varToLightVec.xyz), normalizedHalf), 0.0);
             float NdotV = max (dot (normal, input.varToCameraVec), 0.0);
         #endif
-
+    
         #if NORMALIZED_BLINN_PHONG
-
+    
             #if DIELECTRIC
                 #define ColorType float
                 float fresnelOut = FresnelShlick( NdotV, dielectricFresnelReflectance );
@@ -473,21 +491,19 @@ fragment_out fp_main( fragment_in input )
                     float3 fresnelOut = FresnelShlickVec3( NdotV, metalFresnelReflectance );
                 #endif
             #endif
-
-            //#define GOTANDA
+            
+            //#define GOTANDA                        
             #if GOTANDA
                 float3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
                 float3 diffuse = NdotL / _PI * (1.0 - fresnelIn * inSpecularity);
             #else
                 float diffuse = NdotL / _PI;// * (1.0 - fresnelIn * inSpecularity);
             #endif
-
+        
             #if VIEW_SPECULAR
-                //float glossiness = inGlossiness * 0.999;
-                //glossiness = 200.0 * glossiness / (1.0 - glossiness);                
-                float glossiness = inGlossiness * textureColor0.a;
-                float glossPower = pow(5000.0, glossiness); //textureColor0.a;
-
+                float glossiness = inGlossiness * specularSample;
+                float glossPower = pow(5000.0, glossiness);
+                       
                 #if GOTANDA
                     float specCutoff = 1.0 - NdotL;
                     specCutoff *= specCutoff;
@@ -497,7 +513,7 @@ fragment_out fp_main( fragment_in input )
                 #else
                     float specCutoff = NdotL;
                 #endif
-
+        
                 #if GOTANDA
                     float specularNorm = (glossPower + 2.0) * (glossPower + 4.0) / (8.0 * _PI * (pow(2.0, -glossPower / 2.0) + glossPower));
                 #else
@@ -514,15 +530,15 @@ fragment_out fp_main( fragment_in input )
 
                 ColorType specular = specularNormalized * geometricFactor * fresnelOut;
             #endif
-
+        
         #endif
-
+    
         half3 color = half3(0.0,0.0,0.0);
-
+    
         #if VIEW_AMBIENT && !MATERIAL_LIGHTMAP
             color += half3(lightAmbientColor0);
         #endif
-
+    
         #if VIEW_DIFFUSE
             #if MATERIAL_LIGHTMAP
                 #if VIEW_ALBEDO
@@ -535,7 +551,7 @@ fragment_out fp_main( fragment_in input )
                 color += half3(diffuse * lightColor0);
             #endif
         #endif
-
+    
         #if VIEW_ALBEDO
             #if TILED_DECAL_MASK
                 half maskSample = FP_A8( tex2D( decalmask, input.varTexCoord0 ));
@@ -545,7 +561,7 @@ fragment_out fp_main( fragment_in input )
                 color *= textureColor0.rgb;
             #endif
         #endif
-
+    
         #if VIEW_SPECULAR
             #if MATERIAL_LIGHTMAP
                 color += half3(specular * textureColor1.rgb * lightColor0);
@@ -555,9 +571,9 @@ fragment_out fp_main( fragment_in input )
         #endif
 
     #else
-
+        
         #if MATERIAL_DECAL || MATERIAL_LIGHTMAP
-
+            
             half3 color = half3(0.0,0.0,0.0);
 
             #if VIEW_ALBEDO
@@ -572,29 +588,29 @@ fragment_out fp_main( fragment_in input )
                 #else
                     //do not scale lightmap in view diffuse only case. artist request
                     color *= half3(textureColor1.rgb); 
-                #endif
+                #endif              
             #endif
 
         #elif MATERIAL_TEXTURE
 
             half3 color = half3(textureColor0.rgb);
-
+        
         #elif MATERIAL_SKYBOX
-
+            
             float4 color = float4(textureColor0);
-
+        
         #else
-
+            
             half3 color = half3(1.0,1.0,1.0);
-
+        
         #endif
-
+        
         #if TILED_DECAL_MASK
             half maskSample = FP_A8(tex2D( decalmask, input.varTexCoord0 ));
             half4 tileColor = half4(tex2D( decaltexture, input.varDecalTileTexCoord ).rgba * decalTileColor);
             color.rgb += (tileColor.rgb - color.rgb) * tileColor.a * maskSample;
         #endif
-
+        
     #endif
 
     #if MATERIAL_DETAIL
@@ -612,7 +628,7 @@ fragment_out fp_main( fragment_in input )
     #if VERTEX_COLOR || SPEED_TREE_OBJECT || SPHERICAL_LIT
         output.color *= float4(input.varVertexColor);
     #endif
-
+        
     #if FLATCOLOR
         output.color *= flatColor;
     #endif
@@ -638,8 +654,13 @@ fragment_out fp_main( fragment_in input )
         else
             output.color = 0.0;
     #endif
+
     #if PARTICLE_DEBUG_SHOW_OVERDRAW
         output.color = float4(0.01f, 0.0f, 0.0f, 1.0f);
+    #endif
+
+    #if (GEO_DECAL_DEBUG)
+        output.color += float4(0.75f, 0.75f, 0.75f, 1.0f);
     #endif
 
     return output;

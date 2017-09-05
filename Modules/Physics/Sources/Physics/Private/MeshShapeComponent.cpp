@@ -9,7 +9,7 @@
 
 namespace DAVA
 {
-DAVA::Component* MeshShapeComponent::Clone(Entity* toEntity)
+Component* MeshShapeComponent::Clone(Entity* toEntity)
 {
     MeshShapeComponent* result = new MeshShapeComponent();
     result->SetEntity(toEntity);

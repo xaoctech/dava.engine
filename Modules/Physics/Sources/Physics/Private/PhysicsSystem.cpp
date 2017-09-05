@@ -20,6 +20,7 @@
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Components/SingleComponents/CollisionSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
@@ -149,8 +150,117 @@ PhysicsComponent* GetParentPhysicsComponent(Entity* entity)
 const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
 } // namespace
 
+physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
+                                  physx::PxFilterData filterData0,
+                                  physx::PxFilterObjectAttributes attributes1,
+                                  physx::PxFilterData filterData1,
+                                  physx::PxPairFlags& pairFlags,
+                                  const void* constantBlock,
+                                  physx::PxU32 constantBlockSize)
+{
+    PX_UNUSED(attributes0);
+    PX_UNUSED(attributes1);
+    PX_UNUSED(constantBlockSize);
+    PX_UNUSED(constantBlock);
+
+    // PxFilterData for a shape is used this way:
+    // - PxFilterData.word0 is used for engine-specific features (i.e. for CCD)
+    // - PxFilterData.word1 is a bitmask for encoding type of object
+    // - PxFilterData.word2 is a bitmask for encoding types of objects this object collides with
+    // - PxFilterData.word3 is not used right now
+    // Type of a shape and types it collides with can be set using CollisionShapeComponent::SetTypeMask and CollisionShapeComponent::SetTypeMaskToCollideWith methods
+
+    if ((filterData0.word1 & filterData1.word2) == 0 &&
+        (filterData1.word1 & filterData0.word2) == 0)
+    {
+        // If these types of objects do not collide, ignore this pair unless filter data for either of them changes
+        return physx::PxFilterFlag::eSUPPRESS;
+    }
+
+    pairFlags =
+    physx::PxPairFlag::eCONTACT_DEFAULT | // default collision processing
+    physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | // notify about a first contact
+    physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | // notify about ongoing contacts
+    physx::PxPairFlag::eNOTIFY_CONTACT_POINTS; // report contact points
+
+    return physx::PxFilterFlag::eDEFAULT;
+}
+
+PhysicsSystem::SimulationEventCallback::SimulationEventCallback(DAVA::CollisionSingleComponent* targetCollisionSingleComponent)
+    : targetCollisionSingleComponent(targetCollisionSingleComponent)
+{
+    DVASSERT(targetCollisionSingleComponent != nullptr);
+}
+
+void PhysicsSystem::SimulationEventCallback::onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onWake(physx::PxActor**, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onSleep(physx::PxActor**, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onTrigger(physx::PxTriggerPair*, physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, const physx::PxU32)
+{
+}
+
+void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
+{
+    for (size_t i = 0; i < nbPairs; ++i)
+    {
+        const physx::PxContactPair& pair = pairs[i];
+
+        if (pair.contactCount > 0)
+        {
+            if ((pair.flags & physx::PxContactPairFlag::eREMOVED_SHAPE_0) ||
+                (pair.flags & physx::PxContactPairFlag::eREMOVED_SHAPE_1))
+            {
+                // Either first or second shape has been removed from the scene
+                // Do not report such contacts
+                continue;
+            }
+
+            // Extract physx points
+            static const size_t MAX_CONTACT_POINTS_COUNT = 10;
+            static physx::PxContactPairPoint physxContactPoints[MAX_CONTACT_POINTS_COUNT];
+            const size_t contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
+            DVASSERT(contactPointsCount > 0);
+
+            Vector<CollisionPoint> davaContactPoints(contactPointsCount);
+
+            // Convert each contact point from physx structure to engine structure
+            for (size_t j = 0; j < contactPointsCount; ++j)
+            {
+                CollisionPoint& davaPoint = davaContactPoints[j];
+                physx::PxContactPairPoint& physxPoint = physxContactPoints[j];
+
+                davaPoint.position = PhysicsMath::PxVec3ToVector3(physxPoint.position);
+                davaPoint.impulse = PhysicsMath::PxVec3ToVector3(physxPoint.impulse);
+            }
+
+            CollisionShapeComponent* firstCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[0]->userData);
+            DVASSERT(firstCollisionComponent != nullptr);
+
+            CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
+            DVASSERT(secondCollisionComponent != nullptr);
+
+            // Register collision
+            targetCollisionSingleComponent->collisions.push_back({ firstCollisionComponent->GetEntity(), secondCollisionComponent->GetEntity(), std::move(davaContactPoints) });
+        }
+    }
+}
+
 PhysicsSystem::PhysicsSystem(Scene* scene)
     : SceneSystem(scene)
+    , simulationEventCallback(scene->collisionSingleComponent)
 {
     const KeyedArchive* options = Engine::Instance()->GetOptions();
 
@@ -164,9 +274,10 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     PhysicsSceneConfig sceneConfig;
     sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
     sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
-    geometryCache = new PhysicsGeometryCache();
-    physicsScene = physics->CreateScene(sceneConfig);
 
+    geometryCache = new PhysicsGeometryCache();
+
+    physicsScene = physics->CreateScene(sceneConfig, FilterShader, &simulationEventCallback);
     vehiclesSubsystem = new PhysicsVehiclesSubsystem(scene, physicsScene);
 }
 
@@ -326,6 +437,12 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
             for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
             {
                 CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i));
+                auto iter = std::find(collisionComponents.begin(), collisionComponents.end(), component);
+                if (iter == collisionComponents.end())
+                {
+                    continue;
+                }
+
                 if (waitingComponents == nullptr)
                 {
                     waitingComponents = &waitRenderInfoComponents[entity];
@@ -631,7 +748,6 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     case Component::PLANE_SHAPE_COMPONENT:
     {
         shape = physics->CreatePlaneShape();
-        vehiclesSubsystem->SetupDrivableSurface(shape);
     }
     break;
     case Component::CONVEX_HULL_SHAPE_COMPONENT:
@@ -672,7 +788,6 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         {
             Matrix4 localPose;
             shape = physics->CreateHeightField(landscape, localPose);
-            vehiclesSubsystem->SetupDrivableSurface(shape);
             component->SetLocalPose(localPose);
         }
         else
@@ -689,6 +804,11 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     if (shape != nullptr)
     {
         component->SetPxShape(shape);
+
+        if (component->GetType() == Component::HEIGHT_FIELD_SHAPE_COMPONENT || component->GetType() == Component::PLANE_SHAPE_COMPONENT)
+        {
+            vehiclesSubsystem->SetupDrivableSurface(component);
+        }
     }
 
     return shape;
@@ -793,12 +913,11 @@ void PhysicsSystem::ReleaseShape(CollisionShapeComponent* component)
     DVASSERT(shape->isExclusive() == true);
 
     physx::PxActor* actor = shape->getActor();
-    if (actor == nullptr)
+    if (actor != nullptr)
     {
-        return;
+        actor->is<physx::PxRigidActor>()->detachShape(*shape);
     }
 
-    actor->is<physx::PxRigidActor>()->detachShape(*shape);
     component->ReleasePxShape();
 }
 

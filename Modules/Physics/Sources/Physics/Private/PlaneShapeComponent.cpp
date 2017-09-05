@@ -9,7 +9,7 @@
 
 namespace DAVA
 {
-DAVA::Component* PlaneShapeComponent::Clone(Entity* toEntity)
+Component* PlaneShapeComponent::Clone(Entity* toEntity)
 {
     PlaneShapeComponent* result = new PlaneShapeComponent();
     result->SetEntity(toEntity);

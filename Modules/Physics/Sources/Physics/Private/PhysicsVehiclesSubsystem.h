@@ -37,8 +37,8 @@ public:
     void Simulate(float32 timeElapsed);
     void OnSimulationEnabled(bool enabled);
 
-    void SetupNonDrivableSurface(physx::PxShape* surfaceShape) const;
-    void SetupDrivableSurface(physx::PxShape* surfaceShape) const;
+    void SetupNonDrivableSurface(CollisionShapeComponent* surfaceShape) const;
+    void SetupDrivableSurface(CollisionShapeComponent* surfaceShape) const;
 
 private:
     VehicleChassisComponent* GetChassis(VehicleComponent* vehicle) const;

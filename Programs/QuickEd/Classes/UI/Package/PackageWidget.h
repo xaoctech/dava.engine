@@ -5,7 +5,9 @@
 #include "EditorSystems/SelectionContainer.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/SettingsNode.h>
 
+#include <Reflection/Reflection.h>
 #include <Base/BaseTypes.h>
 
 #include <QWidget>
@@ -13,6 +15,8 @@
 #include <QModelIndex>
 #include <QStack>
 #include <QPointer>
+
+#include <memory>
 
 namespace DAVA
 {
@@ -33,6 +37,18 @@ class PackageModel;
 class PackageNode;
 class QItemSelection;
 class CommandExecutor;
+
+class PackageWidgetSettings : public DAVA::TArc::SettingsNode
+{
+public:
+    DAVA::uint32 selectedDevice = 0;
+    DAVA::uint32 selectedBlank = 0;
+
+    bool useCustomUIViewerPath = false;
+    DAVA::String customUIViewerPath;
+
+    DAVA_VIRTUAL_REFLECTION(PackageWidgetSettings, DAVA::TArc::SettingsNode);
+};
 
 class PackageWidget : public QDockWidget, public Ui::PackageWidget
 {
@@ -63,6 +79,7 @@ public slots:
 
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
     void OnFilterTextChanged(const QString&);
+    void OnSelectAndRename(ControlNode*);
     void OnRename();
     void OnAddStyle();
     void OnCopyControlPath();
@@ -73,7 +90,12 @@ public slots:
     void OnBeforeProcessNodes(const SelectedNodes& nodes);
     void OnAfterProcessNodes(const SelectedNodes& nodes);
 
+    void OnRunUIViewer();
+    void OnRunUIViewerFast();
+
 private:
+    void PushErrorMessage(const DAVA::String& errorMessage);
+
     void SetSelectedNodes(const SelectedNodes& selection);
     void CollectExpandedIndexes(PackageBaseNode* node);
     void MoveNodeUpDown(bool up);
@@ -111,6 +133,9 @@ private:
     QAction* moveDownAction = nullptr;
     QAction* moveLeftAction = nullptr;
     QAction* moveRightAction = nullptr;
+
+    QAction* runUIViewerFast = nullptr;
+    QAction* runUIViewer = nullptr;
 
     FilteredPackageModel* filteredPackageModel = nullptr;
     PackageModel* packageModel = nullptr;

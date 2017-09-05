@@ -12,6 +12,8 @@
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Engine/Engine.h>
+#include <DeviceManager/DeviceManager.h>
+#include <Input/Keyboard.h>
 #include <Input/InputSystem.h>
 #include <Time/SystemTimer.h>
 #include <Logger/Logger.h>
@@ -342,7 +344,7 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
     PxVehicleUpdates(SystemTimer::GetRealFrameDelta(), grav, *frictionPairs, static_cast<physx::PxU32>(vehicleComponents.size()), physxVehicles, vehicleQueryResults);
 
     // Process input
-    // TODO: move reading keyboard inptu out of here
+    // TODO: move reading keyboard input out of here
 
     for (int32 i = 0; i < vehicleComponents.size(); ++i)
     {
@@ -353,20 +355,20 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
             VehicleCarComponent* car = static_cast<VehicleCarComponent*>(vehicleComponent);
             PxVehicleDriveNW* physxCar = static_cast<PxVehicleDriveNW*>(car->vehicle);
 
-            KeyboardDevice& kb = InputSystem::Instance()->GetKeyboard();
-            if (kb.IsKeyPressed(Key::KEY_Y))
+            Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
+            if (kb->GetKeyState(eInputElements::KB_Y).IsPressed())
             {
                 car->SetAnalogAcceleration(1.0f);
             }
-            if (kb.IsKeyPressed(Key::KEY_H))
+            if (kb->GetKeyState(eInputElements::KB_H).IsPressed())
             {
                 car->SetAnalogBrake(1.0f);
             }
-            if (kb.IsKeyPressed(Key::KEY_G))
+            if (kb->GetKeyState(eInputElements::KB_G).IsPressed())
             {
                 car->SetAnalogSteer(1.0f);
             }
-            if (kb.IsKeyPressed(Key::KEY_J))
+            if (kb->GetKeyState(eInputElements::KB_J).IsPressed())
             {
                 car->SetAnalogSteer(-1.0f);
             }
@@ -419,12 +421,12 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
             VehicleTankComponent* tank = static_cast<VehicleTankComponent*>(vehicleComponent);
             PxVehicleDriveTank* physxTank = static_cast<physx::PxVehicleDriveTank*>(vehicleComponent->vehicle);
 
-            KeyboardDevice& kb = InputSystem::Instance()->GetKeyboard();
+            Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
 
-            const bool forwardPressed = kb.IsKeyPressed(Key::KEY_Y);
-            const bool leftPressed = kb.IsKeyPressed(Key::KEY_G);
-            const bool rightPressed = kb.IsKeyPressed(Key::KEY_J);
-            const bool backPressed = kb.IsKeyPressed(Key::KEY_H);
+            const bool forwardPressed = kb->GetKeyState(eInputElements::KB_Y).IsPressed();
+            const bool leftPressed = kb->GetKeyState(eInputElements::KB_G).IsPressed();
+            const bool rightPressed = kb->GetKeyState(eInputElements::KB_J).IsPressed();
+            const bool backPressed = kb->GetKeyState(eInputElements::KB_H).IsPressed();
 
             if (leftPressed && !rightPressed && !forwardPressed && !backPressed)
             {
@@ -545,20 +547,28 @@ void PhysicsVehiclesSubsystem::OnSimulationEnabled(bool enabled)
     }
 }
 
-void PhysicsVehiclesSubsystem::SetupNonDrivableSurface(physx::PxShape* surfaceShape) const
+void PhysicsVehiclesSubsystem::SetupNonDrivableSurface(CollisionShapeComponent* surfaceShape) const
 {
     DVASSERT(surfaceShape != nullptr);
 
-    surfaceShape->setQueryFilterData(physx::PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
-    surfaceShape->setSimulationFilterData(physx::PxFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0));
+    physx::PxShape* pxShape = surfaceShape->GetPxShape();
+    DVASSERT(pxShape != nullptr);
+    pxShape->setQueryFilterData(physx::PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
+
+    surfaceShape->SetTypeMask(COLLISION_FLAG_GROUND);
+    surfaceShape->SetTypeMaskToCollideWith(COLLISION_FLAG_GROUND_AGAINST);
 }
 
-void PhysicsVehiclesSubsystem::SetupDrivableSurface(physx::PxShape* surfaceShape) const
+void PhysicsVehiclesSubsystem::SetupDrivableSurface(CollisionShapeComponent* surfaceShape) const
 {
     DVASSERT(surfaceShape != nullptr);
 
-    surfaceShape->setQueryFilterData(physx::PxFilterData(0, 0, 0, DRIVABLE_SURFACE_FILTER));
-    surfaceShape->setSimulationFilterData(physx::PxFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0));
+    physx::PxShape* pxShape = surfaceShape->GetPxShape();
+    DVASSERT(pxShape != nullptr);
+    pxShape->setQueryFilterData(physx::PxFilterData(0, 0, 0, DRIVABLE_SURFACE_FILTER));
+
+    surfaceShape->SetTypeMask(COLLISION_FLAG_GROUND);
+    surfaceShape->SetTypeMaskToCollideWith(COLLISION_FLAG_GROUND_AGAINST);
 }
 
 VehicleChassisComponent* PhysicsVehiclesSubsystem::GetChassis(VehicleComponent* vehicle) const
@@ -656,7 +666,8 @@ void PhysicsVehiclesSubsystem::CreateVehicleCommonParts(VehicleComponent* vehicl
     DVASSERT(chassisShapePhysx != nullptr);
 
     chassisShapePhysx->setQueryFilterData(PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
-    chassisShapePhysx->setSimulationFilterData(PxFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0));
+    chassisShape->SetTypeMask(COLLISION_FLAG_CHASSIS);
+    chassisShape->SetTypeMaskToCollideWith(COLLISION_FLAG_CHASSIS_AGAINST);
 
     // Actor setup
 
@@ -694,7 +705,8 @@ void PhysicsVehiclesSubsystem::CreateVehicleCommonParts(VehicleComponent* vehicl
         DVASSERT(wheelShapePhysx != nullptr);
 
         wheelShapePhysx->setQueryFilterData(PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
-        wheelShapePhysx->setSimulationFilterData(PxFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, 0, 0));
+        wheelShape->SetTypeMask(COLLISION_FLAG_WHEEL);
+        wheelShape->SetTypeMaskToCollideWith(COLLISION_FLAG_WHEEL_AGAINST);
 
         Matrix4 wheelLocalTransform = wheelShape->GetEntity()->GetLocalTransform();
         wheelCenterActorOffsets[i] = PhysicsMath::Vector3ToPxVec3(wheelLocalTransform.GetTranslationVector());

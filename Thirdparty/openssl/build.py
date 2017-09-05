@@ -4,6 +4,7 @@
 import os
 import shutil
 import build_utils
+import build_config
 
 
 def get_supported_targets(platform):
@@ -86,7 +87,8 @@ _configure_args = [
     'no-camellia',
     'no-comp',
     'no-hw',
-    'no-engine']
+    'no-engine',
+    'no-dso']
 
 _configure_args_win32 = "" # all configure args are in patch_win32.diff
 
@@ -248,7 +250,8 @@ def _build_macos(working_directory_path, root_project_path):
         source_folder_path,
         macos_configure_args,
         install_dir,
-        configure_exec_name='Configure')
+        configure_exec_name='Configure',
+        shell_prefix='perl')
 
     libssl_path = os.path.join(install_dir, 'lib/libssl.a')
     libcrypto_path = os.path.join(install_dir, 'lib/libcrypto.a')
@@ -275,6 +278,7 @@ def _build_ios(working_directory_path, root_project_path):
         ios_configure_args,
         install_dir_armv7,
         configure_exec_name='Configure',
+        shell_prefix='perl',
         env=_get_ios_env())
 
     install_dir_arm64 = os.path.join(
@@ -286,6 +290,7 @@ def _build_ios(working_directory_path, root_project_path):
         ios_configure_args,
         install_dir_arm64,
         configure_exec_name='Configure',
+        shell_prefix='perl',
         env=_get_ios_env())
 
     libssl_fat_path = os.path.join(
@@ -324,6 +329,7 @@ def _build_android(working_directory_path, root_project_path):
         _configure_args,
         install_dir_arm,
         configure_exec_name='config',
+        shell_prefix='perl',
         env=_get_android_env_arm(source_folder_path, root_project_path))
 
     install_dir_x86 = os.path.join(
@@ -333,6 +339,7 @@ def _build_android(working_directory_path, root_project_path):
         _configure_args,
         install_dir_x86,
         configure_exec_name='config',
+        shell_prefix='perl',
         env=_get_android_env_x86(source_folder_path, root_project_path))
 
     libssl_path_android_arm = os.path.join(
@@ -380,6 +387,7 @@ def _build_linux(working_directory_path, root_project_path):
         install_dir,
         env=env,
         configure_exec_name='Configure',
+        shell_prefix='perl',
         make_targets=['depend', 'all', 'install'],
         postclean=False)
 
@@ -416,13 +424,11 @@ def _get_android_env(
     # Python version of setenv.sh
     # (from https://wiki.openssl.org/index.php/Android)
 
-    android_ndk_root = build_utils.get_android_ndk_path(root_project_path)
+    android_ndk_root = build_utils.get_android_ndk_path()
     platform_path = '{}/platforms/{}/arch-{}'.format(
         android_ndk_root, android_target, arch)
     eabi_path = '{}/toolchains/{}/prebuilt/darwin-x86_64/bin'.format(
         android_ndk_root, toolchain_folder)
-    crystax_libs_cflag = '-L{}/sources/crystax/libs/{}/'.format(
-        android_ndk_root, crystax_libs_folder)
     fips_sig_path = '{}/util/incore'.format(source_folder_path)
 
     env = os.environ.copy()
@@ -432,7 +438,6 @@ def _get_android_env(
     env['CROSS_SYSROOT'] = platform_path
     env['CROSS_COMPILE'] = cross_compile
     env['PATH'] = '{}:{}'.format(eabi_path, env['PATH'])
-    env['CRYSTAX_LDFLAGS'] = crystax_libs_cflag
     env['FIPS_SIG'] = fips_sig_path
 
     return env
@@ -442,7 +447,7 @@ def _get_android_env_arm(source_folder_path, root_project_path):
     return _get_android_env(
         source_folder_path,
         root_project_path,
-        'android-9',
+        build_config.get_android_platform(),
         'armv7',
         'arm',
         'arm-linux-androideabi-4.9',
@@ -454,7 +459,7 @@ def _get_android_env_x86(source_folder_path, root_project_path):
     return _get_android_env(
         source_folder_path,
         root_project_path,
-        'android-9',
+        build_config.get_android_platform(),
         'i686',
         'x86',
         'x86-4.9',

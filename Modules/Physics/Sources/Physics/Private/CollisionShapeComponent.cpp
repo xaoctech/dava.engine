@@ -18,6 +18,8 @@ void CollisionShapeComponent::Serialize(KeyedArchive* archive, SerializationCont
     archive->SetMatrix4("shape.localPose", localPose);
     archive->SetBool("shape.overrideMass", overrideMass);
     archive->SetFloat("shape.mass", mass);
+    archive->SetUInt32("shape.typeMask", typeMask);
+    archive->SetUInt32("shape.typeMaskToCollideWith", typeMaskToCollideWith);
 }
 
 void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -27,6 +29,8 @@ void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationCo
     localPose = archive->GetMatrix4("shape.localPose");
     overrideMass = archive->GetBool("shape.overrideMass", overrideMass);
     mass = archive->GetFloat("shape.mass", mass);
+    typeMask = archive->GetUInt32("shape.typeMask", typeMask);
+    typeMaskToCollideWith = archive->GetUInt32("shape.typeMaskToCollideWith", typeMaskToCollideWith);
 }
 
 physx::PxShape* CollisionShapeComponent::GetPxShape() const
@@ -34,7 +38,7 @@ physx::PxShape* CollisionShapeComponent::GetPxShape() const
     return shape;
 }
 
-const DAVA::FastName& CollisionShapeComponent::GetName() const
+const FastName& CollisionShapeComponent::GetName() const
 {
     return name;
 }
@@ -46,7 +50,7 @@ void CollisionShapeComponent::SetName(const FastName& name_)
     ScheduleUpdate();
 }
 
-const DAVA::Matrix4& CollisionShapeComponent::GetLocalPose() const
+const Matrix4& CollisionShapeComponent::GetLocalPose() const
 {
     return localPose;
 }
@@ -82,6 +86,34 @@ void CollisionShapeComponent::SetMass(float32 mass_)
     }
 }
 
+void CollisionShapeComponent::SetTypeMask(uint32 typeMask_)
+{
+    if (typeMask != typeMask_)
+    {
+        typeMask = typeMask_;
+        ScheduleUpdate();
+    }
+}
+
+uint32 CollisionShapeComponent::GetTypeMask() const
+{
+    return typeMask;
+}
+
+void CollisionShapeComponent::SetTypeMaskToCollideWith(uint32 typeMaskToCollideWith_)
+{
+    if (typeMaskToCollideWith != typeMaskToCollideWith_)
+    {
+        typeMaskToCollideWith = typeMaskToCollideWith_;
+        ScheduleUpdate();
+    }
+}
+
+uint32 CollisionShapeComponent::GetTypeMaskToCollideWith() const
+{
+    return typeMaskToCollideWith;
+}
+
 CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* shape)
 {
     DVASSERT(shape != nullptr);
@@ -97,6 +129,12 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     DVASSERT(name.IsValid());
     shape->setName(name.c_str());
     shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+
+    physx::PxFilterData filterData = shape->getSimulationFilterData();
+    filterData.word1 = typeMask;
+    filterData.word2 = typeMaskToCollideWith;
+    shape->setSimulationFilterData(filterData);
+
     shape->acquireReference();
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -136,6 +174,11 @@ void CollisionShapeComponent::UpdateLocalProperties()
         physx::PxMassProperties massProperties = physx::PxRigidBodyExt::computeMassPropertiesFromShapes(&shape, 1);
         mass = massProperties.mass;
     }
+
+    physx::PxFilterData filterData = shape->getSimulationFilterData();
+    filterData.word1 = typeMask;
+    filterData.word2 = typeMaskToCollideWith;
+    shape->setSimulationFilterData(filterData);
 }
 
 void CollisionShapeComponent::ReleasePxShape()
@@ -152,6 +195,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CollisionShapeComponent)
     .Field("Local pose", &CollisionShapeComponent::localPose)
     .Field("Override mass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)
     .Field("Mass", &CollisionShapeComponent::GetMass, &CollisionShapeComponent::SetMass)
+    .Field("Type", &CollisionShapeComponent::GetTypeMask, &CollisionShapeComponent::SetTypeMask)
+    .Field("Types to collide with", &CollisionShapeComponent::GetTypeMaskToCollideWith, &CollisionShapeComponent::SetTypeMaskToCollideWith)
     .End();
 }
 

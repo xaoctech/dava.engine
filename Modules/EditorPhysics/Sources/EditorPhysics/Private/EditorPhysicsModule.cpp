@@ -201,7 +201,7 @@ void EditorPhysicsModule::CreateCarEntity()
     // Root entity
     Entity* vehicleEntity = new DAVA::Entity();
     vehicleEntity->SetName("Vehicle (car)");
-    VehicleComponent* vehicleComponent = new VehicleTankComponent();
+    VehicleComponent* vehicleComponent = new VehicleCarComponent();
     vehicleEntity->AddComponent(vehicleComponent);
     DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
     vehicleEntity->AddComponent(dynamicBody);

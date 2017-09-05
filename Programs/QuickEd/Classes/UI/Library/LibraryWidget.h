@@ -29,8 +29,7 @@ public:
     LibraryWidget(QWidget* parent = nullptr);
     ~LibraryWidget() override;
 
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
-    void SetUI(DAVA::TArc::UI* ui);
+    void Setup(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
 
 private:
     void OnPackageChanged(const DAVA::Any& package);

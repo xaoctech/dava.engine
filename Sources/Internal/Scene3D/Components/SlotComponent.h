@@ -70,6 +70,9 @@ public:
     */
     void SetSlotName(FastName name);
 
+    /** Set attachment transform */
+    void SetAttachmentTransform(const Matrix4& transform);
+
     /** Get attachment transform */
     const Matrix4& GetAttachmentTransform() const;
 
@@ -94,8 +97,6 @@ public:
 
     FastName GetTemplateName() const;
 
-    INTROSPECTION_EXTEND(SlotComponent, Component, nullptr);
-
     static const FastName SlotNameFieldName;
     static const FastName ConfigPathFieldName;
     static const FastName AttchementToJointFieldName;
@@ -103,9 +104,8 @@ public:
 
 private:
     friend class SlotSystem;
-    void SetAttachmentTransform(const Matrix4& transform);
 
-    FastName slotName;
+    FastName slotName = FastName("");
     FastName templateName = FastName("");
 
     Matrix4 attachmentTransform;

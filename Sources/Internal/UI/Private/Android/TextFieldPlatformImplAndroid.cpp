@@ -230,7 +230,7 @@ void TextFieldPlatformImpl::UpdateRect(const Rect& rect)
         {
             controlRect = rect;
 
-            Rect rc = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(rect);
+            Rect rc = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(rect);
             rc.dx = std::max(0.0f, rc.dx);
             rc.dy = std::max(0.0f, rc.dy);
             setRect(javaTextField, rc.x, rc.y, rc.dx, rc.dy);
@@ -305,7 +305,7 @@ void TextFieldPlatformImpl::SetFontSize(float32 virtualFontSize)
     if (javaTextField != nullptr)
     {
         // TODO: window.GetVirtualCoordinatesSystem
-        float32 fontSize = UIControlSystem::Instance()->vcs->ConvertVirtualToInputY(virtualFontSize);
+        float32 fontSize = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInputY(virtualFontSize);
         setFontSize(javaTextField, fontSize);
     }
 }
@@ -521,7 +521,7 @@ void TextFieldPlatformImpl::OnFocusChanged(bool hasFocus)
     {
         if (hasFocus)
         {
-            UIControl* curFocused = UIControlSystem::Instance()->GetFocusedControl();
+            UIControl* curFocused = GetEngineContext()->uiControlSystem->GetFocusedControl();
             if (curFocused != uiTextField && FocusHelpers::CanFocusControl(uiTextField))
             {
                 uiTextField->SetFocused();
