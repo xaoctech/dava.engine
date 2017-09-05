@@ -182,12 +182,7 @@ void ResourceSelectorModule::OnGfxSelected(DAVA::int32 gfxMode)
         }
     }
 
-    WaitDialogParams waitDlgParams;
-    waitDlgParams.message = "Sprite Reloading";
-    waitDlgParams.needProgressBar = false;
-    std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
-
-    Sprite::ReloadSprites();
+    delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::ReloadSpritesImpl));
 }
 
 void ResourceSelectorModule::CreateAction(const QString& actionName, const QString& prevActionName, DAVA::int32 gfxMode)
@@ -241,16 +236,20 @@ void ResourceSelectorModule::OnGraphicsSettingsChanged()
             if (resourceIndex != index)
             {
                 resourceIndex = index;
-
-                WaitDialogParams waitDlgParams;
-                waitDlgParams.message = "Sprite Reloading";
-                waitDlgParams.needProgressBar = false;
-                std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
-
-                Sprite::ReloadSprites();
+                delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::ReloadSpritesImpl));
             }
         }
     }
+}
+
+void ResourceSelectorModule::ReloadSpritesImpl()
+{
+    DAVA::TArc::WaitDialogParams waitDlgParams;
+    waitDlgParams.message = "Sprite Reloading";
+    waitDlgParams.needProgressBar = false;
+    std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+
+    DAVA::Sprite::ReloadSprites();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ResourceSelectorModule)
