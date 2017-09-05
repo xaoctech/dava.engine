@@ -13,7 +13,8 @@
 #include "Debug/Backtrace.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
-#include "Time/SystemTimer.h"
+#include "Engine/EngineSettings.h"
+#include "Debug/ProfilerCPU.h"
 
 #include <iomanip>
 #include <algorithm>
@@ -101,6 +102,13 @@ bool DLCManagerImpl::CountError(int32 errCode)
     return errorCounter >= hints.maxSameErrorCounter;
 }
 
+bool DLCManagerImpl::IsProfilingEnabled() const
+{
+    EngineSettings* engineSettings = engine.GetContext()->settings;
+    Any value = engineSettings->GetSetting<EngineSettings::SETTING_PROFILE_DLC_MANAGER>();
+    return value.Get<bool>(false);
+}
+
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
 {
@@ -113,6 +121,41 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                     {
                                         Update(frameDelta, true);
                                     });
+
+    if (IsProfilingEnabled())
+    {
+        profiler.Start(hints.profilerSamplerCounts);
+    }
+    engine.GetContext()->settings->settingChanged.Connect(this, [this](EngineSettings::eSetting value)
+                                                          {
+                                                              OnSettingsChanged(value);
+                                                          });
+}
+
+void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
+{
+    if (EngineSettings::SETTING_PROFILE_DLC_MANAGER == value)
+    {
+        if (IsProfilingEnabled())
+        {
+            profiler.Start(hints.profilerSamplerCounts);
+        }
+        else
+        {
+            profiler.Stop();
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            FilePath docPath = fs->GetPublicDocumentsPath();
+            String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+            std::ofstream file(name);
+            char buf[16 * 1024];
+            file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+            if (file)
+            {
+                Vector<TraceEvent> events = profiler.GetTrace();
+                TraceEvent::DumpJSON(events, file);
+            }
+        }
+    }
 }
 
 void DLCManagerImpl::ClearResouces()
@@ -160,7 +203,7 @@ void DLCManagerImpl::ClearResouces()
         }
     }
 
-    downloader.reset(nullptr);
+    downloader.reset();
 
     fullSizeServerData = 0;
 
@@ -277,9 +320,9 @@ void DLCManagerImpl::CreateDownloader()
         downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
         downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
         downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
+        downloaderHints.profiler = &profiler;
 
-        downloader.reset(DLCDownloader::Create());
-        downloader->SetHints(downloaderHints);
+        downloader.reset(DLCDownloader::Create(downloaderHints));
     }
 }
 
@@ -288,6 +331,8 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
                                 const Hints& hints_)
 {
     DVASSERT(Thread::IsMainThread());
+
+    profiler.Start();
 
     bool isFirstTimeCall = (log.is_open() == false);
 
@@ -344,6 +389,20 @@ void DLCManagerImpl::Deinitialize()
 
     ClearResouces();
 
+    if (profiler.IsStarted())
+    {
+        profiler.Stop();
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        FilePath docPath = fs->GetPublicDocumentsPath();
+        String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+        std::ofstream file(name);
+        if (file)
+        {
+            Vector<TraceEvent> events = profiler.GetTrace();
+            TraceEvent::DumpJSON(events, file);
+        }
+    }
+
     log.close();
 }
 
@@ -369,6 +428,8 @@ const String& DLCManagerImpl::GetLastErrorMessage() const
 
 void DLCManagerImpl::Update(float frameDelta, bool inBackground)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
+
     DVASSERT(Thread::IsMainThread());
 
     try
@@ -402,6 +463,8 @@ void DLCManagerImpl::Update(float frameDelta, bool inBackground)
 
 void DLCManagerImpl::WaitScanThreadToFinish()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
+
     if (scanState == ScanState::Done)
     {
         initState = InitState::MoveDeleyedRequestsToQueue;
@@ -410,6 +473,8 @@ void DLCManagerImpl::WaitScanThreadToFinish()
 
 void DLCManagerImpl::ContinueInitialization(float frameDelta)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
+
     if (timeWaitingNextInitializationAttempt > 0.f)
     {
         timeWaitingNextInitializationAttempt -= frameDelta;
@@ -590,6 +655,7 @@ void DLCManagerImpl::FireNetworkReady(bool nextState)
 
 void DLCManagerImpl::AskFooter()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
     //Logger::FrameworkDebug("pack manager ask_footer");
 
     DVASSERT(0 == fullSizeServerData);
@@ -669,7 +735,7 @@ void DLCManagerImpl::SaveServerFooter()
 
 void DLCManagerImpl::GetFooter()
 {
-    //Logger::FrameworkDebug("pack manager get_footer");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
 
@@ -713,7 +779,7 @@ void DLCManagerImpl::GetFooter()
 
 void DLCManagerImpl::AskFileTable()
 {
-    //Logger::FrameworkDebug("pack manager ask_file_table");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     FileSystem* fs = engine.GetContext()->fileSystem;
     if (fs->IsFile(localCacheFileTable))
@@ -802,7 +868,7 @@ void DLCManagerImpl::ReadContentAndExtractFileNames()
 
 void DLCManagerImpl::GetFileTable()
 {
-    //Logger::FrameworkDebug("pack manager get_file_table");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     DLCDownloader::TaskStatus status;
 
@@ -842,7 +908,7 @@ void DLCManagerImpl::GetFileTable()
 
 void DLCManagerImpl::CompareLocalMetaWitnRemoteHash()
 {
-    //Logger::FrameworkDebug("pack manager calc_local_db_with_remote_crc32");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     FileSystem* fs = engine.GetContext()->fileSystem;
 
@@ -872,7 +938,7 @@ void DLCManagerImpl::CompareLocalMetaWitnRemoteHash()
 
 void DLCManagerImpl::AskServerMeta()
 {
-    //Logger::FrameworkDebug("pack manager ask_db");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     uint64 internalDataSize = initFooterOnServer.metaDataSize +
     initFooterOnServer.info.filesTableSize +
@@ -897,7 +963,7 @@ void DLCManagerImpl::AskServerMeta()
 
 void DLCManagerImpl::GetServerMeta()
 {
-    //Logger::FrameworkDebug("pack manager get_db");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
 
@@ -929,7 +995,7 @@ void DLCManagerImpl::GetServerMeta()
 
 void DLCManagerImpl::ParseMeta()
 {
-    //Logger::FrameworkDebug("pack manager unpacking_db");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     uint32 buffCrc32 = CRC32::ForBuffer(buffer);
 
@@ -983,7 +1049,7 @@ void DLCManagerImpl::LoadLocalCacheServerFooter()
 
 void DLCManagerImpl::LoadPacksDataFromMeta()
 {
-    //Logger::FrameworkDebug("pack manager load_packs_data_from_db");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     try
     {
@@ -1063,7 +1129,8 @@ void DLCManagerImpl::SwapRequestAndUpdatePointers(PackRequest* userRequestObject
 
 void DLCManagerImpl::StartDelayedRequests()
 {
-    //Logger::FrameworkDebug("pack manager mount_downloaded_packs");
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
+
     if (scanThread != nullptr)
     {
         // scan thread should be finished already
