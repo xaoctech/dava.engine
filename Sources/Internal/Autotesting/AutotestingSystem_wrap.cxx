@@ -6843,6 +6843,7 @@ fail:
     return SWIG_arg;
 }
 
+//DEPRECATED FUNCTION
 static int _wrap_AutotestingSystemLua_ClickSystemBack(lua_State* L)
 {
     int SWIG_arg = 0;
@@ -6900,6 +6901,7 @@ fail:
 }
 
 
+//DEPRECATED FUNCTION
 static int _wrap_AutotestingSystemLua_PressEscape(lua_State* L)
 {
     int SWIG_arg = 0;
