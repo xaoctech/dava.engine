@@ -47,15 +47,7 @@ if (NOT ANDROID)
 endif()
 
 # add physics
-if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
-    # we don't have physx for android x86, so skip this
-elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
-    # we don't have physx for win uap arm, so skip this
-else()
-    find_dava_module( "Physics" )
-
-endif()
-
+find_dava_module( "Physics" )
 find_package( Steam REQUIRED )
 
 find_dava_module( LoggerService  )

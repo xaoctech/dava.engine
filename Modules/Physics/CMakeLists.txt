@@ -2,6 +2,8 @@ set(NAME_MODULE Physics )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
+set(PLATFORMS_IGNORE ANDROID_X86 WINDOWS_UAP_ARM  )                
+
 set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
 set(CPP_FILES_RECURSE Sources/*.cpp)
 

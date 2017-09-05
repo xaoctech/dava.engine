@@ -43,6 +43,18 @@ CPP_FILES_RECURSE_IMPL_${DAVA_PLATFORM_CURENT}
 #
 CPP_FILES_EXECUTE
 #
+PLATFORMS_IGNORE   #ANDROID 
+                   #ANDROID_X86 
+                   #ANDROID_ARM 
+                   #WINDOWS_UAP
+                   #WINDOWS_UAP_WIN32 
+                   #WINDOWS_UAP_ARM 
+                   #WINDOWS_UAP_X64 
+                   #IOS
+                   #MACOS
+                   #WIN
+                   #LINUX
+#   
 ERASE_FILES                
 ERASE_FILES_${DAVA_PLATFORM_CURENT}     
 ERASE_FILES_NOT_${DAVA_PLATFORM_CURENT} 
@@ -242,6 +254,24 @@ macro( setup_main_module )
         set( INIT true )
     endif()
 
+###
+    if( PLATFORMS_IGNORE AND INIT )
+        foreach( PLATFORM ${PLATFORMS_IGNORE} )
+            if(${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURENT} )
+                set( INIT false )
+                break()
+            else()
+
+                list (FIND DAVA_PLATFORM_CURENT_POSTFIXES ${PLATFORM} _index)
+                if (${_index} GREATER -1)
+                    set( INIT false )
+                    break()
+                endif()
+            endif()
+        endforeach()
+    endif()         
+
+###
     if ( INIT )
 
         #"find root call"

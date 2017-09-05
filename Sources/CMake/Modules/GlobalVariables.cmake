@@ -73,6 +73,8 @@ set( DAVA_PLATFORM_LIST IOS
                         LINUX
                         )
 
+set( DAVA_PLATFORM_CURENT_POSTFIXES )
+
 if( IOS )
     set( DAVA_PLATFORM_CURENT IOS )
 elseif( MACOS )
@@ -89,6 +91,23 @@ elseif (LINUX)
     set( DAVA_PLATFORM_CURENT LINUX )
 endif()
 
+if(ANDROID)
+    if(ANDROID_ABI STREQUAL "x86" )
+        set( DAVA_PLATFORM_CURENT_POSTFIXES ANDROID_X86 )
+    elseif( ANDROID_ABI MATCHES "armeabi" ) 
+        set( DAVA_PLATFORM_CURENT_POSTFIXES ANDROID_ARM )
+    endif()
+elseif(WIN32 AND WINDOWS_UAP)
+    if(WINDOWS_UAP_PLATFORMS MATCHES "Win32" )
+        list( APPEND DAVA_PLATFORM_CURENT_POSTFIXES WINDOWS_UAP_WIN32 )
+    endif()
+    if( WINDOWS_UAP_PLATFORMS MATCHES "ARM" ) 
+        list( APPEND DAVA_PLATFORM_CURENT_POSTFIXES WINDOWS_UAP_ARM )
+    endif()
+    if( WINDOWS_UAP_PLATFORMS MATCHES "x64" ) 
+        list( APPEND DAVA_PLATFORM_CURENT_POSTFIXES WINDOWS_UAP_X64 )
+    endif()
+endif()
 
 set( DAVA_MODULES_DIR                   "${DAVA_ROOT_DIR}/Modules" )
 set( DAVA_SOURCES_DIR                   "${DAVA_ROOT_DIR}/Sources" )

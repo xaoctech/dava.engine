@@ -51,9 +51,12 @@ macro ( add_module_subdirectory NAME SOURCE_DIR )
         set( ${VALUE})
     endforeach()
     
-    increase_modules_counter()
-
-    add_subdirectory ( ${SOURCE_DIR} ${CMAKE_BINARY_DIR}/Modules/${MODULES_COUNTER} )
+    if( DAVA_MEGASOLUTION )
+        increase_modules_counter()
+        add_subdirectory ( ${SOURCE_DIR} ${CMAKE_BINARY_DIR}/Modules/${MODULES_COUNTER} )
+    else()
+        add_subdirectory ( ${SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${NAME} )
+    endif()
 
     foreach( VALUE ${MAIN_MODULE_VALUES} )
         set(  ${VALUE} ${${VALUE}_HASH} )
@@ -71,9 +74,12 @@ macro ( add_plugin NAME SOURCE_DIR )
         set_property( GLOBAL PROPERTY ${VALUE} )
     endforeach()
 
-    increase_modules_counter()
-
-    add_subdirectory ( ${SOURCE_DIR} ${CMAKE_BINARY_DIR}/Modules/${MODULES_COUNTER} )
+    if( DAVA_MEGASOLUTION )
+        increase_modules_counter()
+        add_subdirectory ( ${SOURCE_DIR} ${CMAKE_BINARY_DIR}/Modules/${MODULES_COUNTER} )
+    else()
+        add_subdirectory ( ${SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${NAME} )
+    endif()
 
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} )
         set(  ${VALUE} ${${VALUE}_HASH} )
