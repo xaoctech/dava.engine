@@ -88,8 +88,9 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
     ProjectData* projectData = globalContext->GetData<ProjectData>();
 
     UI* ui = GetUI();
-    if (projectData == nullptr)
-    { //project was closed
+
+    if (gfxActionPlacementName.empty() == false)
+    { // remove old actions and old menu items
         for (const QString& actionName : gfxActionPlacementName)
         {
             ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources << actionName));
@@ -97,9 +98,9 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
         }
         gfxActionPlacementName.clear();
     }
-    else
-    { //Project Opened
 
+    if (projectData != nullptr)
+    { //project was opened or changed
         const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
         if (gfxDirectories.empty() == false)
         {
@@ -110,10 +111,9 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
                 GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
             }
 
+            int32 count = static_cast<int32>(gfxDirectories.size());
             { // create actions in menu Resources
                 QString prevActionName = "";
-
-                int32 count = static_cast<int32>(gfxDirectories.size());
                 for (int32 ia = 0; ia < count; ++ia)
                 {
                     const ProjectData::GfxDir& gfx = gfxDirectories[ia];
@@ -128,6 +128,10 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
             { // Enable last selected settings
                 ResourceSelectorData* selectorData = globalContext->GetData<ResourceSelectorData>();
                 DVASSERT(selectorData != nullptr);
+                if (selectorData->preferredMode > count)
+                {
+                    selectorData->preferredMode = 0; //somebody deleted gfx folder, we should select default value
+                }
                 OnGfxSelected(selectorData->preferredMode);
             }
         }

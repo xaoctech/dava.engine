@@ -421,10 +421,22 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
         return;
     }
 
+    auto deleteMenu = [](QMenu* deletedMenu)
+    {
+        QMenu* parentMenu = qobject_cast<QMenu*>(deletedMenu->parent());
+        if (parentMenu != nullptr)
+        {
+            parentMenu->removeAction(deletedMenu->menuAction());
+        }
+
+        deletedMenu->setParent(nullptr);
+        deletedMenu->deleteLater();
+    };
+
     QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(path.back());
     if (menuToRemove != nullptr)
     {
-        menuToRemove->deleteLater();
+        deleteMenu(menuToRemove);
     }
     else
     {
@@ -434,13 +446,7 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
 
         if (currentLevelMenu->isEmpty())
         {
-            QMenu* parentMenu = qobject_cast<QMenu*>(currentLevelMenu->parent());
-            if (parentMenu != nullptr)
-            {
-                parentMenu->removeAction(currentLevelMenu->menuAction());
-            }
-
-            currentLevelMenu->deleteLater();
+            deleteMenu(currentLevelMenu);
         }
     }
 }

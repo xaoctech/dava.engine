@@ -211,8 +211,6 @@ void SceneManagerModule::PostInit()
     params.getMaximumCount = []() {
         return 5;
     };
-    params.insertionParams.method = InsertionParams::eInsertionMethod::AfterItem;
-    params.insertionParams.item = QString("importSeparator");
 
     recentItems.reset(new RecentMenuItems(std::move(params)));
     recentItems->actionTriggered.Connect([this](const DAVA::String& scenePath)

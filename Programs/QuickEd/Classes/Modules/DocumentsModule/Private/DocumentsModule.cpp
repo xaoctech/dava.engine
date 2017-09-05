@@ -236,7 +236,6 @@ void DocumentsModule::CreateDocumentsActions()
     const QString saveDocumentActionName("Save document");
     const QString saveAllDocumentsActionName("Force save all");
     const QString reloadDocumentActionName("Reload document");
-    const QString closeDocumentActionName("Close document");
     const QString toolBarSeparatorName("documents separator");
 
     ContextAccessor* accessor = GetAccessor();
@@ -257,7 +256,7 @@ void DocumentsModule::CreateDocumentsActions()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "Close project" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "projectActionsSeparator" }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
@@ -295,13 +294,14 @@ void DocumentsModule::CreateDocumentsActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::ReloadCurrentDocument, this));
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, closeDocumentActionName }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, saveAllDocumentsActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
     // Separator
     {
         QAction* separator = new QAction(toolBarSeparatorName, nullptr);
+        separator->setObjectName(toolBarSeparatorName);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
