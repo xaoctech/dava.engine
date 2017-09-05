@@ -94,12 +94,12 @@ public:
     }
 
 private:
-    template <typename Type>
+    template <typename U>
     class base_iterator
     {
     public:
         base_iterator() = default;
-        base_iterator(Type* data, uint32 _index, uint32 _mask)
+        base_iterator(U* data, uint32 _index, uint32 _mask)
             : arrayData(data)
             , index(_index)
             , mask(_mask)
@@ -115,16 +115,16 @@ private:
         {
             return !(*this == it);
         }
-        Type& operator*() const
+        U& operator*() const
         {
             return arrayData[index & mask];
         }
-        Type* operator->() const
+        U* operator->() const
         {
             return &arrayData[index & mask];
         }
 
-        Type* arrayData = nullptr;
+        U* arrayData = nullptr;
         uint32 index = 0;
         uint32 mask = 0;
     };
