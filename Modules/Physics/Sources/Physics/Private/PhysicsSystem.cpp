@@ -176,7 +176,11 @@ void PhysicsSystem::SimulationEventCallback::onAdvance(const physx::PxRigidBody*
 
 void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 {
-    for (size_t i = 0; i < nbPairs; ++i)
+    // Buffer for extracting physx contact points
+    static const size_t MAX_CONTACT_POINTS_COUNT = 10;
+    static physx::PxContactPairPoint physxContactPoints[MAX_CONTACT_POINTS_COUNT];
+
+    for (physx::PxU32 i = 0; i < nbPairs; ++i)
     {
         const physx::PxContactPair& pair = pairs[i];
 
@@ -191,8 +195,6 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
             }
 
             // Extract physx points
-            static const size_t MAX_CONTACT_POINTS_COUNT = 10;
-            static physx::PxContactPairPoint physxContactPoints[MAX_CONTACT_POINTS_COUNT];
             const size_t contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
             DVASSERT(contactPointsCount > 0);
 
@@ -214,8 +216,18 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
             CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
             DVASSERT(secondCollisionComponent != nullptr);
 
+            Entity* firstEntity = firstCollisionComponent->GetEntity();
+            DVASSERT(firstEntity != nullptr);
+
+            Entity* secondEntity = secondCollisionComponent->GetEntity();
+            DVASSERT(secondEntity != nullptr);
+
             // Register collision
-            targetCollisionSingleComponent->collisions.push_back({ firstCollisionComponent->GetEntity(), secondCollisionComponent->GetEntity(), std::move(davaContactPoints) });
+            CollisionInfo collisionInfo;
+            collisionInfo.first = firstEntity;
+            collisionInfo.second = secondEntity;
+            collisionInfo.points = std::move(davaContactPoints);
+            targetCollisionSingleComponent->collisions.push_back(collisionInfo);
         }
     }
 }

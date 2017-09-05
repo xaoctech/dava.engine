@@ -69,12 +69,12 @@ private:
     {
     public:
         SimulationEventCallback(CollisionSingleComponent* targetCollisionSingleComponent);
-        void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32);
-        void onWake(physx::PxActor**, physx::PxU32);
-        void onSleep(physx::PxActor**, physx::PxU32);
-        void onTrigger(physx::PxTriggerPair*, physx::PxU32);
-        void onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, const physx::PxU32);
-        void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
+        void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override;
+        void onWake(physx::PxActor**, physx::PxU32) override;
+        void onSleep(physx::PxActor**, physx::PxU32) override;
+        void onTrigger(physx::PxTriggerPair*, physx::PxU32) override;
+        void onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, const physx::PxU32) override;
+        void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
 
     private:
         CollisionSingleComponent* targetCollisionSingleComponent;

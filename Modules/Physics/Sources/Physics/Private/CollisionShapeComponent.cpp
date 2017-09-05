@@ -127,11 +127,6 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     shape->setName(name.c_str());
     shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
 
-    physx::PxFilterData filterData = shape->getSimulationFilterData();
-    filterData.word1 = typeMask;
-    filterData.word2 = typeMaskToCollideWith;
-    shape->setSimulationFilterData(filterData);
-
     shape->acquireReference();
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -147,6 +142,8 @@ void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* compo
     component->localPose = localPose;
     component->overrideMass = overrideMass;
     component->mass = mass;
+    component->typeMask = typeMask;
+    component->typeMaskToCollideWith = typeMaskToCollideWith;
 }
 
 void CollisionShapeComponent::ScheduleUpdate()
