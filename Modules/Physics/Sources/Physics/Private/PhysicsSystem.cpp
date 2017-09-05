@@ -8,6 +8,7 @@
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
+#include "Physics/CollisionSingleComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Entity.h>
@@ -18,7 +19,6 @@
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
-#include <Scene3D/Components/SingleComponents/CollisionSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
@@ -195,7 +195,7 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
             }
 
             // Extract physx points
-            const size_t contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
+            const physx::PxU32 contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
             DVASSERT(contactPointsCount > 0);
 
             Vector<CollisionPoint> davaContactPoints(contactPointsCount);
@@ -210,10 +210,10 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
                 davaPoint.impulse = PhysicsMath::PxVec3ToVector3(physxPoint.impulse);
             }
 
-            CollisionShapeComponent* firstCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[0]->userData);
+            CollisionShapeComponent* firstCollisionComponent = CollisionShapeComponent::GetComponent(pair.shapes[0]);
             DVASSERT(firstCollisionComponent != nullptr);
 
-            CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
+            CollisionShapeComponent* secondCollisionComponent = CollisionShapeComponent::GetComponent(pair.shapes[1]);
             DVASSERT(secondCollisionComponent != nullptr);
 
             Entity* firstEntity = firstCollisionComponent->GetEntity();

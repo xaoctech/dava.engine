@@ -52,7 +52,7 @@
 
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
-#include "Scene3D/Components/SingleComponents/CollisionSingleComponent.h"
+#include "Physics/CollisionSingleComponent.h"
 #endif
 
 #include <functional>
