@@ -1,4 +1,5 @@
 #include "EditorSystems/HUDSystem.h"
+#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
@@ -19,6 +20,7 @@
 #include <Base/BaseTypes.h>
 #include <UI/UIControl.h>
 #include <UI/UIEvent.h>
+#include <UI/UIControlSystem.h>
 
 using namespace DAVA;
 
@@ -130,6 +132,9 @@ HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 
     InitFieldBinder();
+
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
+    updateSystem->beforeRender.Connect(this, &HUDSystem::OnUpdate);
 }
 
 HUDSystem::~HUDSystem()
@@ -153,7 +158,6 @@ void HUDSystem::InitFieldBinder()
 
 void HUDSystem::OnSelectionChanged(const Any& selection)
 {
-    hudMap.clear();
 
     for (auto node : selection.Cast<SelectedNodes>(SelectedNodes()))
     {
@@ -171,6 +175,52 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
     ProcessCursor(hoveredPoint, SEARCH_BACKWARD);
     ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
     OnHighlightNode(node);
+}
+
+void HUDSystem::OnUpdate()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        hudMap.clear();
+        return;
+    }
+
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    SelectedNodes selection = documentData->GetSelectedNodes();
+    for (auto iter = hudMap.begin(); iter != hudMap.end();)
+    {
+        ControlNode* node = iter->first;
+        if (selection.find(node) == selection.end())
+        {
+            iter = hudMap.erase(iter);
+        }
+        else
+        {
+            ++iter;
+        }
+    }
+
+    for (PackageBaseNode* node : selection)
+    {
+        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+        if (controlNode != nullptr)
+        {
+            if (hudMap.find(controlNode) == hudMap.end())
+            {
+                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, systemsManager->GetHUDControl());
+            }
+        }
+    }
+
+    for (const auto& hudPair : hudMap)
+    {
+        const UIGeometricData& controlGD = hudPair.first->GetControl()->GetGeometricData();
+        hudPair.second->container->InitFromGD(controlGD);
+    }
 }
 
 void HUDSystem::ProcessInput(UIEvent* currentInput)

@@ -52,8 +52,8 @@ private:
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
 
     void UpdateAreasVisibility();
-
     void UpdateHUDEnabled();
+    void OnUpdate();
 
     SortedControlNodeSet GetSortedControlList() const;
 
