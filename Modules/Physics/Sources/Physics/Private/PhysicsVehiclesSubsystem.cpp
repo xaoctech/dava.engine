@@ -1,4 +1,4 @@
-#include "Physics/Private/PhysicsVehiclesSubsystem.h"
+#include "Physics/PhysicsVehiclesSubsystem.h"
 
 #include "Physics/PhysicsModule.h"
 #include "Physics/PhysicsHelpers.h"
@@ -30,13 +30,6 @@
 namespace DAVA
 {
 const uint32 MAX_VEHICLES_COUNT = 100;
-
-const uint32 COLLISION_FLAG_GROUND = 1 << 0;
-const uint32 COLLISION_FLAG_WHEEL = 1 << 1;
-const uint32 COLLISION_FLAG_CHASSIS = 1 << 2;
-const uint32 COLLISION_FLAG_GROUND_AGAINST = COLLISION_FLAG_CHASSIS;
-const uint32 COLLISION_FLAG_WHEEL_AGAINST = COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS;
-const uint32 COLLISION_FLAG_CHASSIS_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS;
 
 const uint32 DRIVABLE_SURFACE_FILTER = 0xffff0000;
 const uint32 UNDRIVABLE_SURFACE_FILTER = 0x0000ffff;
@@ -555,8 +548,8 @@ void PhysicsVehiclesSubsystem::SetupNonDrivableSurface(CollisionShapeComponent* 
     DVASSERT(pxShape != nullptr);
     pxShape->setQueryFilterData(physx::PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
 
-    surfaceShape->SetTypeMask(COLLISION_FLAG_GROUND);
-    surfaceShape->SetTypeMaskToCollideWith(COLLISION_FLAG_GROUND_AGAINST);
+    surfaceShape->SetTypeMask(GROUND_TYPE);
+    surfaceShape->SetTypeMaskToCollideWith(GROUND_TYPES_TO_COLLIDE_WITH);
 }
 
 void PhysicsVehiclesSubsystem::SetupDrivableSurface(CollisionShapeComponent* surfaceShape) const
@@ -567,8 +560,8 @@ void PhysicsVehiclesSubsystem::SetupDrivableSurface(CollisionShapeComponent* sur
     DVASSERT(pxShape != nullptr);
     pxShape->setQueryFilterData(physx::PxFilterData(0, 0, 0, DRIVABLE_SURFACE_FILTER));
 
-    surfaceShape->SetTypeMask(COLLISION_FLAG_GROUND);
-    surfaceShape->SetTypeMaskToCollideWith(COLLISION_FLAG_GROUND_AGAINST);
+    surfaceShape->SetTypeMask(GROUND_TYPE);
+    surfaceShape->SetTypeMaskToCollideWith(GROUND_TYPES_TO_COLLIDE_WITH);
 }
 
 VehicleChassisComponent* PhysicsVehiclesSubsystem::GetChassis(VehicleComponent* vehicle) const
@@ -666,8 +659,8 @@ void PhysicsVehiclesSubsystem::CreateVehicleCommonParts(VehicleComponent* vehicl
     DVASSERT(chassisShapePhysx != nullptr);
 
     chassisShapePhysx->setQueryFilterData(PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
-    chassisShape->SetTypeMask(COLLISION_FLAG_CHASSIS);
-    chassisShape->SetTypeMaskToCollideWith(COLLISION_FLAG_CHASSIS_AGAINST);
+    chassisShape->SetTypeMask(CHASSIS_TYPE);
+    chassisShape->SetTypeMaskToCollideWith(CHASSIS_TYPES_TO_COLLIDE_WITH);
 
     // Actor setup
 
@@ -705,8 +698,8 @@ void PhysicsVehiclesSubsystem::CreateVehicleCommonParts(VehicleComponent* vehicl
         DVASSERT(wheelShapePhysx != nullptr);
 
         wheelShapePhysx->setQueryFilterData(PxFilterData(0, 0, 0, UNDRIVABLE_SURFACE_FILTER));
-        wheelShape->SetTypeMask(COLLISION_FLAG_WHEEL);
-        wheelShape->SetTypeMaskToCollideWith(COLLISION_FLAG_WHEEL_AGAINST);
+        wheelShape->SetTypeMask(WHEEL_TYPE);
+        wheelShape->SetTypeMaskToCollideWith(WHEEL_TYPES_TO_COLLIDE_WITH);
 
         Matrix4 wheelLocalTransform = wheelShape->GetEntity()->GetLocalTransform();
         wheelCenterActorOffsets[i] = PhysicsMath::Vector3ToPxVec3(wheelLocalTransform.GetTranslationVector());

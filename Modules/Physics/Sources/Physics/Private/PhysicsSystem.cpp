@@ -9,8 +9,9 @@
 #include "Physics/PlaneShapeComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/PhysicsHelpers.h"
+#include "Physics/CollisionSingleComponent.h"
 #include "Physics/Private/PhysicsMath.h"
-#include "Physics/Private/PhysicsVehiclesSubsystem.h"
+#include "Physics/PhysicsVehiclesSubsystem.h"
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
@@ -20,7 +21,6 @@
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
-#include <Scene3D/Components/SingleComponents/CollisionSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
@@ -214,7 +214,11 @@ void PhysicsSystem::SimulationEventCallback::onAdvance(const physx::PxRigidBody*
 
 void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 {
-    for (size_t i = 0; i < nbPairs; ++i)
+    // Buffer for extracting physx contact points
+    static const size_t MAX_CONTACT_POINTS_COUNT = 10;
+    static physx::PxContactPairPoint physxContactPoints[MAX_CONTACT_POINTS_COUNT];
+
+    for (physx::PxU32 i = 0; i < nbPairs; ++i)
     {
         const physx::PxContactPair& pair = pairs[i];
 
@@ -229,9 +233,7 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
             }
 
             // Extract physx points
-            static const size_t MAX_CONTACT_POINTS_COUNT = 10;
-            static physx::PxContactPairPoint physxContactPoints[MAX_CONTACT_POINTS_COUNT];
-            const size_t contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
+            const physx::PxU32 contactPointsCount = pair.extractContacts(&physxContactPoints[0], MAX_CONTACT_POINTS_COUNT);
             DVASSERT(contactPointsCount > 0);
 
             Vector<CollisionPoint> davaContactPoints(contactPointsCount);
@@ -246,14 +248,24 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
                 davaPoint.impulse = PhysicsMath::PxVec3ToVector3(physxPoint.impulse);
             }
 
-            CollisionShapeComponent* firstCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[0]->userData);
+            CollisionShapeComponent* firstCollisionComponent = CollisionShapeComponent::GetComponent(pair.shapes[0]);
             DVASSERT(firstCollisionComponent != nullptr);
 
-            CollisionShapeComponent* secondCollisionComponent = reinterpret_cast<CollisionShapeComponent*>(pair.shapes[1]->userData);
+            CollisionShapeComponent* secondCollisionComponent = CollisionShapeComponent::GetComponent(pair.shapes[1]);
             DVASSERT(secondCollisionComponent != nullptr);
 
+            Entity* firstEntity = firstCollisionComponent->GetEntity();
+            DVASSERT(firstEntity != nullptr);
+
+            Entity* secondEntity = secondCollisionComponent->GetEntity();
+            DVASSERT(secondEntity != nullptr);
+
             // Register collision
-            targetCollisionSingleComponent->collisions.push_back({ firstCollisionComponent->GetEntity(), secondCollisionComponent->GetEntity(), std::move(davaContactPoints) });
+            CollisionInfo collisionInfo;
+            collisionInfo.first = firstEntity;
+            collisionInfo.second = secondEntity;
+            collisionInfo.points = std::move(davaContactPoints);
+            targetCollisionSingleComponent->collisions.push_back(collisionInfo);
         }
     }
 }
@@ -805,7 +817,9 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     {
         component->SetPxShape(shape);
 
-        if (component->GetType() == Component::HEIGHT_FIELD_SHAPE_COMPONENT || component->GetType() == Component::PLANE_SHAPE_COMPONENT)
+        // It's user's responsibility to setup drivable surfaces to work with vehicles
+        // For simplicity do it for every landscape by default
+        if (component->GetType() == Component::HEIGHT_FIELD_SHAPE_COMPONENT)
         {
             vehiclesSubsystem->SetupDrivableSurface(component);
         }
@@ -937,6 +951,11 @@ bool PhysicsSystem::Raycast(const Vector3& origin, const Vector3& direction, flo
 
     return physicsScene->raycast(PhysicsMath::Vector3ToPxVec3(origin), PhysicsMath::Vector3ToPxVec3(Normalize(direction)),
                                  static_cast<PxReal>(distance), callback);
+}
+
+PhysicsVehiclesSubsystem* PhysicsSystem::GetVehiclesSystem() const
+{
+    return vehiclesSubsystem;
 }
 
 void PhysicsSystem::UpdateComponents()

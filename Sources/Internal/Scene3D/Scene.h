@@ -185,12 +185,10 @@ public:
     GeoDecalSystem* geoDecalSystem = nullptr;
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     PhysicsSystem* physicsSystem = nullptr;
-#endif
 
-    TransformSingleComponent* transformSingleComponent = nullptr;
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     CollisionSingleComponent* collisionSingleComponent = nullptr;
 #endif
+    TransformSingleComponent* transformSingleComponent = nullptr;
 
     void AddSingletonComponent(SingletonComponent* component);
     template <class T>
