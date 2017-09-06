@@ -79,6 +79,10 @@ const char* SceneData::sceneChangedPropertyName = "IsSceneChanged";
 const char* SceneData::scenePathPropertyName = "ScenePath";
 const char* SceneData::sceneLandscapeToolsPropertyName = "EnabledLandscapeTools";
 const char* SceneData::sceneHUDVisiblePropertyName = "sceneHUDVisiblePropertyName";
+const char* SceneData::sceneCanUndoPropertyName = "canUndo";
+const char* SceneData::sceneUndoDescriptionPropertyName = "undoDescription";
+const char* SceneData::sceneCanRedoPropertyName = "canRedo";
+const char* SceneData::sceneRedoDescriptionPropertyName = "redoDescription";
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
 {

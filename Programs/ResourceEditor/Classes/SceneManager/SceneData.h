@@ -40,6 +40,10 @@ public:
     static const char* scenePathPropertyName;
     static const char* sceneLandscapeToolsPropertyName;
     static const char* sceneHUDVisiblePropertyName;
+    static const char* sceneCanUndoPropertyName;
+    static const char* sceneUndoDescriptionPropertyName;
+    static const char* sceneCanRedoPropertyName;
+    static const char* sceneRedoDescriptionPropertyName;
 
 private:
     friend class SceneManagerModule;
@@ -56,6 +60,10 @@ private:
         .Field(sceneLandscapeToolsPropertyName, &SceneData::GetEnabledLandscapeTools, nullptr)
         .Field("ScenePtr", &SceneData::GetScenePtr, nullptr)
         .Field(sceneHUDVisiblePropertyName, &SceneData::IsHUDVisible, nullptr)
+        .Field(sceneCanUndoPropertyName, [](SceneData* data) { return data->scene->CanUndo(); }, nullptr)
+        .Field(sceneUndoDescriptionPropertyName, [](SceneData* data) { return data->scene->GetUndoText(); }, nullptr)
+        .Field(sceneCanRedoPropertyName, [](SceneData* data) { return data->scene->CanRedo(); }, nullptr)
+        .Field(sceneRedoDescriptionPropertyName, [](SceneData* data) { return data->scene->GetRedoText(); }, nullptr)
         .End();
     }
 };

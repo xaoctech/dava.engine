@@ -285,9 +285,6 @@ public:
      */
     void SetTextUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign);
 
-    void SetTextUseRtlAlignFromInt(int32 value);
-    int32 GetTextUseRtlAlignAsInt() const;
-
     void SetSize(const DAVA::Vector2& newSize) override;
     void SetPosition(const Vector2& position) override;
 

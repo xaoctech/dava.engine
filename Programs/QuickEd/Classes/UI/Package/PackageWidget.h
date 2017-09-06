@@ -79,6 +79,7 @@ public slots:
 
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
     void OnFilterTextChanged(const QString&);
+    void OnSelectAndRename(ControlNode*);
     void OnRename();
     void OnAddStyle();
     void OnCopyControlPath();

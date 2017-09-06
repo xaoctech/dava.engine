@@ -24,7 +24,7 @@ public:
     bool LoadPNGDef(const FilePath& filename, const FilePath& pathToProcess);
 
     void ClearPackedFrames();
-    void LoadPNG(const FilePath& fullname, const FilePath& processDirectoryPath);
+    bool LoadPNG(const FilePath& fullname, const FilePath& processDirectoryPath);
     bool LoadPSD(const FilePath& fullname, const FilePath& processDirectoryPath,
                  DAVA::uint32 maxTextureSize, bool retainEmptyPixesl, bool useLayerNames,
                  bool verboseOutput);

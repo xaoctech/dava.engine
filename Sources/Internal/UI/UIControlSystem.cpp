@@ -36,6 +36,7 @@
 #include "Input/TouchScreen.h"
 #include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
+#include "UI/Text/UITextSystem.h"
 
 namespace DAVA
 {
@@ -45,6 +46,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
+    AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem
     AddSystem(std::make_unique<UILayoutSystem>());
     AddSystem(std::make_unique<UIScrollSystem>());
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
@@ -53,6 +55,7 @@ UIControlSystem::UIControlSystem()
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
+    textSystem = GetSystem<UITextSystem>();
     layoutSystem = GetSystem<UILayoutSystem>();
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
@@ -93,6 +96,7 @@ UIControlSystem::~UIControlSystem()
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
+    textSystem = nullptr;
     layoutSystem = nullptr;
     updateSystem = nullptr;
     renderSystem = nullptr;
@@ -752,6 +756,11 @@ std::unique_ptr<UISingleComponent> UIControlSystem::RemoveSingleComponent(const 
         return ptr;
     }
     return nullptr;
+}
+
+UITextSystem* UIControlSystem::GetTextSystem() const
+{
+    return textSystem;
 }
 
 UILayoutSystem* UIControlSystem::GetLayoutSystem() const
