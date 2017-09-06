@@ -107,7 +107,7 @@ public:
 
     void ProcessInput(const UIEvent& input);
     void ClickSystemBack();
-    bool EmulatePressKey(uint32 key);
+    void EmulatePressKey(uint32 key);
     void PressEscape();
 
     // helpers
