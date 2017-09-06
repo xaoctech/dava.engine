@@ -28,7 +28,7 @@ private:
 
     void CopyFieldsToComponent(CharacterControllerComponent* dest) override;
 
-    float32 radius = 0.25f;
+    float32 radius = 0.1f;
     float32 height = 1.0f;
 
     DAVA_VIRTUAL_REFLECTION(CapsuleCharacterControllerComponent, CharacterControllerComponent);

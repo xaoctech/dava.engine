@@ -29,8 +29,6 @@
 #include <Render/RenderHelper.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Utils/Utils.h>
-#include <Logger/Logger.h>
-#include <Scene3D/Components/CameraComponent.h>
 
 #include <physx/PxScene.h>
 #include <physx/PxRigidActor.h>
@@ -554,6 +552,7 @@ void PhysicsSystem::InitNewObjects()
             BoxCharacterControllerComponent* boxCharacterControllerComponent = static_cast<BoxCharacterControllerComponent*>(component);
 
             physx::PxBoxControllerDesc desc;
+            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(component->GetEntity()->GetLocalTransform().GetTranslationVector());
             desc.halfHeight = boxCharacterControllerComponent->GetHalfHeight();
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
@@ -568,16 +567,17 @@ void PhysicsSystem::InitNewObjects()
             CapsuleCharacterControllerComponent* capsuleCharacterControllerComponent = static_cast<CapsuleCharacterControllerComponent*>(component);
 
             physx::PxCapsuleControllerDesc desc;
+            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(component->GetEntity()->GetLocalTransform().GetTranslationVector());
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
             desc.material = physics->GetDefaultMaterial();
+            desc.upDirection = PhysicsMath::Vector3ToPxVec3(component->GetUpDirection());
             DVASSERT(desc.isValid());
 
             controller = controllerManager->createController(desc);
         }
 
         DVASSERT(controller != nullptr);
-        controller->setPosition(PhysicsMath::Vector3ToPxExtendedVec3(component->GetEntity()->GetLocalTransform().GetTranslationVector()));
         component->controller = controller;
 
         characterControllerComponents.push_back(component);

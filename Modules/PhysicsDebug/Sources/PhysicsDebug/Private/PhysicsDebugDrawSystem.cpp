@@ -459,34 +459,6 @@ Vector<RefPtr<PolygonGroup>> CreateHeightfieldPolygonGroup(const physx::PxHeight
     return result;
 }
 
-RefPtr<PolygonGroup> CreatePlanePolygonGroup(const physx::PxPlaneGeometry& geom, const Matrix4& localPose)
-{
-    static const float32 halfWidth = 5.0f;
-    Array<Vector3, 4> vertices =
-    {
-      Vector3(0.0f, -halfWidth, -halfWidth) * localPose,
-      Vector3(0.0f, halfWidth, -halfWidth) * localPose,
-      Vector3(0.0f, -halfWidth, halfWidth) * localPose,
-      Vector3(0.0f, halfWidth, halfWidth) * localPose,
-    };
-
-    Array<uint16, 6> indices =
-    {
-      0, 1, 2,
-      1, 3, 2
-    };
-
-    RefPtr<PolygonGroup> polygonGroup(new PolygonGroup());
-    polygonGroup->SetPrimitiveType(rhi::PRIMITIVE_TRIANGLELIST);
-    polygonGroup->AllocateData(eVertexFormat::EVF_VERTEX, static_cast<int32>(vertices.size()), static_cast<int32>(indices.size()), 2);
-    memcpy(polygonGroup->vertexArray, vertices.data(), vertices.size() * sizeof(Vector3));
-    memcpy(polygonGroup->indexArray, indices.data(), indices.size() * sizeof(uint16));
-    polygonGroup->BuildBuffers();
-    polygonGroup->RecalcAABBox();
-
-    return polygonGroup;
-}
-
 Vector<RefPtr<PolygonGroup>> CreatePolygonGroup(const physx::PxGeometryHolder& geom, const Matrix4& localPose)
 {
     Vector<RefPtr<PolygonGroup>> result;
@@ -509,9 +481,6 @@ Vector<RefPtr<PolygonGroup>> CreatePolygonGroup(const physx::PxGeometryHolder& g
         break;
     case physx::PxGeometryType::eHEIGHTFIELD:
         result = CreateHeightfieldPolygonGroup(geom.heightField(), localPose);
-        break;
-    case physx::PxGeometryType::ePLANE:
-        result.push_back(CreatePlanePolygonGroup(geom.plane(), localPose));
         break;
     default:
         break;

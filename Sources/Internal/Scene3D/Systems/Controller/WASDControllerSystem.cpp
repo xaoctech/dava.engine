@@ -103,7 +103,7 @@ void WASDControllerSystem::Process(float32 timeElapsed)
             CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(entities[i]->GetComponent(Component::BOX_CHARACTER_CONTROLLER_COMPONENT));
             if (physicsController == nullptr)
             {
-                CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(entities[i]->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
+                physicsController = static_cast<CharacterControllerComponent*>(entities[i]->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
             }
 
             if (physicsController != nullptr)
@@ -134,7 +134,7 @@ void WASDControllerSystem::MoveForward(Camera* camera, Entity* parentEntity, flo
     CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::BOX_CHARACTER_CONTROLLER_COMPONENT));
     if (physicsController == nullptr)
     {
-        CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
+        physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
     }
 
     if (physicsController != nullptr)
@@ -166,7 +166,7 @@ void WASDControllerSystem::MoveRight(Camera* camera, Entity* parentEntity, float
     CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::BOX_CHARACTER_CONTROLLER_COMPONENT));
     if (physicsController == nullptr)
     {
-        CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
+        physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
     }
 
     if (physicsController != nullptr)
