@@ -3,10 +3,8 @@
 
 #include <Scene3D/Scene.h>
 #include <Scene3D/Entity.h>
-#include <Scene3D/Components/CameraComponent.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Time/SystemTimer.h>
-#include <Logger/Logger.h>
 
 #include <physx/characterkinematic/PxController.h>
 
@@ -108,9 +106,9 @@ void CharacterControllerComponent::SyncEntityTransform()
     Entity* entity = GetEntity();
     DVASSERT(entity != nullptr);
 
-    Matrix4 transform = entity->GetWorldTransform();
+    Matrix4 transform = entity->GetLocalTransform();
     transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getPosition()));
-    entity->SetWorldTransform(transform);
+    entity->SetLocalTransform(transform);
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CharacterControllerComponent)

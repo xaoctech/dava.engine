@@ -415,6 +415,9 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
         {
             physx::PxActor* actor = actors[i];
             PhysicsComponent* component = PhysicsComponent::GetComponent(actor);
+
+            // When character controller is created, actor is created by physx implicitly
+            // In this case there is no PhysicsComponent attached to this entity
             if (component != nullptr)
             {
                 Entity* entity = component->GetEntity();
@@ -552,6 +555,12 @@ void PhysicsSystem::InitNewObjects()
 
     for (CharacterControllerComponent* component : pendingAddCharacterControllerComponents)
     {
+        Entity* entity = component->GetEntity();
+        DVASSERT(entity != nullptr);
+
+        // Character controllers are only allowed to be root objects
+        DVASSERT(entity->GetParent() == entity->GetScene());
+
         const EngineContext* ctx = GetEngineContext();
         PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
 
@@ -561,7 +570,7 @@ void PhysicsSystem::InitNewObjects()
             BoxCharacterControllerComponent* boxCharacterControllerComponent = static_cast<BoxCharacterControllerComponent*>(component);
 
             physx::PxBoxControllerDesc desc;
-            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(component->GetEntity()->GetLocalTransform().GetTranslationVector());
+            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
             desc.halfHeight = boxCharacterControllerComponent->GetHalfHeight();
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
@@ -576,7 +585,7 @@ void PhysicsSystem::InitNewObjects()
             CapsuleCharacterControllerComponent* capsuleCharacterControllerComponent = static_cast<CapsuleCharacterControllerComponent*>(component);
 
             physx::PxCapsuleControllerDesc desc;
-            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(component->GetEntity()->GetLocalTransform().GetTranslationVector());
+            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
             desc.material = physics->GetDefaultMaterial();

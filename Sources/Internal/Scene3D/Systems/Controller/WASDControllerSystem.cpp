@@ -112,7 +112,7 @@ void WASDControllerSystem::Process(float32 timeElapsed)
 
                 const Vector3& dir = camera->GetDirection();
 
-                camera->SetPosition(entities[i]->GetWorldTransform().GetTranslationVector());
+                camera->SetPosition(entities[i]->GetLocalTransform().GetTranslationVector());
                 camera->SetDirection(dir);
             }
 #endif

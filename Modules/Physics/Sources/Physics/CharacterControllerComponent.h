@@ -11,14 +11,23 @@ class PxController;
 
 namespace DAVA
 {
-/** Class responsible for controlling a character. Forces aren't applied to it, and it moves only when `Move` or `SimpleMove` function is called. */
+/**
+    Class responsible for controlling a character.
+    Forces aren't applied to it, and it moves only when `Move` or `SimpleMove` function is called.
+
+    Note that if a character is using moving scheme provided by `SimpleMove` function,
+    `SimpleMove` should be called every frame, even if there is no input from the user (i.e. displacement = Vector3::Zero), to apply gravity.
+*/
 class CharacterControllerComponent : public Component
 {
 public:
     /** Try move a character for specified `displacement`. Does not apply gravity. */
     void Move(Vector3 displacement);
 
-    /** Try move a character for specified `displacement`. Applies gravity, any translation along up direction is ignored. */
+    /**
+        Try move a character for specified `displacement`. Applies gravity, any translation along up direction is ignored.
+        Well suited for movement on a landscape or other surfaces.
+    */
     void SimpleMove(Vector3 displacement);
 
     /** Teleports a character to specified `worldPosition` */
