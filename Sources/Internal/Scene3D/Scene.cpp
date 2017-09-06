@@ -677,10 +677,12 @@ void Scene::Update(float32 timeElapsed)
         transformSingleComponent->Clear();
     }
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (collisionSingleComponent)
     {
         collisionSingleComponent->collisions.clear();
     }
+#endif
 
     sceneGlobalTime += timeElapsed;
 }
