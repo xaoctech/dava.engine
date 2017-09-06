@@ -24,11 +24,17 @@ MotionSystem::~MotionSystem()
     GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
 
+void MotionSystem::SetScene(Scene* scene)
+{
+    motionSingleComponent = (scene != nullptr) ? scene->motionSingleComponent : nullptr;
+}
+
 void MotionSystem::AddEntity(Entity* entity)
 {
-    MotionComponent* motionComponent = GetMotionComponent(entity);
+    DVASSERT(motionSingleComponent != nullptr);
 
-    GetScene()->motionSingleComponent->reloadConfig.push_back(motionComponent);
+    MotionComponent* motionComponent = GetMotionComponent(entity);
+    motionSingleComponent->reloadConfig.push_back(motionComponent);
 }
 
 void MotionSystem::RemoveEntity(Entity* entity)
@@ -38,28 +44,28 @@ void MotionSystem::RemoveEntity(Entity* entity)
 
 void MotionSystem::ImmediateEvent(Component* component, uint32 event)
 {
+    DVASSERT(motionSingleComponent != nullptr);
+
     if (event == EventSystem::SKELETON_CONFIG_CHANGED)
     {
         MotionComponent* motionComponent = GetMotionComponent(component->GetEntity());
-        GetScene()->motionSingleComponent->rebindAnimation.push_back(motionComponent);
+        motionSingleComponent->rebindAnimation.push_back(motionComponent);
     }
 }
 
 void MotionSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_MOTION_SYSTEM);
+    DVASSERT(motionSingleComponent != nullptr);
 
-    Vector<std::pair<MotionComponent*, MotionSingleComponent::AnimationPhaseInfo>> endedPhases;
-
-    MotionSingleComponent* msc = GetScene()->motionSingleComponent;
-    for (MotionComponent* motionComponent : msc->reloadConfig)
+    for (MotionComponent* motionComponent : motionSingleComponent->reloadConfig)
     {
         motionComponent->ReloadFromConfig();
         FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
-        msc->rebindAnimation.emplace_back(motionComponent);
+        motionSingleComponent->rebindAnimation.emplace_back(motionComponent);
     }
 
-    for (MotionComponent* motionComponent : msc->rebindAnimation)
+    for (MotionComponent* motionComponent : motionSingleComponent->rebindAnimation)
     {
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
         DVASSERT(skeleton);
@@ -76,46 +82,13 @@ void MotionSystem::Process(float32 timeElapsed)
         activeComponents.emplace_back(motionComponent);
     }
 
-    for (MotionComponent* motionComponent : msc->stopAnimation)
-    {
-        //MotionComponent::SimpleMotion* motion = motionComponent->simpleMotion;
-
-        //motion->Stop();
-        //FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
-
-        //SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-        //if (skeleton)
-        //{
-        //    skeleton->ApplyPose(&motion->GetSkeletonPose());
-        //}
-    }
-
-    for (MotionComponent* motionComponent : msc->startAnimation)
-    {
-        //motionComponent->simpleMotion->Start();
-        //triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_STARTED);
-
-        //activeComponents.emplace_back(motionComponent);
-    }
+    motionSingleComponent->Clear();
 
     for (int32 i = int32(activeComponents.size()) - 1; i >= 0; --i)
     {
         MotionComponent* motionComponent = activeComponents[i];
         UpdateMotions(motionComponent, timeElapsed);
-
-        //DVASSERT(motion->IsPlaying());
-
-        //if (motion->IsFinished())
-        //{
-        //    motion->Stop();
-        //    triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_ENDED);
-
-        //    RemoveExchangingWithLast(activeComponents, i);
-        //}
     }
-
-    msc->Clear();
-    msc->animationPhaseEnd = endedPhases;
 }
 
 void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime)
@@ -130,7 +103,19 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
         for (uint32 m = 0; m < motionCount; ++m)
         {
             Motion* motion = motionComponent->GetMotion(m);
-            motion->Update(dTime * motionComponent->playbackRate);
+
+            workPhaseEnded.clear();
+            motion->Update(dTime * motionComponent->playbackRate, &workPhaseEnded);
+
+            for (auto& phaseEnd : workPhaseEnded)
+            {
+                motionSingleComponent->animationPhaseEnd.emplace_back(motionComponent, MotionSingleComponent::AnimationPhaseInfo());
+
+                MotionSingleComponent::AnimationPhaseInfo& phaseInfo = motionSingleComponent->animationPhaseEnd.back().second;
+                phaseInfo.motionName = motion->GetName();
+                phaseInfo.stateID = phaseEnd.first;
+                phaseInfo.phaseID = phaseEnd.second;
+            }
 
             const SkeletonPose& pose = motion->GetCurrentSkeletonPose();
             Motion::eMotionBlend blendMode = motion->GetBlendMode();

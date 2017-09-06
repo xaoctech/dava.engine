@@ -8,8 +8,6 @@ namespace DAVA
 void MotionSingleComponent::Clear()
 {
     animationPhaseEnd.clear();
-    startAnimation.clear();
-    stopAnimation.clear();
     rebindAnimation.clear();
     reloadConfig.clear();
 }
@@ -28,8 +26,6 @@ void MotionSingleComponent::EntityRemoved(const Entity* entity)
             }
         }
 
-        FindAndRemoveExchangingWithLast(startAnimation, component);
-        FindAndRemoveExchangingWithLast(stopAnimation, component);
         FindAndRemoveExchangingWithLast(rebindAnimation, component);
         FindAndRemoveExchangingWithLast(reloadConfig, component);
     }

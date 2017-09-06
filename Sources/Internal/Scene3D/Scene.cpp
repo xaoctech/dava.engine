@@ -255,10 +255,10 @@ void Scene::CreateSystems()
 
     if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
     {
+        motionSingleComponent = new MotionSingleComponent();
+
         motionSystem = new MotionSystem(this);
         AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-
-        motionSingleComponent = new MotionSingleComponent();
     }
 
     if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)

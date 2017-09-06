@@ -60,7 +60,7 @@ public:
     const SkeletonPose& GetCurrentSkeletonPose() const;
 
     void BindSkeleton(const SkeletonComponent* skeleton);
-    void Update(float32 dTime);
+    void Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEndedPhases = nullptr /*[state-id, phase-id]*/);
 
     const Vector<FastName>& GetParameterIDs() const;
     bool BindParameter(const FastName& parameterID, const float32* param);
@@ -95,7 +95,7 @@ protected:
     };
     struct State
     {
-        FastName id; //temporary for debug
+        FastName id;
         BlendTree* blendTree = nullptr;
         FastNameMap<Transition*> transitions;
 

@@ -100,7 +100,7 @@ void Motion::UpdateAndEvaluateStatePose(float32 dTime, State* state, SkeletonPos
     state->blendTree->EvaluatePose(phaseIndex, phase, state->boundParams, pose);
 }
 
-void Motion::Update(float32 dTime)
+void Motion::Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEndedPhases)
 {
     currentPose.Reset();
     if (currentTransition != nullptr)
@@ -115,13 +115,10 @@ void Motion::Update(float32 dTime)
         uint32 prevPhase = currentState->animationPhaseIndex;
         UpdateAndEvaluateStatePose(dTime, currentState, &currentPose);
 
-        if (prevPhase != currentState->animationPhaseIndex)
+        if (prevPhase != currentState->animationPhaseIndex && outEndedPhases != nullptr)
         {
-            //TODO: *Skinning* trigger sync-point event
             if (prevPhase < uint32(currentState->phaseNames.size()))
-            {
-                FastName phaseName = currentState->phaseNames[prevPhase];
-            }
+                outEndedPhases->emplace_back(currentState->id, currentState->phaseNames[prevPhase]);
         }
     }
 }

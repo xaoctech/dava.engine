@@ -207,21 +207,36 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
 
             animation.skeletonAnimation = new SkeletonAnimation(animationClip);
 
-            const YamlNode* syncPointsNode = yamlNode->Get("sync-points");
-            if (syncPointsNode != nullptr)
+            uint32 markerCount = animationClip->GetMarkerCount();
+            if (markerCount != 0)
             {
-                if (syncPointsNode->GetType() == YamlNode::TYPE_STRING)
+                for (uint32 m = 0; m < markerCount; ++m)
                 {
-                    animation.phaseEnds.push_back(syncPointsNode->AsFloat());
+                    DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < animationClip->GetMarkerTime(m));
+                    animation.phaseEnds.push_back(animationClip->GetMarkerTime(m));
                 }
-                else if (syncPointsNode->GetType() == YamlNode::TYPE_ARRAY)
+            }
+            else
+            {
+                const YamlNode* syncPointsNode = yamlNode->Get("sync-points");
+                if (syncPointsNode != nullptr)
                 {
-                    uint32 pointsCount = syncPointsNode->GetCount();
-                    for (uint32 sp = 0; sp < pointsCount; ++sp)
+                    if (syncPointsNode->GetType() == YamlNode::TYPE_STRING)
                     {
-                        const YamlNode* syncPointNode = syncPointsNode->Get(sp);
-                        if (syncPointNode->GetType() == YamlNode::TYPE_STRING)
-                            animation.phaseEnds.push_back(syncPointNode->AsFloat());
+                        animation.phaseEnds.push_back(syncPointsNode->AsFloat());
+                    }
+                    else if (syncPointsNode->GetType() == YamlNode::TYPE_ARRAY)
+                    {
+                        uint32 pointsCount = syncPointsNode->GetCount();
+                        for (uint32 sp = 0; sp < pointsCount; ++sp)
+                        {
+                            const YamlNode* syncPointNode = syncPointsNode->Get(sp);
+                            if (syncPointNode->GetType() == YamlNode::TYPE_STRING)
+                            {
+                                DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < syncPointNode->AsFloat());
+                                animation.phaseEnds.push_back(syncPointNode->AsFloat());
+                            }
+                        }
                     }
                 }
             }
