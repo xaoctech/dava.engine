@@ -6843,8 +6843,35 @@ fail:
     return SWIG_arg;
 }
 
-//DEPRECATED FUNCTION
-static int _wrap_AutotestingSystemLua_ClickSystemBack(lua_State* L)
+static int _wrap_AutotestingSystemLua_EmulatePressKey(lua_State* L)
+{
+    int SWIG_arg=0;
+    DAVA::AutotestingSystemLua *arg1=(DAVA::AutotestingSystemLua*)0;
+    DAVA::uint32 arg2;
+        
+    SWIG_check_num_args("DAVA::AutotestingSystemLua::EmulatePressKey",2,2)
+    if (!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey",1,"DAVA::AutotestingSystemLua *");
+    if (!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey",2,"DAVA::uint32");
+        
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0)))
+    {
+        SWIG_fail_ptr("AutotestingSystemLua_EmulatePressKey",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+    }
+        
+    arg2 = (DAVA::uint32)lua_tonumber(L,2);
+    (arg1)->EmulatePressKey(arg2);
+        
+    return SWIG_arg;
+        
+    if (0)
+        SWIG_fail;
+        
+    fail:
+        lua_error(L);
+        return SWIG_arg;
+}
+
+DAVA_DEPRECATED(static int _wrap_AutotestingSystemLua_ClickSystemBack(lua_State* L))
 {
     int SWIG_arg = 0;
     DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
@@ -6869,38 +6896,7 @@ fail:
     return SWIG_arg;
 }
 
-
-static int _wrap_AutotestingSystemLua_EmulatePressKey(lua_State* L)
-{
-    int SWIG_arg=0;
-    DAVA::AutotestingSystemLua *arg1=(DAVA::AutotestingSystemLua*)0;
-    DAVA::uint32 arg2;
-
-    SWIG_check_num_args("DAVA::AutotestingSystemLua::EmulatePressKey",2,2)
-    if (!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey",1,"DAVA::AutotestingSystemLua *");
-    if (!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey",2,"DAVA::uint32");
-
-    if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0)))
-    {
-        SWIG_fail_ptr("AutotestingSystemLua_EmulatePressKey",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
-    }
-
-    arg2 = (DAVA::uint32)lua_tonumber(L,2);
-    (arg1)->EmulatePressKey(arg2);
-
-    return SWIG_arg;
-
-    if (0)
-        SWIG_fail;
-
-fail:
-    lua_error(L);
-    return SWIG_arg;
-}
-
-
-//DEPRECATED FUNCTION
-static int _wrap_AutotestingSystemLua_PressEscape(lua_State* L)
+DAVA_DEPRECATED(static int _wrap_AutotestingSystemLua_PressEscape(lua_State* L))
 {
     int SWIG_arg = 0;
     DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
