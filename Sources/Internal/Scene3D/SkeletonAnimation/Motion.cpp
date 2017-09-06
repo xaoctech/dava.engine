@@ -16,24 +16,22 @@ ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 
 ENUM_DECLARE(DAVA::Motion::eTransitionType)
 {
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_SMOOTH, "Smooth");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_FROZEN, "Frozen");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_BLENDTREE, "BlendTree");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_CROSS_FADE, "cross-fade");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_FROZEN_FADE, "frozen-fade");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionType::TRANSITION_TYPE_BLENDTREE, "blend-tree");
 };
 
 ENUM_DECLARE(DAVA::Motion::eTransitionFunc)
 {
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionFunc::TRANSITION_FUNC_LERP, "LERP");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionFunc::TRANSITION_FUNC_CURVE, "Curve");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionFunc::TRANSITION_FUNC_LINEAR, "linear");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionFunc::TRANSITION_FUNC_CURVE, "curve");
 };
 
 ENUM_DECLARE(DAVA::Motion::eTransitionSync)
 {
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_IMMIDIATE, "Immidiate");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_END, "WaitEnd");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_PHASE_END, "WaitPhaseTime");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_PERCENTAGE, "Percent");
-    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_PERCENTAGE_INVERSE, "PercentInv");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_IMMIDIATE, "immidiate");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_END, "wait-end");
+    ENUM_ADD_DESCR(DAVA::Motion::eTransitionSync::TRANSITION_SYNC_WAIT_PHASE_END, "wait-phase-end");
 };
 
 namespace DAVA
@@ -57,6 +55,7 @@ void Motion::Transition::Reset(State* _srcState, State* _dstState)
     srcState = _srcState;
     dstState = _dstState;
     transitionPhase = 0.f;
+    started = false;
 }
 
 bool Motion::Transition::IsComplete() const
@@ -71,33 +70,76 @@ void Motion::Transition::Update(float32 dTime, SkeletonPose* outPose)
 
     DVASSERT(srcState != nullptr && dstState != nullptr);
 
-    SkeletonPose pose1;
-    UpdateAndEvaluateStatePose(dTime, srcState, outPose);
-    UpdateAndEvaluateStatePose(dTime, dstState, &pose1);
+    bool srcStateUpdated = false;
+    if (!started)
+    {
+        bool statePhaseEnded = srcState->Update(dTime);
+        if (sync == TRANSITION_SYNC_WAIT_END)
+        {
+            started = (statePhaseEnded && srcState->prevPhaseIndex == 0);
+        }
+        else if (sync == TRANSITION_SYNC_WAIT_PHASE_END)
+        {
+            FastName endedPhaseID = (srcState->prevPhaseIndex < uint32(srcState->phaseNames.size())) ? srcState->phaseNames[srcState->prevPhaseIndex] : FastName();
+            started = (statePhaseEnded && endedPhaseID == waitPhaseID);
+        }
+        else
+        {
+            started = true;
+        }
 
-    transitionPhase += dTime / duration;
-    outPose->Lerp(pose1, transitionPhase);
+        if (started && syncPhases)
+        {
+            dstState->prevPhaseIndex = srcState->prevPhaseIndex;
+            dstState->currPhaseIndex = srcState->currPhaseIndex;
+            dstState->phase = srcState->phase;
+        }
+
+        srcStateUpdated = true;
+    }
+
+    if (started)
+    {
+        if (type == TRANSITION_TYPE_CROSS_FADE && !srcStateUpdated)
+            srcState->Update(dTime);
+
+        dstState->Update(dTime);
+
+        SkeletonPose pose1;
+        srcState->EvaluatePose(outPose);
+        dstState->EvaluatePose(&pose1);
+
+        transitionPhase += dTime / duration;
+        outPose->Lerp(pose1, transitionPhase);
+    }
+    else
+    {
+        srcState->EvaluatePose(outPose);
+    }
 }
 
-void Motion::UpdateAndEvaluateStatePose(float32 dTime, State* state, SkeletonPose* pose)
+bool Motion::State::Update(float32 dTime)
 {
-    DVASSERT(state != nullptr);
-    DVASSERT(pose != nullptr);
+    prevPhaseIndex = currPhaseIndex;
 
-    float32& phase = state->animationPhase;
-    uint32& phaseIndex = state->animationPhaseIndex;
-
-    float32 duration = state->blendTree->EvaluatePhaseDuration(phaseIndex, state->boundParams);
+    float32 duration = blendTree->EvaluatePhaseDuration(currPhaseIndex, boundParams);
     phase += dTime / duration;
     if (phase >= 1.f) //TODO: *Skinning* fix phase calculation on change phaseIndex
     {
         phase -= 1.f;
-        ++phaseIndex;
-        if (phaseIndex == uint32(state->blendTree->GetPhasesCount()))
-            phaseIndex = 0;
+        ++currPhaseIndex;
+        if (currPhaseIndex == uint32(blendTree->GetPhasesCount()))
+            currPhaseIndex = 0;
+
+        return true;
     }
 
-    state->blendTree->EvaluatePose(phaseIndex, phase, state->boundParams, pose);
+    return false;
+}
+
+void Motion::State::EvaluatePose(SkeletonPose* outPose) const
+{
+    blendTree->EvaluatePose(currPhaseIndex, phase, boundParams, outPose);
 }
 
 void Motion::Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEndedPhases)
@@ -112,14 +154,15 @@ void Motion::Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEnd
 
     if (currentTransition == nullptr && currentState != nullptr)
     {
-        uint32 prevPhase = currentState->animationPhaseIndex;
-        UpdateAndEvaluateStatePose(dTime, currentState, &currentPose);
+        bool statePhaseEnded = currentState->Update(dTime);
 
-        if (prevPhase != currentState->animationPhaseIndex && outEndedPhases != nullptr)
+        if (statePhaseEnded && outEndedPhases != nullptr)
         {
-            if (prevPhase < uint32(currentState->phaseNames.size()))
-                outEndedPhases->emplace_back(currentState->id, currentState->phaseNames[prevPhase]);
+            if (currentState->prevPhaseIndex < uint32(currentState->phaseNames.size()))
+                outEndedPhases->emplace_back(currentState->id, currentState->phaseNames[currentState->prevPhaseIndex]);
         }
+
+        currentState->EvaluatePose(&currentPose);
     }
 }
 
@@ -130,11 +173,87 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
 
     if (currentState != nullptr)
     {
-        currentState->animationPhaseIndex = 0u;
-        currentState->animationPhase = 0.f;
+        currentState->currPhaseIndex = currentState->prevPhaseIndex = 0u;
+        currentState->phase = 0.f;
         currentPose.Reset();
-        currentState->blendTree->EvaluatePose(0, 0.f, currentState->boundParams, &currentPose);
+        currentState->EvaluatePose(&currentPose);
     }
+}
+
+bool Motion::BindParameter(const FastName& parameterID, const float32* param)
+{
+    bool success = false;
+
+    for (State& s : states)
+    {
+        const Vector<FastName>& params = s.blendTree->GetParameterIDs();
+        auto found = std::find(params.begin(), params.end(), parameterID);
+        if (found != params.end())
+        {
+            size_t paramIndex = std::distance(params.begin(), found);
+            s.boundParams[paramIndex] = param;
+
+            success = true;
+        }
+    }
+
+    return success;
+}
+
+bool Motion::UnbindParameter(const FastName& parameterID)
+{
+    return BindParameter(parameterID, nullptr);
+}
+
+void Motion::UnbindParameters()
+{
+    for (State& s : states)
+    {
+        for (const float32*& param : s.boundParams)
+            param = nullptr;
+    }
+}
+
+const Vector<FastName>& Motion::GetStateIDs() const
+{
+    return statesIDs;
+}
+
+bool Motion::RequestState(const FastName& stateUID)
+{
+    bool success = false;
+
+    auto foundState = statesMap.find(stateUID);
+    if (foundState != statesMap.end())
+    {
+        State* nextState = foundState->second;
+
+        if (currentState != nullptr)
+        {
+            const FastNameMap<Transition*>& transitions = currentState->transitions;
+            auto foundTransition = transitions.find(stateUID);
+            if (foundTransition != transitions.end())
+            {
+                Transition* nextTransition = foundTransition->second;
+                nextTransition->Reset(currentState, nextState);
+
+                DVASSERT(nextTransition->syncPhases != false || currentState->blendTree->GetPhasesCount() == nextState->blendTree->GetPhasesCount());
+
+                if (currentTransition != nullptr)
+                {
+                    if (nextTransition->interruption == TRANSITION_INTERRUPT_PHASE_INVERSE)
+                        nextTransition->transitionPhase = 1.f - currentTransition->transitionPhase;
+                }
+
+                currentTransition = nextTransition;
+            }
+        }
+
+        currentState = nextState;
+        success = true;
+    }
+
+    return success;
 }
 
 Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
@@ -250,6 +369,18 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                         transition.sync = eTransitionSync(enumValue);
                 }
 
+                const YamlNode* waitPhaseNode = transitionNode->Get("wait-phase-id");
+                if (waitPhaseNode != nullptr && waitPhaseNode->GetType() == YamlNode::TYPE_STRING)
+                {
+                    transition.waitPhaseID = waitPhaseNode->AsFastName();
+                }
+
+                const YamlNode* syncPhasesNode = transitionNode->Get("sync-phases");
+                if (syncPhasesNode != nullptr && syncPhasesNode->GetType() == YamlNode::TYPE_STRING)
+                {
+                    transition.syncPhases = syncPhasesNode->AsBool();
+                }
+
                 const YamlNode* srcNode = transitionNode->Get("src-state");
                 const YamlNode* dstNode = transitionNode->Get("dst-state");
                 if (srcNode != nullptr && srcNode->GetType() == YamlNode::TYPE_STRING &&
@@ -269,83 +400,6 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
     motion->parameterIDs.insert(motion->parameterIDs.begin(), parameters.begin(), parameters.end());
 
     return motion;
-}
-
-bool Motion::BindParameter(const FastName& parameterID, const float32* param)
-{
-    bool success = false;
-
-    for (State& s : states)
-    {
-        const Vector<FastName>& params = s.blendTree->GetParameterIDs();
-        auto found = std::find(params.begin(), params.end(), parameterID);
-        if (found != params.end())
-        {
-            size_t paramIndex = std::distance(params.begin(), found);
-            s.boundParams[paramIndex] = param;
-
-            success = true;
-        }
-    }
-
-    return success;
-}
-
-bool Motion::UnbindParameter(const FastName& parameterID)
-{
-    return BindParameter(parameterID, nullptr);
-}
-
-void Motion::UnbindParameters()
-{
-    for (State& s : states)
-    {
-        for (const float32*& param : s.boundParams)
-            param = nullptr;
-    }
-}
-
-const Vector<FastName>& Motion::GetStateIDs() const
-{
-    return statesIDs;
-}
-
-bool Motion::RequestState(const FastName& stateUID)
-{
-    bool success = false;
-
-    auto foundState = statesMap.find(stateUID);
-    if (foundState != statesMap.end())
-    {
-        State* nextState = foundState->second;
-
-        if (currentState != nullptr)
-        {
-            nextState->animationPhase = currentState->animationPhase;
-
-            const FastNameMap<Transition*>& transitions = currentState->transitions;
-            auto foundTransition = transitions.find(stateUID);
-            if (foundTransition != transitions.end())
-            {
-                Transition* nextTransition = foundTransition->second;
-                nextTransition->Reset(currentState, nextState);
-
-                if (currentTransition != nullptr)
-                {
-                    if (nextTransition->sync == TRANSITION_SYNC_PERCENTAGE)
-                        nextTransition->transitionPhase = currentTransition->transitionPhase;
-                    else if (nextTransition->sync == TRANSITION_SYNC_PERCENTAGE_INVERSE)
-                        nextTransition->transitionPhase = 1.f - currentTransition->transitionPhase;
-                }
-
-                currentTransition = nextTransition;
-            }
-        }
-
-        currentState = foundState->second;
-        success = true;
-    }
-    return success;
 }
 
 } //ns

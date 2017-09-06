@@ -244,6 +244,8 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
             if (animation.phaseEnds.empty() || (!animation.phaseEnds.empty() && !FLOAT_EQUAL(animation.phaseEnds.back(), 1.f)))
                 animation.phaseEnds.push_back(1.f);
 
+            DVASSERT(animation.phaseEnds.front() > EPSILON);
+
             //All animation should have the same phases count
             //TODO: *Skinning* return error, not assert
             DVASSERT(phasesCount == 0 || phasesCount == uint32(animation.phaseEnds.size()));

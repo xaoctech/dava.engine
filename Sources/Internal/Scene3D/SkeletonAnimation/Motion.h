@@ -27,15 +27,15 @@ public:
     };
     enum eTransitionType : uint8
     {
-        TRANSITION_TYPE_SMOOTH,
-        TRANSITION_TYPE_FROZEN,
+        TRANSITION_TYPE_CROSS_FADE,
+        TRANSITION_TYPE_FROZEN_FADE,
         TRANSITION_TYPE_BLENDTREE,
 
         TRANSITION_TYPE_COUNT
     };
     enum eTransitionFunc : uint8
     {
-        TRANSITION_FUNC_LERP,
+        TRANSITION_FUNC_LINEAR,
         TRANSITION_FUNC_CURVE,
 
         TRANSITION_FUNC_COUNT
@@ -45,10 +45,14 @@ public:
         TRANSITION_SYNC_IMMIDIATE,
         TRANSITION_SYNC_WAIT_END,
         TRANSITION_SYNC_WAIT_PHASE_END,
-        TRANSITION_SYNC_PERCENTAGE,
-        TRANSITION_SYNC_PERCENTAGE_INVERSE,
 
         TRANSITION_SYNC_COUNT
+    };
+    enum eTransitionInterrupt : uint8
+    {
+        TRANSITION_INTERRUPT_PHASE_INVERSE,
+
+        TRANSITION_INTERRUPT_COUNT
     };
 
     ~Motion();
@@ -84,30 +88,36 @@ protected:
         eTransitionType type = TRANSITION_TYPE_COUNT;
         eTransitionFunc func = TRANSITION_FUNC_COUNT;
         eTransitionSync sync = TRANSITION_SYNC_COUNT;
+        eTransitionInterrupt interruption = TRANSITION_INTERRUPT_PHASE_INVERSE;
         float32 duration = 0.f;
+        FastName waitPhaseID;
+        bool syncPhases = false;
 
         //runtime
         State* srcState = nullptr;
         State* dstState = nullptr;
         float32 transitionPhase = 0.f;
+        bool started = false;
 
         friend class Motion;
     };
     struct State
     {
+        bool Update(float32 dTime); //return 'true' if current phase of state is ended
+        void EvaluatePose(SkeletonPose* outPose) const;
+
         FastName id;
         BlendTree* blendTree = nullptr;
         FastNameMap<Transition*> transitions;
 
-        uint32 animationPhaseIndex = 0u;
-        float32 animationPhase = 0.f;
+        uint32 currPhaseIndex = 0u;
+        uint32 prevPhaseIndex = 0u;
+        float32 phase = 0.f;
         Vector<const float32*> boundParams;
 
         //TODO: *Skinning* move it to BlendTree ?
         Vector<FastName> phaseNames;
     };
-
-    static void UpdateAndEvaluateStatePose(float32 dTime, State* state, SkeletonPose* pose);
 
     FastName name;
     eMotionBlend blendMode = BLEND_COUNT;
