@@ -6872,20 +6872,20 @@ fail:
 
 static int _wrap_AutotestingSystemLua_EmulatePressKey(lua_State* L)
 {
-    int SWIG_arg = 0;
-    DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0;
+    int SWIG_arg=0;
+    DAVA::AutotestingSystemLua *arg1=(DAVA::AutotestingSystemLua*)0;
     DAVA::uint32 arg2;
 
-    SWIG_check_num_args("DAVA::AutotestingSystemLua::EmulatePressKey", 2, 2)
-        if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey", 1, "DAVA::AutotestingSystemLua *");
-    if (!lua_isnumber(L, 2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey", 2, "DAVA::uint32");
+    SWIG_check_num_args("DAVA::AutotestingSystemLua::EmulatePressKey",2,2)
+    if (!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey",1,"DAVA::AutotestingSystemLua *");
+    if (!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey",2,"DAVA::uint32");
 
-    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&arg1, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)))
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0)))
     {
-        SWIG_fail_ptr("AutotestingSystemLua_EmulatePressKey", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
+        SWIG_fail_ptr("AutotestingSystemLua_EmulatePressKey",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
     }
 
-    arg2 = (DAVA::uint32)lua_tonumber(L, 2);
+    arg2 = (DAVA::uint32)lua_tonumber(L,2);
     (arg1)->EmulatePressKey(arg2);
 
     return SWIG_arg;
@@ -7590,6 +7590,7 @@ static swig_lua_method swig_AutotestingSystemLua_methods[] = {
     { "KeyPress", _wrap_AutotestingSystemLua_KeyPress },
     { "ProcessInput", _wrap_AutotestingSystemLua_ProcessInput },
     { "ClickSystemBack", _wrap_AutotestingSystemLua_ClickSystemBack },
+    { "EmulatePressKey", _wrap_AutotestingSystemLua_EmulatePressKey },
     { "PressEscape", _wrap_AutotestingSystemLua_PressEscape },
     { "SetText", _wrap_AutotestingSystemLua_SetText },
     { "CheckText", _wrap_AutotestingSystemLua_CheckText },
