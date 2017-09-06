@@ -322,6 +322,11 @@ void EditorTransformSystem::OnDragStateChanged(EditorSystemsManager::eDragState 
     }
 }
 
+BaseEditorSystem::eSystems EditorTransformSystem::GetOrder() const
+{
+    return TRANSFORM;
+}
+
 void EditorTransformSystem::ProcessKey(DAVA::eInputElements key)
 {
     using namespace DAVA;

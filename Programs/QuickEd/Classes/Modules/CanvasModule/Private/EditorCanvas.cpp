@@ -101,7 +101,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
 CanvasControls EditorCanvas::CreateCanvasControls()
 {
     CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
-    return { { DISPLAY_CANVAS, canvasModuleData->canvas } };
+    return { { canvasModuleData->canvas } };
 }
 
 void EditorCanvas::DeleteCanvasControls(const CanvasControls& canvasControls)
@@ -110,10 +110,9 @@ void EditorCanvas::DeleteCanvasControls(const CanvasControls& canvasControls)
     canvasModuleData->canvas = nullptr;
 }
 
-DAVA::int32 EditorCanvas::GetUpdateOrder() const
+BaseEditorSystem::eSystems EditorCanvas::GetOrder() const
 {
-    //must be updated right after EditorControlsView to correct controls positions
-    return 1;
+    return CANVAS;
 }
 
 void EditorCanvas::OnUpdate()

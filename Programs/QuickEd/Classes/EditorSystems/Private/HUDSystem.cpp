@@ -135,9 +135,9 @@ HUDSystem::~HUDSystem()
 {
 }
 
-DAVA::int32 HUDSystem::GetUpdateOrder() const
+BaseEditorSystem::eSystems HUDSystem::GetOrder() const
 {
-    return 10;
+    return eSystems::HUD;
 }
 
 void HUDSystem::OnUpdate()
@@ -201,15 +201,14 @@ void HUDSystem::OnUpdate()
         }
     }
 
-    //DAVA::Logger::Warning("hovered point %f %f", hoveredPoint.x, hoveredPoint.y);
-    if (hoveredPoint == Vector2(-1.0f, -1.0f))
-    {
-        OnHighlightNode(nullptr);
-    }
-    else
+    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
     {
         ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
         OnHighlightNode(node);
+    }
+    else
+    {
+        OnHighlightNode(nullptr);
     }
 
     if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
@@ -465,7 +464,7 @@ CanvasControls HUDSystem::CreateCanvasControls()
     hudControl.Set(new DAVA::UIControl());
     hudControl->SetName("hud_control");
 
-    return { { HUD_CANVAS, hudControl } };
+    return { { hudControl } };
 }
 
 void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)

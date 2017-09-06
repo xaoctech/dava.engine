@@ -89,9 +89,15 @@ EditorSystemsManager::~EditorSystemsManager()
     //DVASSERT(systems.empty());
 
     //TODO: remove this block when all systems will be added outside
-    for (BaseEditorSystem* system : systems)
+    for (auto& orderAndSystem : systems)
     {
-        delete system;
+        delete orderAndSystem.second;
+    }
+
+    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
+    if (updateSystem != nullptr)
+    {
+        updateSystem->beforeRender.Disconnect(this);
     }
 }
 
@@ -146,17 +152,17 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
     }
 
     eDragState newState = NoDrag;
-    for (auto it = systems.rbegin(); it != systems.rend(); ++it)
+    for (const auto& orderAndSystem : systems)
     {
-        newState = Max(newState, (*it)->RequireNewState(currentInput));
+        newState = Max(newState, orderAndSystem.second->RequireNewState(currentInput));
     }
     SetDragState(newState);
 
     for (auto it = systems.rbegin(); it != systems.rend(); ++it)
     {
-        if ((*it)->CanProcessInput(currentInput))
+        if ((*it).second->CanProcessInput(currentInput))
         {
-            (*it)->ProcessInput(currentInput);
+            (*it).second->ProcessInput(currentInput);
         }
     }
 }
@@ -291,18 +297,8 @@ void EditorSystemsManager::OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo)
 void EditorSystemsManager::OnUpdate()
 {
     using namespace DAVA;
-    Map<int, BaseEditorSystem*> systemsToUpdate;
-    for (BaseEditorSystem* system : systems)
-    {
-        int32 order = system->GetUpdateOrder();
-        if (order != -1)
-        {
-            DVASSERT(systemsToUpdate.find(order) == systemsToUpdate.end());
-            systemsToUpdate[order] = system;
-        }
-    }
 
-    for (const auto& orderAndSystem : systemsToUpdate)
+    for (const auto& orderAndSystem : systems)
     {
         orderAndSystem.second->OnUpdate();
     }
@@ -420,29 +416,39 @@ void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
     dragStateChanged.Connect(editorSystem, &BaseEditorSystem::OnDragStateChanged);
     displayStateChanged.Connect(editorSystem, &BaseEditorSystem::OnDisplayStateChanged);
 
+    BaseEditorSystem::eSystems order = editorSystem->GetOrder();
+
     CanvasControls newControls = editorSystem->CreateCanvasControls();
-    CanvasControls allControls;
-    for (const auto& iter : systemsControls)
+    if (newControls.empty() == false)
     {
-        allControls.insert(iter.second.begin(), iter.second.end());
-    }
-    for (const auto& controlsPair : newControls)
-    {
-        DVASSERT(allControls.find(controlsPair.first) == allControls.end());
-        const auto& greaterPair = allControls.lower_bound(controlsPair.first);
-        if (greaterPair == allControls.end())
+        auto greatestOrderAndSystem = systems.lower_bound(order);
+        while (greatestOrderAndSystem != systems.end() && systemsControls.find(greatestOrderAndSystem->second) == systemsControls.end())
         {
-            rootControl->AddControl(controlsPair.second.Get());
+            greatestOrderAndSystem++;
+        }
+
+        if (greatestOrderAndSystem == systems.end() || systemsControls.find(greatestOrderAndSystem->second) == systemsControls.end())
+        {
+            for (auto& control : newControls)
+            {
+                rootControl->AddControl(control.Get());
+            }
         }
         else
         {
-            rootControl->InsertChildBelow(controlsPair.second.Get(), greaterPair->second.Get());
+            BaseEditorSystem* foundSystem = greatestOrderAndSystem->second;
+            const DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>& foundCountrols = systemsControls.find(foundSystem)->second;
+            DAVA::UIControl* firstFoundControl = foundCountrols.begin()->Get();
+            for (auto& control : newControls)
+            {
+                rootControl->InsertChildBelow(control.Get(), firstFoundControl);
+            }
         }
-        allControls.insert(controlsPair);
+
+        systemsControls[editorSystem] = newControls;
     }
 
-    systems.push_back(editorSystem);
-    systemsControls[editorSystem] = newControls;
+    systems[order] = editorSystem;
 }
 
 void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem)
@@ -451,14 +457,17 @@ void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem
     displayStateChanged.Disconnect(editorSystem);
 
     auto iter = systemsControls.find(editorSystem);
-    DVASSERT(iter != systemsControls.end());
-    const CanvasControls& canvasControls = systemsControls[editorSystem];
-
-    for (const auto& controlsPair : canvasControls)
+    if (iter != systemsControls.end())
     {
-        rootControl->RemoveControl(controlsPair.second.Get());
+        const CanvasControls& canvasControls = systemsControls[editorSystem];
+
+        for (const auto& control : canvasControls)
+        {
+            rootControl->RemoveControl(control.Get());
+        }
+        editorSystem->DeleteCanvasControls(canvasControls);
     }
-    editorSystem->DeleteCanvasControls(canvasControls);
-    systems.remove(editorSystem);
+
+    systems.erase(editorSystem->GetOrder());
     systemsControls.erase(editorSystem);
 }

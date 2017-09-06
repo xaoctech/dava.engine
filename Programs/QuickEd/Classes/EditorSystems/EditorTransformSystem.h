@@ -45,6 +45,7 @@ private:
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
 

@@ -184,8 +184,8 @@ private:
     DAVA::RefPtr<DAVA::UIControl> rootControl;
     DAVA::RefPtr<DAVA::UIControl> inputLayerControl;
 
-    DAVA::List<BaseEditorSystem*> systems;
-    DAVA::Map<BaseEditorSystem*, DAVA::Map<DAVA::uint32, DAVA::RefPtr<DAVA::UIControl>>> systemsControls;
+    DAVA::Map<DAVA::uint32, BaseEditorSystem*> systems;
+    DAVA::Map<BaseEditorSystem*, DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>> systemsControls;
 
     SelectionSystem* selectionSystemPtr = nullptr; // weak pointer to selection system
     HUDSystem* hudSystemPtr = nullptr;

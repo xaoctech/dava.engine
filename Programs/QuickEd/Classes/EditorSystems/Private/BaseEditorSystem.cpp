@@ -62,11 +62,6 @@ void BaseEditorSystem::DeleteCanvasControls(const CanvasControls& canvasControls
 {
 }
 
-DAVA::int32 BaseEditorSystem::GetUpdateOrder() const
-{
-    return -1;
-}
-
 void BaseEditorSystem::OnUpdate()
 {
 }

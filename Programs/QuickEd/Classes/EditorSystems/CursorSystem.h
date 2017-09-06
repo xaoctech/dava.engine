@@ -17,6 +17,7 @@ public:
 
 private:
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
 

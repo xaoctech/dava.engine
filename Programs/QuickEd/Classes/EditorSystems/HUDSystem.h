@@ -39,7 +39,7 @@ private:
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
-    DAVA::int32 GetUpdateOrder() const override;
+    eSystems GetOrder() const override;
     void OnUpdate() override;
 
     void OnHighlightNode(ControlNode* node);

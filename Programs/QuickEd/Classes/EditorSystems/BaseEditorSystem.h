@@ -11,7 +11,7 @@ class ContextAccessor;
 }
 }
 
-using CanvasControls = DAVA::Map<DAVA::uint32, DAVA::RefPtr<DAVA::UIControl>>;
+using CanvasControls = DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>;
 
 class BaseEditorSystem
 {
@@ -22,11 +22,23 @@ public:
 
 protected:
     //A client module can declare one or more own types and use them later, but can not use any other values
-    enum eCanvas
+    enum eSystems
     {
-        DISPLAY_CANVAS,
-        GRID_CANVAS,
-        HUD_CANVAS
+        //this system place root controls on the screen. Must be updated first
+        CONTROLS_VIEW,
+        //this system move root control to it position. Controls positions used by other systems, so this system must be updated second
+        CANVAS,
+        //this system must be drawed in background of all other systems
+        PIXEL_GRID,
+        //this system creates HUD around controls and must be updated before HUD users
+        HUD,
+        //this system can draw magnet lines and must be updated after the HUD system
+        TRANSFORM,
+
+        //Cursor system must be called after the HUD system to check current HUD area under cursor
+        CURSOR,
+        //this system doesn't require OnUpdate and don't create any controls. Can be less ordered thaan another systems
+        SELECTION
     };
 
     //some systems can process OnUpdate from UpdateViewsSystem
@@ -55,8 +67,6 @@ private:
     virtual CanvasControls CreateCanvasControls();
     virtual void DeleteCanvasControls(const CanvasControls& canvasControls);
 
-    //return order of update
-    //-1 is reserverd, 0 wil be updated first
-    virtual DAVA::int32 GetUpdateOrder() const;
+    virtual eSystems GetOrder() const = 0;
     virtual void OnUpdate();
 };

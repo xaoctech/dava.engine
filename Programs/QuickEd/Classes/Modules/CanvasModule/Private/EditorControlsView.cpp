@@ -346,6 +346,7 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::Cont
 
 EditorControlsView::~EditorControlsView()
 {
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
 void EditorControlsView::DeleteCanvasControls(const CanvasControls& canvasControls)
@@ -423,10 +424,9 @@ void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl
     }
 }
 
-DAVA::int32 EditorControlsView::GetUpdateOrder() const
+BaseEditorSystem::eSystems EditorControlsView::GetOrder() const
 {
-    //this system must be updated first
-    return 0;
+    return CONTROLS_VIEW;
 }
 
 void EditorControlsView::OnUpdate()

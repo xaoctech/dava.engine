@@ -22,7 +22,7 @@ private:
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
-    DAVA::int32 GetUpdateOrder() const override;
+    eSystems GetOrder() const override;
     void OnUpdate() override;
 
     void InitFieldBinder();

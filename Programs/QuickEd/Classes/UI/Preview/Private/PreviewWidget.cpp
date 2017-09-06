@@ -137,7 +137,7 @@ void PreviewWidget::CreateActions()
     renderWidget->addAction(focusNextChildAction);
 
     focusNextChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<bool>(false);
+        return fieldValue.Cast<bool>(false) == false;
     });
     connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
 
