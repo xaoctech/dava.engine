@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Math/Matrix4.h>
-#include <Math/Color.h>
 #include <Math/Quaternion.h>
+#include <Math/Color.h>
 #include <Base/BaseTypes.h>
 
 #include <physx/PxPhysicsAPI.h>

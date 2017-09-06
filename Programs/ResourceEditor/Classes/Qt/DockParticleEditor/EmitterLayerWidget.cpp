@@ -3,13 +3,13 @@
 #include "Commands2/ParticleLayerCommands.h"
 
 #include "TextureBrowser/TextureConvertor.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "ImageTools/ImageTools.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Base/Result.h"
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "QtTools/FileDialogs/FileDialog.h"
+#include <TArc/DataProcessing/DataContext.h>
+#include <QtTools/FileDialogs/FileDialog.h>
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
@@ -34,10 +34,15 @@ static const DAVA::uint32 SPRITE_SIZE = 60;
 static const DAVA::float32 ANGLE_MIN_LIMIT_DEGREES = -360.0f;
 static const DAVA::float32 ANGLE_MAX_LIMIT_DEGREES = 360.0f;
 
+static const DAVA::int32 NOISE_PRECISION_DIGITS = 4;
+static const DAVA::int32 FLOW_PRECISION_DIGITS = 4;
+static const DAVA::int32 STRIPE_TILE_PRECISION_DIGITS = 4;
+
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
   { DAVA::ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle" },
   { DAVA::ParticleLayer::TYPE_PARTICLES, "Particles" },
+  { DAVA::ParticleLayer::TYPE_PARTICLE_STRIPE, "Particle Stripe" },
   { DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter" }
 };
 
@@ -48,7 +53,7 @@ const EmitterLayerWidget::BlendPreset EmitterLayerWidget::blendPresetsMap[] =
   { DAVA::BLENDING_ALPHA_ADDITIVE, "Alpha additive" },
   { DAVA::BLENDING_SOFT_ADDITIVE, "Soft additive" },
   /*{BLEND_DST_COLOR, BLEND_ZERO, "Multiplicative"},
-	{BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}*/
+    {BLEND_DST_COLOR, BLEND_SRC_COLOR, "2x Multiplicative"}*/
 };
 
 EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
@@ -79,7 +84,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     QHBoxLayout* lodsDegradeLayout = new QHBoxLayout();
     lodsDegradeLayout->addWidget(new QLabel("Lod0 degrade strategy"));
-    degradeStrategyComboBox = new QComboBox();
+    degradeStrategyComboBox = new WheellIgnorantComboBox();
     degradeStrategyComboBox->addItem("Keep everything");
     degradeStrategyComboBox->addItem("Reduce particles");
     degradeStrategyComboBox->addItem("Clear");
@@ -92,7 +97,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     layerTypeLabel->setText("Layer type");
     mainBox->addWidget(layerTypeLabel);
 
-    layerTypeComboBox = new QComboBox(this);
+    layerTypeComboBox = new WheellIgnorantComboBox(this);
     FillLayerTypes();
     mainBox->addWidget(layerTypeComboBox);
     connect(layerTypeComboBox,
@@ -165,6 +170,30 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     mainBox->addLayout(spriteHBox);
 
+    enableFlowCheckBox = new QCheckBox("Enable flowmap");
+    mainBox->addWidget(enableFlowCheckBox);
+    connect(enableFlowCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
+    CreateFlowmapLayoutWidget();
+    mainBox->addWidget(flowLayoutWidget);
+
+    enableNoiseCheckBox = new QCheckBox("Enable noise");
+    mainBox->addWidget(enableNoiseCheckBox);
+    connect(enableNoiseCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    CreateNoiseLayoutWidget();
+    mainBox->addWidget(noiseLayoutWidget);
+
+    enableAlphaRemapCheckBox = new QCheckBox("Enable alpha remap");
+    mainBox->addWidget(enableAlphaRemapCheckBox);
+    connect(enableAlphaRemapCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnAlphaRemapPropertiesChanged()));
+    CreateAlphaRemapLayoutWidget();
+    mainBox->addWidget(alphaRemapLayoutWidget);
+
     connect(spriteBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteBtn()));
     connect(spriteFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnSpriteFolderBtn()));
     connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
@@ -228,12 +257,19 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     xFacingCheckBox = new QCheckBox("X-Facing");
     facingLayout->addWidget(xFacingCheckBox);
     connect(xFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     yFacingCheckBox = new QCheckBox("Y-Facing");
     facingLayout->addWidget(yFacingCheckBox);
     connect(yFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     zFacingCheckBox = new QCheckBox("Z-Facing");
     facingLayout->addWidget(zFacingCheckBox);
     connect(zFacingCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
+    cameraFacingStripeSphericalCheckBox = new QCheckBox("Camera Facing Spherical");
+    facingLayout->addWidget(cameraFacingStripeSphericalCheckBox);
+    connect(cameraFacingStripeSphericalCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     orientationLayout->addLayout(facingLayout);
 
     worldAlignCheckBox = new QCheckBox("World Align");
@@ -241,13 +277,15 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(worldAlignCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
     mainBox->addLayout(orientationLayout);
+    mainBox->addLayout(CreateFresnelToAlphaLayout());
 
     blendOptionsLabel = new QLabel("Blending Options");
     mainBox->addWidget(blendOptionsLabel);
 
     presetLabel = new QLabel("Preset");
 
-    presetComboBox = new QComboBox();
+    presetComboBox = new WheellIgnorantComboBox();
+    presetComboBox->setFocusPolicy(Qt::StrongFocus);
     DAVA::int32 presetsCount = sizeof(blendPresetsMap) / sizeof(BlendPreset);
     for (DAVA::int32 i = 0; i < presetsCount; i++)
     {
@@ -268,6 +306,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     fogCheckBox = new QCheckBox("Enable fog");
     connect(fogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnLayerMaterialValueChanged()));
     mainBox->addWidget(fogCheckBox);
+
+    CreateStripeLayoutWidget();
+    mainBox->addWidget(stripeLayoutWidget);
 
     lifeTimeLine = new TimeLineWidget(this);
     InitWidget(lifeTimeLine);
@@ -427,6 +468,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     spriteUpdateTimer = new QTimer(this);
     connect(spriteUpdateTimer, SIGNAL(timeout()), this, SLOT(OnSpriteUpdateTimerExpired()));
+
+    FillTimeLineWidgetIndentifiers();
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -453,19 +496,11 @@ void EmitterLayerWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps
 {
     if (!visualStateProps)
         return;
-
-    lifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_LIFE_PROPS"));
-    numberTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NUMBER_PROPS"));
-    sizeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_PROPS"));
-    sizeVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_VARIATION_PROPS"));
-    sizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_OVER_LIFE_PROPS"));
-    velocityTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_PROPS"));
-    velocityOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_OVER_LIFE")); //todo
-    spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
-    spinOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_OVER_LIFE_PROPS"));
-    animSpeedOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS"));
-    alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
-    angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));
+    for (auto& timeLineData : timeLineWidgetsIdentifiers)
+    {
+        if (timeLineData.second != nullptr)
+            timeLineData.second->SetVisualState(visualStateProps->GetArchive(timeLineData.first));
+    }
 }
 
 void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
@@ -475,109 +510,22 @@ void EmitterLayerWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
 
     DAVA::ScopedPtr<DAVA::KeyedArchive> props(new DAVA::KeyedArchive());
 
-    lifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    numberTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_NUMBER_PROPS", props);
-
-    props->DeleteAllKeys();
-    sizeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SIZE_PROPS", props);
-
-    props->DeleteAllKeys();
-    sizeVariationTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SIZE_VARIATION_PROPS", props);
-
-    props->DeleteAllKeys();
-    sizeOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SIZE_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    velocityTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_VELOCITY_PROPS", props);
-
-    props->DeleteAllKeys();
-    velocityOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_VELOCITY_OVER_LIFE", props);
-
-    props->DeleteAllKeys();
-    spinTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SPIN_PROPS", props);
-
-    props->DeleteAllKeys();
-    spinOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_SPIN_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    animSpeedOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ANIM_SPEED_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    alphaOverLifeTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ALPHA_OVER_LIFE_PROPS", props);
-
-    props->DeleteAllKeys();
-    angleTimeLine->GetVisualState(props);
-    visualStateProps->SetArchive("LAYER_ANGLE", props);
+    for (auto& timeLineData : timeLineWidgetsIdentifiers)
+    {
+        props->DeleteAllKeys();
+        timeLineData.second->GetVisualState(props);
+        visualStateProps->SetArchive(timeLineData.first, props);
+    }
 }
 
 void EmitterLayerWidget::OnSpriteBtn()
 {
-    QString startPath;
-    if (layer->spritePath.IsEmpty())
-    {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
-        DVASSERT(data != nullptr);
-        startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
-    }
-    else
-    {
-        startPath = QString::fromStdString(layer->spritePath.GetDirectory().GetStringValue());
-        startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
-    }
-
-    QString selectedPath = FileDialog::getOpenFileName(nullptr, QString("Open particle sprite"), startPath, QString("Sprite File (*.psd)"));
-    if (selectedPath.isEmpty())
-    {
-        return;
-    }
-
-    selectedPath.truncate(selectedPath.lastIndexOf('.'));
-    if (selectedPath == spritePathLabel->text())
-    {
-        return;
-    }
-
-    spritePathLabel->setText(selectedPath);
-
-    OnSpritePathEdited(selectedPath);
+    OnChangeSpriteButton(layer->spritePath, spritePathLabel, QString("Open particle sprite"), std::bind(&EmitterLayerWidget::OnSpritePathEdited, this, std::placeholders::_1));
 }
 
 void EmitterLayerWidget::OnSpriteFolderBtn()
 {
-    if (layer->spritePath.IsEmpty())
-    {
-        return;
-    }
-
-    QString startPath = QString::fromStdString(layer->spritePath.GetDirectory().GetStringValue());
-    startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
-
-    QString spriteName = QString::fromStdString(layer->spritePath.GetBasename());
-
-    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
-    if (selectedPath.isEmpty())
-    {
-        return;
-    }
-    selectedPath += "/";
-    selectedPath += spriteName;
-
-    spritePathLabel->setText(selectedPath);
-
-    OnSpritePathEdited(selectedPath);
+    OnChangeFolderButton(layer->spritePath, spritePathLabel, std::bind(&EmitterLayerWidget::OnSpritePathEdited, this, std::placeholders::_1));
 }
 
 void EmitterLayerWidget::OnValueChanged()
@@ -650,6 +598,8 @@ void EmitterLayerWidget::OnValueChanged()
         particleOrientation += DAVA::ParticleLayer::PARTICLE_ORIENTATION_Z_FACING;
     if (worldAlignCheckBox->isChecked())
         particleOrientation += DAVA::ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN;
+    if (cameraFacingStripeSphericalCheckBox->isChecked())
+        particleOrientation += DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL;
 
     DAVA::ParticleLayer::eDegradeStrategy degradeStrategy = DAVA::ParticleLayer::eDegradeStrategy(degradeStrategyComboBox->currentIndex());
     bool superemitterStatusChanged = (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES) != (propLayerType == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
@@ -705,12 +655,45 @@ void EmitterLayerWidget::OnValueChanged()
     GetActiveScene()->Exec(std::move(updateLayerCmd));
     GetActiveScene()->MarkAsChanged();
 
-    Update(false);
+    if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
+    {
+        DAVA::TArc::NotificationParams params;
+        params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
+        params.message.type = DAVA::Result::RESULT_WARNING;
+        params.title = "Particle system warning.";
+        REGlobal::ShowNotification(params);
+    }
+
     if (superemitterStatusChanged)
     {
         if (!GetEffect(activeScene)->IsStopped())
             GetEffect(activeScene)->Restart(true);
     }
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnFresnelToAlphaChanged()
+{
+    if (blockSignals)
+        return;
+
+    DVASSERT(GetActiveScene() != nullptr);
+    CommandChangeFresnelToAlphaProperties::FresnelToAlphaParams params;
+    params.useFresnelToAlpha = fresnelToAlphaCheckbox->isChecked();
+    params.fresnelToAlphaPower = static_cast<DAVA::float32>(fresnelPowerSpinBox->value());
+    params.fresnelToAlphaBias = static_cast<DAVA::float32>(fresnelBiasSpinBox->value());
+
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFresnelToAlphaProperties(layer, std::move(params))));
+
+    if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
+    {
+        DAVA::TArc::NotificationParams notificationParams;
+        notificationParams.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
+        notificationParams.message.type = DAVA::Result::RESULT_WARNING;
+        notificationParams.title = "Particle system warning.";
+        REGlobal::ShowNotification(notificationParams);
+    }
+
     emit ValueChanged();
 }
 
@@ -729,6 +712,173 @@ void EmitterLayerWidget::OnLayerMaterialValueChanged()
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeLayerMaterialProperties(layer, spritePath, blending, fogCheckBox->isChecked(), frameBlendingCheckBox->isChecked())));
 
     UpdateLayerSprite();
+
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnFlowPropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeed;
+    flowSpeedTimeLine->GetValue(0, propFlowSpeed.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowSpeedVariation;
+    flowSpeedVariationTimeLine->GetValue(0, propFlowSpeedVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowOffset;
+    flowOffsetTimeLine->GetValue(0, propFlowOffset.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propFlowOffsetVariation;
+    flowOffsetVariationTimeLine->GetValue(0, propFlowOffsetVariation.GetPropsPtr());
+
+    QString path = flowSpritePathLabel->text();
+    path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
+    const DAVA::FilePath spritePath(path.toStdString());
+
+    DVASSERT(GetActiveScene() != nullptr);
+    CommandChangeFlowProperties::FlowParams params;
+    params.spritePath = spritePath;
+    params.enableFlow = enableFlowCheckBox->isChecked();
+    params.enabelFlowAnimation = enableFlowAnimationCheckBox->isChecked();
+    params.flowSpeed = propFlowSpeed.GetPropLine();
+    params.flowSpeedVariation = propFlowSpeedVariation.GetPropLine();
+    params.flowOffset = propFlowOffset.GetPropLine();
+    params.flowOffsetVariation = propFlowOffsetVariation.GetPropLine();
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFlowProperties(layer, std::move(params))));
+
+    UpdateFlowmapSprite();
+
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnStripePropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    DVASSERT(GetActiveScene() != nullptr);
+    DAVA::PropLineWrapper<DAVA::float32> propStripeSizeOverLife;
+    stripeSizeOverLifeTimeLine->GetValue(0, propStripeSizeOverLife.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propStripeTileOverLife;
+    stripeTextureTileTimeLine->GetValue(0, propStripeTileOverLife.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propstripeNoiseUScrollSpeedOverLife;
+    stripeNoiseScrollSpeedOverLifeTimeLine->GetValue(0, propstripeNoiseUScrollSpeedOverLife.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propstripeNoiseVScrollSpeedOverLife;
+    stripeNoiseScrollSpeedOverLifeTimeLine->GetValue(1, propstripeNoiseVScrollSpeedOverLife.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::Color> propStripeColorOverLife;
+    stripeColorOverLifeGradient->GetValues(propStripeColorOverLife.GetPropsPtr());
+
+    CommandChangeParticlesStripeProperties::StripeParams params;
+    params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
+    params.stripeVertexSpawnStep = static_cast<DAVA::float32>(stripeVertexSpawnStepSpin->value());
+    params.stripeStartSize = static_cast<DAVA::float32>(stripeStartSizeSpin->value());
+    params.stripeUScrollSpeed = static_cast<DAVA::float32>(stripeUScrollSpeedSpin->value());
+    params.stripeVScrollSpeed = static_cast<DAVA::float32>(stripeVScrollSpeedSpin->value());
+    params.stripeFadeDistanceFromTop = static_cast<DAVA::float32>(stripeFadeDistanceFromTopSpin->value());
+    params.stripeInheritPositionForBase = stripeInheritPositionForBaseCheckBox->isChecked();
+    params.usePerspectiveMapping = stripeUsePerspectiveMappingCheckBox->isChecked();
+    params.stripeTextureTileOverLife = propStripeTileOverLife.GetPropLine();
+    params.stripeSizeOverLife = propStripeSizeOverLife.GetPropLine();
+    params.stripeNoiseUScrollSpeedOverLife = propstripeNoiseUScrollSpeedOverLife.GetPropLine();
+    params.stripeNoiseVScrollSpeedOverLife = propstripeNoiseVScrollSpeedOverLife.GetPropLine();
+    params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
+
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnNoisePropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    // Scale.
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseScale;
+    noiseScaleTimeLine->GetValue(0, propNoiseScale.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseScaleVariation;
+    noiseScaleVariationTimeLine->GetValue(0, propNoiseScaleVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseScaleOverLife;
+    noiseScaleOverLifeTimeLine->GetValue(0, propNoiseScaleOverLife.GetPropsPtr());
+
+    // U scroll speed.
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeed;
+    noiseUVScrollSpeedTimeLine->GetValue(0, propNoiseUScrollSpeed.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeedVariation;
+    noiseUVScrollSpeedVariationTimeLine->GetValue(0, propNoiseUScrollSpeedVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseUScrollSpeedOverLife;
+    noiseUVScrollSpeedOverLifeTimeLine->GetValue(0, propNoiseUScrollSpeedOverLife.GetPropsPtr());
+
+    // V scroll speed.
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeed;
+    noiseUVScrollSpeedTimeLine->GetValue(1, propNoiseVScrollSpeed.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeedVariation;
+    noiseUVScrollSpeedVariationTimeLine->GetValue(1, propNoiseVScrollSpeedVariation.GetPropsPtr());
+
+    DAVA::PropLineWrapper<DAVA::float32> propNoiseVScrollSpeedOverLife;
+    noiseUVScrollSpeedOverLifeTimeLine->GetValue(1, propNoiseVScrollSpeedOverLife.GetPropsPtr());
+
+    QString path = noiseSpritePathLabel->text();
+    path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
+    const DAVA::FilePath noisePath(path.toStdString());
+
+    CommandChangeNoiseProperties::NoiseParams params;
+    params.noisePath = noisePath;
+    params.enableNoise = enableNoiseCheckBox->isChecked();
+
+    params.noiseScale = propNoiseScale.GetPropLine();
+    params.noiseScaleVariation = propNoiseScaleVariation.GetPropLine();
+    params.noiseScaleOverLife = propNoiseScaleOverLife.GetPropLine();
+
+    params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
+    params.noiseUScrollSpeed = propNoiseUScrollSpeed.GetPropLine();
+    params.noiseUScrollSpeedVariation = propNoiseUScrollSpeedVariation.GetPropLine();
+    params.noiseUScrollSpeedOverLife = propNoiseUScrollSpeedOverLife.GetPropLine();
+
+    params.enableNoiseScroll = enableNoiseScrollCheckBox->isChecked();
+    params.noiseVScrollSpeed = propNoiseVScrollSpeed.GetPropLine();
+    params.noiseVScrollSpeedVariation = propNoiseVScrollSpeedVariation.GetPropLine();
+    params.noiseVScrollSpeedOverLife = propNoiseVScrollSpeedOverLife.GetPropLine();
+
+    DVASSERT(GetActiveScene() != nullptr);
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, std::move(params))));
+
+    UpdateNoiseSprite();
+
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnAlphaRemapPropertiesChanged()
+{
+    if (blockSignals)
+        return;
+    DAVA::PropLineWrapper<DAVA::float32> propAlphaRemapOverLife;
+    alphaRemapOverLifeTimeLine->GetValue(0, propAlphaRemapOverLife.GetPropsPtr());
+
+    QString path = alphaRemapSpritePathLabel->text();
+    path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
+    const DAVA::FilePath alphaPath(path.toStdString());
+
+    CommandChangeAlphaRemapProperties::AlphaRemapParams params;
+    params.alphaRemapOverLife = propAlphaRemapOverLife.GetPropLine();
+    params.enableAlphaRemap = enableAlphaRemapCheckBox->isChecked();
+    params.alphaRemapLoopCount = static_cast<DAVA::float32>(alphaRemapLoopCountSpin->value());
+    params.alphaRemapPath = alphaPath;
+
+    DVASSERT(GetActiveScene() != nullptr);
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeAlphaRemapProperties(layer, std::move(params))));
+
+    UpdateAlphaRemapSprite();
 
     emit ValueChanged();
 }
@@ -752,9 +902,7 @@ void EmitterLayerWidget::OnLodsChanged()
 
 void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 {
-    DVASSERT(!spriteUpdateTexturesStack.empty());
-
-    if (rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().first))
+    if (spriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().first))
     {
         DAVA::ScopedPtr<DAVA::Image> image(spriteUpdateTexturesStack.top().second->CreateImageFromMemory());
         spriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
@@ -763,6 +911,45 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
         {
             SafeRelease(spriteUpdateTexturesStack.top().second);
             spriteUpdateTexturesStack.pop();
+        }
+
+        spriteUpdateTimer->stop();
+    }
+    if (flowSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(flowSpriteUpdateTexturesStack.top().first))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(flowSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        flowSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+
+        while (!flowSpriteUpdateTexturesStack.empty())
+        {
+            SafeRelease(flowSpriteUpdateTexturesStack.top().second);
+            flowSpriteUpdateTexturesStack.pop();
+        }
+
+        spriteUpdateTimer->stop();
+    }
+    if (noiseSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(noiseSpriteUpdateTexturesStack.top().first))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(noiseSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        noiseSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+
+        while (!noiseSpriteUpdateTexturesStack.empty())
+        {
+            SafeRelease(noiseSpriteUpdateTexturesStack.top().second);
+            noiseSpriteUpdateTexturesStack.pop();
+        }
+
+        spriteUpdateTimer->stop();
+    }
+    if (alphaRemapSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(alphaRemapSpriteUpdateTexturesStack.top().first))
+    {
+        DAVA::ScopedPtr<DAVA::Image> image(alphaRemapSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        alphaRemapSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+
+        while (!alphaRemapSpriteUpdateTexturesStack.empty())
+        {
+            SafeRelease(alphaRemapSpriteUpdateTexturesStack.top().second);
+            alphaRemapSpriteUpdateTexturesStack.pop();
         }
 
         spriteUpdateTimer->stop();
@@ -778,7 +965,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
     enableCheckBox->setChecked(!layer->isDisabled);
-    inheritPostionCheckBox->setChecked(layer->inheritPosition);
+    inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
 
     isLongCheckBox->setChecked(layer->isLong);
     scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
@@ -790,6 +977,42 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
     scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
 
+    fresnelToAlphaCheckbox->setChecked(layer->useFresnelToAlpha);
+    fresnelBiasSpinBox->setValue(layer->fresnelToAlphaBias);
+    fresnelPowerSpinBox->setValue(layer->fresnelToAlphaPower);
+
+    stripeLifetimeSpin->setValue(layer->stripeLifetime);
+    stripeVertexSpawnStepSpin->setValue(layer->stripeVertexSpawnStep);
+    stripeStartSizeSpin->setValue(layer->stripeStartSize);
+    stripeUScrollSpeedSpin->setValue(layer->stripeUScrollSpeed);
+    stripeVScrollSpeedSpin->setValue(layer->stripeVScrollSpeed);
+    stripeFadeDistanceFromTopSpin->setValue(layer->stripeFadeDistanceFromTop);
+    stripeInheritPositionForBaseCheckBox->setChecked(layer->GetInheritPositionForStripeBase());
+    stripeUsePerspectiveMappingCheckBox->setChecked(layer->usePerspectiveMapping);
+
+    bool fresToAlphaVisible = layer->useFresnelToAlpha;
+    fresnelBiasLabel->setVisible(fresToAlphaVisible);
+    fresnelBiasSpinBox->setVisible(fresToAlphaVisible);
+    fresnelPowerLabel->setVisible(fresToAlphaVisible);
+    fresnelPowerSpinBox->setVisible(fresToAlphaVisible);
+
+    stripeNoiseScrollSpeedOverLifeTimeLine->setVisible(layer->enableNoise);
+
+    enableFlowCheckBox->setChecked(layer->enableFlow);
+    enableFlowAnimationCheckBox->setChecked(layer->enableFlowAnimation);
+    flowLayoutWidget->setVisible(enableFlowCheckBox->isChecked());
+    flowSettingsLayoutWidget->setVisible(enableFlowCheckBox->isChecked() && !enableFlowAnimationCheckBox->isChecked());
+
+    enableNoiseScrollCheckBox->setChecked(layer->enableNoiseScroll);
+
+    enableNoiseCheckBox->setChecked(layer->enableNoise);
+    noiseLayoutWidget->setVisible(enableNoiseCheckBox->isChecked());
+    noiseScrollWidget->setVisible(enableNoiseCheckBox->isChecked() && enableNoiseScrollCheckBox->isChecked());
+
+    enableAlphaRemapCheckBox->setChecked(layer->enableAlphaRemap);
+    alphaRemapLoopCountSpin->setValue(layer->alphaRemapLoopCount);
+    alphaRemapLayoutWidget->setVisible(enableAlphaRemapCheckBox->isChecked());
+
     isLoopedCheckBox->setChecked(layer->isLooped);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
@@ -800,6 +1023,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     degradeStrategyComboBox->setCurrentIndex(static_cast<DAVA::int32>(layer->degradeStrategy));
 
     UpdateLayerSprite();
+    UpdateFlowmapSprite();
+    UpdateNoiseSprite();
+    UpdateAlphaRemapSprite();
 
     //particle orientation
     cameraFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING);
@@ -807,6 +1033,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     yFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_Y_FACING);
     zFacingCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_Z_FACING);
     worldAlignCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN);
+    cameraFacingStripeSphericalCheckBox->setChecked(layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING_STRIPE_SPHERICAL);
 
     //blend and fog
 
@@ -823,6 +1050,71 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 
+    stripeSizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    stripeSizeOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeSizeOverLife)).GetProps(), Qt::red, "Stripe edge size over life");
+    stripeSizeOverLifeTimeLine->EnableLock(true);
+
+    stripeNoiseScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    stripeNoiseScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeNoiseUScrollSpeedOverLife)).GetProps(), Qt::red, "Noise U scroll speed over stripe life");
+    stripeNoiseScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeNoiseVScrollSpeedOverLife)).GetProps(), Qt::green, "Noise V scroll speed over stripe life");
+    stripeNoiseScrollSpeedOverLifeTimeLine->EnableLock(true);
+
+    stripeTextureTileTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, STRIPE_TILE_PRECISION_DIGITS);
+    stripeTextureTileTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeTextureTileOverLife)).GetProps(), Qt::red, "Stripe texture tile over life");
+    stripeTextureTileTimeLine->EnableLock(true);
+
+    stripeColorOverLifeGradient->Init(0, 1, "Stripe vertex color over life");
+    stripeColorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->stripeColorOverLife)).GetProps());
+
+    // FLOW_STUFF
+    flowSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
+    flowSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeed)).GetProps(), Qt::red, "Flow speed");
+    flowSpeedTimeLine->EnableLock(true);
+
+    flowSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
+    flowSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowSpeedVariation)).GetProps(), Qt::green, "Flow speed variation");
+    flowSpeedVariationTimeLine->EnableLock(true);
+
+    flowOffsetTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
+    flowOffsetTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffset)).GetProps(), Qt::red, "Flow offset");
+    flowOffsetTimeLine->EnableLock(true);
+
+    flowOffsetVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, FLOW_PRECISION_DIGITS);
+    flowOffsetVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->flowOffsetVariation)).GetProps(), Qt::green, "Flow offset variation");
+    flowOffsetVariationTimeLine->EnableLock(true);
+
+    // NOISE_STUFF
+    noiseScaleTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
+    noiseScaleTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScale)).GetProps(), Qt::red, "Noise scale");
+    noiseScaleTimeLine->EnableLock(true);
+
+    noiseScaleVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
+    noiseScaleVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleVariation)).GetProps(), Qt::green, "Noise scale variation");
+    noiseScaleVariationTimeLine->EnableLock(true);
+
+    noiseScaleOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, false, true, false, NOISE_PRECISION_DIGITS);
+    noiseScaleOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseScaleOverLife)).GetProps(), Qt::blue, "Noise scale over life");
+    noiseScaleOverLifeTimeLine->EnableLock(true);
+
+    noiseUVScrollSpeedTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseUVScrollSpeedTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeed)).GetProps(), Qt::red, "Noise U scroll speed");
+    noiseUVScrollSpeedTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeed)).GetProps(), Qt::green, "Noise V scroll speed");
+    noiseUVScrollSpeedTimeLine->EnableLock(true);
+
+    noiseUVScrollSpeedVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+    noiseUVScrollSpeedVariationTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedVariation)).GetProps(), Qt::red, "Noise U scroll speed variation");
+    noiseUVScrollSpeedVariationTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedVariation)).GetProps(), Qt::green, "Noise V scroll speed variation");
+    noiseUVScrollSpeedVariationTimeLine->EnableLock(true);
+
+    noiseUVScrollSpeedOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    noiseUVScrollSpeedOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseUScrollSpeedOverLife)).GetProps(), Qt::red, "Noise U scroll speed over life");
+    noiseUVScrollSpeedOverLifeTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->noiseVScrollSpeedOverLife)).GetProps(), Qt::green, "Noise V scroll speed over life");
+    noiseUVScrollSpeedOverLifeTimeLine->EnableLock(true);
+
+    alphaRemapOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    alphaRemapOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->alphaRemapOverLife)).GetProps(), Qt::red, "Alpha remap over life");
+    alphaRemapOverLifeTimeLine->EnableLock(true);
+
     //LAYER_LIFE, LAYER_LIFE_VARIATION,
     lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
     lifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->life)).GetProps(), Qt::blue, "life");
@@ -830,8 +1122,7 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     lifeTimeLine->SetMinLimits(0.0f);
 
     //LAYER_NUMBER, LAYER_NUMBER_VARIATION,
-    numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, true);
-    //		void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+    numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true);
     numberTimeLine->SetMinLimits(0);
     numberTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->number)).GetProps(), Qt::blue, "number");
     numberTimeLine->AddLine(1, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->numberVariation)).GetProps(), Qt::darkGreen, "number variation");
@@ -958,7 +1249,27 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
 void EmitterLayerWidget::UpdateLayerSprite()
 {
-    if (layer->sprite && !layer->spritePath.IsEmpty())
+    UpdateEditorTexture(layer->sprite, layer->spritePath, spritePathLabel, spriteLabel, spriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateFlowmapSprite()
+{
+    UpdateEditorTexture(layer->flowmap, layer->flowmapPath, flowSpritePathLabel, flowSpriteLabel, flowSpriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateNoiseSprite()
+{
+    UpdateEditorTexture(layer->noise, layer->noisePath, noiseSpritePathLabel, noiseSpriteLabel, noiseSpriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateAlphaRemapSprite()
+{
+    UpdateEditorTexture(layer->alphaRemapSprite, layer->alphaRemapPath, alphaRemapSpritePathLabel, alphaRemapSpriteLabel, alphaRemapSpriteUpdateTexturesStack);
+}
+
+void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack)
+{
+    if (sprite && !filePath.IsEmpty())
     {
         DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
         DAVA::Texture* dstTex = DAVA::Texture::CreateFBO(SPRITE_SIZE, SPRITE_SIZE, DAVA::FORMAT_RGBA8888);
@@ -972,61 +1283,460 @@ void EmitterLayerWidget::UpdateLayerSprite()
         DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
         {
             DAVA::Sprite::DrawState drawState = {};
-            drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, layer->sprite->GetWidth(), layer->sprite->GetHeight());
-            DAVA::RenderSystem2D::Instance()->Draw(layer->sprite, &drawState, DAVA::Color::White);
+            drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, sprite->GetWidth(), sprite->GetHeight());
+            DAVA::RenderSystem2D::Instance()->Draw(sprite, &drawState, DAVA::Color::White);
         }
         DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
-        spriteUpdateTexturesStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
+        textureStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
         spriteUpdateTimer->start(0);
 
-        QString path = QString::fromStdString(layer->spritePath.GetAbsolutePathname());
+        QString path = QString::fromStdString(filePath.GetAbsolutePathname());
         path = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(path);
-        spritePathLabel->setText(path);
+        pathLabel->setText(path);
     }
     else
     {
         spriteLabel->setPixmap(QPixmap());
-        spritePathLabel->setText("");
+        pathLabel->setText("");
     }
 }
 
-void EmitterLayerWidget::UpdateTooltip()
+void EmitterLayerWidget::CreateFlowmapLayoutWidget()
 {
-    QFontMetrics fm = spritePathLabel->fontMetrics();
-    if (fm.width(spritePathLabel->text()) >= spritePathLabel->width())
+    flowLayoutWidget = new QWidget();
+    QVBoxLayout* flowMainLayout = new QVBoxLayout(flowLayoutWidget);
+
+    QHBoxLayout* flowTextureHBox2 = new QHBoxLayout();
+    flowTextureBtn = new QPushButton("Set flow texture", this);
+    flowTextureBtn->setMinimumHeight(30);
+    flowTextureFolderBtn = new QPushButton("Change flow texture folder", this);
+    flowTextureFolderBtn->setMinimumHeight(30);
+    flowTextureHBox2->addWidget(flowTextureBtn);
+    flowTextureHBox2->addWidget(flowTextureFolderBtn);
+
+    QVBoxLayout* flowTextureVBox = new QVBoxLayout();
+    flowSpritePathLabel = new QLineEdit(this);
+    flowSpritePathLabel->setReadOnly(false);
+    flowTextureVBox->addLayout(flowTextureHBox2);
+    flowTextureVBox->addWidget(flowSpritePathLabel);
+
+    QHBoxLayout* flowTextureHBox = new QHBoxLayout();
+    flowSpriteLabel = new QLabel(this);
+    flowSpriteLabel->setMinimumSize(SPRITE_SIZE, SPRITE_SIZE);
+    flowTextureHBox->addWidget(flowSpriteLabel);
+    flowTextureHBox->addLayout(flowTextureVBox);
+
+    flowMainLayout->addLayout(flowTextureHBox);
+
+    enableFlowAnimationCheckBox = new QCheckBox("Enable flowmap animation");
+    mainBox->addWidget(enableFlowAnimationCheckBox);
+    connect(enableFlowAnimationCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
+    flowMainLayout->addWidget(enableFlowAnimationCheckBox);
+
+    flowSettingsLayoutWidget = new QWidget();
+    flowMainLayout->addWidget(flowSettingsLayoutWidget);
+
+    QVBoxLayout* flowVBox = new QVBoxLayout(flowSettingsLayoutWidget);
+    flowSpeedTimeLine = new TimeLineWidget(this);
+    connect(flowSpeedTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowSpeedTimeLine);
+
+    flowSpeedVariationTimeLine = new TimeLineWidget(this);
+    connect(flowSpeedVariationTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowSpeedVariationTimeLine);
+
+    // Offset.
+    flowOffsetTimeLine = new TimeLineWidget(this);
+    connect(flowOffsetTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowOffsetTimeLine);
+
+    flowOffsetVariationTimeLine = new TimeLineWidget(this);
+    connect(flowOffsetVariationTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnFlowPropertiesChanged()));
+    flowVBox->addWidget(flowOffsetVariationTimeLine);
+
+    connect(flowTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowSpriteBtn()));
+    connect(flowTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnFlowFolderBtn()));
+    connect(flowSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnFlowTexturePathChanged(const QString&)));
+    connect(flowSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnFlowSpritePathEdited(const QString&)));
+    flowSpritePathLabel->installEventFilter(this);
+}
+
+void EmitterLayerWidget::CreateNoiseLayoutWidget()
+{
+    noiseLayoutWidget = new QWidget();
+    QVBoxLayout* noiseMainLayout = new QVBoxLayout(noiseLayoutWidget);
+
+    QHBoxLayout* noiseTextureHBox2 = new QHBoxLayout();
+    noiseTextureBtn = new QPushButton("Set noise texture", this);
+    noiseTextureBtn->setMinimumHeight(30);
+    noiseTextureFolderBtn = new QPushButton("Change noise texture folder", this);
+    noiseTextureFolderBtn->setMinimumHeight(30);
+    noiseTextureHBox2->addWidget(noiseTextureBtn);
+    noiseTextureHBox2->addWidget(noiseTextureFolderBtn);
+
+    QVBoxLayout* noiseTextureVBox = new QVBoxLayout();
+    noiseSpritePathLabel = new QLineEdit(this);
+    noiseSpritePathLabel->setReadOnly(false);
+    noiseTextureVBox->addLayout(noiseTextureHBox2);
+    noiseTextureVBox->addWidget(noiseSpritePathLabel);
+
+    QHBoxLayout* noiseTextureHBox = new QHBoxLayout();
+    noiseSpriteLabel = new QLabel(this);
+    noiseSpriteLabel->setMinimumSize(SPRITE_SIZE, SPRITE_SIZE);
+    noiseTextureHBox->addWidget(noiseSpriteLabel);
+    noiseTextureHBox->addLayout(noiseTextureVBox);
+
+    noiseMainLayout->addLayout(noiseTextureHBox);
+
+    QVBoxLayout* timelineVBox = new QVBoxLayout();
+    noiseScaleTimeLine = new TimeLineWidget(this);
+    connect(noiseScaleTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    timelineVBox->addWidget(noiseScaleTimeLine);
+
+    noiseScaleVariationTimeLine = new TimeLineWidget(this);
+    connect(noiseScaleVariationTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    timelineVBox->addWidget(noiseScaleVariationTimeLine);
+
+    noiseScaleOverLifeTimeLine = new TimeLineWidget(this);
+    connect(noiseScaleOverLifeTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    timelineVBox->addWidget(noiseScaleOverLifeTimeLine);
+
+    noiseMainLayout->addLayout(timelineVBox);
+
+    enableNoiseScrollCheckBox = new QCheckBox("Use noise scroll");
+    mainBox->addWidget(enableNoiseScrollCheckBox);
+    connect(enableNoiseScrollCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    noiseMainLayout->addWidget(enableNoiseScrollCheckBox);
+
+    noiseScrollWidget = new QWidget();
+    noiseScrollWidget->setVisible(true);
+    QVBoxLayout* noiseUvScrollLayout = new QVBoxLayout(noiseScrollWidget);
+    noiseMainLayout->addWidget(noiseScrollWidget);
+    noiseUVScrollSpeedTimeLine = new TimeLineWidget(this);
+    connect(noiseUVScrollSpeedTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedTimeLine);
+
+    noiseUVScrollSpeedVariationTimeLine = new TimeLineWidget(this);
+    connect(noiseUVScrollSpeedVariationTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedVariationTimeLine);
+
+    noiseUVScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
+    connect(noiseUVScrollSpeedOverLifeTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnNoisePropertiesChanged()));
+    noiseUvScrollLayout->addWidget(noiseUVScrollSpeedOverLifeTimeLine);
+
+    connect(noiseTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
+    connect(noiseTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnNoiseSpriteBtn()));
+    connect(noiseSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnNoiseTexturePathChanged(const QString&)));
+    connect(noiseSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnNoiseSpritePathEdited(const QString&)));
+    noiseSpritePathLabel->installEventFilter(this);
+}
+
+void EmitterLayerWidget::CreateStripeLayoutWidget()
+{
+    stripeLayoutWidget = new QWidget();
+    QVBoxLayout* vertStripeLayout = new QVBoxLayout(stripeLayoutWidget);
+    vertStripeLayout->setContentsMargins(0, 20, 0, 20);
+    stripeLabel = new QLabel("Stripe Settings:");
+    vertStripeLayout->addWidget(stripeLabel);
+
+    stripeColorOverLifeGradient = new GradientPickerWidget(this);
+    connect(stripeColorOverLifeGradient,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
+    vertStripeLayout->addWidget(stripeColorOverLifeGradient);
+
+    stripeSizeOverLifeTimeLine = new TimeLineWidget(this);
+    connect(stripeSizeOverLifeTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
+
+    stripeTextureTileTimeLine = new TimeLineWidget(this);
+    connect(stripeTextureTileTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
+
+    stripeNoiseScrollSpeedOverLifeTimeLine = new TimeLineWidget(this);
+    connect(stripeNoiseScrollSpeedOverLifeTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnStripePropertiesChanged()));
+
+    stripeInheritPositionForBaseCheckBox = new QCheckBox("Inherit position. Affect only base verts.");
+    vertStripeLayout->addWidget(stripeInheritPositionForBaseCheckBox);
+    connect(stripeInheritPositionForBaseCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnStripePropertiesChanged()));
+
+    stripeUsePerspectiveMappingCheckBox = new QCheckBox("Use perspective mapping.");
+    vertStripeLayout->addWidget(stripeUsePerspectiveMappingCheckBox);
+    connect(stripeUsePerspectiveMappingCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnStripePropertiesChanged()));
+
+    stripeLifetimeSpin = new EventFilterDoubleSpinBox();
+    stripeLifetimeSpin->setMinimum(-100);
+    stripeLifetimeSpin->setMaximum(100);
+    stripeLifetimeSpin->setSingleStep(0.01);
+    stripeLifetimeSpin->setDecimals(4);
+
+    stripeVertexSpawnStepSpin = new EventFilterDoubleSpinBox();
+    stripeVertexSpawnStepSpin->setMinimum(-100);
+    stripeVertexSpawnStepSpin->setMaximum(100);
+    stripeVertexSpawnStepSpin->setSingleStep(0.01);
+    stripeVertexSpawnStepSpin->setDecimals(4);
+
+    stripeStartSizeSpin = new EventFilterDoubleSpinBox();
+    stripeStartSizeSpin->setMinimum(-100);
+    stripeStartSizeSpin->setMaximum(100);
+    stripeStartSizeSpin->setSingleStep(0.01);
+    stripeStartSizeSpin->setDecimals(4);
+    stripeLifetimeLabel = new QLabel("Edge lifetime:");
+    stripeVertexSpawnStepLabel = new QLabel("Vertex Spawn Step:");
+    stripeStartSizeLabel = new QLabel("Start size:");
+
+    vertStripeLayout->addWidget(stripeStartSizeLabel);
+    vertStripeLayout->addWidget(stripeStartSizeSpin);
+
+    vertStripeLayout->addWidget(stripeSizeOverLifeTimeLine);
+    vertStripeLayout->addWidget(stripeTextureTileTimeLine);
+
+    vertStripeLayout->addWidget(stripeLifetimeLabel);
+    vertStripeLayout->addWidget(stripeLifetimeSpin);
+    vertStripeLayout->addWidget(stripeVertexSpawnStepLabel);
+    vertStripeLayout->addWidget(stripeVertexSpawnStepSpin);
+
+    stripeUScrollSpeedSpin = new EventFilterDoubleSpinBox();
+    stripeUScrollSpeedSpin->setMinimum(-100);
+    stripeUScrollSpeedSpin->setMaximum(100);
+    stripeUScrollSpeedSpin->setSingleStep(0.01);
+    stripeUScrollSpeedSpin->setDecimals(4);
+
+    stripeVScrollSpeedSpin = new EventFilterDoubleSpinBox();
+    stripeVScrollSpeedSpin->setMinimum(-100);
+    stripeVScrollSpeedSpin->setMaximum(100);
+    stripeVScrollSpeedSpin->setSingleStep(0.01);
+    stripeVScrollSpeedSpin->setDecimals(4);
+
+    stripeUScrollSpeedLabel = new QLabel("U scroll");
+    stripeVScrollSpeedLabel = new QLabel("V scroll");
+
+    stripeFadeDistanceFromTopSpin = new EventFilterDoubleSpinBox();
+    stripeFadeDistanceFromTopSpin->setMinimum(0);
+    stripeFadeDistanceFromTopSpin->setMaximum(100);
+    stripeFadeDistanceFromTopSpin->setSingleStep(0.1f);
+    stripeFadeDistanceFromTopSpin->setDecimals(2);
+
+    stripeFadeDistanceFromTopLabel = new QLabel("Stripe fade distance from top");
+
+    vertStripeLayout->addWidget(stripeUScrollSpeedLabel);
+    vertStripeLayout->addWidget(stripeUScrollSpeedSpin);
+    vertStripeLayout->addWidget(stripeVScrollSpeedLabel);
+    vertStripeLayout->addWidget(stripeVScrollSpeedSpin);
+    vertStripeLayout->addWidget(stripeFadeDistanceFromTopLabel);
+    vertStripeLayout->addWidget(stripeFadeDistanceFromTopSpin);
+
+    vertStripeLayout->addWidget(stripeNoiseScrollSpeedOverLifeTimeLine);
+
+    connect(stripeLifetimeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeVertexSpawnStepSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeStartSizeSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeFadeDistanceFromTopSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+
+    connect(stripeUScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+    connect(stripeVScrollSpeedSpin, SIGNAL(valueChanged(double)), this, SLOT(OnStripePropertiesChanged()));
+}
+
+void EmitterLayerWidget::CreateAlphaRemapLayoutWidget()
+{
+    alphaRemapLayoutWidget = new QWidget();
+    QVBoxLayout* alphaRemapMainLayout = new QVBoxLayout(alphaRemapLayoutWidget);
+
+    QHBoxLayout* alphaTextureHBox2 = new QHBoxLayout();
+    alphaRemapTextureBtn = new QPushButton("Set alpha remap texture", this);
+    alphaRemapTextureBtn->setMinimumHeight(30);
+    alphaRemapTextureFolderBtn = new QPushButton("Change alpha remap texture folder", this);
+    alphaRemapTextureFolderBtn->setMinimumHeight(30);
+    alphaTextureHBox2->addWidget(alphaRemapTextureBtn);
+    alphaTextureHBox2->addWidget(alphaRemapTextureFolderBtn);
+
+    QVBoxLayout* alphaRemapTextureVBox = new QVBoxLayout();
+    alphaRemapSpritePathLabel = new QLineEdit(this);
+    alphaRemapSpritePathLabel->setReadOnly(false);
+    alphaRemapTextureVBox->addLayout(alphaTextureHBox2);
+    alphaRemapTextureVBox->addWidget(alphaRemapSpritePathLabel);
+
+    QHBoxLayout* alphaTextureHBox = new QHBoxLayout();
+    alphaRemapSpriteLabel = new QLabel(this);
+    alphaRemapSpriteLabel->setMinimumSize(SPRITE_SIZE, SPRITE_SIZE);
+    alphaTextureHBox->addWidget(alphaRemapSpriteLabel);
+    alphaTextureHBox->addLayout(alphaRemapTextureVBox);
+
+    alphaRemapMainLayout->addLayout(alphaTextureHBox);
+
+    QVBoxLayout* alphaVBox = new QVBoxLayout();
+    alphaRemapOverLifeTimeLine = new TimeLineWidget(this);
+    connect(alphaRemapOverLifeTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnAlphaRemapPropertiesChanged()));
+    alphaVBox->addWidget(alphaRemapOverLifeTimeLine);
+    alphaRemapMainLayout->addLayout(alphaVBox);
+
+    alphaRemapLoopCountSpin = new EventFilterDoubleSpinBox();
+    alphaRemapLoopCountSpin->setMinimum(1);
+    alphaRemapLoopCountSpin->setMaximum(50);
+    alphaRemapLoopCountSpin->setSingleStep(1);
+    alphaRemapLoopCountSpin->setDecimals(0);
+
+    alphaRemapLoopLabel = new QLabel("Loop count");
+    QHBoxLayout* alphaHBox = new QHBoxLayout();
+    alphaHBox->addWidget(alphaRemapLoopLabel);
+    alphaHBox->addWidget(alphaRemapLoopCountSpin);
+    alphaRemapMainLayout->addLayout(alphaHBox);
+
+    connect(alphaRemapTextureBtn, SIGNAL(clicked(bool)), this, SLOT(OnAlphaRemapBtn()));
+    connect(alphaRemapTextureFolderBtn, SIGNAL(clicked(bool)), this, SLOT(OnAlphaRemapFolderBtn()));
+    connect(alphaRemapSpritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnAlphaRemapTexturePathChanged(const QString&)));
+    connect(alphaRemapSpritePathLabel, SIGNAL(textEdited(const QString&)), this, SLOT(OnAlphaRemapSpritePathEdited(const QString&)));
+    connect(alphaRemapLoopCountSpin, SIGNAL(valueChanged(double)), this, SLOT(OnAlphaRemapPropertiesChanged()));
+    alphaRemapSpritePathLabel->installEventFilter(this);
+}
+
+QLayout* EmitterLayerWidget::CreateFresnelToAlphaLayout()
+{
+    QHBoxLayout* longFresLayout = new QHBoxLayout();
+    longFresLayout->setContentsMargins(0, 10, 0, 0);
+    fresnelToAlphaCheckbox = new QCheckBox("Fresnel to alpha");
+    longFresLayout->addWidget(fresnelToAlphaCheckbox);
+    connect(fresnelToAlphaCheckbox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnFresnelToAlphaChanged()));
+
+    fresnelBiasSpinBox = new EventFilterDoubleSpinBox();
+    fresnelBiasSpinBox->setMinimum(0);
+    fresnelBiasSpinBox->setMaximum(1);
+    fresnelBiasSpinBox->setSingleStep(0.01);
+    fresnelBiasSpinBox->setDecimals(3);
+
+    fresnelPowerSpinBox = new EventFilterDoubleSpinBox();
+    fresnelPowerSpinBox->setMinimum(0);
+    fresnelPowerSpinBox->setMaximum(50);
+    fresnelPowerSpinBox->setSingleStep(1);
+    fresnelPowerSpinBox->setDecimals(0);
+
+    fresnelBiasLabel = new QLabel("Fresnel to alpha bias:");
+    fresnelPowerLabel = new QLabel("Fresnel to alpha power:");
+    longFresLayout->addWidget(fresnelPowerLabel);
+    longFresLayout->addWidget(fresnelPowerSpinBox);
+    longFresLayout->addWidget(fresnelBiasLabel);
+    longFresLayout->addWidget(fresnelBiasSpinBox);
+    connect(fresnelPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
+    connect(fresnelBiasSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnFresnelToAlphaChanged()));
+    return longFresLayout;
+}
+
+void EmitterLayerWidget::OnChangeSpriteButton(const DAVA::FilePath& initialFilePath, QLineEdit* spriteLabel, QString&& caption, DAVA::Function<void(const QString&)> pathEditFunc)
+{
+    QString startPath;
+    if (initialFilePath.IsEmpty())
     {
-        spritePathLabel->setToolTip(spritePathLabel->text());
+        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DVASSERT(data != nullptr);
+        startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
     }
     else
     {
-        spritePathLabel->setToolTip("");
+        startPath = QString::fromStdString(initialFilePath.GetDirectory().GetStringValue());
+        startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
     }
-}
 
-bool EmitterLayerWidget::eventFilter(QObject* o, QEvent* e)
-{
-    if (e->type() == QEvent::Wheel &&
-        qobject_cast<QAbstractSpinBox*>(o))
+    QString selectedPath = FileDialog::getOpenFileName(nullptr, caption, startPath, QString("Sprite File (*.psd)"));
+    std::string s = selectedPath.toStdString();
+    if (selectedPath.isEmpty())
     {
-        e->ignore();
-        return true;
+        return;
     }
 
-    if (e->type() == QEvent::Resize && qobject_cast<QLineEdit*>(o))
+    selectedPath.truncate(selectedPath.lastIndexOf('.'));
+    s = selectedPath.toStdString();
+    if (selectedPath == spriteLabel->text())
     {
-        UpdateTooltip();
-        return true;
+        return;
+    }
+    s = selectedPath.toStdString();
+    spriteLabel->setText(selectedPath);
+
+    pathEditFunc(selectedPath);
+}
+
+void EmitterLayerWidget::OnChangeFolderButton(const DAVA::FilePath& initialFilePath, QLineEdit* pathLabel, DAVA::Function<void(const QString&)> pathEditFunc)
+{
+    if (initialFilePath.IsEmpty())
+    {
+        return;
     }
 
-    return QWidget::eventFilter(o, e);
+    QString startPath = QString::fromStdString(initialFilePath.GetDirectory().GetStringValue());
+    startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
+
+    QString spriteName = QString::fromStdString(initialFilePath.GetBasename());
+
+    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
+    if (selectedPath.isEmpty())
+    {
+        return;
+    }
+    selectedPath += "/";
+    selectedPath += spriteName;
+
+    pathLabel->setText(selectedPath);
+
+    pathEditFunc(selectedPath);
 }
 
-void EmitterLayerWidget::OnSpritePathChanged(const QString& text)
-{
-    UpdateTooltip();
-}
-
-void EmitterLayerWidget::OnSpritePathEdited(const QString& text)
+void EmitterLayerWidget::CheckPath(const QString& text)
 {
     ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
@@ -1041,8 +1751,112 @@ void EmitterLayerWidget::OnSpritePathEdited(const QString& text)
         QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
         msgBox.exec();
     }
+}
 
+void EmitterLayerWidget::UpdateTooltip(QLineEdit* label)
+{
+    QFontMetrics fm = label->fontMetrics();
+    if (fm.width(label->text()) >= label->width())
+    {
+        label->setToolTip(label->text());
+    }
+    else
+    {
+        label->setToolTip("");
+    }
+}
+
+bool EmitterLayerWidget::eventFilter(QObject* o, QEvent* e)
+{
+    if (e->type() == QEvent::Wheel &&
+        qobject_cast<QAbstractSpinBox*>(o))
+    {
+        e->ignore();
+        return true;
+    }
+
+    QLineEdit* label = qobject_cast<QLineEdit*>(o);
+    if (e->type() == QEvent::Resize && label != nullptr)
+    {
+        UpdateTooltip(label);
+        return true;
+    }
+
+    return QWidget::eventFilter(o, e);
+}
+
+void EmitterLayerWidget::OnSpritePathChanged(const QString& text)
+{
+    UpdateTooltip(spritePathLabel);
+}
+
+void EmitterLayerWidget::OnSpritePathEdited(const QString& text)
+{
+    CheckPath(text);
     OnLayerMaterialValueChanged();
+}
+
+void EmitterLayerWidget::OnFlowSpritePathEdited(const QString& text)
+{
+    CheckPath(text);
+    OnFlowPropertiesChanged();
+}
+
+void EmitterLayerWidget::OnNoiseSpritePathEdited(const QString& text)
+{
+    CheckPath(text);
+    OnNoisePropertiesChanged();
+}
+
+void EmitterLayerWidget::OnAlphaRemapSpritePathEdited(const QString& text)
+{
+    CheckPath(text);
+    OnAlphaRemapPropertiesChanged();
+}
+
+void EmitterLayerWidget::OnFlowSpriteBtn()
+{
+    OnChangeSpriteButton(layer->flowmapPath, flowSpritePathLabel, QString("Open flow texture"), std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnFlowFolderBtn()
+{
+    OnChangeFolderButton(layer->flowmapPath, flowSpritePathLabel, std::bind(&EmitterLayerWidget::OnFlowSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnFlowTexturePathChanged(const QString& text)
+{
+    UpdateTooltip(flowSpritePathLabel);
+}
+
+void EmitterLayerWidget::OnNoiseSpriteBtn()
+{
+    OnChangeSpriteButton(layer->noisePath, noiseSpritePathLabel, QString("Open noise texture"), std::bind(&EmitterLayerWidget::OnNoiseSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnNoiseFolderBtn()
+{
+    OnChangeFolderButton(layer->noisePath, noiseSpritePathLabel, std::bind(&EmitterLayerWidget::OnNoiseSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnNoiseTexturePathChanged(const QString& text)
+{
+    UpdateTooltip(noiseSpritePathLabel);
+}
+
+void EmitterLayerWidget::OnAlphaRemapBtn()
+{
+    OnChangeSpriteButton(layer->alphaRemapPath, alphaRemapSpritePathLabel, QString("Open alpha remap texture"), std::bind(&EmitterLayerWidget::OnAlphaRemapSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnAlphaRemapFolderBtn()
+{
+    OnChangeFolderButton(layer->alphaRemapPath, alphaRemapSpritePathLabel, std::bind(&EmitterLayerWidget::OnAlphaRemapSpritePathEdited, this, std::placeholders::_1));
+}
+
+void EmitterLayerWidget::OnAlphaRemapTexturePathChanged(const QString& text)
+{
+    UpdateTooltip(alphaRemapSpritePathLabel);
 }
 
 void EmitterLayerWidget::FillLayerTypes()
@@ -1068,8 +1882,74 @@ DAVA::int32 EmitterLayerWidget::LayerTypeToIndex(DAVA::ParticleLayer::eType laye
     return 0;
 }
 
-void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
+void EmitterLayerWidget::FillTimeLineWidgetIndentifiers()
 {
+    timeLineWidgetsIdentifiers =
+    {
+      { "LAYER_LIFE_PROPS", lifeTimeLine },
+      { "LAYER_NUMBER_PROPS", numberTimeLine },
+      { "LAYER_SIZE_PROPS", sizeTimeLine },
+      { "LAYER_SIZE_VARIATION_PROPS", sizeVariationTimeLine },
+      { "LAYER_SIZE_OVER_LIFE_PROPS", sizeOverLifeTimeLine },
+      { "LAYER_VELOCITY_PROPS", velocityTimeLine },
+      { "LAYER_VELOCITY_OVER_LIFE", velocityOverLifeTimeLine },
+      { "LAYER_SPIN_PROPS", spinTimeLine },
+      { "LAYER_SPIN_OVER_LIFE_PROPS", spinOverLifeTimeLine },
+      { "LAYER_ANIM_SPEED_OVER_LIFE_PROPS", animSpeedOverLifeTimeLine },
+      { "LAYER_ALPHA_OVER_LIFE_PROPS", alphaOverLifeTimeLine },
+      { "LAYER_ANGLE", angleTimeLine },
+      { "LAYER_FLOW_SPEED_PROPS", flowSpeedTimeLine },
+      { "LAYER_FLOW_SPEED_VARIATION_PROPS", flowSpeedVariationTimeLine },
+      { "LAYER_FLOW_OFFSET_PROPS", flowOffsetTimeLine },
+      { "LAYER_FLOW_OFFSET_VARIATION_PROPS", flowOffsetVariationTimeLine },
+      { "LAYER_NOISE_SCALE_PROPS", noiseScaleTimeLine },
+      { "LAYER_NOISE_SCALE_VARIATION_PROPS", noiseScaleVariationTimeLine },
+      { "LAYER_NOISE_SCALE_PROPS", noiseScaleOverLifeTimeLine },
+      { "LAYER_NOISE_UV_SCROLL_SPEED_PROPS", noiseUVScrollSpeedTimeLine },
+      { "LAYER_NOISE_UV_SCROLL_SPEED_VARIATION_PROPS", noiseUVScrollSpeedVariationTimeLine },
+      { "LAYER_NOISE_UV_SCROLL_SPEED_OVER_LIFE", noiseUVScrollSpeedOverLifeTimeLine },
+      { "LAYER_STRIPE_SIZE_OVER_LIFE_TIME_PROPS", stripeSizeOverLifeTimeLine },
+      { "LAYER_STRIPE_TILE_PROPS", stripeTextureTileTimeLine },
+      { "LAYER_STRIPE_NOISE_SCROLL_SPEED_OVER_LIFE", stripeNoiseScrollSpeedOverLifeTimeLine },
+      { "LAYER_ALPHA_REMAP", alphaRemapOverLifeTimeLine }
+    };
+}
+
+void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
+{
+    bool isSuperemitter = layerMode == eLayerMode::SUPEREMITTER;
+    bool isStripe = layerMode == eLayerMode::STRIPE;
+    sizeTimeLine->setVisible(!isStripe);
+    sizeVariationTimeLine->setVisible(!isStripe);
+    sizeOverLifeTimeLine->setVisible(!isStripe);
+    angleTimeLine->setVisible(!isStripe);
+    randomSpinDirectionCheckBox->setVisible(!isStripe);
+
+    xFacingCheckBox->setText(isStripe ? "X-Align" : "X-Facing");
+    yFacingCheckBox->setText(isStripe ? "Y-Align" : "Y-Facing");
+    zFacingCheckBox->setText(isStripe ? "Z-Align" : "Z-Facing");
+
+    spinTimeLine->setVisible(!isStripe);
+    spinOverLifeTimeLine->setVisible(!isStripe);
+
+    enableFlowCheckBox->setVisible(!isSuperemitter && !isStripe);
+    flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked() && !isStripe);
+
+    stripeLayoutWidget->setVisible(!isSuperemitter && isStripe);
+
+    enableNoiseCheckBox->setVisible(!isSuperemitter);
+    noiseLayoutWidget->setVisible(!isSuperemitter && enableNoiseCheckBox->isChecked());
+
+    enableAlphaRemapCheckBox->setVisible(!isSuperemitter);
+    alphaRemapLayoutWidget->setVisible(!isSuperemitter && enableAlphaRemapCheckBox->isChecked());
+
+    fresnelToAlphaCheckbox->setVisible(!isSuperemitter);
+    bool fresToAlphaVisible = !isSuperemitter && fresnelToAlphaCheckbox->isChecked();
+    fresnelBiasLabel->setVisible(fresToAlphaVisible);
+    fresnelBiasSpinBox->setVisible(fresToAlphaVisible);
+    fresnelPowerLabel->setVisible(fresToAlphaVisible);
+    fresnelPowerSpinBox->setVisible(fresToAlphaVisible);
+
     // Sprite has no sense for Superemitter.
     spriteBtn->setVisible(!isSuperemitter);
     spriteFolderBtn->setVisible(!isSuperemitter);
@@ -1081,20 +1961,20 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
     colorOverLifeGradient->setVisible(!isSuperemitter);
     alphaOverLifeTimeLine->setVisible(!isSuperemitter);
 
-    frameOverlifeCheckBox->setVisible(!isSuperemitter);
-    frameOverlifeFPSSpin->setVisible(!isSuperemitter);
-    frameOverlifeFPSLabel->setVisible(!isSuperemitter);
-    randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
-    loopSpriteAnimationCheckBox->setVisible(!isSuperemitter);
-    animSpeedOverLifeTimeLine->setVisible(!isSuperemitter);
+    frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
+    frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);
+    frameOverlifeFPSLabel->setVisible(!isSuperemitter && !isStripe);
+    randomFrameOnStartCheckBox->setVisible(!isSuperemitter && !isStripe);
+    loopSpriteAnimationCheckBox->setVisible(!isSuperemitter && !isStripe);
+    animSpeedOverLifeTimeLine->setVisible(!isSuperemitter && !isStripe);
 
     // The Pivot Point must be hidden for Superemitter mode.
-    pivotPointLabel->setVisible(!isSuperemitter);
-    pivotPointXSpinBox->setVisible(!isSuperemitter);
-    pivotPointXSpinBoxLabel->setVisible(!isSuperemitter);
-    pivotPointYSpinBox->setVisible(!isSuperemitter);
-    pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
-    pivotPointResetButton->setVisible(!isSuperemitter);
+    pivotPointLabel->setVisible(!isSuperemitter && !isStripe);
+    pivotPointXSpinBox->setVisible(!isSuperemitter && !isStripe);
+    pivotPointXSpinBoxLabel->setVisible(!isSuperemitter && !isStripe);
+    pivotPointYSpinBox->setVisible(!isSuperemitter && !isStripe);
+    pivotPointYSpinBoxLabel->setVisible(!isSuperemitter && !isStripe);
+    pivotPointResetButton->setVisible(!isSuperemitter && !isStripe);
 
     //particle orientation would be set up in inner emitter layers
     particleOrientationLabel->setVisible(!isSuperemitter);
@@ -1103,13 +1983,14 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
     yFacingCheckBox->setVisible(!isSuperemitter);
     zFacingCheckBox->setVisible(!isSuperemitter);
     worldAlignCheckBox->setVisible(!isSuperemitter);
+    cameraFacingStripeSphericalCheckBox->setVisible(!isSuperemitter && isStripe);
 
     //blend and fog settings are set in inner emitter layers
     blendOptionsLabel->setVisible(!isSuperemitter);
     presetLabel->setVisible(!isSuperemitter);
     presetComboBox->setVisible(!isSuperemitter);
     fogCheckBox->setVisible(!isSuperemitter);
-    frameBlendingCheckBox->setVisible(!isSuperemitter);
+    frameBlendingCheckBox->setVisible(!isSuperemitter && !isStripe);
 
     // Some controls are however specific for this mode only - display and update them.
     innerEmitterLabel->setVisible(isSuperemitter);
@@ -1154,4 +2035,21 @@ void EmitterLayerWidget::OnLayerValueChanged()
     }
 
     blockSignals = false;
+}
+
+WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)
+    : QComboBox(parent)
+{
+}
+
+bool WheellIgnorantComboBox::event(QEvent* e)
+{
+    if (e->type() == QEvent::Wheel)
+    {
+        if (this->hasFocus() == false)
+        {
+            return false;
+        }
+    }
+    return QComboBox::event(e);
 }

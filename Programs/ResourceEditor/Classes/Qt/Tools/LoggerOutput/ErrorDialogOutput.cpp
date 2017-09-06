@@ -1,16 +1,16 @@
-#include "Tools/LoggerOutput/ErrorDialogOutput.h"
-
+#include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
 #include "Classes/Qt/GlobalOperations.h"
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 
 #include <TArc/Utils/AssertGuard.h>
 
 #include <Engine/PlatformApiQt.h>
 #include <Concurrency/LockGuard.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <Debug/MessageBox.h>
 #include <Utils/StringFormat.h>
-
-#include <QMessageBox>
+#include <Debug/DVAssertDefaultHandlers.h>
 
 namespace ErrorDialogDetail
 {
@@ -28,8 +28,8 @@ class ErrorDialogOutput::IgnoreHelper
 public:
     bool ShouldIgnoreMessage(DAVA::Logger::eLogLevel ll, const DAVA::String& textMessage)
     {
-        bool enabled = (SettingsManager::Instance() != nullptr) ? SettingsManager::GetValue(Settings::General_ShowErrorDialog).AsBool() : false;
-        if ((ll < DAVA::Logger::LEVEL_ERROR) || !enabled)
+        GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+        if ((ll < DAVA::Logger::LEVEL_ERROR) || settings->showErrorDialog == false)
         {
             return true;
         }
@@ -171,9 +171,7 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         errors.clear();
     }
 
-    bool prevValue = DAVA::PlatformApi::Qt::SetLoopPaused(true);
-    QMessageBox::critical(globalOperations->GetGlobalParentWidget(), title.c_str(), errorMessage.c_str());
-    DAVA::PlatformApi::Qt::SetLoopPaused(prevValue);
+    DAVA::Debug::MessageBox(title, errorMessage, { "Close" });
 }
 
 void ErrorDialogOutput::Disable()

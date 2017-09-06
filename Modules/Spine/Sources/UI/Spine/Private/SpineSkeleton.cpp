@@ -6,6 +6,7 @@
 #include <Debug/DVAssert.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <FileSystem/LocalizationSystem.h>
 #include <Logger/Logger.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
@@ -29,22 +30,41 @@ static const uint16 QUAD_TRIANGLES[6] = { 0, 1, 2, 2, 3, 0 };
 
 FilePath GetScaledName(const FilePath& path)
 {
-    String pathname;
-    if (FilePath::PATH_IN_RESOURCES == path.GetType())
-        pathname = path.GetFrameworkPath(); //as we can have several res folders we should work with 'FrameworkPath' instead of 'AbsolutePathname'
-    else
-        pathname = path.GetAbsolutePathname();
-
-    VirtualCoordinatesSystem* virtualCoordsSystem = Engine::Instance()->GetContext()->uiControlSystem->vcs;
-    const String baseGfxFolderName = virtualCoordsSystem->GetResourceFolder(virtualCoordsSystem->GetBaseResourceIndex());
-    String::size_type pos = pathname.find(baseGfxFolderName);
-    if (String::npos != pos)
+    VirtualCoordinatesSystem* vcs = Engine::Instance()->GetContext()->uiControlSystem->vcs;
+    if (!path.IsEmpty() && vcs != nullptr)
     {
-        const String& desirableGfxFolderName = virtualCoordsSystem->GetResourceFolder(virtualCoordsSystem->GetDesirableResourceIndex());
-        pathname.replace(pos, baseGfxFolderName.length(), desirableGfxFolderName);
-        return FilePath(pathname);
-    }
+        String pathname;
+        if (FilePath::PATH_IN_RESOURCES == path.GetType())
+        {
+            //as we can have several res folders we should work with 'FrameworkPath' instead of 'AbsolutePathname'
+            pathname = path.GetFrameworkPath();
+        }
+        else
+        {
+            pathname = path.GetAbsolutePathname();
+        }
 
+        const String baseGfxFolderName = vcs->GetResourceFolder(vcs->GetBaseResourceIndex());
+        String::size_type pos = pathname.find(baseGfxFolderName);
+        if (String::npos != pos)
+        {
+            const String& desirableGfxFolderName = vcs->GetResourceFolder(vcs->GetDesirableResourceIndex());
+            pathname.replace(pos, baseGfxFolderName.length(), desirableGfxFolderName);
+            return FilePath(pathname);
+        }
+    }
+    return path;
+}
+
+FilePath GetLocalizedName(const FilePath& path)
+{
+    LocalizationSystem* locSys = Engine::Instance()->GetContext()->localizationSystem;
+    if (!path.IsEmpty() && locSys != nullptr)
+    {
+        FilePath localizedPath(path);
+        localizedPath.ReplaceDirectory((path.GetDirectory() + locSys->GetCurrentLocale()).MakeDirectoryPathname());
+        return localizedPath;
+    }
     return path;
 }
 }
@@ -96,14 +116,47 @@ void SpineSkeleton::ReleaseSkeleton()
     ClearData();
 }
 
-bool SpineSkeleton::Load(const FilePath& dataPath, const FilePath& atlasPath_)
+bool SpineSkeleton::Load(const FilePath& dataPath_, const FilePath& atlasPath_)
 {
     ReleaseAtlas();
     ReleaseSkeleton();
 
-    FilePath atlasPath = SpinePrivate::GetScaledName(atlasPath_);
-    if (!dataPath.Exists() || !atlasPath.Exists())
+    if (dataPath_.IsEmpty() || atlasPath_.IsEmpty())
     {
+        return false;
+    }
+
+    FilePath atlasPath(atlasPath_);
+    FilePath dataPath(dataPath_);
+
+    // Check scaled resource (only atlas)
+    FilePath scaledPath = SpinePrivate::GetScaledName(atlasPath);
+    if (scaledPath.Exists())
+    {
+        atlasPath = scaledPath;
+    }
+
+    // Check localized resource (atlas and data)
+    FilePath localizedPath = SpinePrivate::GetLocalizedName(atlasPath);
+    if (localizedPath.Exists())
+    {
+        atlasPath = localizedPath;
+    }
+    localizedPath = SpinePrivate::GetLocalizedName(dataPath);
+    if (localizedPath.Exists())
+    {
+        dataPath = localizedPath;
+    }
+
+    if (!dataPath.Exists())
+    {
+        Logger::Error("[SpineSkeleton::Load] Data file `%s` doesn't exist!", dataPath.GetStringValue().c_str());
+        return false;
+    }
+
+    if (!atlasPath.Exists())
+    {
+        Logger::Error("[SpineSkeleton::Load] Atlas file `%s` doesn't exist!", atlasPath.GetStringValue().c_str());
         return false;
     }
 

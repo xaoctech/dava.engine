@@ -50,60 +50,59 @@ public:
     class iterator;
     class reverse_iterator;
 
-    inline T& next()
+    T& next()
     {
-        return elements[(head++) & mask];
+        return elements[head++ & mask];
     }
-    inline iterator begin()
+    iterator begin() const
     {
-        return iterator(elements, head & mask, mask);
+        return iterator(elements, (head & mask), mask);
     }
-    inline iterator end()
+    iterator end() const
     {
         return iterator(elements, (head & mask) | (mask + 1), mask);
     }
-    inline reverse_iterator rbegin()
+    reverse_iterator rbegin() const
     {
         return reverse_iterator(elements, ((head - 1) & mask) | (mask + 1), mask);
     }
-    inline reverse_iterator rend()
+    reverse_iterator rend() const
     {
         return reverse_iterator(elements, (head - 1) & mask, mask);
     }
-    inline size_t size() const
+    size_t size() const
     {
         return elementsCount;
     }
 
-protected:
+private:
     class base_iterator
     {
     public:
         base_iterator() = default;
-        ~base_iterator() = default;
-
-        inline bool operator==(const base_iterator& it) const
-        {
-            return (index == it.index) && (arrayData == it.arrayData);
-        }
-        inline bool operator!=(const base_iterator& it) const
-        {
-            return !(*this == it);
-        }
-        inline T& operator*() const
-        {
-            return arrayData[index & mask];
-        }
-        inline T* operator->() const
-        {
-            return &arrayData[index & mask];
-        }
-
         base_iterator(T* data, uint32 _index, uint32 _mask)
             : arrayData(data)
             , index(_index)
             , mask(_mask)
         {
+        }
+        ~base_iterator() = default;
+
+        bool operator==(const base_iterator& it) const
+        {
+            return (index == it.index) && (arrayData == it.arrayData);
+        }
+        bool operator!=(const base_iterator& it) const
+        {
+            return !(*this == it);
+        }
+        T& operator*() const
+        {
+            return arrayData[index & mask];
+        }
+        T* operator->() const
+        {
+            return &arrayData[index & mask];
         }
 
         T* arrayData = nullptr;
@@ -112,125 +111,117 @@ protected:
     };
 
 public:
-    class iterator : public base_iterator
+    class iterator final : public base_iterator
     {
     public:
+        iterator(T* data, uint32 _index, uint32 _mask)
+            : base_iterator(data, _index, _mask)
+        {
+        }
         iterator(const reverse_iterator& it)
         {
             this->arrayData = it.arrayData;
             this->mask = it.mask;
             this->index = it.index;
         }
-        inline operator reverse_iterator() const
+        operator reverse_iterator() const
         {
             return reverse_iterator(this->arrayData, this->index, this->mask);
         }
-        inline iterator operator+(uint32 n) const
+        iterator operator+(uint32 n) const
         {
             iterator it(*this);
             it.index += n;
             return it;
         }
-        inline iterator operator-(uint32 n) const
+        iterator operator-(uint32 n) const
         {
             iterator it(*this);
             it.index -= n;
             return it;
         }
-        inline iterator& operator++()
+        iterator& operator++()
         {
-            ++this->index;
+            ++(this->index);
             return *this;
         }
-        inline iterator operator++(int)
+        iterator operator++(int)
         {
             iterator prev = *this;
             ++(*this);
             return prev;
         }
-        inline iterator& operator--()
+        iterator& operator--()
         {
-            --this->index;
+            --(this->index);
             return *this;
         }
-        inline iterator operator--(int)
+        iterator operator--(int)
         {
             iterator prev = *this;
             --(*this);
             return prev;
         }
+    };
 
-    protected:
-        iterator(T* data, uint32 _index, uint32 _mask)
+    class reverse_iterator final : public base_iterator
+    {
+    public:
+        reverse_iterator(T* data, uint32 _index, uint32 _mask)
             : base_iterator(data, _index, _mask)
         {
         }
-
-        friend class ProfilerRingArray;
-    };
-
-    class reverse_iterator : public base_iterator
-    {
-    public:
         reverse_iterator(const iterator& it)
         {
             this->arrayData = it.arrayData;
             this->mask = it.mask;
             this->index = it.index;
         }
-        inline operator iterator() const
+        operator iterator() const
         {
             return iterator(this->arrayData, this->index, this->mask);
         }
-        inline reverse_iterator operator+(uint32 n) const
+        reverse_iterator operator+(uint32 n) const
         {
             reverse_iterator it(*this);
             it.index -= n;
             return it;
         }
-        inline reverse_iterator operator-(uint32 n) const
+        reverse_iterator operator-(uint32 n) const
         {
             reverse_iterator it(*this);
             it.index += n;
             return it;
         }
-        inline reverse_iterator& operator++()
+        reverse_iterator& operator++()
         {
-            --this->index;
+            --(this->index);
             return *this;
         }
-        inline reverse_iterator operator++(int)
+        reverse_iterator operator++(int)
         {
             reverse_iterator prev = *this;
             ++(*this);
             return prev;
         }
-        inline reverse_iterator& operator--()
+        reverse_iterator& operator--()
         {
-            ++this->index;
+            ++(this->index);
             return *this;
         }
-        inline reverse_iterator operator--(int)
+        reverse_iterator operator--(int)
         {
             reverse_iterator prev = *this;
             --(*this);
             return prev;
         }
-
-    protected:
-        reverse_iterator(T* data, uint32 _index, uint32 _mask)
-            : base_iterator(data, _index, _mask)
-        {
-        }
-
-        friend class ProfilerRingArray;
     };
 
-protected:
+private:
     T* elements = nullptr;
     uint32 elementsCount = 0;
     uint32 mask = 0;
     std::atomic<uint32> head = { 0 };
 };
 
-}; //ns
+} // end namespace DAVA

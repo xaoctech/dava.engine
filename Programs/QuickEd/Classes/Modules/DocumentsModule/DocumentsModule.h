@@ -8,8 +8,7 @@
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class FindInDocumentController;
 class PreviewWidget;
@@ -26,7 +25,7 @@ public:
 protected:
     void OnRenderSystemInitialized(DAVA::Window* window) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void PostInit() override;
@@ -38,18 +37,21 @@ protected:
 private:
     void InitEditorSystems();
     void InitCentralWidget();
-    void InitWatcher();
+    void InitGlobalData();
 
     void CreateDocumentsActions();
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
 
+    void DoGroupSelection();
+
     //View
     void CreateViewActions();
+    void CreateFindActions();
 
     DAVA::TArc::DataContext::ContextID OpenDocument(const QString& path);
     DAVA::RefPtr<PackageNode> CreatePackage(const QString& path);
@@ -65,8 +67,9 @@ private:
 
     bool HasUnsavedDocuments() const;
     bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
-    void SaveAllDocuments();
-    void SaveCurrentDocument();
+    bool SaveAllDocuments();
+    bool SaveCurrentDocument();
+    void DiscardUnsavedChanges();
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
 
@@ -84,14 +87,13 @@ private:
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
 
+    void OnSelectInFileSystem();
+
     PreviewWidget* previewWidget = nullptr;
     std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
 
-    friend class FindInDocumentController;
-    std::unique_ptr<FindInDocumentController> findInDocumentController;
-
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
 

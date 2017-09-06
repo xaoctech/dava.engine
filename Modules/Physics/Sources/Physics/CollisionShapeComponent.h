@@ -40,8 +40,8 @@ protected:
     virtual void CheckShapeType() const = 0;
 #endif
 
-    void CopyFields(CollisionShapeComponent* component);
-    void SheduleUpdate();
+    void CopyFieldsIntoClone(CollisionShapeComponent* component) const;
+    void ScheduleUpdate();
     virtual void UpdateLocalProperties();
 
     Matrix4 localPose;

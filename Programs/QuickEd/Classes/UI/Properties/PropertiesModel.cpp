@@ -19,9 +19,8 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
-
-#include <QtTools/Utils/Themes/Themes.h>
-#include <QtTools/Utils/Utils.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Utils/Utils.h>
 
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIControl.h>
@@ -39,12 +38,12 @@ PropertiesModel::PropertiesModel(QObject* parent)
 {
     propertiesUpdater.SetUpdater(MakeFunction(this, &PropertiesModel::UpdateAllChangedProperties));
 
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetListener(this);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(this);
 }
 
 PropertiesModel::~PropertiesModel()
 {
-    UIControlSystem::Instance()->GetStyleSheetSystem()->SetListener(nullptr);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(nullptr);
 
     CleanUp();
     propertiesUpdater.Abort();
@@ -179,7 +178,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
     case Qt::BackgroundRole:
         if (property->GetType() == AbstractProperty::TYPE_HEADER)
         {
-            return Themes::GetViewLineAlternateColor();
+            return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetViewLineAlternateColor();
         }
         break;
 
@@ -202,7 +201,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
     {
         if (property->IsOverriddenLocally() || property->IsReadOnly())
         {
-            return Themes::GetChangedPropertyColor();
+            return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetChangedPropertyColor();
         }
         if (controlNode)
         {
@@ -212,13 +211,13 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
                 bool setByStyle = controlNode->GetControl()->GetStyledPropertySet().test(propertyIndex);
                 if (setByStyle)
                 {
-                    return Themes::GetStyleSheetNodeColor();
+                    return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetStyleSheetNodeColor();
                 }
             }
         }
         if (flags & AbstractProperty::EF_INHERITED)
         {
-            return Themes::GetPrototypeColor();
+            return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetPrototypeColor();
         }
     }
     }
@@ -557,13 +556,13 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
 
     if (val.CanGet<String>())
     {
-        return UnescapeString(StringToQString(val.Get<String>()));
+        return DAVA::TArc::UnescapeString(StringToQString(val.Get<String>()));
     }
 
     if (val.CanGet<WideString>())
     {
         DVASSERT(false);
-        return UnescapeString(WideStringToQString(val.Get<WideString>()));
+        return DAVA::TArc::UnescapeString(WideStringToQString(val.Get<WideString>()));
     }
 
     if (val.CanGet<FastName>())
@@ -587,7 +586,7 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
 
     if (val.CanGet<Color>())
     {
-        return QColorToHex(ColorToQColor(val.Get<Color>()));
+        return QColorToHex(DAVA::TArc::ColorToQColor(val.Get<Color>()));
     }
 
     if (val.CanGet<Vector4>())

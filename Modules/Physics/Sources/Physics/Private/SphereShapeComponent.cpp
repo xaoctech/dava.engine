@@ -10,13 +10,13 @@
 
 namespace DAVA
 {
-DAVA::Component* SphereShapeComponent::Clone(Entity* toEntity)
+Component* SphereShapeComponent::Clone(Entity* toEntity)
 {
     SphereShapeComponent* result = new SphereShapeComponent();
     result->SetEntity(toEntity);
 
     result->radius = radius;
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
 }
@@ -41,7 +41,8 @@ float32 SphereShapeComponent::GetRadius() const
 void SphereShapeComponent::SetRadius(float32 radius_)
 {
     radius = radius_;
-    SheduleUpdate();
+    DVASSERT(radius > 0.0f);
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -54,9 +55,11 @@ void SphereShapeComponent::CheckShapeType() const
 void SphereShapeComponent::UpdateLocalProperties()
 {
     physx::PxShape* shape = GetPxShape();
+    DVASSERT(shape != nullptr);
     physx::PxSphereGeometry geom;
     shape->getSphereGeometry(geom);
     geom.radius = radius;
+    DVASSERT(geom.isValid());
     shape->setGeometry(geom);
 
     CollisionShapeComponent::UpdateLocalProperties();

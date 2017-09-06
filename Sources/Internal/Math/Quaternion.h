@@ -508,9 +508,10 @@ inline bool Quaternion::operator!=(const Quaternion& _v) const
 inline Quaternion Quaternion::MakeRotation(const Vector3& euler)
 {
     Quaternion ret;
-
+    DVASSERT(0, "Not implemented");
     return ret;
 }
+
 inline Quaternion Quaternion::MakeRotation(const Vector3& vector, float32 Angle)
 {
     Quaternion ret;

@@ -11,6 +11,8 @@
 #include <unistd.h>
 #endif
 
+// #define USE_LOCAL_RESOURCES
+
 namespace DAVA
 {
 Vector<FilePath> FilePath::resourceFolders;
@@ -197,7 +199,7 @@ FilePath FilePath::FilepathInDocuments(const String& relativePathname)
     return FilepathInDocuments(relativePathname.c_str());
 }
 
-bool FilePath::StartsWith(const FilePath& basePath)
+bool FilePath::StartsWith(const FilePath& basePath) const
 {
     DVASSERT(!basePath.IsEmpty());
     String baseStr = basePath.GetAbsolutePathname();

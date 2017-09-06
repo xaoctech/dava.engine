@@ -3,12 +3,10 @@
 #include <TArc/DataProcessing/DataNode.h>
 
 #if defined(__DAVAENGINE_MACOS__)
-#include <QtTools/Utils/ShortcutChecker.h>
+#include <TArc/Utils/ShortcutChecker.h>
 #endif //__DAVAENGINE_MACOS__
-#include <QtTools/Utils/QtDelayedExecutor.h>
-
-#include <Base/Introspection.h>
-#include <Preferences/PreferencesRegistrator.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtConnections.h>
 
 #include <QMainWindow>
 
@@ -34,7 +32,7 @@ class QCheckBox;
 class QActionGroup;
 class QEvent;
 
-class MainWindow : public QMainWindow, public DAVA::InspBase, public DAVA::TrackedObject
+class MainWindow : public QMainWindow, public DAVA::TrackedObject
 {
     Q_OBJECT
 
@@ -53,24 +51,12 @@ public:
 signals:
     void EmulationModeChanged(bool emulationMode);
 
-private slots:
-    void OnPixelizationStateChanged(bool isPixelized);
-    void OnEditorPreferencesTriggered();
-
 private:
     void SetProjectPath(const QString& projectPath);
 
     void ConnectActions();
     void InitEmulationMode();
     void SetupViewMenu();
-
-    void SetupAppStyleMenu();
-
-    void SetupBackgroundMenu();
-    void OnPreferencesPropertyChanged(const DAVA::InspMember* member, const DAVA::VariantType& value);
-
-    bool IsPixelized() const;
-    void SetPixelized(bool pixelized);
 
     void UpdateWindowTitle();
 
@@ -82,21 +68,15 @@ private:
     QString projectPath;
 
     QCheckBox* emulationBox = nullptr;
-
-    const DAVA::InspMember* backgroundIndexMember = nullptr;
-    DAVA::Set<const DAVA::InspMember*> backgroundColorMembers;
     QActionGroup* backgroundActions = nullptr;
 
 #if defined(__DAVAENGINE_MACOS__)
-    ShortcutChecker shortcutChecker;
+    DAVA::TArc::ShortcutChecker shortcutChecker;
 #endif //__DAVAENGINE_MACOS__
 
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::QtConnections connections;
 
     ProjectView* projectView = nullptr;
-
-public:
-    INTROSPECTION(MainWindow,
-                  PROPERTY("isPixelized", "MainWindowInternal/IsPixelized", IsPixelized, SetPixelized, DAVA::I_PREFERENCE)
-                  )
 };

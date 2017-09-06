@@ -6,52 +6,39 @@ set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}
 include      ( CMake-common )
 
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
-find_package( ScenePerformanceTests REQUIRED )
+find_package( NetworkHelpers  REQUIRED)
+find_package( ScenePerformanceTests  REQUIRED)
+find_package( LoggerService  REQUIRED)
+find_package( MemoryProfilerService  REQUIRED)
+find_package( DocDirSetup REQUIRED )
 
-include_directories   ( "Classes" )
+include_directories   ( "Sources" )
 
 if( MACOS )
-    set( PLATFORM_SPECIFIC_FOLDER "MacOSSpecific" )
-
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
 elseif( IOS )
-    set( PLATFORM_SPECIFIC_FOLDER "iOSSpecific" )
-    
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
 elseif( WIN32 )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Win32" )
     set( EXECUTABLE_FLAG WIN32 )
-
 endif()
 
-file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/*.xib" )
+define_source ( SOURCE "Sources" ${PLATFORM_SPECIFIC_FOLDER} )
 
-define_source ( SOURCE "Classes" ${PLATFORM_SPECIFIC_FOLDER} )
+set( MIX_APP_DATA               "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
+                                "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
-set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
-                                  "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
+set( IOS_PLISTT                 ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneVieweriPhone-Info.plist )
 
-set( IOS_PLISTT                   ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneVieweriPhone-Info.plist )
+set( MACOS_XIB                  ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/MainMenu.xib)
+set( MACOS_PLIST                ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneViewerMacOS-Info.plist )
 
-set( MACOS_PLIST                  ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneViewerMacOS-Info.plist )
-set( MACOS_XIB                    ${XIB_LIST} )
+set( ADDED_SRC                  ${IOS_ADD_SRC} )
 
-set( ANDROID_USE_STANDART_TEMLATE true )
-set( ANDROID_PACKAGE              "com.dava.sceneviewer" )
-set( ANDROID_APP_NAME             "SceneViewerApp" )
-set( ANDROID_ACTIVITY_APP_NAME    "SceneViewer"   )
-
-set( ANDROID_ICO                   ${CMAKE_CURRENT_LIST_DIR}/android/ic_launcher-web.png )
-
-set( ADDED_SRC                     ${IOS_ADD_SRC} )
-
-if (ANDROID)
-    # Libraries and classes to load at startup
-    set (ANDROID_BOOT_MODULES "crystax;c++_shared;fmodex;fmodevent;SceneViewer")
-    set (ANDROID_BOOT_CLASSES "com.dava.sceneviewer.SceneViewer")
-endif()
 
 if ( WINDOWS_UAP )
     set ( WIN_STORE_MANIFEST_PACKAGE_GUID "C3B05534-90DF-4E75-829E-25D10C77FE49" )
 endif ()
 
 setup_main_executable()
-
 convert_graphics()

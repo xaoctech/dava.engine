@@ -2,6 +2,7 @@
 
 #include <Entity/SceneSystem.h>
 #include <Math/Vector.h>
+#include <Base/BaseTypes.h>
 
 #include <physx/PxQueryReport.h>
 
@@ -15,6 +16,7 @@ class PxControllerManager;
 
 namespace DAVA
 {
+class Vector3;
 class Scene;
 class PhysicsModule;
 class PhysicsComponent;
@@ -42,9 +44,9 @@ public:
     void SetDebugDrawEnabled(bool drawDebugInfo);
     bool IsDebugDrawEnabled() const;
 
-    void SheduleUpdate(PhysicsComponent* component);
-    void SheduleUpdate(CollisionShapeComponent* component);
-    void SheduleUpdate(CharacterControllerComponent* component);
+    void ScheduleUpdate(PhysicsComponent* component);
+    void ScheduleUpdate(CollisionShapeComponent* component);
+    void ScheduleUpdate(CharacterControllerComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
@@ -74,7 +76,7 @@ private:
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
     physx::PxControllerManager* controllerManager = nullptr;
-    PhysicsGeometryCache* geometryCache;
+    PhysicsGeometryCache* geometryCache = nullptr;
 
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;

@@ -1,7 +1,7 @@
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/Private/OptionName.h"
 #include "CommandLine/Private/SceneConsoleHelper.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include "Project/ProjectManagerData.h"
 
 #include "Utils/SceneExporter/SceneExporter.h"
 #include "TArc/Utils/ModuleCollection.h"
@@ -19,6 +19,7 @@
 #include <Render/GPUFamilyDescriptor.h>
 #include <Render/Highlevel/Heightmap.h>
 #include <Time/DateTime.h>
+#include <Time/SystemTimer.h>
 #include <Utils/UTF8Utils.h>
 
 namespace SceneExporterToolDetail
@@ -368,6 +369,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
         else
         {
             useAssetCache = false;
+            cacheClient.Disconnect();
         }
     }
 
@@ -398,7 +400,10 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
         }
     }
 
+    DAVA::int64 packTime = DAVA::SystemTimer::GetMs();
     exporter.ExportObjects(exportedObjects);
+    packTime = DAVA::SystemTimer::GetMs() - packTime;
+    DAVA::Logger::Info("Export time: %.2lf sec", static_cast<DAVA::float64>(packTime) / 1000.0);
 
     if (useAssetCache)
     {

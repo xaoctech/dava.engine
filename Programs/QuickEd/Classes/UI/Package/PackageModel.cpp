@@ -27,8 +27,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/WindowSubSystem/UI.h>
-
-#include <QtTools/Utils/Themes/Themes.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
 #include <Base/ObjectFactory.h>
 #include <UI/UIControl.h>
@@ -245,15 +244,18 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
         }
 
         case Qt::TextColorRole:
+        {
+            DAVA::TArc::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
             if (controlNode->HasErrors())
             {
-                return Themes::GetErrorColor();
+                return settings->GetErrorColor();
             }
             else if (controlNode->GetPrototype() != nullptr)
             {
-                return Themes::GetPrototypeColor();
+                return settings->GetPrototypeColor();
             }
             return QVariant();
+        }
 
         case Qt::FontRole:
         {
@@ -280,7 +282,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
 
             case Qt::TextColorRole:
             {
-                return Themes::GetStyleSheetNodeColor();
+                return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetStyleSheetNodeColor();
             }
 
             case Qt::FontRole:
@@ -301,12 +303,12 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
                 return StringToQString(node->GetName());
 
             case Qt::BackgroundRole:
-                return Themes::GetViewLineAlternateColor();
+                return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetViewLineAlternateColor();
 
             case Qt::TextColorRole:
                 if (node->HasErrors())
                 {
-                    return Themes::GetErrorColor();
+                    return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetErrorColor();
                 }
                 return QVariant();
 
@@ -355,6 +357,7 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     {
         auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
         prop->SetVisibleInEditor(value.toBool());
+        package->RefreshProperty(controlNode, prop);
         return true;
     }
     if (role == Qt::EditRole)

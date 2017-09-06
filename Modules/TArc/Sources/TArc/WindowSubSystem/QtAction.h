@@ -25,6 +25,7 @@ public:
         Enabled, // call back should return Any that can be casted to bool
         Checked,
         Text, // DAVA::String
+        Tooltip, // DAVA::String
         Icon // DAVA::String
     };
 
@@ -36,6 +37,12 @@ private:
 private:
     FieldBinder fieldBinder;
     UnorderedMap<eActionState, Function<Any(const Any&)>> functorsMap;
+};
+
+class QtActionSeparator : public QAction
+{
+public:
+    QtActionSeparator(const QString& name, QObject* parent = nullptr);
 };
 } // namespace TArc
 } // namespace DAVA

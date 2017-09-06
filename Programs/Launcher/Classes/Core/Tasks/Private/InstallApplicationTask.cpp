@@ -24,8 +24,20 @@ QString InstallApplicationTask::GetDescription() const
 
 void InstallApplicationTask::Run()
 {
+    FileManager* fileManager = appManager->GetFileManager();
+    //replace this code later with "Create file while loading"
+    QString filePath = fileManager->GetTempDownloadFilePath(params.newVersion.url);
+    fileToWrite.setFileName(filePath);
+    if (fileToWrite.open(QIODevice::WriteOnly | QIODevice::Truncate) == false)
+    {
+        SetError(QObject::tr("Can not create file %1!").arg(filePath));
+        emit Finished();
+        return;
+    }
+
     QString description = QObject::tr("Downloading application %1").arg(appManager->GetAppName(params.app, params.newVersion.isToolSet));
-    std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, params.newVersion.url);
+    std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, params.newVersion.url, &fileToWrite);
+
     appManager->AddTaskWithNotifier(std::move(task), notifier);
 }
 
@@ -68,18 +80,14 @@ void InstallApplicationTask::OnLoaded(const BaseTask* task)
     FileManager* fileManager = appManager->GetFileManager();
     QString filePath = fileManager->GetTempDownloadFilePath(params.newVersion.url);
 
-    Q_ASSERT(task->GetTaskType() == BaseTask::DOWNLOAD_TASK);
-    const DownloadTask* downloadTask = static_cast<const DownloadTask*>(task);
-    Q_ASSERT(downloadTask->GetLoadedData().empty() == false);
-
-    //move this code to DownloadTask later
-    bool archiveCreated = fileManager->CreateFileFromRawData(downloadTask->GetLoadedData().front(), filePath);
-    if (archiveCreated == false)
+    fileToWrite.close();
+    if (fileToWrite.size() <= 0)
     {
-        SetError(QObject::tr("Can not create file %1!").arg(filePath));
+        SetError(QObject::tr("Failed to write file %1!").arg(filePath));
         emit Finished();
         return;
     }
+
     state = UNPACKING;
     applicationsToRestart = GetApplicationsToRestart(params.branch, params.app);
 

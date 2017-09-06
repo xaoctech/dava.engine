@@ -1,5 +1,8 @@
 #include "WASDControllerSystem.h"
 
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/Controller/WASDControllerComponent.h"
 
@@ -8,8 +11,9 @@
 
 #include "Render/Highlevel/Camera.h"
 
+#include "DeviceManager/DeviceManager.h"
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
+#include "Input/Keyboard.h"
 
 #include "Utils/Utils.h"
 
@@ -50,8 +54,17 @@ void WASDControllerSystem::Process(float32 timeElapsed)
     if (0 == size)
         return;
 
-    KeyboardDevice& keyboard = InputSystem::Instance()->GetKeyboard();
-    if (keyboard.IsKeyPressed(Key::LSHIFT) || keyboard.IsKeyPressed(Key::LCTRL) || keyboard.IsKeyPressed(Key::LALT) || keyboard.IsKeyPressed(Key::RALT) || keyboard.IsKeyPressed(Key::RCTRL))
+    Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
+    if (keyboard == nullptr)
+    {
+        return;
+    }
+
+    if (keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed() ||
+        keyboard->GetKeyState(eInputElements::KB_RCTRL).IsPressed() ||
+        keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed() ||
+        keyboard->GetKeyState(eInputElements::KB_RALT).IsPressed() ||
+        keyboard->GetKeyState(eInputElements::KB_LALT).IsPressed())
     {
         return;
     }
@@ -65,22 +78,22 @@ void WASDControllerSystem::Process(float32 timeElapsed)
             // Should be discussed
 
             bool moved = false;
-            if (keyboard.IsKeyPressed(Key::KEY_W) || keyboard.IsKeyPressed(Key::UP))
+            if (keyboard->GetKeyState(eInputElements::KB_W).IsPressed() || keyboard->GetKeyState(eInputElements::KB_UP).IsPressed())
             {
                 moved = true;
                 MoveForward(camera, entities[i], actualMoveSpeed, DIRECTION_STRAIGHT);
             }
-            if (keyboard.IsKeyPressed(Key::KEY_S) || keyboard.IsKeyPressed(Key::DOWN))
+            if (keyboard->GetKeyState(eInputElements::KB_S).IsPressed() || keyboard->GetKeyState(eInputElements::KB_DOWN).IsPressed())
             {
                 moved = true;
                 MoveForward(camera, entities[i], actualMoveSpeed, DIRECTION_INVERSE);
             }
-            if (keyboard.IsKeyPressed(Key::KEY_D) || keyboard.IsKeyPressed(Key::RIGHT))
+            if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
             {
                 moved = true;
                 MoveRight(camera, entities[i], actualMoveSpeed, DIRECTION_STRAIGHT);
             }
-            if (keyboard.IsKeyPressed(Key::KEY_A) || keyboard.IsKeyPressed(Key::LEFT))
+            if (keyboard->GetKeyState(eInputElements::KB_A).IsPressed() || keyboard->GetKeyState(eInputElements::KB_LEFT).IsPressed())
             {
                 moved = true;
                 MoveRight(camera, entities[i], actualMoveSpeed, DIRECTION_INVERSE);

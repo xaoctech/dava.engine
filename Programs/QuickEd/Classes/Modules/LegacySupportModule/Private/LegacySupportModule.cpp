@@ -5,15 +5,18 @@
 
 #include "Model/PackageHierarchy/PackageNode.h"
 
-#include "Application/QEGlobal.h"
+#include "Classes/Application/SettingsConverter.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/EditorSystems/EditorControlsView.h"
 
 #include "UI/mainwindow.h"
 #include "UI/ProjectView.h"
 #include "UI/Find/Filters/PrototypeUsagesFilter.h"
 
 #include <TArc/Core/ContextAccessor.h>
-
-#include <QtTools/Utils/Themes/Themes.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/DataProcessing/Common.h>
 
 #include <Tools/Version.h>
 #include <DAVAVersion.h>
@@ -30,15 +33,16 @@ void LegacySupportModule::PostInit()
     using namespace DAVA;
     using namespace TArc;
 
-    Themes::InitFromQApplication();
-
     ContextAccessor* accessor = GetAccessor();
+    ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
 
     projectDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<ProjectData>());
     projectDataWrapper.SetListener(this);
 
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     documentDataWrapper.SetListener(this);
+
+    RegisterOperation(QEGlobal::SelectAndRename.ID, this, &LegacySupportModule::OnSelectAndRename);
 
     InitMainWindow();
 }
@@ -165,7 +169,45 @@ void LegacySupportModule::InitMainWindow()
 
     GetUI()->InjectWindow(DAVA::TArc::mainWindowKey, mainWindow);
     ContextAccessor* accessor = GetAccessor();
-    DataContext* globalContext = accessor->GetGlobalContext();
+    UI* ui = GetUI();
+
+    QString toolbarName = "Main Toolbar";
+    ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
+                                                                                << "Toolbars"));
+    ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+
+    PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+
+    FieldDescriptor indexFieldDescr;
+    indexFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
+    indexFieldDescr.fieldName = FastName("backgroundColorIndex");
+
+    ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
+                                                              << "menuGridColor"));
+
+    for (DAVA::uint32 currentIndex = 0; currentIndex < 3; ++currentIndex)
+    {
+        FieldDescriptor descr;
+        descr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
+        descr.fieldName = DAVA::FastName(Format("backgroundColor%u", currentIndex));
+
+        QtAction* action = new QtAction(accessor, "Background color 0");
+        action->SetStateUpdationFunction(QtAction::Icon, descr, [](const Any& v)
+                                         {
+                                             return v.Cast<QIcon>(QIcon());
+                                         });
+
+        action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
+                                         {
+                                             return v.Cast<DAVA::uint32>(-1) == currentIndex;
+                                         });
+        connections.AddConnection(action, &QAction::triggered, [this, accessor, currentIndex]()
+                                  {
+                                      PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+                                      settings->backgroundColorIndex = currentIndex;
+                                  });
+        ui->AddAction(DAVA::TArc::mainWindowKey, info, action);
+    }
 }
 
 void LegacySupportModule::OnFindPrototypeInstances()
@@ -203,6 +245,16 @@ void LegacySupportModule::OnFindPrototypeInstances()
             InvokeOperation(QEGlobal::FindInProject.ID, filter);
         }
     }
+}
+
+void LegacySupportModule::OnSelectAndRename(ControlNode* control)
+{
+    QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
+    DVASSERT(mainWindow != nullptr);
+    PackageWidget* packageWidget = mainWindow->GetPackageWidget();
+
+    packageWidget->OnSelectAndRename(control);
 }
 
 void LegacySupportModule::OnSelectionInPackageChanged(const SelectedNodes& selection)
