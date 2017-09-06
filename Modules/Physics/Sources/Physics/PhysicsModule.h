@@ -56,6 +56,7 @@ public:
 
     const Vector<uint32>& GetBodyComponentTypes() const;
     const Vector<uint32>& GetShapeComponentTypes() const;
+    const Vector<uint32>& GetCharacterControllerComponentTypes() const;
 
 private:
     physx::PxFoundation* foundation = nullptr;
@@ -73,6 +74,7 @@ private:
 
     Vector<uint32> bodyComponents;
     Vector<uint32> shapeComponents;
+    Vector<uint32> characterControllerComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

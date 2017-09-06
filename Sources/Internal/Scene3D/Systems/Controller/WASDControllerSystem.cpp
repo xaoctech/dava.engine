@@ -11,21 +11,22 @@
 
 #include "Render/Highlevel/Camera.h"
 
-#include "DeviceManager/DeviceManager.h"
 #include "Input/InputSystem.h"
 #include "Input/Keyboard.h"
 
 #include "Utils/Utils.h"
 
+#include "DeviceManager/DeviceManager.h"
+
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/CharacterControllerComponent.h>
+#include <Physics/PhysicsHelpers.h>
 #endif
 
 namespace DAVA
 {
 WASDControllerSystem::WASDControllerSystem(Scene* scene)
     : SceneSystem(scene)
-    , moveSpeed(0.05f)
+    , moveSpeed(1.f)
 {
 }
 
@@ -100,11 +101,7 @@ void WASDControllerSystem::Process(float32 timeElapsed)
             }
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-            CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(entities[i]->GetComponent(Component::BOX_CHARACTER_CONTROLLER_COMPONENT));
-            if (physicsController == nullptr)
-            {
-                physicsController = static_cast<CharacterControllerComponent*>(entities[i]->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
-            }
+            CharacterControllerComponent* physicsController = GetCharacterControllerComponent(entities[i]);
 
             if (physicsController != nullptr)
             {
@@ -131,11 +128,7 @@ void WASDControllerSystem::MoveForward(Camera* camera, Entity* parentEntity, flo
     const Vector3 displacement = dir * speed * static_cast<float32>(direction);
     
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::BOX_CHARACTER_CONTROLLER_COMPONENT));
-    if (physicsController == nullptr)
-    {
-        physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
-    }
+    CharacterControllerComponent* physicsController = GetCharacterControllerComponent(parentEntity);
 
     if (physicsController != nullptr)
     {
@@ -163,11 +156,7 @@ void WASDControllerSystem::MoveRight(Camera* camera, Entity* parentEntity, float
     const Vector3 displacement = right * speed * static_cast<float32>(direction);
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    CharacterControllerComponent* physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::BOX_CHARACTER_CONTROLLER_COMPONENT));
-    if (physicsController == nullptr)
-    {
-        physicsController = static_cast<CharacterControllerComponent*>(parentEntity->GetComponent(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT));
-    }
+    CharacterControllerComponent* physicsController = GetCharacterControllerComponent(parentEntity);
 
     if (physicsController != nullptr)
     {

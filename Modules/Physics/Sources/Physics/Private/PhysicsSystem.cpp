@@ -170,6 +170,7 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     const Vector<uint32>& bodyComponents = module->GetBodyComponentTypes();
     const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+    const Vector<uint32>& characterControllerComponents = module->GetCharacterControllerComponentTypes();
 
     for (uint32 type : bodyComponents)
     {
@@ -180,9 +181,12 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
     {
         processEntity(entity, type);
     }
-    
-    processEntity(entity, Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
-    processEntity(entity, Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
+
+    for (uint32 type : characterControllerComponents)
+    {
+        processEntity(entity, type);
+    }
+
     processEntity(entity, Component::RENDER_COMPONENT);
 }
 
@@ -199,6 +203,7 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     const Vector<uint32>& bodyComponents = module->GetBodyComponentTypes();
     const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+    const Vector<uint32>& characterControllerComponents = module->GetCharacterControllerComponentTypes();
 
     for (uint32 type : bodyComponents)
     {
@@ -209,8 +214,12 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
     {
         processEntity(entity, type);
     }
-    processEntity(entity, Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
-    processEntity(entity, Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
+
+    for (uint32 type : characterControllerComponents)
+    {
+        processEntity(entity, type);
+    }
+
     processEntity(entity, Component::RENDER_COMPONENT);
 }
 

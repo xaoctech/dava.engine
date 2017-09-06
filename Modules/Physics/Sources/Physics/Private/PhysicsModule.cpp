@@ -174,6 +174,10 @@ PhysicsModule::PhysicsModule(Engine* engine)
     shapeComponents.push_back(Component::MESH_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
+
+    characterControllerComponents.reserve(2);
+    characterControllerComponents.push_back(Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
+    characterControllerComponents.push_back(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
 }
 
 void PhysicsModule::Init()
@@ -469,6 +473,11 @@ const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
 const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
 {
     return shapeComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
+{
+    return characterControllerComponents;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)
