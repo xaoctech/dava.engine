@@ -2,10 +2,12 @@
 #include "Classes/PropertyPanel/PropertyPanelCommon.h"
 #include "Classes/Commands2/SlotCommands.h"
 #include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/SetFieldValueCommand.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 #include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
+#include "Classes/SlotSupportModule/SlotSystemSettings.h"
 
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Controls/ComboBox.h>
@@ -718,7 +720,7 @@ private:
         {
             DAVA::TArc::NotificationParams p;
             p.message.message = "Clipboard doesn't contain slot component. Please copy slot to clipboard first";
-            p.message.type = Result::RESULT_ERROR;
+            p.message.type = DAVA::Result::RESULT_ERROR;
             p.title = "Slot can't be pasted";
             GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, p);
         };
@@ -979,7 +981,7 @@ public:
         {
             DAVA::TArc::NotificationParams p;
             p.message.message = "You should save scene at least once first";
-            p.message.type = Result::RESULT_ERROR;
+            p.message.type = DAVA::Result::RESULT_ERROR;
             p.title = "Slot can't be copied";
             params.ui->ShowNotification(DAVA::TArc::mainWindowKey, p);
             return nullptr;
@@ -999,7 +1001,7 @@ public:
         DAVA::uint32 archiveSize = archive->Save(nullptr, 0);
         QByteArray byteArray;
         byteArray.resize(archiveSize);
-        archive->Save(reinterpret_cast<uint8*>(byteArray.data()), archiveSize);
+        archive->Save(reinterpret_cast<DAVA::uint8*>(byteArray.data()), archiveSize);
 
         QMimeData* mimeData = new QMimeData();
         mimeData->setData("mime:/propertyPanel/slotComponent", byteArray);

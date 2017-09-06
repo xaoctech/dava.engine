@@ -5,6 +5,8 @@
 #include <FileSystem/FilePath.h>
 #include <Math/Color.h>
 
+#include <QString>
+
 class SlotSystemSettings : public DAVA::TArc::SettingsNode
 {
 public:

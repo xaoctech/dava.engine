@@ -279,7 +279,7 @@ DAVA::RefPtr<DAVA::KeyedArchive> EditorSlotSystem::SaveSlotsPreset(DAVA::Entity*
         for (DAVA::uint32 subEntityIndex = 0; subEntityIndex < subEntitiesCount; ++subEntityIndex)
         {
             DAVA::RefPtr<DAVA::KeyedArchive> arch = archives[subEntityIndex];
-            result->SetArchive(Format("subEntity_%u", subEntityIndex), arch.Get());
+            result->SetArchive(DAVA::Format("subEntity_%u", subEntityIndex), arch.Get());
         }
     }
 
@@ -289,7 +289,7 @@ DAVA::RefPtr<DAVA::KeyedArchive> EditorSlotSystem::SaveSlotsPreset(DAVA::Entity*
         DAVA::FilePath scenePath = static_cast<SceneEditor2*>(GetScene())->GetScenePath();
 
         DAVA::SerializationContext serializeCtx;
-        serializeCtx.SetVersion(VersionInfo::Instance()->GetCurrentVersion().version);
+        serializeCtx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
         serializeCtx.SetScenePath(scenePath.GetDirectory());
         serializeCtx.SetRootNodePath(scenePath);
         serializeCtx.SetScene(GetScene());
@@ -314,7 +314,7 @@ DAVA::RefPtr<DAVA::KeyedArchive> EditorSlotSystem::SaveSlotsPreset(DAVA::Entity*
                 arch->SetFastName("loadedItem", loadedItem);
             }
 
-            result->SetArchive(Format("slot_%u", slotIndex), arch.Get());
+            result->SetArchive(DAVA::Format("slot_%u", slotIndex), arch.Get());
         }
     }
 
@@ -456,7 +456,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
                 f.key = DAVA::SlotComponent::SlotNameFieldName;
                 f.ref = componentRef.GetField(f.key);
                 DVASSERT(f.ref.IsValid());
-                holder.AddPostCommand(std::make_unique<SetFieldValueCommand>(f, GenerateUniqueSlotName(component, cmd->GetNewValue().Cast<FastName>())));
+                holder.AddPostCommand(std::make_unique<SetFieldValueCommand>(f, GenerateUniqueSlotName(component, cmd->GetNewValue().Cast<DAVA::FastName>())));
             }
         }
         else if (autoGenerateName == true && type == DAVA::ReflectedTypeDB::Get<DAVA::Entity>() && fieldName == DAVA::Entity::EntityNameFieldName)
@@ -608,16 +608,15 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
 
 DAVA::FastName EditorSlotSystem::GetSuitableItemName(DAVA::SlotComponent* component) const
 {
-    FastName itemName;
+    DAVA::FastName itemName;
 
-    Vector<SlotSystem::ItemsCache::Item> items = GetScene()->slotSystem->GetItems(component->GetConfigFilePath());
-    FastName templateName = component->GetTemplateName();
+    DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = GetScene()->slotSystem->GetItems(component->GetConfigFilePath());
+    DAVA::FastName templateName = component->GetTemplateName();
     if (templateName.IsValid())
     {
-        auto iter = std::find_if(items.begin(), items.end(), [templateName](const SlotSystem::ItemsCache::Item& item)
-                                 {
-                                     return item.type == templateName;
-                                 });
+        auto iter = std::find_if(items.begin(), items.end(), [templateName](const DAVA::SlotSystem::ItemsCache::Item& item) {
+            return item.type == templateName;
+        });
 
         if (iter != items.end())
         {
@@ -719,7 +718,7 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
     DAVA::FilePath scenePath = scene->GetScenePath();
 
     DAVA::SerializationContext serializeCtx;
-    serializeCtx.SetVersion(VersionInfo::Instance()->GetCurrentVersion().version);
+    serializeCtx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
     serializeCtx.SetScenePath(scenePath.GetDirectory());
     serializeCtx.SetRootNodePath(scenePath);
     serializeCtx.SetScene(scene);
@@ -736,7 +735,7 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
 
         for (DAVA::uint32 slotArhcIndex = 0; slotArhcIndex < slotsCount; ++slotArhcIndex)
         {
-            DAVA::KeyedArchive* slotArch = archive->GetArchive(Format("slot_%u", slotArhcIndex));
+            DAVA::KeyedArchive* slotArch = archive->GetArchive(DAVA::Format("slot_%u", slotArhcIndex));
             DVASSERT(slotArch != nullptr);
             DAVA::FastName slotName = slotArch->GetFastName("slotName");
             DVASSERT(slotName.IsValid() == true);
@@ -771,7 +770,7 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
 
         for (DAVA::uint32 subEntityIndex = 0; subEntityIndex < subEntitiesCount; ++subEntityIndex)
         {
-            DAVA::KeyedArchive* subEntityArch = archive->GetArchive(Format("subEntity_%u", subEntityIndex));
+            DAVA::KeyedArchive* subEntityArch = archive->GetArchive(DAVA::Format("subEntity_%u", subEntityIndex));
             DVASSERT(subEntityArch != nullptr);
             DAVA::FastName entityName = subEntityArch->GetFastName("entityName");
             auto iter = childEntities.find(entityName);

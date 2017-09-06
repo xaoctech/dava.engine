@@ -315,6 +315,7 @@ ImportParams::~ImportParams()
         }
     }
 
+    componentsMap.clear();
     materialsMap.clear();
 }
 
