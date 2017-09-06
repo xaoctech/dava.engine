@@ -60,7 +60,8 @@ private:
     void CreateTankVehicle(VehicleTankComponent* vehicleComponent);
 
 private:
-    physx::PxScene* pxScene;
+    Scene* scene = nullptr;
+    physx::PxScene* pxScene = nullptr;
     Vector<VehicleComponent*> vehicleComponents;
     bool simulationEnabled = false;
 };
