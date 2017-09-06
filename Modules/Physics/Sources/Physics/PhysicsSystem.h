@@ -49,7 +49,7 @@ public:
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
-    PhysicsVehiclesSubsystem* GetVehiclesSystem() const;
+    PhysicsVehiclesSubsystem* GetVehiclesSystem();
 
 private:
     bool FetchResults(bool waitForFetchFinish);
