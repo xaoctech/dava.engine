@@ -28,9 +28,7 @@ if (NOT LINUX)
     find_dava_module( Spine )
 endif()
 
-if ( WIN32 AND NOT WIN_UAP)
-    find_dava_module( CEFWebview )
-endif ()
+find_dava_module( CEFWebview )
 
 # add physics
 

@@ -1,6 +1,8 @@
 
 set( NAME_MODULE Sample )                     # set name to module 
 
+set(PLATFORMS_IGNORE ANDROID )                
+
 set( MODULE_TYPE STATIC )                     # set module type [INLINE, STATIC, DYNAMIC]
 
 set( INCLUDES         Sources)                # set search path headers for all project

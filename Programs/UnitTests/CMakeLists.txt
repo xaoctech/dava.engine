@@ -38,13 +38,8 @@ if (NOT LINUX)
     find_dava_module( "NetworkCore" )
 endif()
 
-if ( WIN32 AND NOT WINDOWS_UAP )
-    find_dava_module( "CEFWebview" )
-endif ()
-
-if (NOT ANDROID)
-    find_dava_module( "Sample" )
-endif()
+find_dava_module( "CEFWebview" )
+find_dava_module( "Sample" )
 
 # add physics
 find_dava_module( "Physics" )

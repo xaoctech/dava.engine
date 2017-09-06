@@ -1,6 +1,8 @@
 set( NAME_MODULE CEFWebview )
 set( MODULE_TYPE STATIC )
 
+set( PLATFORMS_IGNORE WINDOWS_UAP MACOS IOS ANDROID LINUX )                
+
 set( HPP_FILES Sources/CEFWebview/*.h )
 set( CPP_FILES Sources/CEFWebview/Private/*.cpp     )
 

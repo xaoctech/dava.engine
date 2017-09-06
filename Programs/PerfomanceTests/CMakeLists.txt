@@ -10,21 +10,20 @@ if ( ENABLE_MEM_PROFILING )
     dava_add_definitions( -DDAVA_MEMORY_PROFILING_ENABLE )
 endif()
 
-set ( DAVA_COMPONENTS "DAVA_DISABLE_AUTOTESTS" )
+set ( DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
 
-find_dava_module( "Sample" )
+find_dava_module( Sample )
 
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound"  )
-    find_dava_module( "Spine" )
+    list ( APPEND DAVA_COMPONENTS Sound  )
+    find_dava_module( Spine )
 endif()
-if ( WIN32 AND NOT WIN_UAP)
-    find_dava_module( "CEFWebview" )
-endif ()
+
+find_dava_module( CEFWebview )
 
 # add physics
-find_dava_module( "Physics" )
-find_dava_module( "PhysicsDebug" )
+find_dava_module( Physics )
+find_dava_module( PhysicsDebug )
 
 dava_add_definitions(-DLOCALIZATION_DEBUG)
 
