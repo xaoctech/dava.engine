@@ -42,9 +42,6 @@ private:
     DAVA::int32 GetUpdateOrder() const override;
     void OnUpdate() override;
 
-    void InitFieldBinder();
-
-    void OnSelectionChanged(const DAVA::Any& selection);
     void OnHighlightNode(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
@@ -54,7 +51,6 @@ private:
     HUDAreaInfo GetControlArea(const DAVA::Vector2& pos, eSearchOrder searchOrder) const;
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
 
-    void UpdateAreasVisibility();
     void UpdateHUDEnabled();
 
     SortedControlNodeSet GetSortedControlList() const;

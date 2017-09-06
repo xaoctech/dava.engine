@@ -129,32 +129,10 @@ HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
 {
     GetSystemsManager()->highlightNode.Connect(this, &HUDSystem::OnHighlightNode);
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
-
-    InitFieldBinder();
 }
 
 HUDSystem::~HUDSystem()
 {
-}
-
-void HUDSystem::InitFieldBinder()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    fieldBinder.reset(new FieldBinder(accessor));
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &HUDSystem::OnSelectionChanged));
-    }
-}
-
-void HUDSystem::OnSelectionChanged(const Any& selection)
-{
-    UpdateAreasVisibility();
-    ProcessCursor(hoveredPoint, SEARCH_BACKWARD);
 }
 
 DAVA::int32 HUDSystem::GetUpdateOrder() const
@@ -207,6 +185,22 @@ void HUDSystem::OnUpdate()
         hudPair.second->container->InitFromGD(controlGD);
     }
 
+    //show Rotate and Pivot only if only one control is selected
+    bool showAreas = hudMap.size() == 1;
+
+    for (const auto& iter : hudMap)
+    {
+        for (HUDAreaInfo::eArea area : AreasToHide)
+        {
+            auto hudControlsIter = iter.second->hudControls.find(area);
+            if (hudControlsIter != iter.second->hudControls.end())
+            {
+                ControlContainer* controlContainer = hudControlsIter->second;
+                controlContainer->SetSystemVisible(showAreas);
+            }
+        }
+    }
+
     //DAVA::Logger::Warning("hovered point %f %f", hoveredPoint.x, hoveredPoint.y);
     if (hoveredPoint == Vector2(-1.0f, -1.0f))
     {
@@ -217,12 +211,17 @@ void HUDSystem::OnUpdate()
         ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
         OnHighlightNode(node);
     }
+
+    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
+    {
+        bool findPivot = hudMap.size() == 1 && IsKeyPressed(eModifierKeys::CONTROL) && IsKeyPressed(eModifierKeys::ALT);
+        eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
+        ProcessCursor(hoveredPoint, searchOrder);
+    }
 }
 
 void HUDSystem::ProcessInput(UIEvent* currentInput)
 {
-    bool findPivot = hudMap.size() == 1 && DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL) && DAVA::TArc::IsKeyPressed(eModifierKeys::ALT);
-    eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
     UIEvent::Phase phase = currentInput->phase;
     if (currentInput->point.x > 0.0f && currentInput->point.y > 0.0f)
     {
@@ -231,11 +230,6 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
 
     switch (phase)
     {
-    case UIEvent::Phase::MOVE:
-    case UIEvent::Phase::BEGAN:
-    case UIEvent::Phase::ENDED:
-        ProcessCursor(hoveredPoint, searchOrder);
-        break;
     case UIEvent::Phase::DRAG:
         if (GetSystemsManager()->GetDragState() == EditorSystemsManager::SelectByRect)
         {
@@ -422,30 +416,6 @@ void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
     {
         activeAreaInfo = areaInfo;
         GetSystemsManager()->activeAreaChanged.Emit(activeAreaInfo);
-    }
-}
-
-void HUDSystem::UpdateAreasVisibility()
-{
-    SortedControlNodeSet sortedControlList = GetSortedControlList();
-    bool showAreas = sortedControlList.size() == 1;
-
-    for (const auto& iter : sortedControlList)
-    {
-        ControlNode* node = dynamic_cast<ControlNode*>(iter);
-        DVASSERT(nullptr != node);
-        auto findIter = hudMap.find(node);
-        DVASSERT(findIter != hudMap.end(), "hud map corrupted");
-        const auto& hud = findIter->second;
-        for (HUDAreaInfo::eArea area : AreasToHide)
-        {
-            auto hudControlsIter = hud->hudControls.find(area);
-            if (hudControlsIter != hud->hudControls.end())
-            {
-                ControlContainer* controlContainer = hudControlsIter->second;
-                controlContainer->SetSystemVisible(showAreas);
-            }
-        }
     }
 }
 
