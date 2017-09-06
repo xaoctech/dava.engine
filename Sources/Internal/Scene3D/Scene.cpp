@@ -52,7 +52,10 @@
 
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
-#include "Physics/CollisionSingleComponent.h"
+#endif
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/CollisionSingleComponent.h>
 #endif
 
 #include <functional>
@@ -674,10 +677,12 @@ void Scene::Update(float32 timeElapsed)
         transformSingleComponent->Clear();
     }
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (collisionSingleComponent)
     {
         collisionSingleComponent->collisions.clear();
     }
+#endif
 
     sceneGlobalTime += timeElapsed;
 }
