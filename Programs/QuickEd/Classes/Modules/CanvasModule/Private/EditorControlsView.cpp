@@ -436,7 +436,18 @@ void EditorControlsView::OnUpdate()
     if (displayedControls != newDisplayedControls)
     {
         OnRootContolsChanged(newDisplayedControls, displayedControls);
+
+        //we need to retain cached nodes between frames
+        //this is the only way to have no conflicts with the other systems
+        for (ControlNode* node : displayedControls)
+        {
+            node->Release();
+        }
         displayedControls = newDisplayedControls;
+        for (ControlNode* node : displayedControls)
+        {
+            node->Retain();
+        }
     }
 
     if (needRecalculateBgrBeforeRender)
