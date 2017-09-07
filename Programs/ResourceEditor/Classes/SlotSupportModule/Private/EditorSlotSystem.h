@@ -40,14 +40,12 @@ public:
     DAVA::RefPtr<DAVA::KeyedArchive> SaveSlotsPreset(DAVA::Entity* entity);
     void LoadSlotsPreset(DAVA::Entity* entity, DAVA::RefPtr<DAVA::KeyedArchive> archive);
 
-    // if newTemplateName of newEntityName is not valid, this values will be get from component
-    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component,
-                                                 const DAVA::FastName& newTemplateName = DAVA::FastName(),
-                                                 const DAVA::FastName& newEntityName = DAVA::FastName());
+    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component);
     static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component,
                                                  DAVA::Entity* entity,
-                                                 const DAVA::FastName& newTemplateName = DAVA::FastName(),
-                                                 const DAVA::FastName& newEntityName = DAVA::FastName());
+                                                 const DAVA::FastName& newTemplateName,
+                                                 const DAVA::FastName& newEntityName,
+                                                 const DAVA::Set<DAVA::FastName>& reservedName);
 
 protected:
     friend class AttachEntityToSlot;

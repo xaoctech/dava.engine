@@ -621,16 +621,11 @@ public:
             enumerator.emplace(t.name.c_str());
         }
 
-        if (enumerator.empty() == true)
-        {
-            enumerator.emplace("");
-            isEnumeratorEmpty = true;
-        }
-
         DAVA::TArc::ComboBox::Params params(accessor, GetUI(), GetWindowKey());
         params.fields[DAVA::TArc::ComboBox::Fields::Enumerator] = "enumerator";
         params.fields[DAVA::TArc::ComboBox::Fields::Value] = "value";
         params.fields[DAVA::TArc::ComboBox::Fields::IsReadOnly] = "isEmpty";
+        params.fields[DAVA::TArc::ComboBox::Fields::MultipleValueText] = "emptyEnumText";
         return new DAVA::TArc::ComboBox(params, wrappersProcessor, model, parent);
     }
 
@@ -652,13 +647,13 @@ private:
     }
 
     DAVA::Set<DAVA::String> enumerator;
-    bool isEnumeratorEmpty = false;
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotTemplateComponentValue, DAVA::TArc::BaseComponentValue)
     {
         DAVA::ReflectionRegistrator<SlotTemplateComponentValue>::Begin()
         .Field("enumerator", &SlotTemplateComponentValue::enumerator)
         .Field("value", &SlotTemplateComponentValue::GetTemplateName, &SlotTemplateComponentValue::SetTemplateName)
-        .Field("isEmpty", &SlotTemplateComponentValue::isEnumeratorEmpty)
+        .Field("isEmpty", [](SlotTemplateComponentValue* obj) { return obj->enumerator.empty(); }, nullptr)
+        .Field("emptyEnumText", [](SlotTemplateComponentValue*) { return "Empty"; }, nullptr)
         .End();
     }
 };
