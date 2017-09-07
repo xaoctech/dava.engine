@@ -106,6 +106,7 @@ public:
     void KeyPress(int32 keyChar);
 
     void ProcessInput(const UIEvent& input);
+    void ClickSystemBack();
     void EmulatePressKey(DAVA::uint32 key);
 
     // helpers

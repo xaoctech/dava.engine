@@ -68,6 +68,7 @@ public:
     const String& GetScreenShotName();
     void MakeScreenShot();
     bool GetIsScreenShotSaving() const;
+    void ClickSystemBack();
     void EmulatePressKey(DAVA::uint32 key);
 
     // DB Master-Helper relations

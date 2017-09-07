@@ -6843,6 +6843,31 @@ fail:
     return SWIG_arg;
 }
 
+static int _wrap_AutotestingSystemLua_ClickSystemBack(lua_State* L)
+{
+    int SWIG_arg = 0;
+    DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
+    
+    SWIG_check_num_args("DAVA::AutotestingSystemLua::ClickSystemBack", 1, 1)
+    if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ClickSystemBack", 1, "DAVA::AutotestingSystemLua *");
+    
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&arg1, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)))
+    {
+        SWIG_fail_ptr("AutotestingSystemLua_ClickSystemBack", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
+    }
+    
+    (arg1)->ClickSystemBack();
+    
+    return SWIG_arg;
+    
+    if (0)
+        SWIG_fail;
+    
+fail:
+    lua_error(L);
+    return SWIG_arg;
+}
+
 static int _wrap_AutotestingSystemLua_EmulatePressKey(lua_State* L)
 {
     int SWIG_arg=0;
@@ -7535,6 +7560,7 @@ static swig_lua_method swig_AutotestingSystemLua_methods[] = {
     { "ScrollToControl", _wrap_AutotestingSystemLua_ScrollToControl },
     { "KeyPress", _wrap_AutotestingSystemLua_KeyPress },
     { "ProcessInput", _wrap_AutotestingSystemLua_ProcessInput },
+    { "ClickSystemBack", _wrap_AutotestingSystemLua_ClickSystemBack },
     { "EmulatePressKey", _wrap_AutotestingSystemLua_EmulatePressKey },
     { "SetText", _wrap_AutotestingSystemLua_SetText },
     { "CheckText", _wrap_AutotestingSystemLua_CheckText },
