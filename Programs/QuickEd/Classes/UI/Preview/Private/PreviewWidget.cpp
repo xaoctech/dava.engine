@@ -146,7 +146,7 @@ void PreviewWidget::CreateActions()
     focusPreviousChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusPreviousChildAction);
     focusPreviousChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<bool>(false);
+        return fieldValue.Cast<bool>(false) == false;
     });
     connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
 }

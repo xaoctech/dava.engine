@@ -381,11 +381,6 @@ HUDAreaInfo EditorSystemsManager::GetCurrentHUDArea() const
     return currentHUDArea;
 }
 
-void EditorSystemsManager::AddEditorSystem(BaseEditorSystem* system)
-{
-    RegisterEditorSystem(system);
-}
-
 void EditorSystemsManager::SetDragState(eDragState newDragState)
 {
     if (dragState == newDragState)

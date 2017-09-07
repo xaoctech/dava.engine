@@ -121,8 +121,6 @@ public:
     //TODO: remove this function by moving systems to the separate modules
     DAVA_DEPRECATED(void InitSystems());
 
-    void AddEditorSystem(BaseEditorSystem* system);
-
     void OnInput(DAVA::UIEvent* currentInput);
 
     template <class OutIt, class Predicate>
