@@ -132,6 +132,21 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                           });
 }
 
+void DLCManagerImpl::DumpToJsonProfilerTrace()
+{
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    FilePath docPath = fs->GetPublicDocumentsPath();
+    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+    std::ofstream file(name);
+    char buf[16 * 1024];
+    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+    if (file)
+    {
+        Vector<TraceEvent> events = profiler.GetTrace();
+        TraceEvent::DumpJSON(events, file);
+    }
+}
+
 void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
 {
     if (EngineSettings::SETTING_PROFILE_DLC_MANAGER == value)
@@ -143,17 +158,7 @@ void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
         else
         {
             profiler.Stop();
-            FileSystem* fs = GetEngineContext()->fileSystem;
-            FilePath docPath = fs->GetPublicDocumentsPath();
-            String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-            std::ofstream file(name);
-            char buf[16 * 1024];
-            file.rdbuf()->pubsetbuf(buf, sizeof(buf));
-            if (file)
-            {
-                Vector<TraceEvent> events = profiler.GetTrace();
-                TraceEvent::DumpJSON(events, file);
-            }
+            DumpToJsonProfilerTrace();
         }
     }
 }
@@ -392,15 +397,7 @@ void DLCManagerImpl::Deinitialize()
     if (profiler.IsStarted())
     {
         profiler.Stop();
-        FileSystem* fs = GetEngineContext()->fileSystem;
-        FilePath docPath = fs->GetPublicDocumentsPath();
-        String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-        std::ofstream file(name);
-        if (file)
-        {
-            Vector<TraceEvent> events = profiler.GetTrace();
-            TraceEvent::DumpJSON(events, file);
-        }
+        DumpToJsonProfilerTrace();
     }
 
     log.close();
