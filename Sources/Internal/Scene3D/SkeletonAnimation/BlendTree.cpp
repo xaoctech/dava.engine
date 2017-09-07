@@ -223,7 +223,7 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                 {
                     if (syncPointsNode->GetType() == YamlNode::TYPE_STRING)
                     {
-                        animation.phaseEnds.push_back(syncPointsNode->AsFloat());
+                        animation.phaseEnds.push_back(Clamp(syncPointsNode->AsFloat(), 0.f, 1.f));
                     }
                     else if (syncPointsNode->GetType() == YamlNode::TYPE_ARRAY)
                     {
@@ -233,8 +233,10 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                             const YamlNode* syncPointNode = syncPointsNode->Get(sp);
                             if (syncPointNode->GetType() == YamlNode::TYPE_STRING)
                             {
-                                DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < syncPointNode->AsFloat());
-                                animation.phaseEnds.push_back(syncPointNode->AsFloat());
+                                float32 syncPointTimestamp = Clamp(syncPointNode->AsFloat(), 0.f, 1.f);
+                                DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < syncPointTimestamp);
+
+                                animation.phaseEnds.push_back(syncPointTimestamp);
                             }
                         }
                     }

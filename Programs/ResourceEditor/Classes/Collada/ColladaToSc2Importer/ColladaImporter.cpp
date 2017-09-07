@@ -440,7 +440,6 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
         uint32 keyCount = 0;
     } channelHeader;
 
-    uint32 zeroU4 = 0;
     for (auto canimation : colladaScene->colladaAnimations)
     {
         FilePath filePath = dir + String(canimation->name + ".anim");
@@ -524,11 +523,10 @@ eColladaErrorCodes ColladaImporter::SaveAnimations(ColladaScene* colladaScene, c
                         WriteToBuffer(animationClipData, &s.second.x); //scale
                     }
                 }
-
-                //SafeDeleteArray(animationKeysCopy);
             }
 
-            WriteToBuffer(animationClipData, &zeroU4); //TODO: *Skinning* marks count
+            uint32 markersCount = 0;
+            WriteToBuffer(animationClipData, &markersCount);
 
             uint32 animationDataSize = uint32(animationClipData.size());
 
