@@ -257,6 +257,10 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
 void HUDSystem::OnHighlightNode(ControlNode* node)
 {
     using namespace DAVA::TArc;
+    if (hoveredNodeControl != nullptr && node != nullptr && hoveredNodeControl->IsDrawableControl(node->GetControl()))
+    {
+        return;
+    }
     if (hoveredNodeControl != nullptr)
     {
         hoveredNodeControl->RemoveFromParent(hudControl.Get());
@@ -490,7 +494,12 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
 EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput)
 {
     EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
-    if (currentInput->device != eInputDevices::MOUSE || dragState == EditorSystemsManager::Transform || dragState == EditorSystemsManager::DragScreen)
+    //ignore all input devices except mouse while selecting by rect
+    if (dragState == EditorSystemsManager::SelectByRect && currentInput->device != eInputDevices::MOUSE)
+    {
+        return EditorSystemsManager::SelectByRect;
+    }
+    if (dragState == EditorSystemsManager::Transform || dragState == EditorSystemsManager::DragScreen)
     {
         return EditorSystemsManager::NoDrag;
     }

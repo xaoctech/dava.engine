@@ -110,6 +110,11 @@ bool ControlContainer::GetVisibilityFlag() const
     return drawable->GetVisibilityFlag();
 }
 
+bool ControlContainer::IsDrawableControl(DAVA::UIControl* control) const
+{
+    return drawable == control;
+}
+
 HUDContainer::HUDContainer(const ControlNode* node_)
     : ControlContainer(HUDAreaInfo::NO_AREA)
     , node(node_)

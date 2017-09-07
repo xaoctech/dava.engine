@@ -1,4 +1,5 @@
 #include "Modules/CanvasModule/EditorControlsView.h"
+#include "Modules/CanvasModule/Private/InitEditorCanvasSystem.h"
 
 #include "EditorSystems/EditorSystemsManager.h"
 
@@ -342,6 +343,9 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::Cont
     canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
+
+    InitEditorCanvasSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<InitEditorCanvasSystem>();
+    updateSystem->initEditorCanvas.Connect(this, &EditorControlsView::PlaceControlsOnCanvas);
 }
 
 EditorControlsView::~EditorControlsView()
@@ -431,6 +435,26 @@ BaseEditorSystem::eSystems EditorControlsView::GetOrder() const
 
 void EditorControlsView::OnUpdate()
 {
+    if (needRecalculateBgrBeforeRender)
+    {
+        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::Transform)
+        { // do not recalculate while control is dragged
+            return;
+        }
+
+        needRecalculateBgrBeforeRender = false;
+
+        for (auto& iter : gridControls)
+        {
+            iter->UpdateCounterpoise();
+            iter->AdjustToNestedControl();
+        }
+        Layout();
+    }
+}
+
+void EditorControlsView::PlaceControlsOnCanvas()
+{
     static SortedControlNodeSet displayedControls;
     SortedControlNodeSet newDisplayedControls = GetDisplayedControls();
     if (displayedControls != newDisplayedControls)
@@ -448,23 +472,6 @@ void EditorControlsView::OnUpdate()
         {
             node->Retain();
         }
-    }
-
-    if (needRecalculateBgrBeforeRender)
-    {
-        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::Transform)
-        { // do not recalculate while control is dragged
-            return;
-        }
-
-        needRecalculateBgrBeforeRender = false;
-
-        for (auto& iter : gridControls)
-        {
-            iter->UpdateCounterpoise();
-            iter->AdjustToNestedControl();
-        }
-        Layout();
     }
 }
 
@@ -554,22 +561,26 @@ void EditorControlsView::Layout()
 
 void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRootControls, const SortedControlNodeSet& oldRootControls)
 {
+    //set_difference requires sorted Set without custom comparator
+    Set<ControlNode*> sortedNewControls(newRootControls.begin(), newRootControls.end());
+    Set<ControlNode*> sortedOldControls(oldRootControls.begin(), oldRootControls.end());
+
     Set<ControlNode*> newNodes;
     Set<ControlNode*> deletedNodes;
     if (!oldRootControls.empty())
     {
-        std::set_difference(oldRootControls.begin(),
-                            oldRootControls.end(),
-                            newRootControls.begin(),
-                            newRootControls.end(),
+        std::set_difference(sortedOldControls.begin(),
+                            sortedOldControls.end(),
+                            sortedNewControls.begin(),
+                            sortedNewControls.end(),
                             std::inserter(deletedNodes, deletedNodes.end()));
     }
     if (!newRootControls.empty())
     {
-        std::set_difference(newRootControls.begin(),
-                            newRootControls.end(),
-                            oldRootControls.begin(),
-                            oldRootControls.end(),
+        std::set_difference(sortedNewControls.begin(),
+                            sortedNewControls.end(),
+                            sortedOldControls.begin(),
+                            sortedOldControls.end(),
                             std::inserter(newNodes, newNodes.end()));
     }
 
