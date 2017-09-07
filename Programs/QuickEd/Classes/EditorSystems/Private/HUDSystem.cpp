@@ -179,12 +179,6 @@ void HUDSystem::OnUpdate()
         }
     }
 
-    for (const auto& hudPair : hudMap)
-    {
-        const UIGeometricData& controlGD = hudPair.first->GetControl()->GetGeometricData();
-        hudPair.second->container->InitFromGD(controlGD);
-    }
-
     //show Rotate and Pivot only if only one control is selected
     bool showAreas = hudMap.size() == 1;
 
@@ -199,6 +193,12 @@ void HUDSystem::OnUpdate()
                 controlContainer->SetSystemVisible(showAreas);
             }
         }
+    }
+
+    for (const auto& hudPair : hudMap)
+    {
+        const UIGeometricData& controlGD = hudPair.first->GetControl()->GetGeometricData();
+        hudPair.second->container->InitFromGD(controlGD);
     }
 
     if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)

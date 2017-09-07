@@ -276,8 +276,21 @@ void EditorSystemsManager::OnRootContolsChanged(const DAVA::Any& rootControlsVal
     const EngineContext* engineContext = GetEngineContext();
     // reset current screen
     engineContext->uiControlSystem->GetInputSystem()->SetCurrentScreen(engineContext->uiControlSystem->GetScreen());
+}
 
-    SortedControlNodeSet rootControls = rootControlsValue.Cast<SortedControlNodeSet>(SortedControlNodeSet());
+void EditorSystemsManager::UpdateDisplayState()
+{
+    using namespace DAVA::TArc;
+
+    SortedControlNodeSet rootControls;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext != nullptr)
+    {
+        DocumentData* documentData = activeContext->GetData<DocumentData>();
+        rootControls = documentData->GetDisplayedRootControls();
+    }
+
     eDisplayState state = rootControls.size() == 1 ? Edit : Preview;
     if (displayState == Emulation)
     {
@@ -297,6 +310,8 @@ void EditorSystemsManager::OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo)
 void EditorSystemsManager::OnUpdate()
 {
     using namespace DAVA;
+
+    UpdateDisplayState();
 
     for (const auto& orderAndSystem : systems)
     {
