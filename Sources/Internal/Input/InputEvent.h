@@ -14,20 +14,23 @@ class Window;
 */
 struct InputEvent
 {
+    InputEvent();
+    ~InputEvent();
+
     /** The window this event is addressed to. */
-    Window* window;
+    Window* window = nullptr;
 
     /** Event timestamp. */
-    float64 timestamp;
+    float64 timestamp = 0.0;
 
     /** Type of the device that triggered the event. */
-    eInputDeviceTypes deviceType;
+    eInputDeviceTypes deviceType = eInputDeviceTypes::UNKNOWN;
 
     /** Device that triggered the event. This value is never null. */
-    InputDevice* device;
+    InputDevice* device = nullptr;
 
     /** Id of the element which triggered the event. */
-    eInputElements elementId;
+    eInputElements elementId = NONE;
 
     /** Digital element's state. Should only be used if element with `elementId` is a digital one. */
     DigitalElementState digitalState;
@@ -58,4 +61,14 @@ struct InputEvent
         KeyboardEvent keyboardEvent;
     };
 };
+
+inline InputEvent::InputEvent()
+{
+    keyboardEvent = KeyboardEvent();
+}
+
+inline InputEvent::~InputEvent()
+{
+    // do nothing
+}
 }

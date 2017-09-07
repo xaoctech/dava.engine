@@ -6,6 +6,7 @@
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
 #include "DLCManager/Private/PackRequest.h"
+#include "DLCManager/Private/EnableDebugProfiler.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
@@ -306,6 +307,8 @@ private:
 
     Hints hints;
 
+    EnableDebugProfiler gestureChecker;
+
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session
 
@@ -317,6 +320,7 @@ private:
 
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
+    bool showImGuiWindow = false;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const

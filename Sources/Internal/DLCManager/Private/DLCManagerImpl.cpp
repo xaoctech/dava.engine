@@ -17,6 +17,7 @@
 #include "Debug/ProfilerCPU.h"
 
 #include <iomanip>
+#include <Debug/Private/ImGui.h>
 
 namespace DAVA
 {
@@ -109,8 +110,8 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : engine(*engine_)
-    , profiler(1024 * 16)
+    : profiler(1024 * 16)
+    , engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -130,6 +131,12 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                           {
                                                               OnSettingsChanged(value);
                                                           });
+
+    gestureChecker.debugGesture.Connect(this, [this](bool match)
+                                        {
+                                            Logger::Debug("enable mini imgui for dlc profiling: %d", int(match));
+                                            showImGuiWindow = match;
+                                        });
 }
 
 void DLCManagerImpl::DumpToJsonProfilerTrace()
@@ -428,6 +435,34 @@ void DLCManagerImpl::Update(float frameDelta, bool inBackground)
     DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     DVASSERT(Thread::IsMainThread());
+
+    if (ImGui::IsInitialized() && showImGuiWindow)
+    {
+        // 1. Show a simple window
+        {
+            // TODO check why ImGui::NewFrame();
+            // Called ImGui::Render() or ImGui::EndFrame() and haven't called ImGui::NewFrame() again yet
+            ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
+            ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
+
+            ImGui::Begin("DLC Profiling Window", &showImGuiWindow);
+
+            if (ImGui::Button("start dlc profiler"))
+            {
+                Logger::Debug("start dlc profiler");
+                profiler.Start();
+            }
+
+            if (ImGui::Button("stop dlc profiler"))
+            {
+                profiler.Stop();
+                Logger::Debug("stop dlc profiler");
+                DumpToJsonProfilerTrace();
+            }
+
+            ImGui::End();
+        }
+    }
 
     try
     {
