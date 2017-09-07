@@ -107,8 +107,6 @@ public:
 
     void ProcessInput(const UIEvent& input);
     void EmulatePressKey(DAVA::uint32 key);
-    DAVA_DEPRECATED(void ClickSystemBack());
-    DAVA_DEPRECATED(void PressEscape());
 
     // helpers
     bool SetText(const String& path, const String& text); // lua uses ansi strings

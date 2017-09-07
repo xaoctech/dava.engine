@@ -69,8 +69,6 @@ public:
     void MakeScreenShot();
     bool GetIsScreenShotSaving() const;
     void EmulatePressKey(DAVA::uint32 key);
-    DAVA_DEPRECATED(void ClickSystemBack());
-    DAVA_DEPRECATED(void PressEscape());
 
     // DB Master-Helper relations
 
