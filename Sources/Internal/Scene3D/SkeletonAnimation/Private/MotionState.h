@@ -22,17 +22,17 @@ public:
     void LoadFromYaml(const YamlNode* stateNode);
 
     void Reset();
-    bool Update(float32 dTime); //return 'true' if current phase of state is ended
+    void Update(float32 dTime);
     void EvaluatePose(SkeletonPose* outPose) const;
-    void SyncPhase(const MotionState* other);
+    void SyncPhase(const MotionState* withOther);
 
     const FastName& GetID() const;
     const Vector<FastName>& GetBlendTreeParameters() const;
 
-    //TODO: *Skinning* think about interface or usage
-    uint32 GetCurrentPhaseIndex() const;
-    uint32 GetPreviousPhaseIndex() const;
-    const FastName& GetPhaseName(uint32 phaseIndex) const;
+    //TODO: *Skinning* think about interface or usage ?
+    bool IsPhaseEnd() const;
+    bool IsAnimationEnd() const;
+    const FastName& GetLastPhaseName() const;
 
     void BindSkeleton(const SkeletonComponent* skeleton);
 
@@ -49,6 +49,7 @@ protected:
     uint32 animationCurrPhaseIndex = 0u;
     uint32 animationPrevPhaseIndex = 0u;
     float32 animationPhase = 0.f;
+    bool anyPhaseEnd = false;
 };
 
 inline const FastName& MotionState::GetID() const
@@ -56,20 +57,19 @@ inline const FastName& MotionState::GetID() const
     return id;
 }
 
-inline uint32 MotionState::GetCurrentPhaseIndex() const
+inline bool MotionState::IsPhaseEnd() const
 {
-    return animationCurrPhaseIndex;
+    return anyPhaseEnd;
 }
 
-inline uint32 MotionState::GetPreviousPhaseIndex() const
+inline bool MotionState::IsAnimationEnd() const
 {
-    return animationPrevPhaseIndex;
+    return (anyPhaseEnd && animationCurrPhaseIndex == 0);
 }
 
-inline const FastName& MotionState::GetPhaseName(uint32 phaseIndex) const
+inline const FastName& MotionState::GetLastPhaseName() const
 {
-    DVASSERT(phaseIndex < uint32(phaseNames.size()));
-    return phaseNames[phaseIndex];
+    return phaseNames[animationPrevPhaseIndex];
 }
 
 } //ns

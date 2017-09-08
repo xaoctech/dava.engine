@@ -16,11 +16,13 @@ void MotionState::Reset()
     animationPrevPhaseIndex = 0;
     animationCurrPhaseIndex = 0;
     animationPhase = 0.f;
+    anyPhaseEnd = false;
 }
 
-bool MotionState::Update(float32 dTime)
+void MotionState::Update(float32 dTime)
 {
     animationPrevPhaseIndex = animationCurrPhaseIndex;
+    anyPhaseEnd = false;
 
     float32 duration = blendTree->EvaluatePhaseDuration(animationCurrPhaseIndex, boundParams);
     animationPhase += dTime / duration;
@@ -31,10 +33,8 @@ bool MotionState::Update(float32 dTime)
         if (animationCurrPhaseIndex == uint32(blendTree->GetPhasesCount()))
             animationCurrPhaseIndex = 0;
 
-        return true;
+        anyPhaseEnd = true;
     }
-
-    return false;
 }
 
 void MotionState::EvaluatePose(SkeletonPose* outPose) const

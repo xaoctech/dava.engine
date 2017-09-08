@@ -39,8 +39,10 @@ public:
     eMotionBlend GetBlendMode() const;
     const SkeletonPose& GetCurrentSkeletonPose() const;
 
-    void BindSkeleton(const SkeletonComponent* skeleton);
+    bool RequestState(const FastName& stateID);
     void Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEndedPhases = nullptr /*[state-id, phase-id]*/);
+
+    void BindSkeleton(const SkeletonComponent* skeleton);
 
     const Vector<FastName>& GetParameterIDs() const;
     bool BindParameter(const FastName& parameterID, const float32* param);
@@ -48,10 +50,10 @@ public:
     void UnbindParameters();
 
     const Vector<FastName>& GetStateIDs() const;
-    bool RequestState(const FastName& stateID);
 
 protected:
-    uint32 GetTransitionIndex(MotionState* srcState, MotionState* dstState);
+    uint32 GetTransitionIndex(const MotionState* srcState, const MotionState* dstState) const;
+    MotionTransition* GetTransition(const MotionState* srcState, const MotionState* dstState) const;
 
     FastName name;
     eMotionBlend blendMode = BLEND_COUNT;
@@ -61,7 +63,8 @@ protected:
     MotionState* currentState = nullptr;
 
     Vector<MotionTransition*> transitions;
-    List<MotionTransition*> activeTransitions;
+    MotionTransition* currentTransiton = nullptr;
+    List<MotionState*> stateQueue;
 
     Vector<FastName> statesIDs;
     Vector<FastName> parameterIDs;
@@ -73,7 +76,7 @@ protected:
     const FastName& GetStateID() const
     {
         static const FastName invalidID = FastName("#invalid-state");
-        return (currentState != nullptr) ? currentState->GetID() : invalidID;
+        return stateQueue.empty() ? ((currentState != nullptr) ? currentState->GetID() : invalidID) : stateQueue.back()->GetID();
     }
     void SetStateID(const FastName& id)
     {
