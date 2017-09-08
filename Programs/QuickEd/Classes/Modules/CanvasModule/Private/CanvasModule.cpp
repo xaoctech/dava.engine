@@ -3,7 +3,6 @@
 #include "Modules/CanvasModule/EditorCanvas.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
 #include "Modules/CanvasModule/CanvasData.h"
-#include "Modules/CanvasModule/Private/InitEditorCanvasSystem.h"
 
 #include "Interfaces/EditorSystemsManagerInteface.h"
 
@@ -25,9 +24,6 @@ CanvasModule::CanvasModule()
 
 void CanvasModule::PostInit()
 {
-    DAVA::UIControlSystem* uiControlSystem = GetAccessor()->GetEngineContext()->uiControlSystem;
-    uiControlSystem->AddSystem(std::make_unique<InitEditorCanvasSystem>(), uiControlSystem->GetInputSystem());
-
     std::unique_ptr<CanvasModuleData> data = std::make_unique<CanvasModuleData>();
     data->editorCanvas = std::make_unique<EditorCanvas>(GetAccessor());
     data->controlsView = std::make_unique<EditorControlsView>(data->canvas.Get(), GetAccessor());

@@ -1,5 +1,4 @@
 #include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/CanvasModule/Private/InitEditorCanvasSystem.h"
 
 #include "EditorSystems/EditorSystemsManager.h"
 
@@ -342,15 +341,12 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::Cont
 
     canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
-
-    InitEditorCanvasSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<InitEditorCanvasSystem>();
-    updateSystem->initEditorCanvas.Connect(this, &EditorControlsView::PlaceControlsOnCanvas);
+    Engine::Instance()->beginFrame.Connect(this, &EditorControlsView::PlaceControlsOnCanvas);
 }
 
 EditorControlsView::~EditorControlsView()
 {
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
+    Engine::Instance()->beginFrame.Disconnect(this);
 }
 
 void EditorControlsView::DeleteCanvasControls(const CanvasControls& canvasControls)
