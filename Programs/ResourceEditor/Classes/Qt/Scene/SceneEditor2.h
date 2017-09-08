@@ -17,7 +17,6 @@
 #include "Scene/System/StructureSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
-#include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/EditorMaterialSystem.h"
 #include "Scene/System/WayEditSystem.h"
@@ -79,7 +78,6 @@ public:
     EditorParticlesSystem* particlesSystem = nullptr;
     EditorLightSystem* editorLightSystem = nullptr;
     TextDrawSystem* textDrawSystem = nullptr;
-    DebugDrawSystem* debugDrawSystem = nullptr;
     BeastSystem* beastSystem = nullptr;
     DAVA::StaticOcclusionBuildSystem* staticOcclusionBuildSystem = nullptr;
     EditorMaterialSystem* materialSystem = nullptr;

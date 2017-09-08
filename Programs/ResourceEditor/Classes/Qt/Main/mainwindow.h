@@ -143,16 +143,8 @@ public slots:
     void OnNotPassableTerrain();
     void OnWayEditor();
 
-    void OnObjectsTypeChanged(QAction* action);
-    void OnObjectsTypeChanged(int type);
-
-    void OnHangingObjects();
-    void OnHangingObjectsHeight(double value);
-
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
-
-    void OnSwitchWithDifferentLODs(bool checked);
 
     void OnGenerateHeightDelta();
 
@@ -218,8 +210,6 @@ private:
     void LoadModificationState(SceneEditor2* scene);
     void LoadEditorLightState(SceneEditor2* scene);
     void LoadLandscapeEditorState(SceneEditor2* scene);
-    void LoadObjectTypes(SceneEditor2* scene);
-    void LoadHangingObjects(SceneEditor2* scene);
     void LoadMaterialLightViewMode();
 
     // Landscape editor specific
