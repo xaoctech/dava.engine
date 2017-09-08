@@ -92,7 +92,7 @@ macro( processing_mix_data )
 
     load_property( PROPERTY_LIST MIX_APP_DATA )
     if( ANDROID )
-        set( MIX_APP_DIR ${CMAKE_BINARY_DIR}/assets )
+        set( MIX_APP_DIR ${CMAKE_CURRENT_LIST_DIR}/Platforms/Android/${PROJECT_NAME}/assets )
         set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
     elseif(LINUX)
         set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} )
