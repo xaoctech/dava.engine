@@ -62,13 +62,13 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
             // If set is bound to specific devices
             if (boundSet.devices.size() > 0)
             {
-                // Unbind it
+                // Unbind p
                 for (const uint32 deviceId : devices)
                 {
                     boundSet.devices.erase(std::remove(boundSet.devices.begin(), boundSet.devices.end(), deviceId), boundSet.devices.end());
                 }
 
-                // If it is not bound to any devices anymore - remove it from the list
+                // If p is not bound to any devices anymore - remove p from the list
                 if (boundSet.devices.size() == 0)
                 {
                     iter = boundSets.erase(iter);
@@ -88,12 +88,21 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
     for (const auto& digitalBinding : set.digitalBindings)
     {
-        digitalActionsStates[digitalBinding.actionId] = {};
+        ActionState digitalState;
+        digitalState.active = false;
+        digitalState.action.actionId = digitalBinding.actionId;
+        digitalState.action.analogState = digitalBinding.outputAnalogState;
+
+        digitalActionsStates[digitalBinding.actionId] = digitalState;
     }
 
     for (const auto& analogBinding : set.analogBindings)
     {
-        analogActionsStates[analogBinding.actionId] = {};
+        ActionState analogState;
+        analogState.active = false;
+        analogState.action.actionId = analogBinding.actionId;
+
+        analogActionsStates[analogBinding.actionId] = analogState;
     }
 
     boundSets.emplace_back(std::move(boundSet));
@@ -106,31 +115,29 @@ void ActionSystemImpl::UnbindAllSets()
     digitalActionsStates.clear();
 }
 
-bool ActionSystemImpl::GetDigitalActionState(const FastName& actionId) const
+bool ActionSystemImpl::GetDigitalActionState(FastName actionId) const
 {
-    auto it = digitalActionsStates.find(actionId);
+    auto digitalActionStateIter = digitalActionsStates.find(actionId);
 
-    DVASSERT(it != digitalActionsStates.end());
+    DVASSERT(digitalActionStateIter != digitalActionsStates.end());
 
-    return it->second;
+    const ActionState& digitalActionState = digitalActionStateIter->second;
+    return digitalActionState.active;
 }
 
-AnalogActionState ActionSystemImpl::GetAnalogActionState(const FastName actionId) const
+AnalogActionState ActionSystemImpl::GetAnalogActionState(FastName actionId) const
 {
-    auto it = analogActionsStates.find(actionId);
+    auto analogActionStateIter = analogActionsStates.find(actionId);
 
-    DVASSERT(it != analogActionsStates.end());
+    DVASSERT(analogActionStateIter != analogActionsStates.end());
 
-    return it->second;
+    const ActionState& analogActionState = analogActionStateIter->second;
+    return AnalogActionState(analogActionState.active, analogActionState.action.analogState);
 }
 
 // Helper function to check if specified states are active
-// Return 'nullptr' if at least one control is not in the state which is required and random InputDevice pointer otherwise
-// This is kinda dirty, but that saves us an extra cycle in 'OnUpdate' method
-InputDevice* ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
+bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
-    InputDevice* ret = nullptr;
-
     for (size_t i = 0; i < ActionSystem::MAX_DIGITAL_STATES_COUNT; ++i)
     {
         eInputElements elementId = elements[i];
@@ -142,11 +149,11 @@ InputDevice* ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, Ac
         }
 
         const DigitalElementState requiredState = states[i];
-        ret = nullptr;
+        bool requiredStateMatches = false;
 
         for (const uint32 deviceId : devices)
         {
-            InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
+            const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
             if (device != nullptr)
             {
                 if (device->IsElementSupported(elementId))
@@ -154,21 +161,21 @@ InputDevice* ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, Ac
                     const DigitalElementState state = device->GetDigitalElementState(elementId);
                     if (CompareDigitalStates(requiredState, state))
                     {
-                        ret = device;
+                        requiredStateMatches = true;
                         break;
                     }
                 }
             }
         }
 
-        if (ret == nullptr)
+        if (!requiredStateMatches)
         {
             // At least one control is not in the state which is required, stop
-            return nullptr;
+            return false;
         }
     }
 
-    return ret;
+    return true;
 }
 
 bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredState, const DigitalElementState& state)
@@ -199,9 +206,9 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
     InputElementInfo eventElementInfo = GetInputElementInfo(event.elementId);
 
+    // Check if any analog action has triggered
     if (eventElementInfo.type == eInputElementTypes::ANALOG)
     {
-        // Check if any analog action has triggered
         for (const BoundActionSet& setBinding : boundSets)
         {
             for (auto it = setBinding.analogBindings.begin(); it != setBinding.analogBindings.end(); ++it)
@@ -213,19 +220,71 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                     continue;
                 }
 
-                InputDevice* triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
+                auto analogActionStateIter = analogActionsStates.find(binding.actionId);
 
-                analogActionsStates[binding.actionId] = { triggered != nullptr, event.analogState };
+                DVASSERT(analogActionStateIter != analogActionsStates.end());
 
-                if (triggered != nullptr)
+                ActionState& analogActionState = analogActionStateIter->second;
+                analogActionState.action.analogState = event.analogState;
+                analogActionState.action.triggeredDevice = event.device;
+
+                if (analogActionState.active)
                 {
-                    Action action;
-                    action.actionId = binding.actionId;
-                    action.analogState = event.analogState;
-                    action.triggeredDevice = event.device;
-
-                    actionSystem->ActionTriggered.Emit(action);
+                    actionSystem->ActionTriggered.Emit(analogActionState.action);
                 }
+            }
+        }
+    }
+
+    // Check if any digital action is active
+    if (eventElementInfo.type == eInputElementTypes::DIGITAL)
+    {
+        for (const BoundActionSet& setBinding : boundSets)
+        {
+            bool digitalBindingHandled = false;
+            for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
+            {
+                DigitalBinding const& digitalBinding = *it;
+
+                if (std::find(digitalBinding.digitalElements.begin(), digitalBinding.digitalElements.end(), event.elementId) == digitalBinding.digitalElements.end())
+                {
+                    continue;
+                }
+
+                auto digitalActionStateIter = digitalActionsStates.find(digitalBinding.actionId);
+
+                DVASSERT(digitalActionStateIter != digitalActionsStates.end());
+
+                ActionState& digitalActionState = digitalActionStateIter->second;
+                digitalActionState.active = false;
+
+                const bool triggered = CheckDigitalStates(digitalBinding.digitalElements, digitalBinding.digitalStates, setBinding.devices);
+
+                if (triggered && !digitalBindingHandled)
+                {
+                    digitalActionState.active = true;
+                    digitalActionState.action.triggeredDevice = event.device;
+
+                    digitalBindingHandled = true;
+                }
+            }
+
+            // Check 'active' flag for all analog bindings
+            for (auto it = setBinding.analogBindings.begin(); it != setBinding.analogBindings.end(); ++it)
+            {
+                AnalogBinding const& analogBinding = *it;
+
+                if (std::find(analogBinding.digitalElements.begin(), analogBinding.digitalElements.end(), event.elementId) == analogBinding.digitalElements.end())
+                {
+                    continue;
+                }
+
+                auto analogActionStateIter = analogActionsStates.find(analogBinding.actionId);
+
+                DVASSERT(analogActionStateIter != analogActionsStates.end());
+
+                ActionState& analogActionState = analogActionStateIter->second;
+                analogActionState.active = CheckDigitalStates(analogBinding.digitalElements, analogBinding.digitalStates, setBinding.devices);
             }
         }
     }
@@ -235,69 +294,16 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
 void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 {
-    // Set of elements that triggered an action during this update
-    // Required to skip bindings with same elements
-    // For example, we have two bindings:
-    // - Shift + space (binding1)
-    // - Space (binding2)
-    // Binding1 will be processed first and if triggered, binding2 should be skipped
-    static Set<eInputElements> elementsTriggeredActions;
-
-    // Check if any digital action has triggered
-    for (const BoundActionSet& setBinding : boundSets)
+    for (const auto& p : digitalActionsStates)
     {
-        for (auto it = setBinding.digitalBindings.begin(); it != setBinding.digitalBindings.end(); ++it)
+        const ActionState& digitalState = p.second;
+
+        if (digitalState.active)
         {
-            DigitalBinding const& binding = *it;
-            digitalActionsStates[binding.actionId] = false;
-
-            // Check if we already triggered a binding that used some elements from current binding
-            // If we did, skip it
-
-            bool skipBinding = false;
-            for (const eInputElements usedElement : elementsTriggeredActions)
-            {
-                if (std::find(binding.digitalElements.begin(), binding.digitalElements.end(), usedElement) != binding.digitalElements.end())
-                {
-                    skipBinding = true;
-                    break;
-                }
-            }
-
-            if (skipBinding)
-            {
-                continue;
-            }
-
-            // Trigger if all elements are in required state
-
-            InputDevice* triggered = CheckDigitalStates(binding.digitalElements, binding.digitalStates, setBinding.devices);
-
-            if (triggered != nullptr)
-            {
-                Action action;
-                action.actionId = binding.actionId;
-                action.analogState = binding.outputAnalogState;
-                action.triggeredDevice = triggered;
-
-                // Remember elements that triggered that
-                for (eInputElements digitalElement : binding.digitalElements)
-                {
-                    if (digitalElement == eInputElements::NONE)
-                    {
-                        break;
-                    }
-
-                    elementsTriggeredActions.insert(digitalElement);
-                }
-
-                digitalActionsStates[binding.actionId] = true;
-                actionSystem->ActionTriggered.Emit(action);
-            }
+            actionSystem->ActionTriggered.Emit(digitalState.action);
         }
     }
+}
 
-    elementsTriggeredActions.clear();
-}
-}
-}
+} // namespace Private
+} // namespace DAVA

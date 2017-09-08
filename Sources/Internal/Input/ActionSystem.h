@@ -55,12 +55,13 @@ struct ActionSet final
     Vector<AnalogBinding> analogBindings;
 };
 
+/** Describes analog action state */
 struct AnalogActionState final
 {
-    /** Add descr. */
+    /** Action status */
     bool active;
 
-    /** Add descr. */
+    /** Analog state */
     float x;
     float y;
     float z;
@@ -141,10 +142,10 @@ public:
     void UnbindAllSets();
 
 public:
-    /** Add descr. */
+    /** Returns digital action state for digital binding. 'actionId' should correspond to DigitalBinding  */
     bool ActionSystem::GetDigitalActionState(FastName actionId) const;
 
-    /** Add descr. */
+    /** Returns analog action state for analog binding. 'actionId' should correspond to AnalogBinding */
     AnalogActionState ActionSystem::GetAnalogActionState(FastName actionId) const;
 
 public:
