@@ -21,6 +21,5 @@ private:
     bool OnMouseOrTouch(const InputEvent& ev);
     RingArray<InputEvent> history;
     uint32 handlerToken = 0;
-    bool isDebugEnabled = false;
 };
 }
