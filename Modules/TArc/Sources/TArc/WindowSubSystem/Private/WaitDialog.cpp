@@ -7,6 +7,7 @@
 #include <QPlainTextEdit>
 #include <QDialog>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QGridLayout>
 #include <QApplication>
 #include <QThread>
@@ -24,8 +25,9 @@ Qt::ConnectionType GetConnectionType()
 }
 } // namespace WaitDialogDetail
 
-WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
+WaitDialog::WaitDialog(const WaitDialogParams& params_, QWidget* parent)
     : dlg(new QDialog(parent, Qt::WindowFlags(Qt::Window | Qt::CustomizeWindowHint)))
+    , params(params_)
 {
     QGridLayout* layout = new QGridLayout(dlg);
     layout->setHorizontalSpacing(10);
@@ -62,7 +64,12 @@ WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
     palette.setColor(QPalette::Base, Qt::transparent);
     messageLabel->setPalette(palette);
 
-    layout->addWidget(messageLabel, 2, 1, 1, 2);
+    int32 columnSpan = 2;
+    if (params.needProgressBar && params.cancelable)
+    {
+        ++columnSpan;
+    }
+    layout->addWidget(messageLabel, 2, 1, 1, columnSpan);
 
     if (params.needProgressBar)
     {
@@ -73,6 +80,26 @@ WaitDialog::WaitDialog(const WaitDialogParams& params, QWidget* parent)
         progressBar->setMaximum(params.max);
 
         layout->addWidget(progressBar, 3, 0, 1, 3);
+    }
+
+    if (params.cancelable)
+    {
+        cancelButton = new QPushButton(QStringLiteral("Cancel"), dlg);
+        cancelButton->setObjectName(QStringLiteral("cancelButton"));
+        QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(cancelButton->sizePolicy().hasHeightForWidth());
+        cancelButton->setSizePolicy(sizePolicy);
+
+        connections.AddConnection(cancelButton, &QPushButton::clicked, MakeFunction(this, &WaitDialog::CanceledByMouse));
+
+        int32 column = 2;
+        if (params.needProgressBar)
+        {
+            ++column;
+        }
+        layout->addWidget(cancelButton, 3, column, 1, 1);
     }
 
     dlg->setLayout(layout);
@@ -139,8 +166,32 @@ void WaitDialog::Update()
 {
     if (WaitDialogDetail::GetConnectionType() == Qt::DirectConnection)
     {
-        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+        QEventLoop::ProcessEventsFlags flags = QEventLoop::AllEvents;
+        if (params.cancelable == false)
+        {
+            flags |= QEventLoop::ExcludeUserInputEvents;
+        }
+        qApp->processEvents(flags);
     }
 }
+
+void WaitDialog::CanceledByMouse()
+{
+    wasCanceled = true;
+
+    if (dlg != nullptr && cancelButton != nullptr)
+    {
+        RenderContextGuard guard;
+        QMetaObject::invokeMethod(cancelButton.data(), "setEnabled", WaitDialogDetail::GetConnectionType(), Q_ARG(bool, false));
+
+        Update();
+    }
+}
+
+bool WaitDialog::WasCanceled() const
+{
+    return wasCanceled;
+}
+
 } // namespace TArc
 } // namespace DAVA

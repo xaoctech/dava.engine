@@ -1,0 +1,1166 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastmanager.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beastmanager_8h.html','api_beastmanager_8h_html8bddf1c8-dc0a-4fbd-84d2-8f8699e0763c','index.html',location.hash); javascript:initPage('API: beastapi/beastmanager.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastmanager_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastmanager.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastmanager.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#define-members">Defines</a> |
+<a href="#enum-members">Enumerations</a> | <a href=
+"#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beastmanager.h File Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1.htm">What's
+New in Beast 2013.0.x</a>, <a href=
+".././files/GUID-591BE584-9E3B-40A9-BB70-101F31FFC9F8.htm">Setting
+Up Your Project</a>, <a href=
+".././files/GUID-F38A205A-9400-4E8D-888F-78DDC3D58F79.htm">Upgrade
+Requirements for 2013.0.x</a>, <a href=
+".././files/GUID-98C027F7-24AF-47E6-99D8-B2BACAE42DC4.htm">Initializing
+and Terminating Beast</a>, <a href=
+".././files/GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm">Using
+the Cache</a>, <a href=
+".././files/GUID-08210E19-206D-4643-96EE-24DFDEE68845.htm">What's
+New in Beast 2013.2.x</a>, <a href=
+".././files/GUID-C492ECEB-FB55-43E7-8A40-31493DF6DF26.htm">Debugging</a>,
+<a href=
+".././files/GUID-4DB3F5D9-1EBE-4926-AE79-CD48B4983271.htm">Programming
+in Non-C Languages</a>, <a href=
+".././files/GUID-303E8100-F675-4A37-B1A1-6EE6A251ADBF.htm">Known
+Issues with Distribeast</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>The beast manager is the core object for all interaction with
+the Beast API.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="define-members"></a> Defines</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">
+#define&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a13de929aa0e8afc48a9dd14319aaf971">ILB_BEAST_INTERFACE_VERSION</a>&nbsp;&nbsp;&nbsp;5</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="enum-members"></a> Enumerations</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128b">ILBCacheScope</a>
+{ <a class="el" translate="no" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128ba3fe944eafda8c16dc3e6bfab7345389d">
+ILB_CS_GLOBAL</a>, <a class="el" translate="no" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128baea3b0812e33bd4cbe8795c3b8dbade15">
+ILB_CS_LOCAL</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfa">ILBLogSink</a>
+{<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaa8c58ce9d86bba0afe0314ffb1f8e8e15">ILB_LS_NULL</a>,
+<a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaadfaa465f90b7778d2c3e76d9c2f5508c">
+ILB_LS_STDOUT</a>, <a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaa0823c48847428786988097061ae529dc">
+ILB_LS_STDERR</a>, <a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaa646ad0a7a33128b3e2722d23aebb0594">
+ILB_LS_FILE</a>,<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaafe476493e5f3f942fd2cc0feed18a1c3">ILB_LS_DEBUG_OUTPUT</a><br />
+
+}</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36">ILBLogType</a>
+{ <a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36aab16aff43a62a8dab5fc10679279be08">
+ILB_LT_ERROR</a>, <a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979">
+ILB_LT_INFO</a> }</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a8fee8b5f9aeb42ce1331b7b5e6630024">ILBClearCache</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">static <a class=
+"el" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#aeb36a8136fb38c84b0a40368f2f9b259">ILBCreateManager</a>
+(<a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+cacheDirectory, <a class="el" translate="no" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128b">ILBCacheScope</a>
+cacheScope, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+licenseKey, <a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+*beastManager)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a36329e8df624417c9e1cb45dcb470803">ILBDestroyManager</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a641932b6198033b27ae7476c95464478">ILBSetBeastPath</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+beastPath)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">static <a class=
+"el" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5">ILBSetLogTarget</a>
+(<a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36">ILBLogType</a>
+type, <a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfa">ILBLogSink</a>
+sink, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+filename)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#ad8de2e36c835a8f87d6f39b6c7f6963e">ILBSetLogTargetFileHandle</a>
+(<a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36">ILBLogType</a>
+type, ILBFileHandle handle)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmanager_8h.html#ab45eb423b173eb0afbae171201b1ca5e">ILBSetStringEncodingImp</a>
+(<a class="el" translate="no" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268e">ILBStringEncoding</a>
+encoding)</td>
+</tr>
+</table>
+<hr />
+<h2>Define Documentation</h2>
+<a class="anchor" id="a13de929aa0e8afc48a9dd14319aaf971"></a>
+<!-- doxytag: member="beastmanager.h::ILB_BEAST_INTERFACE_VERSION" ref="a13de929aa0e8afc48a9dd14319aaf971" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">#define
+ILB_BEAST_INTERFACE_VERSION&nbsp;&nbsp;&nbsp;5</td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILB_BEAST_INTERFACE_VERSION',false)">Search for all
+occurrences</a></div>
+<p>Revision number for released headers.</p>
+<p>Will increase with every public release with interface
+changes</p>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a8">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="a71f1de2e0b644c5d7f09520e95d6128b"></a>
+<!-- doxytag: member="beastmanager.h::ILBCacheScope" ref="a71f1de2e0b644c5d7f09520e95d6128b" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128b">ILBCacheScope</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCacheScope',false)">Search for all
+occurrences</a></div>
+<p>Sets the scope for the cache.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a71f1de2e0b644c5d7f09520e95d6128ba3fe944eafda8c16dc3e6bfab7345389d">
+</a>
+<!-- doxytag: member="ILB_CS_GLOBAL" ref="a71f1de2e0b644c5d7f09520e95d6128ba3fe944eafda8c16dc3e6bfab7345389d" args="" -->ILB_CS_GLOBAL</em>&nbsp;</td>
+<td>
+<p>Makes the cache global.</p>
+<p>A different new beast manager using the same cache directory
+will be able to find cached resources</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_CS_GLOBAL',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a71f1de2e0b644c5d7f09520e95d6128baea3b0812e33bd4cbe8795c3b8dbade15">
+</a>
+<!-- doxytag: member="ILB_CS_LOCAL" ref="a71f1de2e0b644c5d7f09520e95d6128baea3b0812e33bd4cbe8795c3b8dbade15" args="" -->ILB_CS_LOCAL</em>&nbsp;</td>
+<td>
+<p>Makes the cache local.</p>
+<p>A different new beast manager using the same cache directory
+will not be able to find cached resources</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_CS_LOCAL',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a2">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a72383a21c343b7535664870145851dfa"></a>
+<!-- doxytag: member="beastmanager.h::ILBLogSink" ref="a72383a21c343b7535664870145851dfa" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfa">ILBLogSink</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBLogSink',false)">Search for all
+occurrences</a></div>
+<p>Enum selecting where to route messages.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a72383a21c343b7535664870145851dfaa8c58ce9d86bba0afe0314ffb1f8e8e15">
+</a>
+<!-- doxytag: member="ILB_LS_NULL" ref="a72383a21c343b7535664870145851dfaa8c58ce9d86bba0afe0314ffb1f8e8e15" args="" -->ILB_LS_NULL</em>&nbsp;</td>
+<td>
+<p>Discards messages.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LS_NULL',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a72383a21c343b7535664870145851dfaadfaa465f90b7778d2c3e76d9c2f5508c">
+</a>
+<!-- doxytag: member="ILB_LS_STDOUT" ref="a72383a21c343b7535664870145851dfaadfaa465f90b7778d2c3e76d9c2f5508c" args="" -->ILB_LS_STDOUT</em>&nbsp;</td>
+<td>
+<p>Routes messages to stdout.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LS_STDOUT',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a72383a21c343b7535664870145851dfaa0823c48847428786988097061ae529dc">
+</a>
+<!-- doxytag: member="ILB_LS_STDERR" ref="a72383a21c343b7535664870145851dfaa0823c48847428786988097061ae529dc" args="" -->ILB_LS_STDERR</em>&nbsp;</td>
+<td>
+<p>Routes messages to stderr.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LS_STDERR',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a72383a21c343b7535664870145851dfaa646ad0a7a33128b3e2722d23aebb0594">
+</a>
+<!-- doxytag: member="ILB_LS_FILE" ref="a72383a21c343b7535664870145851dfaa646ad0a7a33128b3e2722d23aebb0594" args="" -->ILB_LS_FILE</em>&nbsp;</td>
+<td>
+<p>Routes messages to a user specified file.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LS_FILE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a72383a21c343b7535664870145851dfaafe476493e5f3f942fd2cc0feed18a1c3">
+</a>
+<!-- doxytag: member="ILB_LS_DEBUG_OUTPUT" ref="a72383a21c343b7535664870145851dfaafe476493e5f3f942fd2cc0feed18a1c3" args="" -->ILB_LS_DEBUG_OUTPUT</em>&nbsp;</td>
+<td>
+<p>Routes messages to the debug output in visual studio when a
+debugger is connected.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LS_DEBUG_OUTPUT',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a20">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a0a1f3118449e22dd61637fe672d15d36"></a>
+<!-- doxytag: member="beastmanager.h::ILBLogType" ref="a0a1f3118449e22dd61637fe672d15d36" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36">ILBLogType</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBLogType',false)">Search for all
+occurrences</a></div>
+<p>Enum selecting a certain log target.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a0a1f3118449e22dd61637fe672d15d36aab16aff43a62a8dab5fc10679279be08">
+</a>
+<!-- doxytag: member="ILB_LT_ERROR" ref="a0a1f3118449e22dd61637fe672d15d36aab16aff43a62a8dab5fc10679279be08" args="" -->ILB_LT_ERROR</em>&nbsp;</td>
+<td>
+<p>Error messages.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LT_ERROR',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979">
+</a>
+<!-- doxytag: member="ILB_LT_INFO" ref="a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979" args="" -->ILB_LT_INFO</em>&nbsp;</td>
+<td>
+<p>Information messages and render progress messages.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LT_INFO',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a14">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="a8fee8b5f9aeb42ce1331b7b5e6630024"></a>
+<!-- doxytag: member="beastmanager.h::ILBClearCache" ref="a8fee8b5f9aeb42ce1331b7b5e6630024" args="(ILBManagerHandle beastManager)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBClearCache</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBClearCache',false)">Search for all
+occurrences</a></div>
+<p>Clears the cache.</p>
+<p>Will only work if there are no scenes present.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the beastManager to clear the cache for</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a10">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a10">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a10">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a9">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a103">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a30">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a69">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a10">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a10">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a10">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a10">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a46">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a10">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a10">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a10">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a10">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2unwrapping_2unwrapping_8cpp-example.html#a45">examples/code/unwrapping/unwrapping.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a10">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a10">include/beastapi/beastmanager.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a0">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aeb36a8136fb38c84b0a40368f2f9b259"></a>
+<!-- doxytag: member="beastmanager.h::ILBCreateManager" ref="aeb36a8136fb38c84b0a40368f2f9b259" args="(ILBConstString cacheDirectory, ILBCacheScope cacheScope, ILBConstString licenseKey, ILBManagerHandle *beastManager)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">static <a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateManager</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>cacheDirectory</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128b">ILBCacheScope</a>&nbsp;</td>
+<td class="paramname"><em>cacheScope</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>licenseKey</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>beastManager</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td><code>[inline, static]</code></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateManager',false)">Search for all
+occurrences</a></div>
+<p>Creates a Beast Manager.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">cacheDirectory</td>
+<td>sets the directory where the Beast Manager stores cached and
+temporary files.</td>
+</tr>
+<tr>
+<td class="paramname">cacheScope</td>
+<td>sets whether the cache is local to this beast manager or it can
+be reopened by another Beast Manager in the same directory.</td>
+</tr>
+<tr>
+<td class="paramname">licenseKey</td>
+<td>the license key provided to you as part of your
+evaluation/purchase.</td>
+</tr>
+<tr>
+<td class="paramname">beastManager</td>
+<td>a pointer to a Beast manager object that will receive the newly
+allocated handle</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a7">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a7">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a7">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a7">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a100">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a27">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a66">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a7">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a7">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a7">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a7">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a43">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a7">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a7">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a7">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a7">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2unwrapping_2unwrapping_8cpp-example.html#a42">examples/code/unwrapping/unwrapping.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a7">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a5">include/beastapi/beastmanager.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2plugincontext_8cpp-example.html#a1">maya/beastmayaplugin/src/plugincontext.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a36329e8df624417c9e1cb45dcb470803"></a>
+<!-- doxytag: member="beastmanager.h::ILBDestroyManager" ref="a36329e8df624417c9e1cb45dcb470803" args="(ILBManagerHandle beastManager)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBDestroyManager</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBDestroyManager',false)">Search for all
+occurrences</a></div>
+<p>Destroys a Beast Manager<br />
+Will invalidate all resources and handles associated it as
+well.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the Beast Manager to destroy</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a9">include/beastapi/beastmanager.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a1">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a641932b6198033b27ae7476c95464478"></a>
+<!-- doxytag: member="beastmanager.h::ILBSetBeastPath" ref="a641932b6198033b27ae7476c95464478" args="(ILBManagerHandle beastManager, ILBConstString beastPath)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetBeastPath</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>beastPath</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetBeastPath',false)">Search for all
+occurrences</a></div>
+<p>Sets where the Beast binaries are located.</p>
+<p>The default search order is:<br />
+1. The bin directory of where the environment variable BEAST_ROOT
+points. I.E. BEAST_ROOT\bin. 2. The directory the beast dll is
+located in. When calling this, all other search paths are
+disregarded.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the BeastManager to set the root</td>
+</tr>
+<tr>
+<td class="paramname">beastPath</td>
+<td>the path to the Beast binaries</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>ILB_ST_SUCCESS if everything went ok. ILB_ST_FILE_IO_ERROR if
+the specified directory doesn't contain a valid set of Beast
+binaries.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a9">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a9">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a9">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a11">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a102">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a29">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a68">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a9">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a9">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a9">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a9">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a45">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a9">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a9">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a9">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a9">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2unwrapping_2unwrapping_8cpp-example.html#a44">examples/code/unwrapping/unwrapping.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a9">examples/code/uvset/uvset.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a11">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a38a065e12002db2fbd7b5b5554faa2d5"></a>
+<!-- doxytag: member="beastmanager.h::ILBSetLogTarget" ref="a38a065e12002db2fbd7b5b5554faa2d5" args="(ILBLogType type, ILBLogSink sink, ILBConstString filename)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">static <a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetLogTarget</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36">ILBLogType</a>&nbsp;</td>
+<td class="paramname"><em>type</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfa">ILBLogSink</a>&nbsp;</td>
+<td class="paramname"><em>sink</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>filename</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td><code>[inline, static]</code></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetLogTarget',false)">Search for all
+occurrences</a></div>
+<p>Sets where log messages should be routed.</p>
+<p>Note this function is global rather than connected since some
+log messages happens before a beast manager may be present or
+known. Note, this method is not thread safe! Don't call it while
+other threads are using Beast</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">type</td>
+<td>the message type to route to this target</td>
+</tr>
+<tr>
+<td class="paramname">sink</td>
+<td>where to route the messages</td>
+</tr>
+<tr>
+<td class="paramname">filename</td>
+<td>the file to write the log info to. Only used if sink is
+ILB_LS_FILE</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>ILB_ST_SUCCESS if routing was successful.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a1">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a1">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a1">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a1">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a94">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a21">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a60">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a1">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a1">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a1">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a1">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a37">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a1">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a1">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a1">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a1">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2unwrapping_2unwrapping_8cpp-example.html#a36">examples/code/unwrapping/unwrapping.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a1">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a21">include/beastapi/beastmanager.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2plugincomponents_8cpp-example.html#a0">
+maya/beastmayaplugin/src/plugincomponents.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ad8de2e36c835a8f87d6f39b6c7f6963e"></a>
+<!-- doxytag: member="beastmanager.h::ILBSetLogTargetFileHandle" ref="ad8de2e36c835a8f87d6f39b6c7f6963e" args="(ILBLogType type, ILBFileHandle handle)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetLogTargetFileHandle</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36">ILBLogType</a>&nbsp;</td>
+<td class="paramname"><em>type</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">ILBFileHandle&nbsp;</td>
+<td class="paramname"><em>handle</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetLogTargetFileHandle',false)">Search for all
+occurrences</a></div>
+<p>Sets where log messages should be routed.</p>
+<p>Note this function is global rather than connected since some
+log messages happens before a beast manager may be present or
+known. Note, this method is not thread safe! Don't call it while
+other threads are using Beast</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">type</td>
+<td>the message type to route to this target</td>
+</tr>
+<tr>
+<td class="paramname">handle</td>
+<td>where to route the messages, or ILB_INVALID_FILE_HANDLE to
+disable logging</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>ILB_ST_SUCCESS if routing was successful.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a22">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ab45eb423b173eb0afbae171201b1ca5e"></a>
+<!-- doxytag: member="beastmanager.h::ILBSetStringEncodingImp" ref="ab45eb423b173eb0afbae171201b1ca5e" args="(ILBStringEncoding encoding)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetStringEncodingImp</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268e">ILBStringEncoding</a>&nbsp;</td>
+<td class="paramname"><em>encoding</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetStringEncodingImp',false)">Search for all
+occurrences</a></div>
+<p>Sets the character type for Beast.</p>
+<p>Should generally not be called explicitly but automatically
+called from ILBCreateManager or ILBSetLogTarget.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">encoding</td>
+<td>the encoding for input and output strings.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastmanager_8h-example.html#a3">include/beastapi/beastmanager.h</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beastmanager_8h_source.html">Go to the source code of
+this file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

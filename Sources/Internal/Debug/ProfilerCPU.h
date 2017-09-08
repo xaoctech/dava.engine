@@ -161,7 +161,7 @@ private:
 
     CounterArray* counters = nullptr;
     Vector<CounterArray*> snapshots;
-    Mutex safeCounters;
+    Mutex mutex;
     uint32 numCounters = 2048;
     bool isStarted = false;
 

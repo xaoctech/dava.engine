@@ -1,6 +1,6 @@
 #include "mainwindow.h"
+
 #include <DavaTools/Version.h>
-#include "Classes/Qt/BeastDialog/BeastDialog.h"
 #include "Classes/Qt/CubemapEditor/CubeMapTextureBrowser.h"
 #include "Classes/Qt/CubemapEditor/CubemapUtils.h"
 #include "Classes/Qt/DebugTools/VersionInfoWidget/VersionInfoWidget.h"
@@ -9,7 +9,6 @@
 #include "Classes/Qt/MaterialEditor/MaterialEditor.h"
 #include "Classes/Qt/QualitySwitcher/QualitySwitcher.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
-#include "Classes/Qt/Scene/LandscapeThumbnails.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
@@ -54,8 +53,6 @@
 #include "Commands2/LandscapeToolsToggleCommand.h"
 #include "Commands2/WayEditCommands.h"
 
-#include "Beast/BeastRunner.h"
-
 #include "SceneProcessing/SceneProcessor.h"
 
 #include "Constants.h"
@@ -78,6 +75,7 @@
 #include <Engine/Qt/RenderWidget.h>
 #include <Reflection/ReflectedType.h>
 #include <Render/2D/Sprite.h>
+#include <Render/Highlevel/LandscapeThumbnails.h>
 #include <Scene3D/Components/ActionComponent.h>
 #include <Scene3D/Components/TextComponent.h>
 #include <Scene3D/Components/Waypoint/PathComponent.h>
@@ -112,7 +110,6 @@ public:
     GlobalOperationsProxy(GlobalOperations* globalOperations_)
         : globalOperations(globalOperations_)
     {
-        globalOperations->waitDialogClosed.Connect(&waitDialogClosed, &DAVA::Signal<>::Emit);
     }
 
     void Reset()
@@ -136,12 +133,6 @@ public:
     {
         CHECK_GLOBAL_OPERATIONS(void());
         globalOperations->ShowWaitDialog(tittle, message, min, max);
-    }
-
-    bool IsWaitDialogVisible() const override
-    {
-        CHECK_GLOBAL_OPERATIONS(false);
-        return globalOperations->IsWaitDialogVisible();
     }
 
     void HideWaitDialog() override
@@ -195,7 +186,6 @@ DAVA::RefPtr<SceneEditor2> GetCurrentScene()
 QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , beastWaitDialog(nullptr)
     , globalInvalidate(false)
     , modificationWidget(nullptr)
     , addSwitchEntityDialog(nullptr)
@@ -217,10 +207,8 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     globalData->SetGlobalOperations(globalOperations);
     globalContext->CreateData(std::move(globalData));
 
-    errorLoggerOutput = new ErrorDialogOutput(globalOperations);
+    errorLoggerOutput = new ErrorDialogOutput(tarcUI);
     DAVA::Logger::AddCustomOutput(errorLoggerOutput);
-
-    tarcUI->lastWaitDialogWasClosed.Connect(&waitDialogClosed, &DAVA::Signal<>::Emit);
 
     new LandscapeEditorShortcutManager(this);
     PathDescriptor::InitializePathDescriptors();
@@ -241,8 +229,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     // create tool windows
     new TextureBrowser(this);
     new MaterialEditor(this);
-
-    beastWaitDialog = new QtWaitDialog(this);
 
     connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &QtMainWindow::SceneCommandExecuted);
     connect(SceneSignals::Instance(), &SceneSignals::Activated, this, &QtMainWindow::SceneActivated);
@@ -324,11 +310,6 @@ void QtMainWindow::WaitSetValue(int value)
 {
     DVASSERT(waitDialog != nullptr);
     waitDialog->SetProgressValue(value);
-}
-
-bool QtMainWindow::IsWaitDialogOnScreen() const
-{
-    return tarcUI->HasActiveWaitDalogues() || (beastWaitDialog != nullptr && beastWaitDialog->isVisible());
 }
 
 void QtMainWindow::WaitStop()
@@ -534,12 +515,6 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
 
     QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
-    
-#if defined(__DAVAENGINE_BEAST__)
-    QObject::connect(ui->actionBeastAndSave, SIGNAL(triggered()), this, SLOT(OnBeastAndSave()));
-#else
-//ui->menuScene->removeAction(ui->menuBeast->menuAction());
-#endif //#if defined(__DAVAENGINE_BEAST__)
 
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
@@ -666,8 +641,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 
     ui->actionSaveHeightmapToPNG->setEnabled(enable);
     ui->actionSaveTiledTexture->setEnabled(enable);
-
-    ui->actionBeastAndSave->setEnabled(enable);
 
     ui->Edit->setEnabled(enable);
     ui->menuCreateNode->setEnabled(enable);
@@ -1396,7 +1369,7 @@ void QtMainWindow::OnSaveTiledTexture()
     DAVA::Landscape* landscape = FindLandscape(scene.Get());
     if (nullptr != landscape)
     {
-        LandscapeThumbnails::Create(landscape, MakeFunction(this, &QtMainWindow::OnTiledTextureRetreived));
+        DAVA::LandscapeThumbnails::Create(landscape, MakeFunction(this, &QtMainWindow::OnTiledTextureRetreived));
     }
 }
 
@@ -1509,73 +1482,6 @@ void QtMainWindow::StartGlobalInvalidateTimer()
 void QtMainWindow::EditorLightEnabled(bool enabled)
 {
     ui->actionEnableCameraLight->setChecked(enabled);
-}
-
-void QtMainWindow::OnBeastAndSave()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    if (scene->GetEnabledTools())
-    {
-        if (QMessageBox::Yes == QMessageBox::question(this, "Starting Beast", "Disable landscape editor and start beasting?", (QMessageBox::Yes | QMessageBox::No), QMessageBox::No))
-        {
-            scene->DisableToolsInstantly(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-
-            bool success = !scene->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-            if (!success)
-            {
-                DAVA::Logger::Error(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS.c_str());
-                return;
-            }
-        }
-        else
-        {
-            return;
-        }
-    }
-
-    REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
-    if (!scene->IsLoaded() || scene->IsChanged())
-    {
-        return;
-    }
-
-    BeastDialog dlg(this);
-    dlg.SetScene(scene.Get());
-    const bool run = dlg.Exec();
-    if (!run)
-        return;
-
-    RunBeast(dlg.GetPath(), dlg.GetMode());
-    scene->SetChanged();
-    REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
-    scene->ClearAllCommands();
-}
-
-void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode)
-{
-#if defined(__DAVAENGINE_BEAST__)
-
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    const DAVA::FilePath path = outputPath.toStdString();
-
-    BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, beastWaitDialog);
-    beast.RunUIMode();
-
-    if (mode == BeastProxy::MODE_LIGHTMAPS)
-    {
-        // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
-        delayedExecutor.DelayedExecute([]() {
-            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
-        });
-    }
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
 }
 
 void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
@@ -2218,11 +2124,6 @@ QWidget* QtMainWindow::GetGlobalParentWidget() const
 void QtMainWindow::ShowWaitDialog(const DAVA::String& tittle, const DAVA::String& message, DAVA::uint32 min /*= 0*/, DAVA::uint32 max /*= 100*/)
 {
     WaitStart(QString::fromStdString(tittle), QString::fromStdString(message), min, max);
-}
-
-bool QtMainWindow::IsWaitDialogVisible() const
-{
-    return IsWaitDialogOnScreen();
 }
 
 void QtMainWindow::HideWaitDialog()

@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-A3F1C9A6-45B7-47AF-B2AD-D72B5A1686FE" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-1A6B5739-AA7F-4155-966A-54C81585442F" />
+      <title>Technical Breakdown of the Maya plug-in</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-A3F1C9A6-45B7-47AF-B2AD-D72B5A1686FE.htm',                           'd30e5453','index.html',location.hash);                           javascript:initPage('Technical Breakdown of the Maya plug-in','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-A3F1C9A6-45B7-47AF-B2AD-D72B5A1686FE.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-A3F1C9A6-45B7-47AF-B2AD-D72B5A1686FE.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Technical Breakdown of the Maya plug-in&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Getting Started with the Maya plug-in</div><a href="GUID-BD12A007-6E92-4610-B6A1-B042AC7F226B.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Maya plug-in</div><a href="GUID-1A6B5739-AA7F-4155-966A-54C81585442F.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Physical Materials in Maya</div><a href="GUID-603B7796-368D-4B34-AD7C-3866D76EC098.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-1A6B5739-AA7F-4155-966A-54C81585442F.htm"> Maya plug-in</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-138BC49D-F721-427B-9BC5-AFEEB6D6760E"></a></span><h1>Technical Breakdown of the Maya plug-in</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-A3F1C9A6-45B7-47AF-B2AD-D72B5A1686FE"></a></span>
+         <!--Body--><div class="section"><span class="anchor_wrapper"><a name="SECTION_32F0DFAE1B4A48F786A7BD838ADC1193"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5459"></a><span class="anchor_wrapper"><a name="GUID-3073A0EB-3B87-4534-8A37-88C379AD3508"></a></span>New Maya Nodes
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-1C76925E-3963-4EEB-9ED9-9E46182CC818"></a></span>Several new nodes have been added: 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-DABB51F8-2320-4253-B7A0-9DA60270EDF5"></a></span> <span class="anchor_wrapper"><a name="UL_A07567A3AEA041BA9801E259F4C94908"></a></span><ul>
+                  <li>beastEntity </li>
+                  <li>beastInstance </li>
+                  <li>beastPass </li>
+                  <li>beastTarget </li>
+                  <li>beastSettings </li>
+               </ul> 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-D6657776-A51D-41D3-A6D9-B0F0A4C18C97"></a></span> <img src="../images/GUID-AC3FCDCB-3C0D-47EF-9D7C-38307C511C5B-low.png" /> 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5C3A4D0635C849369248DB0D95B0F846"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5487"></a><span class="anchor_wrapper"><a name="GUID-CB707168-1D2A-49DC-A3F9-FEDC375FEB79"></a></span>Node lifetime
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-73D152F0-A58B-42CF-925C-228A1783B194"></a></span>When the Beast plug-in is loaded (in Maya), it automatically creates the following nodes: <span class="code" translate="no">beastSettings</span>, <span class="code" translate="no">defaultBeastPass</span>, <span class="code" translate="no">defaultBeastTextureTarget</span>, and <span class="code" translate="no">defaultBeastVertexTarget</span>. When a Maya instance is added to a Beast target, a beastInstance is automatically created and connected to the Maya instance
+               (if no other beastInstance is present). A <span class="code" translate="no">beastEntity</span> node is also created and connected for each target a Maya instance is added to. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-350AADBD-8155-4937-8F06-822F53918DC6"></a></span>The <span class="code" translate="no">beastEntity</span> is considered temporary and will be removed when the Maya instance is removed from the target. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3E8F51A7821A45D999562A6899245E08"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5516"></a><span class="anchor_wrapper"><a name="GUID-0963015C-1726-48EC-B9BD-8DC3800D30B4"></a></span>Source code orientation
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-6E4C75BF-638F-4159-BC7B-42169B960298"></a></span>The solution for the Beast Maya plug-in is located in <span class="filePath" translate="no">BeastSDK\maya</span>, and depends (only) on the Beast and Maya APIs. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_7A5867A433B447A3BF5DB16704A9F83F"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5527"></a><span class="anchor_wrapper"><a name="GUID-A7645E52-9FEA-43E5-912D-EC3935C7E7DB"></a></span>API Documentation
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-6E95206F-F58B-4068-9013-A5FE29D662E0"></a></span>The Maya plug-in API documentation is available in the <em class="strong">Maya plug-in API Reference</em> section of this document; it is also included in the SDK. This documentation is extracted from the comments in the source
+               code. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_A5717086EFEB43B2888B0D150BCB2412"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5538"></a><span class="anchor_wrapper"><a name="GUID-9A3651B8-8F29-4E5F-A1F3-24113853D0C3"></a></span>Building the plug-in
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-AF77BA7D-982C-4869-B4D5-8274A944E7E0"></a></span>When you build the plug-in, it will replace the precompiled binaries in <span class="filePath" translate="no">BeastSDK\bin</span>. If you have successfully used the precompiled plug-in with Maya you should expect no issues with recompiling the plug-in.
+               
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-A96DABE8-EC3D-42AF-9F5A-4C69C094B7C3"></a></span>In a standard installation of Maya, the solution will be able to locate your Maya installation automatically. However, it
+               also checks the <span class="filePath" translate="no">MAYA_LOCATION_2013_32</span> (for 32-bit), <span class="filePath" translate="no">MAYA_LOCATION_2013_64</span> (for 64-bit), and <span class="filePath" translate="no">MAYA_LOCATION</span> environment variables to support non-standard installations. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_7681E885814B4AF697D007395665263B"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5561"></a><span class="anchor_wrapper"><a name="GUID-65FF01AC-C44F-4C95-949B-3688BDB0AA8F"></a></span>Additional Details
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_F7924D56C8E4411490F1A5E59889F96B"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5566"></a><span class="anchor_wrapper"><a name="GUID-F449A737-A011-484A-BCA2-2C7B03D4675F"></a></span>Namespace
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-EB3EB425-C7B9-43BF-A278-60FD9E3194BF"></a></span>All source code in the plug-in is located in the <span class="code" translate="no">beastmaya</span> namespace; all references to types in the documentation refer to this namespace implicitly. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_A0F19BCEABD14D24B5322D13637FDC5E"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5578"></a><span class="anchor_wrapper"><a name="GUID-8B341B96-A27C-4FF9-86A6-666EBA3FDEB9"></a></span>API Wrappers
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-4E1EF7A0-A533-4F14-8B7C-C314AF6B2F16"></a></span>The Beast API is wrapped in C++. These wrappers are located in a separate sub-directory called <span class="filePath" translate="no">beastwrappers</span>. Use of the Beast API directly, or write wrappers, is optional and depends on your preferences. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_6FAC75F098F0471CAF9582C5A3714097"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5590"></a><span class="anchor_wrapper"><a name="GUID-21FCEC74-701D-47E9-A1CE-47293DF91611"></a></span>Entry point
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-2F579FB8-C8CB-4DAE-A5A9-36217A53EBEE"></a></span>The entry point for the plug-in is beastplugin.cpp. This file contains all the C++ plumbing required for defining the Maya
+                  plug-in, and it contains the commands that invoke the various Beast rendering jobs. A global instance of the BeastComponents
+                  type (beastcomponents.cpp/.h) is created when the plug-in is initialized. This global instance includes plumbing-related resources,
+                  and—importantly—a global BeastPluginContext (beastplugincontext.cpp/.h) used to set up the Beast API and register custom Maya
+                  node types (customnodes.cpp/.h), extension attributes (customattributes.cpp/.h), and the UI scripts for the plug-in (userinterface.cpp/.h).
+                  The 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_997C43D196014289A8FAA8D5F43B54B7"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5599"></a><span class="anchor_wrapper"><a name="GUID-6DF01815-BEAC-4E43-A76D-04ABB998AB8E"></a></span>Maya commands
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-53C5A4BE-9421-4C4F-9DA2-F8B84A21D34B"></a></span>The Beast Maya plug-in defines the following Maya commands: 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-CC165B70-8A3C-4664-882C-7C658E8E695B"></a></span> <span class="anchor_wrapper"><a name="UL_DD1706E995684E8B978C5FD534550E3D"></a></span><ul>
+                     <li><span class="code" translate="no">beastRenderFinal</span>: start a final render (offline) 
+                     </li>
+                     <li><span class="code" translate="no">beastBakeFinal</span>: start a final bake (offline) 
+                     </li>
+                     <li><span class="code" translate="no">beastRenderLive</span>: start/stop an interactive camera render session 
+                     </li>
+                     <li><span class="code" translate="no">beastBakeLive</span>: start/stop an interactive bake session 
+                     </li>
+                     <li><span class="code" translate="no">beastIsLive</span>: return if an interactive session is running 
+                     </li>
+                     <li><span class="code" translate="no">beastCreateUVSet</span>: create new UV-sets with applied atlas scale and offset from baked results 
+                     </li>
+                     <li><span class="code" translate="no">beastUVUnwrap</span>: create UV’s for meshes using Beast UV unwrapping 
+                     </li>
+                     <li><span class="code" translate="no">beastCreateMesh</span>: creates a Beast mesh from a Maya mesh (used internally by plug-in) 
+                     </li>
+                  </ul> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-752A6649-9416-42C5-9833-23FA4A2EDEA9"></a></span>These render commands execute a render through a RenderManager instance (rendermanager.cpp/.h). The RenderManager parses the
+                  Maya DAG for targets to bake or render, and validates the collected target setup. When this is done, it exports the scene,
+                  creates a bake/render job, exports the targets, runs the job, and imports the results if the job succeeded. When running through
+                  an interactive session, the job starts asynchronously, and continues to run after the RenderManager and the invoked Maya command
+                  have finished. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_264729A9D22F43F7A5F7F758C71CA44E"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5649"></a><span class="anchor_wrapper"><a name="GUID-A747C3AA-D5CD-4617-AE4A-668E8B8653FA"></a></span>Interactive session components
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-B1C3C6CB-83E4-4CC6-9DDC-BDD92A31AD1E"></a></span>There are two main components of an interactive session: <span class="code" translate="no">BeastViewportLiveJob</span> and <span class="code" translate="no">BeastViewportRenderer</span> (both contained in beastviewportrenderer.cpp/.h). The <span class="code" translate="no">BeastViewPortLiveJob</span> continuously queries the Beast API for new frame updates, reads the new data, and updates the frame buffer in the <span class="code" translate="no">BeastViewportRenderer</span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-0BAEF0D9-5498-4655-83F0-6A114342243F"></a></span><span class="code" translate="no">BeastViewportLiveJob</span> is a specialized action of <span class="code" translate="no">LiveAsyncJob</span> (liveasyncjob.cpp/.h) which contains most of the code. Maya controls the redrawing of the <span class="code" translate="no">BeastViewportRenderer</span>; both <span class="code" translate="no">BeastViewportLiveJob</span> and <span class="code" translate="no">BeastViewportRenderer</span> are managed with a thread lock since both Beast and Maya will trigger access to the same buffer. 
+               </p> 
+            </div> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
