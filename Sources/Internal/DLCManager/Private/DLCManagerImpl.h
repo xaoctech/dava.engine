@@ -12,6 +12,8 @@
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
+#include "Engine/EngineSettings.h"
+#include "Debug/ProfilerCPU.h"
 
 namespace DAVA
 {
@@ -141,6 +143,8 @@ public:
 
     bool IsPackInQueue(const String& packName) override;
 
+    bool IsAnyPackInQueue() const override;
+
     void SetRequestPriority(const IRequest* request) override;
 
     void RemovePack(const String& packName) override;
@@ -166,7 +170,7 @@ public:
     // use only after initialization
     bool IsFileReady(size_t fileIndex) const;
 
-    void SetFileIsReady(size_t fileIndex);
+    void SetFileIsReady(size_t fileIndex, uint32 compressedSize);
 
     bool IsInQueue(const PackRequest* request) const;
 
@@ -177,8 +181,9 @@ public:
     DLCDownloader& GetDownloader() const;
 
     bool CountError(int32 errCode);
-
     void FireNetworkReady(bool nextState);
+
+    ProfilerCPU profiler;
 
 private:
     // initialization state functions
@@ -210,6 +215,8 @@ private:
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
+    void OnSettingsChanged(EngineSettings::eSetting value);
+    bool IsProfilingEnabled() const;
 
     enum class ScanState : uint32
     {
@@ -338,9 +345,10 @@ inline bool DLCManagerImpl::IsFileReady(size_t fileIndex) const
     return scanFileReady[fileIndex];
 }
 
-inline void DLCManagerImpl::SetFileIsReady(size_t fileIndex)
+inline void DLCManagerImpl::SetFileIsReady(size_t fileIndex, uint32 compressedSize)
 {
-    scanFileReady.at(fileIndex) = true;
+    scanFileReady[fileIndex] = true;
+    lastProgress.alreadyDownloaded += compressedSize;
 }
 
 inline bool DLCManagerImpl::IsInQueue(const PackRequest* request) const

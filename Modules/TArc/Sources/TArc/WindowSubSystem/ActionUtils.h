@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TArc/Qt/QtString.h"
-
 #include <Base/BaseTypes.h>
 
 #include <QUrl>
@@ -17,6 +16,8 @@ static const QString toolbarScheme = QStringLiteral("toolbar");
 static const QString statusbarScheme = QStringLiteral("statusbar");
 
 static const QString permanentStatusbarAction = QStringLiteral("permanent");
+
+class ControlProxy;
 
 struct InsertionParams
 {
@@ -45,6 +46,7 @@ QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor = 0, const Inse
 
 /// You can attach widget to Action. This widget will be used to appear action on toolbar or in status bar
 void AttachWidgetToAction(QAction* action, QWidget* widget);
+void AttachWidgetToAction(QAction* action, ControlProxy* control);
 QWidget* GetAttachedWidget(QAction* action);
 } // namespace TArc
 } // namespace DAVA

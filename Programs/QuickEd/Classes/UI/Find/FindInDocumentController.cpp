@@ -112,6 +112,8 @@ void FindInDocumentController::SetFilter(std::shared_ptr<FindFilter> filter)
 
 void FindInDocumentController::Find()
 {
+    using namespace DAVA;
+
     context.results.clear();
     context.currentSelection = -1;
 
@@ -148,8 +150,10 @@ void FindInDocumentController::FindIfActive()
     }
 }
 
-void FindInDocumentController::MoveSelection(int32 step)
+void FindInDocumentController::MoveSelection(DAVA::int32 step)
 {
+    using namespace DAVA;
+
     if (!context.results.empty())
     {
         context.currentSelection += step;

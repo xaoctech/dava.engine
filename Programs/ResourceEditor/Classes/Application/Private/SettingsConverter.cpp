@@ -86,7 +86,7 @@ public:
         ColorPickerSettings* colorPickerSettings = ctx->GetData<ColorPickerSettings>();
         DVASSERT(colorPickerSettings);
 
-        ThemesSettings* themeSettings = ctx->GetData<ThemesSettings>();
+        DAVA::TArc::ThemesSettings* themeSettings = ctx->GetData<DAVA::TArc::ThemesSettings>();
         DVASSERT(themeSettings);
 
 #define LOAD_SETTING(settingsVar, field, key, convertFn)\

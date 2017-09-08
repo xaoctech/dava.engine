@@ -128,6 +128,7 @@ public:
         uint32 skipCDNConnectAfterAttempts = 3; //!< if local metadata exists and CDN is not available use local files without CDN
         uint32 downloaderMaxHandles = 8; //!< play with any values you like from 1 to max open file per process
         uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
+        uint32 profilerSamplerCounts = 1024 * 2; //!< number of counters in profiler ring buffer
         bool fireSignalsInBackground = false; //!< if false, signals are accumulated and will be fired only when an app returns to foreground
     };
 
@@ -172,7 +173,11 @@ public:
     /** return nullptr if can't find pack */
     virtual const IRequest* RequestPack(const String& packName) = 0;
 
+    /** return true if pack currently is in download queue */
     virtual bool IsPackInQueue(const String& packName) = 0;
+
+    /** return true if download queue is not empty */
+    virtual bool IsAnyPackInQueue() const;
 
     /** Update request queue to first download dependency of selected request
         and then request itself */
@@ -185,7 +190,7 @@ public:
     {
         uint64 total = 0; //!< in bytes
         uint64 alreadyDownloaded = 0; //!< in bytes
-        uint64 inQueue = 0; //!< in bytes
+        uint64 inQueue = 0; //!< in bytes (deprecated)
         bool isRequestingEnabled = false; //!< current state of requesting
     };
 
