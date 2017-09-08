@@ -66,7 +66,7 @@ bool EnableDebugProfiler::OnMouseOrTouch(const InputEvent& ev)
         inEvent = ev;
         DeviceManager* devManager = GetEngineContext()->deviceManager;
         TouchScreen* touchScreen = devManager->GetTouchScreen();
-        inEvent.analogState = touchScreen->GetAnalogElementState(TOUCH_CLICK0);
+        inEvent.analogState = touchScreen->GetTouchPositionByIndex(0);
     }
     else
     {
