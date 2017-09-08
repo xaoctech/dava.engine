@@ -143,10 +143,10 @@ public:
 
 public:
     /** Returns digital action state for digital binding. 'actionId' should correspond to DigitalBinding  */
-    bool ActionSystem::GetDigitalActionState(FastName actionId) const;
+    bool GetDigitalActionState(FastName actionId) const;
 
     /** Returns analog action state for analog binding. 'actionId' should correspond to AnalogBinding */
-    AnalogActionState ActionSystem::GetAnalogActionState(FastName actionId) const;
+    AnalogActionState GetAnalogActionState(FastName actionId) const;
 
 public:
     /** Emits when an action is triggered. */
