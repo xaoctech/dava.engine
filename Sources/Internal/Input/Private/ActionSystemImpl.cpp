@@ -68,7 +68,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
                     boundSet.devices.erase(std::remove(boundSet.devices.begin(), boundSet.devices.end(), deviceId), boundSet.devices.end());
                 }
 
-                // If it is not bound to any devices anymore - remove itfrom the list
+                // If it is not bound to any devices anymore - remove it from the list
                 if (boundSet.devices.size() == 0)
                 {
                     iter = boundSets.erase(iter);
