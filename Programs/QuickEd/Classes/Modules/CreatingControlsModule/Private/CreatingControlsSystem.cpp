@@ -1,4 +1,4 @@
-#include "Modules/DocumentsModule/Private/CreatingControlsSystem.h"
+#include "Modules/CreatingControlsModule/CreatingControlsSystem.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "UI/CommandExecutor.h"
 #include "Utils/ControlPlacementUtils.h"
@@ -7,17 +7,6 @@ CreatingControlsSystem::CreatingControlsSystem(EditorSystemsManager* parent, DAV
     : BaseEditorSystem(parent, accessor)
     , ui(ui)
 {
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    fieldBinder.reset(new FieldBinder(accessor));
-
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::nodeToAddOnClickPropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &CreatingControlsSystem::OnAddingControlChanged));
-    }
 }
 
 EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::UIEvent* currentInput)
@@ -52,7 +41,7 @@ void CreatingControlsSystem::OnDragStateChanged(EditorSystemsManager::eDragState
     }
 }
 
-bool CreatingControlsSystem::IsDependsOnCurrentPackage(ControlNode* control)
+bool CreatingControlsSystem::IsDependsOnCurrentPackage(ControlNode* control) const
 {
     using namespace DAVA::TArc;
 
@@ -76,9 +65,9 @@ bool CreatingControlsSystem::IsDependsOnCurrentPackage(ControlNode* control)
     return control->IsDependsOnPackage(currentPackage);
 }
 
-void CreatingControlsSystem::OnAddingControlChanged(const DAVA::Any& control)
+void CreatingControlsSystem::SetCreateByClick(ControlNode* control)
 {
-    createFromControl = control.Cast<ControlNode*>(nullptr);
+    createFromControl = control;
     controlDependsOnPackage = (createFromControl == nullptr ? false : IsDependsOnCurrentPackage(createFromControl));
 }
 
@@ -137,6 +126,4 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
 void CreatingControlsSystem::ClearAddingTask()
 {
     createFromControl = nullptr;
-    DocumentData* documentData = accessor->GetActiveContext()->GetData<DocumentData>();
-    documentData->SetNodeToAddOnClick(nullptr);
 }

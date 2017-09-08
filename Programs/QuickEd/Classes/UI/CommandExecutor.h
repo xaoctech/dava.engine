@@ -77,7 +77,7 @@ private:
     void AddComponentImpl(ControlNode* node, const DAVA::Type* type, DAVA::int32 index, ComponentPropertiesSection* prototypeSection);
     void RemoveComponentImpl(ControlNode* node, ComponentPropertiesSection* section);
     bool IsNodeInHierarchy(const PackageBaseNode* node) const;
-    Result CanGroupSelectedNodes(const SelectedNodes& selectedNodes) const;
+    DAVA::Result CanGroupSelectedNodes(const SelectedNodes& selectedNodes) const;
 
     static bool IsControlNodesHasSameParentControlNode(const ControlNode* n1, const ControlNode* n2);
     DocumentData* GetDocumentData() const;

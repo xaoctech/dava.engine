@@ -35,7 +35,6 @@ protected:
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
 private:
-    void InitEditorSystems();
     void InitCentralWidget();
     void InitGlobalData();
 
@@ -90,7 +89,6 @@ private:
     void OnSelectInFileSystem();
 
     PreviewWidget* previewWidget = nullptr;
-    std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
 
     DAVA::TArc::QtDelayedExecutor delayedExecutor;

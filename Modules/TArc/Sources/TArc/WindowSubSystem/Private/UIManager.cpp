@@ -326,7 +326,8 @@ void AddToolbarPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInf
         menuButton->setText(menuButtonName);
         menuButton->setPopupMode(QToolButton::InstantPopup);
         menuButton->setMenu(topLevelMenu);
-        toolbar->addWidget(menuButton);
+        QAction* action = toolbar->addWidget(menuButton);
+        action->setObjectName(menuButtonName + "_action");
     }
     else
     {
@@ -426,67 +427,79 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
     }
 }
 
-void RemoveMenuPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
+void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& path, const QString& actionName)
 {
-    QStringList path = url.path().split("$/");
-    DVASSERT(!path.isEmpty());
-    QString topLevelTitle = path.front();
-    QMenu* topLevelMenu = windowInfo.menuBar->findChild<QMenu*>(topLevelTitle, Qt::FindDirectChildrenOnly);
-    if (topLevelMenu == nullptr)
-    {
-        return;
-    }
-
-    QMenu* currentLevelMenu = topLevelMenu;
-    for (int i = 1; i < path.size(); ++i)
-    {
-        QString currentLevelTittle = path[i];
-        QMenu* menu = currentLevelMenu->findChild<QMenu*>(currentLevelTittle);
-        if (menu == nullptr)
-        {
-            break;
-        }
-        currentLevelMenu = menu;
-    }
-
     if (currentLevelMenu == nullptr)
     {
         return;
     }
 
-    QAction* action = FindAction(currentLevelMenu, actionName);
-    currentLevelMenu->removeAction(action);
-    action->deleteLater();
+    if (path.empty())
+    {
+        QAction* action = FindAction(currentLevelMenu, actionName);
+        currentLevelMenu->removeAction(action);
+        action->deleteLater();
+    }
+    else
+    {
+        QString nextLevelName = path.front();
+        path.pop_front();
+        QMenu* nextLevelMenu = currentLevelMenu->findChild<QMenu*>(nextLevelName);
+        RemoveActionFromMenu(nextLevelMenu, path, actionName);
+        if (nextLevelMenu != nullptr && nextLevelMenu->isEmpty())
+        {
+            currentLevelMenu->removeAction(nextLevelMenu->menuAction());
+        }
+    }
+}
 
-    //     while (currentLevelMenu != topLevelMenu)
-    //     {
-    //         if (currentLevelMenu->isEmpty())
-    //         {
-    //             QMenu* parentMenu = qobject_cast<QMenu*>(currentLevelMenu->parent());
-    //             if (parentMenu != nullptr)
-    //             {
-    //                 parentMenu->removeAction(currentLevelMenu->menuAction());
-    //             }
-    //             currentLevelMenu = parentMenu;
-    //         }
-    //         else
-    //         {
-    //             break;
-    //         }
-    //     }
+void RemoveMenuPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
+{
+    QStringList path = url.path().split("$/");
+    DVASSERT(!path.isEmpty());
+    QString topLevelTitle = path.front();
+    path.pop_front();
+
+    QMenu* topLevelMenu = windowInfo.menuBar->findChild<QMenu*>(topLevelTitle, Qt::FindDirectChildrenOnly);
+
+    RemoveActionFromMenu(topLevelMenu, path, actionName);
 }
 
 void RemoveToolbarPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
 {
-    QString toolbarName = url.path();
-    DVASSERT(toolbarName.isEmpty() == false);
+    QStringList path = url.path().split("$/");
+    DVASSERT(!path.isEmpty());
+
+    QString toolbarName = path.front();
+    path.pop_front();
 
     QToolBar* toolbar = windowInfo.window->findChild<QToolBar*>(toolbarName);
     if (toolbar != nullptr)
     {
-        QAction* action = FindAction(toolbar, actionName);
-        toolbar->removeAction(action);
-        action->deleteLater();
+        if (path.empty())
+        {
+            QAction* action = FindAction(toolbar, actionName);
+            toolbar->removeAction(action);
+            action->deleteLater();
+            return;
+        }
+        else
+        {
+            QString menuButtonName = path.front();
+            path.pop_front();
+
+            QToolButton* menuButton = toolbar->findChild<QToolButton*>(menuButtonName, Qt::FindDirectChildrenOnly);
+            if (menuButton != nullptr)
+            {
+                RemoveActionFromMenu(menuButton->menu(), path, actionName);
+                if (menuButton->menu()->isEmpty())
+                {
+                    QAction* buttonAction = toolbar->findChild<QAction*>(menuButtonName + "_action", Qt::FindDirectChildrenOnly);
+                    toolbar->removeAction(buttonAction);
+                    buttonAction->deleteLater();
+                }
+            }
+        }
     }
 }
 

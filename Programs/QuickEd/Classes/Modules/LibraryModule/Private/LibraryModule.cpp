@@ -11,6 +11,11 @@
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/ModuleCollection.h>
 
+namespace LibraryModuleDetails
+{
+const QString controlsToolbarName = "Library Controls Toolbar";
+};
+
 DAVA_VIRTUAL_REFLECTION_IMPL(LibraryModule)
 {
     DAVA::ReflectionRegistrator<LibraryModule>::Begin()
@@ -18,12 +23,17 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LibraryModule)
     .End();
 }
 
-QString LibraryModule::controlsToolbarName = "Library Controls Toolbar";
-
 void LibraryModule::PostInit()
 {
+    InitData();
     InitUI();
     BindFields();
+}
+
+void LibraryModule::InitData()
+{
+    std::unique_ptr<LibraryData> data = std::make_unique<LibraryData>();
+    GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
 void LibraryModule::InitUI()
@@ -36,12 +46,12 @@ void LibraryModule::InitUI()
     panelInfo.area = Qt::LeftDockWidgetArea;
     PanelKey panelKey(title, panelInfo);
 
-    libraryWidget = new LibraryWidget(GetAccessor(), GetUI());
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, libraryWidget);
+    GetLibraryData()->libraryWidget = new LibraryWidget(GetAccessor(), GetUI());
+    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, GetLibraryData()->libraryWidget);
 
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, controlsToolbarName);
+    GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, LibraryModuleDetails::controlsToolbarName);
 
     // create menu bar action "Controls", insert before "Help"
     QAction* controlsMenu = new QAction(QStringLiteral("Controls"), nullptr);
@@ -78,20 +88,22 @@ void LibraryModule::OnPackageChanged(const DAVA::Any& package)
         packageNode = package.Get<PackageNode*>();
     }
 
-    if (currentPackageNode != nullptr)
+    LibraryData* data = GetLibraryData();
+
+    if (data->currentPackageNode != nullptr)
     {
-        currentPackageNode->RemoveListener(this);
+        data->currentPackageNode->RemoveListener(this);
         RemovePrototypesMenus();
     }
 
-    currentPackageNode = packageNode;
-    if (currentPackageNode != nullptr)
+    data->currentPackageNode = packageNode;
+    if (data->currentPackageNode != nullptr)
     {
-        currentPackageNode->AddListener(this);
+        data->currentPackageNode->AddListener(this);
         AddPrototypesMenus(packageNode);
     }
 
-    libraryWidget->SetCurrentPackage(packageNode);
+    data->libraryWidget->SetCurrentPackage(packageNode);
 }
 
 void LibraryModule::OnProjectPathChanged(const DAVA::Any& projectPath)
@@ -113,17 +125,12 @@ void LibraryModule::OnProjectPathChanged(const DAVA::Any& projectPath)
         AddControlsMenus(projectData, libraryPackages);
     }
 
-    libraryWidget->SetLibraryPackages(libraryPackages);
+    GetLibraryData()->libraryWidget->SetLibraryPackages(libraryPackages);
 }
 
 void LibraryModule::OnControlCreateTriggered(ControlNode* node)
 {
-    using namespace DAVA::TArc;
-    const DataContext* ctx = GetAccessor()->GetActiveContext();
-    DocumentData* documentData = ctx->GetData<DocumentData>();
-    DVASSERT(documentData != nullptr);
-
-    documentData->SetNodeToAddOnClick(node);
+    InvokeOperation(QEGlobal::CreateByClick.ID, node);
 }
 
 DAVA::Vector<DAVA::RefPtr<PackageNode>> LibraryModule::LoadLibraryPackages(ProjectData* projectData)
@@ -160,6 +167,11 @@ DAVA::Vector<DAVA::RefPtr<PackageNode>> LibraryModule::LoadLibraryPackages(Proje
     return libraryPackages;
 }
 
+LibraryData* LibraryModule::GetLibraryData()
+{
+    return GetAccessor()->GetGlobalContext()->GetData<LibraryData>();
+}
+
 void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages)
 {
     using namespace DAVA;
@@ -193,14 +205,14 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
                     controlIconPath = QString::fromStdString(pinnedControl.iconPath.absolute.GetAbsolutePathname());
                 }
 
-                ActionInfo actionInfo;
+                LibraryData::ActionInfo actionInfo;
                 actionInfo.action = new QtAction(accessor, QIcon(controlIconPath), controlName);
                 actionInfo.placement.AddPlacementPoint(CreateMenuPoint("Controls"));
-                actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(controlsToolbarName));
+                actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(LibraryModuleDetails::controlsToolbarName));
                 connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, controlNode));
                 ui->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
 
-                controlsActions.emplace(controlNode, std::move(actionInfo));
+                GetLibraryData()->controlsActions.emplace(controlNode, std::move(actionInfo));
             }
             else
             {
@@ -230,13 +242,13 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
             if (section.pinned == true)
             {
                 menuPoint = CreateMenuPoint(QStringList() << "Controls" << sectionName);
-                toolbarMenuPoint = CreateToolbarMenuPoint(controlsToolbarName, QStringList() << sectionName);
+                toolbarMenuPoint = CreateToolbarMenuPoint(LibraryModuleDetails::controlsToolbarName, QStringList() << sectionName);
             }
             else
             {
                 menuPoint = CreateMenuPoint(QStringList() << "Controls"
                                                           << "Other" << sectionName);
-                toolbarMenuPoint = CreateToolbarMenuPoint(controlsToolbarName, QStringList() << "Other" << sectionName);
+                toolbarMenuPoint = CreateToolbarMenuPoint(LibraryModuleDetails::controlsToolbarName, QStringList() << "Other" << sectionName);
             }
 
             PackageControlsNode* packageControls = pkgFound->Get()->GetPackageControlsNode();
@@ -246,14 +258,14 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
                 QString iconPath = IconHelper::GetIconPathForClassName(className);
                 QString controlName = QString::fromStdString(node->GetName());
 
-                ActionInfo actionInfo;
+                LibraryData::ActionInfo actionInfo;
                 actionInfo.action = new QtAction(accessor, QIcon(iconPath), controlName);
                 actionInfo.placement.AddPlacementPoint(menuPoint);
                 actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
                 connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, node));
 
                 ui->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
-                controlsActions.emplace(node, std::move(actionInfo));
+                GetLibraryData()->controlsActions.emplace(node, std::move(actionInfo));
             }
         }
     }
@@ -261,15 +273,15 @@ void LibraryModule::AddControlsMenus(const ProjectData* projectData, const Vecto
 
 void LibraryModule::RemoveControlsMenus()
 {
-    ClearActions(controlsActions);
+    ClearActions(GetLibraryData()->controlsActions);
 }
 
-void LibraryModule::AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap)
+void LibraryModule::AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap)
 {
     QString iconPath = IconHelper::GetCustomIconPath();
     QString controlName = QString::fromStdString(controlNode->GetName());
 
-    ActionInfo actionInfo;
+    LibraryData::ActionInfo actionInfo;
     actionInfo.action = new DAVA::TArc::QtAction(GetAccessor(), QIcon(iconPath), controlName);
     actionInfo.placement.AddPlacementPoint(menuPoint);
     actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
@@ -278,7 +290,7 @@ void LibraryModule::AddControlAction(ControlNode* controlNode, const QUrl& menuP
     actionsMap.emplace(controlNode, std::move(actionInfo));
 }
 
-void LibraryModule::AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap)
+void LibraryModule::AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap)
 {
     if (controls != nullptr)
     {
@@ -293,10 +305,10 @@ void LibraryModule::AddPrototypesMenus(PackageNode* packageNode)
 {
     QUrl menuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Controls"
                                                                   << "Prototypes");
-    QUrl toolbarMenuPoint = DAVA::TArc::CreateToolbarMenuPoint(controlsToolbarName, QList<QString>() << "Prototypes");
+    QUrl toolbarMenuPoint = DAVA::TArc::CreateToolbarMenuPoint(LibraryModuleDetails::controlsToolbarName, QList<QString>() << "Prototypes");
 
     PackageControlsNode* prototypes = packageNode->GetPrototypes();
-    AddPackageControlsActions(prototypes, menuPoint, toolbarMenuPoint, prototypesActions);
+    AddPackageControlsActions(prototypes, menuPoint, toolbarMenuPoint, GetLibraryData()->prototypesActions);
 
     ImportedPackagesNode* importedPackages = packageNode->GetImportedPackagesNode();
     if (importedPackages != nullptr)
@@ -314,10 +326,10 @@ void LibraryModule::AddImportedPackageControlsActions(const PackageNode* package
     QUrl menuPoint = DAVA::TArc::CreateMenuPoint(path);
 
     path.pop_front();
-    QUrl toolbarMenuPoint = DAVA::TArc::CreateToolbarMenuPoint(controlsToolbarName, path);
+    QUrl toolbarMenuPoint = DAVA::TArc::CreateToolbarMenuPoint(LibraryModuleDetails::controlsToolbarName, path);
 
     PackageControlsNode* prototypes = package->GetPrototypes();
-    AddPackageControlsActions(prototypes, menuPoint, toolbarMenuPoint, prototypesActions);
+    AddPackageControlsActions(prototypes, menuPoint, toolbarMenuPoint, GetLibraryData()->prototypesActions);
 }
 
 void LibraryModule::RemoveImportedPackageControlsActions(const PackageNode* package)
@@ -325,18 +337,18 @@ void LibraryModule::RemoveImportedPackageControlsActions(const PackageNode* pack
     PackageControlsNode* prototypes = package->GetPrototypes();
     for (ControlNode* controlNode : *prototypes)
     {
-        RemoveControlAction(controlNode, prototypesActions);
+        RemoveControlAction(controlNode, GetLibraryData()->prototypesActions);
     }
 }
 
 void LibraryModule::RemovePrototypesMenus()
 {
-    ClearActions(prototypesActions);
+    ClearActions(GetLibraryData()->prototypesActions);
 }
 
-void LibraryModule::ClearActions(ActionsMap& actionsMap)
+void LibraryModule::ClearActions(LibraryData::ActionsMap& actionsMap)
 {
-    for (const std::pair<ControlNode*, ActionInfo>& entry : actionsMap)
+    for (const std::pair<ControlNode*, LibraryData::ActionInfo>& entry : actionsMap)
     {
         GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, entry.second.placement, entry.second.action->text());
     }
@@ -347,8 +359,9 @@ void LibraryModule::ControlPropertyWasChanged(ControlNode* node, AbstractPropert
 {
     if (property->GetName() == "Name")
     {
-        auto nodeFound = prototypesActions.find(node);
-        if (nodeFound != prototypesActions.end())
+        LibraryData* data = GetLibraryData();
+        auto nodeFound = data->prototypesActions.find(node);
+        if (nodeFound != data->prototypesActions.end())
         {
             nodeFound->second.action->setText(QString::fromStdString(property->GetValue().Get<String>()));
         }
@@ -361,12 +374,14 @@ void LibraryModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* de
     Q_UNUSED(row);
     DVASSERT(nullptr != node);
 
-    if (node->GetParent() == currentPackageNode->GetPrototypes())
+    LibraryData* data = GetLibraryData();
+
+    if (node->GetParent() == data->currentPackageNode->GetPrototypes())
     {
         QUrl menuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Controls"
                                                                       << "Prototypes");
         QUrl toolbarMenuPoint = DAVA::TArc::CreateMenuPoint(QList<QString>() << "Prototypes");
-        AddControlAction(node, menuPoint, toolbarMenuPoint, prototypesActions);
+        AddControlAction(node, menuPoint, toolbarMenuPoint, data->prototypesActions);
     }
 }
 
@@ -374,15 +389,15 @@ void LibraryModule::ControlWillBeRemoved(ControlNode* node, ControlsContainerNod
 {
     Q_UNUSED(from);
     DVASSERT(nullptr != node);
-    RemoveControlAction(node, prototypesActions);
+    RemoveControlAction(node, GetLibraryData()->prototypesActions);
 }
 
-void LibraryModule::RemoveControlAction(ControlNode* node, ActionsMap& actionsMap)
+void LibraryModule::RemoveControlAction(ControlNode* node, LibraryData::ActionsMap& actionsMap)
 {
     auto nodeFound = actionsMap.find(node);
     if (nodeFound != actionsMap.end())
     {
-        ActionInfo& actionInfo = nodeFound->second;
+        LibraryData::ActionInfo& actionInfo = nodeFound->second;
         GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action->text());
         actionsMap.erase(nodeFound);
     }
@@ -393,7 +408,7 @@ void LibraryModule::ImportedPackageWasAdded(PackageNode* node, ImportedPackagesN
     Q_UNUSED(to);
     Q_UNUSED(index);
     DVASSERT(nullptr != node);
-    if (node->GetParent() == currentPackageNode->GetImportedPackagesNode())
+    if (node->GetParent() == GetLibraryData()->currentPackageNode->GetImportedPackagesNode())
     {
         AddImportedPackageControlsActions(node);
     }
@@ -404,7 +419,7 @@ void LibraryModule::ImportedPackageWillBeRemoved(PackageNode* node, ImportedPack
     Q_UNUSED(from);
     DVASSERT(nullptr != node);
 
-    if (node->GetParent() == currentPackageNode->GetImportedPackagesNode())
+    if (node->GetParent() == GetLibraryData()->currentPackageNode->GetImportedPackagesNode())
     {
         RemoveImportedPackageControlsActions(node);
     }

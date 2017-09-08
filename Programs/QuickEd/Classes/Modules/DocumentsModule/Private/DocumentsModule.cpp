@@ -1,7 +1,7 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/Private/CreatingControlsSystem.h"
+#include "Modules/DocumentsModule/EditorData.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "UI/Preview/Data/CanvasData.h"
 
@@ -131,7 +131,6 @@ void DocumentsModule::PostInit()
 
     InitGlobalData();
 
-    InitEditorSystems();
     InitCentralWidget();
 
     RegisterOperations();
@@ -174,15 +173,6 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     watcherData->Unwatch(path);
 }
 
-void DocumentsModule::InitEditorSystems()
-{
-    DVASSERT(nullptr == systemsManager);
-    systemsManager.reset(new EditorSystemsManager(GetAccessor()));
-    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
-
-    systemsManager->AddEditorSystem(new CreatingControlsSystem(systemsManager.get(), GetAccessor(), GetUI()));
-}
-
 void DocumentsModule::InitCentralWidget()
 {
     using namespace DAVA;
@@ -193,7 +183,8 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, systemsManager.get());
+    EditorSystemsManager* manager = accessor->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, manager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -227,6 +218,12 @@ void DocumentsModule::InitGlobalData()
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
     globalContext->CreateData(std::move(data));
+
+    std::unique_ptr<EditorData> editorData(new EditorData());
+    editorData->systemsManager = std::make_unique<EditorSystemsManager>(GetAccessor());
+    editorData->systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
+
+    globalContext->CreateData(std::move(editorData));
 }
 
 void DocumentsModule::CreateDocumentsActions()
@@ -1181,8 +1178,9 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
     DocumentData* documentData = activeContext->GetData<DocumentData>();
+    EditorData* editorData = accessor->GetGlobalContext()->GetData<EditorData>();
 
-    EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
+    EditorSystemsManager::eDisplayState displayState = editorData->systemsManager->GetDisplayState();
     if (displayState == EditorSystemsManager::Preview || displayState == EditorSystemsManager::Emulation)
     {
         PackageNode* package = documentData->GetPackageNode();

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <TArc/Core/ClientModule.h>
+#include "Modules/LibraryModule/LibraryData.h"
 
-class LibraryWidget;
 class ProjectData;
 
 namespace DAVA
@@ -15,16 +15,9 @@ class QtAction;
 
 class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
 {
-    struct ActionInfo
-    {
-        DAVA::TArc::QtAction* action = nullptr;
-        DAVA::TArc::ActionPlacementInfo placement;
-    };
-    using ActionsMap = DAVA::UnorderedMap<ControlNode*, ActionInfo>;
-    ActionsMap controlsActions;
-    ActionsMap prototypesActions;
-
     void PostInit() override;
+
+    void InitData();
     void InitUI();
     void BindFields();
 
@@ -37,11 +30,11 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
     void AddImportedPackageControlsActions(const PackageNode* package);
     void RemoveImportedPackageControlsActions(const PackageNode* package);
 
-    void ClearActions(ActionsMap&);
+    void ClearActions(LibraryData::ActionsMap&);
 
-    void AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap);
-    void AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, ActionsMap& actionsMap);
-    void RemoveControlAction(ControlNode* node, ActionsMap& actionsMap);
+    void AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap);
+    void AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap);
+    void RemoveControlAction(ControlNode* node, LibraryData::ActionsMap& actionsMap);
 
     void OnPackageChanged(const DAVA::Any& package);
     void OnProjectPathChanged(const DAVA::Any& projectPath);
@@ -56,17 +49,10 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
 
     DAVA::Vector<DAVA::RefPtr<PackageNode>> LoadLibraryPackages(ProjectData* projectData);
 
+    LibraryData* GetLibraryData();
+
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::QtConnections connections;
-    LibraryWidget* libraryWidget = nullptr;
-
-    static QString controlsToolbarName;
-
-    QMenu* otherControlsToolMenu = nullptr;
-    QMenu* prototypesToolMenu = nullptr;
-    QMenu* importedPrototypesToolMenu = nullptr;
-
-    PackageNode* currentPackageNode = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::TArc::ClientModule);
 };

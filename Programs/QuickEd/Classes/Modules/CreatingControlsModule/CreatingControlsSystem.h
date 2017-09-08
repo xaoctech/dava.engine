@@ -12,6 +12,8 @@ class CreatingControlsSystem final : public BaseEditorSystem
 public:
     CreatingControlsSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
 
+    void SetCreateByClick(ControlNode* control);
+
 private:
     // BaseEditorSystem
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
@@ -19,10 +21,9 @@ private:
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
 
-    void OnAddingControlChanged(const DAVA::Any& control);
     void OnPackageChanged();
 
-    bool IsDependsOnCurrentPackage(ControlNode* control);
+    bool IsDependsOnCurrentPackage(ControlNode* control) const;
     void AddControlAtPoint(const DAVA::Vector2& point);
     void ClearAddingTask();
 
