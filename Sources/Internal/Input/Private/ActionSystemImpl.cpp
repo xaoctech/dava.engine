@@ -231,6 +231,7 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                 if (analogActionState.active)
                 {
                     actionSystem->ActionTriggered.Emit(analogActionState.action);
+                    return false; // TODO
                 }
             }
         }
