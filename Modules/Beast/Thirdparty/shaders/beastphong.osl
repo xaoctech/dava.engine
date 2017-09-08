@@ -1,0 +1,44 @@
+
+surface
+beastphong
+    [[ string description = "Simple phong material mapping to legacy phong shading in beast" ]]
+(
+	color diffuseColor = 1
+        [[  string description = "Diffuse Color" ]],	
+	color specularColor = 0
+        [[  string description = "Specular Color" ]],
+	color shininessColor = 1.0
+		[[  string description = "Phong Exponent" ]],
+	color transparencyColor = 0
+        [[  string description = "Transparency Color" ]],
+	color emissionColor = 0
+        [[  string description = "Emission Color" ]],
+	string diffuseTexture = ""
+        [[  string description = "Diffuse Texture" ]],
+ 	string specularTexture = ""
+        [[  string description = "Specular Texture" ]],
+	string transparencyTexture = ""
+        [[  string description = "Transparency Texture" ]],		
+	string shininessTexture = ""
+        [[  string description = "Shininess Texture" ]],
+	string emissionTexture = ""
+        [[  string description = "Emission Texture" ]],			
+	string normalTexture = ""
+        [[  string description = "Normal Texture" ]],	
+	float eta = 1.0
+		[[ string description = "Index of Refraction" ]]
+		)
+{
+ 
+	color diffuseTex = diffuseTexture == "" ? diffuseColor : texture(diffuseTexture, u, v, "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color specularTex = specularTexture == "" ? specularColor : texture(specularTexture, u, v, "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color shininessTex = shininessTexture == "" ? shininessColor : texture(shininessTexture, u, v, "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color transparencyTex = transparencyTexture == "" ? transparencyColor : texture(transparencyTexture, u, v, "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color emissionTex = emissionTexture == "" ? emissionColor : texture(emissionTexture, u, v, "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color normalTex = normalTexture == "" ? color(0.5, 0.5, 1.0) : texture(normalTexture, u, v, "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	
+	color white = 1;
+	// Energy-conserving model, scales down diffuse as specular increases
+	Ci = diffuse(N) * diffuseTex * clamp(white-transparencyTex, 0.0, 1.0) * clamp(white - specularTex, 0.0, 1.0) + phong(N, luminance(shininessTex)) * specularTex + refraction(N,eta) * transparencyTex + emission() * emissionTex * M_PI;
+
+}
