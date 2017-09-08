@@ -62,7 +62,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/atomicops.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -80,10 +80,9 @@
 #undef MemoryBarrier
 #endif
 
-namespace base
-{
-namespace subtle
-{
+namespace base {
+namespace subtle {
+
 typedef int32_t Atomic32;
 #ifdef ARCH_CPU_64_BITS
 // We need to be able to go between Atomic64 and AtomicWord implicitly.  This
@@ -172,10 +171,10 @@ void Release_Store(volatile Atomic64* ptr, Atomic64 value);
 Atomic64 NoBarrier_Load(volatile const Atomic64* ptr);
 Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 Atomic64 Release_Load(volatile const Atomic64* ptr);
-#endif // ARCH_CPU_64_BITS
+#endif  // ARCH_CPU_64_BITS
 
-} // namespace subtle
-} // namespace base
+}  // namespace subtle
+}  // namespace base
 
 // Include our platform specific implementation.
 #if defined(OS_WIN) && defined(COMPILER_MSVC) && defined(ARCH_CPU_X86_FAMILY)
@@ -194,6 +193,6 @@ Atomic64 Release_Load(volatile const Atomic64* ptr);
 #include "include/base/internal/cef_atomicops_atomicword_compat.h"
 #endif
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_ATOMICOPS_H_
+#endif  // CEF_INCLUDE_BASE_CEF_ATOMICOPS_H_

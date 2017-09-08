@@ -196,17 +196,16 @@
 // CefMessageRouterBrowserSide and CefMessageRouterRendererSide. If using multiple
 // router pairs make sure to choose values that do not conflict.
 ///
-struct CefMessageRouterConfig
-{
-    CefMessageRouterConfig();
+struct CefMessageRouterConfig {
+  CefMessageRouterConfig();
 
-    // Name of the JavaScript function that will be added to the 'window' object
-    // for sending a query. The default value is "cefQuery".
-    CefString js_query_function;
+  // Name of the JavaScript function that will be added to the 'window' object
+  // for sending a query. The default value is "cefQuery".
+  CefString js_query_function;
 
-    // Name of the JavaScript function that will be added to the 'window' object
-    // for canceling a pending query. The default value is "cefQueryCancel".
-    CefString js_cancel_function;
+  // Name of the JavaScript function that will be added to the 'window' object
+  // for canceling a pending query. The default value is "cefQueryCancel".
+  CefString js_cancel_function;
 };
 
 ///
@@ -214,41 +213,38 @@ struct CefMessageRouterConfig
 // be called on any browser process thread unless otherwise indicated.
 ///
 class CefMessageRouterBrowserSide :
-public base::RefCountedThreadSafe<CefMessageRouterBrowserSide>
-{
-public:
+    public base::RefCountedThreadSafe<CefMessageRouterBrowserSide> {
+ public:
+  ///
+  // Callback associated with a single pending asynchronous query. Execute the
+  // Success or Failure method to send an asynchronous response to the
+  // associated JavaScript handler. It is a runtime error to destroy a Callback
+  // object associated with an uncanceled query without first executing one of
+  // the callback methods. The methods of this class may be called on any
+  // browser process thread.
+  ///
+  class Callback : public CefBase {
+   public:
     ///
-    // Callback associated with a single pending asynchronous query. Execute the
-    // Success or Failure method to send an asynchronous response to the
-    // associated JavaScript handler. It is a runtime error to destroy a Callback
-    // object associated with an uncanceled query without first executing one of
-    // the callback methods. The methods of this class may be called on any
-    // browser process thread.
+    // Notify the associated JavaScript onSuccess callback that the query has
+    // completed successfully with the specified |response|.
     ///
-    class Callback : public CefBase
-    {
-    public:
-        ///
-        // Notify the associated JavaScript onSuccess callback that the query has
-        // completed successfully with the specified |response|.
-        ///
-        virtual void Success(const CefString& response) = 0;
+    virtual void Success(const CefString& response) =0;
 
     ///
     // Notify the associated JavaScript onFailure callback that the query has
     // failed with the specified |error_code| and |error_message|.
     ///
-    virtual void Failure(int error_code, const CefString& error_message) = 0;
-    };
+    virtual void Failure(int error_code, const CefString& error_message) =0;
+  };
 
-    ///
-    // Implement this interface to handle queries. All methods will be executed on
-    // the browser process UI thread.
-    ///
-    class Handler
-    {
-    public:
-        typedef CefMessageRouterBrowserSide::Callback Callback;
+  ///
+  // Implement this interface to handle queries. All methods will be executed on
+  // the browser process UI thread.
+  ///
+  class Handler {
+   public:
+    typedef CefMessageRouterBrowserSide::Callback Callback;
 
     ///
     // Executed when a new query is received. |query_id| uniquely identifies the
@@ -265,9 +261,8 @@ public:
                          int64 query_id,
                          const CefString& request,
                          bool persistent,
-                         CefRefPtr<Callback> callback)
-    {
-        return false;
+                         CefRefPtr<Callback> callback) {
+      return false;
     }
 
     ///
@@ -281,102 +276,97 @@ public:
     ///
     virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser,
                                  CefRefPtr<CefFrame> frame,
-                                 int64 query_id)
-    {
-    }
+                                 int64 query_id) {}
 
-    virtual ~Handler()
-    {
-    }
-    };
+    virtual ~Handler() {}
+  };
 
-    ///
-    // Create a new router with the specified configuration.
-    ///
-    static CefRefPtr<CefMessageRouterBrowserSide> Create(
-    const CefMessageRouterConfig& config);
+  ///
+  // Create a new router with the specified configuration.
+  ///
+  static CefRefPtr<CefMessageRouterBrowserSide> Create(
+      const CefMessageRouterConfig& config);
 
-    ///
-    // Add a new query handler. If |first| is true it will be added as the first
-    // handler, otherwise it will be added as the last handler. Returns true if
-    // the handler is added successfully or false if the handler has already been
-    // added. Must be called on the browser process UI thread. The Handler object
-    // must either outlive the router or be removed before deletion.
-    ///
-    virtual bool AddHandler(Handler* handler, bool first) = 0;
+  ///
+  // Add a new query handler. If |first| is true it will be added as the first
+  // handler, otherwise it will be added as the last handler. Returns true if
+  // the handler is added successfully or false if the handler has already been
+  // added. Must be called on the browser process UI thread. The Handler object
+  // must either outlive the router or be removed before deletion.
+  ///
+  virtual bool AddHandler(Handler* handler, bool first) =0;
 
-    ///
-    // Remove an existing query handler. Any pending queries associated with the
-    // handler will be canceled. Handler::OnQueryCanceled will be called and the
-    // associated JavaScript onFailure callback will be executed with an error
-    // code of -1. Returns true if the handler is removed successfully or false
-    // if the handler is not found. Must be called on the browser process UI
-    // thread.
-    ///
-    virtual bool RemoveHandler(Handler* handler) = 0;
+  ///
+  // Remove an existing query handler. Any pending queries associated with the
+  // handler will be canceled. Handler::OnQueryCanceled will be called and the
+  // associated JavaScript onFailure callback will be executed with an error
+  // code of -1. Returns true if the handler is removed successfully or false
+  // if the handler is not found. Must be called on the browser process UI
+  // thread.
+  ///
+  virtual bool RemoveHandler(Handler* handler) =0;
 
-    ///
-    // Cancel all pending queries associated with either |browser| or |handler|.
-    // If both |browser| and |handler| are NULL all pending queries will be
-    // canceled. Handler::OnQueryCanceled will be called and the associated
-    // JavaScript onFailure callback will be executed in all cases with an error
-    // code of -1.
-    ///
-    virtual void CancelPending(CefRefPtr<CefBrowser> browser,
-                               Handler* handler) = 0;
+  ///
+  // Cancel all pending queries associated with either |browser| or |handler|.
+  // If both |browser| and |handler| are NULL all pending queries will be
+  // canceled. Handler::OnQueryCanceled will be called and the associated
+  // JavaScript onFailure callback will be executed in all cases with an error
+  // code of -1.
+  ///
+  virtual void CancelPending(CefRefPtr<CefBrowser> browser,
+                             Handler* handler) =0;
 
-    ///
-    // Returns the number of queries currently pending for the specified |browser|
-    // and/or |handler|. Either or both values may be empty. Must be called on the
-    // browser process UI thread.
-    ///
-    virtual int GetPendingCount(CefRefPtr<CefBrowser> browser,
-                                Handler* handler) = 0;
+  ///
+  // Returns the number of queries currently pending for the specified |browser|
+  // and/or |handler|. Either or both values may be empty. Must be called on the
+  // browser process UI thread.
+  ///
+  virtual int GetPendingCount(CefRefPtr<CefBrowser> browser,
+                              Handler* handler) =0;
 
-    // The below methods should be called from other CEF handlers. They must be
-    // called exactly as documented for the router to function correctly.
 
-    ///
-    // Call from CefLifeSpanHandler::OnBeforeClose. Any pending queries associated
-    // with |browser| will be canceled and Handler::OnQueryCanceled will be called.
-    // No JavaScript callbacks will be executed since this indicates destruction
-    // of the browser.
-    ///
-    virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) = 0;
+  // The below methods should be called from other CEF handlers. They must be
+  // called exactly as documented for the router to function correctly.
 
-    ///
-    // Call from CefRequestHandler::OnRenderProcessTerminated. Any pending queries
-    // associated with |browser| will be canceled and Handler::OnQueryCanceled
-    // will be called. No JavaScript callbacks will be executed since this
-    // indicates destruction of the context.
-    ///
-    virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) = 0;
+  ///
+  // Call from CefLifeSpanHandler::OnBeforeClose. Any pending queries associated
+  // with |browser| will be canceled and Handler::OnQueryCanceled will be called.
+  // No JavaScript callbacks will be executed since this indicates destruction
+  // of the browser.
+  ///
+  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) =0;
 
-    ///
-    // Call from CefRequestHandler::OnBeforeBrowse only if the navigation is
-    // allowed to proceed. If |frame| is the main frame then any pending queries
-    // associated with |browser| will be canceled and Handler::OnQueryCanceled
-    // will be called. No JavaScript callbacks will be executed since this
-    // indicates destruction of the context.
-    ///
-    virtual void OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame) = 0;
+  ///
+  // Call from CefRequestHandler::OnRenderProcessTerminated. Any pending queries
+  // associated with |browser| will be canceled and Handler::OnQueryCanceled
+  // will be called. No JavaScript callbacks will be executed since this
+  // indicates destruction of the context.
+  ///
+  virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser) =0;
 
-    ///
-    // Call from CefClient::OnProcessMessageReceived. Returns true if the message
-    // is handled by this router or false otherwise.
-    ///
-    virtual bool OnProcessMessageReceived(
-    CefRefPtr<CefBrowser> browser,
-    CefProcessId source_process,
-    CefRefPtr<CefProcessMessage> message) = 0;
+  ///
+  // Call from CefRequestHandler::OnBeforeBrowse only if the navigation is
+  // allowed to proceed. If |frame| is the main frame then any pending queries
+  // associated with |browser| will be canceled and Handler::OnQueryCanceled
+  // will be called. No JavaScript callbacks will be executed since this
+  // indicates destruction of the context.
+  ///
+  virtual void OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefFrame> frame) =0;
 
-protected:
-    // Protect against accidental deletion of this object.
-    friend class base::RefCountedThreadSafe<CefMessageRouterBrowserSide>;
-    virtual ~CefMessageRouterBrowserSide()
-    {
-    }
+  ///
+  // Call from CefClient::OnProcessMessageReceived. Returns true if the message
+  // is handled by this router or false otherwise.
+  ///
+  virtual bool OnProcessMessageReceived(
+      CefRefPtr<CefBrowser> browser,
+      CefProcessId source_process,
+      CefRefPtr<CefProcessMessage> message) =0;
+
+ protected:
+  // Protect against accidental deletion of this object.
+  friend class base::RefCountedThreadSafe<CefMessageRouterBrowserSide>;
+  virtual ~CefMessageRouterBrowserSide() {}
 };
 
 ///
@@ -384,57 +374,55 @@ protected:
 // be called on the render process main thread.
 ///
 class CefMessageRouterRendererSide :
-public base::RefCountedThreadSafe<CefMessageRouterRendererSide>
-{
-public:
-    ///
-    // Create a new router with the specified configuration.
-    ///
-    static CefRefPtr<CefMessageRouterRendererSide> Create(
-    const CefMessageRouterConfig& config);
+    public base::RefCountedThreadSafe<CefMessageRouterRendererSide> {
+ public:
+  ///
+  // Create a new router with the specified configuration.
+  ///
+  static CefRefPtr<CefMessageRouterRendererSide> Create(
+      const CefMessageRouterConfig& config);
 
-    ///
-    // Returns the number of queries currently pending for the specified |browser|
-    // and/or |context|. Either or both values may be empty.
-    ///
-    virtual int GetPendingCount(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefV8Context> context) = 0;
+  ///
+  // Returns the number of queries currently pending for the specified |browser|
+  // and/or |context|. Either or both values may be empty.
+  ///
+  virtual int GetPendingCount(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefV8Context> context) =0;
 
-    // The below methods should be called from other CEF handlers. They must be
-    // called exactly as documented for the router to function correctly.
 
-    ///
-    // Call from CefRenderProcessHandler::OnContextCreated. Registers the
-    // JavaScripts functions with the new context.
-    ///
-    virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
-                                  CefRefPtr<CefFrame> frame,
-                                  CefRefPtr<CefV8Context> context) = 0;
+  // The below methods should be called from other CEF handlers. They must be
+  // called exactly as documented for the router to function correctly.
 
-    ///
-    // Call from CefRenderProcessHandler::OnContextReleased. Any pending queries
-    // associated with the released context will be canceled and
-    // Handler::OnQueryCanceled will be called in the browser process.
-    ///
-    virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<CefFrame> frame,
-                                   CefRefPtr<CefV8Context> context) = 0;
+  ///
+  // Call from CefRenderProcessHandler::OnContextCreated. Registers the
+  // JavaScripts functions with the new context.
+  ///
+  virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefV8Context> context) =0;
 
-    ///
-    // Call from CefRenderProcessHandler::OnProcessMessageReceived. Returns true
-    // if the message is handled by this router or false otherwise.
-    ///
-    virtual bool OnProcessMessageReceived(
-    CefRefPtr<CefBrowser> browser,
-    CefProcessId source_process,
-    CefRefPtr<CefProcessMessage> message) = 0;
+  ///
+  // Call from CefRenderProcessHandler::OnContextReleased. Any pending queries
+  // associated with the released context will be canceled and
+  // Handler::OnQueryCanceled will be called in the browser process.
+  ///
+  virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<CefFrame> frame,
+                                 CefRefPtr<CefV8Context> context) =0;
+  
+  ///
+  // Call from CefRenderProcessHandler::OnProcessMessageReceived. Returns true
+  // if the message is handled by this router or false otherwise.
+  ///
+  virtual bool OnProcessMessageReceived(
+      CefRefPtr<CefBrowser> browser,
+      CefProcessId source_process,
+      CefRefPtr<CefProcessMessage> message) =0;
 
-protected:
-    // Protect against accidental deletion of this object.
-    friend class base::RefCountedThreadSafe<CefMessageRouterRendererSide>;
-    virtual ~CefMessageRouterRendererSide()
-    {
-    }
+ protected:
+  // Protect against accidental deletion of this object.
+  friend class base::RefCountedThreadSafe<CefMessageRouterRendererSide>;
+  virtual ~CefMessageRouterRendererSide() {}
 };
 
-#endif // CEF_INCLUDE_WRAPPER_CEF_MESSAGE_ROUTER_H_
+#endif  // CEF_INCLUDE_WRAPPER_CEF_MESSAGE_ROUTER_H_

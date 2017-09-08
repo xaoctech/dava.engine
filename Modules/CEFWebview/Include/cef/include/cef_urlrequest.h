@@ -54,72 +54,71 @@ class CefURLRequestClient;
 // on the same thread that created it.
 ///
 /*--cef(source=library)--*/
-class CefURLRequest : public virtual CefBase
-{
-public:
-    typedef cef_urlrequest_status_t Status;
-    typedef cef_errorcode_t ErrorCode;
+class CefURLRequest : public virtual CefBase {
+ public:
+  typedef cef_urlrequest_status_t Status;
+  typedef cef_errorcode_t ErrorCode;
 
-    ///
-    // Create a new URL request. Only GET, POST, HEAD, DELETE and PUT request
-    // methods are supported. Multiple post data elements are not supported and
-    // elements of type PDE_TYPE_FILE are only supported for requests originating
-    // from the browser process. Requests originating from the render process will
-    // receive the same handling as requests originating from Web content -- if
-    // the response contains Content-Disposition or Mime-Type header values that
-    // would not normally be rendered then the response may receive special
-    // handling inside the browser (for example, via the file download code path
-    // instead of the URL request code path). The |request| object will be marked
-    // as read-only after calling this method. In the browser process if
-    // |request_context| is empty the global request context will be used. In the
-    // render process |request_context| must be empty and the context associated
-    // with the current renderer process' browser will be used.
-    ///
-    /*--cef(optional_param=request_context)--*/
-    static CefRefPtr<CefURLRequest> Create(
-    CefRefPtr<CefRequest> request,
-    CefRefPtr<CefURLRequestClient> client,
-    CefRefPtr<CefRequestContext> request_context);
+  ///
+  // Create a new URL request. Only GET, POST, HEAD, DELETE and PUT request
+  // methods are supported. Multiple post data elements are not supported and
+  // elements of type PDE_TYPE_FILE are only supported for requests originating
+  // from the browser process. Requests originating from the render process will
+  // receive the same handling as requests originating from Web content -- if
+  // the response contains Content-Disposition or Mime-Type header values that
+  // would not normally be rendered then the response may receive special
+  // handling inside the browser (for example, via the file download code path
+  // instead of the URL request code path). The |request| object will be marked
+  // as read-only after calling this method. In the browser process if
+  // |request_context| is empty the global request context will be used. In the
+  // render process |request_context| must be empty and the context associated
+  // with the current renderer process' browser will be used.
+  ///
+  /*--cef(optional_param=request_context)--*/
+  static CefRefPtr<CefURLRequest> Create(
+      CefRefPtr<CefRequest> request,
+      CefRefPtr<CefURLRequestClient> client,
+      CefRefPtr<CefRequestContext> request_context);
 
-    ///
-    // Returns the request object used to create this URL request. The returned
-    // object is read-only and should not be modified.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefRequest> GetRequest() = 0;
+  ///
+  // Returns the request object used to create this URL request. The returned
+  // object is read-only and should not be modified.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefRequest> GetRequest() =0;
 
-    ///
-    // Returns the client.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefURLRequestClient> GetClient() = 0;
+  ///
+  // Returns the client.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefURLRequestClient> GetClient() =0;
 
-    ///
-    // Returns the request status.
-    ///
-    /*--cef(default_retval=UR_UNKNOWN)--*/
-    virtual Status GetRequestStatus() = 0;
+  ///
+  // Returns the request status.
+  ///
+  /*--cef(default_retval=UR_UNKNOWN)--*/
+  virtual Status GetRequestStatus() =0;
 
-    ///
-    // Returns the request error if status is UR_CANCELED or UR_FAILED, or 0
-    // otherwise.
-    ///
-    /*--cef(default_retval=ERR_NONE)--*/
-    virtual ErrorCode GetRequestError() = 0;
+  ///
+  // Returns the request error if status is UR_CANCELED or UR_FAILED, or 0
+  // otherwise.
+  ///
+  /*--cef(default_retval=ERR_NONE)--*/
+  virtual ErrorCode GetRequestError() =0;
 
-    ///
-    // Returns the response, or NULL if no response information is available.
-    // Response information will only be available after the upload has completed.
-    // The returned object is read-only and should not be modified.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefResponse> GetResponse() = 0;
+  ///
+  // Returns the response, or NULL if no response information is available.
+  // Response information will only be available after the upload has completed.
+  // The returned object is read-only and should not be modified.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefResponse> GetResponse() =0;
 
-    ///
-    // Cancel the request.
-    ///
-    /*--cef()--*/
-    virtual void Cancel() = 0;
+  ///
+  // Cancel the request.
+  ///
+  /*--cef()--*/
+  virtual void Cancel() =0;
 };
 
 ///
@@ -128,63 +127,62 @@ public:
 // request unless otherwise documented.
 ///
 /*--cef(source=client)--*/
-class CefURLRequestClient : public virtual CefBase
-{
-public:
-    ///
-    // Notifies the client that the request has completed. Use the
-    // CefURLRequest::GetRequestStatus method to determine if the request was
-    // successful or not.
-    ///
-    /*--cef()--*/
-    virtual void OnRequestComplete(CefRefPtr<CefURLRequest> request) = 0;
+class CefURLRequestClient : public virtual CefBase {
+ public:
+  ///
+  // Notifies the client that the request has completed. Use the
+  // CefURLRequest::GetRequestStatus method to determine if the request was
+  // successful or not.
+  ///
+  /*--cef()--*/
+  virtual void OnRequestComplete(CefRefPtr<CefURLRequest> request) =0;
 
-    ///
-    // Notifies the client of upload progress. |current| denotes the number of
-    // bytes sent so far and |total| is the total size of uploading data (or -1 if
-    // chunked upload is enabled). This method will only be called if the
-    // UR_FLAG_REPORT_UPLOAD_PROGRESS flag is set on the request.
-    ///
-    /*--cef()--*/
-    virtual void OnUploadProgress(CefRefPtr<CefURLRequest> request,
+  ///
+  // Notifies the client of upload progress. |current| denotes the number of
+  // bytes sent so far and |total| is the total size of uploading data (or -1 if
+  // chunked upload is enabled). This method will only be called if the
+  // UR_FLAG_REPORT_UPLOAD_PROGRESS flag is set on the request.
+  ///
+  /*--cef()--*/
+  virtual void OnUploadProgress(CefRefPtr<CefURLRequest> request,
+                                int64 current,
+                                int64 total) =0;
+
+  ///
+  // Notifies the client of download progress. |current| denotes the number of
+  // bytes received up to the call and |total| is the expected total size of the
+  // response (or -1 if not determined).
+  ///
+  /*--cef()--*/
+  virtual void OnDownloadProgress(CefRefPtr<CefURLRequest> request,
                                   int64 current,
-                                  int64 total) = 0;
+                                  int64 total) =0;
 
-    ///
-    // Notifies the client of download progress. |current| denotes the number of
-    // bytes received up to the call and |total| is the expected total size of the
-    // response (or -1 if not determined).
-    ///
-    /*--cef()--*/
-    virtual void OnDownloadProgress(CefRefPtr<CefURLRequest> request,
-                                    int64 current,
-                                    int64 total) = 0;
+  ///
+  // Called when some part of the response is read. |data| contains the current
+  // bytes received since the last call. This method will not be called if the
+  // UR_FLAG_NO_DOWNLOAD_DATA flag is set on the request.
+  ///
+  /*--cef()--*/
+  virtual void OnDownloadData(CefRefPtr<CefURLRequest> request,
+                              const void* data,
+                              size_t data_length) =0;
 
-    ///
-    // Called when some part of the response is read. |data| contains the current
-    // bytes received since the last call. This method will not be called if the
-    // UR_FLAG_NO_DOWNLOAD_DATA flag is set on the request.
-    ///
-    /*--cef()--*/
-    virtual void OnDownloadData(CefRefPtr<CefURLRequest> request,
-                                const void* data,
-                                size_t data_length) = 0;
-
-    ///
-    // Called on the IO thread when the browser needs credentials from the user.
-    // |isProxy| indicates whether the host is a proxy server. |host| contains the
-    // hostname and |port| contains the port number. Return true to continue the
-    // request and call CefAuthCallback::Continue() when the authentication
-    // information is available. Return false to cancel the request. This method
-    // will only be called for requests initiated from the browser process.
-    ///
-    /*--cef(optional_param=realm)--*/
-    virtual bool GetAuthCredentials(bool isProxy,
-                                    const CefString& host,
-                                    int port,
-                                    const CefString& realm,
-                                    const CefString& scheme,
-                                    CefRefPtr<CefAuthCallback> callback) = 0;
+  ///
+  // Called on the IO thread when the browser needs credentials from the user.
+  // |isProxy| indicates whether the host is a proxy server. |host| contains the
+  // hostname and |port| contains the port number. Return true to continue the
+  // request and call CefAuthCallback::Continue() when the authentication
+  // information is available. Return false to cancel the request. This method
+  // will only be called for requests initiated from the browser process.
+  ///
+  /*--cef(optional_param=realm)--*/
+  virtual bool GetAuthCredentials(bool isProxy,
+                                  const CefString& host,
+                                  int port,
+                                  const CefString& realm,
+                                  const CefString& scheme,
+                                  CefRefPtr<CefAuthCallback> callback) =0;
 };
 
-#endif // CEF_INCLUDE_CEF_URLREQUEST_H_
+#endif  // CEF_INCLUDE_CEF_URLREQUEST_H_
