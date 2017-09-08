@@ -1,11 +1,10 @@
 #pragma once
 
 #include <TArc/DataProcessing/SettingsNode.h>
+#include <TArc/Qt/QtString.h>
 #include <Reflection/Reflection.h>
 #include <FileSystem/FilePath.h>
 #include <Math/Color.h>
-
-#include <QString>
 
 class SlotSystemSettings : public DAVA::TArc::SettingsNode
 {
