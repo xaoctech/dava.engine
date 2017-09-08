@@ -3,7 +3,7 @@
 void MenuItem::SetEnabled(bool enabled)
 {
     button->SetState(enabled ? DAVA::UIControl::eControlState::STATE_NORMAL : DAVA::UIControl::eControlState::STATE_DISABLED);
-    button->SetInputEnabled(enabled);
+    button->SetInputEnabled(enabled, false);
 }
 
 ActionItem::ActionItem(Menu* parentMenu, DAVA::Message& action)

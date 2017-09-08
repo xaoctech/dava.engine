@@ -37,7 +37,7 @@ struct CounterTreeNode
 {
     IMPLEMENT_POOL_ALLOCATOR(CounterTreeNode, 128)
 
-    static CounterTreeNode* BuildTree(ProfilerCPU::CounterArray::iterator begin, const ProfilerCPU::CounterArray* array);
+    static CounterTreeNode* BuildTree(ProfilerCPU::CounterArray::const_iterator begin, const ProfilerCPU::CounterArray* array);
     static CounterTreeNode* CopyTree(const CounterTreeNode* node);
     static void MergeTree(CounterTreeNode* root, const CounterTreeNode* node);
     static void DumpTree(const CounterTreeNode* node, std::ostream& stream, bool average);
@@ -103,26 +103,33 @@ ProfilerCPU::ScopedCounter::~ScopedCounter()
     }
 }
 
+ProfilerCPU::ProfilerCPU(uint32 numCounters_)
+    : numCounters(numCounters_)
+{
+}
+
 ProfilerCPU::~ProfilerCPU()
 {
     DeleteSnapshots();
     SafeDelete(counters);
 }
 
-void ProfilerCPU::Start(uint32 numCounters)
+void ProfilerCPU::Start()
 {
-    LockGuard<Mutex> lock(safeCounters);
+    LockGuard<Mutex> lock(mutex);
     if (isStarted == false)
     {
-        SafeDelete(counters);
-        counters = new CounterArray(numCounters);
+        if (counters == nullptr)
+        {
+            counters = new CounterArray(numCounters);
+        }
         isStarted = true;
     }
 }
 
 void ProfilerCPU::Stop()
 {
-    LockGuard<Mutex> lock(safeCounters);
+    LockGuard<Mutex> lock(mutex);
     isStarted = false;
 }
 
@@ -185,8 +192,8 @@ void ProfilerCPU::DumpLast(const char* counterName, uint32 counterCount, std::os
     stream << "================================================================\n";
 
     const CounterArray* array = GetCounterArray(snapshot);
-    CounterArray::reverse_iterator it = array->rbegin(), itEnd = array->rend();
-    Counter* lastDumpedCounter = nullptr;
+    CounterArray::const_reverse_iterator it = array->rbegin(), itEnd = array->rend();
+    const Counter* lastDumpedCounter = nullptr;
     for (; it != itEnd; ++it)
     {
         if (it->endTime != 0 && (strcmp(counterName, it->name) == 0))
@@ -197,7 +204,7 @@ void ProfilerCPU::DumpLast(const char* counterName, uint32 counterCount, std::os
             }
             lastDumpedCounter = &(*it);
 
-            ProfilerCPUDetails::CounterTreeNode* treeRoot = ProfilerCPUDetails::CounterTreeNode::BuildTree(CounterArray::iterator(it), array);
+            ProfilerCPUDetails::CounterTreeNode* treeRoot = ProfilerCPUDetails::CounterTreeNode::BuildTree(CounterArray::const_iterator(it), array);
             ProfilerCPUDetails::CounterTreeNode::DumpTree(treeRoot, stream, false);
             SafeDelete(treeRoot);
 
@@ -221,14 +228,14 @@ void ProfilerCPU::DumpAverage(const char* counterName, uint32 counterCount, std:
     stream << "=== Average time for " << counterCount << " counter(s):\n";
 
     const CounterArray* array = GetCounterArray(snapshot);
-    CounterArray::reverse_iterator it = array->rbegin();
-    CounterArray::reverse_iterator itEnd = array->rend();
+    CounterArray::const_reverse_iterator it = array->rbegin();
+    CounterArray::const_reverse_iterator itEnd = array->rend();
     CounterTreeNode* treeRoot = nullptr;
     for (; it != itEnd; ++it)
     {
         if (it->endTime != 0 && (strcmp(counterName, it->name) == 0))
         {
-            CounterTreeNode* node = CounterTreeNode::BuildTree(CounterArray::iterator(it), array);
+            CounterTreeNode* node = CounterTreeNode::BuildTree(CounterArray::const_iterator(it), array);
 
             if (treeRoot)
             {
@@ -290,7 +297,8 @@ Vector<TraceEvent> ProfilerCPU::GetTrace(const char* counterName, uint32 desired
     bool found = false;
     std::size_t countersCount = 0;
     const CounterArray* array = GetCounterArray(snapshot);
-    CounterArray::reverse_iterator rit = array->rbegin(), rend = array->rend();
+    CounterArray::const_reverse_iterator rit = array->rbegin();
+    CounterArray::const_reverse_iterator rend = array->rend();
     for (; rit != rend; ++rit)
     {
         ++countersCount;
@@ -306,8 +314,8 @@ Vector<TraceEvent> ProfilerCPU::GetTrace(const char* counterName, uint32 desired
 
     if (found)
     {
-        CounterArray::iterator it(rit);
-        CounterArray::iterator end = array->end();
+        CounterArray::const_iterator it(rit);
+        CounterArray::const_iterator end = array->end();
 
         trace.reserve(countersCount);
 
@@ -350,7 +358,7 @@ const ProfilerCPU::CounterArray* ProfilerCPU::GetCounterArray(int32 snapshot) co
 //Internal Definition
 namespace ProfilerCPUDetails
 {
-CounterTreeNode* CounterTreeNode::BuildTree(ProfilerCPU::CounterArray::iterator begin, const ProfilerCPU::CounterArray* array)
+CounterTreeNode* CounterTreeNode::BuildTree(ProfilerCPU::CounterArray::const_iterator begin, const ProfilerCPU::CounterArray* array)
 {
     DVASSERT(begin->endTime);
 
@@ -361,8 +369,8 @@ CounterTreeNode* CounterTreeNode::BuildTree(ProfilerCPU::CounterArray::iterator 
     CounterTreeNode* node = new CounterTreeNode(nullptr, begin->name, begin->endTime - begin->startTime, 1);
     nodeEndTime.push_back(begin->endTime);
 
-    ProfilerCPU::CounterArray::iterator end = array->end();
-    for (ProfilerCPU::CounterArray::iterator it = begin + 1; it != end; ++it)
+    ProfilerCPU::CounterArray::const_iterator end = array->end();
+    for (ProfilerCPU::CounterArray::const_iterator it = begin + 1; it != end; ++it)
     {
         const ProfilerCPU::Counter& c = *it;
 
