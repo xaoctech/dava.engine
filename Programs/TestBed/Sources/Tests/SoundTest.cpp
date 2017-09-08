@@ -7,7 +7,7 @@
 using namespace DAVA;
 
 SoundTest::SoundTest(TestBed& app)
-    : BaseScreen(app, "Sound test")
+    : BaseScreen(app, "Sound_test")
 {
 }
 
