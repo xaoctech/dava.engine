@@ -1,0 +1,391 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>
+maya/beastmayaplugin/src/mayanodes/beastentitynode.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2mayanodes_2beastentitynode_8cpp-example.html','api_maya_2beastmayaplugin_2src_2mayanodes_2beastentitynode_8cpp_example_htmlefb081e6-9303-4a7d-8987-077fd9453230','index.html',location.hash); javascript:initPage('smaya/beastmayaplugin/src/mayanodes/beastentitynode.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2mayanodes_2beastentitynode_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/mayanodes/beastentitynode.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/mayanodes/beastentitynode.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/src/mayanodes/beastentitynode.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class=
+"preprocessor">#include "mayanodes/beastentitynode.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeids.h"</span>
+
+<span class=
+"preprocessor">#include &lt;maya/MFnCompoundAttribute.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnNumericAttribute.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnMessageAttribute.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnStringData.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnTypedAttribute.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnDependencyNode.h&gt;</span>
+
+<span class="preprocessor">#include "<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastutils.h</a>"</span>
+<span class="preprocessor">#include "mayautils.h"</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+MTypeId BeastEntityNode::id(ADSK_BEAST_ENTITY);
+
+MObject BeastEntityNode::instance;
+MObject BeastEntityNode::target;
+MObject BeastEntityNode::fromInstance;
+MObject BeastEntityNode::autoTextureResolution;
+MObject BeastEntityNode::texelScale;
+MObject BeastEntityNode::textureResolution;
+MObject BeastEntityNode::outAtlasScale;
+MObject BeastEntityNode::outAtlasOffset;
+MObject BeastEntityNode::pass;
+MObject BeastEntityNode::textureFileName;
+MObject BeastEntityNode::textureResults;
+MObject BeastEntityNode::bakeUVSet;
+
+BeastEntityNode::BeastEntityNode() {
+}
+
+BeastEntityNode::~BeastEntityNode() {
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> i = begin(m_ids); i != end(m_ids); ++i) {
+                MMessage::removeCallback(*i);
+        }
+}
+
+<span class=
+"keywordtype">void</span> BeastEntityNode::postConstructor()
+{
+        setExistWithoutInConnections(<span class=
+"keyword">false</span>);
+        setExistWithoutOutConnections(<span class=
+"keyword">false</span>);
+
+        MStatus res;
+        m_ids.push_back(MNodeMessage::addAttributeChangedCallback(thisMObject(), attributeChangedCallback, <span class="keyword">this</span>, &amp;res));
+        CHECK_MSTATUS(res);
+}
+
+<span class="keywordtype">void</span>* BeastEntityNode::creator() {
+        <span class="keywordflow">return</span> <span class=
+"keyword">new</span> BeastEntityNode();
+}
+
+MStatus BeastEntityNode::initialize()
+        <span class="comment">//</span>
+        <span class="comment">//      Description:</span>
+        <span class=
+"comment">//              This method is called to create and initialize all of the attributes</span>
+        <span class=
+"comment">//      and attribute dependencies for this node type.  This is only called </span>
+        <span class=
+"comment">//              once when the node type is registered with Maya.</span>
+        <span class="comment">//</span>
+        <span class="comment">//      Return Values:</span>
+        <span class="comment">//              MS::kSuccess</span>
+        <span class="comment">//              MS::kFailure</span>
+        <span class="comment">//</span>
+{
+        MStatus stat;
+
+        <span class="comment">// Attribute types</span>
+        MFnMessageAttribute nMsgAttr;
+        MFnNumericAttribute nNumAttr;
+        MFnTypedAttribute  nTypedAttr;
+        MFnStringData strData;
+
+        instance = nMsgAttr.create(<span class=
+"stringliteral">"instance"</span>, <span class=
+"stringliteral">"i"</span>);
+        stat = addAttribute(instance);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        target = nTypedAttr.create(<span class=
+"stringliteral">"target"</span>, <span class=
+"stringliteral">"t"</span>, MFnData::kString, strData.create(<span class="stringliteral">""</span>));
+        stat = addAttribute(target);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        fromInstance = nNumAttr.create(<span class=
+"stringliteral">"fromInstance"</span>, <span class=
+"stringliteral">"fi"</span>, MFnNumericData::kBoolean, <span class=
+"keyword">true</span>);
+        stat = addAttribute(fromInstance);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        autoTextureResolution = nNumAttr.create(<span class=
+"stringliteral">"autoTextureResolution"</span>, <span class=
+"stringliteral">"atr"</span>, MFnNumericData::kBoolean, <span class="keyword">true</span>);
+        stat = addAttribute(autoTextureResolution);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        texelScale = nNumAttr.create(<span class=
+"stringliteral">"texelScale"</span>, <span class=
+"stringliteral">"ts"</span>, MFnNumericData::kFloat, 1.0f);
+        nNumAttr.setMin(0.0f);
+        nNumAttr.setSoftMin(0.0f); nNumAttr.setSoftMax(128.0f);
+        stat = addAttribute(texelScale);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        textureResolution = nNumAttr.create(<span class=
+"stringliteral">"textureResolution"</span>, <span class=
+"stringliteral">"tr"</span>, MFnNumericData::k2Int);
+        nNumAttr.setDefault(128, 128);
+        nNumAttr.setMin(1, 1);
+        stat = addAttribute(textureResolution);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        outAtlasScale = nNumAttr.create(<span class=
+"stringliteral">"outAtlasScale"</span>, <span class=
+"stringliteral">"oas"</span>, MFnNumericData::k2Float);
+        nNumAttr.setDefault(1.0f, 1.0f);
+        stat = addAttribute(outAtlasScale);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        outAtlasOffset = nNumAttr.create(<span class=
+"stringliteral">"outAtlasOffset"</span>, <span class=
+"stringliteral">"oaf"</span>, MFnNumericData::k2Float);
+        nNumAttr.setDefault(0.0f, 0.0f);
+        stat = addAttribute(outAtlasOffset);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        
+        <span class=
+"comment">// Compound for texture results</span>
+        pass = nTypedAttr.create(<span class=
+"stringliteral">"pass"</span>, <span class=
+"stringliteral">"p"</span>, MFnData::kString, strData.create(<span class="stringliteral">""</span>));
+        stat = addAttribute(pass);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+        
+        textureFileName = nTypedAttr.create(<span class=
+"stringliteral">"textureFileName"</span>, <span class=
+"stringliteral">"tfn"</span>, MFnData::kString, strData.create(<span class="stringliteral">""</span>));
+        stat = addAttribute(textureFileName);
+        nTypedAttr.setArray(<span class="keyword">true</span>);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        bakeUVSet = nTypedAttr.create(<span class=
+"stringliteral">"bakeUVSet"</span>, <span class=
+"stringliteral">"buv"</span>, MFnData::kString, strData.create(<span class="stringliteral">""</span>));
+        stat = addAttribute(bakeUVSet);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+
+        MFnCompoundAttribute cmpAttr; 
+
+        textureResults = cmpAttr.create(<span class=
+"stringliteral">"textureResults"</span>, <span class=
+"stringliteral">"trs"</span>);
+        cmpAttr.setArray(<span class="keyword">true</span>);
+        cmpAttr.addChild(pass);
+        cmpAttr.addChild(textureFileName);
+        stat = addAttribute(textureResults);
+        CHECK_MSTATUS_AND_RETURN_IT(stat);
+
+        <span class="keywordflow">return</span> MS::kSuccess;
+}
+
+MStatus BeastEntityNode::compute(<span class=
+"keyword">const</span> MPlug&amp; plug, MDataBlock&amp; data) {
+        <span class="keywordflow">return</span> MS::kSuccess;
+}
+
+<span class=
+"keywordtype">void</span> BeastEntityNode::attributeChangedCallback(MNodeMessage::AttributeMessage msg, MPlug&amp; plug1, MPlug&amp; plug2, <span class="keywordtype">void</span>* clientData) {
+        MStatus res;
+        BeastEntityNode* me = <span class=
+"keyword">reinterpret_cast&lt;</span>BeastEntityNode*<span class=
+"keyword">&gt;</span>(clientData);
+
+        MFnDependencyNode node(me-&gt;thisMObject(), &amp;res);
+        CHECK_MSTATUS_AND_RETURN_VOID(res);
+
+        std::wstring plugName = getPlugName(plug1);
+        <span class=
+"keywordflow">if</span> (msg &amp; MNodeMessage::kAttributeSet) {
+                <span class=
+"keywordflow">if</span>(plugName == L<span class=
+"stringliteral">"autoTextureResolution"</span>) {
+                        <span class=
+"keywordtype">bool</span> autoTextureResolution = <span class=
+"keyword">true</span>;
+                        getPlugValue(node, L<span class=
+"stringliteral">"autoTextureResolution"</span>, autoTextureResolution);
+                        <span class=
+"keywordflow">if</span> (!autoTextureResolution) {
+                                <span class=
+"keywordtype">int</span> textureResolution = getAutoTextureResolution(node);
+                                int2 t = {textureResolution, textureResolution};
+                                setCompoundPlugValue(node, L<span class="stringliteral">"textureResolution"</span>, t);
+                        }
+                }
+        }
+}
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
