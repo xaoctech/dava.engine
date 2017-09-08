@@ -91,8 +91,6 @@ public slots:
     void OnPivotCenterMode();
     void OnPivotCommonMode();
     void OnManualModifMode();
-    void OnPlaceOnLandscape();
-    void OnSnapToLandscape();
     void OnResetTransform();
     void OnLockTransform();
     void OnUnlockTransform();
@@ -181,7 +179,6 @@ private slots:
 
     void OnGlobalInvalidateTimeout();
     void EditorLightEnabled(bool enabled);
-    void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
     void UnmodalDialogFinished(int);
 
     void DebugVersionInfo();

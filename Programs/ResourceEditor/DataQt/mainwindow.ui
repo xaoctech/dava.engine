@@ -178,8 +178,6 @@
     <addaction name="actionZeroPivotPoint"/>
     <addaction name="actionCenterPivotPoint"/>
     <addaction name="separator"/>
-    <addaction name="actionModifyPlaceOnLandscape"/>
-    <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="Help">
@@ -322,9 +320,6 @@
    <addaction name="separator"/>
    <addaction name="actionZeroPivotPoint"/>
    <addaction name="actionCenterPivotPoint"/>
-   <addaction name="separator"/>
-   <addaction name="actionModifyPlaceOnLandscape"/>
-   <addaction name="actionModifySnapToLandscape"/>
    <addaction name="separator"/>
    <addaction name="actionManualModifMode"/>
    <addaction name="actionModifyReset"/>
@@ -860,36 +855,6 @@
    </property>
    <property name="shortcut">
     <string>R</string>
-   </property>
-  </action>
-  <action name="actionModifyPlaceOnLandscape">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/modify_placeonland.png</normaloff>:/QtIcons/modify_placeonland.png</iconset>
-   </property>
-   <property name="text">
-    <string>Place On Landscape</string>
-   </property>
-   <property name="shortcut">
-    <string>P</string>
-   </property>
-  </action>
-  <action name="actionModifySnapToLandscape">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/modify_snaptoland.png</normaloff>:/QtIcons/modify_snaptoland.png</iconset>
-   </property>
-   <property name="text">
-    <string>Snap To Landscape</string>
    </property>
   </action>
   <action name="actionModifySelect">
