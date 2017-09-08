@@ -26,7 +26,7 @@ set( DEFAULT_DEPEND_DIRS "Sources/Internal;Modules;Sources/CMake" )
 
 macro ( prepare_tools )
 
-    if( CHECK_DEPENDS_FOLDERS ) 
+    if( CHECK_DEPENDENT_FOLDERS ) 
 
         find_package( PythonInterp   )
 

@@ -9,7 +9,7 @@ set( HPP_FILES_RECURSE Sources/*.h )
 set( CPP_FILES_RECURSE Sources/*.cpp )
 
 set( INCLUDES         Sources)                # set search path headers for all project
-set( INCLUDES_PRIVATE ${DAVA_ENGINE_DIR} )    # set search path headers inside module
+set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR} )   # set search path headers inside module
 
 set( MODULE_INITIALIZATION true )
 

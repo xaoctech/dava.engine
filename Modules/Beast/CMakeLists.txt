@@ -1,4 +1,4 @@
-set( NAME_MODULE Beast )
+set( MODULE_NAME Beast )
 set( MODULE_TYPE STATIC )
 
 set( PLATFORMS_SUPPORTED WIN )                
@@ -6,8 +6,8 @@ set( PLATFORMS_SUPPORTED WIN )
 set( HPP_FILES_RECURSE Sources/*.h )
 set( CPP_FILES_RECURSE Sources/*.cpp )
 
-set(INCLUDES Sources
-             Thirdparty/include
+set( INCLUDES Sources
+              Thirdparty/include
              )
 
 set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
