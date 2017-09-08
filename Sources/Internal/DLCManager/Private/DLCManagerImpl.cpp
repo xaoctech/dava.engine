@@ -132,11 +132,51 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                               OnSettingsChanged(value);
                                                           });
 
-    gestureChecker.debugGesture.Connect(this, [this](bool match)
-                                        {
-                                            Logger::Debug("enable mini imgui for dlc profiling: %d", int(match));
-                                            showImGuiWindow = match;
-                                        });
+    gestureChecker.debugGestureMatch.Connect(this, [this]() {
+        Logger::Debug("enable mini imgui for dlc profiling");
+        GetPrimaryWindow()->draw.Connect(this, [this](Window*) {
+            // TODO move it later to common ImGui setting system
+            if (ImGui::IsInitialized())
+            {
+                // 1. Show a simple window
+                {
+                    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
+                    ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
+
+                    bool isImWindowOpened = true;
+                    ImGui::Begin("DLC Profiling Window", &isImWindowOpened);
+
+                    if (isImWindowOpened)
+                    {
+                        if (ImGui::Button("start dlc profiler"))
+                        {
+                            Logger::Debug("start dlc profiler");
+                            profiler.Start();
+                        }
+
+                        if (ImGui::Button("stop dlc profiler"))
+                        {
+                            profiler.Stop();
+                            Logger::Debug("stop dlc profiler");
+                        }
+
+                        if (ImGui::Button("dump to"))
+                        {
+                            Logger::Debug("start dumping...");
+                            DumpToJsonProfilerTrace();
+                            Logger::Debug("finish dumping.");
+                        }
+                    }
+                    else
+                    {
+                        profiler.Stop();
+                        GetPrimaryWindow()->draw.Disconnect(this);
+                    }
+                    ImGui::End();
+                }
+            }
+        });
+    });
 }
 
 void DLCManagerImpl::DumpToJsonProfilerTrace()
@@ -435,34 +475,6 @@ void DLCManagerImpl::Update(float frameDelta, bool inBackground)
     DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
     DVASSERT(Thread::IsMainThread());
-
-    if (ImGui::IsInitialized() && showImGuiWindow)
-    {
-        // 1. Show a simple window
-        {
-            // TODO check why ImGui::NewFrame();
-            // Called ImGui::Render() or ImGui::EndFrame() and haven't called ImGui::NewFrame() again yet
-            ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
-            ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
-
-            ImGui::Begin("DLC Profiling Window", &showImGuiWindow);
-
-            if (ImGui::Button("start dlc profiler"))
-            {
-                Logger::Debug("start dlc profiler");
-                profiler.Start();
-            }
-
-            if (ImGui::Button("stop dlc profiler"))
-            {
-                profiler.Stop();
-                Logger::Debug("stop dlc profiler");
-                DumpToJsonProfilerTrace();
-            }
-
-            ImGui::End();
-        }
-    }
 
     try
     {

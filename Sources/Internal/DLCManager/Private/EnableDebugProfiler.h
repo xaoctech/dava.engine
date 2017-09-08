@@ -14,7 +14,7 @@ public:
     EnableDebugProfiler();
     ~EnableDebugProfiler();
     void AddListenerOnMouseAndTouch();
-    Signal<bool> debugGesture;
+    Signal<> debugGestureMatch;
 
 private:
     void OnWindowCreated(Window* window);

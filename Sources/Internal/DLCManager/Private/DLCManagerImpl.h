@@ -320,7 +320,6 @@ private:
 
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
-    bool showImGuiWindow = false;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const

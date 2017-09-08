@@ -132,8 +132,7 @@ bool EnableDebugProfiler::OnMouseOrTouch(const InputEvent& ev)
 
     if (match)
     {
-        isDebugEnabled = !isDebugEnabled;
-        debugGesture.Emit(isDebugEnabled);
+        debugGestureMatch.Emit();
     }
 
     return match; // let other input listeners handle this event if not match
