@@ -32,13 +32,13 @@ find_dava_module( Spine )
 find_dava_module( TArc )
 find_dava_module( RemoteTool )
 
-find_package( DavaFramework REQUIRED COMPONENTS "Sound"
-                                                DAVA_PLATFORM_QT 
-                                                DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
-                                                DAVA_DISABLE_AUTOTESTS 
-                                                DAVA_USE_RENDERSTATS)
+list( APPEND DAVA_COMPONENTS Sound )
+list( APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT )
+list( APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
+list( APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
+list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
-
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)

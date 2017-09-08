@@ -1,4 +1,4 @@
-set( NAME_MODULE EditorPhysics )
+set( MODULE_NAME EditorPhysics )
 
 set( MODULE_TYPE STATIC )
 
@@ -7,7 +7,7 @@ set( CPP_FILES_RECURSE Sources/EditorPhysics/*.cpp )
 
 set( CPP_FILES_EXECUTE Sources/EditorPhysics/InitEditorPhysics.cpp )
 
-set( INCLUDES "${CMAKE_CURRENT_LIST_DIR}" "Sources" )
+set( INCLUDES Sources )
 set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
 
 set( FIND_MODULE Physics)

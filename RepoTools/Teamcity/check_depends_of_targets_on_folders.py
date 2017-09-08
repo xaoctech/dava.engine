@@ -10,7 +10,7 @@ import common_tool
 
 ##
 # Parameters -
-#    --framework_branch      Brunch / pull-requests
+#    --framework_branch      Branch / pull-requests
 #    --target_folders_list   List of folders and dependent programs in the format:
 #                            'Tool1':'Folder1+Folder2','Tool2':'Sources/Folder3+Module/Folder4'
 #

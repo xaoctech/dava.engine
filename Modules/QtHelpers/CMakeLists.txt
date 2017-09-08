@@ -1,4 +1,4 @@
-set(NAME_MODULE QtHelpers)
+set(MODULE_NAME QtHelpers)
 
 set(MODULE_TYPE STATIC)
 

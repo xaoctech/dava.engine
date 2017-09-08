@@ -9,7 +9,7 @@ endif()
 
 include ( DavaLibs )
 
-set( NAME_MODULE ${DAVA_LIBRARY} )
+set( MODULE_NAME ${DAVA_LIBRARY} )
 
 set( USE_PARENT_DEFINITIONS true )
 

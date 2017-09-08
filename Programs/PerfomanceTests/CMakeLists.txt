@@ -25,6 +25,7 @@ find_dava_module( CEFWebview )
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
 
+#for toolset
 dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )

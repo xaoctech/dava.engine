@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.0)
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
 include      ( CMake-common  )
 
-set( NAME_MODULE SamplePlugin )                         # set name to plugin 
+set( MODULE_NAME SamplePlugin )                         # set name to plugin 
 
 set( MODULE_TYPE PLUGIN )                               # set module type [INLINE, STATIC, PLUGIN]
 

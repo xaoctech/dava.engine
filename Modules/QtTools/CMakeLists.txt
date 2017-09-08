@@ -1,4 +1,4 @@
-set(NAME_MODULE QtTools)
+set(MODULE_NAME QtTools)
 
 set(MODULE_TYPE STATIC)
 

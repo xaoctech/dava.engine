@@ -1,4 +1,4 @@
-set(NAME_MODULE Physics )
+set(MODULE_NAME Physics )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
@@ -7,18 +7,16 @@ set(PLATFORMS_IGNORE ANDROID_X86 WINDOWS_UAP_ARM  )
 set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
 set(CPP_FILES_RECURSE Sources/*.cpp)
 
-set(PhysicsRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
-
-set(INCLUDES "${PhysicsRootDir}/Sources"
-             "${PhysicsRootDir}/Libs/include/"
-             "${PhysicsRootDir}/Libs/include/physx"
-             "${PhysicsRootDir}/Libs/include/PxShared")
+set(INCLUDES Sources
+             Libs/include
+             Libs/include/physx
+             Libs/include/PxShared)
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
 
 set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
 set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
 
-set (LibsPath "${PhysicsRootDir}/Libs")
+set(LibsPath "${CMAKE_CURRENT_SOURCE_DIR}/Libs")
 
 set(WIN32_STATIC_DEBUG_LIBS "${LibsPath}/Win32/x86/LowLevelDEBUG.lib"
                             "${LibsPath}/Win32/x86/LowLevelAABBDEBUG.lib"

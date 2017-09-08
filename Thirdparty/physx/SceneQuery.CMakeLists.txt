@@ -1,4 +1,4 @@
-set(NAME_MODULE SceneQuery)
+set(MODULE_NAME SceneQuery)
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
 get_filename_component(PhysXRoot "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE)

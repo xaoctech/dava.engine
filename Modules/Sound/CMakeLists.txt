@@ -1,4 +1,4 @@
-set( NAME_MODULE Sound )
+set( MODULE_NAME Sound )
 
 set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC 
 

@@ -1,14 +1,15 @@
-set(NAME_MODULE MemoryProfilerService)
+set( MODULE_NAME MemoryProfilerService )
 
-set(MODULE_TYPE STATIC)
+set( MODULE_TYPE STATIC )
 
-set(HPP_FILES_RECURSE *.h *.hpp)
-set(CPP_FILES_RECURSE *.cpp *.mm)
+set( HPP_FILES_RECURSE *.h *.hpp )
+set( CPP_FILES_RECURSE *.cpp *.mm )
 
-set(INCLUDES "${CMAKE_CURRENT_LIST_DIR}" "Sources")
+set( INCLUDES Sources )
 
-set(INCLUDES_PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR} ${DAVA_ENGINE_DIR} ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
+set( INCLUDES_PRIVATE ${DAVA_ENGINE_DIR}
+                      ${DAVA_INCLUDE_DIR} )
 
-set(FIND_MODULE NetworkHelpers)
+set( FIND_MODULE NetworkHelpers )
 
 setup_main_module()

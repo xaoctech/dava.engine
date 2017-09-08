@@ -1,4 +1,4 @@
-set(NAME_MODULE PhysicsDebug )
+set(MODULE_NAME PhysicsDebug )
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 set(PLATFORMS_IGNORE ANDROID_X86 WINDOWS_UAP_ARM )                
@@ -6,15 +6,15 @@ set(PLATFORMS_IGNORE ANDROID_X86 WINDOWS_UAP_ARM )
 set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
 set(CPP_FILES_RECURSE Sources/*.cpp)
 
-set(PhysicsDebugRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
-set(PhysicsRootDir "${PhysicsDebugRootDir}/../Physics")
 set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__")
 
 set(INCLUDES Sources)
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR}
-                     "${PhysicsRootDir}/Libs/include/physx"
-                     "${PhysicsRootDir}/Libs/include/PxShared")
+                     Libs/include/physx
+                     Libs/include/PxShared)
 
+set(PhysicsDebugRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
+set(PhysicsRootDir "${PhysicsDebugRootDir}/../Physics")
 set(LibsPath "${PhysicsRootDir}/Libs")
 
 set(WIN32_DYNAMIC_DEBUG_LIBS "${LibsPath}/Win32/x86/nvToolsExt32_1.dll")
