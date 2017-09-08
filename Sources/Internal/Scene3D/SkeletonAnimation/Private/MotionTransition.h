@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/AllocatorFactory.h"
+#include "Animation/Interpolation.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
@@ -24,13 +25,6 @@ public:
         TYPE_BLENDTREE,
 
         TYPE_COUNT
-    };
-    enum eFunc : uint8
-    {
-        FUNC_LINEAR,
-        FUNC_CURVE,
-
-        FUNC_COUNT
     };
     enum eSync : uint8
     {
@@ -60,8 +54,9 @@ protected:
     MotionTransition() = default;
 
     eType type = TYPE_COUNT;
-    eFunc func = FUNC_COUNT;
     eSync sync = SYNC_COUNT;
+
+    Interpolation::Func func;
     float32 duration = 0.f;
     FastName waitPhaseID;
     bool syncPhases = false;
@@ -73,6 +68,7 @@ protected:
     float32 transitionPhase = 0.f;
     bool started = false;
     bool srcFrozen = false;
+    bool inversed = false;
 };
 
 inline void MotionTransition::SetStates(MotionState* _srcState, MotionState* _dstState)
