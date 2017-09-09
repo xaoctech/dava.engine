@@ -38,12 +38,16 @@ ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
 {
     inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &ActionSystemImpl::OnInputEvent));
 
+    Engine::Instance()->endFrame.Connect(this, &ActionSystemImpl::OnEndFrame);
+
     Engine::Instance()->update.Connect(this, &ActionSystemImpl::OnUpdate);
 }
 
 ActionSystemImpl::~ActionSystemImpl()
 {
     GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
+
+    Engine::Instance()->endFrame.Disconnect(this);
 
     Engine::Instance()->update.Disconnect(this);
 }
@@ -80,14 +84,16 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
         }
     }
 
-    BoundActionSet boundSet;
-    boundSet.name = set.name;
-    boundSet.digitalBindings.insert(set.digitalBindings.begin(), set.digitalBindings.end());
-    boundSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
-    boundSet.devices = devices;
-
     for (const auto& digitalBinding : set.digitalBindings)
     {
+        for (size_t i = 0; i < digitalBinding.digitalElements.size(); ++i)
+        {
+            if (digitalBinding.digitalElements[i] != eInputElements::NONE)
+            {
+                DVASSERT(digitalBinding.digitalStates[i] != DigitalElementState::Released(), "Do you realy want to bind an action on key release? Your desires are ... unconventional.");
+            }
+        }
+
         ActionState digitalState;
         digitalState.active = false;
         digitalState.action.actionId = digitalBinding.actionId;
@@ -98,12 +104,26 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
     for (const auto& analogBinding : set.analogBindings)
     {
+        for (size_t i = 0; i < analogBinding.digitalElements.size(); ++i)
+        {
+            if (analogBinding.digitalElements[i] != eInputElements::NONE)
+            {
+                DVASSERT(analogBinding.digitalStates[i] != DigitalElementState::Released(), "Do you realy want to bind an action on key release? Your desires are ... unconventional.");
+            }
+        }
+
         ActionState analogState;
         analogState.active = false;
         analogState.action.actionId = analogBinding.actionId;
 
         analogActionsStates[analogBinding.actionId] = analogState;
     }
+
+    BoundActionSet boundSet;
+    boundSet.name = set.name;
+    boundSet.digitalBindings.insert(set.digitalBindings.begin(), set.digitalBindings.end());
+    boundSet.analogBindings.insert(set.analogBindings.begin(), set.analogBindings.end());
+    boundSet.devices = devices;
 
     boundSets.emplace_back(std::move(boundSet));
 }
@@ -259,9 +279,14 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                 ActionState& digitalActionState = digitalActionStateIter->second;
                 digitalActionState.active = false;
 
+                if (digitalBindingHandled)
+                {
+                    continue;
+                }
+
                 const bool triggered = CheckDigitalStates(digitalBinding.digitalElements, digitalBinding.digitalStates, setBinding.devices);
 
-                if (triggered && !digitalBindingHandled)
+                if (triggered)
                 {
                     digitalActionState.active = true;
                     digitalActionState.action.triggeredDevice = event.device;
@@ -295,13 +320,54 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
 void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 {
-    for (const auto& p : digitalActionsStates)
+    for (auto& p : digitalActionsStates)
     {
-        const ActionState& digitalState = p.second;
+        ActionState& digitalState = p.second;
 
         if (digitalState.active)
         {
             actionSystem->ActionTriggered.Emit(digitalState.action);
+        }
+    }
+}
+
+// Reset all JustPressed and JustReleased events since they wont trigger OnInputEvent and state will hang active
+void ActionSystemImpl::OnEndFrame()
+{
+    for (const BoundActionSet& setBinding : boundSets)
+    {
+        for (const DigitalBinding& digitalBinding : setBinding.digitalBindings)
+        {
+            if (!digitalActionsStates[digitalBinding.actionId].active)
+            {
+                continue;
+            }
+
+            for (const DigitalElementState elementState : digitalBinding.digitalStates)
+            {
+                if (elementState.IsJustPressed() || elementState.IsJustReleased())
+                {
+                    digitalActionsStates[digitalBinding.actionId].active = false;
+                    break;
+                }
+            }
+        }
+
+        for (const AnalogBinding& analogbindig : setBinding.analogBindings)
+        {
+            if (!analogActionsStates[analogbindig.actionId].active)
+            {
+                continue;
+            }
+
+            for (const DigitalElementState elementState : analogbindig.digitalStates)
+            {
+                if (elementState.IsJustPressed() || elementState.IsJustReleased())
+                {
+                    analogActionsStates[analogbindig.actionId].active = false;
+                    break;
+                }
+            }
         }
     }
 }

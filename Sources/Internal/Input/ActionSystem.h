@@ -58,17 +58,21 @@ struct ActionSet final
 /** Describes analog action state */
 struct AnalogActionState final
 {
-    /** Action status */
+    /** Indicates if digital state of the action is triggered  */
     bool active;
 
-    /** Analog state */
-    float x;
-    float y;
-    float z;
+    /** Analog X value */
+    float32 x;
+
+    /** Analog Y value */
+    float32 y;
+
+    /** Analog Z value */
+    float32 z;
 
     AnalogActionState() = default;
 
-    AnalogActionState(bool active, AnalogElementState state)
+    AnalogActionState(bool active, const AnalogElementState& state)
         : active(active)
         , x(state.x)
         , y(state.y)
