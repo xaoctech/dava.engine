@@ -104,8 +104,12 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
     for (const auto& analogBinding : set.analogBindings)
     {
+        bool noDigitalBindings = true;
+
         for (size_t i = 0; i < analogBinding.digitalElements.size(); ++i)
         {
+            noDigitalBindings = noDigitalBindings && analogBinding.digitalElements[i] == eInputElements::NONE;
+
             if (analogBinding.digitalElements[i] != eInputElements::NONE)
             {
                 DVASSERT(analogBinding.digitalStates[i] != DigitalElementState::Released(), "Do you realy want to bind an action on key release? Your desires are ... unconventional.");
@@ -114,6 +118,13 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
         ActionState analogState;
         analogState.active = false;
+
+        if (noDigitalBindings)
+        {
+            // always active
+            analogState.active = true;
+        }
+
         analogState.action.actionId = analogBinding.actionId;
 
         analogActionsStates[analogBinding.actionId] = analogState;
