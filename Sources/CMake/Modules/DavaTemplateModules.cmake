@@ -848,10 +848,6 @@ macro( setup_main_module )
                 endif()             
             endif()
 
-            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT} )
-            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE )
-            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG )
-            reset_property( STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT} )
             reset_property( INCLUDES_PRIVATE )
                 
         endif()
