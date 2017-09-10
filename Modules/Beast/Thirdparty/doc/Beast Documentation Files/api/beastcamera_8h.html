@@ -1,0 +1,1248 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastcamera.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beastcamera_8h.html','api_beastcamera_8h_html691e2256-c1f9-4c18-be0c-8b8f2ffb5ca1','index.html',location.hash); javascript:initPage('API: beastapi/beastcamera.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastcamera_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastcamera.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastcamera.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#enum-members">Enumerations</a> |
+<a href="#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beastcamera.h File Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm">Monitoring
+Jobs and Retrieving Updates</a>, <a href=
+".././files/GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm">Working
+With Object Handles</a>, <a href=
+".././files/GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2.htm">Error
+Handling</a>, <a href=
+".././files/GUID-08210E19-206D-4643-96EE-24DFDEE68845.htm">What's
+New in Beast 2013.2.x</a>, <a href=
+".././files/GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm">Creating
+Cameras</a>, <a href=
+".././files/GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating
+a Scene</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>The beast camera function definitions.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="enum-members"></a> Enumerations</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaab">ILBEnvironmentCameraType</a>
+{ <a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaabad59e083dc9c9e502b1b6d42dd9ea0cc1">
+ILB_ECT_CUBEMAP</a> = 0, <a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaabaf21b5120f18a7d0297cdd41b7682fb8b">
+ILB_ECT_BALL</a>, <a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaabae22278e0b71bef8095dd69c03fcfcf75">
+ILB_ECT_LATLONG</a> }</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#ac82c7502fce40017f422a5784d75086f">ILBCreateEnvironmentCamera</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_scene_handle.html">ILBSceneHandle</a> scene,
+<a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *transform,
+<a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaab">ILBEnvironmentCameraType</a>
+type, <a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> *camera)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6">ILBCreatePerspectiveCamera</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_scene_handle.html">ILBSceneHandle</a> scene,
+<a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *transform,
+<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> *camera)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a22182ba8269db297aa7088ddf00b9d35">ILBGetCameraFov</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera, float
+*horizontalFovRadians, float *pixelAspectRatio)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a19e06161549bebac12b2660e97cc70a3">ILBGetCameraName</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera,
+<a class="el" translate="no" href=
+"struct_i_l_b_string_handle.html">ILBStringHandle</a> *name)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a370861d36314e29268344ca65b0bd3f2">ILBGetCameraTransform</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera,
+<a class="el" translate="no" href="struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a>
+*transform)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a8d296c4c9e163193cd019a51fcb4bd00">ILBSetCameraDisplayName</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera,
+<a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+displayName)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a5ddb38aaf02d25d181805dfadcad8400">ILBSetCameraDof</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera, float
+fstop, float focusDistance, int32 blades)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#ab58f56e4f8474214b58fe99ba4962569">ILBSetCameraMotionTransforms</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera, const
+<a class="el" translate="no" href="struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a>
+*transforms, int32 count)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#aeb396bad069d902aff10b92912016149">ILBSetCameraTransform</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera, const
+<a class="el" translate="no" href="struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a>
+*transform)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#acf7eff806d9479b2c65a3093e9515bfb">ILBSetFov</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera, float
+horizontalFovRadians, float pixelAspectRatio)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastcamera_8h.html#a68da5316fd5b310f18de85d3c4e9babf">ILBSetVerticalFov</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> camera, float
+verticalFovRadians)</td>
+</tr>
+</table>
+<hr />
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="aa7c47fd3c259a7018b19cbce2aefbaab"></a>
+<!-- doxytag: member="beastcamera.h::ILBEnvironmentCameraType" ref="aa7c47fd3c259a7018b19cbce2aefbaab" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaab">ILBEnvironmentCameraType</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEnvironmentCameraType',false)">Search for all
+occurrences</a></div>
+<p>Environment camera types.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"aa7c47fd3c259a7018b19cbce2aefbaabad59e083dc9c9e502b1b6d42dd9ea0cc1">
+</a>
+<!-- doxytag: member="ILB_ECT_CUBEMAP" ref="aa7c47fd3c259a7018b19cbce2aefbaabad59e083dc9c9e502b1b6d42dd9ea0cc1" args="" -->ILB_ECT_CUBEMAP</em>&nbsp;</td>
+<td>
+<p>Cubemap environment camera.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_ECT_CUBEMAP',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"aa7c47fd3c259a7018b19cbce2aefbaabaf21b5120f18a7d0297cdd41b7682fb8b">
+</a>
+<!-- doxytag: member="ILB_ECT_BALL" ref="aa7c47fd3c259a7018b19cbce2aefbaabaf21b5120f18a7d0297cdd41b7682fb8b" args="" -->ILB_ECT_BALL</em>&nbsp;</td>
+<td>
+<p>Ball environment camera.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_ECT_BALL',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"aa7c47fd3c259a7018b19cbce2aefbaabae22278e0b71bef8095dd69c03fcfcf75">
+</a>
+<!-- doxytag: member="ILB_ECT_LATLONG" ref="aa7c47fd3c259a7018b19cbce2aefbaabae22278e0b71bef8095dd69c03fcfcf75" args="" -->ILB_ECT_LATLONG</em>&nbsp;</td>
+<td>
+<p>Latlong environment camera.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_ECT_LATLONG',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a3">include/beastapi/beastcamera.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="ac82c7502fce40017f422a5784d75086f"></a>
+<!-- doxytag: member="beastcamera.h::ILBCreateEnvironmentCamera" ref="ac82c7502fce40017f422a5784d75086f" args="(ILBSceneHandle scene, ILBConstString name, const ILBMatrix4x4 *transform, ILBEnvironmentCameraType type, ILBCameraHandle *camera)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateEnvironmentCamera</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_scene_handle.html">ILBSceneHandle</a>&nbsp;</td>
+<td class="paramname"><em>scene</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transform</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaab">ILBEnvironmentCameraType</a>&nbsp;</td>
+<td class="paramname"><em>type</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> *&nbsp;</td>
+<td class="paramname"><em>camera</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateEnvironmentCamera',false)">Search for all
+occurrences</a></div>
+<p>Add an environment camera to the scene.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">scene</td>
+<td>the scene the camera should be a part of</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the camera, must be unique within the scene.</td>
+</tr>
+<tr>
+<td class="paramname">transform</td>
+<td>the object space to world space transform for this camera</td>
+</tr>
+<tr>
+<td class="paramname">type</td>
+<td>the type of environment camera, i.e Ball, Cubemap or
+Latlong</td>
+</tr>
+<tr>
+<td class="paramname">camera</td>
+<td>the handle to store the generated camera in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a8">include/beastapi/beastcamera.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a311e41c55685346b3db3254a8e89bfd6"></a>
+<!-- doxytag: member="beastcamera.h::ILBCreatePerspectiveCamera" ref="a311e41c55685346b3db3254a8e89bfd6" args="(ILBSceneHandle scene, ILBConstString name, const ILBMatrix4x4 *transform, ILBCameraHandle *camera)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreatePerspectiveCamera</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_scene_handle.html">ILBSceneHandle</a>&nbsp;</td>
+<td class="paramname"><em>scene</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transform</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a> *&nbsp;</td>
+<td class="paramname"><em>camera</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreatePerspectiveCamera',false)">Search for all
+occurrences</a></div>
+<p>Add a camera to the scene.</p>
+<p>The camera looks in the negative z direction, positive x in
+camera space maps to right in screen space. positive y maps to up i
+screen space.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">scene</td>
+<td>the scene the camera should be a part of</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the camera, must be unique within the scene.</td>
+</tr>
+<tr>
+<td class="paramname">transform</td>
+<td>the object space to world space transform for this camera</td>
+</tr>
+<tr>
+<td class="paramname">camera</td>
+<td>the handle to store the generated camera in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a32">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a33">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a33">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a34">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a28">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a48">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a27">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a29">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a31">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a29">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a29">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a21">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a31">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a29">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a30">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a33">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a27">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a4">include/beastapi/beastcamera.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastscenewrapper_8cpp-example.html#a4">
+maya/beastmayaplugin/src/beastwrappers/beastscenewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a22182ba8269db297aa7088ddf00b9d35"></a>
+<!-- doxytag: member="beastcamera.h::ILBGetCameraFov" ref="a22182ba8269db297aa7088ddf00b9d35" args="(ILBCameraHandle camera, float *horizontalFovRadians, float *pixelAspectRatio)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetCameraFov</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float *&nbsp;</td>
+<td class="paramname"><em>horizontalFovRadians</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float *&nbsp;</td>
+<td class="paramname"><em>pixelAspectRatio</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetCameraFov',false)">Search for all
+occurrences</a></div>
+<p>Gets the fov of the camera.</p>
+<p>Only works on perspective cameras. The vertical fov will be
+generated from the horizontal fov and the image dimensions</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to get fov for</td>
+</tr>
+<tr>
+<td class="paramname">horizontalFovRadians</td>
+<td>the field of view in the X direction in radians.<br />
+Note that it refers to the complete field of vision, not the angle
+to the forward direction.</td>
+</tr>
+<tr>
+<td class="paramname">pixelAspectRatio</td>
+<td>the aspect ratio of a pixel, expressed as the x / y</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a33">examples/code/ernst/ernst.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a18">include/beastapi/beastcamera.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a19e06161549bebac12b2660e97cc70a3"></a>
+<!-- doxytag: member="beastcamera.h::ILBGetCameraName" ref="a19e06161549bebac12b2660e97cc70a3" args="(ILBCameraHandle camera, ILBStringHandle *name)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetCameraName</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_string_handle.html">ILBStringHandle</a> *&nbsp;</td>
+<td class="paramname"><em>name</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetCameraName',false)">Search for all
+occurrences</a></div>
+<p>Gets the name of a camera.</p>
+<p>This is used for cameras returned from an Ernst session.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to get the name for</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the returned camera name</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a31">examples/code/ernst/ernst.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a16">include/beastapi/beastcamera.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a370861d36314e29268344ca65b0bd3f2"></a>
+<!-- doxytag: member="beastcamera.h::ILBGetCameraTransform" ref="a370861d36314e29268344ca65b0bd3f2" args="(ILBCameraHandle camera, ILBMatrix4x4 *transform)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetCameraTransform</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transform</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetCameraTransform',false)">Search for all
+occurrences</a></div>
+<p>Gets the transform of a camera.</p>
+<p>This is used for cameras returned from an Ernst session.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to get the transform for</td>
+</tr>
+<tr>
+<td class="paramname">transform</td>
+<td>the returned camera transform</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a32">examples/code/ernst/ernst.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a15">include/beastapi/beastcamera.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a8d296c4c9e163193cd019a51fcb4bd00"></a>
+<!-- doxytag: member="beastcamera.h::ILBSetCameraDisplayName" ref="a8d296c4c9e163193cd019a51fcb4bd00" args="(ILBCameraHandle camera, ILBConstString displayName)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetCameraDisplayName</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>displayName</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetCameraDisplayName',false)">Search for all
+occurrences</a></div>
+<p>Sets the display name for the camera.</p>
+<p>This name does not have to be unique within the scene and can be
+used by tools to give human understandable names to objects that
+has names that are generated and for some reason isn't suitable to
+read</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to set the name for</td>
+</tr>
+<tr>
+<td class="paramname">displayName</td>
+<td>the display name to set</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a13">include/beastapi/beastcamera.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a5ddb38aaf02d25d181805dfadcad8400"></a>
+<!-- doxytag: member="beastcamera.h::ILBSetCameraDof" ref="a5ddb38aaf02d25d181805dfadcad8400" args="(ILBCameraHandle camera, float fstop, float focusDistance, int32 blades)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetCameraDof</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>fstop</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>focusDistance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>blades</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetCameraDof',false)">Search for all
+occurrences</a></div>
+<p>Sets depth of field parameters for the camera.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to set depth of field on</td>
+</tr>
+<tr>
+<td class="paramname">fstop</td>
+<td>the aperture fstop</td>
+</tr>
+<tr>
+<td class="paramname">focusDistance</td>
+<td>distance from camera to focal plane</td>
+</tr>
+<tr>
+<td class="paramname">blades</td>
+<td>The number of shutter blades used to construct a non-circular
+dof a value less than 3 will produce a circular dof</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a14">include/beastapi/beastcamera.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastcamerawrapper_8cpp-example.html#a5">
+maya/beastmayaplugin/src/beastwrappers/beastcamerawrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ab58f56e4f8474214b58fe99ba4962569"></a>
+<!-- doxytag: member="beastcamera.h::ILBSetCameraMotionTransforms" ref="ab58f56e4f8474214b58fe99ba4962569" args="(ILBCameraHandle camera, const ILBMatrix4x4 *transforms, int32 count)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetCameraMotionTransforms</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transforms</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>count</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetCameraMotionTransforms',false)">Search for
+all occurrences</a></div>
+<p>Sets the motion transforms of a motion blurred camera.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to set the transform for</td>
+</tr>
+<tr>
+<td class="paramname">transforms</td>
+<td>an array of transforms describing the camera motion</td>
+</tr>
+<tr>
+<td class="paramname">count</td>
+<td>the number of transforms in the array</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a10">include/beastapi/beastcamera.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastcamerawrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beastcamerawrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aeb396bad069d902aff10b92912016149"></a>
+<!-- doxytag: member="beastcamera.h::ILBSetCameraTransform" ref="aeb396bad069d902aff10b92912016149" args="(ILBCameraHandle camera, const ILBMatrix4x4 *transform)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetCameraTransform</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transform</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetCameraTransform',false)">Search for all
+occurrences</a></div>
+<p>Sets the transform of a camera.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to set the transform for</td>
+</tr>
+<tr>
+<td class="paramname">transform</td>
+<td>the new camera transform</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2materials-live_2materials-live_8cpp-example.html#a1">
+examples-physical/code/materials-live/materials-live.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a9">include/beastapi/beastcamera.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastcamerawrapper_8cpp-example.html#a1">
+maya/beastmayaplugin/src/beastwrappers/beastcamerawrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="acf7eff806d9479b2c65a3093e9515bfb"></a>
+<!-- doxytag: member="beastcamera.h::ILBSetFov" ref="acf7eff806d9479b2c65a3093e9515bfb" args="(ILBCameraHandle camera, float horizontalFovRadians, float pixelAspectRatio)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetFov</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>horizontalFovRadians</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>pixelAspectRatio</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetFov',false)">Search for all
+occurrences</a></div>
+<p>Sets the fov of the camera.</p>
+<p>Only works on perspective cameras. The vertical fov will be
+generated from the horizontal fov and the image dimensions</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to set fov for</td>
+</tr>
+<tr>
+<td class="paramname">horizontalFovRadians</td>
+<td>the field of view in the X direction in radians.<br />
+Note that it refers to the complete field of vision, not the angle
+to the forward direction. Negative horizontalFovRadians is
+currently not supported</td>
+</tr>
+<tr>
+<td class="paramname">pixelAspectRatio</td>
+<td>the aspect ratio of a pixel, expressed as the x / y</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a33">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a29">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a49">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a28">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a32">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a34">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a28">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a11">include/beastapi/beastcamera.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastcamerawrapper_8cpp-example.html#a3">
+maya/beastmayaplugin/src/beastwrappers/beastcamerawrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a68da5316fd5b310f18de85d3c4e9babf"></a>
+<!-- doxytag: member="beastcamera.h::ILBSetVerticalFov" ref="a68da5316fd5b310f18de85d3c4e9babf" args="(ILBCameraHandle camera, float verticalFovRadians)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetVerticalFov</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_camera_handle.html">ILBCameraHandle</a>&nbsp;</td>
+<td class="paramname"><em>camera</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>verticalFovRadians</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetVerticalFov',false)">Search for all
+occurrences</a></div>
+<p>Sets the vertical fov of the camera.</p>
+<p>Only works on perspective cameras in scenes locked for use in a
+Live Ernst Job.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">camera</td>
+<td>the camera to set vertical fov for</td>
+</tr>
+<tr>
+<td class="paramname">verticalFovRadians</td>
+<td>the field of view in the Y direction in radians.<br />
+Note that it refers to the complete field of vision, not the angle
+to the forward direction. Negative horizontalFovRadians is not
+supported</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastcamera_8h-example.html#a12">include/beastapi/beastcamera.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastcamerawrapper_8cpp-example.html#a4">
+maya/beastmayaplugin/src/beastwrappers/beastcamerawrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beastcamera_8h_source.html">Go to the source code of
+this file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

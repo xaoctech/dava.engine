@@ -176,6 +176,26 @@ void EditorStatisticsSystem::Process(DAVA::float32 timeElapsed)
     DispatchSignals();
 }
 
+void EditorStatisticsSystem::ClipSelection(DAVA::Camera* camera, DAVA::Vector<DAVA::RenderObject*>& selection,
+                                           DAVA::Vector<DAVA::RenderObject*>& visibilityArray, DAVA::uint32 visibilityCriteria)
+{
+    DAVA::Frustum* frustum = camera->GetFrustum();
+    DAVA::uint32 size = static_cast<DAVA::uint32>(selection.size());
+    for (DAVA::uint32 pos = 0; pos < size; ++pos)
+    {
+        DAVA::RenderObject* node = selection[pos];
+        if ((node->GetFlags() & visibilityCriteria) != visibilityCriteria)
+        {
+            continue;
+        }
+        if ((DAVA::RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) ||
+            frustum->IsInside(node->GetWorldBoundingBox()))
+        {
+            visibilityArray.push_back(node);
+        }
+    }
+}
+
 void EditorStatisticsSystem::CalculateTriangles()
 {
     auto CalculateTrianglesForMode = [this](eEditorMode mode)
@@ -194,18 +214,22 @@ void EditorStatisticsSystem::CalculateTriangles()
 
     //Scene
     triangles[eEditorMode::MODE_ALL_SCENE].renderObjects.clear();
+
+    //Selection
+    triangles[eEditorMode::MODE_SELECTION].renderObjects.clear();
+    const SelectableGroup& selection = Selection::GetSelection();
+    DAVA::Vector<DAVA::RenderObject*> selectedObjects;
+    EditorStatisticsSystemInternal::EnumerateRenderObjects(selection, selectedObjects);
+
+    // Clip objects
     DAVA::Camera* drawCamera = editorScene->GetDrawCamera();
     if (drawCamera != nullptr)
     {
         DAVA::uint32 currVisibilityCriteria = DAVA::RenderObject::CLIPPING_VISIBILITY_CRITERIA;
         editorScene->renderSystem->GetRenderHierarchy()->Clip(drawCamera, triangles[eEditorMode::MODE_ALL_SCENE].renderObjects, currVisibilityCriteria);
+        ClipSelection(drawCamera, selectedObjects, triangles[eEditorMode::MODE_SELECTION].renderObjects, currVisibilityCriteria);
     }
     CalculateTrianglesForMode(eEditorMode::MODE_ALL_SCENE);
-
-    //Selection
-    triangles[eEditorMode::MODE_SELECTION].renderObjects.clear();
-    const SelectableGroup& selection = Selection::GetSelection();
-    EditorStatisticsSystemInternal::EnumerateRenderObjects(selection, triangles[eEditorMode::MODE_SELECTION].renderObjects);
     CalculateTrianglesForMode(eEditorMode::MODE_SELECTION);
 }
 

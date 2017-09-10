@@ -1,0 +1,76 @@
+surface
+beastlegacyphong
+    [[ string description = "Simple phong material mapping to legacy phong shading in beast" ]]
+(
+	color DiffuseColor = 1
+        [[  string description = "Diffuse Color" ]],	
+	color SpecularColor = 0
+        [[  string description = "Specular Color" ]],
+	color ShininessColor = 1.0
+		[[  string description = "Phong Exponent" ]],
+	color TransparencyColor = 0
+        [[  string description = "Transparency Color" ]],
+	color EmissiveColor = 0
+        [[  string description = "Emission Color" ]],
+	string DiffuseTexture = ""
+        [[  string description = "Diffuse Texture" ]],
+ 	string SpecularTexture = ""
+        [[  string description = "Specular Texture" ]],
+	string TransparencyTexture = ""
+        [[  string description = "Transparency Texture" ]],		
+	string ShininessTexture = ""
+        [[  string description = "Shininess Texture" ]],
+	string EmissiveTexture = ""
+        [[  string description = "Emission Texture" ]],			
+	string NormalTexture = ""
+        [[  string description = "Normal Texture" ]],	
+	float ReflectionFactor = 1.0
+		[[ string description = "Reflection Factor" ]],
+
+	// 1 if there is a correspondig UV override, 0 if there is none
+	int HasDiffuseUV = 0,
+	int HasSpecularUV = 0,
+	int HasShininessUV = 0,
+	int HasTransparencyUV = 0,
+	int HasEmissiveUV = 0,
+	int HasNormalUV = 0,
+
+	// This is connection points for the UV overrides
+	vector DiffuseUV = 0 [[int lockgeom=0]],
+	vector SpecularUV = 0 [[int lockgeom=0]],
+	vector ShininessUV = 0 [[int lockgeom=0]],
+	vector TransparencyUV = 0 [[int lockgeom=0]],
+	vector EmissiveUV = 0 [[int lockgeom=0]],
+	vector NormalUV = 0 [[int lockgeom=0]]
+	)
+{
+	vector diffuseUV      = vector(u,v,0.0);
+	vector specularUV     = vector(u,v,0.0);
+	vector shininessUV    = vector(u,v,0.0);
+	vector transparencyUV = vector(u,v,0.0);
+	vector emissiveUV     = vector(u,v,0.0);
+	vector normalUV       = vector(u,v,0.0);		
+	
+	if (HasDiffuseUV != 0)      diffuseUV      = DiffuseUV;
+	if (HasSpecularUV != 0)     specularUV     = SpecularUV;
+	if (HasShininessUV != 0)    shininessUV    = ShininessUV;
+	if (HasTransparencyUV != 0) transparencyUV = TransparencyUV;
+	if (HasEmissiveUV != 0)     emissiveUV     = EmissiveUV;
+	if (HasNormalUV != 0)       normalUV       = NormalUV;
+	
+ 	color diffuseValue      = DiffuseTexture      == "" ? DiffuseColor         : DiffuseColor      * texture(DiffuseTexture, diffuseUV[0], diffuseUV[1], "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color specularValue     = SpecularTexture     == "" ? SpecularColor        : SpecularColor     * texture(SpecularTexture, specularUV[0], specularUV[1], "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color shininessValue    = ShininessTexture    == "" ? ShininessColor       : ShininessColor    * texture(ShininessTexture, shininessUV[0], shininessUV[1], "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color transparencyValue = TransparencyTexture == "" ? TransparencyColor    : TransparencyColor * texture(TransparencyTexture, transparencyUV[0], transparencyUV[1], "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	color emissionValue     = EmissiveTexture     == "" ? EmissiveColor        : EmissiveColor     * texture(EmissiveTexture, emissiveUV[0], emissiveUV[1], "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+	
+	if (NormalTexture != "") {
+		color normalValue = texture(NormalTexture, normalUV[0], normalUV[1], "sblur", 0, "tblur", 0, "swrap", "periodic", "twrap", "periodic");
+		vector tsv = vector(normalValue) * vector(0.5,1.0,0.5) + vector(0.5,0.0,0.5);
+		normal tsn = normalize(tsv);
+		N = dPdu * tsn[0] + dPdv * tsn[1] + N * tsn[2];	
+	}
+	
+	color white = 1;
+	Ci = diffuse(N) * diffuseValue * clamp(white-transparencyValue, 0.0, 1.0) + phong(N, luminance(shininessValue)) * specularValue + transparent() *  transparencyValue + reflection(N) * ReflectionFactor * specularValue * transparencyValue + emission() * emissionValue * M_PI;
+}

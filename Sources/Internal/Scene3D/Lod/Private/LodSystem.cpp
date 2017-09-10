@@ -278,6 +278,8 @@ void LodSystem::UnregisterComponent(Entity* entity, Component* component)
             fast->isEffect = false;
         }
     }
+
+    SceneSystem::UnregisterComponent(entity, component);
 }
 
 void LodSystem::ImmediateEvent(Component* component, uint32 event)
