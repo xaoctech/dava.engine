@@ -132,6 +132,8 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
             }
         }
 
+        DVASSERT(analogBinding.analogElementId != eInputElements::NONE);
+
         ActionState analogState;
         // Always active if there are no digital elements for this binding
         analogState.active = analogBinding.digitalElements[0] == eInputElements::NONE;
