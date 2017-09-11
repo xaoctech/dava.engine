@@ -341,17 +341,18 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::Cont
 
     canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
+
     Engine::Instance()->beginFrame.Connect(this, &EditorControlsView::PlaceControlsOnCanvas);
+    Engine::Instance()->gameLoopStopped.Connect(this, &EditorControlsView::OnGameLoopStopped);
 }
 
 EditorControlsView::~EditorControlsView()
 {
-    Engine::Instance()->beginFrame.Disconnect(this);
 }
 
 void EditorControlsView::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
 void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*currentState*/, EditorSystemsManager::eDragState previousState)
@@ -637,4 +638,10 @@ SortedControlNodeSet EditorControlsView::GetDisplayedControls() const
 
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     return documentData->GetDisplayedRootControls();
+}
+
+void EditorControlsView::OnGameLoopStopped()
+{
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
+    Engine::Instance()->beginFrame.Disconnect(this);
 }
