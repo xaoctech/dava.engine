@@ -212,7 +212,7 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
         }
     }
 
-    if (currentJoint == nullptr)
+    if (currentJoint == nullptr && parentJoint != nullptr)
     {
         joints.emplace_back();
         Joint& joint = joints.back();
@@ -223,16 +223,13 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
         joint.parentIndex = -1;
         joint.hierarhyDepth = 0;
 
-        if (parentJoint != nullptr)
-        {
-            Matrix4 bindPose;
-            parentJoint->inverse0.GetInverse(bindPose);
-            bindPose = node->localTransform * bindPose;
-            bindPose.GetInverse(joint.inverse0);
+        Matrix4 bindPose;
+        parentJoint->inverse0.GetInverse(bindPose);
+        bindPose = node->localTransform * bindPose;
+        bindPose.GetInverse(joint.inverse0);
 
-            joint.index = int32(joints.size() - 1);
-            joint.hierarhyDepth = parentJoint->hierarhyDepth + 1;
-        }
+        joint.index = int32(joints.size() - 1);
+        joint.hierarhyDepth = parentJoint->hierarhyDepth + 1;
 
         joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
         joint.jointUID = node->originalNode->GetDaeId();
