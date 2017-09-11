@@ -1,0 +1,809 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+<script type="text/javascript" src="../scripts/lang-lua.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705" />
+      <meta name="topic-type" content="concept" />
+      <title>Lua Reference</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBCreateLuaPass()", "../api/beastrenderpass_8h.html#a4325115669829001bbad46707487b5c4", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm',                           'd30e16342','index.html',location.hash);                           javascript:initPage('Lua Reference','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject= Lua Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">ADSSettings</div><a href="GUID-E7825EEC-0EA4-47AD-B22D-A84626E051C4.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp"><img src="../images/nav-null-xp.gif" border="0" /></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Lua Examples</div><a href="GUID-B55E815E-DB12-4DF5-B745-986675684CC0.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry">&nbsp;</div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-79BC2D3E-7579-41AD-93AB-230B2232D7AA"></a></span><h1> Lua Reference</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-A6D2A062-0D3B-4A12-98F1-2671EE7BC1CA"></a></span><span class="charspan-msgph" translate="no">Beast</span> offers a Lua render pass, which allows users to take complete control over baking by providing a custom Lua script. This
+            separate pass exists for both texture baking and surface transfer, as well as for point cloud baking. For details on creating
+            the Lua pass, see <span class="char_link"><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm">Creating Render Passes</a></span>. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-CD4F4007-9985-4011-B32B-1C4CACED424C"></a></span>When you create the Lua pass, you must provide the path and file name of a script file that will be called to carry out the
+            baking. This page describes how to write that script, and details the Lua functions built in to <span class="charspan-msgph" translate="no">Beast</span> that you can use in your script. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5C3D1391855F42CEA3AF3918A5A99246"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16360"></a><span class="anchor_wrapper"><a name="GUID-9EF9EC42-BCAD-4E4E-920B-ABF0930E88C6"></a></span>Lua bake script structure
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-CC84E1F6-AF21-4E43-AFE7-1107524D4B91"></a></span>The baking script that you provide in the call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLuaPass()'); return false;">ILBCreateLuaPass()</a></span> should have the following structure: 
+            </p> 
+            <div class="codeBlock"><span class="anchor_wrapper"><a name="LANG-LUA"></a></span><pre class="prettyprint lang-lua">function setup()
+    -- Required. Sets configuration options for baking.
+    -- See <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm#GUID-074081D3-4C42-46E6-B512-83528EFD4D58">The setup() function</a></span>.
+end
+
+function basis(x, y, z)
+    -- Optional. Defines the function basis to which data will be fit.
+    -- See <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm#GUID-D04BF75D-5B7E-4FA7-9F04-43945C812150">The basis(x, y, z) function</a></span>.
+end
+
+function bake()
+    -- Optional. Computes the data output to texture or point cloud for each point.
+    -- See <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm#GUID-C7A3C5F7-3259-4784-962A-D543E2770502">The bake() function</a></span>.
+end </pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_4907722405024E7CAB2036ACE22F192F"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16380"></a><span class="anchor_wrapper"><a name="GUID-074081D3-4C42-46E6-B512-83528EFD4D58"></a></span>The setup() function
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-22C5FE08-1F64-48E5-9B55-791A4AABE773"></a></span>This function is called once before the baking process begins. Its main purpose is to set values for the different configuration
+               options that will control the way the baking is carried out. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-F538866A-DB10-4AD1-AC9C-845418085570"></a></span>To set the value of an option, call the <span class="code" translate="no">bset()</span> function. Pass as arguments: 
+            </p> <span class="anchor_wrapper"><a name="UL_1A0DDA6C8C514F1D8F6108C81AE739A4"></a></span><ul>
+               <li>The name of the configuration option you want to set. </li>
+               <li>The new value you want to set. </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-DFB96B23-D67D-4911-BB8C-A08B26696EA7"></a></span>For example: 
+               <div class="codeBlock"><span class="anchor_wrapper"><a name="LANG-LUA"></a></span><pre class="prettyprint lang-lua">function setup()
+    -- Sampling hemispherically in tangent space.
+    bset("gather.sampletype", "indirect illumination")
+    bset("gather.space", "tangent space")
+    bset("gather.distribution", "equiareal")
+    bset("gather.minsamples", 300)
+    bset("gather.maxsamples", 600)
+    bset("gather.coneangle", 180)
+
+    bset("output.size", 9)
+end</pre></div> 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-E51CD9A3-387A-4E34-AC6B-164AB9D03B4E"></a></span>The following table describes all available configuration options, with their accepted and default values. <span class="anchor_wrapper"><a name="TABLE_44277BB7B76B42668C25071E07864F74"></a></span><div class="table_Ruled">
+                  <table cellpadding="0" cellspacing="0" class="ruled">
+                     <colgroup>
+                        <col width="33.270321361058606%" />
+                        <col width="9.451795841209831%" />
+                        <col width="57.27788279773157%" />
+                     </colgroup>
+                     <tr class="ruledHeading">
+                        <th class="table-heading">option </th>
+                        <th class="table-heading">type </th>
+                        <th class="table-heading">description </th>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.useRadianceCache</span> 
+                        </td>
+                        <td class="table-body">Boolean </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-FB626086-0FF9-4381-8ECD-7367334AC622"></a></span><p class="table-body">Determines whether baking uses the radiance cache or brute force sampling. When enabled, all gather functionality is controlled
+                              <em class="mild">via</em> the final gather options described below. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-FB2770E1-304D-4E62-8CF3-111A88612ADF"></a></span><p class="table-body">If you enable this setting, you must also set the <span class="code" translate="no">basis.type</span> option to <span class="code" translate="no">sh</span>. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-E9363548-0987-4A6D-A1C8-C45422EF351C"></a></span><p class="table-body"> 
+                              <div><span class="anchor_wrapper"><a name="GUID-3471A717-55F0-42C0-A1FE-B1855268D39E"></a></span><div class="note-note"><span class="label">Note</span>This function is only available for scenes that use "classic" materials, not physical materials. 
+                                 </div>
+                              </div> 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.sampletype</span> 
+                        </td>
+                        <td class="table-body">string </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-B625D2B5-C96C-49A9-ACB4-C25F98510C21"></a></span><p class="table-body">Determines the type of light to gather. Accepts the following values: </p> <span class="anchor_wrapper"><a name="UL_5A04A4F8981046D59F61CBA33B4C9D40"></a></span><ul>
+                              <li> <span class="code" translate="no">none</span> or <span class="code" translate="no">n</span>: The gather before each execution of the <span class="code" translate="no">basis()</span> function is disabled. This is useful when no gather is needed, such as when baking only direct static light. 
+                              </li>
+                              <li><span class="code" translate="no">indirect illumination</span> or <span class="code" translate="no">ii</span>: Gathers indirect illumination only. If you want direct illumination, you need to manually add it in your <span class="code" translate="no">bake()</span> function. This setting is typically used for baking radiosity normal maps (RNMs). 
+                              </li>
+                              <li><span class="code" translate="no">dynamic illumination</span> or <span class="code" translate="no">dyni</span>: Gathers outgoing lighting depending on incoming light direction, also known as precomputed radiance transfer. 
+                                 <div><span class="anchor_wrapper"><a name="GUID-196E8DA6-3355-4A71-98C6-A640DA00B48B"></a></span><div class="note-note"><span class="label">Note</span>This setting is only available for scenes that use "classic" materials, not physical materials. 
+                                    </div>
+                                 </div> 
+                              </li>
+                              <li><span class="code" translate="no">direct dynamic illumination</span> or <span class="code" translate="no">ddyni</span>: As dynamic illumination, but does not consider indirect light. 
+                                 <div><span class="anchor_wrapper"><a name="GUID-E889223A-8DEF-46F7-83F1-10D88BA6D00D"></a></span><div class="note-note"><span class="label">Note</span>This setting is only available for scenes that use "classic" materials, not physical materials. 
+                                    </div>
+                                 </div> 
+                              </li>
+                              <li><span class="code" translate="no">indirect dynamic illumination</span> or <span class="code" translate="no">idyni</span>: As dynamic illumination, but considers only indirect light. 
+                                 <div><span class="anchor_wrapper"><a name="GUID-3889DD59-74AC-4B37-9773-0D1993245A1A"></a></span><div class="note-note"><span class="label">Note</span>This setting is only available for scenes that use "classic" materials, not physical materials. 
+                                    </div>
+                                 </div> 
+                              </li>
+                           </ul> <span class="anchor_wrapper"><a name="GUID-39CD9E47-531A-4527-8EAB-02C0A4FFA31E"></a></span><p class="table-body">The default value is <span class="code" translate="no">direct dynamic illumination</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.space</span> 
+                        </td>
+                        <td class="table-body">string </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-ABD1878B-9AAB-48CE-A657-79BF827D5FCE"></a></span><p class="table-body">Specifies the coordinate system in which the gather will be performed. Accepts the following values: </p> <span class="anchor_wrapper"><a name="UL_DDD175699E764D87A34C7E5FCB1E9C62"></a></span><ul>
+                              <li><span class="code" translate="no">world space</span> or <span class="code" translate="no">ws</span> 
+                              </li>
+                              <li><span class="code" translate="no">object space</span> or <span class="code" translate="no">os</span> 
+                              </li>
+                              <li><span class="code" translate="no">tangent space</span> or <span class="code" translate="no">ts</span> 
+                              </li>
+                           </ul> <span class="anchor_wrapper"><a name="GUID-10CF9514-906D-49AA-B0D8-092DAFDF272C"></a></span><p class="table-body">The default value is <span class="code" translate="no">tangent space</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.distribution</span> 
+                        </td>
+                        <td class="table-body">string </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-2F05A842-D1A2-4DCE-9A7C-D0C15A086F3E"></a></span><p class="table-body">Determines how samples are spread out over the sphere or hemisphere. Accepts the following values: </p> <span class="anchor_wrapper"><a name="UL_94631A8716FA42988CA8F95AB277714C"></a></span><ul>
+                              <li><span class="code" translate="no">cosine weighted</span> or <span class="code" translate="no">cw</span>: The gather distribution will be cosine-weighted around the surface normal. This setting might be useful when baking occlusion
+                                 maps. 
+                              </li>
+                              <li><span class="code" translate="no">equiareal</span> or <span class="code" translate="no">ea</span>: The gather space will be uniformly sampled. 
+                              </li>
+                           </ul> <span class="anchor_wrapper"><a name="GUID-9E9856A8-ADD0-4F57-90C7-4FB04059D01E"></a></span><p class="table-body">The default value is <span class="code" translate="no">equiareal</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.minsamples</span> 
+                        </td>
+                        <td class="table-body">int </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-AD7218C9-CAC6-4117-AE73-2272BEF6A835"></a></span><p class="table-body">Specifies the minimum number of samples to be used for the gather. This number is used to determine the number of sample cells
+                              to use in the gather distribution. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-1304013A-7986-4FC1-9EE5-E7AB6F483855"></a></span><p class="table-body">Note that the actual number of sample cells used will not necessarily match the value of this setting, since the sample distribution
+                              needs to distribute the samples over the sphere or hemisphere in an efficient way. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-6F3C018C-B026-4ECF-81E0-89C0B379387C"></a></span><p class="table-body">Accepts any value greater than <span class="code" translate="no">1</span>. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-4CB41E03-0112-4031-B820-36A652631736"></a></span><p class="table-body">The default value is <span class="code" translate="no">128</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.maxsamples</span> 
+                        </td>
+                        <td class="table-body">int </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-84E36FD0-8109-4AFD-A222-8D335F363605"></a></span><p class="table-body">Specifies the maximum number of samples to be used for the gather. This setting provides an upper limit for super-sampling
+                              in the gather distribution. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-95EBD816-29B8-41D0-AC49-C8AC576CC276"></a></span><p class="table-body">Accepts any value greater than the value of the <span class="code" translate="no">gather.minsamples</span> option. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-9D505B21-76E7-4107-9CD1-CC0859CF7124"></a></span><p class="table-body">The default value is <span class="code" translate="no">256</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.coneangle</span> 
+                        </td>
+                        <td class="table-body">int </td>
+                        <td class="table-body">Specifies the cone angle to use for the gather distribution. <span class="anchor_wrapper"><a name="GUID-A5E343B3-F5B8-4CA6-9D07-8BA5EFDDA1AF"></a></span><p class="table-body">Accepts any value between <span class="code" translate="no">0</span> and <span class="code" translate="no">360</span> inclusive. In most cases, use <span class="code" translate="no">180</span> or <span class="code" translate="no">360</span>. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-0B67F2D2-A1A7-451F-8889-EC972889A2EA"></a></span><p class="table-body">The default value is <span class="code" translate="no">180</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.clamp</span> 
+                        </td>
+                        <td class="table-body">Boolean </td>
+                        <td class="table-body">Determines whether or not the values sampled during the gather are clamped. <span class="anchor_wrapper"><a name="GUID-45F3C36D-3065-4EB4-976D-508C6CFB8571"></a></span><p class="table-body">The default value is <span class="code" translate="no">false</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.cosweighdynamic</span> 
+                        </td>
+                        <td class="table-body">Boolean </td>
+                        <td class="table-body">Determines whether or not the gathered dynamic light should be cosine-weighed according to the sample normal. <span class="anchor_wrapper"><a name="GUID-19D506EB-1008-458D-B08D-72E0F4AF0D7D"></a></span><p class="table-body">The default value is <span class="code" translate="no">false</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.aomaxdistance</span> 
+                        </td>
+                        <td class="table-body">float </td>
+                        <td class="table-body">Sets the maximum distance a ray can travel before being considered un-occluded. This will affect the occlusion appearance.
+                           <span class="anchor_wrapper"><a name="GUID-D463EC46-A809-4CC7-A35A-CDD9BAF0FDE2"></a></span><p class="table-body">If this option is not defined, the size of the whole scene will be used. Therefore, you must define this option for indoor
+                              scenes. If you do not, all surfaces will be fully occluded. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.aoscale</span> 
+                        </td>
+                        <td class="table-body">float </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-519F5F2A-545F-4112-AA39-C83127B611FA"></a></span><p class="table-body">Determines the scaling of the occlusion value for occlusion sampling. Can be used to boost the shadowing effect. </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.aocontrast</span> 
+                        </td>
+                        <td class="table-body">float </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-2CD9838B-9FCA-477F-91B8-2FF83C842A3E"></a></span><p class="table-body">Controls the amount of contrast in the occlusion. A higher value will increase the contrast, making dark areas darker and
+                              bright areas brighter. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.aoinfluence</span> 
+                        </td>
+                        <td class="table-body">float </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-43023A5C-4C78-48AC-B26B-F5D0557A4D98"></a></span><p class="table-body">Determines whether the output values from Lua should be scaled by ambient occlusion automatically. </p> <span class="anchor_wrapper"><a name="GUID-7382F0BB-702A-4792-BF09-80159D2405DD"></a></span><p class="table-body">Accepts any value between <span class="code" translate="no">0.0</span> and <span class="code" translate="no">1.0</span>: 
+                           </p> <span class="anchor_wrapper"><a name="UL_F6E682F9C80A436185A3D960A9126363"></a></span><ul>
+                              <li><span class="code" translate="no">0.0</span> produces no occlusion scaling. 
+                              </li>
+                              <li><span class="code" translate="no">1.0</span> produces full occlusion scaling. 
+                              </li>
+                              <li>Values between <span class="code" translate="no">0.0</span> and <span class="code" translate="no">1.0</span> produce a weighted blend between these extremes. 
+                              </li>
+                           </ul> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">gather.obeytransparency</span> 
+                        </td>
+                        <td class="table-body">Boolean </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-01E5EE1F-513F-4287-80BB-6D802A326D39"></a></span><p class="table-body"> Determines whether or not rays will be transmitted through transparent surfaces. </p> <span class="anchor_wrapper"><a name="GUID-97F2D5B5-5087-4A55-8791-623CC6A9E0C2"></a></span><p class="table-body">The default value is <span class="code" translate="no">false</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">output.size</span> 
+                        </td>
+                        <td class="table-body">int </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-7FC3D842-956F-4385-8205-43BB838A4D80"></a></span><p class="table-body">Specifies the number of elements in the array returned by the <span class="code" translate="no">bake()</span> function. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-7D17379B-5051-491D-867A-F78A24316F78"></a></span><p class="table-body">The default value is <span class="code" translate="no">4</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">basis.type</span> 
+                        </td>
+                        <td class="table-body">string </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-88771DBA-3B9C-41EA-9E45-8B73289E2868"></a></span><p class="table-body">Determines the type of function basis the gathered data will fit. </p> <span class="anchor_wrapper"><a name="GUID-55957A97-777D-403C-A773-AD643219DD83"></a></span><p class="table-body">Accepts the following values: </p> <span class="anchor_wrapper"><a name="UL_13E31B3157114AF5B8ADFA5F2FAD8697"></a></span><ul>
+                              <li><span class="code" translate="no">none</span> or <span class="code" translate="no">n</span> 
+                              </li>
+                              <li><span class="code" translate="no">ptm</span>: polynomial texture mapping. 
+                              </li>
+                              <li><span class="code" translate="no">sh</span>: spherical harmonics. 
+                              </li>
+                              <li><span class="code" translate="no">custom</span> or <span class="code" translate="no">c</span>: The basis will be determined by calling the <span class="code" translate="no">basis()</span> function defined in your script. See <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm#GUID-D04BF75D-5B7E-4FA7-9F04-43945C812150">The basis(x, y, z) function</a></span> below. 
+                              </li>
+                           </ul> <span class="anchor_wrapper"><a name="GUID-82E61A23-C20B-4C7A-A39A-C16E09D21C6C"></a></span><p class="table-body">If set to any value other than <span class="code" translate="no">none</span>, the <span class="code" translate="no">bake()</span> function can be omitted from the script, and the coefficients for the specified function basis will be generated automatically.
+                              
+                           </p> <span class="anchor_wrapper"><a name="GUID-E40D06CE-6B4B-4C17-8795-F25B158F8406"></a></span><p class="table-body">The default value is <span class="code" translate="no">none</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledOddRow">
+                        <td class="table-body"> <span class="code" translate="no">basis.rgb</span> 
+                        </td>
+                        <td class="table-body">Boolean </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-1305ECF0-4F1B-4272-ABDE-3336EFCCF168"></a></span><p class="table-body"> This option is taken into consideration when baking function coefficients. </p> <span class="anchor_wrapper"><a name="UL_A8F08830D74240D68A5C5DB48604A45E"></a></span><ul>
+                              <li>Set this option to <span class="code" translate="no">true</span> if your <span class="code" translate="no">bake()</span> implementation returns a set of coefficients for each color channel. The coefficients for all three channels should be returned
+                                 as one concatenated array. 
+                              </li>
+                              <li>Set this option to <span class="code" translate="no">false</span> if the <span class="code" translate="no">bake()</span> function generates coefficients for the intensity of the gathered data, but the relative values of the color channels are
+                                 not important. 
+                              </li>
+                           </ul> <span class="anchor_wrapper"><a name="GUID-356DBE7C-164B-427D-8020-5D8C6CBFE2F8"></a></span><p class="table-body">The default value is <span class="code" translate="no">false</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                     <tr class="ruledEvenRow">
+                        <td class="table-body"> <span class="code" translate="no">basis.sh.bands</span> 
+                        </td>
+                        <td class="table-body">int </td>
+                        <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-2A2A0598-7BD7-4954-9742-178A3D31C51A"></a></span><p class="table-body">Specify the number of bands to use when generating spherical harmonics coefficients. Read only when the <span class="code" translate="no">basis.type</span> option is set to <span class="code" translate="no">sh</span>. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-5D4807FB-4687-4921-9D2C-3288CF72D37B"></a></span><p class="table-body">Accepts any value from <span class="code" translate="no">1</span> to <span class="code" translate="no">10</span> inclusive. 
+                           </p> <span class="anchor_wrapper"><a name="GUID-10D16B0E-8CD9-4C94-AF48-41F5BF88A95A"></a></span><p class="table-body">The default value is <span class="code" translate="no">2</span>. 
+                           </p> 
+                        </td>
+                     </tr>
+                  </table>
+               </div> 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_BCDA66381BE14EC2BD59675746900C48"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16974"></a><span class="anchor_wrapper"><a name="GUID-D04BF75D-5B7E-4FA7-9F04-43945C812150"></a></span>The basis(x, y, z) function
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-E9D070E0-9D37-4E99-8413-20A44FEF823E"></a></span>This optional function allows you to define the values of the function basis that your gathered data should fit. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-E3639348-9C4A-4CE5-9090-205AF88B5965"></a></span>When defined, this function is called once for every direction used in the gather before baking. It is passed a vector that
+               defines a point on the sampling sphere. Your implementation must determine what values this vector will produce in your custom
+               basis, and must return an array with the correct number of coefficients. The sampled data will automatically be fitted to
+               your basis during rendering. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-04EB2A3F-EBAA-4425-BC64-64593A4E4BDE"></a></span>In order to use this function: 
+            </p> <span class="anchor_wrapper"><a name="UL_7CA90B068CD6412D9B80441A3FBC1E61"></a></span><ul>
+               <li>Your <span class="code" translate="no">setup()</span> function must set the <span class="code" translate="no">basis.type</span> option to <span class="code" translate="no">custom</span>. 
+               </li>
+               <li>Your <span class="code" translate="no">setup()</span> function must set the <span class="code" translate="no">output.size</span> option to the number of coefficients returned by your <span class="code" translate="no">basis()</span> and <span class="code" translate="no">bake()</span> implementations. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-1D570DAF-953C-4A60-96EC-44AA1747B081"></a></span>For example, the following simple implementation defines a basis for polynomial texture mapping (PTM): 
+            </p> 
+            <div class="codeBlock"><span class="anchor_wrapper"><a name="LANG-LUA"></a></span><pre class="prettyprint lang-lua">function basis(x, y, z)
+    return {x*x, y*y, x*y, x, y, 1}
+end</pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_6FBD6E2B602949BA990B8A62FF2FCBAB"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e17022"></a><span class="anchor_wrapper"><a name="GUID-C7A3C5F7-3259-4784-962A-D543E2770502"></a></span>The bake() function
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-F59F35A6-A899-4652-A13D-40C65FE9BF31"></a></span>The <span class="code" translate="no">bake()</span> function is executed once for every pixel (or every super-sample if super-sampling is enabled). It must return an array that
+               contains the data that should be output to the texture or point cloud. The size of the returned array must match the value
+               of the <span class="code" translate="no">output.size</span> option set by the <span class="code" translate="no">setup()</span> function. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-047013B2-DF5C-4246-8212-D911AC57E031"></a></span>In your implementation of the <span class="code" translate="no">bake()</span> function, you may need to access information about the point under consideration, or to query <span class="charspan-msgph" translate="no">Beast</span> for additional information about the scene. The following sections describe the different functions and classes that you
+               can use. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_D76F003BB3EA4B2BBEC12F6B66C228F9"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e17048"></a><span class="anchor_wrapper"><a name="GUID-EEB0838A-08C6-467E-A15E-64B1144440DB"></a></span>The vec3 class
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-2ACD66A7-8825-481E-8472-0E6EF9A1B3E1"></a></span>The <span class="code" translate="no">vec3</span> class represents a vector of three floating-point values. It can be constructed by calling <span class="code" translate="no">vec3(x,y,z)</span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-73A5429D-3E32-4FAA-906A-1E497691E9FA"></a></span>This class implements the following operators: 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-F54DE999-2766-4877-AAE2-E98F462FD05C"></a></span> <span class="anchor_wrapper"><a name="UL_52C00B2E73444F1FBABC6653BA70E98C"></a></span><ul>
+                     <li> <span class="code" translate="no">+</span>: Aliased to <span class="code" translate="no">add3</span>. 
+                     </li>
+                     <li><span class="code" translate="no"> -</span> (binary): Aliased to <span class="code" translate="no">sub3</span>. 
+                     </li>
+                     <li><span class="code" translate="no"> -</span> (unary): Aliased to <span class="code" translate="no">neg3</span>. 
+                     </li>
+                     <li> <span class="code" translate="no">*</span>: Aliased to <span class="code" translate="no">mul3</span>. 
+                     </li>
+                     <li> <span class="code" translate="no">/</span>: Aliased to <span class="code" translate="no">div3</span>. 
+                     </li>
+                     <li><span class="code" translate="no"> [i]</span>: Returns the component at index <span class="code" translate="no">i</span> within the <span class="code" translate="no">vec3</span>. The index value may be <span class="code" translate="no">1</span>, <span class="code" translate="no">2</span> or <span class="code" translate="no">3</span>. 
+                     </li>
+                  </ul> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_6217110B46CD4FB3BF3597534A20D68A"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e17128"></a><span class="anchor_wrapper"><a name="GUID-7889DB37-F166-46F5-8D89-398987AADEEF"></a></span>Functions for retrieving point data
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-B66707FD-E4F4-4C0C-BCCF-B5218DC9420E"></a></span>The following table describes the functions available for obtaining information about the point currently being treated by
+                  the <span class="code" translate="no">bake()</span> function. <span class="anchor_wrapper"><a name="TABLE_C21B6B37119B450CBA9A653FAB14978B"></a></span><div class="table_Ruled">
+                     <table cellpadding="0" cellspacing="0" class="ruled">
+                        <colgroup>
+                           <col width="32.89473684210527%" />
+                           <col width="67.10526315789474%" />
+                        </colgroup>
+                        <tr class="ruledHeading">
+                           <th class="table-heading">function </th>
+                           <th class="table-heading">description </th>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getPoint()</span> 
+                           </td>
+                           <td class="table-body">Returns the intersection point of the fragment in world space. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getNormal()</span> 
+                           </td>
+                           <td class="table-body">Returns the normal of the fragment. </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getTangentU()</span> 
+                           </td>
+                           <td class="table-body">Returns the tangent of the fragment. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getTangentV()</span> 
+                           </td>
+                           <td class="table-body">Returns the bitangent of the fragment. </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getViewDir()</span> 
+                           </td>
+                           <td class="table-body">Returns the vector from the fragment to the eye in world space. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getUV()</span> 
+                           </td>
+                           <td class="table-body">Returns the texture coordinates of the fragment. Uses only the first two components of the <span class="code" translate="no">vec3</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getdTdX()</span> 
+                           </td>
+                           <td class="table-body">Returns the projection of the X axis of the screen space pixel in texture space. Uses only the first two components of the
+                              <span class="code" translate="no">vec3</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getdTdY()</span> 
+                           </td>
+                           <td class="table-body">Returns the projection of the Y axis of the screen space pixel in texture space. Uses only the first two components of the
+                              <span class="code" translate="no">vec3</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getT()</span> 
+                           </td>
+                           <td class="table-body">Returns the distance from the ray origin to the current fragment. </td>
+                        </tr>
+                     </table>
+                  </div> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_14DA6E147C0C4FA2897F79EF01EFC668"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e17234"></a><span class="anchor_wrapper"><a name="GUID-62A50DEA-9518-48AB-9EE2-1723C8C74B11"></a></span>Functions for lighting
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-E2F644E6-62A9-402A-B403-26746B85BF35"></a></span>The following table describes the functions that you can call to retrieve information about the light sources that are light-linked
+                  to the point being baked. The <span class="code" translate="no">getLights()</span> function returns the total number light sources linked to the point; the other functions retrieve information about a single
+                  linked light source in that list, specified by the index you provide. <span class="anchor_wrapper"><a name="TABLE_826716FED37A40ED8ED2051C90462492"></a></span><div class="table_Ruled">
+                     <table cellpadding="0" cellspacing="0" class="ruled">
+                        <colgroup>
+                           <col width="44.24778761061947%" />
+                           <col width="55.75221238938054%" />
+                        </colgroup>
+                        <tr class="ruledHeading">
+                           <th class="table-heading">function </th>
+                           <th class="table-heading">description </th>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">int getLights()</span> 
+                           </td>
+                           <td class="table-body">Returns the number of lights linked to the current point. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">bool getLightName(i)</span> 
+                           </td>
+                           <td class="table-body">Returns the name of the light at the specified index. </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getLightDir(i)</span> 
+                           </td>
+                           <td class="table-body">Returns the direction in world space from the current point to the light at the specified index. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float getLightDist(i)</span> 
+                           </td>
+                           <td class="table-body">Returns the distance in world space between the current point and the light at the specified index. </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getLightCol(i)</span> 
+                           </td>
+                           <td class="table-body">Returns the color of the light at the specified index. Includes attenuation and shadows. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getLightColUnshadowed(i)</span> 
+                           </td>
+                           <td class="table-body">Returns the color of the light at the specified index. Does not include shadows. </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">bool getLightAmb(i)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">true</span> if the light at the specified index is ambient. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">bool getLightInd(i)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">true</span> if the light at the specified index is indirect. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">bool getLightCastShadows(i)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">true</span> if the light at the specified index casts shadows. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float getLightLambertianReflectance(i, vec3)</span> 
+                           </td>
+                           <td class="table-body">Returns the Lambertian reflectance of the light with the specified index, around the normal direction specified by the <span class="code" translate="no">vec3</span> argument. 
+                           </td>
+                        </tr>
+                     </table>
+                  </div> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_BFEB9E3176D14555B9F75B3DF4F328CD"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e17350"></a><span class="anchor_wrapper"><a name="GUID-6428F61C-0C09-483C-9F48-B11491F03C0D"></a></span>Functions for ray tracing
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-74EA46AC-2C9C-401F-9AD1-C3F1E4B812CB"></a></span>The following table describes the functions that you can call to cast rays into the scene. <span class="anchor_wrapper"><a name="TABLE_D792EA30DA5F453FA02E7E9BB7976525"></a></span><div class="table_Ruled">
+                     <table cellpadding="0" cellspacing="0" class="ruled">
+                        <colgroup>
+                           <col width="43.66812227074236%" />
+                           <col width="56.33187772925764%" />
+                        </colgroup>
+                        <tr class="ruledHeading">
+                           <th class="table-heading">function </th>
+                           <th class="table-heading">description </th>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 shootRay(vec3 o, vec3 d)</span> 
+                           </td>
+                           <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-2A103C07-EE31-4532-86BA-8D89BDA1AB37"></a></span><p class="table-body">Shoots a ray from the <span class="code" translate="no">o</span> coordinates in the direction <span class="code" translate="no">d</span>, with shading. Returns the color of the first intersection found (if any). 
+                              </p> 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float shootOccRay(vec3 o, vec3 d, [float tmax])</span> 
+                           </td>
+                           <td class="table-body">Shoots a ray from the <span class="code" translate="no">o</span> coordinates in the direction <span class="code" translate="no">d</span>, with shading. Returns the distance to the closest intersection, or <span class="code" translate="no">-1.0f</span> if no intersection is found. <span class="anchor_wrapper"><a name="GUID-3390C19C-BACE-414D-84CE-D8505723D1BB"></a></span><p class="table-body">The occlusion ray ignores the transparency of the occluder. </p> <span class="anchor_wrapper"><a name="GUID-5DB2C83B-87E3-4FC6-9385-579EE53570FA"></a></span><p class="table-body">If desired, you can specify the maximum distance to the intersection using the <span class="code" translate="no">tmax</span> parameter. 
+                              </p> 
+                           </td>
+                        </tr>
+                     </table>
+                  </div> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_F2F10AF7934B459489B715E15CDE047D"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e17414"></a><span class="anchor_wrapper"><a name="GUID-7B3CE45B-C8C9-437B-A1AE-8518B56C5BF4"></a></span>Other utility functions
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-A2BC3549-1E26-4840-84BB-8A46C5C4EE28"></a></span>The following table describes the other utility functions provided by <span class="charspan-msgph" translate="no">Beast</span> that you can call in your <span class="code" translate="no">bake()</span> function. <span class="anchor_wrapper"><a name="TABLE_C1D525B8191D47DDB9C7C7091B2BBF10"></a></span><div class="table_Ruled">
+                     <table cellpadding="0" cellspacing="0" class="ruled">
+                        <colgroup>
+                           <col width="43.66812227074236%" />
+                           <col width="56.33187772925764%" />
+                        </colgroup>
+                        <tr class="ruledHeading">
+                           <th class="table-heading">function </th>
+                           <th class="table-heading">description </th>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">float length(vec3)</span> 
+                           </td>
+                           <td class="table-body">Returns the length of the specified vector. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float smoothstep(min, max, x)</span> 
+                           </td>
+                           <td class="table-body">Returns a value that indicates where <span class="code" translate="no">x</span> falls within the interval specified by <span class="code" translate="no">min</span> and <span class="code" translate="no">max</span>. <span class="anchor_wrapper"><a name="UL_2911D42B0732441C81635823DEBC4CB4"></a></span><ul>
+                                 <li>If <span class="code" translate="no">x</span> is less than <span class="code" translate="no">min</span>, returns <span class="code" translate="no">0.0</span>. 
+                                 </li>
+                                 <li>If <span class="code" translate="no">x</span> is greater than <span class="code" translate="no">max</span>, returns <span class="code" translate="no">1.0</span>. 
+                                 </li>
+                                 <li>If <span class="code" translate="no">x</span> is between <span class="code" translate="no">min</span> and <span class="code" translate="no">max</span>, returns a value between <span class="code" translate="no">0.0</span> and <span class="code" translate="no">1.0</span> that interpolates <span class="code" translate="no">x</span> along a smooth curve within that interval. 
+                                 </li>
+                              </ul> 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">float step(min, max, x)</span> 
+                           </td>
+                           <td class="table-body">Returns a value that indicates where <span class="code" translate="no">x</span> falls within the interval specified by <span class="code" translate="no">min</span> and <span class="code" translate="no">max</span>. <span class="anchor_wrapper"><a name="UL_3B371FF1E915437994C6222506975152"></a></span><ul>
+                                 <li>If <span class="code" translate="no">x</span> is less than <span class="code" translate="no">min</span>, returns <span class="code" translate="no">0.0</span>. 
+                                 </li>
+                                 <li>If <span class="code" translate="no">x</span> is greater than <span class="code" translate="no">max</span>, returns <span class="code" translate="no">1.0</span>. 
+                                 </li>
+                                 <li>If <span class="code" translate="no">x</span> is between <span class="code" translate="no">min</span> and <span class="code" translate="no">max</span>, returns a value between <span class="code" translate="no">0.0</span> and <span class="code" translate="no">1.0</span> that interpolates <span class="code" translate="no">x</span> proportionally within that interval. 
+                                 </li>
+                              </ul> 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float dot3(vec3 x, vec3 y)</span> 
+                           </td>
+                           <td class="table-body">Returns the scalar product of <span class="code" translate="no">x</span> and <span class="code" translate="no">y</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 cross3(vec3 x, vec3 y)</span> 
+                           </td>
+                           <td class="table-body">Returns the cross product of <span class="code" translate="no">x</span> and <span class="code" translate="no">y</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float add3(vec3 x, y)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">x + y</span>. The <span class="code" translate="no">y</span> argument can be a floating-point number or a <span class="code" translate="no">vec3</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">float sub3(vec3 x, y)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">x - y</span>. The <span class="code" translate="no">y</span> argument can be a floating-point number or a <span class="code" translate="no">vec3</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float neg3(vec3 x)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">-x</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">float mul3(vec3 x, y)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">x * y</span>. The <span class="code" translate="no">y</span> argument can be a floating-point number or a <span class="code" translate="no">vec3</span>. If <span class="code" translate="no">y</span> is a <span class="code" translate="no">vec3</span>, the multiplication is element-wise. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">float div3(vec3 x, float y)</span> 
+                           </td>
+                           <td class="table-body">Returns <span class="code" translate="no">x / y</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 reflect(vec3 v, vec3 normal)</span> 
+                           </td>
+                           <td class="table-body">Returns the <span class="code" translate="no">v</span> vector reflected around the specified normal. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 refract(vec3 v, vec3 normal, float inIor, float outIor)</span> 
+                           </td>
+                           <td class="table-body">Returns the <span class="code" translate="no">v</span> vector refracted around the specified normal. The <span class="code" translate="no">inIor</span> parameter is the index of refraction for the material the ray is leaving, and the <span class="code" translate="no">outIor</span> parameter is the index of refraction for the material the ray is entering. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 normalize(vec3 v)</span> 
+                           </td>
+                           <td class="table-body">Returns the <span class="code" translate="no">v</span> vector normalized. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">int getSampleCount()</span> 
+                           </td>
+                           <td class="table-body">Returns the number of sample cells used in the distribution. Note that the number of sample cells does necessarily match the
+                              minimum number of samples set in the <span class="code" translate="no">setup()</span> function. 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getSampleValue(int)</span> 
+                           </td>
+                           <td class="table-body">Returns the color of the sample at the specified index. The red, green and blue values are stored in the components of the
+                              returned <span class="code" translate="no">vec3</span>. 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getSampleDirection(int, boolean)</span> 
+                           </td>
+                           <td class="table-body">Returns the direction of the sample cell at the specified index. <span class="anchor_wrapper"><a name="GUID-D30509FE-1CEB-4333-96D5-23E857AAC6D2"></a></span><p class="table-body">The boolean parameter specifies the desired coordinate system for the returned vector. Use <span class="code" translate="no">true</span> to retrieve the direction in world space. Use <span class="code" translate="no">false</span> to retrieve the direction in gather space. 
+                              </p> 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getSampleMean()</span> 
+                           </td>
+                           <td class="table-body">Returns the mean value of all sample cells as a <span class="code" translate="no">vec3</span> (not weighed by sample cell area). 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getSampleProjectedSum(vec3, boolean)</span> 
+                           </td>
+                           <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-4577465E-8C0F-4B05-950F-5C4864DC23D2"></a></span><p class="table-body">Returns the sum of all sample cell values as a <span class="code" translate="no">vec3</span>. This sum is weighed using the scalar product between the sample cell direction and the vector specified in the <span class="code" translate="no">vec3</span> parameter. 
+                              </p> <span class="anchor_wrapper"><a name="GUID-E4574945-5883-4CFC-BF55-C7D98FD166F8"></a></span><p class="table-body">The boolean parameter determines whether or not to include values with negative weight. </p> 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">float getSampleOcclusion()</span> 
+                           </td>
+                           <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-32C3636F-C454-4F7C-BEBF-1D3765B0FC20"></a></span><p class="table-body">Returns a value in the range <span class="code" translate="no">[0.0, 1.0]</span> that represents the occlusion over all sample cells. 
+                              </p> <span class="anchor_wrapper"><a name="UL_C7D5155DDB474120A65A7791E902FA74"></a></span><ul>
+                                 <li><span class="code" translate="no">0.0</span> represents no occlusion. 
+                                 </li>
+                                 <li> <span class="code" translate="no">1.0</span> represents full occlusion. 
+                                 </li>
+                                 <li>Values between <span class="code" translate="no">0.0</span> and <span class="code" translate="no">1.0</span> represent interpolations between these two extremes. 
+                                 </li>
+                              </ul> 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 getGatherSpaceVector(int)</span> 
+                           </td>
+                           <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-21748379-DF1C-4ACD-AE7B-D008485CF4A7"></a></span><p class="table-body">Returns a world space vector equivalent to one of the components of the gather space vector. </p> <span class="anchor_wrapper"><a name="GUID-3ADD2DF9-B494-4B67-A158-D291CE4116EF"></a></span><p class="table-body">The integer argument specifies which of the gather space vector components to use. May be <span class="code" translate="no">1</span>, <span class="code" translate="no">2</span>, or <span class="code" translate="no">3</span>. 
+                              </p> 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">array getBasisCoefficients(int):</span> 
+                           </td>
+                           <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-CE7A340C-A684-4C41-B6A3-54A238EC5D69"></a></span><p class="table-body"> Returns the array of basis coefficients for the chosen basis, from the data specified in the integer parameter: </p> <span class="anchor_wrapper"><a name="UL_C8A77F37C24B4BD0A8C14523E65E4FF6"></a></span><ul>
+                                 <li> <span class="code" translate="no">0</span>: color intensity. 
+                                 </li>
+                                 <li><span class="code" translate="no">1</span>: red channel. 
+                                 </li>
+                                 <li><span class="code" translate="no">2</span>: green channel. 
+                                 </li>
+                                 <li><span class="code" translate="no">3</span>: blue channel. 
+                                 </li>
+                              </ul> 
+                           </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">array evalSHBasis(vec3, int)</span> 
+                           </td>
+                           <td class="table-body"> <span class="anchor_wrapper"><a name="GUID-F4B730C1-4886-4AD8-A9F9-0B165DD6FBF6"></a></span><p class="table-body">Returns an array of spherical harmonic values for the direction specified in the <span class="code" translate="no">vec3</span> parameter. 
+                              </p> <span class="anchor_wrapper"><a name="GUID-5B61C785-653D-498C-B75C-46A350CB6BAE"></a></span><p class="table-body"> The integer argument specifies the number of SH bands to use. May be any value in the range <span class="code" translate="no">[1,10] </span>. 
+                              </p> 
+                           </td>
+                        </tr>
+                        <tr class="ruledOddRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 gatherToWorld(vec3)</span> 
+                           </td>
+                           <td class="table-body">Converts the specified vector from gather space to world space. </td>
+                        </tr>
+                        <tr class="ruledEvenRow">
+                           <td class="table-body"> <span class="code" translate="no">vec3 worldToGather(vec3)</span> 
+                           </td>
+                           <td class="table-body">Converts the specified vector from world space to gather space. </td>
+                        </tr>
+                     </table>
+                  </div> 
+               </p> 
+            </div> 
+         </div><span class="noindex">
+            <div class="topic-list">
+               <h4 class="related">Topics in this section</h4>
+               <ul class="jumplist">
+                  <li class="topiclist-litem"><a href="GUID-B55E815E-DB12-4DF5-B745-986675684CC0.htm"> Lua Examples</a></li>
+               </ul>
+            </div></span><div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
