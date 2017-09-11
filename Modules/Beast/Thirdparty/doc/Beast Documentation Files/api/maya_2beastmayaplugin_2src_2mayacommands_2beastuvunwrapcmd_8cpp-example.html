@@ -1,0 +1,688 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>
+maya/beastmayaplugin/src/mayacommands/beastuvunwrapcmd.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2mayacommands_2beastuvunwrapcmd_8cpp-example.html','api_maya_2beastmayaplugin_2src_2mayacommands_2beastuvunwrapcmd_8cpp_example_html3b7ed43d-6c9c-46d0-92e8-98504cbe49ce','index.html',location.hash); javascript:initPage('smaya/beastmayaplugin/src/mayacommands/beastuvunwrapcmd.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2mayacommands_2beastuvunwrapcmd_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/mayacommands/beastuvunwrapcmd.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/mayacommands/beastuvunwrapcmd.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/src/mayacommands/beastuvunwrapcmd.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class=
+"preprocessor">#include "mayacommands/beastuvunwrapcmd.h"</span>
+
+<span class=
+"preprocessor">#include &lt;maya/MArgParser.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnDagNode.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnMesh.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MSyntax.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatPointArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MSelectionList.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MArgDatabase.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MItMeshPolygon.h&gt;</span>
+
+<span class=
+"preprocessor">#include "beastwrappers/beastfundamentalswrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmeshwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastuvlayerwrapper.h"</span>
+<span class="preprocessor">#include "plugincontext.h"</span>
+<span class="preprocessor">#include "plugincomponents.h"</span>
+<span class="preprocessor">#include "<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastutils.h</a>"</span>
+<span class="preprocessor">#include "mayautils.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeids.h"</span>
+<span class="preprocessor">#include "liveasyncjob.h"</span>
+
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+
+<span class="keyword">namespace </span>{
+
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kTexelsPerWorldUnitFlag                              = <span class="stringliteral">"-tw"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kTexelsPerWorldUnitFlagLong                  = <span class="stringliteral">"-texelsperworldunit"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kSegmentationThresholdFlag                   = <span class="stringliteral">"-st"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kSegmentationThresholdFlagLong               = <span class="stringliteral">"-segmentationthreshold"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kFlatnessFlag                                                = <span class="stringliteral">"-f"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kFlatnessFlagLong                                    = <span class="stringliteral">"-flatness"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kStraightnessFlag                                    = <span class="stringliteral">"-s"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kStraightnessFlagLong                                = <span class="stringliteral">"-straightness"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kCompactnessFlag                                             = <span class="stringliteral">"-c"</span>;
+<span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">char</span>* kCompactnessFlagLong                                 = <span class="stringliteral">"-compactness"</span>;
+
+<span class="keyword">class </span>BeastUVUnwrapItem {
+<span class="keyword">public</span>:
+        BeastUVUnwrapItem(beastmaya::ResourceManager&amp; resourceManager, MFnDagNode&amp; dagNode, beastmaya::BeastTargetPtr&amp; target);
+        <span class="keywordtype">void</span> <span class=
+"keyword">import</span>();
+<span class="keyword">private</span>:
+        MFnDagNode m_dagNode;
+        beastmaya::BeastTargetPtr&amp; m_target;
+        beastmaya::BeastTargetEntityPtr m_targetEntity;
+        std::vector&lt;unsigned int&gt; m_beastToMayaTriMapping;
+};
+
+<span class=
+"keyword">typedef</span> std::shared_ptr&lt;BeastUVUnwrapItem&gt; BeastUVUnwrapItemPtr;
+
+BeastUVUnwrapItem::BeastUVUnwrapItem(beastmaya::ResourceManager&amp; resourceManager, MFnDagNode&amp; dagNode, beastmaya::BeastTargetPtr&amp; target) : 
+m_dagNode(dagNode.object()),
+m_target(target)
+{
+        MStatus res;
+        MDagPath dagPath;
+        res = dagNode.getPath(dagPath);
+        <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                <span class=
+"keywordflow">throw</span> std::exception(<span class=
+"stringliteral">"BEAST: Couldn't get DAG path"</span>);
+        }
+        beastmaya::BeastMeshPtr beastMesh = resourceManager.createMesh(dagPath, MObjectArray(), beastmaya::getGuid(), &amp;m_beastToMayaTriMapping);
+        <span class=
+"keywordflow">if</span>(!beastMesh || m_beastToMayaTriMapping.size() == 0) {
+                <span class=
+"keywordflow">throw</span> std::exception(<span class=
+"stringliteral">"BEAST: Failed to export mesh"</span>);
+        } <span class="keywordflow">else</span> {
+                m_targetEntity = target-&gt;addMeshToTarget(*beastMesh);
+        }
+}
+
+<span class="keywordtype">void</span> BeastUVUnwrapItem::import() {
+        MStatus status;
+
+        beastmaya::BeastUVLayerPtr newUVLayer = m_target-&gt;getUVLayerFromTarget(*m_targetEntity);
+
+        <span class="keywordtype">int</span> width, height;
+        m_target-&gt;getUVLayerResolutionFromTarget(*m_targetEntity, width, height);
+
+        <span class=
+"comment">// Read back uv data from the uv layer</span>
+        std::vector&lt;ILBVec2&gt; uvArray;
+        std::vector&lt;int&gt; uvIndexArray;
+        <span class="keyword">const</span> <span class=
+"keywordtype">int</span> uvArraySize = newUVLayer-&gt;getUVArraySize();
+        <span class="keyword">const</span> <span class=
+"keywordtype">int</span> uvIndexArraySize = newUVLayer-&gt;getIndexArraySize();
+        newUVLayer-&gt;readUVArray(0, uvArraySize, uvArray);
+        newUVLayer-&gt;readUVIndexArray(0, uvIndexArraySize, uvIndexArray);
+
+        MDagPath dagPath;
+        status = m_dagNode.getPath(dagPath);
+        <span class=
+"keywordflow">if</span>(status != MStatus::kSuccess) {
+                <span class=
+"keywordflow">throw</span> std::exception(<span class=
+"stringliteral">"BEAST: Couldn't get DAG path"</span>);
+        }
+
+        <span class=
+"keywordflow">if</span> (dagPath.extendToShape() != MStatus::kSuccess) {
+                <span class="comment">// No shape, fail.</span>
+                <span class=
+"keywordflow">throw</span> std::exception(<span class=
+"stringliteral">"BEAST: Couldn't find shape"</span>);
+        }
+
+        MFnMesh mesh(dagPath, &amp;status);
+        CHECK_MSTATUS_AND_RETURN_VOID(status);
+
+        MString uvSetName;
+        status = mesh.getCurrentUVSetName(uvSetName);
+        CHECK_MSTATUS_AND_RETURN_VOID(status);
+
+        <span class="comment">// Assign UVs</span>
+        MFloatArray u(uvArraySize, 0.0f);
+        MFloatArray v(uvArraySize, 0.0f);
+        <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; uvArraySize; ++i) {
+                u[i] = uvArray[i].x;
+                v[i] = uvArray[i].y;
+        }
+
+        status = mesh.clearUVs(&amp;uvSetName);
+        CHECK_MSTATUS_AND_RETURN_VOID(status);
+
+        status = mesh.setUVs(u, v, &amp;uvSetName);
+        CHECK_MSTATUS_AND_RETURN_VOID(status);
+
+        <span class="keyword">const</span> <span class=
+"keywordtype">int</span> numTriangles = uvIndexArraySize / 3;
+        MIntArray uvCount(numTriangles, 3);
+        MIntArray uvIds(uvIndexArraySize, 0);
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> t = 0; t &lt; numTriangles; ++t) {
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> mayaTri = m_beastToMayaTriMapping[t];
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> v = 0; v &lt; 3; v++) {
+                        uvIds[t * 3 + v] = uvIndexArray[mayaTri * 3 + v];
+                }
+        }
+        status = mesh.assignUVs(uvCount, uvIds, &amp;uvSetName);
+        CHECK_MSTATUS_AND_RETURN_VOID(status);
+
+        <span class=
+"comment">// This is a fix for a problem in Maya, where Maya deletes the new assigned UV's</span>
+        <span class=
+"comment">// if you switch UV set after the unwrapping is done</span>
+        <span class=
+"comment">// Deleting the construction history on the object seems to be a workaround</span>
+        status = MGlobal::executeCommand(<span class=
+"stringliteral">"delete -constructionHistory"</span>, <span class=
+"keyword">false</span>, <span class="keyword">false</span>);
+        CHECK_MSTATUS_AND_RETURN_VOID(status);
+}
+
+<span class="keyword">class </span>BeastUVUnwrapper {
+<span class="keyword">public</span>:
+        BeastUVUnwrapper(beastmaya::PluginContext&amp; pluginContext, 
+                                                <span class=
+"keywordtype">float</span> texelsPerWorldUnit, <span class=
+"keywordtype">float</span> segmentationThreshold, 
+                                                <span class=
+"keywordtype">float</span> flatness, <span class=
+"keywordtype">float</span> straightness, <span class=
+"keywordtype">float</span> compactness);
+        <span class=
+"keywordtype">void</span> add(MFnDagNode&amp; dagNode);
+        <span class="keywordtype">bool</span> unwrap();
+<span class="keyword">private</span>:
+        beastmaya::ResourceManager&amp; m_resourceManager;
+        beastmaya::BeastJobPtr m_job;
+        beastmaya::BeastTargetPtr m_target;
+        std::vector&lt;BeastUVUnwrapItemPtr&gt; m_uvUnwrapItems;
+};
+
+BeastUVUnwrapper::BeastUVUnwrapper(beastmaya::PluginContext&amp; pluginContext, <span class="keywordtype">float</span> texelsPerWorldUnit, <span class="keywordtype">float</span> segmentationThreshold, <span class="keywordtype">float</span> flatness, <span class="keywordtype">float</span> straightness, <span class="keywordtype">float</span> compactness) : 
+m_resourceManager(pluginContext.getResourceManager())
+{
+        beastmaya::BeastManager&amp; beastManager = pluginContext.getManager();
+        m_job = beastManager.createUVJob(L<span class=
+"stringliteral">"UnwrapJob"</span>);
+        m_target = m_job-&gt;createUVUnwrapTarget(L<span class=
+"stringliteral">"UnwrapTarget"</span>, texelsPerWorldUnit, segmentationThreshold, flatness, straightness, compactness);
+}
+
+<span class=
+"keywordtype">void</span> BeastUVUnwrapper::add(MFnDagNode&amp; dagNode) {
+        m_uvUnwrapItems.push_back(BeastUVUnwrapItemPtr(<span class=
+"keyword">new</span> BeastUVUnwrapItem(m_resourceManager, dagNode, m_target)));
+}
+
+<span class="keywordtype">bool</span> BeastUVUnwrapper::unwrap() {
+        m_job-&gt;start(<a name="a0"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0acea2a833558b7861cb3a5bb8372b5f03"
+title=
+"Show the render window / progress view and close it when the rendering is done.">ILB_SR_CLOSE_WHEN_DONE</a>, <a name="a1"></a><a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a47626f3d45dc2759a1f51829bd610618"
+title="Force a local render.">ILB_RD_FORCE_LOCAL</a>);
+
+        beastmaya::ScopedProgressBar progressBar(<span class=
+"keyword">true</span>, L<span class=
+"stringliteral">"UV Unwrapping"</span>);
+        progressBar.setProgressMax(100);
+
+        <span class=
+"keywordflow">while</span>(m_job-&gt;isRunning()) {
+                <span class=
+"keywordtype">bool</span> newActivity, newProgress;
+                <span class=
+"keywordflow">if</span> (m_job-&gt;hasProgress(newActivity, newProgress)) {
+                        std::wstring jobName;
+                        <span class=
+"keywordtype">int</span> progress;
+                        m_job-&gt;getProgress(jobName, progress);
+                        <span class=
+"keywordflow">if</span> (newProgress) {
+                                progressBar.setProgress(progress);
+                        }
+                }
+                m_job-&gt;waitDone(-1);
+        }
+
+        <a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a> status = m_job-&gt;getResult();
+        <span class=
+"keywordflow">if</span>(!beastmaya::checkJobStatus(status)) {
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        }
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(m_uvUnwrapItems); it != end(m_uvUnwrapItems); ++it) {
+                (*it)-&gt;import();
+        }
+        <span class="keywordflow">return</span> <span class=
+"keyword">true</span>;
+}
+
+}
+
+<span class="keyword">namespace </span>beastmaya {
+
+<span class=
+"keyword">extern</span> PluginComponents* g_beastPlugin;
+
+MSyntax BeastUVUnwrapCmd::newSyntax() {
+        MSyntax syntax;
+
+        syntax.setObjectType(MSyntax::kStringObjects);
+
+        <span class=
+"comment">// Make command non-queryable and non-editable:</span>
+        syntax.enableQuery(<span class="keyword">false</span>);
+        syntax.enableEdit(<span class="keyword">false</span>);
+
+        syntax.addFlag(kTexelsPerWorldUnitFlag, kTexelsPerWorldUnitFlagLong, MSyntax::kDouble);
+        syntax.addFlag(kSegmentationThresholdFlag, kSegmentationThresholdFlagLong, MSyntax::kDouble);
+        syntax.addFlag(kFlatnessFlag, kFlatnessFlagLong, MSyntax::kDouble);
+        syntax.addFlag(kStraightnessFlag, kStraightnessFlagLong, MSyntax::kDouble);
+        syntax.addFlag(kCompactnessFlag, kCompactnessFlagLong, MSyntax::kDouble);
+
+        <span class="keywordflow">return</span> syntax;
+}
+
+MStatus BeastUVUnwrapCmd::doIt(<span class=
+"keyword">const</span> MArgList&amp; args ) {
+
+        MStatus res;
+
+        MArgParser parser(syntax(), args, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        res = parser.getObjects(m_objects);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        <span class=
+"keywordflow">if</span> (m_objects.length() == 0) {
+                <span class=
+"comment">// Inform user and avoid further error handling.</span>
+                MGlobal::executePythonCommandOnIdle(<span class=
+"stringliteral">"beastUtils.messageBox('information', 'A shape or its transform node must be specified as a command argument, or using your current selection.')"</span>);
+                <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+        }
+
+        m_texelsPerWorldUnit = (float)parser.flagArgumentDouble(kTexelsPerWorldUnitFlag, 0, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+        
+        m_segmentationThreshold =  (float)parser.flagArgumentDouble(kSegmentationThresholdFlag, 0, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+        
+        m_flatness =  (float)parser.flagArgumentDouble(kFlatnessFlag, 0, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+        
+        m_straightness =  (float)parser.flagArgumentDouble(kStraightnessFlag, 0, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+        
+        m_compactness =  (float)parser.flagArgumentDouble(kCompactnessFlag, 0, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        <span class="keywordflow">return</span> redoIt();
+}
+
+MStatus BeastUVUnwrapCmd::redoIt() {
+
+        <span class="keywordflow">try</span> {
+
+                <span class=
+"keywordflow">if</span> (g_beastPlugin == NULL) {
+                        MGlobal::displayError(<span class=
+"stringliteral">"Beast plug-in not initialized correctly"</span>);
+                        <span class=
+"keywordflow">return</span> MStatus::kFailure;
+                }
+
+                PluginContext&amp; pluginContext = g_beastPlugin-&gt;getPluginContext();
+
+                BeastUVUnwrapper unwrapper(pluginContext, m_texelsPerWorldUnit, m_segmentationThreshold, m_flatness, m_straightness, m_compactness);
+
+                <span class=
+"keywordtype">bool</span> ignored = <span class=
+"keyword">false</span>;
+                <span class=
+"keywordtype">bool</span> added = <span class=
+"keyword">false</span>;
+
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; m_objects.length(); ++i) {
+
+                        <span class=
+"keyword">const</span> MString&amp; objectName = m_objects[i];
+
+                        MObject unknownObject = findMayaNode(objectName.asWChar());
+                        <span class=
+"keywordflow">if</span>(unknownObject == MObject::kNullObj) {
+                                ignored = <span class=
+"keyword">true</span>;
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+
+                        MStatus status;
+                        MFnDagNode node(unknownObject, &amp;status);
+                        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+                        <span class=
+"comment">// If the names doesn't match some sub-part of a mesh was selected,</span>
+                        <span class=
+"comment">// this is not supported to ignore the object in that case</span>
+                        <span class=
+"keywordflow">if</span> (node.fullPathName() != objectName) {
+                                ignored = <span class=
+"keyword">true</span>;
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+
+                        <span class=
+"comment">// Check if object is a triangulated mesh</span>
+                        <span class=
+"keywordflow">if</span>(!isTriangleMesh(node)) {
+                                <span class=
+"comment">// Inform user and avoid further error handling.</span>
+                                MGlobal::executePythonCommandOnIdle(MString(L<span class="stringliteral">"beastUtils.messageBox('warning', '"</span>) + objectName + L<span class="stringliteral">" is not a triangulated mesh')"</span>);
+                                <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+                        }
+
+                        unwrapper.add(node);
+                        added = <span class="keyword">true</span>;
+                }
+
+                <span class=
+"keywordflow">if</span> (!added &amp;&amp; ignored) {
+                        <span class=
+"comment">// Inform user and avoid further error handling.</span>
+                        MGlobal::executePythonCommandOnIdle(<span class="stringliteral">"beastUtils.messageBox('warning', 'Nothing to unwrap. Objects where of unsupported type and ignored.')"</span>);
+                        <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+                }
+
+                <span class=
+"keywordflow">if</span>(!unwrapper.unwrap()) {
+                        MGlobal::displayError(<span class=
+"stringliteral">"BEAST: Unwrapping failed, unknown error."</span>);
+                        <span class=
+"keywordflow">return</span> MStatus::kFailure;
+                }
+
+        } <span class=
+"keywordflow">catch</span> (BeastException&amp; e) {
+                <span class=
+"keywordflow">if</span> (e.getStatus() == <a name=
+"a2"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a0666c29584ddbaae5c4ed1684ef96f8f"
+title="A license error occurred.">ILB_ST_INVALID_LICENSE</a>) {
+                        <span class=
+"comment">// This is kind of okay, not really an error. Just post a message that we need a license to run.</span>
+                        MGlobal::executePythonCommandOnIdle(<span class="stringliteral">"beastUtils.messageBox('warning', 'A license error has occurred. Please check that your BEAST_LICENSE environment variable contains a valid license. Command has been canceled.')"</span>);
+                } <span class="keywordflow">else</span> {
+                        MGlobal::displayError(e.getTypeString().c_str());
+                        MGlobal::displayError(e.getExtendErrorInformation().c_str());
+                } 
+                <span class=
+"keywordflow">return</span> MStatus::kFailure;
+        } <span class=
+"keywordflow">catch</span>(std::exception&amp; e) {
+                MGlobal::displayError(MString(L<span class=
+"stringliteral">"BEAST: Unwrapping failed, "</span>) + e.what());
+                <span class=
+"keywordflow">return</span> MStatus::kFailure;
+        } <span class="keywordflow">catch</span>(...) {
+                MGlobal::displayError(<span class=
+"stringliteral">"BEAST: Unwrapping failed, unknown exception."</span>);
+                <span class=
+"keywordflow">return</span> MStatus::kFailure;
+        }
+
+        <span class="keywordflow">return</span> MStatus::kSuccess;
+}
+
+<span class=
+"keywordtype">void</span> * BeastUVUnwrapCmd::creator() { 
+        <span class="keywordflow">return</span> <span class=
+"keyword">new</span> BeastUVUnwrapCmd(); 
+}
+
+<span class=
+"keywordtype">bool</span> BeastUVUnwrapCmd::isUndoable()<span class="keyword"> const</span>
+{
+        <span class="keywordflow">return</span> <span class=
+"keyword">false</span>;
+}
+
+<span class=
+"keywordtype">bool</span> BeastUVUnwrapCmd::isTriangleMesh(<span class="keyword">const</span> MFnDagNode&amp; node)<span class="keyword"> const </span>{
+        
+        MStatus status;
+        
+        MDagPath dagPath;
+        status = node.getPath(dagPath);
+        <span class=
+"keywordflow">if</span>(status != MStatus::kSuccess) {
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        }
+
+        <span class=
+"keywordflow">if</span> (dagPath.extendToShape() != MStatus::kSuccess) {
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        }
+
+        <span class=
+"keywordflow">if</span> (!dagPath.hasFn(MFn::kMesh)) {
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        }
+
+        MItMeshPolygon polyIt(dagPath);
+        <span class=
+"keywordflow">for</span> (; !polyIt.isDone(); polyIt.next()) {
+                <span class=
+"keywordflow">if</span> (polyIt.polygonVertexCount() != 3) {
+                        <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+                }
+        }
+
+        <span class="keywordflow">return</span> <span class=
+"keyword">true</span>;
+}
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

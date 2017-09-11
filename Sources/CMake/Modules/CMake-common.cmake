@@ -92,7 +92,7 @@ macro( processing_mix_data )
 
     load_property( PROPERTY_LIST MIX_APP_DATA )
     if( ANDROID )
-        set( MIX_APP_DIR ${CMAKE_BINARY_DIR}/assets )
+        set( MIX_APP_DIR ${CMAKE_CURRENT_LIST_DIR}/Platforms/Android/${PROJECT_NAME}/assets )
         set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
     elseif(LINUX)
         set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} )
@@ -137,14 +137,25 @@ macro( processing_mix_data )
             get_filename_component( DATA_PATH ${DATA_PATH} ABSOLUTE )
             execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${MIX_APP_DIR}/${GROUP_PATH} )
             if( NOT ARG_NOT_DATA_COPY )
-                if( WINDOWS_UAP )
-                    execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                if( IS_DIRECTORY  ${DATA_PATH} )
+                    if( WINDOWS_UAP )
+                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                    endif()
+                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${DATA_PATH} 
+                       ${MIX_APP_DIR}/${GROUP_PATH}
+                    )
+                else()
+                    if( WINDOWS_UAP )
+                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                    endif()
+                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                       COMMAND ${CMAKE_COMMAND} -E copy
+                       ${DATA_PATH} 
+                       ${MIX_APP_DIR}/${GROUP_PATH}
+                    )
                 endif()
-                ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                   ${DATA_PATH} 
-                   ${MIX_APP_DIR}/${GROUP_PATH}
-                )
             endif()
 
         else()

@@ -132,7 +132,7 @@ void DebugDrawModule::PostInit()
 
     //Create menu
     bool separatorInserted = false;
-    for (int32 i = ResourceEditor::eSceneObjectType::ESOT_NONE; i < ResourceEditor::eSceneObjectType::ESOT_COUNT; i++)
+    for (DAVA::int32 i = ResourceEditor::eSceneObjectType::ESOT_NONE; i < ResourceEditor::eSceneObjectType::ESOT_COUNT; i++)
     {
         ResourceEditor::eSceneObjectType type = static_cast<ResourceEditor::eSceneObjectType>(i);
         QString actionName = GlobalEnumMap<ResourceEditor::eSceneObjectType>::Instance()->ToString(type);

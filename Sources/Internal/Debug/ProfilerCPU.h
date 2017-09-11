@@ -88,13 +88,13 @@ public:
     static const int32 NO_SNAPSHOT_ID = -1; ///< Value used to dump or build trace from current counters array
     static ProfilerCPU* const globalProfiler; ///< Global Engine Profiler
 
-    ProfilerCPU() = default;
+    ProfilerCPU(uint32 numCounters = 2048);
     ~ProfilerCPU();
 
     /**
         Start time measuring
     */
-    void Start(uint32 numCounters = 2048);
+    void Start();
 
     /**
         Stop time measuring
@@ -161,7 +161,8 @@ private:
 
     CounterArray* counters = nullptr;
     Vector<CounterArray*> snapshots;
-    Mutex safeCounters;
+    Mutex mutex;
+    uint32 numCounters = 2048;
     bool isStarted = false;
 
     friend class ScopedCounter;
