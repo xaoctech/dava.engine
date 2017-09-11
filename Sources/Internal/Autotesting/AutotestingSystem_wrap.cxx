@@ -7561,7 +7561,7 @@ static swig_lua_method swig_AutotestingSystemLua_methods[] = {
     { "KeyPress", _wrap_AutotestingSystemLua_KeyPress },
     { "ProcessInput", _wrap_AutotestingSystemLua_ProcessInput },
     { "ClickSystemBack", _wrap_AutotestingSystemLua_ClickSystemBack },
-    { "PressEscape", _wrap_AutotestingSystemLua_PressEscape },
+    { "EmulatePressKey", _wrap_AutotestingSystemLua_EmulatePressKey },
     { "SetText", _wrap_AutotestingSystemLua_SetText },
     { "CheckText", _wrap_AutotestingSystemLua_CheckText },
     { "GetTaggedClass", _wrap_AutotestingSystemLua_GetTaggedClass },
