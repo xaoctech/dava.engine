@@ -260,18 +260,18 @@ if( WIN )
 
     list ( APPEND DAVA_STATIC_LIBRARIES_WIN32
             "$ENV{DXSDK_DIR}/lib/x86/d3dx9.lib"
-            "d3d9.lib"
-            "d3d11.lib"
-            "d3dcompiler.lib"
-            "dxguid.lib"
+            "$ENV{DXSDK_DIR}/lib/x86/d3d9.lib"
+            "$ENV{DXSDK_DIR}/lib/x86/d3d11.lib"
+            "$ENV{DXSDK_DIR}/lib/x86/d3dcompiler.lib"
+            "$ENV{DXSDK_DIR}/lib/x86/dxguid.lib"
         )
 
     list ( APPEND DAVA_STATIC_LIBRARIES_WIN64
             "$ENV{DXSDK_DIR}/lib/x64/d3dx9.lib"
-            "d3d9.lib"
-            "d3d11.lib"
-            "d3dcompiler.lib"
-            "dxguid.lib"
+            "$ENV{DXSDK_DIR}/lib/x64/d3d9.lib"
+            "$ENV{DXSDK_DIR}/lib/x64/d3d11.lib"
+            "$ENV{DXSDK_DIR}/lib/x64/d3dcompiler.lib"
+            "$ENV{DXSDK_DIR}/lib/x64/dxguid.lib"
         )
 
 endif()
