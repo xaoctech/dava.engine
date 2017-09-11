@@ -106,6 +106,8 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
             }
         }
 
+        DVASSERT(digitalBinding.digitalElements[0] != eInputElements::NONE, "Digital elements array can't be empty for digital binding.");
+
         ActionState digitalState;
         digitalState.active = false;
         digitalState.action.actionId = digitalBinding.actionId;
