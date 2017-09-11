@@ -9,6 +9,8 @@ namespace physx
 class PxScene;
 class PxShape;
 class PxVehicleWheelsSimData;
+class PxBatchQuery;
+class PxVehicleDrivableSurfaceToTireFrictionPairs;
 }
 
 namespace DAVA
@@ -22,6 +24,11 @@ class VehicleCarComponent;
 class VehicleTankComponent;
 class VehicleChassisComponent;
 class VehicleWheelComponent;
+
+namespace PhysicsVehicleSubsystemDetail
+{
+class VehicleSceneQueryData;
+}
 
 const uint32 GROUND_TYPE = 1 << 0;
 const uint32 WHEEL_TYPE = 1 << 1;
@@ -64,5 +71,9 @@ private:
     physx::PxScene* pxScene = nullptr;
     Vector<VehicleComponent*> vehicleComponents;
     bool simulationEnabled = false;
+
+    PhysicsVehicleSubsystemDetail::VehicleSceneQueryData* vehicleSceneQueryData = nullptr;
+    physx::PxBatchQuery* batchQuery = nullptr;
+    physx::PxVehicleDrivableSurfaceToTireFrictionPairs* frictionPairs = nullptr;
 };
 }

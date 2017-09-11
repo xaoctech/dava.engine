@@ -256,10 +256,34 @@ PhysicsVehiclesSubsystem::PhysicsVehiclesSubsystem(Scene* scene, physx::PxScene*
 {
     DVASSERT(pxScene != nullptr);
     DVASSERT(scene != nullptr);
+
+    using namespace physx;
+    using namespace PhysicsVehicleSubsystemDetail;
+
+    PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+    DVASSERT(physics != nullptr);
+
+    PxAllocatorCallback* allocator = physics->GetAllocator();
+    DVASSERT(allocator != nullptr);
+
+    vehicleSceneQueryData = VehicleSceneQueryData::Allocate(MAX_VEHICLES_COUNT, PX_MAX_NB_WHEELS, 1, MAX_VEHICLES_COUNT, WheelSceneQueryPreFilterBlocking, NULL, *allocator);
+    batchQuery = VehicleSceneQueryData::SetUpBatchedSceneQuery(0, *vehicleSceneQueryData, pxScene);
+    frictionPairs = CreateFrictionPairs(physics->GetDefaultMaterial());
 }
 
 PhysicsVehiclesSubsystem::~PhysicsVehiclesSubsystem()
 {
+    using namespace physx;
+
+    PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+    DVASSERT(physics != nullptr);
+
+    PxAllocatorCallback* allocator = physics->GetAllocator();
+    DVASSERT(allocator != nullptr);
+
+    vehicleSceneQueryData->Free(*allocator);
+    batchQuery->release();
+    frictionPairs->release();
 }
 
 void PhysicsVehiclesSubsystem::RegisterEntity(Entity* entity)
@@ -314,13 +338,6 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
 {
     using namespace physx;
     using namespace PhysicsVehicleSubsystemDetail;
-
-    PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-
-    static PxAllocatorCallback* allocator = physics->GetAllocator();
-    static VehicleSceneQueryData* vehicleSceneQueryData = VehicleSceneQueryData::Allocate(MAX_VEHICLES_COUNT, PX_MAX_NB_WHEELS, 1, MAX_VEHICLES_COUNT, WheelSceneQueryPreFilterBlocking, NULL, *allocator);
-    static physx::PxBatchQuery* batchQuery = VehicleSceneQueryData::SetUpBatchedSceneQuery(0, *vehicleSceneQueryData, pxScene);
-    static PxVehicleDrivableSurfaceToTireFrictionPairs* frictionPairs = CreateFrictionPairs(physics->GetDefaultMaterial());
 
     static PxVehicleWheels* physxVehicles[MAX_VEHICLES_COUNT];
     static PxVehicleWheelQueryResult vehicleQueryResults[MAX_VEHICLES_COUNT];
