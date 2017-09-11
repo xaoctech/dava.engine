@@ -6,6 +6,8 @@
 
 #include "Scene/SceneTypes.h"
 #include "Classes/Selection/SelectableGroup.h"
+#include "Render/Highlevel/RenderHierarchy.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 class ObjectPlacementSystem : public DAVA::SceneSystem, public EditorSceneSystem
 {
@@ -19,6 +21,9 @@ public:
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
 private:
+    void GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
+                                           DAVA::Matrix4& translation, DAVA::Vector3& normal) const;
+
     // FIXME: pointer to scene modification system in ObjectPlacementSystem
     // As for now, Modification System is not reflective, doesn't
     // have its own TArc module or DataNode. So, to be able
@@ -28,4 +33,5 @@ private:
 
     bool snapToLandscape = false;
     DAVA::Landscape* landscape = nullptr;
+    DAVA::RenderSystem* renderSystem = nullptr;
 };
