@@ -1,5 +1,4 @@
 #include "EditorSystems/HUDControls.h"
-#include <Modules/UpdateViewsSystemModule/UpdateViewsSystem.h>
 
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
@@ -111,6 +110,11 @@ bool ControlContainer::GetVisibilityFlag() const
     return drawable->GetVisibilityFlag();
 }
 
+bool ControlContainer::IsDrawableControl(DAVA::UIControl* control) const
+{
+    return drawable == control;
+}
+
 HUDContainer::HUDContainer(const ControlNode* node_)
     : ControlContainer(HUDAreaInfo::NO_AREA)
     , node(node_)
@@ -120,9 +124,6 @@ HUDContainer::HUDContainer(const ControlNode* node_)
     control = node->GetControl();
     visibleProperty = node->GetRootProperty()->GetVisibleProperty();
     DVASSERT(nullptr != control && nullptr != visibleProperty);
-
-    UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    updateSystem->beforeRender.Connect(this, &HUDContainer::OnUpdate);
 }
 
 void HUDContainer::InitFromGD(const UIGeometricData& gd)
@@ -176,12 +177,6 @@ void HUDContainer::InitFromGD(const UIGeometricData& gd)
             }
         }
     }
-}
-
-void HUDContainer::OnUpdate()
-{
-    auto controlGD = control->GetGeometricData();
-    InitFromGD(controlGD);
 }
 
 FrameControl::FrameControl(eType type_, DAVA::TArc::ContextAccessor* accessor)

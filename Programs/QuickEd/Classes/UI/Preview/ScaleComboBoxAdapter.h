@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UI/Preview/Data/CanvasDataAdapter.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
 

@@ -17,6 +17,7 @@ set( DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
 set( DEFINITIONS -D__DAVAENGINE_BEAST__ )
 
 set( BeastThirdparty "${CMAKE_CURRENT_SOURCE_DIR}/Thirdparty")
+set( BeastRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( STATIC_LIBRARIES_WIN32  "${BeastThirdparty}/lib/beast32.lib" )
 set( STATIC_LIBRARIES_WIN64  "${BeastThirdparty}/lib/beast64.lib" )
