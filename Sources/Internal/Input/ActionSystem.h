@@ -58,7 +58,10 @@ struct ActionSet final
 /** Describes analog action state */
 struct AnalogActionState final
 {
-    /** Indicates if digital state of the action is triggered  */
+    /** Indicates if analog action is active. 
+		An analog action is considered to always be active if there are no digital elements requirements, 
+		otherwise it's active only if these digital elements are in required state  
+	*/
     bool active;
 
     /** Analog X value */

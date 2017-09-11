@@ -92,11 +92,17 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
     for (const auto& digitalBinding : set.digitalBindings)
     {
+        bool noneElementProcessed = false;
         for (size_t i = 0; i < digitalBinding.digitalElements.size(); ++i)
         {
             if (digitalBinding.digitalElements[i] != eInputElements::NONE)
             {
+                DVASSERT(!noneElementProcessed, "eInputElements::NONE in the middle of the digital elements array.");
                 DVASSERT(digitalBinding.digitalStates[i] != DigitalElementState::Released(), "Do you really want to bind an action on key release? Your desires are ... unconventional.");
+            }
+            else
+            {
+                noneElementProcessed = true;
             }
         }
 
@@ -110,27 +116,23 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
     for (const auto& analogBinding : set.analogBindings)
     {
-        bool noDigitalBindings = true;
-
+        bool noneElementProcessed = false;
         for (size_t i = 0; i < analogBinding.digitalElements.size(); ++i)
         {
-            noDigitalBindings = noDigitalBindings && analogBinding.digitalElements[i] == eInputElements::NONE;
-
             if (analogBinding.digitalElements[i] != eInputElements::NONE)
             {
+                DVASSERT(!noneElementProcessed, "eInputElements::NONE in the middle of the digital elements array.");
                 DVASSERT(analogBinding.digitalStates[i] != DigitalElementState::Released(), "Do you really want to bind an action on key release? Your desires are ... unconventional.");
+            }
+            else
+            {
+                noneElementProcessed = true;
             }
         }
 
         ActionState analogState;
-        analogState.active = false;
-
-        if (noDigitalBindings)
-        {
-            // always active
-            analogState.active = true;
-        }
-
+        // Always active if there are no digital elements for this binding
+        analogState.active = analogBinding.digitalElements[0] == eInputElements::NONE;
         analogState.action.actionId = analogBinding.actionId;
 
         analogActionsStates[analogBinding.actionId] = analogState;
@@ -320,7 +322,7 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
                 }
             }
 
-            // Check 'active' flag for all analog bindings
+            // Check 'active' flag for all affected analog bindings
             for (auto it = setBinding.analogBindings.begin(); it != setBinding.analogBindings.end(); ++it)
             {
                 AnalogBinding const& analogBinding = *it;
@@ -372,9 +374,14 @@ void ActionSystemImpl::OnEndFrame()
                 continue;
             }
 
-            for (const DigitalElementState elementState : digitalBinding.digitalStates)
+            for (size_t i = 0; i < digitalBinding.digitalElements.size(); ++i)
             {
-                if (elementState.IsJustPressed() || elementState.IsJustReleased())
+                if (digitalBinding.digitalElements[i] == eInputElements::NONE)
+                {
+                    break;
+                }
+
+                if (digitalBinding.digitalStates[i].IsJustPressed() || digitalBinding.digitalStates[i].IsJustReleased())
                 {
                     digitalActionsStates[digitalBinding.actionId].active = false;
                     break;
@@ -382,18 +389,23 @@ void ActionSystemImpl::OnEndFrame()
             }
         }
 
-        for (const AnalogBinding& analogbindig : setBinding.analogBindings)
+        for (const AnalogBinding& analogBinding : setBinding.analogBindings)
         {
-            if (!analogActionsStates[analogbindig.actionId].active)
+            if (!analogActionsStates[analogBinding.actionId].active)
             {
                 continue;
             }
 
-            for (const DigitalElementState elementState : analogbindig.digitalStates)
+            for (size_t i = 0; i < analogBinding.digitalElements.size(); ++i)
             {
-                if (elementState.IsJustPressed() || elementState.IsJustReleased())
+                if (analogBinding.digitalElements[i] == eInputElements::NONE)
                 {
-                    analogActionsStates[analogbindig.actionId].active = false;
+                    break;
+                }
+
+                if (analogBinding.digitalStates[i].IsJustPressed() || analogBinding.digitalStates[i].IsJustReleased())
+                {
+                    analogActionsStates[analogBinding.actionId].active = false;
                     break;
                 }
             }
