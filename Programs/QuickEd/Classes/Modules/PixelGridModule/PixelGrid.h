@@ -16,7 +16,7 @@ class Any;
 class PixelGridPreferences : public DAVA::TArc::SettingsNode
 {
 public:
-    DAVA::Color gridColor = DAVA::Color(0.925f, 0.925f, 0.925f, 0.5f);
+    DAVA::Color gridColor = DAVA::Color(0.925f, 0.925f, 0.925f, 0.15f);
     bool isVisible = true;
     DAVA::float32 scaleToDisplay = 800.0f;
 

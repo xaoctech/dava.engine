@@ -132,7 +132,6 @@ private:
         std::shared_ptr<DVPLWriter> dvplWriter;
     };
 
-    void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
@@ -146,6 +145,8 @@ private:
     mutable Vector<uint32> dependencyCache;
 
     uint64 totalDownloadedSize = 0;
+
+    DLCDownloader::TaskError prevTaskError;
 
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization

@@ -12,7 +12,7 @@ Analytics::Core& GetCore()
 }
 
 UILoggingTest::UILoggingTest(TestBed& app)
-    : BaseScreen(app, "UI Logging test")
+    : BaseScreen(app, "UI_Logging_test")
 {
     auto backend = std::make_unique<Analytics::LoggingBackend>("~doc:/AnalyticsLog.txt");
     GetCore().AddBackend("LoggingBackend", std::move(backend));
