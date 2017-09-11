@@ -36,6 +36,8 @@ bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBi
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
     : actionSystem(actionSystem)
 {
+    DVASSERT(Thread::IsMainThread());
+
     inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &ActionSystemImpl::OnInputEvent));
 
     Engine::Instance()->endFrame.Connect(this, &ActionSystemImpl::OnEndFrame);
@@ -45,6 +47,8 @@ ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
 
 ActionSystemImpl::~ActionSystemImpl()
 {
+    DVASSERT(Thread::IsMainThread());
+
     GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
 
     Engine::Instance()->endFrame.Disconnect(this);
@@ -54,6 +58,8 @@ ActionSystemImpl::~ActionSystemImpl()
 
 void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 {
+    DVASSERT(Thread::IsMainThread());
+
     // Check if there are sets which are already bound to any of these devices
     // Unbind them from these devices if there are
     if (devices.size() > 0)
@@ -141,6 +147,8 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
 void ActionSystemImpl::UnbindAllSets()
 {
+    DVASSERT(Thread::IsMainThread());
+
     boundSets.clear();
     analogActionsStates.clear();
     digitalActionsStates.clear();
@@ -148,6 +156,8 @@ void ActionSystemImpl::UnbindAllSets()
 
 bool ActionSystemImpl::GetDigitalActionState(FastName actionId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     auto digitalActionStateIter = digitalActionsStates.find(actionId);
 
     DVASSERT(digitalActionStateIter != digitalActionsStates.end());
@@ -158,6 +168,8 @@ bool ActionSystemImpl::GetDigitalActionState(FastName actionId) const
 
 AnalogActionState ActionSystemImpl::GetAnalogActionState(FastName actionId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     auto analogActionStateIter = analogActionsStates.find(actionId);
 
     DVASSERT(analogActionStateIter != analogActionsStates.end());
@@ -230,6 +242,8 @@ bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredS
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 {
+    DVASSERT(Thread::IsMainThread());
+
     if (event.deviceType == eInputDeviceTypes::KEYBOARD && event.keyboardEvent.charCode > 0)
     {
         return false;
@@ -331,6 +345,8 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
 void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 {
+    DVASSERT(Thread::IsMainThread());
+
     for (auto& p : digitalActionsStates)
     {
         ActionState& digitalState = p.second;
@@ -345,6 +361,8 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 // Reset all JustPressed and JustReleased events since they wont trigger OnInputEvent and state will hang active
 void ActionSystemImpl::OnEndFrame()
 {
+    DVASSERT(Thread::IsMainThread());
+
     for (const BoundActionSet& setBinding : boundSets)
     {
         for (const DigitalBinding& digitalBinding : setBinding.digitalBindings)
