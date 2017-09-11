@@ -1,7 +1,9 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
-#include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/LegacySupportModule/Private/Project.h"
+#include "Modules/CanvasModule/EditorControlsView.h"
+
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
@@ -13,11 +15,8 @@
 
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/Data/EditorData.h"
+#include "EditorSystems/Data/HudSystemData.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
-#include "Classes/EditorSystems/PixelGrid.h"
-#include "Classes/EditorSystems/EditorControlsView.h"
-#include "Classes/EditorSystems/DistanceSystem.h"
 #include "Classes/EditorSystems/UserAssetsSettings.h"
 
 #include "Application/QEGlobal.h"
@@ -26,8 +25,10 @@
 #include "UI/mainwindow.h"
 #include "UI/ProjectView.h"
 #include "UI/Preview/PreviewWidget.h"
+#include "UI/Preview/PreviewWidgetSettings.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
+#include "UI/UIControl.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -43,7 +44,7 @@
 #include <Base/Any.h>
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
-#include <UI/UIStaticText.h>
+#include <UI/Text/UITextComponent.h>
 #include <UI/Render/UIRenderSystem.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
@@ -68,8 +69,6 @@ DocumentsModule::DocumentsModule()
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SelectionSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ControlTransformationSettings);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DistanceSystemPreferences);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PixelGridPreferences);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PreviewWidgetSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserAssetsSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PackageWidgetSettings);
@@ -116,19 +115,14 @@ bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key
     return HasUnsavedDocuments() == false;
 }
 
-void DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    using namespace DAVA;
-    using namespace TArc;
-    ContextAccessor* accessor = GetAccessor();
-    accessor->ForEachContext([this](DataContext& context) {
-        SaveDocument(context.GetID());
-    });
+    return SaveAllDocuments();
 }
 
 void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
 {
-    //do nothing
+    DiscardUnsavedChanges();
 }
 
 void DocumentsModule::PostInit()
@@ -144,9 +138,12 @@ void DocumentsModule::PostInit()
 
     RegisterOperations();
     CreateDocumentsActions();
-    CreateUndoRedoActions();
+    CreateEditActions();
     CreateViewActions();
     CreateFindActions();
+
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    RegisterInterface(static_cast<Interfaces::EditorSystemsManagerInterface*>(systemsManager));
 }
 
 void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
@@ -182,13 +179,6 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     watcherData->Unwatch(path);
 }
 
-void DocumentsModule::InitEditorSystems()
-{
-    DVASSERT(nullptr == systemsManager);
-    systemsManager.reset(new EditorSystemsManager(GetAccessor()));
-    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
-}
-
 void DocumentsModule::InitCentralWidget()
 {
     using namespace DAVA;
@@ -199,7 +189,8 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget);
+    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -210,7 +201,7 @@ void DocumentsModule::InitCentralWidget()
     //legacy part. Remove it when package will be refactored
     MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
 
-    QObject::connect(mainWindow, &MainWindow::EmulationModeChanged, previewWidget, &PreviewWidget::OnEmulationModeChanged);
+    connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
     QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);
     QObject::connect(previewWidget, &PreviewWidget::DeleteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDelete);
     QObject::connect(previewWidget, &PreviewWidget::ImportRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnImport);
@@ -218,8 +209,6 @@ void DocumentsModule::InitCentralWidget()
     QObject::connect(previewWidget, &PreviewWidget::CopyRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnCopy);
     QObject::connect(previewWidget, &PreviewWidget::PasteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnPaste);
     QObject::connect(previewWidget, &PreviewWidget::DuplicateRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDuplicate);
-
-    findInDocumentController.reset(new FindInDocumentController(this, mainWindow, previewWidget->GetFindInDocumentWidget()));
 }
 
 void DocumentsModule::InitGlobalData()
@@ -227,14 +216,22 @@ void DocumentsModule::InitGlobalData()
     using namespace DAVA;
     using namespace TArc;
 
-    std::unique_ptr<DocumentsWatcherData> data(new DocumentsWatcherData());
-    connections.AddConnection(data->watcher.get(), &QFileSystemWatcher::fileChanged, MakeFunction(this, &DocumentsModule::OnFileChanged));
-    QApplication* app = PlatformApi::Qt::GetApplication();
-    connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
-
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    globalContext->CreateData(std::move(data));
+
+    std::unique_ptr<DocumentsWatcherData> watcherData(new DocumentsWatcherData());
+    connections.AddConnection(watcherData->watcher.get(), &QFileSystemWatcher::fileChanged, MakeFunction(this, &DocumentsModule::OnFileChanged));
+    QApplication* app = PlatformApi::Qt::GetApplication();
+    connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
+    globalContext->CreateData(std::move(watcherData));
+
+    std::unique_ptr<EditorSystemsData> editorData(new EditorSystemsData());
+    editorData->systemsManager = std::make_unique<EditorSystemsManager>(GetAccessor());
+    globalContext->CreateData(std::move(editorData));
+
+    EditorSystemsManager* systemsManager = globalContext->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
+    systemsManager->InitSystems();
 }
 
 void DocumentsModule::CreateDocumentsActions()
@@ -320,7 +317,7 @@ void DocumentsModule::CreateDocumentsActions()
     }
 }
 
-void DocumentsModule::CreateUndoRedoActions()
+void DocumentsModule::CreateEditActions()
 {
     using namespace DAVA;
     using namespace TArc;
@@ -363,6 +360,7 @@ void DocumentsModule::CreateUndoRedoActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::undoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Undo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnUndo));
         ActionPlacementInfo placementInfo;
@@ -391,6 +389,7 @@ void DocumentsModule::CreateUndoRedoActions()
         fieldDescrUndoText.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrUndoText.fieldName = FastName(DocumentData::redoTextPropertyName);
         action->SetStateUpdationFunction(QtAction::Text, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
+        action->SetStateUpdationFunction(QtAction::Tooltip, fieldDescrUndoText, Bind(makeActionName, "Redo", _1));
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnRedo));
         ActionPlacementInfo placementInfo;
@@ -407,6 +406,30 @@ void DocumentsModule::CreateUndoRedoActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+    }
+
+    // Group
+    {
+        const QString groupActionName("Group");
+
+        QtAction* action = new QtAction(accessor, groupActionName, nullptr);
+        action->setShortcutContext(Qt::WindowShortcut);
+        action->setShortcut(QKeySequence("Ctrl+G"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
+                                         {
+                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 }
 
@@ -434,6 +457,16 @@ void DocumentsModule::OnRedo()
     DocumentData* data = context->GetData<DocumentData>();
     DVASSERT(data != nullptr);
     data->commandStack->Redo();
+}
+
+void DocumentsModule::DoGroupSelection()
+{
+    CommandExecutor commandExecutor(GetAccessor(), GetUI());
+    ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
+    if (newGroupControl != nullptr)
+    {
+        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    }
 }
 
 void DocumentsModule::CreateViewActions()
@@ -582,8 +615,7 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new CanvasData());
-            initialData.emplace_back(new EditorData());
+            initialData.emplace_back(new HudSystemData());
             id = contextManager->CreateContext(std::move(initialData));
         }
     }
@@ -664,15 +696,18 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
     DocumentData* data = activeContext->GetData<DocumentData>();
     const PackageNode* package = data->GetPackageNode();
     String controlPathStr = controlPath.toStdString();
-    ControlNode* node = package->GetPrototypes()->FindControlNodeByPath(controlPathStr);
-    if (node == nullptr)
+    Set<PackageBaseNode*> foundNodes;
+    package->GetPrototypes()->FindAllNodesByPath(controlPathStr, foundNodes);
+    package->GetPackageControlsNode()->FindAllNodesByPath(controlPathStr, foundNodes);
+    if (!foundNodes.empty())
     {
-        node = package->GetPackageControlsNode()->FindControlNodeByPath(controlPathStr);
+        data->SetSelectedNodes(foundNodes);
     }
-    if (node != nullptr)
-    {
-        data->SetSelectedNodes({ node });
-    }
+}
+
+void DocumentsModule::OnEmulationModeChanged(bool mode)
+{
+    GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->emulationMode = mode;
 }
 
 //TODO: generalize changes in central widget
@@ -693,8 +728,8 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     UIControl* control = node->GetControl();
 
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(control);
-    DVASSERT(staticText != nullptr);
+    UITextComponent* textComponent = control->GetComponent<UITextComponent>();
+    DVASSERT(textComponent != nullptr);
 
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* textProperty = rootProperty->FindPropertyByName("text");
@@ -714,13 +749,18 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
         stack->BeginBatch("change text by user");
         AbstractProperty* multilineProperty = rootProperty->FindPropertyByName("multiline");
         DVASSERT(multilineProperty != nullptr);
-        UIStaticText::eMultiline multilineType = multilineProperty->GetValue().Cast<UIStaticText::eMultiline>();
-        if (inputText.contains('\n') && multilineType == UIStaticText::MULTILINE_DISABLED)
+
+        // Update "multiline" property if need
+        if (inputText.contains('\n'))
         {
-            std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-            command->AddNodePropertyValue(node, multilineProperty, Any(UIStaticText::MULTILINE_ENABLED));
-            data->ExecCommand(std::move(command));
+            if (textComponent != nullptr && (multilineProperty->GetValue().Cast<UITextComponent::eTextMultiline>() == UITextComponent::MULTILINE_DISABLED))
+            {
+                std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
+                command->AddNodePropertyValue(node, multilineProperty, Any(UITextComponent::MULTILINE_ENABLED));
+                data->ExecCommand(std::move(command));
+            }
         }
+
         std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
         command->AddNodePropertyValue(node, textProperty, Any(inputText.toStdString()));
         data->ExecCommand(std::move(command));
@@ -787,16 +827,25 @@ void DocumentsModule::CloseAllDocuments()
         params.buttons = ModalMessageParams::SaveAll | ModalMessageParams::NoToAll | ModalMessageParams::Cancel;
         params.icon = ModalMessageParams::Question;
         ModalMessageParams::Button button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
-        if (button == ModalMessageParams::Cancel)
+        if (button == ModalMessageParams::SaveAll)
+        {
+            hasUnsaved = (SaveAllDocuments() == false);
+        }
+        else if (button == ModalMessageParams::NoToAll)
+        {
+            DiscardUnsavedChanges();
+            hasUnsaved = false;
+        }
+        else
         {
             return;
         }
-        else if (button == ModalMessageParams::SaveAll)
-        {
-            SaveAllDocuments();
-        }
     }
-    DeleteAllDocuments();
+
+    if (!hasUnsaved)
+    {
+        DeleteAllDocuments();
+    }
 }
 
 void DocumentsModule::DeleteAllDocuments()
@@ -985,9 +1034,8 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     if (serializer.HasErrors())
     {
         ModalMessageParams params;
-        params.title = QObject::tr("Can't save");
-        params.message = QObject::tr("Next Erros were occurred during serialization:\n");
-        params.message.append(QString::fromStdString(serializer.GetResults().GetResultMessages()));
+        params.title = QString::fromStdString(DAVA::Format("Can't save %s", data->package->GetPath().GetFilename().c_str()));
+        params.message = QString::fromStdString(serializer.GetResults().GetResultMessages());
 
         params.buttons = ModalMessageParams::Ok;
         params.icon = ModalMessageParams::Warning;
@@ -1002,21 +1050,32 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
     return true;
 }
 
-void DocumentsModule::SaveAllDocuments()
+bool DocumentsModule::SaveAllDocuments()
 {
-    GetAccessor()->ForEachContext([this](DAVA::TArc::DataContext& context)
+    bool savedOk = true;
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
                                   {
-                                      SaveDocument(context.GetID());
+                                      savedOk = SaveDocument(context.GetID()) && savedOk;
                                   });
+    return savedOk;
 }
 
-void DocumentsModule::SaveCurrentDocument()
+bool DocumentsModule::SaveCurrentDocument()
 {
     using namespace DAVA::TArc;
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
 
-    SaveDocument(activeContext->GetID());
+    return SaveDocument(activeContext->GetID());
+}
+
+void DocumentsModule::DiscardUnsavedChanges()
+{
+    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
+                                  {
+                                      DocumentData* data = context.GetData<DocumentData>();
+                                      data->commandStack->SetClean();
+                                  });
 }
 
 void DocumentsModule::OnFileChanged(const QString& path)
@@ -1142,6 +1201,10 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
     DocumentData* documentData = activeContext->GetData<DocumentData>();
+
+    DataContext* globalContext = accessor->GetGlobalContext();
+    EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
+    const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
 
     EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
     if (displayState == EditorSystemsManager::Preview || displayState == EditorSystemsManager::Emulation)

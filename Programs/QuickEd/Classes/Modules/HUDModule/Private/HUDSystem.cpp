@@ -1,6 +1,6 @@
 #include "EditorSystems/HUDSystem.h"
 
-#include "EditorSystems/Data/EditorData.h"
+#include "EditorSystems/Data/HudSystemData.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
@@ -129,7 +129,7 @@ HUDSystem::HUDSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* 
     : BaseEditorSystem(parent, accessor)
     , sortedControlList(CompareByLCA)
 {
-    editorDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorData>());
+    editorDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<HudSystemData>());
 
     systemsManager->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 
@@ -155,8 +155,8 @@ void HUDSystem::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-        fieldDescr.fieldName = FastName(EditorData::highlightedNodePropertyName);
+        fieldDescr.type = ReflectedTypeDB::Get<HudSystemData>();
+        fieldDescr.fieldName = FastName(HudSystemData::highlightedNodePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &HUDSystem::OnHighlightNode));
     }
 }
@@ -184,7 +184,7 @@ void HUDSystem::OnSelectionChanged(const Any& selection)
     ControlNode* node = systemsManager->GetControlNodeAtPoint(hoveredPoint);
     if (editorDataWrapper.HasData())
     {
-        editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, node);
+        editorDataWrapper.SetFieldValue(HudSystemData::highlightedNodePropertyName, node);
     }
 }
 
@@ -234,11 +234,11 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
         ControlNode* node = systemsManager->GetControlNodeAtPoint(hoveredPoint);
         if (activeArea == HUDAreaInfo::NO_AREA || (activeArea == HUDAreaInfo::FRAME_AREA && node != activeAreaInfo.owner))
         {
-            editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, node);
+            editorDataWrapper.SetFieldValue(HudSystemData::highlightedNodePropertyName, node);
         }
         else
         {
-            editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, static_cast<ControlNode*>(nullptr));
+            editorDataWrapper.SetFieldValue(HudSystemData::highlightedNodePropertyName, static_cast<ControlNode*>(nullptr));
         }
     }
 }
@@ -447,7 +447,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         selectionRectControl->AddToParent(hudControl);
         break;
     case EditorSystemsManager::Transform:
-        editorDataWrapper.SetFieldValue(EditorData::highlightedNodePropertyName, static_cast<ControlNode*>(nullptr));
+        editorDataWrapper.SetFieldValue(HudSystemData::highlightedNodePropertyName, static_cast<ControlNode*>(nullptr));
         break;
     case EditorSystemsManager::DragScreen:
         UpdateHUDEnabled();

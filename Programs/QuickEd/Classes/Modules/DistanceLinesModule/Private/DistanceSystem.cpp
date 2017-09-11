@@ -1,7 +1,7 @@
 #include "EditorSystems/DistanceSystem.h"
-#include "EditorSystems//Data/EditorData.h"
+#include "EditorSystems/Data/HudSystemData.h"
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 #include "EditorSystems/UIControlUtils.h"
 #include "EditorSystems/Private/DistanceLines.h"
@@ -50,8 +50,8 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
-    EditorData* editorData = activeContext->GetData<EditorData>();
-    ControlNode* highlightedNode = editorData->GetHighlightedNode();
+    HudSystemData* hudSystemData = activeContext->GetData<HudSystemData>();
+    ControlNode* highlightedNode = hudSystemData->GetHighlightedNode();
     if (highlightedNode == nullptr)
     {
         return false;
@@ -93,7 +93,7 @@ void DistanceSystem::Update()
 
     //prepare data
     DataContext* activeContext = accessor->GetActiveContext();
-    EditorData* editorData = activeContext->GetData<EditorData>();
+    HudSystemData* editorData = activeContext->GetData<HudSystemData>();
     ControlNode* highlightedNode = editorData->GetHighlightedNode();
     UIControl* highlightedControl = highlightedNode->GetControl();
 
@@ -117,14 +117,4 @@ void DistanceSystem::Update()
     {
         line->Draw(canvas);
     }
-}
-
-DAVA_VIRTUAL_REFLECTION_IMPL(DistanceSystemPreferences)
-{
-    DAVA::ReflectionRegistrator<DistanceSystemPreferences>::Begin()[DAVA::M::DisplayName("Distance lines"), DAVA::M::SettingsSortKey(60)]
-    .ConstructorByPointer()
-    .Field("linesColor", &DistanceSystemPreferences::linesColor)[DAVA::M::DisplayName("Solid line color")]
-    .Field("textColor", &DistanceSystemPreferences::textColor)[DAVA::M::DisplayName("Text color")]
-    .Field("helpLinesTexture", &DistanceSystemPreferences::helpLinesTexture)[DAVA::M::DisplayName("Dot lines texture")]
-    .End();
 }
