@@ -2,6 +2,7 @@
 #include "Input/InputSystem.h"
 #include "Engine/Engine.h"
 #include "DeviceManager/DeviceManager.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
