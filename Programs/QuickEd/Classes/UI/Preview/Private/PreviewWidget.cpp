@@ -1,11 +1,8 @@
-#include "PreviewWidget.h"
-
+#include "UI/Preview/PreviewWidget.h"
 #include "Application/QEGlobal.h"
-
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "EditorSystems/EditorCanvas.h"
-#include "EditorSystems/CursorSystem.h"
+#include "Modules/DocumentsModule/EditorData.h"
 
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
@@ -21,7 +18,7 @@
 
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -32,6 +29,8 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/OperationInvoker.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/DataProcessing/Common.h>
+#include <TArc/WindowSubSystem/QtAction.h>
 
 #include <QtTools/Updaters/ContinuousUpdater.h>
 
@@ -56,7 +55,7 @@
 
 using namespace DAVA;
 
-PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager)
+PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
     : QFrame(nullptr)
     , accessor(accessor_)
     , invoker(invoker_)
@@ -66,12 +65,11 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , hScrollBarData(Vector2::AXIS_X, accessor)
     , vScrollBarData(Vector2::AXIS_Y, accessor)
     , canvasDataAdapter(accessor)
+    , systemsManager(systemsManager_)
 {
     InjectRenderWidget(renderWidget);
 
     InitUI();
-
-    InitFromSystemsManager(systemsManager);
 
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
 }
@@ -80,6 +78,8 @@ PreviewWidget::~PreviewWidget() = default;
 
 void PreviewWidget::CreateActions()
 {
+    using namespace DAVA::TArc;
+
     QAction* importPackageAction = new QAction(tr("Import package"), this);
     importPackageAction->setShortcut(QKeySequence::New);
     importPackageAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -125,38 +125,30 @@ void PreviewWidget::CreateActions()
     selectAllAction->setShortcut(QKeySequence::SelectAll);
     selectAllAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(selectAllAction);
+    connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
 
-    focusNextChildAction = new QAction(tr("Focus next child"), this);
+    FieldDescriptor fieldDescr;
+    fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
+    fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+
+    QtAction* focusNextChildAction = new QtAction(accessor, tr("Focus next child"), this);
     focusNextChildAction->setShortcut(Qt::Key_Tab);
     focusNextChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusNextChildAction);
 
-    focusPreviousChildAction = new QAction(tr("Focus previous child"), this);
+    focusNextChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+        return fieldValue.Cast<bool>(false) == false;
+    });
+    connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
+
+    QtAction* focusPreviousChildAction = new QtAction(accessor, tr("Focus previous child"), this);
     focusPreviousChildAction->setShortcut(static_cast<int>(Qt::ShiftModifier | Qt::Key_Tab));
     focusPreviousChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusPreviousChildAction);
-}
-
-void PreviewWidget::OnEmulationModeChanged(bool emulationMode)
-{
-    systemsManager->SetEmulationMode(emulationMode);
-
-    if (emulationMode)
-    {
-        focusNextChildAction->setShortcut(0);
-        focusNextChildAction->setEnabled(false);
-
-        focusPreviousChildAction->setShortcut(0);
-        focusPreviousChildAction->setEnabled(false);
-    }
-    else
-    {
-        focusNextChildAction->setShortcut(Qt::Key_Tab);
-        focusNextChildAction->setEnabled(true);
-
-        focusPreviousChildAction->setShortcut(static_cast<int>(Qt::ShiftModifier | Qt::Key_Tab));
-        focusPreviousChildAction->setEnabled(true);
-    }
+    focusPreviousChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+        return fieldValue.Cast<bool>(false) == false;
+    });
+    connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
 }
 
 void PreviewWidget::OnIncrementScale()
@@ -201,23 +193,6 @@ void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
     vcs->SetVirtualScreenSize(width, height);
     vcs->RegisterAvailableResourceSize(width, height, "Gfx");
     vcs->RegisterAvailableResourceSize(width, height, "Gfx2");
-}
-
-void PreviewWidget::InitFromSystemsManager(EditorSystemsManager* systemsManager_)
-{
-    DVASSERT(nullptr == systemsManager);
-    systemsManager = systemsManager_;
-
-    connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
-    connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
-    connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
-
-    editorCanvas = new EditorCanvas(systemsManager, accessor);
-
-    systemsManager->AddEditorSystem(editorCanvas);
-
-    CursorSystem* cursorSystem = new CursorSystem(renderWidget, systemsManager, accessor);
-    systemsManager->AddEditorSystem(cursorSystem);
 }
 
 void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
