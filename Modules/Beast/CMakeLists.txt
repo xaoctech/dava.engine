@@ -37,7 +37,7 @@ set( MIX_APP_DATA  "Data.beast/bin = ${BeastThirdparty}/bin/ernsttool.xml"
                    "Data.beast/bin = ${BeastThirdparty}/bin/thebeast-64.exe"
                    "Data.beast/bin = ${BeastThirdparty}/bin/uvtool-64.exe"
 
-                   "Data.beast/config = ${BeastRootDir}/Config"
+                   "Data.beast/config = ${CMAKE_CURRENT_LIST_DIR}/Config"
                    "Data.beast/shaders = ${BeastThirdparty}/shaders"
                    )
 
@@ -45,3 +45,6 @@ set( MIX_APP_DATA  "Data.beast/bin = ${BeastThirdparty}/bin/ernsttool.xml"
 
 
 setup_main_module()
+
+
+
