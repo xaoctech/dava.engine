@@ -90,7 +90,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
         {
             if (digitalBinding.digitalElements[i] != eInputElements::NONE)
             {
-                DVASSERT(digitalBinding.digitalStates[i] != DigitalElementState::Released(), "Do you realy want to bind an action on key release? Your desires are ... unconventional.");
+                DVASSERT(digitalBinding.digitalStates[i] != DigitalElementState::Released(), "Do you really want to bind an action on key release? Your desires are ... unconventional.");
             }
         }
 
@@ -112,7 +112,7 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
             if (analogBinding.digitalElements[i] != eInputElements::NONE)
             {
-                DVASSERT(analogBinding.digitalStates[i] != DigitalElementState::Released(), "Do you realy want to bind an action on key release? Your desires are ... unconventional.");
+                DVASSERT(analogBinding.digitalStates[i] != DigitalElementState::Released(), "Do you really want to bind an action on key release? Your desires are ... unconventional.");
             }
         }
 
