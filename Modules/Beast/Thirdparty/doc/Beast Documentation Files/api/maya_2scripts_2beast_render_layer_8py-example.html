@@ -1,0 +1,422 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/scripts/beastRenderLayer.py</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2scripts_2beast_render_layer_8py-example.html','api_maya_2scripts_2beast_render_layer_8py_example_html317d1913-2b40-4aaa-8df4-3180b5240422','index.html',location.hash); javascript:initPage('API: maya/scripts/beastRenderLayer.py','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2scripts_2beast_render_layer_8py-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/scripts/beastRenderLayer.py&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/scripts/beastRenderLayer.py</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/scripts/beastRenderLayer.py</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class=
+"comment"># Copyright 2013 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment"># Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment"># provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment"># accompanies this software in either electronic or hard copy form.</span>
+
+<span class="keyword">import</span> pymel.core
+
+BEAST_RENDER_LAYER_NAME = <span class=
+"stringliteral">'layer1'</span>
+
+<span class="keyword">class </span>beastnamespace:
+        <span class="keyword">def </span>__enter__(self):
+                namespacename=<span class=
+"stringliteral">':beasttemp'</span>
+                self.oldnamespace=pymel.core.namespaceInfo(currentNamespace=<span class="keyword">True</span>)
+                <span class="keywordflow">if</span> <span class=
+"keywordflow">not</span> pymel.core.namespace(exists=namespacename):
+                        pymel.core.namespace(add=namespacename)
+                pymel.core.namespace(set=namespacename)
+        <span class=
+"keyword">def </span>__exit__(self, type, value, traceback):
+                pymel.core.namespace(set=self.oldnamespace)
+        @classmethod
+        <span class="keyword">def </span>cleanup(cls):
+                pymel.core.delete(pymel.core.general.ls(<span class="stringliteral">'beasttemp:*'</span>))
+
+<span class="keyword">class </span>scopedprogressbar:
+        <span class=
+"keyword">def </span>__init__(self, progressBar):
+                self.progressBar = progressBar
+        <span class="keyword">def </span>__enter__(self):
+                self.progressBar.beginProgress()
+        <span class=
+"keyword">def </span>__exit__(self, type, value, traceback):
+                self.progressBar.endProgress()
+
+<span class=
+"keyword">def </span>createFileTexture(filename, uvscale, uvbias):
+        with beastnamespace():
+                f = pymel.core.nodetypes.File()
+                uv = pymel.core.nodetypes.Place2dTexture()
+                attribs = [<span class=
+"stringliteral">"coverage"</span>, <span class=
+"stringliteral">"translateFrame"</span>, <span class=
+"stringliteral">"rotateFrame"</span>, <span class=
+"stringliteral">"mirrorU"</span>, 
+                                        <span class=
+"stringliteral">"mirrorV"</span>, <span class=
+"stringliteral">"stagger"</span>, <span class=
+"stringliteral">"wrapU"</span>, <span class=
+"stringliteral">"wrapV"</span>, <span class=
+"stringliteral">"repeatUV"</span>, <span class=
+"stringliteral">"offset"</span>,
+                                        <span class=
+"stringliteral">"rotateUV"</span>, <span class=
+"stringliteral">"noiseUV"</span>, <span class=
+"stringliteral">"vertexUvOne"</span>, <span class=
+"stringliteral">"vertexUvTwo"</span>, 
+                                        <span class=
+"stringliteral">"vertexUvThree"</span>, <span class=
+"stringliteral">"vertexCameraOne"</span>]
+                <span class=
+"keywordflow">for</span> attrib <span class=
+"keywordflow">in</span> attribs:
+                        getattr(uv, attrib).connect(getattr(f, attrib))
+                uv.outUV.connect(f.uv)
+                uv.outUvFilterSize.connect(f.uvFilterSize)
+                uv.coverage.set([1 / uvscale[0], 1 / uvscale[1]])
+                uv.translateFrame.set([-uvbias[0]/uvscale[0], -uvbias[1]/uvscale[1]])
+                f.fileTextureName.set(filename)
+                pymel.core.namespace(set=<span class=
+"stringliteral">':'</span>)
+                <span class="keywordflow">return</span> f
+
+<span class=
+"keyword">def </span>createIlluminationDisplayShader(lightmapnode):
+        with beastnamespace():
+                l = pymel.core.nodetypes.Lambert()
+                lightmapnode.outColor.connect(l.color)
+                <span class=
+"comment">#l.color.set([1, 1, 1])</span>
+                <span class="keywordflow">return</span> l
+
+<span class=
+"keyword">def </span>createFullshadingDisplayShader(originalshader, lightmapnode):
+        with beastnamespace():
+                m1 = pymel.core.nodetypes.MultiplyDivide()
+                lightmapnode.outColor.connect(m1.input1)
+                originalshader.color.connect(m1.input2)
+                m2 = pymel.core.nodetypes.MultiplyDivide()
+                m1.output.connect(m2.input1)
+                originalshader.diffuse.connect(m2.input2X)
+                originalshader.diffuse.connect(m2.input2Y)
+                originalshader.diffuse.connect(m2.input2Z)
+                p1 = PlusMinusAverage()
+                m2.output.connect(p1.input3D[0])
+                originalshader.incandescence.connect(p1.input3D[1])
+                displayshader = type(originalshader)()
+                pymel.core.copyAttr(originalshader, displayshader, ic=<span class="keyword">True</span>, ksc=<span class="keyword">True</span>, oc=<span class="keyword">False</span>, v=<span class="keyword">True</span>)
+                p1.output3D.connect(displayshader.incandescence, f=<span class="keyword">True</span>)
+                displayshader.color.disconnect()
+                displayshader.color.set([0, 0, 0])
+                displayshader.rename(originalshader + <span class=
+"stringliteral">"_displayshader"</span>)
+                <span class=
+"keywordflow">return</span> displayshader
+
+<span class="keyword">class </span>TargetResult:
+        <span class=
+"keyword">def </span>__init__(self, atlasOffset, atlasScale, passResults):
+                self._atlasOffset = atlasOffset
+                self._atlasScale = atlasScale
+                self._passResults = passResults
+                
+        <span class="keyword">def </span>getAtlasOffset(self):
+                <span class=
+"keywordflow">return</span> self._atlasOffset
+
+        <span class="keyword">def </span>getAtlasScale(self):
+                <span class=
+"keywordflow">return</span> self._atlasScale
+
+        <span class="keyword">def </span>getPassResults(self):
+                <span class=
+"keywordflow">return</span> self._passResults
+
+<span class="keyword">def </span>getBakedTextures(instance):
+        targetsDict = {}
+        entities = instance.beastEntities.get()
+        <span class="keywordflow">for</span> entity <span class=
+"keywordflow">in</span> entities:
+                targetID = entity.target.get()
+
+                atlasOffset = entity.outAtlasOffset.get()
+                atlasScale = entity.outAtlasScale.get()
+
+                passResults = {}
+                <span class=
+"keywordflow">for</span> result <span class=
+"keywordflow">in</span> entity.textureResults:
+                        passName = result.p.get()
+                        passResults[passName] = result.textureFileName.get()
+                targetResult = TargetResult(atlasOffset, atlasScale, passResults)
+                targetsDict[targetID] = targetResult
+
+        <span class="keywordflow">return</span> targetsDict
+
+<span class="keyword">def </span>removeBeastRenderLayer():
+        renderLayerName = BEAST_RENDER_LAYER_NAME
+        <span class=
+"keywordflow">if</span> pymel.core.general.ls(renderLayerName):
+                renderLayer = pymel.core.PyNode(renderLayerName)
+                <span class=
+"keywordflow">if</span> renderLayer <span class=
+"keywordflow">is</span> <span class=
+"keywordflow">not</span> <span class="keywordtype">None</span>:
+                        <span class=
+"comment"># delete existing render layer, we first have to make it not current</span>
+                        defaultRenderLayer = pymel.core.PyNode(<span class="stringliteral">'defaultRenderLayer'</span>)
+                        defaultRenderLayer.setCurrent()
+                        <span class=
+"keywordflow">print</span> <span class=
+"stringliteral">'BEAST: Deleting existing render layer'</span>, renderLayerName
+                        pymel.core.general.delete(renderLayerName)
+        beastnamespace.cleanup()
+
+<span class="keyword">def </span>createBeastRenderLayer(passName):
+        renderLayerName = BEAST_RENDER_LAYER_NAME
+        removeBeastRenderLayer()
+        <span class="keywordflow">print</span> <span class=
+"stringliteral">'BEAST: Creating new render layer'</span>, renderLayerName
+        renderLayer = pymel.core.rendering.createRenderLayer(name=renderLayerName, makeCurrent=<span class="keyword">True</span>, g=<span class="keyword">True</span>)
+        instances = pymel.core.general.ls(transforms=<span class=
+"keyword">True</span>)
+        <span class="keywordflow">print</span> <span class=
+"stringliteral">'BEAST: Creating Beast UV-sets for all instances'</span>
+        pymel.core.beastCreateUVSet(instances)
+        textureCache = {}
+        uvChooserCache = {}
+        <span class="keywordflow">print</span> <span class=
+"stringliteral">'BEAST: Creating materials for all instances'</span>
+        progressBar = pymel.core.windows.getMainProgressBar()
+        progressBar.setMaxValue(len(instances))
+        progressBar.setStatus(<span class=
+"stringliteral">'BEAST: Adding result display materials'</span>)
+        with scopedprogressbar(progressBar):
+                <span class=
+"keywordflow">for</span> instance <span class=
+"keywordflow">in</span> instances:
+                        progressBar.step(1)
+                        <span class=
+"comment"># find instances that have a Beast entity associated with them</span>
+                        <span class=
+"keywordflow">if</span> len(instance.beastEntities.get()) &gt; 0:
+                                <span class=
+"comment"># create override shader</span>
+                                <span class=
+"keywordflow">if</span> len(instance.shadingGroups()) &gt; 0:
+                                        results = getBakedTextures(instance)
+                                        <span class=
+"keywordflow">if</span> len(results) &gt; 0:
+                                                entity = instance.beastEntities.get()[0]
+                                                targetId = entity.target.get()
+                                                result = results[targetId]
+                                                lightmap = <span class="keywordtype">None</span>
+                                                shadingGroup = <span class="keywordtype">None</span>
+                                                textureCacheKey = result.getPassResults()[passName][0]
+                                                <span class=
+"keywordflow">if</span> textureCacheKey <span class=
+"keywordflow">not</span> <span class=
+"keywordflow">in</span> textureCache:
+                                                        lightmap = createFileTexture(result.getPassResults()[passName], (1.0, 1.0), (0.0, 0.0))
+                                                        oldshader = instance.shadingGroups()[0].surfaceShader.inputs()[0]
+                                                        displayshader = createIlluminationDisplayShader(lightmap)
+        <span class=
+"comment">#                                               displayshader = createFullshadingDisplayShader(oldshader, lightmap)</span>
+                                                        with beastnamespace():
+                                                                sg = pymel.core.sets(renderable=<span class="keyword">True</span>, empty=<span class="keyword">True</span>)
+                                                                pymel.core.surfaceShaderList(displayshader, add=sg)
+                                                                pymel.core.sets(sg, forceElement=instance)
+                                                                textureCache[textureCacheKey] = (lightmap, sg)
+                                                        <span class="comment">#pymel.core.rendering.editRenderLayerAdjustment(instance.shadingGroups()[0].surfaceShader)</span>
+                                                        <span class="comment">#beastLambert = pymel.core.PyNode('lambert1')</span>
+                                                        <span class="comment">#displayshader.outColor.connect(instance.shadingGroups()[0].surfaceShader, force=True)</span>
+                                                <span class=
+"keywordflow">else</span>:
+                                                        (lightmap, shadingGroup) = textureCache[textureCacheKey]
+                                                        pymel.core.sets(shadingGroup, e=<span class="keyword">True</span>, forceElement=instance)
+                                                place2dTexture = pymel.core.general.listConnections(lightmap.uvCoord)[0]
+                                                uvChooser = <span class="keywordtype">None</span>
+                                                <span class=
+"keywordflow">if</span> textureCacheKey <span class=
+"keywordflow">not</span> <span class=
+"keywordflow">in</span> uvChooserCache:
+                                                        with beastnamespace():
+                                                                uvChooser = pymel.core.general.createNode(<span class="stringliteral">'uvChooser'</span>)
+                                                                uvChooser.outUv.connect(place2dTexture.uvCoord, force=<span class="keyword">True</span>)
+                                                                uvChooserCache[textureCacheKey] = uvChooser
+                                                <span class=
+"keywordflow">else</span>:
+                                                        uvChooser = uvChooserCache[textureCacheKey]
+                                                shape = instance.getShape()
+                                                uvSetIndex = 0
+                                                uvSetMatch = targetId + <span class="stringliteral">'('</span> + str(instance.instanceNumber()) + <span class="stringliteral">')'</span>
+                                                <span class=
+"keywordflow">for</span> uvSet <span class=
+"keywordflow">in</span> shape.uvSet:
+                                                        <span class="keywordflow">if</span> uvSet.uvSetName.get() <span class="keywordflow">is</span> <span class="keywordtype">None</span>:
+                                                                <span class="keywordflow">continue</span>
+                                                        <span class="keywordflow">if</span> uvSetMatch <span class="keywordflow">in</span> uvSet.uvSetName.get():
+                                                                <span class="keywordflow">break</span>
+                                                        uvSetIndex = uvSetIndex + 1
+                                                <span class=
+"comment"># TODO: some error checking on resulting uvSetIndex?</span>
+                                                <span class=
+"comment"># check if shape with this UV-set is connected already</span>
+                                                connectedToUVSets = pymel.core.general.listConnections(uvChooser.uvSets, plugs=<span class="keyword">True</span>)
+                                                <span class=
+"keywordflow">if</span> shape.uvSet[uvSetIndex].uvSetName <span class="keywordflow">not</span> <span class="keywordflow">in</span> connectedToUVSets:
+                                                        shape.uvSet[uvSetIndex].uvSetName.connect(uvChooser.uvSets[uvChooser.uvSets.evaluateNumElements()])
+                                        
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

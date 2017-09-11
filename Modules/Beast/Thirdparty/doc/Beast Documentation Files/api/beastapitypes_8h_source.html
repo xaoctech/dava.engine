@@ -1,0 +1,911 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastapitypes.h Source File</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastapitypes_8h_source.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastapitypes.h Source File&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastapitypes.h Source
+File</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">beastapi/beastapitypes.h</div>
+</div>
+</div>
+<div class="contents"><a href="beastapitypes_8h.html">Go to the
+documentation of this file.</a>
+<div class="fragment">
+<pre class="fragment">
+<a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<a name="l00003"></a>00003 <span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<a name="l00004"></a>00004 <span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<a name="l00005"></a>00005 <span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<a name="l00006"></a>00006 <span class="comment">*/</span>
+<a name="l00007"></a>00007 
+<a name="l00008"></a>00008 
+<a name="l00013"></a>00013 <span class=
+"preprocessor">#ifndef BEASTAPITYPES_H</span>
+<a name="l00014"></a>00014 <span class=
+"preprocessor">#define BEASTAPITYPES_H</span>
+<a name="l00015"></a>00015 
+<a name="l00016"></a>00016 <span class=
+"preprocessor">#ifdef __GNUC__</span>
+<a name="l00017"></a>00017 <span class=
+"preprocessor">#include &lt;stdint.h&gt;</span>
+<a name="l00018"></a>00018 <span class=
+"preprocessor">#endif // __GNUC__</span>
+<a name="l00019"></a>00019 
+<a name="l00020"></a>00020 <span class=
+"comment">// To enforce a certain string encoding use any of</span>
+<a name="l00021"></a>00021 <span class=
+"comment">//#define ILB_STRING_UTF8</span>
+<a name="l00022"></a>00022 <span class=
+"comment">//#define ILB_STRING_UTF16</span>
+<a name="l00023"></a>00023 <span class=
+"comment">//#define ILB_STRING_UTF32</span>
+<a name="l00024"></a>00024 <span class=
+"comment">//#define ILB_STRING_ANSI</span>
+<a name="l00025"></a>00025 
+<a name="l00029"></a><a class="code" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268e">00029</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00034"></a><a class="code" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268eafea215d08486cc9d5b27e296d679bdfa">00034</a>         <a class="code"
+href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268eafea215d08486cc9d5b27e296d679bdfa"
+title=
+"Ansi encoding, the one used by default for windows source files.">ILB_SE_ANSI</a>,
+<a name="l00038"></a><a class="code" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268ea9bb449e588dc560c9656fa12c712bf4e">00038</a>         <a class="code"
+href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268ea9bb449e588dc560c9656fa12c712bf4e"
+title="UTF-8 encoding.">ILB_SE_UTF8</a>,
+<a name="l00039"></a>00039         
+<a name="l00043"></a><a class="code" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268eaff194567b14276b69bbce638adbbbe10">00043</a>         <a class="code"
+href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268eaff194567b14276b69bbce638adbbbe10"
+title="UTF-16 encoding.">ILB_SE_UTF16</a>,
+<a name="l00044"></a>00044 
+<a name="l00049"></a><a class="code" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268eab66062579637b9be468b2b3cdc5e59ec">00049</a>         <a class="code"
+href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268eab66062579637b9be468b2b3cdc5e59ec"
+title="UTF-32 encoding.">ILB_SE_UTF32</a>,
+<a name="l00050"></a>00050 } <a class="code" href=
+"beastapitypes_8h.html#ab2cff85d901e2a694a7b8c591ca2268e" title=
+"Defines the different supported string encodings.">ILBStringEncoding</a>;
+<a name="l00051"></a>00051 
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068 <span class=
+"comment">// Try to auto detect a string encoding if no was supplied</span>
+<a name="l00069"></a>00069 <span class=
+"preprocessor">#if !(defined(ILB_STRING_UTF8) || defined(ILB_STRING_UTF16) || defined(ILB_STRING_UTF32) || defined(ILB_STRING_ANSI))</span>
+<a name="l00070"></a>00070 <span class=
+"preprocessor">#if defined(WIN32)</span>
+<a name="l00071"></a>00071 <span class=
+"preprocessor">#ifdef UNICODE</span>
+<a name="l00072"></a>00072 <span class=
+"preprocessor">#define ILB_STRING_UTF16</span>
+<a name="l00073"></a>00073 <span class=
+"preprocessor">#else // UNICODE</span>
+<a name="l00074"></a>00074 <span class=
+"preprocessor">#define ILB_STRING_ANSI</span>
+<a name="l00075"></a>00075 <span class=
+"preprocessor">#endif // UNICODE</span>
+<a name="l00076"></a>00076 <span class=
+"preprocessor">#else // WIN32</span>
+<a name="l00077"></a>00077 <span class=
+"preprocessor">#define ILB_STRING_UTF8</span>
+<a name="l00078"></a>00078 <span class=
+"preprocessor">#endif // WIN32</span>
+<a name="l00079"></a>00079 <span class=
+"preprocessor">#endif // !(defined(ILB_STRING_UTF8) || defined(ILB_STRING_UTF16) || defined(ILB_STRING_UTF32) || defined(ILB_STRING_ANSI))</span>
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081 
+<a name="l00085"></a><a class="code" href=
+"beastapitypes_8h.html#aef7e9dd1dd3255f99e8167b78bbe369d">00085</a> <span class="keyword">typedef</span> <span class="keywordtype">char</span> <a class="code"
+href="beastapitypes_8h.html#aef7e9dd1dd3255f99e8167b78bbe369d"
+title="Character type for 8 bit strings.">ILBChar8</a>;
+<a name="l00086"></a>00086 
+<a name="l00087"></a>00087 <span class=
+"preprocessor">#if defined(WIN32)</span>
+<a name="l00088"></a>00088 
+<a name="l00091"></a>00091 <span class=
+"keyword">typedef</span> <span class=
+"keywordtype">wchar_t</span> <a class="code" href=
+"beastapitypes_8h.html#a46cc8000a05d456fb53de6808a73e518" title=
+"Character type for 16 bit strings.">ILBChar16</a>;
+<a name="l00092"></a>00092 <span class=
+"preprocessor">#else // defined(WIN32)</span>
+<a name="l00093"></a>00093 
+<a name="l00096"></a><a class="code" href=
+"beastapitypes_8h.html#a46cc8000a05d456fb53de6808a73e518">00096</a> <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code"
+href="beastapitypes_8h.html#a46cc8000a05d456fb53de6808a73e518"
+title="Character type for 16 bit strings.">ILBChar16</a>;
+<a name="l00097"></a>00097 <span class=
+"preprocessor">#endif // defined(WIN32)</span>
+<a name="l00098"></a>00098 
+<a name="l00104"></a><a class="code" href=
+"beastapitypes_8h.html#a2b55099e066c3228b7c558670551c4f6">00104</a> <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code"
+href="beastapitypes_8h.html#a2b55099e066c3228b7c558670551c4f6"
+title="Character type for 32 bit strings.">ILBChar32</a>;
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106 <span class=
+"preprocessor">#ifdef beastapi_EXPORTS</span>
+<a name="l00107"></a>00107 <span class=
+"comment">// This is for inside the API. By setting char type</span>
+<a name="l00108"></a>00108 <span class=
+"comment">// to ILBDummyChar we guarantee that someone accidentially</span>
+<a name="l00109"></a>00109 <span class=
+"comment">// converts strings or string constants to ILBString </span>
+<a name="l00110"></a>00110 <span class=
+"comment">// or ILBConstString without thinking about encoding</span>
+<a name="l00111"></a>00111 <span class=
+"keyword">struct </span>ILBDummyChar {
+<a name="l00112"></a>00112         <span class=
+"keywordtype">int</span> unused;
+<a name="l00113"></a>00113 };
+<a name="l00114"></a>00114 
+<a name="l00120"></a>00120 <span class=
+"keyword">typedef</span> ILBDummyChar <a class="code" href=
+"beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70" title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>;
+<a name="l00122"></a>00122 <span class=
+"preprocessor">#define ILB_STRING_ENCODING ILB_SE_ANSI</span>
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124 <span class=
+"preprocessor">#else // beastapi_EXPORTS</span>
+<a name="l00125"></a>00125 
+<a name="l00126"></a>00126 <span class=
+"preprocessor">#if defined(ILB_STRING_ANSI)</span>
+<a name="l00127"></a>00127 <span class=
+"keyword">typedef</span> <a class="code" href=
+"beastapitypes_8h.html#aef7e9dd1dd3255f99e8167b78bbe369d" title=
+"Character type for 8 bit strings.">ILBChar8</a> <a class="code"
+href="beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70"
+title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>;
+<a name="l00128"></a>00128 <span class=
+"preprocessor">#if defined(WIN32)</span>
+<a name="l00129"></a>00129 <span class=
+"preprocessor">#define ILB_STRING_ENCODING ILB_SE_ANSI</span>
+<a name="l00130"></a>00130 <span class=
+"preprocessor">#else // WIN32</span>
+<a name="l00131"></a>00131 <span class=
+"preprocessor">#error ANSI strings only supported on Windows platforms</span>
+<a name="l00132"></a>00132 <span class=
+"preprocessor">#endif // WIN32</span>
+<a name="l00133"></a>00133 <span class=
+"preprocessor">#elif defined(ILB_STRING_UTF8)</span>
+<a name="l00134"></a><a class="code" href=
+"beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70">00134</a> <span class="keyword">typedef</span> <a class="code"
+href="beastapitypes_8h.html#aef7e9dd1dd3255f99e8167b78bbe369d"
+title="Character type for 8 bit strings.">ILBChar8</a> <a class=
+"code" href=
+"beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70" title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>;
+<a name="l00135"></a><a class="code" href=
+"beastapitypes_8h.html#aefa8edd70bf9853c4ecb5ffeb787538a">00135</a> <span class="preprocessor">#define ILB_STRING_ENCODING ILB_SE_UTF8</span>
+<a name="l00136"></a>00136 <span class=
+"preprocessor">#elif defined(ILB_STRING_UTF16)</span>
+<a name="l00137"></a>00137 <span class=
+"keyword">typedef</span> <a class="code" href=
+"beastapitypes_8h.html#a46cc8000a05d456fb53de6808a73e518" title=
+"Character type for 16 bit strings.">ILBChar16</a> <a class="code"
+href="beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70"
+title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>;
+<a name="l00138"></a>00138 <span class=
+"preprocessor">#define ILB_STRING_ENCODING ILB_SE_UTF16</span>
+<a name="l00139"></a>00139 <span class=
+"preprocessor">#elif defined(ILB_STRING_UTF32)</span>
+<a name="l00140"></a>00140 <span class=
+"preprocessor">#error UTF32 currently not supported</span>
+<a name="l00141"></a>00141 <span class=
+"keyword">typedef</span> <a class="code" href=
+"beastapitypes_8h.html#a2b55099e066c3228b7c558670551c4f6" title=
+"Character type for 32 bit strings.">ILBChar32</a> <a class="code"
+href="beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70"
+title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>;
+<a name="l00142"></a>00142 <span class=
+"preprocessor">#define ILB_STRING_ENCODING ILB_SE_UTF32</span>
+<a name="l00143"></a>00143 <span class="preprocessor">#else</span>
+<a name="l00144"></a>00144 <span class=
+"preprocessor">#error No string type defined</span>
+<a name="l00145"></a>00145 <span class=
+"preprocessor">#endif //ILB_STRING_UTF8</span>
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147 <span class=
+"preprocessor">#endif //beastapi_EXPORTS</span>
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149 
+<a name="l00153"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">00153</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00157"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206aef28b1942ff355ac96c65b724412fe2f">00157</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206aef28b1942ff355ac96c65b724412fe2f"
+title=
+"The call was successfully completed!">ILB_ST_SUCCESS</a> = 0,
+<a name="l00158"></a>00158         
+<a name="l00163"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ad0a5bdd658b7e477a36b5ad16f290282">00163</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ad0a5bdd658b7e477a36b5ad16f290282"
+title=
+"One or more parameters were not in valid range or in some other way not valid for this call...">ILB_ST_INVALID_PARAMETER</a>, 
+<a name="l00164"></a>00164 
+<a name="l00168"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a71e6b734086eaa6e5ea17675421c565f">00168</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a71e6b734086eaa6e5ea17675421c565f"
+title=
+"Beast failed to allocate memory somewhere down the line of this call.">ILB_ST_MEMORY_ALLOC_ERROR</a>,
+<a name="l00169"></a>00169 
+<a name="l00173"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206af648562336292c514ed1cb976feff6ac">00173</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206af648562336292c514ed1cb976feff6ac"
+title=
+"An object with the same name already existed.">ILB_ST_DUPLICATE_NAME_ERROR</a>,
+<a name="l00174"></a>00174 
+<a name="l00178"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206af7828c45ee7e3cbdb57475de2e08a02f">00178</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206af7828c45ee7e3cbdb57475de2e08a02f"
+title=
+"This function is not implemented yet.">ILB_ST_FUNCTION_NOT_IMPLEMENTED</a>,
+<a name="l00179"></a>00179 
+<a name="l00184"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ac26eddc5e8a30c491fb488e422e6ad9e">00184</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ac26eddc5e8a30c491fb488e422e6ad9e"
+title=
+"The object the function was called on was in a state where the function isn't valid to call...">ILB_ST_INVALID_OBJECT_STATE</a>,
+<a name="l00185"></a>00185         
+<a name="l00189"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a41c0cbe6e31cf3f6b3bfd4fd82399b4f">00189</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a41c0cbe6e31cf3f6b3bfd4fd82399b4f"
+title=
+"The object handle used is not valid.">ILB_ST_INVALID_HANDLE</a>,
+<a name="l00190"></a>00190         
+<a name="l00195"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a60ffdfd25733fcff269b37348cb23025">00195</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a60ffdfd25733fcff269b37348cb23025"
+title=
+"There was some kind of file problem (invalid filename, permission etc).">ILB_ST_FILE_IO_ERROR</a>,
+<a name="l00196"></a>00196 
+<a name="l00200"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a6fbb043e3fe736aae9db9b78689bb32f">00200</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a6fbb043e3fe736aae9db9b78689bb32f"
+title=
+"A handle to an unknown object was requested.">ILB_ST_UNKNOWN_OBJECT</a>,
+<a name="l00201"></a>00201 
+<a name="l00205"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206aa462ffda6ce5d2b02c0ed6a7ac75c3ac">00205</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206aa462ffda6ce5d2b02c0ed6a7ac75c3ac"
+title=
+"The requested functionality is not supported in the current configuration.">ILB_ST_NOT_SUPPORTED</a>,
+<a name="l00206"></a>00206 
+<a name="l00210"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a5ffe1604bc2391b34b043899d6db845c">00210</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a5ffe1604bc2391b34b043899d6db845c"
+title=
+"The api generated an exception we didn't expect.">ILB_ST_UNHANDLED_EXCEPTION</a>,
+<a name="l00211"></a>00211 
+<a name="l00215"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ab519ba722262a1b633655d8cd5c72952">00215</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ab519ba722262a1b633655d8cd5c72952"
+title=
+"An external tool returned an error.">ILB_ST_JOB_EXECUTION_FAILURE</a>,
+<a name="l00216"></a>00216 
+<a name="l00220"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ab90c3feff9200dbc3f6fe4c6072a0bbd">00220</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206ab90c3feff9200dbc3f6fe4c6072a0bbd"
+title="Atlasing failed.">ILB_ST_ATLAS_EXECUTION_FAILURE</a>,
+<a name="l00221"></a>00221 
+<a name="l00225"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a0666c29584ddbaae5c4ed1684ef96f8f">00225</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a0666c29584ddbaae5c4ed1684ef96f8f"
+title="A license error occurred.">ILB_ST_INVALID_LICENSE</a>,
+<a name="l00226"></a>00226 
+<a name="l00230"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206abbcb24109d9a555a278423bf1981ddee">00230</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206abbcb24109d9a555a278423bf1981ddee"
+title=
+"Dummy entry to be able to loop over all errors.">ILB_ST_LAST_ERROR</a>,
+<a name="l00231"></a>00231 } <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a>;
+<a name="l00232"></a>00232 
+<a name="l00238"></a><a class="code" href=
+"beastapitypes_8h.html#a180da578dc3f216e8ff16bbdd2ea692b">00238</a> <span class="keyword">typedef</span> <a class="code"
+href="beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70"
+title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>* <a class="code"
+href="beastapitypes_8h.html#a180da578dc3f216e8ff16bbdd2ea692b"
+title="Beast api string type.">ILBString</a>;
+<a name="l00239"></a>00239 
+<a name="l00245"></a><a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">00245</a> <span class="keyword">typedef</span> <span class="keyword">const</span> <a class="code"
+href="beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70"
+title=
+"Will be typedef:ed to the proper character type depending on the selected string encoding.">ILBCharType</a>* <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a>;
+<a name="l00246"></a>00246 
+<a name="l00247"></a>00247 
+<a name="l00248"></a>00248 <span class=
+"preprocessor">#ifdef WIN32</span>
+<a name="l00249"></a>00249 
+<a name="l00252"></a>00252 <span class=
+"keyword">typedef</span> __int32 int32;
+<a name="l00253"></a>00253 
+<a name="l00257"></a>00257 <span class=
+"keyword">typedef</span> __int64 int64;
+<a name="l00258"></a>00258 
+<a name="l00262"></a>00262 <span class=
+"keyword">typedef</span> <span class=
+"keywordtype">unsigned</span> __int32 uint32;
+<a name="l00263"></a>00263 
+<a name="l00267"></a>00267 <span class=
+"keyword">typedef</span> <span class=
+"keywordtype">unsigned</span> __int64 uint64;
+<a name="l00268"></a>00268 
+<a name="l00269"></a>00269 <span class=
+"preprocessor">#elif defined(__GNUC__)</span>
+<a name="l00270"></a>00270 
+<a name="l00271"></a>00271 <span class=
+"keyword">typedef</span> int32_t int32;
+<a name="l00272"></a>00272 <span class=
+"keyword">typedef</span> int64_t int64;
+<a name="l00273"></a>00273 <span class=
+"keyword">typedef</span> uint32_t uint32;
+<a name="l00274"></a>00274 <span class=
+"keyword">typedef</span> uint64_t uint64;
+<a name="l00275"></a>00275 <span class=
+"keyword">typedef</span> uint32 DWORD;
+<a name="l00276"></a>00276 <span class="preprocessor">#else</span>
+<a name="l00277"></a>00277 <span class=
+"preprocessor">#error Could not define int32 and friends.</span>
+<a name="l00278"></a>00278 <span class="preprocessor">#endif</span>
+<a name="l00279"></a>00279 
+<a name="l00284"></a><a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813">00284</a> <span class="keyword">typedef</span> int32 <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>;
+<a name="l00285"></a>00285 
+<a name="l00290"></a><a class="code" href=
+"struct_i_l_b_vec2.html">00290</a> <span class=
+"keyword">typedef</span> <span class=
+"keyword">struct </span><a class="code" href=
+"struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a> {
+<a name="l00292"></a><a class="code" href=
+"struct_i_l_b_vec2.html#adb1a4b4dc2d46c740fd47815cedd216e">00292</a>         <span class="keywordtype">float</span> <a class="code"
+href="struct_i_l_b_vec2.html#adb1a4b4dc2d46c740fd47815cedd216e"
+title="x">x</a>;
+<a name="l00294"></a><a class="code" href=
+"struct_i_l_b_vec2.html#a5440758bb5a875c5b9eb53ba2d37258a">00294</a>         <span class="keywordtype">float</span> <a class="code"
+href="struct_i_l_b_vec2.html#a5440758bb5a875c5b9eb53ba2d37258a"
+title="y">y</a>;
+<a name="l00295"></a>00295 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00296"></a>00296         <a class="code" href=
+"struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a>() {}
+<a name="l00297"></a>00297         <a class="code" href=
+"struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a>(<span class=
+"keywordtype">float</span> _x, <span class=
+"keywordtype">float</span> _y): <a class="code" href=
+"struct_i_l_b_vec2.html#adb1a4b4dc2d46c740fd47815cedd216e" title=
+"x">x</a>(_x), <a class="code" href=
+"struct_i_l_b_vec2.html#a5440758bb5a875c5b9eb53ba2d37258a" title=
+"y">y</a>(_y) {}
+<a name="l00298"></a>00298 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00299"></a>00299 } <a class="code" href=
+"struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a>;
+<a name="l00300"></a>00300 
+<a name="l00304"></a><a class="code" href=
+"struct_i_l_b_vec2i.html">00304</a> <span class=
+"keyword">typedef</span> <span class=
+"keyword">struct </span><a class="code" href=
+"struct_i_l_b_vec2i.html" title=
+"Two dimensional geometric vector type with unsigned int members.">ILBVec2i</a> {
+<a name="l00306"></a><a class="code" href=
+"struct_i_l_b_vec2i.html#aa47f7467248ea845f7aedc4bb4b6982f">00306</a>         <span class="keywordtype">int</span> <a class="code"
+href="struct_i_l_b_vec2i.html#aa47f7467248ea845f7aedc4bb4b6982f"
+title="x">x</a>;
+<a name="l00308"></a><a class="code" href=
+"struct_i_l_b_vec2i.html#a42eb7d51e481406969de8c42b59c88ac">00308</a>         <span class="keywordtype">int</span> <a class="code"
+href="struct_i_l_b_vec2i.html#a42eb7d51e481406969de8c42b59c88ac"
+title="y">y</a>;
+<a name="l00309"></a>00309 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00310"></a>00310         <a class="code" href=
+"struct_i_l_b_vec2i.html" title=
+"Two dimensional geometric vector type with unsigned int members.">ILBVec2i</a>() {}
+<a name="l00311"></a>00311         <a class="code" href=
+"struct_i_l_b_vec2i.html" title=
+"Two dimensional geometric vector type with unsigned int members.">ILBVec2i</a>(<span class="keywordtype">int</span> _x, <span class="keywordtype">int</span> _y): <a class="code"
+href="struct_i_l_b_vec2i.html#aa47f7467248ea845f7aedc4bb4b6982f"
+title="x">x</a>(_x), <a class="code" href=
+"struct_i_l_b_vec2i.html#a42eb7d51e481406969de8c42b59c88ac" title=
+"y">y</a>(_y) {}
+<a name="l00312"></a>00312 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00313"></a>00313 } <a class="code" href=
+"struct_i_l_b_vec2i.html" title=
+"Two dimensional geometric vector type with unsigned int members.">ILBVec2i</a>;
+<a name="l00314"></a>00314 
+<a name="l00320"></a><a class="code" href=
+"struct_i_l_b_vec3.html">00320</a> <span class=
+"keyword">typedef</span> <span class=
+"keyword">struct </span><a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a> {
+<a name="l00322"></a><a class="code" href=
+"struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3">00322</a>         <span class="keywordtype">float</span> <a class="code"
+href="struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3"
+title="x">x</a>;
+<a name="l00324"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae">00324</a>         <span class="keywordtype">float</span> <a class="code"
+href="struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae"
+title="y">y</a>;
+<a name="l00326"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c">00326</a>         <span class="keywordtype">float</span> <a class="code"
+href="struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c"
+title="z">z</a>;
+<a name="l00327"></a>00327 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00328"></a>00328         <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>() {}
+<a name="l00329"></a>00329         <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>(<span class=
+"keywordtype">float</span> _x, <span class=
+"keywordtype">float</span> _y, <span class=
+"keywordtype">float</span> _z): <a class="code" href=
+"struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3" title=
+"x">x</a>(_x), <a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a>(_y), <a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a>(_z) {}
+<a name="l00330"></a>00330 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00331"></a>00331 } <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>;
+<a name="l00332"></a>00332 
+<a name="l00338"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html">00338</a> <span class=
+"keyword">typedef</span> <span class=
+"keyword">struct </span><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a> {
+<a name="l00340"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html#aae144720efa4b0c2abdf0a1b32fce858">00340</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b.html#aae144720efa4b0c2abdf0a1b32fce858"
+title="Red component.">r</a>;
+<a name="l00342"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html#af4a6501379b392d095cb36956c1986cc">00342</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b.html#af4a6501379b392d095cb36956c1986cc"
+title="Green component.">g</a>;
+<a name="l00344"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html#ab3922ca8669c479927f2352ac298d710">00344</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b.html#ab3922ca8669c479927f2352ac298d710"
+title="Blue component.">b</a>;
+<a name="l00345"></a>00345 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00346"></a>00346         <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>() {}
+<a name="l00347"></a>00347         <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>(<span class="keywordtype">float</span> _r, <span class="keywordtype">float</span> _g, <span class="keywordtype">float</span> _b): <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b.html#aae144720efa4b0c2abdf0a1b32fce858"
+title="Red component.">r</a>(_r), <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html#af4a6501379b392d095cb36956c1986cc"
+title="Green component.">g</a>(_g), <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html#ab3922ca8669c479927f2352ac298d710"
+title="Blue component.">b</a>(_b) {}
+<a name="l00348"></a>00348 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00349"></a>00349 } <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>;
+<a name="l00350"></a>00350 
+<a name="l00356"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html">00356</a> <span class=
+"keyword">typedef</span> <span class=
+"keyword">struct </span><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> {
+<a name="l00358"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#a576c990277b4bc837e4e663b9ff1b1af">00358</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b_a.html#a576c990277b4bc837e4e663b9ff1b1af"
+title="Red component.">r</a>;
+<a name="l00360"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#a0547e1f7cd81f486ffb0e74fa8f9e80e">00360</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b_a.html#a0547e1f7cd81f486ffb0e74fa8f9e80e"
+title="Green component.">g</a>;
+<a name="l00362"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#a819d4348d1f71e3df558f462558c08ae">00362</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b_a.html#a819d4348d1f71e3df558f462558c08ae"
+title="Blue component.">b</a>;
+<a name="l00364"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#aac541ddd724e2b08932c634292f1ad8a">00364</a>         <span class="keywordtype">float</span> <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b_a.html#aac541ddd724e2b08932c634292f1ad8a"
+title="Alpha.">a</a>;
+<a name="l00365"></a>00365 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00366"></a>00366         <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>() {}
+<a name="l00367"></a>00367         <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>(<span class="keywordtype">float</span> _r, <span class="keywordtype">float</span> _g, <span class="keywordtype">float</span> _b, <span class="keywordtype">float</span> _a): <a class="code"
+href=
+"struct_i_l_b_linear_r_g_b_a.html#a576c990277b4bc837e4e663b9ff1b1af"
+title="Red component.">r</a>(_r), <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#a0547e1f7cd81f486ffb0e74fa8f9e80e"
+title="Green component.">g</a>(_g), <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#a819d4348d1f71e3df558f462558c08ae"
+title="Blue component.">b</a>(_b), <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#aac541ddd724e2b08932c634292f1ad8a"
+title="Alpha.">a</a>(_a) {}
+<a name="l00368"></a>00368 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00369"></a>00369 } <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>;
+<a name="l00370"></a>00370 
+<a name="l00383"></a><a class="code" href=
+"struct_i_l_b_matrix4x4.html">00383</a> <span class=
+"keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00387"></a><a class="code" href=
+"struct_i_l_b_matrix4x4.html#a48a4f2d3bf221e6035bb0677237aef39">00387</a>         <span class="keywordtype">float</span> m[16];
+<a name="l00388"></a>00388 } <a class="code" href=
+"struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>;
+<a name="l00389"></a>00389 
+<a name="l00390"></a>00390 <span class="comment">/*</span>
+<a name="l00391"></a>00391 <span class=
+"comment"> * Macro to define handle types.</span>
+<a name="l00392"></a>00392 <span class=
+"comment"> * Inspired by windows headers</span>
+<a name="l00393"></a>00393 <span class="comment"> */</span>
+<a name="l00394"></a>00394 <span class=
+"preprocessor">#define ILB_DECLARE_HANDLE(name) struct name##__{int unused;}; typedef struct name##__ *name;</span>
+<a name="l00395"></a>00395 
+<a name="l00401"></a>00401 ILB_DECLARE_HANDLE(<a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a>)
+<a name="l00402"></a>00402 
+<a name="l00403"></a>00403 
+<a name="l00408"></a><a class="code" href=
+"struct_i_l_b_scene_handle.html">00408</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a>);
+<a name="l00409"></a>00409 
+<a name="l00415"></a><a class="code" href=
+"struct_i_l_b_scene_info_handle.html">00415</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a>);
+<a name="l00416"></a>00416 
+<a name="l00422"></a><a class="code" href=
+"struct_i_l_b_instance_handle.html">00422</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_scene_info_handle.html" title=
+"Handle for Beast scene information node Intentionally hidden implementation.">ILBSceneInfoHandle</a>);
+<a name="l00423"></a>00423 
+<a name="l00429"></a><a class="code" href=
+"struct_i_l_b_camera_handle.html">00429</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_instance_handle.html" title=
+"Handle for Beast instance Intentionally hidden implementation.">ILBInstanceHandle</a>);
+<a name="l00430"></a>00430 
+<a name="l00436"></a><a class="code" href=
+"struct_i_l_b_light_handle.html">00436</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_camera_handle.html" title=
+"Handle for Beast cameras Intentionally hidden implementation.">ILBCameraHandle</a>);
+<a name="l00437"></a>00437 
+<a name="l00443"></a><a class="code" href=
+"struct_i_l_b_material_handle.html">00443</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>);
+<a name="l00444"></a>00444 
+<a name="l00450"></a><a class="code" href=
+"struct_i_l_b_texture_handle.html">00450</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a>);
+<a name="l00451"></a>00451 
+<a name="l00457"></a><a class="code" href=
+"struct_i_l_b_job_handle.html">00457</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>);
+<a name="l00458"></a>00458 
+<a name="l00464"></a><a class="code" href=
+"struct_i_l_b_job_update_handle.html">00464</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a>);
+<a name="l00465"></a>00465 
+<a name="l00471"></a><a class="code" href=
+"struct_i_l_b_string_handle.html">00471</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a>);
+<a name="l00472"></a>00472 
+<a name="l00478"></a><a class="code" href=
+"struct_i_l_b_target_handle.html">00478</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a>);
+<a name="l00479"></a>00479 
+<a name="l00485"></a><a class="code" href=
+"struct_i_l_b_framebuffer_handle.html">00485</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a>);
+<a name="l00486"></a>00486 
+<a name="l00487"></a>00487 
+<a name="l00493"></a><a class="code" href=
+"struct_i_l_b_target_entity_handle.html">00493</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_framebuffer_handle.html" title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a>);
+<a name="l00494"></a>00494 
+<a name="l00495"></a>00495 
+<a name="l00501"></a><a class="code" href=
+"struct_i_l_b_render_pass_handle.html">00501</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a>);
+<a name="l00502"></a>00502 
+<a name="l00508"></a><a class="code" href=
+"struct_i_l_b_light_pass_entry_handle.html">00508</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>);
+<a name="l00509"></a>00509 
+<a name="l00515"></a><a class="code" href=
+"struct_i_l_b_point_cloud_handle.html">00515</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_light_pass_entry_handle.html" title=
+"Handle for Light pass entry Intentionally hidden implementation.">ILBLightPassEntryHandle</a>);
+<a name="l00516"></a>00516 
+<a name="l00522"></a><a class="code" href=
+"struct_i_l_b_shader_handle.html">00522</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_point_cloud_handle.html" title=
+"Handle for Beast point clouds Intentionally hidden implementation.">ILBPointCloudHandle</a>);
+<a name="l00523"></a>00523 
+<a name="l00528"></a><a class="code" href=
+"struct_i_l_b_u_v_layer_handle.html">00528</a> ILB_DECLARE_HANDLE(<a class="code"
+href="struct_i_l_b_shader_handle.html" title=
+"Handle for an OSL shader.">ILBShaderHandle</a>);
+<a name="l00529"></a>00529 
+<a name="l00535"></a>00535 ILB_DECLARE_HANDLE(<a class="code" href=
+"struct_i_l_b_u_v_layer_handle.html" title=
+"Handle for Beast uv layers Intentionally hidden implementation.">ILBUVLayerHandle</a>);
+<a name="l00536"></a>00536 
+<a name="l00540"></a><a class="code" href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660e">00540</a> typedef enum {
+<a name="l00544"></a><a class="code" href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660eac33d489b56290fea9ee69a4c61e92f72">00544</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660eac33d489b56290fea9ee69a4c61e92f72"
+title=
+"Excludes the supplied lights/objects.">ILB_LL_EXCLUDING</a> = 0,
+<a name="l00545"></a>00545         
+<a name="l00549"></a><a class="code" href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660eae9033899ff4d794f5df5b74a0daec405">00549</a>         <a class="code"
+href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660eae9033899ff4d794f5df5b74a0daec405"
+title="Includes the supplied lights/objects.">ILB_LL_INCLUDING</a>,
+<a name="l00550"></a>00550 } <a class="code" href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660e" title=
+"Enum defining if a light link is inclusive or exclusive.">ILBLightLinkMode</a>;
+<a name="l00551"></a>00551 
+<a name="l00552"></a>00552 <span class="comment">/*</span>
+<a name="l00553"></a>00553 <span class=
+"comment"> * Setup for getting functions exported or imported from the DLL</span>
+<a name="l00554"></a>00554 <span class=
+"comment"> * on windows</span>
+<a name="l00555"></a>00555 <span class="comment"> */</span>
+<a name="l00556"></a>00556 <span class=
+"preprocessor">#ifdef WIN32</span>
+<a name="l00557"></a>00557 <span class=
+"preprocessor">#ifdef beastapi_EXPORTS</span>
+<a name="l00558"></a>00558 <span class=
+"preprocessor">#define ILB_DLL_FUNCTION __declspec(dllexport)</span>
+<a name="l00559"></a>00559 <span class="preprocessor">#else</span>
+<a name="l00560"></a>00560 <span class=
+"preprocessor">#define ILB_DLL_FUNCTION __declspec(dllimport)</span>
+<a name="l00561"></a>00561 <span class=
+"preprocessor">#endif // beastapi_EXPORTS</span>
+<a name="l00562"></a>00562 <span class=
+"preprocessor">#else // WIN32</span>
+<a name="l00563"></a>00563 <span class=
+"preprocessor">#define ILB_DLL_FUNCTION </span>
+<a name="l00564"></a>00564 <span class=
+"preprocessor">#endif // WIN32</span>
+<a name="l00565"></a>00565 
+<a name="l00566"></a>00566 <span class=
+"preprocessor">#ifdef WIN32</span>
+<a name="l00567"></a>00567 <span class=
+"keyword">typedef</span> <span class=
+"keywordtype">void</span>* ILBFileHandle;
+<a name="l00568"></a>00568 <span class=
+"preprocessor">#define ILB_INVALID_FILE_HANDLE ((void*)(((unsigned char*)(0)) - 1))</span>
+<a name="l00569"></a>00569 <span class=
+"preprocessor">#else // WIN32</span>
+<a name="l00570"></a>00570 <span class=
+"keyword">typedef</span> int32 ILBFileHandle;
+<a name="l00571"></a>00571 <span class=
+"preprocessor">#define ILB_INVALID_FILE_HANDLE -1</span>
+<a name="l00572"></a>00572 <span class=
+"preprocessor">#endif // WIN32</span>
+<a name="l00573"></a>00573 
+<a name="l00574"></a>00574 <span class=
+"preprocessor">#endif //BEASTAPITYPES_H</span>
+<a name="l00575"></a>00575 
+<a name="l00576"></a>00576 
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

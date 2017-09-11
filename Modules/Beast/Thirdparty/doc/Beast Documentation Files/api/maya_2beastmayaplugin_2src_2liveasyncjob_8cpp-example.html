@@ -1,0 +1,308 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/liveasyncjob.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2liveasyncjob_8cpp-example.html','api_maya_2beastmayaplugin_2src_2liveasyncjob_8cpp_example_html56115610-7987-4a79-9b30-07fd87eca1d5','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/liveasyncjob.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2liveasyncjob_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/liveasyncjob.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/liveasyncjob.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/beastmayaplugin/src/liveasyncjob.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastutils.h</a>"</span>
+<span class="preprocessor">#include "jobcontext.h"</span>
+<span class="preprocessor">#include "liveasyncjob.h"</span>
+<span class="preprocessor">#include "plugincontext.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttargetwrapper.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livesettings.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeenums.h"</span>
+
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+LiveAsyncJob::LiveAsyncJob(JobContextPtr&amp; bjc, BeastCameraPtr&amp; renderCam, <span class="keywordtype">bool</span> cameraRender) : 
+AsyncTask(L<span class="stringliteral">"liveErnstJob"</span>),
+m_bjc(bjc)
+{
+        BeastManager&amp; manager = bjc-&gt;getPluginContext().getManager();
+        BeastScene&amp; scene = bjc-&gt;getSceneManager().getScene();
+
+        m_job = manager.createErnstLiveJob(L<span class=
+"stringliteral">"ernstJob"</span>, scene);
+
+        m_settingsNode = findMayaNode(L<span class=
+"stringliteral">"beastSettings"</span>);
+
+        int2 liveViewResolution = {640, 480}; 
+        getCompoundPlugValue(m_settingsNode, L<span class=
+"stringliteral">"liveViewRes"</span>, liveViewResolution);
+
+        <span class="comment">// Create the camera target</span>
+        BeastTargetPtr cameraTarget = m_job-&gt;createCameraTarget(L<span class="stringliteral">"renderCamTarget"</span>, *renderCam, liveViewResolution[0], liveViewResolution[1], cameraRender);
+        m_liveSettings.reset(<span class=
+"keyword">new</span> LiveSettings(m_settingsNode, m_job, cameraTarget, renderCam));
+}
+
+LiveAsyncJob::~LiveAsyncJob() {
+}
+
+<span class="keywordtype">void</span> LiveAsyncJob::threadMain() {
+        <span class="keywordflow">try</span> {
+                m_liveSettings-&gt;updateCameraSettings();
+
+                <span class=
+"keywordtype">bool</span> enableDistribution = <span class=
+"keyword">true</span>;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"distribution"</span>, enableDistribution);
+                m_job-&gt;start(<a name="a0"></a><a class="code"
+href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0a3b91c64198f51de01c4d6627e4705c57"
+title=
+"Don't display the render window / progress view.">ILB_SR_NO_DISPLAY</a>, enableDistribution ? <a name="a1"></a><a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f"
+title=
+"Render distributed if possible, otherwise fallback on local rendering.">ILB_RD_AUTODETECT</a> : <a name="a2"></a><a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a47626f3d45dc2759a1f51829bd610618"
+title="Force a local render.">ILB_RD_FORCE_LOCAL</a>);
+                m_job-&gt;setErnstDisplayGamma(2.2f);
+
+                <span class=
+"keywordtype">float</span> directScale = 1.0f;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"directScale"</span>, directScale);
+                m_job-&gt;setErnstDirectIllumination(directScale);
+
+                <span class=
+"keywordtype">float</span> indirectScale = 1.0f;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"indirectScale"</span>, indirectScale);
+                m_job-&gt;setErnstIndirectIllumination(indirectScale);
+
+                <span class=
+"keywordtype">float</span> diffuseBoost = 1.0f;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"diffuseBoost"</span>, diffuseBoost);
+                m_job-&gt;setErnstDiffuseBoost(diffuseBoost);
+
+                <span class=
+"keywordtype">float</span> emissiveScale = 1.0f;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"emissiveScale"</span>, emissiveScale);
+                m_job-&gt;setErnstEmissiveScale(emissiveScale);
+
+                <span class=
+"keywordtype">int</span> maxRayDepth = 1;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"maxRayDepth"</span>, maxRayDepth);
+                m_job-&gt;setRenderMaxDepth(maxRayDepth);
+
+                <span class=
+"keywordtype">int</span> liveNoiseReductionType = 0;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"liveNoiseReduction"</span>, liveNoiseReductionType);
+                <span class="keyword">const</span> <span class=
+"keywordtype">float</span> varianceTreshold = getErnstVarianceThreshold((ELiveNoiseReduction)liveNoiseReductionType);
+                m_job-&gt;setErnstVarianceThreshold(varianceTreshold);
+
+                <span class=
+"keywordtype">int</span> causticsMode = 0;
+                getPlugValue(m_settingsNode, L<span class=
+"stringliteral">"causticsMode"</span>, causticsMode);
+                m_job-&gt;setCausticsMode((ECausticsModeType)causticsMode);
+
+                <span class=
+"keywordflow">while</span>(!m_terminationRequested) {
+                        m_job-&gt;waitDone(500);
+
+                        <span class=
+"keywordflow">if</span> (!m_job-&gt;isRunning()) {
+                                <span class=
+"comment">// Job closed for some reason. Check why and leave.</span>
+                                checkJobStatus(m_job-&gt;getResult());
+                                <span class=
+"keywordflow">break</span>;
+                        }
+
+                        <span class=
+"keywordflow">while</span>(m_job-&gt;hasUpdate() &amp;&amp; !m_terminationRequested) {
+                                onUpdate(m_job-&gt;updateType());
+                                m_job-&gt;destroyUpdate();
+                        }
+                }
+        } <span class=
+"keywordflow">catch</span> (BeastException&amp; e) {
+                MGlobal::displayError(e.getTypeString().c_str());
+                MGlobal::displayError(e.getExtendErrorInformation().c_str());
+        }
+}
+
+LiveAsyncJobPtr LiveAsyncJob::getInstance() {
+        <span class=
+"keywordflow">return</span> std::static_pointer_cast&lt;LiveAsyncJob&gt;(AsyncHandler::getInstance()-&gt;getAsyncTask(L<span class="stringliteral">"liveErnstJob"</span>));
+}
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
