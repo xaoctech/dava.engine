@@ -18,6 +18,9 @@ if (LINUX)
     set ( DAVA_MEMORY_PROFILER 0 )
 endif()
 
+# Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
+dava_add_definitions(-DLOCALIZATION_DEBUG)
+
 if (LINUX)
     dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
     dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
@@ -28,26 +31,23 @@ if ( WIN32 OR MACOS )
     find_dava_module( DavaTools )
 endif()
 
-# Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
-dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 if (NOT LINUX)
     # Enable sound after fmod libraries
-    set ( DAVA_COMPONENTS "Sound" )
-    find_dava_module( "Spine" )
-    find_dava_module( "NetworkCore" )
+    set ( DAVA_COMPONENTS Sound )
+    find_dava_module( Spine )
+    find_dava_module( NetworkCore )
 endif()
 
-find_dava_module( "CEFWebview" )
-find_dava_module( "Sample" )
-
-# add physics
-find_dava_module( "Physics" )
-find_package( Steam REQUIRED )
-
+find_dava_module( Physics )
+find_dava_module( CEFWebview )
+find_dava_module( Sample )
 find_dava_module( LoggerService  )
 find_dava_module( EmbeddedWebServer  )
 find_dava_module( DocDirSetup  )
+
+find_package( Steam REQUIRED )
+
 
 find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" DAVA_DISABLE_AUTOTESTS )
 
