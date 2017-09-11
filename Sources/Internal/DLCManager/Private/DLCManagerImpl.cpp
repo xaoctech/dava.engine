@@ -11,13 +11,13 @@
 #include "Time/SystemTimer.h"
 #include "Engine/Engine.h"
 #include "Debug/Backtrace.h"
+#include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
 
 #include <iomanip>
-#include <Debug/Private/ImGui.h>
 
 namespace DAVA
 {
@@ -138,7 +138,6 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
             // TODO move it later to common ImGui setting system
             if (ImGui::IsInitialized())
             {
-                // 1. Show a simple window
                 {
                     ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
                     ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);

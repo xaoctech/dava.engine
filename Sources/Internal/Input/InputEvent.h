@@ -18,19 +18,19 @@ struct InputEvent
     ~InputEvent();
 
     /** The window this event is addressed to. */
-    Window* window = nullptr;
+    Window* window;
 
     /** Event timestamp. */
-    float64 timestamp = 0.0;
+    float64 timestamp;
 
     /** Type of the device that triggered the event. */
-    eInputDeviceTypes deviceType = eInputDeviceTypes::UNKNOWN;
+    eInputDeviceTypes deviceType;
 
     /** Device that triggered the event. This value is never null. */
-    InputDevice* device = nullptr;
+    InputDevice* device;
 
     /** Id of the element which triggered the event. */
-    eInputElements elementId = NONE;
+    eInputElements elementId;
 
     /** Digital element's state. Should only be used if element with `elementId` is a digital one. */
     DigitalElementState digitalState;
@@ -63,6 +63,11 @@ struct InputEvent
 };
 
 inline InputEvent::InputEvent()
+    : window(nullptr)
+    , timestamp(0.0)
+    , deviceType(eInputDeviceTypes::UNKNOWN)
+    , device(nullptr)
+    , elementId(NONE)
 {
     keyboardEvent = KeyboardEvent();
 }

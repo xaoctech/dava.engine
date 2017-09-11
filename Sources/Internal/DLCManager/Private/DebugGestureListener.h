@@ -8,11 +8,11 @@ namespace DAVA
 {
 class Window;
 
-class EnableDebugProfiler
+class DebugGestureListener
 {
 public:
-    EnableDebugProfiler();
-    ~EnableDebugProfiler();
+    DebugGestureListener();
+    ~DebugGestureListener();
     void AddListenerOnMouseAndTouch();
     Signal<> debugGestureMatch;
 
