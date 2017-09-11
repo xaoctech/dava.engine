@@ -193,13 +193,6 @@ void PreviewWidget::SetActualScale()
     canvasDataAdapter.SetScale(1.0f);
 }
 
-void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
-{
-    const EngineContext* engineContext = GetEngineContext();
-    VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-    vcs->SetVirtualScreenSize(width, height);
-}
-
 void PreviewWidget::InitFromSystemsManager(EditorSystemsManager* systemsManager_)
 {
     DVASSERT(nullptr == systemsManager);
@@ -222,8 +215,6 @@ void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
     DVASSERT(renderWidget_ != nullptr);
     renderWidget = renderWidget_;
     CreateActions();
-
-    renderWidget->resized.Connect(this, &PreviewWidget::OnResized);
 
     renderWidget->SetClientDelegate(this);
 }

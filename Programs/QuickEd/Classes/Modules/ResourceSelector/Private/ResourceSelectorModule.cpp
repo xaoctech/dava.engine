@@ -71,8 +71,9 @@ void ResourceSelectorModule::PostInit()
                                           delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::OnGraphicsSettingsChanged));
                                       });
 
-    primaryWindow->sizeChanged.Connect([this](Window* /*w*/, Size2f /* windowSize*/, Size2f /* surfaceSize */)
+    primaryWindow->sizeChanged.Connect([this](Window* /*w*/, Size2f windowSize, Size2f /* surfaceSize */)
                                        {
+                                           OnWindowResized(windowSize);
                                            delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::OnGraphicsSettingsChanged));
                                        });
 }
@@ -141,31 +142,38 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
 
 void ResourceSelectorModule::OnGfxSelected(DAVA::int32 gfxMode)
 {
+    using namespace DAVA::TArc;
+    using namespace ResourceSelectorModuleDetails;
+
+    ResourceSelectorData* selectorData = GetAccessor()->GetGlobalContext()->GetData<ResourceSelectorData>();
+    DVASSERT(selectorData != nullptr);
+    selectorData->preferredMode = gfxMode;
+
+    RegisterGfxFolders();
+
+    delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::ReloadSpritesImpl));
+}
+
+void ResourceSelectorModule::RegisterGfxFolders()
+{
     using namespace DAVA;
     using namespace DAVA::TArc;
     using namespace ResourceSelectorModuleDetails;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-
     ResourceSelectorData* selectorData = globalContext->GetData<ResourceSelectorData>();
     DVASSERT(selectorData != nullptr);
-    selectorData->preferredMode = gfxMode;
-
     ProjectData* projectData = globalContext->GetData<ProjectData>();
     DVASSERT(projectData != nullptr);
 
     const EngineContext* engineContext = GetEngineContext();
     VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-    Size2i currentSize = vcs->GetVirtualScreenSize();
 
     const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
     int32 gfxCount = static_cast<int32>(gfxDirectories.size());
-    if (gfxMode > gfxCount)
-    {
-        DVASSERT(false);
-        return;
-    }
+    int32 gfxMode = selectorData->preferredMode;
+    Size2i currentSize = vcs->GetVirtualScreenSize();
 
     vcs->UnregisterAllAvailableResourceSizes();
     if (gfxMode < gfxCount)
@@ -181,8 +189,10 @@ void ResourceSelectorModule::OnGfxSelected(DAVA::int32 gfxMode)
             vcs->RegisterAvailableResourceSize(static_cast<int32>(currentSize.dx * dir.scale), static_cast<int32>(currentSize.dy * dir.scale), name);
         }
     }
-
-    delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::ReloadSpritesImpl));
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 void ResourceSelectorModule::CreateAction(const QString& actionName, const QString& prevActionName, DAVA::int32 gfxMode)
@@ -240,6 +250,17 @@ void ResourceSelectorModule::OnGraphicsSettingsChanged()
             }
         }
     }
+}
+
+void ResourceSelectorModule::OnWindowResized(DAVA::Size2f windowSize)
+{
+    using namespace DAVA;
+
+    const EngineContext* engineContext = GetEngineContext();
+    VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
+    vcs->SetVirtualScreenSize(static_cast<int32>(windowSize.dx), static_cast<int32>(windowSize.dy));
+
+    RegisterGfxFolders();
 }
 
 void ResourceSelectorModule::ReloadSpritesImpl()
