@@ -18,10 +18,6 @@
 
 #include "DeviceManager/DeviceManager.h"
 
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/PhysicsHelpers.h>
-#endif
-
 namespace DAVA
 {
 WASDControllerSystem::WASDControllerSystem(Scene* scene)
@@ -75,103 +71,46 @@ void WASDControllerSystem::Process(float32 timeElapsed)
         Camera* camera = GetCamera(entities[i]);
         if ((camera != nullptr) && (camera == GetScene()->GetDrawCamera()))
         {
-            // TODO: Character controller input is temporarily handled here for convinience
-            // Should be discussed
-
-            bool moved = false;
             if (keyboard->GetKeyState(eInputElements::KB_W).IsPressed() || keyboard->GetKeyState(eInputElements::KB_UP).IsPressed())
             {
-                moved = true;
-                MoveForward(camera, entities[i], actualMoveSpeed, DIRECTION_STRAIGHT);
+                MoveForward(camera, actualMoveSpeed, DIRECTION_STRAIGHT);
             }
             if (keyboard->GetKeyState(eInputElements::KB_S).IsPressed() || keyboard->GetKeyState(eInputElements::KB_DOWN).IsPressed())
             {
-                moved = true;
-                MoveForward(camera, entities[i], actualMoveSpeed, DIRECTION_INVERSE);
+                MoveForward(camera, actualMoveSpeed, DIRECTION_INVERSE);
             }
             if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
             {
-                moved = true;
-                MoveRight(camera, entities[i], actualMoveSpeed, DIRECTION_STRAIGHT);
+                MoveRight(camera, actualMoveSpeed, DIRECTION_STRAIGHT);
             }
             if (keyboard->GetKeyState(eInputElements::KB_A).IsPressed() || keyboard->GetKeyState(eInputElements::KB_LEFT).IsPressed())
             {
-                moved = true;
-                MoveRight(camera, entities[i], actualMoveSpeed, DIRECTION_INVERSE);
+                MoveRight(camera, actualMoveSpeed, DIRECTION_INVERSE);
             }
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-            CharacterControllerComponent* physicsController = GetCharacterControllerComponent(entities[i]);
-
-            if (physicsController != nullptr)
-            {
-                if (!moved)
-                {
-                    physicsController->SimpleMove(Vector3::Zero);
-                }
-
-                const Vector3& dir = camera->GetDirection();
-
-                camera->SetPosition(entities[i]->GetLocalTransform().GetTranslationVector());
-                camera->SetDirection(dir);
-            }
-#endif
         }
     }
 }
 
-void WASDControllerSystem::MoveForward(Camera* camera, Entity* parentEntity, float32 speed, eDirection direction)
+void WASDControllerSystem::MoveForward(Camera* camera, float32 speed, eDirection direction)
 {
     Vector3 pos = camera->GetPosition();
     const Vector3& dir = camera->GetDirection();
 
-    const Vector3 displacement = dir * speed * static_cast<float32>(direction);
-    
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    CharacterControllerComponent* physicsController = GetCharacterControllerComponent(parentEntity);
+    pos += (dir * speed * static_cast<float32>(direction));
 
-    if (physicsController != nullptr)
-    {
-        physicsController->SimpleMove(displacement);
-    }
-    else
-    {
-        pos += displacement;
-        camera->SetPosition(pos);
-        camera->SetDirection(dir);
-    }
-#else
-    pos += displacement;
     camera->SetPosition(pos);
     camera->SetDirection(dir);
-#endif
 }
 
-void WASDControllerSystem::MoveRight(Camera* camera, Entity* parentEntity, float32 speed, eDirection direction)
+void WASDControllerSystem::MoveRight(Camera* camera, float32 speed, eDirection direction)
 {
     Vector3 pos = camera->GetPosition();
     Vector3 right = -camera->GetLeft();
     const Vector3& dir = camera->GetDirection();
 
-    const Vector3 displacement = right * speed * static_cast<float32>(direction);
+    pos += (right * speed * static_cast<float32>(direction));
 
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    CharacterControllerComponent* physicsController = GetCharacterControllerComponent(parentEntity);
-
-    if (physicsController != nullptr)
-    {
-        physicsController->SimpleMove(displacement);
-    }
-    else
-    {
-        pos += displacement;
-        camera->SetPosition(pos);
-        camera->SetDirection(dir);
-    }
-#else
-    pos += displacement;
     camera->SetPosition(pos);
     camera->SetDirection(dir);
-#endif
 }
 };

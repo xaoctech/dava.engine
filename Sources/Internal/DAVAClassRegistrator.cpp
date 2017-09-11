@@ -15,6 +15,7 @@
 #include <Physics/HeightFieldShapeComponent.h>
 #include <Physics/BoxCharacterControllerComponent.h>
 #include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/WASDPhysicsControllerComponent.h>
 #endif
 
 using namespace DAVA;
@@ -109,4 +110,5 @@ REGISTER_CLASS(MeshShapeComponent);
 REGISTER_CLASS(HeightFieldShapeComponent);
 REGISTER_CLASS(BoxCharacterControllerComponent);
 REGISTER_CLASS(CapsuleCharacterControllerComponent);
+REGISTER_CLASS(WASDPhysicsControllerComponent);
 #endif

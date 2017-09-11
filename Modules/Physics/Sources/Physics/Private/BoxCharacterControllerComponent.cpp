@@ -40,6 +40,7 @@ void BoxCharacterControllerComponent::SetHalfHeight(float32 newHalfHeight)
     DVASSERT(newHalfHeight > 0.0f);
     halfHeight = newHalfHeight;
 
+    geometryChanged = true;
     ScheduleUpdate();
 }
 
@@ -53,6 +54,7 @@ void BoxCharacterControllerComponent::SetHalfForwardExtent(float32 newHalfForwar
     DVASSERT(newHalfForwardExtent > 0.0f);
     halfForwardExtent = newHalfForwardExtent;
 
+    geometryChanged = true;
     ScheduleUpdate();
 }
 
@@ -66,6 +68,7 @@ void BoxCharacterControllerComponent::SetHalfSideExtent(float32 newHalfSideExten
     DVASSERT(newHalfSideExtent > 0.0f);
     halfSideExtent = newHalfSideExtent;
 
+    geometryChanged = true;
     ScheduleUpdate();
 }
 

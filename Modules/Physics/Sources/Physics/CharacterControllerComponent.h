@@ -13,36 +13,35 @@ namespace DAVA
 {
 /**
     Class responsible for controlling a character.
-    Forces aren't applied to it, and it moves only when `Move` or `SimpleMove` function is called.
-
     This component should only be attached to root entities (i.e. entities on a highest level of hierarchy).
 */
 class CharacterControllerComponent : public Component
 {
 public:
-    /** Try move a character for specified `displacement`. Does not apply gravity. */
-    void Move(Vector3 displacement);
+    /** Enum describing different movement scehemes. */
+    enum MovementMode
+    {
+        /** Gravity applies to a character, any displacement along up axis is ignored. */
+        Walking,
 
-    /**
-        Try move a character for specified `displacement`. Applies gravity, any translation along up direction is ignored.
-        Well suited for movement on a landscape or other surfaces.
+        /** Gravity does not affect a character, free movement in any direction. */
+        Flying
+    };
 
-        Note that if a character is using moving scheme provided by `SimpleMove` function,
-        `SimpleMove` should be called every frame, even if there is no input from the user (i.e. displacement = Vector3::Zero), to apply gravity.
-    */
-    void SimpleMove(Vector3 displacement);
+    /** Set character's movement mode. */
+    void SetMovementMode(MovementMode newMode);
 
-    /** Teleports a character to specified `worldPosition` */
-    void Teleport(Vector3 worldPosition);
+    /** Get character's movement mode. */
+    MovementMode GetMovementMode() const;
 
-    /** Return `true` if object is touching the ground, `false` otherwise */
+    /** Move a character for specified `displacement`. */
+    void Move(const Vector3& displacement);
+
+    /** Teleport a character to specified `worldPosition`. */
+    void Teleport(const Vector3& worldPosition);
+
+    /** Return `true` if object is touching the ground, `false` otherwise. */
     bool IsGrounded() const;
-
-    /** Return character's up direction */
-    Vector3 GetUpDirection() const;
-
-    /** Set character's up direction */
-    void SetUpDirection(Vector3 newUpDirection);
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -52,14 +51,22 @@ protected:
 
     virtual void CopyFieldsToComponent(CharacterControllerComponent* dest);
 
-private:
-    friend class PhysicsSystem; // For accessing underlying PxController
+protected:
+    bool geometryChanged = false;
 
-    void SyncEntityTransform();
+private:
+    friend class PhysicsSystem;
 
     physx::PxController* controller = nullptr;
-    Vector3 upDirection = Vector3::UnitZ;
+
+    MovementMode mode = MovementMode::Walking;
+
     bool grounded = false;
+
+    Vector3 totalDisplacement = Vector3::Zero;
+
+    bool teleported = false;
+    Vector3 teleportDestination = Vector3::Zero;
 
     DAVA_VIRTUAL_REFLECTION(CharacterControllerComponent, Component);
 };

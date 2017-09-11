@@ -66,6 +66,8 @@ private:
     void SyncEntityTransformToPhysx(Entity* entity);
     void UpdateComponents();
 
+    void MoveCharacterControllers(float32 timeElapsed);
+
 private:
     friend class PhysicsSystemPrivate; // for tests only
 

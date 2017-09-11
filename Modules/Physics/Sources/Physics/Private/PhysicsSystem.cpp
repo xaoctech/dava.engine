@@ -359,6 +359,9 @@ void PhysicsSystem::Process(float32 timeElapsed)
         else
         {
             DrawDebugInfo();
+
+            MoveCharacterControllers(timeElapsed);
+
             physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
             isSimulationRunning = true;
         }
@@ -574,7 +577,7 @@ void PhysicsSystem::InitNewObjects()
             desc.halfHeight = boxCharacterControllerComponent->GetHalfHeight();
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
-            desc.upDirection = PhysicsMath::Vector3ToPxVec3(component->GetUpDirection());
+            desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
             desc.material = physics->GetDefaultMaterial();
             DVASSERT(desc.isValid());
 
@@ -589,7 +592,7 @@ void PhysicsSystem::InitNewObjects()
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
             desc.material = physics->GetDefaultMaterial();
-            desc.upDirection = PhysicsMath::Vector3ToPxVec3(component->GetUpDirection());
+            desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
             DVASSERT(desc.isValid());
 
             controller = controllerManager->createController(desc);
@@ -888,24 +891,34 @@ void PhysicsSystem::UpdateComponents()
         physx::PxController* controller = controllerComponent->controller;
         if (controller != nullptr)
         {
-            controller->setUpDirection(PhysicsMath::Vector3ToPxVec3(controllerComponent->GetUpDirection()));
-
-            if (controllerComponent->GetType() == Component::BOX_CHARACTER_CONTROLLER_COMPONENT)
+            // Update geometry if needed
+            if (controllerComponent->geometryChanged)
             {
-                BoxCharacterControllerComponent* boxComponent = static_cast<BoxCharacterControllerComponent*>(controllerComponent);
-                physx::PxBoxController* boxController = static_cast<physx::PxBoxController*>(controller);
+                if (controllerComponent->GetType() == Component::BOX_CHARACTER_CONTROLLER_COMPONENT)
+                {
+                    BoxCharacterControllerComponent* boxComponent = static_cast<BoxCharacterControllerComponent*>(controllerComponent);
+                    physx::PxBoxController* boxController = static_cast<physx::PxBoxController*>(controller);
 
-                boxController->setHalfHeight(boxComponent->GetHalfHeight());
-                boxController->setHalfForwardExtent(boxComponent->GetHalfForwardExtent());
-                boxController->setHalfSideExtent(boxComponent->GetHalfSideExtent());
+                    boxController->setHalfHeight(boxComponent->GetHalfHeight());
+                    boxController->setHalfForwardExtent(boxComponent->GetHalfForwardExtent());
+                    boxController->setHalfSideExtent(boxComponent->GetHalfSideExtent());
+                }
+                else if (controllerComponent->GetType() == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT)
+                {
+                    CapsuleCharacterControllerComponent* capsuleComponent = static_cast<CapsuleCharacterControllerComponent*>(controllerComponent);
+                    physx::PxCapsuleController* capsuleController = static_cast<physx::PxCapsuleController*>(controller);
+
+                    capsuleController->setRadius(capsuleComponent->GetRadius());
+                    capsuleController->setHeight(capsuleComponent->GetHeight());
+                }
+                controllerComponent->geometryChanged = false;
             }
-            else if (controllerComponent->GetType() == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT)
-            {
-                CapsuleCharacterControllerComponent* capsuleComponent = static_cast<CapsuleCharacterControllerComponent*>(controllerComponent);
-                physx::PxCapsuleController* capsuleController = static_cast<physx::PxCapsuleController*>(controller);
 
-                capsuleController->setRadius(capsuleComponent->GetRadius());
-                capsuleController->setHeight(capsuleComponent->GetHeight());
+            // Teleport if neeeded
+            if (controllerComponent->teleported)
+            {
+                controller->setPosition(PhysicsMath::Vector3ToPxExtendedVec3(controllerComponent->teleportDestination));
+                controllerComponent->teleported = false;
             }
         }
     }
@@ -913,6 +926,48 @@ void PhysicsSystem::UpdateComponents()
     collisionComponentsUpdatePending.clear();
     physicsComponensUpdatePending.clear();
     characterControllerComponentsUpdatePending.clear();
+}
+
+void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
+{
+    for (CharacterControllerComponent* controllerComponent : characterControllerComponents)
+    {
+        physx::PxController* controller = controllerComponent->controller;
+        if (controller != nullptr)
+        {
+            // Apply movement
+            physx::PxControllerCollisionFlags collisionFlags;
+            if (controllerComponent->GetMovementMode() == CharacterControllerComponent::MovementMode::Flying)
+            {
+                collisionFlags = controller->move(PhysicsMath::Vector3ToPxVec3(controllerComponent->totalDisplacement), 0.0f, timeElapsed, physx::PxControllerFilters());
+            }
+            else
+            {
+                DVASSERT(controllerComponent->GetMovementMode() == CharacterControllerComponent::MovementMode::Walking);
+
+                // Ignore displacement along z axis
+                Vector3 displacement = controllerComponent->totalDisplacement;
+                displacement.z = 0.0f;
+
+                // Apply gravity
+                displacement += PhysicsMath::PxVec3ToVector3(physicsScene->getGravity()) * timeElapsed;
+
+                collisionFlags = controller->move(PhysicsMath::Vector3ToPxVec3(displacement), 0.0f, timeElapsed, physx::PxControllerFilters());
+            }
+
+            controllerComponent->grounded = (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN);
+            controllerComponent->totalDisplacement = Vector3::Zero;
+
+            // Sync entity's transform
+
+            Entity* entity = controllerComponent->GetEntity();
+            DVASSERT(entity != nullptr);
+
+            Matrix4 transform = entity->GetLocalTransform();
+            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getPosition()));
+            entity->SetLocalTransform(transform);
+        }
+    }
 }
 
 } // namespace DAVA
