@@ -16,6 +16,7 @@ protected:
 private:
     void OnPlaceOnLandscape();
     void OnSnapToLandscape();
+    void OnPlaceAndAlign();
 
     DAVA::TArc::QtConnections connections;
 

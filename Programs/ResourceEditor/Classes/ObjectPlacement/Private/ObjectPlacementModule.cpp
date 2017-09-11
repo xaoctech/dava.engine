@@ -110,6 +110,28 @@ void ObjectPlacementModule::PostInit()
 
         ui->AddAction(mainWindowKey, placementInfo, action);
     }
+
+    // Place and align
+    {
+        QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_placeonobj.png"), QString("Place and align"));
+        { // enable/disable
+            FieldDescriptor fieldDescr;
+            fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+            fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+            action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+                return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+            });
+        }
+        action->setShortcuts({ QKeySequence(Qt::CTRL + Qt::Key_P) });
+        action->setShortcutContext(Qt::WindowShortcut);
+        connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &ObjectPlacementModule::OnPlaceAndAlign));
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit,
+                                                        { InsertionParams::eInsertionMethod::AfterItem, "Place on landscape" }));
+        placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
+
+        ui->AddAction(mainWindowKey, placementInfo, action);
+    }
 }
 
 void ObjectPlacementModule::OnPlaceOnLandscape()
@@ -125,6 +147,13 @@ void ObjectPlacementModule::OnSnapToLandscape()
     ObjectPlacementData* data = context->GetData<ObjectPlacementData>();
     bool snapToLandscapeEnabled = data->GetSnapToLandscape();
     data->SetSnapToLandscape(!snapToLandscapeEnabled);
+}
+
+void ObjectPlacementModule::OnPlaceAndAlign()
+{
+    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    ObjectPlacementData* data = context->GetData<ObjectPlacementData>();
+    data->objectPlacementSystem->PlaceAndAlign();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ObjectPlacementModule)

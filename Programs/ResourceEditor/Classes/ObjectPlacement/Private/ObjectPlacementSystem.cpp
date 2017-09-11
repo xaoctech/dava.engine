@@ -61,3 +61,7 @@ void ObjectPlacementSystem::RemoveEntity(DAVA::Entity* entity)
         modificationSystem->SetLandscapeSnap(snapToLandscape);
     }
 }
+
+void ObjectPlacementSystem::PlaceAndAlign() const
+{
+}

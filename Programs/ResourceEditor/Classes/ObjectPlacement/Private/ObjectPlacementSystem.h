@@ -14,6 +14,7 @@ public:
     void SetSnapToLandscape(bool newSnapToLandscape);
     bool GetSnapToLandscape() const;
     void PlaceOnLandscape() const;
+    void PlaceAndAlign() const;
 
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
