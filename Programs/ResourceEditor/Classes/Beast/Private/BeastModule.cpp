@@ -115,7 +115,7 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([this]() {
-            InvokeOperation(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
+            InvokeOperation(REGlobal::ReloadAllTextures.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         });
     }
 }
