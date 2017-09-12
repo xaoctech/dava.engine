@@ -203,14 +203,14 @@ def copy_folder_recursive(src, dest, ignore=None):
 
 
 def cmake_build(solution_folder_path, configuration):
-    run_process("cmake --build . --config " + configuration, process_cwd=solution_folder_path, shell=True)
+    run_process(build_config.get_cmake_executable() + " --build . --config " + configuration, process_cwd=solution_folder_path, shell=True)
 
 
 def cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args = []):
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
-    cmd = ['cmake', '-G', cmake_generator, src_folder_path]
+    cmd = [build_config.get_cmake_executable(), '-G', cmake_generator, src_folder_path]
     cmd.extend(cmake_additional_args)
 
     print 'Running CMake: {}, working directory: {}'.format(' '.join(cmd), output_folder_path)

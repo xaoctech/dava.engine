@@ -1,3 +1,4 @@
+import os
 
 # Current variables to use for building libraries
 # Change these when migrating over to new compilers, ides etc.
@@ -60,6 +61,27 @@ _vc2017_path = 'C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional
 _msbuild2013_path='c:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe'
 _msbuild2015_path='c:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe'
 _msbuild2017_path='c:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/MSBuild/15.0/Bin/MSBuild.exe'
+
+_cmake_path_win32='Bin/CMakeWin32/bin/cmake'
+_cmake_path_macos='Bin/CMakeMac/CMake.app/Contents/bin/cmake'
+_cmake_path_linux='Bin/CMakeLinux/bin/cmake'
+_cmake_path=None
+
+
+def configure(host, root_path):
+    global _cmake_path
+    print 'configure: host=%s, root_path=%s' % (host, root_path)
+    if host=='win32':
+        _cmake_path=os.path.join(root_path, _cmake_path_win32)
+    elif host=='darwin':
+        _cmake_path=os.path.join(root_path, _cmake_path_macos)
+    elif host=='linux':
+        _cmake_path=os.path.join(root_path, _cmake_path_linux)
+    print 'configure:',_cmake_path
+
+
+def get_cmake_executable():
+    return _cmake_path
 
 
 def get_msvc_path(vs_ver):
