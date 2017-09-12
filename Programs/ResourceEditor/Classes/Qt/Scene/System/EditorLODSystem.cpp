@@ -211,6 +211,14 @@ EditorLODSystem::~EditorLODSystem()
 
 void EditorLODSystem::Process(DAVA::float32 timeElapsed)
 {
+    for (DAVA::uint32 mode = 0; mode < eEditorMode::MODE_COUNT; ++mode)
+    {
+        if (pendingSummarizeValues[mode] == true)
+        {
+            lodData[mode].SummarizeValues();
+            pendingSummarizeValues[mode] = false;
+        }
+    }
     ProcessAddedEntities();
     DispatchSignals();
     ProcessPlaneLODs();
@@ -237,8 +245,8 @@ void EditorLODSystem::ProcessAddedEntities()
             resetForceValues.distance = DAVA::LodComponent::INVALID_DISTANCE;
             lodData[eEditorMode::MODE_SELECTION].ApplyForce(resetForceValues);
             lodData[eEditorMode::MODE_SELECTION].lodComponents.push_back(pair.second);
-            lodData[eEditorMode::MODE_SELECTION].SummarizeValues();
             lodData[eEditorMode::MODE_SELECTION].ApplyForce(forceValues);
+            pendingSummarizeValues[eEditorMode::MODE_SELECTION] = true;
             invalidateUI = true;
         }
     }
@@ -273,7 +281,7 @@ void EditorLODSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* compon
 
     DAVA::LodComponent* lodComponent = static_cast<DAVA::LodComponent*>(component);
     lodData[eEditorMode::MODE_ALL_SCENE].lodComponents.push_back(lodComponent);
-    lodData[eEditorMode::MODE_ALL_SCENE].SummarizeValues();
+    pendingSummarizeValues[eEditorMode::MODE_ALL_SCENE] = true;
 
     componentsToAdd.emplace_back(entity, lodComponent);
 }
@@ -288,7 +296,7 @@ void EditorLODSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* com
         bool removed = FindAndRemoveExchangingWithLast(lodData[m].lodComponents, removedComponent);
         if (removed)
         {
-            lodData[m].SummarizeValues();
+            pendingSummarizeValues[m] = true;
             if (m == mode)
             {
                 EmitInvalidateUI(FLAG_ALL);
@@ -318,7 +326,7 @@ void EditorLODSystem::PrepareForRemove()
 
 void EditorLODSystem::SceneDidLoaded()
 {
-    lodData[eEditorMode::MODE_ALL_SCENE].SummarizeValues();
+    pendingSummarizeValues[eEditorMode::MODE_ALL_SCENE] = true;
     if (mode == eEditorMode::MODE_ALL_SCENE)
     {
         EmitInvalidateUI(FLAG_ALL);
@@ -601,7 +609,7 @@ void EditorLODSystem::SelectionChanged(const SelectableGroup& selection)
         }
     }
 
-    lodData[eEditorMode::MODE_SELECTION].SummarizeValues();
+    pendingSummarizeValues[eEditorMode::MODE_SELECTION] = true;
     if (mode == eEditorMode::MODE_SELECTION)
     {
         lodData[eEditorMode::MODE_SELECTION].ApplyForce(forceValues);

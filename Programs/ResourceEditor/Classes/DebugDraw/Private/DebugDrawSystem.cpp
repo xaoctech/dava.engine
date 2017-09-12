@@ -150,20 +150,18 @@ void DebugDrawSystem::Draw()
 
     for (DAVA::Entity* entity : entities)
     { //drawing methods do not use data from components
-        DrawObjectBoxesByType(entity);
+        //DrawObjectBoxesByType(entity);
         DrawHangingObjects(entity);
         DrawSwitchesWithDifferentLods(entity);
         DrawDebugOctTree(entity);
+    }
 
-        //draw selected objects
-        const SelectableGroup& selection = Selection::GetSelection();
-        bool isSelected = selection.ContainsObject(entity);
-
-        if (isSelected)
-        {
-            DrawLightNode(entity, true);
-            DrawSelectedSoundNode(entity);
-        }
+    //draw selected objects
+    const SelectableGroup& selection = Selection::GetSelection();
+    for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
+    {
+        DrawLightNode(entity, true);
+        DrawSelectedSoundNode(entity);
     }
 }
 

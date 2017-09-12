@@ -175,6 +175,7 @@ private:
     DAVA::Vector<std::pair<DAVA::Entity*, DAVA::LodComponent*>> componentsToAdd;
 
     bool recursive = false;
+    DAVA::Array<bool, eEditorMode::MODE_COUNT> pendingSummarizeValues;
 };
 
 class EditorLODSystemUIDelegate
