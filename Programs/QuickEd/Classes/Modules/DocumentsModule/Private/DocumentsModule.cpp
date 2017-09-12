@@ -15,7 +15,6 @@
 
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/Data/HudSystemData.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
 #include "Classes/EditorSystems/UserAssetsSettings.h"
 
@@ -82,9 +81,6 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
 
     Renderer::SetDesiredFPS(60);
     DynamicBufferAllocator::SetPageSize(DynamicBufferAllocator::DEFAULT_PAGE_SIZE);
-
-    InitEditorSystems();
-    previewWidget->InitFromSystemsManager(systemsManager.get());
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -615,7 +611,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new HudSystemData());
             id = contextManager->CreateContext(std::move(initialData));
         }
     }

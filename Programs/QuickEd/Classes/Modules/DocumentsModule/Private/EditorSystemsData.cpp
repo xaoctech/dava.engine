@@ -1,23 +1,35 @@
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
-DAVA_VIRTUAL_REFLECTION_IMPL(EditorData)
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorSystemsData)
 {
-    DAVA::ReflectionRegistrator<EditorData>::Begin()
+    DAVA::ReflectionRegistrator<EditorSystemsData>::Begin()
     .ConstructorByPointer()
-    .Field(emulationModePropertyName.c_str(), &EditorData::emulationMode)
+    .Field(highlightedNodePropertyName.c_str(), &EditorSystemsData::GetHighlightedNode, &EditorSystemsData::SetHighlightedNode)
+    .Field(emulationModePropertyName.c_str(), &EditorSystemsData::emulationMode)
     .End();
 }
 
-EditorData::EditorData()
+EditorSystemsData::EditorSystemsData()
 {
 }
 
-EditorData::~EditorData() = default;
+EditorSystemsData::~EditorSystemsData() = default;
 
-const EditorSystemsManager* EditorData::GetSystemsManager() const
+ControlNode* EditorSystemsData::GetHighlightedNode() const
+{
+    return highlightedNode;
+}
+
+void EditorSystemsData::SetHighlightedNode(ControlNode* node)
+{
+    highlightedNode = node;
+}
+
+const EditorSystemsManager* EditorSystemsData::GetSystemsManager() const
 {
     return systemsManager.get();
 }
 
-DAVA::FastName EditorData::emulationModePropertyName{ "emulation mode" };
+DAVA::FastName EditorSystemsData::emulationModePropertyName{ "emulation mode" };
+DAVA::FastName EditorSystemsData::highlightedNodePropertyName{ "highlighted node" };

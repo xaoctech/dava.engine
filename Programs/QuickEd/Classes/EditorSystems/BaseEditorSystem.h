@@ -32,6 +32,8 @@ protected:
         PIXEL_GRID,
         //this system creates HUD around controls and must be updated before HUD users
         HUD,
+        //this system draw distance lines between controls
+        DISTANCE_LINES,
         //this system can draw magnet lines and must be updated after the HUD system
         TRANSFORM,
 

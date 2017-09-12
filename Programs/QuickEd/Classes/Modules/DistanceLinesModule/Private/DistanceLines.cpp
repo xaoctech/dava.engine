@@ -1,5 +1,7 @@
-#include "EditorSystems/Private/DistanceLines.h"
-#include "EditorSystems/DistanceSystem.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceLines.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceSystem.h"
+#include "Modules/DistanceLinesModule/Private/DistanceLinesPreferences.h"
+
 #include "EditorSystems/UIControlUtils.h"
 
 #include <TArc/Core/ContextAccessor.h>

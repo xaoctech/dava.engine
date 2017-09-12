@@ -65,7 +65,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , hScrollBarData(Vector2::AXIS_X, accessor)
     , vScrollBarData(Vector2::AXIS_Y, accessor)
     , canvasDataAdapter(accessor)
-    , systemsManager(systemsManager_)
 {
     InjectRenderWidget(renderWidget);
 
@@ -76,7 +75,7 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 
 PreviewWidget::~PreviewWidget() = default;
 
-void PreviewWidget::CreateActions()
+void PreviewWidget::CreateActions(EditorSystemsManager* systemsManager)
 {
     using namespace DAVA::TArc;
 

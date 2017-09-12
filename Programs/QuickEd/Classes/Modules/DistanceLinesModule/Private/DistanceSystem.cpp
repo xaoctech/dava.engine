@@ -1,11 +1,12 @@
-#include "EditorSystems/DistanceSystem.h"
-#include "EditorSystems/Data/HudSystemData.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceSystem.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceLines.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesFactory.h"
+
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/CanvasModule/CanvasData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 #include "EditorSystems/UIControlUtils.h"
-#include "EditorSystems/Private/DistanceLines.h"
-#include "EditorSystems/Private/DistanceLinesFactory.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/Utils.h>
@@ -18,14 +19,11 @@
 #include <Utils/UTF8Utils.h>
 
 DistanceSystem::DistanceSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
-    : BaseEditorSystem(parent, accessor)
+    : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
     , font(nullptr)
 {
     using namespace DAVA;
-
-    UpdateViewsSystem* updateSystem = accessor->GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
-    updateSystem->beforeRender.Connect(this, &DistanceSystem::Update);
 
     FilePath fntPath = FilePath("~res:/QuickEd/Fonts/DejaVuSans.ttf");
     font.Set(FTFont::Create(fntPath));
@@ -33,6 +31,27 @@ DistanceSystem::DistanceSystem(EditorSystemsManager* parent, DAVA::TArc::Context
 }
 
 DistanceSystem::~DistanceSystem() = default;
+
+CanvasControls DistanceSystem::CreateCanvasControls()
+{
+    using namespace DAVA;
+
+    DVASSERT(canvas.Valid() == false);
+    canvas.Set(new UIControl());
+    canvas->SetName("Distance_system_canvas");
+
+    return { { canvas } };
+}
+
+void DistanceSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
+{
+    canvas = nullptr;
+}
+
+BaseEditorSystem::eSystems DistanceSystem::GetOrder() const
+{
+    return DISTANCE_LINES;
+}
 
 bool DistanceSystem::CanDrawDistances() const
 {
@@ -50,8 +69,8 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
-    HudSystemData* hudSystemData = activeContext->GetData<HudSystemData>();
-    ControlNode* highlightedNode = hudSystemData->GetHighlightedNode();
+    EditorSystemsData* systemsData = activeContext->GetData<EditorSystemsData>();
+    ControlNode* highlightedNode = systemsData->GetHighlightedNode();
     if (highlightedNode == nullptr)
     {
         return false;
@@ -79,12 +98,11 @@ bool DistanceSystem::CanDrawDistances() const
     return true;
 }
 
-void DistanceSystem::Update()
+void DistanceSystem::OnUpdate()
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
 
-    UIControl* canvas = systemsManager->GetDistanceLinesControl();
     canvas->RemoveAllControls();
     if (CanDrawDistances() == false)
     {
@@ -93,8 +111,8 @@ void DistanceSystem::Update()
 
     //prepare data
     DataContext* activeContext = accessor->GetActiveContext();
-    HudSystemData* editorData = activeContext->GetData<HudSystemData>();
-    ControlNode* highlightedNode = editorData->GetHighlightedNode();
+    EditorSystemsData* systemsData = activeContext->GetData<EditorSystemsData>();
+    ControlNode* highlightedNode = systemsData->GetHighlightedNode();
     UIControl* highlightedControl = highlightedNode->GetControl();
 
     DocumentData* documentData = activeContext->GetData<DocumentData>();

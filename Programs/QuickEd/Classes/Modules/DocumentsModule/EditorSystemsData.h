@@ -3,12 +3,17 @@
 #include <TArc/DataProcessing/DataNode.h>
 
 class EditorSystemsManager;
+class ControlNode;
 
-class EditorData : public DAVA::TArc::DataNode
+class EditorSystemsData : public DAVA::TArc::DataNode
 {
 public:
-    EditorData();
-    ~EditorData() override;
+    EditorSystemsData();
+    ~EditorSystemsData() override;
+
+    ControlNode* GetHighlightedNode() const;
+
+    static DAVA::FastName highlightedNodePropertyName;
     static DAVA::FastName emulationModePropertyName;
 
 private:
@@ -16,7 +21,9 @@ private:
     friend class DocumentsModule;
 
     const EditorSystemsManager* GetSystemsManager() const;
+    void SetHighlightedNode(ControlNode* node);
 
+    ControlNode* highlightedNode = nullptr;
     std::unique_ptr<EditorSystemsManager> systemsManager;
     bool emulationMode = false;
 

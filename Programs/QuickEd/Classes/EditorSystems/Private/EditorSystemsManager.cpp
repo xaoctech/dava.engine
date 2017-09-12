@@ -10,7 +10,6 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 
 #include "EditorSystems/SelectionSystem.h"
-#include "EditorSystems/HUDSystem.h"
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/CursorSystem.h"
 
@@ -105,7 +104,6 @@ void EditorSystemsManager::InitSystems()
 {
     selectionSystemPtr = new SelectionSystem(accessor);
     RegisterEditorSystem(selectionSystemPtr);
-    RegisterEditorSystem(new HUDSystem(accessor));
     RegisterEditorSystem(new EditorTransformSystem(accessor));
     RegisterEditorSystem(new CursorSystem(accessor));
 }
@@ -307,9 +305,6 @@ void EditorSystemsManager::OnUpdate()
     {
         orderAndSystem.second->OnUpdate();
     }
-    distanceLinesControl.Set(new UIControl());
-    distanceLinesControl->SetName(FastName("distanceLinesControl"));
-    rootControl->AddControl(distanceLinesControl.Get());
 }
 
 void EditorSystemsManager::InitDAVAScreen()
@@ -355,11 +350,6 @@ void EditorSystemsManager::OnDisplayStateChanged(eDisplayState currentState, eDi
     {
         rootControl->AddControl(inputLayerControl.Get());
     }
-}
-
-DAVA::UIControl* EditorSystemsManager::GetDistanceLinesControl() const
-{
-    return distanceLinesControl.Get();
 }
 
 Vector2 EditorSystemsManager::GetMouseDelta() const

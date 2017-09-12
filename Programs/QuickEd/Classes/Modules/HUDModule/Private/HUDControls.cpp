@@ -1,4 +1,4 @@
-#include "EditorSystems/HUDControls.h"
+#include "Classes/Modules/HUDModule/Private/HUDControls.h"
 
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"

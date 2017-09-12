@@ -1,6 +1,7 @@
-#include "EditorSystems/HUDSystem.h"
+#include "Classes/Modules/HUDModule/Private/HUDSystem.h"
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
 
-#include "EditorSystems/Data/HudSystemData.h"
+#include "Classes/Modules/HUDModule/Private/HUDControls.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
@@ -10,7 +11,6 @@
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
-#include "Classes/EditorSystems/HUDControls.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
 
 #include <TArc/Core/ContextAccessor.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EditorSystems/Private/DistanceLines.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceLines.h"
 
 #include <Base/BaseTypes.h>
 #include <Math/Rect.h>
