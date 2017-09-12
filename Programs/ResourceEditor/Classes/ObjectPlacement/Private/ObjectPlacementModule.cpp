@@ -6,11 +6,11 @@
 #include "Classes/Qt/Scene/System/ModifSystem.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/Selection.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 
-#include "TArc/WindowSubSystem/QtAction.h"
+#include <TArc/WindowSubSystem/QtAction.h>
 
-#include <QAction>
+#include <Scene3D/Components/ComponentHelpers.h>
+
 
 void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
@@ -21,7 +21,7 @@ void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
         std::make_unique<ObjectPlacementData>();
 
     objectPlacementData->objectPlacementSystem.reset(new ObjectPlacementSystem(scene));
-    scene->AddSystem(objectPlacementData->objectPlacementSystem.get(), 0);
+    scene->AddSystem(objectPlacementData->objectPlacementSystem.get(), MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT));
 
     context->CreateData(std::move(objectPlacementData));
 }

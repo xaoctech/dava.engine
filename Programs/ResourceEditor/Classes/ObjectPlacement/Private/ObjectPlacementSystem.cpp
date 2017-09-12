@@ -6,71 +6,73 @@ ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
 {
     SceneEditor2* editorScene = static_cast<SceneEditor2*>(scene);
     modificationSystem = editorScene->modifSystem;
+    DVASSERT(modificationSystem);
     renderSystem = editorScene->renderSystem;
 }
 
 bool ObjectPlacementSystem::GetSnapToLandscape() const
 {
+    assert(GetScene());
     return snapToLandscape;
 }
 
 void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 {
-    if (!GetScene())
-        return;
-
-    if (nullptr == landscape)
+    assert(GetScene());
+    if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
         return;
     }
     snapToLandscape = newSnapToLandscape;
-    DVASSERT(modificationSystem);
     modificationSystem->SetLandscapeSnap(snapToLandscape);
 }
 
 void ObjectPlacementSystem::PlaceOnLandscape() const
 {
-    if (!GetScene())
-        return;
-
-    if (nullptr == landscape)
+    assert(GetScene());
+    if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
         return;
     }
-    DVASSERT(modificationSystem);
     const SelectableGroup& selection = Selection::GetSelection();
     modificationSystem->PlaceOnLandscape(selection);
 }
 
 void ObjectPlacementSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (GetLandscape(entity) != NULL)
+    if (GetLandscape(entity) != nullptr)
     {
-        landscape = GetLandscape(entity);
+        landscapes.push_back(GetLandscape(entity));
     }
 }
 
 void ObjectPlacementSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (GetLandscape(entity) != NULL)
+    DAVA::Landscape* landscape;
+    if ((landscape = GetLandscape(entity)) != nullptr)
+    {
+        landscapes.erase(std::remove(landscapes.begin(), landscapes.end(), landscape),
+                         landscapes.end());
+    }
+
+    if (landscapes.empty())
     {
         snapToLandscape = false;
-        landscape = nullptr;
-        DVASSERT(modificationSystem);
         modificationSystem->SetLandscapeSnap(snapToLandscape);
     }
 }
 
 void ObjectPlacementSystem::PlaceAndAlign() const
 {
+    assert(GetScene());
+
     using namespace DAVA;
 
     const SelectableGroup& entities = Selection::GetSelection();
 
-    Vector<EntityToModify> modifEntities;
-    modifEntities = CreateEntityToModifyVector(entities);
+    Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities);
     if (modifEntities.empty())
         return;
 
@@ -79,36 +81,35 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         Matrix4 translation;
         Vector3 collisionNormal;
         bool hitObject = false, hitLandscape = false;
-        do
-        {
-            Vector3 originalPos = etm.originalTransform.GetTranslationVector();
-            Ray3 ray(originalPos, Vector3(0.0f, 0.0f, -1.0f));
-            RayTraceCollision collision;
-            hitObject = renderSystem->GetRenderHierarchy()->RayTrace(ray, collision);
-            if (hitObject)
-            {
-                GetObjectCollisionMatrixAndNormal(collision, translation, collisionNormal);
-                break;
-            }
 
+        Vector3 originalPos = etm.originalTransform.GetTranslationVector();
+        Ray3 ray(originalPos, Vector3(0.0f, 0.0f, -1.0f));
+        RayTraceCollision collision;
+        hitObject = renderSystem->GetRenderHierarchy()->RayTrace(ray, collision);
+        if (hitObject)
+        {
+            GetObjectCollisionMatrixAndNormal(collision, translation, collisionNormal);
+        }
+        else
+        {
             Vector3 landscapeCollision;
-            if (nullptr != landscape)
+            for (Landscape* landscape : landscapes)
             {
                 hitLandscape = landscape->PlacePoint(originalPos, landscapeCollision, &collisionNormal);
+                if (hitLandscape)
+                {
+                    translation.SetTranslationVector(landscapeCollision - originalPos);
+                }
             }
-            if (hitLandscape)
-            {
-                translation.SetTranslationVector(landscapeCollision - originalPos);
-            }
-        } while (0);
+        }
 
-        if (! (hitLandscape || hitObject))
+        if (!(hitLandscape || hitObject))
             continue;
 
         Vector3 currentUp = Vector3(0.0, 0.0, 1.0);
         Quaternion rotationQuaternion;
-        Vector3 _pos, _scale;
-        etm.originalTransform.Decomposition(_pos, _scale, rotationQuaternion);
+        Vector3 pos, scale;
+        etm.originalTransform.Decomposition(pos, scale, rotationQuaternion);
         currentUp = currentUp * rotationQuaternion.GetMatrix();
         rotationQuaternion = Quaternion::MakeRotation(currentUp, collisionNormal);
         Matrix4 rotation = rotationQuaternion.GetMatrix();

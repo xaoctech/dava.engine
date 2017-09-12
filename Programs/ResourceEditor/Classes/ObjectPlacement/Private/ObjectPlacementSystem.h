@@ -32,6 +32,6 @@ private:
     EntityModificationSystem* modificationSystem = nullptr;
 
     bool snapToLandscape = false;
-    DAVA::Landscape* landscape = nullptr;
+    DAVA::Vector<DAVA::Landscape*> landscapes;
     DAVA::RenderSystem* renderSystem = nullptr;
 };
