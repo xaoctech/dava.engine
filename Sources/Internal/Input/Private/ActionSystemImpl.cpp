@@ -335,7 +335,11 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
                 }
             }
 
-            InternalDigitalActionState& digitalActionState = digitalActionsStates[digitalBinding.actionId];
+            auto digitalActionStateIter = digitalActionsStates.find(digitalBinding.actionId);
+
+            DVASSERT(digitalActionStateIter != digitalActionsStates.end());
+
+            InternalDigitalActionState& digitalActionState = digitalActionStateIter->second;
             digitalActionState.active = false;
 
             if (skipBinding)
@@ -364,7 +368,11 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 
         for (const AnalogBinding& analogBinding : setBinding.analogBindings)
         {
-            InternalAnalogActionState& analogActionState = analogActionsStates[analogBinding.actionId];
+            auto analogActionStateIter = analogActionsStates.find(analogBinding.actionId);
+
+            DVASSERT(analogActionStateIter != analogActionsStates.end());
+
+            InternalAnalogActionState& analogActionState = analogActionStateIter->second;
             analogActionState.active = false;
 
             bool skipBinding = false;
@@ -412,23 +420,23 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
         }
     }
 
-    // We need to process all active events after checking states to allow calls to getters
+    // We need to process all active actions after checking states to allow calls to getters
     // (GetDigitalActionState, GetAnalogActionState) from 'ActionTriggered' signal handlers
 
-    // Trigger all active digital events
-    for (const auto& p : digitalActionsStates)
+    // Trigger all active digital actions
+    for (const auto& digitalStatesMapPair : digitalActionsStates)
     {
-        const InternalDigitalActionState& digitalActionState = p.second;
+        const InternalDigitalActionState& digitalActionState = digitalStatesMapPair.second;
         if (digitalActionState.active)
         {
             actionSystem->ActionTriggered.Emit(digitalActionState.action);
         }
     }
 
-    // Trigger all active and changed in the current frame analog events
-    for (auto& p : analogActionsStates)
+    // Trigger all active and changed in the current frame analog actions
+    for (auto& analogStatesMapPair : analogActionsStates)
     {
-        InternalAnalogActionState& analogActionState = p.second;
+        InternalAnalogActionState& analogActionState = analogStatesMapPair.second;
         if (analogActionState.changedInCurrentFrame && analogActionState.active)
         {
             actionSystem->ActionTriggered.Emit(analogActionState.action);
