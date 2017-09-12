@@ -1,7 +1,7 @@
 #include "Physics/PhysicsVehiclesSubsystem.h"
 
 #include "Physics/PhysicsModule.h"
-#include "Physics/PhysicsHelpers.h"
+#include "Physics/PhysicsUtils.h"
 #include "Physics/PhysicsComponent.h"
 #include "Physics/BoxShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
@@ -702,7 +702,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     VehicleChassisComponent* chassis = GetChassis(vehicleComponent);
     DVASSERT(chassis != nullptr);
 
-    Vector<CollisionShapeComponent*> chassisShapes = GetShapeComponents(chassis->GetEntity());
+    Vector<CollisionShapeComponent*> chassisShapes = PhysicsUtils::GetShapeComponents(chassis->GetEntity());
     DVASSERT(chassisShapes.size() == 1);
     CollisionShapeComponent* chassisShape = chassisShapes[0];
     DVASSERT(chassisShape != nullptr);
@@ -749,7 +749,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     {
         VehicleWheelComponent* wheel = wheels[i];
 
-        Vector<CollisionShapeComponent*> wheelShapes = GetShapeComponents(wheel->GetEntity());
+        Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
         DVASSERT(wheelShapes.size() == 1);
 
         CollisionShapeComponent* wheelShape = wheelShapes[0];
@@ -813,7 +813,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     {
         VehicleWheelComponent* wheel = wheels[i];
 
-        Vector<CollisionShapeComponent*> wheelShapes = GetShapeComponents(wheel->GetEntity());
+        Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
         DVASSERT(wheelShapes.size() == 1);
 
         CollisionShapeComponent* wheelShape = wheelShapes[0];

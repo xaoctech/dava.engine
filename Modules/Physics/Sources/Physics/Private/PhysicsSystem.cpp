@@ -8,7 +8,7 @@
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
-#include "Physics/PhysicsHelpers.h"
+#include "Physics/PhysicsUtils.h"
 #include "Physics/CollisionSingleComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 #include "Physics/PhysicsVehiclesSubsystem.h"
@@ -569,7 +569,7 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 Entity* child = children[i];
                 DVASSERT(child != nullptr);
 
-                Vector<CollisionShapeComponent*> shapes = GetShapeComponents(child);
+                Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(child);
                 if (shapes.size() > 0)
                 {
                     // Update entity using just first shape for now
@@ -953,7 +953,7 @@ bool PhysicsSystem::Raycast(const Vector3& origin, const Vector3& direction, flo
                                  static_cast<PxReal>(distance), callback);
 }
 
-PhysicsVehiclesSubsystem* PhysicsSystem::GetVehiclesSystem() const
+PhysicsVehiclesSubsystem* PhysicsSystem::GetVehiclesSystem()
 {
     return vehiclesSubsystem;
 }

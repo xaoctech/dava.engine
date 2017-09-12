@@ -6,6 +6,9 @@
 
 namespace DAVA
 {
+namespace PhysicsUtils
+{
 /** Get vector of collision components attached to the entity */
 Vector<CollisionShapeComponent*> GetShapeComponents(Entity* entity);
+}
 }
