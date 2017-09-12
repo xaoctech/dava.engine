@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TArc/Core/ClientModule.h"
-#include "TArc/Utils/QtConnections.h"
+#include <TArc/Core/ClientModule.h>
+#include <TArc/Utils/QtConnections.h>
 
-#include "Reflection/Reflection.h"
+#include <Reflection/Reflection.h>
 
 class ObjectPlacementModule : public DAVA::TArc::ClientModule
 {
