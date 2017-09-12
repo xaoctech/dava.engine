@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EditorSystems/BaseEditorSystem.h"
-#include "UI/Preview/Data/CanvasDataAdapter.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
 
 #include <TArc/DataProcessing/SettingsNode.h>
 
@@ -26,19 +26,24 @@ public:
 class PixelGrid : public BaseEditorSystem
 {
 public:
-    PixelGrid(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
+    PixelGrid(DAVA::TArc::ContextAccessor* accessor);
     ~PixelGrid() override;
 
 private:
+    CanvasControls CreateCanvasControls() override;
+    void DeleteCanvasControls(const CanvasControls& canvasControls) override;
+    eSystems GetOrder() const override;
+    void OnUpdate() override;
+
     void InitControls();
 
     void OnVisualSettingsChanged(const DAVA::Any&);
 
     bool CanShowGrid() const;
-    void UpdateGrid();
 
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
     DAVA::RefPtr<DAVA::UIControl> hLinesContainer;
 
     CanvasDataAdapter canvasDataAdapter;
+    DAVA::RefPtr<DAVA::UIControl> pixelGridControl;
 };

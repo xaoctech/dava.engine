@@ -1,5 +1,5 @@
-#include "UI/Preview/Data/CanvasDataAdapter.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
+#include "Modules/CanvasModule/CanvasData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
 
 #include <TArc/Core/ContextAccessor.h>

@@ -1,5 +1,4 @@
-#include "UI/Preview/Data/CanvasData.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 
 #include <Base/FastName.h>
 #include <Math/Vector.h>
