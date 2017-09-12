@@ -28,7 +28,9 @@ struct Action final
     /** Id of the action */
     FastName actionId;
 
-    /** Id of the device whose event triggered the action. This field is always non-null. */
+    /** Pointer to the device whose event triggered the action. This field is always non-null. 
+		You can't rely on this for digital bindings, because for digital bindings this field will contain random triggered device pointer.
+	*/
     InputDevice* triggeredDevice;
 
     /**
