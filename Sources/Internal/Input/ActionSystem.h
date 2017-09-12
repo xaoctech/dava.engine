@@ -226,6 +226,13 @@ struct DigitalBinding final
 */
 struct AnalogBinding final
 {
+    enum class eAnalogStateType
+    {
+        // we can't name it ABSOLUTE and RELATIVE, because win api has these as defines in wingdi.h
+        ABSOLUTE_STATE = 0,
+        RELATIVE_STATE
+    };
+
     AnalogBinding()
     {
         std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
@@ -233,6 +240,11 @@ struct AnalogBinding final
 
     /** Id of the action to trigger. */
     FastName actionId;
+
+    /** Type of analog state that will be emitted as 'Action' and returned as 'AnalogActionState' 
+		ABSOLUTE_STATE for absolute coordinates, RELATIVE_STATE for coordinates relative to the previous coordinates
+	*/
+    eAnalogStateType analogStateType;
 
     /** Id of the analog element whose state changes will trigger the action. */
     eInputElements analogElementId;
