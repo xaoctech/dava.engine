@@ -11,7 +11,6 @@
 
 #include <Scene3D/Components/ComponentHelpers.h>
 
-
 void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
     SceneData* sceneData = context->GetData<SceneData>();

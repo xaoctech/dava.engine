@@ -5,13 +5,13 @@ const char* ObjectPlacementData::snapToLandscapePropertyName = "snapToLandscape"
 
 bool ObjectPlacementData::GetSnapToLandscape() const
 {
-    DVASSERT(objectPlacementSystem);
+    DVASSERT(objectPlacementSystem != nullptr);
     return objectPlacementSystem->GetSnapToLandscape();
 }
 
 void ObjectPlacementData::SetSnapToLandscape(bool newSnapToLandscape)
 {
-    DVASSERT(objectPlacementSystem);
+    DVASSERT(objectPlacementSystem != nullptr);
     objectPlacementSystem->SetSnapToLandscape(newSnapToLandscape);
 }
 

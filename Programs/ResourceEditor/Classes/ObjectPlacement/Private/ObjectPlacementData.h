@@ -3,8 +3,8 @@
 #include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
 #include "Classes/Qt/Scene/System/ModifSystem.h"
 
-#include "Reflection/ReflectionRegistrator.h"
 #include <TArc/DataProcessing/DataNode.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <memory>
 

@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Scene/System/SystemDelegates.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-#include "Scene/SceneTypes.h"
 #include "Classes/Selection/SelectableGroup.h"
-#include "Render/Highlevel/RenderHierarchy.h"
-#include "Render/Highlevel/RenderSystem.h"
+#include "Classes/Qt/Scene/System/SystemDelegates.h"
+#include "Classes/Scene/SceneTypes.h"
+
+#include <Scene3D/Entity.h>
+#include <UI/UIEvent.h>
+
+#include <Render/Highlevel/RenderHierarchy.h>
+#include <Render/Highlevel/RenderSystem.h>
 
 class ObjectPlacementSystem : public DAVA::SceneSystem, public EditorSceneSystem
 {

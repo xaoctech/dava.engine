@@ -6,20 +6,20 @@ ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
 {
     SceneEditor2* editorScene = static_cast<SceneEditor2*>(scene);
     modificationSystem = editorScene->modifSystem;
-    DVASSERT(modificationSystem);
+    DVASSERT(modificationSystem != nullptr);
     renderSystem = editorScene->renderSystem;
-    DVASSERT(renderSystem);
+    DVASSERT(renderSystem != nullptr);
 }
 
 bool ObjectPlacementSystem::GetSnapToLandscape() const
 {
-    assert(GetScene());
+    DVASSERT(GetScene() != nullptr);
     return snapToLandscape;
 }
 
 void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 {
-    assert(GetScene());
+    DVASSERT(GetScene() != nullptr);
     if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
@@ -31,7 +31,7 @@ void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 
 void ObjectPlacementSystem::PlaceOnLandscape() const
 {
-    assert(GetScene());
+    DVASSERT(GetScene() != nullptr);
     if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
@@ -54,8 +54,7 @@ void ObjectPlacementSystem::RemoveEntity(DAVA::Entity* entity)
     DAVA::Landscape* landscape;
     if ((landscape = GetLandscape(entity)) != nullptr)
     {
-        landscapes.erase(std::remove(landscapes.begin(), landscapes.end(), landscape),
-                         landscapes.end());
+        FindAndRemoveExchangingWithLast(landscapes, landscape);
     }
 
     if (landscapes.empty())
@@ -67,7 +66,7 @@ void ObjectPlacementSystem::RemoveEntity(DAVA::Entity* entity)
 
 void ObjectPlacementSystem::PlaceAndAlign() const
 {
-    assert(GetScene());
+    DVASSERT(GetScene() != nullptr);
 
     using namespace DAVA;
 
