@@ -17,8 +17,13 @@ public:
 
     UIClipContentComponent* Clone() const override;
 
+    void SetEnabled(bool _enabled);
+    bool IsEnabled() const;
+
 private:
     ~UIClipContentComponent() override = default;
     UIClipContentComponent& operator=(const UIClipContentComponent&) = delete;
+
+    bool enabled = true;
 };
 }
