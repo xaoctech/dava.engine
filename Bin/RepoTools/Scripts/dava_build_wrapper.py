@@ -161,7 +161,7 @@ class BuildWrapper():
         # Mac OS X platform
         if sys.platform == 'darwin':
             self.param = [
-                self.path_to_dava + os.path.normpath('/Bin/CMake.app/Contents/bin/cmake'),
+                self.path_to_dava + os.path.normpath('/Bin/CMakeMac/CMake.app/Contents/bin/cmake'),
                 '--build',
                 os.path.normpath(self.path_to_build),
                 '--config',
@@ -174,7 +174,7 @@ class BuildWrapper():
         # Windows 32 platform
         if sys.platform == 'win32':
             self.param = [
-                self.path_to_dava + os.path.normpath('/Bin/cmake/bin/cmake.exe'),
+                self.path_to_dava + os.path.normpath('/Bin/CMakeWin32/bin/cmake.exe'),
                 '--build',
                 os.path.normpath(self.path_to_build),
                 '--config',

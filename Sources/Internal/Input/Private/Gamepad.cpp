@@ -34,13 +34,8 @@ Gamepad::Gamepad(uint32 id)
     , axes{}
 {
     Engine* engine = Engine::Instance();
-    endFrameConnectionToken = engine->endFrame.Connect(this, &Gamepad::OnEndFrame);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Connect(this, &Gamepad::OnWindowFocusChanged); // TODO: handle all the windows
-    }
+    endFrameConnectionToken = engine->endFrame.Connect(this, &Gamepad::OnEndFrame);
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Gamepad::HandleMainDispatcherEvent));
 }
@@ -48,13 +43,8 @@ Gamepad::Gamepad(uint32 id)
 Gamepad::~Gamepad()
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Disconnect(endFrameConnectionToken);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Disconnect(this);
-    }
+    engine->endFrame.Disconnect(endFrameConnectionToken);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
@@ -208,23 +198,13 @@ void Gamepad::OnEndFrame()
     }
 }
 
-void Gamepad::OnWindowFocusChanged(DAVA::Window* window, bool focused)
-{
-    // Reset gamepad state when window is unfocused
-
-    if (!focused)
-    {
-        ResetState();
-    }
-}
-
 bool Gamepad::HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
 
     if (e.type == MainDispatcherEvent::WINDOW_CANCEL_INPUT)
     {
-        ResetState();
+        ResetState(e.window);
     }
 
     return false;
@@ -302,7 +282,7 @@ void Gamepad::HandleAxisMovement(eInputElements element, float32 newValue, bool 
     }
 }
 
-void Gamepad::ResetState()
+void Gamepad::ResetState(Window*)
 {
     for (uint32 i = eInputElements::GAMEPAD_FIRST_BUTTON; i <= eInputElements::GAMEPAD_LAST_BUTTON; ++i)
     {
@@ -316,5 +296,4 @@ void Gamepad::ResetState()
         HandleAxisMovement(axis, 0.0f, false);
     }
 }
-
 } // namespace DAVA

@@ -1,0 +1,1089 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: shaders/stdosl.h</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/shaders_2stdosl_8h-example.html','api_shaders_2stdosl_8h_example_html5d742c7f-3fd0-4b06-8d4d-2d8935452f2c','index.html',location.hash); javascript:initPage('API: shaders/stdosl.h','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="shaders_2stdosl_8h-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=shaders/stdosl.h&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>shaders/stdosl.h</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">shaders/stdosl.h</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class=
+"comment">// Copyright (c) 2009-2010 Sony Pictures Imageworks Inc., et al.  All Rights Reserved.</span>
+<span class="comment">//</span>
+<span class=
+"comment">// Redistribution and use in source and binary forms, with or without</span>
+<span class=
+"comment">// modification, are permitted provided that the following conditions are</span>
+<span class="comment">// met:</span>
+<span class=
+"comment">// * Redistributions of source code must retain the above copyright</span>
+<span class=
+"comment">//   notice, this list of conditions and the following disclaimer.</span>
+<span class=
+"comment">// * Redistributions in binary form must reproduce the above copyright</span>
+<span class=
+"comment">//   notice, this list of conditions and the following disclaimer in the</span>
+<span class=
+"comment">//   documentation and/or other materials provided with the distribution.</span>
+<span class=
+"comment">// * Neither the name of Sony Pictures Imageworks nor the names of its</span>
+<span class=
+"comment">//   contributors may be used to endorse or promote products derived from</span>
+<span class=
+"comment">//   this software without specific prior written permission.</span>
+<span class=
+"comment">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span>
+<span class=
+"comment">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span>
+<span class=
+"comment">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</span>
+<span class=
+"comment">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</span>
+<span class=
+"comment">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+<span class=
+"comment">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</span>
+<span class=
+"comment">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<span class=
+"comment">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span>
+<span class=
+"comment">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class=
+"comment">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+<span class=
+"comment">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+
+
+<span class="preprocessor">#ifndef STDOSL_H</span>
+<span class="preprocessor">#define STDOSL_H</span>
+
+
+<span class="preprocessor">#ifndef M_PI</span>
+<span class=
+"preprocessor">#define M_PI       3.1415926535897932        </span><span class="comment">/* pi */</span>
+<span class=
+"preprocessor">#define M_PI_2     1.5707963267948966        </span><span class="comment">/* pi/2 */</span>
+<span class=
+"preprocessor">#define M_PI_4     0.7853981633974483        </span><span class="comment">/* pi/4 */</span>
+<span class=
+"preprocessor">#define M_2_PI     0.6366197723675813        </span><span class="comment">/* 2/pi */</span>
+<span class=
+"preprocessor">#define M_2PI      6.2831853071795865        </span><span class="comment">/* 2*pi */</span>
+<span class=
+"preprocessor">#define M_4PI     12.566370614359173         </span><span class="comment">/* 4*pi */</span>
+<span class=
+"preprocessor">#define M_2_SQRTPI 1.1283791670955126        </span><span class="comment">/* 2/sqrt(pi) */</span>
+<span class=
+"preprocessor">#define M_E        2.7182818284590452        </span><span class="comment">/* e (Euler's number) */</span>
+<span class=
+"preprocessor">#define M_LN2      0.6931471805599453        </span><span class="comment">/* ln(2) */</span>
+<span class=
+"preprocessor">#define M_LN10     2.3025850929940457        </span><span class="comment">/* ln(10) */</span>
+<span class=
+"preprocessor">#define M_LOG2E    1.4426950408889634        </span><span class="comment">/* log_2(e) */</span>
+<span class=
+"preprocessor">#define M_LOG10E   0.4342944819032518        </span><span class="comment">/* log_10(e) */</span>
+<span class=
+"preprocessor">#define M_SQRT2    1.4142135623730950        </span><span class="comment">/* sqrt(2) */</span>
+<span class=
+"preprocessor">#define M_SQRT1_2  0.7071067811865475        </span><span class="comment">/* 1/sqrt(2) */</span>
+<span class="preprocessor">#endif</span>
+
+
+
+<span class=
+"comment">// Declaration of built-in functions and closures</span>
+<span class=
+"preprocessor">#define BUILTIN [[ int builtin = 1 ]]</span>
+<span class=
+"preprocessor">#define BUILTIN_DERIV [[ int builtin = 1, int deriv = 1 ]]</span>
+
+<span class=
+"preprocessor">#define PERCOMP1(name)                          \</span>
+<span class=
+"preprocessor">    normal name (normal x) BUILTIN;             \</span>
+<span class=
+"preprocessor">    vector name (vector x) BUILTIN;             \</span>
+<span class=
+"preprocessor">    point  name (point x) BUILTIN;              \</span>
+<span class=
+"preprocessor">    color  name (color x) BUILTIN;              \</span>
+<span class=
+"preprocessor">    float  name (float x) BUILTIN;</span>
+
+<span class=
+"preprocessor">#define PERCOMP2(name)                          \</span>
+<span class=
+"preprocessor">    normal name (normal x, normal y) BUILTIN;   \</span>
+<span class=
+"preprocessor">    vector name (vector x, vector y) BUILTIN;   \</span>
+<span class=
+"preprocessor">    point  name (point x, point y) BUILTIN;     \</span>
+<span class=
+"preprocessor">    color  name (color x, color y) BUILTIN;     \</span>
+<span class=
+"preprocessor">    float  name (float x, float y) BUILTIN;</span>
+
+<span class=
+"preprocessor">#define PERCOMP2F(name)                         \</span>
+<span class=
+"preprocessor">    normal name (normal x, float y) BUILTIN;    \</span>
+<span class=
+"preprocessor">    vector name (vector x, float y) BUILTIN;    \</span>
+<span class=
+"preprocessor">    point  name (point x, float y) BUILTIN;     \</span>
+<span class=
+"preprocessor">    color  name (color x, float y) BUILTIN;     \</span>
+<span class=
+"preprocessor">    float  name (float x, float y) BUILTIN;</span>
+
+
+<span class="comment">// Basic math</span>
+normal degrees (normal x) { <span class=
+"keywordflow">return</span> x*(180.0/M_PI); }
+vector degrees (vector x) { <span class=
+"keywordflow">return</span> x*(180.0/M_PI); }
+point  degrees (point x)  { <span class=
+"keywordflow">return</span> x*(180.0/M_PI); }
+color  degrees (color x)  { <span class=
+"keywordflow">return</span> x*(180.0/M_PI); }
+<span class="keywordtype">float</span>  degrees (<span class=
+"keywordtype">float</span> x)  { <span class=
+"keywordflow">return</span> x*(180.0/M_PI); }
+normal radians (normal x) { <span class=
+"keywordflow">return</span> x*(M_PI/180.0); }
+vector radians (vector x) { <span class=
+"keywordflow">return</span> x*(M_PI/180.0); }
+point  radians (point x)  { <span class=
+"keywordflow">return</span> x*(M_PI/180.0); }
+color  radians (color x)  { <span class=
+"keywordflow">return</span> x*(M_PI/180.0); }
+<span class="keywordtype">float</span>  radians (<span class=
+"keywordtype">float</span> x)  { <span class=
+"keywordflow">return</span> x*(M_PI/180.0); }
+PERCOMP1 (cos)
+PERCOMP1 (sin)
+PERCOMP1 (tan)
+PERCOMP1 (acos)
+PERCOMP1 (asin)
+PERCOMP1 (atan)
+PERCOMP2 (atan2)
+PERCOMP1 (cosh)
+PERCOMP1 (sinh)
+PERCOMP1 (tanh)
+PERCOMP2F (pow)
+PERCOMP1 (exp)
+PERCOMP1 (exp2)
+PERCOMP1 (expm1)
+PERCOMP1 (log)
+point  log (point a,  <span class=
+"keywordtype">float</span> b) { <span class=
+"keywordflow">return</span> log(a)/log(b); }
+vector log (vector a, <span class=
+"keywordtype">float</span> b) { <span class=
+"keywordflow">return</span> log(a)/log(b); }
+color  log (color a,  <span class=
+"keywordtype">float</span> b) { <span class=
+"keywordflow">return</span> log(a)/log(b); }
+<span class="keywordtype">float</span>  log (<span class=
+"keywordtype">float</span> a,  <span class=
+"keywordtype">float</span> b) { <span class=
+"keywordflow">return</span> log(a)/log(b); }
+PERCOMP1 (log2)
+PERCOMP1 (log10)
+PERCOMP1 (logb)
+PERCOMP1 (sqrt)
+PERCOMP1 (inversesqrt)
+<span class="keywordtype">float</span> hypot (<span class=
+"keywordtype">float</span> a, <span class=
+"keywordtype">float</span> b) { <span class=
+"keywordflow">return</span> sqrt (a*a + b*b); }
+<span class="keywordtype">float</span> hypot (<span class=
+"keywordtype">float</span> a, <span class=
+"keywordtype">float</span> b, <span class=
+"keywordtype">float</span> c) { <span class=
+"keywordflow">return</span> sqrt (a*a + b*b + c*c); }
+PERCOMP1 (abs)
+int abs (<span class="keywordtype">int</span> x) BUILTIN;
+PERCOMP1 (fabs)
+<span class="keywordtype">int</span> fabs (<span class=
+"keywordtype">int</span> x) BUILTIN;
+PERCOMP1 (sign)
+PERCOMP1 (floor)
+PERCOMP1 (ceil)
+PERCOMP1 (round)
+PERCOMP1 (trunc)
+PERCOMP2 (fmod)
+PERCOMP2F (fmod)
+<span class="keywordtype">int</span>    mod (<span class=
+"keywordtype">int</span>    a, <span class=
+"keywordtype">int</span>    b) { <span class=
+"keywordflow">return</span> a - b*(int)floor(a/b); }
+point  mod (point  a, point  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+vector mod (vector a, vector b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+normal mod (normal a, normal b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+color  mod (color  a, color  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+point  mod (point  a, <span class=
+"keywordtype">float</span>  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+vector mod (vector a, <span class=
+"keywordtype">float</span>  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+normal mod (normal a, <span class=
+"keywordtype">float</span>  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+color  mod (color  a, <span class=
+"keywordtype">float</span>  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+<span class="keywordtype">float</span>  mod (<span class=
+"keywordtype">float</span>  a, <span class=
+"keywordtype">float</span>  b) { <span class=
+"keywordflow">return</span> a - b*floor(a/b); }
+PERCOMP2 (min)
+PERCOMP2 (max)
+normal clamp (normal x, normal minval, normal maxval) { <span class="keywordflow">return</span> max(min(x,maxval),minval); }
+vector clamp (vector x, vector minval, vector maxval) { <span class="keywordflow">return</span> max(min(x,maxval),minval); }
+point  clamp (point x, point minval, point maxval) { <span class=
+"keywordflow">return</span> max(min(x,maxval),minval); }
+color  clamp (color x, color minval, color maxval) { <span class=
+"keywordflow">return</span> max(min(x,maxval),minval); }
+<span class="keywordtype">float</span>  clamp (<span class=
+"keywordtype">float</span> x, <span class=
+"keywordtype">float</span> minval, <span class=
+"keywordtype">float</span> maxval) { <span class=
+"keywordflow">return</span> max(min(x,maxval),minval); }
+normal mix (normal x, normal y, normal a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+normal mix (normal x, normal y, <span class=
+"keywordtype">float</span>  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+vector mix (vector x, vector y, vector a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+vector mix (vector x, vector y, <span class=
+"keywordtype">float</span>  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+point  mix (point  x, point  y, point  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+point  mix (point  x, point  y, <span class=
+"keywordtype">float</span>  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+color  mix (color  x, color  y, color  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+color  mix (color  x, color  y, <span class=
+"keywordtype">float</span>  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+<span class="keywordtype">float</span>  mix (<span class=
+"keywordtype">float</span>  x, <span class=
+"keywordtype">float</span>  y, <span class=
+"keywordtype">float</span>  a) { <span class=
+"keywordflow">return</span> x*(1-a) + y*a; }
+<span class="keywordtype">int</span> isnan (<span class=
+"keywordtype">float</span> x) BUILTIN;
+<span class="keywordtype">int</span> isinf (<span class=
+"keywordtype">float</span> x) BUILTIN;
+<span class="keywordtype">int</span> isfinite (<span class=
+"keywordtype">float</span> x) BUILTIN;
+<span class="keywordtype">float</span> erf (<span class=
+"keywordtype">float</span> x) BUILTIN;
+<span class="keywordtype">float</span> erfc (<span class=
+"keywordtype">float</span> x) BUILTIN;
+
+<span class="comment">// Vector functions</span>
+
+vector cross (vector a, vector b) BUILTIN;
+<span class=
+"keywordtype">float</span> dot (vector a, vector b) BUILTIN;
+<span class="keywordtype">float</span> length (vector v) BUILTIN;
+<span class=
+"keywordtype">float</span> distance (point a, point b) BUILTIN;
+<span class=
+"keywordtype">float</span> distance (point a, point b, point q) BUILTIN;
+normal normalize (normal v) BUILTIN;
+vector normalize (vector v) BUILTIN;
+vector faceforward (vector N, vector I, vector Nref) BUILTIN;
+vector faceforward (vector N, vector I) BUILTIN;
+vector reflect (vector I, vector N) { <span class=
+"keywordflow">return</span> I - 2*dot(N,I)*N; }
+vector refract (vector I, vector N, <span class=
+"keywordtype">float</span> eta) {
+    <span class="keywordtype">float</span> IdotN = dot (I, N);
+    <span class=
+"keywordtype">float</span> k = 1 - eta*eta * (1 - IdotN*IdotN);
+    <span class=
+"keywordflow">return</span> (k &lt; 0) ? vector(0,0,0) : (eta*I - N * (eta*IdotN + sqrt(k)));
+}
+<span class=
+"keywordtype">void</span> fresnel (vector I, normal N, <span class=
+"keywordtype">float</span> eta,
+              output <span class=
+"keywordtype">float</span> Kr, output <span class=
+"keywordtype">float</span> Kt,
+              output vector R, output vector T)
+{
+    <span class="keywordtype">float</span> sqr(<span class=
+"keywordtype">float</span> x) { <span class=
+"keywordflow">return</span> x*x; }
+    <span class="keywordtype">float</span> c = dot(I, N);
+    <span class="keywordflow">if</span> (c &lt; 0)
+        c = -c;
+    R = reflect(I, N);
+    <span class=
+"keywordtype">float</span> g = 1.0 / sqr(eta) - 1.0 + c * c;
+    <span class="keywordflow">if</span> (g &gt;= 0.0) {
+        g = sqrt (g);
+        <span class="keywordtype">float</span> beta = g - c;
+        <span class=
+"keywordtype">float</span> F = (c * (g+c) - 1.0) / (c * beta + 1.0);
+        F = 0.5 * (1.0 + sqr(F));
+        F *= sqr (beta / (g+c));
+        Kr = F;
+        Kt = (1.0 - Kr) * eta*eta;
+        <span class=
+"comment">// OPT: the following recomputes some of the above values, but it </span>
+        <span class=
+"comment">// gives us the same result as if the shader-writer called refract()</span>
+        T = refract(I, N, eta);
+    } <span class="keywordflow">else</span> {
+        <span class="comment">// total internal reflection</span>
+        Kr = 1.0;
+        Kt = 0.0;
+        T = vector (0,0,0);
+    }
+}
+
+<span class=
+"keywordtype">void</span> fresnel (vector I, normal N, <span class=
+"keywordtype">float</span> eta,
+              output <span class=
+"keywordtype">float</span> Kr, output <span class=
+"keywordtype">float</span> Kt)
+{
+    vector R, T;
+    fresnel(I, N, eta, Kr, Kt, R, T);
+}
+
+
+normal transform (matrix Mto, normal p) BUILTIN;
+vector transform (matrix Mto, vector p) BUILTIN;
+point  transform (matrix Mto, point p) BUILTIN;
+normal transform (<span class=
+"keywordtype">string</span> from, <span class=
+"keywordtype">string</span> to, normal p) BUILTIN;
+vector transform (<span class=
+"keywordtype">string</span> from, <span class=
+"keywordtype">string</span> to, vector p) BUILTIN;
+point  transform (<span class=
+"keywordtype">string</span> from, <span class=
+"keywordtype">string</span> to, point p) BUILTIN;
+normal transform (<span class=
+"keywordtype">string</span> to, normal p) { <span class=
+"keywordflow">return</span> transform(<span class=
+"stringliteral">"common"</span>,to,p); }
+vector transform (<span class=
+"keywordtype">string</span> to, vector p) { <span class=
+"keywordflow">return</span> transform(<span class=
+"stringliteral">"common"</span>,to,p); }
+point  transform (<span class=
+"keywordtype">string</span> to, point p)  { <span class=
+"keywordflow">return</span> transform(<span class=
+"stringliteral">"common"</span>,to,p); }
+
+<span class="keywordtype">float</span> transformu (<span class=
+"keywordtype">string</span> tounits, <span class=
+"keywordtype">float</span> x) BUILTIN;
+<span class="keywordtype">float</span> transformu (<span class=
+"keywordtype">string</span> fromunits, <span class=
+"keywordtype">string</span> tounits, <span class=
+"keywordtype">float</span> x) BUILTIN;
+
+point rotate (point p, <span class=
+"keywordtype">float</span> angle, point a, point b)
+{
+    vector axis = normalize (b - a);
+    <span class="keywordtype">float</span> cosang, sinang;
+    sincos (angle, sinang, cosang);
+    <span class="keywordtype">float</span> cosang1 = 1.0 - cosang;
+    <span class=
+"keywordtype">float</span> x = axis[0], y = axis[1], z = axis[2];
+    matrix M = matrix (x * x + (1.0 - x * x) * cosang,
+                       x * y * cosang1 + z * sinang,
+                       x * z * cosang1 - y * sinang,
+                       0.0,
+                       x * y * cosang1 - z * sinang,
+                       y * y + (1.0 - y * y) * cosang,
+                       y * z * cosang1 + x * sinang,
+                       0.0,
+                       x * z * cosang1 + y * sinang,
+                       y * z * cosang1 - x * sinang,
+                       z * z + (1.0 - z * z) * cosang,
+                       0.0,
+                       0.0, 0.0, 0.0, 1.0);
+    <span class="keywordflow">return</span> transform (M, p-a) + a;
+}
+
+
+
+<span class="comment">// Color functions</span>
+
+<span class="keywordtype">float</span> luminance (color c) BUILTIN;
+color blackbody (<span class=
+"keywordtype">float</span> temperatureK) BUILTIN;
+color wavelength_color (<span class=
+"keywordtype">float</span> wavelength_nm) BUILTIN;
+
+
+color transformc (<span class=
+"keywordtype">string</span> to, color x)
+{
+    color rgb_to_hsv (color rgb) {  <span class=
+"comment">// See Foley &amp; van Dam</span>
+        <span class=
+"keywordtype">float</span> r = rgb[0], g = rgb[1], b = rgb[2];
+        <span class=
+"keywordtype">float</span> mincomp = min (r, min (g, b));
+        <span class=
+"keywordtype">float</span> maxcomp = max (r, max (g, b));
+        <span class=
+"keywordtype">float</span> delta = maxcomp - mincomp;  <span class=
+"comment">// chroma</span>
+        <span class="keywordtype">float</span> h, s, v;
+        v = maxcomp;
+        <span class="keywordflow">if</span> (maxcomp &gt; 0)
+            s = delta / maxcomp;
+        <span class="keywordflow">else</span> s = 0;
+        <span class="keywordflow">if</span> (s &lt;= 0)
+            h = 0;
+        <span class="keywordflow">else</span> {
+            <span class=
+"keywordflow">if</span>      (r &gt;= maxcomp) h = (g-b) / delta;
+            <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (g &gt;= maxcomp) h = 2 + (b-r) / delta;
+            <span class=
+"keywordflow">else</span>                   h = 4 + (r-g) / delta;
+            h /= 6;
+            <span class="keywordflow">if</span> (h &lt; 0)
+                h += 1;
+        }
+        <span class="keywordflow">return</span> color (h, s, v);
+    }
+
+    color rgb_to_hsl (color rgb) {  <span class=
+"comment">// See Foley &amp; van Dam</span>
+        <span class=
+"comment">// First convert rgb to hsv, then to hsl</span>
+        <span class=
+"keywordtype">float</span> minval = min (rgb[0], min (rgb[1], rgb[2]));
+        color hsv = rgb_to_hsv (rgb);
+        <span class=
+"keywordtype">float</span> maxval = hsv[2];   <span class=
+"comment">// v == maxval</span>
+        <span class=
+"keywordtype">float</span> h = hsv[0], s, l = (minval+maxval) / 2;
+        <span class="keywordflow">if</span> (minval == maxval)
+            s = 0;  <span class=
+"comment">// special 'achromatic' case, hue is 0</span>
+        <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (l &lt;= 0.5)
+            s = (maxval - minval) / (maxval + minval);
+        <span class="keywordflow">else</span>
+            s = (maxval - minval) / (2 - maxval - minval);
+        <span class="keywordflow">return</span> color (h, s, l);
+    }
+
+    color r;
+    <span class="keywordflow">if</span> (to == <span class=
+"stringliteral">"rgb"</span> || to == <span class=
+"stringliteral">"RGB"</span>)
+        r = x;
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (to == <span class=
+"stringliteral">"hsv"</span>)
+        r = rgb_to_hsv (x);
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (to == <span class=
+"stringliteral">"hsl"</span>)
+        r = rgb_to_hsl (x);
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (to == <span class=
+"stringliteral">"YIQ"</span>)
+        r = color (dot (vector(0.299,  0.587,  0.114), (vector)x),
+                   dot (vector(0.596, -0.275, -0.321), (vector)x),
+                   dot (vector(0.212, -0.523,  0.311), (vector)x));
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (to == <span class=
+"stringliteral">"xyz"</span>)
+        r = color (dot (vector(0.412453, 0.357580, 0.180423), (vector)x),
+                   dot (vector(0.212671, 0.715160, 0.072169), (vector)x),
+                   dot (vector(0.019334, 0.119193, 0.950227), (vector)x));
+    <span class="keywordflow">else</span> {
+        error (<span class=
+"stringliteral">"Unknown color space \"%s\""</span>, to);
+        r = x;
+    }
+    <span class="keywordflow">return</span> r;
+}
+
+
+color transformc (<span class=
+"keywordtype">string</span> from, <span class=
+"keywordtype">string</span> to, color x)
+{
+    color hsv_to_rgb (color c) { <span class=
+"comment">// Reference: Foley &amp; van Dam</span>
+        <span class=
+"keywordtype">float</span> h = c[0], s = c[1], v = c[2];
+        color r;
+        <span class="keywordflow">if</span> (s &lt; 0.0001) {
+            r = v;
+        } <span class="keywordflow">else</span> {
+            h = 6 * (h - floor(h));  <span class=
+"comment">// expand to [0..6)</span>
+            <span class="keywordtype">int</span> hi = (int)h;
+            <span class="keywordtype">float</span> f = h - hi;
+            <span class="keywordtype">float</span> p = v * (1-s);
+            <span class="keywordtype">float</span> q = v * (1-s*f);
+            <span class=
+"keywordtype">float</span> t = v * (1-s*(1-f));
+            <span class=
+"keywordflow">if</span>      (hi == 0) r = color (v, t, p);
+            <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (hi == 1) r = color (q, v, p);
+            <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (hi == 2) r = color (p, v, t);
+            <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (hi == 3) r = color (p, q, v);
+            <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (hi == 4) r = color (t, p, v);
+            <span class=
+"keywordflow">else</span>              r = color (v, p, q);
+        }
+        <span class="keywordflow">return</span> r;
+    }
+
+    color hsl_to_rgb (color c) {
+        <span class=
+"keywordtype">float</span> h = c[0], s = c[1], l = c[2];
+        <span class=
+"comment">// Easiest to convert hsl -&gt; hsv, then hsv -&gt; RGB (per Foley &amp; van Dam)</span>
+        <span class=
+"keywordtype">float</span> v = (l &lt;= 0.5) ? (l * (1 + s)) : (l * (1 - s) + s);
+        color r;
+        <span class="keywordflow">if</span> (v &lt;= 0) {
+            r = 0;
+        } <span class="keywordflow">else</span> {
+            <span class="keywordtype">float</span> min = 2 * l - v;
+            s = (v - min) / v;
+            r = hsv_to_rgb (color (h, s, v));
+        }
+        <span class="keywordflow">return</span> r;
+    }
+
+    color r;
+    <span class="keywordflow">if</span> (from == <span class=
+"stringliteral">"rgb"</span> || from == <span class=
+"stringliteral">"RGB"</span>)
+        r = x;
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (from == <span class=
+"stringliteral">"hsv"</span>)
+        r = hsv_to_rgb (x);
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (from == <span class=
+"stringliteral">"hsl"</span>)
+        r = hsl_to_rgb (x);
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (from == <span class=
+"stringliteral">"YIQ"</span>)
+        r = color (dot (vector(1,  0.9557,  0.6199), (vector)x),
+                   dot (vector(1, -0.2716, -0.6469), (vector)x),
+                   dot (vector(1, -1.1082,  1.7051), (vector)x));
+    <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (from == <span class=
+"stringliteral">"xyz"</span>)
+        r = color (dot (vector( 3.240479, -1.537150, -0.498535), (vector)x),
+                   dot (vector(-0.969256,  1.875991,  0.041556), (vector)x),
+                   dot (vector( 0.055648, -0.204043,  1.057311), (vector)x));
+    <span class="keywordflow">else</span> {
+        error (<span class=
+"stringliteral">"Unknown color space \"%s\""</span>, to);
+        r = x;
+    }
+    <span class="keywordflow">return</span> transformc (to, r);
+}
+
+ 
+
+<span class="comment">// Matrix functions</span>
+
+<span class=
+"keywordtype">float</span> determinant (matrix m) BUILTIN;
+matrix transpose (matrix m) BUILTIN;
+
+
+
+<span class="comment">// Pattern generation</span>
+
+<span class="keywordtype">float</span> step (<span class=
+"keywordtype">float</span> edge, <span class=
+"keywordtype">float</span> x) BUILTIN;
+color step (color edge, color x) BUILTIN;
+point step (point edge, point x) BUILTIN;
+vector step (vector edge, vector x) BUILTIN;
+normal step (normal edge, normal x) BUILTIN;
+<span class="keywordtype">float</span> smoothstep (<span class=
+"keywordtype">float</span> edge0, <span class=
+"keywordtype">float</span> edge1, <span class=
+"keywordtype">float</span> x) BUILTIN;
+
+
+<span class="comment">// Derivatives and area operators</span>
+
+
+<span class="comment">// Displacement functions</span>
+
+
+<span class="comment">// String functions</span>
+
+<span class="keywordtype">int</span> strlen (<span class=
+"keywordtype">string</span> s) BUILTIN;
+<span class="keywordtype">int</span> startswith (<span class=
+"keywordtype">string</span> s, <span class=
+"keywordtype">string</span> prefix) BUILTIN;
+<span class="keywordtype">int</span> endswith (<span class=
+"keywordtype">string</span> s, <span class=
+"keywordtype">string</span> suffix) BUILTIN;
+<span class="keywordtype">string</span> substr (<span class=
+"keywordtype">string</span> s, <span class=
+"keywordtype">int</span> start, <span class=
+"keywordtype">int</span> len) BUILTIN;
+<span class="keywordtype">string</span> substr (<span class=
+"keywordtype">string</span> s, <span class=
+"keywordtype">int</span> start) { <span class=
+"keywordflow">return</span> substr (s, start, strlen(s)); }
+
+<span class=
+"comment">// Define concat in terms of shorter concat</span>
+<span class="keywordtype">string</span> concat (<span class=
+"keywordtype">string</span> a, <span class=
+"keywordtype">string</span> b, <span class=
+"keywordtype">string</span> c) {
+    <span class="keywordflow">return</span> concat(concat(a,b), c);
+}
+<span class="keywordtype">string</span> concat (<span class=
+"keywordtype">string</span> a, <span class=
+"keywordtype">string</span> b, <span class=
+"keywordtype">string</span> c, <span class=
+"keywordtype">string</span> d) {
+    <span class=
+"keywordflow">return</span> concat(concat(a,b,c), d);
+}
+<span class="keywordtype">string</span> concat (<span class=
+"keywordtype">string</span> a, <span class=
+"keywordtype">string</span> b, <span class=
+"keywordtype">string</span> c, <span class=
+"keywordtype">string</span> d, <span class=
+"keywordtype">string</span> e) {
+    <span class=
+"keywordflow">return</span> concat(concat(a,b,c,d), e);
+}
+<span class="keywordtype">string</span> concat (<span class=
+"keywordtype">string</span> a, <span class=
+"keywordtype">string</span> b, <span class=
+"keywordtype">string</span> c, <span class=
+"keywordtype">string</span> d, <span class=
+"keywordtype">string</span> e, <span class=
+"keywordtype">string</span> f) {
+    <span class=
+"keywordflow">return</span> concat(concat(a,b,c,d,e), f);
+}
+
+
+<span class="comment">// Texture</span>
+
+
+<span class="comment">// Closures</span>
+
+closure color diffuse(normal N) BUILTIN;
+closure color translucent(normal N) BUILTIN;
+closure color reflection(normal N, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color reflection(normal N) { <span class=
+"keywordflow">return</span> reflection (N, 0.0); }
+closure color refraction(normal N, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color dielectric(normal N, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color transparent() BUILTIN;
+closure color microfacet_ggx(normal N, <span class=
+"keywordtype">float</span> ag, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color microfacet_ggx_refraction(normal N, <span class=
+"keywordtype">float</span> ag, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color microfacet_beckmann(normal N, <span class=
+"keywordtype">float</span> ab, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color microfacet_beckmann_refraction(normal N, <span class=
+"keywordtype">float</span> ab, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color ward(normal N, vector T,<span class=
+"keywordtype">float</span> ax, <span class=
+"keywordtype">float</span> ay) BUILTIN;
+closure color phong(normal N, <span class=
+"keywordtype">float</span> exponent) BUILTIN;
+closure color phong_ramp(normal N, <span class=
+"keywordtype">float</span> exponent, color colors[8]) BUILTIN;
+closure color hair_diffuse(vector T) BUILTIN;
+closure color hair_specular(vector T, <span class=
+"keywordtype">float</span> offset, <span class=
+"keywordtype">float</span> exponent) BUILTIN;
+closure color ashikhmin_velvet(normal N, <span class=
+"keywordtype">float</span> sigma, <span class=
+"keywordtype">float</span> eta) BUILTIN;
+closure color westin_backscatter(normal N, <span class=
+"keywordtype">float</span> roughness) BUILTIN;
+closure color westin_sheen(normal N, <span class=
+"keywordtype">float</span> edginess) BUILTIN;
+closure color bssrdf_cubic(color radius) BUILTIN;
+closure color emission(<span class=
+"keywordtype">float</span> inner_angle, <span class=
+"keywordtype">float</span> outer_angle) BUILTIN;
+closure color emission(<span class=
+"keywordtype">float</span> outer_angle) BUILTIN;
+closure color emission() BUILTIN;
+closure color debug(<span class=
+"keywordtype">string</span> tag) BUILTIN;
+closure color background() BUILTIN;
+closure color holdout() BUILTIN;
+closure color subsurface(<span class=
+"keywordtype">float</span> eta, <span class=
+"keywordtype">float</span> g, color mfp, color albedo) BUILTIN;
+
+closure color cloth(normal N, <span class=
+"keywordtype">float</span> s, <span class=
+"keywordtype">float</span> t, <span class=
+"keywordtype">float</span> dsdx, <span class=
+"keywordtype">float</span> dtdx, <span class=
+"keywordtype">float</span> dsdy, <span class=
+"keywordtype">float</span> dtdy,
+                    <span class=
+"keywordtype">float</span> area_scaled, vector dPdu, color diff_warp_col, color diff_weft_col,
+                    color spec_warp_col, color spec_weft_col, <span class="keywordtype">float</span> fresnel_warp, <span class="keywordtype">float</span> fresnel_weft,
+                    <span class=
+"keywordtype">float</span> spread_x_mult, <span class=
+"keywordtype">float</span> spread_y_mult, <span class=
+"keywordtype">int</span> pattern, <span class=
+"keywordtype">float</span> pattern_angle,
+                    <span class=
+"keywordtype">float</span> warp_width_scale, <span class=
+"keywordtype">float</span> weft_width_scale, <span class=
+"keywordtype">float</span> thread_count_mult_u,
+                    <span class=
+"keywordtype">float</span> thread_count_mult_v) BUILTIN;
+closure color cloth_specular(normal N, color spec_col[4], <span class="keywordtype">float</span> eta[4], <span class="keywordtype">int</span> thread_pattern[4],
+                             <span class=
+"keywordtype">float</span> pattern_weight[4], <span class=
+"keywordtype">int</span>   current_thread, <span class=
+"keywordtype">float</span> brdf_interp,
+                             <span class=
+"keywordtype">float</span> btf_interp, <span class=
+"keywordtype">float</span> uux, <span class=
+"keywordtype">float</span> vvx, <span class=
+"keywordtype">float</span> area_scaled, vector dPdu,
+                             <span class=
+"keywordtype">float</span> eccentricity[4], <span class=
+"keywordtype">float</span> angle[4], <span class=
+"keywordtype">float</span> Kx[4], <span class=
+"keywordtype">float</span> Ky[4],
+                             <span class=
+"keywordtype">float</span> Sx[4], <span class=
+"keywordtype">float</span> Sy[4]) BUILTIN;
+closure color fakefur_diffuse(normal N, vector T, <span class=
+"keywordtype">float</span> fur_reflectivity, <span class=
+"keywordtype">float</span> fur_transmission,
+                              <span class=
+"keywordtype">float</span> shadow_start, <span class=
+"keywordtype">float</span> shadow_end, <span class=
+"keywordtype">float</span> fur_attenuation, <span class=
+"keywordtype">float</span> fur_density,
+                              <span class=
+"keywordtype">float</span> fur_avg_radius, <span class=
+"keywordtype">float</span> fur_length, <span class=
+"keywordtype">float</span> fur_shadow_fraction) BUILTIN;
+closure color fakefur_specular(normal N, vector T, <span class=
+"keywordtype">float</span> offset, <span class=
+"keywordtype">float</span> exp, <span class=
+"keywordtype">float</span> fur_reflectivity,
+                               <span class=
+"keywordtype">float</span> fur_transmission, <span class=
+"keywordtype">float</span> shadow_start, <span class=
+"keywordtype">float</span> shadow_end,
+                               <span class=
+"keywordtype">float</span> fur_attenuation, <span class=
+"keywordtype">float</span> fur_density, <span class=
+"keywordtype">float</span> fur_avg_radius,
+                               <span class=
+"keywordtype">float</span> fur_length, <span class=
+"keywordtype">float</span> fur_shadow_fraction) BUILTIN;
+
+closure color fakefur_skin(vector N, vector T, <span class=
+"keywordtype">float</span> fur_reflectivity, <span class=
+"keywordtype">float</span> fur_transmission,
+                           <span class=
+"keywordtype">float</span> shadow_start, <span class=
+"keywordtype">float</span> shadow_end, <span class=
+"keywordtype">float</span> fur_attenuation, <span class=
+"keywordtype">float</span> fur_density,
+                           <span class=
+"keywordtype">float</span> fur_avg_radius, <span class=
+"keywordtype">float</span> fur_length) BUILTIN;
+
+
+closure color cloth(normal N, <span class=
+"keywordtype">float</span> s, <span class=
+"keywordtype">float</span> t, color diff_warp, color diff_weft, 
+                    color spec_warp, color spec_weft, <span class=
+"keywordtype">float</span> fresnel_warp, <span class=
+"keywordtype">float</span> fresnel_weft,
+                    <span class=
+"keywordtype">float</span> spread_x_mult, <span class=
+"keywordtype">float</span> spread_y_mult, <span class=
+"keywordtype">int</span> pattern, <span class=
+"keywordtype">float</span> pattern_angle,
+                    <span class=
+"keywordtype">float</span> warp_width_scale, <span class=
+"keywordtype">float</span> weft_width_scale, <span class=
+"keywordtype">float</span> thread_count_mult_u,
+                    <span class=
+"keywordtype">float</span> thread_count_mult_v)
+{
+
+    <span class=
+"keywordflow">return</span> cloth(N, s, t, Dx(s), Dx(t), Dy(s), Dy(t), area(P), dPdu, diff_warp, diff_weft, spec_warp, spec_weft,
+                 fresnel_warp, fresnel_weft, spread_x_mult, spread_y_mult, pattern, pattern_angle, 
+                 warp_width_scale, weft_width_scale, thread_count_mult_u, thread_count_mult_v);
+}
+
+closure color cloth(normal N, <span class=
+"keywordtype">float</span> s, <span class=
+"keywordtype">float</span> t, color diff_warp, color diff_weft, 
+                    color spec_warp, color spec_weft, <span class=
+"keywordtype">float</span> fresnel_warp, <span class=
+"keywordtype">float</span> fresnel_weft,
+                    <span class=
+"keywordtype">float</span> spread_x_mult, <span class=
+"keywordtype">float</span> spread_y_mult, <span class=
+"keywordtype">int</span> pattern, <span class=
+"keywordtype">float</span> pattern_angle,
+                    <span class=
+"keywordtype">float</span> warp_width_scale, <span class=
+"keywordtype">float</span> weft_width_scale, <span class=
+"keywordtype">float</span> thread_count_mult_u,
+                    <span class=
+"keywordtype">float</span> thread_count_mult_v, <span class=
+"keywordtype">string</span> tok, <span class=
+"keywordtype">string</span> val)
+{
+
+    <span class=
+"keywordflow">return</span> cloth(N, s, t, Dx(s), Dx(t), Dy(s), Dy(t), area(P), dPdu, diff_warp, diff_weft, spec_warp, spec_weft,
+                 fresnel_warp, fresnel_weft, spread_x_mult, spread_y_mult, pattern, pattern_angle, 
+                 warp_width_scale, weft_width_scale, thread_count_mult_u, thread_count_mult_v, tok, val);
+}
+
+
+
+<span class="comment">// Renderer state</span>
+<span class="keywordtype">int</span> raytype (<span class=
+"keywordtype">string</span> <span class=
+"keyword">typename</span>) BUILTIN;
+<span class=
+"comment">// the individual 'isFOOray' functions are deprecated</span>
+<span class="keywordtype">int</span> iscameraray () { <span class=
+"keywordflow">return</span> raytype(<span class=
+"stringliteral">"camera"</span>); }
+<span class="keywordtype">int</span> isdiffuseray () { <span class=
+"keywordflow">return</span> raytype(<span class=
+"stringliteral">"diffuse"</span>); }
+<span class="keywordtype">int</span> isglossyray () { <span class=
+"keywordflow">return</span> raytype(<span class=
+"stringliteral">"glossy"</span>); }
+<span class="keywordtype">int</span> isshadowray () { <span class=
+"keywordflow">return</span> raytype(<span class=
+"stringliteral">"shadow"</span>); }
+<span class="keywordtype">int</span> getmatrix (<span class=
+"keywordtype">string</span> fromspace, <span class=
+"keywordtype">string</span> tospace, output matrix M) BUILTIN;
+<span class="keywordtype">int</span> getmatrix (<span class=
+"keywordtype">string</span> fromspace, output matrix M) {
+    <span class=
+"keywordflow">return</span> getmatrix (fromspace, <span class=
+"stringliteral">"common"</span>, M);
+}
+
+
+<span class="comment">// Miscellaneous</span>
+
+
+
+
+<span class="preprocessor">#undef BUILTIN</span>
+<span class="preprocessor">#undef BUILTIN_DERIV</span>
+<span class="preprocessor">#undef PERCOMP1</span>
+<span class="preprocessor">#undef PERCOMP2</span>
+<span class="preprocessor">#undef PERCOMP2F</span>
+
+<span class="preprocessor">#endif </span><span class=
+"comment">/* STDOSL_H */</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

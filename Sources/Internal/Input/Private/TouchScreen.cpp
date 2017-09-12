@@ -15,13 +15,8 @@ TouchScreen::TouchScreen(uint32 id)
     , nativeTouchIds{}
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Connect(this, &TouchScreen::OnWindowFocusChanged); // TODO: handle all the windows
-    }
+    engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchScreen::HandleMainDispatcherEvent));
 }
@@ -29,13 +24,8 @@ TouchScreen::TouchScreen(uint32 id)
 TouchScreen::~TouchScreen()
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Disconnect(this);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Disconnect(this);
-    }
+    engine->endFrame.Disconnect(this);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
@@ -73,15 +63,6 @@ void TouchScreen::OnEndFrame()
     for (DigitalElementState& touchState : clicks)
     {
         touchState.OnEndFrame();
-    }
-}
-
-void TouchScreen::OnWindowFocusChanged(DAVA::Window* window, bool focused)
-{
-    // Reset keyboard state when window is unfocused
-    if (!focused)
-    {
-        ResetState(window);
     }
 }
 
