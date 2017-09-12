@@ -14,6 +14,8 @@ TouchScreen::TouchScreen(uint32 id)
     , positions{}
     , nativeTouchIds{}
 {
+    DVASSERT(Thread::IsMainThread());
+
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
@@ -23,6 +25,8 @@ TouchScreen::TouchScreen(uint32 id)
 
 TouchScreen::~TouchScreen()
 {
+    DVASSERT(Thread::IsMainThread());
+
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Disconnect(this);
@@ -47,12 +51,16 @@ bool TouchScreen::IsElementSupported(eInputElements elementId) const
 
 DigitalElementState TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsTouchClickInputElement(elementId) && IsElementSupported(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
 AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsTouchPositionInputElement(elementId) && IsElementSupported(elementId));
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }

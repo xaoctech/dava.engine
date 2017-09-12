@@ -33,6 +33,8 @@ Gamepad::Gamepad(uint32 id)
     , buttons{}
     , axes{}
 {
+    DVASSERT(Thread::IsMainThread());
+
     Engine* engine = Engine::Instance();
 
     endFrameConnectionToken = engine->endFrame.Connect(this, &Gamepad::OnEndFrame);
@@ -42,6 +44,8 @@ Gamepad::Gamepad(uint32 id)
 
 Gamepad::~Gamepad()
 {
+    DVASSERT(Thread::IsMainThread());
+
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Disconnect(endFrameConnectionToken);
@@ -142,12 +146,16 @@ bool Gamepad::IsElementSupported(eInputElements elementId) const
 
 DigitalElementState Gamepad::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsGamepadButtonInputElement(elementId));
     return buttons[elementId - eInputElements::GAMEPAD_FIRST_BUTTON];
 }
 
 AnalogElementState Gamepad::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsGamepadAxisInputElement(elementId));
     return axes[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
 }

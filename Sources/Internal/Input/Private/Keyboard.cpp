@@ -28,6 +28,8 @@ Keyboard::Keyboard(uint32 id)
     , impl(new Private::KeyboardImpl())
     , keys{}
 {
+    DVASSERT(Thread::IsMainThread());
+
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
@@ -37,6 +39,8 @@ Keyboard::Keyboard(uint32 id)
 
 Keyboard::~Keyboard()
 {
+    DVASSERT(Thread::IsMainThread());
+
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Disconnect(this);
@@ -74,6 +78,8 @@ bool Keyboard::IsElementSupported(eInputElements elementId) const
 
 DigitalElementState Keyboard::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsElementSupported(elementId));
     return keys[elementId - eInputElements::KB_FIRST];
 }
