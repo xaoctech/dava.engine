@@ -16,6 +16,7 @@ public:
     static const char* snapToLandscapePropertyName;
     bool GetSnapToLandscape() const;
     void SetSnapToLandscape(bool newSnapToLandscape);
+
 private:
     std::unique_ptr<ObjectPlacementSystem> objectPlacementSystem;
 

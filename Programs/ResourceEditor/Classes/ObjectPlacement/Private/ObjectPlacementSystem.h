@@ -21,6 +21,7 @@ public:
 
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
+
 private:
     void GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
                                            DAVA::Matrix4& translation, DAVA::Vector3& normal) const;

@@ -16,8 +16,7 @@ void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
 
-    std::unique_ptr<ObjectPlacementData> objectPlacementData =
-        std::make_unique<ObjectPlacementData>();
+    std::unique_ptr<ObjectPlacementData> objectPlacementData = std::make_unique<ObjectPlacementData>();
 
     objectPlacementData->objectPlacementSystem.reset(new ObjectPlacementSystem(scene));
     scene->AddSystem(objectPlacementData->objectPlacementSystem.get(), MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT));
@@ -94,17 +93,17 @@ void ObjectPlacementModule::PostInit()
             fieldDescr.fieldName = DAVA::FastName(ObjectPlacementData::snapToLandscapePropertyName);
             fieldDescr.type = DAVA::ReflectedTypeDB::Get<ObjectPlacementData>();
             action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-               bool checked = value.Get<bool>(false);
-               if (checked)
-                   return DAVA::String("Disable snap to landscape");
-               return DAVA::String("Enable snap to landscape");
+                bool checked = value.Get<bool>(false);
+                if (checked)
+                    return DAVA::String("Disable snap to landscape");
+                return DAVA::String("Enable snap to landscape");
             });
         }
 
         connections.AddConnection(action, &QAction::triggered, DAVA::MakeFunction(this, &ObjectPlacementModule::OnSnapToLandscape));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit,
-                                                        { InsertionParams::eInsertionMethod::AfterItem,  "Place on landscape"}));
+                                                        { InsertionParams::eInsertionMethod::AfterItem, "Place on landscape" }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(mainWindowKey, placementInfo, action);
