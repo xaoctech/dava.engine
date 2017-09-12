@@ -82,7 +82,7 @@ public:
     enum class ErrorOrigin
     {
         FileIO, //!< error with read, write, create, open etc... file or directory operation
-        InitTimeout //!< initialization timeout
+        InitTimeout, //!< initialization timeout
     };
 
     /**
@@ -94,7 +94,8 @@ public:
 			    1. filePath in case of FileIO
 				2. url to server in case of InitTimeout
 
-		If you receive FileIO error type requesting disabled before signal.
+		Requesting is NOT disabled before emitting the signal. You can disable requesting
+		with SetRequestingEnabled() inside your signal handler callback.
 		Suggest also to check for:
 		    EBUSY(device_or_resource_busy),
 			ENAMETOOLONG(filename_too_long),
@@ -105,7 +106,7 @@ public:
 			ENFILE(too_many_files_open_in_system),
 			EMFILE(too_many_files_open)
 		If you receive InitTimeout error type check for:
-			EHOSTUNREACH(host_unreachable) - connection to cdn timed out
+			EHOSTUNREACH(host_unreachable) - connection to CDN timed out
 		*/
     Signal<ErrorOrigin /*errorType*/,
            int32 /*errnoValue*/,
@@ -173,7 +174,11 @@ public:
     /** return nullptr if can't find pack */
     virtual const IRequest* RequestPack(const String& packName) = 0;
 
+    /** return true if pack currently is in download queue */
     virtual bool IsPackInQueue(const String& packName) = 0;
+
+    /** return true if download queue is not empty */
+    virtual bool IsAnyPackInQueue() const;
 
     /** Update request queue to first download dependency of selected request
         and then request itself */
@@ -186,7 +191,7 @@ public:
     {
         uint64 total = 0; //!< in bytes
         uint64 alreadyDownloaded = 0; //!< in bytes
-        uint64 inQueue = 0; //!< in bytes
+        uint64 inQueue = 0; //!< in bytes (deprecated)
         bool isRequestingEnabled = false; //!< current state of requesting
     };
 

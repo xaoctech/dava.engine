@@ -17,7 +17,6 @@
 #include "Debug/ProfilerCPU.h"
 
 #include <iomanip>
-#include <algorithm>
 
 namespace DAVA
 {
@@ -111,6 +110,7 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : engine(*engine_)
+    , profiler(1024 * 16)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -124,12 +124,27 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
 
     if (IsProfilingEnabled())
     {
-        profiler.Start(hints.profilerSamplerCounts);
+        profiler.Start();
     }
     engine.GetContext()->settings->settingChanged.Connect(this, [this](EngineSettings::eSetting value)
                                                           {
                                                               OnSettingsChanged(value);
                                                           });
+}
+
+void DLCManagerImpl::DumpToJsonProfilerTrace()
+{
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    FilePath docPath = fs->GetPublicDocumentsPath();
+    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+    std::ofstream file(name);
+    char buf[16 * 1024];
+    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+    if (file)
+    {
+        Vector<TraceEvent> events = profiler.GetTrace();
+        TraceEvent::DumpJSON(events, file);
+    }
 }
 
 void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
@@ -138,22 +153,12 @@ void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
     {
         if (IsProfilingEnabled())
         {
-            profiler.Start(hints.profilerSamplerCounts);
+            profiler.Start();
         }
         else
         {
             profiler.Stop();
-            FileSystem* fs = GetEngineContext()->fileSystem;
-            FilePath docPath = fs->GetPublicDocumentsPath();
-            String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-            std::ofstream file(name);
-            char buf[16 * 1024];
-            file.rdbuf()->pubsetbuf(buf, sizeof(buf));
-            if (file)
-            {
-                Vector<TraceEvent> events = profiler.GetTrace();
-                TraceEvent::DumpJSON(events, file);
-            }
+            DumpToJsonProfilerTrace();
         }
     }
 }
@@ -392,15 +397,7 @@ void DLCManagerImpl::Deinitialize()
     if (profiler.IsStarted())
     {
         profiler.Stop();
-        FileSystem* fs = GetEngineContext()->fileSystem;
-        FilePath docPath = fs->GetPublicDocumentsPath();
-        String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-        std::ofstream file(name);
-        if (file)
-        {
-            Vector<TraceEvent> events = profiler.GetTrace();
-            TraceEvent::DumpJSON(events, file);
-        }
+        DumpToJsonProfilerTrace();
     }
 
     log.close();
@@ -1439,45 +1436,28 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     using namespace DAVA;
     using namespace PackFormat;
 
-    Progress progress;
-
     if (!IsInitialized())
     {
         lastProgress.isRequestingEnabled = false;
         return lastProgress;
     }
 
-    progress.isRequestingEnabled = true;
-
-    const Vector<PackFile::FilesTableBlock::FilesData::Data>& files = usedPackFile.filesTable.data.files;
-    const size_t size = files.size();
-    for (size_t indexOfFile = 0; indexOfFile < size; ++indexOfFile)
+    // count total only once
+    if (lastProgress.total == 0)
     {
-        const auto& fileData = files[indexOfFile];
-        uint64 compressedSize = fileData.compressedSize;
-        progress.total += compressedSize;
-
-        if (IsFileReady(indexOfFile))
+        const Vector<PackFile::FilesTableBlock::FilesData::Data>& files = usedPackFile.filesTable.data.files;
+        for (const auto& fileData : files)
         {
-            progress.alreadyDownloaded += compressedSize;
-        }
-        else
-        {
-            // is current file is downloading in requestManager queue?
-            const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(fileData.metaIndex);
-            if (requestManager->IsInQueue(packInfo.packName))
-            {
-                progress.inQueue += compressedSize;
-            }
+            lastProgress.total += fileData.compressedSize;
         }
     }
 
-    lastProgress.total = progress.total;
-    lastProgress.alreadyDownloaded = progress.alreadyDownloaded;
-    lastProgress.inQueue = progress.inQueue;
-    lastProgress.isRequestingEnabled = progress.isRequestingEnabled;
+    // inQueue, - calculated in runtime in PackRequest
+    // alreadyDownloaded, - calculated in runtime in PackRequest
 
-    return progress;
+    lastProgress.isRequestingEnabled = true;
+
+    return lastProgress;
 }
 
 DLCManager::Info DLCManager::GetInfo() const
@@ -1552,6 +1532,20 @@ PackRequest* DLCManagerImpl::FindRequest(const String& requestedPackName) const
     }
 
     return nullptr;
+}
+
+bool DLCManager::IsAnyPackInQueue() const
+{
+    return false;
+}
+
+bool DLCManagerImpl::IsAnyPackInQueue() const
+{
+    if (IsInitialized())
+    {
+        return !requestManager->Empty();
+    }
+    return false;
 }
 
 bool DLCManagerImpl::IsPackInQueue(const String& packName)
@@ -1721,7 +1715,7 @@ void DLCManagerImpl::ThreadScanFunc()
                 entry->compressedSize + sizeof(PackFormat::LitePack::Footer) == info.sizeOnDevice)
             {
                 size_t fileIndex = std::distance(&pack.filesTable.data.files[0], entry);
-                scanFileReady[fileIndex] = true;
+                SetFileIsReady(fileIndex, info.compressedSize);
             }
             else
             {

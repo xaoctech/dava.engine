@@ -23,7 +23,6 @@ public:
     MemoryBufferWriter(void* buff, size_t size)
     {
         DVASSERT(buff != nullptr);
-        DVASSERT(size > 0);
 
         start = static_cast<char*>(buff);
         current = start;
@@ -143,6 +142,8 @@ public:
 
     bool IsPackInQueue(const String& packName) override;
 
+    bool IsAnyPackInQueue() const override;
+
     void SetRequestPriority(const IRequest* request) override;
 
     void RemovePack(const String& packName) override;
@@ -168,7 +169,7 @@ public:
     // use only after initialization
     bool IsFileReady(size_t fileIndex) const;
 
-    void SetFileIsReady(size_t fileIndex);
+    void SetFileIsReady(size_t fileIndex, uint32 compressedSize);
 
     bool IsInQueue(const PackRequest* request) const;
 
@@ -215,6 +216,7 @@ private:
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
+    void DumpToJsonProfilerTrace();
 
     enum class ScanState : uint32
     {
@@ -343,9 +345,10 @@ inline bool DLCManagerImpl::IsFileReady(size_t fileIndex) const
     return scanFileReady[fileIndex];
 }
 
-inline void DLCManagerImpl::SetFileIsReady(size_t fileIndex)
+inline void DLCManagerImpl::SetFileIsReady(size_t fileIndex, uint32 compressedSize)
 {
-    scanFileReady.at(fileIndex) = true;
+    scanFileReady[fileIndex] = true;
+    lastProgress.alreadyDownloaded += compressedSize;
 }
 
 inline bool DLCManagerImpl::IsInQueue(const PackRequest* request) const

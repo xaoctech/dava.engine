@@ -25,7 +25,7 @@ bool LockedButton::IsLocked() const
 void LockedButton::SetLocked(bool selected)
 {
     SetState(selected ? DAVA::UIControl::STATE_SELECTED : DAVA::UIControl::STATE_NORMAL);
-    SetInputEnabled(!selected);
+    SetInputEnabled(!selected, false);
 }
 
 void LockedButton::OnPressed(DAVA::BaseObject* caller, void* param, void* callerData)

@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057" />
+      <title>Creating Cameras</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBSetCameraTransform()", "../api/beastcamera_8h.html#aeb396bad069d902aff10b92912016149", "API"]); 
+reflinkdata.push(["ILBCreatePerspectiveCamera()", "../api/beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6", "API"]); 
+reflinkdata.push(["ILBSetFov()", "../api/beastcamera_8h.html#acf7eff806d9479b2c65a3093e9515bfb", "API"]); 
+reflinkdata.push(["ILBSetVerticalFov()", "../api/beastcamera_8h.html#a68da5316fd5b310f18de85d3c4e9babf", "API"]); 
+reflinkdata.push(["ILBCreateEnvironmentCamera()", "../api/beastcamera_8h.html#ac82c7502fce40017f422a5784d75086f", "API"]); 
+reflinkdata.push(["ILBEnvironmentCameraType", "../api/beastcamera_8h.html#aa7c47fd3c259a7018b19cbce2aefbaab", "API"]); 
+reflinkdata.push(["ILBCameraHandle", "../api/struct_i_l_b_camera_handle.html", "API"]); 
+reflinkdata.push(["beastcamera.h", "../api/beastcamera_8h.html", "API"]); 
+reflinkdata.push(["ILBCreatePerspectiveCamera", "../api/beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6", "API"]); 
+reflinkdata.push(["ILBSetFov", "../api/beastcamera_8h.html#acf7eff806d9479b2c65a3093e9515bfb", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm',                           'd30e7982','index.html',location.hash);                           javascript:initPage('Creating Cameras','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Cameras&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating Light Sources</div><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Creating a Scene</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Point Clouds</div><a href="GUID-6318156E-F07D-4207-AD69-816CA1217869.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-3C46763E-97AD-4E3F-9625-BFB5DF93ED68"></a></span><h1>Creating Cameras</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-C9E5DE46-A0BC-4BB3-B9CA-779A981F487F"></a></span> Cameras represent points of view within a scene. You can create render targets based on your cameras in order to tell Beast
+            to render the camera's point of view to a single image. Depending on the type of camera you create, you can use the resulting
+            images for different purposes. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_D0E947481DFB4FF3A8DBDBDED8C38CD8"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7990"></a><span class="anchor_wrapper"><a name="GUID-A8874462-EBDA-4860-9374-E4C7B32182B8"></a></span>Types of cameras
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-3F33EDDE-D595-4F0C-98B2-2147473F5013"></a></span><span class="charspan-msgph" translate="no">Beast</span> supports two distinct types of cameras, described in the following sections. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-08B0E447-0C7B-40F9-96D9-B99CCC415D92"></a></span>By default, both types of cameras are oriented to point in the negative direction of the Z axis; you can control this by setting
+               a rotation in the matrix transform you apply to the camera. See also <span class="char_link"><a href="GUID-4832F702-D95A-4FBC-B8E5-E3C7853DD8E7.htm">The Beast Coordinate System</a></span>. You set the matrix transform at the time you create the camera. You can also change it at any time through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetCameraTransform()'); return false;">ILBSetCameraTransform()</a></span>. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_C6C22861F3E74D948003DD53C39AD613"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e8009"></a><span class="anchor_wrapper"><a name="GUID-152909CB-49D4-41BE-9AB5-72CBD2D1753E"></a></span>Perspective camera
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-F07A1631-FB5D-47DC-AAC9-7F30FA17F378"></a></span>Perspective cameras produce still images that represent the scene from a given position in 3D space, with a specified angular
+                  field of view. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-D2967165-7B41-4028-8049-DEE06F8D4A7D"></a></span>To create a perspective camera, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePerspectiveCamera()'); return false;">ILBCreatePerspectiveCamera()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-C5757B4A-AA26-46FA-84AD-E1F01C4EABD8"></a></span>You can set the horizontal field of view of the camera by calling the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetFov()'); return false;">ILBSetFov()</a></span> function. 
+               </p> <span class="anchor_wrapper"><a name="UL_3A41A9E095F14609923FD99EEED6D1BE"></a></span><ul>
+                  <li>When you carry out a standard rendering job, the vertical field of view is calculated automatically based on the horizontal
+                     FoV value and the resolution requested for the render target. See also <span class="char_link"><a href="GUID-C5DEE2AC-1BFE-4C80-8370-03BBFD925C4D.htm">Creating Render Targets</a></span>. 
+                  </li>
+                  <li>When you run an eRnsT session, the vertical field of view is calculated automatically based on the horizontal FoV value. </li>
+                  <li>When you run a live eRnsT session, you can also specify the vertical field of view explicitly through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetVerticalFov()'); return false;">ILBSetVerticalFov()</a></span>. 
+                  </li>
+               </ul> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_2F9D443B742543AD87BD68D8949C2D77"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e8043"></a><span class="anchor_wrapper"><a name="GUID-DCF4B529-4097-45F3-B1B2-CC2E5208A145"></a></span>Cameras and eRnsT
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-A946D7E6-191C-4227-B4F2-D23BF4369C6B"></a></span>eRnsT will use the first perspective camera defined within a scene to determine the viewer's field of vision within the game
+                     world. 
+                  </p> <span class="anchor_wrapper"><a name="UL_FEF4723226694E96A3F08CA90D30A97F"></a></span><ul>
+                     <li>If you use the standalone eRnsT viewer, this defines the starting position and orientation of the camera when the viewer is
+                        launched. The user can move the camera around in the viewer. 
+                     </li>
+                     <li>If you incorporate live eRnsT feedback in your level editor, the field of vision of the camera that you feed to eRnsT each
+                        time you carry out a rendering determines the lightmaps that get rendered in that pass. 
+                     </li>
+                  </ul> 
+               </div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_2A2487DD28674FAEA98163211FE306C9"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e8059"></a><span class="anchor_wrapper"><a name="GUID-754F676D-B1BB-4D73-92AF-9D42B6DF4407"></a></span>Environment camera
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-8ADC044D-8F50-4894-860D-F7BDC3F230E3"></a></span>Environment cameras produce environment maps: still images that record the entire world surrounding the camera. You can use
+                  these environment maps for real-time reflections, as textures for sky lights in another scene, as skybox images within the
+                  game, etc. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-28D6CCED-F59A-40BF-97EC-1270A06F64AF"></a></span>To create an environment camera, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateEnvironmentCamera()'); return false;">ILBCreateEnvironmentCamera()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-AC2E1E26-7D17-4CBF-8741-B6E3BD47DE56"></a></span>In your call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateEnvironmentCamera()'); return false;">ILBCreateEnvironmentCamera()</a></span>, you set the type of projection that the camera will use to flatten the environment to a still image. You can use any value
+                  from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEnvironmentCameraType'); return false;">ILBEnvironmentCameraType</a></span> enumeration. See the API Reference for details. 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_B065527F135A4928965AE371878B8B63"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e8083"></a><span class="anchor_wrapper"><a name="GUID-1DB1234D-58BE-45EE-95DC-002E3321DF21"></a></span>Setting up a camera
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-C4E96CE7-931D-4313-BBB9-6ABC6D5168CD"></a></span>You can only set up a camera in the context of setting up a scene. See also <span class="char_link"><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-928B89E1-FA28-430A-8368-77228AB2A1CE"></a></span>To set up a camera: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_4AC046A842CB444B80DD60E2A6CDAA77"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCameraHandle'); return false;">ILBCameraHandle</a></span>. 
+               </li>
+               <li>Initialize the handle by calling the <span class="code" translate="no">ILBCreate...()</span> function that corresponds to the type of camera you want to create. See <span class="char_link"><a href="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm#SECTION_D0E947481DFB4FF3A8DBDBDED8C38CD8">Types of cameras</a></span> above. In your call, you have to specify the handle of the scene that will contain your camera. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-961CC0BF-2538-46E9-86B7-A81934527381"></a></span>You do not have to close or finalize your camera before it can be used in a rendering. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-452993B1-1EBF-44F9-A54D-0BD87C70EC90"></a></span>For example, the following code sets up a simple perspective camera: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCameraHandle'); return false;">ILBCameraHandle</a> camera;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePerspectiveCamera'); return false;">ILBCreatePerspectiveCamera</a>(scene, _T("Camera"), matrix, &amp;camera);
+
+// Set a 45 degrees fov
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetFov'); return false;">ILBSetFov</a>(camera, static_cast&lt;float&gt;(M_PI) / 4.0f, 1.0f);
+</pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5E077F57F8C0401381F23F8B4EBCE8EA"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e8121"></a><span class="anchor_wrapper"><a name="GUID-60F54548-80DA-48E8-BC0A-346C0D93D9BA"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-7EBD848E-F625-4F8E-9F98-EE58899EFCE1"></a></span>You should only modify a camera from a single thread at a time. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3F5B017701174750A97671D77741018A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e8129"></a><span class="anchor_wrapper"><a name="GUID-AAF39697-AF65-4D13-8AD2-4F64A59BA4C8"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-A755418D-7CC8-4749-AB80-FB3E4AD4BEA3"></a></span>API functions related to the creation and setup of cameras are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastcamera.h'); return false;">beastcamera.h</a></span> file. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
