@@ -2,7 +2,7 @@
 
 #include "Classes/Selection/SelectableGroup.h"
 #include "Classes/Qt/Scene/System/SystemDelegates.h"
-#include "Classes/Scene/SceneTypes.h"
+#include "Classes/Qt/Scene/SceneTypes.h"
 
 #include <Scene3D/Entity.h>
 #include <UI/UIEvent.h>
