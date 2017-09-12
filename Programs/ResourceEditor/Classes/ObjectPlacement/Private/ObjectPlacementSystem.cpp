@@ -8,6 +8,7 @@ ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
     modificationSystem = editorScene->modifSystem;
     DVASSERT(modificationSystem);
     renderSystem = editorScene->renderSystem;
+    DVASSERT(renderSystem);
 }
 
 bool ObjectPlacementSystem::GetSnapToLandscape() const
