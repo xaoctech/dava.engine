@@ -2,11 +2,13 @@
 
 #include <TArc/Core/ClientModule.h>
 
-class DistanceModule : public DAVA::TArc::ClientModule
+class DistanceLinesModule : public DAVA::TArc::ClientModule
 {
-    DistanceModule();
+public:
+    DistanceLinesModule();
 
+private:
     void PostInit() override;
 
-    DAVA_VIRTUAL_REFLECTION(DistanceModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(DistanceLinesModule, DAVA::TArc::ClientModule);
 };

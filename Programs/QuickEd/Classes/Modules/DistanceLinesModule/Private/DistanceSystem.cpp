@@ -18,7 +18,7 @@
 #include <Render/2D/FTFont.h>
 #include <Utils/UTF8Utils.h>
 
-DistanceSystem::DistanceSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor)
+DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
     , font(nullptr)
@@ -133,6 +133,6 @@ void DistanceSystem::OnUpdate()
 
     for (const std::unique_ptr<DistanceLine>& line : lines)
     {
-        line->Draw(canvas);
+        line->Draw(canvas.Get());
     }
 }

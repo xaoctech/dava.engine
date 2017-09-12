@@ -22,8 +22,8 @@ class ControlTransformationSettings;
 class HUDSystem : public BaseEditorSystem
 {
 public:
-    HUDSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
-    ~HUDSystem() override;
+    HUDSystem(DAVA::TArc::ContextAccessor* accessor);
+    ~HUDSystem();
 
 private:
     enum eSearchOrder
@@ -39,8 +39,12 @@ private:
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
     void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
+    CanvasControls CreateCanvasControls() override;
+    void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
-    void OnSelectionChanged(const DAVA::Any& selection);
+    eSystems GetOrder() const override;
+    void OnUpdate() override;
+
     void OnHighlightNode(const DAVA::Any& node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
@@ -50,9 +54,8 @@ private:
     HUDAreaInfo GetControlArea(const DAVA::Vector2& pos, eSearchOrder searchOrder) const;
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
 
-    void UpdateAreasVisibility();
-
     void UpdateHUDEnabled();
+    SortedControlNodeSet GetSortedControlList() const;
 
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
@@ -60,7 +63,7 @@ private:
     HUDAreaInfo activeAreaInfo;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
-    DAVA::Vector2 hoveredPoint;
+    DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);
 
     DAVA::Map<ControlNode*, std::unique_ptr<HUD>> hudMap;
     std::unique_ptr<FrameControl> selectionRectControl;
@@ -70,5 +73,6 @@ private:
     std::unique_ptr<ControlContainer> hoveredNodeControl;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
-    DAVA::TArc::DataWrapper editorDataWrapper;
+    DAVA::TArc::DataWrapper systemsDataWrapper;
+    DAVA::RefPtr<DAVA::UIControl> hudControl;
 };

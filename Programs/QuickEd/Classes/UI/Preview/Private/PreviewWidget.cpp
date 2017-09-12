@@ -65,17 +65,19 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , hScrollBarData(Vector2::AXIS_X, accessor)
     , vScrollBarData(Vector2::AXIS_Y, accessor)
     , canvasDataAdapter(accessor)
+    , systemsManager(systemsManager_)
 {
     InjectRenderWidget(renderWidget);
 
     InitUI();
 
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
+    systemsDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorSystemsData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
 
-void PreviewWidget::CreateActions(EditorSystemsManager* systemsManager)
+void PreviewWidget::CreateActions()
 {
     using namespace DAVA::TArc;
 
@@ -454,7 +456,7 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
         QPoint pos = event->pos();
         DAVA::Vector2 davaPos(pos.x(), pos.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPos);
-        systemsManager->HighlightNode(node);
+        systemsDataWrapper.SetFieldValue(EditorSystemsData::highlightedNodePropertyName, node);
 
         if (nullptr != node)
         {
@@ -490,12 +492,12 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 
 void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 {
-    systemsManager->ClearHighlight();
+    systemsDataWrapper.SetFieldValue(EditorSystemsData::highlightedNodePropertyName, nullptr);
 }
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
-    systemsManager->ClearHighlight();
+    systemsDataWrapper.SetFieldValue(EditorSystemsData::highlightedNodePropertyName, nullptr);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))
