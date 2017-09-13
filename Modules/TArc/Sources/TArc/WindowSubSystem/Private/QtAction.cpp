@@ -13,7 +13,6 @@ QtAction::QtAction(ContextAccessor* accessor, QObject* parent)
 QtAction::QtAction(ContextAccessor* accessor, const QString& text, QObject* parent)
     : QAction(text, parent)
     , fieldBinder(accessor)
-
 {
 }
 
@@ -23,11 +22,19 @@ QtAction::QtAction(ContextAccessor* accessor, const QIcon& icon, const QString& 
 {
 }
 
+void QtAction::OnActionTriggered(bool checked, eActionState state, const FieldDescriptor& fieldDescr)
+{
+    Any value = fieldBinder.GetValue(fieldDescr);
+    DVASSERT(!value.IsEmpty());
+    OnFieldValueChanged(value, state);
+}
+
 void QtAction::SetStateUpdationFunction(eActionState state, const FieldDescriptor& fieldDescr, const Function<Any(const Any&)>& fn)
 {
     DVASSERT(functorsMap.count(state) == 0);
     functorsMap.emplace(state, fn);
     fieldBinder.BindField(fieldDescr, Bind(&QtAction::OnFieldValueChanged, this, _1, state));
+    connect(this, &QAction::triggered, this, Bind(&QtAction::OnActionTriggered, this, _1, state, fieldDescr));
 }
 
 void QtAction::OnFieldValueChanged(const Any& value, eActionState state)

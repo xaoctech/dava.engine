@@ -33,6 +33,7 @@ public:
 
 private:
     void OnFieldValueChanged(const Any& value, eActionState state);
+    void OnActionTriggered(bool checked, eActionState state, const FieldDescriptor& fieldDescr);
 
 private:
     FieldBinder fieldBinder;
