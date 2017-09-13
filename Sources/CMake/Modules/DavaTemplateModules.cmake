@@ -47,10 +47,10 @@ PLATFORMS_SUPPORTED
 PLATFORMS_IGNORE    #ANDROID 
                     #ANDROID_X86 
                     #ANDROID_ARM 
-                    #WINDOWS_UAP
-                    #WINDOWS_UAP_WIN32 
-                    #WINDOWS_UAP_ARM 
-                    #WINDOWS_UAP_X64 
+                    #WINUAP
+                    #WINUAP_WIN32 
+                    #WINUAP_ARM 
+                    #WINUAP_X64 
                     #IOS
                     #MACOS
                     #WIN

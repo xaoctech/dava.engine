@@ -2,7 +2,7 @@ set(MODULE_NAME Physics )
 
 set(MODULE_TYPE STATIC)
 
-set(PLATFORMS_IGNORE ANDROID WINDOWS_UAP_ARM  )                
+set(PLATFORMS_IGNORE ANDROID WINUAP_ARM  )                
 
 set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
 set(CPP_FILES_RECURSE Sources/*.cpp)
