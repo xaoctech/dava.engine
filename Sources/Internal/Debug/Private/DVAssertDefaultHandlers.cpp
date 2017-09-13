@@ -4,7 +4,6 @@
 #include "Debug/MessageBox.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
-#include <utf8.h>
 
 namespace DAVA
 {
@@ -48,9 +47,8 @@ FailBehaviour DefaultDialogBoxHandler(const AssertInfo& assertInfo)
     const int backtraceDepth = 0;
 #endif
 
-    //should be UTF-8, otherwise we have empty AlertDialog on iOS and NSException from NSAlert::setInformativeText on MacOS
-    String displayString;
-    utf8::replace_invalid(assertInfo.message, assertInfo.message + strlen(assertInfo.message), back_inserter(displayString));
+    //'message' should be UTF-8, otherwise we have empty AlertDialog on iOS and NSException from
+    // NSAlert::setInformativeText on MacOS
 
     // clang-format off
     String message = Format("DVASSERT failed\n"
@@ -60,7 +58,7 @@ FailBehaviour DefaultDialogBoxHandler(const AssertInfo& assertInfo)
                             "Callstack:\n"
                             "%s",
                             assertInfo.expression,
-                            displayString.c_str(),
+                            assertInfo.message,
                             assertInfo.fileName,
                             assertInfo.lineNumber,
                             Debug::GetBacktraceString(assertInfo.backtrace, backtraceDepth).c_str());
