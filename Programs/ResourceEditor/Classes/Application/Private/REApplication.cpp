@@ -8,7 +8,8 @@
 #include "Classes/Application/RESettings.h"
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 
-#include <Tools/TextureCompression/PVRConverter.h>
+#include <DavaTools/TextureCompression/PVRConverter.h>
+
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/EditorConfig.h"
 

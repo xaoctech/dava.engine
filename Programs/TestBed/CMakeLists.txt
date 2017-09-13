@@ -20,35 +20,20 @@ endif()
 # Uncomment to use local resources for android
 # dava_add_definitions(-DUSE_LOCAL_RESOURCES)
 
-set ( DAVA_COMPONENTS "SampleModule" "DAVA_DISABLE_AUTOTESTS" )
+set ( DAVA_COMPONENTS  "DAVA_DISABLE_AUTOTESTS" )
+find_dava_module( SampleModule )
+
 if (NOT LINUX)
-    list ( APPEND DAVA_COMPONENTS "Sound" "Spine" )
+    find_dava_module( Sound )
+    find_dava_module( Spine )
 endif()
-if ( WIN32 AND NOT WIN_UAP AND NOT DAVA_PLATFORM_QT)
-    list ( APPEND DAVA_COMPONENTS "CEFWebview" )
-endif ()
+
+find_dava_module( CEFWebview )
 
 # add physics
-if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
-    # we don't have physx for android x86, so skip this
-elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
-    # we don't have physx for win uap arm, so skip this
-else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
-    list ( APPEND DAVA_COMPONENTS "PhysicsDebug" )
-endif()
 
-if (DAVA_PLATFORM_QT)
-    list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
-    dava_add_definitions(-D__DAVAENGINE_QT__)
-    if ( MACOS )
-        dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
-        dava_add_definitions(-DDISABLE_NATIVE_WEBVIEW)
-        dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
-    endif()
-    find_package(QT5 REQUIRED Core Gui Widgets QuickWidgets Network)
-    set( ADDED_BINARY_DIR ${QT_ACTUAL_PATH}/bin )
-endif()
+find_dava_module( Physics )
+find_dava_module( PhysicsDebug )
 
 dava_add_definitions(-DLOCALIZATION_DEBUG)
 
@@ -58,11 +43,14 @@ if( NOT WINDOWS_UAP AND ( MACOS OR WIN32 ) )
 endif()
 
 
+find_dava_module( LoggerService )
+find_dava_module( MemoryProfilerService )
+find_dava_module( EmbeddedWebServer )
+find_dava_module( DocDirSetup )
+
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
-find_package( LoggerService REQUIRED )
-find_package( MemoryProfilerService REQUIRED )
-find_package( EmbeddedWebServer REQUIRED )
-find_package( DocDirSetup REQUIRED )
+
+
 include_directories   ( "Sources" )
 include_directories   ( "Sources/Infrastructure" )
 
@@ -72,9 +60,7 @@ elseif( IOS )
     set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
     set( IOS_ADD_SRC ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/TestBed.entitlements )
 elseif( WIN32 )
-    if (NOT DAVA_PLATFORM_QT)
-        set( EXECUTABLE_FLAG WIN32 )
-    endif()
+    set( EXECUTABLE_FLAG WIN32 )
 endif()
 
 file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/*.xib" )

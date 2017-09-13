@@ -1,5 +1,6 @@
 #include "mainwindow.h"
-#include <Tools/Version.h>
+
+#include <DavaTools/Version.h>
 #include "Classes/Qt/CubemapEditor/CubeMapTextureBrowser.h"
 #include "Classes/Qt/CubemapEditor/CubemapUtils.h"
 #include "Classes/Qt/DebugTools/VersionInfoWidget/VersionInfoWidget.h"
@@ -56,7 +57,8 @@
 
 #include "Constants.h"
 #include "StringConstants.h"
-#include <Tools/TextureCompression/TextureConverter.h>
+
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <QtTools/ConsoleWidget/LogWidget.h>
 #include <QtTools/ConsoleWidget/LogModel.h>

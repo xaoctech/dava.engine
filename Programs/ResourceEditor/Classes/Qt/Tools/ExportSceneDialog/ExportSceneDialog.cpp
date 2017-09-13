@@ -5,8 +5,6 @@
 #include <Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h>
 #include "Classes/Qt/Tools/Widgets/FilePathBrowser.h"
 
-#include <Tools/TextureCompression/TextureConverter.h>
-
 #include <TArc/DataProcessing/DataContext.h>
 #include <Base/GlobalEnum.h>
 #include <Debug/DVAssert.h>
