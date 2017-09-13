@@ -70,6 +70,8 @@ uint32 Keyboard::GetKeyNativeScancode(eInputElements elementId) const
 
 bool Keyboard::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return IsKeyboardInputElement(elementId);
 }
 
@@ -83,6 +85,8 @@ DigitalElementState Keyboard::GetDigitalElementState(eInputElements elementId) c
 
 AnalogElementState Keyboard::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(false, "KeyboardInputDevice does not support analog elements");
     return {};
 }

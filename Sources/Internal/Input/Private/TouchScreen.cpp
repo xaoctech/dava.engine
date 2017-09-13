@@ -43,6 +43,8 @@ AnalogElementState TouchScreen::GetTouchPositionByIndex(size_t i) const
 
 bool TouchScreen::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return IsTouchInputElement(elementId);
 }
 
