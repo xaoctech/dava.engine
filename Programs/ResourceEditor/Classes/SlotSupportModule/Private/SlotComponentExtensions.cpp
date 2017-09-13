@@ -744,7 +744,7 @@ private:
         DAVA::SerializationContext ctx;
         ctx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
         ctx.SetScene(scene.Get());
-        ctx.SetScenePath(scenePath.GetDirectory());
+        ctx.SetScenePath(DAVA::FilePath());
         ctx.SetRootNodePath(scenePath);
 
         DAVA::SlotComponent* newComponent = new DAVA::SlotComponent();
@@ -986,7 +986,7 @@ public:
         DAVA::SerializationContext ctx;
         ctx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
         ctx.SetScene(scene.Get());
-        ctx.SetScenePath(scenePath.GetDirectory());
+        ctx.SetScenePath(DAVA::FilePath());
         ctx.SetRootNodePath(scenePath);
 
         DAVA::SlotComponent* slotComponent = node->field.ref.GetValueObject().GetPtr<DAVA::SlotComponent>();

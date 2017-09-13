@@ -698,8 +698,21 @@ std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGa
     DAVA::SlotSystem* slotSystem = sceneEditor->slotSystem;
 
     RECommandBatch* batchCommand = new RECommandBatch("Prepare for save", static_cast<DAVA::uint32>(entities.size()));
+    DAVA::Map<DAVA::int32, DAVA::Entity*, std::greater<DAVA::int32>> depthEntityMap;
     for (DAVA::Entity* entity : entities)
     {
+        DAVA::int32 depth = 0;
+        DAVA::Entity* parent = entity;
+        while (parent != nullptr)
+        {
+            ++depth;
+            parent = parent->GetParent();
+        }
+        depthEntityMap.emplace(depth, entity);
+    }
+    for (const auto& entityNode : depthEntityMap)
+    {
+        DAVA::Entity* entity = entityNode.second;
         for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
         {
             DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
@@ -762,6 +775,7 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
             auto iter = existsComponents.find(slotName);
             if (iter != existsComponents.end())
             {
+                scene->Exec(std::make_unique<AttachEntityToSlot>(scene, iter->second, nullptr, DAVA::FastName()));
                 scene->Exec(std::make_unique<RemoveComponentCommand>(entity, iter->second));
             }
 
