@@ -33,8 +33,6 @@ Gamepad::Gamepad(uint32 id)
     , buttons{}
     , axes{}
 {
-    DVASSERT(Thread::IsMainThread());
-
     Engine* engine = Engine::Instance();
 
     endFrameConnectionToken = engine->endFrame.Connect(this, &Gamepad::OnEndFrame);
@@ -44,8 +42,6 @@ Gamepad::Gamepad(uint32 id)
 
 Gamepad::~Gamepad()
 {
-    DVASSERT(Thread::IsMainThread());
-
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Disconnect(endFrameConnectionToken);
@@ -140,6 +136,8 @@ AnalogElementState Gamepad::GetRightThumbAxis() const
 
 bool Gamepad::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsGamepadAxisInputElement(elementId) || IsGamepadButtonInputElement(elementId));
     return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
 }

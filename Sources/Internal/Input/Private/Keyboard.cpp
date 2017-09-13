@@ -28,8 +28,6 @@ Keyboard::Keyboard(uint32 id)
     , impl(new Private::KeyboardImpl())
     , keys{}
 {
-    DVASSERT(Thread::IsMainThread());
-
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
@@ -39,8 +37,6 @@ Keyboard::Keyboard(uint32 id)
 
 Keyboard::~Keyboard()
 {
-    DVASSERT(Thread::IsMainThread());
-
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Disconnect(this);

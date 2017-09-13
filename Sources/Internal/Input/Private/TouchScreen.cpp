@@ -14,8 +14,6 @@ TouchScreen::TouchScreen(uint32 id)
     , positions{}
     , nativeTouchIds{}
 {
-    DVASSERT(Thread::IsMainThread());
-
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
@@ -25,8 +23,6 @@ TouchScreen::TouchScreen(uint32 id)
 
 TouchScreen::~TouchScreen()
 {
-    DVASSERT(Thread::IsMainThread());
-
     Engine* engine = Engine::Instance();
 
     engine->endFrame.Disconnect(this);
