@@ -4,6 +4,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {

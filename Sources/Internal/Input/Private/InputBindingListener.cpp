@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
 #include "Debug/DVAssert.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {

@@ -19,6 +19,7 @@
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
 #include "Logger/Logger.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
