@@ -53,6 +53,9 @@ protected slots:
     void OnCommmandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
     void OnThemeChanged();
 
+    void OnRefreshLODSectionInFrame();
+    void OnRefreshLODSectionInSelection();
+
 private:
     void OnSelectionChanged(const DAVA::Any& selection);
 

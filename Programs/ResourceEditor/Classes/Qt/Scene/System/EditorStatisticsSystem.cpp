@@ -1,13 +1,17 @@
 #include "Classes/Selection/Selection.h"
+#include "Classes/Selection/SelectionData.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/System/EditorStatisticsSystem.h"
+#include "Classes/Commands2/RECommandIDs.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
 
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Lod/LodComponent.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <Debug/DVAssert.h>
 
@@ -17,6 +21,14 @@ struct TrianglesData
     DAVA::Vector<DAVA::uint32> visibleTriangles;
     DAVA::Vector<DAVA::RenderObject*> renderObjects;
 };
+
+DAVA_VIRTUAL_REFLECTION_IMPL(RenderStatsSettings)
+{
+    DAVA::ReflectionRegistrator<RenderStatsSettings>::Begin()[DAVA::M::DisplayName("Render statistics")]
+    .ConstructorByPointer()
+    .Field("calculatePerFrame", &RenderStatsSettings::calculatePerFrame)[DAVA::M::DisplayName(" Calculate per frame")]
+    .End();
+}
 
 namespace EditorStatisticsSystemInternal
 {
@@ -125,14 +137,34 @@ void EnumerateRenderObjects(const SelectableGroup& group, DAVA::Vector<DAVA::Ren
     }
 }
 }
+
 EditorStatisticsSystem::EditorStatisticsSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
+    , binder(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()))
 {
     triangles.resize(eEditorMode::MODE_COUNT);
     for (DAVA::uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
     {
         triangles[m].storedTriangles.resize(EditorStatisticsSystemInternal::SIZE_OF_TRIANGLES, 0);
         triangles[m].visibleTriangles.resize(EditorStatisticsSystemInternal::SIZE_OF_TRIANGLES, 0);
+    }
+
+    {
+        DAVA::TArc::FieldDescriptor descr;
+        descr.type = DAVA::ReflectedTypeDB::Get<RenderStatsSettings>();
+        descr.fieldName = DAVA::FastName("calculatePerFrame");
+        binder->BindField(descr, [this](const DAVA::Any& v) {
+            calculatePerFrame = v.Cast<bool>(true);
+        });
+    }
+
+    {
+        DAVA::TArc::FieldDescriptor descr;
+        descr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
+        descr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        binder->BindField(descr, [this](const DAVA::Any& v) {
+            EmitInvalidateUI(true);
+        });
     }
 }
 
@@ -164,8 +196,13 @@ void EditorStatisticsSystem::PrepareForRemove()
 {
 }
 
-const DAVA::Vector<DAVA::uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, bool allTriangles) const
+const DAVA::Vector<DAVA::uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, bool allTriangles)
 {
+    if (calculatePerFrame == false && initialized == true)
+    {
+        CalculateTriangles();
+    }
+
     if (allTriangles)
     {
         return triangles[mode].storedTriangles;
@@ -176,7 +213,11 @@ const DAVA::Vector<DAVA::uint32>& EditorStatisticsSystem::GetTriangles(eEditorMo
 
 void EditorStatisticsSystem::Process(DAVA::float32 timeElapsed)
 {
-    CalculateTriangles();
+    initialized = true;
+    if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame)
+    {
+        CalculateTriangles();
+    }
     DispatchSignals();
 }
 
@@ -258,6 +299,21 @@ void EditorStatisticsSystem::DispatchSignals()
     }
 
     invalidateUIflag = FLAG_NONE;
+}
+
+void EditorStatisticsSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
+{
+    static DAVA::Vector<DAVA::uint32> commandIDs = {
+        CMDID_DELETE_RENDER_BATCH,
+        CMDID_LOD_COPY_LAST_LOD,
+        CMDID_LOD_CREATE_PLANE,
+        CMDID_LOD_DELETE
+    };
+
+    if (commandNotification.MatchCommandIDs(commandIDs))
+    {
+        EmitInvalidateUI(true);
+    }
 }
 
 void EditorStatisticsSystem::AddDelegate(EditorStatisticsSystemUIDelegate* uiDelegate)

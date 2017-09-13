@@ -3,6 +3,7 @@
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/FileSystemData.h"
 #include "Classes/Application/Private/SettingsConverter.h"
+#include "Classes/Qt/Scene/System/EditorStatisticsSystem.h"
 
 #include "Main/mainwindow.h"
 #include "TextureCache.h"
@@ -47,6 +48,7 @@ public:
 
 REModule::REModule()
 {
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderStatsSettings);
 }
 
 REModule::~REModule()

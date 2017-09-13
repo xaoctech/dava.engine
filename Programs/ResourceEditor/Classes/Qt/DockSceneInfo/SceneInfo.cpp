@@ -218,6 +218,10 @@ void SceneInfo::RefreshSpeedTreeInfoSelection()
 void SceneInfo::InitializeLODSectionInFrame()
 {
     QtPropertyData* header = CreateInfoHeader("LOD in Frame");
+    QtPropertyToolButton* button = header->AddButton(QtPropertyToolButton::ACTIVE_ALWAYS);
+    button->setIcon(QIcon(":/QtIcons/refresh.png"));
+    button->setAutoRaise(false);
+    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::OnRefreshLODSectionInFrame);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -233,6 +237,10 @@ void SceneInfo::InitializeLODSectionInFrame()
 void SceneInfo::InitializeLODSectionForSelection()
 {
     QtPropertyData* header = CreateInfoHeader("LOD Info for Selected Entities");
+    QtPropertyToolButton* button = header->AddButton(QtPropertyToolButton::ACTIVE_ALWAYS);
+    button->setIcon(QIcon(":/QtIcons/refresh.png"));
+    button->setAutoRaise(false);
+    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::OnRefreshLODSectionInSelection);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -578,8 +586,11 @@ void SceneInfo::UpdateInfoByTimer()
         return;
 
     Refresh3DDrawInfo();
-    RefreshLODInfoInFrame();
-    RefreshLODInfoForSelection();
+    if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame == true)
+    {
+        RefreshLODInfoInFrame();
+        RefreshLODInfoForSelection();
+    }
 
     CollectSpeedInfo(&Selection::GetSelection());
     RefreshSpeedTreeInfoSelection();
@@ -653,7 +664,10 @@ void SceneInfo::OnSelectionChanged(const DAVA::Any& selectionAny)
         const SelectableGroup& selection = selectionAny.Get<SelectableGroup>();
         ClearSelectionData();
         CollectSelectedRenderObjects(&selection);
-        RefreshLODInfoForSelection();
+        if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame == true)
+        {
+            RefreshLODInfoForSelection();
+        }
 
         CollectSpeedInfo(&selection);
         RefreshSpeedTreeInfoSelection();
@@ -827,6 +841,16 @@ void SceneInfo::SpritesReloaded()
 void SceneInfo::OnQualityChanged()
 {
     RefreshAllData();
+}
+
+void SceneInfo::OnRefreshLODSectionInFrame()
+{
+    RefreshLODInfoInFrame();
+}
+
+void SceneInfo::OnRefreshLODSectionInSelection()
+{
+    RefreshLODInfoForSelection();
 }
 
 void SceneInfo::InitializeVegetationInfoSection()
