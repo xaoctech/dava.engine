@@ -37,8 +37,6 @@ bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBi
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
     : actionSystem(actionSystem)
 {
-    DVASSERT(Thread::IsMainThread());
-
     inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &ActionSystemImpl::OnInputEvent));
 
     Engine::Instance()->update.Connect(this, &ActionSystemImpl::OnUpdate);
@@ -46,8 +44,6 @@ ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
 
 ActionSystemImpl::~ActionSystemImpl()
 {
-    DVASSERT(Thread::IsMainThread());
-
     GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
 
     Engine::Instance()->update.Disconnect(this);
@@ -184,7 +180,7 @@ AnalogActionState ActionSystemImpl::GetAnalogActionState(FastName actionId) cons
 // Helper function to check if specified states are active
 bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices, InputDevice** deviceOut)
 {
-    DVASSERT(Thread::IsMainThread());
+    DeviceManager* deviceManager = GetEngineContext()->deviceManager;
 
     for (size_t i = 0; i < ActionSystem::MAX_DIGITAL_STATES_COUNT; ++i)
     {
@@ -201,7 +197,7 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSyst
 
         for (const uint32 deviceId : devices)
         {
-            InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
+            InputDevice* device = deviceManager->GetInputDevice(deviceId);
             if (device != nullptr)
             {
                 if (device->IsElementSupported(elementId))
@@ -251,11 +247,11 @@ bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredS
 
 AnalogElementState ActionSystemImpl::GetAnalogElementStateFromSupportedDevice(eInputElements analogElementId, const Vector<uint32>& devices)
 {
-    DVASSERT(Thread::IsMainThread());
+    DeviceManager* deviceManager = GetEngineContext()->deviceManager;
 
     for (const uint32 deviceId : devices)
     {
-        const InputDevice* device = GetEngineContext()->deviceManager->GetInputDevice(deviceId);
+        const InputDevice* device = deviceManager->GetInputDevice(deviceId);
         if (device != nullptr)
         {
             if (device->IsElementSupported(analogElementId))
@@ -272,8 +268,6 @@ AnalogElementState ActionSystemImpl::GetAnalogElementStateFromSupportedDevice(eI
 
 bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 {
-    DVASSERT(Thread::IsMainThread());
-
     if (event.deviceType == eInputDeviceTypes::KEYBOARD && event.keyboardEvent.charCode > 0)
     {
         return false;
@@ -310,16 +304,6 @@ bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
 
 void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 {
-    DVASSERT(Thread::IsMainThread());
-
-    // Sets to skip bindings with same elements.
-    // For example, we have two bindings:
-    // - Shift + space (binding1)
-    // - Space (binding2)
-    // Binding1 will be processed first and if triggered, binding2 should be skipped
-    Set<eInputElements> elementsUsedInDigitalBindings;
-    Set<eInputElements> elementsUsedInAnalogBindings;
-
     for (const BoundActionSet& setBinding : boundSets)
     {
         for (const DigitalBinding& digitalBinding : setBinding.digitalBindings)
@@ -419,6 +403,9 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
             }
         }
     }
+
+    elementsUsedInDigitalBindings.clear();
+    elementsUsedInAnalogBindings.clear();
 
     // We need to process all active actions after checking states to allow calls to getters
     // (GetDigitalActionState, GetAnalogActionState) from 'ActionTriggered' signal handlers
