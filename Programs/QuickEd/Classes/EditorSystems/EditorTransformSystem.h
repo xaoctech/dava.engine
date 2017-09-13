@@ -23,7 +23,7 @@ class Command;
 class EditorTransformSystem : public BaseEditorSystem
 {
 public:
-    explicit EditorTransformSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor);
+    explicit EditorTransformSystem(DAVA::TArc::ContextAccessor* accessor);
     ~EditorTransformSystem() override;
 
     static DAVA::Vector2 GetMinimumSize();
@@ -45,6 +45,7 @@ private:
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
 
