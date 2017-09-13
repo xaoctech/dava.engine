@@ -30,6 +30,7 @@ private:
 private:
     DAVA::TArc::UI* ui = nullptr;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    DAVA::TArc::DataWrapper documentDataWrapper;
     ControlNode* createFromControl = nullptr;
     bool controlDependsOnPackage = false;
 };

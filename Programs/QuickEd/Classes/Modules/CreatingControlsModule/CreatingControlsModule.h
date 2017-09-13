@@ -17,7 +17,6 @@ private:
     void OnCreateByClick(ControlNode* control);
 
 private:
-    //std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     DAVA_VIRTUAL_REFLECTION(CreatingControlsModule, DAVA::TArc::ClientModule);

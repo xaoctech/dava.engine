@@ -7,6 +7,7 @@ CreatingControlsSystem::CreatingControlsSystem(EditorSystemsManager* parent, DAV
     : BaseEditorSystem(parent, accessor)
     , ui(ui)
 {
+    documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
 }
 
 EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::UIEvent* currentInput)
@@ -84,10 +85,10 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
 {
     DAVA::TArc::DataContext* active = accessor->GetActiveContext();
     DVASSERT(active != nullptr);
-    const DocumentData* data = active->GetData<DocumentData>();
-    if (data != nullptr)
+    DocumentData* docData = active->GetData<DocumentData>();
+    if (docData != nullptr)
     {
-        PackageNode* package = data->GetPackageNode();
+        PackageNode* package = docData->GetPackageNode();
         DVASSERT(package != nullptr);
 
         uint32 destIndex = 0;
@@ -105,6 +106,7 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
         ControlsContainerNode* destControlContainer = dynamic_cast<ControlsContainerNode*>(destNode);
         if (destControlContainer != nullptr)
         {
+            docData->BeginBatch("Copy control from library");
             CommandExecutor executor(accessor, ui);
 
             Vector<ControlNode*> newNodes;
@@ -114,9 +116,19 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
                 ControlNode* destControl = dynamic_cast<ControlNode*>(destNode);
                 if (destControl != nullptr && newNodes.size() == 1)
                 {
-                    ControlPlacementUtils::SetAbsoulutePosToControlNode(package, newNodes.front(), destControl, point);
+                    ControlNode* newNode = newNodes.front();
+                    ControlPlacementUtils::SetAbsoulutePosToControlNode(package, newNode, destControl, point);
+                    AbstractProperty* postionProperty = newNode->GetRootProperty()->FindPropertyByName("position");
+                    AbstractProperty* sizeProperty = newNode->GetRootProperty()->FindPropertyByName("size");
+                    newNode->GetRootProperty()->SetProperty(postionProperty, Any(newNode->GetControl()->GetPosition()));
+                    newNode->GetRootProperty()->SetProperty(sizeProperty, Any(newNode->GetControl()->GetSize()));
+
+                    SelectedNodes newSelection = { newNode };
+                    documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, newSelection);
                 }
             }
+
+            docData->EndBatch();
         }
     }
 
