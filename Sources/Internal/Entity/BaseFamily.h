@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
+#include "Concurrency/Atomic.h"
 
 namespace DAVA
 {
@@ -15,6 +16,7 @@ class BaseFamily
 {
 public:
     BaseFamily(const Vector<Component*>& components);
+    BaseFamily(const BaseFamily<Component>& other);
 
     uint32 GetComponentIndex(uint32 componentType, uint32 index) const;
     uint32 GetComponentsCount(uint32 componentType) const;
@@ -26,7 +28,7 @@ private:
     uint32 componentIndices[Component::COMPONENT_COUNT];
     uint32 componentCount[Component::COMPONENT_COUNT];
     uint64 componentsFlags;
-    int32 refCount;
+    Atomic<int32> refCount;
 
     template <typename EntityFamilyType>
     friend class BaseFamilyRepository;
@@ -50,7 +52,7 @@ public:
 
 private:
     Vector<EntityFamilyType*> families;
-    int32 refCount = 0;
+    Atomic<int32> refCount;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +75,16 @@ BaseFamily<Component>::BaseFamily(const Vector<Component*>& components)
         componentCount[type]++;
         componentsFlags |= 1ULL << type;
     }
+}
+
+template <typename Component>
+BaseFamily<Component>::BaseFamily(const BaseFamily<Component>& other)
+    : refCount(0)
+{
+    Memcpy(componentIndices, other.componentIndices, sizeof(componentIndices));
+    Memcpy(componentCount, other.componentCount, sizeof(componentIndices));
+    componentsFlags = other.componentsFlags;
+    refCount.Set(other.refCount.Get());
 }
 
 template <typename Component>
@@ -120,8 +132,8 @@ EntityFamilyType* BaseFamilyRepository<EntityFamilyType>::GetOrCreate(const Enti
         families.push_back(new EntityFamilyType(localFamily));
         iter = families.end() - 1;
     }
-    (*iter)->refCount += 1; // Increase family ref counter
-    refCount += 1; // Increase repository ref counter
+    (*iter)->refCount.Increment(); // Increase family ref counter
+    refCount.Increment(); // Increase repository ref counter
     return *iter;
 }
 
@@ -130,16 +142,16 @@ void BaseFamilyRepository<EntityFamilyType>::ReleaseFamily(EntityFamilyType* fam
 {
     if (family != nullptr)
     {
-        DVASSERT(refCount > 0);
-        DVASSERT(family->refCount > 0);
+        DVASSERT(refCount.Get() > 0);
+        DVASSERT(family->refCount.Get() > 0);
 
-        family->refCount--;
-        refCount--;
+        family->refCount.Decrement();
+        refCount.Decrement();
         if (0 == refCount)
         {
             for (auto x : families)
             {
-                DVASSERT(x->refCount == 0);
+                DVASSERT(x->refCount.Get() == 0);
                 delete x;
             }
             families.clear();
