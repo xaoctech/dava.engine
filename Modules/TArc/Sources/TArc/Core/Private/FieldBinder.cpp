@@ -172,7 +172,7 @@ void FieldBinder::SetValue(const FieldDescriptor& fieldDescr, const Any& v)
     }
 }
 
-Any FieldBinder::GetValue(const FieldDescriptor& fieldDescr)
+Any FieldBinder::GetValue(const FieldDescriptor& fieldDescr) const
 {
     for (UniversalDataListener& listener : impl->listeners)
     {

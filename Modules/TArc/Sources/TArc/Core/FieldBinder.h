@@ -19,7 +19,7 @@ public:
 
     void BindField(const FieldDescriptor& fieldDescr, const Function<void(const Any&)>& fn);
     void SetValue(const FieldDescriptor& fieldDescr, const Any& v);
-    Any GetValue(const FieldDescriptor& fieldDescr);
+    Any GetValue(const FieldDescriptor& fieldDescr) const;
 
 private:
     class Impl;
