@@ -2,6 +2,8 @@
 
 #include "EditorSystems/EditorSystemsManager.h"
 
+class Painter;
+
 namespace DAVA
 {
 class UIEvent;
@@ -44,10 +46,12 @@ protected:
     };
 
     //some systems can process OnUpdate from UpdateViewsSystem
-    //order of update is metter, because without it canvas views will be in invalid state during the frame
+    //order of update is matter, because without it canvas views will be in invalid state during the frame
 
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
+    Painter* GetPainter();
+
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
 private:

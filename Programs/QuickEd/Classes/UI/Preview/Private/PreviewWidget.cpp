@@ -2,8 +2,6 @@
 #include "Application/QEGlobal.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
@@ -17,8 +15,11 @@
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/CanvasModule/CanvasData.h"
+#include "Modules/HUDModule/HUDModuleData.h"
+
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -72,7 +73,7 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InitUI();
 
     centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
-    systemsDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorSystemsData>());
+    hudModuleDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<HUDModuleData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -439,6 +440,7 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/uri-list"))
     {
+        droppingFile.Emit(true);
         QStringList strList = mimeData->text().split("\n");
         for (const auto& str : strList)
         {
@@ -456,7 +458,6 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
         QPoint pos = event->pos();
         DAVA::Vector2 davaPos(pos.x(), pos.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPos);
-        systemsDataWrapper.SetFieldValue(EditorSystemsData::highlightedNodePropertyName, node);
 
         if (nullptr != node)
         {
@@ -492,12 +493,12 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 
 void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 {
-    systemsDataWrapper.SetFieldValue(EditorSystemsData::highlightedNodePropertyName, nullptr);
+    droppingFile.Emit(false);
 }
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
-    systemsDataWrapper.SetFieldValue(EditorSystemsData::highlightedNodePropertyName, nullptr);
+    droppingFile.Emit(false);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))

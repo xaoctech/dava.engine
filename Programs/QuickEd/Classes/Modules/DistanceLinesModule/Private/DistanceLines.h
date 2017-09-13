@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Math/Vector.h>
-#include <Render/2D/Font.h>
 
 namespace DAVA
 {
@@ -13,6 +12,8 @@ class ContextAccessor;
 }
 }
 
+class Painter;
+
 struct LineParams
 {
     LineParams(const DAVA::UIGeometricData& gd);
@@ -23,7 +24,7 @@ struct LineParams
     DAVA::Vector2::eAxis axis;
     DAVA::Vector2::eAxis oppositeAxis;
     DAVA::eAlign direction;
-    DAVA::RefPtr<DAVA::Font> font;
+    Painter* painter = nullptr;
 };
 
 //lines have different behavior, so use base class to draw them

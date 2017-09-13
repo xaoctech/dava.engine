@@ -25,6 +25,9 @@ public:
     HUDSystem(DAVA::TArc::ContextAccessor* accessor);
     ~HUDSystem();
 
+    DAVA::Signal<ControlNode*> highlightChanged;
+    void HighlightNode(ControlNode* highLight);
+
 private:
     enum eSearchOrder
     {
@@ -33,7 +36,6 @@ private:
     };
     struct HUD;
 
-    void InitFieldBinder();
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
@@ -45,7 +47,7 @@ private:
     eSystems GetOrder() const override;
     void OnUpdate() override;
 
-    void OnHighlightNode(const DAVA::Any& node);
+    void SetHighlight(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
     void ClearMagnetLines();

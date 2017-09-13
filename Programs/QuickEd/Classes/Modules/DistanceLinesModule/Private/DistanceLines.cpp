@@ -88,41 +88,40 @@ void SolidLine::DrawLineText(DAVA::UIControl* canvas)
 
     float32 length = fabs((params.endPoint - params.startPoint)[params.axis]);
 
-    RefPtr<UIStaticText> textControl(new UIStaticText());
-    textControl->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
-    textControl->SetTextPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_FORCED);
-    DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
-    textControl->SetTextColor(preferences->textColor);
-    textControl->SetFont(params.font.Get());
-
-    String text = Format("%.0f", length);
-
-    textControl->SetUtf8Text(text);
-
-    Font::StringMetrics metrics = params.font->GetStringMetrics(UTF8Utils::EncodeToWideString(text));
-    Vector2 size(metrics.width, metrics.height);
-    size /= params.gd.scale;
-
-    //margin around text
-    Vector2 margin = Vector2(3.0f, 3.0f) / params.gd.scale;
-    Vector2 pos;
-
-    if (length > (size[params.axis] + margin[params.axis]))
-    {
-        pos[params.oppositeAxis] = params.direction == ALIGN_TOP || params.direction == ALIGN_RIGHT ?
-        params.startPoint[params.oppositeAxis] + margin[params.oppositeAxis] :
-        params.startPoint[params.oppositeAxis] - size[params.oppositeAxis] - margin[params.oppositeAxis];
-        pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f - size[params.axis] / 2.0f;
-    }
-    else
-    {
-        pos[params.oppositeAxis] = params.startPoint[params.oppositeAxis] - (size[params.oppositeAxis] / 2.0f);
-        pos[params.axis] = params.direction == ALIGN_BOTTOM || params.direction == ALIGN_RIGHT ?
-        params.endPoint[params.axis] + margin[params.axis] :
-        params.endPoint[params.axis] - size[params.axis] - margin[params.axis];
-    }
-    UIControlUtils::MapRectToScreen(Rect(pos, size), params.gd, textControl);
-    canvas->AddControl(textControl.Get());
+    //     RefPtr<UIStaticText> textControl(new UIStaticText());
+    //     textControl->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
+    //     textControl->SetTextPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_FORCED);
+    //     DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    //     textControl->SetTextColor(preferences->textColor);
+    //
+    //     String text = Format("%.0f", length);
+    //
+    //     textControl->SetUtf8Text(text);
+    //
+    //     Font::StringMetrics metrics = params.font->GetStringMetrics(UTF8Utils::EncodeToWideString(text));
+    //     Vector2 size(metrics.width, metrics.height);
+    //     size /= params.gd.scale;
+    //
+    //     //margin around text
+    //     Vector2 margin = Vector2(3.0f, 3.0f) / params.gd.scale;
+    //     Vector2 pos;
+    //
+    //     if (length > (size[params.axis] + margin[params.axis]))
+    //     {
+    //         pos[params.oppositeAxis] = params.direction == ALIGN_TOP || params.direction == ALIGN_RIGHT ?
+    //         params.startPoint[params.oppositeAxis] + margin[params.oppositeAxis] :
+    //         params.startPoint[params.oppositeAxis] - size[params.oppositeAxis] - margin[params.oppositeAxis];
+    //         pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f - size[params.axis] / 2.0f;
+    //     }
+    //     else
+    //     {
+    //         pos[params.oppositeAxis] = params.startPoint[params.oppositeAxis] - (size[params.oppositeAxis] / 2.0f);
+    //         pos[params.axis] = params.direction == ALIGN_BOTTOM || params.direction == ALIGN_RIGHT ?
+    //         params.endPoint[params.axis] + margin[params.axis] :
+    //         params.endPoint[params.axis] - size[params.axis] - margin[params.axis];
+    //     }
+    //     UIControlUtils::MapRectToScreen(Rect(pos, size), params.gd, textControl);
+    //     canvas->AddControl(textControl.Get());
 }
 
 DotLine::DotLine(const LineParams& params)

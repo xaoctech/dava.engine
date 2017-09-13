@@ -18,36 +18,9 @@ DAVA::eAlign GetDirection(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startP
 }
 }
 
-ControlsLinesFactory::ControlsLinesFactory(const ControlLinesFactoryParams& params)
-    : accessor(params.accessor)
-    , font(params.font)
+ControlsLinesFactory::ControlsLinesFactory(const ControlLinesFactoryParams& params_)
+    : params(params_)
 {
-    using namespace DAVA;
-    UIControl* highlightedControl = params.highlightedControl;
-    UIControl* selectedControl = params.selectedControl;
-
-    if (highlightedControl->GetParent() == selectedControl->GetParent())
-    {
-        selectedRect = selectedControl->GetRect();
-        highlightedRect = highlightedControl->GetRect();
-        parentGd = highlightedControl->GetParent()->GetGeometricData();
-    }
-    else if (highlightedControl->GetParent() == selectedControl)
-    {
-        selectedRect = Rect(Vector2(0.0f, 0.0f), selectedControl->GetSize());
-        highlightedRect = highlightedControl->GetRect();
-        parentGd = selectedControl->GetGeometricData();
-    }
-    else if (selectedControl->GetParent() == highlightedControl)
-    {
-        selectedRect = selectedControl->GetRect();
-        highlightedRect = Rect(Vector2(0.0f, 0.0f), highlightedControl->GetSize());
-        parentGd = highlightedControl->GetGeometricData();
-    }
-    else
-    {
-        DVASSERT("selected and highlighted nodes must be child and parent or be neighbours");
-    }
 }
 
 DAVA::Vector<std::unique_ptr<DistanceLine>> ControlsLinesFactory::CreateLines() const
@@ -55,7 +28,7 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> ControlsLinesFactory::CreateLines() 
     using namespace DAVA;
 
     Vector<std::unique_ptr<DistanceLine>> lines;
-    if (highlightedRect.RectIntersects(selectedRect))
+    if (params.highlightedRect.RectIntersects(params.selectedRect))
     {
         for (int i = 0; i < Vector2::AXIS_COUNT; ++i)
         {
@@ -65,16 +38,16 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> ControlsLinesFactory::CreateLines() 
             Vector2 startPos;
             Vector2 endPos;
 
-            float32 selectedRectMiddle = selectedRect.GetPosition()[oppositeAxis] + selectedRect.GetSize()[oppositeAxis] / 2.0f;
+            float32 selectedRectMiddle = params.selectedRect.GetPosition()[oppositeAxis] + params.selectedRect.GetSize()[oppositeAxis] / 2.0f;
             startPos[oppositeAxis] = selectedRectMiddle;
             endPos[oppositeAxis] = selectedRectMiddle;
 
-            startPos[axis] = selectedRect.GetPosition()[axis];
-            endPos[axis] = highlightedRect.GetPosition()[axis];
+            startPos[axis] = params.selectedRect.GetPosition()[axis];
+            endPos[axis] = params.highlightedRect.GetPosition()[axis];
             AddLine<SolidLine>(axis, startPos, endPos, lines);
 
-            startPos[axis] += selectedRect.GetSize()[axis];
-            endPos[axis] += highlightedRect.GetSize()[axis];
+            startPos[axis] += params.selectedRect.GetSize()[axis];
+            endPos[axis] += params.highlightedRect.GetSize()[axis];
             AddLine<SolidLine>(axis, startPos, endPos, lines);
         }
     }
@@ -87,36 +60,36 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> ControlsLinesFactory::CreateLines() 
 
             Vector2 startPos;
             Vector2 endPos;
-            float32 selectedRectMiddle = selectedRect.GetPosition()[oppositeAxis] + selectedRect.GetSize()[oppositeAxis] / 2.0f;
+            float32 selectedRectMiddle = params.selectedRect.GetPosition()[oppositeAxis] + params.selectedRect.GetSize()[oppositeAxis] / 2.0f;
             startPos[oppositeAxis] = selectedRectMiddle;
             endPos[oppositeAxis] = selectedRectMiddle;
 
-            if (highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis] < selectedRect.GetPosition()[axis])
+            if (params.highlightedRect.GetPosition()[axis] + params.highlightedRect.GetSize()[axis] < params.selectedRect.GetPosition()[axis])
             { //if highlighted control at the left / top of the selected control
 
-                startPos[axis] = selectedRect.GetPosition()[axis];
-                endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
+                startPos[axis] = params.selectedRect.GetPosition()[axis];
+                endPos[axis] = params.highlightedRect.GetPosition()[axis] + params.highlightedRect.GetSize()[axis];
                 AddLine<SolidLine>(axis, startPos, endPos, lines);
-                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, params.highlightedRect, endPos, lines);
             }
-            else if (highlightedRect.GetPosition()[axis] > selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis])
+            else if (params.highlightedRect.GetPosition()[axis] > params.selectedRect.GetPosition()[axis] + params.selectedRect.GetSize()[axis])
             {
-                startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
-                endPos[axis] = highlightedRect.GetPosition()[axis];
+                startPos[axis] = params.selectedRect.GetPosition()[axis] + params.selectedRect.GetSize()[axis];
+                endPos[axis] = params.highlightedRect.GetPosition()[axis];
                 AddLine<SolidLine>(axis, startPos, endPos, lines);
-                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, params.highlightedRect, endPos, lines);
             }
             else
             {
-                startPos[axis] = selectedRect.GetPosition()[axis];
-                endPos[axis] = highlightedRect.GetPosition()[axis];
+                startPos[axis] = params.selectedRect.GetPosition()[axis];
+                endPos[axis] = params.highlightedRect.GetPosition()[axis];
                 AddLine<SolidLine>(axis, startPos, endPos, lines);
-                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, params.highlightedRect, endPos, lines);
 
-                startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
-                endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
+                startPos[axis] = params.selectedRect.GetPosition()[axis] + params.selectedRect.GetSize()[axis];
+                endPos[axis] = params.highlightedRect.GetPosition()[axis] + params.highlightedRect.GetSize()[axis];
                 AddLine<SolidLine>(axis, startPos, endPos, lines);
-                SurroundWithDotLines(oppositeAxis, highlightedRect, endPos, lines);
+                SurroundWithDotLines(oppositeAxis, params.highlightedRect, endPos, lines);
             }
         }
     }
@@ -127,15 +100,15 @@ LineParams ControlsLinesFactory::CreateLineParams(const DAVA::Vector2& startPoin
 {
     using namespace DAVA;
 
-    LineParams params(parentGd);
-    params.accessor = accessor;
-    params.font = font;
-    params.startPoint = startPoint;
-    params.endPoint = endPos;
-    params.direction = direction;
-    params.axis = direction == ALIGN_LEFT || direction == ALIGN_RIGHT ? Vector2::AXIS_X : Vector2::AXIS_Y;
-    params.oppositeAxis = params.axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
-    return params;
+    LineParams lineParams(params.parentGd);
+    lineParams.accessor = params.accessor;
+    lineParams.startPoint = startPoint;
+    lineParams.endPoint = endPos;
+    lineParams.direction = direction;
+    lineParams.axis = direction == ALIGN_LEFT || direction == ALIGN_RIGHT ? Vector2::AXIS_X : Vector2::AXIS_Y;
+    lineParams.oppositeAxis = (lineParams.axis == Vector2::AXIS_X) ? Vector2::AXIS_Y : Vector2::AXIS_X;
+    lineParams.painter = params.painter;
+    return lineParams;
 }
 
 void ControlsLinesFactory::SurroundWithDotLines(DAVA::Vector2::eAxis axis, const DAVA::Rect& rect, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const
@@ -162,5 +135,32 @@ void ControlsLinesFactory::AddLine(DAVA::Vector2::eAxis axis, const DAVA::Vector
     {
         DAVA::eAlign direction = DistanceLinesFactoryDetails::GetDirection(axis, startPos, endPos);
         lines.push_back(std::make_unique<T>(CreateLineParams(startPos, endPos, direction)));
+    }
+}
+
+ControlsLinesFactory::ControlLinesFactoryParams::ControlLinesFactoryParams(DAVA::UIControl* selectedControl, DAVA::UIControl* highlightedControl)
+{
+    using namespace DAVA;
+    if (highlightedControl->GetParent() == selectedControl->GetParent())
+    {
+        selectedRect = selectedControl->GetRect();
+        highlightedRect = highlightedControl->GetRect();
+        parentGd = highlightedControl->GetParent()->GetGeometricData();
+    }
+    else if (highlightedControl->GetParent() == selectedControl)
+    {
+        selectedRect = Rect(Vector2(0.0f, 0.0f), selectedControl->GetSize());
+        highlightedRect = highlightedControl->GetRect();
+        parentGd = selectedControl->GetGeometricData();
+    }
+    else if (selectedControl->GetParent() == highlightedControl)
+    {
+        selectedRect = selectedControl->GetRect();
+        highlightedRect = Rect(Vector2(0.0f, 0.0f), highlightedControl->GetSize());
+        parentGd = highlightedControl->GetGeometricData();
+    }
+    else
+    {
+        DVASSERT("selected and highlighted nodes must be child and parent or be neighbours");
     }
 }

@@ -189,6 +189,7 @@ void DocumentsModule::InitCentralWidget()
     previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
+    previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
@@ -1225,4 +1226,11 @@ void DocumentsModule::OnSelectInFileSystem()
     DocumentData* documentData = context->GetData<DocumentData>();
     QString filePath = documentData->GetPackageAbsolutePath();
     InvokeOperation(QEGlobal::SelectFile.ID, filePath);
+}
+
+void DocumentsModule::OnDroppingFile(bool droppingFile)
+{
+    DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    EditorSystemsData* systemsData = globalContext->GetData<EditorSystemsData>();
+    systemsData->highlightDisabled = droppingFile;
 }

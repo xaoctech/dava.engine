@@ -1,5 +1,6 @@
 #include "EditorSystems/BaseEditorSystem.h"
 #include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "EditorSystems/Painter.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <UI/UIEvent.h>
@@ -29,6 +30,17 @@ EditorSystemsManager* BaseEditorSystem::GetSystemsManager()
     EditorSystemsManager* systemsManager = editorData->systemsManager.get();
     DVASSERT(systemsManager != nullptr);
     return systemsManager;
+}
+
+Painter* BaseEditorSystem::GetPainter()
+{
+    using namespace DAVA::TArc;
+    DataContext* globalContext = accessor->GetGlobalContext();
+    EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
+    DVASSERT(editorData != nullptr);
+    Painter* painter = nullptr; // editorData->painter.get();
+    DVASSERT(painter != nullptr);
+    return painter;
 }
 
 void BaseEditorSystem::ProcessInput(DAVA::UIEvent* /*currentInput*/)

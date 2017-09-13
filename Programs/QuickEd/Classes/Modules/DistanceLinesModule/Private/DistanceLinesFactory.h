@@ -26,10 +26,12 @@ class ControlsLinesFactory : public LinesFactory
 public:
     struct ControlLinesFactoryParams
     {
+        ControlLinesFactoryParams(DAVA::UIControl* selectedControl, DAVA::UIControl* highlightedControl);
         DAVA::TArc::ContextAccessor* accessor = nullptr;
-        DAVA::RefPtr<DAVA::Font> font;
-        DAVA::UIControl* selectedControl = nullptr;
-        DAVA::UIControl* highlightedControl = nullptr;
+        DAVA::Rect selectedRect;
+        DAVA::Rect highlightedRect;
+        DAVA::UIGeometricData parentGd;
+        Painter* painter;
     };
 
     ControlsLinesFactory(const ControlLinesFactoryParams& params);
@@ -43,9 +45,5 @@ private:
     template <typename T>
     void AddLine(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::RefPtr<DAVA::Font> font;
-    DAVA::Rect selectedRect;
-    DAVA::Rect highlightedRect;
-    DAVA::UIGeometricData parentGd;
+    ControlLinesFactoryParams params;
 };

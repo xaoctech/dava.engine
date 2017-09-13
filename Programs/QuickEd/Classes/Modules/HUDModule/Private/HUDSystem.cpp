@@ -130,24 +130,9 @@ HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
 {
     systemsDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorSystemsData>());
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
-    InitFieldBinder();
 }
 
 HUDSystem::~HUDSystem() = default;
-
-void HUDSystem::InitFieldBinder()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    fieldBinder.reset(new FieldBinder(accessor));
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
-        fieldDescr.fieldName = FastName(EditorSystemsData::highlightedNodePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &HUDSystem::OnHighlightNode));
-    }
-}
 
 BaseEditorSystem::eSystems HUDSystem::GetOrder() const
 {
@@ -215,14 +200,16 @@ void HUDSystem::OnUpdate()
         hudPair.second->container->InitFromGD(controlGD);
     }
 
-    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
+    EditorSystemsData* systemsData = accessor->GetGlobalContext()->GetData<EditorSystemsData>();
+    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag &&
+        systemsData->IsHighlightDisabled() == false)
     {
         ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
-        OnHighlightNode(node);
+        SetHighlight(node);
     }
     else
     {
-        OnHighlightNode(nullptr);
+        SetHighlight(nullptr);
     }
 
     if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
@@ -268,11 +255,15 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
     }
 }
 
-void HUDSystem::OnHighlightNode(const DAVA::Any& nodeValue)
+void HUDSystem::SetHighlight(ControlNode* node)
+{
+    highlightChanged.Emit(node);
+    HighlightNode(node);
+}
+
+void HUDSystem::HighlightNode(ControlNode* node)
 {
     using namespace DAVA::TArc;
-
-    ControlNode* node = nodeValue.Get<ControlNode*>(nullptr);
 
     if (hoveredNodeControl != nullptr && node != nullptr && hoveredNodeControl->IsDrawableControl(node->GetControl()))
     {
@@ -490,6 +481,7 @@ CanvasControls HUDSystem::CreateCanvasControls()
 
 void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
+    hudMap.clear();
     hudControl = nullptr;
 }
 

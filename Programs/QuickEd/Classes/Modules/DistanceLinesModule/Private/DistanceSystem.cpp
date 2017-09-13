@@ -12,22 +12,13 @@
 #include <TArc/Utils/Utils.h>
 
 #include <Math/Vector.h>
-#include <UI/UIControlSystem.h>
 #include <UI/UIControl.h>
-#include <UI/UIStaticText.h>
 #include <Render/2D/FTFont.h>
-#include <Utils/UTF8Utils.h>
 
 DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
-    , font(nullptr)
 {
-    using namespace DAVA;
-
-    FilePath fntPath = FilePath("~res:/QuickEd/Fonts/DejaVuSans.ttf");
-    font.Set(FTFont::Create(fntPath));
-    font->SetSize(10.0f);
 }
 
 DistanceSystem::~DistanceSystem() = default;
@@ -69,8 +60,9 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
-    EditorSystemsData* systemsData = activeContext->GetData<EditorSystemsData>();
-    ControlNode* highlightedNode = systemsData->GetHighlightedNode();
+    DVASSERT(getHighlight != nullptr);
+
+    ControlNode* highlightedNode = getHighlight();
     if (highlightedNode == nullptr)
     {
         return false;
@@ -112,7 +104,9 @@ void DistanceSystem::OnUpdate()
     //prepare data
     DataContext* activeContext = accessor->GetActiveContext();
     EditorSystemsData* systemsData = activeContext->GetData<EditorSystemsData>();
-    ControlNode* highlightedNode = systemsData->GetHighlightedNode();
+
+    DVASSERT(getHighlight != nullptr);
+    ControlNode* highlightedNode = getHighlight();
     UIControl* highlightedControl = highlightedNode->GetControl();
 
     DocumentData* documentData = activeContext->GetData<DocumentData>();
@@ -123,11 +117,9 @@ void DistanceSystem::OnUpdate()
     ControlNode* selectedNode = *selectedControls.begin();
     UIControl* selectedControl = selectedNode->GetControl();
 
-    ControlsLinesFactory::ControlLinesFactoryParams params;
+    ControlsLinesFactory::ControlLinesFactoryParams params(selectedControl, highlightedControl);
     params.accessor = accessor;
-    params.font = font;
-    params.selectedControl = selectedControl;
-    params.highlightedControl = highlightedControl;
+    params.painter = GetPainter();
     std::unique_ptr<LinesFactory> factory(new ControlsLinesFactory(params));
     Vector<std::unique_ptr<DistanceLine>> lines = factory->CreateLines();
 
