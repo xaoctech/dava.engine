@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-7E5EEC74-8DBD-4429-8D69-B0BAE5C63518" />
+      <title>What's New in Beast 2013.1.x</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBCreateUVJob()", "../api/beastjob_8h.html#a51efd3529c65fa21fa0358d5eeab2854", "API"]); 
+reflinkdata.push(["ILBCreateUVUnwrapTarget()", "../api/beasttarget_8h.html#af8d6eb7e3a8a0a2422fcdee3216e7bd0", "API"]); 
+reflinkdata.push(["ILBAddMeshToTarget()", "../api/beasttarget_8h.html#aebfe65844a739b06821567403c1db3ca", "API"]); 
+reflinkdata.push(["ILBSetUVUnwrapSegmentationThreshold()", "../api/beasttarget_8h.html#a71da55429a23ff429df5a485ec3826d3", "API"]); 
+reflinkdata.push(["ILBSetUVUnwrapFlatness()", "../api/beasttarget_8h.html#a0e31b14eada3d1d98fbeabf4e5c71505", "API"]); 
+reflinkdata.push(["ILBSetUVUnwrapStraightness()", "../api/beasttarget_8h.html#aac8dcc9ee035bbfe20f770e0a17c38d1", "API"]); 
+reflinkdata.push(["ILBSetUVUnwrapCompactness()", "../api/beasttarget_8h.html#a52c3064830176eb906962d4158f88326", "API"]); 
+reflinkdata.push(["ILBGetUVLayerFromTarget()", "../api/beasttarget_8h.html#a6d613b86c358f0776c2d4c656b452802", "API"]); 
+reflinkdata.push(["ILBGetUVLayerResolutionFromTarget()", "../api/beasttarget_8h.html#acd242766614ee76a1ee20466e9e7aace", "API"]); 
+reflinkdata.push(["ILBUVLayerHandle", "../api/struct_i_l_b_u_v_layer_handle.html", "API"]); 
+reflinkdata.push(["ILBGetUVLayerSize()", "../api/beastuvlayer_8h.html#a28b39e6d49654cc53bdfa5888a0670a9", "API"]); 
+reflinkdata.push(["ILBReadUVLayerValues()", "../api/beastuvlayer_8h.html#aa613565b4ec0412f14b7b0b46fdcc612", "API"]); 
+reflinkdata.push(["ILBGetUVLayerIndexSize()", "../api/beastuvlayer_8h.html#a30f59a9e1075498e204f135b85035729", "API"]); 
+reflinkdata.push(["ILBReadUVLayerIndexValues()", "../api/beastuvlayer_8h.html#a85f61f1a4885f6a4d1fd50ef738149f8", "API"]); 
+reflinkdata.push(["ILBDestroyUVLayer()", "../api/beastuvlayer_8h.html#a8e1113829d354389500b44000989ad21", "API"]); 
+reflinkdata.push(["ILBSetInputGamma()", "../api/beasttexture_8h.html#aeb4462778d8120fba15a814bebb14f70", "API"]); 
+reflinkdata.push(["ILBReferenceTexture()", "../api/beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm',                           'd30e1423','index.html',location.hash);                           javascript:initPage('What\'s New in Beast 2013.1.x','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=What\'s New in Beast 2013.1.x&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Beast 2013.1.x</div><a href="GUID-7E5EEC74-8DBD-4429-8D69-B0BAE5C63518.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Beast 2013.1.x</div><a href="GUID-7E5EEC74-8DBD-4429-8D69-B0BAE5C63518.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Upgrade Requirements for 2013.1.x</div><a href="GUID-AB782AEC-347E-4CED-81B7-A22FA71CFD7C.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-61E8AD5E-49BB-4F7F-8D8C-11B3CADE2821.htm">Migration Guide</a>&nbsp;&gt;&nbsp;<a href="GUID-9F081398-2814-48DD-9EDD-623E18FB6550.htm">Previous Releases</a>&nbsp;&gt;&nbsp;<a href="GUID-7E5EEC74-8DBD-4429-8D69-B0BAE5C63518.htm">Beast 2013.1.x</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-CE7A9573-CA71-4304-8234-21C0363E778F"></a></span><h1>What's New in Beast 2013.1.x</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-4BBED246-E1D2-4A90-9960-3FF219996831"></a></span>This page lists the new features and bug fixes introduced in the 2013.1 release. <span class="anchor_wrapper"><a name="UL_BD1D7E00306C4D3DB635FF2D13B75369"></a></span><ul>
+               <li> <span class="char_link"><a href="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm#GUID-2CE8A798-8E62-47D3-A3FC-24B0A27591E5">Beast</a></span> 
+               </li>
+               <li> <span class="char_link"><a href="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm#GUID-83775A32-8124-449C-A64B-876D5218C03F">Beast API</a></span> 
+               </li>
+               <li> <span class="char_link"><a href="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm#GUID-5D63BEF1-145A-4F36-9C52-B53A72D04A9C">Beast Maya plug-in</a></span> 
+               </li>
+               <li> <span class="char_link"><a href="GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm#GUID-4B369A5B-F2FC-4A47-936A-AF08BBC70033">Distribeast 0.3.18.0</a></span> 
+               </li>
+            </ul> 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_BBC3CA331F234946A6CD7E867F7E4193"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e1453"></a><span class="anchor_wrapper"><a name="GUID-2CE8A798-8E62-47D3-A3FC-24B0A27591E5"></a></span>Beast
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_A12B690CC29F4DB1AED67F15D0D31810"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1458"></a><span class="anchor_wrapper"><a name="GUID-8C25FE0B-46AA-4BE7-B859-1163B76181CF"></a></span>New Features
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-4FCF1EC7-7075-448F-A255-BB1B3C14AC86"></a></span>The following new feature has been added: 
+               </p> <span class="anchor_wrapper"><a name="UL_0C2B3890A64B4974ACFDB7387FCF460A"></a></span><ul>
+                  <li>Added UV unwrapping. See <span class="char_link"><a href="GUID-BB1E6549-0663-4EFC-8B06-F27253E87FF3.htm">Creating UVs for Meshes</a></span> and its subtopics for more information. 
+                  </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_729AE03E877647A9A4F44E42AA1342FA"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1474"></a><span class="anchor_wrapper"><a name="GUID-8220B4F1-10BD-44E3-81D1-1ABBB109CFCC"></a></span>Changes
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-23833A4B-2225-459A-B426-506327E3DE75"></a></span>The following changes have been made in Beast 2013.1 
+               </p> <span class="anchor_wrapper"><a name="UL_6A9590138197493293BE460FB46CC771"></a></span><ul>
+                  <li>Changed material shading to multiply color, texture, and vertex colors instead of being mutually exclusive. </li>
+                  <li>Changed default color on material diffuse component from gray to white. </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_993AE2B698C64B37A052F0873E0777A3"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1489"></a><span class="anchor_wrapper"><a name="GUID-917E8827-3978-42DA-B262-A1D7B353FF61"></a></span>Improvements
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-4C76731F-3AFA-4700-B02E-2D2255B5F609"></a></span>The following improvements have been made in Beast 2013.1 
+               </p> <span class="anchor_wrapper"><a name="UL_D49C515811514D25A134924173DAD579"></a></span><ul>
+                  <li>Added support for normal maps to ambient occlusion pass. </li>
+                  <li>Improved error message reporting in eRnsT. </li>
+                  <li>Improved distributed rendering to prevent jobs from failing. </li>
+                  <li>Improved error handling in distributed rendering. </li>
+                  <li>Improved job splitting in distributed rendering. </li>
+                  <li>Improved estimation of remaining time in distributed rendering. </li>
+                  <li>Changed the way tools catch and report license errors if the license key cannot be parsed on the command line because of mistyped/incorrectly
+                     entered license keys. 
+                  </li>
+                  <li>Improved handling of faceting artifacts in the final gather. </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_3FDD14ECBA3B4710A2E76E5842DF4C9F"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1516"></a><span class="anchor_wrapper"><a name="GUID-F7C5C360-0783-41CD-9CD6-C6E76C909F64"></a></span>Fixes
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-7B70FD2F-DF73-4EA0-B805-178AAF47AD34"></a></span>The following have been fixed in Beast 2013.1: 
+               </p> <span class="anchor_wrapper"><a name="UL_3878DCFC41064409AD6C0FCE56BCEB4F"></a></span><ul>
+                  <li>Scene loading in eRnsT causing an unexpected halt. </li>
+                  <li>Spotlight gobo not gamma corrected. </li>
+                  <li>Constant environment shader incorrectly gamma corrected. </li>
+                  <li>Sky lights incorrectly displayed in the eRnsT editor. </li>
+                  <li>In some cases, the last tile was incorrectly included in the previous tile in texture splitting jobs. </li>
+                  <li>A problem with read back of updates from ambient light sources. </li>
+                  <li>Edge dilation and background color not being set in distributed rendering. </li>
+                  <li>Vertical FOV not initialized properly for live camera renders. </li>
+                  <li>Default material is used if the material used on live-created objects cannot be found. </li>
+                  <li>Resizing the frame viewer in eRnsT causing an unexpected termination. </li>
+                  <li>Job error messages caused a job to be cancelled when the messages were follow-ups to errors that were "accepted" (such as
+                     an "Out of Memory" error). 
+                  </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E8C4D4D9DCAC4382AA4D5AA139FFF56E"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e1549"></a><span class="anchor_wrapper"><a name="GUID-83775A32-8124-449C-A64B-876D5218C03F"></a></span>Beast API
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_2130D98189C44C448729BAC78B404C57"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1554"></a><span class="anchor_wrapper"><a name="GUID-B1D3640A-F4CE-4E21-931E-F298A980D600"></a></span>New elements
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-6BA28641-9726-416E-AA7F-B96740BF4503"></a></span>The following are new in the Beast API: 
+               </p> <span class="anchor_wrapper"><a name="UL_0DBC7AC6E89941ECBC379899F455080D"></a></span><ul>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateUVJob()'); return false;">ILBCreateUVJob()</a></span>: used in creating jobs for UV unwrapping. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateUVUnwrapTarget()'); return false;">ILBCreateUVUnwrapTarget()</a></span>: used in creating targets for UV unwrapping. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddMeshToTarget()'); return false;">ILBAddMeshToTarget()</a></span>: used in adding meshes to targets for UV unwrapping. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetUVUnwrapSegmentationThreshold()'); return false;">ILBSetUVUnwrapSegmentationThreshold()</a></span>: used to set the segmentation threshold for UV unwrapping. See <span class="char_link"><a href="GUID-BB85619D-51F7-4BF0-9EF1-B4BEF32F4185.htm#GUID-1EE37689-BFEC-4214-B81D-C5735D2D6A61">ILBSetUVUnwrapSegmentationThreshold() in Adjusting Mesh Segmentation</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetUVUnwrapFlatness()'); return false;">ILBSetUVUnwrapFlatness()</a></span>: used to set unwrap flatness for UV unwrapping. See <span class="char_link"><a href="GUID-BB85619D-51F7-4BF0-9EF1-B4BEF32F4185.htm#GUID-7CEF751D-BD6A-4A96-8A44-E2DDB27CAB70">ILBSetUVUnwrapFlatness() in Adjusting Mesh Segmentation</a></span> 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetUVUnwrapStraightness()'); return false;">ILBSetUVUnwrapStraightness()</a></span>: used to set unwrap straightness for UV unwrapping. See <span class="char_link"><a href="GUID-BB85619D-51F7-4BF0-9EF1-B4BEF32F4185.htm#GUID-44E6B481-0AA7-4EDB-9AC6-EC2CB3C6E9E6">ILBSetUVUnwrapStraightness() in Adjusting Mesh Segmentation</a></span> 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetUVUnwrapCompactness()'); return false;">ILBSetUVUnwrapCompactness()</a></span>: used to set unwrap compactness for UV unwrapping. See <span class="char_link"><a href="GUID-BB85619D-51F7-4BF0-9EF1-B4BEF32F4185.htm#GUID-E78ECBA0-C4AA-43A1-B334-58176791C6EA">ILBSetUVUnwrapCompactness() in Adjusting Mesh Segmentation</a></span> 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerFromTarget()'); return false;">ILBGetUVLayerFromTarget()</a></span>: used to receive a UV layer from a completed UV unwrap target. See <span class="char_link"><a href="GUID-2C898010-9E97-4206-8569-2EBF662DCE2B.htm">Retrieving UV Layers</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerResolutionFromTarget()'); return false;">ILBGetUVLayerResolutionFromTarget()</a></span>: used to receive a UV layer's resolution from a completed UV unwrap target. See <span class="char_link"><a href="GUID-2C898010-9E97-4206-8569-2EBF662DCE2B.htm">Retrieving UV Layers</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBUVLayerHandle'); return false;">ILBUVLayerHandle</a></span>: used to handle a new UV layer structure. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerSize()'); return false;">ILBGetUVLayerSize()</a></span>: used to retrieve the size of a UV layer. See <span class="char_link"><a href="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm">Reading UV Layer Data</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReadUVLayerValues()'); return false;">ILBReadUVLayerValues()</a></span>: used to read UV values from a UV layer. See <span class="char_link"><a href="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm">Reading UV Layer Data</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerIndexSize()'); return false;">ILBGetUVLayerIndexSize()</a></span>: used to retrieve the index size of a UV layer. See <span class="char_link"><a href="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm">Reading UV Layer Data</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReadUVLayerIndexValues()'); return false;">ILBReadUVLayerIndexValues()</a></span>: used to read UV index values from a UV layer. See <span class="char_link"><a href="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm">Reading UV Layer Data</a></span>. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBDestroyUVLayer()'); return false;">ILBDestroyUVLayer()</a></span>: used to delete a UV layer. 
+                  </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_91FF415F687047848505E97500890B32"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1656"></a><span class="anchor_wrapper"><a name="GUID-E86799B7-2F3E-4311-9D01-5A4D3ED33264"></a></span>Changed
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-0B2DC95E-D6AE-4528-A264-DA24C27CC87F"></a></span>The following change has been made to the Beast API: 
+               </p> <span class="anchor_wrapper"><a name="UL_B122CEE410D24EA6964AA8A820898A8A"></a></span><ul>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetInputGamma()'); return false;">ILBSetInputGamma()</a></span> can now be used to specify gamma encoding for referenced textures (created using <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReferenceTexture()'); return false;">ILBReferenceTexture()</a></span>). 
+                  </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_B10C0980E4634AC18728675854D1C722"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e1674"></a><span class="anchor_wrapper"><a name="GUID-5D63BEF1-145A-4F36-9C52-B53A72D04A9C"></a></span>Beast Maya plug-in
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_BABB2721A3EC4737AD2D6C4AA9A77F9C"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1679"></a><span class="anchor_wrapper"><a name="GUID-14CE3237-66E1-4D8A-B037-3ADEE7C42A93"></a></span>Improvements
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-2E00254D-4C5E-43AF-80E8-2D6D06A48F45"></a></span>The following improvements have been made to the Beast Maya plug-in: 
+               </p> <span class="anchor_wrapper"><a name="UL_15FF80686474440AA14771E9357EC290"></a></span><ul>
+                  <li>Added support for Beast UV unwrapping to create UVs for Maya meshes. </li>
+                  <li>Added the <em class="strong">Edit Target</em> menu option. 
+                  </li>
+                  <li>Added support for Light Pass. </li>
+                  <li>Normal maps can now be referenced rather than sampled (as with other textures). </li>
+                  <li>Copy/Cut/Paste detects the originating material, avoiding a switch to the default material. </li>
+                  <li>Added bake UV-set to the instance and entity nodes to support override of bake UV-set at a finer level. </li>
+                  <li>Added a texture resolution clamp to ensure light maps use the same resolution for live and offline renders. </li>
+                  <li>Added a message box for the display of errors. </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_38B66A357DC34E12AE6B1F7C80A954F4"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1709"></a><span class="anchor_wrapper"><a name="GUID-E46AB6C5-276D-4A04-AFB2-0F6BF213E5A9"></a></span>Fixes
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-42370B91-D640-4DDC-B80C-E3204879F544"></a></span>The following have been fixed in the Beast Maya plug-in: 
+               </p> <span class="anchor_wrapper"><a name="UL_C7FBA00B67A8488898F441EBB1BAF4EC"></a></span><ul>
+                  <li>A problem with Beast API exceptions passed into Maya. </li>
+                  <li>A problem with deleting instances. </li>
+                  <li>A problem with use of Copy/Cut/Paste while running a live job. </li>
+                  <li>A deadlock problem with asynchronous tasks. </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_7EC38639E4CA4EF6947A3ECC58C8DC38"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e1728"></a><span class="anchor_wrapper"><a name="GUID-4B369A5B-F2FC-4A47-936A-AF08BBC70033"></a></span>Distribeast 0.3.18.0
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_CDC80B5ABACA41A6A892DD4A794266D7"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1733"></a><span class="anchor_wrapper"><a name="GUID-16E44A87-22C0-42B3-AF03-EC2582F29395"></a></span>Fixes
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-CFC21488-8FC1-4636-927F-0B163EE6F882"></a></span>The following has been fixed in Distribeast: 
+               </p> <span class="anchor_wrapper"><a name="UL_2778DD6BFA644108B894E21045FC2007"></a></span><ul>
+                  <li>An issue that could lead to failed resource transfers because of a file rename operation that fails with a sharing violation
+                     on some systems. 
+                  </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_4E63AA06F7A24325945023031853DA7B"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1746"></a><span class="anchor_wrapper"><a name="GUID-16DF4DBC-D3DC-4CBA-930E-D01D54F9B591"></a></span>Known Issues
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-6FE522B8-8728-4E21-90E5-8C36F9864347"></a></span>The following may be an issue: 
+               </p> <span class="anchor_wrapper"><a name="UL_7D63CCCEBE6C487496253DBD39AB0495"></a></span><ul>
+                  <li>In rare instances, bake jobs might not terminate because of a missing indication of completion for a resource transfer when
+                     multiple simultaneous transfers of the same resource are being made to the same node. 
+                  </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

@@ -1,0 +1,325 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/scripts/beastMenu.py</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2scripts_2beast_menu_8py-example.html','api_maya_2scripts_2beast_menu_8py_example_html15f63029-a6c0-48b6-80de-c99e2504bbe9','index.html',location.hash); javascript:initPage('API: maya/scripts/beastMenu.py','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2scripts_2beast_menu_8py-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/scripts/beastMenu.py&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>maya/scripts/beastMenu.py</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/scripts/beastMenu.py</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class=
+"comment"># Copyright 2013 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment"># Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment"># provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment"># accompanies this software in either electronic or hard copy form.</span>
+
+<span class="keyword">import</span> pymel.core
+<span class="keyword">import</span> pymel.core.windows
+<span class="keyword">import</span> beastUtils
+
+BEAST_MENU_NAME         = <span class=
+"stringliteral">"beastMenu"</span>
+
+<span class="keyword">def </span>popupOnError(f):
+        <span class="keywordflow">try</span>:
+                f()
+        <span class=
+"keywordflow">except</span> pymel.core.language.MelError <span class="keyword">as</span> e:
+                beastUtils.messageBox(<span class=
+"stringliteral">'critical'</span>, str(e))
+                <span class="keywordflow">raise</span> e
+
+<span class="keyword">class </span>BeastMenu:
+
+        <span class="keyword">def </span>__init__(self):
+                self.name = BEAST_MENU_NAME
+                pymel.core.windows.setParent(<span class=
+"stringliteral">"MayaWindow"</span>)
+                <span class="keywordflow">if</span> <span class=
+"keywordflow">not</span> pymel.core.windows.menu(BEAST_MENU_NAME, query=<span class="keyword">True</span>, exists=<span class="keyword">True</span>):
+                        self.beastMenu = pymel.core.windows.menu(BEAST_MENU_NAME, label=<span class="stringliteral">"Beast"</span>, postMenuCommand=self.onPopulateBeastMenu)
+
+        <span class="keyword">def </span>destroy(self):
+                <span class=
+"keywordflow">if</span> hasattr(self, <span class=
+"stringliteral">"beastMenu"</span>):
+                        pymel.core.windows.deleteUI(self.beastMenu)
+
+        <span class=
+"keyword">def </span>onPopulateBeastMenu(self, *args):
+                pymel.core.windows.menu(self.beastMenu, deleteAllItems=<span class="keyword">True</span>, e=<span class="keyword">True</span>)
+                pymel.core.windows.setParent(self.beastMenu, menu=<span class="keyword">True</span>)
+
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"Settings..."</span>, command=pymel.core.windows.Callback(self.onSettings))
+                pymel.core.windows.menuItem(divider=<span class=
+"keyword">True</span>)
+
+                <span class="keywordflow">if</span> <span class=
+"keywordflow">not</span> pymel.core.mel.beastIsLive():
+                        pymel.core.windows.menuItem(label=<span class="stringliteral">"Start Live Render"</span>, command=pymel.core.windows.Callback(popupOnError, pymel.core.mel.beastRenderLive))
+                        pymel.core.windows.menuItem(label=<span class="stringliteral">"Start Live Bake"</span>, command=pymel.core.windows.Callback(popupOnError, pymel.core.mel.beastBakeLive))
+                <span class="keywordflow">else</span>:
+                        pymel.core.windows.menuItem(label=<span class="stringliteral">"Stop Live"</span>, command=pymel.core.windows.Callback(popupOnError, pymel.core.mel.beastRenderLive)) <span class="comment">#</span>
+
+                pymel.core.windows.menuItem(divider=<span class=
+"keyword">True</span>)
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"Final Render"</span>, command=pymel.core.windows.Callback(popupOnError, pymel.core.mel.beastRenderFinal))
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"Final Bake"</span>, command=pymel.core.windows.Callback(popupOnError, pymel.core.mel.beastBakeFinal))
+                pymel.core.windows.menuItem(divider=<span class=
+"keyword">True</span>)
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"New Target"</span>, command=pymel.core.windows.Callback(self.onNewTarget, <span class="keyword">False</span>))
+                self.editTargetMenu = pymel.core.windows.subMenuItem(label=<span class="stringliteral">"Edit Target"</span>, postMenuCommand=self.onPopulateEditTargetMenu)
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>, menu=<span class=
+"keyword">True</span>)
+                self.addToTargetMenu = pymel.core.windows.subMenuItem(label=<span class="stringliteral">"Add To Target"</span>, postMenuCommand=self.onPopulateAddToTargetMenu)
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>, menu=<span class=
+"keyword">True</span>)
+                pymel.core.windows.menuItem(divider=<span class=
+"keyword">True</span>)
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"New Pass"</span>, command=self.onNewPass)
+                self.editPassMenu = pymel.core.windows.subMenuItem(label=<span class="stringliteral">"Edit Pass"</span>, postMenuCommand=self.onPopulatePassMenu)
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>, menu=<span class=
+"keyword">True</span>)
+                pymel.core.windows.menuItem(divider=<span class=
+"keyword">True</span>)
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"UV Unwrap"</span>, command=pymel.core.windows.Callback(popupOnError, self.onUVUnwrap))
+                pymel.core.windows.menuItem(optionBox=<span class=
+"keyword">True</span>, command=pymel.core.windows.Callback(pymel.core.mel.performBeastUVUnwrap, 1))
+
+        <span class="keyword">def </span>onSettings(self):
+                pymel.core.mel.showEditor(<span class=
+"stringliteral">"beastSettings"</span>)
+
+        <span class="keyword">def </span>onUVUnwrap(self):
+                pymel.core.mel.performBeastUVUnwrap(0)
+
+        <span class=
+"keyword">def </span>onNewTarget(self, addSelection=False):
+                members = []
+                <span class=
+"keywordflow">if</span> addSelection <span class=
+"keywordflow">is</span> <span class="keyword">True</span>:
+                        members = pymel.core.general.ls(long=<span class="keyword">True</span>, selection=<span class="keyword">True</span>, type=<span class="stringliteral">"dagNode"</span>)
+                newTarget = pymel.core.general.createNode(<span class="stringliteral">"beastTarget"</span>)
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"Created new Beast target:"</span>, newTarget
+                <span class=
+"keywordflow">if</span> addSelection <span class=
+"keywordflow">is</span> <span class="keyword">True</span>:
+                        pymel.core.general.sets(str(newTarget), addElement=members)
+                <span class=
+"comment"># connect defaultBeastPass</span>
+                pymel.core.general.connectAttr(<span class=
+"stringliteral">"defaultBeastPass.targets"</span>, str(newTarget) + <span class="stringliteral">".passes"</span>, nextAvailable=<span class="keyword">True</span>)
+                pymel.core.mel.showEditor(newTarget)
+
+        <span class="keyword">def </span>onNewPass(self, *args):
+                newPass = pymel.core.general.createNode(<span class="stringliteral">"beastPass"</span>)
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"Created new Beast pass:"</span>, newPass
+                pymel.core.mel.showEditor(newPass)
+
+        <span class=
+"keyword">def </span>onPopulateAddToTargetMenu(self, *args):
+                <span class="comment"># delete old items</span>
+                pymel.core.windows.menu(self.addToTargetMenu, deleteAllItems=<span class="keyword">True</span>, e=<span class="keyword">True</span>)
+                pymel.core.windows.setParent(self.addToTargetMenu, menu=<span class="keyword">True</span>)
+                pymel.core.windows.menuItem(label=<span class=
+"stringliteral">"New Target"</span>, command=pymel.core.windows.Callback(self.onNewTarget, <span class="keyword">True</span>))
+                pymel.core.windows.menuItem(divider=<span class=
+"keyword">True</span>)
+                targets = pymel.core.general.ls(type=<span class=
+"stringliteral">"beastTarget"</span>)
+                <span class=
+"keywordflow">for</span> target <span class=
+"keywordflow">in</span> targets:
+                        pymel.core.windows.menuItem(label=target, command=pymel.core.windows.Callback(self.onAddToTarget, target))
+
+        <span class=
+"keyword">def </span>onPopulateEditTargetMenu(self, *args):
+                <span class="comment"># delete old items</span>
+                pymel.core.windows.menu(self.editTargetMenu, deleteAllItems=<span class="keyword">True</span>, e=<span class="keyword">True</span>)
+                pymel.core.windows.setParent(self.editTargetMenu, menu=<span class="keyword">True</span>)
+                targets = pymel.core.general.ls(type=<span class=
+"stringliteral">"beastTarget"</span>)
+                <span class=
+"keywordflow">for</span> target <span class=
+"keywordflow">in</span> targets:
+                        pymel.core.windows.menuItem(label=target, command=pymel.core.windows.Callback(pymel.core.mel.showEditor, target))
+
+        <span class=
+"keyword">def </span>onAddToTarget(self, target):
+                members = pymel.core.general.ls(long=<span class=
+"keyword">True</span>, selection=<span class=
+"keyword">True</span>, type=<span class=
+"stringliteral">"dagNode"</span>)
+                pymel.core.general.sets(str(target), addElement=members)
+
+        <span class=
+"keyword">def </span>onPopulatePassMenu(self, *args):
+                pymel.core.windows.menu(self.editPassMenu, deleteAllItems=<span class="keyword">True</span>, e=<span class="keyword">True</span>)
+                pymel.core.windows.setParent(self.editPassMenu, menu=<span class="keyword">True</span>)
+                passes = pymel.core.general.ls(type=<span class=
+"stringliteral">"beastPass"</span>)
+                <span class="keywordflow">for</span> p <span class=
+"keywordflow">in</span> passes:
+                        pymel.core.windows.menuItem(label=p, command=pymel.core.windows.Callback(pymel.core.mel.showEditor, p))
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
