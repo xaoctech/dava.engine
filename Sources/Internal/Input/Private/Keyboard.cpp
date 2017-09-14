@@ -10,6 +10,8 @@
 #include "Input/Private/Android/KeyboardImplAndroid.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "Input/Private/Ios/KeyboardImplIos.h"
+#elif defined(__DAVAENGINE_LINUX__)
+#include "Input/Private/Linux/KeyboardImplLinux.h"
 #else
 #error "KeyboardDevice: unknown platform"
 #endif

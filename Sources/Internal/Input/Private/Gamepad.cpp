@@ -20,6 +20,8 @@
 #include "Input/Private/Mac/GamepadImplMac.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "Input/Private/Ios/GamepadImplIos.h"
+#elif defined(__DAVAENGINE_LINUX__)
+#include "Input/Private/Linux/GamepadImplLinux.h"
 #else
 #error "GamepadDevice: unknown platform"
 #endif
