@@ -13,6 +13,7 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
+#include "Classes/EditorSystems/Painter.h"
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
@@ -51,6 +52,9 @@
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
 #include <Reflection/Reflection.h>
+#include <Engine/Window.h>
+#include <Engine/Engine.h>
+#include <Functional/Signal.h>
 
 #include <QAction>
 #include <QApplication>
@@ -81,6 +85,13 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
 
     Renderer::SetDesiredFPS(60);
     DynamicBufferAllocator::SetPageSize(DynamicBufferAllocator::DEFAULT_PAGE_SIZE);
+
+    //we can create graphic items only when render is initialized
+    EditorSystemsData* systemsData = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>();
+    systemsData->painter = std::make_unique<Painter>();
+    Vector<Window*> windows = Engine::Instance()->GetWindows();
+    DVASSERT(windows.size() == 1);
+    windows.front()->draw.Connect(systemsData->painter.get(), &Painter::Draw);
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)

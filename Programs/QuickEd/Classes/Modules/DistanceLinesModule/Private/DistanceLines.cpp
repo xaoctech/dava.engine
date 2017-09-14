@@ -3,11 +3,9 @@
 #include "Modules/DistanceLinesModule/Private/DistanceLinesPreferences.h"
 
 #include "EditorSystems/UIControlUtils.h"
+#include "EditorSystems/Painter.h"
 
 #include <TArc/Core/ContextAccessor.h>
-
-#include <UI/UIStaticText.h>
-#include <Utils/UTF8Utils.h>
 
 namespace DistanceLinesDetails
 {
@@ -88,40 +86,47 @@ void SolidLine::DrawLineText(DAVA::UIControl* canvas)
 
     float32 length = fabs((params.endPoint - params.startPoint)[params.axis]);
 
-    //     RefPtr<UIStaticText> textControl(new UIStaticText());
-    //     textControl->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
-    //     textControl->SetTextPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_FORCED);
-    //     DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
-    //     textControl->SetTextColor(preferences->textColor);
-    //
-    //     String text = Format("%.0f", length);
-    //
-    //     textControl->SetUtf8Text(text);
-    //
-    //     Font::StringMetrics metrics = params.font->GetStringMetrics(UTF8Utils::EncodeToWideString(text));
-    //     Vector2 size(metrics.width, metrics.height);
-    //     size /= params.gd.scale;
-    //
-    //     //margin around text
-    //     Vector2 margin = Vector2(3.0f, 3.0f) / params.gd.scale;
-    //     Vector2 pos;
-    //
-    //     if (length > (size[params.axis] + margin[params.axis]))
-    //     {
-    //         pos[params.oppositeAxis] = params.direction == ALIGN_TOP || params.direction == ALIGN_RIGHT ?
-    //         params.startPoint[params.oppositeAxis] + margin[params.oppositeAxis] :
-    //         params.startPoint[params.oppositeAxis] - size[params.oppositeAxis] - margin[params.oppositeAxis];
-    //         pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f - size[params.axis] / 2.0f;
-    //     }
-    //     else
-    //     {
-    //         pos[params.oppositeAxis] = params.startPoint[params.oppositeAxis] - (size[params.oppositeAxis] / 2.0f);
-    //         pos[params.axis] = params.direction == ALIGN_BOTTOM || params.direction == ALIGN_RIGHT ?
-    //         params.endPoint[params.axis] + margin[params.axis] :
-    //         params.endPoint[params.axis] - size[params.axis] - margin[params.axis];
-    //     }
-    //     UIControlUtils::MapRectToScreen(Rect(pos, size), params.gd, textControl);
-    //     canvas->AddControl(textControl.Get());
+    DrawTextParams textParams;
+
+    DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    textParams.color = preferences->textColor;
+    textParams.text = Format("%.0f", length);
+    textParams.margin = Vector2(3.0f, 3.0f);
+    textParams.angle = params.gd.angle;
+    textParams.scale = params.gd.scale;
+    textParams.parentPos = params.gd.position - Rotate(params.gd.pivotPoint * params.gd.scale, params.gd.angle);
+
+    //margin around text
+    const float32 minLength = 20.0f;
+    if (length > minLength)
+    {
+        if (params.axis == Vector2::AXIS_X)
+        {
+            textParams.direction = ALIGN_HCENTER | (params.direction == ALIGN_RIGHT ? ALIGN_BOTTOM : ALIGN_TOP);
+        }
+        else
+        {
+            textParams.direction = ALIGN_VCENTER | (params.direction == ALIGN_BOTTOM ? ALIGN_LEFT : ALIGN_RIGHT);
+        }
+
+        textParams.pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f;
+        textParams.pos[params.oppositeAxis] = params.endPoint[params.oppositeAxis];
+        //         textParams.pos[params.oppositeAxis] = params.direction == ALIGN_TOP || params.direction == ALIGN_RIGHT ?
+        //         params.startPoint[params.oppositeAxis] + margin[params.oppositeAxis] :
+        //         params.startPoint[params.oppositeAxis] - size[params.oppositeAxis] - margin[params.oppositeAxis];
+        //         textParams.pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f - size[params.axis] / 2.0f;
+    }
+    else
+    {
+        textParams.direction = params.direction | (params.axis == Vector2::AXIS_X ? ALIGN_VCENTER : ALIGN_HCENTER);
+        textParams.pos[params.axis] = params.endPoint[params.axis];
+        textParams.pos[params.oppositeAxis] = params.endPoint[params.oppositeAxis];
+        //         textParams.pos[params.oppositeAxis] = params.startPoint[params.oppositeAxis] - (size[params.oppositeAxis] / 2.0f);
+        //         textParams.pos[params.axis] = params.direction == ALIGN_BOTTOM || params.direction == ALIGN_RIGHT ?
+        //         params.endPoint[params.axis] + margin[params.axis] :
+        //         params.endPoint[params.axis] - size[params.axis] - margin[params.axis];
+    }
+    params.painter->Add(textParams);
 }
 
 DotLine::DotLine(const LineParams& params)

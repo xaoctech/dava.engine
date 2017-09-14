@@ -9,6 +9,7 @@ class ControlNode;
 class EditorSystemsData : public DAVA::TArc::DataNode
 {
 public:
+    EditorSystemsData();
     ~EditorSystemsData() override;
 
     bool IsHighlightDisabled() const;

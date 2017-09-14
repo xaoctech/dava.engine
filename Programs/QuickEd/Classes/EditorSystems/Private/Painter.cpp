@@ -11,13 +11,18 @@ struct Painter::Impl
 };
 
 Painter::Painter()
-//: impl(new Impl())
+    : impl(new Impl())
 {
 }
 
 Painter::~Painter() = default;
 
-void Painter::Draw(const DrawTextParams& params)
+void Painter::Add(const DrawTextParams& params)
 {
-    //impl->textPainter.Draw(params);
+    impl->textPainter.Add(params);
+}
+
+void Painter::Draw(DAVA::Window* window)
+{
+    impl->textPainter.Draw();
 }

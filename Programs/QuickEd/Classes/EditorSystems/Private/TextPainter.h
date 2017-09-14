@@ -15,13 +15,18 @@ class TextPainter
 {
 public:
     TextPainter();
-    void Draw(const DrawTextParams& params);
-    void PushNextBatch(const DrawTextParams& params);
+    void Add(const DrawTextParams& params);
+    void Draw();
 
 private:
+    void PushNextBatch(const DrawTextParams& params);
+    void ApplyParamPos(DrawTextParams& params) const;
+
     using GraphicFontVertexVector = DAVA::Vector<DAVA::GraphicFont::GraphicFontVertex>;
 
     DAVA::RefPtr<DAVA::GraphicFont> font;
     DAVA::RefPtr<DAVA::NMaterial> fontMaterial;
     GraphicFontVertexVector vertices;
+    DAVA::Vector<DrawTextParams> drawItems;
+    DAVA::float32 cachedSpread = 0.0f;
 };

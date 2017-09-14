@@ -10,6 +10,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EditorSystemsData)
     .End();
 }
 
+EditorSystemsData::EditorSystemsData()
+{
+}
+
 EditorSystemsData::~EditorSystemsData() = default;
 
 bool EditorSystemsData::IsHighlightDisabled() const

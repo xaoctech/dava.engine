@@ -38,7 +38,7 @@ Painter* BaseEditorSystem::GetPainter()
     DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     DVASSERT(editorData != nullptr);
-    Painter* painter = nullptr; // editorData->painter.get();
+    Painter* painter = editorData->painter.get();
     DVASSERT(painter != nullptr);
     return painter;
 }

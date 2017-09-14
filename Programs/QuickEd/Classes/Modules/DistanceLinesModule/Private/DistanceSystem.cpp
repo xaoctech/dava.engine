@@ -77,11 +77,6 @@ bool DistanceSystem::CanDrawDistances() const
 
     PackageBaseNode* parent = (*selectedControls.begin())->GetParent();
 
-    if (highlightedNode != parent && highlightedNode->GetParent() != parent)
-    {
-        return false;
-    }
-
     if (selectedControls.size() == 1 && selectedControls.find(highlightedNode) != selectedControls.end())
     {
         return false;

@@ -143,19 +143,19 @@ ControlsLinesFactory::ControlLinesFactoryParams::ControlLinesFactoryParams(DAVA:
     using namespace DAVA;
     if (highlightedControl->GetParent() == selectedControl->GetParent())
     {
-        selectedRect = selectedControl->GetRect();
-        highlightedRect = highlightedControl->GetRect();
+        selectedRect = selectedControl->GetLocalGeometricData().GetAABBox();
+        highlightedRect = highlightedControl->GetLocalGeometricData().GetAABBox();
         parentGd = highlightedControl->GetParent()->GetGeometricData();
     }
     else if (highlightedControl->GetParent() == selectedControl)
     {
         selectedRect = Rect(Vector2(0.0f, 0.0f), selectedControl->GetSize());
-        highlightedRect = highlightedControl->GetRect();
+        highlightedRect = highlightedControl->GetLocalGeometricData().GetAABBox();
         parentGd = selectedControl->GetGeometricData();
     }
     else if (selectedControl->GetParent() == highlightedControl)
     {
-        selectedRect = selectedControl->GetRect();
+        selectedRect = selectedControl->GetLocalGeometricData().GetAABBox();
         highlightedRect = Rect(Vector2(0.0f, 0.0f), highlightedControl->GetSize());
         parentGd = highlightedControl->GetGeometricData();
     }
