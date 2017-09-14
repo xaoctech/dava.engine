@@ -1,0 +1,587 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples/code/common/vecmath.h</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples_2code_2common_2vecmath_8h-example.html','api_examples_2code_2common_2vecmath_8h_example_htmlfb185bb3-afb4-4133-abce-080399dcf281','index.html',location.hash); javascript:initPage('API: examples/code/common/vecmath.h','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples_2code_2common_2vecmath_8h-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples/code/common/vecmath.h&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples/code/common/vecmath.h</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">examples/code/common/vecmath.h</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#ifndef VECMATH_H</span>
+<span class="preprocessor">#define VECMATH_H</span>
+
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapi/beastapitypes.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;cmath&gt;</span>
+<span class="preprocessor">#include &lt;cstdlib&gt;</span>
+<span class="preprocessor">#include &lt;stdexcept&gt;</span>
+
+<span class="keyword">namespace </span>bex {
+        <span class="keyword">class </span>Vec2 : <span class=
+"keyword">public</span> <a name="_a0"></a><a class="code" href=
+"struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a> {
+        <span class="keyword">public</span>:
+                Vec2(<span class=
+"keywordtype">float</span> _x, <span class=
+"keywordtype">float</span> _y)  : <a class="code" href=
+"struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a>(_x, _y) {}
+                Vec2() {}
+        };
+
+
+        <span class="keyword">class </span>Vec3 : <span class=
+"keyword">public</span> <a name="_a1"></a><a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a> {
+        <span class="keyword">public</span>:
+                Vec3(<span class=
+"keywordtype">float</span> _x, <span class=
+"keywordtype">float</span> _y, <span class=
+"keywordtype">float</span> _z) : <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>(_x, _y, _z) {}
+                Vec3() : <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>(0.0f, 0.0f, 0.0f) {}
+                <span class=
+"keyword">const</span> Vec3&amp; operator+=(<span class=
+"keyword">const</span> Vec3&amp; v)  {
+                        this-&gt;x += v.x;
+                        this-&gt;y += v.y;
+                        this-&gt;z += v.z;
+                        <span class=
+"keywordflow">return</span> *<span class="keyword">this</span>;
+                }
+        };
+
+        <span class="keyword">inline</span> Vec3 cross(<span class=
+"keyword">const</span> Vec3&amp; v1, <span class=
+"keyword">const</span> Vec3&amp; v2) {
+                <span class=
+"keywordflow">return</span> Vec3(v1.y*v2.z - v1.z*v2.y, 
+                        v1.z*v2.x - v1.x*v2.z, 
+                        v1.x*v2.y - v1.y*v2.x);
+        }
+
+        <span class="keyword">inline</span> <span class=
+"keywordtype">float</span> dot(<span class=
+"keyword">const</span> Vec3&amp; v1, <span class=
+"keyword">const</span> Vec3&amp; v2) {
+                <span class=
+"keywordflow">return</span> v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+        }
+
+        <span class=
+"keyword">inline</span> Vec3 operator+(<span class=
+"keyword">const</span> Vec3&amp; v1, <span class=
+"keyword">const</span> Vec3&amp; v2) {
+                <span class=
+"keywordflow">return</span> Vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+        }
+
+        <span class=
+"keyword">inline</span> Vec3 operator-(<span class=
+"keyword">const</span> Vec3&amp; v1, <span class=
+"keyword">const</span> Vec3&amp; v2) {
+                <span class=
+"keywordflow">return</span> Vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+        }
+
+        <span class=
+"keyword">inline</span> Vec3 operator*(<span class=
+"keyword">const</span> Vec3&amp; v, <span class=
+"keywordtype">float</span> f) {
+                <span class=
+"keywordflow">return</span> Vec3(v.x * f,
+                        v.y * f,
+                        v.z * f);
+        }
+        
+        <span class=
+"keyword">inline</span> Vec3 operator-(<span class=
+"keyword">const</span> Vec3&amp; v) {
+                <span class="keywordflow">return</span> Vec3(-v.x,
+                                        -v.y,
+                                        -v.z);
+        }
+        <span class=
+"keyword">inline</span> Vec3 normalize(<span class=
+"keyword">const</span> Vec3&amp; v1) {
+                <span class=
+"keywordtype">float</span> lenRec = 1.0f / sqrtf(dot(v1, v1));
+                <span class=
+"keywordflow">return</span> v1 * lenRec;
+        }
+        
+        <span class="keyword">class </span>Matrix4x4 : <span class=
+"keyword">public</span> <a name="_a2"></a><a class="code" href=
+"struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a> {
+        <span class="keyword">public</span>: 
+                <span class=
+"keywordtype">void</span> setColumn(<span class=
+"keyword">const</span> Vec3&amp; v, <span class=
+"keywordtype">int</span> col) {
+                        <span class=
+"keywordflow">if</span>(col &lt; 0 || col &gt; 3) {
+                                <span class=
+"keywordflow">throw</span> std::runtime_error(<span class=
+"stringliteral">"Invalid matrix column"</span>);
+                        }
+                        m[col] = v.x;
+                        m[col + 4] = v.y;
+                        m[col + 8] = v.z;
+                }
+
+                <span class=
+"keywordtype">void</span> setRow(<span class=
+"keyword">const</span> Vec3&amp; v, <span class=
+"keywordtype">int</span> row) {
+                        <span class=
+"keywordflow">if</span>(row &lt; 0 || row &gt; 3) {
+                                <span class=
+"keywordflow">throw</span> std::runtime_error(<span class=
+"stringliteral">"Invalid matrix row"</span>);
+                        }
+                        m[row * 4] = v.x;
+                        m[row * 4 + 1] = v.y;
+                        m[row * 4 + 2] = v.z;
+                }               
+        };
+        
+        <span class="keyword">inline</span> Matrix4x4 identity() {
+                Matrix4x4 result;
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; 16; ++i) {
+                        <span class=
+"comment">// Check if we are on the diagonal</span>
+                        <span class=
+"keywordflow">if</span>((i&amp;3) == (i / 4)) {
+                                result.m[i] = 1.0f;
+                        } <span class="keywordflow">else</span> {
+                                result.m[i] = 0.0f;
+                        }
+                }
+                <span class="keywordflow">return</span> result;
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 translation(<span class=
+"keyword">const</span> Vec3&amp; pos) {
+                Matrix4x4 result = identity();
+                result.m[3] = pos.x;
+                result.m[7] = pos.y;
+                result.m[11] = pos.z;
+                <span class="keywordflow">return</span> result;  
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 scale(<span class=
+"keyword">const</span> Vec3&amp; scale) {
+                Matrix4x4 result = identity();
+                result.m[0] = scale.x;
+                result.m[5] = scale.y;
+                result.m[10] = scale.z;
+                <span class="keywordflow">return</span> result;  
+        }
+        
+        <span class=
+"keyword">inline</span> Matrix4x4 operator*(<span class=
+"keyword">const</span> Matrix4x4&amp; m1, <span class=
+"keyword">const</span> Matrix4x4&amp; m2) {
+                Matrix4x4 result;
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; 4; ++i) {
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> j = 0; j &lt; 4; ++j) {
+                                result.m[i * 4 + j] = 0.0f;
+                                <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> k = 0; k &lt; 4; ++k) {
+                                        result.m[i * 4 + j] += m1.m[i * 4 + k] * m2.m[k * 4 + j];
+                                }
+                        }
+                }
+                <span class="keywordflow">return</span> result;
+        }
+
+        <span class=
+"keyword">inline</span> Vec3 mulPoint(<span class=
+"keyword">const</span> Matrix4x4&amp; m, <span class=
+"keyword">const</span> Vec3&amp; p) {
+                <span class=
+"keywordflow">return</span> Vec3(m.m[0 + 0] * p.x + m.m[0 + 1] * p.y + m.m[0 + 2] * p.z + m.m[0 + 3],
+                                        m.m[4 + 0] * p.x + m.m[4 + 1] * p.y + m.m[4 + 2] * p.z + m.m[4 + 3],
+                                        m.m[8 + 0] * p.x + m.m[8 + 1] * p.y + m.m[8 + 2] * p.z + m.m[8 + 3]);
+        }
+        
+        <span class=
+"keyword">inline</span> Vec3 mulVec(<span class="keyword">const</span> Matrix4x4&amp; m, <span class="keyword">const</span> Vec3&amp; v) {
+                <span class=
+"keywordflow">return</span> Vec3(m.m[0 + 0] * v.x + m.m[0 + 1] * v.y + m.m[0 + 2] * v.z,
+                        m.m[4 + 0] * v.x + m.m[4 + 1] * v.y + m.m[4 + 2] * v.z,
+                        m.m[8 + 0] * v.x + m.m[8 + 1] * v.y + m.m[8 + 2] * v.z);
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 transpose(<span class=
+"keyword">const</span> Matrix4x4&amp; m) {
+                Matrix4x4 result;
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; 4; ++y){
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; 4; ++x){
+                                result.m[y * 4 + x] = m.m[x * 4 + y];
+                        }
+                }
+                <span class="keywordflow">return</span> result;
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 scaleTranslation(<span class=
+"keyword">const</span> Vec3&amp; _scale, <span class=
+"keyword">const</span> Vec3&amp; _trans) {
+                <span class=
+"keywordflow">return</span> translation(_trans) * scale(_scale);
+        }
+        Vec3 smallestComponent(<span class=
+"keyword">const</span> Vec3&amp; v) {
+                <span class=
+"keywordtype">float</span> x = fabs(v.x);
+                <span class=
+"keywordtype">float</span> y = fabs(v.y);
+                <span class=
+"keywordtype">float</span> z = fabs(v.z);
+                <span class=
+"keywordflow">if</span>(x &lt; y &amp;&amp; x &lt; z) {
+                        <span class=
+"keywordflow">return</span> Vec3(1.0f, 0.0f, 0.0f);
+                } <span class=
+"keywordflow">else</span> <span class="keywordflow">if</span> (y &lt; z) {
+                        <span class=
+"keywordflow">return</span> Vec3(0.0f, 1.0f, 0.0f);
+                } <span class="keywordflow">else</span> {
+                        <span class=
+"keywordflow">return</span> Vec3(0.0f, 0.0f, 1.0f);
+                }
+        }
+        
+        <span class=
+"keyword">inline</span> Vec3 findOrtho(<span class=
+"keyword">const</span> Vec3&amp; v) {
+                <span class=
+"keywordflow">return</span> cross(smallestComponent(v), v);
+        }
+
+
+        <span class=
+"keyword">inline</span> Matrix4x4 directionalLightOrientation(Vec3 dir, <span class="keyword">const</span> Vec3&amp; upHint) {
+                <span class=
+"keywordtype">float</span> proj = dot(dir, upHint);
+                <span class=
+"comment">// Epsilon check to avoid having up vectors parallel with the forward vector</span>
+                <span class=
+"keywordflow">if</span>(fabs(proj * proj - (dot(dir, dir) * dot(upHint, upHint))) &lt; .001f) {
+                        <span class=
+"keywordflow">throw</span> std::runtime_error(<span class=
+"stringliteral">"Up vector and forward vector parallel or close to parallel"</span>);
+                }
+
+                Vec3 x = normalize(cross(dir, upHint));
+                Vec3 z = normalize(cross(dir, x));
+                dir = normalize(dir);
+                Matrix4x4 result = identity();
+                result.setColumn(x, 0);
+                result.setColumn(-dir, 1);
+                result.setColumn(z, 2);
+                <span class="keywordflow">return</span> result;
+        }
+        <span class=
+"keyword">inline</span> Matrix4x4 directionalLightOrientation(Vec3 dir) {
+                Vec3 up = findOrtho(dir);
+                <span class=
+"keywordflow">return</span> directionalLightOrientation(dir, up);
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 cameraOrientation(Vec3 forward, <span class="keyword">const</span> Vec3&amp; upHint) {
+                <span class=
+"keywordtype">float</span> proj = dot(forward, upHint);
+                <span class=
+"comment">// Epsilon check to avoid having up vectors parallel with the forward vector</span>
+                <span class=
+"keywordflow">if</span>(fabs(proj * proj - (dot(forward, forward) * dot(upHint, upHint))) &lt; .001f) {
+                        <span class=
+"keywordflow">throw</span> std::runtime_error(<span class=
+"stringliteral">"Up vector and forward vector parallel or close to parallel"</span>);
+                }
+                Vec3 right = normalize(cross(upHint, forward));
+                Vec3 up = normalize(cross(forward, right));
+                forward = normalize(forward);
+                Matrix4x4 result = identity();
+                result.setColumn(-right, 0);
+                result.setColumn(up, 1);
+                result.setColumn(-forward, 2);
+                <span class="keywordflow">return</span> result;
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 setCameraMatrix(<span class=
+"keyword">const</span> Vec3&amp; pos, <span class=
+"keyword">const</span> Vec3&amp; forward, <span class=
+"keyword">const</span> Vec3&amp; upHint) {
+                Matrix4x4 trans = translation(pos);
+                Matrix4x4 orient = cameraOrientation(forward, upHint);
+                <span class=
+"keywordflow">return</span> trans * orient;
+        }
+
+        <span class=
+"keyword">inline</span> Matrix4x4 setSpotlightMatrix(<span class=
+"keyword">const</span> Vec3&amp; pos, <span class=
+"keyword">const</span> Vec3&amp; forward, <span class=
+"keyword">const</span> Vec3&amp; upHint) {
+                Matrix4x4 trans = translation(pos);
+                Matrix4x4 orient = directionalLightOrientation(forward, upHint);
+                <span class=
+"keywordflow">return</span> trans * orient;
+        }
+        <span class=
+"keyword">inline</span> Matrix4x4 setSpotlightMatrix(<span class=
+"keyword">const</span> Vec3&amp; pos, <span class=
+"keyword">const</span> Vec3&amp; forward) {
+                Vec3 up = findOrtho(forward);
+                <span class=
+"keywordflow">return</span> setSpotlightMatrix(pos, forward, up);
+        }
+        
+        <span class=
+"keyword">inline</span> Matrix4x4 setAreaLightMatrix(<span class=
+"keyword">const</span> Vec3&amp; pos, <span class=
+"keyword">const</span> Vec3&amp; forward, <span class=
+"keyword">const</span> Vec3&amp; upHint, <span class=
+"keyword">const</span> Vec2&amp; scaling) {
+                Matrix4x4 scalemtx = scale(Vec3(scaling.x, 1.0f, scaling.y));
+                <span class=
+"keywordflow">return</span> setSpotlightMatrix(pos, forward, upHint) * scalemtx;
+        }
+
+        <span class="keyword">class </span>ColorRGB : <span class=
+"keyword">public</span> <a name="_a3"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a> {
+        <span class="keyword">public</span>:
+                ColorRGB(<span class=
+"keywordtype">float</span> _r, <span class=
+"keywordtype">float</span> _g, <span class=
+"keywordtype">float</span> _b) : <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>(_r, _g, _b) {}
+        };
+
+
+        <span class="keyword">class </span>ColorRGBA : <span class=
+"keyword">public</span> <a name="_a4"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> {
+        <span class="keyword">public</span>:
+                ColorRGBA() : <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>(0.0f, 0.0f, 0.0f, 1.0f) {}
+                ColorRGBA(<span class=
+"keywordtype">float</span> _r, <span class=
+"keywordtype">float</span> _g, <span class=
+"keywordtype">float</span> _b, <span class=
+"keywordtype">float</span> _a) : <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>(_r, _g, _b, _a) {}
+                ColorRGB toColorRGB() {
+                        <span class=
+"keywordflow">return</span> ColorRGB(r, g, b);
+                }
+        };
+
+        <span class="keyword">inline</span> <span class=
+"keywordtype">float</span> frand() {
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> r = rand();
+                <span class=
+"keywordflow">return</span> (<span class=
+"keywordtype">float</span>)r / (float)RAND_MAX;
+        }
+
+        ColorRGBA randomRGBA(<span class=
+"keywordtype">float</span> amp) {
+                <span class=
+"keywordflow">return</span> ColorRGBA(frand() * amp, frand() * amp, frand() * amp, frand() * amp);
+        }
+} <span class="comment">// namespace bex</span>
+
+
+<span class="preprocessor">#endif // VECMATH_H</span>
+
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

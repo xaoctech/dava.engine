@@ -12,7 +12,7 @@
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/EditorConfig.h"
 
-#include "CommandLine/BeastCommandLineTool.h"
+#include "Classes/Beast/BeastCommandLineTool.h"
 #include "CommandLine/ConsoleHelpTool.h"
 #include "CommandLine/DumpTool.h"
 #include "CommandLine/SceneImageDump.h"
@@ -24,12 +24,6 @@
 #include "CommandLine/SceneSaverTool.h"
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/SceneValidationTool.h"
-
-#ifdef __DAVAENGINE_BEAST__
-#include "BeastProxyImpl.h"
-#else
-#include "Beast/BeastProxy.h"
-#endif //__DAVAENGINE_BEAST__
 
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
@@ -176,8 +170,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "ResourceEditor");
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
-
-    beastProxy = new BEAST_PROXY_TYPE();
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
@@ -194,8 +186,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 void REApplication::Cleanup()
 {
     REGlobal::InitTArcCore(nullptr);
-    DAVA::SafeRelease(beastProxy);
-
     VisibilityCheckSystem::ReleaseCubemapRenderTargets();
 
     cmdLine.clear();

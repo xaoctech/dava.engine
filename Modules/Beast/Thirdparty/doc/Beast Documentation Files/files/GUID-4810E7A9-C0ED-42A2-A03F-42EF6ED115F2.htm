@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA" />
+      <title>Error Handling</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBStatus", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206", "API"]); 
+reflinkdata.push(["ILB_ST_SUCCESS", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206aef28b1942ff355ac96c65b724412fe2f", "API"]); 
+reflinkdata.push(["ILB_ST_UNKNOWN_OBJECT", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a6fbb043e3fe736aae9db9b78689bb32f", "API"]); 
+reflinkdata.push(["ILBGetExtendErrorInformation()", "../api/beastutils_8h.html#ae949fbbb56d2dfb94290a968802066c0", "API"]); 
+reflinkdata.push(["ILB_ST_UNHANDLED_EXCEPTION", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a5ffe1604bc2391b34b043899d6db845c", "API"]); 
+reflinkdata.push(["ILBSetFov", "../api/beastcamera_8h.html#acf7eff806d9479b2c65a3093e9515bfb", "API"]); 
+reflinkdata.push(["ILBStringHandle", "../api/struct_i_l_b_string_handle.html", "API"]); 
+reflinkdata.push(["ILBErrorToString", "../api/beastutils_8h.html#aed2244af0fe901862e4d71c934af46dc", "API"]); 
+reflinkdata.push(["ILBGetExtendErrorInformation", "../api/beastutils_8h.html#ae949fbbb56d2dfb94290a968802066c0", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2.htm',                           'd30e4670','index.html',location.hash);                           javascript:initPage('Error Handling','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Error Handling&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Working With Strings</div><a href="GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Programming With the Beast API</div><a href="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Debugging</div><a href="GUID-C492ECEB-FB55-43E7-8A40-31493DF6DF26.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-215C3EE9-6616-41B4-B6A6-6BEEF46BB58D.htm"> Getting Started with Beast</a>&nbsp;&gt;&nbsp;<a href="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA.htm">Programming With the Beast API</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-8580EE49-7AC3-4C01-A69D-7E8B81554C4D"></a></span><h1>Error Handling</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-F09E155A-CA73-4E53-8793-492A0EE1DE62"></a></span>All functions in the <span class="charspan-msgph" translate="no">Beast</span> API return an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a></span> enumeration to indicate the result of the request. If the function returns <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_ST_SUCCESS'); return false;">ILB_ST_SUCCESS</a></span>, you can be sure that the operation completed successfully. Other values may indicate that an error occurred during processing,
+            that there was a problem with input parameters, etc. Not all values other than <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_ST_SUCCESS'); return false;">ILB_ST_SUCCESS</a></span> indicate failure or errors; for example, when you look for an object in the cache, your function may return <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_ST_UNKNOWN_OBJECT'); return false;">ILB_ST_UNKNOWN_OBJECT</a></span> to indicate that the object is not in the cache. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_01003874EAB34284A62D59E8584717F6"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4693"></a><span class="anchor_wrapper"><a name="GUID-DE6164E8-6AF7-4A86-B940-A0B9D48B4396"></a></span>Extended Error Information
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-7E933C24-4E47-4D96-8608-F661631191F9"></a></span>In some cases, the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a></span> return value does not give enough information to determine the problem. In these cases, you can call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetExtendErrorInformation()'); return false;">ILBGetExtendErrorInformation()</a></span> function to get more information about the last error. This function is specific to each thread, so it will always return
+               details only on the last error to occur within the same thread. You must always call it from the same thread in which the
+               error occurred. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_F5542F08BC8743198174A67CA294B2AB"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4707"></a><span class="anchor_wrapper"><a name="GUID-A3854902-F86A-4A6C-8ACC-B0097EC6BA08"></a></span>Error Handling in C++
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-1D43D2D8-6556-47BF-9C31-C60B547B9B36"></a></span>Many developers prefer to handle errors using exceptions rather than return codes. A simple way of mapping <span class="charspan-msgph" translate="no">Beast</span> errors to exceptions is to introduce a helper function that captures the return value and throws it as an exception: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">class BeastException {
+public:
+   BeastException(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a> s) : status(s) {}
+   <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a> status;
+};
+
+inline void beastCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a> s) {
+   if(s != <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_ST_SUCCESS'); return false;">ILB_ST_SUCCESS</a>) {
+      throw BeastException(s);
+   }
+}
+</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-45854DFB-7202-4A11-B218-9B70570D132C"></a></span>Now, you can wrap all your calls to Beast API functions within a call to <span class="code" translate="no">beastCall()</span> in order to generate exceptions. You can handle them using a standard try/catch block: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">try {
+   ...
+   beastCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetFov'); return false;">ILBSetFov</a>(cam, PI / 3.0f, .1f));
+   ...
+} catch(BeastException&amp; ex) {
+   <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStringHandle'); return false;">ILBStringHandle</a> errorString;
+   <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStringHandle'); return false;">ILBStringHandle</a> extendedError;
+   <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBErrorToString'); return false;">ILBErrorToString</a>(ex.status, &amp;errorString);
+   <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetExtendErrorInformation'); return false;">ILBGetExtendErrorInformation</a>(&amp;extendedError);
+   std::cout &lt;&lt; "Error:" &lt;&lt; convertBeastString(errorString) &lt;&lt; std::endl;
+   std::cout &lt;&lt; "Info:" &lt;&lt; convertBeastString(extendedError) &lt;&lt; std::endl;
+}</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-BF92963A-59C5-47E7-8B56-45A77330DEA8"></a></span>For example, this is done in the <span class="charspan-msgph" translate="no">Beast</span> example projects using the <span class="code" translate="no">bex::apiCall</span> function. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_B424FA6625DF4BC39647C8E6AAFB05B3"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4740"></a><span class="anchor_wrapper"><a name="GUID-57DAA5CD-61A5-4C51-AF9F-BCA265EF0D74"></a></span>Crashes and unhandled exceptions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-CA420624-B38C-4C26-87F8-1816362AD776"></a></span>Errors of the type <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_ST_UNHANDLED_EXCEPTION'); return false;">ILB_ST_UNHANDLED_EXCEPTION</a></span> should never occur. If you receive a result of this type from a <span class="charspan-msgph" translate="no">Beast</span> API function, contact Autodesk Support immediately. See <span class="char_link"><a href="GUID-D70BFD6A-2A69-4C5D-9885-D6B1F176E60A.htm"> Support</a></span>. Support engineers will do their best to diagnose and solve the problem quickly. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-F7F9307D-D52C-44EE-ADFD-A7264D70E019"></a></span>Crashes should not happen either, in normal circumstances. The most frequent cause of a crash is the use of an invalid or
+               uninitialized object handle. If you encounter a crash, ensure that your code correctly sets up all handles before using them.
+               See also <span class="char_link"><a href="GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm">Working With Object Handles</a></span>. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

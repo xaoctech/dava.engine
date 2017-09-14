@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-9FD24241-08CF-4585-A5ED-54825582120F" />
+      <meta name="topic-type" content="concept" />
+      <title>Getting Started with the Beast Examples</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-9FD24241-08CF-4585-A5ED-54825582120F.htm',                           'd30e4878','index.html',location.hash);                           javascript:initPage('Getting Started with the Beast Examples','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-9FD24241-08CF-4585-A5ED-54825582120F.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-9FD24241-08CF-4585-A5ED-54825582120F.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Getting Started with the Beast Examples&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Programming in Non-C Languages</div><a href="GUID-4DB3F5D9-1EBE-4926-AE79-CD48B4983271.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp"><img src="../images/nav-null-xp.gif" border="0" /></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Maya plug-in</div><a href="GUID-1A6B5739-AA7F-4155-966A-54C81585442F.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry">&nbsp;</div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-83E56B33-6C30-4B2D-8B03-CE06BCDDC96D"></a></span><h1>Getting Started with the Beast Examples</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-9FD24241-08CF-4585-A5ED-54825582120F"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-91A06495-D31F-4DBB-A1C5-015EC02E4A20"></a></span> The <span class="charspan-msgph" translate="no">Beast</span> SDK includes a comprehensive set of example projects that illustrate how to use the <span class="charspan-msgph" translate="no">Beast</span> API to create many different kinds of lighting effects. These examples serve several purposes: 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-1F5AE7E3-CF79-4188-B7E8-6B5042EA9A80"></a></span> <span class="anchor_wrapper"><a name="UL_6D1302DC2C5943008AFF28D4F4D58BED"></a></span><ul>
+               <li>They provide a visual introduction to some of the main features of <span class="charspan-msgph" translate="no">Beast</span> 
+               </li>
+               <li>They provide a working integration of the API that you can use as a model when integrating <span class="charspan-msgph" translate="no">Beast</span> into your own game engine or editor. You can cut and paste code as needed, including the helper classes and functions common
+                  to multiple example projects. 
+               </li>
+               <li>You can easily extend the examples by altering existing projects, or by adding your own custom applications that build on
+                  the helper code used in the examples. This allows you to explore different features of <span class="charspan-msgph" translate="no">Beast</span>, and even to plug in scenes and props from your own game, without needing to integrate the API and libraries into your own
+                  editor and production system. 
+               </li>
+            </ul> 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_8C6B63BC4ACC431D88FC10F584709420"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4914"></a><span class="anchor_wrapper"><a name="GUID-AD01DDE7-B650-4423-B831-E189080DFC03"></a></span>Physical vs. classic rendering
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-FC18E6B5-9C40-48C7-AA71-C3AD07BD3102"></a></span>The examples are split into two solutions: one that shows how to use the newer physically based rendering system, and one
+               that shows the use of the fixed-function material shading previously used in older versions of <span class="charspan-msgph" translate="no">Beast</span>. This is intended to clarify the way the two rendering pipelines differ in their use of the <span class="charspan-msgph" translate="no">Beast</span> API. If you are starting to use <span class="charspan-msgph" translate="no">Beast</span> from scratch, it is highly recommended that you concentrate on the physical rendering approach. Although the older fixed-function
+               material system is still supported in this release, the physical rendering pipeline offers several concrete advantages, and
+               it is expected to replace the older system completely in future. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-22C39792-B7EC-4CAA-B258-4C91BBCB202F"></a></span>See also <span class="char_link"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a></span> and <span class="char_link"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating Classic Materials</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_2814F53D8FDD47B49ACCA5DB0E534D47"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4938"></a><span class="anchor_wrapper"><a name="GUID-8779C335-CFBA-4788-952E-C7CA3A3DD7AC"></a></span>Pre-requisites
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-AA996EFB-8618-4AE1-B473-09BDBCFFC748"></a></span>In order to compile and run the examples: 
+            </p> <span class="anchor_wrapper"><a name="UL_C7AF27D7C592405D9FDE41E56306524B"></a></span><ul>
+               <li><em class="strong">You must have your <span class="charspan-msgph" translate="no">Beast</span> license in place.</em> For details, see <span class="char_link"><a href="GUID-EE85845D-D31C-4985-A7F2-693A95CA7212.htm">Licensing</a></span>. 
+               </li>
+               <li>You must have Microsoft Visual Studio 2005 (VC8) or later installed on your system. </li>
+               <li>You must have installed Distribeast on your computer, although you do not need to have installed it on any other computers
+                  in your network. 
+               </li>
+            </ul> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_A6B5DBD9EB054D9497D43A448074EDFD"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4962"></a><span class="anchor_wrapper"><a name="GUID-5AABFA46-C1BA-4190-926A-71745280D90A"></a></span>Maya plug-in requirements
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-6B34917D-BDAA-45B9-A5CB-E3B6BD7F5C4E"></a></span> <span class="anchor_wrapper"><a name="UL_84481027B60040FD9300994053791550"></a></span><ul>
+                  <li>A licensed installation of Maya 2013. </li>
+                  <li>Microsoft Visual Studio 2010 (VC10). </li>
+               </ul> 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_AC88BBADD53644009750765B5A97A587"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4976"></a><span class="anchor_wrapper"><a name="GUID-098D0E6A-2BF0-4A55-BAFB-D75DDCDA0C48"></a></span>Building the examples
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-65C89841-1B67-44E6-BACC-FBDD9A09474D"></a></span>To build the examples, use either of the following solutions: 
+            </p> <span class="anchor_wrapper"><a name="UL_AD3EA2582BF944D791DADD4C082CDC67"></a></span><ul>
+               <li> <span class="filePath" translate="no">examples-physical\projects\beastapisamplesphysical.sln</span> 
+               </li>
+               <li> <span class="filePath" translate="no">examples\projects\beastapisamples.sln</span> 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-5290A5FC-34D8-47D6-98EB-E70C9EEAE423"></a></span>These solutions contain several projects, each of which shows a distinct feature of <span class="charspan-msgph" translate="no">Beast</span> or a method of using <span class="charspan-msgph" translate="no">Beast</span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-A89E6F3B-DB4B-4DEE-84F1-A8881489DF89"></a></span>The compilation process automatically copies the generated binaries and any other necessary files into one of the following
+               directories, depending on the solution and build mode you chose: 
+            </p> <span class="anchor_wrapper"><a name="UL_BD8F1FB9402049C5B461F6B25882BA97"></a></span><ul>
+               <li> <span class="filePath" translate="no">examples-physical\projects\release</span> 
+               </li>
+               <li> <span class="filePath" translate="no">examples-physical\projects\debug</span> 
+               </li>
+               <li> <span class="filePath" translate="no">examples\projects\release</span> 
+               </li>
+               <li> <span class="filePath" translate="no">examples\projects\debug</span> 
+               </li>
+            </ul> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E0789CDD7EF44DF5B24F5819EA47CA0F"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5031"></a><span class="anchor_wrapper"><a name="GUID-BDBD94BB-F04B-4FB6-B3CC-9B6F97ED8635"></a></span>Running the examples
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-2C176C4A-BD13-4457-858C-91326F23ED76"></a></span>Each project contained in the solutions generates its own executable. You can launch these executables by either: 
+            </p> <span class="anchor_wrapper"><a name="UL_F1379EF33A6C4BFEB219A4251450A8F4"></a></span><ul>
+               <li>Double-clicking the executables in the output directory. </li>
+               <li>Running them from the command line. If you choose this option, you must first change directories to the directory that contains
+                  the executables. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-57C37A20-C5E5-46AC-B319-51195F7D781D"></a></span>Since each example illustrates a different feature of the product, each executable is best viewed in conjunction with its
+               code. The <span class="code" translate="no">.cpp</span> file for each project gives a brief description of the goals of the example, and the in-line comments should be clear enough
+               to demonstrate how the rendered effects are achieved. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
