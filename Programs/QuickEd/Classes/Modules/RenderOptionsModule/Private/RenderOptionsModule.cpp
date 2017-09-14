@@ -10,11 +10,15 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+
+#include <Render/RenderOptions.h>
 
 #include <QAction>
 #include <QDialog>
 #include <QScrollArea>
 #include <QWidget>
+#include <QVBoxLayout>
 
 namespace RenderOptionsDetails
 {
@@ -36,7 +40,7 @@ class OptionWrapper : public DAVA::ReflectionBase
     }
 
 public:
-    OptionWrapper(RenderOptions::RenderOption option)
+    OptionWrapper(DAVA::RenderOptions::RenderOption option)
         : option(option)
     {
     }
@@ -57,7 +61,7 @@ public:
     }
 
 private:
-    RenderOptions::RenderOption option;
+    DAVA::RenderOptions::RenderOption option;
 };
 
 class RenderOptionsData : public DAVA::TArc::DataNode
