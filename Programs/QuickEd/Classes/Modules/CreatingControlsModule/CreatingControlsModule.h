@@ -13,6 +13,8 @@ public:
 private:
     // ClientModule
     void PostInit() override;
+    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
+    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
     void OnCreateByClick(ControlNode* control);
 

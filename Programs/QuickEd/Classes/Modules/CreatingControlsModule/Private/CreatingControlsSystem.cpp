@@ -3,8 +3,8 @@
 #include "UI/CommandExecutor.h"
 #include "Utils/ControlPlacementUtils.h"
 
-CreatingControlsSystem::CreatingControlsSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui)
-    : BaseEditorSystem(parent, accessor)
+CreatingControlsSystem::CreatingControlsSystem(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui)
+    : BaseEditorSystem(accessor)
     , ui(ui)
 {
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
@@ -17,7 +17,7 @@ EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::U
 
 bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
 {
-    return (systemsManager->GetDragState() == EditorSystemsManager::AddingControl);
+    return (GetSystemsManager()->GetDragState() == EditorSystemsManager::AddingControl);
 }
 
 void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput)
@@ -66,6 +66,11 @@ bool CreatingControlsSystem::IsDependsOnCurrentPackage(ControlNode* control) con
     return control->IsDependsOnPackage(currentPackage);
 }
 
+BaseEditorSystem::eSystems CreatingControlsSystem::GetOrder() const
+{
+    return CREATING_CONTROLS;
+}
+
 void CreatingControlsSystem::SetCreateByClick(ControlNode* control)
 {
     createFromControl = control;
@@ -92,11 +97,11 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
         DVASSERT(package != nullptr);
 
         uint32 destIndex = 0;
-        PackageBaseNode* destNode = systemsManager->GetControlNodeAtPoint(point);
+        PackageBaseNode* destNode = GetSystemsManager()->GetControlNodeAtPoint(point);
         if (destNode == nullptr)
         {
             destNode = DynamicTypeCheck<PackageBaseNode*>(package->GetPackageControlsNode());
-            destIndex = systemsManager->GetIndexOfNearestRootControl(point);
+            destIndex = GetSystemsManager()->GetIndexOfNearestRootControl(point);
         }
         else
         {

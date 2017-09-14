@@ -52,9 +52,8 @@ private:
     TouchScreen& operator=(const TouchScreen&) = delete;
 
     void OnEndFrame();
-    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
-    void ResetState(Window* window);
+    void ResetState(Window* window) override;
 
     bool HandleMainDispatcherEvent(const Private::MainDispatcherEvent& e);
     bool HandleTouchDownEvent(const Private::MainDispatcherEvent& e);

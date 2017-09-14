@@ -5,7 +5,6 @@
 #include "Render/Texture.h"
 
 #include "Utils/QtDavaConvertion.h"
-#include "EditorSystems/EditorControlsView.h"
 
 #include "QtTools/FileDialogs/FileDialog.h"
 #include "QtTools/ReloadSprites/DialogReloadSprites.h"

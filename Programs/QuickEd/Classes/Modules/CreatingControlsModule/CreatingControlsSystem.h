@@ -10,7 +10,10 @@
 class CreatingControlsSystem final : public BaseEditorSystem
 {
 public:
-    CreatingControlsSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
+    CreatingControlsSystem(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
+
+    // BaseEditorSystem
+    eSystems GetOrder() const override;
 
     void SetCreateByClick(ControlNode* control);
 

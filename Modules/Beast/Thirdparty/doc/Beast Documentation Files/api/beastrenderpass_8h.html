@@ -1,0 +1,3003 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastrenderpass.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beastrenderpass_8h.html','api_beastrenderpass_8h_htmlebd58ba3-ba88-4856-983c-90a18ffb323f','index.html',location.hash); javascript:initPage('API: beastapi/beastrenderpass.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastrenderpass_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastrenderpass.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastrenderpass.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#enum-members">Enumerations</a> |
+<a href="#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beastrenderpass.h File Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-542C4514-5E74-45DE-AABE-263C3EA509B4.htm">What's
+New</a>, <a href=
+".././files/GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1.htm">What's
+New in Beast 2013.0.x</a>, <a href=
+".././files/GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating
+Classic Materials</a>, <a href=
+".././files/GUID-66113B54-02C9-4F7F-8F0E-FFEB466DC342.htm">Retrieving
+the Rendered Output</a>, <a href=
+".././files/GUID-C22120BC-D33D-4B51-BCB7-E8D1ADEEDC01.htm">What's
+New in 2012.1.x</a>, <a href=
+".././files/GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm">Rendering
+the Scene</a>, <a href=
+".././files/GUID-C5DEE2AC-1BFE-4C80-8370-03BBFD925C4D.htm">Creating
+Render Targets</a>, <a href=
+".././files/GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm">Creating
+Render Passes</a>, <a href=
+".././files/GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm">Lua
+Reference</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>Render Pass specification.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="enum-members"></a> Enumerations</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a">ILBAOSelfOcclusion</a>
+{ <a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa87a367367bf2fc58d6d23fa494d1f720">
+ILB_SO_DISABLED</a> = 0, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aac549fa1859fc951ef06b3ab4ad0f8292">
+ILB_SO_SET_ENVIRONMENT</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa2f8d6b0274be869aff02c7dfad441ff6">
+ILB_SO_ENABLED</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a9d0a3a0278c5d56cf2b4a15f8c06a608">ILBBasisType</a></td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>
+{ <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3">
+ILB_IM_DIRECT_ONLY</a> = 0, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82">
+ILB_IM_INDIRECT_ONLY</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93">
+ILB_IM_FULL</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aef8d5a408fd47e7b7655421774103240">
+ILB_IM_FULL_AND_INDIRECT</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf">ILBLightPassType</a>
+{ <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1">
+ILB_LP_LIGHTMAP</a> = 0, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c">
+ILB_LP_SHADOWMAP</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772">
+ILB_LP_FULLSHADING</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc">ILBRNMAllowNegative</a>
+{ <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bcac66096b5e81f9b4060a7391932d2c8d4">
+ILB_AN_ALLOW</a> = 0, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca824494289339b57485d64f0b212c9dae">
+ILB_AN_DISALLOW</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca50926c390d9ba33b0249dfc72cf97fdb">
+ILB_AN_DISALLOW_CULL_HORIZON</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15">ILBRNMBasis</a>
+{ <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5">
+ILB_RB_HL2</a> = 0, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0">
+ILB_RB_UE3</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a6e5b6d82674682e7b91178102d395be1">
+ILB_RB_UE3_FLIPPED</a>, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b">
+ILB_RB_CUSTOM</a> }</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a0237a590e98b631eb7a486b9446f957e">ILBAddCustomBasisVector</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, const <a class="el" translate="no" href="struct_i_l_b_vec3.html">ILBVec3</a>
+*basisVector)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ab0407b495d4427673eddc63082d4490f">ILBAddFullyBakedLight</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, <a class="el" translate="no" href=
+"struct_i_l_b_light_handle.html">ILBLightHandle</a> light)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a75899d0b3701c21fe3bf10681a54371b">ILBAddLightToPass</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_light_pass_entry_handle.html">ILBLightPassEntryHandle</a>
+entry, <a class="el" translate="no" href=
+"struct_i_l_b_light_handle.html">ILBLightHandle</a> light)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a1cf7ec9fa12d94730a9b9642b1b9d701">ILBAddTargetToPass</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_light_pass_entry_handle.html">ILBLightPassEntryHandle</a>
+entry, <a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+target)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a6b867c7cb0101d7f28870ef50fbd3c97">ILBCreateAmbientOcclusionPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, float maxDistance, float coneAngle, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ad16bdfe42814a2538c0c974ea79ec715">ILBCreateFullShadingPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ad0c96c4fec277646dab3674b931c2cfd">ILBCreateIlluminationPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>
+mode, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a43bb3dff69e941825b46da030c0a6f4a">ILBCreateIlluminationPassSH</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>
+mode, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a75f19f8d7eaba6ce1f2350e5fcecd1bb">ILBCreateLightPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf">ILBLightPassType</a>
+type, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a5e739df252830d484d077607ba8390c8">ILBCreateLightPassEntry</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, <a class="el" translate="no" href=
+"struct_i_l_b_light_pass_entry_handle.html">ILBLightPassEntryHandle</a>
+*entry)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a4325115669829001bbad46707487b5c4">ILBCreateLuaPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+scriptFile, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a5fc31993f18372a48d9552eb067e8ed2">ILBCreateNormalPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6">ILBCreateRNMPass</a>
+(<a class="el" translate="no" href="struct_i_l_b_job_handle.html">ILBJobHandle</a>
+job, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>
+mode, int32 samples, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15">ILBRNMBasis</a>
+basis, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ad61962c051aa01a367b08758e2d822a1">ILBEnableAOBentNormals</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a21dfaef01b2775b3a55501fcb8a111d5">ILBEnableSignedDistanceField</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, int32 pixelFilterSize, float maxWorldDistance)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a385b1ebd62698ea6cccb53c0e9cf071d">ILBIncludeNormalComponent</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae64d10b6a4bd82cbf109d0c46e73fa40">ILBNormalizeTextures</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, bool perChannel)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a01320e43cb627fb5655bda7817cd2f1e">ILBRNMMatchNormalIntensity</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a95e0f741d4f937d51b0d4f3b0d33018b">ILBSetAllowNegative</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc">ILBRNMAllowNegative</a>
+allow)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a51193d5aa62550475f31c0b90100cc07">ILBSetAOAdaptive</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, float accuracy, float smooth)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ad8788bbbafd64342099152ac404f5f03">ILBSetAOContrast</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, float contrast, float scale)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a77ae79aa30453e1b5c2c824ac6afda7f">ILBSetAONumRays</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, int32 minRay, int32 maxRay)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2c7e9750b8ca0817583d49f7f296de27">ILBSetAOSelfOcclusion</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, <a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a">ILBAOSelfOcclusion</a>
+selfOcclusion)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#afc887b914ff75213285173bb6cd33298">ILBSetAOUniformSampling</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#adc7b570a58e487fa5b7d5088a4aca422">ILBSetLambertianClamp</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, float val)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a71609144a15421439392d9ce80eb31d3">ILBSetLambertianScale</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, float scale)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2dc9ba10f419c629b6ea8801ee3136dc">ILBSetNondirectionalScale</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, float scale)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a6b42987084f1ec2ad31c32147a9e0fb0">ILBSetResolutionScale</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, float scale)</td>
+</tr>
+</table>
+<hr />
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="ae278e21212869d75cf7f6263e8ae754a"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBAOSelfOcclusion" ref="ae278e21212869d75cf7f6263e8ae754a" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a">ILBAOSelfOcclusion</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAOSelfOcclusion',false)">Search for all
+occurrences</a></div>
+<p>Self Occlusion Mode.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae278e21212869d75cf7f6263e8ae754aa87a367367bf2fc58d6d23fa494d1f720">
+</a>
+<!-- doxytag: member="ILB_SO_DISABLED" ref="ae278e21212869d75cf7f6263e8ae754aa87a367367bf2fc58d6d23fa494d1f720" args="" -->ILB_SO_DISABLED</em>&nbsp;</td>
+<td>
+<p>Self Occluded rays will continue beyond the originating
+object.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_SO_DISABLED',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae278e21212869d75cf7f6263e8ae754aac549fa1859fc951ef06b3ab4ad0f8292">
+</a>
+<!-- doxytag: member="ILB_SO_SET_ENVIRONMENT" ref="ae278e21212869d75cf7f6263e8ae754aac549fa1859fc951ef06b3ab4ad0f8292" args="" -->ILB_SO_SET_ENVIRONMENT</em>&nbsp;</td>
+<td>
+<p>Self Occluded rays will be set to the environment.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_SO_SET_ENVIRONMENT',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae278e21212869d75cf7f6263e8ae754aa2f8d6b0274be869aff02c7dfad441ff6">
+</a>
+<!-- doxytag: member="ILB_SO_ENABLED" ref="ae278e21212869d75cf7f6263e8ae754aa2f8d6b0274be869aff02c7dfad441ff6" args="" -->ILB_SO_ENABLED</em>&nbsp;</td>
+<td>
+<p>Objects can self occlude.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_SO_ENABLED',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a18">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2rendermanager_8cpp-example.html#a18">maya/beastmayaplugin/src/rendermanager.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a9d0a3a0278c5d56cf2b4a15f8c06a608"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBBasisType" ref="a9d0a3a0278c5d56cf2b4a15f8c06a608" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a9d0a3a0278c5d56cf2b4a15f8c06a608">ILBBasisType</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBasisType',false)">Search for all
+occurrences</a></div>
+<p>Basis type.</p>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a5">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a92b9b61709699c9defd6802a93aeb636"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBIlluminationMode" ref="a92b9b61709699c9defd6802a93aeb636" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBIlluminationMode',false)">Search for all
+occurrences</a></div>
+<p>Illumination Modes.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3">
+</a>
+<!-- doxytag: member="ILB_IM_DIRECT_ONLY" ref="a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3" args="" -->ILB_IM_DIRECT_ONLY</em>&nbsp;</td>
+<td>
+<p>Only direct illumination (no indirect illumination)</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_IM_DIRECT_ONLY',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82">
+</a>
+<!-- doxytag: member="ILB_IM_INDIRECT_ONLY" ref="a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82" args="" -->ILB_IM_INDIRECT_ONLY</em>&nbsp;</td>
+<td>
+<p>Only indirect illumination (no direct illumination)</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_IM_INDIRECT_ONLY',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93">
+</a>
+<!-- doxytag: member="ILB_IM_FULL" ref="a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93" args="" -->ILB_IM_FULL</em>&nbsp;</td>
+<td>
+<p>Both direct and indirect illumination.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_IM_FULL',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a92b9b61709699c9defd6802a93aeb636aef8d5a408fd47e7b7655421774103240">
+</a>
+<!-- doxytag: member="ILB_IM_FULL_AND_INDIRECT" ref="a92b9b61709699c9defd6802a93aeb636aef8d5a408fd47e7b7655421774103240" args="" -->ILB_IM_FULL_AND_INDIRECT</em>&nbsp;</td>
+<td>
+<p>Stores both direct+indirect and indirect separately.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_IM_FULL_AND_INDIRECT',false)">Search
+for all occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a4">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2rendermanager_8cpp-example.html#a5">maya/beastmayaplugin/src/rendermanager.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a827e8d68dc2c632a836954c3637a7aaf"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBLightPassType" ref="a827e8d68dc2c632a836954c3637a7aaf" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf">ILBLightPassType</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBLightPassType',false)">Search for all
+occurrences</a></div>
+<p>Light Pass Type.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1">
+</a>
+<!-- doxytag: member="ILB_LP_LIGHTMAP" ref="a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1" args="" -->ILB_LP_LIGHTMAP</em>&nbsp;</td>
+<td>
+<p>Stores the incoming light in the light map.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LP_LIGHTMAP',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c">
+</a>
+<!-- doxytag: member="ILB_LP_SHADOWMAP" ref="a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c" args="" -->ILB_LP_SHADOWMAP</em>&nbsp;</td>
+<td>
+<p>Stores the shadow mask.</p>
+<p>The individual light mask intensity will be proportional to the
+light source intensity.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LP_SHADOWMAP',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772">
+</a>
+<!-- doxytag: member="ILB_LP_FULLSHADING" ref="a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772" args="" -->ILB_LP_FULLSHADING</em>&nbsp;</td>
+<td>
+<p>Stores the full shading in the light map.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_LP_FULLSHADING',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a22">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a53911d3a2277d2c15d428a6b0e4c65bc"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBRNMAllowNegative" ref="a53911d3a2277d2c15d428a6b0e4c65bc" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc">ILBRNMAllowNegative</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBRNMAllowNegative',false)">Search for all
+occurrences</a></div>
+<p>Allow Negative.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a53911d3a2277d2c15d428a6b0e4c65bcac66096b5e81f9b4060a7391932d2c8d4">
+</a>
+<!-- doxytag: member="ILB_AN_ALLOW" ref="a53911d3a2277d2c15d428a6b0e4c65bcac66096b5e81f9b4060a7391932d2c8d4" args="" -->ILB_AN_ALLOW</em>&nbsp;</td>
+<td>
+<p>Allows negative RNM values.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_AN_ALLOW',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a53911d3a2277d2c15d428a6b0e4c65bca824494289339b57485d64f0b212c9dae">
+</a>
+<!-- doxytag: member="ILB_AN_DISALLOW" ref="a53911d3a2277d2c15d428a6b0e4c65bca824494289339b57485d64f0b212c9dae" args="" -->ILB_AN_DISALLOW</em>&nbsp;</td>
+<td>
+<p>Clamps negative RNM values to 0.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_AN_DISALLOW',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a53911d3a2277d2c15d428a6b0e4c65bca50926c390d9ba33b0249dfc72cf97fdb">
+</a>
+<!-- doxytag: member="ILB_AN_DISALLOW_CULL_HORIZON" ref="a53911d3a2277d2c15d428a6b0e4c65bca50926c390d9ba33b0249dfc72cf97fdb" args="" -->ILB_AN_DISALLOW_CULL_HORIZON</em>&nbsp;</td>
+<td>
+<p>As <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca824494289339b57485d64f0b212c9dae"
+title="Clamps negative RNM values to 0.">ILB_AN_DISALLOW</a>, and
+also culls lights below the horizon of each triangle.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick=
+"searchForTerm('ILB_AN_DISALLOW_CULL_HORIZON',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a14">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2rendermanager_8cpp-example.html#a11">maya/beastmayaplugin/src/rendermanager.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a2915dd174636e1a53353050c7841df15"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBRNMBasis" ref="a2915dd174636e1a53353050c7841df15" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15">ILBRNMBasis</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBRNMBasis',false)">Search for all
+occurrences</a></div>
+<p>RNM Basis.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5">
+</a>
+<!-- doxytag: member="ILB_RB_HL2" ref="a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5" args="" -->ILB_RB_HL2</em>&nbsp;</td>
+<td>
+<p>Half-Life 2 compatible basis.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RB_HL2',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0">
+</a>
+<!-- doxytag: member="ILB_RB_UE3" ref="a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0" args="" -->ILB_RB_UE3</em>&nbsp;</td>
+<td>
+<p>Unreal Engine 3 compatible basis.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RB_UE3',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a2915dd174636e1a53353050c7841df15a6e5b6d82674682e7b91178102d395be1">
+</a>
+<!-- doxytag: member="ILB_RB_UE3_FLIPPED" ref="a2915dd174636e1a53353050c7841df15a6e5b6d82674682e7b91178102d395be1" args="" -->ILB_RB_UE3_FLIPPED</em>&nbsp;</td>
+<td>
+<p>Unreal Engine 3 basis in untouched order.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RB_UE3_FLIPPED',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b">
+</a>
+<!-- doxytag: member="ILB_RB_CUSTOM" ref="a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b" args="" -->ILB_RB_CUSTOM</em>&nbsp;</td>
+<td>
+<p>Allows the user to enter the basis vectors manually.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RB_CUSTOM',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a10">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="a0237a590e98b631eb7a486b9446f957e"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBAddCustomBasisVector" ref="a0237a590e98b631eb7a486b9446f957e" args="(ILBRenderPassHandle pass, const ILBVec3 *basisVector)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddCustomBasisVector</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *&nbsp;</td>
+<td class="paramname"><em>basisVector</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddCustomBasisVector',false)">Search for all
+occurrences</a></div>
+<p>Adds a custom basis vector to be used with ILB_RB_CUSTOM.</p>
+<p>Only supported by the RNM pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">basisVector</td>
+<td>the basis vector to be added.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a55">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a7">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ab0407b495d4427673eddc63082d4490f"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBAddFullyBakedLight" ref="ab0407b495d4427673eddc63082d4490f" args="(ILBRenderPassHandle pass, ILBLightHandle light)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddFullyBakedLight</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_light_handle.html">ILBLightHandle</a>&nbsp;</td>
+<td class="paramname"><em>light</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddFullyBakedLight',false)">Search for all
+occurrences</a></div>
+<p>Add a light to be fully baked to a FullAndIndirectIllumination
+Pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the illumination pass to add the light to</td>
+</tr>
+<tr>
+<td class="paramname">light</td>
+<td>the light to add</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a36">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a75899d0b3701c21fe3bf10681a54371b"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBAddLightToPass" ref="a75899d0b3701c21fe3bf10681a54371b" args="(ILBLightPassEntryHandle entry, ILBLightHandle light)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddLightToPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_light_pass_entry_handle.html">ILBLightPassEntryHandle</a>&nbsp;</td>
+<td class="paramname"><em>entry</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_light_handle.html">ILBLightHandle</a>&nbsp;</td>
+<td class="paramname"><em>light</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddLightToPass',false)">Search for all
+occurrences</a></div>
+<p>Add a light to a light pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entry</td>
+<td>the light pass entry to add the light to</td>
+</tr>
+<tr>
+<td class="paramname">light</td>
+<td>the light to add</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a32">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a1cf7ec9fa12d94730a9b9642b1b9d701"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBAddTargetToPass" ref="a1cf7ec9fa12d94730a9b9642b1b9d701" args="(ILBLightPassEntryHandle entry, ILBTargetEntityHandle target)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddTargetToPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_light_pass_entry_handle.html">ILBLightPassEntryHandle</a>&nbsp;</td>
+<td class="paramname"><em>entry</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>target</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddTargetToPass',false)">Search for all
+occurrences</a></div>
+<p>Add an affected target entity to a light pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entry</td>
+<td>the light pass entry to add the target entity to</td>
+</tr>
+<tr>
+<td class="paramname">target</td>
+<td>the target to add</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a34">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a3">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a6b867c7cb0101d7f28870ef50fbd3c97"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateAmbientOcclusionPass" ref="a6b867c7cb0101d7f28870ef50fbd3c97" args="(ILBJobHandle job, ILBConstString name, float maxDistance, float coneAngle, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateAmbientOcclusionPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>maxDistance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>coneAngle</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateAmbientOcclusionPass',false)">Search for
+all occurrences</a></div>
+<p>Creates an Ambient Occlusion render pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">maxDistance</td>
+<td>the maximum distance to check for occlusion. 0 for
+infinite.</td>
+</tr>
+<tr>
+<td class="paramname">coneAngle</td>
+<td>the cone angle. Default is 180</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a34">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a38">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html#a14">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ad16bdfe42814a2538c0c974ea79ec715"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateFullShadingPass" ref="ad16bdfe42814a2538c0c974ea79ec715" args="(ILBJobHandle job, ILBConstString name, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateFullShadingPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateFullShadingPass',false)">Search for all
+occurrences</a></div>
+<p>Creates a Full Shading render pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2materials_2materials_8cpp-example.html#a9">
+examples-physical/code/materials/materials.cpp</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a38">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a38">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a39">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a119">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a54">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a44">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a34">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a47">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a34">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a39">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a33">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a23">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html#a11">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ad0c96c4fec277646dab3674b931c2cfd"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateIlluminationPass" ref="ad0c96c4fec277646dab3674b931c2cfd" args="(ILBJobHandle job, ILBConstString name, ILBIlluminationMode mode, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateIlluminationPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>&nbsp;</td>
+<td class="paramname"><em>mode</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateIlluminationPass',false)">Search for all
+occurrences</a></div>
+<p>Creates an Illumination render pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">mode</td>
+<td>Selects Direct Illumination Only, Indirect Illumination only or
+both.</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2baking_2baking_8cpp-example.html#a8">examples-physical/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a45">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html#a12">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a43bb3dff69e941825b46da030c0a6f4a"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateIlluminationPassSH" ref="a43bb3dff69e941825b46da030c0a6f4a" args="(ILBJobHandle job, ILBConstString name, ILBIlluminationMode mode, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateIlluminationPassSH</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>&nbsp;</td>
+<td class="paramname"><em>mode</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateIlluminationPassSH',false)">Search for all
+occurrences</a></div>
+<p>Creates an Illumination render pass with sh output.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">mode</td>
+<td>Selects Direct Illumination Only, Indirect Illumination only or
+both.</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a38">examples/code/shbaking/shbaking.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a46">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a75f19f8d7eaba6ce1f2350e5fcecd1bb"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateLightPass" ref="a75f19f8d7eaba6ce1f2350e5fcecd1bb" args="(ILBJobHandle job, ILBConstString name, ILBLightPassType type, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateLightPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf">ILBLightPassType</a>&nbsp;</td>
+<td class="paramname"><em>type</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateLightPass',false)">Search for all
+occurrences</a></div>
+<p>Creates a Light render pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">type</td>
+<td>the lighting mode</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a27">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html#a15">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a5e739df252830d484d077607ba8390c8"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateLightPassEntry" ref="a5e739df252830d484d077607ba8390c8" args="(ILBRenderPassHandle pass, ILBLightPassEntryHandle *entry)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateLightPassEntry</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_light_pass_entry_handle.html">ILBLightPassEntryHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>entry</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateLightPassEntry',false)">Search for all
+occurrences</a></div>
+<p>Creates a Light Pass Entry.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the light pass to create the entry on</td>
+</tr>
+<tr>
+<td class="paramname">entry</td>
+<td>the created entry</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a30">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a1">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a4325115669829001bbad46707487b5c4"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateLuaPass" ref="a4325115669829001bbad46707487b5c4" args="(ILBJobHandle job, ILBConstString name, ILBConstString scriptFile, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateLuaPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>scriptFile</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateLuaPass',false)">Search for all
+occurrences</a></div>
+<p>Creates a LUA pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">scriptFile</td>
+<td>the file name of the script</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a34">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a35">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a37">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a47">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html#a13">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a5fc31993f18372a48d9552eb067e8ed2"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateNormalPass" ref="a5fc31993f18372a48d9552eb067e8ed2" args="(ILBJobHandle job, ILBConstString name, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateNormalPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateNormalPass',false)">Search for all
+occurrences</a></div>
+<p>Creates a Normal render pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a37">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aed59b8f7001b93c2fa6bd5090b321cc6"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBCreateRNMPass" ref="aed59b8f7001b93c2fa6bd5090b321cc6" args="(ILBJobHandle job, ILBConstString name, ILBIlluminationMode mode, int32 samples, ILBRNMBasis basis, ILBRenderPassHandle *pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateRNMPass</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_job_handle.html">ILBJobHandle</a>&nbsp;</td>
+<td class="paramname"><em>job</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">ILBIlluminationMode</a>&nbsp;</td>
+<td class="paramname"><em>mode</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>samples</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15">ILBRNMBasis</a>&nbsp;</td>
+<td class="paramname"><em>basis</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>pass</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateRNMPass',false)">Search for all
+occurrences</a></div>
+<p>Creates an RNM render pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">job</td>
+<td>the job to add the pass to</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the pass</td>
+</tr>
+<tr>
+<td class="paramname">mode</td>
+<td>Selects Direct Illumination Only, Indirect Illumination only or
+both.</td>
+</tr>
+<tr>
+<td class="paramname">samples</td>
+<td>Number of samples for non-adaptive RNM. Set to 0 samples to
+turn on adaptivity (recommended).</td>
+</tr>
+<tr>
+<td class="paramname">basis</td>
+<td>The RNM basis to use</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the handle to store the generated target in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a35">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a26">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html#a16">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ad61962c051aa01a367b08758e2d822a1"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBEnableAOBentNormals" ref="ad61962c051aa01a367b08758e2d822a1" args="(ILBRenderPassHandle pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEnableAOBentNormals</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEnableAOBentNormals',false)">Search for all
+occurrences</a></div>
+<p>No support in physical rendering.</p>
+<p>Calculates the "bent normal" (most visible direction). If this
+is used, sampling cannot be adaptive. The put will contain normals
+in RGB and occlusion in A</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the affected pass, must be an AO pass</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a44">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a21dfaef01b2775b3a55501fcb8a111d5"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBEnableSignedDistanceField" ref="a21dfaef01b2775b3a55501fcb8a111d5" args="(ILBRenderPassHandle pass, int32 pixelFilterSize, float maxWorldDistance)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEnableSignedDistanceField</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>pixelFilterSize</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>maxWorldDistance</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEnableSignedDistanceField',false)">Search for
+all occurrences</a></div>
+<p>No support in physical rendering.</p>
+<p>Makes a light pass use signed distance field shadow maps. Each
+resulting baked pixel will store the distance to the closest shadow
+transition.<br />
+Distances are remapped to the range [0.0, 1.0], where:</p>
+<ul>
+<li>Values below 0.5 indicate pixels that lie in unlit areas. As
+the distance from the pixel to the shadow transition increases, the
+value decreases. The minimum value of 0.0f indicates that the pixel
+is at a distance of at least <code>maxWorldDistance</code> from the
+transition.</li>
+<li>0.5 indicates a pixel that lies exactly on a shadow
+transition.</li>
+<li>Values above 0.5 indicate pixels that lie in lit areas. As the
+distance from the pixel to the shadow transition increases, the
+value increases. The maximum value of 1.0f indicates that the pixel
+is at a distance of at least <code>maxWorldDistance</code> from the
+transition.<br />
+We strongly recommend that you disable soft shadows on any lights
+that generate signed distance fields, as sharp shadow transitions
+generate the best results. Also make sure to specify a high maximum
+super sampling rate to ensure high quality signed distance
+fields.<br />
+Only enable signed distance fields for a light pass, and only when
+the light pass is configured to bake shadow maps (<a class="el" translate="no"
+href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c"
+title="Stores the shadow mask.">ILB_LP_SHADOWMAP</a>). Any other
+use will produce undefined results.
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the light pass</td>
+</tr>
+<tr>
+<td class="paramname">pixelFilterSize</td>
+<td>Sets the maximum search range in pixels in the image. This is
+mainly a performance optimization hint, having this set too large
+will cause excessive overlap rendering which will degrade
+performance. Default value is 20.</td>
+</tr>
+<tr>
+<td class="paramname">maxWorldDistance</td>
+<td>the maximum world distance to be stored. Default value is
+1.0f.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+</li>
+</ul>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a28">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a385b1ebd62698ea6cccb53c0e9cf071d"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBIncludeNormalComponent" ref="a385b1ebd62698ea6cccb53c0e9cf071d" args="(ILBRenderPassHandle pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBIncludeNormalComponent</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBIncludeNormalComponent',false)">Search for all
+occurrences</a></div>
+<p>Enables inclusion of a normal component in the RNM pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a50">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a5">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ae64d10b6a4bd82cbf109d0c46e73fa40"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBNormalizeTextures" ref="ae64d10b6a4bd82cbf109d0c46e73fa40" args="(ILBRenderPassHandle pass, bool perChannel)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBNormalizeTextures</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">bool&nbsp;</td>
+<td class="paramname"><em>perChannel</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBNormalizeTextures',false)">Search for all
+occurrences</a></div>
+<p>Normalizes the texture values to the 0..1 range.</p>
+<p>Stores the original range per entity which can be collected with
+the getNormalization* functions.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">perChannel</td>
+<td>if enabled normalization will be done individually for each
+channel</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a52">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a01320e43cb627fb5655bda7817cd2f1e"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBRNMMatchNormalIntensity" ref="a01320e43cb627fb5655bda7817cd2f1e" args="(ILBRenderPassHandle pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBRNMMatchNormalIntensity</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBRNMMatchNormalIntensity',false)">Search for all
+occurrences</a></div>
+<p>Scales the RNM values to the amplitude of the normal
+component.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a51">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a95e0f741d4f937d51b0d4f3b0d33018b"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetAllowNegative" ref="a95e0f741d4f937d51b0d4f3b0d33018b" args="(ILBRenderPassHandle pass, ILBRNMAllowNegative allow)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetAllowNegative</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc">ILBRNMAllowNegative</a>&nbsp;</td>
+<td class="paramname"><em>allow</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetAllowNegative',false)">Search for all
+occurrences</a></div>
+<p>Determines how the RNM pass handles light contributions that
+come from below the plane of the surface.</p>
+<p>In an ordinary illumination pass, such a light would yield a
+light contribution of 0. However, in the RNM pass the light can
+still affect one or two of the RNM basis components. This function
+determines whether negative RNM components will be taken into
+account as-is or clamped to 0.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">allow</td>
+<td>the allow value (default is ILB_AN_DISALLOW_CULL_HORIZON)</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a49">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a4">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a51193d5aa62550475f31c0b90100cc07"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetAOAdaptive" ref="a51193d5aa62550475f31c0b90100cc07" args="(ILBRenderPassHandle pass, float accuracy, float smooth)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetAOAdaptive</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>accuracy</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>smooth</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetAOAdaptive',false)">Search for all
+occurrences</a></div>
+<p>No support in physical rendering.</p>
+<p>Enables adaptivity on an AO pass</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass to enable adaptivity on, must be an AO pass</td>
+</tr>
+<tr>
+<td class="paramname">accuracy</td>
+<td>adaptive accuracy, default is 1</td>
+</tr>
+<tr>
+<td class="paramname">smooth</td>
+<td>smooth value, default is 1</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a35">examples/code/occlusion/occlusion.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a39">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ad8788bbbafd64342099152ac404f5f03"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetAOContrast" ref="ad8788bbbafd64342099152ac404f5f03" args="(ILBRenderPassHandle pass, float contrast, float scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetAOContrast</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>contrast</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetAOContrast',false)">Search for all
+occurrences</a></div>
+<p>Sets the contrast and scale of an AO pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the affected pass, must be an AO pass</td>
+</tr>
+<tr>
+<td class="paramname">contrast</td>
+<td>the desired contrast of the AO pass. Default = 1.0f</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>scale of occlusion values. Default = 1.0f</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a37">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a41">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a8">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a77ae79aa30453e1b5c2c824ac6afda7f"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetAONumRays" ref="a77ae79aa30453e1b5c2c824ac6afda7f" args="(ILBRenderPassHandle pass, int32 minRay, int32 maxRay)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetAONumRays</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>minRay</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>maxRay</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetAONumRays',false)">Search for all
+occurrences</a></div>
+<p>No support in physical rendering.</p>
+<p>Sets the number of rays to use in an AO pass</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the affected pass, must be an AO pass</td>
+</tr>
+<tr>
+<td class="paramname">minRay</td>
+<td>the minimum number of rays to sample for each point, default is
+64</td>
+</tr>
+<tr>
+<td class="paramname">maxRay</td>
+<td>the maximum number of rays to sample for each point, default is
+300</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a36">examples/code/occlusion/occlusion.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a40">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a2c7e9750b8ca0817583d49f7f296de27"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetAOSelfOcclusion" ref="a2c7e9750b8ca0817583d49f7f296de27" args="(ILBRenderPassHandle pass, ILBAOSelfOcclusion selfOcclusion)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetAOSelfOcclusion</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a">ILBAOSelfOcclusion</a>&nbsp;</td>
+<td class="paramname"><em>selfOcclusion</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetAOSelfOcclusion',false)">Search for all
+occurrences</a></div>
+<p>Sets how the AO pass should react to self occlusion.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the affected pass, must be an AO pass</td>
+</tr>
+<tr>
+<td class="paramname">selfOcclusion</td>
+<td>the self occlusion mode. Default is ILB_SO_ENABLED.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a39">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a43">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a10">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="afc887b914ff75213285173bb6cd33298"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetAOUniformSampling" ref="afc887b914ff75213285173bb6cd33298" args="(ILBRenderPassHandle pass)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetAOUniformSampling</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetAOUniformSampling',false)">Search for all
+occurrences</a></div>
+<p>Enables Uniform Sampling on an AO pass.</p>
+<p>When Uniform Sampling is enabled the sampling is not
+cos()-weighted.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the affected pass, must be an AO pass</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a38">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a42">include/beastapi/beastrenderpass.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastrenderpasswrapper_8cpp-example.html#a9">
+maya/beastmayaplugin/src/beastwrappers/beastrenderpasswrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="adc7b570a58e487fa5b7d5088a4aca422"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetLambertianClamp" ref="adc7b570a58e487fa5b7d5088a4aca422" args="(ILBRenderPassHandle pass, float val)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetLambertianClamp</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>val</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetLambertianClamp',false)">Search for all
+occurrences</a></div>
+<p>Enable lambertian clamp on an RNM pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">val</td>
+<td>the lambertian clamp value</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a48">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a71609144a15421439392d9ce80eb31d3"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetLambertianScale" ref="a71609144a15421439392d9ce80eb31d3" args="(ILBRenderPassHandle pass, float scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetLambertianScale</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetLambertianScale',false)">Search for all
+occurrences</a></div>
+<p>Sets the lambertian scale on a light pass.</p>
+<p><br />
+This configures the amount of lambertian reflectance (N * L) to be
+weighted into the resulting direct lighting. A scale of 1.0f will
+render the light that is reflected by the surface, just like the
+ordinary illumination pass. A scale of 0.0f renders the incoming
+light on the surface, disregarding the orientation from the surface
+to the light source. This can be useful if you want to do surface
+shading at a later stage. Please note that this makes sense to bake
+only for single light sources and only for direct lighting.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>the scale of influcence from lambertian reflectance (N*L)</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a29">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a2dc9ba10f419c629b6ea8801ee3136dc"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetNondirectionalScale" ref="a2dc9ba10f419c629b6ea8801ee3136dc" args="(ILBRenderPassHandle pass, float scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetNondirectionalScale</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetNondirectionalScale',false)">Search for all
+occurrences</a></div>
+<p>Scales the nondirectional influence of materials.</p>
+<p>Only supported by the RNM pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>the nondirectional scale factor.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a54">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a6b42987084f1ec2ad31c32147a9e0fb0"></a>
+<!-- doxytag: member="beastrenderpass.h::ILBSetResolutionScale" ref="a6b42987084f1ec2ad31c32147a9e0fb0" args="(ILBRenderPassHandle pass, float scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetResolutionScale</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetResolutionScale',false)">Search for all
+occurrences</a></div>
+<p>Scales the resolution on all texture targets for the pass.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">pass</td>
+<td>the pass</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>the resolution scale factor.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastrenderpass_8h-example.html#a53">include/beastapi/beastrenderpass.h</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beastrenderpass_8h_source.html">Go to the source code
+of this file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

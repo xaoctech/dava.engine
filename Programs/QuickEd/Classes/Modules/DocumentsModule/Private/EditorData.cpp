@@ -6,7 +6,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EditorData)
     DAVA::ReflectionRegistrator<EditorData>::Begin()
     .ConstructorByPointer()
     .Field(emulationModePropertyName.c_str(), &EditorData::emulationMode)
-    .Field(systemsManagerPropertyName.c_str(), &EditorData::GetSystemsManager, nullptr)
     .End();
 }
 
@@ -16,10 +15,9 @@ EditorData::EditorData()
 
 EditorData::~EditorData() = default;
 
-EditorSystemsManager* EditorData::GetSystemsManager()
+const EditorSystemsManager* EditorData::GetSystemsManager() const
 {
     return systemsManager.get();
 }
 
 DAVA::FastName EditorData::emulationModePropertyName{ "emulation mode" };
-DAVA::FastName EditorData::systemsManagerPropertyName{ "editor systems manager" };

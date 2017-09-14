@@ -72,6 +72,8 @@ private:
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
 
+    void OnEmulationModeChanged(bool mode);
+
     //previewWidget helper functions
     void ChangeControlText(ControlNode* node);
 

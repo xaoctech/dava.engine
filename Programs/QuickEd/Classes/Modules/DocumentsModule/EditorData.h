@@ -10,13 +10,12 @@ public:
     EditorData();
     ~EditorData() override;
     static DAVA::FastName emulationModePropertyName;
-    static DAVA::FastName systemsManagerPropertyName;
-
-    EditorSystemsManager* GetSystemsManager();
 
 private:
     friend class BaseEditorSystem;
     friend class DocumentsModule;
+
+    const EditorSystemsManager* GetSystemsManager() const;
 
     std::unique_ptr<EditorSystemsManager> systemsManager;
     bool emulationMode = false;

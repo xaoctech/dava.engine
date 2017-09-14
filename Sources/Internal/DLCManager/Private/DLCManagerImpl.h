@@ -23,7 +23,6 @@ public:
     MemoryBufferWriter(void* buff, size_t size)
     {
         DVASSERT(buff != nullptr);
-        DVASSERT(size > 0);
 
         start = static_cast<char*>(buff);
         current = start;
@@ -217,6 +216,7 @@ private:
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
+    void DumpToJsonProfilerTrace();
 
     enum class ScanState : uint32
     {

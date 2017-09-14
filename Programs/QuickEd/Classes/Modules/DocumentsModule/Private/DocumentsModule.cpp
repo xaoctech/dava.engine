@@ -3,7 +3,6 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/DocumentsModule/EditorData.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
-#include "UI/Preview/Data/CanvasData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -15,8 +14,6 @@
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
-#include "Classes/EditorSystems/PixelGrid.h"
-#include "Classes/EditorSystems/EditorControlsView.h"
 #include "Classes/EditorSystems/UserAssetsSettings.h"
 
 #include "Application/QEGlobal.h"
@@ -25,6 +22,7 @@
 #include "UI/mainwindow.h"
 #include "UI/ProjectView.h"
 #include "UI/Preview/PreviewWidget.h"
+#include "UI/Preview/PreviewWidgetSettings.h"
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
 #include "UI/UIControl.h"
@@ -68,7 +66,6 @@ DocumentsModule::DocumentsModule()
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SelectionSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ControlTransformationSettings);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PixelGridPreferences);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PreviewWidgetSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserAssetsSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PackageWidgetSettings);
@@ -138,6 +135,9 @@ void DocumentsModule::PostInit()
     CreateEditActions();
     CreateViewActions();
     CreateFindActions();
+
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    RegisterInterface(static_cast<Interfaces::EditorSystemsManagerInterface*>(systemsManager));
 }
 
 void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
@@ -183,8 +183,8 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    EditorSystemsManager* manager = accessor->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, manager);
+    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
@@ -195,7 +195,7 @@ void DocumentsModule::InitCentralWidget()
     //legacy part. Remove it when package will be refactored
     MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
 
-    QObject::connect(mainWindow, &MainWindow::EmulationModeChanged, previewWidget, &PreviewWidget::OnEmulationModeChanged);
+    connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
     QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);
     QObject::connect(previewWidget, &PreviewWidget::DeleteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDelete);
     QObject::connect(previewWidget, &PreviewWidget::ImportRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnImport);
@@ -210,20 +210,22 @@ void DocumentsModule::InitGlobalData()
     using namespace DAVA;
     using namespace TArc;
 
-    std::unique_ptr<DocumentsWatcherData> data(new DocumentsWatcherData());
-    connections.AddConnection(data->watcher.get(), &QFileSystemWatcher::fileChanged, MakeFunction(this, &DocumentsModule::OnFileChanged));
-    QApplication* app = PlatformApi::Qt::GetApplication();
-    connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
-
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    globalContext->CreateData(std::move(data));
+
+    std::unique_ptr<DocumentsWatcherData> watcherData(new DocumentsWatcherData());
+    connections.AddConnection(watcherData->watcher.get(), &QFileSystemWatcher::fileChanged, MakeFunction(this, &DocumentsModule::OnFileChanged));
+    QApplication* app = PlatformApi::Qt::GetApplication();
+    connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
+    globalContext->CreateData(std::move(watcherData));
 
     std::unique_ptr<EditorData> editorData(new EditorData());
     editorData->systemsManager = std::make_unique<EditorSystemsManager>(GetAccessor());
-    editorData->systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
-
     globalContext->CreateData(std::move(editorData));
+
+    EditorSystemsManager* systemsManager = globalContext->GetData<EditorData>()->systemsManager.get();
+    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
+    systemsManager->InitSystems();
 }
 
 void DocumentsModule::CreateDocumentsActions()
@@ -607,7 +609,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         {
             DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
-            initialData.emplace_back(new CanvasData());
             id = contextManager->CreateContext(std::move(initialData));
         }
     }
@@ -695,6 +696,11 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
     {
         data->SetSelectedNodes(foundNodes);
     }
+}
+
+void DocumentsModule::OnEmulationModeChanged(bool mode)
+{
+    GetAccessor()->GetGlobalContext()->GetData<EditorData>()->emulationMode = mode;
 }
 
 //TODO: generalize changes in central widget
@@ -1180,9 +1186,12 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
     DocumentData* documentData = activeContext->GetData<DocumentData>();
-    EditorData* editorData = accessor->GetGlobalContext()->GetData<EditorData>();
 
-    EditorSystemsManager::eDisplayState displayState = editorData->systemsManager->GetDisplayState();
+    DataContext* globalContext = accessor->GetGlobalContext();
+    EditorData* editorData = globalContext->GetData<EditorData>();
+    const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
+
+    EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
     if (displayState == EditorSystemsManager::Preview || displayState == EditorSystemsManager::Emulation)
     {
         PackageNode* package = documentData->GetPackageNode();

@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beasttexture.h Source File</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beasttexture_8h_source.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beasttexture.h Source File&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beasttexture.h Source
+File</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">beastapi/beasttexture.h</div>
+</div>
+</div>
+<div class="contents"><a href="beasttexture_8h.html">Go to the
+documentation of this file.</a>
+<div class="fragment">
+<pre class="fragment">
+<a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<a name="l00003"></a>00003 <span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<a name="l00004"></a>00004 <span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<a name="l00005"></a>00005 <span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<a name="l00006"></a>00006 <span class="comment">*/</span>
+<a name="l00007"></a>00007 
+<a name="l00008"></a>00008 
+<a name="l00012"></a>00012 <span class=
+"preprocessor">#ifndef BEASTTEXTURE_H</span>
+<a name="l00013"></a>00013 <span class=
+"preprocessor">#define BEASTTEXTURE_H</span>
+<a name="l00014"></a>00014 
+<a name="l00015"></a>00015 <span class=
+"preprocessor">#include "<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapitypes.h</a>"</span>
+<a name="l00016"></a>00016 
+<a name="l00017"></a>00017 
+<a name="l00018"></a>00018 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00019"></a>00019 <span class=
+"keyword">extern</span> <span class="stringliteral">"C"</span> {
+<a name="l00020"></a>00020 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00021"></a>00021 
+<a name="l00025"></a><a class="code" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537f">00025</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00029"></a><a class="code" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537fa4e632ef8d15de472a8da7340d9d1facf">00029</a>         <a class="code"
+href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537fa4e632ef8d15de472a8da7340d9d1facf"
+title=
+"Gamma ramp, will always be combined with a gamma value.">ILB_IG_GAMMA</a>,
+<a name="l00030"></a>00030         <span class=
+"comment">//ILB_TG_SRGB,</span>
+<a name="l00031"></a>00031 } <a class="code" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537f" title=
+"Gamma for input pixels data.">ILBImageGammaType</a>;
+<a name="l00032"></a>00032 
+<a name="l00036"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3">00036</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00040"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a12194f1625a0233c928889e47db72fe0">00040</a>         <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a12194f1625a0233c928889e47db72fe0"
+title="Monochrome floating point pixels.">ILB_PF_MONO_FLOAT</a>,
+<a name="l00044"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3afabf0b0240e9ddfaf4ab8ec763d052e9">00044</a>         <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3afabf0b0240e9ddfaf4ab8ec763d052e9"
+title="Color floating point pixels.">ILB_PF_RGB_FLOAT</a>,
+<a name="l00048"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a3402163b47ccf0c7f57696ab4040ee7a">00048</a>         <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a3402163b47ccf0c7f57696ab4040ee7a"
+title=
+"Color with alpha floating point pixels.">ILB_PF_RGBA_FLOAT</a>,
+<a name="l00052"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3aad5992a25edcbed487932f9cb28af25b">00052</a>         <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3aad5992a25edcbed487932f9cb28af25b"
+title="Monochrome byte pixels.">ILB_PF_MONO_BYTE</a>,
+<a name="l00056"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8">00056</a>         <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8"
+title="Color byte pixels.">ILB_PF_RGB_BYTE</a>,
+<a name="l00060"></a><a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748">00060</a>         <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748"
+title="Color with alpha byte pixels.">ILB_PF_RGBA_BYTE</a>,
+<a name="l00061"></a>00061 } <a class="code" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3" title=
+"Format for pixel data.">ILBPixelFormat</a>;
+<a name="l00062"></a>00062 
+<a name="l00073"></a>00073 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78"
+title="References in an external texture.">ILBReferenceTexture</a>(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager,
+<a name=
+"l00074"></a>00074                                                                            <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> uniqueName,
+<a name=
+"l00075"></a>00075                                                                            <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> filename,
+<a name=
+"l00076"></a>00076                                                                            <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>* target);
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078 
+<a name="l00093"></a>00093 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#a218a87ee822598e86003b25c4d956108"
+title="Begins creation of a texture.">ILBBeginTexture</a>(<a class=
+"code" href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager,
+<a name=
+"l00094"></a>00094                                                                    <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> uniqueName,
+<a name=
+"l00095"></a>00095                                                                    int32 width,
+<a name=
+"l00096"></a>00096                                                                    int32 height,
+<a name=
+"l00097"></a>00097                                                                    <a class="code"
+href="beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3"
+title="Format for pixel data.">ILBPixelFormat</a> inputFormat,
+<a name=
+"l00098"></a>00098                                                                    <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>* target);
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100 
+<a name="l00111"></a>00111 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#a6bd555f05562f16b62dfd859221220d5"
+title="Finds a cached texture.">ILBFindTexture</a>(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager,
+<a name=
+"l00112"></a>00112                                                                                 <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> uniqueName,
+<a name=
+"l00113"></a>00113                                                                                 <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>* target);
+<a name="l00114"></a>00114 
+<a name="l00131"></a>00131 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#a4fc283ac7977576dfb4bbd89b7efa1de"
+title="Adds pixels to a texture.">ILBAddPixelDataHDR</a>(<a class=
+"code" href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture,
+<a name=
+"l00132"></a>00132                                                                           <span class="keyword">const</span> <span class="keywordtype">float</span>* data,
+<a name=
+"l00133"></a>00133                                                                           int32 pixelCount);
+<a name="l00134"></a>00134 
+<a name="l00151"></a>00151 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#a899020e097cdd18e0e9fc6e4c144bc8c"
+title="Adds pixels to a texture.">ILBAddPixelDataLDR</a>(<a class=
+"code" href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture,
+<a name=
+"l00152"></a>00152                                                                         <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* data,
+<a name=
+"l00153"></a>00153                                                                         int32 pixelCount);
+<a name="l00154"></a>00154 
+<a name="l00161"></a>00161 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#ab3fc5a5b9823618ada51e95db0c3d917"
+title="Finalizes creation of a texture.">ILBEndTexture</a>(<a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture);
+<a name="l00162"></a>00162 
+<a name="l00173"></a>00173 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beasttexture_8h.html#aeb4462778d8120fba15a814bebb14f70"
+title="Sets what gamma encoding the colors in LDR texture has.">ILBSetInputGamma</a>(<a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture, <a class="code"
+href="beasttexture_8h.html#a07eaf015717168a5368efd47614a537f"
+title="Gamma for input pixels data.">ILBImageGammaType</a> type, <span class="keywordtype">float</span> gamma);
+<a name="l00174"></a>00174 
+<a name="l00175"></a>00175 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00176"></a>00176 }
+<a name="l00177"></a>00177 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00178"></a>00178 
+<a name="l00179"></a>00179 
+<a name="l00180"></a>00180 <span class=
+"preprocessor">#endif // BEASTTEXTURE_H</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

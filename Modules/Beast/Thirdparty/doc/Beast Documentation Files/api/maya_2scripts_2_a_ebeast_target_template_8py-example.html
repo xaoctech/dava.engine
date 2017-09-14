@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/scripts/AEbeastTargetTemplate.py</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2scripts_2_a_ebeast_target_template_8py-example.html','api_maya_2scripts_2_a_ebeast_target_template_8py_example_htmle314699f-e764-4817-9d78-11de46d7fb2c','index.html',location.hash); javascript:initPage('API: maya/scripts/AEbeastTargetTemplate.py','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2scripts_2_a_ebeast_target_template_8py-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/scripts/AEbeastTargetTemplate.py&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/scripts/AEbeastTargetTemplate.py</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/scripts/AEbeastTargetTemplate.py</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class=
+"comment"># Copyright 2013 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment"># Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment"># provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment"># accompanies this software in either electronic or hard copy form.</span>
+
+<span class="keyword">import</span> pymel.core
+<span class="keyword">import</span> pymel.core.general
+
+<span class=
+"keyword">class </span>AEbeastTargetTemplate(pymel.core.ui.AETemplate):
+        <span class="keyword">def </span>__init__(self, nodeName):
+                self.beginScrollLayout()
+                self.addControl(<span class=
+"stringliteral">"targetType"</span>, label=<span class=
+"stringliteral">"Target Type"</span>, changeCommand=self.targetTypeChanged)
+                self.addSeparator()
+                <span class="comment"># Texture properties</span>
+                self.beginLayout(<span class=
+"stringliteral">"Texture"</span>,collapse=0)
+                self.addControl(<span class=
+"stringliteral">"bakeUVSet"</span>, label=<span class=
+"stringliteral">"Default Bake UV Set"</span>)
+                self.addControl(<span class=
+"stringliteral">"atlasTarget"</span>, label=<span class=
+"stringliteral">"Atlas Target"</span>, changeCommand=self.onAtlasChanged)
+                self.addControl(<span class=
+"stringliteral">"textureResolution"</span>, label=<span class=
+"stringliteral">"Max Texture Resolution"</span>)
+                self.addControl(<span class=
+"stringliteral">"atlasPadding"</span>, label=<span class=
+"stringliteral">"Atlas Padding"</span>)
+                self.addControl(<span class=
+"stringliteral">"atlasRescale"</span>, label=<span class=
+"stringliteral">"Atlas Rescale"</span>, changeCommand=self.onAtlasRescaleChanged)
+                self.addControl(<span class=
+"stringliteral">"atlasThreshold"</span>, label=<span class=
+"stringliteral">"Rescale Freq. Threshold"</span>)
+                self.endLayout()
+                <span class="comment"># Filter properties</span>
+                self.beginLayout(<span class=
+"stringliteral">"World Space Filter"</span>, collapse=0)
+                self.addControl(<span class=
+"stringliteral">"enableDirectFilter"</span>, label=<span class=
+"stringliteral">"Filter Direct Illumination"</span>, changeCommand=self.onEnableDirectFilterChanged)
+                self.addControl(<span class=
+"stringliteral">"directFilterSize"</span>, label=<span class=
+"stringliteral">"Filter Size"</span>)
+                self.addControl(<span class=
+"stringliteral">"directFilterNormalDev"</span>, label=<span class=
+"stringliteral">"Normal Deviation"</span>)
+                self.addSeparator()
+                self.addControl(<span class=
+"stringliteral">"enableIndirectFilter"</span>, label=<span class=
+"stringliteral">"Filter Indirect Illumination"</span>, changeCommand=self.onEnableIndirectFilterChanged)
+                self.addControl(<span class=
+"stringliteral">"indirectFilterSize"</span>, label=<span class=
+"stringliteral">"Filter Size"</span>)
+                self.addControl(<span class=
+"stringliteral">"indirectFilterNormalDev"</span>, label=<span class="stringliteral">"Normal Deviation"</span>)
+                self.addSeparator()
+                self.addControl(<span class=
+"stringliteral">"enableOtherFilter"</span>, label=<span class=
+"stringliteral">"Filter Other Data"</span>, changeCommand=self.onEnableOtherFilterChanged)
+                self.addControl(<span class=
+"stringliteral">"otherFilterSize"</span>, label=<span class=
+"stringliteral">"Filter Size"</span>)
+                self.addControl(<span class=
+"stringliteral">"otherFilterNormalDev"</span>, label=<span class=
+"stringliteral">"Normal Deviation"</span>)
+                self.endLayout()
+                <span class="comment"># Pass properties</span>
+                self.callCustom(self.onPassDisplayNew, self.onPassDisplayUpdate, <span class="stringliteral">"passes"</span>)
+                <span class=
+"comment"># Base template for ObjectSet</span>
+                pymel.core.mel.AEobjectSetNoScroll(nodeName)
+                self.suppress(<span class=
+"stringliteral">"uniqueID"</span>)
+                self.addExtraControls()
+                self.endScrollLayout()
+
+        <span class=
+"keyword">def </span>targetTypeChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"atlasTarget"</span>, node.targetType.get() == 1)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"bakeUVSet"</span>, node.targetType.get() == 1)
+                self.onAtlasChanged(nodeName)
+
+        <span class=
+"keyword">def </span>onAtlasChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"textureResolution"</span>, node.targetType.get() == 1 <span class="keywordflow">or</span> node.atlasTarget.get() == 0)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"atlasPadding"</span>, node.targetType.get() == 1 <span class="keywordflow">or</span> node.atlasTarget.get() == 0)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"atlasRescale"</span>, node.targetType.get() == 1 <span class="keywordflow">or</span> node.atlasTarget.get() == 0)
+                self.onAtlasRescaleChanged(nodeName)
+
+        <span class=
+"keyword">def </span>onAtlasRescaleChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"atlasThreshold"</span>, node.targetType.get() == 1 <span class="keywordflow">or</span> node.atlasTarget.get() == 0 <span class="keywordflow">or</span> node.atlasRescale.get() == 0)
+
+        <span class=
+"keyword">def </span>onEnableFilterChanged(self, nodeName, component, dim):
+                self.dimControl(nodeName, component + <span class=
+"stringliteral">"FilterSize"</span>, dim)
+                self.dimControl(nodeName, component + <span class=
+"stringliteral">"FilterShape"</span>, dim)
+                self.dimControl(nodeName, component + <span class=
+"stringliteral">"FilterNormalDev"</span>, dim)
+
+        <span class=
+"keyword">def </span>onEnableDirectFilterChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                dim = node.enableDirectFilter.get() == 0
+                self.onEnableFilterChanged(nodeName, <span class=
+"stringliteral">"direct"</span>, dim)
+
+        <span class=
+"keyword">def </span>onEnableIndirectFilterChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                dim = node.enableIndirectFilter.get() == 0
+                self.onEnableFilterChanged(nodeName, <span class=
+"stringliteral">"indirect"</span>, dim)
+
+        <span class=
+"keyword">def </span>onEnableOtherFilterChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                dim = node.enableOtherFilter.get() == 0
+                self.onEnableFilterChanged(nodeName, <span class=
+"stringliteral">"other"</span>, dim)
+
+        <span class=
+"keyword">def </span>onPassDisplayNew(self, attrStr):
+                self.ctrls = []
+                <span class="comment"># create controls</span>
+                pymel.core.windows.setUITemplate(<span class=
+"stringliteral">"attributeEditorTemplate"</span>, pushTemplate=<span class="keyword">True</span>)
+                self.ctrls.append(pymel.core.windows.frameLayout(label=<span class="stringliteral">"Passes"</span>, collapse=0))
+                pymel.core.windows.columnLayout(adjustableColumn=<span class="keyword">True</span>)
+                self.createPassDropDown()
+                self.createPassTextList()
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>)
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>)
+                pymel.core.windows.setUITemplate(popTemplate=<span class="keyword">True</span>)
+                self.onPassDisplayUpdate(attrStr)
+
+        <span class="keyword">def </span>createPassDropDown(self):
+                pymel.core.windows.rowLayout(numberOfColumns=2, adjustableColumn=1, columnAttach2=(<span class="stringliteral">"right"</span>, <span class="stringliteral">"left"</span>), columnAlign=(2, <span class="stringliteral">"center"</span>))
+                self.passMenuGrp = pymel.core.windows.optionMenuGrp(label=<span class="stringliteral">"Add Pass"</span>)
+                <span class=
+"comment">#pymel.core.windows.menuItem(label="defaultBeastTextureTarget")</span>
+                self.newPassButton = pymel.core.windows.button(label=<span class="stringliteral">"New Pass"</span>, width=80, height=20)
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>)
+
+        <span class="keyword">def </span>createPassTextList(self):
+                self.passList = pymel.core.windows.textScrollList(allowMultiSelection=<span class="keyword">True</span>, height=100, doubleClickCommand=self.onDoubleClickPass)
+                self.removePassButton = pymel.core.windows.button(label=<span class="stringliteral">"Remove"</span>)
+
+        <span class=
+"keyword">def </span>onPassDisplayUpdate(self, attrStr):
+                self.populatePassMenu(attrStr)
+                self.populatePassList(attrStr)
+
+        <span class=
+"keyword">def </span>populatePassMenu(self, attrStr):
+                self.emptyPassMenu()
+                attr = pymel.core.general.Attribute(attrStr)
+                targetNode = attr.node()
+                allPasses = pymel.core.general.ls(type=<span class=
+"stringliteral">"beastPass"</span>)
+                connectedPasses = pymel.core.general.listConnections(str(targetNode) + <span class="stringliteral">".passes"</span>)
+                pymel.core.windows.setParent(self.passMenuGrp)
+                <span class="keywordflow">for</span> p <span class=
+"keywordflow">in</span> allPasses:
+                        <span class=
+"keywordflow">if</span> p <span class=
+"keywordflow">not</span> <span class=
+"keywordflow">in</span> connectedPasses:
+                                pymel.core.windows.menuItem(label=p)
+                self.passMenuGrp.changeCommand(pymel.core.Callback(self.onAddPass, attrStr))
+                self.newPassButton.setCommand(pymel.core.Callback(self.onNewPass, attrStr))
+
+        <span class="keyword">def </span>emptyPassMenu(self):
+                listOfMenuItems = pymel.core.windows.optionMenuGrp(self.passMenuGrp, query=<span class="keyword">True</span>, itemListLong=<span class="keyword">True</span>)
+                pymel.core.windows.setParent(str(self.passMenuGrp) + <span class="stringliteral">"|OptionMenu"</span>, menu=<span class="keyword">True</span>)
+                <span class=
+"keywordflow">for</span> item <span class=
+"keywordflow">in</span> listOfMenuItems:
+                        pymel.core.windows.deleteUI(item, menuItem=<span class="keyword">True</span>)
+
+        <span class="keyword">def </span>onAddPass(self, attrStr):
+                attr = pymel.core.general.Attribute(attrStr)
+                targetNode = attr.node()
+                passes = pymel.core.general.listConnections(str(targetNode) + <span class="stringliteral">".passes"</span>)
+                p = self.passMenuGrp.getValue()
+                <span class="keywordflow">if</span> p <span class=
+"keywordflow">in</span> passes:
+                        <span class="keywordflow">return</span>
+                <span class=
+"comment"># connect pass and target</span>
+                passNode = pymel.core.PyNode(p)
+                passNode.targets.connect(targetNode.passes, nextAvailable=<span class="keyword">True</span>) 
+                self.onPassDisplayUpdate(attrStr)
+
+        <span class="keyword">def </span>onNewPass(self, attrStr):
+                passNode = pymel.core.general.createNode(<span class="stringliteral">"beastPass"</span>, skipSelect=<span class="keyword">True</span>)
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"Created new Beast pass:"</span>, passNode
+                attr = pymel.core.general.Attribute(attrStr)
+                targetNode = attr.node()
+                passNode.targets.connect(targetNode.passes, nextAvailable=<span class="keyword">True</span>)
+                self.onPassDisplayUpdate(attrStr)
+        
+        <span class=
+"keyword">def </span>populatePassList(self, attrStr):
+                self.passList.removeAll()
+                attr = pymel.core.general.Attribute(attrStr)
+                node = attr.node()
+                passes = pymel.core.general.listConnections(str(node) + <span class="stringliteral">".passes"</span>)
+                self.passList.append(passes)
+                self.passList.deleteKeyCommand(pymel.core.Callback(self.onRemovePass, attrStr))
+                self.removePassButton.setCommand(pymel.core.Callback(self.onRemovePass, attrStr))
+
+        <span class=
+"keyword">def </span>onRemovePass(self, attrStr):
+                attr = pymel.core.general.Attribute(attrStr)
+                targetNode = attr.node()
+                selectedPasses = self.passList.getSelectItem()
+                <span class="keywordflow">for</span> p <span class=
+"keywordflow">in</span> selectedPasses:
+                        passNode = pymel.core.PyNode(p)
+                        passNode.targets.disconnect(targetNode.passes, nextAvailable=<span class="keyword">True</span>)
+                self.onPassDisplayUpdate(attrStr)
+
+        <span class="keyword">def </span>onDoubleClickPass(self):
+                selectedPasses = self.passList.getSelectItem()
+                <span class=
+"keywordflow">if</span> len(selectedPasses) &gt; 0:
+                        pymel.core.mel.showEditor(selectedPasses[0])
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
