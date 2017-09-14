@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057" />
+      <title>Creating Light Sources</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBSetLightTransform()", "../api/beastlightsource_8h.html#a5b7594e206c261e4b28a42151e70768a", "API"]); 
+reflinkdata.push(["ILBSetLightColor()", "../api/beastlightsource_8h.html#a772db085a4f1b2d4f98e78e0587d3d8d", "API"]); 
+reflinkdata.push(["ILBSetLightIntensity()", "../api/beastlightsource_8h.html#ad6a54067158baa1510c1fe57ab90bf1c", "API"]); 
+reflinkdata.push(["ILBSetCastShadows()", "../api/beastlightsource_8h.html#a5a4df1a9c5464fde3618d1b953357e3b", "API"]); 
+reflinkdata.push(["ILBSetIntensityScale()", "../api/beastlightsource_8h.html#a27beb7875c829e6c3fbe4fffe6393b2d", "API"]); 
+reflinkdata.push(["ILBSetLightExponentFalloff()", "../api/beastlightsource_8h.html#a2283254650fcf9ba204164f3412d1e5e", "API"]); 
+reflinkdata.push(["ILBSetLightMaxRangeFalloff()", "../api/beastlightsource_8h.html#a9fe9ebf5765ce92d61a0844624b3ac78", "API"]); 
+reflinkdata.push(["ILBSetLightPolynomialFalloff()", "../api/beastlightsource_8h.html#a7e4faad59ecedce853ed9f0f2ce497b2", "API"]); 
+reflinkdata.push(["ILBLightStats", "../api/beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853a", "API"]); 
+reflinkdata.push(["ILBSetLightStats()", "../api/beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8", "API"]); 
+reflinkdata.push(["ILBLightStatOperation", "../api/beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446", "API"]); 
+reflinkdata.push(["ILB_LSOP_DISABLE", "../api/beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a8a7cbb31b5b0ec84832a6a231f77844f", "API"]); 
+reflinkdata.push(["ILB_LSOP_ENABLE", "../api/beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a080ba9816cbce988c57024dc51e53276", "API"]); 
+reflinkdata.push(["ILBChangeLightType()", "../api/beastlightsource_8h.html#aac29ff03845abebbdc4f508423f69969", "API"]); 
+reflinkdata.push(["ILBCreatePointLight()", "../api/beastlightsource_8h.html#a18dbdf65ce6b68609609caea8df8f620", "API"]); 
+reflinkdata.push(["ILBSetShadowRadius()", "../api/beastlightsource_8h.html#a727de9f4b1ab1e33e23d94dab8e79cff", "API"]); 
+reflinkdata.push(["ILBSetLightRampEntry()", "../api/beastlightsource_8h.html#a23d0ee936cbfd4454f4c7850275c9a62", "API"]); 
+reflinkdata.push(["ILBCreateSpotLight()", "../api/beastlightsource_8h.html#ac670809149f4a6cfbb9a6fed48a8c62c", "API"]); 
+reflinkdata.push(["ILBSetSpotlightCone()", "../api/beastlightsource_8h.html#a1b9a66bbda4bb1b84028405cac5f9f97", "API"]); 
+reflinkdata.push(["ILBSetClippingPlanes()", "../api/beastlightsource_8h.html#a59b48b4e30c877228135bd657695db52", "API"]); 
+reflinkdata.push(["ILBSetLightProjectedTexture()", "../api/beastlightsource_8h.html#ae31119270e91668a18c14d899487ecaa", "API"]); 
+reflinkdata.push(["ILBCreateDirectionalLight()", "../api/beastlightsource_8h.html#a8ced5dd6f603ff9a82629f4e8e0bfc06", "API"]); 
+reflinkdata.push(["ILBSetShadowAngle()", "../api/beastlightsource_8h.html#a241e87acac4e6b2de274e224f4a9a44a", "API"]); 
+reflinkdata.push(["ILBCreateAreaLight()", "../api/beastlightsource_8h.html#a19211b284f14aa8e950dd5148d89393d", "API"]); 
+reflinkdata.push(["ILBCreateWindowLight()", "../api/beastlightsource_8h.html#a6451d16f84a33191333cfad658e2835b", "API"]); 
+reflinkdata.push(["ILBCreateSkyLight()", "../api/beastlightsource_8h.html#a9cf9e1a688ab5ec1ffa1fb74519b1a44", "API"]); 
+reflinkdata.push(["ILBSetSkyLightTexture()", "../api/beastlightsource_8h.html#af59d123c255edd4894ff9b11ff68199c", "API"]); 
+reflinkdata.push(["ILBSetSkyLightTextureFilter()", "../api/beastlightsource_8h.html#a1280f6365c390d723f8701ace5aafa72", "API"]); 
+reflinkdata.push(["ILBSetLightVolumeType()", "../api/beastlightsource_8h.html#a5fe7bbb22fbef033bb75f05142ba6bd2", "API"]); 
+reflinkdata.push(["ILBLightVolumeType", "../api/beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7", "API"]); 
+reflinkdata.push(["ILBCreateAmbientLight()", "../api/beastlightsource_8h.html#a5061a63c225138b6fc1884f00b879cbb", "API"]); 
+reflinkdata.push(["ILBLightHandle", "../api/struct_i_l_b_light_handle.html", "API"]); 
+reflinkdata.push(["beastlightsource.h", "../api/beastlightsource_8h.html", "API"]); 
+reflinkdata.push(["ILBDeleteLightSource()", "../api/beastlightsource_8h.html#a41519a99b86d5e36fd825f95a67d54c4", "API"]); 
+reflinkdata.push(["ILBSetLightStats", "../api/beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8", "API"]); 
+reflinkdata.push(["ILB_LS_VISIBLE_FOR_REFLECTIONS", "../api/beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa9a82b735fb4a137ba45c79c5634e01be", "API"]); 
+reflinkdata.push(["ILB_LS_VISIBLE_FOR_GI", "../api/beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa6c17d6ab5ace5c5a6871360a271b064b", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm',                           'd30e7439','index.html',location.hash);                           javascript:initPage('Creating Light Sources','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Light Sources&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating Classic Materials</div><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Creating a Scene</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Cameras</div><a href="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-27689FAF-DBC8-4C01-91A1-ECA30E0216B0"></a></span><h1>Creating Light Sources</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-8F3DDBB4-2440-4797-992C-ECAE9529E14C"></a></span> The term <em class="mild">light sources</em> refers to several different kinds of objects in your scene that emit light, including sky lights, point lights, spot lights,
+            etc. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-2B1BBA42-3C63-4AEB-AC9A-6543F952FFAD"></a></span>You can also make a material give off light by setting the color and scale of its emissive channel. This approach is typically
+            best for modeling large, dim light sources. Smaller, more intense lights are better represented using the point, area and
+            spot lights described on this page, to avoid noise in the final rendering. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_C75FBCF6162D4CFB86DC98815A8D57E6"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7452"></a><span class="anchor_wrapper"><a name="GUID-91F16120-339E-4DF1-8DC5-A97CB244CCBB"></a></span>Common light properties
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-FB7C5A16-4AC1-4251-819B-D68884A3C412"></a></span>All light sources share a basic set of properties, including those listed below. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_CC93539B65554A80A1B9E01F9B3862CF"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7460"></a><span class="anchor_wrapper"><a name="GUID-E2699F0E-9854-4995-9B74-12B6114D9FF9"></a></span>Matrix transform
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-16D38E97-5945-45F9-95D6-5CFFDFE671D6"></a></span>The matrix transform determines the translation, rotation and scaling of the light in the world space of the scene. Different
+                  types of light sources interpret these values differently. For instance, point lights emit light equally in all directions,
+                  so their orientation does not have any effect. Similarly, directional lights are intended to be so distant from a scene that
+                  their translation is not taken into account, only their orientation. Scaling values are used by area lights and window lights
+                  to set the rectangular dimensions, and are used by point lights and spot lights to set up the size of a color ramp. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-8ACB3F02-1DB1-419F-B3B4-084D4B94DC10"></a></span>This value is mandatory for all light sources; it is set when you create the light source. You can change it at any time by
+                  calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightTransform()'); return false;">ILBSetLightTransform()</a></span>. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_D0859AE2566D402D861E0C55ABA7EF56"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7475"></a><span class="anchor_wrapper"><a name="GUID-99048C15-08DF-4683-8385-00869C8F1D11"></a></span>Color intensity
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-BDED3A24-54BC-4DCD-B528-721218B00001"></a></span>Each light source has an RGB color value, which determines the color of the light rays it emits. This value is mandatory for
+                  all light sources; it is set when you create the light source. You can change it at any time by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightColor()'); return false;">ILBSetLightColor()</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-FAD5DC93-AFB2-4314-A83D-28EC18787310"></a></span> Each light source also has an intensity value, which scales the amount of light the light source emits. You can change it
+                  at any time by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightIntensity()'); return false;">ILBSetLightIntensity()</a></span>. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_DDAF42A2E22D4EDD8E17B4AC8FB4E291"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7493"></a><span class="anchor_wrapper"><a name="GUID-EB8EA54C-80AF-414E-AAA4-D5D9BADC2CA9"></a></span>Shadow-casting properties
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-707CC57C-AF17-44AF-93D8-2E8A095ED50D"></a></span>All lights can cast shadows. By default, shadow casting is disabled for all lights. You can toggle shadow casting on and off
+                  by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetCastShadows()'); return false;">ILBSetCastShadows()</a></span>. Different types of light sources may also offer additional controls over the way they generate shadows; for details, see
+                  <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_8BF8C1C161694BAC85DFAE72ACA9A85C">Types of light sources</a></span> below. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_4BEA984C244040A6BC2073C12C7CB164"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7509"></a><span class="anchor_wrapper"><a name="GUID-8B9F238D-C88D-43BE-BDE3-B4C4630AA774"></a></span>Direct and indirect intensity scales
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-575757F3-C12B-4C10-9F31-B165B0E2A8E5"></a></span>Each light offers separate scale controls for its direct light and its indirect light. You can use these scales to control
+                  the contribution of each type of light relative to each other, or relative to the other light sources in your scene. Both
+                  of these scale values are set through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetIntensityScale()'); return false;">ILBSetIntensityScale()</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-6628857E-1C45-4A48-B24A-D60B1AE10C0F"></a></span>For example, a common use of these scales is to create lightmaps that contain only the indirect light contribution from the
+                  light source, while all direct lighting is calculated at runtime instead. This allows the game to combine the benefits of
+                  real-time dynamic shadowing with the benefits of baked indirect lighting: color bleeding, high performance, etc. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_E933521745F442BFAA4A08B2837014D5"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7524"></a><span class="anchor_wrapper"><a name="GUID-4A7169D2-C643-4498-A913-3631FABC4F2B"></a></span>Falloff
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-0F31947D-215D-45EB-8FE7-5DDF6838DFB1"></a></span>Some types of lights (including point lights, area lights, spot lights and window lights) cast light rays that get weaker
+                  with distance. The relationship between the attenuation of the light and the distance from the source is called the <em class="mild">falloff</em>. Beast offers three types of falloff: 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-BAF89353-BB4A-4ECB-8DAA-3320A4EF2DDB"></a></span> <span class="anchor_wrapper"><a name="UL_B93BF203CA99414691A538E8FE7D5B1A"></a></span><ul>
+                     <li><em class="mild">Exponent</em> calculates falloff based purely on the distance from the source, and clips any contributions at a distance greater than a
+                        maximum range cutoff. You can set up this kind of falloff through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightExponentFalloff()'); return false;">ILBSetLightExponentFalloff()</a></span>. 
+                     </li>
+                     <li><em class="mild">Max Range</em> calculates falloff based on a maximum range setting so that the light diminishes gracefully as it approaches the range cutoff.
+                        You can set up this kind of falloff through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightMaxRangeFalloff()'); return false;">ILBSetLightMaxRangeFalloff()</a></span>. 
+                     </li>
+                     <li><em class="mild">Polynomial</em> allows you to specify three coefficients (a constant, a linear, and a quadratic) that are used to calculate the falloff.
+                        The equation used is as follows, where r represents the distance to the light source: 
+                        <div class="codeBlock"><pre class="prettyprint">falloff = ( 1 / (Constant + Linear * r + Quadratic * r <sup>2</sup> ))</pre></div>You can set up this kind of falloff through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightPolynomialFalloff()'); return false;">ILBSetLightPolynomialFalloff()</a></span>. 
+                     </li>
+                  </ul> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_8DBB38CE9DF74F549DD3BFD7E1B87C4B"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7568"></a><span class="anchor_wrapper"><a name="GUID-DE661D65-DEDF-4BBD-933B-9E69EC5761AA"></a></span>Light stats
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-A221BB3B-41C2-43B8-A87E-C3001B33E3B1"></a></span>Light stats determine whether or not a light source is taken into account during different types of rendering and lighting
+                  calculations. For example, you can specify for each light source whether or not it should be visible in reflections and refractions,
+                  etc. The full set of controls are listed in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightStats'); return false;">ILBLightStats</a></span> enumeration. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-03171A0B-AACE-4BE6-9E53-68087F3ADD83"></a></span>To customize the light stats for a light source, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightStats()'); return false;">ILBSetLightStats()</a></span> function. You provide this function with: 
+               </p> <span class="anchor_wrapper"><a name="UL_DCA5492309A7410582DC4EB88A724447"></a></span><ul>
+                  <li>A bitmask composed from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightStats'); return false;">ILBLightStats</a></span> enumeration that specifies the render stats that you want to modify. 
+                  </li>
+                  <li>A value from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightStatOperation'); return false;">ILBLightStatOperation</a></span> enumeration that indicates whether you want to enable the light stats you have identified. May be <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LSOP_DISABLE'); return false;">ILB_LSOP_DISABLE</a></span> to disable the specified light stats, or <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LSOP_ENABLE'); return false;">ILB_LSOP_ENABLE</a></span> to enable them. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-9769C23B-4366-4D0F-A1A9-CB3F364C9491"></a></span>For example: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightStats'); return false;">ILBSetLightStats</a>(lightSource, 
+                         <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LS_VISIBLE_FOR_REFLECTIONS'); return false;">ILB_LS_VISIBLE_FOR_REFLECTIONS</a> | <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LS_VISIBLE_FOR_GI'); return false;">ILB_LS_VISIBLE_FOR_GI</a>, 
+                         <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LSOP_DISABLE'); return false;">ILB_LSOP_DISABLE</a>);</pre></div> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_8BF8C1C161694BAC85DFAE72ACA9A85C"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7611"></a><span class="anchor_wrapper"><a name="GUID-BC0F7CE5-E29D-491A-A9F8-FB82C8B580CD"></a></span>Types of light sources
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-82EB3075-66AC-45CE-9546-28EC297C5E57"></a></span><span class="charspan-msgph" translate="no">Beast</span> supports several different types of light sources to model different models of light emission. Each type of light source
+               has its own characteristics and properties that can be controlled using the functions listed in the following sections. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-531A7A80-0418-4B89-892B-962C4AAF6268"></a></span>At the time you create the light source, you determine its type. Each type of light source is created by a different API function.
+               You can change the type of the light source at any time after its creation by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBChangeLightType()'); return false;">ILBChangeLightType()</a></span>. The only properties preserved during the change are the transform matrix and color. All other properties of the old light
+               source type are discarded; all properties of the new light source type are set to default values. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_34FDFBC1CE1D4010A2A8370D1C8FA391"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7627"></a><span class="anchor_wrapper"><a name="GUID-B6D65C4E-D63A-4198-88A4-24D0088C0E3A"></a></span>Point lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-537EFE7C-3924-49CF-A1EA-BE20EEE3F07D"></a></span>A point light, sometimes called an omni light, is a point in 3D space that emits light equally in all directions. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-7C7D68AE-A252-414C-8C1A-64BC423625A5"></a></span>To create a point light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePointLight()'); return false;">ILBCreatePointLight()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-08D24EA2-C31E-49A1-9430-ABEFF377B10F"></a></span>In addition to the controls described under <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span> above, you can set the following properties for point lights: 
+               </p> <span class="anchor_wrapper"><a name="UL_853531B0D14C4ED8AC236CB8E1C786B6"></a></span><ul>
+                  <li>You can control the softness of the shadows cast by the point light by setting the effective radius of the light in world
+                     space.The default value is 0, which treats the light as a zero-dimensional point that casts the sharpest possible shadows.
+                     Larger values will cast softer, more gentle shadows. You can set the radius through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShadowRadius()'); return false;">ILBSetShadowRadius()</a></span>. 
+                  </li>
+                  <li>You can set up a ramp of colors that will be applied to the rays emitted from the point light as they propagate through space.
+                     You set up this color ramp by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightRampEntry()'); return false;">ILBSetLightRampEntry()</a></span> one or more times to set the color value used at different positions along the ramp. See the function description for details.
+                     
+                  </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_8F349F1C1C6D4B75A6DCC32114EFB79C"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7660"></a><span class="anchor_wrapper"><a name="GUID-D3D6FFB5-F2D4-4243-AD87-AB7A1BF7EEB9"></a></span>Spot lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-2BBC7451-8CC5-4A90-9947-C9E0F7112A86"></a></span>A spot light is a point in 3D space that emits light only within a defined cone. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-3B115742-DF0A-4A66-96DE-41AB707FAD4C"></a></span>By default, spot lights are oriented to point in the negative direction of the Y axis; you can control this by setting a rotation
+                  in the matrix transform you apply to the light. See also <span class="char_link"><a href="GUID-4832F702-D95A-4FBC-B8E5-E3C7853DD8E7.htm">The Beast Coordinate System</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-8A0F3FD9-E846-4C5C-A959-FEA426B56558"></a></span>To create a spot light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateSpotLight()'); return false;">ILBCreateSpotLight()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-156DA9B0-5CD1-4ADF-9599-627C7C28322A"></a></span>In addition to the controls described under <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span> above, you can set the following properties for spot lights: 
+               </p> <span class="anchor_wrapper"><a name="UL_4D6BA7E6EB9046C69CB8FE689201CC88"></a></span><ul>
+                  <li>You can set the angular width of the spot light cone in a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetSpotlightCone()'); return false;">ILBSetSpotlightCone()</a></span>. 
+                  </li>
+                  <li>You can set the angular width of the <em class="mild">penumbra</em>: the shadowy region at the edge of the spot cone. You can also set an exponent that controls how rapidly the light fades
+                     away in the penumbra as you move from the center of the spot to the outside of the cone. These values are also set in a call
+                     to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetSpotlightCone()'); return false;">ILBSetSpotlightCone()</a></span>. 
+                  </li>
+                  <li>You can control the softness of the shadows cast by the spot light by setting the effective radius of the light in world space.
+                     The default value is 0, which treats the light as a zero-dimensional point that casts the sharpest possible shadows. Larger
+                     values will cast softer, more gentle shadows. You can set the radius through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShadowRadius()'); return false;">ILBSetShadowRadius()</a></span>. 
+                  </li>
+                  <li>You can set up a ramp of colors that will be applied to the rays emitted from the spot light as they propagate through space.
+                     You set up this color ramp by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightRampEntry()'); return false;">ILBSetLightRampEntry()</a></span> one or more times to set the color value used at different positions along the ramp. See the function description for details.
+                     
+                  </li>
+                  <li>You can set near and far clipping planes by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetClippingPlanes()'); return false;">ILBSetClippingPlanes()</a></span>. This restricts the effects of the light to objects that lie between the near plane and the far plane. 
+                  </li>
+                  <li>You can make the spot light project a texture, or a <em class="mild">gobo</em>, by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightProjectedTexture()'); return false;">ILBSetLightProjectedTexture()</a></span>. The U and V axes of the texture are always mapped to the local X and Z axes of the light source respectively. 
+                  </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_AD69872595B14FB5B40F312736B619F1"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7727"></a><span class="anchor_wrapper"><a name="GUID-F8AC8E61-2F59-4102-BFDE-16A93E3B9AA8"></a></span>Directional lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-99E1B9B2-C095-42FF-B33D-7962DA07AE74"></a></span>A directional light, or sun light, is a distant light source whose rays light the scene at a constant angle with no falloff.
+                  
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-1120A9A1-C752-4F70-B236-84CB79573BB9"></a></span>By default, directional lights are oriented to point in the negative direction of the Y axis; you can control this by setting
+                  a rotation in the matrix transform you apply to the light. See also <span class="char_link"><a href="GUID-4832F702-D95A-4FBC-B8E5-E3C7853DD8E7.htm">The Beast Coordinate System</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-032F0240-FBFE-4AD1-99BA-3521313935DB"></a></span>To create a directional light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateDirectionalLight()'); return false;">ILBCreateDirectionalLight()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-CA8268DA-C97F-4CC5-A463-D7CE141DD183"></a></span>In addition to the controls described under <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span> above, you can set the following properties for directional lights: 
+               </p> <span class="anchor_wrapper"><a name="UL_4A8CA53E78E242E1977BB7B843EA70DA"></a></span><ul>
+                  <li>You can control the softness of the shadows cast by the directional light by setting the angle of sky occupied by the light
+                     source. The default value is 0, which treats the light as a zero-dimensional point that casts the sharpest possible shadows.
+                     Larger values will cast softer, more gentle shadows. You can set the radius through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShadowAngle()'); return false;">ILBSetShadowAngle()</a></span>. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-8C0C2C95-A724-4ACD-B229-6228AE49F03B"></a></span>Directional lights have no falloff; therefore, their rays do not diminish in brightness as they propagate through space. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_9509049D587248A4850B936409B33193"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7765"></a><span class="anchor_wrapper"><a name="GUID-CBE0493B-56A9-4E81-A07F-0E3C2A751B9D"></a></span>Area lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-38D4C9AA-9AB5-496B-9193-6F175391A485"></a></span>An area light is a planar rectangle that emits light from one face. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-C7268822-F880-4C79-B573-6872320FC033"></a></span>By default, area lights are oriented to point in the negative direction of the Y axis; you can control this by setting a rotation
+                  in the matrix transform you apply to the light. See also <span class="char_link"><a href="GUID-4832F702-D95A-4FBC-B8E5-E3C7853DD8E7.htm">The Beast Coordinate System</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-317C1BBF-A5B1-40BE-893F-1CB2E454A5FE"></a></span>To create an area light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateAreaLight()'); return false;">ILBCreateAreaLight()</a></span> function. The size of the rectangle is set by the scaling values you set in the transform matrix you provide to this function.
+                  By default, it extends from (-1, -1) to (1, 1). 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_3683BD14A5434841B95FC2C98CCD6B83"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7786"></a><span class="anchor_wrapper"><a name="GUID-CE777288-6BBA-43F4-A1B9-5E4210DF0694"></a></span>Window lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-3F34477B-3384-4689-8C98-2DF3CD36D729"></a></span>A window light simulates a beam of directional light coming through a rectangular window. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-E1A4425C-A403-4805-926F-4541FBD3E389"></a></span>By default, window lights are oriented to point in the negative direction of the Y axis; you can control this by setting a
+                  rotation in the matrix transform you apply to the light. See also <span class="char_link"><a href="GUID-4832F702-D95A-4FBC-B8E5-E3C7853DD8E7.htm">The Beast Coordinate System</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-3EE75469-4AB8-4282-84E5-0090DC3BF0DD"></a></span>To create a window light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateWindowLight()'); return false;">ILBCreateWindowLight()</a></span> function. The size of the rectangle is set by the scaling values you set in the transform matrix you provide to this function.
+                  By default, it extends from (-1, -1) to (1, 1). 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-696B1D35-C29C-4DA5-93FD-7041771B0008"></a></span>In addition to the controls described under <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span> above, you can set the following properties for window lights: 
+               </p> <span class="anchor_wrapper"><a name="UL_E90060A496B0440ABDEE58E9845088DB"></a></span><ul>
+                  <li>You can control the softness of the shadows cast by the window by setting the angle of sky occupied by the light source. The
+                     default value is 0, which treats the light as a zero-dimensional point that casts the sharpest possible shadows. Larger values
+                     will cast softer, more gentle shadows. You can set the radius through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShadowAngle()'); return false;">ILBSetShadowAngle()</a></span>. 
+                  </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_DD5A83356474465C95B6578BBA3416D8"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7821"></a><span class="anchor_wrapper"><a name="GUID-08F77570-BD91-44F3-A5C1-01FD370CC197"></a></span>Sky lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-9C8C490E-3332-44C7-BCC4-33A13D0874F0"></a></span>A sky light is a light source that can surround the entire scene or a defined volume within the scene. It can light the scene
+                  with a constant color, or colors derived from a texture. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-4B1F0B96-3F9B-48BC-8C09-4C23BDA68AD2"></a></span>To create a sky light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateSkyLight()'); return false;">ILBCreateSkyLight()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-6DADF211-18C3-4FEB-9801-25D930C5988D"></a></span>In addition to the controls described under <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span> above, you can set the following properties for sky lights: 
+               </p> <span class="anchor_wrapper"><a name="UL_2912DECBF7094A4E86818177D9F00ECC"></a></span><ul>
+                  <li>You can set a texture for the sky light by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetSkyLightTexture()'); return false;">ILBSetSkyLightTexture()</a></span>. If you set a texture, the light emitted by the sky is colored according to the pixels in the texture. The rotation of the
+                     transform matrix controls the orientation of the texture relative to the scene. 
+                  </li>
+                  <li>When using a texture, you can reduce noise in global illumination by blurring the texture a little through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetSkyLightTextureFilter()'); return false;">ILBSetSkyLightTextureFilter()</a></span>. 
+                  </li>
+                  <li>You can control the volume affected by the sky light by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightVolumeType()'); return false;">ILBSetLightVolumeType()</a></span>. You pass an element of the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightVolumeType'); return false;">ILBLightVolumeType</a></span> enumeration to indicate the type of volume you want the sky light to occupy: an infinite volume that surrounds the whole
+                     scene, a sphere, or a cube. The position and size of the latter two volume types are defined by the translation and scaling
+                     values you set in the transform matrix. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-1807E678-67C5-49E8-A10B-5F3E0F7463F2"></a></span>Sky lights have no falloff; therefore, their rays do not diminish in brightness as they propagate through space. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_8A6D29594537447D99F2CB8DA7DB3A48"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7866"></a><span class="anchor_wrapper"><a name="GUID-A50A9743-FE13-42C7-A9C0-F5CC54B14753"></a></span>Ambient lights
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-556BA33A-0B5D-4DC7-8414-BEC6E78FC930"></a></span>An ambient light is a light source that applies equally to all surfaces in the scene, regardless of their orientation or occlusion.
+                  
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-683FFA00-99B4-4BB2-92E8-27E4A7678E2C"></a></span>To create an ambient light, use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateAmbientLight()'); return false;">ILBCreateAmbientLight()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-0CC13D6F-0B41-4033-BAEB-FE47300D4C52"></a></span>In addition to the controls described under <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span> above, you can set the following properties for ambient lights: 
+               </p> <span class="anchor_wrapper"><a name="UL_FA4A4C011B4A4CA0AB8771D2511ED424"></a></span><ul>
+                  <li>You can control the volume affected by the ambient light by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLightVolumeType()'); return false;">ILBSetLightVolumeType()</a></span>. You pass an element of the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightVolumeType'); return false;">ILBLightVolumeType</a></span> enumeration to indicate the type of volume you want the ambient light to occupy: an infinite volume that surrounds the whole
+                     scene, a sphere, or a cube. The position and size of the latter two volume types are defined by the translation and scaling
+                     values you set in the transform matrix. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-65B00A68-CE30-45D5-B6D4-3EA0E0895EDF"></a></span>Ambient lights have no falloff; therefore, their rays do not diminish in brightness as they propagate through space. 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_360978F1B8BF41A682C61E9A93D034E5"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7901"></a><span class="anchor_wrapper"><a name="GUID-DE9A2B92-274B-4940-91C3-47D89A745D21"></a></span>Setting up a light source
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-2F0C2B4A-F841-4512-9A93-7B62A28AA3C1"></a></span>You can only set up a light source in the context of setting up a scene. See also <span class="char_link"><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-7302EA3B-7D59-448B-84AB-FBEB1AFBDB40"></a></span>To set up a light source: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_4AC046A842CB444B80DD60E2A6CDAA77"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightHandle'); return false;">ILBLightHandle</a></span>. 
+               </li>
+               <li>Initialize the light source by calling the <span class="code" translate="no">ILBCreate...()</span> function that corresponds to the type of light source you want to create. See <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_8BF8C1C161694BAC85DFAE72ACA9A85C">Types of light sources</a></span> to types above. In your call, you have to specify the handle of the scene that will contain your light source, the matrix
+                  transform and intensity of the light. See <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_C75FBCF6162D4CFB86DC98815A8D57E6">Common light properties</a></span>. 
+               </li>
+               <li>Set up the properties of the light source using the <span class="code" translate="no">ILBSet..()</span> functions defined in <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastlightsource.h'); return false;">beastlightsource.h</a></span>. For details on which functions can be used for which different types of light sources, see <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm#SECTION_8BF8C1C161694BAC85DFAE72ACA9A85C">Types of light sources</a></span> above and the function descriptions in the API Reference. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-C7F82CC3-2843-4D94-94FC-40EF7C581CD1"></a></span>You do not have to close or finalize a light source in order to use it in a rendering pass. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-494DE315-FC30-47BD-B6E1-4D5E1001911A"></a></span>For example, the following code sets up a point light with a yellow color: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">ILBLightHandle lh;
+ILBCreatePointLight(scene, _T("Light"), matrix, ILBColorRGB(3.2f, 3.0f, 0.2f), &amp;lh);
+
+// Set a soft shadow
+ILBSetCastShadows(lh, true);
+ILBSetShadowRadius(lh, 1.0f);
+ILBSetShadowSamples(lh, 32); // not needed for physical materials, only for "classic" materials
+
+// Set a falloff
+ILBSetFalloff(lh, ILB_FO_EXPONENT, 2.0f, 20.0f, true);
+</pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_FC519BD9AA8E42B5BBABED309555A114"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7954"></a><span class="anchor_wrapper"><a name="GUID-AE192F2F-1539-4963-BE24-D77D161EBC75"></a></span>Deleting a light source
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-07E085B2-17AC-4F92-A740-C13FCA01D68A"></a></span>When you run a live eRnsT session, you can delete a light source from your scene by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBDeleteLightSource()'); return false;">ILBDeleteLightSource()</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5599068625C9430CBF4637D858681849"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7965"></a><span class="anchor_wrapper"><a name="GUID-72C41867-84E4-4451-80E2-9574BF970A65"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-181E1455-3106-443B-A3FA-2056DE2864C5"></a></span>You should only operate on a given light source from one thread at a time. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3F5B017701174750A97671D77741018A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7973"></a><span class="anchor_wrapper"><a name="GUID-E231BECA-5701-4173-AE85-2C242A11C289"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-F491BCA3-7194-4C58-B4B2-93C76B8056E6"></a></span>API functions related to the creation and setup of light sources are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastlightsource.h'); return false;">beastlightsource.h</a></span> file. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

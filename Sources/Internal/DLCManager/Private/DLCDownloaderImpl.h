@@ -3,6 +3,7 @@
 #include "DLCManager/DLCDownloader.h"
 #include "Concurrency/Thread.h"
 #include "Concurrency/Semaphore.h"
+#include "Debug/ProfilerCPU.h"
 
 #include <curl/curl.h>
 
@@ -90,7 +91,7 @@ struct DLCDownloader::Task
 class DLCDownloaderImpl : public DLCDownloader, public ICurlEasyStorage
 {
 public:
-    DLCDownloaderImpl();
+    explicit DLCDownloaderImpl(const Hints& hints_);
     ~DLCDownloaderImpl();
 
     DLCDownloaderImpl(const DLCDownloaderImpl&) = delete;
@@ -179,5 +180,6 @@ private:
     Semaphore downloadSem; // to resume download thread
 
     Hints hints; // read only params
+    ProfilerCPU unusedProfiler;
 };
 } // end namespace DAVA

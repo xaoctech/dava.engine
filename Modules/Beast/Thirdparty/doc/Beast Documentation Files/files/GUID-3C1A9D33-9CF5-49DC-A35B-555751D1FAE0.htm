@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055" />
+      <title>Using the Cache</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILB_CS_GLOBAL", "../api/beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128ba3fe944eafda8c16dc3e6bfab7345389d", "API"]); 
+reflinkdata.push(["ILBCreateManager()", "../api/beastmanager_8h.html#aeb36a8136fb38c84b0a40368f2f9b259", "API"]); 
+reflinkdata.push(["ILBFindMesh()", "../api/beastmesh_8h.html#a1c52fe9db53e4b783d8563957e077bca", "API"]); 
+reflinkdata.push(["ILBFindTexture()", "../api/beasttexture_8h.html#a6bd555f05562f16b62dfd859221220d5", "API"]); 
+reflinkdata.push(["ILBFindMaterial()", "../api/beastmaterial_8h.html#a71daf4692f979d84f4c09f74ed4e1ca1", "API"]); 
+reflinkdata.push(["ILB_ST_UNKNOWN_OBJECT", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a6fbb043e3fe736aae9db9b78689bb32f", "API"]); 
+reflinkdata.push(["ILBClearCache()", "../api/beastmanager_8h.html#a8fee8b5f9aeb42ce1331b7b5e6630024", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm',                           'd30e10253','index.html',location.hash);                           javascript:initPage('Using the Cache','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Using the Cache&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Retrieving the Rendered Output</div><a href="GUID-66113B54-02C9-4F7F-8F0E-FFEB466DC342.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Integrating the Beast API</div><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating UVs for Meshes</div><a href="GUID-BB1E6549-0663-4EFC-8B06-F27253E87FF3.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-9A8D9530-9EC1-4E3C-8747-68B142380883"></a></span><h1>Using the Cache</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-328BE2A0-9DF8-46A0-B42D-AC1402F5C120"></a></span>As introduced under <span class="char_link"><a href="GUID-98C027F7-24AF-47E6-99D8-B2BACAE42DC4.htm">Initializing and Terminating Beast</a></span>, most calls to the <span class="charspan-msgph" translate="no">Beast</span> API are done within the context of a <span class="charspan-msgph" translate="no">Beast</span> Manager, which handles memory management and object creation tasks. Each <span class="charspan-msgph" translate="no">Beast</span> Manager stores records of objects such as meshes and textures in a file cache. You may be able to increase the speed of your
+            baking by re-using the meshes and textures from the cache rather than re-creating them from their corresponding game objects
+            each time you render a level. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-D1DC575E-96D5-4780-AEFE-7B93CD751699"></a></span>You can re-use these objects in two ways: 
+         </p><span class="anchor_wrapper"><a name="UL_EF6E0F2F4AF74F6ABC20DF92CE4550AD"></a></span><ul>
+            <li>Over successive rendering jobs. For example, the first time you bake lighting for a level in your game, you create <span class="charspan-msgph" translate="no">Beast</span> representations of all your meshes and textures. If you tweak some configuration parameters and want to re-bake the lighting
+               for the level, the next time you create the <span class="charspan-msgph" translate="no">Beast</span> scene you can retrieve the meshes and textures generated in the previous run. 
+            </li>
+            <li>Over simultaneous rendering jobs in different threads. If you have different <span class="charspan-msgph" translate="no">Beast</span> Managers in different threads running jobs in parallel that rely on the same meshes and textures, you can make those <span class="charspan-msgph" translate="no">Beast</span> Managers share a cache and retrieve those shared objects from the cache. 
+            </li>
+         </ul>
+         <p><span class="anchor_wrapper"><a name="GUID-42F8E158-5CBD-49C6-B669-7745EA7C221E"></a></span>The contents of your cache can also aid <span class="charspan-msgph" translate="no">Autodesk</span> support in diagnosing problems or unexpected results that you may encounter when using <span class="charspan-msgph" translate="no">Beast</span>. You may be asked to provide your cache, so that support engineers can attempt to reproduce your problem using the same set
+            of data. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_6BC7F7B6D2EE4CEAADF4BE97AA63ED05"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10300"></a><span class="anchor_wrapper"><a name="GUID-78D07AED-4878-4E05-A907-FA0CC0BB2FFB"></a></span>Setting up cache sharing
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-BB678615-0EA2-45C0-A3B1-3CD8F09360C3"></a></span>In order for a <span class="charspan-msgph" translate="no">Beast</span> Manager to be able to share meshes and textures that were added to the cache by a different <span class="charspan-msgph" translate="no">Beast</span> Manager: 
+            </p> <span class="anchor_wrapper"><a name="UL_C5D261E154A546BC9D66913B2444D539"></a></span><ul>
+               <li>Both <span class="charspan-msgph" translate="no">Beast</span> Managers that you want to share the cache must use the same cache directory. 
+               </li>
+               <li>Both <span class="charspan-msgph" translate="no">Beast</span> Managers must be set to use the global scope (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CS_GLOBAL'); return false;">ILB_CS_GLOBAL</a></span>). 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-BF390BC9-9D7E-40C5-ABFD-EB1209EEF2FF"></a></span>These values are set when the <span class="charspan-msgph" translate="no">Beast</span> Manager is created. See the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateManager()'); return false;">ILBCreateManager()</a></span> function. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-1777836D-FBCD-4D04-9BDB-DAA25203E9CB"></a></span>Note that both <span class="charspan-msgph" translate="no">Beast</span> Managers need to have access to read, write and delete files in the cache directory. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_DABF2BDCD49344A790760B101DEC4F9B"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10344"></a><span class="anchor_wrapper"><a name="GUID-EE7542B9-4F86-48E6-BB74-D25E5536E777"></a></span>Finding cached objects
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-FEC77777-2E93-45BB-ADC3-2FE90C870FBA"></a></span>You can retrieve an object from the cache by the unique name that you specified at the time the object was created. You can
+               retrieve: 
+            </p> <span class="anchor_wrapper"><a name="UL_1BE4A86E1E0948A6A30EEF4349058531"></a></span><ul>
+               <li>Meshes, by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBFindMesh()'); return false;">ILBFindMesh()</a></span>. 
+               </li>
+               <li>Textures, by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBFindTexture()'); return false;">ILBFindTexture()</a></span>. 
+               </li>
+               <li>Materials, by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBFindMaterial()'); return false;">ILBFindMaterial()</a></span>. Note that materials can only be used within the context of the same scene in which they were initially created, and scenes
+                  are not persisted in the cache. Materials therefore cannot be re-used once the scene has been destroyed. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-836C18BB-8DA4-4819-A7C1-3D2C7BBD72C2"></a></span>Each of the functions listed above requires you to provide a pointer to a handle of the appropriate type. If an object of
+               the requested type with the specified name is found in the cache, the handle you provide is updated to point to the retrieved
+               object. If no matching object could be found in the cache, the handle is not updated and the function returns <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_ST_UNKNOWN_OBJECT'); return false;">ILB_ST_UNKNOWN_OBJECT</a></span>. Your code should handle this case by re-creating the object from scratch from the corresponding game object. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_81237B00B4DC410AA21538188FC0CECF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10375"></a><span class="anchor_wrapper"><a name="GUID-CB7DFDC0-CF9A-435E-9783-DED657B4F16F"></a></span>Invalidating cached objects
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-DD3A8A1B-528E-43A6-915D-E5F7EE19BD90"></a></span>All cached objects can be removed (invalidated) by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBClearCache()'); return false;">ILBClearCache()</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-E48933A3-EA5F-4FC1-88D1-A536F91617A0"></a></span>If any other resource in the same <span class="charspan-msgph" translate="no">Beast</span> Manager is currently referring to the object you try to erase (e.g. if a scene contains the texture that you want to erase),
+               your call will fail. However, note that if any object handles exist that already refer to the erased object, those handles
+               will be invalidated. Any further use of those handles will cause undefined behavior. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_8CCECC5C86C84141B9E82C8DE0651EDF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10392"></a><span class="anchor_wrapper"><a name="GUID-A8A77D31-2B95-4160-B1D3-75DEC95DF733"></a></span>Updating cached objects
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-9F8830AE-2F94-496D-9653-CD23DF61E46F"></a></span>If the source of an object that exists in the cache is changed in your level design tool or game editor, you need to introduce
+               a mechanism to ensure that you do not keep re-using the cached version of the object the next time you render your scene.
+               You can either: 
+            </p> <span class="anchor_wrapper"><a name="UL_6D20CEAAE298493D9E6E1B16D525CB32"></a></span><ul>
+               <li>Invalidate the cached object each time the corresponding object in the level editor is changed. Your code that sets up the
+                  <span class="charspan-msgph" translate="no">Beast</span> scene should detect that the object is not available in the cache, and therefore re-create it from the current level content.
+                  
+               </li>
+               <li>Embed a unique ID, revision number or modification timestamp in your game objects, which you retrieve when you create the
+                  unique names that you assign to your <span class="charspan-msgph" translate="no">Beast</span> meshes and textures. Each time you build a <span class="charspan-msgph" translate="no">Beast</span> scene and look for an object in the cache, you will therefore be guaranteed to retrieve the <span class="charspan-msgph" translate="no">Beast</span> representation that matches the current version of the game object in the level editor. Using this approach guarantees that
+                  you never have a mismatch between the objects in your game level and the objects read from the cache, even if you load earlier
+                  versions of the game level into your level editor. 
+               </li>
+            </ul> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
