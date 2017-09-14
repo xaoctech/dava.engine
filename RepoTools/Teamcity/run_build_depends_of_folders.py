@@ -48,6 +48,13 @@ def __run_build( args, triggering_options = [] ):
         if framework_branch and '/from' in framework_branch:
             framework_branch = framework_branch.replace('/from', '/merge')
 
+    else:
+        if client_branch and '/merge' in client_branch:
+            client_branch = client_branch.replace('/merge', '/from')
+
+        if framework_branch and '/merge' in framework_branch:
+            framework_branch = framework_branch.replace('/merge', '/from')
+
     properties = {}
     if client_branch and client_branch != '<default>':
         properties = {'config.client_branch': client_branch}

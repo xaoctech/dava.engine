@@ -1,0 +1,594 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html','api_maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp_example_htmlf2ac2ddb-1a48-4a6c-a672-edcbefe67ef4','index.html',location.hash); javascript:initPage('smaya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2beastwrappers_2beastjobwrapper_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/src/beastwrappers/beastjobwrapper.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class=
+"preprocessor">#include "beastwrappers/beastjobwrapper.h"</span>
+
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttarget_8h.html" title=
+"The target definitions.">beastapi/beasttarget.h</a>&gt;</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttargetwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastcamerawrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastrenderpasswrapper.h"</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+BeastTargetPtr BeastJob::createTextureTarget( <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, int32 width, int32 height )
+{
+        <a name="_a0"></a><a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> handle;
+        BEAST_CALL(<a name="a1"></a><a class="code" href=
+"beasttarget_8h.html#a409692f3e607da5b2757b75c75fe2413" title=
+"Adds a texture baking target to a job.">ILBCreateTextureTarget</a>(obj(), name, width, height, &amp;handle));
+        <span class=
+"keywordflow">return</span> BeastTargetPtr(<span class=
+"keyword">new</span> BeastTarget(handle));
+}
+
+BeastTargetPtr BeastJob::createAtlasedTextureTarget( <a class=
+"code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, int32 maxWidth, int32 maxHeight, int32 maxTextures, <span class="keywordtype">bool</span> rescale, <span class="keywordtype">float</span> threshold )
+{
+        <a class="code" href="struct_i_l_b_target_handle.html"
+title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> handle;
+        BEAST_CALL(<a name="a2"></a><a class="code" href=
+"beasttarget_8h.html#a9cfccd68a82309763fa51fbdc046b736" title=
+"Adds an atlased texture baking target to a job.">ILBCreateAtlasedTextureTarget</a>(obj(), name, maxWidth, maxHeight, maxTextures, &amp;handle));
+        <span class="keywordflow">if</span> (rescale) {
+                BEAST_CALL(<a name="a3"></a><a class="code" href=
+"beasttarget_8h.html#ae88b2433331057e9f3ff62a4a05f7cad" title=
+"Enables automatic rescaling of instances in the atlas based on frequency information from the baked l...">ILBEnableAtlasRescale</a>(handle));
+                BEAST_CALL(<a name="a4"></a><a class="code" href=
+"beasttarget_8h.html#a0ec918aad3a2b8bf7ef5284e93e1f7ff" title=
+"Sets the frequency cutoff for the atlas rescale mode.">ILBSetAtlasRescaleFrequencyThreshold</a>(handle, threshold));
+        }
+        <span class=
+"keywordflow">return</span> BeastTargetPtr(<span class=
+"keyword">new</span> BeastTarget(handle));
+}
+
+BeastTargetPtr BeastJob::createVertexTarget( <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name )
+{
+        <a class="code" href="struct_i_l_b_target_handle.html"
+title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> handle;
+        BEAST_CALL(<a name="a5"></a><a class="code" href=
+"beasttarget_8h.html#a02a3067604f5ac729d6ddf533fc3c3a2" title=
+"Adds a vertex baking target.">ILBCreateVertexTarget</a>(obj(), name, &amp;handle));
+        <span class=
+"keywordflow">return</span> BeastTargetPtr(<span class=
+"keyword">new</span> BeastTarget(handle));
+}
+
+BeastTargetPtr BeastJob::createCameraTarget( <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, BeastCamera&amp; camera, int32 width, int32 height, <span class="keywordtype">bool</span> cameraRender )
+{
+        <a class="code" href="struct_i_l_b_target_handle.html"
+title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> handle;
+        BEAST_CALL(<a name="a6"></a><a class="code" href=
+"beasttarget_8h.html#ab91c63b59f1ad10a213890f69a1de72f" title=
+"Adds a camera render target to a job.">ILBCreateCameraTarget</a>(obj(), name, camera.obj(), width, height, &amp;handle));
+        BEAST_CALL(<a name="a7"></a><a class="code" href=
+"beasttarget_8h.html#a44202f61302b6d0d11dca72ae1f44c01" title=
+"Dictates which camera render mode used.">ILBCameraTargetSetRenderMode</a>(handle, cameraRender?<a name="a8"></a><a class="code"
+href=
+"beasttarget_8h.html#a768fe5fcafc3adaa45e3fb49d82631d9a5a6e9ba4ab6ee236bed45056c24495a5"
+title=
+"Return frame buffers containing a full shaded per pixel version of the camera view I...">ILB_LEC_CAMERA_PER_PIXEL_LIGHTING</a>:<a name="a9"></a><a class="code"
+href=
+"beasttarget_8h.html#a768fe5fcafc3adaa45e3fb49d82631d9a9a979295abcf425b5fc3f44803b3ce1f"
+title=
+"Return frame buffers containing a full shaded light mapped version of the camera view I...">ILB_LEC_CAMERA_LIGHT_MAP_LIGHTING</a>));
+        <span class=
+"keywordflow">return</span> BeastTargetPtr(<span class=
+"keyword">new</span> BeastTarget(handle));
+}
+
+BeastRenderPassPtr BeastJob::createFullShadingPass( <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name )
+{
+        <a name="_a10"></a><a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> h;
+        BEAST_CALL(<a name="a11"></a><a class="code" href=
+"beastrenderpass_8h.html#ad16bdfe42814a2538c0c974ea79ec715" title=
+"Creates a Full Shading render pass.">ILBCreateFullShadingPass</a>(obj(), name, &amp;h));
+        <span class=
+"keywordflow">return</span> BeastRenderPassPtr(<span class=
+"keyword">new</span> BeastRenderPass(h));
+}
+
+BeastRenderPassPtr BeastJob::createIlluminationPass( <a class=
+"code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, <a class=
+"code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a> mode )
+{
+        <a class="code" href="struct_i_l_b_render_pass_handle.html"
+title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> h;
+        BEAST_CALL(<a name="a12"></a><a class="code" href=
+"beastrenderpass_8h.html#ad0c96c4fec277646dab3674b931c2cfd" title=
+"Creates an Illumination render pass.">ILBCreateIlluminationPass</a>(obj(), name, mode, &amp;h));
+        <span class=
+"keywordflow">return</span> BeastRenderPassPtr(<span class=
+"keyword">new</span> BeastRenderPass(h));
+}
+
+BeastRenderPassPtr BeastJob::createLuaPass( <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, <a class=
+"code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> script )
+{
+        <a class="code" href="struct_i_l_b_render_pass_handle.html"
+title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> h;
+        BEAST_CALL(<a name="a13"></a><a class="code" href=
+"beastrenderpass_8h.html#a4325115669829001bbad46707487b5c4" title=
+"Creates a LUA pass.">ILBCreateLuaPass</a>(obj(), name, script, &amp;h));
+        <span class=
+"keywordflow">return</span> BeastRenderPassPtr(<span class=
+"keyword">new</span> BeastRenderPass(h));
+}
+
+BeastAmbientOcclusionPassPtr BeastJob::createAmbientOcclusionPass( <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title=
+"Beast api const string type.">ILBConstString</a> name, <span class="keywordtype">float</span> maxDistance, <span class="keywordtype">float</span> coneAngle )
+{
+        <a class="code" href="struct_i_l_b_render_pass_handle.html"
+title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> h;
+        BEAST_CALL(<a name="a14"></a><a class="code" href=
+"beastrenderpass_8h.html#a6b867c7cb0101d7f28870ef50fbd3c97" title=
+"Creates an Ambient Occlusion render pass.">ILBCreateAmbientOcclusionPass</a>(obj(), name, maxDistance, coneAngle, &amp;h));
+        <span class=
+"keywordflow">return</span> BeastAmbientOcclusionPassPtr(<span class="keyword">new</span> BeastAmbientOcclusionPass(h));
+}
+
+BeastLightPassPtr BeastJob::createLightPass( <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, <a class=
+"code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf" title=
+"Light Pass Type.">ILBLightPassType</a> type )
+{
+        <a class="code" href="struct_i_l_b_render_pass_handle.html"
+title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> h;
+        BEAST_CALL(<a name="a15"></a><a class="code" href=
+"beastrenderpass_8h.html#a75f19f8d7eaba6ce1f2350e5fcecd1bb" title=
+"Creates a Light render pass.">ILBCreateLightPass</a>(obj(), name, type, &amp;h));
+        <span class=
+"keywordflow">return</span> BeastLightPassPtr(<span class=
+"keyword">new</span> BeastLightPass(h));
+}
+
+BeastRNMPassPtr BeastJob::createRNMPass( <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, <a class=
+"code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a> mode, <a class="code"
+href="beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15"
+title="RNM Basis.">ILBRNMBasis</a> basis )
+{
+        <a class="code" href="struct_i_l_b_render_pass_handle.html"
+title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> h;
+        BEAST_CALL(<a name="a16"></a><a class="code" href=
+"beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6" title=
+"Creates an RNM render pass.">ILBCreateRNMPass</a>(obj(), name, mode, 0, basis, &amp;h));
+        <span class=
+"keywordflow">return</span> BeastRNMPassPtr(<span class=
+"keyword">new</span> BeastRNMPass(h));
+}
+
+<span class="keywordtype">void</span> BeastJob::start( <a class=
+"code" href="beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0"
+title=
+"Sets how to handle the Beast window when rendering.">ILBShowResults</a> sr, <a class="code"
+href="beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2" title=
+"Sets how beast should render distributed.">ILBDistributionType</a> dt )
+{
+        BEAST_CALL(<a name="a17"></a><a class="code" href=
+"beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8" title=
+"Starts a job.">ILBStartJob</a>(obj(), sr, dt));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::waitDone( <span class=
+"keywordtype">int</span> timeout )
+{
+        BEAST_CALL(<a name="a18"></a><a class="code" href=
+"beastjob_8h.html#a5098930e9e25f74f9a36b7c57e8fdc55" title=
+"Waits until a job is done or until there is progress updates.">ILBWaitJobDone</a>(obj(), timeout));
+}
+
+<span class="keywordtype">bool</span> BeastJob::isRunning()
+{
+        <a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813" title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> isRunning = <span class="keyword">true</span>;
+        BEAST_CALL(<a name="a19"></a><a class="code" href=
+"beastjob_8h.html#aab1c21d554bd70197ef70d76be8c46ac" title=
+"Checks if the job is running.">ILBIsJobRunning</a>(obj(), &amp;isRunning));
+        <span class="keywordflow">return</span> (isRunning != 0);
+}
+
+<a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a> BeastJob::getResult()
+{
+        <a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a> res;
+        BEAST_CALL(<a name="a20"></a><a class="code" href=
+"beastjob_8h.html#af2b42bfe51b1ae4b46f6ccd1e292dba7" title=
+"Returns the result of the job as a JobStatus.">ILBGetJobResult</a>(obj(), &amp;res));
+        <span class="keywordflow">return</span> res;
+}
+
+<span class="keywordtype">bool</span> BeastJob::hasUpdate()
+{
+        <a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813" title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> hasUpdate;
+        BEAST_CALL(<a name="a21"></a><a class="code" href=
+"beastjob_8h.html#a0d5762fda4d20fac1ec419ab9c3ff73a" title=
+"Checks if a job has a new update and retrieves it.">ILBGetJobUpdate</a>(obj(), &amp;hasUpdate, &amp;m_uh));
+        <span class="keywordflow">return</span> (hasUpdate != 0);
+}
+
+<a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a> BeastJob::updateType()
+{
+        <a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a> updateType;
+        BEAST_CALL(<a name="a22"></a><a class="code" href=
+"beastjob_8h.html#aad63bf4ebd2d2adbd09da011901748c2" title=
+"Gets the type of update.">ILBGetJobUpdateType</a>(m_uh, &amp;updateType));
+        <span class="keywordflow">return</span> updateType;
+}
+
+<a name="_a23"></a><a class="code" href=
+"struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> BeastJob::getUpdateHandle() {
+        <span class="keywordflow">return</span> m_uh;
+}
+
+<span class="keywordtype">void</span> BeastJob::destroyUpdate()
+{
+        BEAST_CALL(<a name="a24"></a><a class="code" href=
+"beastjob_8h.html#aca61aa7f5a3bced77f1a43dd273901a9" title=
+"Destroys a job update.">ILBDestroyUpdate</a>(m_uh));
+}
+
+<span class=
+"keywordtype">bool</span> BeastJob::hasProgress(<span class=
+"keywordtype">bool</span>&amp; newActivity, <span class=
+"keywordtype">bool</span>&amp; newProgress) {
+        <a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813" title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> _newActivity, _newProgress;
+        BEAST_CALL(<a name="a25"></a><a class="code" href=
+"beastjob_8h.html#a09ba4786a9be629ae8f83f418fe38d43" title=
+"Checks if the progress of a Job has been updated since the last time ILBGetJobProgress was called...">ILBJobHasNewProgress</a>(obj(), &amp;_newActivity, &amp;_newProgress));
+        newActivity = _newActivity != 0;
+        newProgress = _newProgress != 0;
+        <span class=
+"keywordflow">return</span> newActivity || newProgress;
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::getProgress(std::wstring&amp; taskName, <span class="keywordtype">int</span>&amp; progress) {
+        <a name="_a26"></a><a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> _taskName;
+        int32 _progress;
+        BEAST_CALL(<a name="a27"></a><a class="code" href=
+"beastjob_8h.html#aea220bd754153ffafc87ba440793e892" title=
+"Gets the current status of a job.">ILBGetJobProgress</a>(obj(), &amp;_taskName, &amp;_progress));
+        taskName = BeastString(_taskName).asWString();
+        progress = _progress;
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setErnstDisplayGamma( <span class="keywordtype">float</span> displayGamma ) {
+        BEAST_CALL(<a name="a28"></a><a class="code" href=
+"beastjob_8h.html#a3b620cd0523152ab23eb3ffefe8d49bc" title=
+"Sets the display gamma for the Ernst editor.">ILBSetErnstDisplayGamma</a>(obj(), displayGamma));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setErnstDirectIllumination( <span class="keywordtype">float</span> scale )
+{
+        BEAST_CALL(<a name="a29"></a><a class="code" href=
+"beastjob_8h.html#aed0365d41663f51d7dbf4582afbdf734" title=
+"Sets the amount of direct illumination to use in a Live Ernst job.">ILBSetErnstDirectIllumination</a>(obj(), scale));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setErnstIndirectIllumination( <span class="keywordtype">float</span> scale )
+{
+        BEAST_CALL(<a name="a30"></a><a class="code" href=
+"beastjob_8h.html#afaa17868cb90cf6922f665364be87f4f" title=
+"Sets the amount of indirect illumination to use in a Live Ernst job.">ILBSetErnstIndirectIllumination</a>(obj(), scale));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setErnstDiffuseBoost( <span class="keywordtype">float</span> boost )
+{
+        BEAST_CALL(<a name="a31"></a><a class="code" href=
+"beastjob_8h.html#ae5fd67aa889802d364f7476bfd3da760" title=
+"Sets the GI diffuse boost in a Live Ernst job.">ILBSetErnstGIDiffuseBoost</a>(obj(), boost));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setErnstEmissiveScale( <span class="keywordtype">float</span> scale )
+{
+        BEAST_CALL(<a name="a32"></a><a class="code" href=
+"beastjob_8h.html#a5f2f5675ea97d6f88b001d36b7fa7d5c" title=
+"Sets the GI emissive scale in a Live Ernst job.">ILBSetErnstGIEmissiveScale</a>(obj(), scale));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setRenderMaxDepth(<span class=
+"keywordtype">int</span> depth) {
+        BEAST_CALL(<a name="a33"></a><a class="code" href=
+"beastjob_8h.html#a70223d84464a93188b0cfed18fb42116" title=
+"Sets the GI depth in a Live Ernst job.">ILBSetErnstGIDepth</a>(obj(), 1, depth));
+        BEAST_CALL(<a name="a34"></a><a class="code" href=
+"beastjob_8h.html#aa8778c64a9ef66e0c1bbf95987bedcbd" title=
+"Sets the minimum and maximum number of light bounces to use for rendering.">ILBSetJobRenderDepth</a>(obj(), 1, depth));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setRenderQuality(<span class=
+"keywordtype">float</span> quality) {
+        BEAST_CALL(<a name="a35"></a><a class="code" href=
+"beastjob_8h.html#a6e4e8546ad5c0e0c0965dfdb350ac4f8" title=
+"Sets the render quality to use for a job.">ILBSetJobRenderQuality</a>(obj(), quality));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setRenderSamples(<span class=
+"keywordtype">int</span> minSamples, <span class=
+"keywordtype">int</span> maxSamples, <span class=
+"keywordtype">float</span> varianceThreshold) {
+        BEAST_CALL(<a name="a36"></a><a class="code" href=
+"beastjob_8h.html#a2c25424b816e17f2bdbafa20da12df0d" title=
+"Explicitly sets the sampling settings to use for a job.">ILBSetJobRenderSamples</a>(obj(), minSamples, maxSamples, varianceThreshold));
+}
+
+beastmaya::BeastTargetPtr BeastJob::createUVUnwrapTarget( <a class=
+"code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name, <span class="keywordtype">float</span> texelPerWorldUnit, <span class="keywordtype">float</span> segmentationThreshold, <span class="keywordtype">float</span> unwrapFlatness, <span class="keywordtype">float</span> straightness, <span class="keywordtype">float</span> compactness ) {
+        <a class="code" href="struct_i_l_b_target_handle.html"
+title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> handle;
+        BEAST_CALL(<a name="a37"></a><a class="code" href=
+"beasttarget_8h.html#af8d6eb7e3a8a0a2422fcdee3216e7bd0" title=
+"Adds an UV unwrap target to a job.">ILBCreateUVUnwrapTarget</a>(obj(), name, texelPerWorldUnit, &amp;handle));
+        BEAST_CALL(<a name="a38"></a><a class="code" href=
+"beasttarget_8h.html#a71da55429a23ff429df5a485ec3826d3" title=
+"Sets the threshold used when segmenting the mesh into charts for unwrapping.">ILBSetUVUnwrapSegmentationThreshold</a>(handle, segmentationThreshold));
+        BEAST_CALL(<a name="a39"></a><a class="code" href=
+"beasttarget_8h.html#a0e31b14eada3d1d98fbeabf4e5c71505" title=
+"Sets a weight for the importance of having flat charts.">ILBSetUVUnwrapFlatness</a>(handle, unwrapFlatness));
+        BEAST_CALL(<a name="a40"></a><a class="code" href=
+"beasttarget_8h.html#aac8dcc9ee035bbfe20f770e0a17c38d1" title=
+"Sets a weight for the importance of having straight chart boundaries.">ILBSetUVUnwrapStraightness</a>(handle, straightness));
+        BEAST_CALL(<a name="a41"></a><a class="code" href=
+"beasttarget_8h.html#a52c3064830176eb906962d4158f88326" title=
+"Sets a weight for the importance of having compact (round) charts.">ILBSetUVUnwrapCompactness</a>(handle, compactness));
+        <span class=
+"keywordflow">return</span> BeastTargetPtr(<span class=
+"keyword">new</span> BeastTarget(handle));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setErnstVarianceThreshold(<span class="keywordtype">float</span> threshold) {
+        BEAST_CALL(<a name="a42"></a><a class="code" href=
+"beastjob_8h.html#a262f4913dcff6fae0c03e2852915418f" title=
+"Sets the variance threshold in a Live Ernst job.">ILBSetErnstVarianceThreshold</a>(obj(), threshold));
+}
+
+<span class=
+"keywordtype">void</span> BeastJob::setCausticsMode(ECausticsModeType mode) {
+        BEAST_CALL(<a name="a43"></a><a class="code" href=
+"beastjob_8h.html#add50e31b2711d273a4a66767e689418d" title=
+"Enables or disables caustics in physical rendering.">ILBSetCausticsMode</a>(obj(), (<a class="code"
+href="beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183" title=
+"Controls the type of caustics to include in physical rendering (both Ernst and Beast)">ILBCausticsModeType</a>)mode));
+}
+
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
