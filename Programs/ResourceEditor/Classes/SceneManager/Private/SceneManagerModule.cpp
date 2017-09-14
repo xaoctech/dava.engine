@@ -502,9 +502,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
         undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
 
-        undo->setShortcutContext(Qt::ApplicationShortcut);
-        undo->setAutoRepeat(false);
-        undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+        KeyBindableActionInfo info;
+        info.blockName = "Scene modification";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::Key_Z));
+        info.readOnly = true;
+        MakeActionKeyBindable(undo, info);
 
         connections.AddConnection(undo, &QAction::triggered, [this]() {
             ContextAccessor* accessor = GetAccessor();
@@ -526,9 +529,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
         redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
 
-        redo->setShortcutContext(Qt::ApplicationShortcut);
-        redo->setAutoRepeat(false);
-        redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        KeyBindableActionInfo info;
+        info.blockName = "Scene modification";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        info.readOnly = true;
+        MakeActionKeyBindable(redo, info);
 
         connections.AddConnection(redo, &QAction::triggered, [this]() {
             ContextAccessor* accessor = GetAccessor();
