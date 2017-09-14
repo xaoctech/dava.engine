@@ -289,7 +289,8 @@ DeviceInfo::NetworkInfo DeviceInfoPrivate::GetNetworkInfo()
     // This is true for wi-fi too
     if (connectedState & INTERNET_CONNECTION_LAN)
     {
-        networkInfo.networkType = DeviceInfo::eNetworkType::NETWORK_TYPE_ETHERNET;
+        // Set wi-fi type anyway, since it is more informative for us
+        networkInfo.networkType = DeviceInfo::eNetworkType::NETWORK_TYPE_WIFI;
     }
     else
     {
