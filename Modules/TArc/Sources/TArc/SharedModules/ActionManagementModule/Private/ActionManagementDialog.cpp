@@ -5,6 +5,8 @@
 #include "TArc/Controls/ComboBox.h"
 #include "TArc/Controls/LineEdit.h"
 #include "TArc/Controls/ReflectedButton.h"
+#include "TArc/Qt/QtSize.h"
+#include "TArc/Qt/QtIcon.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Base/GlobalEnum.h>
@@ -17,6 +19,7 @@
 #include <QItemSelectionModel>
 #include <QItemSelection>
 #include <QKeyEvent>
+#include <QKeySequenceEdit>
 
 ENUM_DECLARE(Qt::ShortcutContext)
 {
@@ -29,10 +32,70 @@ namespace DAVA
 {
 namespace TArc
 {
+namespace ActionManagementDialogDetail
+{
+bool HasModif(int key)
+{
+    return (key & Qt::CTRL) == Qt::CTRL ||
+    (key & Qt::ALT) == Qt::ALT ||
+    (key & Qt::SHIFT) == Qt::SHIFT ||
+    (key & Qt::META) == Qt::META;
+}
+
+int ExtractKey(int key)
+{
+    return (key & (~(Qt::CTRL | Qt::ALT | Qt::SHIFT | Qt::META)));
+}
+
+int ExtractModif(int key)
+{
+    int extractedKey = ExtractKey(key);
+    return key ^ extractedKey;
+}
+
+bool IsFunctionalKey(int key)
+{
+    return key >= Qt::Key_F1 && key <= Qt::Key_F12;
+}
+
+bool IsDigit(int key)
+{
+    return key >= Qt::Key_0 && key <= Qt::Key_9;
+}
+
+bool IsLetter(int key)
+{
+    return key >= Qt::Key_A && key <= Qt::Key_Z;
+}
+
+bool IsSpecialAllowedSymbol(int key)
+{
+    if (key >= Qt::Key_Colon && key <= Qt::Key_At)
+    {
+        return true;
+    }
+
+    if (key >= Qt::Key_BracketLeft && key <= Qt::Key_BraceRight)
+    {
+        return true;
+    }
+
+    if (key == Qt::Key_BraceLeft && key == Qt::Key_BraceRight)
+    {
+        return true;
+    }
+
+    return false;
+}
+}
+
 ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIManager* ui_)
     : accessor(accessor_)
     , ui(ui_)
 {
+    setWindowTitle("Key Bindings");
+    setWindowFlags(Qt::Tool);
+
     Reflection model = Reflection::Create(ReflectedObject(this));
     QtVBoxLayout* layout = new QtVBoxLayout(this);
 
@@ -113,12 +176,52 @@ ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIMan
         currentSequencesLayout->addWidget(comboBox->ToWidgetCast(), 1, 0, 1, 1);
     }
     {
-        LineEdit::Params params(accessor, ui, mainWindowKey);
-        params.fields[LineEdit::Fields::Text] = "shortcutText";
-        params.fields[LineEdit::Fields::IsEnabled] = "shortcutEnabled";
-        LineEdit* lineEdit = new LineEdit(params, accessor, model, this);
-        lineEdit->ToWidgetCast()->installEventFilter(this);
-        currentSequencesLayout->addWidget(lineEdit->ToWidgetCast(), 1, 1, 1, 1);
+        sequenceEdit = new QKeySequenceEdit(this);
+        connections.AddConnection(sequenceEdit, &QKeySequenceEdit::keySequenceChanged, [this](const QKeySequence& seq) {
+
+            using namespace ActionManagementDialogDetail;
+            QKeySequence inputSequence = seq;
+            DAVA::Array<int, 4> correctedKeys;
+            correctedKeys.fill(0);
+            DAVA::Vector<QChar> incorrectKeys;
+            for (int i = 0; i < inputSequence.count(); ++i)
+            {
+                int key = inputSequence[i];
+                bool modifExists = HasModif(key);
+                int modif = ExtractModif(key);
+                key = ExtractKey(key);
+
+                bool digit = IsDigit(key);
+                bool functional = IsFunctionalKey(key);
+                bool letter = IsLetter(key);
+                bool special = IsSpecialAllowedSymbol(key);
+
+                bool isKeyExists = digit || functional || letter || special;
+                if (isKeyExists == false)
+                {
+                    incorrectKeys.push_back(key);
+                    key = 0;
+                }
+
+                correctedKeys[i] = modif + key;
+            }
+            inputSequence = QKeySequence(correctedKeys[0], correctedKeys[1], correctedKeys[2], correctedKeys[3]);
+            shortcutText = seq;
+            if (inputSequence != seq)
+            {
+                QString incorrectKeysStr;
+                for (const QChar& ch : incorrectKeys)
+                {
+                    incorrectKeysStr = QString("%1 %2").arg(incorrectKeysStr).arg(ch);
+                }
+                NotificationParams params;
+                params.title = "Incorrect shortcut";
+                params.message.type = DAVA::Result::RESULT_ERROR;
+                params.message.message = Format("Incorrect keys was pressed: %s", incorrectKeysStr.toStdString().c_str());
+                ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+            }
+        });
+        currentSequencesLayout->addWidget(sequenceEdit);
     }
     {
         ReflectedPushButton::Params params(accessor, ui, mainWindowKey);
@@ -141,47 +244,6 @@ ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIMan
     treeView->resizeColumnToContents(0);
 }
 
-bool ActionManagementDialog::eventFilter(QObject* obj, QEvent* e)
-{
-    QEvent::Type t = e->type();
-    if (t == QEvent::KeyPress)
-    {
-        int key = 0;
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
-        Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
-        if (modifiers.testFlag(Qt::ControlModifier))
-        {
-            key += Qt::CTRL;
-        }
-        if (modifiers.testFlag(Qt::AltModifier))
-        {
-            key += Qt::ALT;
-        }
-        if (modifiers.testFlag(Qt::MetaModifier))
-        {
-            key += Qt::META;
-        }
-        if (modifiers.testFlag(Qt::ShiftModifier))
-        {
-            key += Qt::SHIFT;
-        }
-
-        int inputKey = keyEvent->key();
-        if (inputKey != Qt::Key_Control &&
-            inputKey != Qt::Key_Shift &&
-            inputKey != Qt::Key_Alt &&
-            inputKey != Qt::Key_Meta)
-        {
-            key += inputKey;
-        }
-
-        shortcutText = QKeySequence(key);
-        return true;
-    }
-
-    return QDialog::eventFilter(obj, e);
-}
-
 String ActionManagementDialog::GetCurrentKeyBindingsScheme() const
 {
     return ui->GetCurrentKeyBindingsScheme();
@@ -196,8 +258,19 @@ void ActionManagementDialog::SetCurrentKeyBindingsScheme(const String& scheme)
 void ActionManagementDialog::AddKeyBindingsScheme()
 {
     QInputDialog dlg;
+    dlg.setWindowFlags(Qt::Tool);
+    dlg.setWindowTitle("New key binding scheme name");
     dlg.setObjectName("newSchemeNameDlg");
     dlg.setInputMode(QInputDialog::TextInput);
+    QObject::connect(&dlg, &QInputDialog::textValueChanged, [&dlg](const QString& text) {
+        QString replacedText = text;
+        replacedText.replace("/", "");
+        replacedText.replace("\\", "");
+        if (replacedText != text)
+        {
+            dlg.setTextValue(replacedText);
+        }
+    });
 
     QString newSchemeName;
     while (true)
@@ -308,41 +381,37 @@ bool ActionManagementDialog::CanBeAssigned() const
         return false;
     }
 
-    bool modifFound = false;
-    bool keyFound = false;
+    using namespace ActionManagementDialogDetail;
     for (int i = 0; i < shortcutText.count(); ++i)
     {
         int key = shortcutText[i];
-        if ((key & Qt::CTRL) == Qt::CTRL ||
-            (key & Qt::ALT) == Qt::ALT ||
-            (key & Qt::SHIFT) == Qt::SHIFT ||
-            (key & Qt::META) == Qt::META)
+        bool modifExists = HasModif(key);
+        key = ExtractKey(key);
+        bool digit = IsDigit(key);
+        bool functional = IsFunctionalKey(key);
+        bool letter = IsLetter(key);
+        bool special = IsSpecialAllowedSymbol(key);
+
+        bool isKeyExists = digit || functional || letter || special;
+        if (isKeyExists == false)
         {
-            modifFound = true;
+            return false;
         }
 
-        key = key & (~(Qt::CTRL | Qt::ALT | Qt::SHIFT | Qt::META));
-        if (key != 0)
+        if (modifExists == false && functional == false)
         {
-            keyFound = true;
+            return false;
         }
     }
-    return modifFound == true && keyFound == true;
-}
 
-String ActionManagementDialog::GetShortcutText() const
-{
-    return shortcutText.toString(QKeySequence::NativeText).toStdString();
-}
-
-void ActionManagementDialog::SetShortcutText(const String&)
-{
+    return shortcutText.count() > 0;
 }
 
 void ActionManagementDialog::AssignShortcut()
 {
     ui->AddShortcut(shortcutText, selectedAction);
     shortcutText = QKeySequence();
+    sequenceEdit->clear();
     UpdateSchemes();
 }
 
@@ -428,8 +497,16 @@ DAVA_REFLECTION_IMPL(ActionManagementDialog)
     .Field("currentContext", &ActionManagementDialog::GetContext, &ActionManagementDialog::SetContext)[M::EnumT<Qt::ShortcutContext>()]
     .Field("contextReadOnly", [](ActionManagementDialog* obj) { return obj->selectedAction == nullptr || obj->isSelectedActionReadOnly == true; }, nullptr)
     //  Shortcut line edit
-    .Field("shortcutText", &ActionManagementDialog::GetShortcutText, &ActionManagementDialog::SetShortcutText)
-    .Field("shortcutEnabled", [](ActionManagementDialog* obj) { return obj->selectedAction != nullptr && obj->isSelectedActionReadOnly == false; }, nullptr)
+    .Field("shortcutEnabled", [](ActionManagementDialog* obj) {
+        bool result = obj->selectedAction != nullptr && obj->isSelectedActionReadOnly == false;
+        if (obj->sequenceEdit->isEnabled() != result)
+        {
+            obj->sequenceEdit->setEnabled(result);
+        }
+
+        return result;
+    },
+           nullptr)
     // assign button
     .Field("assignButtonText", [](ActionManagementDialog*) { return "Assign"; }, nullptr)
     .Field("assignButtonEnabled", &ActionManagementDialog::CanBeAssigned, nullptr)

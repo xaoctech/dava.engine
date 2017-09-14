@@ -842,7 +842,7 @@ QString UIManager::GetSaveFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getSaveFileName(windowInfo.window, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absolutePath());
     }
     return filePath;
 }
@@ -864,7 +864,7 @@ QString UIManager::GetOpenFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getOpenFileName(parent, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absolutePath());
     }
     return filePath;
 }
@@ -890,11 +890,13 @@ QString UIManager::GetExistingDirectory(const WindowKey& windowKey, const Direct
 int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
 {
     DVASSERT(dlg != nullptr);
-    DVASSERT(dlg->parent() == nullptr);
     UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
     if (windowInfo != nullptr)
     {
-        dlg->setParent(windowInfo->window.data());
+        if (dlg->parent() != windowInfo->window.data())
+        {
+            dlg->setParent(windowInfo->window.data());
+        }
     }
 
     dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
@@ -911,7 +913,6 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
     if (dialogRect.isValid())
     {
         dlg->setGeometry(dialogRect);
-        dlg->move(dialogRect.topLeft());
     }
 
     int result = dlg->exec();

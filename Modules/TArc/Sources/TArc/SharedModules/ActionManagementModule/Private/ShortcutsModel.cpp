@@ -38,7 +38,7 @@ void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
 
                 foreach (const QKeySequence& seq2, conflicted.sequences)
                 {
-                    if (seq1.matches(seq2) == QKeySequence::ExactMatch)
+                    if (seq1.matches(seq2) != QKeySequence::NoMatch)
                     {
                         QString conflictedAction = QString("%1.%2").arg(conflicted.blockName).arg(conflicted.actionName);
                         if (conflitsWith.isEmpty())

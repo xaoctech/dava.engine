@@ -9,6 +9,7 @@
 class QItemSelectionModel;
 class QItemSelection;
 class QTreeView;
+class QKeySequenceEdit;
 
 namespace DAVA
 {
@@ -22,9 +23,6 @@ class ActionManagementDialog : public QDialog
 public:
     ActionManagementDialog(ContextAccessor* accessor, UIManager* ui);
 
-protected:
-    bool eventFilter(QObject* obj, QEvent* e) override;
-
 private:
     String GetCurrentKeyBindingsScheme() const;
     void SetCurrentKeyBindingsScheme(const String& scheme);
@@ -37,9 +35,6 @@ private:
     void UpdateSchemes();
 
     void RemoveSequence();
-
-    String GetShortcutText() const;
-    void SetShortcutText(const String& text);
 
     bool CanBeAssigned() const;
     void AssignShortcut();
@@ -66,6 +61,7 @@ private:
     bool isSelectedActionReadOnly = false;
 
     QKeySequence shortcutText;
+    mutable QKeySequenceEdit* sequenceEdit;
 
     DAVA_REFLECTION(ActionManagementDialog);
 };
