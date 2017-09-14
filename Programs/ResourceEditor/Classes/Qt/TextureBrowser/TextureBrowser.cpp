@@ -642,7 +642,9 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
             DAVA::Vector<DAVA::Texture*> reloadTextures;
             reloadTextures.push_back(texture);
 
-            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+            delayedReloadTextures.DelayedExecute([reloadTextures]() {
+                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+            });
         }
     }
 }
