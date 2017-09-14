@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057" />
+      <title>Creating Physical Materials</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBMaterialHandle", "../api/struct_i_l_b_material_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateMaterial()", "../api/beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e", "API"]); 
+reflinkdata.push(["ILBShaderHandle", "../api/struct_i_l_b_shader_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateShader()", "../api/beastmaterial_8h.html#ac154eb57095a7a087166517aba93d155", "API"]); 
+reflinkdata.push(["ILBSetShader()", "../api/beastmaterial_8h.html#ab4d8366405c79ee8784b8c1812f43ef9", "API"]); 
+reflinkdata.push(["ILBSetShaderParamFloat()", "../api/beastmaterial_8h.html#a95d45304f5bf78bbbc621983dccb62d9", "API"]); 
+reflinkdata.push(["ILBSetShaderParamInt()", "../api/beastmaterial_8h.html#a17c26e4ee50ac3391a42f6f8d1877f15", "API"]); 
+reflinkdata.push(["ILBSetShaderParamTexture()", "../api/beastmaterial_8h.html#a381ba3a6f85ff6dc82bc45a0c1e745b5", "API"]); 
+reflinkdata.push(["ILBSetShaderParamColor()", "../api/beastmaterial_8h.html#a544a0f468f000db767652d12733af720", "API"]); 
+reflinkdata.push(["ILBSetShaderParamUV()", "../api/beastmaterial_8h.html#acf044a1d16cb91637cd1a8b604fe327f", "API"]); 
+reflinkdata.push(["beastmaterial.h", "../api/beastmaterial_8h.html", "API"]); 
+reflinkdata.push(["ILBCreateMaterial", "../api/beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e", "API"]); 
+reflinkdata.push(["ILBCreateShader", "../api/beastmaterial_8h.html#ac154eb57095a7a087166517aba93d155", "API"]); 
+reflinkdata.push(["ILBSetShader", "../api/beastmaterial_8h.html#ab4d8366405c79ee8784b8c1812f43ef9", "API"]); 
+reflinkdata.push(["ILBSetShaderParamTexture", "../api/beastmaterial_8h.html#a381ba3a6f85ff6dc82bc45a0c1e745b5", "API"]); 
+reflinkdata.push(["ILBTextureHandle", "../api/struct_i_l_b_texture_handle.html", "API"]); 
+reflinkdata.push(["ILBReferenceTexture", "../api/beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78", "API"]); 
+reflinkdata.push(["ILBSetShaderParamColor", "../api/beastmaterial_8h.html#a544a0f468f000db767652d12733af720", "API"]); 
+reflinkdata.push(["ILBLinearRGB", "../api/struct_i_l_b_linear_r_g_b.html", "API"]); 
+reflinkdata.push(["ILBSetMaterialOverrides", "../api/beastinstance_8h.html#a597be38698cb168821114af6525b6e4a", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm',                           'd30e6888','index.html',location.hash);                           javascript:initPage('Creating Physical Materials','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Physical Materials&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating Mesh Instances</div><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Creating a Scene</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Classic Materials</div><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-BAC22DF0-F083-4D33-8FD4-CBF29C602E24"></a></span><h1>Creating Physical Materials</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-D81B4FDD-967B-4BA6-81D1-39EDDD10A03C"></a></span> Materials define the way the surfaces of your meshes react to light. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-BA96E6BB-A237-4DF3-A834-C3FBD4820836"></a></span>You define materials within a scene. When you create a mesh, you give each of its triangles a material by name. Then, when
+            you create an instance of a mesh within a scene, each of its triangles uses the material in that scene whose name matches
+            the name of the material assigned to it when the mesh was created. See <span class="char_link"><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm">Creating Meshes</a></span>. You can also override the materials used in each instance of a mesh. See <span class="char_link"><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm">Creating Mesh Instances</a></span>. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-0FD5B1A3-51C7-4FDC-A77D-689A9A830B5F"></a></span><span class="charspan-msgph" translate="no">Beast</span> uses a physical rendering system based on shaders expressed in the Open Shading Language (OSL). To customize the way each
+            material interacts with light, you assign it a shader. Depending on the shader you use, you may also be able to set various
+            input parameters (colors, textures, numeric values, etc.) for the material, which are passed to the shader as input values.
+            
+         </p>
+         <div><span class="anchor_wrapper"><a name="GUID-6B907B2A-F998-431A-9A40-A2BB9CD69D69"></a></span><div class="note-note"><span class="label">Note</span>The sections on this page detail the recommended way to set up materials in <span class="charspan-msgph" translate="no">Beast</span>, using the physically based rendering system introduced in release 2013.2. For instructions on using the older, fixed-shader
+               materials system, see <span class="char_link"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating Classic Materials</a></span>. 
+            </div>
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_53A88F67C6AE44178F5258E6EA8E43E8"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6916"></a><span class="anchor_wrapper"><a name="GUID-422BC6C7-ED99-4C84-B09A-105C3472D0AB"></a></span>What is the Open Shading Language?
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-5320DD34-D1EE-4462-B514-250E56443CE4"></a></span>Open Shading Language is an open-source shading system developed by Sony Pictures Imageworks for use in major feature films.
+               
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-D7CCF049-63E5-4C6D-922D-47E246FC05E5"></a></span>For more information, including source code, and a complete language specification that also outlines the library of functions
+               you can use in your shaders, see: <a href="https://github.com/imageworks/OpenShadingLanguage" target="_blank">https://github.com/imageworks/OpenShadingLanguage</a> 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_F3D6F162FFFF4ADC91F65CE3ED92743D"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e6930"></a><span class="anchor_wrapper"><a name="GUID-13A12690-37D4-46F2-BB90-0A1E17BC0E74"></a></span>OSL in <span class="charspan-msgph" translate="no">Beast</span></h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-9E3058A6-D3E4-44B2-970F-00B8730C2A4E"></a></span>Since OSL was designed for VFX film production, some aspects of it are not relevant for use when baking textures for games.
+                  In particular, <span class="charspan-msgph" translate="no">Beast</span> does not support: 
+               </p> <span class="anchor_wrapper"><a name="UL_4A311B27294E49F38396807659DF6B70"></a></span><ul>
+                  <li>Displacement Shaders </li>
+                  <li>Volumetric Shaders </li>
+                  <li>BSSDRF shaders (sub surface scattering) </li>
+                  <li>Networks of OSL shaders </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-6A13D79B-1123-4DDA-888B-4DF350FDA4BF"></a></span>If you find that you need support for these or any other unsupported aspects of OSL, please contact Autodesk Support. See
+                  <span class="char_link"><a href="GUID-D70BFD6A-2A69-4C5D-9885-D6B1F176E60A.htm"> Support</a></span>. 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_A6C2C8F5E6E545FCAC916B4282BEABEB"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6960"></a><span class="anchor_wrapper"><a name="GUID-F88C98E8-F8E4-4FE6-A4C6-AFB2D08FC0B0"></a></span>Writing an OSL shader file
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-0D9D176F-5AFD-4664-ACD2-EAABAE13311E"></a></span>In order to set up a material, you need to provide a file that contains an OSL shader. A shader can be as simple or as complex
+               as you need in order to express the way your material surface interacts with light to produce its final shading. You can use
+               the sample shader files provided in the <span class="filePath" translate="no">shaders</span> sub-directory of the <span class="charspan-msgph" translate="no">Beast</span> SDK package, or write your own from scratch. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-C54A5793-6431-4AE2-9B96-E253D3AB334D"></a></span>For example, the following code shows a simple shader that multiplies the diffuse <em class="mild">closure</em> in OSL with a texture file that is passed as an input parameter: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">Surface                                                    //&lt; All Beast shaders use the Surface type.
+diffuseTexture                                             //&lt; A name for this shader.
+( string diffuseFile = ""                                  //&lt; An input parameter.
+     [[  string description = "Diffuse texture file" ]] )  //&lt; Anything inside [[ ]] is optional metadata.
+{
+    Ci = (color)texture (filename, u, v) * diffuse(N);     //&lt; Beast expects the shader to set the output
+                                                           //&lt; closure in the <em class="strong">Ci</em> variable.
+}</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-48C651B5-822D-4A42-BCCB-69C205E38B7B"></a></span>For a more complex and interesting example, see the <span class="code" translate="no">beastphong.osl</span> file, which models a Phong-type shading similar to the one used by <span class="charspan-msgph" translate="no">Beast</span> to render "classic" non-physical materials (see also <span class="char_link"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating Classic Materials</a></span>). 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_371BBA6D02B248D18C2522CC8B08149C"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6998"></a><span class="anchor_wrapper"><a name="GUID-9EA68734-E4EF-415B-ABA6-AB418B9F6F87"></a></span>Setting up a physical material
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-54F482F9-BAF5-41F2-B622-4ABFCE89547A"></a></span> Once you have your shader file ready, you need to: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_0FD0A00A2C1B4661A844A5D847F9A9D6"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a></span>. 
+               </li>
+               <li>Initialize the handle by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial()'); return false;">ILBCreateMaterial()</a></span>. In your call, you have to specify the handle of the scene that will contain your material, and the name of the material.
+                  This name should match the name of the material assigned to the triangles in your mesh. 
+               </li>
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBShaderHandle'); return false;">ILBShaderHandle</a></span>. 
+               </li>
+               <li>Initialize the shader by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateShader()'); return false;">ILBCreateShader()</a></span>. In your call, you have to specify the handle of the scene that will contain your shader, and the path to your shader file.
+                  
+               </li>
+               <li>Assign your shader to your material by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShader()'); return false;">ILBSetShader()</a></span>. 
+               </li>
+               <li>Set up any input parameters needed by the shader. See <span class="char_link"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm#SECTION_FFB801B750C843A3943F1A1600C5D530">Binding input parameters</a></span> below. 
+               </li>
+            </ol> 
+            <div class="codeBlock"><pre class="prettyprint">// Create and initialize the material.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a> material;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial'); return false;">ILBCreateMaterial</a>(scene, _T("materialWithShader"), &amp;material);
+
+// Create and initialize the shader.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBShaderHandle'); return false;">ILBShaderHandle</a> diffuseShader;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateShader'); return false;">ILBCreateShader</a>(scene, _T("diffuse"), _T("diffuseTexture.osl"), &amp;diffuseShader);
+
+// Assign the shader to the material.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShader'); return false;">ILBSetShader</a>(material, diffuseShader);
+
+// Create a new texture, and bind it to the material as an input parameter for the shader.
+// Note that the call to <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamTexture'); return false;">ILBSetShaderParamTexture</a>() specifies the name "diffuseFile", which is the
+// name of the input parameter in the simple shader file shown above.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a> tex; 
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReferenceTexture'); return false;">ILBReferenceTexture</a>(manager, _T("AUniqueName"), _T("C:\textures\wood.exr"), &amp;tex);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamTexture'); return false;">ILBSetShaderParamTexture</a>(material, _T("diffuseFile"), tex);
+</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-066A59C8-4376-43E3-9E9C-6CD82E979418"></a></span>Note that this is a very simple example. A more in-depth usage might involve iterating over the attributes accepted by the
+               shader, querying the type of each attribute (float, color, texture, etc.), and binding the necessary values to the material.
+               
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-CD066DA4-72F5-4305-8727-5F5CBF00AA4F"></a></span>For a more complex example, look at the source for the Maya plugin. A Python script is used to extract the attributes accepted
+               by the shader. These attributes are used to set up the BeastOSL node in Maya. The user can set values in the Maya UI. The
+               settings in the Maya node are then queried, parsed, and bound to the material using that shader. See the <span class="code" translate="no">createMaterial()</span> method in <span class="code" translate="no">scenemanager.cpp</span>. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_FFB801B750C843A3943F1A1600C5D530"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7054"></a><span class="anchor_wrapper"><a name="GUID-62C9A0B4-EE1E-47A7-A9BC-DBC58A0302D0"></a></span>Binding input parameters
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-20EC9BA1-60DA-4872-8ACA-A5A569C995A9"></a></span>You can use the <span class="charspan-msgph" translate="no">Beast</span> API to set the following types of input parameters for your shaders: 
+               </p> <span class="anchor_wrapper"><a name="UL_6939A13BE53B48B7AD45BC9716A80F40"></a></span><ul>
+                  <li>Floating-point numbers, using <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamFloat()'); return false;">ILBSetShaderParamFloat()</a></span>. 
+                  </li>
+                  <li>Integers, using <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamInt()'); return false;">ILBSetShaderParamInt()</a></span>. 
+                  </li>
+                  <li>Textures, using <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamTexture()'); return false;">ILBSetShaderParamTexture()</a></span>. 
+                  </li>
+                  <li>RGB colors, using <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamColor()'); return false;">ILBSetShaderParamColor()</a></span>. 
+                  </li>
+                  <li>UV sets, using <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamUV()'); return false;">ILBSetShaderParamUV()</a></span>. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-1320ADBD-FC8A-4102-9378-28B2E36EE5C2"></a></span>Each of these functions requires a material handle, a string that matches the name of the corresponding input parameter declared
+                  in the shader file, and the value that you want to pass to the shader. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-F7175EC6-2E70-46E2-9FFD-6204168951E8"></a></span>Note that the input parameters are bound to a <em class="mild">material</em> handle, rather than to the <em class="mild">shader</em> handle. This allows you to use the same shader for multiple different kinds of materials, but to specify different input
+                  parameters for each of the different materials. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-40D8BCD8-8CC6-40F3-8EF3-34A905E9F5A9"></a></span>For example, in the <span class="code" translate="no">examples-physical</span> project, two different materials are created using the same shader, and set up with different parameters: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBShaderHandle'); return false;">ILBShaderHandle</a> phongishShader;
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateShader'); return false;">ILBCreateShader</a>(bmh, _T("PhongishShader"), "../../data/phongish.osl", &amp;phongishShader));
+...
+
+// Sphere 1 - Textured lambert
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a> sm1;
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial'); return false;">ILBCreateMaterial</a>(scene, _T("TexturedLambert"), &amp;sm1));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShader'); return false;">ILBSetShader</a>(sm1, phongishShader));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamTexture'); return false;">ILBSetShaderParamTexture</a>(sm1, _T("DiffuseTexture"), xorTexture));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamColor'); return false;">ILBSetShaderParamColor</a>(sm1, _T("DiffuseColor"), &amp;<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLinearRGB'); return false;">ILBLinearRGB</a>(0.5f, 0.5f, 1.0f)));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialOverrides'); return false;">ILBSetMaterialOverrides</a>(sphereInstances[1], &amp;sm1, 1));
+
+// Sphere 2 - Phongish
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a> sm2;
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial'); return false;">ILBCreateMaterial</a>(scene, _T("Phongish"), &amp;sm2));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShader'); return false;">ILBSetShader</a>(sm2, phongishShader));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamColor'); return false;">ILBSetShaderParamColor</a>(sm2, _T("DiffuseColor"), &amp;<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLinearRGB'); return false;">ILBLinearRGB</a>(0.0f, 0.0f, 0.0f)));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamColor'); return false;">ILBSetShaderParamColor</a>(sm2, _T("SpecularColor"), &amp;<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLinearRGB'); return false;">ILBLinearRGB</a>(1.0f, 0.0f, 0.0f)));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShaderParamColor'); return false;">ILBSetShaderParamColor</a>(sm2, _T("Shininess"), &amp;<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLinearRGB'); return false;">ILBLinearRGB</a>(400.0f,400.0f,400.0f)));
+bex::apiCall(<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialOverrides'); return false;">ILBSetMaterialOverrides</a>(sphereInstances[2], &amp;sm2, 1));
+</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-2EE4BE8F-B7B8-4E96-88E9-96DE0294EF2A"></a></span>Despite using the same shader, the result of rendering the two spheres is very different. 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_B02927B7663348AA912E2072681022FE"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7118"></a><span class="anchor_wrapper"><a name="GUID-BE086B45-B19E-46E4-B0A2-7795F9DB83ED"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-21776FBD-D791-4DBD-A89A-0E82B986A4CA"></a></span>You can create multiple different materials simultaneously in multiple threads. In addition, multiple threads can find materials
+               in the cache and use them simultaneously. You can also modify a single material from multiple different threads at the same
+               time. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_1C2ABE3608D54C86B16D6443A36FFB6F"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7126"></a><span class="anchor_wrapper"><a name="GUID-78253DE3-431D-4FC4-80BE-8C96760CA233"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-F4CD7323-1017-40BB-BF4C-A5552D77709E"></a></span>API functions related to the creation and setup of materials are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastmaterial.h'); return false;">beastmaterial.h</a></span> file. 
+            </p> 
+         </div><span class="noindex">
+            <div class="topic-list">
+               <h4 class="related">Topics in this section</h4>
+               <ul class="jumplist">
+                  <li class="topiclist-litem"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating Classic Materials</a></li>
+               </ul>
+            </div></span><div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

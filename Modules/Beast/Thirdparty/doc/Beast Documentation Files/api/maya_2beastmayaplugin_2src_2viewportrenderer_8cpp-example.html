@@ -1,0 +1,427 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/viewportrenderer.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2viewportrenderer_8cpp-example.html','api_maya_2beastmayaplugin_2src_2viewportrenderer_8cpp_example_htmlaaef4c6e-bcd9-4522-92b5-4dafc8f94ef9','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/viewportrenderer.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2viewportrenderer_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/viewportrenderer.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/viewportrenderer.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/src/viewportrenderer.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "viewportrenderer.h"</span>
+<span class=
+"preprocessor">#include &lt;maya/MRenderingInfo.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnCamera.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastframebufferwrapper.h"</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+ViewportRenderer::ViewportRenderer(<span class=
+"keyword">const</span> MString&amp; name) : 
+                MViewportRenderer(name), 
+                m_GLFT(NULL), 
+                m_frameTexture(0),
+                m_powLookup(12, 1.0f / 2.2f) {
+        setUIName(<span class=
+"stringliteral">"Beast Renderer"</span>);
+        setRenderingOverride(MViewportRenderer::kOverrideThenStandard);
+        registerRenderer();
+}
+
+
+<span class=
+"keywordtype">void</span> ViewportRenderer::BeastViewportLiveJob::onUpdate(<a class="code"
+href="beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a> updateType) {
+        <span class="keywordflow">switch</span> (updateType) {
+                <span class="keywordflow">case</span> <a name=
+"a0"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2d20e2df2a9b2701b0fc9534ff2e8713"
+title=
+"Specifies an update camera frame buffer from a Live Ernst job.">ILB_UT_UPDATE_CAMERA_FRAME_BUFFER</a>:
+                        <span class=
+"keywordtype">int</span> width, height;
+                        <a name="_a1"></a><a class="code" href=
+"struct_i_l_b_framebuffer_handle.html" title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a> h;
+                        BEAST_CALL(<a name="a2"></a><a class="code"
+href="beastjob_8h.html#af28fc0ad160035db7462377d25e94010" title=
+"Get an updated frame buffer.">ILBGetUpdateFramebuffer</a>(m_job-&gt;getUpdateHandle(), &amp;h));
+                        BeastFramebuffer beastBuffer(h, <span class="keyword">true</span>);
+                        beastBuffer.getResolution(width, height);
+                        std::vector&lt;float&gt; framebuffer;
+                        beastBuffer.readRegionHDR(0, 0, width, height, <a name="a3"></a><a class="code"
+href=
+"beastframebuffer_8h.html#a1473025b7f3e0baa1c2f4c2a4e57e594a9fb46486573c96d0f2d568934d8107ad">ILB_CS_RGB</a>, framebuffer);
+                        m_viewportRenderer.setFrameBufferData(framebuffer, width, height, 3); <span class="comment">// Pretty sure it's three channels (RGB)</span>
+                        <span class="keywordflow">break</span>;
+        }
+}
+
+MStatus ViewportRenderer::render(<span class=
+"keyword">const</span> MRenderingInfo &amp;renderInfo) {
+        MFnCamera cam(renderInfo.cameraPath());
+        <span class=
+"keywordflow">if</span> (cam.fullPathName() != <span class=
+"stringliteral">"|persp|perspShape"</span>) {
+                <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+        }
+
+        <span class=
+"keywordflow">if</span> (m_framebufferData.size() == 0) {
+                <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+        }
+        
+        <span class=
+"keyword">const</span> MRenderTarget&amp; target = renderInfo.renderTarget();
+        <span class="comment">//target.makeTargetCurrent();</span>
+        <span class=
+"keywordtype">int</span> frameWidth = target.width();
+        <span class=
+"keywordtype">int</span> frameHeight = target.height();
+
+        <span class=
+"keywordflow">if</span> (renderInfo.renderingAPI() == MViewportRenderer::kOpenGL &amp;&amp; m_GLFT != NULL) {
+                m_fbLock.lock();
+                <span class=
+"keywordflow">if</span> (m_framebufferUpdated) {
+                        m_GLFT-&gt;glEnable(MGL_TEXTURE_2D);
+                        m_GLFT-&gt;glBindTexture(MGL_TEXTURE_2D, m_frameTexture);
+                        m_GLFT-&gt;glTexImage2D(MGL_TEXTURE_2D, 0, 4, m_framebufferWidth, m_framebufferHeight, 0, MGL_BGRA_EXT, MGL_UNSIGNED_BYTE, &amp;m_framebufferData[0]);
+                        m_GLFT-&gt;glTexParameteri(MGL_TEXTURE_2D, MGL_TEXTURE_MIN_FILTER, MGL_LINEAR);
+                        m_GLFT-&gt;glTexParameteri(MGL_TEXTURE_2D, MGL_TEXTURE_MAG_FILTER, MGL_LINEAR);
+                        m_GLFT-&gt;glTexParameteri(MGL_TEXTURE_2D, MGL_TEXTURE_WRAP_S, MGL_CLAMP);
+                        m_GLFT-&gt;glTexParameteri(MGL_TEXTURE_2D, MGL_TEXTURE_WRAP_T, MGL_CLAMP);
+                        m_framebufferUpdated = <span class=
+"keyword">false</span>;
+                }
+                m_fbLock.unlock();
+
+                m_GLFT-&gt;glDisable(MGL_DEPTH_TEST);
+                
+                <span class=
+"comment">// Set projection matrix</span>
+                m_GLFT-&gt;glMatrixMode(MGL_PROJECTION);
+                m_GLFT-&gt;glPushMatrix();
+                m_GLFT-&gt;glLoadIdentity();
+
+                <span class=
+"comment">// Set orthographic view matching the framebuffer to viewport</span>
+                <span class=
+"keywordtype">double</span> yscale = ((double)frameHeight / frameWidth) * ((double)m_framebufferWidth / m_framebufferHeight);
+                m_GLFT-&gt;glOrtho(-1, 1, -yscale, yscale, -1, 1);
+
+                <span class="comment">// Set view projection</span>
+                m_GLFT-&gt;glMatrixMode(MGL_MODELVIEW);
+                m_GLFT-&gt;glPushMatrix();
+                m_GLFT-&gt;glLoadIdentity();
+
+                <span class="comment">// Draw</span>
+                m_GLFT-&gt;glEnable(MGL_TEXTURE_2D);
+                m_GLFT-&gt;glBindTexture(MGL_TEXTURE_2D, m_frameTexture);
+                m_GLFT-&gt;glCallList(m_frameList);
+
+                <span class="comment">// Reset</span>
+                m_GLFT-&gt;glMatrixMode(MGL_PROJECTION);
+                m_GLFT-&gt;glPopMatrix();
+                m_GLFT-&gt;glMatrixMode(MGL_MODELVIEW);
+                m_GLFT-&gt;glPopMatrix();
+                m_GLFT-&gt;glEnable(MGL_DEPTH_TEST);
+                m_GLFT-&gt;glDisable(MGL_TEXTURE_2D);
+
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (renderInfo.renderingAPI() == MViewportRenderer::kSoftware) {
+                m_fbLock.lock();
+                MImage resizedImage;
+                resizedImage.create(m_framebufferWidth, m_framebufferHeight);
+                resizedImage.setPixels(&amp;m_framebufferData[0], m_framebufferWidth, m_framebufferHeight);
+                m_framebufferUpdated = <span class=
+"keyword">false</span>;
+                m_fbLock.unlock();
+
+                <span class=
+"keywordtype">int</span> resizedHeight = frameWidth * m_framebufferHeight / m_framebufferWidth ;
+                resizedImage.resize(frameWidth, resizedHeight, <span class="keyword">false</span>);
+
+
+                MImage croppedImage;
+                <span class=
+"keywordtype">int</span> croppedHeight = std::min(frameHeight, resizedHeight);
+                croppedImage.create(frameWidth, frameHeight);
+
+
+                <span class=
+"keywordtype">int</span> ypeek = std::max((resizedHeight - frameHeight) / 2, 0) ;
+                croppedImage.setPixels(resizedImage.pixels() + ypeek * frameWidth * 4, frameWidth, croppedHeight);
+
+
+                <span class=
+"keywordtype">int</span> ypoke = std::max((frameHeight - croppedHeight) / 2, 0);
+                target.writeColorBuffer(croppedImage, 0, ypoke);
+
+                resizedImage.release();
+                croppedImage.release();
+        }
+
+        <span class="keywordflow">return</span> MStatus::kSuccess;
+}
+
+
+<span class=
+"keywordtype">void</span> ViewportRenderer::setFrameBufferData(<span class="keyword">const</span> std::vector&lt;unsigned char&gt;&amp; pixels, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, <span class="keywordtype">int</span> channels) {
+
+        m_fbLock.lock();
+
+        m_framebufferData.resize(width*height*4);
+
+        <span class="keywordtype">int</span> destBufIndex = 0;
+        <span class=
+"keywordtype">int</span> srcBufIndex = width * (height - 1) * channels;
+        <span class="keywordflow">if</span> (channels == 3) {
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> y = 0; y &lt; height; y++) {
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> x = 0; x &lt; width; x++) {
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> r = pixels[srcBufIndex++];
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> g = pixels[srcBufIndex++];
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> b = pixels[srcBufIndex++];
+                                m_framebufferData[destBufIndex++] = b;
+                                m_framebufferData[destBufIndex++] = g;
+                                m_framebufferData[destBufIndex++] = r;
+                                m_framebufferData[destBufIndex++] = 255;
+                        }
+                        srcBufIndex -= 2 * width * channels;
+                }
+        }
+
+        m_framebufferWidth = width;
+        m_framebufferHeight = height;
+        m_framebufferUpdated = <span class="keyword">true</span>;
+        m_fbLock.unlock();
+
+        MStatus res = MGlobal::executeCommandOnIdle(<span class=
+"stringliteral">"refresh -f"</span>);
+        CHECK_MSTATUS(res);
+}
+
+<span class=
+"keywordtype">void</span> ViewportRenderer::setFrameBufferData(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; pixels, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, <span class="keywordtype">int</span> channels) {
+
+        m_fbLock.lock();
+
+        m_framebufferData.resize(width*height*4);
+
+        <span class="keywordtype">int</span> destBufIndex = 0;
+        <span class=
+"keywordtype">int</span> srcBufIndex = width * (height - 1) * channels;
+        <span class="keywordflow">if</span> (channels == 3) {
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> y = 0; y &lt; height; y++) {
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> x = 0; x &lt; width; x++) {
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> r = m_powLookup.lookup(pixels[srcBufIndex++]);
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> g = m_powLookup.lookup(pixels[srcBufIndex++]);
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> b = m_powLookup.lookup(pixels[srcBufIndex++]);
+                                m_framebufferData[destBufIndex++] = b;
+                                m_framebufferData[destBufIndex++] = g;
+                                m_framebufferData[destBufIndex++] = r;
+                                m_framebufferData[destBufIndex++] = 255;
+                        }
+                        srcBufIndex -= 2 * width * channels;
+                }
+        }
+        m_framebufferWidth = width;
+        m_framebufferHeight = height;
+        m_framebufferUpdated = <span class="keyword">true</span>;
+        m_fbLock.unlock();
+
+        MStatus res = MGlobal::executeCommandOnIdle(<span class=
+"stringliteral">"refresh -f"</span>);
+        CHECK_MSTATUS(res);
+}
+
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

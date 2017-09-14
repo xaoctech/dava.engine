@@ -106,9 +106,6 @@ set( DAVA_THIRD_PARTY_INCLUDES_PATH     "${DAVA_THIRD_PARTY_ROOT_PATH}/include"
                                         "${DAVA_THIRD_PARTY_ROOT_PATH}/icucommon/source/common" 
                                       ) 
 
-set( DAVA_SPEEDTREE_ROOT_DIR            "${DAVA_ROOT_DIR}/../dava.speedtree" )                                      
-set( DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast" ) 
-
 #additional variables for Windows UAP
 if ( WINDOWS_UAP )
     #turning on openssl_WinRT lib on Windows Store
@@ -170,11 +167,6 @@ endif ()
 
 set( DAVA_THIRD_PARTY_INCLUDES_PATH "${DAVA_THIRD_PARTY_INCLUDES_PATH}"
                                     "${DAVA_THIRD_PARTY_ROOT_PATH}/openssl/include/${DAVA_OPENSSL_PLATFORM}/${DAVA_OPENSSL_ARCH}" )
-
-get_filename_component( DAVA_SPEEDTREE_ROOT_DIR ${DAVA_SPEEDTREE_ROOT_DIR} ABSOLUTE )
-get_filename_component( DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR ${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR} ABSOLUTE )
-
-set( DAVA_BINARY_WIN32_DIR  "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/beast/bin" )
 
 set( DAVA_INCLUDE_DIR       ${DAVA_ENGINE_DIR} ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
 

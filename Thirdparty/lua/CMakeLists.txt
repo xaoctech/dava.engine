@@ -4,6 +4,9 @@ project(lua)
 include_directories(./src)
 
 FILE(GLOB SOURCE_FILES src/*.c)
+list(REMOVE_ITEM SOURCE_FILES "src/lua.c")
+list(REMOVE_ITEM SOURCE_FILES "src/luac.c")
+
 add_library(lua STATIC ${SOURCE_FILES})
 
 if(WIN32)

@@ -53,7 +53,6 @@ private:
 
     enum Status : uint32
     {
-        Wait = 0,
         CheckLocalFile,
         LoadingPackFile, // download manager thread, wait on main thread
         Ready, // on main thread
@@ -129,11 +128,10 @@ private:
         uint64 downloadedFileSize = 0;
         DLCDownloader::Task* task = nullptr;
         Compressor::Type compressionType = Compressor::Type::Lz4HC;
-        Status status = Wait;
+        Status status = CheckLocalFile;
         std::shared_ptr<DVPLWriter> dvplWriter;
     };
 
-    void DisableRequestingAndFireSignalIOError(FileRequest& fileRequest, int32 errVal, const String& extMsg) const;
     bool CheckLocalFileState(FileSystem* fs, FileRequest& fileRequest);
     bool CheckLoadingStatusOfFileRequest(FileRequest& fileRequest, DLCDownloader& dm, const String& dstPath);
     bool LoadingPackFileState(FileSystem* fs, FileRequest& fileRequest);
@@ -146,8 +144,9 @@ private:
     String requestedPackName;
     mutable Vector<uint32> dependencyCache;
 
-    uint32 numOfDownloadedFile = 0;
     uint64 totalDownloadedSize = 0;
+
+    DLCDownloader::TaskError prevTaskError;
 
     // if this field is false, you can check fileIndexes
     // else fileIndexes maybe empty and wait initialization

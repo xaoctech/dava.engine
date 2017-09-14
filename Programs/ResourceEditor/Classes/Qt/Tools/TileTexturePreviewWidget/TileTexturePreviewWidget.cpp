@@ -1,6 +1,6 @@
 #include "TileTexturePreviewWidget.h"
 #include "TextureBrowser/TextureConvertor.h"
-#include "../../Main/QtUtils.h"
+#include "Classes/Qt/Main/QtUtils.h"
 #include "StringConstants.h"
 #include "ImageTools/ImageTools.h"
 
@@ -8,8 +8,7 @@
 #include "Classes/Application/REGlobal.h"
 
 #include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
-
-#include <QtTools/Utils/Utils.h>
+#include <TArc/Utils/Utils.h>
 
 
 #include <QHeaderView>
@@ -201,7 +200,7 @@ void TileTexturePreviewWidget::UpdateColor(DAVA::uint32 number)
     bool blocked = blockSignals(true);
 
     QTreeWidgetItem* item = topLevelItem(number);
-    QColor color = ColorToQColor(colors[number]);
+    QColor color = DAVA::TArc::ColorToQColor(colors[number]);
     color.setAlpha(255);
 
     QPalette palette = labels[number]->palette();
@@ -256,7 +255,7 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
             QColor color = QColor(colorString);
             if (color.isValid())
             {
-                DAVA::Color c = QColorToColor(color);
+                DAVA::Color c = DAVA::TArc::QColorToColor(color);
                 if (c != colors[index])
                 {
                     SetColor(index, c);

@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA" />
+      <title>Working With Strings</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["beastapitypes.h", "../api/beastapitypes_8h.html", "API"]); 
+reflinkdata.push(["ILBConstString", "../api/beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5", "API"]); 
+reflinkdata.push(["ILBStringHandle", "../api/struct_i_l_b_string_handle.html", "API"]); 
+reflinkdata.push(["ILBGetLength()", "../api/beaststring_8h.html#abe0cf7e931bb4ded132edf29bc93245a", "API"]); 
+reflinkdata.push(["ILBCopy()", "../api/beaststring_8h.html#a04f9d83165cc6abc3eec1101d2673fa8", "API"]); 
+reflinkdata.push(["ILBCharType", "../api/beastapitypes_8h.html#a2dd94949d31a400c9be7ad34fe0f8e70", "API"]); 
+reflinkdata.push(["ILBReleaseString()", "../api/beaststring_8h.html#a0511419e6d1254e6946cad27aa098c14", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3.htm',                           'd30e4527','index.html',location.hash);                           javascript:initPage('Working With Strings','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Working With Strings&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Working With Object Handles</div><a href="GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Programming With the Beast API</div><a href="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Error Handling</div><a href="GUID-4810E7A9-C0ED-42A2-A03F-42EF6ED115F2.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-215C3EE9-6616-41B4-B6A6-6BEEF46BB58D.htm"> Getting Started with Beast</a>&nbsp;&gt;&nbsp;<a href="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA.htm">Programming With the Beast API</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-CA786E36-DAFC-457F-97E3-10DB52FE8224"></a></span><h1>Working With Strings</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-960BE7DE-4B54-4DE5-8AEF-91748123FA4D"></a></span> <span class="charspan-msgph" translate="no">Beast</span> uses strings for several purposes, typically for resource names and messages. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E10B4960B5F7493FA1616B4E3D9A6F4A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4538"></a><span class="anchor_wrapper"><a name="GUID-E58FC519-63C1-47A1-8D07-879B815C2906"></a></span>Encodings
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-E598EDBD-449C-4C29-AD77-BDD8E1CB9A47"></a></span>The Beast API can handle string input and output using any of the following encodings: 
+            </p> <span class="anchor_wrapper"><a name="UL_66213985A76E4411ACD714CBAA748A8C"></a></span><ul>
+               <li>ANSI. This is the default string encoding in Visual Studio when working with 8-bit strings. Strings work like char* with ASCII
+                  characters only. You should use this encoding in your own project unless you need support for the wider range of characters
+                  accepted by Unicode encoding. 
+               </li>
+               <li>UTF-8: 8-bit Unicode encoding. </li>
+               <li>UTF-16: 16-bit Unicode encoding. This is the default string encoding in Visual Studio when working with Unicode strings. </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-0548ED63-1C3E-4D6E-B9AD-A8FAA082A809"></a></span>The <span class="charspan-msgph" translate="no">Beast</span> API will attempt to detect automatically the string encoding used by the host application with the pre-processor. You can
+               override the auto-detection by setting one of the following defines to specify the kind of encoding you want to use: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">#define ILB_STRING_ANSI
+#define ILB_STRING_UTF8
+#define ILB_STRING_UTF16</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-F1021EFA-767F-4BF5-A8F3-C3F07D5B78AD"></a></span>If you choose to specify an encoding using one of those defines, make sure that you do this for all files that directly or
+               indirectly use the <span class="charspan-msgph" translate="no">Beast</span> headers in order to avoid conflicts. See the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastapitypes.h'); return false;">beastapitypes.h</a></span> file for the auto-detection and setup for strings. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_EE2D425CAA5E437B8FA3D0496CC6147F"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4573"></a><span class="anchor_wrapper"><a name="GUID-A832717D-B25D-48A3-B399-64CD5A2EADF2"></a></span>Input strings
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-AA1C5A6E-3B00-4495-86BB-928838DB6A3E"></a></span>When you provide a string to the <span class="charspan-msgph" translate="no">Beast</span> API, you provide it as an <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBConstString'); return false;">ILBConstString</a></span> object. This is a pointer to a zero-terminated string of characters. Depending on the string encoding being used, the character
+               type will be different. If you use ANSI or UTF-8 encodings, you can build the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBConstString'); return false;">ILBConstString</a></span> from a string of <span class="code" translate="no">char*</span> characters; if you use UTF-16, you can build the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBConstString'); return false;">ILBConstString</a></span> from a string of <span class="code" translate="no">wchar_t*</span> characters. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_F9E5CA2DA1FF47BA87694EF7A5C772F0"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e4600"></a><span class="anchor_wrapper"><a name="GUID-DB562C24-E35B-49FC-B1BE-14988C1B60A5"></a></span>Output strings
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-87B887D6-34EA-4B16-8848-A39A0A526D0F"></a></span><span class="charspan-msgph" translate="no">Beast</span> also provides strings as output in some cases. This requires some memory management to ensure that the memory allocated for
+               the string is released properly. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-5D8FD3E3-E49B-4785-93DA-9154403F4AE7"></a></span>When a function in the <span class="charspan-msgph" translate="no">Beast</span> API provides a string as output, it provides it through an <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStringHandle'); return false;">ILBStringHandle</a></span>. You need to use this handle as follows: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_3C5285EA8FF349639A03EECEBBA4D5B2"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStringHandle'); return false;">ILBStringHandle</a></span> before you call the <span class="charspan-msgph" translate="no">Beast</span> API function, and pass it as a parameter. 
+               </li>
+               <li>After the function has completed, call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetLength()'); return false;">ILBGetLength()</a></span> to determine the length of the string. 
+               </li>
+               <li>Allocate a buffer of the appropriate length, and copy the contents of the handle into that buffer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCopy()'); return false;">ILBCopy()</a></span>. The length value indicated by the API gives the length of the string as the number of <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCharType'); return false;">ILBCharType</a></span> objects that make it up; the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCharType'); return false;">ILBCharType</a></span> is determined by the string encoding currently in use. The length also includes the zero termination marker. The <span class="charspan-msgph" translate="no">Beast</span> API will never return a zero-length string; empty strings are represented as a single zero termination marker. 
+               </li>
+               <li>Once you have finished with the string handle, you need to release it by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReleaseString()'); return false;">ILBReleaseString()</a></span>. String handles are not managed through the <span class="charspan-msgph" translate="no">Beast</span> manager, so if you do not release a string handle that you have created, you will have a memory leak. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-F933B2BB-C5B5-4F73-B9A3-1309767305F0"></a></span>The typical way of handling return strings is to create a function that converts the string to the format used in the host
+               application. For example, the following code block creates an <span class="code" translate="no">std::string</span> from an <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStringHandle'); return false;">ILBStringHandle</a></span> in C++: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">std::string convertBeastString(ILBStringHandle h) {
+   int32 len;
+   ILBGetLength(h, &amp;len);
+   // Note that <span class="charspan-msgph" translate="no">Beast</span> strings give their length
+   // including zero termination. We need to
+   // make the std::string 1 character shorter
+   // since std::string expects sizes without zero
+   // termination.
+   std::string result(len - 1, 0);
+   ILBCopy(h, &amp;result[0], len);
+   ILBReleaseString(h);
+   return result;
+}</pre></div> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

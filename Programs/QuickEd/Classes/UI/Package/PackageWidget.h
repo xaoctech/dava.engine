@@ -5,8 +5,9 @@
 #include "EditorSystems/SelectionContainer.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
+#include <TArc/DataProcessing/SettingsNode.h>
 
-#include <Preferences/PreferencesRegistrator.h>
+#include <Reflection/Reflection.h>
 #include <Base/BaseTypes.h>
 
 #include <QWidget>
@@ -37,7 +38,19 @@ class PackageNode;
 class QItemSelection;
 class CommandExecutor;
 
-class PackageWidget : public QDockWidget, public Ui::PackageWidget, public DAVA::InspBase
+class PackageWidgetSettings : public DAVA::TArc::SettingsNode
+{
+public:
+    DAVA::uint32 selectedDevice = 0;
+    DAVA::uint32 selectedBlank = 0;
+
+    bool useCustomUIViewerPath = false;
+    DAVA::String customUIViewerPath;
+
+    DAVA_VIRTUAL_REFLECTION(PackageWidgetSettings, DAVA::TArc::SettingsNode);
+};
+
+class PackageWidget : public QDockWidget, public Ui::PackageWidget
 {
     Q_OBJECT
 public:
@@ -66,6 +79,7 @@ public slots:
 
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
     void OnFilterTextChanged(const QString&);
+    void OnSelectAndRename(ControlNode*);
     void OnRename();
     void OnAddStyle();
     void OnCopyControlPath();
@@ -135,21 +149,6 @@ private:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::TArc::UI* ui = nullptr;
     DAVA::TArc::DataWrapper dataWrapper;
-
-    DAVA::uint32 selectedDevice = 0;
-    DAVA::uint32 selectedBlank = 0;
-
-    bool useCustomUIViewerPath = false;
-    DAVA::String customUIViewerPath;
-
-public:
-    INTROSPECTION(PackageWidget,
-                  MEMBER(selectedDevice, "Selected Device Index", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-                  MEMBER(selectedBlank, "Selected Blank Index", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_PREFERENCE)
-
-                  MEMBER(useCustomUIViewerPath, "Package Widget/Override UIViewer Path", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_VIEW | DAVA::I_PREFERENCE)
-                  MEMBER(customUIViewerPath, "Package Widget/UIViewer path", DAVA::I_SAVE | DAVA::I_EDIT | DAVA::I_VIEW | DAVA::I_PREFERENCE)
-                  )
 };
 
 struct PackageContext

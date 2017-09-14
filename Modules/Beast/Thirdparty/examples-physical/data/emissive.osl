@@ -1,0 +1,3 @@
+surface emissive(color Ke = 0) {
+    Ci = Ke * emission() * M_PI;
+}
