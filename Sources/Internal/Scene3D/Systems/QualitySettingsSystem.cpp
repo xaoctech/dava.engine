@@ -93,7 +93,9 @@ void QualitySettingsSystem::Load(const FilePath& path)
                             }
                         }
 
-                        materialGroups[FastName(name->AsString().c_str())] = std::move(maGr);
+                        String nodeName = name->AsString();
+                        FastName materialKey = FastName(nodeName);
+                        materialGroups[materialKey] = std::move(maGr);
                     }
                 }
             }
