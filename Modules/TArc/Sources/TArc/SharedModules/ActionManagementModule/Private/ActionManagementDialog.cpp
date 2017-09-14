@@ -184,6 +184,7 @@ ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIMan
             DAVA::Array<int, 4> correctedKeys;
             correctedKeys.fill(0);
             DAVA::Vector<QChar> incorrectKeys;
+            bool withoutModifFound = false;
             for (int i = 0; i < inputSequence.count(); ++i)
             {
                 int key = inputSequence[i];
@@ -196,6 +197,11 @@ ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIMan
                 bool letter = IsLetter(key);
                 bool special = IsSpecialAllowedSymbol(key);
 
+                if (modifExists == false && functional == false)
+                {
+                    withoutModifFound = true;
+                }
+
                 bool isKeyExists = digit || functional || letter || special;
                 if (isKeyExists == false)
                 {
@@ -207,7 +213,15 @@ ActionManagementDialog::ActionManagementDialog(ContextAccessor* accessor_, UIMan
             }
             inputSequence = QKeySequence(correctedKeys[0], correctedKeys[1], correctedKeys[2], correctedKeys[3]);
             shortcutText = seq;
-            if (inputSequence != seq)
+            if (withoutModifFound == true)
+            {
+                NotificationParams params;
+                params.title = "Incorrect shortcut";
+                params.message.type = DAVA::Result::RESULT_ERROR;
+                params.message.message = Format("You should use modification key (Ctrl, Alt, Shift or combination)\nfor all keys in shortcut except F1-F12");
+                ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+            }
+            else if (inputSequence != seq)
             {
                 QString incorrectKeysStr;
                 for (const QChar& ch : incorrectKeys)
