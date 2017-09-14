@@ -2,24 +2,22 @@
 
 #include "EditorSystems/BaseEditorSystem.h"
 #include "EditorSystems/EditorSystemsManager.h"
+
+#include <TArc/Qt/QtString.h>
+
 #include <QMap>
 #include <QPixmap>
-#include <QString>
 #include <QCursor>
-
-namespace DAVA
-{
-class RenderWidget;
-}
 
 class CursorSystem final : public BaseEditorSystem
 {
 public:
-    explicit CursorSystem(DAVA::RenderWidget* renderWidget, EditorSystemsManager* doc, DAVA::TArc::ContextAccessor* accessor);
+    explicit CursorSystem(DAVA::TArc::ContextAccessor* accessor);
     ~CursorSystem() override = default;
 
 private:
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
 
@@ -27,6 +25,4 @@ private:
     QPixmap CreatePixmap(const QString& address) const;
 
     static QMap<QString, QPixmap> cursorpixes;
-
-    DAVA::RenderWidget* renderWidget = nullptr;
 };

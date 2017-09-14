@@ -123,9 +123,24 @@ const ResultList& PackageBaseNode::GetResults() const
     return results;
 }
 
+void PackageBaseNode::AddIssue(DAVA::int32 issueId)
+{
+    issues.insert(issueId);
+}
+
+void PackageBaseNode::RemoveIssue(DAVA::int32 issueId)
+{
+    issues.erase(issueId);
+}
+
+void PackageBaseNode::RemoveAllIssues()
+{
+    issues.clear();
+}
+
 bool PackageBaseNode::HasErrors() const
 {
-    return results.HasErrors();
+    return results.HasErrors() || (issues.empty() == false);
 }
 
 namespace

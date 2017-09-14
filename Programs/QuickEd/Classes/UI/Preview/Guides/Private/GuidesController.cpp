@@ -1,6 +1,6 @@
 #include "UI/Preview/Guides/GuidesController.h"
 #include "UI/Preview/Guides/GuideLabel.h"
-#include "UI/Preview/Data/CanvasData.h"
+#include "Modules/CanvasModule/CanvasData.h"
 #include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
@@ -16,8 +16,7 @@
 #include <UI/UIControlSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Logger/Logger.h>
-#include <Preferences/PreferencesStorage.h>
-#include <Preferences/PreferencesRegistrator.h>
+#include "EditorSystems/UserAssetsSettings.h"
 
 GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_, QWidget* container_)
     : orientation(orientation_)
@@ -35,10 +34,6 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
     canvasDataAdapterWrapper.SetListener(this);
 
     BindFields();
-
-    preferences.guidesColorChanged.Connect(this, &GuidesController::OnGuidesColorChanged);
-    preferences.previewGuideColorChanged.Connect(this, &GuidesController::OnPreviewGuideColorChanged);
-
     CreatePreviewGuide();
 }
 
@@ -75,6 +70,20 @@ void GuidesController::BindFields()
         fieldDescr.type = ReflectedTypeDB::Get<CanvasData>();
         fieldDescr.fieldName = CanvasData::scalePropertyName;
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnCanvasParametersChanged));
+    }
+
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<UserAssetsSettings>();
+        fieldDescr.fieldName = FastName("guidesColor");
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnGuidesColorChanged));
+    }
+
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<UserAssetsSettings>();
+        fieldDescr.fieldName = FastName("previewGuideColor");
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &GuidesController::OnPreviewGuideColorChanged));
     }
 }
 
@@ -331,13 +340,15 @@ void GuidesController::SyncGuidesWithValues()
 
     std::size_t size = visibleValues.size();
 
+    UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
+
     while (guides.size() > size)
     {
         RemoveLastGuideWidget();
     }
     while (guides.size() < size)
     {
-        Guide guide = CreateGuide(preferences.GetGuidesColor());
+        Guide guide = CreateGuide(settings->guidesColor);
         guides.append(guide);
     }
 
@@ -428,7 +439,8 @@ void GuidesController::SetValues(const PackageNode::AxisGuides& values)
 void GuidesController::CreatePreviewGuide()
 {
     DVASSERT(previewGuide.line == nullptr && previewGuide.text == nullptr);
-    previewGuide = CreateGuide(preferences.GetPreviewGuideColor());
+    UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
+    previewGuide = CreateGuide(settings->previewGuideColor);
     previewGuide.Hide();
 }
 
@@ -499,16 +511,18 @@ void GuidesController::SetGuidesEnabled(bool enabled)
     }
 }
 
-void GuidesController::OnGuidesColorChanged(const DAVA::Color& color)
+void GuidesController::OnGuidesColorChanged(const DAVA::Any& c)
 {
+    DAVA::Color color = c.Cast<DAVA::Color>(DAVA::Color(DAVA::Color::Transparent));
     for (Guide& guide : guides)
     {
         SetGuideColor(guide.line, color);
     }
 }
 
-void GuidesController::OnPreviewGuideColorChanged(const DAVA::Color& color)
+void GuidesController::OnPreviewGuideColorChanged(const DAVA::Any& c)
 {
+    DAVA::Color color = c.Cast<DAVA::Color>(DAVA::Color(DAVA::Color::Transparent));
     SetGuideColor(previewGuide.line, color);
 }
 
@@ -595,41 +609,3 @@ void GuidesController::MoveGuide(DAVA::float32 value, Guide& guide) const
         guide.text->move(startPos, position - guide.text->height() - 5);
     }
 }
-
-GuidesControllerPreferences::GuidesControllerPreferences()
-{
-    PreferencesStorage::Instance()->RegisterPreferences(this);
-}
-
-GuidesControllerPreferences::~GuidesControllerPreferences()
-{
-    PreferencesStorage::Instance()->UnregisterPreferences(this);
-}
-
-const DAVA::Color& GuidesControllerPreferences::GetGuidesColor() const
-{
-    return guidesColor;
-}
-
-void GuidesControllerPreferences::SetGuidesColor(const DAVA::Color& color)
-{
-    guidesColor = color;
-    guidesColorChanged.Emit(color);
-}
-
-const DAVA::Color& GuidesControllerPreferences::GetPreviewGuideColor() const
-{
-    return previewGuideColor;
-}
-
-void GuidesControllerPreferences::SetPreviewGuideColor(const DAVA::Color& color)
-{
-    previewGuideColor = color;
-    previewGuideColorChanged.Emit(color);
-}
-
-REGISTER_PREFERENCES_ON_START(GuidesControllerPreferences,
-                              PREF_ARG("detectGuideDistance", DAVA::float32(3.0f)),
-                              PREF_ARG("guideColor", DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f)),
-                              PREF_ARG("previewGuideColor", DAVA::Color(1.0f, 0.0f, 0.0f, 0.5f))
-                              )

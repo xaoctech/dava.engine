@@ -8,8 +8,7 @@
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class FindInDocumentController;
 class PreviewWidget;
@@ -26,7 +25,7 @@ public:
 protected:
     void OnRenderSystemInitialized(DAVA::Window* window) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void PostInit() override;
@@ -36,7 +35,6 @@ protected:
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
 private:
-    void InitEditorSystems();
     void InitCentralWidget();
     void InitGlobalData();
 
@@ -44,9 +42,11 @@ private:
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
+
+    void DoGroupSelection();
 
     //View
     void CreateViewActions();
@@ -66,10 +66,13 @@ private:
 
     bool HasUnsavedDocuments() const;
     bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
-    void SaveAllDocuments();
-    void SaveCurrentDocument();
+    bool SaveAllDocuments();
+    bool SaveCurrentDocument();
+    void DiscardUnsavedChanges();
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
+
+    void OnEmulationModeChanged(bool mode);
 
     //previewWidget helper functions
     void ChangeControlText(ControlNode* node);
@@ -88,13 +91,9 @@ private:
     void OnSelectInFileSystem();
 
     PreviewWidget* previewWidget = nullptr;
-    std::unique_ptr<EditorSystemsManager> systemsManager;
     DAVA::TArc::QtConnections connections;
 
-    friend class FindInDocumentController;
-    std::unique_ptr<FindInDocumentController> findInDocumentController;
-
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
 

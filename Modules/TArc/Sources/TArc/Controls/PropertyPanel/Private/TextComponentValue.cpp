@@ -6,8 +6,7 @@
 #include "TArc/Controls/PropertyPanel/Private/ComponentStructureWrapper.h"
 #include "TArc/Controls/PropertyPanel/PropertyPanelMeta.h"
 #include "TArc/Controls/CommonStrings.h"
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include "TArc/Utils/Utils.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Reflection/ReflectedMeta.h>

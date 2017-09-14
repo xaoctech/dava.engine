@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-40FA7118-4ED8-4E59-8A93-7970F63673BA" />
+      <title>What's New in Beast 2013.0.x</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBCreateInstance()", "../api/beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470", "API"]); 
+reflinkdata.push(["ILBDeleteInstance()", "../api/beastinstance_8h.html#a0ef5936f29b4b853eab139c36c3d038e", "API"]); 
+reflinkdata.push(["ILBSetInstanceTransform()", "../api/beastinstance_8h.html#aaddf2d7e0cdbdb6dd81715245b0e4c37", "API"]); 
+reflinkdata.push(["ILBSetInstanceMesh()", "../api/beastinstance_8h.html#a238175a5847cbc6aaeb7e803f93ea002", "API"]); 
+reflinkdata.push(["ILBEnableAtlasRescale()", "../api/beasttarget_8h.html#ae88b2433331057e9f3ff62a4a05f7cad", "API"]); 
+reflinkdata.push(["ILBSetAtlasRescaleFrequencyThreshold()", "../api/beasttarget_8h.html#a0ec918aad3a2b8bf7ef5284e93e1f7ff", "API"]); 
+reflinkdata.push(["ILBCameraTargetSetRenderMode()", "../api/beasttarget_8h.html#a44202f61302b6d0d11dca72ae1f44c01", "API"]); 
+reflinkdata.push(["ILBSetResolutionScale()", "../api/beastrenderpass_8h.html#a6b42987084f1ec2ad31c32147a9e0fb0", "API"]); 
+reflinkdata.push(["ILBCreateManager()", "../api/beastmanager_8h.html#aeb36a8136fb38c84b0a40368f2f9b259", "API"]); 
+reflinkdata.push(["ILBSetErnstDisplayGamma()", "../api/beastjob_8h.html#a3b620cd0523152ab23eb3ffefe8d49bc", "API"]); 
+reflinkdata.push(["ILBStatus", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1.htm',                           'd30e1777','index.html',location.hash);                           javascript:initPage('What\'s New in Beast 2013.0.x','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=What\'s New in Beast 2013.0.x&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Beast 2013.0.x</div><a href="GUID-40FA7118-4ED8-4E59-8A93-7970F63673BA.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Beast 2013.0.x</div><a href="GUID-40FA7118-4ED8-4E59-8A93-7970F63673BA.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Upgrade Requirements for 2013.0.x</div><a href="GUID-F38A205A-9400-4E8D-888F-78DDC3D58F79.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-61E8AD5E-49BB-4F7F-8D8C-11B3CADE2821.htm">Migration Guide</a>&nbsp;&gt;&nbsp;<a href="GUID-9F081398-2814-48DD-9EDD-623E18FB6550.htm">Previous Releases</a>&nbsp;&gt;&nbsp;<a href="GUID-40FA7118-4ED8-4E59-8A93-7970F63673BA.htm">Beast 2013.0.x</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-0CB32B66-7BBD-4398-9BF7-C6C3966068A4"></a></span><h1>What's New in Beast 2013.0.x</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1"></a></span>
+         <!--Body--><div class="section"><span class="anchor_wrapper"><a name="SECTION_00F55CD60F144C6099D59EE119FBB574"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e1783"></a><span class="anchor_wrapper"><a name="GUID-395340BA-63C7-4A5F-81DD-F4DADD6D047A"></a></span>Beast 2013.0.1
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_D521BFF706364913B99F68252698D7A8"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1788"></a><span class="anchor_wrapper"><a name="GUID-071F42F3-3755-4593-9F85-7D979BD38A7B"></a></span>Fixes in Beast 2013.0.1
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-D5016A3F-DAA9-46C9-9EC2-456BA61B66CF"></a></span>The following have been fixed in Beast 2013.0.1: 
+               </p> <span class="anchor_wrapper"><a name="UL_64287D7AD47645C59450D43CD3DD6226"></a></span><ul>
+                  <li> a race condition that resulted in eRnsT hanging on shutdown </li>
+                  <li>error messages not being added to the log </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E6FF3932370D4F1B939F9B9F33263DAF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e1803"></a><span class="anchor_wrapper"><a name="GUID-90B4BCE6-E526-4A4D-8DAF-399877F43EE4"></a></span>Beast 2013
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_2798ED1EC0264BB39F1933A4A08A7FE9"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1808"></a><span class="anchor_wrapper"><a name="GUID-39B669A5-D330-492F-B047-6B912BAC79A1"></a></span>Live scene authoring
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-183DC849-82F8-4C2D-AA25-14EB767EFAC2"></a></span>Beast's new complete live workflow supports adding, removing, and modifying both instances and geometry. This supports simultaneous
+                  changes to layout and lighting without the need to restart rendering. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_5D3242F82FC7451B88040EA10CB87222"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1817"></a><span class="anchor_wrapper"><a name="GUID-62FBE9BD-8CF7-4BEE-998E-E137F0771F76"></a></span>Maya plug-in
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-F53ED3D3-10D7-4FF3-B9E3-1FC8A48DDE9D"></a></span>Beast 2013 includes a custom Maya integration. This includes the plug-in's full source code that serves as both an extensive
+                  Beast API example, and the foundation for building the plug-in for production use. The Maya plug-in is also ready for use
+                  to help your game artists be up-and-running without first having to integrate Beast into your proprietary game engine. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_2AC42A3006EE462384359E570BBBEBD2"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1826"></a><span class="anchor_wrapper"><a name="GUID-319854B8-DB31-4EB3-9EDC-5356AB179170"></a></span>Live Camera frame buffer rendering
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-77173B13-6907-4C45-AB5D-06FF8F3F72B8"></a></span>Live mode now outputs camera frame buffers, simplifying Beast integrations by displaying a streaming sequence of images rather
+                  than applying live lightmaps. This camera mode supports the display of both baked lightmaps and final frame rendering; it
+                  can be used with geometry that has not yet been set up to use lightmap UVs. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_5B26AEFAD3B645218C47FDB5CD0482BE"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1835"></a><span class="anchor_wrapper"><a name="GUID-B293F19C-907C-491F-A994-94EB55A3CC19"></a></span>Lightmap atlas optimization
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-135C0BA8-3BF9-4641-992D-3BCF7877A8C2"></a></span>Beast can automatically adapt the UV-layout of a lightmap atlas to the baked content. This optimization reduces memory use
+                  by scaling-down shapes with low frequency lighting. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_130C8C0C810A4F1981334C4BD42CB0EA"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1845"></a><span class="anchor_wrapper"><a name="GUID-D058913F-513A-44DA-BAD3-2D7D53F39E4C"></a></span>LOD support in Live mode
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-DD468EAA-A238-4CE4-B25D-4306C40133C3"></a></span>Beast previews correctly bake LOD hierarchies of objects to support the streaming of lightmaps into your game engine for all
+                  resolutions of your objects. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_E350C4685F9E4CEEAE2C62D3B6D60B8C"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1854"></a><span class="anchor_wrapper"><a name="GUID-8DDC6365-194D-4156-941C-145C7AC6030E"></a></span>Additional new features
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-0324676A-A962-4ED3-9E3F-4A45F3067BB0"></a></span> <span class="anchor_wrapper"><a name="UL_5E914472BAB54B248251914891898E29"></a></span><ul>
+                     <li>A new LUA function for a perturbed normal (for bump/normal mapping) </li>
+                     <li>The Ambient Light light source. </li>
+                  </ul> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_290ECB3175D34D5883A2010D3073C4F7"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1869"></a><span class="anchor_wrapper"><a name="GUID-3CD41F3A-4AAE-4095-AF85-E0800770C042"></a></span>Improvements
+               </h3> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_7A67A28900D74C07B2DEF592E942CBF1"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e1874"></a><span class="anchor_wrapper"><a name="GUID-9EAC69E1-1A40-4A1F-B613-E1A2FACE4C5C"></a></span>Final bake distribution performance
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-8CC90BEF-0520-465E-8981-DB0E6D954F94"></a></span> <span class="anchor_wrapper"><a name="UL_A5E9AB787BDA48DE8C996EE1B11EFC20"></a></span><ul>
+                        <li>Improved calculation of the size of the job queue for distributed rendering </li>
+                        <li>Optimized performance of distributed file I/O </li>
+                        <li>Increased efficiency in the handling of shared global illumination caches. </li>
+                     </ul> 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_53D70DED266B4E209B4C7C2169C06788"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e1891"></a><span class="anchor_wrapper"><a name="GUID-B58DAD17-D4B2-4D5E-AA2E-36377B8F7F2F"></a></span>Live rendering
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-19CEC8DE-2454-492D-B626-52560987DBBB"></a></span> <span class="anchor_wrapper"><a name="UL_A214DA295E864B4E878452589DE84784"></a></span><ul>
+                        <li>Optimized live mode processing of shapes and lightmaps for large scenes </li>
+                        <li>Support for normal mapping in eRnsT </li>
+                     </ul> 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_1BD42F7003254E0A93E081F9D970ACCB"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e1906"></a><span class="anchor_wrapper"><a name="GUID-0DB1C7F9-2392-4DE9-8C21-C243945D9064"></a></span>Final bake rendering
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-12678DFB-70BA-461F-B45E-F7681425E1F2"></a></span> <span class="anchor_wrapper"><a name="UL_9A47A07BFCC94DFD95066EE01E65860B"></a></span><ul>
+                        <li>Gamma correction is enabled by default </li>
+                        <li>Added <span class="code" translate="no">LARGEADDRESSAWARE</span> to WIN32 builds 
+                        </li>
+                        <li>Modified the contrast measure in FG/RC to use a relative measure for sample values larger than 1.0. This improves Beast performance
+                           with very bright scenes. 
+                        </li>
+                        <li>Added front-back culling of FG samples when <em class="strong">check sample visibility</em> is disabled 
+                        </li>
+                     </ul> 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_79F7D38E493046A98727DF5FF3ED18D2"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e1931"></a><span class="anchor_wrapper"><a name="GUID-2CD14A77-0360-4D95-B176-679961AC6BE1"></a></span>Beast API
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-0A7E888F-83F1-4E8C-85C1-74517F4D1716"></a></span> <span class="anchor_wrapper"><a name="UL_AA32A5B06197455882936DE25636BB5F"></a></span><ul>
+                        <li>Optimized latency when reading results from live jobs </li>
+                        <li>Improved XML handling in API to speed up use cases when the Debugger is attached in release mode </li>
+                     </ul> 
+                  </p> 
+               </div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_BDD112F726374BAFB5793514C36F651D"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1947"></a><span class="anchor_wrapper"><a name="GUID-62A22197-95B2-47AE-80BA-2DBAA3066506"></a></span>Distribeast 0.3.17.0
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-449D7E1E-98EC-46D2-A206-01A077505A69"></a></span> <span class="anchor_wrapper"><a name="UL_0C00A83E585645628BD4A02401DA44AD"></a></span><ul>
+                     <li>Improved logging </li>
+                     <li>Internal performance improvements </li>
+                     <li>Job handling has been added to manage child and grandchild processes in the event of an unexpected termination </li>
+                     <li>Distribeast can be remotely started, stopped, and restarted using dconfig </li>
+                     <li>Distribeast automatically stops receiving jobs from other nodes if the node is determined to be <em class="mild">busy</em> (determined by metrics based on CPU and memory use on the host system). The node automatically starts accepting jobs 30 seconds
+                        after it is no longer <em class="mild">busy</em>. Jobs from the local machine are accepted at all times. 
+                     </li>
+                     <li>When a node is started, it does not accept jobs until a certain time has elapsed; the default waiting period is 60 seconds
+                        
+                     </li>
+                     <li>Logs can be gathered from remote machines using dconfig; log gathering can be limited to <em class="mild">recently</em> updated log files 
+                     </li>
+                     <li>Distribeast settings and cache clearing can be remotely managed using dconfig </li>
+                     <li>The clearing of temporary files has been improved to prevent problems with Windows Search that can cause the host computer
+                        to become too busy 
+                     </li>
+                  </ul> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_05DFB5F78A7C497092CC6B694CA4197D"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e1985"></a><span class="anchor_wrapper"><a name="GUID-FC7DFA58-09BE-4126-8796-8BBC6B36C7B7"></a></span>API
+               </h3> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_5FCFD2D9749B455EBF25F0DAA56C57EB"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e1990"></a><span class="anchor_wrapper"><a name="GUID-25A4D4EC-A76F-410E-AF1E-C85091F0F7F4"></a></span>New
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-12DE4897-E20B-47FF-B781-7BA9A83C61DC"></a></span> <span class="anchor_wrapper"><a name="UL_3581CDF763074604BF9E4DDFBDC167A7"></a></span><ul>
+                        <li>Added support for creating a new instance by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateInstance()'); return false;">ILBCreateInstance()</a></span> in live mode 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBDeleteInstance()'); return false;">ILBDeleteInstance()</a></span> added for deleting an instance in live mode 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetInstanceTransform()'); return false;">ILBSetInstanceTransform()</a></span> added for setting a transform for an instance in live mode 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetInstanceMesh()'); return false;">ILBSetInstanceMesh()</a></span> added for changing the shape of an instance 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEnableAtlasRescale()'); return false;">ILBEnableAtlasRescale()</a></span> added for automatic rescaling of instance lightmaps in an atlas 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAtlasRescaleFrequencyThreshold()'); return false;">ILBSetAtlasRescaleFrequencyThreshold()</a></span> added to control the rescale frequency threshold of an atlas 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCameraTargetSetRenderMode()'); return false;">ILBCameraTargetSetRenderMode()</a></span> added to control a camera's frame buffer render mode. This is used to change between lightmap or <em class="mild">pure camera</em> rendering 
+                        </li>
+                        <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetResolutionScale()'); return false;">ILBSetResolutionScale()</a></span> added to scale the texture bake output resolution per pass 
+                        </li>
+                        <li><span class="code" translate="no">LIBSetErnstRunningState()</span> added for pausing/resuming in live mode 
+                        </li>
+                     </ul> 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_6220C35606AC4465A14EFB2BD8B0C0FB"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2041"></a><span class="anchor_wrapper"><a name="GUID-1C31797F-70EF-4E20-9482-570B250833A9"></a></span>Changed
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-F21CD09B-88AC-4CAF-A223-DF16DF4EC91D"></a></span> <span class="anchor_wrapper"><a name="UL_3454D438CB4B4ACE87BEE9CD822DBBDC"></a></span><ul>
+                        <li>Changed API render stats enums for consistency; old render stats still exist for backwards compatibility </li>
+                        <li>Added new Gameware license system, which affects changes to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateManager()'); return false;">ILBCreateManager()</a></span> 
+                        </li>
+                        <li>Replaced <span class="code" translate="no">ILBSetErnstGamma()</span> with <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetErnstDisplayGamma()'); return false;">ILBSetErnstDisplayGamma()</a></span> to ensure the gamma is correct between the Beast API and rendering binaries 
+                        </li>
+                        <li>Added <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a></span> to report license errors 
+                        </li>
+                        <li>Removed <span class="code" translate="no">ILBEraseCachedMesh()</span> and <span class="code" translate="no">ILBEraceCachedTexture()</span> because they were limited to local data 
+                        </li>
+                     </ul> 
+                  </p> 
+               </div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_E521D342268946338D394F0267E58DFA"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2081"></a><span class="anchor_wrapper"><a name="GUID-DB3C4373-5B63-4137-9962-88E3E12F2D5F"></a></span>Fixes in Beast 2013
+               </h3> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_B8702F9914024A4D88B177480CA6625F"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2086"></a><span class="anchor_wrapper"><a name="GUID-E6DA4841-7778-490E-BDDF-FC89CEA123C8"></a></span>Beast
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-2C7A99EE-8E4C-4F6D-BF92-72143773F3D8"></a></span>The following have been fixed in Beast 2013: 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-3713C0CF-6E1A-4DE2-BBD0-72312E38D5DC"></a></span> <span class="anchor_wrapper"><a name="UL_E844864D82454E7B928173B3E02289AB"></a></span><ul>
+                        <li>Local Beast bake caused unexpected halt when using multiple-depth FG </li>
+                        <li>Sampling sky lights when using the MonteCarlo integrator </li>
+                        <li>eRnsT was not respecting all render stats </li>
+                        <li>Irradience cache files were always empty when distributed </li>
+                        <li>Incorrect point distributions in FG when multiple surfaces were baked together (FG filtering was "stealing" FG points from
+                           other surfaces) 
+                        </li>
+                        <li>eRnsT lightmap rendering occasionally displaying black squares in the lightmaps </li>
+                        <li>Rendertool job management was only spawning one job at a time when it might be possible to run multiple jobs </li>
+                        <li>API error message concerning "target mapping not found" </li>
+                        <li>Incorrect error message when a file copy failed and the node connection was lost </li>
+                        <li>Culling specular reflections from light that is not facing intersection normal </li>
+                        <li>Unexpected halts of eRnsT on exit </li>
+                        <li><span class="code" translate="no">ILBGetTargetEntityInstance</span> caused unexpected halts, and it caused incorrect return of the internal (hashed) name rather than the specified name 
+                        </li>
+                        <li>UV-antialiasing negative region size triggered unexpected halt with shapes that were out of UV range </li>
+                        <li>Problems in combining transparency and diffuse shading in eRnsT </li>
+                        <li><span class="code" translate="no">ILBClearCache</span> did not apply correctly in a global scale when using a local cache scope 
+                        </li>
+                        <li>Shadow pass was returning the last pass rather than the maximum transmission of all added light sources </li>
+                        <li>An instances display name was not correctly applied in the property panel of the live mode editor </li>
+                     </ul> 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_C50734360CB24A949178DF68D32C5D9B"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2139"></a><span class="anchor_wrapper"><a name="GUID-90368A18-DC8A-4DCC-8971-B940BE1AF55C"></a></span>Distribeast 0.3.17.0
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-C88B902B-83EA-43B8-8015-CF35FE8EB7B6"></a></span>The following have been fixed in Distribeast: 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-775499C6-CF26-46BA-85F7-973F4C822B93"></a></span> <span class="anchor_wrapper"><a name="UL_F09E6D1CD1F94AA99633276C4B3604B4"></a></span><ul>
+                        <li>Distribeast was prevented from monitoring tool processes </li>
+                        <li>Jobs started on the same machine as the controller could overuse node resources </li>
+                        <li>A race condition when sending cancelled tools notifications could cause bakes to fail </li>
+                        <li>A race condition that could leave some transfer files in the resource cache if the job ended at the same time </li>
+                        <li>Double replies were sent for resource transfers that failed when the source node could not be contacted </li>
+                        <li>Incorrectly "Working for" displayed on tooltip for the Distribeast monitor when a tool was closed early </li>
+                        <li>"Files in Use" dialog appeared during upgrade. </li>
+                     </ul> 
+                  </p> 
+               </div> 
+            </div> 
+            <p><span class="anchor_wrapper"><a name="GUID-45132CDA-5BF3-43BF-9798-89E552B2AC90"></a></span> 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

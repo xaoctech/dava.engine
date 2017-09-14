@@ -1,17 +1,15 @@
-#include "Tools/LoggerOutput/ErrorDialogOutput.h"
+#include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 
-#include "Classes/Qt/GlobalOperations.h"
+#include <TArc/Utils/AssertGuard.h>
+#include <TArc/WindowSubSystem/UI.h>
 
-#include "TArc/Utils/AssertGuard.h"
-
-#include "Concurrency/LockGuard.h"
-#include "Utils/StringFormat.h"
-
-#include "Settings/SettingsManager.h"
-
-#include "Debug/DVAssertDefaultHandlers.h"
-
-#include <QMessageBox>
+#include <Concurrency/LockGuard.h>
+#include <Debug/DVAssertDefaultHandlers.h>
+#include <Debug/MessageBox.h>
+#include <Engine/PlatformApiQt.h>
+#include <Utils/StringFormat.h>
 
 namespace ErrorDialogDetail
 {
@@ -29,8 +27,8 @@ class ErrorDialogOutput::IgnoreHelper
 public:
     bool ShouldIgnoreMessage(DAVA::Logger::eLogLevel ll, const DAVA::String& textMessage)
     {
-        bool enabled = (SettingsManager::Instance() != nullptr) ? SettingsManager::GetValue(Settings::General_ShowErrorDialog).AsBool() : false;
-        if ((ll < DAVA::Logger::LEVEL_ERROR) || !enabled)
+        GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+        if ((ll < DAVA::Logger::LEVEL_ERROR) || settings->showErrorDialog == false)
         {
             return true;
         }
@@ -73,12 +71,13 @@ private:
     bool callstackPrinting = false;
 };
 
-ErrorDialogOutput::ErrorDialogOutput(const std::shared_ptr<GlobalOperations>& globalOperations_)
+ErrorDialogOutput::ErrorDialogOutput(DAVA::TArc::UI* ui)
     : ignoreHelper(new IgnoreHelper())
-    , globalOperations(globalOperations_)
     , isJobStarted(false)
     , enabled(true)
+    , tarcUI(ui)
 {
+    DVASSERT(tarcUI != nullptr);
     errors.reserve(ErrorDialogDetail::maxErrorsPerDialog);
 }
 
@@ -110,17 +109,17 @@ void ErrorDialogOutput::ShowErrorDialog()
 {
     DVASSERT(isJobStarted == true);
 
-    if (globalOperations->IsWaitDialogVisible())
+    if (tarcUI->HasActiveWaitDalogues())
     {
         DVASSERT(waitDialogConnectionToken.IsEmpty());
-        waitDialogConnectionToken = globalOperations->waitDialogClosed.Connect(this, &ErrorDialogOutput::ShowErrorDialog);
+        waitDialogConnectionToken = tarcUI->lastWaitDialogWasClosed.Connect(this, &ErrorDialogOutput::ShowErrorDialog);
         return;
     }
 
     { // disconnect from
         if (!waitDialogConnectionToken.IsEmpty())
         {
-            globalOperations->waitDialogClosed.Disconnect(waitDialogConnectionToken);
+            tarcUI->lastWaitDialogWasClosed.Disconnect(waitDialogConnectionToken);
             waitDialogConnectionToken.Clear();
         }
         isJobStarted = false;
@@ -172,7 +171,7 @@ void ErrorDialogOutput::ShowErrorDialogImpl()
         errors.clear();
     }
 
-    QMessageBox::critical(globalOperations->GetGlobalParentWidget(), title.c_str(), errorMessage.c_str());
+    DAVA::Debug::MessageBox(title, errorMessage, { "Close" });
 }
 
 void ErrorDialogOutput::Disable()

@@ -1,4 +1,12 @@
-.git
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# File name: white_list.txt                                             #
+# This file contains a list of paths to load into the GitHub repository #
+#                                                                       #
+# WARNING: Beast And SpeedTree should never been in white list!!!       #
+#                                                                       #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+.git # Example comment for path/dir/file
 Bin/cmake
 Bin/CMake.app
 Bin/doxygen

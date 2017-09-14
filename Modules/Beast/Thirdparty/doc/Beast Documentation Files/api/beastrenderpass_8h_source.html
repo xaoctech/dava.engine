@@ -1,0 +1,708 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastrenderpass.h Source File</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastrenderpass_8h_source.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastrenderpass.h Source File&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastrenderpass.h Source
+File</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">beastapi/beastrenderpass.h</div>
+</div>
+</div>
+<div class="contents"><a href="beastrenderpass_8h.html">Go to the
+documentation of this file.</a>
+<div class="fragment">
+<pre class="fragment">
+<a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<a name="l00003"></a>00003 <span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<a name="l00004"></a>00004 <span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<a name="l00005"></a>00005 <span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<a name="l00006"></a>00006 <span class="comment">*/</span>
+<a name="l00007"></a>00007 
+<a name="l00012"></a>00012 <span class=
+"preprocessor">#ifndef BEASTRENDERPASS_H</span>
+<a name="l00013"></a>00013 <span class=
+"preprocessor">#define BEASTRENDERPASS_H</span>
+<a name="l00014"></a>00014 
+<a name="l00015"></a>00015 <span class=
+"preprocessor">#include "<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapitypes.h</a>"</span>
+<a name="l00016"></a>00016 
+<a name="l00020"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636">00020</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00024"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3">00024</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3"
+title=
+"Only direct illumination (no indirect illumination)">ILB_IM_DIRECT_ONLY</a> = 0,
+<a name="l00025"></a>00025 
+<a name="l00029"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82">00029</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82"
+title=
+"Only indirect illumination (no direct illumination)">ILB_IM_INDIRECT_ONLY</a>,
+<a name="l00030"></a>00030 
+<a name="l00034"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93">00034</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93"
+title="Both direct and indirect illumination.">ILB_IM_FULL</a>,
+<a name="l00035"></a>00035 
+<a name="l00039"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aef8d5a408fd47e7b7655421774103240">00039</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aef8d5a408fd47e7b7655421774103240"
+title=
+"Stores both direct+indirect and indirect separately.">ILB_IM_FULL_AND_INDIRECT</a>,
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 } <a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a>;
+<a name="l00042"></a>00042 
+<a name="l00046"></a><a class="code" href=
+"beastrenderpass_8h.html#a9d0a3a0278c5d56cf2b4a15f8c06a608">00046</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00047"></a>00047         ILB_BT_NO_BASIS = 0,
+<a name="l00048"></a>00048         ILB_BT_SH,
+<a name="l00049"></a>00049 } <a class="code" href=
+"beastrenderpass_8h.html#a9d0a3a0278c5d56cf2b4a15f8c06a608" title=
+"Basis type.">ILBBasisType</a>;
+<a name="l00050"></a>00050 
+<a name="l00054"></a><a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15">00054</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00058"></a><a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5">00058</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5"
+title="Half-Life 2 compatible basis.">ILB_RB_HL2</a> = 0,
+<a name="l00059"></a>00059 
+<a name="l00063"></a><a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0">00063</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0"
+title="Unreal Engine 3 compatible basis.">ILB_RB_UE3</a>,
+<a name="l00064"></a>00064 
+<a name="l00068"></a><a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a6e5b6d82674682e7b91178102d395be1">00068</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a6e5b6d82674682e7b91178102d395be1"
+title=
+"Unreal Engine 3 basis in untouched order.">ILB_RB_UE3_FLIPPED</a>,
+<a name="l00069"></a>00069 
+<a name="l00073"></a><a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b">00073</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b"
+title=
+"Allows the user to enter the basis vectors manually.">ILB_RB_CUSTOM</a>,
+<a name="l00074"></a>00074 } <a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15" title=
+"RNM Basis.">ILBRNMBasis</a>;
+<a name="l00075"></a>00075 
+<a name="l00079"></a><a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc">00079</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00083"></a><a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bcac66096b5e81f9b4060a7391932d2c8d4">00083</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bcac66096b5e81f9b4060a7391932d2c8d4"
+title="Allows negative RNM values.">ILB_AN_ALLOW</a> = 0,
+<a name="l00084"></a>00084 
+<a name="l00088"></a><a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca824494289339b57485d64f0b212c9dae">00088</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca824494289339b57485d64f0b212c9dae"
+title="Clamps negative RNM values to 0.">ILB_AN_DISALLOW</a>,
+<a name="l00089"></a>00089 
+<a name="l00093"></a><a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca50926c390d9ba33b0249dfc72cf97fdb">00093</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca50926c390d9ba33b0249dfc72cf97fdb"
+title=
+"As ILB_AN_DISALLOW, and also culls lights below the horizon of each triangle.">ILB_AN_DISALLOW_CULL_HORIZON</a>,
+<a name="l00094"></a>00094 } <a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc" title=
+"Allow Negative.">ILBRNMAllowNegative</a>;
+<a name="l00095"></a>00095 
+<a name="l00099"></a><a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a">00099</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00103"></a><a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa87a367367bf2fc58d6d23fa494d1f720">00103</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa87a367367bf2fc58d6d23fa494d1f720"
+title=
+"Self Occluded rays will continue beyond the originating object.">ILB_SO_DISABLED</a> = 0,
+<a name="l00104"></a>00104 
+<a name="l00108"></a><a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aac549fa1859fc951ef06b3ab4ad0f8292">00108</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aac549fa1859fc951ef06b3ab4ad0f8292"
+title=
+"Self Occluded rays will be set to the environment.">ILB_SO_SET_ENVIRONMENT</a>,
+<a name="l00109"></a>00109 
+<a name="l00113"></a><a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa2f8d6b0274be869aff02c7dfad441ff6">00113</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa2f8d6b0274be869aff02c7dfad441ff6"
+title="Objects can self occlude.">ILB_SO_ENABLED</a>,
+<a name="l00114"></a>00114 } <a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a" title=
+"Self Occlusion Mode.">ILBAOSelfOcclusion</a>;
+<a name="l00115"></a>00115 
+<a name="l00119"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf">00119</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00123"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1">00123</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1"
+title=
+"Stores the incoming light in the light map.">ILB_LP_LIGHTMAP</a> = 0,
+<a name="l00124"></a>00124 
+<a name="l00129"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c">00129</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c"
+title="Stores the shadow mask.">ILB_LP_SHADOWMAP</a>,
+<a name="l00130"></a>00130 
+<a name="l00134"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772">00134</a>         <a class="code"
+href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772"
+title=
+"Stores the full shading in the light map.">ILB_LP_FULLSHADING</a>,
+<a name="l00135"></a>00135 } <a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf" title=
+"Light Pass Type.">ILBLightPassType</a>;
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00138"></a>00138 <span class=
+"keyword">extern</span> <span class="stringliteral">"C"</span> {
+<a name="l00139"></a>00139 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00140"></a>00140 
+<a name="l00148"></a>00148         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#ad16bdfe42814a2538c0c974ea79ec715" title=
+"Creates a Full Shading render pass.">ILBCreateFullShadingPass</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00149"></a>00149                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00150"></a>00150                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00151"></a>00151 
+<a name="l00164"></a>00164         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6" title=
+"Creates an RNM render pass.">ILBCreateRNMPass</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00165"></a>00165                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00166"></a>00166                 <a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a> mode,
+<a name="l00167"></a>00167                 int32 samples,
+<a name="l00168"></a>00168                 <a class="code" href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15" title=
+"RNM Basis.">ILBRNMBasis</a> basis,
+<a name="l00169"></a>00169                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00170"></a>00170 
+<a name="l00179"></a>00179         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a75f19f8d7eaba6ce1f2350e5fcecd1bb" title=
+"Creates a Light render pass.">ILBCreateLightPass</a>(<a class=
+"code" href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00180"></a>00180                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00181"></a>00181                 <a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf" title=
+"Light Pass Type.">ILBLightPassType</a> type,
+<a name="l00182"></a>00182                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00183"></a>00183 
+<a name="l00211"></a>00211         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a21dfaef01b2775b3a55501fcb8a111d5" title=
+"No support in physical rendering.">ILBEnableSignedDistanceField</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name=
+"l00212"></a>00212                 int32 pixelFilterSize, <span class="keywordtype">float</span> maxWorldDistance);
+<a name="l00213"></a>00213 
+<a name="l00226"></a>00226         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a71609144a15421439392d9ce80eb31d3" title=
+"Sets the lambertian scale on a light pass.">ILBSetLambertianScale</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00227"></a>00227                 <span class=
+"keywordtype">float</span> scale);
+<a name="l00228"></a>00228 
+<a name="l00235"></a>00235         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a5e739df252830d484d077607ba8390c8" title=
+"Creates a Light Pass Entry.">ILBCreateLightPassEntry</a>(<a class=
+"code" href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00236"></a>00236                 <a class="code" href=
+"struct_i_l_b_light_pass_entry_handle.html" title=
+"Handle for Light pass entry Intentionally hidden implementation.">ILBLightPassEntryHandle</a>* entry);
+<a name="l00237"></a>00237 
+<a name="l00244"></a>00244         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a75899d0b3701c21fe3bf10681a54371b" title=
+"Add a light to a light pass.">ILBAddLightToPass</a>(<a class=
+"code" href="struct_i_l_b_light_pass_entry_handle.html" title=
+"Handle for Light pass entry Intentionally hidden implementation.">ILBLightPassEntryHandle</a> entry,
+<a name="l00245"></a>00245                 <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light);
+<a name="l00246"></a>00246 
+<a name="l00253"></a>00253         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a1cf7ec9fa12d94730a9b9642b1b9d701" title=
+"Add an affected target entity to a light pass.">ILBAddTargetToPass</a>(<a class="code"
+href="struct_i_l_b_light_pass_entry_handle.html" title=
+"Handle for Light pass entry Intentionally hidden implementation.">ILBLightPassEntryHandle</a> entry, 
+<a name="l00254"></a>00254                 <a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> target);
+<a name="l00255"></a>00255 
+<a name="l00262"></a>00262         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#ab0407b495d4427673eddc63082d4490f" title=
+"Add a light to be fully baked to a FullAndIndirectIllumination Pass.">ILBAddFullyBakedLight</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass, 
+<a name="l00263"></a>00263                 <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light);
+<a name="l00264"></a>00264 
+<a name="l00272"></a>00272         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a5fc31993f18372a48d9552eb067e8ed2" title=
+"Creates a Normal render pass.">ILBCreateNormalPass</a>(<a class=
+"code" href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00273"></a>00273                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00274"></a>00274                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00275"></a>00275 
+<a name="l00285"></a>00285         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a6b867c7cb0101d7f28870ef50fbd3c97" title=
+"Creates an Ambient Occlusion render pass.">ILBCreateAmbientOcclusionPass</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00286"></a>00286                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00287"></a>00287                 <span class=
+"keywordtype">float</span> maxDistance,
+<a name="l00288"></a>00288                 <span class=
+"keywordtype">float</span> coneAngle,
+<a name="l00289"></a>00289                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00290"></a>00290 
+<a name="l00299"></a>00299         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a51193d5aa62550475f31c0b90100cc07" title=
+"No support in physical rendering.">ILBSetAOAdaptive</a>(<a class=
+"code" href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00300"></a>00300                 <span class=
+"keywordtype">float</span> accuracy, 
+<a name="l00301"></a>00301                 <span class=
+"keywordtype">float</span> smooth);
+<a name="l00302"></a>00302 
+<a name="l00311"></a>00311         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a77ae79aa30453e1b5c2c824ac6afda7f" title=
+"No support in physical rendering.">ILBSetAONumRays</a>(<a class=
+"code" href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00312"></a>00312                 int32 minRay, 
+<a name="l00313"></a>00313                 int32 maxRay);
+<a name="l00314"></a>00314 
+<a name="l00322"></a>00322         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#ad8788bbbafd64342099152ac404f5f03" title=
+"Sets the contrast and scale of an AO pass.">ILBSetAOContrast</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00323"></a>00323                 <span class=
+"keywordtype">float</span> contrast, 
+<a name="l00324"></a>00324                 <span class=
+"keywordtype">float</span> scale);
+<a name="l00325"></a>00325 
+<a name="l00332"></a>00332         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#afc887b914ff75213285173bb6cd33298" title=
+"Enables Uniform Sampling on an AO pass.">ILBSetAOUniformSampling</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass);
+<a name="l00333"></a>00333 
+<a name="l00340"></a>00340         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a2c7e9750b8ca0817583d49f7f296de27" title=
+"Sets how the AO pass should react to self occlusion.">ILBSetAOSelfOcclusion</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00341"></a>00341                 <a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a" title=
+"Self Occlusion Mode.">ILBAOSelfOcclusion</a> selfOcclusion);
+<a name="l00342"></a>00342 
+<a name="l00351"></a>00351         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#ad61962c051aa01a367b08758e2d822a1" title=
+"No support in physical rendering.">ILBEnableAOBentNormals</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass);
+<a name="l00352"></a>00352 
+<a name="l00353"></a>00353 
+<a name="l00363"></a>00363         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#ad0c96c4fec277646dab3674b931c2cfd" title=
+"Creates an Illumination render pass.">ILBCreateIlluminationPass</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00364"></a>00364                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00365"></a>00365                 <a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a> mode,
+<a name="l00366"></a>00366                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00367"></a>00367 
+<a name="l00377"></a>00377         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a43bb3dff69e941825b46da030c0a6f4a" title=
+"Creates an Illumination render pass with sh output.">ILBCreateIlluminationPassSH</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00378"></a>00378                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00379"></a>00379                 <a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a> mode,
+<a name="l00380"></a>00380                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00381"></a>00381 
+<a name="l00390"></a>00390         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a4325115669829001bbad46707487b5c4" title=
+"Creates a LUA pass.">ILBCreateLuaPass</a>(<a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job,
+<a name="l00391"></a>00391                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00392"></a>00392                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> scriptFile,
+<a name="l00393"></a>00393                 <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a>* pass);
+<a name="l00394"></a>00394 
+<a name="l00401"></a>00401         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#adc7b570a58e487fa5b7d5088a4aca422" title=
+"Enable lambertian clamp on an RNM pass.">ILBSetLambertianClamp</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00402"></a>00402                 <span class=
+"keywordtype">float</span> val);
+<a name="l00403"></a>00403 
+<a name="l00414"></a>00414         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a95e0f741d4f937d51b0d4f3b0d33018b" title=
+"Determines how the RNM pass handles light contributions that come from below the plane of the surface...">ILBSetAllowNegative</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00415"></a>00415                 <a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc" title=
+"Allow Negative.">ILBRNMAllowNegative</a> allow);
+<a name="l00416"></a>00416 
+<a name="l00422"></a>00422         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a385b1ebd62698ea6cccb53c0e9cf071d" title=
+"Enables inclusion of a normal component in the RNM pass.">ILBIncludeNormalComponent</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass);
+<a name="l00423"></a>00423 
+<a name="l00429"></a>00429         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a01320e43cb627fb5655bda7817cd2f1e" title=
+"Scales the RNM values to the amplitude of the normal component.">ILBRNMMatchNormalIntensity</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass);
+<a name="l00430"></a>00430 
+<a name="l00438"></a>00438         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#ae64d10b6a4bd82cbf109d0c46e73fa40" title=
+"Normalizes the texture values to the 0..1 range.">ILBNormalizeTextures</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00439"></a>00439                 <span class=
+"keywordtype">bool</span> perChannel);
+<a name="l00440"></a>00440 
+<a name="l00447"></a>00447         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a6b42987084f1ec2ad31c32147a9e0fb0" title=
+"Scales the resolution on all texture targets for the pass.">ILBSetResolutionScale</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00448"></a>00448                 <span class=
+"keywordtype">float</span> scale);
+<a name="l00449"></a>00449 
+<a name="l00456"></a>00456         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a2dc9ba10f419c629b6ea8801ee3136dc" title=
+"Scales the nondirectional influence of materials.">ILBSetNondirectionalScale</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00457"></a>00457                 <span class=
+"keywordtype">float</span> scale);
+<a name="l00458"></a>00458 
+<a name="l00465"></a>00465         ILB_DLL_FUNCTION <a class="code"
+href="beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206"
+title="Status codes for Beast API calls.">ILBStatus</a> <a class=
+"code" href=
+"beastrenderpass_8h.html#a0237a590e98b631eb7a486b9446f957e" title=
+"Adds a custom basis vector to be used with ILB_RB_CUSTOM.">ILBAddCustomBasisVector</a>(<a class="code"
+href="struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass,
+<a name="l00466"></a>00466                 <span class=
+"keyword">const</span> <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>* basisVector);
+<a name="l00467"></a>00467 
+<a name="l00468"></a>00468 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00469"></a>00469 } <span class=
+"comment">// extern "C"</span>
+<a name="l00470"></a>00470 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00471"></a>00471 
+<a name="l00472"></a>00472 <span class=
+"preprocessor">#endif//BEASTRENDERPASS_H</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

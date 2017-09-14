@@ -2,7 +2,6 @@
 #include "Commands2/RECommandIDs.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Deprecated/ParticlesEditorNodeNameHelper.h"
 
 #include "Main/QtUtils.h"

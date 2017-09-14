@@ -297,9 +297,7 @@ void UIControl::SetName(const FastName& name_)
         return;
     }
 
-#if defined(__DAVAENGINE_DEBUG__)
-    DVASSERT(UIControlHelpers::IsControlNameValid(name_));
-#endif
+    DVASSERT(UIControlHelpers::IsControlNameValid(name_), Format("Control name '%s' contains incorrect symbols", name_.c_str()).c_str());
 
     name = name_;
 
@@ -578,38 +576,6 @@ void UIControl::SetScaledRect(const Rect& rect, bool rectInAbsoluteCoordinates /
         scale.y = rect.dy / (size.y * gd.scale.y);
         SetAbsolutePosition(Vector2(rect.x + GetPivotPoint().x * scale.x, rect.y + GetPivotPoint().y * scale.y));
     }
-}
-
-Vector2 UIControl::GetContentPreferredSize(const Vector2& constraints) const
-{
-    UIControlBackground* bg = GetComponent<UIControlBackground>();
-    if (bg != nullptr && bg->GetSprite() != nullptr)
-    {
-        if (constraints.dx > 0)
-        {
-            Vector2 size;
-            size.dx = constraints.dx;
-            size.dy = bg->GetSprite()->GetHeight() * size.dx / bg->GetSprite()->GetWidth();
-            return size;
-        }
-        else
-        {
-            return bg->GetSprite()->GetSize();
-        }
-    }
-    return Vector2(0.0f, 0.0f);
-}
-
-bool UIControl::IsHeightDependsOnWidth() const
-{
-    UIControlBackground* bg = GetComponent<UIControlBackground>();
-    if (bg == nullptr || bg->GetSprite() == nullptr)
-    {
-        return false;
-    }
-
-    UIControlBackground::eDrawType dt = bg->GetDrawType();
-    return dt == UIControlBackground::DRAW_SCALE_PROPORTIONAL || dt == UIControlBackground::DRAW_SCALE_PROPORTIONAL_ONE;
 }
 
 void UIControl::SetVisibilityFlag(bool isVisible)

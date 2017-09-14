@@ -1,14 +1,13 @@
 #pragma once
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/Qt/QtString.h>
 
 #include <Base/Result.h>
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <Math/Math2D.h>
 #include <FileSystem/FilePath.h>
-
-#include <QString>
 
 #include <tuple>
 
@@ -77,6 +76,8 @@ public:
     const DAVA::Vector<Device>& GetDevices() const;
     const DAVA::Vector<Blank>& GetBlanks() const;
 
+    const DAVA::Map<DAVA::String, DAVA::String>& GetSoundLocales() const;
+
     bool Save() const;
 
     static DAVA::FastName projectPathPropertyName;
@@ -116,6 +117,7 @@ private:
 
     DAVA::Vector<Device> devicesForPreview;
     DAVA::Vector<Blank> blanksForPreview;
+    DAVA::Map<DAVA::String, DAVA::String> soundLocales;
 
     DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArc::DataNode);
 };

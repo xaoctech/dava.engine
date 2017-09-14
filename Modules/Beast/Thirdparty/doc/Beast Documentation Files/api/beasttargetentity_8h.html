@@ -1,0 +1,1103 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beasttargetentity.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beasttargetentity_8h.html','api_beasttargetentity_8h_html5c7ee830-c353-438e-8bd5-4aef3767aa53','index.html',location.hash); javascript:initPage('API: beastapi/beasttargetentity.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beasttargetentity_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beasttargetentity.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beasttargetentity.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#enum-members">Enumerations</a> |
+<a href="#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beasttargetentity.h File
+Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm">Monitoring
+Jobs and Retrieving Updates</a>, <a href=
+".././files/GUID-66113B54-02C9-4F7F-8F0E-FFEB466DC342.htm">Retrieving
+the Rendered Output</a>, <a href=
+".././files/GUID-C5DEE2AC-1BFE-4C80-8370-03BBFD925C4D.htm">Creating
+Render Targets</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>Target entities, the relationship between an instance and a bake
+target.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="enum-members"></a> Enumerations</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7">ILBTargetEntityType</a>
+{ <a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7abcb361095b616cd31a1c738b009c3fc5">
+ILB_TT_TEXTURE</a> = 0, <a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7aa05422efdd87ef30541164f6cad73ce0">
+ILB_TT_VERTEX</a> }</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#a11b2bbdb832a07056e02e0de6106b922">ILBChangeTargetEntityType</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+entity, <a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7">ILBTargetEntityType</a>
+type)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#aef6c99a1fefe389148e42acd4988f4ba">ILBGetAtlasInformation</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+te, int32 *framebufferIndex, <a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *offset, <a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *scale)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#af1fd1cb7e157a12e4ebd746a2b773511">ILBGetNormalizationData</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+entity, <a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>
+pass, int channel, float *minValue, float *maxValue)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad5027ddb11f200414b8b751fcde428ab">ILBGetTargetEntityInstance</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+entity, <a class="el" translate="no" href=
+"struct_i_l_b_string_handle.html">ILBStringHandle</a> *name)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#add0a9223823f18e10aebd87b250f6641">ILBGetTargetEntityResolution</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+entity, int32 *width, int32 *height)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#a1d7e1f10c186982acb6ec4a800ae167d">ILBGetTargetEntityType</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+entity, <a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7">ILBTargetEntityType</a>
+*type)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#af8cdbd10b4318b8a8788091cc3fbd8cf">ILBSetBakeResolution</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+target, int32 width, int32 height)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#aa84ecd6c62f4445fa546cd4ec60c3e53">ILBSetBakeUVSet</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+target, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+uvName)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#a12c2cc5c75d6e8927f749fa972d84d08">ILBSetTexelScale</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+target, float scale)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#a04d129ca4b44d4be5ce796e78b6f50b2">ILBSetUVTransform</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>
+target, const <a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *offset, const <a class="el" translate="no"
+href="struct_i_l_b_vec2.html">ILBVec2</a> *scale)</td>
+</tr>
+</table>
+<hr />
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="ad61a2b2bfc8d0073d56483c3be12b3f7"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBTargetEntityType" ref="ad61a2b2bfc8d0073d56483c3be12b3f7" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7">ILBTargetEntityType</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBTargetEntityType',false)">Search for all
+occurrences</a></div>
+<p>Describes what kind of baking a target entity is using.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ad61a2b2bfc8d0073d56483c3be12b3f7abcb361095b616cd31a1c738b009c3fc5">
+</a>
+<!-- doxytag: member="ILB_TT_TEXTURE" ref="ad61a2b2bfc8d0073d56483c3be12b3f7abcb361095b616cd31a1c738b009c3fc5" args="" -->ILB_TT_TEXTURE</em>&nbsp;</td>
+<td>
+<p>Texture baking.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_TT_TEXTURE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ad61a2b2bfc8d0073d56483c3be12b3f7aa05422efdd87ef30541164f6cad73ce0">
+</a>
+<!-- doxytag: member="ILB_TT_VERTEX" ref="ad61a2b2bfc8d0073d56483c3be12b3f7aa05422efdd87ef30541164f6cad73ce0" args="" -->ILB_TT_VERTEX</em>&nbsp;</td>
+<td>
+<p>Vertex baking.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_TT_VERTEX',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a2">include/beastapi/beasttargetentity.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="a11b2bbdb832a07056e02e0de6106b922"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBChangeTargetEntityType" ref="a11b2bbdb832a07056e02e0de6106b922" args="(ILBTargetEntityHandle entity, ILBTargetEntityType type)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBChangeTargetEntityType</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>entity</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7">ILBTargetEntityType</a>&nbsp;</td>
+<td class="paramname"><em>type</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBChangeTargetEntityType',false)">Search for all
+occurrences</a></div>
+<p>Changes the type of a target entity when running an Live Ernst
+job.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entity</td>
+<td>the target to change type</td>
+</tr>
+<tr>
+<td class="paramname">type</td>
+<td>the new type</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a9">include/beastapi/beasttargetentity.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetentitywrapper_8cpp-example.html#a7">
+maya/beastmayaplugin/src/beastwrappers/beasttargetentitywrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aef6c99a1fefe389148e42acd4988f4ba"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBGetAtlasInformation" ref="aef6c99a1fefe389148e42acd4988f4ba" args="(ILBTargetEntityHandle te, int32 *framebufferIndex, ILBVec2 *offset, ILBVec2 *scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetAtlasInformation</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>te</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32 *&nbsp;</td>
+<td class="paramname"><em>framebufferIndex</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *&nbsp;</td>
+<td class="paramname"><em>offset</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetAtlasInformation',false)">Search for all
+occurrences</a></div>
+<p>Gets the atlas information for a target entity Only valid on
+Atlas texture target entities and texture target entities.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">te</td>
+<td>the target entity to get atlas information for</td>
+</tr>
+<tr>
+<td class="paramname">framebufferIndex</td>
+<td>a pointer to write where the index of the framebuffer</td>
+</tr>
+<tr>
+<td class="paramname">offset</td>
+<td>a pointer to write the offset in uv space of the atlased
+object.</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>a pointer to write the scale in uv space of the atlased
+object.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a47">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a10">include/beastapi/beasttargetentity.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetentitywrapper_8cpp-example.html#a4">
+maya/beastmayaplugin/src/beastwrappers/beasttargetentitywrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="af1fd1cb7e157a12e4ebd746a2b773511"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBGetNormalizationData" ref="af1fd1cb7e157a12e4ebd746a2b773511" args="(ILBTargetEntityHandle entity, ILBRenderPassHandle pass, int channel, float *minValue, float *maxValue)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetNormalizationData</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>entity</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_render_pass_handle.html">ILBRenderPassHandle</a>&nbsp;</td>
+<td class="paramname"><em>pass</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int&nbsp;</td>
+<td class="paramname"><em>channel</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float *&nbsp;</td>
+<td class="paramname"><em>minValue</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float *&nbsp;</td>
+<td class="paramname"><em>maxValue</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetNormalizationData',false)">Search for all
+occurrences</a></div>
+<p>Returns the minimum/maximum value in the selected entity.</p>
+<p>Used to scale the LDR values read from the frame buffer to
+preserve the dynamic range.<br />
+The function will fail if the pass has not enabled
+normalization.<br /></p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entity</td>
+<td>the entity for which scale factors should be returned.</td>
+</tr>
+<tr>
+<td class="paramname">pass</td>
+<td>the render pass to get normalization values from</td>
+</tr>
+<tr>
+<td class="paramname">channel</td>
+<td>the framebuffer channel to use (ignored for global
+normalization)</td>
+</tr>
+<tr>
+<td class="paramname">minValue</td>
+<td>the minimum value for the framebuffer/entity.</td>
+</tr>
+<tr>
+<td class="paramname">maxValue</td>
+<td>the maximum value for the framebuffer/entity.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a11">include/beastapi/beasttargetentity.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ad5027ddb11f200414b8b751fcde428ab"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBGetTargetEntityInstance" ref="ad5027ddb11f200414b8b751fcde428ab" args="(ILBTargetEntityHandle entity, ILBStringHandle *name)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetTargetEntityInstance</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>entity</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_string_handle.html">ILBStringHandle</a> *&nbsp;</td>
+<td class="paramname"><em>name</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetTargetEntityInstance',false)">Search for all
+occurrences</a></div>
+<p>Returns the name of the instance of a target entity.</p>
+<p>Can only be used on update targets returned from an Ernst
+job.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entity</td>
+<td>the update target entity</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the the name of the instance</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a144">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a102">examples/code/liveernst/liveernst.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a15">include/beastapi/beasttargetentity.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="add0a9223823f18e10aebd87b250f6641"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBGetTargetEntityResolution" ref="add0a9223823f18e10aebd87b250f6641" args="(ILBTargetEntityHandle entity, int32 *width, int32 *height)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetTargetEntityResolution</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>entity</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32 *&nbsp;</td>
+<td class="paramname"><em>width</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32 *&nbsp;</td>
+<td class="paramname"><em>height</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetTargetEntityResolution',false)">Search for
+all occurrences</a></div>
+<p>Returns the bake resolution selected in an Ernst session.</p>
+<p>Can only be used on update targets returned from an Ernst job
+and with type == ILB_TT_TEXTURE</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entity</td>
+<td>the update target entity</td>
+</tr>
+<tr>
+<td class="paramname">width</td>
+<td>the x texture resolution</td>
+</tr>
+<tr>
+<td class="paramname">height</td>
+<td>the y texture resolution</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a145">examples/code/ernst/ernst.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a14">include/beastapi/beasttargetentity.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a1d7e1f10c186982acb6ec4a800ae167d"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBGetTargetEntityType" ref="a1d7e1f10c186982acb6ec4a800ae167d" args="(ILBTargetEntityHandle entity, ILBTargetEntityType *type)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBGetTargetEntityType</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>entity</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7">ILBTargetEntityType</a>
+*&nbsp;</td>
+<td class="paramname"><em>type</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBGetTargetEntityType',false)">Search for all
+occurrences</a></div>
+<p>Returns the type of baking selected in an Ernst session.</p>
+<p>Can only be used on update targets returned from an Ernst
+job.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">entity</td>
+<td>the update target entity</td>
+</tr>
+<tr>
+<td class="paramname">type</td>
+<td>the baking type selected on the entity</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a143">examples/code/ernst/ernst.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a13">include/beastapi/beasttargetentity.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="af8cdbd10b4318b8a8788091cc3fbd8cf"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBSetBakeResolution" ref="af8cdbd10b4318b8a8788091cc3fbd8cf" args="(ILBTargetEntityHandle target, int32 width, int32 height)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetBakeResolution</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>target</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>width</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>height</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetBakeResolution',false)">Search for all
+occurrences</a></div>
+<p>Sets the requested resolution for the target entity.</p>
+<p>For atlased targets: Will fail if the resolution is higher than
+the maximum resolution of the atlased target. For live Ernst
+targets: Will set the bake resolution of the instance attached to
+this entity. Not valid for other targets.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">target</td>
+<td>the target entity to set the resolution on</td>
+</tr>
+<tr>
+<td class="paramname">width</td>
+<td>the requested width</td>
+</tr>
+<tr>
+<td class="paramname">height</td>
+<td>the requested height</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2baking-live_2baking-live_8cpp-example.html#a1">
+examples-physical/code/baking-live/baking-live.cpp</a>, <a class=
+"el" href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a43">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a21">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a21">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a7">include/beastapi/beasttargetentity.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetentitywrapper_8cpp-example.html#a0">
+maya/beastmayaplugin/src/beastwrappers/beasttargetentitywrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aa84ecd6c62f4445fa546cd4ec60c3e53"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBSetBakeUVSet" ref="aa84ecd6c62f4445fa546cd4ec60c3e53" args="(ILBTargetEntityHandle target, ILBConstString uvName)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetBakeUVSet</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>target</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>uvName</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetBakeUVSet',false)">Search for all
+occurrences</a></div>
+<p>Sets the uv set to use when baking the target entity.</p>
+<p>Will use default if the uv set is not present in the instance.
+Only valid for texture and atlased target entities</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">target</td>
+<td>the target entity to set the uv set for</td>
+</tr>
+<tr>
+<td class="paramname">uvName</td>
+<td>the name of the uv set to use</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a3">include/beastapi/beasttargetentity.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetentitywrapper_8cpp-example.html#a1">
+maya/beastmayaplugin/src/beastwrappers/beasttargetentitywrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a12c2cc5c75d6e8927f749fa972d84d08"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBSetTexelScale" ref="a12c2cc5c75d6e8927f749fa972d84d08" args="(ILBTargetEntityHandle target, float scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetTexelScale</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>target</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetTexelScale',false)">Search for all
+occurrences</a></div>
+<p>Sets the relationship between world space coordinates and texels
+for an atlased target instance.</p>
+<p>Only valid for atlased target instance.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">target</td>
+<td>the target entity to set the resolution on</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>the number of texels each world space unit should cover</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a22">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a8">include/beastapi/beasttargetentity.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetentitywrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beasttargetentitywrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a04d129ca4b44d4be5ce796e78b6f50b2"></a>
+<!-- doxytag: member="beasttargetentity.h::ILBSetUVTransform" ref="a04d129ca4b44d4be5ce796e78b6f50b2" args="(ILBTargetEntityHandle target, const ILBVec2 *offset, const ILBVec2 *scale)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetUVTransform</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_target_entity_handle.html">ILBTargetEntityHandle</a>&nbsp;</td>
+<td class="paramname"><em>target</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *&nbsp;</td>
+<td class="paramname"><em>offset</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *&nbsp;</td>
+<td class="paramname"><em>scale</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetUVTransform',false)">Search for all
+occurrences</a></div>
+<p>Sets the a uv transform for a bake shape.</p>
+<p>It will place the shape in a specific location of the texture.
+Only valid for texture target entities</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">target</td>
+<td>the target entity to set the uv transform on</td>
+</tr>
+<tr>
+<td class="paramname">offset</td>
+<td>the offset in uv space for the object</td>
+</tr>
+<tr>
+<td class="paramname">scale</td>
+<td>the scale in uv space for the object</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a43">examples/code/baking/baking.cpp</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beasttargetentity_8h-example.html#a5">include/beastapi/beasttargetentity.h</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beasttargetentity_8h_source.html">Go to the source code
+of this file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

@@ -32,14 +32,8 @@ else()
 
 endif()
 
-if     ( ANDROID )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-standalone-debug -DNDEBUG" )
-    set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -mfloat-abi=softfp -mfpu=neon -frtti" )
-    set( CMAKE_ECLIPSE_MAKE_ARGUMENTS -j8 )
-    
-    if ( ANDROID_STRIP_EXPORTS )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden" )
-    endif ()
+if ( ANDROID )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -frtti -fexceptions" )
 
 elseif ( LINUX )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14 --stdlib=libc++ -pthread -frtti" )
@@ -250,6 +244,13 @@ elseif( WARNINGS_AS_ERRORS )
         set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
             -Wno-reserved-id-macro \
             -Wno-unused-local-typedef \
+            -Wno-inconsistent-missing-destructor-override \
+            -Wno-shadow-field \
+            -Wno-undefined-func-template \
+            -Wno-double-promotion \
+            -Wno-comma \
+            -Wno-unused-lambda-capture \
+            -Wno-signed-enum-bitfield \
             -Wno-unknown-pragmas")
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
     elseif( APPLE )
@@ -308,7 +309,9 @@ elseif ( WIN32 )
         set ( DAVA_THIRD_PARTY_LIBRARIES_PATH  "${DAVA_THIRD_PARTY_ROOT_PATH}/lib_CMake/win/x86" ) 
     endif ()
 
-    list( APPEND DAVA_BINARY_WIN32_DIR ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug )
+    list( APPEND DAVA_BINARY_WIN_DIR_RELEASE ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release )
+    list( APPEND DAVA_BINARY_WIN_DIR_DEBUG   ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug   )
+
 
 endif  ()
 
