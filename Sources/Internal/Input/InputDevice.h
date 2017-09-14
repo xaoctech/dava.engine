@@ -2,6 +2,7 @@
 
 #include "Input/InputSystemTypes.h"
 #include "Input/InputElements.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {
@@ -21,13 +22,17 @@ namespace DAVA
     Derived classes are welcome to introduce helper method for easier and more readable access to its elements,
     e.g. a mouse can provide GetPosition() method which can be a wrapper around GetAnalogElementState(eInputElements::MOUSE_POSITION), etc.
 */
+
+// Forward declaration
+class Window;
+
 class InputDevice
 {
 public:
     /** Create InputDevice instance with specified `id` */
     explicit InputDevice(uint32 id);
 
-    virtual ~InputDevice() = default;
+    virtual ~InputDevice();
 
     /** Return unique device id */
     uint32 GetId() const;
@@ -51,18 +56,16 @@ public:
     */
     virtual AnalogElementState GetAnalogElementState(eInputElements elementId) const = 0;
 
+protected:
+    virtual void ResetState(Window* window) = 0;
+
+private:
+    void OnWindowCreated(Window* window);
+    void OnWindowDestroyed(Window* window);
+    void OnWindowFocusChanged(Window* window, bool focused);
+    void OnWindowSizeChanged(Window* window, Size2f, Size2f);
+
 private:
     const uint32 id;
 };
-
-inline InputDevice::InputDevice(uint32 id)
-    : id(id)
-{
-}
-
-inline uint32 InputDevice::GetId() const
-{
-    return id;
-}
-
 } // namespace DAVA
