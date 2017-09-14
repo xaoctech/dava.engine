@@ -80,7 +80,7 @@ bool IsSpecialAllowedSymbol(int key)
         return true;
     }
 
-    if (key == Qt::Key_BraceLeft && key == Qt::Key_BraceRight)
+    if (key == Qt::Key_BraceLeft || key == Qt::Key_BraceRight)
     {
         return true;
     }
