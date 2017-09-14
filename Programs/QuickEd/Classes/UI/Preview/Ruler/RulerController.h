@@ -2,7 +2,7 @@
 
 #include "UI/Preview/Ruler/RulerSettings.h"
 
-#include "UI/Preview/Data/CanvasDataAdapter.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
