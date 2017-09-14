@@ -586,16 +586,16 @@ void WindowNativeBridge::UpdateSystemCursorVisible()
     if (mouseVisibleState != visible)
     {
         mouseVisibleState = visible;
-        CGError check = kCGErrorSuccess;
         if (visible)
         {
-            check = CGDisplayShowCursor(kCGDirectMainDisplay);
+            CGError check = CGDisplayShowCursor(kCGDirectMainDisplay);
+            DVASSERT(kCGErrorSuccess == check);
         }
         else
         {
-            check = CGDisplayHideCursor(kCGDirectMainDisplay);
+            CGError check = CGDisplayHideCursor(kCGDirectMainDisplay);
+            DVASSERT(kCGErrorSuccess == check);
         }
-        DVASSERT(kCGErrorSuccess == check);
     }
 }
 
