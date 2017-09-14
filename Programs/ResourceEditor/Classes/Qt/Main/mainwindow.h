@@ -214,7 +214,8 @@ private:
 
     // Landscape editor specific
     // TODO: remove later -->
-    bool LoadAppropriateTextureFormat();
+    bool CanEnableLandscapeEditor() const;
+    bool LoadAppropriateTextureFormat() const;
     // <--
 
     void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;

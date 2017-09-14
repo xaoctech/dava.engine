@@ -62,5 +62,8 @@ public:
     static const DAVA::String Validate;
     static const DAVA::String Count;
 
+    static const DAVA::String Tag;
+    static const DAVA::String TagList;
+
     static const DAVA::String MakeNameForGPU(DAVA::eGPUFamily gpuFamily);
 };

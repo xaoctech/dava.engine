@@ -87,6 +87,22 @@ File* File::Create(const FilePath& filename, uint32 attributes)
         return nullptr;
     }
 
+    //Tags
+    FileSystem* fs = FileSystem::Instance();
+    if (!(attributes & (WRITE | CREATE | APPEND)) && fs->filenamesTag.empty() == false)
+    {
+        FilePath taggedFilename = filename;
+        taggedFilename.ReplaceBasename(filename.GetBasename() + fs->filenamesTag);
+
+        File* result = PureCreate(taggedFilename, attributes);
+        if (result != nullptr)
+        {
+            result->filename = filename;
+            return result;
+        }
+    }
+    //end of tags
+
     File* result = PureCreate(filename, attributes);
     if (result != nullptr)
     {

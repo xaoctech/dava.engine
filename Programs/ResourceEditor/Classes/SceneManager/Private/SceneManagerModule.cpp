@@ -15,6 +15,7 @@
 #include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
+#include "Classes/Deprecated/EditorConfig.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -944,6 +945,14 @@ void SceneManagerModule::SaveSceneToFolder(bool compressedTextures)
     sceneSaver.SetOutFolder(folder);
     sceneSaver.EnableCopyConverted(compressedTextures);
 
+    { //tags
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
+        if (data->GetEditorConfig()->HasProperty("Tags"))
+        {
+            sceneSaver.SetTags(data->GetEditorConfig()->GetComboPropertyValues("Tags"));
+        }
+    }
+
     SceneEditor2* sceneForSaving = scene->CreateCopyForExport();
     sceneSaver.SaveScene(sceneForSaving, scene->GetScenePath());
     sceneForSaving->Release();
@@ -977,6 +986,7 @@ void SceneManagerModule::ExportScene()
         exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
         exportingParams.dataSourceFolder = dataSourceFolder;
         exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
+        exportingParams.filenamesTag = dlg.GetFilenamesTag();
 
         scene->Export(exportingParams);
 

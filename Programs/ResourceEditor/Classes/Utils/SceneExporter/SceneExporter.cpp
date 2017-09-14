@@ -10,6 +10,7 @@
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FilePath.h>
+#include <FileSystem/FileList.h>
 #include <FileSystem/FileSystem.h>
 #include <Functional/Function.h>
 #include <Logger/Logger.h>
@@ -73,6 +74,26 @@ void CalculateSceneKey(const DAVA::FilePath& scenePathname, const DAVA::String& 
 
 namespace SceneExporterDetails
 {
+class FileSystemTagGuard final
+{
+public:
+    FileSystemTagGuard(const DAVA::String newFilenamesTag)
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        oldFilenamesTag = fs->GetFilenamesTag();
+        fs->SetFilenamesTag(newFilenamesTag);
+    }
+
+    ~FileSystemTagGuard()
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        fs->SetFilenamesTag(oldFilenamesTag);
+    }
+
+private:
+    DAVA::String oldFilenamesTag;
+};
+
 bool SaveExportedObjects(const DAVA::FilePath& linkPathname, const DAVA::Vector<SceneExporter::ExportedObjectCollection>& exportedObjects)
 {
     using namespace DAVA;
@@ -556,6 +577,66 @@ void CollectSourceImageInfo(const DAVA::TextureDescriptor& descriptor, DAVA::Vec
 }
 }
 
+bool SceneExporter::ExportTextureObjectTagged(const ExportedObject& object)
+{
+    using namespace DAVA;
+
+    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+
+    FilePath taggedPathname;
+    String nonTaggedBasename;
+    String taggedBasename;
+
+    bool needExportTagged = exportingParams.filenamesTag.empty() == false;
+    if (needExportTagged)
+    { // try to find tagget texture file
+        taggedPathname = exportingParams.dataSourceFolder + object.relativePathname;
+        nonTaggedBasename = taggedPathname.GetBasename();
+        taggedBasename = nonTaggedBasename + exportingParams.filenamesTag;
+        taggedPathname.ReplaceBasename(taggedBasename);
+        needExportTagged = fs->Exists(taggedPathname);
+    }
+
+    if (needExportTagged)
+    { // export tagged texure
+        ExportedObject taggedObject = object;
+        taggedObject.relativePathname = taggedPathname.GetRelativePathname(exportingParams.dataSourceFolder);
+
+        //real export of tagged file
+        bool exported = ExportTextureObject(taggedObject);
+
+        //restore filenames to non-tagged style
+        for (const Params::Output& output : exportingParams.outputs)
+        {
+            FilePath texPath = output.dataFolder + object.relativePathname;
+
+            ScopedPtr<FileList> fileList(new FileList(texPath.GetDirectory(), false));
+            for (uint32 index = 0; index < fileList->GetCount(); ++index)
+            {
+                const FilePath& path = fileList->GetPathname(index);
+                if (path.IsDirectoryPathname() == false)
+                {
+                    String name = path.GetBasename();
+                    if (name.find(taggedBasename) != String::npos)
+                    {
+                        String nontaggedFileName = path.GetAbsolutePathname();
+                        String::size_type pos = nontaggedFileName.find(taggedBasename);
+
+                        nontaggedFileName.replace(pos, taggedBasename.length(), nonTaggedBasename);
+
+                        exported = fs->MoveFile(path, nontaggedFileName, true) && exported;
+                    }
+                }
+            }
+        }
+
+        return exported;
+    }
+
+    // export non-tagged file
+    return ExportTextureObject(object);
+}
+
 bool SceneExporter::ExportTextureObject(const ExportedObject& object)
 {
     using namespace DAVA;
@@ -897,7 +978,7 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
 
     Array<Function<bool(const ExportedObject&)>, OBJECT_COUNT> exporters =
     { { MakeFunction(this, &SceneExporter::ExportSceneObject),
-        MakeFunction(this, &SceneExporter::ExportTextureObject),
+        MakeFunction(this, &SceneExporter::ExportTextureObjectTagged),
         MakeFunction(this, &SceneExporter::CopyObject),
         MakeFunction(this, &SceneExporter::CopyObject),
         MakeFunction(this, &SceneExporter::CopyObject) } };
@@ -919,15 +1000,21 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
         }
     }
 
-    //export only slot objects
-    SceneExporterDetails::RemoveDuplicates(objectsToExport[OBJECT_SLOT_CONFIG]);
-    for (const ExportedObject& slot : objectsToExport[OBJECT_SLOT_CONFIG])
-    {
-        DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
-        for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+    { //export only slot objects
+        SceneExporterDetails::RemoveDuplicates(objectsToExport[OBJECT_SLOT_CONFIG]);
+        for (const ExportedObject& slot : objectsToExport[OBJECT_SLOT_CONFIG])
         {
-            ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
-            exportIsOk = ExportSceneObject(sceneObject) & exportIsOk;
+            DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items;
+            { // load tagged config
+                SceneExporterDetails::FileSystemTagGuard tagGuard(exportingParams.filenamesTag);
+                items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
+            }
+
+            for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+            {
+                ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
+                exportIsOk = ExportSceneObject(sceneObject) & exportIsOk;
+            }
         }
     }
 
@@ -938,6 +1025,8 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
         CreateFoldersStructure(objectsToExport[i]);
         for (const ExportedObject& object : objectsToExport[i])
         {
+            DVASSERT(object.type != eExportedObjectType::OBJECT_SCENE && object.type != eExportedObjectType::OBJECT_SLOT_CONFIG);
+
             exportIsOk = exporters[i](object) && exportIsOk;
         }
     }

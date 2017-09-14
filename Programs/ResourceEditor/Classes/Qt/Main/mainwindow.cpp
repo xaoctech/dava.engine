@@ -510,9 +510,7 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
-
     QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
-
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
 
@@ -963,20 +961,42 @@ void QtMainWindow::OnZeroPivotPoint()
 
 void QtMainWindow::OnMaterialEditor(DAVA::NMaterial* material)
 {
-    MaterialEditor* editor = MaterialEditor::Instance();
-    editor->show();
-    if (material != nullptr)
+    const DAVA::String& tag = DAVA::GetEngineContext()->fileSystem->GetFilenamesTag();
+    if (tag.empty() == true)
     {
-        editor->SelectMaterial(material);
+        MaterialEditor* editor = MaterialEditor::Instance();
+        editor->show();
+        if (material != nullptr)
+        {
+            editor->SelectMaterial(material);
+        }
+    }
+    else
+    {
+        DAVA::TArc::NotificationParams notifParams;
+        notifParams.title = "Information";
+        notifParams.message.message = DAVA::Format("Cannot show Material Editor while %s tag is activated", tag.c_str());
+        tarcUI->ShowNotification(DAVA::TArc::mainWindowKey, notifParams);
     }
 }
 
 void QtMainWindow::OnTextureBrowser()
 {
-    TextureBrowser::Instance()->show();
+    const DAVA::String& tag = DAVA::GetEngineContext()->fileSystem->GetFilenamesTag();
+    if (tag.empty() == true)
+    {
+        TextureBrowser::Instance()->show();
 
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    TextureBrowser::Instance()->sceneActivated(sceneEditor.Get());
+        DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
+        TextureBrowser::Instance()->sceneActivated(sceneEditor.Get());
+    }
+    else
+    {
+        DAVA::TArc::NotificationParams notifParams;
+        notifParams.title = "Information";
+        notifParams.message.message = DAVA::Format("Cannot show Texture Browser while %s tag is activated", tag.c_str());
+        tarcUI->ShowNotification(DAVA::TArc::mainWindowKey, notifParams);
+    }
 }
 
 void QtMainWindow::OnSceneLightMode()
@@ -1413,6 +1433,8 @@ void QtMainWindow::OnConvertModifiedTextures()
         return;
     }
 
+    DAVA::TextureConverter::eConvertQuality quality = REGlobal::GetGlobalContext()->GetData<GeneralSettings>()->compressionQuality;
+
     int convretedNumber = 0;
     waitDialog->SetRange(convretedNumber, filesToUpdate);
     WaitSetValue(convretedNumber);
@@ -1425,11 +1447,9 @@ void QtMainWindow::OnConvertModifiedTextures()
             continue;
         }
 
-        DAVA::TextureConverter::eConvertQuality quality = REGlobal::GetGlobalContext()->GetData<GeneralSettings>()->compressionQuality;
-
-        DAVA::Vector<DAVA::eGPUFamily> updatedGPUs = it->second;
+        const DAVA::Vector<DAVA::eGPUFamily>& updatedGPUs = it->second;
         WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
-        foreach (DAVA::eGPUFamily gpu, updatedGPUs)
+        for (DAVA::eGPUFamily gpu : updatedGPUs)
         {
             DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, quality);
 
@@ -1541,28 +1561,15 @@ void QtMainWindow::OnCustomColorsEditor()
         return;
     }
 
-    if (!sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
+    if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableCustomColorsCommand(sceneEditor.Get(), true)));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
-        return;
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableCustomColorsCommand(sceneEditor.Get(), true)));
     }
-
-    sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableCustomColorsCommand(sceneEditor.Get(), true)));
-    ui->actionCustomColorsEditor->setChecked(false);
+    else if (CanEnableLandscapeEditor())
+    {
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableCustomColorsCommand(sceneEditor.Get(), true)));
+    }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnHeightmapEditor()
@@ -1577,24 +1584,11 @@ void QtMainWindow::OnHeightmapEditor()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableHeightmapEditorCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableHeightmapEditorCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableHeightmapEditorCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnRulerTool()
@@ -1609,24 +1603,11 @@ void QtMainWindow::OnRulerTool()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableRulerToolCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableRulerToolCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableRulerToolCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnTilemaskEditor()
@@ -1641,24 +1622,11 @@ void QtMainWindow::OnTilemaskEditor()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableTilemaskEditorCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableTilemaskEditorCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableTilemaskEditorCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnForceFirstLod(bool enabled)
@@ -1693,24 +1661,11 @@ void QtMainWindow::OnNotPassableTerrain()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableNotPassableCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableNotPassableCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableNotPassableCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnWayEditor()
@@ -1901,7 +1856,29 @@ void QtMainWindow::OnAddPathEntity()
     scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(pathEntity, scene.Get())));
 }
 
-bool QtMainWindow::LoadAppropriateTextureFormat()
+bool QtMainWindow::CanEnableLandscapeEditor() const
+{
+    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
+    if (scene.Get() == nullptr)
+        return false;
+
+    if (scene->pathSystem->IsPathEditEnabled())
+    {
+        DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
+        return false;
+    }
+
+    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+    if (fs->GetFilenamesTag().empty() == false)
+    {
+        DAVA::Logger::Error("Could not enable editing of landscape due to enabled tags at file system");
+        return false;
+    }
+
+    return LoadAppropriateTextureFormat();
+}
+
+bool QtMainWindow::LoadAppropriateTextureFormat() const
 {
     CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
     DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
