@@ -578,7 +578,7 @@ FBXNodeAnimationData GetNodeAnimationData(FbxNode* fbxNode, FbxAnimLayer* fbxAni
 
             Vector3 keyValue;
             for (int32 c = 0; c < 3; ++c)
-                keyValue.data[c] = (fbxAnimCurve[c] != nullptr) ? fbxAnimCurve[c]->Evaluate(t) : fbxNode->LclTranslation.EvaluateValue(t)[c];
+                keyValue.data[c] = (fbxAnimCurve[c] != nullptr) ? fbxAnimCurve[c]->Evaluate(t) : float32(fbxNode->LclTranslation.EvaluateValue(t)[c]);
 
             channelData.animationKeys.emplace_back(std::make_pair(float32(t.GetSecondDouble()), keyValue));
         }

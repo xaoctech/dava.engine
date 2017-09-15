@@ -5,7 +5,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Library/Private/DAEConverter.h"
 
-#include "Classes/FBX/FBXImporter.h"
+#include <FBX/FBXImporter.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/FieldBinder.h>

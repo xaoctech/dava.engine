@@ -26,6 +26,7 @@ find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
 find_package( QtHelpers REQUIRED )
 find_package( DocDirSetup REQUIRED )
+find_package( FBX REQUIRED )
 
 if (NOT PUBLIC_BUILD)
     if( WIN32 )
