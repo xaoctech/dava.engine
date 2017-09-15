@@ -12,7 +12,6 @@
 #include "Base/RefPtr.h"
 #include "Base/FastName.h"
 #include "Time/SystemTimer.h"
-#include "Logger/Logger.h"
 
 DAVA_TESTCLASS (SlotSystemTest)
 {
@@ -191,7 +190,6 @@ DAVA_TESTCLASS (SlotSystemTest)
         {
             testScene->Update(timeElapsed);
         }
-        testTime += DAVA::SystemTimer::GetRealFrameDelta();
 
         if (testName == "RemoveLoadedEntityTest")
         {
@@ -244,22 +242,24 @@ DAVA_TESTCLASS (SlotSystemTest)
     {
         if (testName == "LoadItemsTest")
         {
-            DAVA::Logger::Info("Test time %f", testTime);
-            TEST_VERIFY(testTime < 100.0f);
-            TEST_VERIFY(testScene->GetChildrenCount() == 2);
-            DAVA::Entity* aEntity = testScene->GetChild(0);
+            bool result = false;
+            if (DAVA::GetEngineContext()->jobManager->HasWorkerJobs() == false)
+            {
+                TEST_VERIFY(testScene->GetChildrenCount() == 2);
+                DAVA::Entity* aEntity = testScene->GetChild(0);
 
-            TEST_VERIFY(aEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1);
-            DAVA::SlotComponent* alfaComponent = static_cast<DAVA::SlotComponent*>(aEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 0));
-            bool result = ValidateLoadedItem(aEntity, alfaComponent, DAVA::FastName("tree_k2_test3"));
+                TEST_VERIFY(aEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1);
+                DAVA::SlotComponent* alfaComponent = static_cast<DAVA::SlotComponent*>(aEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 0));
+                result = ValidateLoadedItem(aEntity, alfaComponent, DAVA::FastName("tree_k2_test3"));
 
-            DAVA::Entity* bEntity = testScene->GetChild(1);
-            TEST_VERIFY(bEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 2);
-            DAVA::SlotComponent* betaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 0));
-            DAVA::SlotComponent* gamaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 1));
+                DAVA::Entity* bEntity = testScene->GetChild(1);
+                TEST_VERIFY(bEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 2);
+                DAVA::SlotComponent* betaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 0));
+                DAVA::SlotComponent* gamaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 1));
 
-            result &= ValidateLoadedItem(bEntity, betaComponent, DAVA::FastName("tree_k2_test3"));
-            result &= ValidateLoadedItem(bEntity, gamaComponent, DAVA::FastName("BigPlant01"));
+                result &= ValidateLoadedItem(bEntity, betaComponent, DAVA::FastName("tree_k2_test3"));
+                result &= ValidateLoadedItem(bEntity, gamaComponent, DAVA::FastName("BigPlant01"));
+            }
 
             return result;
         }
@@ -285,12 +285,10 @@ DAVA_TESTCLASS (SlotSystemTest)
     {
         DAVA::Texture::SetGPULoadingOrder(gpuOrder);
         testScene = DAVA::RefPtr<DAVA::Scene>();
-        testTime = 0.0;
         updateAfterJobFinished = false;
     }
 
     DAVA::Vector<DAVA::eGPUFamily> gpuOrder;
     DAVA::RefPtr<DAVA::Scene> testScene;
-    DAVA::float32 testTime = 0.0f;
     bool updateAfterJobFinished = false;
 };
