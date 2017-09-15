@@ -78,8 +78,8 @@ void InputSystemTest::LoadResources()
     action5.digitalStates[1] = DigitalElementState::Pressed();
     set.analogBindings.push_back(action5);
 
-    Keyboard* keyboard = context->deviceManager->GetKeyboard();
-    Mouse* mouse = context->deviceManager->GetMouse();
+    keyboard = context->deviceManager->GetKeyboard();
+    mouse = context->deviceManager->GetMouse();
     if (keyboard != nullptr && mouse != nullptr)
     {
         context->actionSystem->BindSet(set, keyboard->GetId(), mouse->GetId());
@@ -856,38 +856,41 @@ void InputSystemTest::OnUpdate(float32 delta)
         }
     }
 
-    ActionSystem* actionSystem = GetEngineContext()->actionSystem;
-
-    for (auto& actionStatus : digitalActionsStatus)
+    if (keyboard != nullptr && mouse != nullptr)
     {
-        FastName actionId = actionStatus.first;
-        UIStaticText* status = actionStatus.second;
-        bool active = actionSystem->GetDigitalActionState(actionId);
-        if (active)
-        {
-            status->SetUtf8Text("active");
-        }
-        else
-        {
-            status->SetUtf8Text("not active");
-        }
-    }
+        ActionSystem* actionSystem = GetEngineContext()->actionSystem;
 
-    for (auto& actionStatus : analogActionsStatus)
-    {
-        FastName actionId = actionStatus.first;
-        UIStaticText* status = actionStatus.second;
-        AnalogActionState state = actionSystem->GetAnalogActionState(actionId);
-        int32 x = static_cast<int32>(state.x);
-        int32 y = static_cast<int32>(state.y);
-        String coords = "x: " + std::to_string(x) + ", y: " + std::to_string(y);
-        if (state.active)
+        for (auto& actionStatus : digitalActionsStatus)
         {
-            status->SetUtf8Text("active, " + coords);
+            FastName actionId = actionStatus.first;
+            UIStaticText* status = actionStatus.second;
+            bool active = actionSystem->GetDigitalActionState(actionId);
+            if (active)
+            {
+                status->SetUtf8Text("active");
+            }
+            else
+            {
+                status->SetUtf8Text("not active");
+            }
         }
-        else
+
+        for (auto& actionStatus : analogActionsStatus)
         {
-            status->SetUtf8Text("not active, " + coords);
+            FastName actionId = actionStatus.first;
+            UIStaticText* status = actionStatus.second;
+            AnalogActionState state = actionSystem->GetAnalogActionState(actionId);
+            int32 x = static_cast<int32>(state.x);
+            int32 y = static_cast<int32>(state.y);
+            String coords = "x: " + std::to_string(x) + ", y: " + std::to_string(y);
+            if (state.active)
+            {
+                status->SetUtf8Text("active, " + coords);
+            }
+            else
+            {
+                status->SetUtf8Text("not active, " + coords);
+            }
         }
     }
 }
