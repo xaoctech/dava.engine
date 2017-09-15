@@ -1360,7 +1360,7 @@ public:
 
     const FbxProperty& StaticInit(FbxObject* pObject, const char* pName, const FbxReference& pValue, bool pForceSet, FbxPropertyFlags::EFlags pFlags = FbxPropertyFlags::eNone)
     {
-        return StaticInit(pObject, pName, FbxGetDataTypeFromEnum(FbxTypeOf(*((FbxReference*)0))), pValue, pForceSet, pFlags);
+        return StaticInit(pObject, pName, FbxGetDataTypeFromEnum(FbxTypeOf(pValue)), pValue, pForceSet, pFlags);
     }
 
     const FbxProperty& StaticInit(FbxObject* pObject, const char* pName, const FbxDataType& pDataType, const FbxReference& pValue, bool pForceSet, FbxPropertyFlags::EFlags pFlags = FbxPropertyFlags::eNone)

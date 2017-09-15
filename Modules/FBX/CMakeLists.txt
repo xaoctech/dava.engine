@@ -27,6 +27,10 @@ set( STATIC_LIBRARIES_WIN64_DEBUG    "${FbxThirdparty}/lib/Win32/x64/debug/libfb
 set( DYNAMIC_LIBRARIES_WIN64_RELEASE "${FbxThirdparty}/lib/Win32/x64/release/libfbxsdk.dll" )
 set( DYNAMIC_LIBRARIES_WIN64_DEBUG   "${FbxThirdparty}/lib/Win32/x64/debug/libfbxsdk.dll" )
 
+set( DYNAMIC_LIBRARIES_MACOS         ${FbxThirdparty}/lib/MacOS/release/libfbxsdk.dylib )
+set( DYNAMIC_LIBRARIES_MACOS_RELEASE ${FbxThirdparty}/lib/MacOS/release/libfbxsdk.dylib )
+set( DYNAMIC_LIBRARIES_MACOS_DEBUG   ${FbxThirdparty}/lib/MacOS/debug/libfbxsdk.dylib )
+
 set(BINARY_WIN32_DIR_RELEASE     "${FbxThirdparty}/lib/Win32/x86/release")
 set(BINARY_WIN32_DIR_RELWITHDEB  "${FbxThirdparty}/lib/Win32/x86/release")
 set(BINARY_WIN32_DIR_DEBUG       "${FbxThirdparty}/lib/Win32/x86/debug")

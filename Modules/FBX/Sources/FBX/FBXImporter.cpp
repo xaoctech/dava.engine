@@ -38,6 +38,7 @@ struct FBXVertex
     //////////////////////////////////////////////////////////////////////////
 
     FBXVertex();
+    FBXVertex(const FBXVertex& other);
 
     bool operator<(const FBXVertex& other) const;
 };
@@ -630,6 +631,12 @@ void ProcessAnimations(FbxScene* fbxScene)
 FBXVertex::FBXVertex()
 {
     Memset(data, 0, sizeof(data));
+}
+    
+FBXVertex::FBXVertex(const FBXVertex& other)
+    : joints(other.joints)
+{
+    Memcpy(data, other.data, sizeof(data));
 }
 
 inline bool FBXVertex::operator<(const FBXVertex& other) const
