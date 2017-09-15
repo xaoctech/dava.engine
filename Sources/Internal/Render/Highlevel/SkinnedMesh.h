@@ -1,10 +1,9 @@
-#ifndef __DAVAENGINE_SKINNED_MESH_H__
-#define __DAVAENGINE_SKINNED_MESH_H__
+#pragma once
 
 #include "Animation/AnimatedObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/HashMap.h"
+#include "Base/UnordererMap.h"
 #include "Debug/DVAssert.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
@@ -49,10 +48,11 @@ public:
     JointTargetsData GetJointTargetsData(RenderBatch* batch);
 
 protected:
-    void PrepareJointTargetsData(RenderBatch* batch);
+    void PrepareJointTargetsData(uint32 dataIndex);
 
-    HashMap<RenderBatch*, JointTargets> jointTargets;
-    HashMap<RenderBatch*, JointTargetsData> jointTargetsData;
+    UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index
+    Set<uint32> jointTargetsDataToPrepare;
+    Vector<std::pair<JointTargets, JointTargetsData>> jointTargetsData;
 
     const JointTransform* skeletonFinalJointTransforms = nullptr;
     uint32 skeletonJointCount = 0;
@@ -70,5 +70,3 @@ inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)
 }
 
 } //ns
-
-#endif
