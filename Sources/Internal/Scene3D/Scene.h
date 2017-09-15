@@ -256,7 +256,6 @@ public: // deprecated methods
 
 protected:
     void RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity);
-    void UnregisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity);
 
     bool RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system);
 

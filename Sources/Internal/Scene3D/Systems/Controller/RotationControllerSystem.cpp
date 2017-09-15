@@ -46,6 +46,11 @@ void RotationControllerSystem::RemoveEntity(Entity* entity)
     DVASSERT(removeResult);
 }
 
+void RotationControllerSystem::PrepareForRemove()
+{
+    entities.clear();
+}
+
 void RotationControllerSystem::Process(float32 timeElapsed)
 {
     Camera* camera = GetScene()->GetDrawCamera();

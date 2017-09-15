@@ -23,6 +23,7 @@ public:
     void UnregisterEntity(DAVA::Entity* entity) override;
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     void Recalculate();
     void Process(DAVA::float32 timeElapsed) override;

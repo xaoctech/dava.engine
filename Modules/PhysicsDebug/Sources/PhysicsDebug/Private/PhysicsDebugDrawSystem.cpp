@@ -594,6 +594,20 @@ void PhysicsDebugDrawSystem::UnregisterComponent(Entity* entity, Component* comp
     }
 }
 
+void PhysicsDebugDrawSystem::PrepareForRemove()
+{
+    pendingComponents.clear();
+    for (const auto& roItem : renderObjects)
+    {
+        RenderObject* ro = roItem.second.ro;
+        if (ro != nullptr)
+        {
+            GetScene()->GetRenderSystem()->RemoveFromRender(ro);
+            SafeRelease(ro);
+        }
+    }
+}
+
 void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
 {
     using namespace PhysicsDebugDrawSystemDetail;

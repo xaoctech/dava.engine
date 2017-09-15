@@ -382,11 +382,6 @@ Scene::~Scene()
     SafeRelease(mainCamera);
     SafeRelease(drawCamera);
 
-    // Children should be removed first because they should unregister themselves in managers
-    RemoveAllChildren();
-
-    SafeRelease(sceneGlobalMaterial);
-
     transformSystem = 0;
     renderUpdateSystem = 0;
     lodSystem = 0;
@@ -409,8 +404,18 @@ Scene::~Scene()
 
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
+    {
+        systems[k]->PrepareForRemove();
+    }
+
+    for (size_t k = 0; k < size; ++k)
+    {
         SafeDelete(systems[k]);
+    }
     systems.clear();
+
+    RemoveAllChildren();
+    SafeRelease(sceneGlobalMaterial);
 
     for (SingletonComponent* s : singletonComponents)
     {
@@ -463,12 +468,6 @@ void Scene::RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* ent
     system->RegisterEntity(entity);
     for (int32 i = 0, sz = entity->GetChildrenCount(); i < sz; ++i)
         RegisterEntitiesInSystemRecursively(system, entity->GetChild(i));
-}
-void Scene::UnregisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity)
-{
-    system->UnregisterEntity(entity);
-    for (int32 i = 0, sz = entity->GetChildrenCount(); i < sz; ++i)
-        UnregisterEntitiesInSystemRecursively(system, entity->GetChild(i));
 }
 
 void Scene::RegisterComponent(Entity* entity, Component* component)
@@ -543,7 +542,7 @@ void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 pr
 
 void Scene::RemoveSystem(SceneSystem* sceneSystem)
 {
-    UnregisterEntitiesInSystemRecursively(sceneSystem, this);
+    sceneSystem->PrepareForRemove();
 
     RemoveSystem(systemsToProcess, sceneSystem);
     RemoveSystem(systemsToInput, sceneSystem);

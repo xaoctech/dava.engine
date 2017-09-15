@@ -118,6 +118,12 @@ void DebugDrawSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component*
     }
 }
 
+void DebugDrawSystem::PrepareForRemove()
+{
+    entities.clear();
+    entitiesComponentMap.clear();
+}
+
 void DebugDrawSystem::DrawComponent(DAVA::Component::eType type, const DAVA::Function<void(DAVA::Entity*)>& func)
 {
     auto it = entitiesComponentMap.find(type);

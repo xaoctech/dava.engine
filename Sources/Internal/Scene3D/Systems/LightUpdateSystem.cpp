@@ -68,4 +68,14 @@ void LightUpdateSystem::RemoveEntity(Entity* entity)
     GetScene()->GetRenderSystem()->RemoveLight(lightObject);
     entityObjectMap.erase(entity);
 }
+
+void LightUpdateSystem::PrepareForRemove()
+{
+    RenderSystem* renderSystem = GetScene()->GetRenderSystem();
+    for (const auto& node : entityObjectMap)
+    {
+        renderSystem->RemoveLight(node.second);
+    }
+    entityObjectMap.clear();
+}
 };

@@ -248,9 +248,9 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
                     rigidActor->detachShape(*shape);
                 }
 
-                physicsScene->removeActor(*physicsComponent->GetPxActor());
-                physicsComponent->ReleasePxActor();
             }
+            physicsScene->removeActor(*actor);
+            physicsComponent->ReleasePxActor();
         }
     }
 
@@ -298,6 +298,46 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         collisionProcess(Component::MESH_SHAPE_COMPONENT);
         collisionProcess(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
     }
+}
+
+void PhysicsSystem::PrepareForRemove()
+{
+    waitRenderInfoComponents.clear();
+    physicsComponensUpdatePending.clear();
+    collisionComponentsUpdatePending.clear();
+    for (CollisionShapeComponent* component : collisionComponents)
+    {
+        ReleaseShape(component);
+    }
+    collisionComponents.clear();
+
+    for (CollisionShapeComponent* component : pendingAddCollisionComponents)
+    {
+        ReleaseShape(component);
+    }
+    pendingAddCollisionComponents.clear();
+
+    for (PhysicsComponent* component : physicsComponents)
+    {
+        physx::PxActor* actor = component->GetPxActor();
+        if (actor != nullptr)
+        {
+            physicsScene->removeActor(*actor);
+            component->ReleasePxActor();
+        }
+    }
+    physicsComponents.clear();
+
+    for (PhysicsComponent* component : pendingAddPhysicsComponents)
+    {
+        physx::PxActor* actor = component->GetPxActor();
+        if (actor != nullptr)
+        {
+            physicsScene->removeActor(*actor);
+            component->ReleasePxActor();
+        }
+    }
+    pendingAddPhysicsComponents.clear();
 }
 
 void PhysicsSystem::Process(float32 timeElapsed)
