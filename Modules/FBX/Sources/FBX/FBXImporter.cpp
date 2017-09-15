@@ -632,7 +632,7 @@ FBXVertex::FBXVertex()
 {
     Memset(data, 0, sizeof(data));
 }
-    
+
 FBXVertex::FBXVertex(const FBXVertex& other)
     : joints(other.joints)
 {

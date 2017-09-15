@@ -93,7 +93,7 @@ protected:
 //globally.
 
 #define FBXSDK_EVENT_TEMPLATE_HEADER(ClassName, TemplateName)\
-template <class TemplateName, const char* T> \
+template<class TemplateName, const char * T> \
     class ClassName : public FbxEvent<ClassName<TemplateName, T>>\
 {\
     public: virtual const char* GetEventName() const {return FbxEventName();}\

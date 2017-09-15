@@ -59,17 +59,19 @@ protected:\
 
 //! Macro used to declare a new class derived from FbxObject.
 #define FBXSDK_OBJECT_DECLARE(Class, Parent)\
-	FBXSDK_FBXOBJECT_DECLARE(Class, Parent)\
-protected:\
-	Class(FbxManager& pManager, const char* pName) \
+	FBXSDK_FBXOBJECT_DECLARE(Class, Parent) \
+    \
+protected : \
+    Class(FbxManager& pManager, const char* pName) \
         : Parent(pManager, pName){};\
 private: /* end of object declaration, put back private */
 
 //! Macro used to declare a new abstract class derived from FbxObject.
 #define FBXSDK_ABSTRACT_OBJECT_DECLARE(Class, Parent)\
-	FBXSDK_CLASS_DECLARE(Class, Parent)\
-protected:\
-	static FbxObjectCreateProc Allocate;\
+	FBXSDK_CLASS_DECLARE(Class, Parent) \
+    \
+protected : \
+    static FbxObjectCreateProc Allocate;\
 	Class(FbxManager& pManager, const char* pName) \
         : Parent(pManager, pName){};\
 private: /* end of object declaration, put back private */
