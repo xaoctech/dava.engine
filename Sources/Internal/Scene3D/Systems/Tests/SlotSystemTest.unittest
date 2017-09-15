@@ -12,6 +12,7 @@
 #include "Base/RefPtr.h"
 #include "Base/FastName.h"
 #include "Time/SystemTimer.h"
+#include "Logger/Logger.h"
 
 DAVA_TESTCLASS (SlotSystemTest)
 {
@@ -243,7 +244,8 @@ DAVA_TESTCLASS (SlotSystemTest)
     {
         if (testName == "LoadItemsTest")
         {
-            TEST_VERIFY(testTime < 10.0f);
+            DAVA::Logger::Info("Test time %f", testTime);
+            TEST_VERIFY(testTime < 100.0f);
             TEST_VERIFY(testScene->GetChildrenCount() == 2);
             DAVA::Entity* aEntity = testScene->GetChild(0);
 
