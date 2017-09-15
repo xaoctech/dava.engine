@@ -289,6 +289,6 @@ DAVA_TESTCLASS (SlotSystemTest)
 
     DAVA::Vector<DAVA::eGPUFamily> gpuOrder;
     DAVA::RefPtr<DAVA::Scene> testScene;
-    DAVA::float32 testTime;
+    DAVA::float32 testTime = 0.0f;
     bool updateAfterJobFinished = false;
 };
