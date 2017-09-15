@@ -1,6 +1,9 @@
 #include "FBXImporter.h"
 #include "DAVAEngine.h"
 
+#include "Animation/AnimationClip.h"
+#include "Utils/CRC32.h"
+
 #define FBXSDK_SHARED //requested only for dynamic linking
 
 #include <fbxsdk.h>
@@ -71,12 +74,49 @@ void ProcessSkeletonsRecursive(const FbxNode* fbxSkeleton);
 void CollectSkeletonNodes(const FbxSkeleton* joint, Vector<FBXJoint>* fbxJoints, const FbxSkeleton* parentJoint = nullptr, uint32 depth = 0);
 void ProcessSkeletonHierarchy(const FbxSkeleton* fbxSkeleton);
 
-void ProcessAnimations(FbxScene* fbxScene);
+//////////////////////////////////////////////////////////////////////////
+
+struct FBXAnimationKey
+{
+    float32 time;
+    Vector3 value;
+};
+
+struct FBXAnimationChannelData
+{
+    FBXAnimationChannelData() = default;
+    FBXAnimationChannelData(AnimationTrack::eChannelTarget _channel, const Vector<FBXAnimationKey>& _animationKeys)
+        : channel(_channel)
+        , animationKeys(_animationKeys)
+    {
+    }
+
+    AnimationTrack::eChannelTarget channel = AnimationTrack::CHANNEL_TARGET_COUNT;
+    Vector<FBXAnimationKey> animationKeys;
+};
+
+struct FBXNodeAnimationData
+{
+    FbxNode* fbxNode = nullptr;
+    Vector<FBXAnimationChannelData> animationTrackData;
+};
+
+struct FBXAnimationStackData
+{
+    String name;
+    float32 duration = 0.f;
+    Vector<FBXNodeAnimationData> nodesAnimations;
+};
+
+Vector<FBXAnimationStackData> ProcessAnimations(FbxScene* fbxScene);
+void SaveAnimation(const FBXAnimationStackData& fbxStackAnimationData, const FilePath& filePath);
+
+//////////////////////////////////////////////////////////////////////////
 
 Matrix4 ToMatrix4(const FbxAMatrix& fbxMatrix);
 Vector3 ToVector3(const FbxVector4& fbxVector);
 const char* GetFBXTexturePath(const FbxProperty& textureProperty);
-FastName GenerateJointUID(const FbxSkeleton* node);
+FastName GenerateUID(const FbxNode* node);
 
 FbxAMatrix GetGeometricTransform(const FbxNode* pNode);
 const FbxSkeleton* GetSkeletonAttribute(const FbxNode* fbxNode);
@@ -94,18 +134,16 @@ static uint32 materialInstanceIndex = 0;
 
 //////////////////////////////////////////////////////////////////////////
 
-bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
+FbxScene* ImportFbxScene(FbxManager* fbxManager, const FilePath& fbxPath)
 {
-    FbxManager* fbxManager = FbxManager::Create();
-
     FbxIOSettings* fbxIOSettings = FbxIOSettings::Create(fbxManager, IOSROOT);
     FbxImporter* importer = FbxImporter::Create(fbxManager, "fbxImporter");
 
     bool initSuccess = importer->Initialize(fbxPath.GetAbsolutePathname().c_str());
     if (!initSuccess)
     {
-        Logger::Error("FBX Initialization error: %s", importer->GetStatus().GetErrorString());
-        return false;
+        Logger::Error("FbxImporter Initialization error: %s", importer->GetStatus().GetErrorString());
+        return nullptr;
     }
 
     FbxScene* fbxScene = FbxScene::Create(fbxManager, "importedScene");
@@ -113,25 +151,79 @@ bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
     if (!importSuccess)
     {
         Logger::Error("FBX Import error: %s", importer->GetStatus().GetErrorString());
-        return false;
+        return nullptr;
     }
     importer->Destroy();
 
     FbxAxisSystem::MayaZUp.ConvertScene(fbxScene); // UpVector = ZAxis, CoordSystem = RightHanded
-    FbxGeometryConverter fbxGeometryConverter(fbxManager);
-    fbxGeometryConverter.Triangulate(fbxScene, true); //Triangulate whole scene
 
-    ScopedPtr<Scene> scene(new Scene());
-    FBXImporterDetails::ProcessSkeletonsRecursive(fbxScene->GetRootNode());
-    FBXImporterDetails::ProcessHierarchyRecursive(fbxScene->GetRootNode(), scene);
-    FBXImporterDetails::ClearCache();
-    fbxScene->Destroy();
+    FbxSystemUnit::ConversionOptions fbxConversionOptions = {
+        false, /* mConvertRrsNodes */
+        true, /* mConvertLimits */
+        true, /* mConvertClusters */
+        true, /* mConvertLightIntensity */
+        true, /* mConvertPhotometricLProperties */
+        true /* mConvertCameraClipPlanes */
+    };
+    FbxSystemUnit::m.ConvertScene(fbxScene, fbxConversionOptions); //Unit = meter
 
-    scene->SaveScene(sc2Path);
+    return fbxScene;
+}
 
+Scene* FBXImporter::ConstructSceneFromFBX(const FilePath& fbxPath)
+{
+    FbxManager* fbxManager = FbxManager::Create();
+
+    Scene* scene = nullptr;
+    FbxScene* fbxScene = ImportFbxScene(fbxManager, fbxPath);
+    if (fbxScene != nullptr)
+    {
+        FbxGeometryConverter fbxGeometryConverter(fbxManager);
+        fbxGeometryConverter.Triangulate(fbxScene, true); //Triangulate whole scene
+
+        scene = new Scene();
+        FBXImporterDetails::ProcessSkeletonsRecursive(fbxScene->GetRootNode());
+        FBXImporterDetails::ProcessHierarchyRecursive(fbxScene->GetRootNode(), scene);
+        FBXImporterDetails::ClearCache();
+        fbxScene->Destroy();
+    }
     fbxManager->Destroy();
 
-    return true;
+    return scene;
+}
+
+bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
+{
+    Scene* scene = ConstructSceneFromFBX(fbxPath);
+    if (scene)
+    {
+        scene->SaveScene(sc2Path);
+        return true;
+    }
+
+    return false;
+}
+
+bool FBXImporter::ConvertAnimations(const FilePath& fbxPath)
+{
+    FbxManager* fbxManager = FbxManager::Create();
+
+    FbxScene* fbxScene = ImportFbxScene(fbxManager, fbxPath);
+    if (fbxScene != nullptr)
+    {
+        Vector<FBXImporterDetails::FBXAnimationStackData> animations = FBXImporterDetails::ProcessAnimations(fbxScene);
+
+        for (FBXImporterDetails::FBXAnimationStackData& animation : animations)
+        {
+            FilePath animationPath = (animations.size() == 1) ? FilePath::CreateWithNewExtension(fbxPath, ".anim") : FilePath::CreateWithNewExtension(fbxPath, animation.name + ".anim");
+            FBXImporterDetails::SaveAnimation(animation, animationPath);
+        }
+
+        fbxScene->Destroy();
+    }
+    fbxManager->Destroy();
+
+    return (fbxScene != nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -531,33 +623,17 @@ void ProcessSkeletonHierarchy(const FbxSkeleton* fbxSkeleton)
 
 //////////////////////////////////////////////////////////////////////////
 
-using FBXAnimationKey = std::pair<float32, Vector3>;
-
-struct FBXAnimationChannelData
+Vector<FBXAnimationKey> GetChannelAnimationKeys(FbxPropertyT<FbxDouble3>& fbxProperty, FbxAnimLayer* fbxAnimLayer)
 {
     Vector<FBXAnimationKey> animationKeys;
-    AnimationTrack::eChannelTarget trackTarget = AnimationTrack::CHANNEL_TARGET_COUNT;
-};
 
-struct FBXNodeAnimationData
-{
-    FbxNode* fbxNode = nullptr;
-    Vector<FBXAnimationChannelData> animationTrackData;
-};
+    FbxAnimCurve* fbxAnimCurve[3] = {
+        fbxProperty.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X),
+        fbxProperty.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y),
+        fbxProperty.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z),
+    };
 
-FBXNodeAnimationData GetNodeAnimationData(FbxNode* fbxNode, FbxAnimLayer* fbxAnimLayer)
-{
-    FBXNodeAnimationData result;
-    result.fbxNode = fbxNode;
-
-    FbxAnimCurve* fbxAnimCurve[3] = {}; //x, y, z curves
     Set<FbxTime> keyTimes;
-
-    //TODO: for rotation and scale
-    fbxAnimCurve[0] = fbxNode->LclTranslation.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
-    fbxAnimCurve[1] = fbxNode->LclTranslation.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-    fbxAnimCurve[2] = fbxNode->LclTranslation.GetCurve(fbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-
     for (FbxAnimCurve* curve : fbxAnimCurve)
     {
         if (curve)
@@ -570,20 +646,27 @@ FBXNodeAnimationData GetNodeAnimationData(FbxNode* fbxNode, FbxAnimLayer* fbxAni
 
     if (!keyTimes.empty())
     {
-        result.animationTrackData.emplace_back();
-        FBXAnimationChannelData& channelData = result.animationTrackData.back();
-
         for (const FbxTime& t : keyTimes)
         {
-            channelData.trackTarget = AnimationTrack::CHANNEL_TARGET_POSITION;
+            animationKeys.emplace_back();
+            animationKeys.back().time = float32(t.GetSecondDouble());
 
-            Vector3 keyValue;
             for (int32 c = 0; c < 3; ++c)
-                keyValue.data[c] = (fbxAnimCurve[c] != nullptr) ? fbxAnimCurve[c]->Evaluate(t) : float32(fbxNode->LclTranslation.EvaluateValue(t)[c]);
-
-            channelData.animationKeys.emplace_back(std::make_pair(float32(t.GetSecondDouble()), keyValue));
+                animationKeys.back().value.data[c] = (fbxAnimCurve[c] != nullptr) ? fbxAnimCurve[c]->Evaluate(t) : float32(fbxProperty.EvaluateValue(t)[c]);
         }
     }
+
+    return animationKeys;
+}
+
+FBXNodeAnimationData GetNodeAnimationData(FbxNode* fbxNode, FbxAnimLayer* fbxAnimLayer)
+{
+    FBXNodeAnimationData result;
+    result.fbxNode = fbxNode;
+
+    result.animationTrackData.emplace_back(AnimationTrack::CHANNEL_TARGET_POSITION, GetChannelAnimationKeys(fbxNode->LclTranslation, fbxAnimLayer));
+    result.animationTrackData.emplace_back(AnimationTrack::CHANNEL_TARGET_ORIENTATION, GetChannelAnimationKeys(fbxNode->LclRotation, fbxAnimLayer));
+    result.animationTrackData.emplace_back(AnimationTrack::CHANNEL_TARGET_SCALE, GetChannelAnimationKeys(fbxNode->LclScaling, fbxAnimLayer));
 
     return result;
 }
@@ -601,28 +684,192 @@ void ProcessNodeAnimationRecursive(FbxNode* fbxNode, FbxAnimLayer* fbxAnimLayer,
         ProcessNodeAnimationRecursive(fbxNode->GetChild(child), fbxAnimLayer, outNodesAnimations);
 }
 
-void ProcessAnimations(FbxScene* fbxScene)
+Vector<FBXAnimationStackData> ProcessAnimations(FbxScene* fbxScene)
 {
+    Vector<FBXAnimationStackData> result;
+
     int animationStackCount = fbxScene->GetSrcObjectCount<FbxAnimStack>();
     for (int as = 0; as < fbxScene->GetSrcObjectCount<FbxAnimStack>(); as++)
     {
         FbxAnimStack* animationStack = fbxScene->GetSrcObject<FbxAnimStack>(as);
-        String animationStackName = animationStack->GetName();
+
+        result.emplace_back();
+        result.back().name = animationStack->GetName();
 
         int animationLayersCount = animationStack->GetMemberCount<FbxAnimLayer>();
         if (animationLayersCount > 0)
         {
             if (animationLayersCount > 1)
             {
-                Logger::Warning("[FBXImporter] FBX animation '%s' contains more than one animation layer. Import only first layer", animationStackName.c_str());
+                Logger::Warning("[FBXImporter] FBX animation '%s' contains more than one animation layer. Import only first (base) layer", animationStack->GetName());
             }
 
-            Vector<FBXNodeAnimationData> nodesAnimations;
             FbxAnimLayer* animationLayer = animationStack->GetMember<FbxAnimLayer>(0);
-            ProcessNodeAnimationRecursive(fbxScene->GetRootNode(), animationLayer, &nodesAnimations);
+            ProcessNodeAnimationRecursive(fbxScene->GetRootNode(), animationLayer, &result.back().nodesAnimations);
+
+            //Calculate duration
+            float32 minTimeStamp = std::numeric_limits<float32>::infinity();
+            float32 maxTimeStamp = -std::numeric_limits<float32>::infinity();
+            for (auto& nodeAnimation : result.back().nodesAnimations)
+            {
+                for (auto& channelData : nodeAnimation.animationTrackData)
+                {
+                    if (!channelData.animationKeys.empty())
+                    {
+                        minTimeStamp = Min(minTimeStamp, channelData.animationKeys.front().time);
+                        maxTimeStamp = Max(maxTimeStamp, channelData.animationKeys.back().time);
+                    }
+                }
+            }
+
+            result.back().duration = maxTimeStamp - minTimeStamp;
+        }
+    }
+
+    return result;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void WriteToBuffer(Vector<uint8>& buffer, const void* data, uint32 size)
+{
+    DVASSERT(data != nullptr && size != 0);
+
+    const uint8* bytes = reinterpret_cast<const uint8*>(data);
+    buffer.insert(buffer.end(), bytes, bytes + size);
+}
+
+template <class T>
+void WriteToBuffer(Vector<uint8>& buffer, const T* value)
+{
+    WriteToBuffer(buffer, value, sizeof(T));
+}
+
+void WriteToBuffer(Vector<uint8>& buffer, const String& string)
+{
+    uint32 stringBytes = uint32(string.length() + 1);
+    WriteToBuffer(buffer, string.c_str(), stringBytes);
+
+    //as we load animation data directly to memory and use it without any processing we have to align strings data
+    uint32 stringAlignment = 4 - (stringBytes & 0x3);
+    if (stringAlignment > 0 && stringAlignment < 4)
+    {
+        uint32 pad = 0;
+        WriteToBuffer(buffer, &pad, stringAlignment);
+    }
+}
+
+void SaveAnimation(const FBXAnimationStackData& fbxStackAnimationData, const FilePath& filePath)
+{
+    //binary file format described in 'AnimationBinaryFormat.md'
+    struct ChannelHeader
+    {
+        //Track part
+        uint8 target;
+        uint8 pad0[3];
+
+        //Channel part
+        uint32 signature = AnimationChannel::ANIMATION_CHANNEL_DATA_SIGNATURE;
+        uint8 dimension = 0;
+        uint8 interpolation = 0;
+        uint16 compression = 0;
+        uint32 keyCount = 0;
+    } channelHeader;
+
+    ScopedPtr<File> file(File::Create(filePath, File::CREATE | File::WRITE));
+    if (file)
+    {
+        Vector<uint8> animationData;
+
+        WriteToBuffer(animationData, &fbxStackAnimationData.duration);
+
+        uint32 nodeCount = uint32(fbxStackAnimationData.nodesAnimations.size());
+        WriteToBuffer(animationData, &nodeCount);
+
+        //Write nodes data
+        for (auto& fbxNodeData : fbxStackAnimationData.nodesAnimations)
+        {
+            //TODO: FBX_COMPLETE bake parents transform to root-joint animation ?
+
+            String nodeUID = GenerateUID(fbxNodeData.fbxNode).c_str();
+            String nodeName = fbxNodeData.fbxNode->GetName();
+
+            WriteToBuffer(animationData, nodeUID);
+            WriteToBuffer(animationData, nodeName);
+
+            //Write Track data
+            uint32 signature = AnimationTrack::ANIMATION_TRACK_DATA_SIGNATURE;
+            WriteToBuffer(animationData, &signature);
+
+            uint32 channelsCount = 0;
+            for (auto& fbxChannelData : fbxNodeData.animationTrackData)
+            {
+                if (!fbxChannelData.animationKeys.empty())
+                    ++channelsCount;
+            }
+
+            WriteToBuffer(animationData, &channelsCount);
+
+            for (auto& fbxChannelData : fbxNodeData.animationTrackData)
+            {
+                if (!fbxChannelData.animationKeys.empty())
+                {
+                    channelHeader.target = fbxChannelData.channel;
+                    channelHeader.interpolation = uint8(AnimationChannel::INTERPOLATION_LINEAR);
+                    channelHeader.keyCount = uint32(fbxChannelData.animationKeys.size());
+                    channelHeader.dimension =
+                    (channelHeader.target == AnimationTrack::CHANNEL_TARGET_POSITION) ? 3 :
+                                                                                        (channelHeader.target == AnimationTrack::CHANNEL_TARGET_ORIENTATION) ? 4 :
+                                                                                                                                                               (channelHeader.target == AnimationTrack::CHANNEL_TARGET_SCALE) ? 1 : 0;
+
+                    WriteToBuffer(animationData, &channelHeader);
+
+                    for (uint32 k = 0; k < channelHeader.keyCount; ++k)
+                    {
+                        const FBXAnimationKey& key = fbxChannelData.animationKeys[k];
+
+                        WriteToBuffer(animationData, &key.time);
+
+                        if (channelHeader.target == AnimationTrack::CHANNEL_TARGET_POSITION)
+                        {
+                            WriteToBuffer(animationData, &key.value);
+                        }
+                        else if (channelHeader.target == AnimationTrack::CHANNEL_TARGET_ORIENTATION)
+                        {
+                            Vector3 euler(DegToRad(key.value.x), DegToRad(key.value.y), DegToRad(key.value.z));
+                            Quaternion orientation;
+                            orientation.Construct(euler);
+
+                            WriteToBuffer(animationData, &orientation);
+                        }
+                        else if (channelHeader.target == AnimationTrack::CHANNEL_TARGET_SCALE)
+                        {
+                            WriteToBuffer(animationData, &key.value.x);
+                        }
+                    }
+                }
+            }
         }
 
-        //TODO: save animation clip here
+        uint32 markerCount = 0;
+        WriteToBuffer(animationData, &markerCount); //TODO: *Skinning* marks count
+
+        uint32 animationDataSize = uint32(animationData.size());
+
+        AnimationClip::FileHeader header;
+        header.signature = AnimationClip::ANIMATION_CLIP_FILE_SIGNATURE;
+        header.version = 1;
+        header.crc32 = CRC32::ForBuffer(animationData.data(), animationDataSize);
+        header.dataSize = animationDataSize;
+
+        file->Write(&header);
+        file->Write(animationData.data(), animationDataSize);
+
+        file->Flush();
+    }
+    else
+    {
+        Logger::Error("[FBXImporter] Failed to open file for writing: %s", filePath.GetAbsolutePathname().c_str());
     }
 }
 
@@ -705,9 +952,10 @@ const char* GetFBXTexturePath(const FbxProperty& textureProperty)
     return nullptr;
 }
 
-FastName GenerateJointUID(const FbxSkeleton* joint)
+FastName GenerateUID(const FbxNode* node)
 {
-    return FastName(Format("%llu", joint->GetUniqueID()).c_str());
+    //return FastName(Format("%llu", node->GetUniqueID()).c_str());
+    return FastName("node-" + String(node->GetName())); //Temporary in collada-style
 }
 
 FbxAMatrix GetGeometricTransform(const FbxNode* pNode)
@@ -828,13 +1076,13 @@ SkeletonComponent* ProcessSkin(FbxSkin* fbxSkin, Vector<FbxControlPointInfluence
     for (uint32 j = 0; j < jointCount; ++j)
     {
         const FBXJoint& fbxJoint = fbxJoints[j];
+        const FbxNode* jointNode = fbxJoint.joint->GetNode();
+
         SkeletonComponent::Joint& joint = joints[j];
-
         joint.parentIndex = fbxJoint.parentIndex;
-        joint.name = FastName(fbxJoint.joint->GetNode()->GetName());
-        joint.uid = FastName("node-" + String(fbxJoint.joint->GetNode()->GetName())); // GenerateJointUID(fbxJoint.joint);
+        joint.uid = GenerateUID(jointNode);
+        joint.name = FastName(jointNode->GetName());
         joint.bbox = (linksBBox.find(fbxJoint.joint) != linksBBox.end()) ? linksBBox[fbxJoint.joint] : AABBox3(Vector3(), 0.f);
-
         joint.bindTransform = linksTransforms[fbxJoint.joint].first;
         joint.bindTransformInv = linksTransforms[fbxJoint.joint].second;
     }
