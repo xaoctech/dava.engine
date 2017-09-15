@@ -79,7 +79,6 @@ BaseFamily<Component>::BaseFamily(const Vector<Component*>& components)
 
 template <typename Component>
 BaseFamily<Component>::BaseFamily(const BaseFamily<Component>& other)
-    : refCount(0)
 {
     Memcpy(componentIndices, other.componentIndices, sizeof(componentIndices));
     Memcpy(componentCount, other.componentCount, sizeof(componentIndices));
