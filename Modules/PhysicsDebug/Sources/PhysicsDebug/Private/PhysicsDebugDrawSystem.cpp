@@ -606,6 +606,8 @@ void PhysicsDebugDrawSystem::PrepareForRemove()
             SafeRelease(ro);
         }
     }
+
+    renderObjects.clear();
 }
 
 void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
