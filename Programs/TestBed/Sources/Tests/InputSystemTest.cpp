@@ -489,6 +489,16 @@ void InputSystemTest::CreateActionsUI()
 
     actionCounters[ACTION_1] = staticText;
 
+    staticText = new UIStaticText(Rect(270, y, 50, 30));
+    staticText->SetTextColor(Color::White);
+    staticText->SetFont(font);
+    staticText->SetMultiline(true);
+    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
+    staticText->SetUtf8Text("not active");
+    AddControl(staticText);
+
+    digitalActionsStatus[ACTION_1] = staticText;
+
     y += yDelta;
 
     //
@@ -510,6 +520,16 @@ void InputSystemTest::CreateActionsUI()
     AddControl(staticText);
 
     actionCounters[ACTION_2] = staticText;
+
+    staticText = new UIStaticText(Rect(270, y, 50, 30));
+    staticText->SetTextColor(Color::White);
+    staticText->SetFont(font);
+    staticText->SetMultiline(true);
+    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
+    staticText->SetUtf8Text("not active");
+    AddControl(staticText);
+
+    digitalActionsStatus[ACTION_2] = staticText;
 
     y += yDelta;
 
@@ -533,6 +553,16 @@ void InputSystemTest::CreateActionsUI()
 
     actionCounters[ACTION_3] = staticText;
 
+    staticText = new UIStaticText(Rect(270, y, 50, 30));
+    staticText->SetTextColor(Color::White);
+    staticText->SetFont(font);
+    staticText->SetMultiline(true);
+    staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
+    staticText->SetUtf8Text("not active");
+    AddControl(staticText);
+
+    digitalActionsStatus[ACTION_3] = staticText;
+
     y += yDelta;
 
     //
@@ -555,11 +585,21 @@ void InputSystemTest::CreateActionsUI()
 
     actionCounters[ACTION_4] = staticText;
 
+    staticText = new UIStaticText(Rect(270, y, 130, 30));
+    staticText->SetTextColor(Color::White);
+    staticText->SetFont(font);
+    staticText->SetMultiline(true);
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetUtf8Text("not active");
+    AddControl(staticText);
+
+    analogActionsStatus[ACTION_4] = staticText;
+
     y += yDelta;
 
     //
 
-    staticText = new UIStaticText(Rect(10, y, 200, 30));
+    staticText = new UIStaticText(Rect(10, y, 100, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
@@ -576,6 +616,16 @@ void InputSystemTest::CreateActionsUI()
     AddControl(staticText);
 
     actionCounters[ACTION_5] = staticText;
+
+    staticText = new UIStaticText(Rect(270, y, 130, 30));
+    staticText->SetTextColor(Color::White);
+    staticText->SetFont(font);
+    staticText->SetMultiline(true);
+    staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+    staticText->SetUtf8Text("not active");
+    AddControl(staticText);
+
+    analogActionsStatus[ACTION_5] = staticText;
 
     y += yDelta;
 
@@ -803,6 +853,41 @@ void InputSystemTest::OnUpdate(float32 delta)
             std::wstringstream ss;
             ss << static_cast<int>(state.x) << "\n" << static_cast<int>(state.y);
             touchButton->SetStateText(0xFF, ss.str());
+        }
+    }
+
+    ActionSystem* actionSystem = GetEngineContext()->actionSystem;
+
+    for (auto& actionStatus : digitalActionsStatus)
+    {
+        FastName actionId = actionStatus.first;
+        UIStaticText* status = actionStatus.second;
+        bool active = actionSystem->GetDigitalActionState(actionId);
+        if (active)
+        {
+            status->SetUtf8Text("active");
+        }
+        else
+        {
+            status->SetUtf8Text("not active");
+        }
+    }
+
+    for (auto& actionStatus : analogActionsStatus)
+    {
+        FastName actionId = actionStatus.first;
+        UIStaticText* status = actionStatus.second;
+        AnalogActionState state = actionSystem->GetAnalogActionState(actionId);
+        int32 x = static_cast<int32>(state.x);
+        int32 y = static_cast<int32>(state.y);
+        String coords = "x: " + std::to_string(x) + ", y: " + std::to_string(y);
+        if (state.active)
+        {
+            status->SetUtf8Text("active, " + coords);
+        }
+        else
+        {
+            status->SetUtf8Text("not active, " + coords);
         }
     }
 }
