@@ -599,7 +599,7 @@ void InputSystemTest::CreateActionsUI()
 
     //
 
-    staticText = new UIStaticText(Rect(10, y, 100, 30));
+    staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
     staticText->SetMultiline(true);
