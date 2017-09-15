@@ -9,7 +9,7 @@
 #include <QSet>
 #include <QDebug>
 
-class ApplicationManager;
+class GuiApplicationManager;
 class BranchesListModel;
 class QSortFilterProxyModel;
 
@@ -25,7 +25,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(ApplicationManager* appManager, QWidget* parent = 0);
+    explicit MainWindow(GuiApplicationManager* appManager, QWidget* parent = 0);
     ~MainWindow();
 
     void RefreshApps();
@@ -83,7 +83,7 @@ private:
     QFont tableFont;
     BranchesListModel* listModel = nullptr;
     QSortFilterProxyModel* filterModel = nullptr;
-    ApplicationManager* appManager = nullptr;
+    GuiApplicationManager* appManager = nullptr;
 
     Receiver receiver;
 

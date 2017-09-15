@@ -120,6 +120,7 @@ public:
     Application* GetApplication(const QString& branch, const QString& appID);
 
     AppVersion* GetAppVersion(const QString& branch, const QString& appID, const QString& ver);
+    AppVersion* GetAppVersion(const QString& branch, const QString& appID);
 
     void RemoveBranch(const QString& branchID);
 

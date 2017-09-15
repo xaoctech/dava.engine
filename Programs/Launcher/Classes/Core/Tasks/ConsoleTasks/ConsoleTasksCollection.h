@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <QList>
@@ -8,17 +9,22 @@ class ConsoleTasksCollection
 public:
     static ConsoleTasksCollection* Instance();
 
-    void RegisterConsoleTask(const QMetaObject& meta);
+    void RegisterConsoleTask(const char* name);
 
-    const QList<QMetaObject>& GetMetas() const;
+    const QList<const char*>& GetMetas() const;
 
 private:
-    QList<QMetaObject> tasks;
-
-    static ConsoleTasksCollection* self;
+    QList<const char*> tasks;
 };
 
+template <typename T>
 struct ConsoleTasksRegistrator
 {
-    ConsoleTasksRegistrator(const QMetaObject& metaObject);
+    ConsoleTasksRegistrator(const char* name)
+    {
+        qRegisterMetaType<T>();
+        ConsoleTasksCollection::Instance()->RegisterConsoleTask(name);
+    }
 };
+
+#define REGISTER_CLASS(Type) ConsoleTasksRegistrator<Type> registrator(#Type);

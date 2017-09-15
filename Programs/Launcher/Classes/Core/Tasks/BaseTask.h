@@ -3,7 +3,7 @@
 #include <QString>
 #include <QVariant>
 
-class ApplicationManager;
+struct ApplicationContext;
 
 //task data component
 class TaskDataHolder
@@ -33,7 +33,7 @@ private:
 class BaseTask : public TaskDataHolder, public ErrorHolder
 {
 public:
-    BaseTask(ApplicationManager* appManager);
+    BaseTask(ApplicationContext* appManager);
 
     virtual ~BaseTask() = default;
 
@@ -50,7 +50,7 @@ public:
     virtual eTaskType GetTaskType() const = 0;
 
 protected:
-    ApplicationManager* appManager = nullptr;
+    ApplicationContext* appContext = nullptr;
 
 private:
     friend class Notifier;
@@ -69,5 +69,5 @@ public:
     eTaskType GetTaskType() const override;
 
 protected:
-    RunTask(ApplicationManager* appManager);
+    RunTask(ApplicationContext* appManager);
 };

@@ -5,10 +5,9 @@
 
 //ConseoleTask can not be derived from BaseTask
 //Because ConsoleTask can create ApplicationManager itself
-class ConsoleBaseTask : public QObject
+class ConsoleBaseTask
 {
 public:
     virtual QCommandLineOption CreateOption() const = 0;
-
-protected:
+    virtual void Run(const QStringList& arguments) = 0;
 };

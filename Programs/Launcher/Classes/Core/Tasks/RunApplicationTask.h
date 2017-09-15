@@ -2,10 +2,12 @@
 
 #include "Core/Tasks/BaseTask.h"
 
+struct ConfigHolder;
+
 class RunApplicationTask : public RunTask
 {
 public:
-    RunApplicationTask(ApplicationManager* appManager, const QString& branch, const QString& app, const QString& version);
+    RunApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder, const QString& branch, const QString& app, const QString& version);
 
 private:
     QString GetDescription() const override;
@@ -14,4 +16,5 @@ private:
     QString branch;
     QString app;
     QString version;
+    ConfigHolder* configHolder = nullptr;
 };

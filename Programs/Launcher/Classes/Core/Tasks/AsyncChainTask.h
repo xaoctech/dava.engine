@@ -12,7 +12,7 @@ class AsyncChainTask : public QObject, public BaseTask
     Q_OBJECT
 
 public:
-    AsyncChainTask(ApplicationManager* appManager);
+    AsyncChainTask(ApplicationContext* appContext);
 
     void SetNotifier(const Notifier& notifier);
 

@@ -20,10 +20,13 @@ void CommandLineMediator::Start(const QStringList& arguments)
 
     ConsoleTasksCollection* collection = ConsoleTasksCollection::Instance();
     QMap<ConsoleBaseTask*, QCommandLineOption> tasks;
-    for (const QMetaObject& meta : collection->GetMetas())
+    for (const char* meta : collection->GetMetas())
     {
-        void* task = QMetaType::create(QMetaType::type(meta.className()));
+        int type = QMetaType::type(meta);
+        void* task = QMetaType::create(type);
         ConsoleBaseTask* consoleTask = static_cast<ConsoleBaseTask*>(task);
+        QCommandLineOption option = consoleTask->CreateOption();
+        parser.addOption(option);
         tasks.insert(consoleTask, consoleTask->CreateOption());
     }
 
@@ -35,57 +38,21 @@ void CommandLineMediator::Start(const QStringList& arguments)
 
     if (parser.isSet(versionOption))
     {
-        qInfo() << parser.showVersion();
+        parser.showVersion();
         return;
     }
 
     if (parser.isSet(helpOption))
     {
-        qInfo() << parser.showHelp();
+        parser.showHelp();
         return;
     }
 
-    if (parser.isSet(versionOption))
-        return CommandLineVersionRequested;
-
-    if (parser.isSet(helpOption))
-        return CommandLineHelpRequested;
-
-    if (parser.isSet(nameServerOption))
+    for (auto iter = tasks.begin(); iter != tasks.end(); ++iter)
     {
-        const QString nameserver = parser.value(nameServerOption);
-        query->nameServer = QHostAddress(nameserver);
-        if (query->nameServer.isNull() || query->nameServer.protocol() == QAbstractSocket::UnknownNetworkLayerProtocol)
+        if (parser.isSet(iter.value()))
         {
-            *errorMessage = "Bad nameserver address: " + nameserver;
-            return CommandLineError;
+            iter.key()->Run(parser.positionalArguments());
         }
     }
-
-    if (parser.isSet(typeOption))
-    {
-        const QString typeParameter = parser.value(typeOption);
-        const int type = typeFromParameter(typeParameter.toLower());
-        if (type < 0)
-        {
-            *errorMessage = "Bad record type: " + typeParameter;
-            return CommandLineError;
-        }
-        query->type = static_cast<QDnsLookup::Type>(type);
-    }
-
-    const QStringList positionalArguments = parser.positionalArguments();
-    if (positionalArguments.isEmpty())
-    {
-        *errorMessage = "Argument 'name' missing.";
-        return CommandLineError;
-    }
-    if (positionalArguments.size() > 1)
-    {
-        *errorMessage = "Several 'name' arguments specified.";
-        return CommandLineError;
-    }
-    query->name = positionalArguments.first();
-
-    return CommandLineOk;
 }

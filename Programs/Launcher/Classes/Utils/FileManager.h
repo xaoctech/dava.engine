@@ -36,6 +36,7 @@ public:
     bool IsInQuarantine() const;
 
     static QString GetFileNameFromURL(const QString& url);
+    static QString GetLocalConfigFilePath();
     static bool DeleteDirectory(const QString& path);
     static void MakeDirectory(const QString& path);
 

@@ -681,6 +681,20 @@ AppVersion* ConfigParser::GetAppVersion(const QString& branchID, const QString& 
     return nullptr;
 }
 
+AppVersion* ConfigParser::GetAppVersion(const QString& branchID, const QString& appID)
+{
+    Application* app = GetApplication(branchID, appID);
+    if (app != nullptr)
+    {
+        if (app->versions.isEmpty() == false)
+        {
+            return &app->versions.first();
+        }
+    }
+
+    return nullptr;
+}
+
 QString ConfigParser::GetString(const QString& stringID) const
 {
     if (strings.contains(stringID))

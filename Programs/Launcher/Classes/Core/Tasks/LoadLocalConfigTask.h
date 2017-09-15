@@ -2,10 +2,12 @@
 
 #include "Core/Tasks/BaseTask.h"
 
+struct ConfigHolder;
+
 class LoadLocalConfigTask : public RunTask
 {
 public:
-    LoadLocalConfigTask(ApplicationManager* appManager, const QString& localConfigPath);
+    LoadLocalConfigTask(ApplicationContext* appContext, ConfigHolder* configHolder, const QString& localConfigPath);
 
 private:
     QString GetDescription() const override;
@@ -13,4 +15,5 @@ private:
     void Run() override;
 
     QString localConfigPath;
+    ConfigHolder* configHolder;
 };

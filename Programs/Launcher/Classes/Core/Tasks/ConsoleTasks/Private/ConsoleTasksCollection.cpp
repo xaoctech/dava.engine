@@ -1,23 +1,20 @@
 #include "Core/Tasks/ConsoleTasks/ConsoleTasksCollection.h"
 
-ConsoleTasksCollection* ConsoleTasksCollection::self;
+#include <QMetaType>
 
 ConsoleTasksCollection* ConsoleTasksCollection::Instance()
 {
-    return self;
+    static ConsoleTasksCollection self;
+    return &self;
 }
 
-void ConsoleTasksCollection::RegisterConsoleTask(const QMetaObject& meta)
+void ConsoleTasksCollection::RegisterConsoleTask(const char* name)
 {
-    tasks.append(meta);
+    tasks.append(name);
 }
 
-const QList<QMetaObject>& ConsoleTasksCollection::GetMetas() const
+const QList<const char*>& ConsoleTasksCollection::GetMetas() const
 {
     return tasks;
 }
 
-ConsoleTasksRegistrator::ConsoleTasksRegistrator(const QMetaObject& metaObject)
-{
-    ConsoleTasksCollection::Instance()->RegisterConsoleTask(metaObject);
-}

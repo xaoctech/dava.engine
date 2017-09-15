@@ -1,7 +1,7 @@
 #include "Core/Tasks/AsyncChainTask.h"
 
-AsyncChainTask::AsyncChainTask(ApplicationManager* appManager)
-    : BaseTask(appManager)
+AsyncChainTask::AsyncChainTask(ApplicationContext* appContext)
+    : BaseTask(appContext)
 {
 }
 

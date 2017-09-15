@@ -9,7 +9,7 @@ class ApplicationQuitController;
 class SelfUpdateTask : public AsyncChainTask
 {
 public:
-    SelfUpdateTask(ApplicationManager* appManager, ApplicationQuitController* quitController, const QString& url);
+    SelfUpdateTask(ApplicationContext* appContext, ApplicationQuitController* quitController, const QString& url);
 
 private:
     enum eState

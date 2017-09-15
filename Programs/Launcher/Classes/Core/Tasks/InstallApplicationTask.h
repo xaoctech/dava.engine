@@ -5,6 +5,8 @@
 
 #include <QFile>
 
+struct ConfigHolder;
+
 struct InstallApplicationParams
 {
     QString branch;
@@ -15,7 +17,7 @@ struct InstallApplicationParams
 class InstallApplicationTask final : public AsyncChainTask
 {
 public:
-    InstallApplicationTask(ApplicationManager* appManager, const InstallApplicationParams& params);
+    InstallApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder, const InstallApplicationParams& params);
 
 private:
     enum eState
@@ -38,8 +40,6 @@ private:
     QStringList GetApplicationsToRestart(const QString& branchID, const QString& appID);
     bool CanTryStopApplication(const QString& applicationName) const;
 
-    QString GetAppName() const;
-
     bool NeedUnpack() const;
 
     InstallApplicationParams params;
@@ -47,4 +47,5 @@ private:
 
     eState state = LOADING;
     QFile fileToWrite;
+    ConfigHolder* configHolder = nullptr;
 };

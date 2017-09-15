@@ -5,7 +5,7 @@
 class UnzipTask final : public BaseTask
 {
 public:
-    UnzipTask(ApplicationManager* appManager, const QString& archivePath, const QString& outputPath);
+    UnzipTask(ApplicationContext* appContext, const QString& archivePath, const QString& outputPath);
 
     QString GetDescription() const override;
     eTaskType GetTaskType() const override;

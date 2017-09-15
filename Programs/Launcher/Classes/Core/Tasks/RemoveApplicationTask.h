@@ -3,10 +3,12 @@
 #include "Core/Tasks/BaseTask.h"
 #include "Data/ConfigParser.h"
 
+struct ConfigHolder;
+
 class RemoveApplicationTask : public RunTask
 {
 public:
-    RemoveApplicationTask(ApplicationManager* appManager, const QString& branch, const QString& app);
+    RemoveApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder, const QString& branch, const QString& app);
 
 private:
     QString GetDescription() const override;
@@ -18,4 +20,6 @@ private:
 
     QString branch;
     QString app;
+
+    ConfigHolder* configHolder = nullptr;
 };

@@ -1,8 +1,9 @@
 #include "Core/BAManagerClient.h"
-#include "Core/ApplicationManager.h"
+#include "Core/GuiApplicationManager.h"
 #include "Core/TaskManager.h"
 
 #include "Utils/ErrorMessenger.h"
+#include "Utils/Utils.h"
 
 #include "Gui/MainWindow.h"
 
@@ -23,7 +24,7 @@
 
 #include <memory>
 
-BAManagerClient::BAManagerClient(ApplicationManager* appManager_, QObject* parent /* = nullptr */)
+BAManagerClient::BAManagerClient(GuiApplicationManager* appManager_, QObject* parent /* = nullptr */)
     : QObject(parent)
     , applicationManager(appManager_)
     , updateTimer(new QTimer(this))
@@ -294,7 +295,7 @@ void BAManagerClient::SilentUpdate(const QJsonObject& requestObj, const QString&
 
     ::FillAppFields(&params.newVersion, requestObj, IsToolset(appName));
 
-    std::unique_ptr<BaseTask> task = applicationManager->CreateTask<InstallApplicationTask>(params);
+    std::unique_ptr<BaseTask> task = applicationManager->CreateTask<InstallApplicationTask>(applicationManager->GetConfigHolder(), params);
     task->SetUserData(commandID);
     applicationManager->AddTaskWithCustomReceivers(std::move(task), { receiver, applicationManager->GetMainWindow()->GetReceiver() });
 }

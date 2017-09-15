@@ -6,4 +6,7 @@ class DownloadToDestinationTask : public ConsoleBaseTask
 {
 private:
     QCommandLineOption CreateOption() const override;
+    void Run(const QStringList& arguments);
 };
+
+Q_DECLARE_METATYPE(DownloadToDestinationTask);

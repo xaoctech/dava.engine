@@ -1,7 +1,10 @@
 #include "Core/Tasks/RunApplicationTask.h"
-#include "Core/ApplicationManager.h"
+#include "Core/ApplicationContext.h"
+#include "Core/ConfigHolder.h"
 
 #include "Data/ConfigParser.h"
+
+#include "Utils/Utils.h"
 
 #include <QtHelpers/ProcessHelper.h>
 
@@ -28,11 +31,12 @@ void FixLocalAppPath_kostil(QString& runPath)
 #endif //Q_OS_WIN
 }
 
-RunApplicationTask::RunApplicationTask(ApplicationManager* appManager, const QString& branch_, const QString& app_, const QString& version_)
-    : RunTask(appManager)
+RunApplicationTask::RunApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder_, const QString& branch_, const QString& app_, const QString& version_)
+    : RunTask(appContext)
     , branch(branch_)
     , app(app_)
     , version(version_)
+    , configHolder(configHolder_)
 {
 }
 
@@ -43,19 +47,19 @@ QString RunApplicationTask::GetDescription() const
 
 void RunApplicationTask::Run()
 {
-    AppVersion* localVersion = appManager->GetLocalConfig()->GetAppVersion(branch, app, version);
+    AppVersion* localVersion = configHolder->localConfig.GetAppVersion(branch, app, version);
     if (localVersion == nullptr)
     {
         SetError(QObject::tr("Version %1 of application %2 is not installed").arg(version).arg(app));
         return;
     }
-    QString runPath = appManager->GetApplicationDirectory(branch, app, localVersion->isToolSet, false);
+    QString runPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branch, app, localVersion->isToolSet, false);
     if (runPath.isEmpty())
     {
         SetError(QObject::tr("Application %1 in branch %2 not exists!").arg(app).arg(branch));
         return;
     }
-    QString localAppPath = appManager->GetLocalAppPath(localVersion, app);
+    QString localAppPath = LauncherUtils::GetLocalAppPath(localVersion, app);
     runPath += localAppPath;
 #ifdef Q_OS_WIN
     RunApplicationTaskDetails::FixLocalAppPath_kostil(runPath);

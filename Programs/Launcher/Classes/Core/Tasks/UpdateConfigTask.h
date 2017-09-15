@@ -6,11 +6,12 @@
 #include <QString>
 
 class QIODevice;
+struct ConfigHolder;
 
 class UpdateConfigTask : public AsyncChainTask
 {
 public:
-    UpdateConfigTask(ApplicationManager* appManager, const std::vector<QUrl>& urls);
+    UpdateConfigTask(ApplicationContext* appContext, ConfigHolder* configHolder, const std::vector<QUrl>& urls);
 
 private:
     QString GetDescription() const override;
@@ -19,4 +20,5 @@ private:
     void OnFinished(const BaseTask* task) override;
 
     std::map<QUrl, QIODevice*> buffers;
+    ConfigHolder* configHolder = nullptr;
 };
