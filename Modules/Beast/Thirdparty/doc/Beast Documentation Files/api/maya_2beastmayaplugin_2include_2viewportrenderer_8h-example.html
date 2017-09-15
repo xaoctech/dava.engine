@@ -1,0 +1,382 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/include/viewportrenderer.h</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2include_2viewportrenderer_8h-example.html','api_maya_2beastmayaplugin_2include_2viewportrenderer_8h_example_html8b32bd61-b523-4fe1-bd06-9778d0a8cf9a','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/include/viewportrenderer.h','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2include_2viewportrenderer_8h-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/include/viewportrenderer.h&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/include/viewportrenderer.h</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/include/viewportrenderer.h</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#ifndef BEAST_VIEWPORT_RENDERER_H</span>
+<span class="preprocessor">#define BEAST_VIEWPORT_RENDERER_H</span>
+
+<span class="preprocessor">#include &lt;vector&gt;</span>
+<span class="preprocessor">#include &lt;math.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MViewportRenderer.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MHardwareRenderer.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MImage.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MMutexLock.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/M3dView.h&gt;</span>
+<span class="preprocessor">#include "liveasyncjob.h"</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+<span class="keyword">class </span>PowLookup {
+<span class="keyword">public</span>:
+        PowLookup(<span class="keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> bits, <span class=
+"keyword">const</span> <span class=
+"keywordtype">float</span> gamma) {
+                <span class="keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> values = (1 &lt;&lt; bits);
+                m_maxIdx = values - 1;
+                m_lookup.reserve(values);
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">size_t</span> i = 0; i &lt; values; ++i) {
+                        <span class=
+"keyword">const</span> <span class=
+"keywordtype">float</span> v = (float)i / (<span class=
+"keywordtype">float</span>)m_maxIdx;
+                        m_lookup.push_back((<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span>)(255.0f * powf(v, gamma)));
+                }
+        }
+
+        <span class="keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> lookup(<span class=
+"keyword">const</span> <span class="keywordtype">float</span> v) {
+                <span class=
+"keywordflow">if</span> (v &lt;= 0 || v != v) {
+                        <span class=
+"keywordflow">return</span> 0x00;
+                } <span class=
+"keywordflow">else</span> <span class="keywordflow">if</span> (v &gt;= 1) {
+                        <span class=
+"keywordflow">return</span> 0xff;
+                }
+                <span class="keyword">const</span> <span class=
+"keywordtype">size_t</span> idx = (size_t)(v * m_maxIdx);
+                <span class=
+"keywordflow">return</span> m_lookup[idx];
+        }
+
+<span class="keyword">private</span>:
+        std::vector&lt;unsigned char&gt; m_lookup;
+        <span class="keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> m_maxIdx;
+};
+
+<span class="keyword">class </span>ViewportRenderer : <span class=
+"keyword">public</span> MViewportRenderer {
+<span class="keyword">public</span>:
+
+        ViewportRenderer(<span class=
+"keyword">const</span> MString&amp; name);
+        
+        ~ViewportRenderer() {
+                deregisterRenderer();
+                uninitialize();
+        }
+
+        MStatus initialize() {
+                MHardwareRenderer *rend = MHardwareRenderer::theRenderer();
+                <span class="keywordflow">if</span> (rend) {
+                        m_GLFT = rend-&gt;glFunctionTable();
+                        <span class=
+"keywordflow">if</span> (m_GLFT) {
+                                m_frameList = m_GLFT-&gt;glGenLists(1);
+
+                                m_GLFT-&gt;glNewList(m_frameList, MGL_COMPILE);
+                                        m_GLFT-&gt;glBegin(MGL_QUADS);
+                                                m_GLFT-&gt;glTexCoord2f(0.0f, 1.0f); 
+                                                m_GLFT-&gt;glVertex3f(-1.0f, 1.0f, 0.0f);              <span class="comment">// Top Left</span>
+
+                                                m_GLFT-&gt;glTexCoord2f(1.0f, 1.0f); 
+                                                m_GLFT-&gt;glVertex3f(1.0f, 1.0f, 0.0f);              <span class="comment">// Top Right</span>
+
+                                                m_GLFT-&gt;glTexCoord2f(1.0f, 0.0f); 
+                                                m_GLFT-&gt;glVertex3f(1.0f, -1.0f, 0.0f);              <span class="comment">// Bottom Right</span>
+
+                                                m_GLFT-&gt;glTexCoord2f(0.0f, 0.0f); 
+                                                m_GLFT-&gt;glVertex3f(-1.0f, -1.0f, 0.0f);              <span class="comment">// Bottom Left</span>
+                                        m_GLFT-&gt;glEnd();
+                                m_GLFT-&gt;glEndList();
+                                
+                                m_GLFT-&gt;glGenTextures(1, &amp;m_frameTexture);  
+                        } <span class="keywordflow">else</span> {
+                                <span class=
+"keywordflow">return</span> MStatus::kFailure;
+                        }
+                }
+
+                <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+        }
+
+        MStatus uninitialize() {
+                m_GLFT-&gt;glDeleteLists(m_frameList, 1);
+                m_GLFT-&gt;glDeleteTextures(1, &amp;m_frameTexture);
+
+                <span class=
+"keywordflow">return</span> MStatus::kSuccess;
+        }
+
+        <span class=
+"keywordtype">bool</span> nativelySupports(MViewportRenderer::RenderingAPI api, <span class="keywordtype">float</span> version) {
+                <span class=
+"keywordflow">return</span> (api == MViewportRenderer::kSoftware || api == MViewportRenderer::kOpenGL);
+        }
+
+        <span class="keywordtype">bool</span> <span class=
+"keyword">override</span>(MViewportRenderer::RenderingOverride <span class="keyword">override</span>) {
+                <span class=
+"keywordflow">return</span> (<span class=
+"keyword">override</span> == MViewportRenderer::kOverrideThenStandard);
+        }
+        
+        <span class="keyword">virtual</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span>  overrideThenStandardExclusion ()<span class="keyword"> const </span>{
+                M3dView theView = M3dView::active3dView();
+
+                MString rendererName;
+                theView.getRendererString(rendererName);
+                <span class=
+"keywordflow">if</span> (rendererName != <span class=
+"stringliteral">"BEAST_VIEWPORT_RENDERER"</span>) {
+                        <span class=
+"keywordflow">return</span> MViewportRenderer::kExcludeMeshes;
+                }
+
+                <span class=
+"keywordflow">if</span> (theView.isShadeActiveOnly()) {
+                        <span class=
+"keywordflow">return</span> MViewportRenderer::kExcludeNone;
+                }
+
+                M3dView::DisplayStyle ds = theView.displayStyle();
+                <span class=
+"keywordflow">if</span> (ds == M3dView::kWireFrame || ds == M3dView::kPoints || ds == M3dView::kBoundingBox) {
+                        <span class=
+"keywordflow">return</span> MViewportRenderer::kExcludeNone;
+                }
+
+                <span class=
+"keywordflow">return</span> MViewportRenderer::kExcludeMeshes;
+        }
+        
+        <span class=
+"keyword">virtual</span> MStatus render(<span class=
+"keyword">const</span> MRenderingInfo &amp;renderInfo);
+
+        <span class=
+"keywordtype">void</span> setFrameBufferData(<span class=
+"keyword">const</span> std::vector&lt;unsigned char&gt;&amp; pixels, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, <span class="keywordtype">int</span> channels);
+        <span class=
+"keywordtype">void</span> setFrameBufferData(<span class=
+"keyword">const</span> std::vector&lt;float&gt;&amp; pixels, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, <span class="keywordtype">int</span> channels);
+
+        LiveAsyncJobPtr createViewportJob(JobContextPtr&amp; bjc, BeastCameraPtr&amp; renderCam, <span class="keywordtype">bool</span> cameraRender) {
+                <span class=
+"keywordflow">return</span> LiveAsyncJobPtr(<span class=
+"keyword">new</span> BeastViewportLiveJob(bjc, renderCam, cameraRender, *<span class="keyword">this</span>));
+        }
+
+<span class="keyword">private</span>:
+        MGLFunctionTable *m_GLFT;
+        MGLuint m_frameTexture;
+        MGLuint m_frameList;
+
+        std::vector&lt;unsigned char&gt; m_framebufferData;
+        <span class=
+"keywordtype">int</span> m_framebufferWidth, m_framebufferHeight;
+        <span class="keywordtype">bool</span> m_framebufferUpdated;
+        MMutexLock m_fbLock;
+        PowLookup m_powLookup;
+
+        <span class=
+"keyword">class </span>BeastViewportLiveJob : <span class=
+"keyword">public</span> LiveAsyncJob {
+        <span class="keyword">public</span>:
+                BeastViewportLiveJob(JobContextPtr&amp; bjc, BeastCameraPtr&amp; renderCam, <span class="keywordtype">bool</span> cameraRender, ViewportRenderer&amp; bvr) : LiveAsyncJob(bjc, renderCam, cameraRender), m_viewportRenderer(bvr) {
+                }
+
+                <span class="keyword">virtual</span> <span class=
+"keywordtype">void</span> onUpdate(<a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a> updateType);
+        <span class="keyword">private</span>:
+                ViewportRenderer&amp; m_viewportRenderer;
+        };
+};
+
+}
+
+<span class=
+"preprocessor">#endif //BEAST_VIEWPORT_RENDERER_H</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

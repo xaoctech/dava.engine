@@ -1,10 +1,9 @@
-#ifndef __DAVAENGINE_SKINNED_MESH_H__
-#define __DAVAENGINE_SKINNED_MESH_H__
+#pragma once
 
 #include "Animation/AnimatedObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/HashMap.h"
+#include "Base/UnordererMap.h"
 #include "Debug/DVAssert.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
@@ -49,8 +48,11 @@ public:
     JointTargetsData GetJointTargetsData(RenderBatch* batch);
 
 protected:
-    HashMap<RenderBatch*, JointTargets> jointTargets;
-    HashMap<RenderBatch*, JointTargetsData> jointTargetsData;
+    void PrepareJointTargetsData(uint32 dataIndex);
+
+    UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index
+    Set<uint32> jointTargetsDataToPrepare;
+    Vector<std::pair<JointTargets, JointTargetsData>> jointTargetsData;
 
     const JointTransform* skeletonFinalJointTransforms = nullptr;
     uint32 skeletonJointCount = 0;
@@ -62,39 +64,9 @@ inline void SkinnedMesh::SetFinalJointTransformsPtr(const JointTransform* transf
     skeletonJointCount = jointCount;
 }
 
-inline void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
-{
-    DVASSERT(uint32(targets.size()) <= MAX_TARGET_JOINTS);
-
-    jointTargets[batch] = targets;
-
-    JointTargetsData& data = jointTargetsData[batch];
-    data.positions.resize(targets.size());
-    data.quaternions.resize(targets.size());
-    data.jointsDataCount = uint32(targets.size());
-}
-
-inline SkinnedMesh::JointTargets SkinnedMesh::GetJointTargets(RenderBatch* batch)
-{
-    if (jointTargets.count(batch))
-        return jointTargets[batch];
-    else
-        return JointTargets();
-}
-
-inline SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
-{
-    if (jointTargetsData.count(batch))
-        return jointTargetsData[batch];
-    else
-        return SkinnedMesh::JointTargetsData();
-}
-
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)
 {
     bbox = box;
 }
 
 } //ns
-
-#endif

@@ -1,10 +1,34 @@
 #include "EditorSystems/BaseEditorSystem.h"
-#include "UI/UIEvent.h"
+#include "Modules/DocumentsModule/EditorData.h"
 
-BaseEditorSystem::BaseEditorSystem(EditorSystemsManager* parent, DAVA::TArc::ContextAccessor* accessor_)
-    : systemsManager(parent)
-    , accessor(accessor_)
+#include <TArc/Core/ContextAccessor.h>
+#include <UI/UIEvent.h>
+
+BaseEditorSystem::BaseEditorSystem(DAVA::TArc::ContextAccessor* accessor_)
+    : accessor(accessor_)
 {
+}
+
+const EditorSystemsManager* BaseEditorSystem::GetSystemsManager() const
+{
+    using namespace DAVA::TArc;
+    DataContext* globalContext = accessor->GetGlobalContext();
+    EditorData* editorData = globalContext->GetData<EditorData>();
+    DVASSERT(editorData != nullptr);
+    const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
+    DVASSERT(systemsManager != nullptr);
+    return systemsManager;
+}
+
+EditorSystemsManager* BaseEditorSystem::GetSystemsManager()
+{
+    using namespace DAVA::TArc;
+    DataContext* globalContext = accessor->GetGlobalContext();
+    EditorData* editorData = globalContext->GetData<EditorData>();
+    DVASSERT(editorData != nullptr);
+    EditorSystemsManager* systemsManager = editorData->systemsManager.get();
+    DVASSERT(systemsManager != nullptr);
+    return systemsManager;
 }
 
 void BaseEditorSystem::ProcessInput(DAVA::UIEvent* /*currentInput*/)
@@ -26,5 +50,18 @@ void BaseEditorSystem::OnDragStateChanged(EditorSystemsManager::eDragState /*cur
 }
 
 void BaseEditorSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState /*currentState*/, EditorSystemsManager::eDisplayState /*previousState*/)
+{
+}
+
+CanvasControls BaseEditorSystem::CreateCanvasControls()
+{
+    return CanvasControls();
+}
+
+void BaseEditorSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
+{
+}
+
+void BaseEditorSystem::OnUpdate()
 {
 }

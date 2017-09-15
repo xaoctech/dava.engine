@@ -3,6 +3,7 @@
 #include "Infrastructure/BaseScreen.h"
 #include <FileSystem/FilePath.h>
 #include <DLCManager/DLCManager.h>
+#include <Debug/ProfilerCPU.h>
 
 class TestBed;
 class DLCManagerTest : public BaseScreen, DAVA::UITextFieldDelegate
@@ -17,6 +18,8 @@ private:
 
     void LoadResources() override;
     void UnloadResources() override;
+
+    void Update(DAVA::float32 timeElapsed) override;
 
     void OnStartInitClicked(BaseObject* sender, void* data, void* callerData);
     void OnIOErrorClicked(BaseObject* sender, void* data, void* callerData);
@@ -37,6 +40,7 @@ private:
     void OnErrorSignal(DAVA::DLCManager::ErrorOrigin errType, DAVA::int32 errnoVal, const DAVA::String& msg);
 
     DAVA::Engine& engine;
+    DAVA::ProfilerCPU profiler;
 
     DAVA::FilePath folderWithDownloadedPacks = "~doc:/DLCManagerTest/packs/";
     // TODO quick and dirty way to test download on all platforms, in future replace with local http server

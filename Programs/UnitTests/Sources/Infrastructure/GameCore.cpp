@@ -41,12 +41,9 @@ String runOnlyTheseTestClasses = "";
 String disableTheseTestClasses = "ScriptTest";
 #else
 // TODO: linux
+// Linux unittests are running in console mode so disable tests dependent on GUI facilities (windows, input, etc)
 String disableTheseTestClasses =
-"UILayoutSystemTest "
-"UIControlHelpersTest "
-"UIControlHierarhyTest "
-"UIControlTest "
-"UIRichContentTest "
+"ActionSystemTest "
 ;
 #endif
 

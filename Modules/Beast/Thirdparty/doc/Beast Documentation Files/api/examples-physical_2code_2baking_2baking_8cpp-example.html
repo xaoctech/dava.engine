@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples-physical/code/baking/baking.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples-physical_2code_2baking_2baking_8cpp-example.html','api_examples_physical_2code_2baking_2baking_8cpp_example_html8493c4b1-a15a-4cf5-b046-07dffe6dfbd6','index.html',location.hash); javascript:initPage('API: examples-physical/code/baking/baking.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples-physical_2code_2baking_2baking_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples-physical/code/baking/baking.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples-physical/code/baking/baking.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">examples-physical/code/baking/baking.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="comment">/*</span>
+<span class=
+"comment">Beast API Sample: Final bake with physical materials</span>
+
+<span class=
+"comment">The purpose of this sample is to demonstrate how to:</span>
+<span class=
+"comment">1. How to setup a physical scene for baking</span>
+<span class=
+"comment">2. How to retrieve the finished light map data</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "samplescommon.h"</span>
+
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beaststring_8h.html" title=
+"Beast strings is objects encapsulating strings returned from Beast API functions.">beastapi/beaststring.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastapi/beastutils.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmanager_8h.html" title=
+"The beast manager is the core object for all interaction with the Beast API.">beastapi/beastmanager.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastscene_8h.html" title=
+"The api for specifying scenes in beast.">beastapi/beastscene.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastinstance_8h.html" title=
+"The api for specifying instances of meshes in Beast.">beastapi/beastinstance.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttarget_8h.html" title=
+"The target definitions.">beastapi/beasttarget.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastrenderpass_8h.html" title=
+"Render Pass specification.">beastapi/beastrenderpass.h</a>&gt;</span>
+
+<span class=
+"comment">// Make sure we have a unicode safe cout define</span>
+<span class="preprocessor">#ifdef UNICODE</span>
+<span class="preprocessor">#define tcout std::wcout</span>
+<span class="preprocessor">#else</span>
+<span class="preprocessor">#define tcout std::cout</span>
+<span class="preprocessor">#endif</span>
+
+<span class="keywordtype">int</span> main(<span class=
+"keywordtype">char</span> argc, <span class=
+"keywordtype">char</span>** argv) {
+        <span class="keywordflow">try</span> {
+
+                <span class=
+"comment">// Setup the beast manager</span>
+                <a name="_a0"></a><a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bmh = bex::setupBeastManager(_T(<span class="stringliteral">"baking-physical"</span>));
+
+                <span class="comment">// Create a scene</span>
+                <a name="_a1"></a><a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene;
+                bex::apiCall(<a name="a2"></a><a class="code" href=
+"beastscene_8h.html#a0a467a88ff313a3165115a9a3836552f" title=
+"Begins creation of a scene that will use physical materials set up with OSL shaders.">ILBBeginPhysicalScene</a>(bmh, <span class="stringliteral">"PhysicalFinalScene"</span>, &amp;scene));
+
+                bex::InstanceMap instances;
+                bex::setupTestScene(bmh, scene, instances);
+                bex::setupCamera(scene);
+
+                <span class="comment">// Finalize the scene</span>
+                bex::apiCall(<a name="a3"></a><a class="code" href=
+"beastscene_8h.html#a73654682a5785904682800b934720fcf" title=
+"Finalizes this scene Any future call to modify this scene or any of its objects will fail...">ILBEndScene</a>(scene));
+
+                <a name="_a4"></a><a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job;
+                bex::apiCall(<a name="a5"></a><a class="code" href=
+"beastjob_8h.html#a9947df5852323003deac6c8799ddd607" title=
+"Creates a Beast job.">ILBCreateJob</a>(bmh, _T(<span class=
+"stringliteral">"TestJob"</span>), scene, _T(<span class=
+"stringliteral">""</span>), &amp;job));
+
+                <span class=
+"comment">// Set render quality for the job</span>
+                bex::apiCall(<a name="a6"></a><a class="code" href=
+"beastjob_8h.html#a6e4e8546ad5c0e0c0965dfdb350ac4f8" title=
+"Sets the render quality to use for a job.">ILBSetJobRenderQuality</a>(job, 0.5f));
+
+                <span class="comment">// Create passes</span>
+                <a name="_a7"></a><a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> pass;
+                bex::apiCall(<a name="a8"></a><a class="code" href=
+"beastrenderpass_8h.html#ad0c96c4fec277646dab3674b931c2cfd" title=
+"Creates an Illumination render pass.">ILBCreateIlluminationPass</a>(job, _T(<span class="stringliteral">"Illumination"</span>), <a name="a9"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93"
+title=
+"Both direct and indirect illumination.">ILB_IM_FULL</a>, &amp;pass));
+
+                <span class="comment">// Create targets</span>
+                <a name="_a10"></a><a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> textureTarget;
+                bex::apiCall(<a name="a11"></a><a class="code"
+href="beasttarget_8h.html#a409692f3e607da5b2757b75c75fe2413" title=
+"Adds a texture baking target to a job.">ILBCreateTextureTarget</a>(job, _T(<span class="stringliteral">"TextureTarget"</span>), 512, 256, &amp;textureTarget));
+
+                <span class="keyword">const</span> <span class=
+"keywordtype">bool</span> enableWorldSpaceFilter = <span class=
+"keyword">true</span>;
+                <span class=
+"keywordflow">if</span>(enableWorldSpaceFilter) {
+                        bex::apiCall(<a name="a12"></a><a class=
+"code" href="beasttarget_8h.html#a1ef516e92fd790f09348b6e30f79c06a"
+title=
+"Enable world space filter for a target.">ILBEnableWorldSpaceFilter</a>(textureTarget, <a name="a13"></a><a class="code"
+href=
+"beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09a7aed6772cf92bd75b7c6367f6c04edd5"
+title="Filter everything.">ILB_WSFC_DEFAULT</a>));
+                }
+
+                <span class=
+"comment">// Add bake instances to targets</span>
+                <a name="_a14"></a><a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> textureTargetEntity;
+                bex::apiCall(<a name="a15"></a><a class="code"
+href="beasttarget_8h.html#a03e7ae4191ae2af374e373220df6a240" title=
+"Adds an instance to bake to a texture or vertex bake target.">ILBAddBakeInstance</a>(textureTarget, instances[_T(<span class="stringliteral">"FloorInstance"</span>)], &amp;textureTargetEntity));
+
+                <span class=
+"comment">// Add passes to targets</span>
+                bex::apiCall(<a name="a16"></a><a class="code"
+href="beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385" title=
+"Add a Render Pass to a target.">ILBAddPassToTarget</a>(textureTarget, pass));
+
+                <span class="comment">// Start the job</span>
+                <span class="keyword">const</span> <span class=
+"keywordtype">bool</span> showProgressWindow = <span class=
+"keyword">true</span>;
+                bex::apiCall(<a name="a17"></a><a class="code"
+href="beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8" title=
+"Starts a job.">ILBStartJob</a>(job, showProgressWindow ? <a name=
+"a18"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0ad5c6185f7d1d74ce7e48872a9583a26b"
+title=
+"Show the render window and keep it open until the user closes it or the job is destroyed.">ILB_SR_KEEP_OPEN</a> : <a name="a19"></a><a class="code"
+href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0a3b91c64198f51de01c4d6627e4705c57"
+title=
+"Don't display the render window / progress view.">ILB_SR_NO_DISPLAY</a>, <a name="a20"></a><a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f"
+title=
+"Render distributed if possible, otherwise fallback on local rendering.">ILB_RD_AUTODETECT</a>));
+
+                <span class=
+"comment">// Render and display the result</span>
+                <span class=
+"keywordtype">int</span> returnCode = 0;
+                <span class=
+"keywordflow">if</span> (!bex::displayJobResult(job, tcout, textureTarget, pass)) {
+                        returnCode = 1;
+                }
+
+                <span class="comment">// Destroy the job</span>
+                bex::apiCall(<a name="a21"></a><a class="code"
+href="beastjob_8h.html#a3dd89827f352d0c78c9c735ffc315f92" title=
+"Destroys a job.">ILBDestroyJob</a>(job));
+
+                <span class="keywordflow">return</span> returnCode;
+
+        } <span class=
+"keywordflow">catch</span>(bex::Exception&amp; ex) {
+                <a name="_a22"></a><a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> errorString;
+                <a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> extendedError;
+                <a name="a23"></a><a class="code" href=
+"beastutils_8h.html#aed2244af0fe901862e4d71c934af46dc" title=
+"Converts an error code into a string for human readable error reporting.">ILBErrorToString</a>(ex.status, &amp;errorString);
+                <a name="a24"></a><a class="code" href=
+"beastutils_8h.html#ae949fbbb56d2dfb94290a968802066c0" title=
+"Returns the last error that happened in this thread.">ILBGetExtendErrorInformation</a>(&amp;extendedError);
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Beast API error"</span> &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Error: "</span> &lt;&lt; bex::convertStringHandle(errorString) &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Info: "</span> &lt;&lt; bex::convertStringHandle(extendedError) &lt;&lt; std::endl;
+                <span class="keywordflow">return</span> 1;
+        }  <span class=
+"keywordflow">catch</span>(std::exception&amp; ex) {
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Standard exception"</span> &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Error: "</span> &lt;&lt; ex.what() &lt;&lt; std::endl;;
+                <span class="keywordflow">return</span> 1;
+        }
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

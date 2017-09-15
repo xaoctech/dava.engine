@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-48EAD368-B67B-451F-BE60-C1201718EF50" />
+      <title>Working with Light Sources</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm',                           'd30e11193','index.html',location.hash);                           javascript:initPage('Working with Light Sources','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Working with Light Sources&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Selecting Objects</div><a href="GUID-80499326-2F23-42EB-A4BA-BA6F8E017000.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Using the eRnsT Viewer</div><a href="GUID-48EAD368-B67B-451F-BE60-C1201718EF50.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Setting Properties</div><a href="GUID-9AE90AD7-B3E5-469B-94E5-8B20CF301C30.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-48EAD368-B67B-451F-BE60-C1201718EF50.htm"> Using the eRnsT Viewer</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-B39F1683-A023-4A29-8068-A59780B57E2B"></a></span><h1>Working with Light Sources</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-42408C74-3A2B-4601-85B2-E88524979148"></a></span> This page describes the ways you can 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_6D2390E5287B4558B6CB7FF8EF401CFF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e11201"></a><span class="anchor_wrapper"><a name="GUID-6AF3BCE2-D010-4F8C-896D-C885BCE016FE"></a></span>Creating a new light source
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-A5B4E73E-5F63-46F0-B74A-1418E3499DF7"></a></span>To create a new light source, you can use the icons provided in the toolbar or the options available in the Scene menu. 
+            </p> <span class="anchor_wrapper"><a name="UL_0F646BED84294D6B83CFA5ACF622BC82"></a></span><ul>
+               <li>To create a point light, click the <img src="../images/GUID-E7FE4452-8D05-4731-A6A6-FC31C69969F6-low.png" /> icon in the toolbar, or select <em class="strong">Scene &gt; Create &gt; Create Point Light</em> from the main menu. 
+               </li>
+               <li>To create a spot light, click the <img src="../images/GUID-D7FF0E8A-E5BE-41F5-BEBB-13B94B44A921-low.png" /> icon in the toolbar, or select <em class="strong">Scene &gt; Create &gt; Create Spot Light</em> from the main menu. 
+               </li>
+               <li>To create a directional light, click the <img src="../images/GUID-C3DD35BC-BC65-4C53-B662-D7D9A75284F1-low.png" /> icon in the toolbar, or select <em class="strong">Scene &gt; Create &gt; Create Directional Light</em> from the main menu. 
+               </li>
+               <li>To create an area light, click the <img src="../images/GUID-7511008D-6FE9-4CCF-AAF6-DEEDDA08515B-low.png" /> icon in the toolbar, or select <em class="strong">Scene &gt; Create &gt; Create Area Light</em> from the main menu. 
+               </li>
+               <li>To create a sky light, click the <img src="../images/GUID-AFDD0787-5D8E-46E2-A67C-05D1BD8DBE7B-low.png" /> icon in the toolbar, or select <em class="strong">Scene &gt; Create &gt; Create Sky Light</em> from the main menu. 
+               </li>
+               <li>To create an ambient light, click the <img src="../images/GUID-A33A8A9D-9D91-4B84-8E49-6EA3F075F332-low.png" /> icon in the toolbar, or select <em class="strong">Scene &gt; Create &gt; Create Ambient Light</em> from the main menu. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-B1B2BBC3-EABB-45AE-80F2-4A7165CD4567"></a></span>When you create a new light source, it is always placed directly in front of the camera at a distance of five meters from
+               the position of the camera. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_DAA87C609FF84C858AF8023800AC0277"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e11256"></a><span class="anchor_wrapper"><a name="GUID-D796F612-E5E7-45FB-A7EE-3CC23F0654AB"></a></span>Modifying a light source
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_9FEC261C7A8A44DC968E8667660395B6"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e11261"></a><span class="anchor_wrapper"><a name="GUID-C5B3B6C5-5D3E-42A5-AEA9-89E75CB430D1"></a></span>Selecting light sources
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-003905C9-5E61-4DF7-883A-E5D447AF3048"></a></span>In order to modify one or more light sources, you must select them by highlighting them in the Browser pane or by clicking
+                  their representations in the 3D view: 
+               </p> <span class="anchor_wrapper"><a name="UL_106EB7497FBE4CB3AC747DA81672E767"></a></span><ul>
+                  <li>Yellow spheres represent point lights and ambient lights. </li>
+                  <li>Yellow cones represent spot lights. </li>
+                  <li>Yellow arrows represent directional lights. </li>
+                  <li>Yellow 2D squares represent area lights. </li>
+                  <li>Yellow 3D cubes represent sky lights. </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-22BACF33-474A-4C31-8334-F2DB3C8ED6F0"></a></span>If your light sources are not shown in the 3D view, toggle the <img src="../images/GUID-2D47B635-8782-412B-9ACA-22F644AD6806-low.png" /> button in the toolbar to restore the rendering of their representations. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-96A7908E-9228-4BF3-BE1C-FE8EA662B15E"></a></span>See also <span class="char_link"><a href="GUID-80499326-2F23-42EB-A4BA-BA6F8E017000.htm">Selecting Objects</a></span>. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_20A00C13EC21440DB52DF30BBBB69D53"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e11293"></a><span class="anchor_wrapper"><a name="GUID-3D3ECD8F-2249-45DC-944F-6F494D1E39AD"></a></span>Setting properties
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-E33C881C-F720-4B60-9E05-4828547524F1"></a></span>Once you have selected one or more light sources, you can modify their settings in the Properties pane. See also <span class="char_link"><a href="GUID-9AE90AD7-B3E5-469B-94E5-8B20CF301C30.htm">Setting Properties</a></span>. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_F9BB5E50964C4F42A45A6E6C832A2313"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e11305"></a><span class="anchor_wrapper"><a name="GUID-0E1D1580-A05C-4E56-8BB2-18EF50C5A194"></a></span>Moving, rotating and scaling
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-CF4AC90D-CA7D-4E7E-8D36-E2C24F3D7955"></a></span>When you select a light source, its representation in the 3D view is updated with an interactive manipulator widget. You can
+                  click and drag this widget to modify the translation, rotation or scaling of the light source, depending on the current manipulation
+                  mode: 
+               </p> <span class="anchor_wrapper"><a name="UL_91EC315A923647E1863E081C87DAECCE"></a></span><ul>
+                  <li>When the <img src="../images/GUID-4323FC34-A7A9-4CAC-B864-E64CC0FA5E79-low.png" /> icon in the toolbar is selected, translation mode is active. Clicking and dragging a manipulator widget moves the light source
+                     to a new position in 3D space. 
+                  </li>
+                  <li>When the <img src="../images/GUID-6C947BAF-5E35-4BCD-8584-4050FDDA00A0-low.png" /> icon is selected, rotation mode is active. Clicking and dragging a manipulator widget rotates the light source to a new orientation.
+                     
+                  </li>
+                  <li>When the <img src="../images/GUID-FC15F5E9-D8B1-432A-8490-353B295999C3-low.png" /> icon is selected, scaling mode is active. Clicking and dragging a manipulator widget scales the light source up or down.
+                     
+                  </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_58EA02E2A7C345A189092B2E629C431B"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e11328"></a><span class="anchor_wrapper"><a name="GUID-0F36EEE4-A839-44CF-B31C-BDB901578C58"></a></span>Deleting a light source
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-7D4A5944-60C9-477D-A276-A15828FB74FF"></a></span>To delete a light source, select it and press <em class="strong">Delete</em>. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
