@@ -197,7 +197,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     projectDataWrapper = REGlobal::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<ProjectManagerData>());
     projectDataWrapper.SetListener(this);
 
-    ActiveSceneHolder::Init();
     globalOperations.reset(new MainWindowDetails::GlobalOperationsProxy(this));
 
     DAVA::TArc::DataContext* globalContext = REGlobal::GetGlobalContext();
@@ -265,7 +264,6 @@ QtMainWindow::~QtMainWindow()
 
     std::static_pointer_cast<MainWindowDetails::GlobalOperationsProxy>(globalOperations)->Reset();
     globalOperations.reset();
-    ActiveSceneHolder::Deinit();
 }
 
 void QtMainWindow::OnRenderingInitialized()
