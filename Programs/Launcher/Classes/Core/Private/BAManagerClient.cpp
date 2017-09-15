@@ -292,7 +292,10 @@ void BAManagerClient::SilentUpdate(const QJsonObject& requestObj, const QString&
     params.branch = branchName;
     QString appName = appNameValue.toString();
     params.app = applicationManager->GetString(appName);
-
+    if (forceRestartValue.isBool() && forceRestartValue.toBool())
+    {
+        params.appToStart = params.app;
+    }
     ::FillAppFields(&params.newVersion, requestObj, IsToolset(appName));
 
     std::unique_ptr<BaseTask> task = applicationManager->CreateTask<InstallApplicationTask>(applicationManager->GetConfigHolder(), params);

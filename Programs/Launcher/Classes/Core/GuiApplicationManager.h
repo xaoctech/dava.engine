@@ -73,8 +73,6 @@ private:
     BAManagerClient* baManagerClient = nullptr;
     ConfigRefresher* configRefresher = nullptr;
 
-    UrlsHolder* urlsHolder = nullptr;
-
     MainWindow* mainWindow = nullptr;
 
     ConfigHolder configHolder;

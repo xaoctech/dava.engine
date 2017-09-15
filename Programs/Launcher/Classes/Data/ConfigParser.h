@@ -2,7 +2,7 @@
 
 #include <QString>
 #include <QMap>
-#include <QVector>
+#include <QList>
 #include <QSet>
 
 struct AppVersion;
@@ -58,7 +58,7 @@ struct Application
     AppVersion* GetVersionByNum(const QString& num);
     void RemoveVersion(const QString& versionID);
 
-    QVector<AppVersion> versions;
+    QList<AppVersion> versions;
 };
 
 struct Branch
@@ -90,7 +90,7 @@ struct Branch
 
     void RemoveApplication(const QString& appID);
 
-    QVector<Application> applications;
+    QList<Application> applications;
 };
 
 class ConfigParser
@@ -144,6 +144,9 @@ public:
     void UpdateApplicationsNames();
     bool ParseJSON(const QByteArray& configData, BaseTask* task);
 
+    const QList<Branch>& GetBranches() const;
+    QList<Branch>& GetBranches();
+
 private:
     void InsertApplicationImpl(const QString& branchID, const QString& appID, const AppVersion& version);
 
@@ -159,6 +162,6 @@ private:
 
     QStringList favorites;
 
-    QVector<Branch> branches;
+    QList<Branch> branches;
     QMap<QString, QString> strings;
 };

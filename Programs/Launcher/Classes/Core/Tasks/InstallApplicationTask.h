@@ -12,6 +12,7 @@ struct InstallApplicationParams
     QString branch;
     QString app;
     AppVersion newVersion;
+    QString appToStart;
 };
 
 class InstallApplicationTask final : public AsyncChainTask

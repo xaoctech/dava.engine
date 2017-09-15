@@ -89,6 +89,8 @@ bool ExtractApp(const QString& appName, const QJsonObject& entry, Branch* branch
 }
 }
 
+bool VersionListComparator(const AppVersion& leftVer, const AppVersion& rightVer);
+
 bool ConfigParser::ExtractLauncherVersionAndURL(const QJsonValue& value)
 {
     QJsonObject launcherObject = value.toObject();
@@ -203,7 +205,7 @@ bool ConfigParser::ExtractBranches(const QJsonValue& value)
     //hot fix to sort downloaded items without rewriting mainWindow
     for (auto branchIter = branches.begin(); branchIter != branches.end(); ++branchIter)
     {
-        QVector<Application>& apps = branchIter->applications;
+        QList<Application>& apps = branchIter->applications;
         qSort(apps.begin(), apps.end(), [](const Application& appLeft, const Application& appRight)
               {
                   return appLeft.id < appRight.id;
@@ -293,7 +295,7 @@ void Application::RemoveVersion(const QString& versionID)
         }
     }
     if (index != -1)
-        versions.remove(index);
+        versions.removeAt(index);
 }
 
 Application* Branch::GetApplication(const QString& appID)
@@ -319,7 +321,7 @@ void Branch::RemoveApplication(const QString& appID)
         }
     }
     if (index != -1)
-        applications.remove(index);
+        applications.removeAt(index);
 }
 
 ConfigParser::ConfigParser()
@@ -383,7 +385,27 @@ bool ConfigParser::ParseJSON(const QByteArray& configData, BaseTask* task)
             }
         }
     }
+    if (haveUsefulInformation)
+    {
+        for (Branch& branch : branches)
+        {
+            for (Application& application : branch.applications)
+            {
+                qSort(application.versions.begin(), application.versions.end(), VersionListComparator);
+            }
+        }
+    }
     return haveUsefulInformation;
+}
+
+const QList<Branch>& ConfigParser::GetBranches() const
+{
+    return branches;
+}
+
+QList<Branch>& ConfigParser::GetBranches()
+{
+    return branches;
 }
 
 void ConfigParser::CopyStringsAndFavsFromConfig(ConfigParser* parser)
@@ -499,7 +521,9 @@ void ConfigParser::RemoveBranch(const QString& branchID)
         }
     }
     if (index != -1)
-        branches.remove(index);
+    {
+        branches.removeAt(index);
+    }
 }
 
 void ConfigParser::InsertApplication(const QString& branchID, const QString& appID, const AppVersion& version)
@@ -535,6 +559,7 @@ void ConfigParser::InsertApplicationImpl(const QString& branchID, const QString&
 
     app->versions.clear();
     app->versions.push_back(version);
+    qSort(app->versions.begin(), app->versions.end(), VersionListComparator);
 }
 
 void ConfigParser::RemoveApplication(const QString& branchID, const QString& appID, const QString& versionID)
@@ -749,3 +774,62 @@ const QStringList& ConfigParser::GetFavorites()
 {
     return favorites;
 }
+
+//expected format of input string: 0.8_2015-02-14_11.20.12_0000,
+//where 0.8 - DAVA version, 2015-02-14 - build date, 11.20.12 - build time and 0000 - build version
+//all blocks can be modified or empty
+bool VersionListComparator(const AppVersion& leftVer, const AppVersion& rightVer)
+{
+    const QString& left = leftVer.id;
+    const QString& right = rightVer.id;
+    if (left == right)
+    {
+        return leftVer.buildNum < rightVer.buildNum;
+    }
+    if (leftVer.isToolSet != rightVer.isToolSet)
+    {
+        //value with toolset == false must be less
+        return leftVer.isToolSet == false;
+    }
+    QStringList leftList = left.split('_', QString::SkipEmptyParts);
+    QStringList rightList = right.split('_', QString::SkipEmptyParts);
+
+    int minSize = qMin(leftList.size(), rightList.size());
+    for (int i = 0; i < minSize; ++i)
+    {
+        const QString& leftSubStr = leftList.at(i);
+        const QString& rightSubStr = rightList.at(i);
+        QStringList leftSubList = leftSubStr.split('.', QString::SkipEmptyParts);
+        QStringList rightSubList = rightSubStr.split('.', QString::SkipEmptyParts);
+        int subMinSize = qMin(leftSubList.size(), rightSubList.size());
+        for (int subStrIndex = 0; subStrIndex < subMinSize; ++subStrIndex)
+        {
+            bool leftOk;
+            bool rightOk;
+            const QString& leftSubSubStr = leftSubList.at(subStrIndex);
+            const QString& rightSubSubStr = rightSubList.at(subStrIndex);
+            qlonglong leftVal = leftSubSubStr.toLongLong(&leftOk);
+            qlonglong rightVal = rightSubSubStr.toLongLong(&rightOk);
+            if (leftOk && rightOk)
+            {
+                if (leftVal != rightVal)
+                {
+                    return leftVal < rightVal;
+                }
+            }
+            else //date format or other
+            {
+                if (leftSubSubStr != rightSubSubStr)
+                {
+                    return leftSubSubStr < rightSubSubStr;
+                }
+            }
+        }
+        //if version lists are equal - checking for extra subversion
+        if (leftSubList.size() != rightSubList.size())
+        {
+            return leftSubList.size() < rightSubList.size();
+        }
+    }
+    return false; // string are equal
+};

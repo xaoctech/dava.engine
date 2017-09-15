@@ -53,6 +53,8 @@ void CommandLineMediator::Start(const QStringList& arguments)
         if (parser.isSet(iter.value()))
         {
             iter.key()->Run(parser.positionalArguments());
+            QEventLoop loop;
+            loop.exec();
         }
     }
 }

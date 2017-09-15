@@ -7,6 +7,7 @@ class FileManager;
 class UrlsHolder;
 class BAManagerClient;
 class ConfigRefresher;
+struct ApplicationContext;
 
 class PreferencesDialog : public QDialog, private Ui::PreferencesDialog
 {
@@ -35,4 +36,5 @@ private:
 };
 
 void SavePreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
-void LoadPreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
+void LoadPreferences(ApplicationContext* context);
+void LoadPreferences(ApplicationContext* context, BAManagerClient* commandListener, ConfigRefresher* configRefresher);

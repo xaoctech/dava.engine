@@ -50,6 +50,11 @@ int InstallApplicationTask::GetSubtasksCount() const
 
 void InstallApplicationTask::OnFinished(const BaseTask* task)
 {
+    //ignore children run tasks
+    if (dynamic_cast<const RunApplicationTask*>(task) != nullptr)
+    {
+        return;
+    }
     if (task->HasError() == false)
     {
         switch (state)
@@ -141,6 +146,19 @@ void InstallApplicationTask::OnInstalled()
     {
         AppVersion* installedAppVersion = configHolder->localConfig.GetAppVersion(params.branch, appToRestart);
         appContext->taskManager.AddTask(appContext->CreateTask<RunApplicationTask>(configHolder, params.branch, appToRestart, installedAppVersion->id), notifier);
+    }
+
+    if (params.appToStart.isEmpty() == false)
+    {
+        Application* app = LauncherUtils::FindApplication(&configHolder->localConfig, params.branch, params.appToStart, true);
+        if (app != nullptr)
+        {
+            AppVersion* version = LauncherUtils::FindVersion(app, QString(), true);
+            if (version != nullptr)
+            {
+                appContext->taskManager.AddTask(appContext->CreateTask<RunApplicationTask>(configHolder, params.branch, app->id, version->id), notifier);
+            }
+        }
     }
     emit Finished();
 }
