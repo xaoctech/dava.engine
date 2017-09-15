@@ -146,8 +146,8 @@ void BaseFamilyRepository<EntityFamilyType>::ReleaseFamily(EntityFamilyType* fam
         DVASSERT(family->refCount.Get() > 0);
 
         family->refCount.Decrement();
-        refCount.Decrement();
-        if (0 == refCount)
+        int32 newRefCount = refCount.Decrement();
+        if (0 == newRefCount)
         {
             for (auto x : families)
             {
