@@ -52,6 +52,10 @@
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/PhysicsSystem.h>
+#endif
+
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
 #endif

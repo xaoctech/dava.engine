@@ -1,5 +1,6 @@
 #include "Physics/CollisionShapeComponent.h"
 #include "Physics/Private/PhysicsMath.h"
+#include "Physics/PhysicsSystem.h"
 
 #include <Scene3D/Scene.h>
 #include <Reflection/ReflectionRegistrator.h>
