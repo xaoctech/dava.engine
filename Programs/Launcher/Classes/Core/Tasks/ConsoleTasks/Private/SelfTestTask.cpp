@@ -5,6 +5,14 @@
 
 REGISTER_CLASS(SelfTestTask);
 
+SelfTestTask::SelfTestTask()
+{
+}
+
+SelfTestTask::~SelfTestTask()
+{
+}
+
 QCommandLineOption SelfTestTask::CreateOption() const
 {
     return QCommandLineOption(QStringList() << "s"

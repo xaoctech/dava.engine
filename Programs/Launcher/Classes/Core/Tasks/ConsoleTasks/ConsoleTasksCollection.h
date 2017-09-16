@@ -1,8 +1,8 @@
-
 #pragma once
 
 #include <QList>
 #include <QMetaObject>
+#include <QMetaType>
 
 class ConsoleTasksCollection
 {
@@ -27,4 +27,4 @@ struct ConsoleTasksRegistrator
     }
 };
 
-#define REGISTER_CLASS(Type) ConsoleTasksRegistrator<Type> registrator(#Type);
+#define REGISTER_CLASS(Type) ConsoleTasksRegistrator<Type> registrator_##Type(#Type);

@@ -9,11 +9,11 @@ class InstallAndLaunchTask : public ConsoleBaseTask
 {
 public:
     InstallAndLaunchTask();
-    ~InstallAndLaunchTask();
+    ~InstallAndLaunchTask() override;
 
 private:
     QCommandLineOption CreateOption() const override;
-    void Run(const QStringList& arguments);
+    void Run(const QStringList& arguments) override;
     void OnUpdateConfigFinished(const QStringList& arguments);
 
     ApplicationContext* appContext;

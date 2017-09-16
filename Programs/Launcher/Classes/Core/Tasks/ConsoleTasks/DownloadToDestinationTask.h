@@ -9,7 +9,7 @@ class DownloadToDestinationTask : public ConsoleBaseTask
 {
 public:
     DownloadToDestinationTask();
-    ~DownloadToDestinationTask();
+    ~DownloadToDestinationTask() override;
 
 private:
     QCommandLineOption CreateOption() const override;

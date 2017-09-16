@@ -40,7 +40,6 @@ void UpdateConfigTask::OnFinished(const BaseTask* task)
     {
         Q_ASSERT(task->GetTaskType() == BaseTask::DOWNLOAD_TASK);
 
-        const DownloadTask* downloadTask = static_cast<const DownloadTask*>(task);
         for (auto& bufferItem : buffers)
         {
             QBuffer* buffer = static_cast<QBuffer*>(bufferItem.second);
