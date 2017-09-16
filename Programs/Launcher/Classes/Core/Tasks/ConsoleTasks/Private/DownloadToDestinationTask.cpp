@@ -76,31 +76,25 @@ void DownloadToDestinationTask::Run(const QStringList& arguments)
     std::unique_ptr<BaseTask> loadConfigTask = appContext->CreateTask<LoadLocalConfigTask>(configHolder, FileManager::GetLocalConfigFilePath());
     appContext->taskManager.AddTask(std::move(loadConfigTask), receiver);
 
-    UrlsHolder urlsHolder;
-
-    std::unique_ptr<BaseTask> updateTask = appContext->CreateTask<UpdateConfigTask>(configHolder, urlsHolder.GetURLs());
-
-    QString description = updateTask->GetDescription();
     receiver.onStarted = [](const BaseTask* task) {
         qDebug() << task->GetDescription();
     };
     receiver.onProgress = [](const BaseTask* task, quint32 progress) {
         std::cout << "progress: " << progress << "\r";
     };
-    receiver.onFinished = [description, arguments, this](const BaseTask* task) {
-        if (task->GetDescription() == description)
+    receiver.onFinished = [arguments, this](const BaseTask* task) {
+        if (task->HasError())
         {
-            if (task->HasError())
-            {
-                qDebug() << "error: " + task->GetError();
-                exit(1);
-            }
-            else
-            {
-                OnUpdateConfigFinished(arguments);
-            }
+            qDebug() << "error: " + task->GetError();
+            exit(1);
+        }
+        else if (dynamic_cast<const UpdateConfigTask*>(task) != nullptr)
+        {
+            OnUpdateConfigFinished(arguments);
         }
     };
+
+    std::unique_ptr<BaseTask> updateTask = appContext->CreateTask<UpdateConfigTask>(configHolder, appContext->urlsHolder.GetURLs());
     appContext->taskManager.AddTask(std::move(updateTask), receiver);
 }
 
@@ -142,9 +136,6 @@ void DownloadToDestinationTask::OnUpdateConfigFinished(const QStringList& argume
         exit(1);
     }
 
-    std::unique_ptr<BaseTask> downloadTask = appContext->CreateTask<DownloadTask>("loading application " + applicationName, version->url, file);
-    QString description = downloadTask->GetDescription();
-
     Receiver receiver;
     receiver.onStarted = [applicationName](const BaseTask* task) {
         qDebug() << "Start loading " + applicationName;
@@ -152,23 +143,22 @@ void DownloadToDestinationTask::OnUpdateConfigFinished(const QStringList& argume
     receiver.onProgress = [](const BaseTask* task, quint32 progress) {
         std::cout << "progress: " << progress << "\r";
     };
-    receiver.onFinished = [description, file, fullPath, fileName](const BaseTask* task) {
-        if (task->GetDescription() == description)
+    receiver.onFinished = [file, fullPath, fileName](const BaseTask* task) {
+        if (task->HasError())
         {
-            if (task->HasError())
-            {
-                qDebug() << "error: " + task->GetError();
-                exit(1);
-            }
-            else
-            {
-                qDebug() << "loaded file with name:" << fileName;
-                qDebug() << "full path:" << fullPath;
-                file->close();
-                delete file;
-                exit(0);
-            }
+            qDebug() << "error: " + task->GetError();
+            exit(1);
+        }
+        else if (dynamic_cast<const DownloadTask*>(task) != nullptr)
+        {
+            qDebug() << "loaded file with name:" << fileName;
+            qDebug() << "full path:" << fullPath;
+            file->close();
+            delete file;
+            exit(0);
         }
     };
+
+    std::unique_ptr<BaseTask> downloadTask = appContext->CreateTask<DownloadTask>("loading application " + applicationName, version->url, file);
     appContext->taskManager.AddTask(std::move(downloadTask), receiver);
 }

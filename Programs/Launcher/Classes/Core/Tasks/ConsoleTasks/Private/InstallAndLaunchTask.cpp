@@ -64,11 +64,6 @@ void InstallAndLaunchTask::Run(const QStringList& arguments)
 
     std::unique_ptr<BaseTask> loadConfigTask = appContext->CreateTask<LoadLocalConfigTask>(configHolder, FileManager::GetLocalConfigFilePath());
     appContext->taskManager.AddTask(std::move(loadConfigTask), receiver);
-
-    UrlsHolder urlsHolder;
-
-    std::unique_ptr<BaseTask> updateTask = appContext->CreateTask<UpdateConfigTask>(configHolder, urlsHolder.GetURLs());
-
     receiver.onStarted = [](const BaseTask* task) {
         qDebug() << task->GetDescription();
     };
@@ -76,19 +71,19 @@ void InstallAndLaunchTask::Run(const QStringList& arguments)
         std::cout << "progress: " << progress << "\r";
     };
     receiver.onFinished = [arguments, this](const BaseTask* task) {
-        if (dynamic_cast<const UpdateConfigTask*>(task) != nullptr)
+        if (task->HasError())
         {
-            if (task->HasError())
-            {
-                qDebug() << "error: " + task->GetError();
-                exit(1);
-            }
-            else
-            {
-                OnUpdateConfigFinished(arguments);
-            }
+            qDebug() << "error: " + task->GetError();
+            exit(1);
+        }
+        else if (dynamic_cast<const UpdateConfigTask*>(task) != nullptr)
+
+        {
+            OnUpdateConfigFinished(arguments);
         }
     };
+
+    std::unique_ptr<BaseTask> updateTask = appContext->CreateTask<UpdateConfigTask>(configHolder, appContext->urlsHolder.GetURLs());
     appContext->taskManager.AddTask(std::move(updateTask), receiver);
 }
 
@@ -170,18 +165,15 @@ void InstallAndLaunchTask::OnUpdateConfigFinished(const QStringList& arguments)
             std::cout << "progress: " << progress << "\r";
         };
         installReceiver.onFinished = [this](const BaseTask* task) {
-            if (dynamic_cast<const InstallApplicationTask*>(task) != nullptr)
+            if (task->HasError())
             {
-                if (task->HasError())
-                {
-                    qDebug() << "error: " + task->GetError();
-                    exit(1);
-                }
-                else
-                {
-                    qDebug() << "success";
-                    exit(0);
-                }
+                qDebug() << "error: " + task->GetError();
+                exit(1);
+            }
+            else if (dynamic_cast<const InstallApplicationTask*>(task) != nullptr)
+            {
+                qDebug() << "success";
+                exit(0);
             }
         };
 

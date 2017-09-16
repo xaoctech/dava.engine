@@ -16,8 +16,8 @@ private:
     void Run(const QStringList& arguments) override;
     void OnUpdateConfigFinished(const QStringList& arguments);
 
-    ApplicationContext* appContext;
-    ConfigHolder* configHolder;
+    ApplicationContext* appContext = nullptr;
+    ConfigHolder* configHolder = nullptr;
 
     QString appName;
 };
