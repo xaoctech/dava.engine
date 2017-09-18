@@ -141,7 +141,7 @@ void SceneDumper::DumpRenderObject(DAVA::RenderObject* renderObject, DAVA::Set<D
         VegetationRenderObject* vegetation = static_cast<VegetationRenderObject*>(renderObject);
         links.insert(vegetation->GetHeightmapPath());
 
-        if (mode == eMode::EXTENDED)
+        if (mode == eMode::EXTENDED || mode == eMode::COMPRESSED)
         {
             links.insert(vegetation->GetCustomGeometryPath());
         }
@@ -306,7 +306,7 @@ void SceneDumper::ProcessSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::FilePath>&
 {
     using namespace DAVA;
 
-    if (sprite == nullptr)
+    if (sprite == nullptr || mode == eMode::COMPRESSED)
         return;
 
     FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
