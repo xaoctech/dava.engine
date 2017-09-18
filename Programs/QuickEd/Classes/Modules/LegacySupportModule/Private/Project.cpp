@@ -40,7 +40,7 @@ using namespace DAVA;
 Project::Project(MainWindow::ProjectView* view_, DAVA::TArc::ContextAccessor* accessor_)
     : view(view_)
     , editorFontSystem(new EditorFontSystem())
-    , editorLocalizationSystem(new EditorLocalizationSystem())
+    , editorLocalizationSystem(new EditorLocalizationSystem(accessor_))
     , accessor(accessor_)
 {
     using namespace TArc;

@@ -290,7 +290,7 @@ void SceneInfo::RefreshLODInfoForSelection()
     EditorStatisticsSystem* statisticsSystem = GetCurrentEditorStatisticsSystem();
     if (statisticsSystem != nullptr)
     {
-        const auto& triangles = statisticsSystem->GetTriangles(eEditorMode::MODE_SELECTION, true);
+        const auto& triangles = statisticsSystem->GetTriangles(eEditorMode::MODE_SELECTION, false);
 
         uint32 lodTriangles = 0;
         for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
@@ -1067,7 +1067,12 @@ void SceneInfo::RefreshLayersSection()
         for (int32 i = 0; i < VisibilityQueryResults::QUERY_INDEX_COUNT; ++i)
         {
             FastName queryName = VisibilityQueryResults::GetQueryIndexName(static_cast<VisibilityQueryResults::eQueryIndex>(i));
-            uint32 fragmentStats = renderStats.visibilityQueryResults.count(queryName) ? renderStats.visibilityQueryResults[queryName] : 0U;
+            auto it = renderStats.visibilityQueryResults.find(queryName);
+            uint32 fragmentStats = 0U;
+            if (it != renderStats.visibilityQueryResults.end())
+            {
+                fragmentStats = it->second;
+            }
 
             String str = Format("%d / %.2f%%", fragmentStats, (fragmentStats * 100.0) / viewportSize);
             SetChild(queryName.c_str(), str.c_str(), header);

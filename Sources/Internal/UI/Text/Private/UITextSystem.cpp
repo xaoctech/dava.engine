@@ -88,24 +88,20 @@ void UITextSystem::ApplyData(UITextComponent* component)
         textBlock->SetText(UTF8Utils::EncodeToWideString(component->GetText()), component->GetRequestedTextRectSize());
 
         String fontName = component->GetFontName();
+        Font* font = nullptr;
         if (!fontName.empty())
         {
-            Font* font = FontManager::Instance()->GetFont(fontName);
-            if (textBlock->GetFont() != font)
-            {
-                textBlock->SetFont(font);
-            }
+            font = FontManager::Instance()->GetFont(fontName);
         }
         else
         {
-            Font* font = component->GetFont();
-            if (font)
-            {
-                if (textBlock->GetFont() != font)
-                {
-                    textBlock->SetFont(font);
-                }
-            }
+            font = component->GetFont();
+        }
+        if (font && textBlock->GetFont() != font)
+        {
+            textBlock->SetFont(font);
+            textBg->SetSprite(nullptr, 0);
+            shadowBg->SetSprite(nullptr, 0);
         }
 
         switch (component->GetMultiline())

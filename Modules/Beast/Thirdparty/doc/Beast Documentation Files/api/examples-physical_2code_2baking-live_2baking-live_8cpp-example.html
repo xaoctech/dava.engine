@@ -1,0 +1,395 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples-physical/code/baking-live/baking-live.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples-physical_2code_2baking-live_2baking-live_8cpp-example.html','api_examples_physical_2code_2baking_live_2baking_live_8cpp_example_html6a705818-d20a-4112-ab31-3c8d97f306d8','index.html',location.hash); javascript:initPage('API: examples-physical/code/baking-live/baking-live.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples-physical_2code_2baking-live_2baking-live_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples-physical/code/baking-live/baking-live.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples-physical/code/baking-live/baking-live.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+examples-physical/code/baking-live/baking-live.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="comment">/*</span>
+<span class=
+"comment">Beast API Sample: Live bake with physical materials</span>
+
+<span class=
+"comment">The purpose of this sample is to demonstrate how to:</span>
+<span class=
+"comment">1. Bake different combinations of passes and lighting modes with a physical material</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "samplescommon.h"</span>
+
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beaststring_8h.html" title=
+"Beast strings is objects encapsulating strings returned from Beast API functions.">beastapi/beaststring.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastapi/beastutils.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmanager_8h.html" title=
+"The beast manager is the core object for all interaction with the Beast API.">beastapi/beastmanager.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastscene_8h.html" title=
+"The api for specifying scenes in beast.">beastapi/beastscene.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastinstance_8h.html" title=
+"The api for specifying instances of meshes in Beast.">beastapi/beastinstance.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttarget_8h.html" title=
+"The target definitions.">beastapi/beasttarget.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastrenderpass_8h.html" title=
+"Render Pass specification.">beastapi/beastrenderpass.h</a>&gt;</span>
+
+<span class=
+"comment">// Make sure we have a unicode safe cout define</span>
+<span class="preprocessor">#ifdef UNICODE</span>
+<span class="preprocessor">#define tcout std::wcout</span>
+<span class="preprocessor">#else</span>
+<span class="preprocessor">#define tcout std::cout</span>
+<span class="preprocessor">#endif</span>
+
+<span class=
+"comment">// An animator that changes the resolution of the texture target entity once every 8 second</span>
+<span class="keyword">class </span>ResizeAnimator : <span class=
+"keyword">public</span> bex::SceneUpdater {
+<span class="keyword">public</span>:
+        ResizeAnimator(<a name="_a0"></a><a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> targetEntity) :
+                m_targetEntity(targetEntity),
+                m_timer(0.0f),
+                m_even(<span class="keyword">true</span>)
+          {
+          }
+
+          <span class="keyword">virtual</span> <span class=
+"keywordtype">void</span> update(<span class=
+"keywordtype">float</span> deltaTime) {
+                  <span class="keyword">const</span> <span class=
+"keywordtype">float</span> timerInterval = 10.0f;
+
+                  m_timer += deltaTime;
+
+                  <span class=
+"keywordflow">if</span> (m_timer &gt;= timerInterval) {
+                          m_timer -= timerInterval;
+
+                          <span class=
+"keywordflow">if</span> (m_even) {
+                                  <a name="a1"></a><a class="code"
+href="beasttargetentity_8h.html#af8cdbd10b4318b8a8788091cc3fbd8cf"
+title=
+"Sets the requested resolution for the target entity.">ILBSetBakeResolution</a>(m_targetEntity, 512, 256);
+                          } <span class="keywordflow">else</span> {
+                                  <a class="code" href=
+"beasttargetentity_8h.html#af8cdbd10b4318b8a8788091cc3fbd8cf"
+title="Sets the requested resolution for the target entity.">ILBSetBakeResolution</a>(m_targetEntity, 256, 64);
+                          }
+
+                          m_even = !m_even;
+                  }
+          }
+
+<span class="keyword">private</span>:
+        <a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> m_targetEntity;
+        <span class="keywordtype">float</span> m_timer;
+        <span class="keywordtype">bool</span> m_even;
+};
+
+
+<span class="keywordtype">int</span> main(<span class=
+"keywordtype">char</span> argc, <span class=
+"keywordtype">char</span>** argv) {
+        <span class="keywordflow">try</span> {
+
+                <span class=
+"comment">// Setup the beast manager</span>
+                <a name="_a2"></a><a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bmh = bex::setupBeastManager(_T(<span class="stringliteral">"baking-live-physical"</span>));
+
+                <span class=
+"comment">// Create an empty scene</span>
+                <a name="_a3"></a><a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene;
+                bex::apiCall(<a name="a4"></a><a class="code" href=
+"beastscene_8h.html#a0a467a88ff313a3165115a9a3836552f" title=
+"Begins creation of a scene that will use physical materials set up with OSL shaders.">ILBBeginPhysicalScene</a>(bmh, <span class="stringliteral">"PhysicalFinalScene"</span>, &amp;scene));
+                bex::setupCamera(scene);
+                bex::apiCall(<a name="a5"></a><a class="code" href=
+"beastscene_8h.html#a73654682a5785904682800b934720fcf" title=
+"Finalizes this scene Any future call to modify this scene or any of its objects will fail...">ILBEndScene</a>(scene));
+
+                <span class=
+"comment">// Create a live Ernst job</span>
+                <a name="_a6"></a><a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job;
+                bex::apiCall(<a name="a7"></a><a class="code" href=
+"beastjob_8h.html#a93d10d404c2f5e693ef531a444ed215d" title=
+"Creates a Live Ernst job.">ILBCreateLiveErnstJob</a>(bmh, _T(<span class="stringliteral">"TestJob"</span>), scene, &amp;job));
+
+                <span class="comment">// Create target</span>
+                <span class=
+"comment">// NOTE: Must be created before the job is started. One target can be used for all baked entities so you never need more than one when doing live</span>
+                <a name="_a8"></a><a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> textureTarget;
+                bex::apiCall(<a name="a9"></a><a class="code" href=
+"beasttarget_8h.html#a409692f3e607da5b2757b75c75fe2413" title=
+"Adds a texture baking target to a job.">ILBCreateTextureTarget</a>(job, _T(<span class="stringliteral">"TextureTarget0"</span>), 1, 1, &amp;textureTarget)); <span class="comment">// Resolution here is irrelevant and it is overridden below</span>
+
+                <span class="comment">// Start the job</span>
+                bex::apiCall(<a name="a10"></a><a class="code"
+href="beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8" title=
+"Starts a job.">ILBStartJob</a>(job, <a name="a11"></a><a class=
+"code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0a3b91c64198f51de01c4d6627e4705c57"
+title=
+"Don't display the render window / progress view.">ILB_SR_NO_DISPLAY</a>, <a name="a12"></a><a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f"
+title=
+"Render distributed if possible, otherwise fallback on local rendering.">ILB_RD_AUTODETECT</a>));
+
+                <span class=
+"comment">// Create the entire scene with meshes, textures, materials, light sources and instances live</span>
+                bex::InstanceMap instances;
+                bex::setupTestScene(bmh, scene, instances);
+
+                <span class=
+"comment">// Add bake instances to the target (live)</span>
+                <a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> textureTargetEntity;
+                bex::apiCall(<a name="a13"></a><a class="code"
+href="beasttarget_8h.html#a03e7ae4191ae2af374e373220df6a240" title=
+"Adds an instance to bake to a texture or vertex bake target.">ILBAddBakeInstance</a>(textureTarget, instances[_T(<span class="stringliteral">"FloorInstance"</span>)], &amp;textureTargetEntity));          
+                bex::apiCall(<a class="code" href=
+"beasttargetentity_8h.html#af8cdbd10b4318b8a8788091cc3fbd8cf"
+title="Sets the requested resolution for the target entity.">ILBSetBakeResolution</a>(textureTargetEntity, 512, 256));
+
+                <span class=
+"comment">// Set Ernst to bake whole texture and not just parts visible from the camera</span>
+                bex::apiCall(<a name="a14"></a><a class="code"
+href="beastjob_8h.html#a285dfca953c0c4e5fb546b2db11454ca" title=
+"Sets the GI baking mode in a Live Ernst job.">ILBSetErnstGIBakingMode</a>(job, <a name="a15"></a><a class="code"
+href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05a236e30494587bd34eb17bcd58fcdee75"
+title=
+"Bake all targets in the scene, prioritized by the areas with the most variance.">ILB_BM_ENTIRE_LEVEL</a>));
+
+                <span class=
+"comment">// We use an animator to show that it is possible to change bake resolution while running</span>
+                ResizeAnimator animator(textureTargetEntity);
+
+                <span class=
+"comment">// Render and display the result</span>
+                <span class=
+"keywordtype">int</span> returnCode = 0;
+                <span class=
+"keywordflow">if</span> (!bex::displayLiveJob(job, tcout, textureTarget, &amp;animator)) {
+                        returnCode = 1;
+                }
+
+                <span class="comment">// Destroy the job</span>
+                bex::apiCall(<a name="a16"></a><a class="code"
+href="beastjob_8h.html#a3dd89827f352d0c78c9c735ffc315f92" title=
+"Destroys a job.">ILBDestroyJob</a>(job));
+
+                <span class="keywordflow">return</span> returnCode;
+
+        } <span class=
+"keywordflow">catch</span>(bex::Exception&amp; ex) {
+                <a name="_a17"></a><a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> errorString;
+                <a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> extendedError;
+                <a name="a18"></a><a class="code" href=
+"beastutils_8h.html#aed2244af0fe901862e4d71c934af46dc" title=
+"Converts an error code into a string for human readable error reporting.">ILBErrorToString</a>(ex.status, &amp;errorString);
+                <a name="a19"></a><a class="code" href=
+"beastutils_8h.html#ae949fbbb56d2dfb94290a968802066c0" title=
+"Returns the last error that happened in this thread.">ILBGetExtendErrorInformation</a>(&amp;extendedError);
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Beast API error"</span> &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Error: "</span> &lt;&lt; bex::convertStringHandle(errorString) &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Info: "</span> &lt;&lt; bex::convertStringHandle(extendedError) &lt;&lt; std::endl;
+                <span class="keywordflow">return</span> 1;
+        }  <span class=
+"keywordflow">catch</span>(std::exception&amp; ex) {
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Standard exception"</span> &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Error: "</span> &lt;&lt; ex.what() &lt;&lt; std::endl;;
+                <span class="keywordflow">return</span> 1;
+        }
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

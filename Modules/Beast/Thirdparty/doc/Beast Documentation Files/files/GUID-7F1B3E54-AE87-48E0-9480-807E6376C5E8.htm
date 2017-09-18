@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8" />
+      <meta name="topic-type" content="concept" />
+      <title>Using Distribeast</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBExecuteBeast()", "../api/beastjob_8h.html#a3f2bf3d3ec6c6fd231ace0e653410c70", "API"]); 
+reflinkdata.push(["ILBStartJob()", "../api/beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8", "API"]); 
+reflinkdata.push(["ILBDistributionType", "../api/beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2", "API"]); 
+reflinkdata.push(["ILB_RD_AUTODETECT", "../api/beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f", "API"]); 
+reflinkdata.push(["ILB_RD_FORCE_DISTRIBUTED", "../api/beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a51dec84d8cf599aeea2d0216b7bbd0c5", "API"]); 
+reflinkdata.push(["ILBStatus", "../api/beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206", "API"]); 
+reflinkdata.push(["ILBStartJob", "../api/beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8", "API"]); 
+reflinkdata.push(["ILB_SR_CLOSE_WHEN_DONE", "../api/beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0acea2a833558b7861cb3a5bb8372b5f03", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8.htm',                           'd30e13187','index.html',location.hash);                           javascript:initPage('Using Distribeast','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject= Using Distribeast&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Undoing and Redoing</div><a href="GUID-E42AB1EB-365E-4DA3-8984-2F2CAE5F7606.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp"><img src="../images/nav-null-xp.gif" border="0" /></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Installing Distribeast</div><a href="GUID-462E6129-1DAA-4778-9E28-08BB326BC6EB.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry">&nbsp;</div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-9C8FE270-50A5-4E7A-AD28-77C6AD3AA79E"></a></span><h1> Using Distribeast</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-6F7BF410-75B4-4AB7-AD7E-0B615F4B0DDF"></a></span> Distribeast is a system of distributed computing that processes <span class="charspan-msgph" translate="no">Beast</span> rendering jobs in parallel on multiple different computers. This can speed up your rendering times dramatically, particularly
+            for projects with large, complex scenes. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_240607840392409FA81EFB803A5735C9"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e13198"></a><span class="anchor_wrapper"><a name="GUID-5F9D62D8-8C26-4F37-9373-42C9963B9B95"></a></span>System overview
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-6FBE02F2-058A-4C9D-8473-BAA1FBC0AFA4"></a></span>A Distribeast network contains a single computer that acts as a <em class="mild">controller</em>, and any number of other computers that act as <em class="mild">workers</em>. At startup, each worker establishes a connection with the controller over TCP/IP. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-6397576E-D78F-4438-B8F1-3619BE78A4B0"></a></span>Any application running on a host that is also running a Distribeast worker or controller node can submit rendering jobs to
+               Distribeast. Jobs are submitted through the <span class="charspan-msgph" translate="no">Beast</span> API, by specifying a flag value at the time the rendering job is created. See <span class="char_link"><a href="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8.htm#SECTION_C4CC08FDD4DF40888B2C25EA68891575">Sending jobs to Distribeast</a></span> below. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-A404B3CF-FE44-4CBC-8A3A-A01B7EFA1EBE"></a></span>When a rendering job is submitted to Distribeast, the job is split into smaller chunks that are sent to the workers for processing.
+               Each worker carries out the requested rendering operation on its own chunk independently. When all chunks have been successfully
+               treated, the submitting application is notified through the <span class="charspan-msgph" translate="no">Beast</span> API like with any non-distributed job. See also <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm">Monitoring Jobs and Retrieving Updates</a></span>. The submitter can then retrieve the results through the <span class="charspan-msgph" translate="no">Beast</span> API like it would for a non-distributed job. See also <span class="char_link"><a href="GUID-66113B54-02C9-4F7F-8F0E-FFEB466DC342.htm">Retrieving the Rendered Output</a></span>. The splitting of the job done by Distribeast is entirely transparent to the submitter. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-5ED85EF0-B287-4191-89DA-9DD13309CA15"></a></span>The controller can handle multiple simultaneous requests, so any worker in the network can submit a rendering job at any time.
+               All workers in the network participate in each job, including the worker on the same host as the submitting application, and
+               including the controller itself. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-19E827B0-E5EB-477B-92B0-F19D4D8239BD"></a></span>Each worker node is capable of using all available processing units or cores on its host. Therefore, only one worker needs
+               to be installed on a given computer, regardless of the number of CPUs offered by that computer. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-9EE764A4-4961-47CE-ABC6-A6FFCCC3588B"></a></span>Note that because each controller also acts as a worker, the minimal Distribeast system consists of a single computer with
+               a controller node installed. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_1E164E3688FA42C9BDB24D86641125DF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e13246"></a><span class="anchor_wrapper"><a name="GUID-275FAFE7-35B8-4070-ABEB-4CF65E112FCB"></a></span>Setting up the Distribeast network
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-9A6EEFBB-410B-45DB-AF1D-B5222490CAC0"></a></span>To set up your Distribeast network: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_5D4DF85F3D7E469E999488CB2456DCEC"></a></span><ol start="1">
+               <li>Install one Distribeast controller node. You can install the controller node on any machine in your network, but to avoid
+                  having to re-configure or re-install your worker nodes, it is best to choose a computer that you expect to be in continual
+                  service for as long as possible. 
+               </li>
+               <li>Install a Distribeast worker node on each computer that you want to send distributed rendering jobs to the controller, and
+                  on any other computers that you want to include in the render farm. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-A3F33002-460C-4946-9AA9-6B6EFAA0E0E9"></a></span>For details on installing Distribeast controller and worker nodes, see <span class="char_link"><a href="GUID-462E6129-1DAA-4778-9E28-08BB326BC6EB.htm">Installing Distribeast</a></span>. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_ED84D2315BA8484B9E7DBAFF0B50A795"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e13266"></a><span class="anchor_wrapper"><a name="GUID-E288C264-53C1-456F-B6AC-BF6D9D74EB49"></a></span>Network restrictions
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-BA8D5FBE-D062-491F-AEFD-7BFD04C526B6"></a></span>The following restrictions apply to the structure of your Distribeast network, and to the computers running the controller
+                  node and worker nodes: 
+               </p> <span class="anchor_wrapper"><a name="UL_378C72ED0EE149C3A3FA5A17D3308B0E"></a></span><ul>
+                  <li>It is not recommended to install a Distribeast node on a computer that is directly connected to the Internet with a public
+                     IP address. Install only on computers that are on a local area network, with a firewall/NAT between them and any untrusted
+                     computers. 
+                  </li>
+                  <li>Distribeast currently only listens on IP v4 addresses. </li>
+                  <li> Distribeast is not guaranteed to work on machines connected to more than one network. </li>
+                  <li>"Network discovery" must be turned on for all computers participating in the Distribeast network. </li>
+                  <li>It must be possible for any computer in the network to connect to any other. For example, you cannot situate one part of the
+                     network behind a firewall that doesn't let through connections from the rest of the local network. 
+                  </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_C4CC08FDD4DF40888B2C25EA68891575"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e13287"></a><span class="anchor_wrapper"><a name="GUID-2769321F-249E-4724-AA87-8967F11FD76E"></a></span>Sending jobs to Distribeast
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-46EBCE89-5475-4E35-8F73-15C8E092C052"></a></span>Whenever you call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBExecuteBeast()'); return false;">ILBExecuteBeast()</a></span> or <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStartJob()'); return false;">ILBStartJob()</a></span> to launch the processing of a rendering job, you need to provide an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBDistributionType'); return false;">ILBDistributionType</a></span> enumeration that determines whether or not the rendering job should be parallellized through Distribeast. 
+            </p> <span class="anchor_wrapper"><a name="UL_9097C85E6F85427EA1ECE46237DCC657"></a></span><ul>
+               <li>To use Distribeast when a worker node is available on the local machine, use <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RD_AUTODETECT'); return false;">ILB_RD_AUTODETECT</a></span>. 
+               </li>
+               <li>To force the use of Distribeast, use <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RD_FORCE_DISTRIBUTED'); return false;">ILB_RD_FORCE_DISTRIBUTED</a></span>. If the Distribeast worker on the local machine is not available, the job will fail. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-5D6AA3DA-23E6-44C5-8E72-B0EB9D75DD1D"></a></span>For example: 
+            </p> 
+            <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStatus'); return false;">ILBStatus</a> result = <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStartJob'); return false;">ILBStartJob</a>(myJob, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_SR_CLOSE_WHEN_DONE'); return false;">ILB_SR_CLOSE_WHEN_DONE</a>, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RD_AUTODETECT'); return false;">ILB_RD_AUTODETECT</a>);
+</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-DFF4FEF5-66E1-4BF3-9F9F-89552EC64243"></a></span>Note that you cannot launch Distribeast by running its executable contained in the <span class="filePath" translate="no">bin</span> directory directly. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_9DF60CFCA4F2450BA774D933FB3451C6"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e13329"></a><span class="anchor_wrapper"><a name="GUID-E3EE852D-E06C-49D0-909D-9D7FE3C037A7"></a></span>Supported platforms
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-927AA025-AE32-475E-820B-44CF2407B911"></a></span>Distribeast currently supports controller nodes and worker nodes on Windows Vista and Windows 7, running on either 32-bit
+               or 64-bit processors. 
+            </p> 
+         </div><span class="noindex">
+            <div class="topic-list">
+               <h4 class="related">Topics in this section</h4>
+               <ul class="jumplist">
+                  <li class="topiclist-litem"><a href="GUID-462E6129-1DAA-4778-9E28-08BB326BC6EB.htm">Installing Distribeast</a></li>
+                  <li class="topiclist-litem"><a href="GUID-38252C85-D35B-4FE6-B896-A1566AB6A0A9.htm">Configuring Distribeast</a></li>
+                  <li class="topiclist-litem"><a href="GUID-CFB931AC-3B1C-45F5-BE98-A78D48CD938F.htm">Monitoring Distribeast</a></li>
+                  <li class="topiclist-litem"><a href="GUID-C647B007-60BB-42A5-B39A-86CBC306A858.htm">Using the Cache with Distribeast</a></li>
+                  <li class="topiclist-litem"><a href="GUID-303E8100-F675-4A37-B1A1-6EE6A251ADBF.htm">Known Issues with Distribeast</a></li>
+               </ul>
+            </div></span><div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

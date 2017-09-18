@@ -13,7 +13,6 @@
 #include <Render/RenderBase.h>
 #include <Render/GPUFamilyDescriptor.h>
 #include <Base/BaseTypes.h>
-#include <Base/FastNameMap.h>
 
 namespace SettingsConverterDetail
 {
@@ -33,7 +32,7 @@ public:
                 const DAVA::KeyedArchive::UnderlyingMap& values = toLoad->GetArchieveData();
                 for (const auto& valueNode : values)
                 {
-                    settingsMap.Insert(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
+                    settingsMap.emplace(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
                 }
             }
 
@@ -56,7 +55,7 @@ public:
                         }
                         else
                         {
-                            settingsMap2.Insert(DAVA::FastName(valueNode.first), *valueNode.second);
+                            settingsMap2[DAVA::FastName(valueNode.first)] = *valueNode.second;
                         }
                     }
                 };
@@ -252,8 +251,8 @@ private:
         return srcValue;
     }
 
-    DAVA::FastNameMap<DAVA::VariantType> settingsMap;
-    DAVA::FastNameMap<DAVA::VariantType> settingsMap2;
+    DAVA::UnorderedMap<DAVA::FastName, DAVA::VariantType> settingsMap;
+    DAVA::UnorderedMap<DAVA::FastName, DAVA::VariantType> settingsMap2;
 
     const DAVA::String settingsFilePath = "~doc:/ResourceEditorOptions.archive";
     const DAVA::String settingsFilePath2 = "~doc:/ResourceEditorSettings.archive";
