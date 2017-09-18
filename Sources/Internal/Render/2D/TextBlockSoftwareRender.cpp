@@ -40,8 +40,14 @@ void TextBlockSoftwareRender::Prepare()
     TextBlockRender::Prepare();
     SafeRelease(currentTexture);
 
-    uint32 width = Max(textBlock->cacheDx, 1);
-    uint32 height = Max(textBlock->cacheDy, 1);
+    if (textBlock->visualText.empty())
+    {
+        // Skip draw empty string
+        return;
+    }
+
+    uint32 width = Max(textBlock->cacheDx, static_cast<int32>(Texture::MINIMAL_WIDTH));
+    uint32 height = Max(textBlock->cacheDy, static_cast<int32>(Texture::MINIMAL_HEIGHT));
 
     // Check that text can be rendered in available texture size otherwise don't draw it
     uint32 maxSize = rhi::DeviceCaps().maxTextureSize;
@@ -77,19 +83,15 @@ void TextBlockSoftwareRender::Prepare()
     {
         addInfo = UTF8Utils::EncodeToUTF8(textBlock->visualText.c_str());
     }
-    else
+    else if (textBlock->multilineStrings.size() >= 1)
     {
-        if (textBlock->multilineStrings.size() >= 1)
-        {
-            addInfo = UTF8Utils::EncodeToUTF8(textBlock->multilineStrings[0].c_str());
-        }
-        else
-        {
-            addInfo = "empty";
-        }
+        addInfo = UTF8Utils::EncodeToUTF8(textBlock->multilineStrings[0].c_str());
     }
 
     currentTexture = Texture::CreateTextFromData(FORMAT_A8, buffer.data(), width, height, false, addInfo.c_str());
+    currentTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+    currentTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+
     sprite = Sprite::CreateFromTexture(currentTexture, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
 }
 
