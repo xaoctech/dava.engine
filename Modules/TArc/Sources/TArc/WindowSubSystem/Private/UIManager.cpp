@@ -248,7 +248,7 @@ QAction* RemoveAction(T* placeholder, QAction* action)
 template <class T>
 QMenu* GetOrCreateSubmenu(T* placeholder, const QString& submenuName)
 {
-    QMenu* submenu = placeholder->findChild<QMenu*>(submenuName, Qt::FindDirectChildrenOnly);
+    QMenu* submenu = ((QWidget*)placeholder)->findChild<QMenu*>(submenuName, Qt::FindDirectChildrenOnly);
     if (submenu == nullptr)
     {
         QAction* action = FindAction(placeholder, submenuName);
