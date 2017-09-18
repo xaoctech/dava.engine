@@ -94,6 +94,8 @@ BINARY_WIN64_DIR_RELEASE
 BINARY_WIN64_DIR_DEBUG
 BINARY_WIN64_DIR_RELWITHDEB
 #
+#MIX_APP_DATA                   ## we should not change value of this variable
+#
 JAR_FOLDERS_ANDROID
 JAVA_FOLDERS_ANDROID
 #
@@ -363,8 +365,14 @@ macro( setup_main_module )
                 foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}${CONFIGURE}} )
                     get_filename_component( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARY} ABSOLUTE )
                     get_filename_component( DYNAMIC_LIBRARY_DIR ${DYNAMIC_LIBRARY}  DIRECTORY )
-                    append_property( MODULE_DYNAMIC_LIBRARIES_DIR${CONFIGORE} ${DYNAMIC_LIBRARY_DIR} )  
+                    append_property( MODULE_DYNAMIC_LIBRARIES_DIR${CONFIGURE} ${DYNAMIC_LIBRARY_DIR} )
                 endforeach()
+            endforeach()
+
+            foreach( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}}  )
+                get_filename_component( DYNAMIC_LIBRARY ${DYNAMIC_LIBRARY} ABSOLUTE )
+                get_filename_component( DYNAMIC_LIBRARY_DIR ${DYNAMIC_LIBRARY}  DIRECTORY )
+                append_property( MODULE_DYNAMIC_LIBRARIES_DIR ${DYNAMIC_LIBRARY_DIR} )
             endforeach()
 
         endif()      
@@ -508,6 +516,7 @@ macro( setup_main_module )
                 BINARY_WIN64_DIR_RELWITHDEB
                 JAR_FOLDERS_ANDROID
                 JAVA_FOLDERS_ANDROID
+                MIX_APP_DATA
                 )
 
         load_property( PROPERTY_LIST 
@@ -645,16 +654,6 @@ macro( setup_main_module )
                 endif()
 
             endif()
-
-            if( CREATE_NEW_MODULE )
-                file_tree_check( "${CMAKE_CURRENT_LIST_DIR}" )
-
-                if( TARGET_FILE_TREE_FOUND )
-                    add_dependencies(  ${NAME_MODULE} FILE_TREE_${NAME_MODULE} )
-                endif()
-
-            endif()
-
 
             if( DEFINITIONS_PRIVATE )
                 add_definitions( ${DEFINITIONS_PRIVATE} )

@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057" />
+      <title>Creating Textures</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBTextureHandle", "../api/struct_i_l_b_texture_handle.html", "API"]); 
+reflinkdata.push(["ILBReferenceTexture()", "../api/beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78", "API"]); 
+reflinkdata.push(["ILBBeginTexture()", "../api/beasttexture_8h.html#a218a87ee822598e86003b25c4d956108", "API"]); 
+reflinkdata.push(["ILBEndTexture()", "../api/beasttexture_8h.html#ab3fc5a5b9823618ada51e95db0c3d917", "API"]); 
+reflinkdata.push(["ILBPixelFormat", "../api/beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3", "API"]); 
+reflinkdata.push(["ILBAddPixelDataHDR()", "../api/beasttexture_8h.html#a4fc283ac7977576dfb4bbd89b7efa1de", "API"]); 
+reflinkdata.push(["ILBAddPixelDataLDR()", "../api/beasttexture_8h.html#a899020e097cdd18e0e9fc6e4c144bc8c", "API"]); 
+reflinkdata.push(["ILB_PF_RGBA_FLOAT", "../api/beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a3402163b47ccf0c7f57696ab4040ee7a", "API"]); 
+reflinkdata.push(["beasttexture.h", "../api/beasttexture_8h.html", "API"]); 
+reflinkdata.push(["ILBReferenceTexture", "../api/beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78", "API"]); 
+reflinkdata.push(["ILBBeginTexture", "../api/beasttexture_8h.html#a218a87ee822598e86003b25c4d956108", "API"]); 
+reflinkdata.push(["ILB_PF_RGBA_BYTE", "../api/beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748", "API"]); 
+reflinkdata.push(["ILBAddPixelDataLDR", "../api/beasttexture_8h.html#a899020e097cdd18e0e9fc6e4c144bc8c", "API"]); 
+reflinkdata.push(["ILBEndTexture", "../api/beasttexture_8h.html#ab3fc5a5b9823618ada51e95db0c3d917", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm',                           'd30e6547','index.html',location.hash);                           javascript:initPage('Creating Textures','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Textures&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating Meshes</div><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Creating a Scene</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Mesh Instances</div><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-E7CA05BB-8A53-4335-BF11-BB0EC5D9BA10"></a></span><h1>Creating Textures</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-F3835025-58BC-41BF-A2D6-24444F01395E"></a></span> Textures are 2D images that can be applied to the materials that make up a mesh or a mesh instance. For example, the mesh
+            for a door might use a texture image to make it look like wood grain, or the mesh for a wall might use a stone texture. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_F172A86304B849E99B1D1F57EB58A5DF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6555"></a><span class="anchor_wrapper"><a name="GUID-87A3EB87-5BD6-4BAB-A9DE-2BAEF99554AC"></a></span>Setting up a texture
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-2E851135-7584-4643-B2F4-55330C003A2B"></a></span>You can create a texture from the contents of an image file on disk, or programmatically by providing the <span class="charspan-msgph" translate="no">Beast</span> API with the RGBA values for each pixel in the texture. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-B51F2C35-A5F4-4D0C-829A-FE9E1A356548"></a></span>In order to apply a texture that you create to a mesh instance in a scene, you need to link the texture to a specific input
+               parameter of the shader set up for the material used by that mesh instance. See <span class="char_link"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a></span>. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_1D039B7C89164B3F99320DFE32F8DAFD"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e6572"></a><span class="anchor_wrapper"><a name="GUID-40885FC0-B37C-40B6-89EC-ECAB33388EF6"></a></span>Creating a texture from a file
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-4F0873A2-7C33-489C-B8D9-F5AE6D6F45E3"></a></span><span class="charspan-msgph" translate="no">Beast</span> can read RGB(A) texture data from any of the following file types: 
+               </p> <span class="anchor_wrapper"><a name="UL_0290EAE4CE7546C7B66837F168527A6F"></a></span><ul>
+                  <li>BMP </li>
+                  <li>DDS (either RGB or RGBA, compressed or uncompressed) </li>
+                  <li>EXR </li>
+                  <li>HDR </li>
+                  <li>JPG </li>
+                  <li>PNG </li>
+                  <li>TGA </li>
+                  <li>TIFF </li>
+                  <li>TX 
+                     <div><span class="anchor_wrapper"><a name="GUID-52AC074B-FFB6-4C2A-8E8D-BA270874B85E"></a></span><div class="note-note"><span class="label">Note</span>You may be able to significantly increase shading performance by using tiled <span class="filePath" translate="no">.tx</span> files created by the <span class="filePath" translate="no">maketx</span> utility, which is included in the OpenImageIO toolkit. For more information, see <a href="https://sites.google.com/site/openimageio/" target="_blank">https://sites.google.com/site/openimageio/</a>. 
+                        </div>
+                     </div> 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-9760C45C-C6C8-4A24-8940-8E371E62E4D7"></a></span>To create a texture from a file: 
+               </p> 
+               <!--OList--><span class="anchor_wrapper"><a name="OL_C77879FBFAA24205A73E3F727DA0710A"></a></span><ol start="1">
+                  <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a></span>. 
+                  </li>
+                  <li>Call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReferenceTexture()'); return false;">ILBReferenceTexture()</a></span>. In this function, you provide the path and filename of the source file, and a unique name that should be used to identify
+                     the texture in the <span class="charspan-msgph" translate="no">Beast</span> cache. This unique name may be related to the file name or not. 
+                  </li>
+               </ol> 
+               <p><span class="anchor_wrapper"><a name="GUID-F5AE677F-8A54-495E-A403-178087571A82"></a></span>The source file is copied to the <span class="charspan-msgph" translate="no">Beast</span> cache and used from there. Once the source is copied to the cache, it is no longer used. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-A09F1855-A54F-4082-AA63-357379E91C72"></a></span>Note that you do not call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTexture()'); return false;">ILBBeginTexture()</a></span> or <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTexture()'); return false;">ILBEndTexture()</a></span> when you create the texture from a file on disk. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-2C7F8496-90AD-4AEB-A100-C817B0F7104F"></a></span>For example: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a> tex;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReferenceTexture'); return false;">ILBReferenceTexture</a>(beastManager, _T("MyTextureName"), _T("C:\textures\floor.png"), &amp;tex);</pre></div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_3C2935F8F92C4C73BEEE997E6E77B589"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e6655"></a><span class="anchor_wrapper"><a name="GUID-179EB333-24AD-4C97-89D9-759D1E993904"></a></span>Creating a texture programmatically
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-BEAE644B-C571-47CD-BF12-55664B04C46C"></a></span>When you create a texture programmatically, you provide the color data for each pixel in the texture one-by-one. You start
+                  with the pixel at the bottom left corner, and progress upward line by line. In other words, you first provide the bottom horizontal
+                  line in the image from left to right; then the next line up starting from the left again; etc. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-146A9907-5D6A-47FD-9F92-A52DB9C718F4"></a></span>For each pixel, you can provide a monochrome value, a three-channel RGB color, or a four-channel RGBA color. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-ECDF7F7D-A0DE-4809-BA93-28CD78352074"></a></span>You can provide the color of each pixel in either HDR or LDR format. 
+               </p> <span class="anchor_wrapper"><a name="UL_24288F173C78459E8FE994B5D6E4DC24"></a></span><ul>
+                  <li>If you use HDR, you must provide each pixel color value as a floating-point number expressed in linear color space. </li>
+                  <li>If you use LDR, you must provide each pixel color value as an unsigned char that contains the value expressed in a gamma space.
+                     <span class="charspan-msgph" translate="no">Beast</span> converts your color values to linear color space using an input gamma that you provide (typically the default value of 2.2).
+                     
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-919D6B1C-33E7-4474-839F-82FCA15D56A3"></a></span>To create a texture programmatically: 
+               </p> 
+               <!--OList--><span class="anchor_wrapper"><a name="OL_334BF1925F2143599C694E0B1D212CD9"></a></span><ol start="1">
+                  <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a></span>. 
+                  </li>
+                  <li>Initialize the texture handle and open it for modification by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTexture()'); return false;">ILBBeginTexture()</a></span>. In your call, you must specify the dimensions of the texture, and an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBPixelFormat'); return false;">ILBPixelFormat</a></span> enumeration that determines the type of data that you will be able to record for each pixel. 
+                  </li>
+                  <li>Call either <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPixelDataHDR()'); return false;">ILBAddPixelDataHDR()</a></span> or <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPixelDataLDR()'); return false;">ILBAddPixelDataLDR()</a></span> to add the data for the pixels in the image. You can call these functions multiple times to add pixel data in batches; this
+                     can be useful if you are working from a source data structure that expresses pixel data in a different order from the order
+                     expected by <span class="charspan-msgph" translate="no">Beast</span>. 
+                     <p><span class="anchor_wrapper"><a name="GUID-AE2B2F2C-E9A8-421E-B8D4-CFA0DF4449D7"></a></span>For each pixel, you must add a number of data elements of a type that corresponds to the pixel format you set in your call
+                        to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTexture()'); return false;">ILBBeginTexture()</a></span>. For example, if you want to set an RGBA colors for each pixel in HDR format (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_PF_RGBA_FLOAT'); return false;">ILB_PF_RGBA_FLOAT</a></span>), you need to provide four floating-point numbers for each pixel. 
+                     </p> 
+                  </li>
+                  <li>When you have added color data for each pixel in the texture, finalize the texture by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTexture()'); return false;">ILBEndTexture()</a></span>. Once you have finalized the texture, you can no longer modify it, but it will be ready for use in your scenes. 
+                  </li>
+               </ol> 
+               <p><span class="anchor_wrapper"><a name="GUID-ECE11D59-2758-4849-B31E-69141A08E922"></a></span>For example: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a> tex;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTexture'); return false;">ILBBeginTexture</a>(beastManager, "texture1", width, height, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_PF_RGBA_BYTE'); return false;">ILB_PF_RGBA_BYTE</a>, &amp;tex)
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPixelDataLDR'); return false;">ILBAddPixelDataLDR</a>(tex, pixelDataArray, arrayLength);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTexture'); return false;">ILBEndTexture</a>(tex)</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-F3FB2006-455C-4512-972F-E3A8B704AB7B"></a></span>If you need to re-interpret the line order or color values from a source data structure, you can avoid creating a full temporary
+                  copy of the texture by adding pixel data in batches using an approach such as this: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a> tex;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTexture'); return false;">ILBBeginTexture</a>(bm, "texture2", width, height, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_PF_RGBA_BYTE'); return false;">ILB_PF_RGBA_BYTE</a>, &amp;tex)
+// Add data line by line
+for(int y = 0; y &lt; height; ++y) {
+    // Prepare a scanline of data by looking it up in source data structure
+    char* lineData = prepareLine(y);
+    // Add a scanline of data
+    <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPixelDataLDR'); return false;">ILBAddPixelDataLDR</a>(tex, lineData, width);
+}
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTexture'); return false;">ILBEndTexture</a>(tex)</pre></div> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5599068625C9430CBF4637D858681849"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6735"></a><span class="anchor_wrapper"><a name="GUID-258E859C-1B07-42E8-91DF-BAD192511ABE"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-73EE5AD6-36AE-45F6-9F93-A04214C36187"></a></span>You can create multiple different textures simultaneously in multiple threads. In addition, multiple threads can find textures
+               in the cache and use them simultaneously. However, only one thread should add pixel data to any given texture at any time;
+               therefore, each texture should be created entirely within a single thread and not split across multiple threads. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3F5B017701174750A97671D77741018A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6743"></a><span class="anchor_wrapper"><a name="GUID-9F1386A7-3538-45D5-8415-EE92FE970B2D"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-CAC61687-5F88-4EEC-8F2B-D485A15B463A"></a></span>API functions related to the creation and setup of textures are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beasttexture.h'); return false;">beasttexture.h</a></span> file. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

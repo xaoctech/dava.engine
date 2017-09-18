@@ -49,9 +49,7 @@ fragment_in
         float3 varToCameraVec : TEXCOORD7;
     #endif
     
-    #if FLOWMAP || PARTICLES_FLOWMAP
-        float3 varFlowData : TEXCOORD4;
-    #endif
+    
 
     #if VERTEX_COLOR || SPHERICAL_LIT
         [lowp] half4 varVertexColor : COLOR1;
@@ -69,16 +67,20 @@ fragment_in
         #endif
     #elif PARTICLES_FRESNEL_TO_ALPHA
         float varTexcoord6 : TEXCOORD6; // Fresnel a.
-    #endif
-
-    #if GEO_DECAL
-        float2 geoDecalCoord : TEXCOORD6;
-    #endif
+    #endif    
 
     #if FRAME_BLEND && PARTICLES_ALPHA_REMAP
         half2 varTexcoord3 : TEXCOORD3;
     #elif FRAME_BLEND || PARTICLES_ALPHA_REMAP
         half varTexcoord3 : TEXCOORD3;
+    #endif
+    
+    #if FLOWMAP || PARTICLES_FLOWMAP
+        float3 varFlowData : TEXCOORD4;
+    #endif
+    
+    #if GEO_DECAL
+        float2 geoDecalCoord : TEXCOORD6;
     #endif
 
 };

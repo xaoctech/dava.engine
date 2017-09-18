@@ -577,18 +577,24 @@ void WindowNativeBridge::SetSystemCursorCapture(bool capture)
 void WindowNativeBridge::UpdateSystemCursorVisible()
 {
     static bool mouseVisibleState = true;
-
+    
+#ifdef __DAVAENGINE_STEAM__ // fix for Steam overlay only
     bool visible = !cursorInside || mouseVisible;
+#else
+    bool visible = mouseVisible;
+#endif
     if (mouseVisibleState != visible)
     {
         mouseVisibleState = visible;
         if (visible)
         {
-            CGDisplayShowCursor(kCGDirectMainDisplay);
+            CGError check = CGDisplayShowCursor(kCGDirectMainDisplay);
+            DVASSERT(kCGErrorSuccess == check);
         }
         else
         {
-            CGDisplayHideCursor(kCGDirectMainDisplay);
+            CGError check = CGDisplayHideCursor(kCGDirectMainDisplay);
+            DVASSERT(kCGErrorSuccess == check);
         }
     }
 }
