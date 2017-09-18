@@ -16,6 +16,8 @@ namespace LibraryModuleDetails
 QString CreateMenuName(QString name)
 {
 #if defined __DAVAENGINE_MACOS__
+    // toolbar buttons with menu do look differently on Mac and Win. On Mac, button text overlaps with dropdown arrow symbol.
+    // Adding spaces should fix this overlap issue.
     return name + QStringLiteral("  ");
 #else
     return name;
