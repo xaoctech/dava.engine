@@ -50,7 +50,7 @@ DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
 };
 
 template <typename T, typename U, size_t sz>
-int ElementToIndex(T elem, const Array<U, sz> map)
+int ElementToIndex(T elem, const DAVA::Array<U, sz> map)
 {
     for (size_t i = 0; i < map.size(); ++i)
     {

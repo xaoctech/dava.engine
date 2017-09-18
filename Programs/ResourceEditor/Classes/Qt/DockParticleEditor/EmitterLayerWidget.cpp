@@ -11,6 +11,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/Utils.h>
 #include <QtTools/FileDialogs/FileDialog.h>
 
 #include <QHBoxLayout>
@@ -1095,6 +1096,7 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 
 void EmitterLayerWidget::OnAddForce()
 {
+    using namespace DAVA;
     // TODO
     const Vector<std::pair<FastName, ParticleDragForceComponent*>>& forces = layer->GetForces();
     if (forces.empty())
@@ -1129,6 +1131,7 @@ void EmitterLayerWidget::OnRemoveForce()
 
 void EmitterLayerWidget::OnForceChanged(const QString& forceName)
 {
+    using namespace DAVA;
     QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
     DAVA::int32 forceIndex = comboBox->property("forceIndex").value<DAVA::int32>();
 
