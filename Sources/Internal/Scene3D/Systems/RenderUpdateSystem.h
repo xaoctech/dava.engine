@@ -3,7 +3,6 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
 #include "Entity/SceneSystem.h"
 
 namespace DAVA
