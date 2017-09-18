@@ -132,8 +132,11 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                               OnSettingsChanged(value);
                                                           });
 
+    gestureChecker.debugGestureMatch.DisconnectAll();
+
     gestureChecker.debugGestureMatch.Connect(this, [this]() {
         Logger::Debug("enable mini imgui for dlc profiling");
+        GetPrimaryWindow()->draw.Disconnect(this);
         GetPrimaryWindow()->draw.Connect(this, [this](Window*) {
             // TODO move it later to common ImGui setting system
             if (ImGui::IsInitialized())
