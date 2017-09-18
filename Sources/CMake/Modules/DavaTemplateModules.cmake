@@ -655,6 +655,16 @@ macro( setup_main_module )
 
             endif()
 
+            if( CREATE_NEW_MODULE )
+                file_tree_check( "${CMAKE_CURRENT_LIST_DIR}" )
+
+                if( TARGET_FILE_TREE_FOUND )
+                    add_dependencies(  ${NAME_MODULE} FILE_TREE_${NAME_MODULE} )
+                endif()
+
+            endif()
+
+
             if( DEFINITIONS_PRIVATE )
                 add_definitions( ${DEFINITIONS_PRIVATE} )
             endif()
