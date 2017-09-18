@@ -2,7 +2,7 @@
 
 #include "UI/Preview/Guides/IRulerListener.h"
 #include "UI/Preview/Guides/Guide.h"
-#include "UI/Preview/Data/CanvasDataAdapter.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 

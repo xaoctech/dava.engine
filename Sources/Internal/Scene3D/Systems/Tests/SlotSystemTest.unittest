@@ -11,8 +11,9 @@
 #include "FileSystem/FilePath.h"
 #include "Base/RefPtr.h"
 #include "Base/FastName.h"
+#include "Time/SystemTimer.h"
 
-DAVA_TESTCLASS (SlotSystemTests)
+DAVA_TESTCLASS (SlotSystemTest)
 {
     void ValidateParseResult(const DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item>& items)
     {
@@ -189,7 +190,7 @@ DAVA_TESTCLASS (SlotSystemTests)
         {
             testScene->Update(timeElapsed);
         }
-        testTime += timeElapsed;
+        testTime += DAVA::SystemTimer::GetRealFrameDelta();
 
         if (testName == "RemoveLoadedEntityTest")
         {

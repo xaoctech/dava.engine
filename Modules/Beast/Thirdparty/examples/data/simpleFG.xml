@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ILConfig>
+	<AASettings>
+		<maxSampleRate>2</maxSampleRate>
+		<minSampleRate>0</minSampleRate>
+	</AASettings>
+	<FrameSettings>
+		<cameraName>Camera</cameraName>
+		<imageFormat>TGA</imageFormat>
+	</FrameSettings>
+	<GISettings>
+		<enableGI>true</enableGI>
+		<fgRays>1000</fgRays>
+		<primaryIntegrator>FinalGather</primaryIntegrator>
+		<secondaryIntegrator>None</secondaryIntegrator>
+	</GISettings>
+	<RenderSettings>
+		<shadowDepth>10</shadowDepth>
+		<maxRayDepth>10</maxRayDepth>
+	</RenderSettings>
+</ILConfig>

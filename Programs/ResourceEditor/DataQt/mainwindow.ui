@@ -223,7 +223,6 @@
     <addaction name="separator"/>
     <addaction name="actionBuildStaticOcclusion"/>
     <addaction name="actionInvalidateStaticOcclusion"/>
-    <addaction name="actionBeastAndSave"/>
     <addaction name="VisibilityCheckSystem"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
@@ -1101,14 +1100,6 @@
    </property>
    <property name="toolTip">
     <string>Visibility Check Tool</string>
-   </property>
-  </action>
-  <action name="actionBeastAndSave">
-   <property name="text">
-    <string>Run Beast</string>
-   </property>
-   <property name="toolTip">
-    <string>Run Beast</string>
    </property>
   </action>
   <action name="actionAddActionComponent">

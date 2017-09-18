@@ -1,16 +1,15 @@
 #include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
-#include "Classes/Qt/GlobalOperations.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/REGlobal.h"
 
 #include <TArc/Utils/AssertGuard.h>
+#include <TArc/WindowSubSystem/UI.h>
 
-#include <Engine/PlatformApiQt.h>
 #include <Concurrency/LockGuard.h>
 #include <Debug/DVAssertDefaultHandlers.h>
 #include <Debug/MessageBox.h>
+#include <Engine/PlatformApiQt.h>
 #include <Utils/StringFormat.h>
-#include <Debug/DVAssertDefaultHandlers.h>
 
 namespace ErrorDialogDetail
 {
@@ -72,12 +71,13 @@ private:
     bool callstackPrinting = false;
 };
 
-ErrorDialogOutput::ErrorDialogOutput(const std::shared_ptr<GlobalOperations>& globalOperations_)
+ErrorDialogOutput::ErrorDialogOutput(DAVA::TArc::UI* ui)
     : ignoreHelper(new IgnoreHelper())
-    , globalOperations(globalOperations_)
     , isJobStarted(false)
     , enabled(true)
+    , tarcUI(ui)
 {
+    DVASSERT(tarcUI != nullptr);
     errors.reserve(ErrorDialogDetail::maxErrorsPerDialog);
 }
 
@@ -109,17 +109,17 @@ void ErrorDialogOutput::ShowErrorDialog()
 {
     DVASSERT(isJobStarted == true);
 
-    if (globalOperations->IsWaitDialogVisible())
+    if (tarcUI->HasActiveWaitDalogues())
     {
         DVASSERT(waitDialogConnectionToken.IsEmpty());
-        waitDialogConnectionToken = globalOperations->waitDialogClosed.Connect(this, &ErrorDialogOutput::ShowErrorDialog);
+        waitDialogConnectionToken = tarcUI->lastWaitDialogWasClosed.Connect(this, &ErrorDialogOutput::ShowErrorDialog);
         return;
     }
 
     { // disconnect from
         if (!waitDialogConnectionToken.IsEmpty())
         {
-            globalOperations->waitDialogClosed.Disconnect(waitDialogConnectionToken);
+            tarcUI->lastWaitDialogWasClosed.Disconnect(waitDialogConnectionToken);
             waitDialogConnectionToken.Clear();
         }
         isJobStarted = false;
