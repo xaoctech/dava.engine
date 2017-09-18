@@ -249,8 +249,7 @@ template <class T>
 QMenu* GetOrCreateSubmenu(T* placeholder, const QString& submenuName)
 {
     static_assert(std::is_base_of<QWidget, T>::value, "should be derived from QWidget");
-    QWidget* widget = qobject_cast<QWidget*>(placeholder);
-    QMenu* submenu = widget->findChild<QMenu*>(submenuName, Qt::FindDirectChildrenOnly);
+    QMenu* submenu = placeholder->template findChild<QMenu*>(submenuName, Qt::FindDirectChildrenOnly);
     if (submenu == nullptr)
     {
         QAction* action = FindAction(placeholder, submenuName);
