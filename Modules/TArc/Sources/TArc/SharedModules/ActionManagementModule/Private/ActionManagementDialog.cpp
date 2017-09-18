@@ -277,9 +277,15 @@ void ActionManagementDialog::AddKeyBindingsScheme()
     dlg.setObjectName("newSchemeNameDlg");
     dlg.setInputMode(QInputDialog::TextInput);
     QObject::connect(&dlg, &QInputDialog::textValueChanged, [&dlg](const QString& text) {
+        DAVA::Array<QChar, 15> forbiddenSymbols = {
+            '/', '\\', '.', ':', ';', '*', '?', '\"', '<', '>', '|', '{', '}', '[', ']'
+        };
+
         QString replacedText = text;
-        replacedText.replace("/", "");
-        replacedText.replace("\\", "");
+        for (const QChar& symbol : forbiddenSymbols)
+        {
+            replacedText.replace(QString(symbol), "");
+        }
         if (replacedText != text)
         {
             dlg.setTextValue(replacedText);
@@ -343,7 +349,7 @@ void ActionManagementDialog::ImportKeyBindingsScheme()
 void ActionManagementDialog::ExportKeyBindingsScheme()
 {
     FileDialogParams params;
-    params.title = "Import key bindings scheme";
+    params.title = "Export key bindings scheme";
     params.filters = "Key binding scheme (*.kbs)";
     QString fileName = ui->GetSaveFileName(mainWindowKey, params);
     if (fileName.isEmpty() == true)

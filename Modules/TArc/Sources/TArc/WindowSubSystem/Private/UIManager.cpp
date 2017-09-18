@@ -1223,10 +1223,10 @@ void UIManager::RegisterAction(QAction* action)
             bindableAction->blockName = info.blockName;
             bindableAction->context = info.context;
             bindableAction->sequences = info.defaultShortcuts;
-            bindableAction->isReadOnly = info.readOnly;
         }
 
         bindableAction->action = action;
+        bindableAction->isReadOnly = info.readOnly;
         bindableAction->defaultContext = info.context;
         bindableAction->defaultSequences = info.defaultShortcuts;
         action->setShortcutContext(bindableAction->context);
