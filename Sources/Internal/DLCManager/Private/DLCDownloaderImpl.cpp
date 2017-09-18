@@ -5,6 +5,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Concurrency/LockGuard.h"
 #include "Engine/Engine.h"
+#include "Debug/ProfilerCPU.h"
 
 namespace DAVA
 {
@@ -57,7 +58,7 @@ public:
 
     explicit BufferWriter(int64 size)
     {
-        if (size > 0)
+        if (size >= 0)
         {
             buf = new char[static_cast<uint32>(size)];
             current = buf;
@@ -133,9 +134,9 @@ private:
     char* end = nullptr;
 };
 
-DLCDownloader* DLCDownloader::Create()
+DLCDownloader* DLCDownloader::Create(const Hints& hints_)
 {
-    return new DLCDownloaderImpl();
+    return new DLCDownloaderImpl(hints_);
 }
 
 void DLCDownloader::Destroy(DLCDownloader* downloader)
@@ -256,7 +257,7 @@ struct DownloadChunkSubTask : IDownloaderSubTask
         , size(size_)
         , chunkBuf(size_)
     {
-        if (offset >= 0 && size <= 0)
+        if (offset >= 0 && size < 0) // size can be zero for empty file request
         {
             DVASSERT(false);
             Logger::Error("incorrect offset or size");
@@ -350,7 +351,11 @@ struct DownloadChunkSubTask : IDownloaderSubTask
     {
         if (curlMsg->data.result != CURLE_OK)
         {
-            if (curlMsg->data.result == CURLE_PARTIAL_FILE && task.status.sizeDownloaded == task.info.rangeSize)
+            if (curlMsg->data.result == CURLE_WRITE_ERROR && task.status.sizeDownloaded == task.info.rangeSize && task.status.sizeDownloaded == 0)
+            {
+                // all good
+            }
+            else if (curlMsg->data.result == CURLE_PARTIAL_FILE && task.status.sizeDownloaded == task.info.rangeSize)
             {
                 // all good
             }
@@ -765,6 +770,10 @@ DLCDownloader::TaskStatus& DLCDownloader::TaskStatus::operator=(const TaskStatus
 
 void DLCDownloaderImpl::Initialize()
 {
+    if (hints.profiler == nullptr)
+    {
+        hints.profiler = &unusedProfiler;
+    }
     Context::CurlGlobalInit();
 
     multiHandle = curl_multi_init();
@@ -809,7 +818,8 @@ void DLCDownloaderImpl::Deinitialize()
     Context::CurlGlobalDeinit();
 }
 
-DLCDownloaderImpl::DLCDownloaderImpl()
+DLCDownloaderImpl::DLCDownloaderImpl(const Hints& hints_)
+    : hints(hints_)
 {
     Initialize();
 }
@@ -825,6 +835,8 @@ DLCDownloader::Task* DLCDownloaderImpl::StartAnyTask(const String& srcUrl,
                                                      std::shared_ptr<IWriter> dstWriter = std::shared_ptr<IWriter>(),
                                                      Range range)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (srcUrl.empty())
     {
         return nullptr;
@@ -897,6 +909,7 @@ DLCDownloader::Task* DLCDownloaderImpl::ResumeTask(const String& srcUrl, std::sh
 
 void DLCDownloaderImpl::RemoveTask(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     DVASSERT(task);
     if (task != nullptr)
     {
@@ -908,6 +921,7 @@ void DLCDownloaderImpl::RemoveTask(Task* task)
 
 void DLCDownloaderImpl::WaitTask(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     if (task != nullptr && task->status.state != TaskState::Finished)
     {
         Semaphore semaphore;
@@ -928,6 +942,7 @@ void DLCDownloaderImpl::WaitTask(Task* task)
 
 const DLCDownloader::TaskInfo& DLCDownloaderImpl::GetTaskInfo(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     if (task == nullptr)
     {
         DAVA_THROW(Exception, "task is nullptr");
@@ -937,6 +952,7 @@ const DLCDownloader::TaskInfo& DLCDownloaderImpl::GetTaskInfo(Task* task)
 
 const DLCDownloader::TaskStatus& DLCDownloaderImpl::GetTaskStatus(Task* task)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
     if (task == nullptr)
     {
         DAVA_THROW(Exception, "task is nullptr");
@@ -1216,9 +1232,17 @@ void DLCDownloader::Task::SetupFullDownload()
         // we already know size to download
         restOffset = info.rangeOffset;
         restSize = info.rangeSize;
-        const int chunkSize = curlStorage.GetChunkSize();
-
-        GenerateChunkSubRequests(chunkSize);
+        if (restSize == 0)
+        {
+            // generate empty request
+            IDownloaderSubTask* subTask = new DownloadChunkSubTask(*this, restOffset, restSize);
+            subTasksWorking.push_back(subTask);
+        }
+        else
+        {
+            const int chunkSize = curlStorage.GetChunkSize();
+            GenerateChunkSubRequests(chunkSize);
+        }
     }
     else
     {
@@ -1298,6 +1322,8 @@ void DLCDownloader::Task::SetupGetSizeDownload()
 
 bool DLCDownloaderImpl::TakeNewTaskFromInputList()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     Task* task = AddOneMoreTask();
 
     if (task != nullptr)
@@ -1311,6 +1337,8 @@ bool DLCDownloaderImpl::TakeNewTaskFromInputList()
 
 void DLCDownloaderImpl::SignalOnFinishedWaitingTasks()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     if (!waitingTaskList.empty())
     {
         LockGuard<Mutex> lock(mutexWaitingList);
@@ -1350,6 +1378,8 @@ void DLCDownloaderImpl::AddNewTasks()
 
 void DLCDownloaderImpl::ConsumeSubTask(CURLMsg* curlMsg, CURL* easyHandle)
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     IDownloaderSubTask& subTask = FindInMap(easyHandle);
     Task& task = subTask.GetTask();
 
@@ -1380,6 +1410,8 @@ void DLCDownloaderImpl::ConsumeSubTask(CURLMsg* curlMsg, CURL* easyHandle)
 
 void DLCDownloaderImpl::ProcessMessagesFromMulti()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     CURLMsg* curlMsg = nullptr;
 
     do
@@ -1502,6 +1534,7 @@ void DLCDownloaderImpl::Task::OnErrorCurlErrno(int32 errnoVal, Task& task, int32
 
 void DLCDownloaderImpl::Task::OnErrorHttpCode(long httpCode, Task& task, int32 line)
 {
+    // always set http error code
     task.status.error.errorHappened = true;
     task.status.error.httpCode = static_cast<int32>(httpCode);
     // if other thread call strerror and change internal buffer - it will not crush still,
@@ -1524,6 +1557,8 @@ void DLCDownloaderImpl::Task::OnErrorHttpCode(long httpCode, Task& task, int32 l
 
 void DLCDownloaderImpl::DownloadThreadFunc()
 {
+    DVASSERT(hints.profiler != nullptr);
+
     try
     {
         Thread* currentThread = Thread::Current();
@@ -1537,6 +1572,7 @@ void DLCDownloaderImpl::DownloadThreadFunc()
         {
             if (!downloading)
             {
+                DAVA_PROFILER_CPU_SCOPE_CUSTOM("DownloadThreadFunc_Waiting", hints.profiler);
                 downloadSem.Wait();
                 downloading = true;
             }
@@ -1586,6 +1622,8 @@ void DLCDownloaderImpl::DownloadThreadFunc()
 
 int DLCDownloaderImpl::CurlPerform()
 {
+    DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, hints.profiler);
+
     int stillRunning = 0;
 
     // from https://curl.haxx.se/libcurl/c/curl_multi_perform.html
