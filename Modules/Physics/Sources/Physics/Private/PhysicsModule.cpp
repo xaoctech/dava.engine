@@ -178,7 +178,7 @@ PhysicsModule::PhysicsModule(Engine* engine)
     shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
 
-    vehicleComponents.reserve(3);
+    vehicleComponents.reserve(4);
     vehicleComponents.push_back(Component::VEHICLE_CAR_COMPONENT);
     vehicleComponents.push_back(Component::VEHICLE_TANK_COMPONENT);
     vehicleComponents.push_back(Component::VEHICLE_CHASSIS_COMPONENT);
