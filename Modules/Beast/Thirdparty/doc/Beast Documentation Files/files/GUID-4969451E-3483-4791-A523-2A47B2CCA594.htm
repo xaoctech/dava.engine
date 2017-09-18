@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-4969451E-3483-4791-A523-2A47B2CCA594" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-EA20965A-23B7-45B1-B71F-E585C0806CA1" />
+      <title>Path Tracer Settings</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-4969451E-3483-4791-A523-2A47B2CCA594.htm',                           'd30e15870','index.html',location.hash);                           javascript:initPage('Path Tracer Settings','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-4969451E-3483-4791-A523-2A47B2CCA594.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-4969451E-3483-4791-A523-2A47B2CCA594.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject= Path Tracer Settings&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Final Gather Settings</div><a href="GUID-82757E4A-4070-4B3B-B1FF-2F851B73C5B8.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">GISettings</div><a href="GUID-EA20965A-23B7-45B1-B71F-E585C0806CA1.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">TextureBakeSettings</div><a href="GUID-462362BF-31D3-4F3E-9AFC-31800BA75CB2.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-F64DB7DB-534D-4B24-8556-FE2AF7F6B1CD.htm"> XML Reference</a>&nbsp;&gt;&nbsp;<a href="GUID-EA20965A-23B7-45B1-B71F-E585C0806CA1.htm"> GISettings</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-5730AAD4-8BEB-4AEB-9E26-E33B57239221"></a></span><h1> Path Tracer Settings</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-4969451E-3483-4791-A523-2A47B2CCA594"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-5FBF6005-65B9-48A6-B06A-4D08EC73CDC0"></a></span>The Path Tracer algorithm calculates indirect lighting by tracing a large number of rays from the camera or light map into
+            the scene. These rays are bounced and traced further into the scene, depending on the properties of the surfaces they hit.
+            Surfaces with a high diffuse reflectance will have a higher probability to continue the ray paths, giving more color bleeding
+            to other surfaces. The path is only terminated when the probability for absorption is high enough. This is called an unbiased
+            solution, since all possible light paths are considered, and the paths are not truncated to a maximum depth. 
+         </p>
+         <div><span class="anchor_wrapper"><a name="GUID-F2B299FD-85BF-4614-81DF-247672A76851"></a></span><div class="note-note"><span class="label">Note</span>The settings in this group are only used when rendering scenes with "classic" materials. They are not used at all for physically
+               based rendering. 
+            </div>
+         </div>
+         <p><span class="anchor_wrapper"><a name="GUID-29E26CDF-242A-4CBF-AA64-630C14879A72"></a></span>Illumination from the ray bounces are stored at selected points in the scene, resulting in a set of cache points. A parameter,
+            <span class="code" translate="no">&lt;ptPointSize&gt;</span>, is used to set the distance between the cached points. A smaller distance will generate more cache points, and enable better
+            capturing of details, but also higher memory usage and longer rendering time. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-D08944A0-0D19-4385-98A2-F9B20E5E65EE"></a></span>Once the pre-render pass completes, the path tracer cache holds an approximation of the indirect light. The quality of the
+            solution depends on the number of paths used and the density of the cache. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-086C316D-A59A-428D-BADC-E321A55CC987"></a></span>The Path Tracer produces relatively noisy results, so it is typically not suitable for use as the primary GI integrator. However,
+            since it is relatively fast, you might want to use it as the primary integrator when testing things like texture bake settings.
+            To get a good balance between good quality and fast results, use the Path Tracer as the secondary integrator with final gather
+            as the primary integrator. In this case, the settings can be set quite low and still produce good quality. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-B18DDF25-3A7F-474C-B070-81262056AC08"></a></span>The following block lists all settings available, with their default values. Descriptions of the settings are below. 
+         </p>
+         <div class="codeBlock"><pre class="prettyprint">&lt;GISettings&gt;
+    &lt;ptAccuracy&gt;1&lt;/ptAccuracy&gt;
+    &lt;ptPointSize&gt;0&lt;/ptPointSize&gt;
+    &lt;ptPrecalcIrradiance&gt;true&lt;/ptPrecalcIrradiance&gt;
+    &lt;ptNormalThreshold&gt;0.707&lt;/ptNormalThreshold&gt;
+    &lt;ptFilterType&gt;box&lt;/ptFilterType&gt;
+    &lt;ptFilterSize&gt;3&lt;/ptFilterSize&gt;
+    &lt;ptPreview&gt;true&lt;/ptPreview&gt;
+    &lt;ptCacheDirectLight&gt;true&lt;/ptCacheDirectLight&gt;
+    &lt;ptCheckVisibility&gt;false&lt;/ptCheckVisibility&gt;
+    &lt;ptDefaultColor&gt;
+        &lt;r&gt;0&lt;/r&gt;
+        &lt;g&gt;0&lt;/g&gt;
+        &lt;b&gt;0&lt;/b&gt;
+    &lt;/ptDefaultColor&gt;
+    &lt;ptDepth&gt;5&lt;/ptDepth&gt;
+    &lt;ptDiffuseIllum&gt;true&lt;/ptDiffuseIllum&gt;
+    &lt;ptSpecularIllum&gt;true&lt;/ptSpecularIllum&gt;
+    &lt;ptTransmissiveIllum&gt;true&lt;/ptTransmissiveIllum&gt;
+    &lt;ptConservativeEnergyLimit&gt;0.95&lt;/ptConservativeEnergyLimit&gt;
+ &lt;/GISettings&gt;</pre></div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_25682BCA8D7A4C95BFDC504DCB46809B"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15893"></a><span class="anchor_wrapper"><a name="GUID-9992DB79-0DC6-4930-AA36-DBF4A210C810"></a></span>ptAccuracy
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-D5C0B2F5-3944-4894-84AC-93ABF8BF6C09"></a></span>Sets the number of paths that are traced for each sample element (pixel, texel or vertex). 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-198C82F4-69E7-4760-BD6C-0859003CE334"></a></span>For lower-quality preview renderings, you can use a low value like <span class="code" translate="no">0.5</span> or <span class="code" translate="no">0.1</span>, which means that paths will be generated from only half of the pixels or 1/10 of the pixels respectively. For higher-quality
+               production renderings, you can use <span class="code" translate="no">1.0</span>, or higher values if needed. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_49A1E0BBFC89407382C0D86618A097B9"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15913"></a><span class="anchor_wrapper"><a name="GUID-44E5983B-54B4-4E6D-A869-9ACC7500E15A"></a></span>ptPointSize
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-0C1EC6B4-9ABA-4621-89CE-F31FC8939F6B"></a></span>Sets the maximum distance between the points in the path tracer cache. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-AE417BAC-54EA-40A7-B33C-4107DBDE2082"></a></span>If set to <span class="code" translate="no">0</span>, a value will be calculated internally based on the size of the scene. This generated value is printed out during rendering.
+               If you need to make adjustments to the point spacing, you can use this generated value as a good starting point. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_855B27DA82B64C4D8B1D47C3423B3971"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15927"></a><span class="anchor_wrapper"><a name="GUID-67172409-A3FA-45D1-8F95-93E963781FEA"></a></span>ptPrecalcIrradiance
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-ABF15F09-7E15-411F-9041-627F8ABC8620"></a></span> If enabled, the cache points will be pre-filtered before the final pass starts. This increases the performance of the final
+               render pass. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_B0CD7A706FD14790819CB64944AA9806"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15935"></a><span class="anchor_wrapper"><a name="GUID-F5742442-1C84-4F2F-9EFF-ED1C5BA2F2A1"></a></span>ptNormalThreshold
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-5EE519DA-3F90-4501-A92E-D316D28075C5"></a></span>Sets the amount of normal deviation that is allowed when filtering cache points. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_019A696712CD4184B64BD60E6F0D8560"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15944"></a><span class="anchor_wrapper"><a name="GUID-D5F9D3F4-1FA6-4639-AB7E-0998E97F3260"></a></span>ptFilterType
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-036F4323-41E3-4DDD-877A-91BBD2812AAA"></a></span>Selects the filter to use when querying the cache during rendering. Accepts the following values: 
+            </p> <span class="anchor_wrapper"><a name="UL_0FE04BCC6E774C558B9633D4B74B7561"></a></span><ul>
+               <li><span class="code" translate="no">none</span>: returns the closest cache point (unfiltered). 
+               </li>
+               <li> <span class="code" translate="no">box</span> 
+               </li>
+               <li> <span class="code" translate="no">gauss</span> 
+               </li>
+               <li> <span class="code" translate="no">triangle</span> 
+               </li>
+            </ul> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3981DA9FEFB149E0AA6EA8A2077C94CC"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15973"></a><span class="anchor_wrapper"><a name="GUID-F236DFF3-6C20-4B20-A309-F24135A237CB"></a></span>ptFilterSize
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-7A185BB7-657B-40F3-AB8E-A50DBF936FE8"></a></span>Sets the size of the filter as a multiplier of the cache point spacing value. For example; a value of <span class="code" translate="no">3.0</span> will use a filter whose width and height are three times as large as the cache point spacing. If this value is below <span class="code" translate="no">1.0</span>, there is no guarantee that any cache point will be found. If no cache point is found, the default color will be returned
+               instead for that query. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E5B1FC755F254D51A7EB59B3CF220557"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15987"></a><span class="anchor_wrapper"><a name="GUID-8C6E2F84-4702-4404-8C7F-863E53F86724"></a></span>ptPreview
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-131F74DC-C1CF-4730-8AC9-4078627A5757"></a></span> If enabled the pre-render pass will be visible in the render view. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_79173CEE99CC494F88486A09EABAD182"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e15995"></a><span class="anchor_wrapper"><a name="GUID-267456D5-5CDA-42A6-B020-49FC4A5A2DFF"></a></span>ptCacheDirectLight
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-B1609A7F-6132-4BB6-A4F5-3E510A700908"></a></span>When enabled, the path tracer will also cache lighting from light sources. This increases performance, since fewer direct
+               light calculations are needed. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-FAD05EA5-165F-45BE-9E2A-077F6D3A3B7D"></a></span>This caching gives an approximate result, and hence can affect the quality of the lighting. For instance, indirect light bounces
+               from specular highlights might be lost. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_CED2F71D40BF411898432F961C07A4B3"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16006"></a><span class="anchor_wrapper"><a name="GUID-0B7F7DA8-1700-4A57-B741-BF71B21BD61C"></a></span>ptCheckVisibility
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-52117B41-2D16-429D-8A07-E77631DF0555"></a></span>Enable this setting to reduce light leakage through walls. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-779528DD-9CAC-4B79-A538-E901452D1B22"></a></span>When adjacent points are collected to interpolate between, some of these points can be located on the other side of geometry.
+               As a result light will bleed through the geometry. To prevent this, <span class="charspan-msgph" translate="no">Beast</span> can reject points that are not visible from each other. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-90AA5689-EB67-4D31-9B5F-35A58FE6801D"></a></span>If you enable this setting, you should also ensure that light leakage checking is disabled for your final gather. See the
+               <span class="code" translate="no">&lt;fgLightLeakReduction&gt;</span> setting under <span class="char_link"><a href="GUID-82757E4A-4070-4B3B-B1FF-2F851B73C5B8.htm"> Final Gather Settings</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_EC74565EE9B648309A2113363D927025"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16029"></a><span class="anchor_wrapper"><a name="GUID-FB374DF2-9CE2-4D94-AE19-0EBDE3EF6DA5"></a></span>ptDefaultColor
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-E45A128D-3D04-4F9F-9FC7-65EF37587605"></a></span>Specifies the color that will be assigned to any areas that have not been reached by any path tracer rays. You can set this
+               to an easily distinguishable color in order to find areas of your scene that are not reached by any light. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_CC7A23B01A4144309733578D384BA93C"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16037"></a><span class="anchor_wrapper"><a name="GUID-DD2FCF50-5D4D-4C65-9BBA-6392C56786AF"></a></span>ptDepth
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-269216C7-5F12-43C2-8C8D-4B90CEF2E87B"></a></span>The average number of light bounces to use in the path tracing. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_831B2E1E985A4B129FFEA0A8818EF1AB"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16045"></a><span class="anchor_wrapper"><a name="GUID-05519A13-1FDC-4F76-85FE-B9D0E2D8D1AB"></a></span>ptDiffuseIllum
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-FD27E526-1FF3-4B42-A3BC-B8C2EAC97841"></a></span>Enables or disables diffuse bounces in the scene. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_A2653EDEB6AA4DC8858FD7A3B6222B66"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16053"></a><span class="anchor_wrapper"><a name="GUID-41BF9117-58E6-471B-ACC6-DDB25983F8C4"></a></span>ptSpecularIllum
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-8AD226FF-B5D5-447C-9322-64A878436B12"></a></span>Enables or disables specular bounces in the scene. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_C0CD25143B6D41508632FB575A76ACD6"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16061"></a><span class="anchor_wrapper"><a name="GUID-AF00043F-3064-48A4-AF3B-069D7E4AD93A"></a></span>ptTransmissiveIllum
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-B9A84A1E-D72C-4D1B-AED4-8127C813E809"></a></span>Enables or disables transmissive bounces in the scene. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_BC0BB9B08A8C40FF9972210186CAE120"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e16069"></a><span class="anchor_wrapper"><a name="GUID-3116DA42-D90C-4F54-9161-7F7FCD3E83FA"></a></span>ptConservativeEnergyLimit
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-74F666B2-13BB-4145-82D3-CDDDC4C23FCE"></a></span>Determines the amount of energy that may be transmitted in a shading point, not including the emissive contribution. Accepts
+               values from <span class="code" translate="no">0.01</span> to <span class="code" translate="no">1.0</span> inclusive. The default value of <span class="code" translate="no">0.95</span> should suffice for most projects. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>
