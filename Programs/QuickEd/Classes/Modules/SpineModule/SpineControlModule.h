@@ -5,7 +5,7 @@
 #include <Base/BaseTypes.h>
 #include <Reflection/Reflection.h>
 
-#include <QIcon>
+class QIcon;
 
 namespace DAVA
 {

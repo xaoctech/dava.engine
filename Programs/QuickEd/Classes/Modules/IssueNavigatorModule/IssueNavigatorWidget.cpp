@@ -117,7 +117,6 @@ int IssueNavigatorWidget::GetIssueRow(const DAVA::int32 issueId_, const DAVA::in
         if (issueId_ == issueId && sectionId_ == sectionId)
         {
             return row;
-            break;
         }
     }
     return -1;

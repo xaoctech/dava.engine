@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-BD12A007-6E92-4610-B6A1-B042AC7F226B" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-1A6B5739-AA7F-4155-966A-54C81585442F" />
+      <title>Getting Started with the Maya plug-in</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-BD12A007-6E92-4610-B6A1-B042AC7F226B.htm',                           'd30e5136','index.html',location.hash);                           javascript:initPage('Getting Started with the Maya plug-in','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-BD12A007-6E92-4610-B6A1-B042AC7F226B.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-BD12A007-6E92-4610-B6A1-B042AC7F226B.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Getting Started with the Maya plug-in&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Installing the Maya plug-in</div><a href="GUID-DF24253E-BB0E-4B7F-89A0-51FD0B49EFFC.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Maya plug-in</div><a href="GUID-1A6B5739-AA7F-4155-966A-54C81585442F.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Technical Breakdown of the Maya plug-in</div><a href="GUID-A3F1C9A6-45B7-47AF-B2AD-D72B5A1686FE.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-1A6B5739-AA7F-4155-966A-54C81585442F.htm"> Maya plug-in</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-0548360A-46FB-4A3C-A7B9-E84E3B267B4E"></a></span><h1>Getting Started with the Maya plug-in</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-BD12A007-6E92-4610-B6A1-B042AC7F226B"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-B7140AA7-5A8C-4097-B0F1-CD1C329E7399"></a></span> This section demonstrates how you can use Beast with Maya. The baking workflow, when using Beast for Maya, is designed with
+            building game levels in mind. This approach lets you set up a level for "quick" baking, then add finer control where required
+            rather than manually tweaking each object. For clarity, we have used a relatively small scene in this example. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-6E6BC589-24F5-426E-B283-B8FBCFCE1372"></a></span> <img src="../images/GUID-41D176C3-1DC3-4D77-9C6F-BB6A0373873E-low.png" /> 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_1857E1A2226D44D188F6DD3ED03C75C9"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5148"></a><span class="anchor_wrapper"><a name="GUID-AE187397-18D2-41EB-BEF5-9BAC01BA0D16"></a></span>Open an Interactive Scene
+            </h2> 
+         </div>
+         <!--OList--><span class="anchor_wrapper"><a name="OL_0F24BA7CF9AF4E97B09626C4FFAD79A7"></a></span><ol start="1">
+            <li>Start an interactive Beast render in the viewport. Choose <span class="MenuCascade" id="GUID-A445C917-37B6-4E66-B3A6-8C4027538A5B">Beast <img src="../images/ac.menuaro.gif" /> Start Live Render</span>, then choose <span class="MenuCascade" id="GUID-E346EB69-723F-46D1-8A71-C87A66EC9E7D">Renderer <img src="../images/ac.menuaro.gif" /> Beast Renderer</span>. 
+               <p><span class="anchor_wrapper"><a name="GUID-CBB7BC3F-F160-4843-AD7B-AE98EEE4A8C5"></a></span> <img src="../images/GUID-15A4812B-6A48-4CCA-9E1D-984A86701FDD-low.png" /> <img src="../images/GUID-76730425-EDB3-4FEC-9834-39B16CC34882-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-B6F1D55D-72FE-4C54-8D9F-2AD796A614FE"></a></span>Opening a scene in this interactive viewport gives you a live preview of any changes—such as adding or moving lights, moving
+                  or editing geometry, etc. Changes are progressively rendered for a quick preview when making changes or moving the camera,
+                  but present a higher quality render when no changes are being made or the camera is static. If you have a DistriBeast cluster
+                  running, it will be used to render the scene in the viewport. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-AE60F535-948F-448A-8B7E-E618A7FFD59A"></a></span> <img src="../images/GUID-BFB04DC7-6B73-4528-B5F5-08037ED576BF-low.png" /> 
+               </p> 
+            </li>
+            <li>To improve visibility of objects in the viewport, choose <span class="MenuCascade" id="GUID-E1E3169C-2C20-4A99-AAB9-A10F4830BA44">Shading <img src="../images/ac.menuaro.gif" /> Wireframe</span> to add a wireframe overlay to the scene. 
+               <p><span class="anchor_wrapper"><a name="GUID-2CEFD46E-FA11-49C7-8734-07D9BCFE76A7"></a></span> <img src="../images/GUID-60BE4615-6572-4E48-9BDF-EC6B139C4889-low.png" /> 
+               </p> 
+            </li>
+            <li>Choose <span class="MenuCascade" id="GUID-6CBA2578-59A6-40C2-8864-C5AFA96F9CEB">Shading <img src="../images/ac.menuaro.gif" /> Smooth Shade All</span> to return to the render without the wire frame, and <span class="MenuCascade" id="GUID-D852C981-041F-4837-9B8C-8D0A98EE0CA9">Beast <img src="../images/ac.menuaro.gif" /> Stop Live</span> to pause the live rendering. 
+            </li>
+         </ol>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_DE950EFE74884BBC854D8160EF411BB8"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5210"></a><span class="anchor_wrapper"><a name="GUID-00259075-E9E2-4B10-9D0A-88819CC9EE14"></a></span>Bake the Scene
+            </h2> 
+         </div>
+         <p><span class="anchor_wrapper"><a name="GUID-DAF7C01C-B70F-4702-9A7C-91107E748075"></a></span>Before baking the scene, Maya instances need to be added to the default Beast bake targets. These bake targets are logical
+            groupings of objects sharing bake settings—such as pass and bake type. 
+         </p>
+         <ol start="4">
+            <li>Drag Maya instances, groups, or sets to a Beast target, or add them using <span class="MenuCascade" id="GUID-B7AC253C-FC6E-4DEB-BAB2-8C36CA29CEA8">Beast <img src="../images/ac.menuaro.gif" /> Add To Target</span>. 
+               <p><span class="anchor_wrapper"><a name="GUID-59C2650B-4E57-4670-9EEC-D8BCBC0046F6"></a></span> <img src="../images/GUID-EC9CEED5-94CA-4B20-9ED1-1BFDF3A04103-low.png" /> 
+               </p> 
+            </li>
+            <li>Choose <span class="MenuCascade" id="GUID-C3D88515-8249-4041-B4C3-45742C4B8458">Beast <img src="../images/ac.menuaro.gif" /> Start Live Bake</span> to from the viewport renderer to the Beast Renderer to display the baking rather than the camera rendering. 
+               <p><span class="anchor_wrapper"><a name="GUID-AB5FE26B-4568-4BC9-8CE9-F0FA38B8E3A8"></a></span> <img src="../images/GUID-2693F81A-04EC-4643-AA0F-C178EAAEE494-low.png" /> <img src="../images/GUID-76730425-EDB3-4FEC-9834-39B16CC34882-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-A021C8B5-3EBA-4DD2-84E9-FDA370707E2E"></a></span>The result will appear quite similar to the viewport rendering, but in this view the display is Beast baking the lightmaps
+                  for the objects. In this view, you can rotate the scene without causing the render to become invalidated; it will automatically
+                  fill in any gaps in the baked lightmaps. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-EC641808-9843-44AE-8519-893016C421E9"></a></span> <img src="../images/GUID-7AA5483B-A285-42EC-8BB8-10381C5A8620-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-ECB4F87B-A808-4040-B66F-F35E1C4B98A3"></a></span>At this point, the scene appears somewhat blurry because the texture resolution has not yet been adjusted. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-EF260D65-1D7B-4F66-BE05-1E89947038D5"></a></span>By default, a scene is assigned approximately one lightmap texel per world unit (active Maya working units). The scene in
+                  this example is 24 cm wide, and the plane was assigned a texture resolution of 24 x 24. 
+               </p> 
+            </li>
+            <li> To display the assigned texture resolution, select the Maya instance, and choose the beastInstance in the Attribute Editor.
+               
+               <p><span class="anchor_wrapper"><a name="GUID-9319F5F8-1806-405A-98B4-049D29F44C30"></a></span> <img src="../images/GUID-788D68A1-6929-4813-A8C3-F5F503C09C41-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-8B544765-55E4-494C-814F-1D3FC7C49533"></a></span>When a Maya instance is added to a Beast target, a Beast intance node is automatically connected. This node contains bake
+                  settings specific to the Maya instance. While you can adjust (increase) the Texel Scale for a larger texture resolution, for
+                  an instance, it is more efficient to make the adjustment for the whole level. 
+               </p> 
+            </li>
+            <li>To adjust the resolution for the whole level, choose <span class="MenuCascade" id="GUID-80854F76-3127-4999-9590-2CFDD0914115">Beast <img src="../images/ac.menuaro.gif" /> Settings</span>. 
+               <p><span class="anchor_wrapper"><a name="GUID-D6B803C6-9895-4A15-AB76-1FECE9B06A88"></a></span> <img src="../images/GUID-16B527C4-3400-4130-A8D5-0D67D8F3AB18-low.png" /> 
+               </p> 
+            </li>
+            <li>Increase the <em class="strong">Global Texel Scale</em> to 10.0. Reselect the plane in the viewport to see the updated resolution. 
+               <p><span class="anchor_wrapper"><a name="GUID-667E7238-8A54-46CC-9C18-20FA7C4C53DB"></a></span> <img src="../images/GUID-FA969C71-C52C-4D6A-A229-2C44A0062598-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-3BF65489-D99F-40AC-807A-B7FAF3847535"></a></span> 
+                  <div><span class="anchor_wrapper"><a name="GUID-746F443B-85FC-4B1E-ABE4-9BE06110C06D"></a></span><div class="note-note"><span class="label">Note</span>It is important to have non-overlapping UV-sets when baking lightmaps. In this sample scene, all objects have correct UV-maps
+                        because they are simple primitives. 
+                     </div>
+                  </div> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-AAC54FF4-30A4-412F-AA7B-8049C2CFB09A"></a></span>Interactive baking supports UV-mapping for an object without stopping the bake. To change UV-mapping, open the UV texture
+                  editor and edit the map. Beast will automatically adjust for changes to the UV-mapand re-bake the object to apply your changes.
+                  
+               </p> 
+            </li>
+         </ol>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_219B91FD85DD4205883F05B2F4F7C981"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5302"></a><span class="anchor_wrapper"><a name="GUID-DF0BCBCC-5A31-4A0D-B3D3-A2599C2305BA"></a></span>Additional Beast Nodes
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_45C9EA9CBF16479AAAC4D4554FBB670B"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5307"></a><span class="anchor_wrapper"><a name="GUID-CFCEBD36-6B51-49FD-B4C4-3A87BAEAD469"></a></span>Beast Entity Nodes
+               </h3> 
+            </div> 
+            <p><span class="anchor_wrapper"><a name="GUID-F58F0861-4BFF-4248-936A-D24732F43CC4"></a></span>For each Beast target a Maya instance is added to, a Beast entity node is created. These nodes can be used to override the
+               bake settings for a target in a Maya instance, and they are used to store relevant information for the final baked result.
+               
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-5F2CA12A-A60C-4BBA-B3D7-6DE5531AF9D3"></a></span> <img src="../images/GUID-B9015616-AEF4-44AC-B1C4-45AAB888E7A6-low.png" /> 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_28B48A966A2447AAB9CF2977E203FE92"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5321"></a><span class="anchor_wrapper"><a name="GUID-1B2D0A7F-EBC8-404F-8900-DA2A94B83D50"></a></span>Beast Targets
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-16A431D1-F4BD-4093-B5EA-117689681296"></a></span>Beast targets, best located in the Outliner, can be texture or vertex type. These targets contain settings for the Bake UV
+                  set, and they are used to determine if members of the target should be baked together into a texture atlas. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-F3A188D7-AA9C-4ABA-A863-D3875FB15DEA"></a></span> <img src="../images/GUID-4B8D05E0-9C7E-4C3D-8DCD-645E94BC3072-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-726BAE57-C09C-4313-97C0-0BC72FADB09D"></a></span> 
+                  <div><span class="anchor_wrapper"><a name="GUID-4C3BA0B2-5597-440E-BAC1-DEA1B02D719F"></a></span><div class="note-note"><span class="label">Note</span>A Maya instance can be included in many Beast targets, but will require additional effort to make use of the baked data in
+                        this complex setup. 
+                     </div>
+                  </div> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_E90DA9136D454B97826C9B8A65889144"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5342"></a><span class="anchor_wrapper"><a name="GUID-D59021A7-173F-43FE-9555-F190E70DAA02"></a></span>BeastOSL
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-24C683DB-0E42-4F7C-974F-47FACBB44B9F"></a></span>The <em class="mild">BeastOSL</em> node is a new shader type that should be used instead of the standard Maya shaders such as Lambert, Blinn, Phong, Phong E,
+                  anisotropic, etc. The OSL shader decides what BSDF function(s) to use; you can then plug standard Maya networks into that
+                  shader. These are sampled as usual using the sample resolution that you specify in the beastSettings tab in the Attribute
+                  Editor, or the resolution referenced in the input texture. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-AFEE5E5B-7257-480F-84FE-8CE4C192099E"></a></span> <img src="../images/GUID-70E9BD5D-1E7F-423B-90E5-AD625E71612F-low.png" /> 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-41535B9C-03D9-4770-BCE0-0E9D3A42F035"></a></span>To use this node: 
+               </p> <span class="anchor_wrapper"><a name="UL_3B3DD6689D7345D0BDA105D0F10AB159"></a></span><ul>
+                  <li>Browse to your OSL file in the Shader File control. 
+                     <p><span class="anchor_wrapper"><a name="GUID-1287407D-E859-47C0-AFD4-D017CC788F81"></a></span>If you have written a new shader from scratch, you can test it by first compiling it with the <span class="filePath" translate="no">oslc.exe</span> tool, found in the <span class="filePath" translate="no">bin</span> directory of the Beast SDK package. 
+                     </p> 
+                  </li>
+                  <li>Once the shader is loaded, the Shader Parameters section is populated automatically with mappable slots for the parameters
+                     exposed by the shader. You can connect standard Maya pattern nodes (i.e. not Blinn, Lambert, etc.) to these slots. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-9FD9F5D1-3D2F-4987-AAA3-3B9F8699DC06"></a></span>Currently, the plug-in uses a Python script to extract the parameters from the OSL shader. If this script fails, please contact
+                  Support and provide the OSL shader that loads incorrectly. See <span class="char_link"><a href="GUID-D70BFD6A-2A69-4C5D-9885-D6B1F176E60A.htm"> Support</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-AF30EAFA-C8D0-4915-A6FF-B243514C6156"></a></span>For more information on OSL shading, see <span class="char_link"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a></span>. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_CF2B9FEE9EDC4159A07E920F5056E87F"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5390"></a><span class="anchor_wrapper"><a name="GUID-B4F566A7-3BE8-4DCA-B089-A2C8A10CE7E2"></a></span>Beast Passes
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-3AF420E8-EE87-4E9C-9CC1-6493CD5A8E3A"></a></span>A target can be associated with a number of Beast passes. A single pass generates one type of output—such as Illumination,
+                  Radiosity Normal Maps, etc. Passes can be shared by different Beast targets. Double-click a pass in the association list to
+                  open it in the Attibute Editor. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-FBC603F6-0C9B-4D28-997D-8A3AEC4DF6C4"></a></span> <img src="../images/GUID-3F618DF9-B377-4299-BC4B-3B0C0E1586F8-low.png" /> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_3EE3B69E4EA847A99004F78647824504"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5404"></a><span class="anchor_wrapper"><a name="GUID-04B1E3A7-7D12-4EB0-9103-32D3ABB7D050"></a></span>Beast Atlas
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-B13CBF0A-5FD4-47F6-A717-71140F7BBBC0"></a></span>To see the Beast Atlas while baking, diable distributed rendering (if using DistriBeast), as the results of the baking are
+                  not displayed when distributed. Once distributed rendering is disabled, choose <span class="MenuCascade" id="GUID-83CE83BD-2D5E-49A0-AFC8-8BA903D23EAC">Beast <img src="../images/ac.menuaro.gif" /> Final Bake</span> to see Beast rendering the atlas for the scene. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-76C16722-CA0B-4DC8-9C3C-70EB248C4213"></a></span> <img src="../images/GUID-80CE564C-3C6B-401F-B76C-E06BC7BA7C8D-low.png" /> 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_8D65A89393544FA8A608EE630DF46AA2"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e5424"></a><span class="anchor_wrapper"><a name="GUID-834DF862-9E17-460A-8854-D02017C99F46"></a></span>Custom Beast Attributes
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-4FE55AED-B6D3-44A0-8CF6-27EA99542813"></a></span>Beast extends shapes and lights with special attributes you can use to tweak lighting and shading. These attributes are located
+                  on the <span class="MenuCascade" id="GUID-D95DB805-B32A-49CC-AE9F-D64A44AF46DB">Extra Attributes</span> tab of the Attribute Editor. 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3DC9544D6C1D4802B2FA080813364596"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e5436"></a><span class="anchor_wrapper"><a name="GUID-B35002D4-FCAA-42DB-8DAD-C38F65DD57E8"></a></span>Creating UVs
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-D0F78F08-D825-4FFF-8A0E-4DA1CECEF864"></a></span>The Maya plug-in integrates the Beast UV creation system into Maya. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-B996E1BD-9403-416D-9930-6DE1AA8BDA4B"></a></span>To create UVs for your meshes using Beast in Maya, select the <em class="strong">Beast &gt; UV Unwrap</em> option from the main menu. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-70FB9076-D213-4E6C-B626-F96E51F178A1"></a></span>Click the square icon in the menu to open a tool options window in which you can configure the settings used by the UV creation
+               system. For details on these settings, see the topics under <span class="char_link"><a href="GUID-11CE4EA5-A237-4A8C-93C7-C00C3445EDF1.htm">UV Unwrapping</a></span>. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

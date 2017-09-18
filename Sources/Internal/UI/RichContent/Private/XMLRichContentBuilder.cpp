@@ -12,9 +12,9 @@
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
 #include "UI/RichContent/UIRichContentObjectComponent.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
 #include "UI/UIPackageLoader.h"
-#include "UI/UIStaticText.h"
 #include "Utils/StringUtils.h"
 #include "Utils/UTF8Utils.h"
 #include "Utils/UTF8Walker.h"
@@ -203,6 +203,15 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
     }
     else if (tag == "br")
     {
+        if (needLineBreak)
+        {
+            // Append text with space for additional empty line
+            RefPtr<UIControl> ctrl(new UIControl());
+            PrepareControl(ctrl.Get(), true);
+            UITextComponent* txt = ctrl->GetOrCreateComponent<UITextComponent>();
+            txt->SetText(" ");
+            AppendControl(ctrl.Get());
+        }
         needLineBreak = true;
     }
     else if (tag == "ul")
@@ -367,9 +376,10 @@ void XMLRichContentBuilder::ProcessText(const String& text)
                 direction = wordDirection;
             }
 
-            RefPtr<UIStaticText> ctrl(new UIStaticText());
+            RefPtr<UIControl> ctrl(new UIControl());
             PrepareControl(ctrl.Get(), true);
-            ctrl->SetUtf8Text(token);
+            UITextComponent* txt = ctrl->GetOrCreateComponent<UITextComponent>();
+            txt->SetText(token);
             AppendControl(ctrl.Get());
 
             token.clear();
