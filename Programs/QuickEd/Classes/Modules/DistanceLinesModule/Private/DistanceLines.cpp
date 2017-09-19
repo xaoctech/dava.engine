@@ -1,9 +1,10 @@
 #include "Classes/Modules/DistanceLinesModule/Private/DistanceLines.h"
 #include "Classes/Modules/DistanceLinesModule/Private/DistanceSystem.h"
-#include "Modules/DistanceLinesModule/Private/DistanceLinesPreferences.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesPreferences.h"
 
-#include "EditorSystems/UIControlUtils.h"
-#include "EditorSystems/Painter.h"
+#include "Classes/EditorSystems/UIControlUtils.h"
+
+#include "Classes/Painter/Painter.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
@@ -32,6 +33,10 @@ LineParams::LineParams(const DAVA::UIGeometricData& gd_)
 
 DistanceLine::DistanceLine(const LineParams& params)
     : params(params)
+{
+}
+
+DistanceLine::~DistanceLine()
 {
 }
 
@@ -86,7 +91,7 @@ void SolidLine::DrawLineText(DAVA::UIControl* canvas)
 
     float32 length = fabs((params.endPoint - params.startPoint)[params.axis]);
 
-    DrawTextParams textParams;
+    Painting::DrawTextParams textParams;
 
     DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     textParams.color = preferences->textColor;
@@ -111,20 +116,12 @@ void SolidLine::DrawLineText(DAVA::UIControl* canvas)
 
         textParams.pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f;
         textParams.pos[params.oppositeAxis] = params.endPoint[params.oppositeAxis];
-        //         textParams.pos[params.oppositeAxis] = params.direction == ALIGN_TOP || params.direction == ALIGN_RIGHT ?
-        //         params.startPoint[params.oppositeAxis] + margin[params.oppositeAxis] :
-        //         params.startPoint[params.oppositeAxis] - size[params.oppositeAxis] - margin[params.oppositeAxis];
-        //         textParams.pos[params.axis] = (params.startPoint[params.axis] + params.endPoint[params.axis]) / 2.0f - size[params.axis] / 2.0f;
     }
     else
     {
         textParams.direction = params.direction | (params.axis == Vector2::AXIS_X ? ALIGN_VCENTER : ALIGN_HCENTER);
         textParams.pos[params.axis] = params.endPoint[params.axis];
         textParams.pos[params.oppositeAxis] = params.endPoint[params.oppositeAxis];
-        //         textParams.pos[params.oppositeAxis] = params.startPoint[params.oppositeAxis] - (size[params.oppositeAxis] / 2.0f);
-        //         textParams.pos[params.axis] = params.direction == ALIGN_BOTTOM || params.direction == ALIGN_RIGHT ?
-        //         params.endPoint[params.axis] + margin[params.axis] :
-        //         params.endPoint[params.axis] - size[params.axis] - margin[params.axis];
     }
     params.painter->Add(textParams);
 }

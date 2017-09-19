@@ -1,6 +1,6 @@
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "EditorSystems/Painter.h"
-#include "EditorSystems/EditorSystemsManager.h"
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
+#include "Classes/Painter/Painter.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
 
 DAVA_VIRTUAL_REFLECTION_IMPL(EditorSystemsData)
 {
@@ -10,10 +10,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EditorSystemsData)
     .End();
 }
 
-EditorSystemsData::EditorSystemsData()
-{
-}
-
+EditorSystemsData::EditorSystemsData() = default;
 EditorSystemsData::~EditorSystemsData() = default;
 
 bool EditorSystemsData::IsHighlightDisabled() const

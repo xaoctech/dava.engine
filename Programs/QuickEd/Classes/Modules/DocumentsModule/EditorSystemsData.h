@@ -3,8 +3,12 @@
 #include <TArc/DataProcessing/DataNode.h>
 
 class EditorSystemsManager;
-class Painter;
 class ControlNode;
+
+namespace Painting
+{
+class Painter;
+}
 
 class EditorSystemsData : public DAVA::TArc::DataNode
 {
@@ -23,7 +27,7 @@ private:
     const EditorSystemsManager* GetSystemsManager() const;
 
     std::unique_ptr<EditorSystemsManager> systemsManager;
-    std::unique_ptr<Painter> painter;
+    std::unique_ptr<Painting::Painter> painter;
 
     bool emulationMode = false;
     bool highlightDisabled = false;

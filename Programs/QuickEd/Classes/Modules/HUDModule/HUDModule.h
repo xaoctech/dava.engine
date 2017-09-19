@@ -1,15 +1,15 @@
 #pragma once
 
-#include <TArc/Core/ClientModule.h>
+#include "Classes/Modules/QEClientModule.h"
 
 class ControlNode;
 
-class HUDModule : public DAVA::TArc::ClientModule
+class HUDModule : public QEClientModule
 {
 private:
     void PostInit() override;
-    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
-    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
+    void CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager) override;
+    void DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager) override;
 
     void OnHighlightChanged(ControlNode* node);
 

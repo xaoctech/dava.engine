@@ -12,7 +12,10 @@ class ContextAccessor;
 }
 }
 
+namespace Painting
+{
 class Painter;
+}
 
 struct LineParams
 {
@@ -24,7 +27,7 @@ struct LineParams
     DAVA::Vector2::eAxis axis;
     DAVA::Vector2::eAxis oppositeAxis;
     DAVA::eAlign direction;
-    Painter* painter = nullptr;
+    Painting::Painter* painter = nullptr;
 };
 
 //lines have different behavior, so use base class to draw them
@@ -32,6 +35,8 @@ class DistanceLine
 {
 public:
     DistanceLine(const LineParams& params);
+    virtual ~DistanceLine();
+
     virtual void Draw(DAVA::UIControl* canvas) = 0;
 
 protected:

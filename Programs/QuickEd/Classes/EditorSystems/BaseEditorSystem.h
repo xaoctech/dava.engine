@@ -2,8 +2,6 @@
 
 #include "EditorSystems/EditorSystemsManager.h"
 
-class Painter;
-
 namespace DAVA
 {
 class UIEvent;
@@ -11,6 +9,11 @@ namespace TArc
 {
 class ContextAccessor;
 }
+}
+
+namespace Painting
+{
+class Painter;
 }
 
 using CanvasControls = DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>;
@@ -50,7 +53,7 @@ protected:
 
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
-    Painter* GetPainter();
+    Painting::Painter* GetPainter();
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 

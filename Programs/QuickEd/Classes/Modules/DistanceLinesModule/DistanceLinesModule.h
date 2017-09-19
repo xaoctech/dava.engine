@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TArc/Core/ClientModule.h>
+#include "Classes/Modules/QEClientModule.h"
 
 namespace DAVA
 {
@@ -8,17 +8,17 @@ class Any;
 }
 class ControlNode;
 
-class DistanceLinesModule : public DAVA::TArc::ClientModule
+class DistanceLinesModule : public QEClientModule
 {
 public:
     DistanceLinesModule();
 
 private:
     void PostInit() override;
-    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
-    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
+    void CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager) override;
+    void DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager) override;
 
-    ControlNode* GetHighlight() const;
+    ControlNode* GetHighlightNode() const;
 
     DAVA_VIRTUAL_REFLECTION(DistanceLinesModule, DAVA::TArc::ClientModule);
 };

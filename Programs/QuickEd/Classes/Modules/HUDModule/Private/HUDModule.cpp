@@ -21,30 +21,22 @@ void HUDModule::PostInit()
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
-void HUDModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
+void HUDModule::CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::EditorSystemsManagerInterface>())
-    {
-        HUDModuleData* data = GetAccessor()->GetGlobalContext()->GetData<HUDModuleData>();
-        DVASSERT(data != nullptr);
-        HUDSystem* system = data->hudSystem.get();
+    HUDModuleData* data = GetAccessor()->GetGlobalContext()->GetData<HUDModuleData>();
+    DVASSERT(data != nullptr);
+    HUDSystem* system = data->hudSystem.get();
 
-        Interfaces::EditorSystemsManagerInterface* systemsManager = QueryInterface<Interfaces::EditorSystemsManagerInterface>();
-        systemsManager->RegisterEditorSystem(system);
-    }
+    systemsManager->RegisterEditorSystem(system);
 }
 
-void HUDModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
+void HUDModule::DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::EditorSystemsManagerInterface>())
-    {
-        HUDModuleData* data = GetAccessor()->GetGlobalContext()->GetData<HUDModuleData>();
-        DVASSERT(data != nullptr);
-        HUDSystem* system = data->hudSystem.get();
+    HUDModuleData* data = GetAccessor()->GetGlobalContext()->GetData<HUDModuleData>();
+    DVASSERT(data != nullptr);
+    HUDSystem* system = data->hudSystem.get();
 
-        Interfaces::EditorSystemsManagerInterface* systemsManager = QueryInterface<Interfaces::EditorSystemsManagerInterface>();
-        systemsManager->UnregisterEditorSystem(system);
-    }
+    systemsManager->UnregisterEditorSystem(system);
 }
 
 void HUDModule::OnHighlightChanged(ControlNode* node)

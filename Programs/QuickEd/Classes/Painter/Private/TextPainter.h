@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EditorSystems/Painter.h"
+#include "Classes/Painter/Painter.h"
 
 #include <Base/RefPtr.h>
 
@@ -11,7 +11,9 @@ namespace DAVA
 class NMaterial;
 }
 
-class TextPainter
+namespace Painting
+{
+class TextPainter final
 {
 public:
     TextPainter();
@@ -30,3 +32,4 @@ private:
     DAVA::Vector<DrawTextParams> drawItems;
     DAVA::float32 cachedSpread = 0.0f;
 };
+}

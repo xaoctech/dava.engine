@@ -14,36 +14,26 @@ class ContextAccessor;
 }
 }
 
-class LinesFactory
-{
-public:
-    virtual DAVA::Vector<std::unique_ptr<DistanceLine>> CreateLines() const = 0;
-};
-
 //factory to create distance lines between two controls
-class ControlsLinesFactory : public LinesFactory
+class DistanceLinesFactory
 {
 public:
-    struct ControlLinesFactoryParams
+    struct Params
     {
-        ControlLinesFactoryParams(DAVA::UIControl* selectedControl, DAVA::UIControl* highlightedControl);
+        Params(DAVA::UIControl* selectedControl, DAVA::UIControl* highlightedControl);
         DAVA::TArc::ContextAccessor* accessor = nullptr;
         DAVA::Rect selectedRect;
         DAVA::Rect highlightedRect;
         DAVA::UIGeometricData parentGd;
-        Painter* painter;
+        Painting::Painter* painter = nullptr;
     };
 
-    ControlsLinesFactory(const ControlLinesFactoryParams& params);
+    DAVA::Vector<std::unique_ptr<DistanceLine>> CreateLines(const Params& params) const;
 
 private:
-    DAVA::Vector<std::unique_ptr<DistanceLine>> CreateLines() const override;
+    LineParams CreateLineParams(const Params& params, const DAVA::Vector2& startPoint, const DAVA::Vector2& endPos, DAVA::eAlign direction) const;
 
-    LineParams CreateLineParams(const DAVA::Vector2& startPoint, const DAVA::Vector2& endPos, DAVA::eAlign direction) const;
-
-    void SurroundWithDotLines(DAVA::Vector2::eAxis axis, const DAVA::Rect& rect, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const;
+    void SurroundWithDotLines(const Params& params, DAVA::Vector2::eAxis axis, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const;
     template <typename T>
-    void AddLine(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const;
-
-    ControlLinesFactoryParams params;
+    void AddLine(const Params& params, DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const;
 };

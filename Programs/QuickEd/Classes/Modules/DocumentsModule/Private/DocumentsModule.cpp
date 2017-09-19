@@ -13,7 +13,8 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
-#include "Classes/EditorSystems/Painter.h"
+#include "Classes/Painter/Painter.h"
+
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
@@ -88,10 +89,10 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
 
     //we can create graphic items only when render is initialized
     EditorSystemsData* systemsData = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>();
-    systemsData->painter = std::make_unique<Painter>();
+    systemsData->painter = std::make_unique<Painting::Painter>();
     Vector<Window*> windows = Engine::Instance()->GetWindows();
     DVASSERT(windows.size() == 1);
-    windows.front()->draw.Connect(systemsData->painter.get(), &Painter::Draw);
+    windows.front()->draw.Connect(systemsData->painter.get(), &Painting::Painter::Draw);
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)

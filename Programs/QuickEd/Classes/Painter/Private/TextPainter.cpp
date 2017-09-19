@@ -1,15 +1,12 @@
-#include "EditorSystems/Private/TextPainter.h"
+#include "Classes/Painter/Private/TextPainter.h"
 
 #include <Render/Material/NMaterial.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/TextBlockGraphicRender.h>
 #include <Utils/UTF8Utils.h>
 
-namespace TextPainterDetails
+namespace Painting
 {
-
-}
-
 TextPainter::TextPainter()
 {
     using namespace DAVA;
@@ -43,13 +40,14 @@ void TextPainter::Add(const DrawTextParams& params)
 void TextPainter::Draw()
 {
     using namespace DAVA;
-    for (DrawTextParams& params : drawItems)
+    for (const DrawTextParams& params : drawItems)
     {
         font->SetSize(params.textSize);
         vertices.resize(4 * params.text.length());
 
         int32 charactersDrawn = 0;
         font->DrawStringToBuffer(UTF8Utils::EncodeToWideString(params.text), 0, 0, vertices.data(), charactersDrawn);
+        DVASSERT(charactersDrawn == params.text.length());
 
         PushNextBatch(params);
     }
@@ -114,9 +112,8 @@ void TextPainter::ApplyParamPos(DrawTextParams& params) const
         Font::StringMetrics metrics = font->GetStringMetrics(UTF8Utils::EncodeToWideString(params.text));
         //while we using hard-coded font we need to fix it base line manually
         //DejaVuSans have a very big height which is invalid for digits. So while we use only digits, and font DejaVuSans and GraphicsFont have no GetBaseLine member function - i will change metrics height manually
-        float32 padding = 6.0f;
+        const float32 padding = 6.0f;
         params.size = Vector2(metrics.width, metrics.height - padding);
-        //params.scale /= params.scale.y;
     }
 
     params.size /= params.scale;
@@ -134,6 +131,10 @@ void TextPainter::ApplyParamPos(DrawTextParams& params) const
     {
         params.pos.x += params.margin.x;
     }
+    else
+    {
+        DVASSERT(false, "horisontal direction must be specified");
+    }
 
     if (params.direction & ALIGN_TOP)
     {
@@ -147,8 +148,13 @@ void TextPainter::ApplyParamPos(DrawTextParams& params) const
     {
         params.pos.y += params.margin.y;
     }
+    else
+    {
+        DVASSERT(false, "vertical direction must be specified");
+    }
 
     params.pos = Rotate(params.pos, params.angle);
     params.pos *= params.scale;
     params.pos += params.parentPos;
+}
 }

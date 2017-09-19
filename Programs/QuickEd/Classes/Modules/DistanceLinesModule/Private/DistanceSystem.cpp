@@ -3,10 +3,10 @@
 #include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesFactory.h"
 
 #include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/CanvasModule/CanvasData.h"
-#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
-#include "EditorSystems/UIControlUtils.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
+#include "Classes/Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
+#include "Classes/EditorSystems/UIControlUtils.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/Utils.h>
@@ -18,6 +18,7 @@
 DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
+    , factory(new DistanceLinesFactory())
 {
 }
 
@@ -77,7 +78,7 @@ bool DistanceSystem::CanDrawDistances() const
 
     PackageBaseNode* parent = (*selectedControls.begin())->GetParent();
 
-    if (selectedControls.size() == 1 && selectedControls.find(highlightedNode) != selectedControls.end())
+    if (selectedControls.find(highlightedNode) != selectedControls.end())
     {
         return false;
     }
@@ -112,11 +113,10 @@ void DistanceSystem::OnUpdate()
     ControlNode* selectedNode = *selectedControls.begin();
     UIControl* selectedControl = selectedNode->GetControl();
 
-    ControlsLinesFactory::ControlLinesFactoryParams params(selectedControl, highlightedControl);
+    DistanceLinesFactory::Params params(selectedControl, highlightedControl);
     params.accessor = accessor;
     params.painter = GetPainter();
-    std::unique_ptr<LinesFactory> factory(new ControlsLinesFactory(params));
-    Vector<std::unique_ptr<DistanceLine>> lines = factory->CreateLines();
+    Vector<std::unique_ptr<DistanceLine>> lines = factory->CreateLines(params);
 
     for (const std::unique_ptr<DistanceLine>& line : lines)
     {

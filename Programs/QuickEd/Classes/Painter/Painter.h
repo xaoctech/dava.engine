@@ -8,6 +8,8 @@ namespace DAVA
 class Window;
 }
 
+namespace Painting
+{
 struct DrawTextParams
 {
     DAVA::String text;
@@ -31,7 +33,7 @@ struct DrawTextParams
     DAVA::Vector2 parentPos = DAVA::Vector2(0.0f, 0.0f);
 };
 
-class Painter
+class Painter final
 {
 public:
     Painter();
@@ -44,3 +46,4 @@ private:
     struct Impl;
     std::unique_ptr<Impl> impl;
 };
+}
