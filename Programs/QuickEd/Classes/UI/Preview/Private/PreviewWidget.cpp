@@ -71,9 +71,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InjectRenderWidget(renderWidget);
 
     InitUI();
-
-    centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
-    hudModuleDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<HUDModuleData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -425,6 +422,11 @@ void PreviewWidget::OnMouseMove(QMouseEvent* event)
 
 void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
 {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasFormat("text/uri-list"))
+    {
+        droppingFile.Emit(true);
+    }
     event->accept();
 }
 
@@ -440,7 +442,6 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/uri-list"))
     {
-        droppingFile.Emit(true);
         QStringList strList = mimeData->text().split("\n");
         for (const auto& str : strList)
         {
