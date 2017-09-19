@@ -401,6 +401,11 @@ bool ActionManagementDialog::CanBeAssigned() const
         return false;
     }
 
+    if (selectedAction == nullptr)
+    {
+        return false;
+    }
+
     using namespace ActionManagementDialogDetail;
     for (int i = 0; i < shortcutText.count(); ++i)
     {
@@ -424,7 +429,12 @@ bool ActionManagementDialog::CanBeAssigned() const
         }
     }
 
-    return shortcutText.count() > 0;
+    if (shortcutText.count() == 0)
+    {
+        return false;
+    }
+
+    return selectedAction->shortcuts().indexOf(shortcutText) == -1;
 }
 
 void ActionManagementDialog::AssignShortcut()
@@ -432,6 +442,7 @@ void ActionManagementDialog::AssignShortcut()
     ui->AddShortcut(shortcutText, selectedAction);
     shortcutText = QKeySequence();
     sequenceEdit->clear();
+    sequenceEdit->clearFocus();
     UpdateSchemes();
 }
 
