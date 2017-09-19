@@ -9,10 +9,11 @@
 #include "TArc/WindowSubSystem/Private/UIProxy.h"
 #include "TArc/Utils/AssertGuard.h"
 #include "TArc/Utils/RhiEmptyFrame.h"
-#include "TArc/Utils/Private/CrashDumpHandler.h"
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/QtDelayedExecutor.h"
+
+#include <QtHelpers/CrashDumpHandler.h>
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"

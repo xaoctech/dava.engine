@@ -48,7 +48,7 @@
     </sizepolicy>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0" colspan="2">
+    <item row="1" column="0" colspan="5">
      <layout class="QHBoxLayout" name="saveCancelLayout">
       <item>
        <spacer name="horizontalSpacer">
@@ -122,12 +122,23 @@
         <string>Sharing</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>Debug</string>
+       </property>
+       <property name="font">
+        <font>
+         <italic>true</italic>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="pageStorage">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -759,8 +770,8 @@ QProgressBar::chunk {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>587</width>
-             <height>241</height>
+             <width>597</width>
+             <height>300</height>
             </rect>
            </property>
           </widget>
@@ -922,6 +933,94 @@ QProgressBar::chunk {
            <size>
             <width>17</width>
             <height>161</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="pageDebug">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>13</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <property name="horizontalSpacing">
+             <number>12</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>22</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>DAVA assert will be produced</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="crashButton">
+              <property name="text">
+               <string>Generate crash</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>program crash will be produced</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="assertButton">
+              <property name="text">
+               <string>Generate Assert</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>249</height>
            </size>
           </property>
          </spacer>
