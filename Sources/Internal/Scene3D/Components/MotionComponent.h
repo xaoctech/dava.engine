@@ -33,9 +33,12 @@ public:
     const FilePath& GetConfigPath() const;
     void SetConfigPath(const FilePath& path);
 
-protected:
+    float32 GetPlaybackRate() const;
+    void SetPlaybackRate(float32 rate);
+
     void ReloadFromConfig();
 
+protected:
     FilePath configPath;
     Vector<Motion*> motions;
 

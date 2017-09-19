@@ -33,15 +33,11 @@ void BlendTree::BindSkeleton(const SkeletonComponent* skeleton)
 
 void BlendTree::EvaluatePose(uint32 phaseIndex, float32 phase, const Vector<const float32*>& parameters, SkeletonPose* outPose) const
 {
-    DVASSERT(phaseIndex < phasesCount);
-
     EvaluateRecursive(phaseIndex, phase, nodes.front(), parameters, outPose, nullptr);
 }
 
 float32 BlendTree::EvaluatePhaseDuration(uint32 phaseIndex, const Vector<const float32*>& parameters) const
 {
-    DVASSERT(phaseIndex < phasesCount);
-
     float32 duration = 1.f;
     EvaluateRecursive(phaseIndex, 0.f, nodes.front(), parameters, nullptr, &duration);
     return duration;
@@ -56,6 +52,8 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
         int32 animationIndex = node.animData.animationIndex;
         if (animationIndex != -1)
         {
+            DVASSERT(phaseIndex < phasesCount);
+
             const BlendTree::Animation& animation = animations[node.animData.animationIndex];
 
             float32 phaseStart = (phaseIndex > 0) ? animation.phaseEnds[phaseIndex - 1] : 0.f;

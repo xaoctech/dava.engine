@@ -14,8 +14,10 @@ namespace DAVA
 class BlendTree;
 class SkeletonComponent;
 class YamlNode;
+class Motion;
 class MotionState;
-class MotionTransition;
+struct MotionTransitionInfo;
+
 class Motion
 {
     Motion() = default;
@@ -40,7 +42,7 @@ public:
     const SkeletonPose& GetCurrentSkeletonPose() const;
 
     bool RequestState(const FastName& stateID);
-    void Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEndedPhases = nullptr /*[state-id, phase-id]*/);
+    void Update(float32 dTime);
 
     void BindSkeleton(const SkeletonComponent* skeleton);
 
@@ -50,34 +52,35 @@ public:
     void UnbindParameters();
 
     const Vector<FastName>& GetStateIDs() const;
+    const FastName& GetRequestedState() const;
+
+    const Vector<std::pair<FastName, FastName>> GetEndedPhases() const;
 
 protected:
     uint32 GetTransitionIndex(const MotionState* srcState, const MotionState* dstState) const;
-    MotionTransition* GetTransition(const MotionState* srcState, const MotionState* dstState) const;
+    MotionTransitionInfo* GetTransition(const MotionState* srcState, const MotionState* dstState) const;
 
     FastName name;
     eMotionBlend blendMode = BLEND_COUNT;
 
     Vector<MotionState> states;
     FastNameMap<MotionState*> statesMap;
-    MotionState* currentState = nullptr;
-
-    Vector<MotionTransition*> transitions;
-    MotionTransition* currentTransiton = nullptr;
-    List<MotionState*> stateQueue;
+    Vector<MotionTransitionInfo*> transitions;
 
     Vector<FastName> statesIDs;
     Vector<FastName> parameterIDs;
 
+    MotionTransition currentTransition;
+    MotionState* currentState = nullptr;
+    MotionState* pendingState = nullptr;
+    MotionState* afterTransitionState = nullptr; //TODO: *Skinning* state-sequence
+    bool transitionIsActive = false;
+
     SkeletonPose currentPose;
+    Vector<std::pair<FastName, FastName>> endedPhases; /*[state-id, phase-id]*/
 
     //////////////////////////////////////////////////////////////////////////
     //temporary for debug
-    const FastName& GetStateID() const
-    {
-        static const FastName invalidID = FastName("#invalid-state");
-        return stateQueue.empty() ? ((currentState != nullptr) ? currentState->GetID() : invalidID) : stateQueue.back()->GetID();
-    }
     void SetStateID(const FastName& id)
     {
         RequestState(id);
@@ -105,6 +108,25 @@ inline const SkeletonPose& Motion::GetCurrentSkeletonPose() const
 inline const Vector<FastName>& Motion::GetParameterIDs() const
 {
     return parameterIDs;
+}
+
+inline const FastName& Motion::GetRequestedState() const
+{
+    static const FastName invalidID = FastName("#invalid-state");
+
+    if (afterTransitionState != nullptr)
+        return afterTransitionState->GetID();
+    else if (pendingState != nullptr)
+        return pendingState->GetID();
+    else if (currentState != nullptr)
+        return currentState->GetID();
+    else
+        return invalidID;
+}
+
+inline const Vector<std::pair<FastName, FastName>> Motion::GetEndedPhases() const
+{
+    return endedPhases;
 }
 
 } //ns

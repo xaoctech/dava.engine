@@ -13,16 +13,18 @@ namespace DAVA
 class MotionState;
 class SkeletonPose;
 class YamlNode;
-class MotionTransition
+
+struct MotionTransitionInfo
 {
 public:
-    IMPLEMENT_POOL_ALLOCATOR(MotionTransition, 128);
+    IMPLEMENT_POOL_ALLOCATOR(MotionTransitionInfo, 128);
 
     enum eType : uint8
     {
+        TYPE_REPLACE,
         TYPE_CROSS_FADE,
         TYPE_FROZEN_FADE,
-        TYPE_BLENDTREE,
+        TYPE_STATE,
 
         TYPE_COUNT
     };
@@ -35,23 +37,7 @@ public:
         SYNC_COUNT
     };
 
-    static MotionTransition* LoadFromYaml(const YamlNode* transitionNode);
-
-    void SetStates(MotionState* srcState, MotionState* dstState);
-    const MotionState* GetSrcState() const;
-    const MotionState* GetDstState() const;
-
-    void Reset();
-    void Update(float32 dTime);
-    void EvaluatePose(SkeletonPose* outPose) const;
-    bool IsComplete() const;
-    bool IsStarted() const;
-
-    bool CanInterrupt(const MotionTransition* other) const;
-    void Interrupt(const MotionTransition* other);
-
-protected:
-    MotionTransition() = default;
+    static MotionTransitionInfo* LoadFromYaml(const YamlNode* transitionNode, const FastNameMap<MotionState*>& states);
 
     eType type = TYPE_COUNT;
     eSync sync = SYNC_COUNT;
@@ -59,37 +45,47 @@ protected:
     Interpolation::Func func;
     float32 duration = 0.f;
     FastName waitPhaseID;
+    MotionState* transitionState = nullptr;
     bool syncPhases = false;
+};
 
-    //runtime
-    SkeletonPose frozenPose;
+class MotionTransition
+{
+public:
+    MotionTransition() = default;
+
+    void Reset(const MotionTransitionInfo* transitionInfo, MotionState* srcState, MotionState* dstState);
+
+    void Update(float32 dTime);
+    void EvaluatePose(SkeletonPose* outPose) const;
+
+    bool IsComplete() const;
+    bool IsStarted() const;
+
+    bool CanBeInterrupted(const MotionTransitionInfo* other, const MotionState* dstState) const;
+    void Interrupt(const MotionTransitionInfo* other, MotionState* dstState);
+
+    MotionState* GetDstState() const;
+    MotionState* GetSrcState() const;
+
+    void SetSrcState(MotionState* state);
+
+protected:
+    const MotionTransitionInfo* transitionInfo = nullptr;
     MotionState* srcState = nullptr;
     MotionState* dstState = nullptr;
+
+    SkeletonPose frozenPose;
     float32 transitionPhase = 0.f;
     bool started = false;
     bool srcFrozen = false;
     bool inversed = false;
 };
 
-inline void MotionTransition::SetStates(MotionState* _srcState, MotionState* _dstState)
-{
-    srcState = _srcState;
-    dstState = _dstState;
-}
-
-inline const MotionState* MotionTransition::GetSrcState() const
-{
-    return srcState;
-}
-
-inline const MotionState* MotionTransition::GetDstState() const
-{
-    return dstState;
-}
-
 inline bool MotionTransition::IsComplete() const
 {
-    return (transitionPhase >= 1.f) || (duration < EPSILON);
+    DVASSERT(transitionInfo != nullptr);
+    return IsStarted() && ((transitionPhase >= 1.f) || (transitionInfo->duration < EPSILON) || (transitionInfo->type == MotionTransitionInfo::TYPE_REPLACE));
 }
 
 inline bool MotionTransition::IsStarted() const

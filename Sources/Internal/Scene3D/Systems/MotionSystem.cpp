@@ -98,16 +98,15 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
     SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
     if (skeleton != nullptr)
     {
-        SkeletonPose resultPose;
+        SkeletonPose resultPose = skeleton->GetDefaultPose();
         uint32 motionCount = motionComponent->GetMotionsCount();
         for (uint32 m = 0; m < motionCount; ++m)
         {
             Motion* motion = motionComponent->GetMotion(m);
 
-            workPhaseEnded.clear();
-            motion->Update(dTime * motionComponent->playbackRate, &workPhaseEnded);
+            motion->Update(dTime * motionComponent->playbackRate);
 
-            for (auto& phaseEnd : workPhaseEnded)
+            for (auto& phaseEnd : motion->GetEndedPhases())
             {
                 motionSingleComponent->animationPhaseEnd.emplace_back(motionComponent, MotionSingleComponent::AnimationPhaseInfo());
 

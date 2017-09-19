@@ -20,135 +20,136 @@ DAVA_REFLECTION_IMPL(Motion)
 {
     ReflectionRegistrator<Motion>::Begin()
     .Field("name", &Motion::name)[M::ReadOnly()]
-    .Field("state", &Motion::GetStateID, &Motion::SetStateID)[M::DisplayName("Motion State")]
+    .Field("state", &Motion::GetRequestedState, &Motion::SetStateID)[M::DisplayName("Motion State")]
     .End();
 }
 
 Motion::~Motion()
 {
-    for (MotionTransition* t : transitions)
+    for (MotionTransitionInfo* t : transitions)
         SafeDelete(t);
 }
 
 bool Motion::RequestState(const FastName& stateUID)
 {
+    if (GetRequestedState() == stateUID)
+        return true;
+
     bool success = false;
 
-    //TODO: *Skinning* rethink state/transition queue ?
     auto foundState = statesMap.find(stateUID);
     if (foundState != statesMap.end())
     {
-        MotionState* nextState = foundState->second;
-        if (currentState != nullptr)
-        {
-            if (currentState != nextState)
-            {
-                if (currentTransiton != nullptr && !currentTransiton->IsStarted())
-                {
-                    if (currentTransiton->GetSrcState() == nextState)
-                    {
-                        //discard not started transition
-                        currentTransiton = nullptr;
-                        currentState = nextState;
-                        stateQueue.clear();
-                    }
-                    else
-                    {
-                        MotionTransition* nextTransition = GetTransition(currentTransiton->GetSrcState(), nextState);
-                        if (nextTransition != nullptr)
-                        {
-                            //replace not started transition
-                            currentTransiton = nextTransition;
-                            currentTransiton->Reset();
-                            currentState = nextState;
-                            stateQueue.clear();
-                        }
-                    }
-                }
-                else
-                {
-                    MotionTransition* nextTransition = GetTransition(currentState, nextState);
-                    if (currentTransiton != nullptr && nextTransition->CanInterrupt(currentTransiton))
-                    {
-                        //interrupt started transition if can
-                        nextTransition->Reset();
-                        nextTransition->Interrupt(currentTransiton);
-                        currentTransiton = nextTransition;
-
-                        currentState = nextState;
-                        stateQueue.clear();
-                    }
-                    else
-                    {
-                        //search state in queue that we can replace
-                        auto found = std::find_if(stateQueue.begin(), stateQueue.end(), [this, &nextState](MotionState* state) {
-                            return (this->GetTransition(state, nextState) != nullptr || state == nextState);
-                        });
-
-                        if (found != stateQueue.end())
-                        {
-                            //replace state in queue
-                            *found = nextState;
-                            stateQueue.erase(++found, stateQueue.end());
-                        }
-                        else
-                        {
-                            //add state to queue
-                            stateQueue.push_back(nextState);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                stateQueue.clear();
-            }
-        }
-        else
-        {
-            currentState = nextState;
-        }
-
+        pendingState = (currentState != foundState->second) ? (foundState->second) : nullptr;
         success = true;
     }
 
     return success;
 }
 
-void Motion::Update(float32 dTime, Vector<std::pair<FastName, FastName>>* outEndedPhases)
+void Motion::Update(float32 dTime)
 {
-    currentPose.Reset();
-    if (currentTransiton != nullptr)
+    endedPhases.clear();
+
+    //Update
+    if (pendingState != nullptr)
     {
-        currentTransiton->Update(dTime);
-        currentTransiton->EvaluatePose(&currentPose);
-        if (currentTransiton->IsComplete())
-            currentTransiton = nullptr;
+        bool transitionInterruption = false;
+        if (currentState != nullptr)
+        {
+            MotionTransitionInfo* nextTransition = GetTransition(currentState, pendingState);
+            if (nextTransition != nullptr)
+            {
+                if (nextTransition->type == MotionTransitionInfo::TYPE_STATE)
+                {
+                    DVASSERT(nextTransition->transitionState != nullptr);
+                    afterTransitionState = pendingState;
+                    currentState = nextTransition->transitionState;
+                    currentState->Reset();
+                }
+                else
+                {
+                    if (transitionIsActive)
+                    {
+                        if (!currentTransition.IsStarted())
+                        {
+                            if (nextTransition != nullptr)
+                                currentTransition.Reset(nextTransition, currentState, pendingState);
+                            else
+                                transitionIsActive = false;
+                        }
+                        else
+                        {
+                            if (currentTransition.CanBeInterrupted(nextTransition, pendingState))
+                            {
+                                currentTransition.Interrupt(nextTransition, pendingState);
+                                transitionInterruption = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        currentTransition.Reset(nextTransition, currentState, pendingState);
+                        transitionIsActive = true;
+                    }
+                }
+            }
+            else
+            {
+                currentState = pendingState;
+            }
+        }
+        else
+        {
+            currentState = pendingState;
+        }
+
+        if (!transitionInterruption)
+            pendingState->Reset();
+
+        pendingState = nullptr;
+    }
+
+    currentState->Update(dTime);
+
+    if (afterTransitionState != nullptr && currentState->IsAnimationEnd())
+    {
+        currentState = afterTransitionState;
+        afterTransitionState = nullptr;
+
+        if (transitionIsActive)
+            currentTransition.SetSrcState(currentState);
+    }
+
+    if (currentState->IsPhaseEnd())
+    {
+        const FastName& endedPhaseName = currentState->GetLastPhaseName();
+        if (endedPhaseName.IsValid())
+            endedPhases.emplace_back(currentState->GetID(), endedPhaseName);
+    }
+
+    if (transitionIsActive)
+    {
+        currentTransition.GetDstState()->Update(dTime);
+        currentTransition.Update(dTime);
+
+        if (currentTransition.IsComplete())
+        {
+            currentState = currentTransition.GetDstState();
+            afterTransitionState = nullptr;
+            transitionIsActive = false;
+        }
+    }
+
+    //Evaluate
+    currentPose.Reset();
+    if (transitionIsActive)
+    {
+        currentTransition.EvaluatePose(&currentPose);
     }
     else
     {
-        currentState->Update(dTime);
-
-        if (currentState->IsPhaseEnd() && outEndedPhases != nullptr)
-        {
-            const FastName& endedPhaseName = currentState->GetLastPhaseName();
-            if (endedPhaseName.IsValid())
-                outEndedPhases->emplace_back(currentState->GetID(), endedPhaseName);
-        }
-
         currentState->EvaluatePose(&currentPose);
-    }
-
-    if (currentTransiton == nullptr && currentState != nullptr)
-    {
-        if (!stateQueue.empty())
-        {
-            currentTransiton = GetTransition(currentState, stateQueue.front());
-            currentTransiton->Reset();
-
-            currentState = stateQueue.front();
-            stateQueue.pop_front();
-        }
     }
 }
 
@@ -198,8 +199,11 @@ uint32 Motion::GetTransitionIndex(const MotionState* srcState, const MotionState
     return uint32(srcStateIndex * states.size() + dstStateIndex);
 }
 
-MotionTransition* Motion::GetTransition(const MotionState* srcState, const MotionState* dstState) const
+MotionTransitionInfo* Motion::GetTransition(const MotionState* srcState, const MotionState* dstState) const
 {
+    if (srcState == nullptr || dstState == nullptr)
+        return nullptr;
+
     return transitions[GetTransitionIndex(srcState, dstState)];
 }
 
@@ -256,29 +260,20 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
         for (uint32 t = 0; t < transitionsCount; ++t)
         {
             const YamlNode* transitionNode = transitionsNode->Get(t);
-            MotionTransition* transition = MotionTransition::LoadFromYaml(transitionNode);
 
             const YamlNode* srcNode = transitionNode->Get("src-state");
             const YamlNode* dstNode = transitionNode->Get("dst-state");
             if (srcNode != nullptr && srcNode->GetType() == YamlNode::TYPE_STRING &&
                 dstNode != nullptr && dstNode->GetType() == YamlNode::TYPE_STRING)
             {
-                MotionState *srcState = nullptr, *dstState = nullptr;
-
                 auto foundSrc = motion->statesMap.find(srcNode->AsFastName());
-                if (foundSrc != motion->statesMap.end())
-                    srcState = foundSrc->second;
-
                 auto foundDst = motion->statesMap.find(dstNode->AsFastName());
-                if (foundDst != motion->statesMap.end())
-                    dstState = foundDst->second;
 
-                if (srcState != nullptr && dstState != nullptr)
+                if (foundSrc != motion->statesMap.end() && foundDst != motion->statesMap.end())
                 {
-                    transition->SetStates(srcState, dstState);
-
-                    uint32 transitionIndex = motion->GetTransitionIndex(srcState, dstState);
-                    motion->transitions[transitionIndex] = transition;
+                    uint32 transitionIndex = motion->GetTransitionIndex(foundSrc->second, foundDst->second);
+                    motion->transitions[transitionIndex] = MotionTransitionInfo::LoadFromYaml(transitionNode, motion->statesMap);
+                    ;
                 }
             }
         }

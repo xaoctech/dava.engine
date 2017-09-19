@@ -9,10 +9,11 @@
 namespace DAVA
 {
 class BlendTree;
-class MotionTransition;
 class SkeletonComponent;
 class SkeletonPose;
 class YamlNode;
+struct MotionTransitionInfo;
+
 class MotionState
 {
 public:

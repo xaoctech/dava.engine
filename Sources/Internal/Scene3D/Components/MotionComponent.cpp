@@ -80,6 +80,16 @@ Motion* MotionComponent::GetMotion(uint32 index) const
     return motions[index];
 }
 
+float32 MotionComponent::GetPlaybackRate() const
+{
+    return playbackRate;
+}
+
+void MotionComponent::SetPlaybackRate(float32 rate)
+{
+    playbackRate = rate;
+}
+
 const FilePath& MotionComponent::GetConfigPath() const
 {
     return configPath;

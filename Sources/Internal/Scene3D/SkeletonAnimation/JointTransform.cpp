@@ -60,7 +60,7 @@ JointTransform JointTransform::Lerp(const JointTransform& t0, const JointTransfo
 {
     JointTransform result;
 
-    if (t0.HasPosition() && t1.HasOrientation())
+    if (t0.HasPosition() && t1.HasPosition())
     {
         result.SetPosition(DAVA::Lerp<Vector3>(t0.position, t1.position, factor));
     }
