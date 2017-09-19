@@ -139,6 +139,15 @@ Vector3 Fade(const Vector3& t)
     };
 }
 
+Vector2 Fade(const Vector2& t)
+{
+    return
+    {
+        t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
+        t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
+    };
+}
+
 int32 WrapBlock(const int32 block, const int32 numBlocks, const float32 scale)
 {
     if ((float32)block >= numBlocks * scale)
@@ -162,6 +171,47 @@ void GetPoint(int32 blockX, int32 blockY, int32 blockZ, int32 numBlocks, int32 b
     *x = ((float32)blockX + px) * (float32)blockSize;
     *y = ((float32)blockY + py) * (float32)blockSize;
     *z = ((float32)blockZ + pz) * (float32)blockSize;
+}
+
+float32 PerlinNoise2d(const Vector2& p, float32 wrap)
+{
+    Vector4 pi = Floor(Vector4(p.x, p.y, p.x, p.y)) + Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    Vector4 pf = Frac(Vector4(p.x, p.y, p.x, p.y)) - Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    pi = Fmod(pi, Vector4(wrap, wrap, wrap, wrap));
+    pi = Fmod(pi, Vector4(289.0f, 289.0f, 289.0f, 289.0f));
+
+    Vector4 ix = Vector4(pi.x, pi.z, pi.x, pi.z);
+    Vector4 iy = Vector4(pi.y, pi.y, pi.w, pi.w);
+    Vector4 fx = Vector4(pf.x, pf.z, pf.x, pf.z);
+    Vector4 fy = Vector4(pf.y, pf.y, pf.w, pf.w);
+
+    Vector4 i = Permute(Permute((ix)+iy));
+
+    Vector4 gx = 2.0f * Frac(i / 41.0f) - 1.0f;
+    Vector4 gy = Abs(gx) - 0.5f;
+    Vector4 tx = Floor(gx + 0.5f);
+    gx = gx - tx;
+
+    Vector2 g00(gx.x, gy.x);
+    Vector2 g10(gx.y, gy.y);
+    Vector2 g01(gx.z, gy.z);
+    Vector2 g11(gx.w, gy.w);
+
+    Vector4 norm = TaylorInvSqrt(Vector4(g00.DotProduct(g00), g01.DotProduct(g01), g10.DotProduct(g10), g11.DotProduct(g11)));
+    g00 *= norm.x;
+    g01 *= norm.y;
+    g10 *= norm.z;
+    g11 *= norm.w;
+
+    float32 n00 = g00.DotProduct(Vector2(fx.x, fy.x));
+    float32 n10 = g10.DotProduct(Vector2(fx.y, fy.y));
+    float32 n01 = g01.DotProduct(Vector2(fx.z, fy.z));
+    float32 n11 = g11.DotProduct(Vector2(fx.w, fy.w));
+
+    Vector2 fade_xy = Fade(Vector2(pf.x, pf.y));
+    Vector2 n_x = Lerp(Vector2(n00, n01), Vector2(n10, n11), fade_xy.x);
+    float32 n_xy = Lerp(n_x.x, n_x.y, fade_xy.y);
+    return n_xy * 2.3f;
 }
 
 float32 PerlinNoise3d(const Vector3& p, float32 wrap)
@@ -245,7 +295,7 @@ Vector3 Generate4OctavesPerlin(const Vector3& p)
     uint32 octaves = 4;
     for (uint32 i = 0; i < octaves; ++i)
     {
-        float n0 = 0.5f * PerlinNoise3d(p, frequency) + 0.5f;
+        float n0 = 0.5f * PerlinNoise3d(p * frequency, frequency) + 0.5f;
         float n1 = 0.5f * PerlinNoise3d(p + Vector3(123.4f, 129845.6f, -1239.1f), frequency) + 0.5f;
         float n2 = 0.5f * PerlinNoise3d(p + Vector3(-9519.0, 9051.0, -123.0), frequency) + 0.5f;
         total += Vector3(n0, n1, n2) * amplitude;
@@ -255,4 +305,25 @@ Vector3 Generate4OctavesPerlin(const Vector3& p)
     return total;
 }
 
+Vector3 Generate4OctavesPerlin(const Vector2& p)
+{
+    Vector3 total(0.0f, 0.0f, 0.0f);
+    float frequency = 8.f;
+    float amplitude = 1.0f;
+    float persistence = 0.5f;
+    uint32 octaves = 4;
+    for (uint32 i = 0; i < octaves; ++i)
+    {
+        //float n0 = 0.5f * PerlinNoise3d(p3 * frequency, frequency) + 0.5f;
+        //float n1 = 0.5f * PerlinNoise3d(p3 + Vector3(123.4f, 129845.6f, -1239.1f), frequency) + 0.5f;
+        //float n2 = 0.5f * PerlinNoise3d(p3 + Vector3(-9519.0f, 9051.0f, -123.0f), frequency) + 0.5f;
+        float n0 = PerlinNoise2d(p, frequency);
+        float n1 = PerlinNoise2d(p + Vector2(123.4f, 129845.6f), frequency);
+        float n2 = PerlinNoise2d(p + Vector2(-9519.0f, 9051.0f), frequency);
+        total += Vector3(n0, n1, n2) * amplitude;
+        frequency *= 2.0f;
+        amplitude *= persistence;
+    }
+    return total;
+}
 }
