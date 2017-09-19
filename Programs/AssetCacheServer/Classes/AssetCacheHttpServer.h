@@ -14,6 +14,9 @@ struct AssetServerStatus
     DAVA::String assetServerPath;
 };
 
+/*
+class is DEPRECATED for now. There are issues related to working with separate network thread
+*/
 struct AssetCacheHttpServer : public HttpServerListener
 {
     AssetCacheHttpServer(DAVA::Net::IOLoop*);
