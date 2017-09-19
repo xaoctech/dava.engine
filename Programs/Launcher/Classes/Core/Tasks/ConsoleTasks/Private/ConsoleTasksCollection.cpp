@@ -17,4 +17,3 @@ const QList<const char*>& ConsoleTasksCollection::GetClassNames() const
 {
     return tasks;
 }
-
