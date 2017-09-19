@@ -138,18 +138,24 @@ AnalogElementState Gamepad::GetRightThumbAxis() const
 
 bool Gamepad::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsGamepadAxisInputElement(elementId) || IsGamepadButtonInputElement(elementId));
     return supportedElements[elementId - eInputElements::GAMEPAD_FIRST];
 }
 
 DigitalElementState Gamepad::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsGamepadButtonInputElement(elementId));
     return buttons[elementId - eInputElements::GAMEPAD_FIRST_BUTTON];
 }
 
 AnalogElementState Gamepad::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsGamepadAxisInputElement(elementId));
     return axes[elementId - eInputElements::GAMEPAD_FIRST_AXIS];
 }
