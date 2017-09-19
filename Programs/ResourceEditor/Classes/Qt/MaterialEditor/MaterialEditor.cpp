@@ -129,11 +129,10 @@ struct InvalidTexturesCollector
     {
         while (material != nullptr)
         {
-            using TTexturesMap = DAVA::HashMap<DAVA::FastName, DAVA::MaterialTextureInfo*>;
-            using TTextureItem = TTexturesMap::HashMapItem;
+            using TTexturesMap = DAVA::UnorderedMap<DAVA::FastName, DAVA::MaterialTextureInfo*>;
 
             const TTexturesMap& localTextures = material->GetLocalTextures();
-            for (const TTextureItem& lc : localTextures)
+            for (const auto& lc : localTextures)
             {
                 // DF-10204, we don't allow change heightmap in material for new Landscape.
                 if (validTextures.count(lc.first) == 0 && lc.first != DAVA::NMaterialTextureName::TEXTURE_HEIGHTMAP)
