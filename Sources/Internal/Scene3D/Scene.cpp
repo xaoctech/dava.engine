@@ -54,6 +54,10 @@
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
 #endif
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/CollisionSingleComponent.h>
+#endif
+
 #include <functional>
 
 namespace DAVA
@@ -242,6 +246,8 @@ void Scene::CreateSystems()
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
     {
+        collisionSingleComponent = new CollisionSingleComponent;
+
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
     }
@@ -419,6 +425,9 @@ Scene::~Scene()
     singletonComponents.clear();
 
     SafeDelete(transformSingleComponent);
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    SafeDelete(collisionSingleComponent);
+#endif
 
     systemsToProcess.clear();
     systemsToInput.clear();
@@ -451,6 +460,13 @@ void Scene::UnregisterEntity(Entity* entity)
     {
         transformSingleComponent->EraseEntity(entity);
     }
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    if (collisionSingleComponent)
+    {
+        collisionSingleComponent->RemoveCollisionsWithEntity(entity);
+    }
+#endif
 
     for (auto& system : systems)
     {
@@ -660,6 +676,14 @@ void Scene::Update(float32 timeElapsed)
     {
         transformSingleComponent->Clear();
     }
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    if (collisionSingleComponent)
+    {
+        collisionSingleComponent->collisions.clear();
+    }
+#endif
+
     sceneGlobalTime += timeElapsed;
 }
 
