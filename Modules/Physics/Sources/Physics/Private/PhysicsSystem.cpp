@@ -981,8 +981,8 @@ void PhysicsSystem::UpdateComponents()
         // Ignore vehicles, VehiclesSubsystem is responsible for setting correct values
 
         Entity* entity = bodyComponent->GetEntity();
-        if (entity->GetComponent(Component::VEHICLE_CAR_COMPONENT) != nullptr &&
-            entity->GetComponent(Component::VEHICLE_TANK_COMPONENT) != nullptr)
+        if (entity->GetComponent(Component::VEHICLE_CAR_COMPONENT) == nullptr &&
+            entity->GetComponent(Component::VEHICLE_TANK_COMPONENT) == nullptr)
         {
             physx::PxRigidDynamic* dynamicActor = bodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
             if (dynamicActor != nullptr)
