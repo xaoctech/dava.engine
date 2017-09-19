@@ -220,7 +220,7 @@ void ProjectModule::OpenProject(const DAVA::String& path)
     ContextAccessor* accessor = GetAccessor();
 
     ResultList resultList;
-    std::unique_ptr<ProjectData> newProjectData = std::make_unique<ProjectData>();
+    std::unique_ptr<ProjectData> newProjectData = std::make_unique<ProjectData>(path);
 
     resultList = newProjectData->LoadProject(QString::fromStdString(path));
 
