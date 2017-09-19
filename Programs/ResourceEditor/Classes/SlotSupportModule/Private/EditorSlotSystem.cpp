@@ -36,15 +36,15 @@ namespace EditorSlotSystemDetail
 {
 void DetachSlotForRemovingEntity(DAVA::Entity* entity, SceneEditor2* scene, REDependentCommandsHolder& holder)
 {
+    for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
+    {
+        DetachSlotForRemovingEntity(entity->GetChild(i), scene, holder);
+    }
+
     for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
     {
         DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
         holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, DAVA::FastName()));
-    }
-
-    for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
-    {
-        DetachSlotForRemovingEntity(entity->GetChild(i), scene, holder);
     }
 }
 } // namespace EditorSlotSystemDetail
@@ -758,11 +758,11 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
     DAVA::uint32 slotsCount = archive->GetUInt32("slotsCount", 0);
     if (slotsCount > 0)
     {
-        DAVA::UnorderedMap<DAVA::FastName, DAVA::SlotComponent*> existsComponents;
+        DAVA::UnorderedMap<DAVA::FastName, DAVA::Deque<DAVA::SlotComponent*>> existsComponents;
         for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
         {
             DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
-            existsComponents.emplace(component->GetSlotName(), component);
+            existsComponents[component->GetSlotName()].push_back(component);
         }
 
         for (DAVA::uint32 slotArhcIndex = 0; slotArhcIndex < slotsCount; ++slotArhcIndex)
@@ -775,8 +775,14 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
             auto iter = existsComponents.find(slotName);
             if (iter != existsComponents.end())
             {
-                scene->Exec(std::make_unique<AttachEntityToSlot>(scene, iter->second, nullptr, DAVA::FastName()));
-                scene->Exec(std::make_unique<RemoveComponentCommand>(entity, iter->second));
+                DAVA::Deque<DAVA::SlotComponent*>& components = iter->second;
+                if (components.empty() == false)
+                {
+                    DAVA::SlotComponent* component = components.front();
+                    scene->Exec(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, DAVA::FastName()));
+                    scene->Exec(std::make_unique<RemoveComponentCommand>(entity, component));
+                    components.pop_front();
+                }
             }
 
             DAVA::SlotComponent* newComponent = new DAVA::SlotComponent();
