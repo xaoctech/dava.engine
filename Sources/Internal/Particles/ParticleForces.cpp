@@ -154,8 +154,11 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
     if (Abs(force->windTurbulence) > EPSILON)
     {
         uint32 offset = particleIndex % noiseWidth;
-        uint32 xindex = static_cast<uint32>(floor(particleOverLife * noiseWidth * force->windTurbulenceFrequency)) + offset;
-        float32 fractPart = particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset - xindex;
+        float32 indexUnclamped = particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset;
+        float32 intPart = 0.0f;
+        float32 fractPart = modf(particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset, &intPart);
+        uint32 xindex = static_cast<uint32>(intPart);
+
         xindex %= noiseWidth;
         uint32 yindex = offset % noiseHeight;
         uint32 nextIndex = (xindex + 1) % noiseWidth;
@@ -163,11 +166,14 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
         Vector3 t2 = noise[nextIndex][yindex];
         turbulence = Lerp(t1, t2, fractPart);
         //turbulence *= Vector3(sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency), cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency), sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * 2.0f);
-        float32 dot = Normalize(effectSpaceVelocity).DotProduct(Normalize(turbulence));
-        if (dot < 0 && offset % 3 == 0)
-            turbulence *= -1.0f;
+        if (offset % 100 < 70)
+        {
+            float32 dot = Normalize(effectSpaceVelocity).DotProduct(Normalize(turbulence));
+            if (dot < 0)
+                turbulence *= -1.0f;
+        }
         turbulence *= force->windTurbulence * dt;
-        effectSpacePosition += turbulence;
+        effectSpacePosition += turbulence; // how with drug? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
     }
     effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex);// +turbulence;
 }
