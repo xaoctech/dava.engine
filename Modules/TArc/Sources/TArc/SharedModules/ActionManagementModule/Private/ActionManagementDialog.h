@@ -43,6 +43,7 @@ private:
     void SetContext(Qt::ShortcutContext v);
 
     void OnActionSelected(const QItemSelection& selected, const QItemSelection& deselected);
+    void OnShortcutTextChanged(const QKeySequence& seq);
 
 private:
     ContextAccessor* accessor = nullptr;
