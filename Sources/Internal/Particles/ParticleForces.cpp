@@ -10,14 +10,14 @@ namespace DAVA
 {
 namespace ParticleForces
 {
-const int32 noiseWidth = 128;
-const int32 noiseHeight = 128;
+const int32 noiseWidth = 256;
+const int32 noiseHeight = 256;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
 
 void GenerateNoise()
 {
-    float32 xFactor = 1.0f / (noiseWidth - 1.0f);
-    float32 yFactor = 1.0f / (noiseHeight - 1.0f);
+    float32 xFactor = 2.0f / (noiseWidth - 1.0f);
+    float32 yFactor = 2.0f / (noiseHeight - 1.0f);
     for (int32 i = 0; i < noiseWidth; ++i)
     {
         Vector2 q(i * xFactor, 0);
@@ -48,12 +48,12 @@ void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& eff
 void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt);
-void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
+void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 float32 GetWindValueFromTable(const Vector3& inPosition, const ParticleDragForce* force, float32 layerOverLife, int32 index);
 
-void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, const Particle* particle)
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, const Particle* particle)
 {
     using ForceType = ParticleDragForce::eType;
 
@@ -141,7 +141,7 @@ void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, 
     effectSpaceVelocity += effectSpaceDown * force->forcePower.z * dt;
 }
 
-void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
 {
     if (!force->isInfinityRange)
     {
@@ -154,21 +154,22 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
     if (Abs(force->windTurbulence) > EPSILON)
     {
         uint32 offset = particleIndex % noiseWidth;
-        uint32 xindex = static_cast<uint32>(floor(particleOverLife * noiseWidth)) + offset;
-        float32 fractPart = particleOverLife * noiseWidth + offset - xindex;
+        uint32 xindex = static_cast<uint32>(floor(particleOverLife * noiseWidth * force->windTurbulenceFrequency)) + offset;
+        float32 fractPart = particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset - xindex;
         xindex %= noiseWidth;
         uint32 yindex = offset % noiseHeight;
         uint32 nextIndex = (xindex + 1) % noiseWidth;
         Vector3 t1 = noise[xindex][yindex];
         Vector3 t2 = noise[nextIndex][yindex];
         turbulence = Lerp(t1, t2, fractPart);
+        //turbulence *= Vector3(sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency), cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency), sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * 2.0f);
         float32 dot = Normalize(effectSpaceVelocity).DotProduct(Normalize(turbulence));
-        if (dot < 0)
+        if (dot < 0 && offset % 3 == 0)
             turbulence *= -1.0f;
         turbulence *= force->windTurbulence * dt;
+        effectSpacePosition += turbulence;
     }
-
-    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex) + turbulence;
+    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex);// +turbulence;
 }
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)

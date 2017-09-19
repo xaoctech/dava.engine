@@ -88,6 +88,8 @@ private:
     EventFilterDoubleSpinBox* windFreqSpin = nullptr;
     QLabel* windTurbLabel = nullptr;
     EventFilterDoubleSpinBox* windTurbSpin = nullptr;
+    QLabel* windTurbFreqLabel = nullptr;
+    EventFilterDoubleSpinBox* windTurbFreqSpin = nullptr;
     QLabel* windBiasLabel = nullptr;
     EventFilterDoubleSpinBox* windBiasSpin = nullptr;
 

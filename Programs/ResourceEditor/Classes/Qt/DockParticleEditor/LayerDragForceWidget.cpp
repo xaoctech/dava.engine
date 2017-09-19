@@ -210,6 +210,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     windFreqSpin->setVisible(isWind);
     windTurbLabel->setVisible(isWind);
     windTurbSpin->setVisible(isWind);
+    windTurbFreqLabel->setVisible(isWind);
+    windTurbFreqSpin->setVisible(isWind);
     windBiasLabel->setVisible(isWind);
     windBiasSpin->setVisible(isWind);
 }
@@ -289,6 +291,19 @@ void LayerDragForceWidget::BuildWindSection()
     turbLayout->addWidget(windTurbLabel);
     turbLayout->addWidget(windTurbSpin);
     mainLayout->addLayout(turbLayout);
+
+    QHBoxLayout* turbFreqLayout = new QHBoxLayout(this);
+    windTurbFreqLabel = new QLabel("Wind turbulence frequency:");
+    windTurbFreqSpin = new EventFilterDoubleSpinBox();
+    windTurbFreqSpin->setMinimum(-100000000000000000000.0);
+    windTurbFreqSpin->setMaximum(100000000000000000000.0);
+    windTurbFreqSpin->setSingleStep(0.001);
+    windTurbFreqSpin->setDecimals(4);
+    connect(windTurbFreqSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    windTurbFreqSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    turbFreqLayout->addWidget(windTurbFreqLabel);
+    turbFreqLayout->addWidget(windTurbFreqSpin);
+    mainLayout->addLayout(turbFreqLayout);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -317,6 +332,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     direction->SetValue(selectedForce->direction);
     gravitySpin->setValue(selectedForce->forcePower.z);
     windTurbSpin->setValue(selectedForce->windTurbulence);
+    windTurbFreqSpin->setValue(selectedForce->windTurbulenceFrequency);
     windFreqSpin->setValue(selectedForce->windFrequency);
     windBiasSpin->setValue(selectedForce->windBias);
 
@@ -388,6 +404,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.forcePowerLine = propForce.GetPropLine();
     params.windFrequency = windFreqSpin->value();
     params.windTurbulence = windTurbSpin->value();
+    params.windTurbulenceFrequency = windTurbFreqSpin->value();
     params.windBias = windBiasSpin->value();
 
     if (selectedForce->type == ForceType::GRAVITY)
