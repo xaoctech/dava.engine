@@ -1,13 +1,13 @@
 #pragma once
 
 #include <TArc/Qt/QtByteArray.h>
+#include <TArc/Qt/QtSize.h>
 
 #include <Logger/Logger.h>
 #include <functional>
 
 #include <QObject>
 #include <QAbstractListModel>
-#include <QSize>
 #include <QPixmap>
 
 class QMutex;

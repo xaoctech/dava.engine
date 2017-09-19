@@ -38,7 +38,6 @@
 
 #include <QList>
 #include <QString>
-#include <QShortcut>
 #include <QtGlobal>
 #include <QUrl>
 #include <QMimeData>
@@ -231,14 +230,25 @@ void SceneManagerModule::CreateModuleControls(DAVA::TArc::UI* ui)
     renderWidget = new SceneRenderWidget(accessor, engineRenderWidget, this);
 
     QAction* deleteSelection = new QAction("Delete Selection", engineRenderWidget);
-    deleteSelection->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace);
-    deleteSelection->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    {
+        KeyBindableActionInfo info;
+        info.blockName = "Scene Modification";
+        info.context = Qt::WidgetWithChildrenShortcut;
+        info.defaultShortcuts << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace;
+        info.readOnly = true;
+        MakeActionKeyBindable(deleteSelection, info);
+    }
     engineRenderWidget->addAction(deleteSelection);
     connections.AddConnection(deleteSelection, &QAction::triggered, DAVA::MakeFunction(this, &SceneManagerModule::DeleteSelection));
 
     QAction* moveToSelection = new QAction("Move to selection", engineRenderWidget);
-    moveToSelection->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-    moveToSelection->setShortcutContext(Qt::WindowShortcut);
+    {
+        KeyBindableActionInfo info;
+        info.blockName = "Scene Modification";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts << QKeySequence(Qt::CTRL + Qt::Key_D);
+        MakeActionKeyBindable(moveToSelection, info);
+    }
     engineRenderWidget->addAction(moveToSelection);
     connections.AddConnection(moveToSelection, &QAction::triggered, DAVA::MakeFunction(this, &SceneManagerModule::MoveToSelection));
 
@@ -254,8 +264,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // New Scene action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/newscene.png"), QString("New Scene"));
-        action->setShortcut(QKeySequence("Ctrl+N"));
-        action->setShortcutContext(Qt::WindowShortcut);
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+N"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
@@ -278,8 +291,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Open Scene action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/openscene.png"), QString("Open Scene"));
-        action->setShortcut(QKeySequence("Ctrl+O"));
-        action->setShortcutContext(Qt::WindowShortcut);
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+O"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
@@ -300,13 +316,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Open Scene Quickly Action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/openscene.png"), QString("Open Scene Quickly"));
-        action->setShortcutContext(Qt::ApplicationShortcut);
-
-        QList<QKeySequence> keySequences;
-        keySequences << Qt::CTRL + Qt::SHIFT + Qt::Key_O;
-        keySequences << Qt::ALT + Qt::SHIFT + Qt::Key_O;
-
-        action->setShortcuts(keySequences);
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+        info.defaultShortcuts.push_back(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_O));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
@@ -338,8 +353,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Save Scene Action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/savescene.png"), QString("Save Scene"));
-        action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+S"));
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+S"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -360,8 +378,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Save Scene As Action
     {
         QtAction* action = new QtAction(accessor, QString("Save Scene As"));
-        action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+Shift+S"));
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+Shift+S"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -394,6 +415,10 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Export
     {
         QtAction* action = new QtAction(accessor, QString("Export"));
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -477,9 +502,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
         undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
 
-        undo->setShortcutContext(Qt::ApplicationShortcut);
-        undo->setAutoRepeat(false);
-        undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+        KeyBindableActionInfo info;
+        info.blockName = "Scene modification";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::Key_Z));
+        info.readOnly = true;
+        MakeActionKeyBindable(undo, info);
 
         connections.AddConnection(undo, &QAction::triggered, [this]() {
             ContextAccessor* accessor = GetAccessor();
@@ -501,9 +529,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
         redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
 
-        redo->setShortcutContext(Qt::ApplicationShortcut);
-        redo->setAutoRepeat(false);
-        redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        KeyBindableActionInfo info;
+        info.blockName = "Scene modification";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        info.readOnly = true;
+        MakeActionKeyBindable(redo, info);
 
         connections.AddConnection(redo, &QAction::triggered, [this]() {
             ContextAccessor* accessor = GetAccessor();

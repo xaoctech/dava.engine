@@ -7,6 +7,7 @@
 #include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
 #include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Deprecated/EditorConfig.h"
