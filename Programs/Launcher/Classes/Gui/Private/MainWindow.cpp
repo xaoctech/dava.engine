@@ -215,7 +215,7 @@ void MainWindow::ShowTable(QString branchID)
             Receiver tmpReceiver;
             newsDataBuffer.open(QIODevice::ReadWrite);
             tmpReceiver.onFinished = std::bind(&MainWindow::OnNewsLoaded, this, std::placeholders::_1);
-            std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, configHolder->localConfig.GetWebpageURL(), &newsDataBuffer);
+            std::unique_ptr<BaseTask> task = appManager->GetContext()->CreateTask<DownloadTask>(description, configHolder->localConfig.GetWebpageURL(), &newsDataBuffer);
             appManager->AddTaskWithCustomReceivers(std::move(task), { tmpReceiver });
             return;
         }

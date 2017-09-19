@@ -13,7 +13,7 @@ void ConsoleTasksCollection::RegisterConsoleTask(const char* name)
     tasks.append(name);
 }
 
-const QList<const char*>& ConsoleTasksCollection::GetMetas() const
+const QList<const char*>& ConsoleTasksCollection::GetClassNames() const
 {
     return tasks;
 }

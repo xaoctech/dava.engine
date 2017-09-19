@@ -298,7 +298,7 @@ void BAManagerClient::SilentUpdate(const QJsonObject& requestObj, const QString&
     }
     ::FillAppFields(&params.newVersion, requestObj, IsToolset(appName));
 
-    std::unique_ptr<BaseTask> task = applicationManager->CreateTask<InstallApplicationTask>(applicationManager->GetConfigHolder(), params);
+    std::unique_ptr<BaseTask> task = applicationManager->GetContext()->CreateTask<InstallApplicationTask>(applicationManager->GetConfigHolder(), params);
     task->SetUserData(commandID);
     applicationManager->AddTaskWithCustomReceivers(std::move(task), { receiver, applicationManager->GetMainWindow()->GetReceiver() });
 }

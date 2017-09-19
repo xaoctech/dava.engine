@@ -25,7 +25,7 @@ class ConfigRefresher;
 class FileDownloader;
 class UrlsHolder;
 
-class GuiApplicationManager : public QObject, public ApplicationContext
+class GuiApplicationManager : public QObject
 {
     Q_OBJECT
 
@@ -57,6 +57,8 @@ public:
 
     void CheckUpdates();
 
+    ApplicationContext* GetContext() const;
+
 private slots:
     void Refresh();
     void OpenPreferencesEditor();
@@ -76,10 +78,12 @@ private:
     MainWindow* mainWindow = nullptr;
 
     ConfigHolder configHolder;
+
+    ApplicationContext* context;
 };
 
 template <typename T, typename... Arguments>
 void GuiApplicationManager::AddTaskWithBaseReceivers(Arguments&&... args)
 {
-    AddTaskWithBaseReceivers(std::move(CreateTask<T>(std::forward<Arguments>(args)...)));
+    AddTaskWithBaseReceivers(std::move(context->CreateTask<T>(std::forward<Arguments>(args)...)));
 }

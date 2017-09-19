@@ -11,7 +11,7 @@ public:
 
     void RegisterConsoleTask(const char* name);
 
-    const QList<const char*>& GetMetas() const;
+    const QList<const char*>& GetClassNames() const;
 
 private:
     QList<const char*> tasks;

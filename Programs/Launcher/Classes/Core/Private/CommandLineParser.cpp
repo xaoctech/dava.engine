@@ -1,4 +1,4 @@
-#include "Core/CommandLineMediator.h"
+#include "Core/CommandLineParser.h"
 #include "Core/Tasks/ConsoleTasks/ConsoleTasksCollection.h"
 #include "Core/Tasks/ConsoleTasks/ConsoleBaseTask.h"
 
@@ -11,7 +11,7 @@
 #include <QCommandLineParser>
 #include <QDebug>
 
-void CommandLineMediator::Start(const QStringList& arguments)
+void CommandLineParser::Parse(const QStringList& arguments)
 {
     QCommandLineParser parser;
 
@@ -20,9 +20,9 @@ void CommandLineMediator::Start(const QStringList& arguments)
 
     ConsoleTasksCollection* collection = ConsoleTasksCollection::Instance();
     QMap<ConsoleBaseTask*, QCommandLineOption> tasks;
-    for (const char* meta : collection->GetMetas())
+    for (const char* className : collection->GetClassNames())
     {
-        int type = QMetaType::type(meta);
+        int type = QMetaType::type(className);
         void* task = QMetaType::create(type);
         ConsoleBaseTask* consoleTask = static_cast<ConsoleBaseTask*>(task);
         QCommandLineOption option = consoleTask->CreateOption();
@@ -30,7 +30,7 @@ void CommandLineMediator::Start(const QStringList& arguments)
         tasks.insert(consoleTask, consoleTask->CreateOption());
     }
 
-    if (!parser.parse(QCoreApplication::arguments()))
+    if (!parser.parse(arguments))
     {
         qInfo() << parser.errorText();
         return;
