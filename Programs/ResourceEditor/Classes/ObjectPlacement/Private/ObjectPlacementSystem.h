@@ -26,7 +26,6 @@ public:
     void PlaceOnLandscape() const;
     void PlaceAndAlign() const;
 
-    void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
 
 private:
@@ -39,8 +38,8 @@ private:
     // to set Modification System's fields via Object Placement module's
     // reflective controls, we need to store it here.
     EntityModificationSystem* modificationSystem = nullptr;
+    DAVA::RenderSystem* renderSystem = nullptr;
+    DAVA::LandscapeSystem* landscapeSystem = nullptr;
 
     bool snapToLandscape = false;
-    DAVA::Vector<DAVA::Landscape*> landscapes;
-    DAVA::RenderSystem* renderSystem = nullptr;
 };

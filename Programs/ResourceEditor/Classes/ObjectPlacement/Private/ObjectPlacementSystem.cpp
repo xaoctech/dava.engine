@@ -13,6 +13,8 @@ ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
     DVASSERT(modificationSystem != nullptr);
     renderSystem = editorScene->renderSystem;
     DVASSERT(renderSystem != nullptr);
+    landscapeSystem = editorScene->landscapeSystem;
+    DVASSERT(landscapeSystem != nullptr);
 }
 
 bool ObjectPlacementSystem::GetSnapToLandscape() const
@@ -24,6 +26,7 @@ bool ObjectPlacementSystem::GetSnapToLandscape() const
 void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 {
     DVASSERT(GetScene() != nullptr);
+    DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
     if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
@@ -36,6 +39,7 @@ void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 void ObjectPlacementSystem::PlaceOnLandscape() const
 {
     DVASSERT(GetScene() != nullptr);
+    DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
     if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
@@ -45,22 +49,9 @@ void ObjectPlacementSystem::PlaceOnLandscape() const
     modificationSystem->PlaceOnLandscape(selection);
 }
 
-void ObjectPlacementSystem::AddEntity(DAVA::Entity* entity)
-{
-    if (GetLandscape(entity) != nullptr)
-    {
-        landscapes.push_back(GetLandscape(entity));
-    }
-}
-
 void ObjectPlacementSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    DAVA::Landscape* landscape;
-    if ((landscape = GetLandscape(entity)) != nullptr)
-    {
-        FindAndRemoveExchangingWithLast(landscapes, landscape);
-    }
-
+    DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
     if (landscapes.empty())
     {
         snapToLandscape = false;
@@ -97,6 +88,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         else
         {
             Vector3 landscapeCollision;
+            DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
             for (Landscape* landscape : landscapes)
             {
                 hitLandscape = landscape->PlacePoint(originalPos, landscapeCollision, &collisionNormal);
