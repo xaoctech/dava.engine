@@ -13,9 +13,6 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Scene3D/SceneFileV2.h"
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/PhysicsSystem.h>
-#endif
 
 namespace DAVA
 {
@@ -56,10 +53,8 @@ class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+class PhysicsSystem;
 class CollisionSingleComponent;
-#endif
 
 class UIEvent;
 class RenderPass;
@@ -183,11 +178,9 @@ public:
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
     GeoDecalSystem* geoDecalSystem = nullptr;
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     PhysicsSystem* physicsSystem = nullptr;
 
     CollisionSingleComponent* collisionSingleComponent = nullptr;
-#endif
     TransformSingleComponent* transformSingleComponent = nullptr;
 
     void AddSingletonComponent(SingletonComponent* component);
