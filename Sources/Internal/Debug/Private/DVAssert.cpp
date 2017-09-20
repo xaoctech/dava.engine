@@ -6,6 +6,7 @@
 #include "Logger/Logger.h"
 
 #include <csignal>
+#include <utf8.h>
 
 namespace DAVA
 {
@@ -94,6 +95,8 @@ DAVA::Assert::FailBehaviour HandleAssert(const char* const expr,
 {
     using namespace DAVA;
     using namespace DAVA::Assert;
+
+    DVASSERT(utf8::is_valid(message, message + strlen(message)));
 
     // Copy handlers list to avoid data race in case some handler uses AddHandler or RemoveHandler functions
     Vector<Handler> handlersCopy;

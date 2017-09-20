@@ -19,11 +19,11 @@ using namespace DAVA;
 const String contentNodeName("content");
 
 template <typename T>
-void ClearContent(const Function<const HashMap<FastName, T>&()>& getContentFn, const Function<void(const FastName&)>& removeFn)
+void ClearContent(const Function<const UnorderedMap<FastName, T>&()>& getContentFn, const Function<void(const FastName&)>& removeFn)
 {
     // We have to clear local content before applying undo snapshot, because applying will not delete fields
     // Snapshot contains only info about "exists fields", but not containfo about "not exists fields"
-    HashMap<FastName, T> info = getContentFn();
+    UnorderedMap<FastName, T> info = getContentFn();
     for (const auto& item : info)
     {
         removeFn(item.first);

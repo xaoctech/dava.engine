@@ -4,6 +4,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
@@ -15,13 +16,8 @@ TouchScreen::TouchScreen(uint32 id)
     , nativeTouchIds{}
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Connect(this, &TouchScreen::OnWindowFocusChanged); // TODO: handle all the windows
-    }
+    engine->endFrame.Connect(this, &TouchScreen::OnEndFrame);
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &TouchScreen::HandleMainDispatcherEvent));
 }
@@ -29,13 +25,8 @@ TouchScreen::TouchScreen(uint32 id)
 TouchScreen::~TouchScreen()
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Disconnect(this);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Disconnect(this);
-    }
+    engine->endFrame.Disconnect(this);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 }
@@ -52,17 +43,23 @@ AnalogElementState TouchScreen::GetTouchPositionByIndex(size_t i) const
 
 bool TouchScreen::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return IsTouchInputElement(elementId);
 }
 
 DigitalElementState TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsTouchClickInputElement(elementId) && IsElementSupported(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
 AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsTouchPositionInputElement(elementId) && IsElementSupported(elementId));
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
@@ -73,15 +70,6 @@ void TouchScreen::OnEndFrame()
     for (DigitalElementState& touchState : clicks)
     {
         touchState.OnEndFrame();
-    }
-}
-
-void TouchScreen::OnWindowFocusChanged(DAVA::Window* window, bool focused)
-{
-    // Reset keyboard state when window is unfocused
-    if (!focused)
-    {
-        ResetState(window);
     }
 }
 

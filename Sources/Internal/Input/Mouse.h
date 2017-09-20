@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-class Window;
 class InputSystem;
 
 namespace Private
@@ -77,11 +76,10 @@ private:
     Mouse& operator=(const Mouse&) = delete;
 
     void OnEndFrame();
-    void OnWindowFocusChanged(DAVA::Window* window, bool focused);
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
 
-    void ResetState(Window* window);
+    void ResetState(Window* window) override;
     void HandleMouseClick(const Private::MainDispatcherEvent& e);
     void HandleMouseWheel(const Private::MainDispatcherEvent& e);
     void HandleMouseMove(const Private::MainDispatcherEvent& e);
@@ -95,5 +93,4 @@ private:
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
 };
-
 } // namespace DAVA
