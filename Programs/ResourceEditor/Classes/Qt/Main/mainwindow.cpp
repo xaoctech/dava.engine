@@ -90,7 +90,6 @@
 #include <QMessageBox>
 #include <QMetaObject>
 #include <QMetaType>
-#include <QShortcut>
 #include <QList>
 
 #define CHECK_GLOBAL_OPERATIONS(retValue) \
@@ -604,6 +603,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionModifyRotate->setEnabled(enable);
     ui->actionModifyScale->setEnabled(enable);
     ui->actionConvertToShadow->setEnabled(enable);
+    ui->actionModifyPlaceOnLandscape->setEnabled(enable);
+    ui->actionModifySnapToLandscape->setEnabled(enable);
     ui->actionPivotCenter->setEnabled(enable);
     ui->actionPivotCommon->setEnabled(enable);
     ui->actionCenterPivotPoint->setEnabled(enable);

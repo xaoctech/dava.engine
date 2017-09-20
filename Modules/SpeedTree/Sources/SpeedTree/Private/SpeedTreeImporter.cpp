@@ -507,7 +507,11 @@ FilePath SpeedTreeImporter::FindTexture(const FilePath& path)
     if (path.IsEmpty())
         return path;
 
-    if (!FileSystem::Instance()->Exists(path))
+    if (FileSystem::Instance()->Exists(path))
+    {
+        return path;
+    }
+    else
     {
         FilePath texturePath = path;
         texturePath.ReplaceDirectory(xmlPath.GetDirectory());

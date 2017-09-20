@@ -6,7 +6,6 @@
 #include "Base/Hash.h"
 
 #include <string.h>
-#include <string.h>
 #include <math.h>
 
 using DAVA::InvalidIndex;
