@@ -119,7 +119,7 @@ inline size_t FastName::find(const char* s, size_t pos) const
 {
     if (nullptr != str && nullptr != s)
     {
-        DVASSERT(pos < strlen(str));
+        DVASSERT(pos <= strlen(str));
 
         const char* q = strstr(str + pos, s);
         return q ? (q - str) : String::npos;
