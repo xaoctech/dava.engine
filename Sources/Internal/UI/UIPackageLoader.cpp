@@ -598,7 +598,25 @@ void UIPackageLoader::ProcessLegacyClipContent(const YamlNode* node, AbstractUIP
 {
     if (node->Get("clip"))
     {
-        builder->BeginComponentPropertiesSection(Type::Instance<UIClipContentComponent>(), 0);
+        const ReflectedType* componentRef = builder->BeginComponentPropertiesSection(Type::Instance<UIClipContentComponent>(), 0);
+        if (componentRef != nullptr && componentRef->GetStructure() != nullptr)
+        {
+            const Vector<std::unique_ptr<ReflectedStructure::Field>>& fields = componentRef->GetStructure()->fields;
+            for (const std::unique_ptr<ReflectedStructure::Field>& field : fields)
+            {
+                static const FastName enabledFieldName("enabled");
+                if (field->name == enabledFieldName)
+                {
+                    Any res = ReadAnyFromYamlNode(field.get(), node, "clip");
+                    if (!res.IsEmpty())
+                    {
+                        builder->ProcessProperty(*field, res);
+                    }
+                    break;
+                }
+            }
+        }
+
         builder->EndComponentPropertiesSection();
     }
 }
