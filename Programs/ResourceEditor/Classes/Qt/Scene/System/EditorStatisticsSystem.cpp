@@ -204,6 +204,11 @@ void EditorStatisticsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Com
 
 void EditorStatisticsSystem::PrepareForRemove()
 {
+    DAVA::uint32 type = component->GetType();
+    if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
+    {
+        EmitInvalidateUI(true);
+    }
 }
 
 const DAVA::Vector<DAVA::uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, bool allTriangles)
