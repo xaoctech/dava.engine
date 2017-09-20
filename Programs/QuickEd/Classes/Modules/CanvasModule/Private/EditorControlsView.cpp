@@ -608,6 +608,9 @@ void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRoo
         AddBackgroundControllerToCanvas(backgroundController, std::distance(newRootControls.begin(), iter));
     }
     needRecalculateBgrBeforeRender = true;
+
+    //centralize new displayed root controls while we have no ensure visible functions
+    canvasDataWrapper.SetFieldValue(CanvasData::needCentralizePropertyName, true);
 }
 
 //later background controls must be a part of data and rootControlPos must be simple getter
