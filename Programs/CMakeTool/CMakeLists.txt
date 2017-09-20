@@ -9,7 +9,7 @@ set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_
 include               ( CMake-common )
 
 find_package          ( QT5 REQUIRED )
-find_package          ( QtHelpers  REQUIRED )
+find_dava_module      ( QtHelpers )
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)
