@@ -311,7 +311,7 @@ Vector3 Generate4OctavesPerlin(const Vector2& p)
     float frequency = 8.f;
     float amplitude = 1.0f;
     float persistence = 0.5f;
-    uint32 octaves = 4;
+    uint32 octaves = 2;
     for (uint32 i = 0; i < octaves; ++i)
     {
         //float n0 = 0.5f * PerlinNoise3d(p3 * frequency, frequency) + 0.5f;

@@ -173,7 +173,7 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
                 turbulence *= -1.0f;
         }
         turbulence *= force->windTurbulence * dt;
-        effectSpacePosition += turbulence; // how with drug? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
+        effectSpacePosition += turbulence; // how with drug and other forces, turb not adding to velocity? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
     }
     effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex);// +turbulence;
 }
