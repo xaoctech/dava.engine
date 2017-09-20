@@ -71,6 +71,7 @@ private:
     WheellIgnorantComboBox* timingTypeComboBox = nullptr;
     QLabel* forcePowerLabel = nullptr;
     ParticleVector3Widget* forcePower = nullptr;
+    EventFilterDoubleSpinBox* forcePowerSpin = nullptr;
     TimeLineWidget* forcePowerTimeLine = nullptr;
 
     DAVA::ParticleLayer* layer = nullptr;

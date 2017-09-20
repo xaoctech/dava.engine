@@ -112,6 +112,10 @@ void LayerDragForceWidget::BuildTimingSection()
     forcePower = new ParticleVector3Widget("Force power", DAVA::Vector3::Zero);
     connect(forcePower, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(forcePower);
+
+    forcePowerSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(forcePowerSpin);
+    mainLayout->addWidget(forcePowerSpin);
 }
 
 void LayerDragForceWidget::BuildShapeSection()
@@ -188,9 +192,10 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     shapeLabel->setVisible(!isInfinityRange && !isGravity);
     shapeSeparator->setVisible(!isInfinityRange && !isGravity);
 
-    forcePower->setVisible(timingType == TimingType::CONSTANT && !isGravity);
+    forcePower->setVisible(timingType == TimingType::CONSTANT && !isGravity && !isWind);
     forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT && !isGravity);
-    forcePowerLabel->setVisible(timingType != TimingType::CONSTANT && !isGravity);
+    forcePowerLabel->setVisible((timingType != TimingType::CONSTANT && !isGravity) || (timingType == TimingType::CONSTANT && isWind));
+    forcePowerSpin->setVisible(timingType == TimingType::CONSTANT && isWind);
 
     direction->setVisible(isDirectionalForce);
     directionSeparator->setVisible(isDirectionalForce);
@@ -336,6 +341,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     windFreqSpin->setValue(selectedForce->windFrequency);
     windBiasSpin->setValue(selectedForce->windBias);
     backTurbSpin->setValue(selectedForce->backwardTurbulenceProbability);
+    forcePowerSpin->setValue(selectedForce->forcePower.x);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -416,7 +422,11 @@ void LayerDragForceWidget::OnValueChanged()
     params.shape = shape;
     params.timingType = timingType;
     params.boxSize = boxSize->GetValue();
-    params.forcePower = forcePower->GetValue();
+    if (selectedForce->type == ForceType::WIND)
+        params.forcePower = Vector3(forcePowerSpin->value(), 0.0f, 0.0f);
+    else
+        params.forcePower = forcePower->GetValue();
+
     params.direction = direction->GetValue();
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
