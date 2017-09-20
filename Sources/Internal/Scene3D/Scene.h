@@ -59,6 +59,10 @@ class SlotSystem;
 class TransformSingleComponent;
 class MotionSingleComponent;
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+class CollisionSingleComponent;
+#endif
+
 class UIEvent;
 class RenderPass;
 
@@ -185,8 +189,9 @@ public:
     GeoDecalSystem* geoDecalSystem = nullptr;
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     PhysicsSystem* physicsSystem = nullptr;
-#endif
 
+    CollisionSingleComponent* collisionSingleComponent = nullptr;
+#endif
     TransformSingleComponent* transformSingleComponent = nullptr;
     MotionSingleComponent* motionSingleComponent = nullptr;
 
