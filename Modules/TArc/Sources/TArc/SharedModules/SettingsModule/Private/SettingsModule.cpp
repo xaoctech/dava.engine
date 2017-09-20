@@ -58,6 +58,7 @@ void SettingsModule::PostInit()
 
     executor.DelayedExecute([this]() {
         QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/TArc/Resources/settings.png"), actionName);
+        settingsAction->setMenuRole(QAction::PreferencesRole);
 
         GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, settingsAction);
         connections.AddConnection(settingsAction, &QAction::triggered, DAVA::MakeFunction(this, &SettingsModule::ShowSettings));

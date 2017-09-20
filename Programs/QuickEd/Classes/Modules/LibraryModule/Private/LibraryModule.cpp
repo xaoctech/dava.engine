@@ -72,10 +72,9 @@ void LibraryModule::InitUI()
     }
 
     { // create menu "Controls", insert before "Help"
-        QAction* controlsMenu = new QAction(QStringLiteral("Controls"), nullptr);
-        controlsMenu->setObjectName(QStringLiteral("Controls"));
+        QMenu* controlsMenu = new QMenu(QStringLiteral("Controls"), nullptr);
         ActionPlacementInfo controlsMenuPlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
-        GetUI()->AddAction(mainWindowKey, controlsMenuPlacement, controlsMenu);
+        GetUI()->AddAction(mainWindowKey, controlsMenuPlacement, controlsMenu->menuAction());
     }
 
     { // create menu "Library", insert into Controls menu and Controls toolbar
