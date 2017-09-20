@@ -17,7 +17,7 @@ ILBMatrix4x4 ConvertDavaMatrixNoTranspose(const DAVA::Matrix4& davaMatrix);
 
 #define BEAST_VERIFY(command) \
 { \
-if(ILB_ST_SUCCESS != command) \
+if (ILB_ST_SUCCESS != command) \
     { \
         ILBStringHandle extendedError; \
         ILBGetExtendErrorInformation(&extendedError); \
