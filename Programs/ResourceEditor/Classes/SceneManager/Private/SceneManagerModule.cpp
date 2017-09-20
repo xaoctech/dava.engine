@@ -988,9 +988,30 @@ void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
     DAVA::Set<DAVA::NMaterial*> materials;
     SceneHelper::EnumerateMaterials(scene.Get(), materials);
 
+    int progress = 0;
+    WaitDialogParams params;
+    std::unique_ptr<WaitHandle> waitHandle;
+
+    if (textures.size() > 1)
+    {
+        params.needProgressBar = true;
+        params.message = "Reloading textures.";
+        params.min = 0;
+        params.max = static_cast<int>(textures.size());
+        waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
+    }
+
     for (DAVA::Texture* tex : textures)
     {
         DAVA::TextureDescriptor* descriptor = tex->GetDescriptor();
+
+        if (textures.size() > 1)
+        {
+            QString message = QString("Reloading texture:%1");
+            message = message.arg(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+            waitHandle->SetMessage(message);
+            waitHandle->SetProgressValue(progress++);
+        }
 
         tex->ReloadAs(gpuFormat);
         TextureCache::Instance()->clearOriginal(descriptor);
@@ -1030,42 +1051,20 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
         DAVA::TexturesMap& allScenesTextures = collector.GetTextures();
         if (!allScenesTextures.empty())
         {
-            int progress = 0;
-            WaitDialogParams params;
-            params.needProgressBar = true;
-            params.message = "Reloading textures.";
-            params.min = 0;
-            params.max = static_cast<int>(allScenesTextures.size());
-
-            std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
+            DAVA::Vector<DAVA::Texture*> reloadTextures;
 
             DAVA::TexturesMap::const_iterator it = allScenesTextures.begin();
             DAVA::TexturesMap::const_iterator end = allScenesTextures.end();
 
             for (; it != end; ++it)
             {
-                QString message = QString("Reloading texture:%1");
-#if defined(USE_FILEPATH_IN_MAP)
-                message = message.arg(it->first.GetAbsolutePathname().c_str());
-#else //#if defined(USE_FILEPATH_IN_MAP)
-                message = message.arg(it->first.c_str());
-#endif //#if defined(USE_FILEPATH_IN_MAP)
-                waitHandle->SetMessage(message);
-                waitHandle->SetProgressValue(progress++);
-
-                it->second->ReloadAs(gpu);
+                reloadTextures.push_back(it->second);
             }
 
-            TextureCache::Instance()->ClearCache();
+            ReloadTextures(reloadTextures);
         }
 
-        if (!allSceneMaterials.empty())
-        {
-            for (auto m : allSceneMaterials)
-            {
-                m->InvalidateTextureBindings();
-            }
-        }
+        TextureCache::Instance()->ClearCache();
 
         accessor->ForEachContext([](DataContext& ctx)
                                  {
