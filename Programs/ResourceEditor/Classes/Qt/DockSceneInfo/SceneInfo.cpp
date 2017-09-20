@@ -221,7 +221,7 @@ void SceneInfo::InitializeLODSectionInFrame()
     QtPropertyToolButton* button = header->AddButton(QtPropertyToolButton::ACTIVE_ALWAYS);
     button->setIcon(QIcon(":/QtIcons/refresh.png"));
     button->setAutoRaise(false);
-    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::OnRefreshLODSectionInFrame);
+    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::RefreshLODInfoInFrame);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -240,7 +240,7 @@ void SceneInfo::InitializeLODSectionForSelection()
     QtPropertyToolButton* button = header->AddButton(QtPropertyToolButton::ACTIVE_ALWAYS);
     button->setIcon(QIcon(":/QtIcons/refresh.png"));
     button->setAutoRaise(false);
-    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::OnRefreshLODSectionInSelection);
+    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::RefreshLODInfoForSelection);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -841,16 +841,6 @@ void SceneInfo::SpritesReloaded()
 void SceneInfo::OnQualityChanged()
 {
     RefreshAllData();
-}
-
-void SceneInfo::OnRefreshLODSectionInFrame()
-{
-    RefreshLODInfoInFrame();
-}
-
-void SceneInfo::OnRefreshLODSectionInSelection()
-{
-    RefreshLODInfoForSelection();
 }
 
 void SceneInfo::InitializeVegetationInfoSection()

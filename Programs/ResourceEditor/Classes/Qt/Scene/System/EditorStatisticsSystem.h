@@ -12,7 +12,9 @@
 namespace DAVA
 {
 class Entity;
+class Camera;
 class RenderComponent;
+class RenderObject;
 }
 
 class RECommandNotificationObject;
@@ -42,10 +44,11 @@ public:
 
     EditorStatisticsSystem(DAVA::Scene* scene);
 
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
-    void AddComponent(DAVA::Entity* entity, DAVA::Component* component) override;
-    void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void RegisterEntity(DAVA::Entity* entity) override;
+    void UnregisterEntity(DAVA::Entity* entity) override;
+
+    void RegisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
     void PrepareForRemove() override;
 
     void Process(DAVA::float32 timeElapsed) override;

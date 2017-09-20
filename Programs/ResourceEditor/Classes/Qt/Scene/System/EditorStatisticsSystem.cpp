@@ -168,28 +168,38 @@ EditorStatisticsSystem::EditorStatisticsSystem(DAVA::Scene* scene)
     }
 }
 
-void EditorStatisticsSystem::AddEntity(DAVA::Entity* entity)
+void EditorStatisticsSystem::RegisterEntity(DAVA::Entity* entity)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT))
+    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT) || HasComponent(entity, DAVA::Component::LOD_COMPONENT))
     {
-        AddComponent(entity, GetRenderComponent(entity));
+        EmitInvalidateUI(true);
     }
 }
 
-void EditorStatisticsSystem::RemoveEntity(DAVA::Entity* entity)
+void EditorStatisticsSystem::UnregisterEntity(DAVA::Entity* entity)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT))
+    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT) || HasComponent(entity, DAVA::Component::LOD_COMPONENT))
     {
-        RemoveComponent(entity, GetRenderComponent(entity));
+        EmitInvalidateUI(true);
     }
 }
 
-void EditorStatisticsSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
+void EditorStatisticsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
+    DAVA::uint32 type = component->GetType();
+    if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
+    {
+        EmitInvalidateUI(true);
+    }
 }
 
-void EditorStatisticsSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* component)
+void EditorStatisticsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
+    DAVA::uint32 type = component->GetType();
+    if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
+    {
+        EmitInvalidateUI(true);
+    }
 }
 
 void EditorStatisticsSystem::PrepareForRemove()
@@ -214,7 +224,7 @@ const DAVA::Vector<DAVA::uint32>& EditorStatisticsSystem::GetTriangles(eEditorMo
 void EditorStatisticsSystem::Process(DAVA::float32 timeElapsed)
 {
     initialized = true;
-    if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame)
+    if (calculatePerFrame == true)
     {
         CalculateTriangles();
     }
