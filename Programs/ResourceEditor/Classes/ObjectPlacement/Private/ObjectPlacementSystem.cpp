@@ -128,4 +128,9 @@ void ObjectPlacementSystem::GetObjectCollisionMatrixAndNormal(DAVA::RayTraceColl
     collision.geometry->GetCoord(vertIndices[2], v[2]);
     normal = (v[1] - v[0]).CrossProduct(v[2] - v[0]);
     translation.SetTranslationVector(DAVA::Vector3(0.0, 0.0, -collision.t));
+    DAVA::Matrix4* hitWorldTransform = collision.renderObject->GetWorldTransformPtr();
+    DAVA::Quaternion rotationQuaternion;
+    DAVA::Vector3 pos, scale;
+    hitWorldTransform->Decomposition(pos, scale, rotationQuaternion);
+    normal = MultiplyVectorMat3x3(normal, rotationQuaternion.GetMatrix());
 }
