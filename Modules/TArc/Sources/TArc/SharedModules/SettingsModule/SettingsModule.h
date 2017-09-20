@@ -12,16 +12,10 @@ namespace TArc
 class SettingsManager;
 class SettingsModule : public ClientModule
 {
-public:
-    SettingsModule();
-    SettingsModule(ActionPlacementInfo placementInfo, QString actionName);
-
 private:
     void PostInit() override;
     void ShowSettings();
 
-    ActionPlacementInfo placementInfo;
-    QString actionName;
     std::unique_ptr<SettingsManager> manager;
     QtConnections connections;
     QtDelayedExecutor executor;

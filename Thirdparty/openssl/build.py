@@ -382,8 +382,7 @@ def _build_android(working_directory_path, root_project_path):
 
 def _build_linux(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    # TODO: patch if neccessary (current patch does not apply to 1.0.1l)
-    #_patch_sources(source_folder_path, working_directory_path)
+    _patch_sources(source_folder_path, 'patch.diff')
 
     env = build_utils.get_autotools_linux_env()
     install_dir = os.path.join(working_directory_path, 'gen/install_linux')

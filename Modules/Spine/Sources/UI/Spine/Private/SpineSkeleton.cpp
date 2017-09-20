@@ -75,6 +75,8 @@ SpineSkeleton::SpineSkeleton()
 
 SpineSkeleton::~SpineSkeleton()
 {
+    ReleaseAtlas();
+    ReleaseSkeleton();
 }
 
 void SpineSkeleton::ReleaseAtlas()

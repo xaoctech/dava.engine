@@ -47,6 +47,9 @@ FailBehaviour DefaultDialogBoxHandler(const AssertInfo& assertInfo)
     const int backtraceDepth = 0;
 #endif
 
+    //'message' should be UTF-8, otherwise we have empty AlertDialog on iOS and NSException from
+    // NSAlert::setInformativeText on MacOS
+
     // clang-format off
     String message = Format("DVASSERT failed\n"
                             "Expression: %s\n"

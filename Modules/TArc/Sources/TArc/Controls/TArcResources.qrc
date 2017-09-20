@@ -8,5 +8,9 @@
       <file>Resources/DarkTheme.qss</file>
       <file>Resources/settings.png</file>
       <file>ColorPicker/Private/Resources/dropper.png</file>
+      <file>Resources/cminus.png</file>
+      <file>Resources/cplus.png</file>
+      <file>Resources/import.png</file>
+      <file>Resources/export.png</file>
     </qresource>
 </RCC>

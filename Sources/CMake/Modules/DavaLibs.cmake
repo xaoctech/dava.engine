@@ -83,8 +83,8 @@ set( DAVA_STATIC_LIBRARIES_LINUX
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libxml.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libyaml.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libogg.a"
-                                    "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libcrypto.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libssl.a"
+                                    "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libcrypto.a"
                                     "-ldl"
                                     "-lz"
                                     )
