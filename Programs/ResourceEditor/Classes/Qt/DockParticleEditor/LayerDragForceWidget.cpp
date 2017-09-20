@@ -330,9 +330,15 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
 
     static const Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
     static const Vector<QString> legends{ "Force x", "Force y", "Force z" };
+    static const Vector<QString> windLegends{ "Wind force", "none", "none" };
+    const Vector<QString>* currLegends = nullptr;
+    if (selectedForce->type == ParticleDragForce::eType::WIND)
+        currLegends = &windLegends;
+    else
+        currLegends = &legends;
 
     forcePowerTimeLine->Init(0, 1, updateMinimized, true, false);
-    forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(selectedForce->forcePowerLine)).GetProps(), colors, legends);
+    forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(selectedForce->forcePowerLine)).GetProps(), colors, *currLegends);
     forcePowerTimeLine->EnableLock(true);
 
     turbulenceTimeLine->Init(0, 1, updateMinimized);
