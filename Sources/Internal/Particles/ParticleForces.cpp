@@ -170,9 +170,9 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
         Vector3 t2 = noise[nextIndex][yindex];
         turbulence = Lerp(t1, t2, fractPart);
         //turbulence *= Vector3(sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency), cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency), sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * 2.0f);
-        if (offset % 100 < 70)
+        if ((100 - force->backwardTurbulenceProbability) > offset % 100)
         {
-            float32 dot = Normalize(effectSpaceVelocity).DotProduct(Normalize(turbulence));
+            float32 dot = Normalize(force->direction).DotProduct(Normalize(turbulence));
             if (dot < 0)
                 turbulence *= -1.0f;
         }

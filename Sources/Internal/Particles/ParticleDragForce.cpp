@@ -44,6 +44,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->windFrequency = windFrequency;
     dst->windTurbulenceFrequency = windTurbulenceFrequency;
     dst->windTurbulence = windTurbulence;
+    dst->backwardTurbulenceProbability = backwardTurbulenceProbability;
     dst->windBias = windBias;
 
     return dst;

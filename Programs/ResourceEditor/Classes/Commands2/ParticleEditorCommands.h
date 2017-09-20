@@ -471,6 +471,7 @@ public:
         DAVA::float32 windTurbulence = 0.0f;
         DAVA::float32 windTurbulenceFrequency = 0.0f;
         DAVA::float32 windBias = 1.0f;
+        DAVA::uint32 backwardTurbulenceProbability = 0;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
     };
 

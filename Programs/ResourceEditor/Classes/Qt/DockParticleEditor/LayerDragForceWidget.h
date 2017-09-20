@@ -94,6 +94,8 @@ private:
     QLabel* windBiasLabel = nullptr;
     EventFilterDoubleSpinBox* windBiasSpin = nullptr;
     TimeLineWidget* turbulenceTimeLine = nullptr;
+    QLabel* backTurbLabel = nullptr;
+    EventFilterDoubleSpinBox* backTurbSpin = nullptr;
 
     bool blockSignals = false;
 

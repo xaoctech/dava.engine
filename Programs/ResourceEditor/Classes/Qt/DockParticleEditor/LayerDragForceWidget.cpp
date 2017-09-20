@@ -215,6 +215,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     windBiasLabel->setVisible(isWind);
     windBiasSpin->setVisible(isWind);
     turbulenceTimeLine->setVisible(timingType != TimingType::CONSTANT && isWind);
+    backTurbLabel->setVisible(isWind);
+    backTurbSpin->setVisible(isWind);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin)
@@ -294,6 +296,14 @@ void LayerDragForceWidget::BuildWindSection()
     turbFreqLayout->addWidget(windTurbFreqLabel);
     turbFreqLayout->addWidget(windTurbFreqSpin);
     mainLayout->addLayout(turbFreqLayout);
+
+    QHBoxLayout* backTurbLayout = new QHBoxLayout(this);
+    backTurbLabel = new QLabel("Backward turbulence probability:");
+    backTurbSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(backTurbSpin);
+    backTurbLayout->addWidget(backTurbLabel);
+    backTurbLayout->addWidget(backTurbSpin);
+    mainLayout->addLayout(backTurbLayout);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -325,6 +335,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     windTurbFreqSpin->setValue(selectedForce->windTurbulenceFrequency);
     windFreqSpin->setValue(selectedForce->windFrequency);
     windBiasSpin->setValue(selectedForce->windBias);
+    backTurbSpin->setValue(selectedForce->backwardTurbulenceProbability);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -415,6 +426,9 @@ void LayerDragForceWidget::OnValueChanged()
     params.windTurbulence = windTurbSpin->value();
     params.windTurbulenceFrequency = windTurbFreqSpin->value();
     params.windBias = windBiasSpin->value();
+    params.backwardTurbulenceProbability = static_cast<uint32>(backTurbSpin->value());
+
+    backTurbSpin->setValue(params.backwardTurbulenceProbability);
 
     if (selectedForce->type == ForceType::GRAVITY)
         params.forcePower.z = gravitySpin->value();

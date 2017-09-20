@@ -59,6 +59,7 @@ public:
     float32 windTurbulenceFrequency = 1.0f;
     float32 windBias = 1.0f;
 
+    uint32 backwardTurbulenceProbability = 0;
     float32 windTurbulence = 0.0f;
     RefPtr<PropertyLine<float32>> turbulenceLine;
 
