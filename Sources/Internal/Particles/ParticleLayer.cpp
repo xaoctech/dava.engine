@@ -1246,6 +1246,10 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("forceWindBias%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->windBias);
+
+        forceDataName = Format("turbulenceLine%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, forceDataName, currentForce->turbulenceLine);
+
     }
 }
 
@@ -1540,6 +1544,9 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
 
         RefPtr<PropertyLine<Vector3>> forcePowerLine = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("dragForceLine%d", i)));
         dragForce->forcePowerLine = forcePowerLine;
+
+        RefPtr<PropertyLine<float32>> turbulenceLine = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get(Format("turbulenceLine%d", i)));
+        dragForce->turbulenceLine = turbulenceLine;
 
         AddDrag(dragForce);
         dragForce->Release();

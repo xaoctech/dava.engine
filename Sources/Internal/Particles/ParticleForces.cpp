@@ -51,6 +51,7 @@ void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, 
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
+float32 GetTurbulenceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 float32 GetWindValueFromTable(const Vector3& inPosition, const ParticleDragForce* force, float32 layerOverLife, int32 index);
 
 void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, const Particle* particle)
@@ -148,10 +149,13 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
         if (!IsPositionInForceShape(parent, force, effectSpacePosition))
             return;
     }
+    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife) * dt;
+
     intptr_t partInd = reinterpret_cast<intptr_t>(particle);
     uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
     Vector3 turbulence;
-    if (Abs(force->windTurbulence) > EPSILON)
+    float32 tubulencePower = GetTurbulenceValue(force, particleOverLife, layerOverLife);
+    if (Abs(tubulencePower) > EPSILON)
     {
         uint32 offset = particleIndex % noiseWidth;
         float32 indexUnclamped = particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset;
@@ -172,10 +176,10 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
             if (dot < 0)
                 turbulence *= -1.0f;
         }
-        turbulence *= force->windTurbulence * dt;
+        turbulence *= tubulencePower * dt;
         effectSpacePosition += turbulence; // how with drug and other forces, turb not adding to velocity? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
     }
-    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex);// +turbulence;
+    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex) * forceStrength.x;// +turbulence;
 }
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
@@ -194,6 +198,20 @@ Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, 
         return force->forcePowerLine->GetValue(layerOverLife);
 
     return force->forcePower;
+}
+
+float32 GetTurbulenceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife)
+{
+    if (force->timingType == ParticleDragForce::eTimingType::CONSTANT || force->turbulenceLine == nullptr)
+        return force->windTurbulence;
+
+    if (force->timingType == ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE)
+        return force->turbulenceLine->GetValue(particleOverLife);
+
+    if (force->timingType == ParticleDragForce::eTimingType::OVER_LAYER_LIFE)
+        return force->turbulenceLine->GetValue(layerOverLife);
+
+    return force->windTurbulence;
 }
 
 float32 GetWindValueFromTable(const Vector3& inPosition, const ParticleDragForce* force, float32 layerOverLife, int32 index)

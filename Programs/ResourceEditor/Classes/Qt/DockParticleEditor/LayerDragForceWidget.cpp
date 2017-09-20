@@ -208,12 +208,23 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     windSeparator->setVisible(isWind);
     windFreqLabel->setVisible(isWind);
     windFreqSpin->setVisible(isWind);
-    windTurbLabel->setVisible(isWind);
-    windTurbSpin->setVisible(isWind);
+    windTurbLabel->setVisible(timingType == TimingType::CONSTANT && isWind);
+    windTurbSpin->setVisible(timingType == TimingType::CONSTANT && isWind);
     windTurbFreqLabel->setVisible(isWind);
     windTurbFreqSpin->setVisible(isWind);
     windBiasLabel->setVisible(isWind);
     windBiasSpin->setVisible(isWind);
+    turbulenceTimeLine->setVisible(timingType != TimingType::CONSTANT && isWind);
+}
+
+void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin)
+{
+    spin->setMinimum(-100000000000000000000.0);
+    spin->setMaximum(100000000000000000000.0);
+    spin->setSingleStep(0.001);
+    spin->setDecimals(4);
+    connect(spin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    spin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 }
 
 void LayerDragForceWidget::BuilDirectionSection()
@@ -236,12 +247,7 @@ void LayerDragForceWidget::BuildGravitySection()
     QHBoxLayout* layout = new QHBoxLayout(this);
     gravityLabel = new QLabel("Gravity force:");
     gravitySpin = new EventFilterDoubleSpinBox();
-    gravitySpin->setMinimum(-100000000000000000000.0);
-    gravitySpin->setMaximum(100000000000000000000.0);
-    gravitySpin->setSingleStep(0.001);
-    gravitySpin->setDecimals(4);
-    connect(gravitySpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
-    gravitySpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    SetupSpin(gravitySpin);
     layout->addWidget(gravityLabel);
     layout->addWidget(gravitySpin);
     mainLayout->addLayout(layout);
@@ -256,12 +262,7 @@ void LayerDragForceWidget::BuildWindSection()
     QHBoxLayout* freqLayout = new QHBoxLayout(this);
     windFreqLabel = new QLabel("Wind frequency:");
     windFreqSpin = new EventFilterDoubleSpinBox();
-    windFreqSpin->setMinimum(-100000000000000000000.0);
-    windFreqSpin->setMaximum(100000000000000000000.0);
-    windFreqSpin->setSingleStep(0.001);
-    windFreqSpin->setDecimals(4);
-    connect(windFreqSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
-    windFreqSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    SetupSpin(windFreqSpin);
     freqLayout->addWidget(windFreqLabel);
     freqLayout->addWidget(windFreqSpin);
     mainLayout->addLayout(freqLayout);
@@ -269,12 +270,7 @@ void LayerDragForceWidget::BuildWindSection()
     QHBoxLayout* biasLayout = new QHBoxLayout(this);
     windBiasLabel = new QLabel("Wind bias:");
     windBiasSpin = new EventFilterDoubleSpinBox();
-    windBiasSpin->setMinimum(-100000000000000000000.0);
-    windBiasSpin->setMaximum(100000000000000000000.0);
-    windBiasSpin->setSingleStep(0.001);
-    windBiasSpin->setDecimals(4);
-    connect(windBiasSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
-    windBiasSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    SetupSpin(windBiasSpin);
     biasLayout->addWidget(windBiasLabel);
     biasLayout->addWidget(windBiasSpin);
     mainLayout->addLayout(biasLayout);
@@ -282,25 +278,19 @@ void LayerDragForceWidget::BuildWindSection()
     QHBoxLayout* turbLayout = new QHBoxLayout(this);
     windTurbLabel = new QLabel("Wind turbulence:");
     windTurbSpin = new EventFilterDoubleSpinBox();
-    windTurbSpin->setMinimum(-100000000000000000000.0);
-    windTurbSpin->setMaximum(100000000000000000000.0);
-    windTurbSpin->setSingleStep(0.001);
-    windTurbSpin->setDecimals(4);
-    connect(windTurbSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
-    windTurbSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    SetupSpin(windTurbSpin);
     turbLayout->addWidget(windTurbLabel);
     turbLayout->addWidget(windTurbSpin);
     mainLayout->addLayout(turbLayout);
 
+    turbulenceTimeLine = new TimeLineWidget(this);
+    connect(turbulenceTimeLine, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(turbulenceTimeLine);
+
     QHBoxLayout* turbFreqLayout = new QHBoxLayout(this);
     windTurbFreqLabel = new QLabel("Wind turbulence frequency:");
     windTurbFreqSpin = new EventFilterDoubleSpinBox();
-    windTurbFreqSpin->setMinimum(-100000000000000000000.0);
-    windTurbFreqSpin->setMaximum(100000000000000000000.0);
-    windTurbFreqSpin->setSingleStep(0.001);
-    windTurbFreqSpin->setDecimals(4);
-    connect(windTurbFreqSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
-    windTurbFreqSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    SetupSpin(windTurbFreqSpin);
     turbFreqLayout->addWidget(windTurbFreqLabel);
     turbFreqLayout->addWidget(windTurbFreqSpin);
     mainLayout->addLayout(turbFreqLayout);
@@ -345,6 +335,10 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(selectedForce->forcePowerLine)).GetProps(), colors, legends);
     forcePowerTimeLine->EnableLock(true);
 
+    turbulenceTimeLine->Init(0, 1, updateMinimized);
+    turbulenceTimeLine->AddLine(0, PropLineWrapper<float32>(LineHelper::GetValueLine(selectedForce->turbulenceLine)).GetProps(), Qt::red, "Turbulence");
+    turbulenceTimeLine->EnableLock(true);
+
     shapeComboBox->setCurrentIndex(ElementToIndex(selectedForce->shape, shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(selectedForce->timingType, timingMap));
 
@@ -364,6 +358,10 @@ void LayerDragForceWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps
     DAVA::KeyedArchive* props = new DAVA::KeyedArchive();
     forcePowerTimeLine->GetVisualState(props);
     visualStateProps->SetArchive("FORCE_PROPS", props);
+
+    props->DeleteAllKeys();
+    turbulenceTimeLine->SetVisualState(props);
+    visualStateProps->SetArchive("TURB_PROPS", props);
     DAVA::SafeRelease(props);
 }
 
@@ -372,6 +370,7 @@ void LayerDragForceWidget::RestoreVisualState(DAVA::KeyedArchive* visualStatePro
     if (!visualStateProps)
         return;
     forcePowerTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_PROPS"));
+    turbulenceTimeLine->SetVisualState(visualStateProps->GetArchive("TURB_PROPS"));
 }
 
 void LayerDragForceWidget::OnValueChanged()
@@ -391,6 +390,9 @@ void LayerDragForceWidget::OnValueChanged()
     PropLineWrapper<Vector3> propForce;
     forcePowerTimeLine->GetValues(propForce.GetPropsPtr());
 
+    PropLineWrapper<float32> propTurb;
+    turbulenceTimeLine->GetValue(0, propTurb.GetPropsPtr());
+
     CommandUpdateParticleDragForce::ForceParams params;
     params.isActive = isActive->isChecked();
     params.forceName = forceNameEdit->text().toStdString();
@@ -402,6 +404,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.useInfinityRange = infinityRange->isChecked();
     params.radius = radiusSpin->value();
     params.forcePowerLine = propForce.GetPropLine();
+    params.turbulenceLine = propTurb.GetPropLine();
     params.windFrequency = windFreqSpin->value();
     params.windTurbulence = windTurbSpin->value();
     params.windTurbulenceFrequency = windTurbFreqSpin->value();

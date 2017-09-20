@@ -56,9 +56,11 @@ public:
     float32 radius = 1.0f;
 
     float32 windFrequency = 0.0f;
-    float32 windTurbulence = 0.0f;
     float32 windTurbulenceFrequency = 1.0f;
     float32 windBias = 1.0f;
+
+    float32 windTurbulence = 0.0f;
+    RefPtr<PropertyLine<float32>> turbulenceLine;
 
     bool isInfinityRange = true;
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);

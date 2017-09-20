@@ -23,6 +23,11 @@ ParticleDragForce* ParticleDragForce::Clone()
         dst->forcePowerLine = forcePowerLine->Clone();
         dst->forcePowerLine->Release();
     }
+    if (turbulenceLine != nullptr)
+    {
+        dst->turbulenceLine = turbulenceLine->Clone();
+        dst->turbulenceLine->Release();
+    }
     dst->direction = direction;
     dst->isActive = isActive;
     dst->timingType = timingType;
@@ -47,5 +52,6 @@ ParticleDragForce* ParticleDragForce::Clone()
 void ParticleDragForce::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
     PropertyLineHelper::AddIfModifiable(forcePowerLine.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(turbulenceLine.Get(), modifiables);
 }
 }
