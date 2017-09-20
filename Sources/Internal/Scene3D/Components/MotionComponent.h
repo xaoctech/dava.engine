@@ -38,6 +38,8 @@ public:
 
     void ReloadFromConfig();
 
+    Vector3 rootOffsetDelta;
+
 protected:
     FilePath configPath;
     Vector<Motion*> motions;

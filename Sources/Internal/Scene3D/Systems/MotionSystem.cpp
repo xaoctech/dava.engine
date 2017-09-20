@@ -122,6 +122,7 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
             {
             case Motion::BLEND_OVERRIDE:
                 resultPose.Override(pose);
+                motionComponent->rootOffsetDelta = motion->GetCurrentRootOffsetDelta();
                 break;
             case Motion::BLEND_ADD:
                 resultPose.Add(pose);

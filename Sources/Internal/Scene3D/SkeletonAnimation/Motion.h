@@ -40,6 +40,7 @@ public:
     const FastName& GetName() const;
     eMotionBlend GetBlendMode() const;
     const SkeletonPose& GetCurrentSkeletonPose() const;
+    const Vector3& GetCurrentRootOffsetDelta() const;
 
     bool RequestState(const FastName& stateID);
     void Update(float32 dTime);
@@ -76,6 +77,7 @@ protected:
     MotionState* afterTransitionState = nullptr; //TODO: *Skinning* state-sequence
     bool transitionIsActive = false;
 
+    Vector3 currentRootOffsetDelta;
     SkeletonPose currentPose;
     Vector<std::pair<FastName, FastName>> endedPhases; /*[state-id, phase-id]*/
 
@@ -103,6 +105,11 @@ inline Motion::eMotionBlend Motion::GetBlendMode() const
 inline const SkeletonPose& Motion::GetCurrentSkeletonPose() const
 {
     return currentPose;
+}
+
+inline const Vector3& Motion::GetCurrentRootOffsetDelta() const
+{
+    return currentRootOffsetDelta;
 }
 
 inline const Vector<FastName>& Motion::GetParameterIDs() const

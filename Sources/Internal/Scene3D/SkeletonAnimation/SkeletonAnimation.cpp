@@ -37,6 +37,12 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
             {
                 const AnimationTrack* track = animationClip->GetTrack(t);
 
+                if (j == 0)
+                {
+                    rootTrack = track;
+                    rootTrackStateIndex = uint32(animationStates.size());
+                }
+
                 animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
                 track->Evaluate(0.f, &animationStates.back());
 
@@ -51,7 +57,7 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
     }
 }
 
-void SkeletonAnimation::EvaluatePose(float32 localTime, SkeletonPose* outPose, Vector3* offset)
+void SkeletonAnimation::EvaluatePose(float32 localTime, SkeletonPose* outPose)
 {
     DVASSERT(outPose);
     outPose->SetJointCount(maxJointIndex + 1);
@@ -69,6 +75,24 @@ void SkeletonAnimation::EvaluatePose(float32 localTime, SkeletonPose* outPose, V
     }
 }
 
+void SkeletonAnimation::EvaluateRootPosition(float32 localTime, Vector3* offset)
+{
+    if (rootTrack != nullptr)
+    {
+        rootTrack->Evaluate(localTime, &animationStates[rootTrackStateIndex]);
+
+        for (uint32 c = 0; c < rootTrack->GetChannelsCount(); ++c)
+        {
+            AnimationTrack::eChannelTarget target = rootTrack->GetChannelTarget(c);
+            if (target == AnimationTrack::CHANNEL_TARGET_POSITION)
+            {
+                *offset = Vector3(rootTrack->GetStateValue(&animationStates[rootTrackStateIndex], c));
+                break;
+            }
+        }
+    }
+}
+
 float32 SkeletonAnimation::GetDuration() const
 {
     return animationClip->GetDuration();
@@ -82,15 +106,15 @@ JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* 
         AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
         switch (target)
         {
-        case DAVA::AnimationTrack::CHANNEL_TARGET_POSITION:
+        case AnimationTrack::CHANNEL_TARGET_POSITION:
             transform.SetPosition(Vector3(track->GetStateValue(state, c)));
             break;
 
-        case DAVA::AnimationTrack::CHANNEL_TARGET_ORIENTATION:
+        case AnimationTrack::CHANNEL_TARGET_ORIENTATION:
             transform.SetOrientation(Quaternion(track->GetStateValue(state, c)));
             break;
 
-        case DAVA::AnimationTrack::CHANNEL_TARGET_SCALE:
+        case AnimationTrack::CHANNEL_TARGET_SCALE:
             transform.SetScale(*track->GetStateValue(state, c));
             break;
 

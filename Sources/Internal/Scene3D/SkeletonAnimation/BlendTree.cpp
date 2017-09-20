@@ -33,17 +33,38 @@ void BlendTree::BindSkeleton(const SkeletonComponent* skeleton)
 
 void BlendTree::EvaluatePose(uint32 phaseIndex, float32 phase, const Vector<const float32*>& parameters, SkeletonPose* outPose) const
 {
-    EvaluateRecursive(phaseIndex, phase, nodes.front(), parameters, outPose, nullptr);
+    EvaluateRecursive(phaseIndex, phase, 0, 0.f, nodes.front(), parameters, outPose, nullptr, nullptr);
 }
 
 float32 BlendTree::EvaluatePhaseDuration(uint32 phaseIndex, const Vector<const float32*>& parameters) const
 {
     float32 duration = 1.f;
-    EvaluateRecursive(phaseIndex, 0.f, nodes.front(), parameters, nullptr, &duration);
+    EvaluateRecursive(phaseIndex, 0.f, 0, 0.f, nodes.front(), parameters, nullptr, &duration, nullptr);
     return duration;
 }
 
-void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendNode& node, const Vector<const float32*>& parameters, SkeletonPose* outPose, float32* outPhaseDuration) const
+void BlendTree::EvaluateRootOffset(uint32 phaseIndex0, float32 phase0, uint32 phaseIndex1, float32 phase1, const Vector<const float32*>& parameters, Vector3* outOffset)
+{
+    EvaluateRecursive(phaseIndex0, phase0, phaseIndex1, phase1, nodes.front(), parameters, nullptr, nullptr, outOffset);
+}
+
+float32 BlendTree::GetAnimationPhaseTime(const Animation& animation, uint32 phaseIndex) const
+{
+    float32 phaseStart = (phaseIndex > 0) ? animation.phaseEnds[phaseIndex - 1] : 0.f;
+    float32 phaseEnd = animation.phaseEnds[phaseIndex];
+
+    return (phaseEnd - phaseStart) * animation.skeletonAnimation->GetDuration();
+}
+
+float32 BlendTree::GetAnimationLocalTime(const Animation& animation, uint32 phaseIndex, float32 phase) const
+{
+    float32 phaseStart = (phaseIndex > 0) ? animation.phaseEnds[phaseIndex - 1] : 0.f;
+    float32 phaseEnd = animation.phaseEnds[phaseIndex];
+
+    return (phaseStart + phase * (phaseEnd - phaseStart)) * animation.skeletonAnimation->GetDuration();
+}
+
+void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phaseIndex1, float32 phase1, const BlendNode& node, const Vector<const float32*>& parameters, SkeletonPose* outPose, float32* outPhaseDuration, Vector3* outOffset) const
 {
     switch (node.type)
     {
@@ -56,18 +77,44 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
 
             const BlendTree::Animation& animation = animations[node.animData.animationIndex];
 
-            float32 phaseStart = (phaseIndex > 0) ? animation.phaseEnds[phaseIndex - 1] : 0.f;
-            float32 phaseEnd = animation.phaseEnds[phaseIndex];
-
             if (outPose != nullptr)
             {
-                float32 animationLocalTime = (phaseStart + phase * (phaseEnd - phaseStart)) * animation.skeletonAnimation->GetDuration();
-                animation.skeletonAnimation->EvaluatePose(animationLocalTime, outPose);
+                animation.skeletonAnimation->EvaluatePose(GetAnimationLocalTime(animation, phaseIndex, phase), outPose);
             }
 
             if (outPhaseDuration != nullptr)
             {
-                *outPhaseDuration = (phaseEnd - phaseStart) * animation.skeletonAnimation->GetDuration();
+                *outPhaseDuration = GetAnimationPhaseTime(animation, phaseIndex);
+            }
+
+            if (outOffset != nullptr)
+            {
+                if (phaseIndex1 < phaseIndex || (phasesCount == 1 && phase1 < phase))
+                {
+                    Vector3 endOffset, startOffset;
+                    animation.skeletonAnimation->EvaluateRootPosition(0.f, &startOffset);
+                    animation.skeletonAnimation->EvaluateRootPosition(animation.skeletonAnimation->GetDuration(), &endOffset);
+
+                    float32 animationLocalTime0 = GetAnimationLocalTime(animation, phaseIndex, phase);
+                    float32 animationLocalTime1 = GetAnimationLocalTime(animation, phaseIndex1, phase1);
+
+                    Vector3 offset0, offset1;
+                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime0, &offset0);
+                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime1, &offset1);
+
+                    *outOffset = (endOffset - offset0) + (offset1 - startOffset);
+                }
+                else
+                {
+                    float32 animationLocalTime0 = GetAnimationLocalTime(animation, phaseIndex, phase);
+                    float32 animationLocalTime1 = GetAnimationLocalTime(animation, phaseIndex1, phase1);
+
+                    Vector3 offset0;
+                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime0, &offset0);
+                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime1, outOffset);
+
+                    *outOffset -= offset0;
+                }
             }
         }
     }
@@ -78,7 +125,7 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
         int32 childrenCount = blendData.endChildIndex - blendData.beginChildIndex;
         if (childrenCount == 1)
         {
-            EvaluateRecursive(phaseIndex, phase, nodes[blendData.beginChildIndex], parameters, outPose, outPhaseDuration);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, outPhaseDuration, outOffset);
         }
         else
         {
@@ -93,11 +140,11 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
 
             if (c == blendData.beginChildIndex)
             {
-                EvaluateRecursive(phaseIndex, phase, nodes[blendData.beginChildIndex], parameters, outPose, outPhaseDuration);
+                EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, outPhaseDuration, outOffset);
             }
             else if (c == blendData.endChildIndex)
             {
-                EvaluateRecursive(phaseIndex, phase, nodes[blendData.endChildIndex - 1], parameters, outPose, outPhaseDuration);
+                EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.endChildIndex - 1], parameters, outPose, outPhaseDuration, outOffset);
             }
             else
             {
@@ -110,17 +157,25 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
                 if (outPose != nullptr)
                 {
                     SkeletonPose pose1;
-                    EvaluateRecursive(phaseIndex, phase, child0, parameters, outPose, nullptr);
-                    EvaluateRecursive(phaseIndex, phase, child1, parameters, &pose1, nullptr);
+                    EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, child0, parameters, outPose, nullptr, nullptr);
+                    EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, child1, parameters, &pose1, nullptr, nullptr);
                     outPose->Lerp(pose1, factor);
                 }
 
                 if (outPhaseDuration != nullptr)
                 {
                     float32 dur0, dur1;
-                    EvaluateRecursive(phaseIndex, phase, child0, parameters, nullptr, &dur0);
-                    EvaluateRecursive(phaseIndex, phase, child1, parameters, nullptr, &dur1);
+                    EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, child0, parameters, nullptr, &dur0, nullptr);
+                    EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, child1, parameters, nullptr, &dur1, nullptr);
                     *outPhaseDuration = Lerp(dur0, dur1, factor);
+                }
+
+                if (outOffset != nullptr)
+                {
+                    Vector3 offset0, offset1;
+                    EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, child0, parameters, nullptr, nullptr, &offset0);
+                    EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, child1, parameters, nullptr, nullptr, &offset1);
+                    *outOffset = Lerp(offset0, offset1, factor);
                 }
             }
         }
@@ -139,8 +194,8 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
         if (outPose != nullptr)
         {
             SkeletonPose pose1;
-            EvaluateRecursive(phaseIndex, phase, nodes[blendData.beginChildIndex], parameters, outPose, nullptr);
-            EvaluateRecursive(phaseIndex, phase, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, nullptr, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr, nullptr);
             outPose->Add(pose1);
         }
     }
@@ -152,8 +207,8 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, const BlendN
         if (outPose != nullptr)
         {
             SkeletonPose pose1;
-            EvaluateRecursive(phaseIndex, phase, nodes[blendData.beginChildIndex], parameters, outPose, nullptr);
-            EvaluateRecursive(phaseIndex, phase, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, nullptr, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr, nullptr);
             outPose->Diff(pose1);
         }
     }

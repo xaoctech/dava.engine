@@ -25,6 +25,7 @@ public:
     void Reset();
     void Update(float32 dTime);
     void EvaluatePose(SkeletonPose* outPose) const;
+    void GetRootOffsetDelta(Vector3* offset) const;
     void SyncPhase(const MotionState* withOther);
 
     const FastName& GetID() const;
@@ -47,6 +48,7 @@ protected:
     Vector<const float32*> boundParams;
     Vector<FastName> phaseNames;
 
+    Vector3 rootOffset;
     uint32 animationCurrPhaseIndex = 0u;
     uint32 animationPrevPhaseIndex = 0u;
     float32 animationPhase = 0.f;

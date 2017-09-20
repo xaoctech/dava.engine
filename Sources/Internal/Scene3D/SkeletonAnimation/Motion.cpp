@@ -111,6 +111,7 @@ void Motion::Update(float32 dTime)
     }
 
     currentState->Update(dTime);
+    currentState->GetRootOffsetDelta(&currentRootOffsetDelta);
 
     if (afterTransitionState != nullptr && currentState->IsAnimationEnd())
     {
@@ -135,6 +136,8 @@ void Motion::Update(float32 dTime)
 
         if (currentTransition.IsComplete())
         {
+            currentTransition.EvaluateRootOffset(&currentRootOffsetDelta);
+
             currentState = currentTransition.GetDstState();
             afterTransitionState = nullptr;
             transitionIsActive = false;
@@ -146,11 +149,19 @@ void Motion::Update(float32 dTime)
     if (transitionIsActive)
     {
         currentTransition.EvaluatePose(&currentPose);
+        currentTransition.EvaluateRootOffset(&currentRootOffsetDelta);
     }
     else
     {
         currentState->EvaluatePose(&currentPose);
     }
+
+    //Temp for debug
+    currentRootOffsetDelta.z = 0.f;
+
+    Vector3 rootPosition = currentPose.GetJointTransform(0).GetPosition();
+    rootPosition.x = rootPosition.y = 0.f;
+    currentPose.SetPosition(0, rootPosition);
 }
 
 void Motion::BindSkeleton(const SkeletonComponent* skeleton)
@@ -163,6 +174,7 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
         currentPose.Reset();
         currentState->Reset();
         currentState->EvaluatePose(&currentPose);
+        currentState->GetRootOffsetDelta(&currentRootOffsetDelta);
     }
 }
 

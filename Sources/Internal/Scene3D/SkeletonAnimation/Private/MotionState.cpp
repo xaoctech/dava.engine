@@ -13,6 +13,7 @@ MotionState::~MotionState()
 
 void MotionState::Reset()
 {
+    rootOffset = Vector3();
     animationPrevPhaseIndex = 0;
     animationCurrPhaseIndex = 0;
     animationPhase = 0.f;
@@ -23,6 +24,9 @@ void MotionState::Update(float32 dTime)
 {
     animationPrevPhaseIndex = animationCurrPhaseIndex;
     anyPhaseEnd = false;
+
+    float32 animationPhase0 = animationPhase;
+    uint32 animationCurrPhaseIndex0 = animationCurrPhaseIndex;
 
     float32 duration = blendTree->EvaluatePhaseDuration(animationCurrPhaseIndex, boundParams);
     animationPhase += dTime / duration;
@@ -35,11 +39,18 @@ void MotionState::Update(float32 dTime)
 
         anyPhaseEnd = true;
     }
+
+    blendTree->EvaluateRootOffset(animationCurrPhaseIndex0, animationPhase0, animationCurrPhaseIndex, animationPhase, boundParams, &rootOffset);
 }
 
 void MotionState::EvaluatePose(SkeletonPose* outPose) const
 {
     blendTree->EvaluatePose(animationCurrPhaseIndex, animationPhase, boundParams, outPose);
+}
+
+void MotionState::GetRootOffsetDelta(Vector3* offset) const
+{
+    *offset = rootOffset;
 }
 
 void MotionState::SyncPhase(const MotionState* other)

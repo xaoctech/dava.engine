@@ -58,6 +58,7 @@ public:
 
     void Update(float32 dTime);
     void EvaluatePose(SkeletonPose* outPose) const;
+    void EvaluateRootOffset(Vector3* outOffset);
 
     bool IsComplete() const;
     bool IsStarted() const;
@@ -76,6 +77,7 @@ protected:
     MotionState* dstState = nullptr;
 
     SkeletonPose frozenPose;
+    Vector3 frozenOffset;
     float32 transitionPhase = 0.f;
     bool started = false;
     bool srcFrozen = false;

@@ -245,6 +245,14 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
+    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
+    {
+        motionSingleComponent = new MotionSingleComponent();
+
+        motionSystem = new MotionSystem(this);
+        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
     {
@@ -259,14 +267,6 @@ void Scene::CreateSystems()
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
     AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
-
-    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
-    {
-        motionSingleComponent = new MotionSingleComponent();
-
-        motionSystem = new MotionSystem(this);
-        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-    }
 
     if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
     {
