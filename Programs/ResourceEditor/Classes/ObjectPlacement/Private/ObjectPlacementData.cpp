@@ -1,5 +1,5 @@
 #include "Classes/ObjectPlacement/Private/ObjectPlacementData.h"
-#include "Classes/Qt/Scene/System/ModifSystem.h"
+#include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
 
 const char* ObjectPlacementData::snapToLandscapePropertyName = "snapToLandscape";
 

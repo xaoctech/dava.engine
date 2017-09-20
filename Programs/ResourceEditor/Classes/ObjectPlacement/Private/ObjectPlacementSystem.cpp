@@ -1,5 +1,9 @@
 #include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/System/ModifSystem.h"
+#include "Classes/Selection/Selection.h"
+
+#include <Scene3D/Systems/LandscapeSystem.h>
 
 ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)

@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
-#include "Classes/Qt/Scene/System/ModifSystem.h"
-
 #include <TArc/DataProcessing/DataNode.h>
 #include <Reflection/ReflectionRegistrator.h>
 
 #include <memory>
+
+class ObjectPlacementSystem;
 
 class ObjectPlacementData : public DAVA::TArc::DataNode
 {

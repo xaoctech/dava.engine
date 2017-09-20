@@ -7,6 +7,8 @@
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/Selection.h"
 
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 
 #include <Scene3D/Components/ComponentHelpers.h>
