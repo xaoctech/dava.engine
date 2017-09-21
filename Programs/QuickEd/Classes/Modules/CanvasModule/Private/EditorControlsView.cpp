@@ -610,7 +610,10 @@ void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRoo
     needRecalculateBgrBeforeRender = true;
 
     //centralize new displayed root controls while we have no ensure visible functions
-    canvasDataWrapper.SetFieldValue(CanvasData::needCentralizePropertyName, true);
+    if (canvasDataWrapper.HasData())
+    {
+        canvasDataWrapper.SetFieldValue(CanvasData::needCentralizePropertyName, true);
+    }
 }
 
 //later background controls must be a part of data and rootControlPos must be simple getter
