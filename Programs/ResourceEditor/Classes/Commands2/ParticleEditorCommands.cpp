@@ -343,6 +343,7 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.direction = force->direction;
         oldParams.windFrequency = force->windFrequency;
         oldParams.windTurbulence = force->windTurbulence;
+        oldParams.pointGravityRadius = force->pointGravityRadius;
         oldParams.windTurbulenceFrequency = force->windTurbulenceFrequency;
         oldParams.windBias = force->windBias;
         oldParams.backwardTurbulenceProbability = force->backwardTurbulenceProbability;
@@ -378,6 +379,7 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
         force->windTurbulenceFrequency = params.windTurbulenceFrequency;
         force->windBias = params.windBias;
         force->backwardTurbulenceProbability = params.backwardTurbulenceProbability;
+        force->pointGravityRadius = params.pointGravityRadius;
         PropertyLineHelper::SetValueLine(force->forcePowerLine, params.forcePowerLine);
         PropertyLineHelper::SetValueLine(force->turbulenceLine, params.turbulenceLine);
     }

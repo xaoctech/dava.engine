@@ -245,10 +245,18 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
             Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
     }
+    
+    RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    if (force->type == ForceType::POINT_GRAVITY)
+    {
+        Matrix4 wMat = Selectable(force).GetWorldTransform();
+        float32 radius = force->pointGravityRadius;
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.3f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.15f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
 
     if (force->isInfinityRange)
         return;
-    RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->shape == ParticleDragForce::eShape::BOX)
     {
         auto layer = GetDragForceOwner(force);

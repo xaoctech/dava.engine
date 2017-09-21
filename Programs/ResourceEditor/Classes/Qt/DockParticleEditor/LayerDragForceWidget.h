@@ -50,6 +50,7 @@ private:
     void BuilDirectionSection();
     void BuildGravitySection();
     void BuildWindSection();
+    void BuildPointGravitySection();
     void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange);
     void SetupSpin(EventFilterDoubleSpinBox* spin);
 
@@ -97,6 +98,10 @@ private:
     TimeLineWidget* turbulenceTimeLine = nullptr;
     QLabel* backTurbLabel = nullptr;
     EventFilterDoubleSpinBox* backTurbSpin = nullptr;
+
+    QFrame* pointGravitySeparator = nullptr;
+    QLabel* pointGravityRadiusLabel = nullptr;
+    EventFilterDoubleSpinBox* pointGravityRadiusSpin = nullptr;
 
     bool blockSignals = false;
 

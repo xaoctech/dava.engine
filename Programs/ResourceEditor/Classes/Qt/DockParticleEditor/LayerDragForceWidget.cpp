@@ -77,6 +77,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     BuildTimingSection();
     BuilDirectionSection();
     BuildWindSection();
+    BuildPointGravitySection();
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     blockSignals = false;
@@ -186,6 +187,7 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     bool isGravity = forceType == ForceType::GRAVITY;
     bool isWind = forceType == ForceType::WIND;
     bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND;
+    bool isPointGravity = forceType == ForceType::POINT_GRAVITY;
 
     boxSize->setVisible(shape == Shape::BOX && !isInfinityRange && !isGravity);
     radiusWidget->setVisible(shape == Shape::SPHERE && !isInfinityRange && !isGravity);
@@ -223,6 +225,11 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     turbulenceTimeLine->setVisible(timingType != TimingType::CONSTANT && isWind);
     backTurbLabel->setVisible(isWind);
     backTurbSpin->setVisible(isWind);
+
+    // PointGravity
+    pointGravitySeparator->setVisible(isPointGravity);
+    pointGravityRadiusLabel->setVisible(isPointGravity);
+    pointGravityRadiusSpin->setVisible(isPointGravity);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin)
@@ -312,6 +319,21 @@ void LayerDragForceWidget::BuildWindSection()
     mainLayout->addLayout(backTurbLayout);
 }
 
+void LayerDragForceWidget::BuildPointGravitySection()
+{
+    pointGravitySeparator = new QFrame();
+    pointGravitySeparator->setFrameShape(QFrame::HLine);
+    mainLayout->addWidget(pointGravitySeparator);
+
+    QHBoxLayout* pointGravityRadLayout = new QHBoxLayout(this);
+    pointGravityRadiusLabel = new QLabel("Point gravity radius:");
+    pointGravityRadiusSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(pointGravityRadiusSpin);
+    pointGravityRadLayout->addWidget(pointGravityRadiusLabel);
+    pointGravityRadLayout->addWidget(pointGravityRadiusSpin);
+    mainLayout->addLayout(pointGravityRadLayout);
+}
+
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
     using namespace DAVA;
@@ -343,6 +365,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     windBiasSpin->setValue(selectedForce->windBias);
     backTurbSpin->setValue(selectedForce->backwardTurbulenceProbability);
     forcePowerSpin->setValue(selectedForce->forcePower.x);
+    pointGravityRadiusSpin->setValue(selectedForce->pointGravityRadius);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -438,6 +461,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.windTurbulenceFrequency = windTurbFreqSpin->value();
     params.windBias = windBiasSpin->value();
     params.backwardTurbulenceProbability = static_cast<uint32>(backTurbSpin->value());
+    params.pointGravityRadius = pointGravityRadiusSpin->value();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
 

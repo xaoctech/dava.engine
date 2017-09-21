@@ -29,7 +29,6 @@ void GenerateNoise()
     }
 }
 
-
 const float32 windPeriod = 2 * PI;
 const uint32 windTableSize = 64;
 Array<float32, windTableSize> windValuesTable;
@@ -46,7 +45,7 @@ void Init()
 
 void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
-void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt);
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 
@@ -78,6 +77,11 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
     if (force->type == ForceType::WIND)
     {
         ApplyWind(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        return;
+    }
+    if (force->type == ForceType::POINT_GRAVITY)
+    {
+        ApplyPointGravity(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife);
         return;
     }
 }
@@ -182,8 +186,23 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
     effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex) * forceStrength.x;// +turbulence;
 }
 
-void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
+void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {
+    if (!force->isInfinityRange)
+    {
+        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+            return;
+    }
+    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife) * dt;
+    Vector3 forceDirection = force->position - effectSpacePosition;
+    float32 dist = forceDirection.SquareLength();
+    if (dist > 0)
+        forceDirection /= sqrt(dist);
+
+    if (dist > force->pointGravityRadius * force->pointGravityRadius)
+        effectSpaceVelocity += forceDirection * forceStrength;
+    else
+        effectSpacePosition = force->position - force->pointGravityRadius * forceDirection;
 }
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife)

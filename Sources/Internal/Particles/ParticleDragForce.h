@@ -61,6 +61,9 @@ public:
 
     uint32 backwardTurbulenceProbability = 0;
     float32 windTurbulence = 0.0f;
+
+    float32 pointGravityRadius = 1.0f;
+
     RefPtr<PropertyLine<float32>> turbulenceLine;
 
     bool isInfinityRange = true;
