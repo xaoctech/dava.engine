@@ -613,6 +613,17 @@ void CommandAddParticleWind::Redo()
     AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::WIND);
 }
 
+CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_POINT_GRAVITY_ADD)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticlePointGravity::Redo()
+{
+    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::POINT_GRAVITY);
+}
+
 CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDragForce* drag)
     : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_REMOVE)
     , selectedLayer(layer)
