@@ -27,6 +27,7 @@ public:
     void PlaceAndAlign() const;
 
     void RemoveEntity(DAVA::Entity* entity) override;
+    void Process(DAVA::float32 time) override;
 
 private:
     void GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
@@ -42,4 +43,5 @@ private:
     DAVA::LandscapeSystem* landscapeSystem = nullptr;
 
     bool snapToLandscape = false;
+    bool needCheckLandscapes = true;
 };

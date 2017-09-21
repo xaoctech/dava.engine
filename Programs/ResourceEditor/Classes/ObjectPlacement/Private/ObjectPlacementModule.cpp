@@ -21,7 +21,9 @@ void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
     std::unique_ptr<ObjectPlacementData> objectPlacementData = std::make_unique<ObjectPlacementData>();
 
     objectPlacementData->objectPlacementSystem.reset(new ObjectPlacementSystem(scene));
-    scene->AddSystem(objectPlacementData->objectPlacementSystem.get(), MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT));
+    scene->AddSystem(objectPlacementData->objectPlacementSystem.get(),
+                     MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT),
+                     DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(objectPlacementData));
 }

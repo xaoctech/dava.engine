@@ -26,7 +26,7 @@ bool ObjectPlacementSystem::GetSnapToLandscape() const
 void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 {
     DVASSERT(GetScene() != nullptr);
-    DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
+    const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
     if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
@@ -39,7 +39,7 @@ void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 void ObjectPlacementSystem::PlaceOnLandscape() const
 {
     DVASSERT(GetScene() != nullptr);
-    DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
+    const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
     if (landscapes.empty())
     {
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
@@ -51,11 +51,20 @@ void ObjectPlacementSystem::PlaceOnLandscape() const
 
 void ObjectPlacementSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    DAVA::Vector<DAVA::Landscape*> landscapes = landscapeSystem->GetLandscapeObjects();
-    if (landscapes.empty())
+    needCheckLandscapes = true;
+}
+
+void ObjectPlacementSystem::Process(DAVA::float32 time)
+{
+    if (needCheckLandscapes == true)
     {
-        snapToLandscape = false;
-        modificationSystem->SetLandscapeSnap(snapToLandscape);
+        const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
+        if (landscapes.empty())
+        {
+            snapToLandscape = false;
+            modificationSystem->SetLandscapeSnap(snapToLandscape);
+        }
+        needCheckLandscapes = false;
     }
 }
 
