@@ -126,6 +126,7 @@ void OverdrawTesterSystem::PrepareForRemove()
     {
         renderSystem->RemoveFromRender(ro);
     }
+    activeRenderObjects.clear();
 }
 
 void OverdrawTesterSystem::Process(DAVA::float32 timeElapsed)
