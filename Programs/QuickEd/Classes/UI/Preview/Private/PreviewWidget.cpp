@@ -205,6 +205,7 @@ void PreviewWidget::InitUI()
 
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
     DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
+    addActions(tabBar->actions());
     tabBar->closeTab.Connect(&requestCloseTab, &DAVA::Signal<DAVA::uint64>::Emit);
     tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tabBar, &QWidget::customContextMenuRequested, this, &PreviewWidget::OnTabBarContextMenuRequested);

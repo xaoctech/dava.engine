@@ -10,6 +10,8 @@
 #include "Input/Private/Android/KeyboardImplAndroid.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "Input/Private/Ios/KeyboardImplIos.h"
+#elif defined(__DAVAENGINE_LINUX__)
+#include "Input/Private/Linux/KeyboardImplLinux.h"
 #else
 #error "KeyboardDevice: unknown platform"
 #endif
@@ -19,6 +21,7 @@
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
 #include "Logger/Logger.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
@@ -69,17 +72,23 @@ uint32 Keyboard::GetKeyNativeScancode(eInputElements elementId) const
 
 bool Keyboard::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return IsKeyboardInputElement(elementId);
 }
 
 DigitalElementState Keyboard::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsElementSupported(elementId));
     return keys[elementId - eInputElements::KB_FIRST];
 }
 
 AnalogElementState Keyboard::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(false, "KeyboardInputDevice does not support analog elements");
     return {};
 }

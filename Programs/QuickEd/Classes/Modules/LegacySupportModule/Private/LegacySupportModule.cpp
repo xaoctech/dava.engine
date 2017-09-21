@@ -13,6 +13,7 @@
 #include "UI/Find/Filters/PrototypeUsagesFilter.h"
 #include "UI/Preview/PreviewWidgetSettings.h"
 
+#include <TArc/Qt/QtIcon.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>

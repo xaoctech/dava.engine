@@ -710,6 +710,15 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 {
     using namespace DAVA;
     using namespace TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* globalContext = accessor->GetGlobalContext();
+    EditorData* editorSystemsData = globalContext->GetData<EditorData>();
+    if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
+    {
+        return;
+    }
+
     DVASSERT(node != nullptr);
 
     UIControl* control = node->GetControl();
@@ -728,7 +737,6 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
     QString inputText = MultilineTextInputDialog::GetMultiLineText(GetUI(), label, label, QString::fromStdString(text), &ok);
     if (ok)
     {
-        ContextAccessor* accessor = GetAccessor();
         DataContext* activeContext = accessor->GetActiveContext();
         DVASSERT(nullptr != activeContext);
         DocumentData* data = activeContext->GetData<DocumentData>();

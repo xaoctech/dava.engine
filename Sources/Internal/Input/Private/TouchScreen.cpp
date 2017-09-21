@@ -4,6 +4,7 @@
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
@@ -42,17 +43,23 @@ AnalogElementState TouchScreen::GetTouchPositionByIndex(size_t i) const
 
 bool TouchScreen::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return IsTouchInputElement(elementId);
 }
 
 DigitalElementState TouchScreen::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsTouchClickInputElement(elementId) && IsElementSupported(elementId));
     return clicks[elementId - eInputElements::TOUCH_FIRST_CLICK];
 }
 
 AnalogElementState TouchScreen::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsTouchPositionInputElement(elementId) && IsElementSupported(elementId));
     return positions[elementId - eInputElements::TOUCH_FIRST_POSITION];
 }
