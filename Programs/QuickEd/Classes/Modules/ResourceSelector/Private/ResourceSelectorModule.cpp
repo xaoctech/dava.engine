@@ -1,7 +1,12 @@
 #include "Modules/ResourceSelector/ResourceSelectorModule.h"
 #include "Modules/ProjectModule/ProjectData.h"
+#include "Modules/DocumentsModule/DocumentData.h"
+#include "Model/PackageHierarchy/PackageControlsNode.h"
+#include "Model/PackageHierarchy/PackageNode.h"
+#include "Model/PackageHierarchy/ControlNode.h"
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/Common.h>
 #include <TArc/DataProcessing/SettingsNode.h>
 #include <TArc/Utils/ModuleCollection.h>
@@ -11,6 +16,8 @@
 
 #include <Engine/EngineContext.h>
 #include <UI/UIControlSystem.h>
+#include <UI/UIControl.h>
+#include "UI/UIControlBackground.h"
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Utils/Random.h>
 
@@ -57,6 +64,7 @@ ResourceSelectorModule::ResourceSelectorModule()
 void ResourceSelectorModule::PostInit()
 {
     using namespace DAVA;
+    using namespace DAVA::TArc;
     using namespace ResourceSelectorModuleDetails;
 
     //create data wrapper
@@ -76,6 +84,16 @@ void ResourceSelectorModule::PostInit()
                                            OnWindowResized(windowSize);
                                            delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ResourceSelectorModule::OnGraphicsSettingsChanged));
                                        });
+
+    fieldBinder.reset(new FieldBinder(GetAccessor()));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        fieldBinder->BindField(fieldDescr, MakeFunction(this, &ResourceSelectorModule::RefreshUIControls));
+    }
+
+    RegisterOperation(QEGlobal::ReloadSprites.ID, this, &ResourceSelectorModule::ReloadSpritesImpl);
 }
 
 void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
@@ -99,6 +117,7 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
             ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo);
         }
         gfxActionPlacementName.clear();
+        settingsAreFiltered = false;
     }
 
     if (projectData != nullptr)
@@ -134,6 +153,8 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
                 {
                     selectorData->preferredMode = 0; //somebody deleted gfx folder, we should select default value
                 }
+
+                settingsAreFiltered = true;
                 OnGfxSelected(selectorData->preferredMode);
             }
         }
@@ -172,7 +193,7 @@ void ResourceSelectorModule::RegisterGfxFolders()
 
     const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
     int32 gfxCount = static_cast<int32>(gfxDirectories.size());
-    int32 gfxMode = selectorData->preferredMode;
+    int32 gfxMode = settingsAreFiltered ? selectorData->preferredMode : 0;
     Size2i currentSize = vcs->GetVirtualScreenSize();
 
     vcs->UnregisterAllAvailableResourceSizes();
@@ -271,6 +292,57 @@ void ResourceSelectorModule::ReloadSpritesImpl()
     std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
 
     DAVA::Sprite::ReloadSprites();
+    RefreshUIControls(DAVA::Any());
+}
+
+void ProcessUIControl(DAVA::UIControl* control)
+{
+    using namespace DAVA;
+    UIControlBackground* background = control->GetComponent<UIControlBackground>();
+    if (background != nullptr)
+    {
+        control->SetLayoutDirty();
+        background->ReleaseDrawData();
+    }
+
+    const List<UIControl*>& children = control->GetChildren();
+    for (UIControl* c : children)
+    {
+        ProcessUIControl(c);
+    }
+}
+
+void ResourceSelectorModule::RefreshUIControls(const DAVA::Any& value)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = GetAccessor()->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
+
+    DocumentData* data = activeContext->GetData<DocumentData>();
+    DVASSERT(data != nullptr);
+
+    PackageNode* packageNode = data->GetPackageNode();
+    DVASSERT(packageNode != nullptr);
+
+    auto processControls = [](PackageControlsNode* container)
+    {
+        if (container != nullptr)
+        {
+            for (auto it = container->begin(); it != container->end(); ++it)
+            {
+                ControlNode* ctrlNode = *it;
+                ProcessUIControl(ctrlNode->GetControl());
+            }
+        }
+    };
+
+    processControls(packageNode->GetPackageControlsNode());
+    processControls(packageNode->GetPrototypes());
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ResourceSelectorModule)
