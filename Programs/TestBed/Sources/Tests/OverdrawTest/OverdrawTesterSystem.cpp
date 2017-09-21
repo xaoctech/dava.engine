@@ -121,7 +121,7 @@ void OverdrawTesterSystem::RemoveEntity(Entity* entity)
 
 void OverdrawTesterSystem::PrepareForRemove()
 {
-    RenderSystem* renderSystem = GetScene()->GetRenderSystem();
+    DAVA::RenderSystem* renderSystem = GetScene()->GetRenderSystem();
     for (OverdrawTesterRenderObject* ro : activeRenderObjects)
     {
         renderSystem->RemoveFromRender(ro);

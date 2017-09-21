@@ -370,7 +370,6 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
                     DVASSERT(shape != nullptr);
                     rigidActor->detachShape(*shape);
                 }
-
             }
             physicsScene->removeActor(*actor);
             physicsComponent->ReleasePxActor();
