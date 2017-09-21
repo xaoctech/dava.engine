@@ -182,8 +182,7 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh*
         resBox.AddAABBox(skeleton->objectSpaceBoxes[currJoint]);
     }
 
-    //set data to SkinnedMesh
-    skinnedMeshObject->SetFinalJointTransformsPtr(skeleton->finalTransforms.data(), skeleton->GetJointsCount());
+    skinnedMeshObject->UpdateJointTransforms(skeleton->finalTransforms);
     skinnedMeshObject->SetBoundingBox(resBox); //TODO: *Skinning* decide on bbox calculation
 
     GetScene()->GetRenderSystem()->MarkForUpdate(skinnedMeshObject);

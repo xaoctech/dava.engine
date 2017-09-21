@@ -38,31 +38,18 @@ public:
 
     void RecalcBoundingBox() override;
     void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
-    void PrepareToRender(Camera* camera) override;
 
     void SetBoundingBox(const AABBox3& box);
-    void SetFinalJointTransformsPtr(const JointTransform* transformsPtr, uint32 jointCount);
+    void UpdateJointTransforms(const Vector<JointTransform>& finalTransforms);
 
     void SetJointTargets(RenderBatch* batch, const JointTargets& jointTargets);
     JointTargets GetJointTargets(RenderBatch* batch);
     JointTargetsData GetJointTargetsData(RenderBatch* batch);
 
 protected:
-    void PrepareJointTargetsData(uint32 dataIndex);
-
     UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index
-    Set<uint32> jointTargetsDataToPrepare;
     Vector<std::pair<JointTargets, JointTargetsData>> jointTargetsData;
-
-    const JointTransform* skeletonFinalJointTransforms = nullptr;
-    uint32 skeletonJointCount = 0;
 };
-
-inline void SkinnedMesh::SetFinalJointTransformsPtr(const JointTransform* transformsPtr, uint32 jointCount)
-{
-    skeletonFinalJointTransforms = transformsPtr;
-    skeletonJointCount = jointCount;
-}
 
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)
 {
