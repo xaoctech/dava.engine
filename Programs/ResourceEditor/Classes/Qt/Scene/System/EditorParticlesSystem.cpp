@@ -215,14 +215,15 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
 
 void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
 {
-    using ForceType = DAVA::ParticleDragForce::eType;
+    using namespace DAVA;
+    using ForceType = ParticleDragForce::eType;
 
     if (force->type == ForceType::GRAVITY)
         return;
 
     if (force->type == ForceType::LORENTZ_FORCE || force->type == ForceType::WIND)
     {
-        DAVA::float32 scale = 1.0f;
+        float32 scale = 1.0f;
         HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;
         if (hoodSystem != nullptr)
         {
@@ -231,43 +232,43 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         auto layer = GetDragForceOwner(force);
         auto ent = GetLayerOwner(layer);
 
-        DAVA::float32 arrowSize = scale;
-        DAVA::float32 arrowBaseSize = 5.0f;
+        float32 arrowSize = scale;
+        float32 arrowBaseSize = 5.0f;
         Vector3 emitterVector = force->direction;
 
-        DAVA::Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
+        Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
         emitterVector = emitterVector * Matrix3(wMat);
         emitterVector.Normalize();
         emitterVector *= arrowBaseSize * scale;
         Vector3 center = force->position * wMat;
 
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
-            DAVA::Color(0.7f, 0.7f, 0.0f, 0.35f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+            Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
     }
 
     if (force->isInfinityRange)
         return;
-    DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    if (force->shape == DAVA::ParticleDragForce::eShape::BOX)
+    RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    if (force->shape == ParticleDragForce::eShape::BOX)
     {
         auto layer = GetDragForceOwner(force);
         auto ent = GetLayerOwner(layer);
 
-        DAVA::Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
+        Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
         wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
 
-        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
-                                     DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawAABoxTransformed(AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
+                                     Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
 
-        drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
-                                     DAVA::Color(0.0f, 0.35f, 0.15f, 0.35f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+        drawer->DrawAABoxTransformed(AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
+                                     Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
-    else if (force->shape == DAVA::ParticleDragForce::eShape::SPHERE)
+    else if (force->shape == ParticleDragForce::eShape::SPHERE)
     {
-        DAVA::Matrix4 wMat = Selectable(force).GetWorldTransform();
-        DAVA::float32 radius = force->radius;
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.7f, 0.3f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, DAVA::Color(0.0f, 0.35f, 0.15f, 0.35f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+        Matrix4 wMat = Selectable(force).GetWorldTransform();
+        float32 radius = force->radius;
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
 }
 

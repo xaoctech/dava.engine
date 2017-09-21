@@ -18,6 +18,7 @@
 #include <QGraphicsWidget>
 #include <QFile>
 #include <QMessageBox>
+#include <QToolButton>
 
 namespace EmitterLayerWidgetDetails
 {

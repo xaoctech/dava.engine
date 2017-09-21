@@ -7,6 +7,7 @@
 #include <QFrame>
 
 #include "Classes/Qt/DockParticleEditor/ParticleVector3Widget.h"
+#include "Classes/Qt/DockParticleEditor/TimeLineWidget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 #include "Classes/Commands2/ParticleEditorCommands.h"

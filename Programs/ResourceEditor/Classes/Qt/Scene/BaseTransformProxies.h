@@ -2,11 +2,11 @@
 
 #include "Classes/Selection/Selectable.h"
 #include <Reflection/Reflection.h>
+#include <Particles/ParticleDragForce.h>
 
 namespace DAVA
 {
 class ParticleEmitterInstance;
-class ParticleDragForce;
 }
 
 class EntityTransformProxy : public Selectable::TransformProxy

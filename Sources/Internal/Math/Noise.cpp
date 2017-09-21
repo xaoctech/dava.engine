@@ -1,6 +1,7 @@
 #include "Math/Noise.h"
 
 #include <math.h>
+#include "Math/MathHelpers.h"
 
 namespace DAVA
 {
