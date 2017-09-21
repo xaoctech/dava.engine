@@ -108,13 +108,5 @@ public:
     DAVA::uint32 grabSizeWidth = 1280;
     DAVA::uint32 grabSizeHeight = 1024;
 
-    // Debug draw slot settings
-    DAVA::Color slotBoxColor = DAVA::Color(0.0f, 0.0f, 0.7f, 0.1f);
-    DAVA::Color slotBoxEdgesColor = DAVA::Color(0.5f, 0.2f, 0.0f, 1.0f);
-    DAVA::Color slotPivotColor = DAVA::Color(0.7f, 0.7f, 0.0f, 0.5f);
-
-    void Load(const DAVA::TArc::PropertiesItem& settingsNode) override;
-    void Save(DAVA::TArc::PropertiesItem& settingsNode) const override;
-
     DAVA_VIRTUAL_REFLECTION(GlobalSceneSettings, DAVA::TArc::SettingsNode);
 };

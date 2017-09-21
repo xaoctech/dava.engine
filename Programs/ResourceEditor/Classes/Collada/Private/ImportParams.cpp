@@ -184,45 +184,22 @@ void LoadMaterial(const DAVA::FilePath& sceneDirPath, DAVA::NMaterial* material,
     material->RemoveConfig(0);
 }
 
-void SaveComponent(DAVA::Entity* entity, DAVA::Map<DAVA::FastName, DAVA::Component*>& componentMap, const DAVA::Function<DAVA::Component*(DAVA::Entity*)>& getComponentFn)
-{
-    DAVA::Component* component = getComponentFn(entity);
-    if (component != nullptr)
-    {
-        componentMap.emplace(entity->GetName(), component->Clone(nullptr));
-    }
-}
-
-void RestoreComponent(DAVA::Entity* entity, DAVA::Map<DAVA::FastName, DAVA::Component*>& componentMap, const DAVA::Function<DAVA::Component*(DAVA::Entity*)>& getComponentFn)
-{
-    const DAVA::FastName& entityName = entity->GetName();
-    auto iter = componentMap.find(entityName);
-    if (iter != componentMap.end())
-    {
-        DAVA::Component* component = getComponentFn(entity);
-        if (component != nullptr)
-        {
-            entity->RemoveComponent(component);
-        }
-
-        entity->AddComponent(iter->second);
-        componentMap.erase(iter);
-    }
-}
-
 void AccumulateImportParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& sceneDirPath, ImportParams* params)
 {
     using namespace DAVA;
 
-    SaveComponent(entity, params->customPropertiesMap, [](DAVA::Entity* entity) -> DAVA::Component*
-                  {
-                      return GetCustomProperties(entity);
-                  });
+    for (DAVA::uint32 type : ImportParams::reImportComponentsIds)
+    {
+        DAVA::Map<DAVA::FastName, DAVA::Vector<DAVA::Component*>>& componentsMap = params->componentsMap[type];
+        DAVA::Vector<DAVA::Component*>& components = componentsMap[DAVA::FastName(entity->GetFullName())];
 
-    SaveComponent(entity, params->lodComponentsMap, [](DAVA::Entity* entity) -> DAVA::Component*
-                  {
-                      return GetLodComponent(entity);
-                  });
+        DAVA::uint32 componentsCount = entity->GetComponentCount(type);
+        components.reserve(componentsCount);
+        for (DAVA::uint32 i = 0; i < componentsCount; ++i)
+        {
+            components.push_back(entity->GetComponent(type, i)->Clone(nullptr));
+        }
+    }
 
     RenderComponent* renderComponent = GetRenderComponent(entity);
     if (renderComponent != nullptr)
@@ -259,16 +236,36 @@ void RestoreSceneParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& sceneDir
 
     const FastName& entityName = entity->GetName();
 
-    // Restore Custom Properties
-    RestoreComponent(entity, params->customPropertiesMap, [](DAVA::Entity* entity) -> DAVA::Component*
-                     {
-                         return GetCustomProperties(entity);
-                     });
+    for (DAVA::uint32 type : ImportParams::reImportComponentsIds)
+    {
+        DAVA::Map<DAVA::FastName, DAVA::Vector<DAVA::Component*>>& componentsMap = params->componentsMap[type];
+        DAVA::Vector<DAVA::Component*>& components = componentsMap[DAVA::FastName(entity->GetFullName())];
 
-    RestoreComponent(entity, params->lodComponentsMap, [](DAVA::Entity* entity) -> DAVA::Component*
-                     {
-                         return GetLodComponent(entity);
-                     });
+        if (components.empty() == true)
+        {
+            continue;
+        }
+
+        DAVA::uint32 componentsCount = entity->GetComponentCount(type);
+        DAVA::Vector<DAVA::Component*> componentsToRemove;
+        componentsToRemove.reserve(componentsCount);
+        for (DAVA::uint32 i = 0; i < componentsCount; ++i)
+        {
+            componentsToRemove.push_back(entity->GetComponent(type, i));
+        }
+
+        for (DAVA::Component* componentToRemove : componentsToRemove)
+        {
+            entity->RemoveComponent(componentToRemove);
+        }
+        componentsToRemove.clear();
+
+        for (DAVA::Component* componentToAdd : components)
+        {
+            entity->AddComponent(componentToAdd);
+        }
+        components.clear();
+    }
 
     RenderComponent* renderComponent = GetRenderComponent(entity);
     if (renderComponent != nullptr)
@@ -305,18 +302,28 @@ void RestoreSceneParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& sceneDir
 
 ImportParams::~ImportParams()
 {
-    for (auto iter : customPropertiesMap)
+    for (const auto& typeIter : componentsMap)
     {
-        DAVA::SafeDelete(iter.second);
+        const DAVA::Map<DAVA::FastName, DAVA::Vector<DAVA::Component*>>& subMap = typeIter.second;
+        for (const auto& nameMap : subMap)
+        {
+            const DAVA::Vector<DAVA::Component*>& components = nameMap.second;
+            for (DAVA::Component* component : components)
+            {
+                DAVA::SafeDelete(component);
+            }
+        }
     }
 
-    for (auto iter : lodComponentsMap)
-    {
-        DAVA::SafeDelete(iter.second);
-    }
-
+    componentsMap.clear();
     materialsMap.clear();
 }
+
+const DAVA::Vector<DAVA::uint32> ImportParams::reImportComponentsIds = {
+    DAVA::Component::LOD_COMPONENT,
+    DAVA::Component::SLOT_COMPONENT,
+    DAVA::Component::CUSTOM_PROPERTIES_COMPONENT
+};
 
 void AccumulateImportParams(DAVA::RefPtr<DAVA::Scene> scene, const DAVA::FilePath& scenePath, ImportParams* params)
 {

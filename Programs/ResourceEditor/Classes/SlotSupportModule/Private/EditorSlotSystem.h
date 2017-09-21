@@ -39,6 +39,16 @@ public:
     void WillClone(DAVA::Entity* originalEntity) override;
     void DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* newEntity) override;
 
+    DAVA::RefPtr<DAVA::KeyedArchive> SaveSlotsPreset(DAVA::Entity* entity);
+    void LoadSlotsPreset(DAVA::Entity* entity, DAVA::RefPtr<DAVA::KeyedArchive> archive);
+
+    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component);
+    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component,
+                                                 DAVA::Entity* entity,
+                                                 const DAVA::FastName& newTemplateName,
+                                                 const DAVA::FastName& newEntityName,
+                                                 const DAVA::Set<DAVA::FastName>& reservedName);
+
 protected:
     friend class AttachEntityToSlot;
 
@@ -48,6 +58,7 @@ protected:
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
+    DAVA::FastName GetSuitableItemName(DAVA::SlotComponent* component) const;
 
     void Draw() override;
 
@@ -56,6 +67,7 @@ protected:
     void SetScene(DAVA::Scene* scene) override;
 
 private:
+    void LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DAVA::KeyedArchive> archive);
     DAVA::Vector<DAVA::Entity*> entities;
     DAVA::Set<DAVA::Entity*> pendingOnInitialize;
     DAVA::TArc::QtConnections connections;

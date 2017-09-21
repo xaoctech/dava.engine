@@ -533,6 +533,11 @@ void SlotSystem::AttachEntityToSlot(SlotComponent* component, Entity* entity, Fa
 
 Entity* SlotSystem::LookUpLoadedEntity(SlotComponent* component) const
 {
+    if (component->GetEntity() == nullptr)
+    {
+        return nullptr;
+    }
+
     uint32 index = GetComponentIndex(component);
     return nodes[index].loadedEnity;
 }

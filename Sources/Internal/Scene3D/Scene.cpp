@@ -385,9 +385,6 @@ Scene::~Scene()
 {
     Renderer::GetOptions()->RemoveObserver(this);
 
-    SafeRelease(mainCamera);
-    SafeRelease(drawCamera);
-
     transformSystem = 0;
     renderUpdateSystem = 0;
     lodSystem = 0;
@@ -419,6 +416,12 @@ Scene::~Scene()
         SafeDelete(systems[k]);
     }
     systems.clear();
+
+    SafeRelease(mainCamera);
+    SafeRelease(drawCamera);
+    for (Camera*& c : cameras)
+        SafeRelease(c);
+    cameras.clear();
 
     RemoveAllChildren();
     SafeRelease(sceneGlobalMaterial);
