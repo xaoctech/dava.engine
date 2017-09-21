@@ -22,10 +22,10 @@
 DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, const DAVA::Vector<DAVA::String>& tags)
 {
     DAVA::Set<DAVA::FilePath> dumpedLinks;
-    return DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks, tags);
+    return DumpLinks(scenePath, mode, compressedGPUs, tags, dumpedLinks);
 }
 
-DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, DAVA::Set<DAVA::FilePath>& dumpedLinks, const DAVA::Vector<DAVA::String>& tags)
+DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, const DAVA::Vector<DAVA::String>& tags, DAVA::Set<DAVA::FilePath>& dumpedLinks)
 {
     DAVA::Set<DAVA::FilePath> links;
     SceneDumper dumper(scenePath, mode, compressedGPUs, tags);
@@ -40,7 +40,7 @@ DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath
 
     for (const DAVA::FilePath& scenePath : redumpScenes)
     {
-        DAVA::Set<DAVA::FilePath> result = SceneDumper::DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks, tags);
+        DAVA::Set<DAVA::FilePath> result = SceneDumper::DumpLinks(scenePath, mode, compressedGPUs, tags, dumpedLinks);
         links.insert(result.begin(), result.end());
     }
 

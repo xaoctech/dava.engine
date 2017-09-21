@@ -32,6 +32,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/REGlobalOperationsData.h"
 #include "Classes/Application/RESettings.h"
+#include "Classes/Application/FileSystemData.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
@@ -66,6 +67,7 @@
 #include <QtTools/FileDialogs/FindFileDialog.h>
 
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/Utils.h>
 
 #include <Engine/Engine.h>
@@ -195,6 +197,20 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
 {
     projectDataWrapper = REGlobal::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<ProjectManagerData>());
     projectDataWrapper.SetListener(this);
+
+    fieldBinderTagged.reset(REGlobal::CreateFieldBinder());
+    { // bind to changed data
+        DAVA::TArc::FieldDescriptor sceneFieldDescr;
+        sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+
+        DAVA::TArc::FieldDescriptor fsFieldDescr;
+        fsFieldDescr.type = DAVA::ReflectedTypeDB::Get<FileSystemData>();
+        fsFieldDescr.fieldName = DAVA::FastName("tag");
+
+        fieldBinderTagged->BindField(sceneFieldDescr, DAVA::MakeFunction(this, &QtMainWindow::UpdateTagDependentActionsState));
+        fieldBinderTagged->BindField(fsFieldDescr, DAVA::MakeFunction(this, &QtMainWindow::UpdateTagDependentActionsState));
+    }
 
     ActiveSceneHolder::Init();
     globalOperations.reset(new MainWindowDetails::GlobalOperationsProxy(this));
@@ -617,14 +633,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     if (modificationWidget)
         modificationWidget->setEnabled(enable);
 
-    ui->actionTextureConverter->setEnabled(enable);
-    ui->actionMaterialEditor->setEnabled(enable);
-    ui->actionHeightMapEditor->setEnabled(enable);
-    ui->actionTileMapEditor->setEnabled(enable);
-    ui->actionShowNotPassableLandscape->setEnabled(enable);
-    ui->actionRulerTool->setEnabled(enable);
-    ui->actionVisibilityCheckTool->setEnabled(enable);
-    ui->actionCustomColorsEditor->setEnabled(enable);
     ui->actionWayEditor->setEnabled(enable);
     ui->actionForceFirstLODonLandscape->setEnabled(enable);
     ui->actionEnableVisibilitySystem->setEnabled(enable);
@@ -653,6 +661,21 @@ void QtMainWindow::EnableSceneActions(bool enable)
     const auto isMenuBarEnabled = ui->menuBar->isEnabled();
     ui->menuBar->setEnabled(false);
     ui->menuBar->setEnabled(isMenuBarEnabled);
+}
+
+void QtMainWindow::UpdateTagDependentActionsState(const DAVA::Any& value)
+{
+    const DAVA::String& tag = DAVA::GetEngineContext()->fileSystem->GetFilenamesTag();
+    bool enable = (tag.empty() == true) && (REGlobal::GetActiveDataNode<SceneData>() != nullptr);
+
+    ui->actionTextureConverter->setEnabled(enable);
+    ui->actionMaterialEditor->setEnabled(enable);
+    ui->actionHeightMapEditor->setEnabled(enable);
+    ui->actionTileMapEditor->setEnabled(enable);
+    ui->actionShowNotPassableLandscape->setEnabled(enable);
+    ui->actionRulerTool->setEnabled(enable);
+    ui->actionVisibilityCheckTool->setEnabled(enable);
+    ui->actionCustomColorsEditor->setEnabled(enable);
 }
 
 void QtMainWindow::UpdateModificationActionsState()
@@ -961,42 +984,20 @@ void QtMainWindow::OnZeroPivotPoint()
 
 void QtMainWindow::OnMaterialEditor(DAVA::NMaterial* material)
 {
-    const DAVA::String& tag = DAVA::GetEngineContext()->fileSystem->GetFilenamesTag();
-    if (tag.empty() == true)
+    MaterialEditor* editor = MaterialEditor::Instance();
+    editor->show();
+    if (material != nullptr)
     {
-        MaterialEditor* editor = MaterialEditor::Instance();
-        editor->show();
-        if (material != nullptr)
-        {
-            editor->SelectMaterial(material);
-        }
-    }
-    else
-    {
-        DAVA::TArc::NotificationParams notifParams;
-        notifParams.title = "Information";
-        notifParams.message.message = DAVA::Format("Cannot show Material Editor while %s tag is activated", tag.c_str());
-        tarcUI->ShowNotification(DAVA::TArc::mainWindowKey, notifParams);
+        editor->SelectMaterial(material);
     }
 }
 
 void QtMainWindow::OnTextureBrowser()
 {
-    const DAVA::String& tag = DAVA::GetEngineContext()->fileSystem->GetFilenamesTag();
-    if (tag.empty() == true)
-    {
-        TextureBrowser::Instance()->show();
+    TextureBrowser::Instance()->show();
 
-        DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-        TextureBrowser::Instance()->sceneActivated(sceneEditor.Get());
-    }
-    else
-    {
-        DAVA::TArc::NotificationParams notifParams;
-        notifParams.title = "Information";
-        notifParams.message.message = DAVA::Format("Cannot show Texture Browser while %s tag is activated", tag.c_str());
-        tarcUI->ShowNotification(DAVA::TArc::mainWindowKey, notifParams);
-    }
+    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
+    TextureBrowser::Instance()->sceneActivated(sceneEditor.Get());
 }
 
 void QtMainWindow::OnSceneLightMode()

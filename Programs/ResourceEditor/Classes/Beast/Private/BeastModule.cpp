@@ -122,14 +122,10 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
 
 bool BeastModule::GetBeastAvailable() const
 {
-    const DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
-    if (activeContext != nullptr)
+    if (GetAccessor()->GetActiveContext() != nullptr)
     {
-        SceneData* sceneData = activeContext->GetData<SceneData>();
-        DAVA::RefPtr<SceneEditor2> scene = sceneData->GetScene();
-
         DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
-        return (fs->GetFilenamesTag().empty() == true) && (scene.Get() != nullptr);
+        return fs->GetFilenamesTag().empty() == true;
     }
 
     return false;

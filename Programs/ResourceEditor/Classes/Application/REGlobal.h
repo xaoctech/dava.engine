@@ -14,6 +14,7 @@ namespace TArc
 {
 class Core;
 class DataContext;
+class FieldBinder;
 }
 }
 
@@ -26,6 +27,8 @@ DAVA::TArc::DataContext* GetActiveContext();
 
 DAVA::TArc::OperationInvoker* GetInvoker();
 DAVA::TArc::ContextAccessor* GetAccessor();
+
+DAVA::TArc::FieldBinder* CreateFieldBinder();
 
 DAVA::TArc::DataWrapper CreateDataWrapper(const DAVA::ReflectedType* type);
 DAVA::TArc::ModalMessageParams::Button ShowModalMessage(const DAVA::TArc::ModalMessageParams& params);

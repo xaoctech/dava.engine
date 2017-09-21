@@ -32,6 +32,11 @@ class ErrorDialogOutput;
 namespace DAVA
 {
 class RenderWidget;
+
+namespace TArc
+{
+class FieldBinder;
+}
 }
 
 class QtMainWindow : public QMainWindow, public GlobalOperations, private DAVA::TArc::DataListener
@@ -235,5 +240,9 @@ private:
     std::unique_ptr<DAVA::TArc::WaitHandle> waitDialog;
     DAVA::TArc::DataWrapper projectDataWrapper;
     DAVA::TArc::DataWrapper selectionWrapper;
+
+    void UpdateTagDependentActionsState(const DAVA::Any& value);
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinderTagged;
+
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
 };
