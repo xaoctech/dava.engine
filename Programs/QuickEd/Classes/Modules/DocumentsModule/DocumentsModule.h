@@ -47,6 +47,7 @@ private:
     void OnRedo();
 
     void DoGroupSelection();
+    void OnSetSizeFromImage();
 
     //View
     void CreateViewActions();

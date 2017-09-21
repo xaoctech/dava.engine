@@ -68,6 +68,7 @@ public:
     SelectedNodes Paste(PackageNode* root, PackageBaseNode* dest, DAVA::int32 destIndex, const DAVA::String& data);
 
     ControlNode* GroupSelectedNodes() const;
+    void FitToImageSize(ControlNode* node) const;
 
 private:
     void AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package);
