@@ -1284,7 +1284,8 @@ bool UIControl::SystemInput(UIEvent* currentInput)
 
     //if(currentInput->touchLocker != this)
     {
-        bool clipContents = (GetComponentCount<UIClipContentComponent>() != 0);
+        UIClipContentComponent* clipContent = GetComponent<UIClipContentComponent>();
+        bool clipContents = (clipContent != nullptr && clipContent->IsEnabled());
         if (clipContents &&
             (UIEvent::Phase::BEGAN == currentInput->phase || UIEvent::Phase::MOVE == currentInput->phase || UIEvent::Phase::WHEEL == currentInput->phase || UIEvent::Phase::CANCELLED == currentInput->phase))
         {

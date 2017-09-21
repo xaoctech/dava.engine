@@ -290,7 +290,6 @@ bool CEFWebViewControl::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                                       bool* noJavascriptAccess)
 {
     // Disallow popups
-    LoadURL(targetUrl, false);
     return true;
 }
 

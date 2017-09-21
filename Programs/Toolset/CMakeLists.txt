@@ -1,4 +1,3 @@
-
 ## Command line parameters
 #
 # -DCHECK_DEPENDS_FOLDERS = generate only tools in which there were changes [true/false]
@@ -61,14 +60,8 @@ if (NOT DEPLOY OR CACHE_CLIENT)
     add_tool_package     ( AssetCacheClient )
 endif ()
 
-
 ###
 
 prepare_tools()
-
-
-
-
-
 
 

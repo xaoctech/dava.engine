@@ -107,6 +107,7 @@ void DebugDrawModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
 void DebugDrawModule::PostInit()
 {
+    using namespace DAVA;
     using namespace DAVA::TArc;
 
     UI* ui = GetUI();

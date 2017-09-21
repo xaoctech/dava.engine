@@ -53,15 +53,12 @@ class ThemesModule : public ClientModule
 {
 public:
     ThemesModule();
-    ThemesModule(InsertionParams insertionParams);
-
     void PostInit() override;
 
 private:
     ThemesSettings::eTheme GetTheme() const;
     void SetTheme(ThemesSettings::eTheme theme);
 
-    InsertionParams insertionParams;
     QtConnections connections;
     QtDelayedExecutor executor;
 
