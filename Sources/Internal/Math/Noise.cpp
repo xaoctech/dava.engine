@@ -285,7 +285,7 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
     float32 n_xyz = Lerp(n_yz.x, n_yz.y, fade_xyz.x);
     return n_xyz;
 }
-
+/*
 Vector3 Generate4OctavesPerlin(const Vector3& p)
 {
     Vector3 total(0.0f, 0.0f, 0.0f);
@@ -304,7 +304,7 @@ Vector3 Generate4OctavesPerlin(const Vector3& p)
     }
     return total;
 }
-
+*/
 Vector3 Generate4OctavesPerlin(const Vector2& p)
 {
     Vector3 total(0.0f, 0.0f, 0.0f);
