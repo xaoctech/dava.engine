@@ -388,6 +388,10 @@ Scene::~Scene()
     SafeRelease(mainCamera);
     SafeRelease(drawCamera);
 
+    for (Camera*& c : cameras)
+        SafeRelease(c);
+    cameras.clear();
+
     // Children should be removed first because they should unregister themselves in managers
     RemoveAllChildren();
 
