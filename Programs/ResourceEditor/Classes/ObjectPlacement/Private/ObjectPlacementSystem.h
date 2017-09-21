@@ -14,7 +14,7 @@ class LandscapeSystem;
 class RayTraceCollision;
 class RenderSystem;
 struct Matrix4;
-struct Vector3;
+class Vector3;
 }
 
 class ObjectPlacementSystem : public DAVA::SceneSystem, public EditorSceneSystem
