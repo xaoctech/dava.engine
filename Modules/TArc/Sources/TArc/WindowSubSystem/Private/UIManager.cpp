@@ -376,15 +376,18 @@ void AddToolbarPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInf
         menuButton->setObjectName(menuButtonName);
         menuButton->setText(menuButtonName);
         menuButton->setPopupMode(QToolButton::InstantPopup);
-        menuButton->setMenu(new QMenu(menuButton));
+
+        topLevelMenu = new QMenu(menuButton);
+        menuButton->setMenu(topLevelMenu);
         QAction* insertedAction = toolbar->insertWidget(insertBefore, menuButton);
         insertedAction->setObjectName(menuButtonName);
     }
     else
     {
         topLevelMenu = menuButton->menu();
-        UIManagerDetail::InsertActionInMenu(topLevelMenu, path, action, url);
     }
+
+    UIManagerDetail::InsertActionInMenu(topLevelMenu, path, action, url);
 }
 
 void AddStatusbarPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInfo)
