@@ -118,6 +118,22 @@ void LayerDragForceWidget::BuildTimingSection()
     forcePowerSpin = new EventFilterDoubleSpinBox();
     SetupSpin(forcePowerSpin);
     mainLayout->addWidget(forcePowerSpin);
+
+    QHBoxLayout* freqLayout = new QHBoxLayout(this);
+    windFreqLabel = new QLabel("Wind frequency:");
+    windFreqSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(windFreqSpin);
+    freqLayout->addWidget(windFreqLabel);
+    freqLayout->addWidget(windFreqSpin);
+    mainLayout->addLayout(freqLayout);
+
+    QHBoxLayout* biasLayout = new QHBoxLayout(this);
+    windBiasLabel = new QLabel("Wind bias:");
+    windBiasSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(windBiasSpin);
+    biasLayout->addWidget(windBiasLabel);
+    biasLayout->addWidget(windBiasSpin);
+    mainLayout->addLayout(biasLayout);
 }
 
 void LayerDragForceWidget::BuildShapeSection()
@@ -274,22 +290,6 @@ void LayerDragForceWidget::BuildWindSection()
     windSeparator = new QFrame();
     windSeparator->setFrameShape(QFrame::HLine);
     mainLayout->addWidget(windSeparator);
-
-    QHBoxLayout* freqLayout = new QHBoxLayout(this);
-    windFreqLabel = new QLabel("Wind frequency:");
-    windFreqSpin = new EventFilterDoubleSpinBox();
-    SetupSpin(windFreqSpin);
-    freqLayout->addWidget(windFreqLabel);
-    freqLayout->addWidget(windFreqSpin);
-    mainLayout->addLayout(freqLayout);
-
-    QHBoxLayout* biasLayout = new QHBoxLayout(this);
-    windBiasLabel = new QLabel("Wind bias:");
-    windBiasSpin = new EventFilterDoubleSpinBox();
-    SetupSpin(windBiasSpin);
-    biasLayout->addWidget(windBiasLabel);
-    biasLayout->addWidget(windBiasSpin);
-    mainLayout->addLayout(biasLayout);
 
     QHBoxLayout* turbLayout = new QHBoxLayout(this);
     windTurbLabel = new QLabel("Wind turbulence:");
