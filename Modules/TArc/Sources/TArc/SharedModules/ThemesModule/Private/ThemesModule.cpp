@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QStyleFactory>
 #include <QFile>
+#include <QMenu>
 
 ENUM_DECLARE(DAVA::TArc::ThemesSettings::eTheme)
 {
@@ -236,12 +237,12 @@ void ThemesModule::PostInit()
     executor.DelayedExecute([this]() {
         UI* ui = GetUI();
         ContextAccessor* accessor = GetAccessor();
-        QAction* menuAction = new QAction("App style", nullptr);
+        QAction* menu = new QAction("App style", nullptr);
 
-        QActionGroup* styleGroup = new QActionGroup(menuAction);
+        QActionGroup* styleGroup = new QActionGroup(menu);
 
         ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "View", insertionParams));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, menuAction);
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, menu);
 
         {
             ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "View"

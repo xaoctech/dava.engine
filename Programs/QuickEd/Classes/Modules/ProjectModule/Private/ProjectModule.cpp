@@ -14,6 +14,7 @@
 #include <Base/Result.h>
 
 #include <QApplication>
+#include <QMenu>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ProjectModule)
 {
