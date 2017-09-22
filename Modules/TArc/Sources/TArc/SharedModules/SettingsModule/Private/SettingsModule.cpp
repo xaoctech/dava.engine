@@ -33,17 +33,6 @@ public:
     }
 };
 }
-SettingsModule::SettingsModule()
-{
-    placementInfo.AddPlacementPoint(CreateMenuPoint(QList<QString>() << "Tools"));
-    actionName = "Settings";
-}
-
-SettingsModule::SettingsModule(ActionPlacementInfo placementInfo_, QString actionName_)
-    : placementInfo(placementInfo_)
-    , actionName(actionName_)
-{
-}
 
 void SettingsModule::PostInit()
 {
@@ -57,11 +46,14 @@ void SettingsModule::PostInit()
     accessor->GetGlobalContext()->CreateData(std::unique_ptr<DataNode>(node));
 
     executor.DelayedExecute([this]() {
-        QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/TArc/Resources/settings.png"), actionName);
-        settingsAction->setMenuRole(QAction::PreferencesRole);
-
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, settingsAction);
-        connections.AddConnection(settingsAction, &QAction::triggered, DAVA::MakeFunction(this, &SettingsModule::ShowSettings));
+        UI* ui = GetUI();
+        ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"));
+        {
+            QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/TArc/Resources/settings.png"), "Settings");
+            settingsAction->setMenuRole(QAction::PreferencesRole);
+            ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, settingsAction);
+            connections.AddConnection(settingsAction, &QAction::triggered, DAVA::MakeFunction(this, &SettingsModule::ShowSettings));
+        }
     });
 }
 
@@ -84,7 +76,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SettingsModule)
 {
     ReflectionRegistrator<SettingsModule>::Begin()
     .ConstructorByPointer()
-    .ConstructorByPointer<ActionPlacementInfo, QString>()
     .End();
 }
 

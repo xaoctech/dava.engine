@@ -13,7 +13,6 @@
 #include <Render/RenderBase.h>
 #include <Render/GPUFamilyDescriptor.h>
 #include <Base/BaseTypes.h>
-#include <Base/FastNameMap.h>
 
 namespace SettingsConverterDetail
 {
@@ -33,7 +32,7 @@ public:
                 const DAVA::KeyedArchive::UnderlyingMap& values = toLoad->GetArchieveData();
                 for (const auto& valueNode : values)
                 {
-                    settingsMap.Insert(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
+                    settingsMap.emplace(DAVA::FastName(valueNode.first), CustomTextureViewGPULoad(valueNode.first, *valueNode.second));
                 }
             }
 
@@ -56,7 +55,7 @@ public:
                         }
                         else
                         {
-                            settingsMap2.Insert(DAVA::FastName(valueNode.first), *valueNode.second);
+                            settingsMap2[DAVA::FastName(valueNode.first)] = *valueNode.second;
                         }
                     }
                 };
@@ -83,7 +82,7 @@ public:
         CommonInternalSettings* internalSettings = ctx->GetData<CommonInternalSettings>();
         DVASSERT(internalSettings);
 
-        ColorPickerSettings* colorPickerSettings = ctx->GetData<ColorPickerSettings>();
+        DAVA::TArc::ColorPickerSettings* colorPickerSettings = ctx->GetData<DAVA::TArc::ColorPickerSettings>();
         DVASSERT(colorPickerSettings);
 
         DAVA::TArc::ThemesSettings* themeSettings = ctx->GetData<DAVA::TArc::ThemesSettings>();
@@ -159,9 +158,6 @@ public:
         LOAD_SETTING(globalSceneSettings, soundObjectSphereColor, Scene_Sound_SoundObjectSphereColor, AsColor);
         globalSceneSettings->grabSizeWidth = GetValue(Scene_Grab_Size_Width, static_cast<DAVA::int32>(globalSceneSettings->grabSizeWidth)).AsInt32();
         globalSceneSettings->grabSizeHeight = GetValue(Scene_Grab_Size_Width, static_cast<DAVA::int32>(globalSceneSettings->grabSizeHeight)).AsInt32();
-        LOAD_SETTING(globalSceneSettings, slotBoxColor, Scene_Slot_Box_Color, AsColor);
-        LOAD_SETTING(globalSceneSettings, slotBoxEdgesColor, Scene_Slot_Box_Edges_Color, AsColor);
-        LOAD_SETTING(globalSceneSettings, slotPivotColor, Scene_Slot_Pivot_Color, AsColor);
 
         internalSettings->textureViewGPU = GetEnumValue(Internal_TextureViewGPU, internalSettings->textureViewGPU);
         internalSettings->spritesViewGPU = GetEnumValue(Internal_SpriteViewGPU, internalSettings->spritesViewGPU);
@@ -252,8 +248,8 @@ private:
         return srcValue;
     }
 
-    DAVA::FastNameMap<DAVA::VariantType> settingsMap;
-    DAVA::FastNameMap<DAVA::VariantType> settingsMap2;
+    DAVA::UnorderedMap<DAVA::FastName, DAVA::VariantType> settingsMap;
+    DAVA::UnorderedMap<DAVA::FastName, DAVA::VariantType> settingsMap2;
 
     const DAVA::String settingsFilePath = "~doc:/ResourceEditorOptions.archive";
     const DAVA::String settingsFilePath2 = "~doc:/ResourceEditorSettings.archive";

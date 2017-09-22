@@ -58,7 +58,7 @@ void UIProxy::ShowMessage(const WindowKey& windowKey, const QString& message, ui
     globalUI->ShowMessage(windowKey, message, duration);
 }
 
-void UIProxy::ShowNotification(const WindowKey& windowKey, const NotificationParams& params)
+void UIProxy::ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const
 {
     globalUI->ShowNotification(windowKey, params);
 }
@@ -127,6 +127,11 @@ void UIProxy::UnlockModule()
 void UIProxy::SetCurrentModule(ClientModule* /*module*/)
 {
     DVASSERT(false);
+}
+
+UI* UIProxy::GetGlobalUI()
+{
+    return globalUI;
 }
 
 } // namespace TArc
