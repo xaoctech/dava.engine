@@ -202,6 +202,8 @@ void DeveloperTools::OnDebugCreateTestHardSkinnedObject()
 
 void DeveloperTools::OnDebugCreateTestSoftSkinnedObject()
 {
+    using namespace DAVA;
+
     SceneEditor2* currentScene = sceneHolder.GetScene();
     if (!currentScene)
         return;
