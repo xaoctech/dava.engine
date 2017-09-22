@@ -33,7 +33,7 @@ namespace PhysicsModuleDetail
 {
 physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return nullptr;
@@ -54,7 +54,7 @@ physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 
 void ReleasePvd()
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return;
@@ -455,6 +455,35 @@ physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, Matrix4& 
     Matrix4::MakeTranslation(Vector3(-translate, -translate, 0.0f));
 
     return shape;
+}
+
+physx::PxConvexMesh* PhysicsModule::CreateConvexMesh(const DAVA::Vector<DAVA::Vector3>& points) const
+{
+    using namespace physx;
+
+    Vector<PxVec3> vertices;
+    vertices.resize(points.size());
+
+    std::transform(points.begin(), points.end(), vertices.begin(), [](const DAVA::Vector3& v) -> PxVec3 {
+        return PhysicsMath::Vector3ToPxVec3(v);
+    });
+
+    PxConvexMeshDesc desc;
+    desc.points.count = static_cast<PxU32>(points.size());
+    desc.points.stride = sizeof(PxVec3);
+    desc.points.data = vertices.data();
+    desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+    PxConvexMeshCookingResult::Enum condition;
+    PxDefaultMemoryOutputStream outStream;
+    if (cooking->cookConvexMesh(desc, outStream, &condition) == false)
+    {
+        Logger::Error("[Physics::CreateMeshShape] Mesh creation failure for polygon group with code: %u", static_cast<uint32>(condition));
+        return nullptr;
+    }
+
+    physx::PxDefaultMemoryInputData inputStream(outStream.getData(), outStream.getSize());
+    return physics->createConvexMesh(inputStream);
 }
 
 physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const

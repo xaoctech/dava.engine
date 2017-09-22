@@ -85,7 +85,6 @@ public:
     bool selectionSequent = false;
     bool selectionOnClick = false;
     SelectionSystemDrawMode selectionDrawMode = SelectionSystemDrawMode::SS_DRAW_DEFAULT;
-    CollisionSystemDrawMode collisionDrawMode = CollisionSystemDrawMode::CS_DRAW_DEFAULT;
     bool modificationByGizmoOnly = false;
     DAVA::float32 gizmoScale = 1.0f;
     DAVA::float32 debugBoxScale = 1.0f;

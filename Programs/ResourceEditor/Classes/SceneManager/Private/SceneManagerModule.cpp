@@ -1219,7 +1219,7 @@ void SceneManagerModule::OnDrop(QObject* target, QDropEvent* event)
             DAVA::Landscape* landscape = data->scene->collisionSystem->GetLandscape();
             if (landscape != nullptr && landscape->GetHeightmap() != nullptr && landscape->GetHeightmap()->Size() > 0)
             {
-                data->scene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(), pos);
+                data->scene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(pos), pos);
             }
         }
 

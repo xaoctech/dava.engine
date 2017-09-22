@@ -94,7 +94,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
     .Field("saveStaticOcclusion", &GlobalSceneSettings::saveStaticOcclusion)[DAVA::M::DisplayName("Save static occlusion")]
     .Field("defaultCustomColorIndex", &GlobalSceneSettings::defaultCustomColorIndex)[DAVA::M::DisplayName("Default custom color index")]
     .Field("selectionDrawMode", &GlobalSceneSettings::selectionDrawMode)[DAVA::M::DisplayName("Selection draw mode"), DAVA::M::FlagsT<SelectionSystemDrawMode>()]
-    .Field("collisionDrawMode", &GlobalSceneSettings::collisionDrawMode)[DAVA::M::DisplayName("Collision draw mode"), DAVA::M::FlagsT<CollisionSystemDrawMode>()]
     .Field("gridStep", &GlobalSceneSettings::gridStep)[DAVA::M::DisplayName("Step"), DAVA::M::Group("Grid")]
     .Field("gridSize", &GlobalSceneSettings::gridSize)[DAVA::M::DisplayName("Size"), DAVA::M::Group("Grid")]
     .Field("cameraSpeed0", &GlobalSceneSettings::cameraSpeed0)[DAVA::M::DisplayName("Speed 0"), DAVA::M::Group("Camera")]
