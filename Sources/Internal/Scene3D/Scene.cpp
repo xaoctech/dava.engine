@@ -52,6 +52,10 @@
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/WASDPhysicsControllerSystem.h>
+#endif
+
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
 #endif
@@ -252,6 +256,9 @@ void Scene::CreateSystems()
 
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
+
+        WASDPhysicsControllerSystem* wasdPhysicsSystem = new WASDPhysicsControllerSystem(this);
+        AddSystem(wasdPhysicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS, physicsSystem, physicsSystem);
     }
 #endif
 
@@ -397,6 +404,10 @@ Scene::~Scene()
 
     SafeRelease(mainCamera);
     SafeRelease(drawCamera);
+
+    for (Camera*& c : cameras)
+        SafeRelease(c);
+    cameras.clear();
 
     // Children should be removed first because they should unregister themselves in managers
     RemoveAllChildren();

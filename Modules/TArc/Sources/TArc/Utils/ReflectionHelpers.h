@@ -45,6 +45,40 @@ const T* GetTypeMeta(const Any& value)
     return GetReflectedTypeMeta<T>(type);
 }
 
+template <typename T>
+Vector<const T*> GetTypeHierarhcyMeta(const Any& value)
+{
+    Vector<const T*> result;
+    std::function<void(const Type*)> unpackMeta = [&result, &unpackMeta](const Type* t)
+    {
+        DVASSERT(t != nullptr);
+        const ReflectedType* type = ReflectedTypeDB::GetByType(t);
+        if (type != nullptr)
+        {
+            const T* m = GetReflectedTypeMeta<T>(type);
+            if (m != nullptr)
+            {
+                result.push_back(m);
+            }
+        }
+
+        const TypeInheritance* inheritance = t->GetInheritance();
+        if (inheritance != nullptr)
+        {
+            const Vector<TypeInheritance::Info> baseTypes = inheritance->GetBaseTypes();
+            for (const TypeInheritance::Info& baseType : baseTypes)
+            {
+                unpackMeta(baseType.type);
+            }
+        }
+    };
+
+    const ReflectedType* type = GetValueReflectedType(value);
+    unpackMeta(type->GetType());
+
+    return result;
+}
+
 template <typename TMeta, typename TIndex>
 void EmplaceTypeMeta(const ReflectedType* type, Meta<TMeta, TIndex>&& meta)
 {
