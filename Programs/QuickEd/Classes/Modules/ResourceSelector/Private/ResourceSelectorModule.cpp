@@ -45,6 +45,23 @@ DAVA::String GetNameFromGfxFolder(const DAVA::String& folder)
 {
     return folder.substr(2, folder.length() - 3); // because of "./Gfx/" ... "./Gfx2/"
 }
+
+void ProcessUIControl(DAVA::UIControl* control)
+{
+    using namespace DAVA;
+    UIControlBackground* background = control->GetComponent<UIControlBackground>();
+    if (background != nullptr)
+    {
+        control->SetLayoutDirty();
+        background->ReleaseDrawData();
+    }
+
+    const List<UIControl*>& children = control->GetChildren();
+    for (UIControl* c : children)
+    {
+        ProcessUIControl(c);
+    }
+}
 }
 
 ResourceSelectorModule::ResourceSelectorModule()
@@ -295,23 +312,6 @@ void ResourceSelectorModule::ReloadSpritesImpl()
     RefreshUIControls(DAVA::Any());
 }
 
-void ProcessUIControl(DAVA::UIControl* control)
-{
-    using namespace DAVA;
-    UIControlBackground* background = control->GetComponent<UIControlBackground>();
-    if (background != nullptr)
-    {
-        control->SetLayoutDirty();
-        background->ReleaseDrawData();
-    }
-
-    const List<UIControl*>& children = control->GetChildren();
-    for (UIControl* c : children)
-    {
-        ProcessUIControl(c);
-    }
-}
-
 void ResourceSelectorModule::RefreshUIControls(const DAVA::Any& value)
 {
     using namespace DAVA;
@@ -336,7 +336,7 @@ void ResourceSelectorModule::RefreshUIControls(const DAVA::Any& value)
             for (auto it = container->begin(); it != container->end(); ++it)
             {
                 ControlNode* ctrlNode = *it;
-                ProcessUIControl(ctrlNode->GetControl());
+                ResourceSelectorModuleDetails::ProcessUIControl(ctrlNode->GetControl());
             }
         }
     };

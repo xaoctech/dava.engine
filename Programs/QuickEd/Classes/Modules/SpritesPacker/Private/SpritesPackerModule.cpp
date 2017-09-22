@@ -119,18 +119,6 @@ void SpritesPackerModule::DisableCacheClient()
     }
 }
 
-void SetDirty(DAVA::UIControl* ctrl)
-{
-    using namespace DAVA;
-    ctrl->SetLayoutDirty();
-
-    const List<UIControl*>& children = ctrl->GetChildren();
-    for (UIControl* c : children)
-    {
-        SetDirty(c);
-    }
-}
-
 void SpritesPackerModule::OnReloadFinished()
 {
     InvokeOperation(QEGlobal::ReloadSprites.ID);
