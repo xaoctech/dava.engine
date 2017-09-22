@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-C647B007-60BB-42A5-B39A-86CBC306A858" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8" />
+      <title>Using the Cache with Distribeast</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-C647B007-60BB-42A5-B39A-86CBC306A858.htm',                           'd30e14087','index.html',location.hash);                           javascript:initPage('Using the Cache with Distribeast','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-C647B007-60BB-42A5-B39A-86CBC306A858.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-C647B007-60BB-42A5-B39A-86CBC306A858.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Using the Cache with Distribeast&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Monitoring Distribeast</div><a href="GUID-CFB931AC-3B1C-45F5-BE98-A78D48CD938F.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Using Distribeast</div><a href="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Known Issues with Distribeast</div><a href="GUID-303E8100-F675-4A37-B1A1-6EE6A251ADBF.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-7F1B3E54-AE87-48E0-9480-807E6376C5E8.htm"> Using Distribeast</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-4671B476-1197-46D2-8A91-0FCE3AADD66D"></a></span><h1>Using the Cache with Distribeast</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-C647B007-60BB-42A5-B39A-86CBC306A858"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-1614398C-CE6C-4E09-8FB0-4C91BE807024"></a></span> When you run a distributed rendering job, objects in the <span class="charspan-msgph" translate="no">Beast</span> cache are sent from the submitting application to the other workers in the network. The workers then maintain those objects
+            in their own caches, to speed up any other jobs that they may have to run. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-D1C00804-EE50-4DAF-B243-3CFEC43856E2"></a></span>This distributed caching involves some special considerations, outlined in the sections below. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_DA52B75BC23C4F5D9DEFDEC72FB01E02"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e14100"></a><span class="anchor_wrapper"><a name="GUID-9DD1993A-BEEF-43C1-B183-391C4148482C"></a></span>No invalidating objects
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-1048793A-4230-4C70-AC17-62AAB6B79AC3"></a></span>When you use distributed rendering, your application cannot depend on being able to invalidate any objects in the cache, since
+               those objects may have already been sent to one or more workers. If so, the objects will be maintained in the cache local
+               to each worker. Requests to invalidate an object are not propagated to the workers. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-6DEBA6D6-1EF0-4390-B6CF-E87E15456328"></a></span>Therefore, when you set up your object naming conventions (as described under <span class="char_link"><a href="GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm">Using the Cache</a></span>), you should use a system that incorporates unique IDs into your object names in order to avoid cache conflicts and make
+               sure you always use the most up-to-date version of your game assets. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E68085D63EA64E4E8B4E0F18B9F6A3F9"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e14113"></a><span class="anchor_wrapper"><a name="GUID-5EE8F676-C510-45EF-A6C9-900305C9724E"></a></span>Cache scope and object naming
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-E82A4D11-3651-437A-B86C-B24319F49B81"></a></span>When you initialize your <span class="charspan-msgph" translate="no">Beast</span> Manager, you determine the scope of its cache. The choice you make has important consequences for your naming conventions,
+               as introduced under <span class="char_link"><a href="GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm">Using the Cache</a></span>. There are also special considerations when using Distribeast, since cached objects are shared across the network. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_974AE60458284592BD5437DA57CAA16D"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e14126"></a><span class="anchor_wrapper"><a name="GUID-CD642C8C-93A3-48D4-99B3-9F335ECCA919"></a></span>Local scope
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-44ACA875-E686-47FB-9368-C52E1ED811BE"></a></span>If you initialize your <span class="charspan-msgph" translate="no">Beast</span> Manager with a local cache scope, your object names only have to be unique for the objects sent by that <span class="charspan-msgph" translate="no">Beast</span> Manager. They will not be shared with other <span class="charspan-msgph" translate="no">Beast</span> Managers, even when you run a distributed job. This is exactly the same as when you use local scope without Distribeast.
+                  
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_CDA89486F3A44CFCB176931BD7E37FF0"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e14144"></a><span class="anchor_wrapper"><a name="GUID-098625A0-9221-4668-9F1F-1388BD0389EE"></a></span>Global scope
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-85F4C152-ADE5-4F5F-8AD7-DFC6AE8E0B50"></a></span>If you initialize your <span class="charspan-msgph" translate="no">Beast</span> Manager with a global cache scope, and you run a distributed rendering job, all cached objects sent to the workers will be
+                  visible to those workers even when they are treating rendering jobs from other submitters. This may speed up the rendering
+                  jobs, sinced the cached versions of the resources can be retrieved from the network resource cache by any job when needed.
+                  
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-17E1A5DA-22EE-4354-8851-6BB7B21F3624"></a></span>However, this also means that when you use global cache scope and distributed rendering together, you must make sure that
+                  your object names are unique across <em class="mild">all</em> jobs that may be sent to the Distribeast network by another <span class="charspan-msgph" translate="no">Beast</span> Manager with global scope. If the object names are not unique, a naming conflict may lead to one of your rendering jobs incorrectly
+                  using a texture or mesh created by a different submitter. This could cause incorrect results or even rendering failures. 
+               </p> 
+            </div> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

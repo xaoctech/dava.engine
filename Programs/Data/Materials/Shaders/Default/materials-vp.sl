@@ -637,7 +637,12 @@ vertex_out vp_main( vertex_in input )
 
     #endif // !CUT_LEAF
 
-    output.varVertexColor.xyz = half3(sphericalLightFactor * 2.0);
+    #if VERTEX_COLOR
+        output.varVertexColor.xyz = half3(input.color0.xyz) * half3(sphericalLightFactor * 2.0);
+    #else
+        output.varVertexColor.xyz = half3(sphericalLightFactor * 2.0);
+    #endif
+
     output.varVertexColor.w = half(1.0);    
 
 #elif SPEED_TREE_OBJECT //legacy for old tree lighting

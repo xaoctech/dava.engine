@@ -12,7 +12,7 @@
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/EditorConfig.h"
 
-#include "CommandLine/BeastCommandLineTool.h"
+#include "Classes/Beast/BeastCommandLineTool.h"
 #include "CommandLine/ConsoleHelpTool.h"
 #include "CommandLine/DumpTool.h"
 #include "CommandLine/SceneImageDump.h"
@@ -25,12 +25,6 @@
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/SceneValidationTool.h"
 
-#ifdef __DAVAENGINE_BEAST__
-#include "BeastProxyImpl.h"
-#else
-#include "Beast/BeastProxy.h"
-#endif //__DAVAENGINE_BEAST__
-
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
 #include <QtTools/InitQtTools.h>
@@ -41,6 +35,7 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
 
 #include <DocDirSetup/DocDirSetup.h>
 
@@ -175,8 +170,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "ResourceEditor");
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
-
-    beastProxy = new BEAST_PROXY_TYPE();
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
@@ -193,8 +186,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 void REApplication::Cleanup()
 {
     REGlobal::InitTArcCore(nullptr);
-    DAVA::SafeRelease(beastProxy);
-
     VisibilityCheckSystem::ReleaseCubemapRenderTargets();
 
     cmdLine.clear();
@@ -222,8 +213,8 @@ void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
     InitQtTools();
 
     tarcCore->CreateModule<DAVA::TArc::SettingsModule>();
-    InsertionParams params(InsertionParams::eInsertionMethod::BeforeItem, "Toolbars");
-    tarcCore->CreateModule<DAVA::TArc::ThemesModule>(params);
+    tarcCore->CreateModule<DAVA::TArc::ThemesModule>();
+    tarcCore->CreateModule<DAVA::TArc::ActionManagementModule>();
     tarcCore->CreateModule<ReflectionExtensionsModule>();
     tarcCore->CreateModule<REModule>();
     tarcCore->CreateModule<ProjectManagerModule>();

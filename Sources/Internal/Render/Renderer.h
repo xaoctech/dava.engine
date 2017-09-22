@@ -7,7 +7,6 @@
 #include "RuntimeTextures.h"
 #include "RHI/rhi_Public.h"
 #include "RHI/rhi_Type.h"
-#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
@@ -95,6 +94,6 @@ struct RenderStats
     uint32 visibleRenderObjects = 0U;
     uint32 occludedRenderObjects = 0U;
 
-    FastNameMap<uint32> visibilityQueryResults = FastNameMap<uint32>(16, 0U);
+    UnorderedMap<FastName, uint32> visibilityQueryResults = UnorderedMap<FastName, uint32>(16);
 };
 }

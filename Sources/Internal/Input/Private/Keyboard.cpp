@@ -10,6 +10,8 @@
 #include "Input/Private/Android/KeyboardImplAndroid.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "Input/Private/Ios/KeyboardImplIos.h"
+#elif defined(__DAVAENGINE_LINUX__)
+#include "Input/Private/Linux/KeyboardImplLinux.h"
 #else
 #error "KeyboardDevice: unknown platform"
 #endif
@@ -19,6 +21,7 @@
 #include "Input/InputSystem.h"
 #include "Time/SystemTimer.h"
 #include "Logger/Logger.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
@@ -29,15 +32,8 @@ Keyboard::Keyboard(uint32 id)
     , keys{}
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        // TODO: handle all the windows
-        primaryWindow->focusChanged.Connect(this, &Keyboard::OnWindowFocusChanged);
-        primaryWindow->sizeChanged.Connect(this, &Keyboard::OnWindowSizeChanged);
-    }
+    engine->endFrame.Connect(this, &Keyboard::OnEndFrame);
 
     Private::EngineBackend::Instance()->InstallEventFilter(this, MakeFunction(this, &Keyboard::HandleMainDispatcherEvent));
 }
@@ -45,14 +41,8 @@ Keyboard::Keyboard(uint32 id)
 Keyboard::~Keyboard()
 {
     Engine* engine = Engine::Instance();
-    engine->endFrame.Disconnect(this);
 
-    Window* primaryWindow = engine->PrimaryWindow();
-    if (primaryWindow != nullptr)
-    {
-        primaryWindow->focusChanged.Disconnect(this);
-        primaryWindow->sizeChanged.Disconnect(this);
-    }
+    engine->endFrame.Disconnect(this);
 
     Private::EngineBackend::Instance()->UninstallEventFilter(this);
 
@@ -82,17 +72,23 @@ uint32 Keyboard::GetKeyNativeScancode(eInputElements elementId) const
 
 bool Keyboard::IsElementSupported(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return IsKeyboardInputElement(elementId);
 }
 
 DigitalElementState Keyboard::GetDigitalElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(IsElementSupported(elementId));
     return keys[elementId - eInputElements::KB_FIRST];
 }
 
 AnalogElementState Keyboard::GetAnalogElementState(eInputElements elementId) const
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(false, "KeyboardInputDevice does not support analog elements");
     return {};
 }
@@ -104,23 +100,6 @@ void Keyboard::OnEndFrame()
     {
         keyState.OnEndFrame();
     }
-}
-
-void Keyboard::OnWindowFocusChanged(DAVA::Window* window, bool focused)
-{
-    // Reset keyboard state when window is unfocused
-    if (!focused)
-    {
-        ResetState(window);
-    }
-}
-
-void Keyboard::OnWindowSizeChanged(DAVA::Window* window, Size2f, Size2f)
-{
-    // Reset keyboard state when window size changes
-    // To workaround cases when input events are not generated while window is changint its size
-    // (e.g. when maximizing window in macOS)
-    ResetState(window);
 }
 
 void Keyboard::ResetState(Window* window)
@@ -233,5 +212,4 @@ void Keyboard::CreateAndSendCharInputEvent(char32_t charCode, bool charRepeated,
 
     inputSystem->DispatchInputEvent(inputEvent);
 }
-
 } // namespace DAVA

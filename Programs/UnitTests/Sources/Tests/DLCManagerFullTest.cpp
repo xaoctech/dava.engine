@@ -8,6 +8,7 @@
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
 #include <EmbeddedWebServer/EmbeddedWebServer.h>
+#include <Time/SystemTimer.h>
 
 #include "UnitTests/UnitTests.h"
 #include <Platform/DeviceInfo.h>
@@ -72,11 +73,12 @@ struct FSMTest02
         }
     }
 
-    bool Update(DAVA::float32 dt)
+    bool Update(DAVA::float32 /*timeElapsed*/)
     {
         using namespace DAVA;
         DLCManager& dlcManager = *GetEngineContext()->dlcManager;
 
+        DAVA::float32 dt = DAVA::SystemTimer::GetRealFrameDelta();
         time += dt;
 
         switch (state)

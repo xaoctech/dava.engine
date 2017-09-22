@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Render/Highlevel/VisibilityQuadTree.h"

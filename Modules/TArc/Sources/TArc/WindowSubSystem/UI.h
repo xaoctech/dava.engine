@@ -143,6 +143,7 @@ struct WaitDialogParams
     uint32 min = 0; // if min and max value equal 0, than progress bar will be infinite
     uint32 max = 0;
     bool needProgressBar = true;
+    bool cancelable = false;
 };
 
 class WaitHandle
@@ -155,6 +156,8 @@ public:
     virtual void SetMessage(const QString& msg) = 0;
     virtual void SetRange(uint32 min, uint32 max) = 0;
     virtual void SetProgressValue(uint32 progress) = 0;
+    virtual bool WasCanceled() const = 0;
+
     virtual void Update() = 0;
 };
 
@@ -242,7 +245,7 @@ public:
     virtual void ClearMessage(const WindowKey& windowKey) = 0;
     virtual int ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog) = 0;
     virtual ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) = 0;
-    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) = 0;
+    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const = 0;
 
     virtual QString GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;
     virtual QString GetSaveFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;
