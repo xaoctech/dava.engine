@@ -245,7 +245,7 @@ void InsertAction(T* container, QAction* action, const InsertionParams& params)
         DVASSERT(action->parent() == actionMenu);
         DVASSERT(actionMenu->parent() == nullptr || actionMenu->parent() == container);
         actionMenu->setObjectName(action->objectName());
-        actionMenu->setParent(container);
+        actionMenu->setParent(container, actionMenu->windowFlags());
     }
     else
     {
@@ -312,7 +312,7 @@ void AddMenuPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInfo)
 {
     if (windowInfo.menuBar == nullptr)
     {
-        windowInfo.menuBar = new QMenuBar(windowInfo.window);
+        windowInfo.menuBar = new QMenuBar();
         windowInfo.menuBar->setNativeMenuBar(true);
         windowInfo.menuBar->setObjectName("menu");
         windowInfo.menuBar->setVisible(true);
