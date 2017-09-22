@@ -193,6 +193,10 @@ void LayerDragForceWidget::BuildCommonSection()
     infinityRange = new QCheckBox("Use infinity range");
     connect(infinityRange, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(infinityRange);
+
+    isGlobal = new QCheckBox("Is global force");
+    connect(isGlobal, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(isGlobal);
 }
 
 void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange)
@@ -371,6 +375,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forcePowerSpin->setValue(selectedForce->forcePower.x);
     pointGravityRadiusSpin->setValue(selectedForce->pointGravityRadius);
     pointGravityUseRnd->setChecked(selectedForce->pointGravityUseRandomPointsOnSphere);
+    isGlobal->setChecked(selectedForce->isGlobal);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -468,6 +473,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.backwardTurbulenceProbability = static_cast<uint32>(Clamp(backTurbSpin->value(), 0.0, 100.0));
     params.pointGravityRadius = pointGravityRadiusSpin->value();
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
+    params.isGlobal = isGlobal->isChecked();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
 

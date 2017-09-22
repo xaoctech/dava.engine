@@ -59,6 +59,7 @@ private:
     QLineEdit* forceNameEdit = nullptr;
     QCheckBox* isActive = nullptr;
     QCheckBox* infinityRange = nullptr;
+    QCheckBox* isGlobal = nullptr;
 
     QFrame* shapeSeparator = nullptr;
     QLabel* shapeLabel = nullptr;

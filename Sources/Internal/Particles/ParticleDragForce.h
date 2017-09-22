@@ -68,6 +68,7 @@ public:
 
     bool isInfinityRange = true;
     bool pointGravityUseRandomPointsOnSphere = false;
+    bool isGlobal = false;
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
 public:

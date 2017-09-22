@@ -1217,6 +1217,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->pointGravityUseRandomPointsOnSphere);
 
+        forceDataName = Format("isGlobal%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->isGlobal);
+
         forceDataName = Format("dragForcePower%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePower);
 
@@ -1499,6 +1502,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* pointGravityUseRandomPointsOnSphereNode = node->Get(forceDataName);
         if (pointGravityUseRandomPointsOnSphereNode)
             dragForce->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphereNode->AsBool();
+
+        forceDataName = Format("isGlobal%d", i);
+        const YamlNode* isGlobalNode = node->Get(forceDataName);
+        if (isGlobalNode)
+            dragForce->isGlobal = isGlobalNode->AsBool();
 
         forceDataName = Format("dragForcePower%d", i);
         const YamlNode* powerNode = node->Get(forceDataName);
