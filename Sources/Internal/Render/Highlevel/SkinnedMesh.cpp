@@ -78,20 +78,6 @@ void SkinnedMesh::Load(KeyedArchive* archive, SerializationContext* serializatio
     }
 }
 
-void SkinnedMesh::RecalcBoundingBox()
-{
-    AABBox3 geometryBBox;
-
-    for (const RenderBatchWithOptions& i : renderBatchArray)
-    {
-        RenderBatch* batch = i.renderBatch;
-        geometryBBox.AddAABBox(batch->GetBoundingBox());
-    }
-
-    float32 radius = geometryBBox.GetBoundingSphereRadius();
-    bbox = AABBox3(geometryBBox.GetCenter(), 2.f * radius);
-}
-
 void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     auto found = jointTargetsDataMap.find(batch);

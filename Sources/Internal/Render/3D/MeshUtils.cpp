@@ -443,8 +443,16 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
     for (int32 nodeIndex = 0; nodeIndex < int32(childrenNodes.size()); ++nodeIndex)
     {
         Entity* child = childrenNodes[nodeIndex];
+
+        Matrix4 bindTransform = child->AccamulateLocalTransform(fromEntity);
+
+        outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
+        outJoints[nodeIndex].uid = childrenNodes[nodeIndex]->GetName();
+        outJoints[nodeIndex].bindTransform = bindTransform;
+        bindTransform.GetInverse(outJoints[nodeIndex].bindTransformInv);
+
         RenderObject* ro = GetRenderObject(child);
-        if (ro)
+        if (ro != nullptr)
         {
             uint32 jointTarget = uint32(jointTargets.size());
             jointTargets.emplace_back(nodeIndex);
@@ -459,15 +467,12 @@ SkinnedMesh* CreateHardSkinnedMesh(Entity* fromEntity, Vector<SkeletonComponent:
                 collapseDataMap[dataKey].push_back(SkinnedMeshJointWork(rb, jointTarget));
             }
 
-            outJoints[nodeIndex].bbox = ro->GetBoundingBox();
+            ro->GetBoundingBox().GetTransformedBox(outJoints[nodeIndex].bindTransformInv, outJoints[nodeIndex].bbox);
         }
-
-        Matrix4 bindTransform = child->AccamulateLocalTransform(fromEntity);
-
-        outJoints[nodeIndex].name = childrenNodes[nodeIndex]->GetName();
-        outJoints[nodeIndex].uid = childrenNodes[nodeIndex]->GetName();
-        outJoints[nodeIndex].bindTransform = bindTransform;
-        bindTransform.GetInverse(outJoints[nodeIndex].bindTransformInv);
+        else
+        {
+            outJoints[nodeIndex].bbox.Empty();
+        }
 
         Entity* parentEntity = child->GetParent();
         if (!parentEntity || parentEntity == fromEntity)

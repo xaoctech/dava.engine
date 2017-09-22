@@ -36,7 +36,6 @@ public:
     void Save(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Load(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    void RecalcBoundingBox() override;
     void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
 
     void SetBoundingBox(const AABBox3& box);
