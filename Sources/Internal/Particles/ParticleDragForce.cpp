@@ -38,6 +38,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->position = position;
     dst->rotation = rotation;
     dst->isInfinityRange = isInfinityRange;
+    dst->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphere;
     dst->boxSize = boxSize;
     dst->forcePower = forcePower;
     dst->radius = radius;

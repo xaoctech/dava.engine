@@ -1214,6 +1214,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("dragForceInfinityRange%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->isInfinityRange);
 
+        forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->pointGravityUseRandomPointsOnSphere);
+
         forceDataName = Format("dragForcePower%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePower);
 
@@ -1491,6 +1494,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* rangeNode = node->Get(forceDataName);
         if (rangeNode)
             dragForce->isInfinityRange = rangeNode->AsBool();
+
+        forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
+        const YamlNode* pointGravityUseRandomPointsOnSphereNode = node->Get(forceDataName);
+        if (pointGravityUseRandomPointsOnSphereNode)
+            dragForce->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphereNode->AsBool();
 
         forceDataName = Format("dragForcePower%d", i);
         const YamlNode* powerNode = node->Get(forceDataName);

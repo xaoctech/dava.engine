@@ -52,7 +52,7 @@ private:
     void BuildWindSection();
     void BuildPointGravitySection();
     void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange);
-    void SetupSpin(EventFilterDoubleSpinBox* spin);
+    void SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep = 0.0001, DAVA::int32 decimals = 4);
 
     QVBoxLayout* mainLayout = nullptr;
     QLabel* forceTypeLabel = nullptr;
@@ -102,6 +102,7 @@ private:
     QFrame* pointGravitySeparator = nullptr;
     QLabel* pointGravityRadiusLabel = nullptr;
     EventFilterDoubleSpinBox* pointGravityRadiusSpin = nullptr;
+    QCheckBox* pointGravityUseRnd = nullptr;
 
     bool blockSignals = false;
 

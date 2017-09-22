@@ -230,14 +230,15 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     pointGravitySeparator->setVisible(isPointGravity);
     pointGravityRadiusLabel->setVisible(isPointGravity);
     pointGravityRadiusSpin->setVisible(isPointGravity);
+    pointGravityUseRnd->setVisible(isPointGravity);
 }
 
-void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin)
+void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
 {
     spin->setMinimum(-100000000000000000000.0);
     spin->setMaximum(100000000000000000000.0);
-    spin->setSingleStep(0.001);
-    spin->setDecimals(4);
+    spin->setSingleStep(singleStep);
+    spin->setDecimals(decimals);
     connect(spin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
     spin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 }
@@ -313,7 +314,7 @@ void LayerDragForceWidget::BuildWindSection()
     QHBoxLayout* backTurbLayout = new QHBoxLayout(this);
     backTurbLabel = new QLabel("Backward turbulence probability:");
     backTurbSpin = new EventFilterDoubleSpinBox();
-    SetupSpin(backTurbSpin);
+    SetupSpin(backTurbSpin, 1, 0);
     backTurbLayout->addWidget(backTurbLabel);
     backTurbLayout->addWidget(backTurbSpin);
     mainLayout->addLayout(backTurbLayout);
@@ -332,6 +333,9 @@ void LayerDragForceWidget::BuildPointGravitySection()
     pointGravityRadLayout->addWidget(pointGravityRadiusLabel);
     pointGravityRadLayout->addWidget(pointGravityRadiusSpin);
     mainLayout->addLayout(pointGravityRadLayout);
+    pointGravityUseRnd = new QCheckBox("Random points on sphere:");
+    connect(pointGravityUseRnd, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(pointGravityUseRnd);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -366,6 +370,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     backTurbSpin->setValue(selectedForce->backwardTurbulenceProbability);
     forcePowerSpin->setValue(selectedForce->forcePower.x);
     pointGravityRadiusSpin->setValue(selectedForce->pointGravityRadius);
+    pointGravityUseRnd->setChecked(selectedForce->pointGravityUseRandomPointsOnSphere);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -460,8 +465,9 @@ void LayerDragForceWidget::OnValueChanged()
     params.windTurbulence = windTurbSpin->value();
     params.windTurbulenceFrequency = windTurbFreqSpin->value();
     params.windBias = windBiasSpin->value();
-    params.backwardTurbulenceProbability = static_cast<uint32>(backTurbSpin->value());
+    params.backwardTurbulenceProbability = static_cast<uint32>(Clamp(backTurbSpin->value(), 0.0, 100.0));
     params.pointGravityRadius = pointGravityRadiusSpin->value();
+    params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
 

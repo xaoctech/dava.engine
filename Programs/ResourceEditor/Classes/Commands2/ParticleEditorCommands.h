@@ -470,6 +470,7 @@ public:
         bool isActive = true;
         DAVA::String forceName;
         bool useInfinityRange = false;
+        bool pointGravityUseRandomPointsOnSphere = false;
         DAVA::float32 radius = 0.0f;
         DAVA::Vector3 boxSize;
         DAVA::Vector3 forcePower;

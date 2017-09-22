@@ -219,8 +219,7 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
     Vector3 toCenter;
     float32 toCenterDist = -1;
     float32 distToTarget = -1;
-    bool b = true;
-    if (!b)
+    if (force->pointGravityUseRandomPointsOnSphere)
     {
         intptr_t partInd = reinterpret_cast<intptr_t>(particle);
         uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
