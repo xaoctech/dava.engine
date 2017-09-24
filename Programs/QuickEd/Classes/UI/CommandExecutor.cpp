@@ -835,22 +835,6 @@ ControlNode* CommandExecutor::GroupSelectedNodes() const
     return newGroupControl;
 }
 
-void CommandExecutor::FitToImageSize(ControlNode* controlNode) const
-{
-    using namespace DAVA;
-
-    UIControlBackground* bg = controlNode->GetControl()->GetComponent<UIControlBackground>();
-    if (bg != nullptr)
-    {
-        Vector2 spriteSize = bg->GetSprite()->GetSize();
-        DocumentData* data = GetDocumentData();
-        std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
-        AbstractProperty* sizeProperty = controlNode->GetRootProperty()->FindPropertyByName("size");
-        command->AddNodePropertyValue(controlNode, sizeProperty, Any(spriteSize));
-        data->ExecCommand(std::move(command));
-    }
-}
-
 void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package)
 {
     DocumentData* data = GetDocumentData();

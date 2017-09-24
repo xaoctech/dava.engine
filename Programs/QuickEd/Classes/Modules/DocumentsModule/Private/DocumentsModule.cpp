@@ -427,30 +427,6 @@ void DocumentsModule::CreateEditActions()
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
-
-    // Set Size From Image
-    {
-        const QString actionName("Set size from image");
-
-        QtAction* action = new QtAction(accessor, actionName, nullptr);
-        action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+I"));
-
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
-                                         {
-                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).size() == 1);
-                                         });
-
-        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::OnSetSizeFromImage));
-
-        ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
-
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
-    }
 }
 
 void DocumentsModule::OnUndo()
@@ -486,17 +462,6 @@ void DocumentsModule::DoGroupSelection()
     if (newGroupControl != nullptr)
     {
         GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
-    }
-}
-
-void DocumentsModule::OnSetSizeFromImage()
-{
-    const SelectedNodes& nodes = GetAccessor()->GetActiveContext()->GetData<DocumentData>()->GetSelectedNodes();
-    ControlNode* node = dynamic_cast<ControlNode*>(*(nodes.begin()));
-    if (node != nullptr)
-    {
-        CommandExecutor commandExecutor(GetAccessor(), GetUI());
-        commandExecutor.FitToImageSize(node);
     }
 }
 
