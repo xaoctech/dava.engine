@@ -2,6 +2,9 @@
 #include "Main/mainwindow.h"
 #include "Commands2/EntityAddCommand.h"
 
+#include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
+
 #include "Qt/ImageSplitterDialog/ImageSplitterDialogNormal.h"
 
 #include "Scene3D/Components/SkeletonComponent.h"
@@ -14,7 +17,18 @@
 
 #include <QInputDialog>
 
-using namespace DAVA;
+namespace DeveloperToolsDetails
+{
+SceneEditor2* GetActiveScene()
+{
+    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    if (data != nullptr)
+    {
+        return data->GetScene().Get();
+    }
+    return nullptr;
+}
+}
 
 DeveloperTools::DeveloperTools(QWidget* parent)
     : QObject(parent)
@@ -23,7 +37,9 @@ DeveloperTools::DeveloperTools(QWidget* parent)
 
 void DeveloperTools::OnDebugFunctionsGridCopy()
 {
-    SceneEditor2* currentScene = sceneHolder.GetScene();
+    using namespace DAVA;
+
+    SceneEditor2* currentScene = DeveloperToolsDetails::GetActiveScene();
     float32 z = 0;
     const float32 xshift = 10.0;
     const float32 yshift = 10.0;
@@ -77,7 +93,9 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
 
 void DeveloperTools::OnDebugCreateTestSkinnedObject()
 {
-    SceneEditor2* currentScene = sceneHolder.GetScene();
+    using namespace DAVA;
+
+    SceneEditor2* currentScene = DeveloperToolsDetails::GetActiveScene();
     if (!currentScene)
         return;
     ScopedPtr<Entity> entity(new Entity());
@@ -172,6 +190,8 @@ void DeveloperTools::OnImageSplitterNormals()
 
 void DeveloperTools::OnReplaceTextureMipmap()
 {
+    using namespace DAVA;
+
     QStringList items = QStringList()
     << QString(NMaterialTextureName::TEXTURE_ALBEDO.c_str())
     << QString(NMaterialTextureName::TEXTURE_LIGHTMAP.c_str())
@@ -182,14 +202,16 @@ void DeveloperTools::OnReplaceTextureMipmap()
     QString item = QInputDialog::getItem(GetParentWidget(), "Replace mipmaps", "Textures:", items, 0, true, &isOk);
     if (isOk)
     {
-        MipMapReplacer::ReplaceMipMaps(sceneHolder.GetScene(), FastName(item.toStdString().c_str()));
+        SceneEditor2* currentScene = DeveloperToolsDetails::GetActiveScene();
+        MipMapReplacer::ReplaceMipMaps(currentScene, FastName(item.toStdString().c_str()));
     }
 }
 
 void DeveloperTools::OnToggleLandscapeInstancing()
 {
-    SceneEditor2* currentScene = sceneHolder.GetScene();
+    using namespace DAVA;
 
+    SceneEditor2* currentScene = DeveloperToolsDetails::GetActiveScene();
     for (Landscape* l : currentScene->landscapeSystem->GetLandscapeObjects())
     {
         l->SetUseInstancing(!l->IsUseInstancing());

@@ -10,7 +10,7 @@ namespace DAVA
 /** 
     \ingroup math
     \brief Class that represents quaternion. Main purpose of the class to give you ability to interpolate between 3D orientations.
-    It used inside skeleton animations, to make all animations smooth and frame intedepndant. 
+    It is used inside skeleton animations, to make all animations smooth and frame independent. 
 */
 class Quaternion
 {
