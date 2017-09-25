@@ -102,6 +102,7 @@ LineParams DistanceLinesFactory::CreateLineParams(const Params& params, const DA
     lineParams.direction = direction;
     lineParams.axis = (direction == ALIGN_LEFT || direction == ALIGN_RIGHT) ? Vector2::AXIS_X : Vector2::AXIS_Y;
     lineParams.oppositeAxis = (lineParams.axis == Vector2::AXIS_X) ? Vector2::AXIS_Y : Vector2::AXIS_X;
+    lineParams.order = params.order;
     lineParams.painter = params.painter;
     return lineParams;
 }

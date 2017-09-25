@@ -24,22 +24,6 @@ DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
 
 DistanceSystem::~DistanceSystem() = default;
 
-CanvasControls DistanceSystem::CreateCanvasControls()
-{
-    using namespace DAVA;
-
-    DVASSERT(canvas.Valid() == false);
-    canvas.Set(new UIControl());
-    canvas->SetName("Distance_system_canvas");
-
-    return { { canvas } };
-}
-
-void DistanceSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
-{
-    canvas = nullptr;
-}
-
 BaseEditorSystem::eSystems DistanceSystem::GetOrder() const
 {
     return DISTANCE_LINES;
@@ -91,7 +75,6 @@ void DistanceSystem::OnUpdate()
     using namespace DAVA;
     using namespace DAVA::TArc;
 
-    canvas->RemoveAllControls();
     if (CanDrawDistances() == false)
     {
         return;
@@ -116,10 +99,11 @@ void DistanceSystem::OnUpdate()
     DistanceLinesFactory::Params params(selectedControl, highlightedControl);
     params.accessor = accessor;
     params.painter = GetPainter();
+    params.order = GetOrder();
     Vector<std::unique_ptr<DistanceLine>> lines = factory->CreateLines(params);
 
     for (const std::unique_ptr<DistanceLine>& line : lines)
     {
-        line->Draw(canvas.Get());
+        line->Draw();
     }
 }

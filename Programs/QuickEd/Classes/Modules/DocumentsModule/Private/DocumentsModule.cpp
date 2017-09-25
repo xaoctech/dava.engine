@@ -92,7 +92,7 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
     systemsData->painter = std::make_unique<Painting::Painter>();
     Vector<Window*> windows = Engine::Instance()->GetWindows();
     DVASSERT(windows.size() == 1);
-    windows.front()->draw.Connect(systemsData->painter.get(), &Painting::Painter::Draw);
+    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::Draw));
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -726,7 +726,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorSystemsData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorSystemsData = globalContext->GetData<EditorSystemsData>();
     if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
     {
         return;

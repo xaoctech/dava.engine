@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-class UIControl;
 class UIGeometricData;
 namespace TArc
 {
@@ -27,6 +26,7 @@ struct LineParams
     DAVA::Vector2::eAxis axis;
     DAVA::Vector2::eAxis oppositeAxis;
     DAVA::eAlign direction;
+    DAVA::uint32 order = 0;
     Painting::Painter* painter = nullptr;
 };
 
@@ -37,7 +37,7 @@ public:
     DistanceLine(const LineParams& params);
     virtual ~DistanceLine();
 
-    virtual void Draw(DAVA::UIControl* canvas) = 0;
+    virtual void Draw() = 0;
 
 protected:
     LineParams params;
@@ -49,11 +49,11 @@ public:
     SolidLine(const LineParams& params);
 
 private:
-    void Draw(DAVA::UIControl* canvas) override;
+    void Draw() override;
 
-    void DrawEndLine(DAVA::UIControl* canvas);
-    void DrawSolidLine(DAVA::UIControl* canvas);
-    void DrawLineText(DAVA::UIControl* canvas);
+    void DrawEndLine();
+    void DrawSolidLine();
+    void DrawLineText();
 };
 
 class DotLine : public DistanceLine
@@ -62,5 +62,5 @@ public:
     DotLine(const LineParams& params);
 
 private:
-    void Draw(DAVA::UIControl* canvas) override;
+    void Draw() override;
 };

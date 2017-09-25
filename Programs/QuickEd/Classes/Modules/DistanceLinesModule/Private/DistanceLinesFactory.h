@@ -25,6 +25,7 @@ public:
         DAVA::Rect selectedRect;
         DAVA::Rect highlightedRect;
         DAVA::UIGeometricData parentGd;
+        DAVA::uint32 order = 0;
         Painting::Painter* painter = nullptr;
     };
 
