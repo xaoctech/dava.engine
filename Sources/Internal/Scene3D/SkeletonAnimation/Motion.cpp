@@ -6,6 +6,8 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 
+#include "Private/MotionStateSequence.h"
+
 ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 {
     ENUM_ADD_DESCR(DAVA::Motion::eMotionBlend::BLEND_OVERRIDE, "Override");
@@ -24,10 +26,17 @@ DAVA_REFLECTION_IMPL(Motion)
     .End();
 }
 
+Motion::Motion()
+{
+    primaryStateSequence = new MotionStateSequence(this);
+}
+
 Motion::~Motion()
 {
     for (MotionTransitionInfo* t : transitions)
         SafeDelete(t);
+
+    SafeDelete(primaryStateSequence);
 }
 
 bool Motion::RequestState(const FastName& stateUID)
@@ -40,107 +49,121 @@ bool Motion::RequestState(const FastName& stateUID)
     auto foundState = statesMap.find(stateUID);
     if (foundState != statesMap.end())
     {
-        pendingState = (currentState != foundState->second) ? (foundState->second) : nullptr;
+        pendingState = foundState->second;
         success = true;
     }
 
     return success;
 }
 
+const FastName& Motion::GetRequestedState() const
+{
+    static const FastName invalidID = FastName("#invalid-state");
+
+    if (pendingState != nullptr)
+        return pendingState->GetID();
+    else if (secondaryStateSequence != nullptr && secondaryStateSequence->GetLastState() != nullptr)
+        return secondaryStateSequence->GetLastState()->GetID();
+    else if (primaryStateSequence->GetLastState() != nullptr)
+        return primaryStateSequence->GetLastState()->GetID();
+    else
+        return invalidID;
+}
+
 void Motion::Update(float32 dTime)
 {
+    DVASSERT(primaryStateSequence != nullptr);
+
     endedPhases.clear();
 
-    //Update
-    if (pendingState != nullptr)
+    if (pendingState != nullptr && secondaryStateSequence == nullptr)
     {
-        bool transitionInterruption = false;
-        if (currentState != nullptr)
+        MotionState* lastState = primaryStateSequence->GetCurrentState();
+        MotionTransitionInfo* pendingTransitionInfo = GetTransition(lastState, pendingState);
+        if (pendingTransitionInfo != nullptr && pendingTransitionInfo->type == MotionTransitionInfo::TYPE_STATE)
         {
-            MotionTransitionInfo* nextTransition = GetTransition(currentState, pendingState);
-            if (nextTransition != nullptr)
+            if (primaryStateSequence->CanBeInterrupted(pendingTransitionInfo->transitionState))
             {
-                if (nextTransition->type == MotionTransitionInfo::TYPE_STATE)
-                {
-                    DVASSERT(nextTransition->transitionState != nullptr);
-                    afterTransitionState = pendingState;
-                    currentState = nextTransition->transitionState;
-                    currentState->Reset();
-                }
-                else
-                {
-                    if (transitionIsActive)
-                    {
-                        if (!currentTransition.IsStarted())
-                        {
-                            if (nextTransition != nullptr)
-                                currentTransition.Reset(nextTransition, currentState, pendingState);
-                            else
-                                transitionIsActive = false;
-                        }
-                        else
-                        {
-                            if (currentTransition.CanBeInterrupted(nextTransition, pendingState))
-                            {
-                                currentTransition.Interrupt(nextTransition, pendingState);
-                                transitionInterruption = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        currentTransition.Reset(nextTransition, currentState, pendingState);
-                        transitionIsActive = true;
-                    }
-                }
+                primaryStateSequence->Interrupt(pendingTransitionInfo->transitionState);
+                primaryStateSequence->Append(pendingState);
+
+                pendingState = nullptr;
             }
-            else
+            else if (secondaryStateSequence == nullptr)
             {
-                currentState = pendingState;
+                secondaryStateSequence = new MotionStateSequence(this);
+                secondaryStateSequence->Append(pendingTransitionInfo->transitionState);
+                secondaryStateSequence->Append(pendingState);
+
+                pendingState = nullptr;
             }
         }
         else
         {
-            currentState = pendingState;
+            if (primaryStateSequence->CanBeInterrupted(pendingState))
+            {
+                primaryStateSequence->Interrupt(pendingState);
+
+                pendingState = nullptr;
+            }
+            else if (secondaryStateSequence == nullptr)
+            {
+                secondaryStateSequence = new MotionStateSequence(this);
+                secondaryStateSequence->Append(pendingState);
+
+                pendingState = nullptr;
+            }
         }
-
-        if (!transitionInterruption)
-            pendingState->Reset();
-
-        pendingState = nullptr;
     }
 
-    currentState->Update(dTime);
-    currentState->GetRootOffsetDelta(&currentRootOffsetDelta);
-
-    if (afterTransitionState != nullptr && currentState->IsAnimationEnd())
+    if (!transitionIsActive && secondaryStateSequence != nullptr)
     {
-        currentState = afterTransitionState;
-        afterTransitionState = nullptr;
+        MotionTransitionInfo* transitionInfo = GetTransition(primaryStateSequence->GetCurrentState(), secondaryStateSequence->GetCurrentState());
 
-        if (transitionIsActive)
-            currentTransition.SetSrcState(currentState);
+        if (transitionInfo != nullptr)
+        {
+            DVASSERT(transitionInfo->type != MotionTransitionInfo::TYPE_STATE);
+            currentTransition.Reset(transitionInfo, primaryStateSequence, secondaryStateSequence);
+            transitionIsActive = true;
+        }
+        else
+        {
+            SafeDelete(primaryStateSequence);
+            primaryStateSequence = secondaryStateSequence;
+            secondaryStateSequence = nullptr;
+        }
     }
 
-    if (currentState->IsPhaseEnd())
-    {
-        const FastName& endedPhaseName = currentState->GetLastPhaseName();
-        if (endedPhaseName.IsValid())
-            endedPhases.emplace_back(currentState->GetID(), endedPhaseName);
-    }
+    primaryStateSequence->Update(dTime);
+    primaryStateSequence->EvaluateRootOffset(&currentRootOffsetDelta);
 
     if (transitionIsActive)
     {
-        currentTransition.GetDstState()->Update(dTime);
+        DVASSERT(secondaryStateSequence != nullptr);
+
+        secondaryStateSequence->Update(dTime);
         currentTransition.Update(dTime);
 
         if (currentTransition.IsComplete())
         {
             currentTransition.EvaluateRootOffset(&currentRootOffsetDelta);
 
-            currentState = currentTransition.GetDstState();
-            afterTransitionState = nullptr;
+            SafeDelete(primaryStateSequence);
+            primaryStateSequence = secondaryStateSequence;
+            secondaryStateSequence = nullptr;
+
             transitionIsActive = false;
+        }
+    }
+
+    //TODO: *Skinning*
+    {
+        MotionState* currentState = primaryStateSequence->GetCurrentState();
+        if (currentState->IsPhaseEnd())
+        {
+            const FastName& endedPhaseName = currentState->GetLastPhaseName();
+            if (endedPhaseName.IsValid())
+                endedPhases.emplace_back(currentState->GetID(), endedPhaseName);
         }
     }
 
@@ -153,7 +176,7 @@ void Motion::Update(float32 dTime)
     }
     else
     {
-        currentState->EvaluatePose(&currentPose);
+        primaryStateSequence->EvaluatePose(&currentPose);
     }
 
     //Temp for debug
@@ -169,9 +192,11 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
     for (MotionState& s : states)
         s.BindSkeleton(skeleton);
 
-    if (currentState != nullptr)
+    if (primaryStateSequence->GetCurrentState() != nullptr)
     {
         currentPose.Reset();
+
+        MotionState* currentState = primaryStateSequence->GetCurrentState();
         currentState->Reset();
         currentState->EvaluatePose(&currentPose);
         currentState->GetRootOffsetDelta(&currentRootOffsetDelta);
@@ -259,7 +284,7 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 
         if (statesCount > 0)
         {
-            motion->currentState = motion->states.data();
+            motion->primaryStateSequence->Append(motion->states.data());
         }
 
         motion->transitions.resize(statesCount * statesCount, nullptr);
@@ -284,8 +309,8 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                 if (foundSrc != motion->statesMap.end() && foundDst != motion->statesMap.end())
                 {
                     uint32 transitionIndex = motion->GetTransitionIndex(foundSrc->second, foundDst->second);
+                    DVASSERT(motion->transitions[transitionIndex] == nullptr);
                     motion->transitions[transitionIndex] = MotionTransitionInfo::LoadFromYaml(transitionNode, motion->statesMap);
-                    ;
                 }
             }
         }

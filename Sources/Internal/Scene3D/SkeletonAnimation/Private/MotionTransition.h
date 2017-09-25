@@ -11,6 +11,7 @@
 namespace DAVA
 {
 class MotionState;
+class MotionStateSequence;
 class SkeletonPose;
 class YamlNode;
 
@@ -55,6 +56,7 @@ public:
     MotionTransition() = default;
 
     void Reset(const MotionTransitionInfo* transitionInfo, MotionState* srcState, MotionState* dstState);
+    void Reset(const MotionTransitionInfo* transitionInfo, MotionStateSequence* srcSequence, MotionStateSequence* dstSequence);
 
     void Update(float32 dTime);
     void EvaluatePose(SkeletonPose* outPose) const;
@@ -63,18 +65,19 @@ public:
     bool IsComplete() const;
     bool IsStarted() const;
 
-    bool CanBeInterrupted(const MotionTransitionInfo* other, const MotionState* dstState) const;
-    void Interrupt(const MotionTransitionInfo* other, MotionState* dstState);
+    bool CanBeInterrupted(const MotionTransitionInfo* other, const MotionState* srcState, const MotionState* dstState) const;
+    void Interrupt(const MotionTransitionInfo* other, MotionState* srcState, MotionState* dstState);
 
     MotionState* GetDstState() const;
     MotionState* GetSrcState() const;
 
-    void SetSrcState(MotionState* state);
-
 protected:
     const MotionTransitionInfo* transitionInfo = nullptr;
+
     MotionState* srcState = nullptr;
     MotionState* dstState = nullptr;
+    MotionStateSequence* srcSequence = nullptr;
+    MotionStateSequence* dstSequence = nullptr;
 
     SkeletonPose frozenPose;
     Vector3 frozenOffset;

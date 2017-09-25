@@ -16,11 +16,12 @@ class SkeletonComponent;
 class YamlNode;
 class Motion;
 class MotionState;
+class MotionStateSequence;
 struct MotionTransitionInfo;
 
 class Motion
 {
-    Motion() = default;
+    Motion();
 
 public:
     enum eMotionBlend
@@ -43,6 +44,8 @@ public:
     const Vector3& GetCurrentRootOffsetDelta() const;
 
     bool RequestState(const FastName& stateID);
+    const FastName& GetRequestedState() const;
+
     void Update(float32 dTime);
 
     void BindSkeleton(const SkeletonComponent* skeleton);
@@ -53,7 +56,6 @@ public:
     void UnbindParameters();
 
     const Vector<FastName>& GetStateIDs() const;
-    const FastName& GetRequestedState() const;
 
     const Vector<std::pair<FastName, FastName>> GetEndedPhases() const;
 
@@ -71,10 +73,11 @@ protected:
     Vector<FastName> statesIDs;
     Vector<FastName> parameterIDs;
 
-    MotionTransition currentTransition;
-    MotionState* currentState = nullptr;
+    MotionStateSequence* primaryStateSequence = nullptr;
+    MotionStateSequence* secondaryStateSequence = nullptr;
     MotionState* pendingState = nullptr;
-    MotionState* afterTransitionState = nullptr; //TODO: *Skinning* state-sequence
+
+    MotionTransition currentTransition; //use for transition between main and second
     bool transitionIsActive = false;
 
     Vector3 currentRootOffsetDelta;
@@ -88,6 +91,8 @@ protected:
         RequestState(id);
     }
     //////////////////////////////////////////////////////////////////////////
+
+    friend class MotionStateSequence;
 
     DAVA_REFLECTION(Motion);
 };
@@ -115,20 +120,6 @@ inline const Vector3& Motion::GetCurrentRootOffsetDelta() const
 inline const Vector<FastName>& Motion::GetParameterIDs() const
 {
     return parameterIDs;
-}
-
-inline const FastName& Motion::GetRequestedState() const
-{
-    static const FastName invalidID = FastName("#invalid-state");
-
-    if (afterTransitionState != nullptr)
-        return afterTransitionState->GetID();
-    else if (pendingState != nullptr)
-        return pendingState->GetID();
-    else if (currentState != nullptr)
-        return currentState->GetID();
-    else
-        return invalidID;
 }
 
 inline const Vector<std::pair<FastName, FastName>> Motion::GetEndedPhases() const
