@@ -283,6 +283,7 @@ public:
     static const char* SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME;
 
     static FastName EntityNameFieldName;
+    static const char* componentFieldString;
 
     void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*>& components);
 
@@ -321,8 +322,6 @@ private:
 
     friend class Scene;
     friend class SceneFileV2;
-
-    static const char* componentFieldString;
 };
 
 inline uint32 Entity::GetID() const

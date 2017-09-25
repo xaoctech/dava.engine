@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
 #include "Debug/DVAssert.h"
+#include "Concurrency/Thread.h"
 
 namespace DAVA
 {
@@ -23,6 +24,8 @@ void InputBindingListener::Listen(eInputBindingListenerModes mode, Function<void
 
 void InputBindingListener::Listen(eInputBindingListenerModes mode, Function<void(bool, const Vector<InputEvent>&)> callback, uint32 deviceId, eInputDeviceTypes deviceTypesMask)
 {
+    DVASSERT(Thread::IsMainThread());
+
     DVASSERT(callback != nullptr);
 
     StopListening();
@@ -137,11 +140,15 @@ bool InputBindingListener::OnInputEvent(const InputEvent& e)
 
 bool InputBindingListener::IsListening() const
 {
+    DVASSERT(Thread::IsMainThread());
+
     return inputHandlerToken > 0;
 }
 
 void InputBindingListener::StopListening()
 {
+    DVASSERT(Thread::IsMainThread());
+
     if (IsListening())
     {
         GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);

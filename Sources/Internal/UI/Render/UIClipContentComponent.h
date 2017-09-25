@@ -8,7 +8,7 @@ namespace DAVA
 {
 class UIClipContentComponent : public UIComponent
 {
-    DAVA_VIRTUAL_REFLECTION(UIDebugRenderComponent, UIComponent);
+    DAVA_VIRTUAL_REFLECTION(UIClipContentComponent, UIComponent);
     IMPLEMENT_UI_COMPONENT(UIClipContentComponent);
 
 public:
@@ -17,8 +17,13 @@ public:
 
     UIClipContentComponent* Clone() const override;
 
+    void SetEnabled(bool _enabled);
+    bool IsEnabled() const;
+
 private:
     ~UIClipContentComponent() override = default;
     UIClipContentComponent& operator=(const UIClipContentComponent&) = delete;
+
+    bool enabled = true;
 };
 }

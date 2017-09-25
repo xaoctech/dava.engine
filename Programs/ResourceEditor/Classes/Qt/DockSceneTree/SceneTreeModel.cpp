@@ -7,6 +7,7 @@
 
 #include "MaterialEditor/MaterialAssignSystem.h"
 
+#include "Classes/Application/REMeta.h"
 #include "Classes/Selection/Selection.h"
 
 // framework
@@ -17,7 +18,43 @@
 
 //mime data
 #include "Tools/MimeData/MimeDataHelper2.h"
+
 #include <TArc/Utils/Utils.h>
+#include <TArc/Utils/ReflectionHelpers.h>
+
+#include <Scene3D/Entity.h>
+#include <Reflection/Reflection.h>
+#include <Base/Any.h>
+
+namespace SceneTreeModelDetail
+{
+bool IsDragNDropAllow(DAVA::Entity* entity, bool isRoot = true)
+{
+    DAVA::Reflection ref = DAVA::Reflection::Create(DAVA::ReflectedObject(entity));
+    DAVA::Reflection componentsRef = ref.GetField(DAVA::Entity::componentFieldString);
+    DVASSERT(componentsRef.IsValid());
+
+    DAVA::Vector<DAVA::Reflection::Field> component = componentsRef.GetFields();
+    for (const DAVA::Reflection::Field& f : component)
+    {
+        DAVA::Any value = f.ref.GetValue();
+        if (DAVA::TArc::GetTypeMeta<REMeta::DisableEntityReparent>(value) != nullptr)
+        {
+            return false;
+        }
+    }
+
+    for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
+    {
+        if (IsDragNDropAllow(entity->GetChild(i), false) == false)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+} // namespace SceneTreeModelDetail
 
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/)
     : QStandardItemModel(parent)
@@ -209,10 +246,17 @@ QMimeData* SceneTreeModel::mimeData(const QModelIndexList& indexes) const
                     QVector<DAVA::Entity*> data;
                     foreach (QModelIndex index, indexes)
                     {
-                        data.push_back(SceneTreeItemEntity::GetEntity(GetItem(index)));
+                        DAVA::Entity* entity = SceneTreeItemEntity::GetEntity(GetItem(index));
+                        if (SceneTreeModelDetail::IsDragNDropAllow(entity))
+                        {
+                            data.push_back(entity);
+                        }
                     }
 
-                    ret = MimeDataHelper2<DAVA::Entity>::EncodeMimeData(data);
+                    if (data.isEmpty() == false)
+                    {
+                        ret = MimeDataHelper2<DAVA::Entity>::EncodeMimeData(data);
+                    }
                 }
                 break;
                 case SceneTreeItem::EIT_Emitter:

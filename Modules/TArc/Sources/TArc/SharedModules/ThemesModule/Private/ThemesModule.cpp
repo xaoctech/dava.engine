@@ -215,18 +215,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ThemesModule)
 {
     ReflectionRegistrator<ThemesModule>::Begin()
     .ConstructorByPointer()
-    .ConstructorByPointer<InsertionParams>()
     .Field("currentTheme", &ThemesModule::GetTheme, &ThemesModule::SetTheme)
     .End();
 }
 
 ThemesModule::ThemesModule()
-{
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ThemesSettings);
-}
-
-ThemesModule::ThemesModule(InsertionParams insertionParams_)
-    : insertionParams(insertionParams_)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ThemesSettings);
 }
@@ -240,11 +233,11 @@ void ThemesModule::PostInit()
 
         QActionGroup* styleGroup = new QActionGroup(menuAction);
 
-        ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "View", insertionParams));
+        ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, menuAction);
 
         {
-            ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "View"
+            ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"
                                                                                << "App style"));
 
             const EnumMap* map = GlobalEnumMap<ThemesSettings::eTheme>::Instance();

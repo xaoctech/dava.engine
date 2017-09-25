@@ -1,11 +1,11 @@
 #include "TArc/Controls/QtWrapLayout.h"
+#include "TArc/Qt/QtSize.h"
 
 #include <Debug/DVAssert.h>
 
 #include <private/qlayout_p.h>
 #include <private/qlayoutengine_p.h>
 
-#include <QSize>
 #include <QtGlobal>
 #include <QWidget>
 

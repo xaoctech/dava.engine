@@ -48,6 +48,8 @@
 #include <FileSystem/VariantType.h>
 
 #include <QShortcut>
+#include "SlotSupportModule/Private/EditorSlotSystem.h"
+#include "SlotSupportModule/SlotSystemSettings.h"
 
 namespace SceneTreeDetails
 {
@@ -391,6 +393,29 @@ protected:
                 menu.addSeparator();
                 Connect(menu.addAction(SharedIcon(":/QtIconsTextureDialog/filter.png"), QStringLiteral("Set name as filter")), this, &EntityContextMenu::SetEntityNameAsFilter);
             }
+
+            menu.addSeparator();
+            {
+                Connect(menu.addAction(SharedIcon(":/QtIcons/openscene.png"), QStringLiteral("Load slots preset")), this, &EntityContextMenu::LoadSlotsPreset);
+            }
+            {
+                std::function<bool(DAVA::Entity*)> checkSlotComponent = [&checkSlotComponent](DAVA::Entity* entity) {
+                    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0)
+                        return true;
+
+                    for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
+                    {
+                        if (checkSlotComponent(entity->GetChild(i)) == true)
+                            return true;
+                    }
+
+                    return false;
+                };
+                bool hasSlotComponent = checkSlotComponent(entity);
+                QAction* action = menu.addAction(SharedIcon(":/QtIcons/save_as.png"), QStringLiteral("Save slots preset"));
+                action->setEnabled(hasSlotComponent);
+                Connect(action, this, &EntityContextMenu::SaveSlotsPreset);
+            }
         }
     }
 
@@ -639,6 +664,53 @@ private:
         DAVA::Camera* camera = GetCamera(entityItem->GetEntity());
         DVASSERT(camera != nullptr);
         GetScene()->SetCustomDrawCamera(camera);
+    }
+
+    void SaveSlotsPreset()
+    {
+        SceneEditor2* scene = GetScene();
+        SlotSystemSettings* settings = REGlobal::GetGlobalContext()->GetData<SlotSystemSettings>();
+
+        if (scene->IsLoaded() == false)
+        {
+            DAVA::Logger::Error("[SaveSlotsPreset] Sorry, you should save scene first");
+            return;
+        }
+
+        QString selectedPath = FileDialog::getSaveFileName(nullptr, QStringLiteral("Save slot preset"), settings->lastPresetSaveLoadPath, QStringLiteral("Slots preset file (*.spreset)"));
+        if (selectedPath.isEmpty())
+        {
+            return;
+        }
+
+        settings->lastPresetSaveLoadPath = selectedPath;
+        EditorSlotSystem* system = scene->LookupEditorSystem<EditorSlotSystem>();
+        DAVA::RefPtr<DAVA::KeyedArchive> archive = system->SaveSlotsPreset(entityItem->GetEntity());
+        if (archive->Save(selectedPath.toStdString()) == false)
+        {
+            DAVA::Logger::Error("Slots Preset was not saved");
+        }
+    }
+
+    void LoadSlotsPreset()
+    {
+        SlotSystemSettings* settings = REGlobal::GetGlobalContext()->GetData<SlotSystemSettings>();
+        QString selectedPath = FileDialog::getOpenFileName(nullptr, QStringLiteral("Save slot preset"), settings->lastPresetSaveLoadPath, QStringLiteral("Slots preset file (*.spreset)"));
+        if (selectedPath.isEmpty())
+        {
+            return;
+        }
+
+        settings->lastPresetSaveLoadPath = selectedPath;
+        DAVA::RefPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        if (archive->Load(selectedPath.toStdString()) == false)
+        {
+            DAVA::Logger::Error("Can't read selected slots preset");
+            return;
+        }
+
+        EditorSlotSystem* system = GetScene()->LookupEditorSystem<EditorSlotSystem>();
+        system->LoadSlotsPreset(entityItem->GetEntity(), archive);
     }
 
 private:
