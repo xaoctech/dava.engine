@@ -69,7 +69,9 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
             if ((currentInput->modifiers & (eModifierKeys::CONTROL | eModifierKeys::COMMAND)) != eModifierKeys::NONE)
             {
                 int32 ticksCount = static_cast<int32>(currentInput->wheelDelta.y);
-                float newScale = GetScaleFromWheelEvent(ticksCount);
+
+                float scale = canvasDataAdapter.GetScale();
+                float newScale = scale * (1.0f + (0.05 * ticksCount * -1.0f));
                 canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
             }
             else
@@ -156,23 +158,6 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
     }
     bool inDragScreenState = isMouseMidButtonPressed || isSpacePressed;
     return inDragScreenState ? EditorSystemsManager::DragScreen : EditorSystemsManager::NoDrag;
-}
-
-DAVA::float32 EditorCanvas::GetScaleFromWheelEvent(DAVA::int32 ticksCount) const
-{
-    using namespace DAVA;
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
-    DVASSERT(activeContext != nullptr);
-    CanvasData* canvasData = activeContext->GetData<CanvasData>();
-    if (ticksCount > 0)
-    {
-        return canvasData->GetNextScale(ticksCount);
-    }
-    else if (ticksCount < 0)
-    {
-        return canvasData->GetPreviousScale(ticksCount);
-    }
-    return canvasData->GetScale();
 }
 
 void EditorCanvas::OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition)
