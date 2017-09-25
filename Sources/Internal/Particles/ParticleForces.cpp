@@ -68,6 +68,7 @@ void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle);
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
+void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 float32 GetTurbulenceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
@@ -102,6 +103,11 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
     if (force->type == ForceType::POINT_GRAVITY)
     {
         ApplyPointGravity(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        return;
+    }
+    if (force->type == ForceType::PLANE_COLLISION)
+    {
+        ApplyPlaneCollision(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
         return;
     }
 }
@@ -254,6 +260,26 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
             particle->life = particle->lifeTime + 0.1f;
         else
             effectSpacePosition = force->position - force->pointGravityRadius * toCenter;
+    }
+}
+
+void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+{
+    if (force->direction.SquareLength() < EPSILON * EPSILON)
+        return;
+    if (!force->isInfinityRange)
+    {
+        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+            return;
+    }
+    Vector3 normal = force->direction; // todo dir can be 0
+    normal.Normalize();
+    Vector3 posDiff = effectSpacePosition - force->position;
+    //Vector3 prevPosDiff = effectSpacePosition 
+    if (posDiff.DotProduct(normal) <= 0)
+    {
+        Vector3 newVel = Reflect(effectSpaceVelocity, normal);
+        effectSpaceVelocity = newVel;
     }
 }
 

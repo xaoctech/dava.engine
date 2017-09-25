@@ -704,6 +704,10 @@ const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/pointGravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/pointGravity_red.png");
     }
+    else if (force->type == DAVA::ParticleDragForce::eType::PLANE_COLLISION)
+    {
+        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/plane_coll.png") : DAVA::TArc::SharedIcon(":/QtIcons/plane_coll_red.png");
+    }
 
     return DAVA::TArc::SharedIcon(":/QtIcons/turtle.png");
 }

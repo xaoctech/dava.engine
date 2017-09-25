@@ -221,7 +221,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
     if (force->type == ForceType::GRAVITY)
         return;
 
-    if (force->type == ForceType::LORENTZ_FORCE || force->type == ForceType::WIND)
+    if (force->type == ForceType::LORENTZ_FORCE || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
     {
         float32 scale = 1.0f;
         HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;

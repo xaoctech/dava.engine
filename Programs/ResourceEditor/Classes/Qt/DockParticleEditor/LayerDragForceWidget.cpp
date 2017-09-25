@@ -47,7 +47,7 @@ DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
     { DAVA::ParticleDragForce::eType::GRAVITY, "Gravity" },
     { DAVA::ParticleDragForce::eType::WIND, "Wind" },
     { DAVA::ParticleDragForce::eType::POINT_GRAVITY, "Point Gravity" },
-    { DAVA::ParticleDragForce::eType::BOX_WRAP, "Box Wrap" }
+    { DAVA::ParticleDragForce::eType::PLANE_COLLISION, "Plane Collision" }
 };
 
 template <typename T, typename U, size_t sz>
@@ -206,7 +206,7 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     using ForceType = DAVA::ParticleDragForce::eType;
     bool isGravity = forceType == ForceType::GRAVITY;
     bool isWind = forceType == ForceType::WIND;
-    bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND;
+    bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND || forceType == ForceType::PLANE_COLLISION;
     bool isPointGravity = forceType == ForceType::POINT_GRAVITY;
 
     boxSize->setVisible(shape == Shape::BOX && !isInfinityRange && !isGravity);

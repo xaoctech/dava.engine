@@ -919,6 +919,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     float32 currVelocityOverLife = 1.0f;
     if (layer.layer->velocityOverLife)
         currVelocityOverLife = layer.layer->velocityOverLife->GetValue(overLife);
+    particle->prevPosition = particle->position;
     particle->position += particle->speed * (currVelocityOverLife * dt);
 
     float32 currSpinOverLife = 1.0f;
@@ -1078,6 +1079,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     particle->position += group.spawnPosition;
     TransformPerserveLength(particle->speed, newTransform);
     TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)
+    particle->prevPosition = particle->position;
 }
 
 void ParticleEffectSystem::SetGlobalExtertnalValue(const String& name, float32 value)

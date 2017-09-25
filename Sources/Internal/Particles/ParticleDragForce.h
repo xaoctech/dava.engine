@@ -33,7 +33,7 @@ public:
         DRAG_FORCE,
         LORENTZ_FORCE,
         POINT_GRAVITY,
-        BOX_WRAP,
+        PLANE_COLLISION,
         GRAVITY,
         WIND
     } type = eType::DRAG_FORCE;

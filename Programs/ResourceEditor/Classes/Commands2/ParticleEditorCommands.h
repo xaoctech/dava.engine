@@ -204,6 +204,16 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
+class CommandAddParticlePlaneCollision : public CommandAction
+{
+public:
+    CommandAddParticlePlaneCollision(DAVA::ParticleLayer* layer);
+    void Redo() override;
+
+protected:
+    DAVA::ParticleLayer* selectedLayer = nullptr;
+};
+
 // Remove particle drag
 class CommandRemoveParticleDrag : public CommandAction
 {

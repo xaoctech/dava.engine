@@ -632,6 +632,17 @@ void CommandAddParticlePointGravity::Redo()
     AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::POINT_GRAVITY);
 }
 
+CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_PLANE_COLLISION_ADD)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticlePlaneCollision::Redo()
+{
+    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::PLANE_COLLISION);
+}
+
 CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDragForce* drag)
     : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_REMOVE)
     , selectedLayer(layer)

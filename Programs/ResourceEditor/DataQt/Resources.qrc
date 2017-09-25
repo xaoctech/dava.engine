@@ -74,6 +74,9 @@
         <file>QtIcons/gravity.png</file>
         <file>QtIcons/gravity_red.png</file>
         <file>QtIcons/gravity_remove.png</file>
+        <file>QtIcons/plane_coll.png</file>
+        <file>QtIcons/plane_coll_red.png</file>
+        <file>QtIcons/plane_coll_remove.png</file>
         <file>QtIcons/pointGravity.png</file>
         <file>QtIcons/pointGravity_red.png</file>
         <file>QtIcons/pointGravity_remove.png</file>
