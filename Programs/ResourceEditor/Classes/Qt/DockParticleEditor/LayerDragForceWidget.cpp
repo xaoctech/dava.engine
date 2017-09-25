@@ -216,21 +216,15 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     shapeSeparator->setVisible(!isInfinityRange && !isGravity);
 
     forcePower->setVisible(timingType == TimingType::CONSTANT && !isGravity && !isWind);
-    forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT && !isGravity);
-    forcePowerLabel->setVisible((timingType != TimingType::CONSTANT && !isGravity) || (timingType == TimingType::CONSTANT && isWind));
-    forcePowerSpin->setVisible(timingType == TimingType::CONSTANT && isWind);
+    forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT);
+    forcePowerLabel->setVisible(timingType != TimingType::CONSTANT || (timingType == TimingType::CONSTANT && isWind) || (timingType == TimingType::CONSTANT && isGravity));
+    forcePowerSpin->setVisible(timingType == TimingType::CONSTANT && (isWind || isGravity));
 
     direction->setVisible(isDirectionalForce);
     directionSeparator->setVisible(isDirectionalForce);
 
     // Gravity
     infinityRange->setVisible(!isGravity);
-    gravitySeparator->setVisible(isGravity);
-    gravityLabel->setVisible(isGravity);
-    gravitySpin->setVisible(isGravity);
-    timingTypeComboBox->setVisible(!isGravity);
-    timingTypeSeparator->setVisible(!isGravity);
-    timingLabel->setVisible(!isGravity);
 
     // Wind
     windSeparator->setVisible(isWind);
@@ -276,18 +270,6 @@ void LayerDragForceWidget::BuilDirectionSection()
 
 void LayerDragForceWidget::BuildGravitySection()
 {
-    gravityWidget = new QWidget(this);
-    gravitySeparator = new QFrame(gravityWidget);
-    gravitySeparator->setFrameShape(QFrame::HLine);
-    mainLayout->addWidget(gravitySeparator);
-
-    QHBoxLayout* layout = new QHBoxLayout(this);
-    gravityLabel = new QLabel("Gravity force:");
-    gravitySpin = new EventFilterDoubleSpinBox();
-    SetupSpin(gravitySpin);
-    layout->addWidget(gravityLabel);
-    layout->addWidget(gravitySpin);
-    mainLayout->addLayout(layout);
 }
 
 void LayerDragForceWidget::BuildWindSection()
@@ -370,7 +352,6 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     forceNameEdit->setText(QString::fromStdString(selectedForce->forceName));
     forceTypeLabel->setText(forceTypes[selectedForce->type]);
     direction->SetValue(selectedForce->direction);
-    gravitySpin->setValue(selectedForce->forcePower.z);
     windTurbSpin->setValue(selectedForce->windTurbulence);
     windTurbFreqSpin->setValue(selectedForce->windTurbulenceFrequency);
     windFreqSpin->setValue(selectedForce->windFrequency);
@@ -387,9 +368,12 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     static const Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
     static const Vector<QString> legends{ "Force x", "Force y", "Force z" };
     static const Vector<QString> windLegends{ "Wind force", "none", "none" };
+    static const Vector<QString> gravityLegends{ "Gravity force", "none", "none" };
     const Vector<QString>* currLegends = nullptr;
     if (selectedForce->type == ParticleDragForce::eType::WIND)
         currLegends = &windLegends;
+    else if (selectedForce->type == ParticleDragForce::eType::GRAVITY)
+        currLegends = &gravityLegends;
     else
         currLegends = &legends;
 
@@ -461,7 +445,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.shape = shape;
     params.timingType = timingType;
     params.boxSize = boxSize->GetValue();
-    if (selectedForce->type == ForceType::WIND)
+    if (selectedForce->type == ForceType::WIND || selectedForce->type == ForceType::GRAVITY)
         params.forcePower = Vector3(forcePowerSpin->value(), 0.0f, 0.0f);
     else
         params.forcePower = forcePower->GetValue();
@@ -482,9 +466,6 @@ void LayerDragForceWidget::OnValueChanged()
     params.killParticles = killParticles->isChecked();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
-
-    if (selectedForce->type == ForceType::GRAVITY)
-        params.forcePower.z = gravitySpin->value();
 
     UpdateVisibility(shape, timingType, selectedForce->type, params.useInfinityRange);
 

@@ -83,11 +83,6 @@ private:
     QFrame* directionSeparator = nullptr;
     ParticleVector3Widget* direction = nullptr;
 
-    QFrame* gravitySeparator = nullptr;
-    QLabel* gravityLabel = nullptr;
-    EventFilterDoubleSpinBox* gravitySpin = nullptr;
-    QWidget* gravityWidget = nullptr;
-
     QFrame* windSeparator = nullptr;
     QLabel* windFreqLabel = nullptr;
     EventFilterDoubleSpinBox* windFreqSpin = nullptr;

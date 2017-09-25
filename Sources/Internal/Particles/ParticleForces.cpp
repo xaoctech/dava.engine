@@ -66,7 +66,7 @@ void Init()
 void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle);
-void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt);
+void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
@@ -91,7 +91,7 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
     }
     if (force->type == ForceType::GRAVITY)
     {
-        ApplyGravity(force, effectSpaceVelocity, effectSpaceDown, dt);
+        ApplyGravity(force, effectSpaceVelocity, effectSpaceDown, dt, particleOverLife, layerOverLife);
         return;
     }
     if (force->type == ForceType::WIND)
@@ -161,9 +161,9 @@ void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& 
     effectSpaceVelocity += forceStrength * forceDir;
 }
 
-void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt)
+void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife)
 {
-    effectSpaceVelocity += effectSpaceDown * force->forcePower.z * dt;
+    effectSpaceVelocity += effectSpaceDown * GetForceValue(force, particleOverLife, layerOverLife).x * dt;
 }
 
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
@@ -220,7 +220,7 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
     Vector3 toCenter;
     float32 toCenterDist = -1;
     float32 distToTarget = -1;
-    if (force->pointGravityUseRandomPointsOnSphere)
+    if (force->pointGravityUseRandomPointsOnSphere) // TODO
     {
         intptr_t partInd = reinterpret_cast<intptr_t>(particle);
         uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
