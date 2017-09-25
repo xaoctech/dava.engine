@@ -251,6 +251,7 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     pointGravityRadiusLabel->setVisible(isPointGravity);
     pointGravityRadiusSpin->setVisible(isPointGravity);
     pointGravityUseRnd->setVisible(isPointGravity);
+    killParticles->setVisible(isPointGravity);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
@@ -337,9 +338,12 @@ void LayerDragForceWidget::BuildPointGravitySection()
     pointGravityRadLayout->addWidget(pointGravityRadiusLabel);
     pointGravityRadLayout->addWidget(pointGravityRadiusSpin);
     mainLayout->addLayout(pointGravityRadLayout);
-    pointGravityUseRnd = new QCheckBox("Random points on sphere:");
+    pointGravityUseRnd = new QCheckBox("Random points on sphere");
     connect(pointGravityUseRnd, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(pointGravityUseRnd);
+    killParticles = new QCheckBox("Kill particles");
+    connect(killParticles, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(killParticles);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -376,6 +380,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     pointGravityRadiusSpin->setValue(selectedForce->pointGravityRadius);
     pointGravityUseRnd->setChecked(selectedForce->pointGravityUseRandomPointsOnSphere);
     isGlobal->setChecked(selectedForce->isGlobal);
+    killParticles->setChecked(selectedForce->killParticles);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -474,6 +479,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.pointGravityRadius = pointGravityRadiusSpin->value();
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
     params.isGlobal = isGlobal->isChecked();
+    params.killParticles = killParticles->isChecked();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
 

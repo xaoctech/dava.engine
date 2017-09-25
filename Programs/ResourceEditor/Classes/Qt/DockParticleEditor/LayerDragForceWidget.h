@@ -60,6 +60,7 @@ private:
     QCheckBox* isActive = nullptr;
     QCheckBox* infinityRange = nullptr;
     QCheckBox* isGlobal = nullptr;
+    QCheckBox* killParticles = nullptr;
 
     QFrame* shapeSeparator = nullptr;
     QLabel* shapeLabel = nullptr;

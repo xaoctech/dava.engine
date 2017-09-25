@@ -7,6 +7,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleForces.h"
+#include "Particles/ParticleDragForce.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Time/SystemTimer.h"
 #include "Utils/Random.h"
@@ -300,6 +301,19 @@ void ParticleEffectSystem::AddComponent(Entity* entity, Component* component)
 {
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
     PrebuildMaterials(effect);
+    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
+    {
+        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
+        ParticleEmitter* emitter = emitterInst->GetEmitter();
+        for (auto& layer : emitter->layers)
+        {
+            for (auto& force : layer->GetDragForces())
+            {
+                if (force->isGlobal)
+                    globalForces.push_back(force);
+            }
+        }
+    }
 }
 
 void ParticleEffectSystem::RemoveEntity(Entity* entity)
@@ -314,6 +328,19 @@ void ParticleEffectSystem::RemoveComponent(Entity* entity, Component* component)
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
     if (effect && effect->state != ParticleEffectComponent::STATE_STOPPED)
         RemoveFromActive(effect);
+    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
+    {
+        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
+        ParticleEmitter* emitter = emitterInst->GetEmitter();
+        for (auto& layer : emitter->layers)
+        {
+            for (auto& force : layer->GetDragForces())
+            {
+                if (force->isGlobal)
+                    globalForces.erase(std::remove(globalForces.begin(), globalForces.end(), force), globalForces.end());
+            }
+        }
+    }
 }
 
 void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
@@ -916,7 +943,10 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     }
 
     for (uint32 i = 0; i < dForcesCount; ++i)
-        ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle);
+    {
+        if (!dForces[i]->isGlobal)
+            ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle);
+    }
 
     if (dForcesCount > 0)
     {

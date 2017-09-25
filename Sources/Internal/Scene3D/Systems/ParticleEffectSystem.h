@@ -100,6 +100,7 @@ private:
 private: //materials stuff
     NMaterial* particleBaseMaterial;
     Vector<std::pair<MaterialData, NMaterial*>> particlesMaterials;
+    Vector<ParticleDragForce*> globalForces;
     NMaterial* AcquireMaterial(const MaterialData& materialData);
 
     bool allowLodDegrade;
