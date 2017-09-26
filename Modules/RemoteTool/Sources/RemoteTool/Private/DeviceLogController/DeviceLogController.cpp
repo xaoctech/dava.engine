@@ -1,15 +1,21 @@
 #include "RemoteTool/Private/DeviceLogController/DeviceLogController.h"
 
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/WindowSubSystem/UI.h>
+
 #include <QtTools/ConsoleWidget/LogWidget.h>
 #include <QtTools/ConsoleWidget/LogModel.h>
 
 #include <Network/NetCore.h>
 #include <Utils/UTF8Utils.h>
 
-DeviceLogController::DeviceLogController(const DAVA::Net::PeerDescription& peerDescr, QWidget* _parentWidget, QObject* parent)
+QMap<QString, LogWidget*> DeviceLogController::views;
+
+DeviceLogController::DeviceLogController(DAVA::TArc::UI* ui, const DAVA::Net::PeerDescription& peerDescr, QWidget* _parentWidget, QObject* parent)
     : QObject(parent)
     , parentWidget(_parentWidget)
     , peer(peerDescr)
+    , ui(ui)
 {
     ShowView();
 }
@@ -33,15 +39,8 @@ void DeviceLogController::ShowView()
                               .arg(peer.GetPlatformString().c_str())
                               .arg(peer.GetVersion().c_str());
 
-        view = new LogWidget(parentWidget);
-        view->setWindowFlags(Qt::Window);
-        view->setWindowTitle(title);
-
-        connect(this, &QObject::destroyed, view, &QObject::deleteLater);
+        view = GetOrCreateLogView(title, parentWidget, ui);
     }
-    view->show();
-    view->activateWindow();
-    view->raise();
 }
 
 void DeviceLogController::ChannelOpen()
@@ -81,5 +80,30 @@ void DeviceLogController::Output(const DAVA::String& msg)
         else if (list[2] == "error")
             ll = DAVA::Logger::LEVEL_ERROR;
     }
+
     view->AddMessage(ll, msg.c_str());
+}
+
+LogWidget* DeviceLogController::GetOrCreateLogView(const QString& title, QWidget* parentWidget, DAVA::TArc::UI* ui)
+{
+    auto found = views.find(title);
+    if (found != views.end())
+    {
+        return found.value();
+    }
+    else
+    {
+        LogWidget* view = new LogWidget(parentWidget);
+        view->setWindowFlags(Qt::Window);
+        view->setWindowTitle(title);
+
+        DAVA::TArc::DockPanelInfo panelInfo;
+        panelInfo.title = title;
+        panelInfo.area = Qt::RightDockWidgetArea;
+        DAVA::TArc::PanelKey panelKey(title, panelInfo);
+        ui->AddView(DAVA::TArc::mainWindowKey, panelKey, view);
+
+        views.insert(title, view);
+        return view;
+    }
 }

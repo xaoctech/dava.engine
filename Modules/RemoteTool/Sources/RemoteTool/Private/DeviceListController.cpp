@@ -21,8 +21,9 @@
 #include <QMessageBox>
 #include <QTimer>
 
-DeviceListController::DeviceListController(QObject* parent)
+DeviceListController::DeviceListController(DAVA::TArc::UI* ui, QObject* parent)
     : QObject(parent)
+    , ui(ui)
     , model(NULL)
     , loggerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
     , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
@@ -247,7 +248,7 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
             auto iterService = std::find(servIds.begin(), servIds.end(), LOG_SERVICE_ID);
             if (iterService != servIds.end())
             {
-                services.log.reset(new DeviceLogController(peer, view, this));
+                services.log.reset(new DeviceLogController(ui, peer, view, this));
                 services.log->Init();
             }
             iterService = std::find(servIds.begin(), servIds.end(), MEMORY_PROFILER_SERVICE_ID);
@@ -360,10 +361,6 @@ void DeviceListController::OnShowLogButtonPressed()
         if (trackId != NetCore::INVALID_TRACK_ID)
         {
             DeviceServices services = index.data(ROLE_PEER_SERVICES).value<DeviceServices>();
-            if (services.log)
-            {
-                services.log->ShowView();
-            }
             if (services.memprof)
             {
                 services.memprof->ShowView();
