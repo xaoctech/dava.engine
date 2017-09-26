@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Input/InputDevice.h"
+#include "Engine/Window.h"
 
 namespace DAVA
 {
