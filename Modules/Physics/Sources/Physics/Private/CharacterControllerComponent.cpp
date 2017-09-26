@@ -1,4 +1,5 @@
 #include "Physics/CharacterControllerComponent.h"
+#include "Physics/PhysicsSystem.h"
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Scene.h>
