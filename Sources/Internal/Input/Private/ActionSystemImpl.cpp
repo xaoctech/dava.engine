@@ -276,7 +276,9 @@ InputDevice* ActionSystemImpl::GetDeviceForAnalogElement(eInputElements analogEl
 
 void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 {
+    // TODO: handle multi window case (check pinning on focused window)
     Window* primaryWindow = Engine::Instance()->PrimaryWindow();
+    bool isPinningEnabled = primaryWindow->GetCursorCapture() == eCursorCapture::PINNING;
 
     for (const BoundActionSet& setBinding : boundSets)
     {
@@ -341,8 +343,7 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
             // Handle pinning
             if (analogBinding.analogElementId == eInputElements::MOUSE_POSITION)
             {
-                // TODO: handle multi window case (check pinning on focused window)
-                if (primaryWindow->GetCursorCapture() == eCursorCapture::PINNING)
+                if (isPinningEnabled)
                 {
                     analogActionState.previousElementState = { 0.f, 0.f, 0.f };
 

@@ -33,7 +33,7 @@ namespace
 {
 // List of names specifying which test classes should run.
 // Names should be separated with ' ' or ',' or ';'
-String runOnlyTheseTestClasses = "";
+String runOnlyTheseTestClasses = "ActionSystemTest";
 
 // List of names specifying which test classes shouldn't run. This list takes precedence over runOnlyTheseTests.
 // Names should be separated with ' ' or ',' or ';'

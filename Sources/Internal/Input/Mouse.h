@@ -76,6 +76,7 @@ private:
     Mouse& operator=(const Mouse&) = delete;
 
     void OnEndFrame();
+    void OnCursorCaptureChanged(Window*, eCursorCapture mode);
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
 
