@@ -62,11 +62,6 @@ public:
     */
     eInputElements GetFirstPressedButton() const;
 
-    /**
-        Return true if current position is relative (pinning mode is active).
-    */
-    bool IsRelative() const;
-
     // InputDevice overrides
 
     bool IsElementSupported(eInputElements elementId) const override;
