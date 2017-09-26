@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes/Modules/QEClientModule.h"
+#include "Classes/Modules/BaseEditorModule.h"
 
 namespace DAVA
 {
@@ -8,7 +8,7 @@ class Any;
 }
 class ControlNode;
 
-class DistanceLinesModule : public QEClientModule
+class DistanceLinesModule : public BaseEditorModule
 {
 public:
     DistanceLinesModule();

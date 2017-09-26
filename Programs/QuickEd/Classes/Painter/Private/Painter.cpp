@@ -11,10 +11,10 @@
 
 namespace Painting
 {
+using namespace DAVA;
+
 Painter::Painter()
 {
-    using namespace DAVA;
-
     FilePath fntPath = FilePath("~res:/QuickEd/Fonts/DejaVuSans.fnt");
     FilePath texPath = FilePath("~res:/QuickEd/Fonts/DejaVuSans.tex");
     font = GraphicFont::Create(fntPath, texPath);
@@ -37,23 +37,20 @@ Painter::Painter()
     textureMaterial = SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 }
 
-Painter::~Painter() = default;
-
-void Painter::Add(DAVA::uint32 order, const DrawTextParams& params)
+void Painter::Add(uint32 order, const DrawTextParams& params)
 {
-    DAVA::Vector<DrawTextParams>& items = drawItems[order].drawTextItems;
+    Vector<DrawTextParams>& items = drawItems[order].drawTextItems;
     items.push_back(params);
 }
 
-void Painter::Add(DAVA::uint32 order, const DrawLineParams& params)
+void Painter::Add(uint32 order, const DrawLineParams& params)
 {
-    DAVA::Vector<DrawLineParams>& items = drawItems[order].drawLineItems;
+    Vector<DrawLineParams>& items = drawItems[order].drawLineItems;
     items.push_back(params);
 }
 
-void Painter::Draw(DAVA::Window* window)
+void Painter::Draw(Window* window)
 {
-    using namespace DAVA;
     for (auto& pair : drawItems)
     {
         for (const DrawLineParams& params : pair.second.drawLineItems)
@@ -71,7 +68,6 @@ void Painter::Draw(DAVA::Window* window)
 
 void Painter::Draw(const DrawLineParams& params)
 {
-    using namespace DAVA;
     Vector2 start = params.startPos * params.transformMatrix;
     Vector2 end = params.endPos * params.transformMatrix;
     if (params.type == DrawLineParams::SOLID)
@@ -98,8 +94,6 @@ void Painter::Draw(const DrawLineParams& params)
 
 void Painter::Draw(const DrawTextParams& params)
 {
-    using namespace DAVA;
-
     font->SetSize(params.textSize);
     vertices.resize(4 * params.text.length());
 
@@ -135,7 +129,7 @@ void Painter::Draw(const DrawTextParams& params)
     BatchDescriptor2D batchDescriptor;
     batchDescriptor.singleColor = params.color;
     batchDescriptor.vertexCount = vertexCount;
-    batchDescriptor.indexCount = DAVA::Min(TextBlockGraphicRender::GetSharedIndexBufferCapacity(), indexCount);
+    batchDescriptor.indexCount = Min(TextBlockGraphicRender::GetSharedIndexBufferCapacity(), indexCount);
     batchDescriptor.vertexPointer = vertices.front().position.data;
     batchDescriptor.vertexStride = TextBlockGraphicRender::TextVerticesDefaultStride;
     batchDescriptor.texCoordPointer[0] = vertices.front().texCoord.data;
@@ -151,8 +145,6 @@ void Painter::Draw(const DrawTextParams& params)
 
 void Painter::ApplyParamPos(DrawTextParams& params) const
 {
-    using namespace DAVA;
-
     Font::StringMetrics metrics = font->GetStringMetrics(UTF8Utils::EncodeToWideString(params.text));
     //while we using hard-coded font we need to fix it base line manually
     //DejaVuSans have a very big height which is invalid for digits. So while we use only digits, and font DejaVuSans and GraphicsFont have no GetBaseLine member function - i will change metrics height manually

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Classes/Modules/QEClientModule.h"
+#include "Classes/Modules/BaseEditorModule.h"
 
 class ControlNode;
 
-class HUDModule : public QEClientModule
+class HUDModule : public BaseEditorModule
 {
 private:
     void PostInit() override;

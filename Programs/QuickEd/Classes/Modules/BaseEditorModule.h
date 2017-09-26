@@ -7,7 +7,7 @@ namespace Interfaces
 class EditorSystemsManagerInterface;
 }
 
-class QEClientModule : public DAVA::TArc::ClientModule
+class BaseEditorModule : public DAVA::TArc::ClientModule
 {
 private:
     void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
@@ -16,5 +16,5 @@ private:
     virtual void CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager) = 0;
     virtual void DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager) = 0;
 
-    DAVA_VIRTUAL_REFLECTION(QEClientModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(BaseEditorModule, DAVA::TArc::ClientModule);
 };

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Classes/Modules/QEClientModule.h"
+#include "Classes/Modules/BaseEditorModule.h"
 
-class PixelGridModule : public QEClientModule
+class PixelGridModule : public BaseEditorModule
 {
 public:
     PixelGridModule();

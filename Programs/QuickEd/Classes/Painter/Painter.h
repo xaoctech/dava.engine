@@ -14,40 +14,42 @@ class NMaterial;
 
 namespace Painting
 {
+using namespace DAVA;
+
 struct DrawTextParams
 {
-    DAVA::String text;
-    DAVA::float32 textSize = 10.0f;
+    String text;
+    float32 textSize = 10.0f;
     //text color
-    DAVA::Color color = DAVA::Color::Black;
+    Color color = Color::Black;
     //position of item in screen coordinates
-    DAVA::Vector2 pos = DAVA::Vector2(0.0f, 0.0f);
+    Vector2 pos = Vector2(0.0f, 0.0f);
     //direction to draw text item relative to it position.
     //As an example if direction is equal to ALIGN_LEFT item X position will be equal to params.pos.x - params.size.x - margin.x
-    DAVA::int32 direction = DAVA::ALIGN_RIGHT | DAVA::ALIGN_BOTTOM;
+    int32 direction = ALIGN_RIGHT | ALIGN_BOTTOM;
     //margin between params position and actual text item position.
     //As an example if direction is equal to ALIGN_LEFT item X position will be equal to params.pos.x - params.size.x - margin.x
-    DAVA::Vector2 margin = DAVA::Vector2(0.0f, 0.0f);
+    Vector2 margin = Vector2(0.0f, 0.0f);
 
-    DAVA::Vector2 scale = DAVA::Vector2(1.0f, 1.0f);
+    Vector2 scale = Vector2(1.0f, 1.0f);
 
-    DAVA::float32 angle = 0.0f;
-    DAVA::Matrix3 transformMatrix;
+    float32 angle = 0.0f;
+    Matrix3 transformMatrix;
 };
 
 struct DrawLineParams
 {
     //line color
-    DAVA::Color color = DAVA::Color::Black;
+    Color color = Color::Black;
     //position of item in screen coordinates
-    DAVA::Vector2 startPos = DAVA::Vector2(0.0f, 0.0f);
+    Vector2 startPos = Vector2(0.0f, 0.0f);
     //size of item in screen coordinates. If size is zero it will be calculated from text metrics
-    DAVA::Vector2 endPos = DAVA::Vector2(0.0f, 0.0f);
+    Vector2 endPos = Vector2(0.0f, 0.0f);
 
     //line width in pixels
-    DAVA::float32 width = 1.0f;
+    float32 width = 1.0f;
 
-    DAVA::Matrix3 transformMatrix;
+    Matrix3 transformMatrix;
 
     enum eType
     {
@@ -62,12 +64,11 @@ class Painter final
 {
 public:
     Painter();
-    ~Painter();
 
-    void Add(DAVA::uint32 order, const DrawTextParams& params);
-    void Add(DAVA::uint32 order, const DrawLineParams& params);
+    void Add(uint32 order, const DrawTextParams& params);
+    void Add(uint32 order, const DrawLineParams& params);
 
-    void Draw(DAVA::Window* window);
+    void Draw(Window* window);
 
 private:
     void Draw(const DrawTextParams& params);
@@ -75,21 +76,21 @@ private:
 
     void ApplyParamPos(DrawTextParams& params) const;
 
-    using GraphicFontVertexVector = DAVA::Vector<DAVA::GraphicFont::GraphicFontVertex>;
+    using GraphicFontVertexVector = Vector<GraphicFont::GraphicFontVertex>;
 
-    DAVA::RefPtr<DAVA::GraphicFont> font;
-    DAVA::RefPtr<DAVA::NMaterial> fontMaterial;
-    DAVA::RefPtr<DAVA::NMaterial> textureMaterial;
+    RefPtr<GraphicFont> font;
+    RefPtr<NMaterial> fontMaterial;
+    RefPtr<NMaterial> textureMaterial;
     GraphicFontVertexVector vertices;
 
     struct DrawItems
     {
-        DAVA::Vector<DrawTextParams> drawTextItems;
-        DAVA::Vector<DrawLineParams> drawLineItems;
+        Vector<DrawTextParams> drawTextItems;
+        Vector<DrawLineParams> drawLineItems;
     };
 
-    DAVA::Map<DAVA::uint32, DrawItems> drawItems;
+    Map<uint32, DrawItems> drawItems;
 
-    DAVA::float32 cachedSpread = 0.0f;
+    float32 cachedSpread = 0.0f;
 };
 }
