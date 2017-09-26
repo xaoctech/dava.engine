@@ -149,7 +149,7 @@ void HUDSystem::OnUpdate()
     {
         hudMap.clear();
         SetNewArea(HUDAreaInfo());
-        OnHighlightNode(nullptr);
+        SetHighlight(nullptr);
         return;
     }
 
