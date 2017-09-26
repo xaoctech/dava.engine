@@ -237,7 +237,7 @@ struct AnalogBinding final
 
     /** Type of analog state that will be emitted as 'Action' and returned as 'AnalogActionState' 
         ABSOLUTE_STATE for absolute coordinates, RELATIVE_STATE for coordinates relative to the previous coordinates.
-        In pinning mode for ABSOLUTE_STATE x = 0, y = 0, z = 0 will be returned/emitted, 
+        In pinning mode for ABSOLUTE_STATE action will not be emitted, x = 0, y = 0, z = 0 will be returned, 
         for RELATIVE_STATE relative diff given by Window impl. will be returned/emitted
     */
     eAnalogStateType analogStateType = eAnalogStateType::ABSOLUTE_STATE;
