@@ -1,6 +1,9 @@
 #include "Modules/ResourceSelector/ResourceSelectorModule.h"
 #include "Modules/ProjectModule/ProjectData.h"
 #include "Modules/DocumentsModule/DocumentData.h"
+
+#include "Application/QEGlobal.h"
+
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
