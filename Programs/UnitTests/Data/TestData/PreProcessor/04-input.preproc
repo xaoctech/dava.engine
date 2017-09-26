@@ -11,7 +11,7 @@ first
 #endif
 
 second
-#ifndef /*ignored*/DEATH
+#ifndef DEATH
   expected
   aab 1
   aab 2

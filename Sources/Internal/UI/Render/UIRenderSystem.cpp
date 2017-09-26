@@ -137,7 +137,8 @@ void UIRenderSystem::RenderControlHierarhy(UIControl* control, const UIGeometric
 
     const Rect& unrotatedRect = drawData.GetUnrotatedRect();
 
-    bool clipContents = (control->GetComponentCount<UIClipContentComponent>() != 0);
+    UIClipContentComponent* clipContent = control->GetComponent<UIClipContentComponent>();
+    bool clipContents = (clipContent != nullptr && clipContent->IsEnabled());
     if (clipContents)
     { //WARNING: for now clip contents don't work for rotating controls if you have any ideas you are welcome
         renderSystem2D->PushClip();
