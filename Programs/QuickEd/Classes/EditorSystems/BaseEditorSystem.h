@@ -44,8 +44,10 @@ protected:
 
         //Cursor system must be called after the HUD system to check current HUD area under cursor
         CURSOR,
-        //this system doesn't require OnUpdate and don't create any controls. Can be less ordered thaan another systems
-        SELECTION
+        //this system doesn't require OnUpdate and don't create any controls. Can be less ordered than another systems
+        SELECTION,
+        //this system must be on bottom of all other systems, because modal control searching starting from end
+        INPUT
     };
 
     //some systems can process OnUpdate from UpdateViewsSystem
