@@ -49,11 +49,27 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
         if (currentInput->phase == UIEvent::Phase::GESTURE)
         {
             const UIEvent::Gesture& gesture = currentInput->gesture;
+            Vector2 gestureDelta(gesture.dx, gesture.dy);
             if (gesture.dx != 0.0f || gesture.dy != 0.0f)
             {
-                Vector2 position = canvasDataAdapter.GetPosition();
-                Vector2 newPosition = position - Vector2(gesture.dx, gesture.dy);
-                canvasDataAdapter.SetPosition(newPosition);
+                if ((currentInput->modifiers & (eModifierKeys::CONTROL | eModifierKeys::COMMAND)) != eModifierKeys::NONE)
+                {
+                    float32 scale = canvasDataAdapter.GetScale();
+
+                    //magic value to convert gestureDelta to visible scale changing
+                    //later we can move it to preferences
+                    const float32 scaleDelta = 0.003f;
+
+                    float32 newScale = scale * (1.0f + (scaleDelta * gestureDelta.dy * -1.0f));
+
+                    canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
+                }
+                else
+                {
+                    Vector2 position = canvasDataAdapter.GetPosition();
+                    Vector2 newPosition = position - gestureDelta;
+                    canvasDataAdapter.SetPosition(newPosition);
+                }
             }
             else if (gesture.magnification != 0.0f)
             {
@@ -69,9 +85,12 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
             if ((currentInput->modifiers & (eModifierKeys::CONTROL | eModifierKeys::COMMAND)) != eModifierKeys::NONE)
             {
                 int32 ticksCount = static_cast<int32>(currentInput->wheelDelta.y);
+                float32 scale = canvasDataAdapter.GetScale();
 
-                float scale = canvasDataAdapter.GetScale();
-                float newScale = scale * (1.0f + (0.05 * ticksCount * -1.0f));
+                //magic value to convert ticsCount to visible scale changing
+                //later we can move it to preferences
+                const float32 scaleDelta = 0.07f;
+                float32 newScale = scale * (1.0f + (scaleDelta * ticksCount * -1.0f));
                 canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
             }
             else
@@ -80,13 +99,8 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 Vector2 additionalPos(currentInput->wheelDelta.x, currentInput->wheelDelta.y);
 
                 additionalPos *= canvasDataAdapter.GetViewSize();
-//custom delimiter to scroll widget by little chunks of visible area
-#if defined(__DAVAENGINE_MACOS__)
-                //on the OS X platform wheelDelta depend on scrolling speed
-                static const float wheelDelta = 0.002f;
-#elif defined(__DAVAENGINE_WIN32__)
-                static const float wheelDelta = 0.1f;
-#endif //platform
+                //custom delimiter to scroll widget by little chunks of visible area
+                static const float wheelDelta = 0.05f;
                 Vector2 newPosition = position - additionalPos * wheelDelta;
                 canvasDataAdapter.SetPosition(newPosition);
             }

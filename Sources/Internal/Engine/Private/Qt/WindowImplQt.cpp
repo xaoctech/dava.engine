@@ -324,24 +324,29 @@ void WindowImpl::OnWheel(QWheelEvent* qtEvent)
     float32 deltaX = 0.f;
     float32 deltaY = 0.f;
 
+    //most mouse types work in steps of 15 degrees, in which case the delta value is a multiple of 120
+    QPointF angleDelta = QPointF(qtEvent->angleDelta()) / 120.0f;
     QPoint pixelDelta = qtEvent->pixelDelta();
-    if (!pixelDelta.isNull())
+    if (angleDelta.isNull() == false
+#ifdef Q_OS_MAC
+        && qtEvent->source() != Qt::MouseEventSynthesizedBySystem
+#endif
+        )
+    {
+        deltaX = angleDelta.x();
+        deltaY = angleDelta.y();
+    }
+    else if (pixelDelta.isNull() == false)
     {
         deltaX = static_cast<float32>(pixelDelta.x());
         deltaY = static_cast<float32>(pixelDelta.y());
     }
-    else
-    {
-        //most mouse types work in steps of 15 degrees, in which case the delta value is a multiple of 120
-        QPointF delta = QPointF(qtEvent->angleDelta()) / 120.0f;
-        deltaX = delta.x();
-        deltaY = delta.y();
-    }
+
     eModifierKeys modifierKeys = GetModifierKeys();
 #ifdef Q_OS_MAC
     if (qtEvent->source() == Qt::MouseEventSynthesizedBySystem)
     {
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, deltaX, deltaY, modifierKeys));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, x, y, deltaX, deltaY, modifierKeys));
         return;
     }
 #endif
