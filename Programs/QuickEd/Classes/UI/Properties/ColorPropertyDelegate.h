@@ -1,5 +1,4 @@
-#ifndef __ITEMDELEGATEFORCOLOR_H__
-#define __ITEMDELEGATEFORCOLOR_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 
@@ -26,6 +25,3 @@ private:
     QPointer<QLineEdit> lineEdit = nullptr;
     QPointer<QAction> chooseColorAction = nullptr;
 };
-
-
-#endif // __ITEMDELEGATEFORCOLOR_H__

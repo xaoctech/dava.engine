@@ -1,4 +1,6 @@
 #include "TArc/Utils/Utils.h"
+#include "TArc/Qt/QtIcon.h"
+
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <DeviceManager/DeviceManager.h>
@@ -9,7 +11,6 @@
 #include <QProcess>
 #include <QDir>
 #include <QApplication>
-#include <QIcon>
 
 namespace DAVA
 {

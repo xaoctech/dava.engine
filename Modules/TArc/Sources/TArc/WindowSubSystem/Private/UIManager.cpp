@@ -434,9 +434,34 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
         return;
     }
 
-    QAction* action = FindAction(currentLevelMenu, path.back());
-    currentLevelMenu->removeAction(action);
-    action->deleteLater();
+    auto deleteMenu = [](QMenu* deletedMenu)
+    {
+        QMenu* parentMenu = qobject_cast<QMenu*>(deletedMenu->parent());
+        if (parentMenu != nullptr)
+        {
+            parentMenu->removeAction(deletedMenu->menuAction());
+        }
+
+        deletedMenu->setParent(nullptr);
+        deletedMenu->deleteLater();
+    };
+
+    QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(path.back());
+    if (menuToRemove != nullptr)
+    {
+        deleteMenu(menuToRemove);
+    }
+    else
+    {
+        QAction* action = FindAction(currentLevelMenu, path.back());
+        currentLevelMenu->removeAction(action);
+        action->deleteLater();
+
+        if (currentLevelMenu->isEmpty())
+        {
+            deleteMenu(currentLevelMenu);
+        }
+    }
 }
 
 void RemoveToolbarPoint(const QUrl& url, MainWindowInfo& windowInfo)
