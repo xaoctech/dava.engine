@@ -432,7 +432,7 @@ void SceneCameraSystem::CreateDebugCameras()
         topCamera->SetupPerspective(cameraFov, 320.0f / 480.0f, cameraNear, cameraFar);
         topCamera->SetAspect(1.0f);
 
-        DAVA::ScopedPtr<DAVA::Entity> topCameraEntity(new DAVA::Entity());
+        topCameraEntity = new DAVA::Entity();
         topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
         topCameraEntity->SetNotRemovable(true);
         topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
@@ -658,4 +658,36 @@ void SceneCameraSystem::EnableSystem()
 {
     EditorSceneSystem::EnableSystem();
     CreateDebugCameras();
+}
+
+std::unique_ptr<DAVA::Command> SceneCameraSystem::PrepareForSave(bool saveForGame)
+{
+    class CameraSaveCommand : public RECommand
+    {
+    public:
+        CameraSaveCommand(SceneCameraSystem* camSystem)
+            : RECommand(CMDID_USER, "Save/load camera settings")
+            , camSystem(camSystem)
+        {
+        }
+
+        void Redo() override
+        {
+            camEntity = camSystem->topCameraEntity;
+            camEntity->Retain();
+            camEntity->GetParent()->RemoveNode(camEntity);
+        }
+
+        void Undo() override
+        {
+            SceneEditor2* scene = static_cast<SceneEditor2*>(camSystem->GetScene());
+            scene->AddEditorEntity(camEntity);
+            camEntity->Release();
+        }
+
+    private:
+        SceneCameraSystem* camSystem{ nullptr };
+        DAVA::Entity* camEntity{ nullptr };
+    };
+    return std::make_unique<CameraSaveCommand>(CameraSaveCommand(this));
 }

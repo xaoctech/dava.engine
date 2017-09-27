@@ -218,8 +218,6 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
         editorLightSystem->SetCameraLightEnabled(false);
     }
 
-    ExtractEditorEntities();
-
     DAVA::Vector<std::unique_ptr<DAVA::Command>> prepareForSaveCommands;
     prepareForSaveCommands.reserve(editorSystems.size());
     for (EditorSceneSystem* editorSceneSystem : editorSystems)
@@ -235,6 +233,8 @@ DAVA::SceneFileV2::eError SceneEditor2::SaveScene(const DAVA::FilePath& path, bo
                   {
                       cmd->Redo();
                   });
+
+    ExtractEditorEntities();
 
     DAVA::ScopedPtr<DAVA::Texture> tilemaskTexture(nullptr);
     bool needToRestoreTilemask = false;
