@@ -1,12 +1,11 @@
 #pragma once
 
+#include <TArc/Qt/QtRect.h>
+#include <TArc/Qt/QtByteArray.h>
+#include <TArc/Qt/QtString.h>
 
-#include "TArc/Qt/QtRect.h"
-#include "TArc/Qt/QtByteArray.h"
-#include "TArc/Qt/QtString.h"
-
-#include "Base/BaseTypes.h"
-#include "Base/Any.h"
+#include <Base/BaseTypes.h>
+#include <Base/Any.h>
 
 #include <memory>
 
