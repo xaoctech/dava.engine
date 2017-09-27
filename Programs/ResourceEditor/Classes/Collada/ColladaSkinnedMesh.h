@@ -7,7 +7,7 @@
 
 namespace DAVA
 {
-class ColladaAnimatedMesh
+class ColladaSkinnedMesh
 {
 public:
     struct Joint
@@ -17,6 +17,10 @@ public:
         ColladaSceneNode* node;
         int32 index;
         int32 parentIndex;
+        int32 hierarhyDepth;
+
+        String jointName;
+        String jointUID;
 
         // original collada matrices
         FMMatrix44 colladaInverse0;
@@ -31,24 +35,25 @@ public:
         Vector3 localTranslation;
     };
 
-    ColladaAnimatedMesh(FCDController* animationController);
-    ~ColladaAnimatedMesh();
+    ColladaSkinnedMesh(FCDController* colladaController);
+    ~ColladaSkinnedMesh();
 
-    void MarkJoints(ColladaSceneNode* node);
-    void UpdateSkinnedMesh(float time);
+    void BuildJoints(ColladaSceneNode* node);
+    void UpdateSkinnedMesh(float32 time);
 
     std::vector<Joint> joints;
     std::vector<ColladaVertexWeight> vertexWeights;
     Matrix4 bindShapeMatrix;
     FMMatrix44 colladaBindShapeMatrix;
 
-    ColladaSceneNode* sceneRootNode;
-    FCDController* controller;
+    ColladaSceneNode* sceneRootNode = nullptr;
+    FCDController* controller = nullptr;
 
-    ColladaMesh* mesh;
+    ColladaMesh* mesh = nullptr;
 
 private:
-    void BuildJointsHierarhy(ColladaSceneNode* node, Joint* parentJoint);
+    void LinkJoints(ColladaSceneNode* node, Joint* parentJoint);
+    void BuildJointsHierarhy();
 };
 };
 

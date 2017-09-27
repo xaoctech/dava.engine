@@ -4,6 +4,7 @@
 #include "FCollada.h"
 
 #include "FCDocument/FCDocument.h"
+#include "FCDocument/FCDocumentTools.h"
 #include "FCDocument/FCDLibrary.h"
 #include "FCDocument/FCDGeometry.h"
 #include "FCDocument/FCDImage.h"

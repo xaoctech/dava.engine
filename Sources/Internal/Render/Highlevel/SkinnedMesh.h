@@ -1,9 +1,10 @@
-#ifndef __DAVAENGINE_SKINNED_MESH_H__
-#define __DAVAENGINE_SKINNED_MESH_H__
+#pragma once
 
-#include "Base/BaseTypes.h"
 #include "Animation/AnimatedObject.h"
+#include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/UnordererMap.h"
+#include "Debug/DVAssert.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
@@ -14,65 +15,44 @@ class PolygonGroup;
 class RenderBatch;
 class ShadowVolume;
 class NMaterial;
-
+struct JointTransform;
 class SkinnedMesh : public RenderObject
 {
 public:
+    const static uint32 MAX_TARGET_JOINTS = 32; //same as in shader
+
+    using JointTargets = Vector<int32>; // Vector index is joint target, value - skeleton joint index.
+
+    struct JointTargetsData
+    {
+        Vector<Vector4> positions;
+        Vector<Vector4> quaternions;
+        uint32 jointsDataCount = 0;
+    };
+
     SkinnedMesh();
 
     RenderObject* Clone(RenderObject* newObject) override;
-    void BindDynamicParameters(Camera* camera) override;
+    void Save(KeyedArchive* archive, SerializationContext* serializationContext) override;
+    void Load(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    const AABBox3& GetObjectSpaceBoundingBox() const;
-    void SetObjectSpaceBoundingBox(const AABBox3& box);
+    void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
 
-    Vector4* GetPositionArray() const;
-    Vector4* GetQuaternionArray() const;
-    int32 GetJointsArraySize() const;
-    void SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count);
+    void SetBoundingBox(const AABBox3& box);
+    void UpdateJointTransforms(const Vector<JointTransform>& finalTransforms);
 
-    void RecalcBoundingBox() override
-    {
-    }
+    void SetJointTargets(RenderBatch* batch, const JointTargets& jointTargets);
+    JointTargets GetJointTargets(RenderBatch* batch);
+    JointTargetsData GetJointTargetsData(RenderBatch* batch);
 
 protected:
-    Vector4* positionArray = nullptr;
-    Vector4* quaternionArray = nullptr;
-    int32 jointsCount = 0;
+    UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index
+    Vector<std::pair<JointTargets, JointTargetsData>> jointTargetsData;
 };
 
-inline void SkinnedMesh::SetJointsPtr(Vector4* positionPtr, Vector4* quaternoinPtr, int32 count)
-{
-    positionArray = positionPtr;
-    quaternionArray = quaternoinPtr;
-    jointsCount = count;
-}
-
-inline void SkinnedMesh::SetObjectSpaceBoundingBox(const AABBox3& box)
+inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)
 {
     bbox = box;
 }
 
-inline const AABBox3& SkinnedMesh::GetObjectSpaceBoundingBox() const
-{
-    return bbox;
-}
-
-inline Vector4* SkinnedMesh::GetPositionArray() const
-{
-    return positionArray;
-}
-
-inline Vector4* SkinnedMesh::GetQuaternionArray() const
-{
-    return quaternionArray;
-}
-
-inline int32 SkinnedMesh::GetJointsArraySize() const
-{
-    return jointsCount;
-}
-
 } //ns
-
-#endif

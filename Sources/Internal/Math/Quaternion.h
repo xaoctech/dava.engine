@@ -25,6 +25,7 @@ public:
     };
 
     inline Quaternion(float32 _x = 0.0f, float32 _y = 0.0f, float32 _z = 0.0f, float32 _w = 1.0f);
+    inline Quaternion(const float32* _data);
     inline Quaternion(const Quaternion& _q);
     inline const Quaternion& operator=(const Quaternion& _q);
 
@@ -136,6 +137,14 @@ inline Quaternion::Quaternion(float32 _x, float32 _y, float32 _z, float32 _w)
     , z(_z)
     , w(_w)
 {
+}
+
+inline Quaternion::Quaternion(const float32* _data)
+{
+    x = _data[0];
+    y = _data[1];
+    z = _data[2];
+    w = _data[3];
 }
 
 inline Quaternion::Quaternion(const Quaternion& _q)

@@ -3,12 +3,13 @@
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
-#include "Scene3D/Components/SkeletonComponent.h"
 
 namespace DAVA
 {
 class Component;
+class SkeletonComponent;
 class SkinnedMesh;
+class RenderHelper;
 
 class SkeletonSystem : public SceneSystem
 {
@@ -19,15 +20,18 @@ public:
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
 
-    void Process(float32 timeElapsed) override;
     void ImmediateEvent(Component* component, uint32 event) override;
+    void Process(float32 timeElapsed) override;
 
-    void UpdateSkinnedMesh(SkeletonComponent* component, SkinnedMesh* skinnedMeshObject);
+    void UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh* skinnedMeshObject);
+    void DrawSkeletons(RenderHelper* drawer);
 
 private:
-    void UpdatePose(SkeletonComponent* component);
+    void UpdateJointTransforms(SkeletonComponent* skeleton);
 
-    void RebuildSkeleton(Entity* entity);
+    void RebuildSkeleton(SkeletonComponent* skeleton);
+
+    void UpdateTestSkeletons(float32 timeElapsed);
 
     Vector<Entity*> entities;
 };
