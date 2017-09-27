@@ -934,11 +934,13 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     }
 
     Vector3 effectSpacePosition;
+    Vector3 prevEffectSpacePosition;
     Vector3 effectSpaceSpeed;
     Vector3 effectSpaceDown;
     if (dForcesCount > 0)
     {
         effectSpacePosition = particle->position * invWorld;
+        prevEffectSpacePosition = particle->prevPosition * invWorld;
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
         effectSpaceDown = Vector3(0.0f, 0.0f, -1.0f) * Matrix3(invWorld); // TODO: take from matrix.
     }
@@ -946,7 +948,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     for (uint32 i = 0; i < dForcesCount; ++i)
     {
         if (!dForces[i]->isGlobal)
-            ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle);
+            ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle, prevEffectSpacePosition);
     }
 
     if (dForcesCount > 0)

@@ -483,6 +483,7 @@ public:
         bool pointGravityUseRandomPointsOnSphere = false;
         bool isGlobal = false;
         bool killParticles = false;
+        bool normalAsReflectionVector = true;
         DAVA::float32 radius = 0.0f;
         DAVA::Vector3 boxSize;
         DAVA::Vector3 forcePower;

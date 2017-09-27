@@ -1217,6 +1217,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("killParticles%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->killParticles);
 
+        forceDataName = Format("normalAsReflectionVector%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->normalAsReflectionVector);
+
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->pointGravityUseRandomPointsOnSphere);
 
@@ -1508,6 +1511,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* killParticlesNode = node->Get(forceDataName);
         if (killParticlesNode)
             dragForce->killParticles = killParticlesNode->AsBool();
+
+        forceDataName = Format("normalAsReflectionVector%d", i);
+        const YamlNode* normalAsReflectionVectorNode = node->Get(forceDataName);
+        if (normalAsReflectionVectorNode)
+            dragForce->normalAsReflectionVector = normalAsReflectionVectorNode->AsBool();
 
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         const YamlNode* pointGravityUseRandomPointsOnSphereNode = node->Get(forceDataName);

@@ -71,6 +71,7 @@ public:
     bool pointGravityUseRandomPointsOnSphere = false;
     bool isGlobal = false;
     bool killParticles = false;
+    bool normalAsReflectionVector = true;
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
 public:

@@ -68,13 +68,13 @@ void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle);
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife);
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
-void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
+void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition);
 
 Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 float32 GetTurbulenceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife);
 float32 GetWindValueFromTable(const Vector3& inPosition, const ParticleDragForce* force, float32 layerOverLife, int32 index);
 
-void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, Particle* particle)
+void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, Particle* particle, const Vector3& prevEffectSpacePosition)
 {
     using ForceType = ParticleDragForce::eType;
 
@@ -107,7 +107,7 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
     }
     if (force->type == ForceType::PLANE_COLLISION)
     {
-        ApplyPlaneCollision(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        ApplyPlaneCollision(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, prevEffectSpacePosition);
         return;
     }
 }
@@ -263,7 +263,7 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
     }
 }
 
-void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition)
 {
     float32 sqrLen = force->direction.SquareLength();
     if (sqrLen < EPSILON * EPSILON)
@@ -277,10 +277,27 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
     float32 invLen = 1.0f / sqrt(sqrLen);
     normal *= invLen;
     Vector3 posDiff = effectSpacePosition - force->position;
-    if (posDiff.DotProduct(normal) <= 0)
+    Vector3 prevPosDiff = prevEffectSpacePosition - force->position;
+    if (posDiff.DotProduct(normal) <= 0 && prevPosDiff.DotProduct(normal) > 0)
     {
-        Vector3 newVel = Reflect(effectSpaceVelocity, normal);
+        if (force->killParticles)
+        {
+            particle->life = particle->lifeTime + 0.1f;
+            return;
+        }
+
+        Vector3 newVel;
+        if (force->normalAsReflectionVector)
+            newVel = normal * effectSpaceVelocity.Length();
+        else
+            newVel = Reflect(effectSpaceVelocity, normal);
         effectSpaceVelocity = newVel * force->forcePower;
+        Vector3 diffVector = prevEffectSpacePosition - effectSpacePosition;
+        float32 projDiffVector = diffVector.DotProduct(normal);
+        if (abs(projDiffVector) < EPSILON)
+            return;
+
+        //effectSpacePosition = effectSpacePosition + diffVector *  posDiff / projDiffVector; TODO
     }
 }
 

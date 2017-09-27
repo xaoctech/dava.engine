@@ -105,6 +105,9 @@ private:
     QFrame* planeCollisionSeparator = nullptr;
     QLabel* planeScaleLabel = nullptr;
     EventFilterDoubleSpinBox* planeScaleSpin = nullptr;
+    QCheckBox* normalAsReflectionVector = nullptr;
+    QCheckBox* killParticlesAfterCollision = nullptr;
+
     bool blockSignals = false;
 
     DAVA::ParticleDragForce* selectedForce = nullptr;

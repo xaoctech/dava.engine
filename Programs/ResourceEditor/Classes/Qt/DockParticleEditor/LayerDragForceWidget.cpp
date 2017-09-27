@@ -347,6 +347,14 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     planeScaleLayout->addWidget(planeScaleLabel);
     planeScaleLayout->addWidget(planeScaleSpin);
     mainLayout->addLayout(planeScaleLayout);
+
+    normalAsReflectionVector = new QCheckBox("Use normal as reflection vector");
+    connect(normalAsReflectionVector, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(normalAsReflectionVector);
+
+    killParticlesAfterCollision = new QCheckBox("Kill particles after collision");
+    connect(killParticlesAfterCollision, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(killParticlesAfterCollision);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -383,6 +391,8 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     pointGravityUseRnd->setChecked(selectedForce->pointGravityUseRandomPointsOnSphere);
     isGlobal->setChecked(selectedForce->isGlobal);
     killParticles->setChecked(selectedForce->killParticles);
+    killParticlesAfterCollision->setChecked(selectedForce->killParticles);
+    normalAsReflectionVector->setChecked(selectedForce->normalAsReflectionVector);
     planeScaleSpin->setValue(selectedForce->planeScale);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
@@ -485,8 +495,12 @@ void LayerDragForceWidget::OnValueChanged()
     params.pointGravityRadius = pointGravityRadiusSpin->value();
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
     params.isGlobal = isGlobal->isChecked();
-    params.killParticles = killParticles->isChecked();
+    if (selectedForce->type != ForceType::PLANE_COLLISION)
+        params.killParticles = killParticles->isChecked();
+    else
+        params.killParticles = killParticlesAfterCollision->isChecked();
     params.planeScale = planeScaleSpin->value();
+    params.normalAsReflectionVector = normalAsReflectionVector->isChecked();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
 

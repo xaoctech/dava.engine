@@ -333,6 +333,7 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.isActive = force->isActive;
         oldParams.useInfinityRange = force->isInfinityRange;
         oldParams.killParticles = force->killParticles;
+        oldParams.normalAsReflectionVector = force->normalAsReflectionVector;
         oldParams.pointGravityUseRandomPointsOnSphere = force->pointGravityUseRandomPointsOnSphere;
         oldParams.isGlobal = force->isGlobal;
         oldParams.boxSize = force->boxSize;
@@ -388,6 +389,7 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
         force->backwardTurbulenceProbability = params.backwardTurbulenceProbability;
         force->pointGravityRadius = params.pointGravityRadius;
         force->planeScale = params.planeScale;
+        force->normalAsReflectionVector = params.normalAsReflectionVector;
         PropertyLineHelper::SetValueLine(force->forcePowerLine, params.forcePowerLine);
         PropertyLineHelper::SetValueLine(force->turbulenceLine, params.turbulenceLine);
     }
