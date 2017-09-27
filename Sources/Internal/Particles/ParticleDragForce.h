@@ -65,6 +65,8 @@ public:
     float32 pointGravityRadius = 1.0f;
     float32 planeScale = 5.0f; // Editor only.
     float32 reflectionChaos = 0.0f;
+    float32 rndReflectionForceMin = 1.0f;
+    float32 rndReflectionForceMax = 1.1f;
 
     RefPtr<PropertyLine<float32>> turbulenceLine;
 
@@ -73,6 +75,7 @@ public:
     bool isGlobal = false;
     bool killParticles = false;
     bool normalAsReflectionVector = true;
+    bool randomizeReflectionForce = false;
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
 public:

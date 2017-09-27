@@ -334,6 +334,7 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.useInfinityRange = force->isInfinityRange;
         oldParams.killParticles = force->killParticles;
         oldParams.normalAsReflectionVector = force->normalAsReflectionVector;
+        oldParams.randomizeReflectionForce = force->randomizeReflectionForce;
         oldParams.pointGravityUseRandomPointsOnSphere = force->pointGravityUseRandomPointsOnSphere;
         oldParams.isGlobal = force->isGlobal;
         oldParams.boxSize = force->boxSize;
@@ -348,6 +349,8 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.windFrequency = force->windFrequency;
         oldParams.windTurbulence = force->windTurbulence;
         oldParams.pointGravityRadius = force->pointGravityRadius;
+        oldParams.rndReflectionForceMin = force->rndReflectionForceMin;
+        oldParams.rndReflectionForceMax = force->rndReflectionForceMax;
         oldParams.planeScale = force->planeScale;
         oldParams.reflectionChaos = force->reflectionChaos;
         oldParams.windTurbulenceFrequency = force->windTurbulenceFrequency;
@@ -392,6 +395,9 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
         force->planeScale = params.planeScale;
         force->reflectionChaos = params.reflectionChaos;
         force->normalAsReflectionVector = params.normalAsReflectionVector;
+        force->randomizeReflectionForce = params.randomizeReflectionForce;
+        force->rndReflectionForceMin = params.rndReflectionForceMin;
+        force->rndReflectionForceMax = params.rndReflectionForceMax;
         PropertyLineHelper::SetValueLine(force->forcePowerLine, params.forcePowerLine);
         PropertyLineHelper::SetValueLine(force->turbulenceLine, params.turbulenceLine);
     }

@@ -484,6 +484,7 @@ public:
         bool isGlobal = false;
         bool killParticles = false;
         bool normalAsReflectionVector = true;
+        bool randomizeReflectionForce = true;
         DAVA::float32 radius = 0.0f;
         DAVA::Vector3 boxSize;
         DAVA::Vector3 forcePower;
@@ -499,6 +500,8 @@ public:
         DAVA::float32 pointGravityRadius = 1.0f;
         DAVA::float32 planeScale = 1.0f;
         DAVA::float32 reflectionChaos = 0.0f;
+        DAVA::float32 rndReflectionForceMin = 1.0f;
+        DAVA::float32 rndReflectionForceMax = 1.0f;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
     };
 

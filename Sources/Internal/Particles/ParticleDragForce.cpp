@@ -40,6 +40,9 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->isInfinityRange = isInfinityRange;
     dst->killParticles = killParticles;
     dst->normalAsReflectionVector = normalAsReflectionVector;
+    dst->randomizeReflectionForce = randomizeReflectionForce;
+    dst->rndReflectionForceMin = rndReflectionForceMin;
+    dst->rndReflectionForceMax = rndReflectionForceMax;
     dst->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphere;
     dst->isGlobal = isGlobal;
     dst->boxSize = boxSize;

@@ -109,6 +109,11 @@ private:
     QCheckBox* killParticlesAfterCollision = nullptr;
     QLabel* reflectionChaosLabel = nullptr;
     EventFilterDoubleSpinBox* reflectionChaosSpin = nullptr;
+    QCheckBox* randomizeReflectionForce = nullptr;
+    QLabel* rndReflectionForceMinLabel = nullptr;
+    EventFilterDoubleSpinBox* rndReflectionForceMinSpin = nullptr;
+    QLabel* rndReflectionForceMaxLabel = nullptr;
+    EventFilterDoubleSpinBox* rndReflectionForceMaxSpin = nullptr;
 
     bool blockSignals = false;
 

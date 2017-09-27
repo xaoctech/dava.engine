@@ -324,6 +324,13 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
                 newVel = -newVel;
         }
         effectSpaceVelocity = newVel * force->forcePower;
+        if (force->randomizeReflectionForce)
+        {
+            std::random_device rd;
+            std::mt19937 rng(rd());
+            std::uniform_real_distribution<float32> uni(force->rndReflectionForceMin, force->rndReflectionForceMax);
+            effectSpaceVelocity *= uni(rng);
+        }
 
         Vector3 dir = prevEffectSpacePosition - effectSpacePosition;
         float32 abProj = dir.DotProduct(normal);

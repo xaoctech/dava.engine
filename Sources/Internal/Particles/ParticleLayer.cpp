@@ -1220,6 +1220,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("normalAsReflectionVector%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->normalAsReflectionVector);
 
+        forceDataName = Format("randomizeReflectionForce%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->randomizeReflectionForce);
+
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->pointGravityUseRandomPointsOnSphere);
 
@@ -1258,6 +1261,12 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("pointGravityRadius%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->pointGravityRadius);
+
+        forceDataName = Format("rndReflectionForceMin%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->rndReflectionForceMin);
+
+        forceDataName = Format("rndReflectionForceMax%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->rndReflectionForceMax);
 
         forceDataName = Format("planeScale%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->planeScale);
@@ -1520,6 +1529,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         if (normalAsReflectionVectorNode)
             dragForce->normalAsReflectionVector = normalAsReflectionVectorNode->AsBool();
 
+        forceDataName = Format("randomizeReflectionForce%d", i);
+        const YamlNode* randomizeReflectionForceNode = node->Get(forceDataName);
+        if (randomizeReflectionForceNode)
+            dragForce->randomizeReflectionForce = randomizeReflectionForceNode->AsBool();
+
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         const YamlNode* pointGravityUseRandomPointsOnSphereNode = node->Get(forceDataName);
         if (pointGravityUseRandomPointsOnSphereNode)
@@ -1585,6 +1599,16 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* pointGravityRadiusNode = node->Get(forceDataName);
         if (pointGravityRadiusNode)
             dragForce->pointGravityRadius = pointGravityRadiusNode->AsFloat();
+
+        forceDataName = Format("rndReflectionForceMin%d", i);
+        const YamlNode* rndReflectionForceMinNode = node->Get(forceDataName);
+        if (rndReflectionForceMinNode)
+            dragForce->rndReflectionForceMin = rndReflectionForceMinNode->AsFloat();
+
+        forceDataName = Format("rndReflectionForceMax%d", i);
+        const YamlNode* rndReflectionForceMaxNode = node->Get(forceDataName);
+        if (rndReflectionForceMaxNode)
+            dragForce->rndReflectionForceMax = rndReflectionForceMaxNode->AsFloat();
 
         forceDataName = Format("planeScale%d", i);
         const YamlNode* planeScaleNode = node->Get(forceDataName);

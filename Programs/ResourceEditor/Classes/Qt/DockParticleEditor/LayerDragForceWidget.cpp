@@ -255,6 +255,11 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     planeScaleSpin->setVisible(isPlaneCollision);
     reflectionChaosLabel->setVisible(isPlaneCollision);
     reflectionChaosSpin->setVisible(isPlaneCollision);
+    randomizeReflectionForce->setVisible(isPlaneCollision);
+    rndReflectionForceMinLabel->setVisible(isPlaneCollision);
+    rndReflectionForceMinSpin->setVisible(isPlaneCollision);
+    rndReflectionForceMaxLabel->setVisible(isPlaneCollision);
+    rndReflectionForceMaxSpin->setVisible(isPlaneCollision);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
@@ -357,7 +362,6 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     killParticlesAfterCollision = new QCheckBox("Kill particles after collision");
     connect(killParticlesAfterCollision, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(killParticlesAfterCollision);
-
     QHBoxLayout* reflectionChaosLayout = new QHBoxLayout(this);
     reflectionChaosLabel = new QLabel("Reflection chaos:");
     reflectionChaosSpin = new EventFilterDoubleSpinBox();
@@ -365,6 +369,23 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     reflectionChaosLayout->addWidget(reflectionChaosLabel);
     reflectionChaosLayout->addWidget(reflectionChaosSpin);
     mainLayout->addLayout(reflectionChaosLayout);
+
+    randomizeReflectionForce = new QCheckBox("Randomize reflection force");
+    connect(randomizeReflectionForce, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(randomizeReflectionForce);
+
+    QHBoxLayout* rndForceLayout = new QHBoxLayout(this);
+    rndReflectionForceMinLabel = new QLabel("Force random min multiplier:");
+    rndReflectionForceMinSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(rndReflectionForceMinSpin);
+    rndReflectionForceMaxLabel = new QLabel("Force random max multiplier:");
+    rndReflectionForceMaxSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(rndReflectionForceMaxSpin);
+    rndForceLayout->addWidget(rndReflectionForceMinLabel);
+    rndForceLayout->addWidget(rndReflectionForceMinSpin);
+    rndForceLayout->addWidget(rndReflectionForceMaxLabel);
+    rndForceLayout->addWidget(rndReflectionForceMaxSpin);
+    mainLayout->addLayout(rndForceLayout);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -405,6 +426,9 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     normalAsReflectionVector->setChecked(selectedForce->normalAsReflectionVector);
     planeScaleSpin->setValue(selectedForce->planeScale);
     reflectionChaosSpin->setValue(selectedForce->reflectionChaos);
+    randomizeReflectionForce->setChecked(selectedForce->randomizeReflectionForce);
+    rndReflectionForceMinSpin->setValue(selectedForce->rndReflectionForceMin);
+    rndReflectionForceMaxSpin->setValue(selectedForce->rndReflectionForceMax);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -505,6 +529,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.backwardTurbulenceProbability = static_cast<uint32>(Clamp(backTurbSpin->value(), 0.0, 100.0));
     params.pointGravityRadius = pointGravityRadiusSpin->value();
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
+    params.randomizeReflectionForce = randomizeReflectionForce->isChecked();
 
     params.isGlobal = isGlobal->isChecked();
     if (selectedForce->type != ForceType::PLANE_COLLISION)
@@ -514,6 +539,15 @@ void LayerDragForceWidget::OnValueChanged()
     params.planeScale = planeScaleSpin->value();
     params.reflectionChaos = Clamp(static_cast<float32>(reflectionChaosSpin->value()), 0.0f, 360.0f);
     params.normalAsReflectionVector = normalAsReflectionVector->isChecked();
+
+    float32 rndReflForceMinMult = rndReflectionForceMinSpin->value();
+    float32 rndReflForceMaxMult = rndReflectionForceMaxSpin->value();
+    rndReflForceMinMult = Clamp(rndReflForceMinMult, 0.0f, 99.9f);
+    rndReflForceMaxMult = Max(rndReflForceMaxMult, rndReflForceMinMult + 0.1f);
+    params.rndReflectionForceMin = rndReflForceMinMult;
+    params.rndReflectionForceMax = rndReflForceMaxMult;
+    rndReflectionForceMinSpin->setValue(rndReflForceMinMult);
+    rndReflectionForceMaxSpin->setValue(rndReflForceMaxMult);
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
     reflectionChaosSpin->setValue(params.reflectionChaos);
