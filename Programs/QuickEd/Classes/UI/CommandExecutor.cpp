@@ -142,20 +142,6 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
         control->GetControl()->SetName(newName);
     }
 }
-Vector<ControlNode*> ToControlNodesVector(const SelectedNodes& selectedNodes)
-{
-    Vector<ControlNode*> controlNodes;
-    controlNodes.reserve(selectedNodes.size());
-    for (PackageBaseNode* node : selectedNodes)
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (controlNode)
-        {
-            controlNodes.push_back(controlNode);
-        }
-    }
-    return controlNodes;
-}
 
 Rect GetConstraintBox(const Vector<ControlNode*> nodes)
 {
@@ -796,7 +782,18 @@ ControlNode* CommandExecutor::GroupSelectedNodes() const
 
     if (result.type != Result::RESULT_ERROR)
     {
-        selectedControlNodes = ToControlNodesVector(data->GetSelectedNodes());
+        selectedControlNodes.reserve(selectedNodes.size());
+        for (PackageBaseNode* node : selectedNodes)
+        {
+            ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+            if (controlNode)
+            {
+                selectedControlNodes.push_back(controlNode);
+            }
+        }
+
+        std::sort(selectedControlNodes.begin(), selectedControlNodes.end(), CompareByLCA);
+
         if (data->GetSelectedNodes().size() != selectedControlNodes.size())
         {
             result = Result(Result::RESULT_ERROR, "only controls can be grouped");

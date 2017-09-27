@@ -465,8 +465,6 @@ void EngineBackend::Update(float32 frameDelta)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::ENGINE_UPDATE);
     engine->update.Emit(frameDelta);
-
-    context->localNotificationController->Update();
 }
 
 void EngineBackend::UpdateAndDrawWindows(float32 frameDelta, bool drawOnly)

@@ -1,5 +1,7 @@
 #system
+import os
 import sys
+import inspect
 import argparse
 import subprocess
 
@@ -11,7 +13,8 @@ parser.add_argument("action",\
 
 def do():
     args = parser.parse_args(sys.argv[1:2])
-    exec_string = "python Private/cmd_{}.py {}"
+    current_dir = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
+    exec_string = "python " + current_dir + os.path.normpath("/Private/cmd_{}.py {}")
     # Grab all remaining arguments and wrap them into quotes to forward to another script
     args_string = " ".join("\"{}\"".format(arg) for arg in sys.argv[2:])
     return subprocess.call(exec_string.format(args.action, args_string))

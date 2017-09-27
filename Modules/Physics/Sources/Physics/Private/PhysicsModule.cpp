@@ -12,6 +12,9 @@
 #include "Physics/VehicleTankComponent.h"
 #include "Physics/VehicleChassisComponent.h"
 #include "Physics/VehicleWheelComponent.h"
+#include "Physics/BoxCharacterControllerComponent.h"
+#include "Physics/CapsuleCharacterControllerComponent.h"
+#include "Physics/WASDPhysicsControllerComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/Private/PhysicsMath.h"
 
@@ -183,6 +186,10 @@ PhysicsModule::PhysicsModule(Engine* engine)
     vehicleComponents.push_back(Component::VEHICLE_TANK_COMPONENT);
     vehicleComponents.push_back(Component::VEHICLE_CHASSIS_COMPONENT);
     vehicleComponents.push_back(Component::VEHICLE_WHEEL_COMPONENT);
+
+    characterControllerComponents.reserve(2);
+    characterControllerComponents.push_back(Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
+    characterControllerComponents.push_back(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
 }
 
 void PhysicsModule::Init()
@@ -227,6 +234,9 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleTankComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleChassisComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleWheelComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxCharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleCharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WASDPhysicsControllerComponent);
 }
 
 void PhysicsModule::Shutdown()
@@ -496,6 +506,11 @@ const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
 const Vector<uint32>& PhysicsModule::GetVehicleComponentTypes() const
 {
     return vehicleComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
+{
+    return characterControllerComponents;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)

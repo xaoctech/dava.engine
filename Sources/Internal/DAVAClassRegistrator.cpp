@@ -17,13 +17,16 @@
 #include <Physics/VehicleTankComponent.h>
 #include <Physics/VehicleChassisComponent.h>
 #include <Physics/VehicleWheelComponent.h>
+#include <Physics/BoxCharacterControllerComponent.h>
+#include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/WASDPhysicsControllerComponent.h>
 #endif
 
 using namespace DAVA;
 
 void DAVA::RegisterDAVAClasses()
 {
-    // this code do nothing. Needed to compiler generate code from this cpp file
+    // this code does nothing. Needed to compiler generate code from this cpp file
     Logger* log = GetEngineContext()->logger;
     if (log)
         log->Log(Logger::LEVEL__DISABLE, "");
@@ -109,6 +112,9 @@ REGISTER_CLASS(PlaneShapeComponent);
 REGISTER_CLASS(ConvexHullShapeComponent);
 REGISTER_CLASS(MeshShapeComponent);
 REGISTER_CLASS(HeightFieldShapeComponent);
+REGISTER_CLASS(BoxCharacterControllerComponent);
+REGISTER_CLASS(CapsuleCharacterControllerComponent);
+REGISTER_CLASS(WASDPhysicsControllerComponent);
 REGISTER_CLASS(VehicleCarComponent);
 REGISTER_CLASS(VehicleTankComponent);
 REGISTER_CLASS(VehicleChassisComponent);

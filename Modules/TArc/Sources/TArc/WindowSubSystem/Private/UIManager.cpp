@@ -12,6 +12,9 @@
 #include <Base/Any.h>
 #include <Debug/DVAssert.h>
 #include <Utils/StringFormat.h>
+#include <FileSystem/FileSystem.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 #include <QPointer>
 #include <QMainWindow>
@@ -37,6 +40,9 @@ namespace UIManagerDetail
 String WINDOW_GEOMETRY_KEY("geometry");
 String WINDOW_STATE_KEY("state");
 String FILE_DIR_KEY("fileDialogDir");
+String DEFAULT_SCHEME_NAME("default");
+String KEY_BINDINGS_SCHEMES("keyBindingSchemes");
+String KEY_BINDING_ACTIONS("keyBindableActions");
 
 static Vector<std::pair<QMessageBox::StandardButton, ModalMessageParams::Button>> buttonsConvertor =
 {
@@ -386,6 +392,13 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
         {
             AddStatusbarPoint(url, action, windowInfo);
         }
+        else if (scheme == invisibleScheme)
+        {
+            if (action->parent() == nullptr)
+            {
+                action->setParent(windowInfo.window);
+            }
+        }
         else
         {
             DVASSERT(false);
@@ -421,9 +434,34 @@ void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
         return;
     }
 
-    QAction* action = FindAction(currentLevelMenu, path.back());
-    currentLevelMenu->removeAction(action);
-    action->deleteLater();
+    auto deleteMenu = [](QMenu* deletedMenu)
+    {
+        QMenu* parentMenu = qobject_cast<QMenu*>(deletedMenu->parent());
+        if (parentMenu != nullptr)
+        {
+            parentMenu->removeAction(deletedMenu->menuAction());
+        }
+
+        deletedMenu->setParent(nullptr);
+        deletedMenu->deleteLater();
+    };
+
+    QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(path.back());
+    if (menuToRemove != nullptr)
+    {
+        deleteMenu(menuToRemove);
+    }
+    else
+    {
+        QAction* action = FindAction(currentLevelMenu, path.back());
+        currentLevelMenu->removeAction(action);
+        action->deleteLater();
+
+        if (currentLevelMenu->isEmpty())
+        {
+            deleteMenu(currentLevelMenu);
+        }
+    }
 }
 
 void RemoveToolbarPoint(const QUrl& url, MainWindowInfo& windowInfo)
@@ -483,6 +521,8 @@ struct UIManager::Impl : public QObject
     };
 
     Map<ClientModule*, ModuleResources> moduleResourcesMap;
+
+    Vector<KeyBindableAction> keyBindableActions;
 
     Impl(ContextAccessor* accessor_, UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
         : managerDelegate(delegate)
@@ -691,6 +731,13 @@ protected:
 UIManager::UIManager(ContextAccessor* accessor, Delegate* delegate, PropertiesItem&& holder)
     : impl(new Impl(accessor, delegate, std::move(holder)))
 {
+    FilePath schemesDir = FilePath::FilepathInDocuments(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->Exists(schemesDir.MakeDirectoryPathname()) == false)
+    {
+        fs->CreateDirectory(schemesDir, false);
+    }
+    LoadScheme();
 }
 
 UIManager::~UIManager() = default;
@@ -735,6 +782,15 @@ void UIManager::AddView(const WindowKey& windowKey, const PanelKey& panelKey, QW
     DVASSERT(impl->addFunctions[type] != nullptr);
 
     impl->addFunctions[type](panelKey, windowKey, widget);
+    QList<QAction*> actions = widget->findChildren<QAction*>();
+    foreach (QAction* action, actions)
+    {
+        if (action->objectName().isEmpty())
+        {
+            action->setObjectName(action->text());
+        }
+        RegisterAction(action);
+    }
 
     UIManagerDetail::MainWindowInfo& mainWindowInfo = impl->FindOrCreateWindow(windowKey);
     QMainWindow* window = mainWindowInfo.window;
@@ -752,6 +808,8 @@ void UIManager::AddAction(const WindowKey& windowKey, const ActionPlacementInfo&
 
     UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
     UIManagerDetail::AddAction(windowInfo, placement, action);
+
+    RegisterAction(action);
 }
 
 void UIManager::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement)
@@ -809,7 +867,7 @@ QString UIManager::GetSaveFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getSaveFileName(windowInfo.window, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absolutePath());
     }
     return filePath;
 }
@@ -831,7 +889,7 @@ QString UIManager::GetOpenFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getOpenFileName(parent, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absolutePath());
     }
     return filePath;
 }
@@ -857,11 +915,13 @@ QString UIManager::GetExistingDirectory(const WindowKey& windowKey, const Direct
 int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
 {
     DVASSERT(dlg != nullptr);
-    DVASSERT(dlg->parent() == nullptr);
     UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
     if (windowInfo != nullptr)
     {
-        dlg->setParent(windowInfo->window.data());
+        if (dlg->parent() != windowInfo->window.data())
+        {
+            dlg->setParent(windowInfo->window.data());
+        }
     }
 
     dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
@@ -878,7 +938,6 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
     if (dialogRect.isValid())
     {
         dlg->setGeometry(dialogRect);
-        dlg->move(dialogRect.topLeft());
     }
 
     int result = dlg->exec();
@@ -902,7 +961,7 @@ ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKe
     return Convert(resultButton);
 }
 
-void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationParams& params)
+void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const
 {
     using namespace UIManagerDetail;
 
@@ -912,6 +971,30 @@ void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationP
 
 void UIManager::InjectWindow(const WindowKey& windowKey, QMainWindow* window)
 {
+    QList<QAction*> actions = window->findChildren<QAction*>();
+    foreach (QAction* action, actions)
+    {
+        QVariant block = action->property("blockName");
+        if (block.canConvert<QString>())
+        {
+            QString blockName = block.value<QString>();
+            QVariant actionName = action->property("actionName");
+            if (actionName.canConvert<QString>())
+            {
+                action->setObjectName(actionName.value<QString>());
+            }
+
+            KeyBindableActionInfo info;
+            info.blockName = blockName;
+            info.context = action->shortcutContext();
+            info.defaultShortcuts = action->shortcuts();
+
+            MakeActionKeyBindable(action, info);
+        }
+
+        RegisterAction(action);
+    }
+
     UIManagerDetail::MainWindowInfo windowInfo;
     windowInfo.window = window;
     windowInfo.menuBar = window->findChild<QMenuBar*>();
@@ -956,6 +1039,331 @@ void UIManager::ModuleDestroyed(ClientModule* module)
         }
 
         impl->moduleResourcesMap.erase(iter);
+    }
+}
+
+const Vector<KeyBindableAction>& UIManager::GetKeyBindableActions() const
+{
+    return impl->keyBindableActions;
+}
+
+String UIManager::GetCurrentKeyBindingsScheme() const
+{
+    String currentScheme;
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        currentScheme = schemesHolder.Get<String>("currentScheme");
+        if (currentScheme.empty())
+        {
+            currentScheme = UIManagerDetail::DEFAULT_SCHEME_NAME;
+            schemesHolder.Set("currentScheme", currentScheme);
+        }
+    }
+
+    return currentScheme;
+}
+
+void UIManager::SetCurrentKeyBindingsScheme(const String& schemeName)
+{
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        schemesHolder.Set("currentScheme", schemeName);
+    }
+    LoadScheme();
+}
+
+Vector<String> UIManager::GetKeyBindingsSchemeNames() const
+{
+    Vector<String> schemes;
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        int32 schemesCount = schemesHolder.Get<int32>("schemesCount");
+        schemes.reserve(schemesCount + 1);
+
+        for (int32 i = 0; i < schemesCount; ++i)
+        {
+            schemes.push_back(schemesHolder.Get<String>(Format("scheme_%d", i)));
+        }
+    }
+
+    auto iter = std::find(schemes.begin(), schemes.end(), UIManagerDetail::DEFAULT_SCHEME_NAME);
+    if (iter == schemes.end())
+    {
+        schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
+        SaveSchemeNames(schemes);
+    }
+
+    return schemes;
+}
+
+void UIManager::AddKeyBindingsScheme(const String& schemeName)
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    DVASSERT(std::find(schemes.begin(), schemes.end(), schemeName) == schemes.end());
+
+    schemes.push_back(schemeName);
+    SaveSchemeNames(schemes);
+}
+
+void UIManager::RemoveKeyBindingsScheme(const String& schemeName)
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
+    DVASSERT(iter != schemes.end());
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    fs->DeleteFile(BuildSchemePath(schemeName));
+
+    schemes.erase(iter);
+    if (schemes.empty())
+    {
+        schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
+    }
+    SaveSchemeNames(schemes);
+    SetCurrentKeyBindingsScheme(schemes.front());
+}
+
+String UIManager::ImportKeyBindingsScheme(const FilePath& path)
+{
+    PropertiesHolder holder(path.GetFilename(), path.GetDirectory());
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    String schemeName = item.Get<String>("schemeName");
+    if (schemeName.empty())
+    {
+        NotificationParams p;
+        p.title = "Import scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "Key Binding scheme file is invalid";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+        return schemeName;
+    }
+
+    int32 index = 0;
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    String newSchemeName = schemeName;
+    while (true)
+    {
+        auto iter = std::find(schemes.begin(), schemes.end(), newSchemeName);
+        if (iter == schemes.end())
+        {
+            schemeName = newSchemeName;
+            break;
+        }
+
+        newSchemeName = Format("%s_%d", schemeName.c_str(), ++index);
+    }
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->CopyFile(path, BuildSchemePath(schemeName)))
+    {
+        AddKeyBindingsScheme(schemeName);
+    }
+    else
+    {
+        schemeName = String("");
+        NotificationParams p;
+        p.title = "Import scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "File can't be copied";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+    }
+
+    return schemeName;
+}
+
+void UIManager::ExportKeyBindingsScheme(const FilePath& path, const String& schemeName) const
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
+    DVASSERT(iter != schemes.end());
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->CopyFile(BuildSchemePath(schemeName), path) == false)
+    {
+        NotificationParams p;
+        p.title = "Export scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "File can't be copied";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+    }
+}
+
+void UIManager::AddShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->sequences.push_back(shortcut);
+    iter->action->setShortcuts(iter->sequences);
+    SaveScheme();
+}
+
+void UIManager::RemoveShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->sequences.removeAll(shortcut);
+    iter->action->setShortcuts(iter->sequences);
+    SaveScheme();
+}
+
+void UIManager::SetActionContext(QPointer<QAction> action, Qt::ShortcutContext context)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->context = context;
+    iter->action->setShortcutContext(iter->context);
+    SaveScheme();
+}
+
+void UIManager::RegisterAction(QAction* action)
+{
+    KeyBindableActionInfo info;
+    if (GetActionKeyBindableInfo(action, info))
+    {
+        auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [&action, &info](const KeyBindableAction& keyBindAction) {
+            return keyBindAction.actionName == action->objectName() && keyBindAction.blockName == info.blockName;
+        });
+
+        KeyBindableAction* bindableAction = nullptr;
+        if (iter != impl->keyBindableActions.end())
+        {
+            bindableAction = &(*iter);
+        }
+        else
+        {
+            impl->keyBindableActions.push_back(KeyBindableAction());
+            bindableAction = &impl->keyBindableActions.back();
+            bindableAction->actionName = action->objectName();
+            bindableAction->blockName = info.blockName;
+            bindableAction->context = info.context;
+            bindableAction->sequences = info.defaultShortcuts;
+        }
+
+        bindableAction->action = action;
+        bindableAction->isReadOnly = info.readOnly;
+        bindableAction->defaultContext = info.context;
+        bindableAction->defaultSequences = info.defaultShortcuts;
+        action->setShortcutContext(bindableAction->context);
+        action->setShortcuts(bindableAction->sequences);
+    }
+}
+
+void UIManager::LoadScheme()
+{
+    Vector<QAction*> actions;
+    for (KeyBindableAction& action : impl->keyBindableActions)
+    {
+        action.sequences = action.defaultSequences;
+        action.context = action.defaultContext;
+        if (action.action != nullptr)
+        {
+            action.action->setShortcutContext(action.defaultContext);
+            action.action->setShortcuts(action.defaultSequences);
+            actions.push_back(action.action.data());
+        }
+    }
+
+    impl->keyBindableActions.clear();
+    FilePath schemePath = BuildSchemePath(GetCurrentKeyBindingsScheme());
+    PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    int32 blocksCount = item.Get<int32>("blocksCount");
+    for (int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockIndex));
+        QString blockName = blockHolder.Get<QString>("blockName");
+        int32 actionsCount = blockHolder.Get<int32>("actionsCount");
+        for (int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", actionIndex));
+
+            KeyBindableAction bindableAction;
+            bindableAction.blockName = blockName;
+            bindableAction.actionName = actionHolder.Get<QString>("actionName");
+            bindableAction.context = actionHolder.Get<Qt::ShortcutContext>("actionContext");
+
+            int32 sequencesCount = actionHolder.Get<int32>("actionSequencesCount");
+            for (int32 sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                bindableAction.sequences.push_back(QKeySequence::fromString(sequenceHolder.Get<QString>("keySequence")));
+            }
+
+            impl->keyBindableActions.push_back(bindableAction);
+        }
+    }
+
+    for (QAction* action : actions)
+    {
+        RegisterAction(action);
+    }
+}
+
+void UIManager::SaveScheme() const
+{
+    FilePath schemePath = BuildSchemePath(GetCurrentKeyBindingsScheme());
+    PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
+
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    item.Set("schemeName", schemePath.GetBasename());
+    Map<QString, Vector<KeyBindableAction>> sortedActions;
+    for (const KeyBindableAction& action : impl->keyBindableActions)
+    {
+        if (action.action != nullptr)
+        {
+            sortedActions[action.blockName].push_back(action);
+        }
+    }
+
+    item.Set("blocksCount", static_cast<int32>(sortedActions.size()));
+    int32 blockCounter = 0;
+    for (const auto& blockPair : sortedActions)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockCounter++));
+        blockHolder.Set("blockName", blockPair.first);
+        blockHolder.Set("actionsCount", static_cast<int32>(blockPair.second.size()));
+        for (size_t i = 0; i < blockPair.second.size(); ++i)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<int32>(i)));
+            const KeyBindableAction& action = blockPair.second[i];
+            actionHolder.Set("actionName", action.actionName);
+            actionHolder.Set("actionContext", action.context);
+
+            actionHolder.Set("actionSequencesCount", static_cast<int32>(action.sequences.size()));
+            for (int sequenceIndex = 0; sequenceIndex < action.sequences.size(); ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                sequenceHolder.Set("keySequence", action.sequences[sequenceIndex].toString());
+            }
+        }
+    }
+}
+
+FilePath UIManager::BuildSchemePath(const String& scheme) const
+{
+    return FilePath::FilepathInDocuments(Format("%s/%s", UIManagerDetail::KEY_BINDINGS_SCHEMES.c_str(), scheme.c_str()));
+}
+
+void UIManager::SaveSchemeNames(const Vector<String>& schemes) const
+{
+    PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+    int32 schemesCount = static_cast<int32>(schemes.size());
+    schemesHolder.Set("schemesCount", schemesCount);
+
+    for (int32 i = 0; i < schemesCount; ++i)
+    {
+        schemesHolder.Set(Format("scheme_%d", i), schemes[i]);
     }
 }
 

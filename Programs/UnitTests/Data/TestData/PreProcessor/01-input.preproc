@@ -1,7 +1,7 @@
 BASIC INCLUDE TEST
 
 first
-#include "01-included.txt"  
+#include "01-included.preproc"  
 second
 #define SOMETHING 7 
 #define LIFE 42 
