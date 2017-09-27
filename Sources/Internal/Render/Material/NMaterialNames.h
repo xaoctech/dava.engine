@@ -72,6 +72,14 @@ public:
     static const FastName DEBUG_DRAW_PARTICLES_NO_DEPTH;
 
     static const FastName WATER_ALL_QUALITIES;
+
+    static const FastName WATER_PER_PIXEL_REAL_REFLECTIONS;
+    static const FastName WATER_PER_PIXEL_CUBEMAP_ALPHABLEND;
+    static const FastName WATER_PER_VERTEX_CUBEMAP_DECAL;
+
+    static const FastName NORMALIZED_BLINN_PHONG_PER_PIXEL_OPAQUE;
+    static const FastName NORMALIZED_BLINN_PHONG_PER_PIXEL_FAST_OPAQUE;
+    static const FastName NORMALIZED_BLINN_PHONG_PER_VERTEX_OPAQUE;
 };
 
 class NMaterialTextureName
@@ -179,7 +187,8 @@ public:
     static const FastName FLAG_DEBUG_Z_NORMAL_SCALE;
     static const FastName FLAG_DEBUG_NORMAL_ROTATION;
 
-    static const FastName FLAG_SKINNING;
+    static const FastName FLAG_HARD_SKINNING;
+    static const FastName FLAG_SOFT_SKINNING;
 
     static const FastName FLAG_FLOWMAP_SKY;
     static const FastName FLAG_PARTICLES_FLOWMAP;

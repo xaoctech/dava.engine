@@ -143,6 +143,16 @@ FilePath Sprite::GetScaledName(const FilePath& spriteName)
         pathname.replace(pos, baseGfxFolderName.length(), desirableGfxFolderName);
         return pathname;
     }
+    else if (virtualCoordsSystem->GetResourceFoldersCount() == 1 && baseGfxFolderName != "Gfx")
+    { // magic for QE
+
+        String::size_type startPos = pathname.find("/Gfx/");
+        if (String::npos != startPos)
+        {
+            pathname.replace(startPos, 5, "/" + baseGfxFolderName + "/");
+            return pathname;
+        }
+    }
 
     return spriteName;
 }
@@ -881,22 +891,28 @@ File* Sprite::GetSpriteFile(const FilePath& spriteName, int32& resourceSizeIndex
     FilePath pathName = FilePath::CreateWithNewExtension(spriteName, ".txt");
     FilePath scaledPath = GetScaledName(pathName);
 
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
+
     FilePath texturePath;
     File* fp = LoadLocalizedFile(scaledPath, texturePath);
     if (!fp)
     {
-        fp = LoadLocalizedFile(pathName, texturePath);
+        if (vcs->GetResourceFoldersCount() > 1)
+        { // try to load default path in case of several resource folders
+            fp = LoadLocalizedFile(pathName, texturePath);
+        }
+
         if (!fp)
         {
             Logger::Warning("Failed to open sprite file: %s", pathName.GetAbsolutePathname().c_str());
             return NULL;
         }
 
-        resourceSizeIndex = GetEngineContext()->uiControlSystem->vcs->GetBaseResourceIndex();
+        resourceSizeIndex = vcs->GetBaseResourceIndex();
     }
     else
     {
-        resourceSizeIndex = GetEngineContext()->uiControlSystem->vcs->GetDesirableResourceIndex();
+        resourceSizeIndex = vcs->GetDesirableResourceIndex();
     }
 
     return fp;

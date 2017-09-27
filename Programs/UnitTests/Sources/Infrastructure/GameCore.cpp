@@ -65,7 +65,7 @@ int DAVAMain(Vector<String> cmdline)
 #elif defined(__DAVAENGINE_MACOS__)
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
 #elif defined(__DAVAENGINE_IPHONE__)
-    appOptions->SetInt32("renderer", rhi::RHI_GLES2);
+    appOptions->SetInt32("renderer", rhi::ApiIsSupported(rhi::RHI_METAL) ? rhi::RHI_METAL : rhi::RHI_GLES2);
 #elif defined(__DAVAENGINE_WIN32__)
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
 #elif defined(__DAVAENGINE_WIN_UAP__)

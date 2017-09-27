@@ -36,7 +36,7 @@ CollisionRenderObject::CollisionRenderObject(DAVA::Entity* entity, btCollisionWo
         if ((batchLodIndex == bestLodIndex) && (batchSwitchIndex == curSwitchIndex))
         {
             DAVA::PolygonGroup* pg = batch->GetPolygonGroup();
-            if (pg != nullptr)
+            if (pg != nullptr && pg->GetPrimitiveType() == rhi::PRIMITIVE_TRIANGLELIST)
             {
                 // is this the first polygon in cycle
                 if (!anyPolygonAdded)

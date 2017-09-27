@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/Qt/QtString.h>
 
 #include <Base/Result.h>
@@ -30,7 +31,7 @@ public:
     struct GfxDir
     {
         ResDir directory;
-        DAVA::Size2i resolution;
+        DAVA::float32 scale = 1.f;
     };
 
     struct Device
@@ -46,7 +47,7 @@ public:
         DAVA::FastName controlPath;
     };
 
-    ProjectData();
+    ProjectData(const DAVA::String& projectDir);
     ~ProjectData() override;
 
     static const DAVA::int32 CURRENT_PROJECT_FILE_VERSION = 1;
@@ -79,6 +80,8 @@ public:
     const DAVA::Map<DAVA::String, DAVA::String>& GetSoundLocales() const;
 
     bool Save() const;
+
+    DAVA::TArc::PropertiesItem CreatePropertiesNode(const DAVA::String& nodeName);
 
     static DAVA::FastName projectPathPropertyName;
 
@@ -118,6 +121,8 @@ private:
     DAVA::Vector<Device> devicesForPreview;
     DAVA::Vector<Blank> blanksForPreview;
     DAVA::Map<DAVA::String, DAVA::String> soundLocales;
+
+    std::unique_ptr<DAVA::TArc::PropertiesHolder> propertiesHolder;
 
     DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArc::DataNode);
 };

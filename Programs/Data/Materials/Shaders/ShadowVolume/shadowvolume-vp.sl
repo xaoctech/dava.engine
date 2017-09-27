@@ -5,8 +5,8 @@ vertex_in
     float3  pos     : POSITION;
     float3  normal  : NORMAL;
 
-    #if SKINNING
-    float   index   : BLENDINDICES;
+    #if HARD_SKINNING
+    float  index   : BLENDINDICES;
     #endif
 };
 
@@ -21,7 +21,7 @@ vertex_out
 
 [auto][global] property float4x4 projMatrix;
 
-#if SKINNING
+#if HARD_SKINNING
 [auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
 [auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
 #endif
@@ -31,11 +31,15 @@ vertex_out
 [material][global] property float3 forcedShadowDirection = float3(0.0, 0.0, -1.0);
 #endif
 
-inline float3 JointTransformTangent( float3 inVec, float4 jointQuaternion )
+#if HARD_SKINNING
+
+inline float3 JointTransformTangent( float3 tangent, float4 quaternion )
 {
-    float3 t = 2.0 * cross( jointQuaternion.xyz, inVec );
-    return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
+    float3 tmp = 2.0 * cross(quaternion.xyz, tangent);
+    return tangent + quaternion.w * tmp + cross(quaternion.xyz, tmp);
 }
+
+#endif
 
 vertex_out vp_main( vertex_in input )
 {
@@ -48,17 +52,24 @@ vertex_out vp_main( vertex_in input )
                                      worldViewInvTransposeMatrix[1].xyz, 
                                      worldViewInvTransposeMatrix[2].xyz);
 
-#if SKINNING
-    // compute final state - for now just effected by 1 bone - later blend everything here
-    int     index                    = int(input.index);
-    float4  weightedVertexPosition   = jointPositions[index];
-    float4  weightedVertexQuaternion = jointQuaternions[index];
-    float3 tmpVec = 2.0 * cross(weightedVertexQuaternion.xyz, in_pos.xyz);
-    float4 position = float4(weightedVertexPosition.xyz + (in_pos.xyz + weightedVertexQuaternion.w * tmpVec + cross(weightedVertexQuaternion.xyz, tmpVec))*weightedVertexPosition.w, 1.0);
-    float3 normal = normalize( mul( JointTransformTangent(in_normal, weightedVertexQuaternion), normalMatrix ) );
+    float4 position;
+    float3 normal;
+    
+#if HARD_SKINNING
+    {
+        int jIndex = int(input.index);
+        
+        float4 jP = jointPositions[jIndex];
+        float4 jQ = jointQuaternions[jIndex];
+    
+        float3 tmp = 2.0 * cross(jQ.xyz, in_pos.xyz);
+        position = float4(jP.xyz + (in_pos.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0);
+        
+        normal = normalize( mul( JointTransformTangent(in_normal, jQ), normalMatrix ) );
+    }
 #else
-    float4 position = float4(in_pos.x, in_pos.y, in_pos.z, 1.0);
-    float3 normal = mul( in_normal, normalMatrix );
+    position = float4(in_pos.x, in_pos.y, in_pos.z, 1.0);
+    normal = mul( in_normal, normalMatrix );
 #endif
 
     float4 posView = mul( position, worldViewMatrix );
@@ -100,8 +111,5 @@ vertex_out vp_main( vertex_in input )
         output.pos = posProj;                
     }    
     
-    
-
-
     return output; 
 };

@@ -1,5 +1,4 @@
-#ifndef __TABLE_PROPERTY_DELEGATE_H__
-#define __TABLE_PROPERTY_DELEGATE_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 
@@ -25,5 +24,3 @@ private:
 
     QList<QString> header;
 };
-
-#endif // __TABLE_PROPERTY_DELEGATE_H__

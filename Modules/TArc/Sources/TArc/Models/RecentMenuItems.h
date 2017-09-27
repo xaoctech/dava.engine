@@ -37,8 +37,11 @@ public:
 
         DAVA::TArc::ContextAccessor* accessor = nullptr;
         DAVA::TArc::UI* ui = nullptr;
+
+        QString recentMenuName;
+        DAVA::TArc::ActionPlacementInfo recentMenuPlacementInfo;
+
         QList<QString> menuSubPath;
-        DAVA::TArc::InsertionParams insertionParams;
         DAVA::Function<DAVA::uint32()> getMaximumCount;
         const DAVA::String propertiesItemKey;
         DAVA::TArc::FieldDescriptor predicateFieldDescriptor;
