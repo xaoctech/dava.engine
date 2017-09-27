@@ -89,7 +89,14 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         Vector3 originalPos = etm.originalTransform.GetTranslationVector();
         Ray3 ray(originalPos, Vector3(0.0f, 0.0f, -1.0f));
         RayTraceCollision collision;
-        hitObject = renderSystem->GetRenderHierarchy()->RayTrace(ray, collision);
+
+        Vector<RenderObject*> selectedObjects;
+        for (const Selectable& item : entities.GetContent())
+        {
+            selectedObjects.push_back(GetRenderObject(item.AsEntity()));
+        }
+
+        hitObject = renderSystem->GetRenderHierarchy()->RayTrace(ray, collision, selectedObjects);
         if (hitObject)
         {
             GetObjectCollisionMatrixAndNormal(collision, translation, collisionNormal);
