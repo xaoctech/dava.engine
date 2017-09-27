@@ -1,6 +1,13 @@
 #ifndef __COLLADAINCLUDES_H__
 #define __COLLADAINCLUDES_H__
 
+#include "Base/BaseMath.h"
+
+#include <string>
+#include <vector>
+#include <list>
+#include <map>
+
 #include "FCollada.h"
 
 #include "FCDocument/FCDocument.h"
@@ -31,15 +38,7 @@
 #include "FCDocument/FCDAnimationKey.h"
 #include "FCDocument/FCDCamera.h"
 
-
 #include <FMath/FMMatrix44.h>
-
-#include "Base/BaseMath.h"
-
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
 
 #define COLLADA_GLUT_RENDER
 
