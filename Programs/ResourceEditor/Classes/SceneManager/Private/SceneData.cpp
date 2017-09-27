@@ -74,6 +74,25 @@ bool SceneData::IsHUDVisible() const
     return scene->IsHUDVisible();
 }
 
+DAVA::TArc::PropertiesItem SceneData::GetPropertiesSection(const DAVA::String& name)
+{
+    DAVA::TArc::PropertiesItem newSection = propertiesRoot->CreateSubHolder(name);
+    return std::move(newSection);
+}
+
+void SceneData::CreatePropertiesRoot(const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName)
+{
+    DAVA::FileSystem::Instance()->CreateDirectory(dirPath, true);
+    if (propertiesRoot.get() == nullptr)
+    {
+        propertiesRoot = std::make_unique<DAVA::TArc::PropertiesHolder>(fileName.GetFilename(), dirPath);
+    }
+    else
+    {
+        propertiesRoot->CopyWithNewPath(fileName.GetFilename(), dirPath);
+    }
+}
+
 const char* SceneData::scenePropertyName = "Scene";
 const char* SceneData::sceneChangedPropertyName = "IsSceneChanged";
 const char* SceneData::scenePathPropertyName = "ScenePath";

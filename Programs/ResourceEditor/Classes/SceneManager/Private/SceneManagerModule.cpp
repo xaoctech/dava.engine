@@ -39,6 +39,7 @@
 #include <Base/Any.h>
 #include <Base/String.h>
 #include <Base/GlobalEnum.h>
+#include <Utils/MD5.h>
 
 #include <QList>
 #include <QString>
@@ -719,6 +720,8 @@ void SceneManagerModule::CreateNewScene()
 
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
     sceneData->scene = scene;
+
+    CreateSceneProperties(sceneData.get(), true);
     DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
     DataContext::ContextID newContext = contextManager->CreateContext(std::move(initialData));
@@ -840,6 +843,7 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
     sceneData->scene = scene;
 
+    CreateSceneProperties(sceneData.get());
     DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
     DataContext::ContextID newContext = contextManager->CreateContext(std::move(initialData));
@@ -879,18 +883,79 @@ void SceneManagerModule::SaveScene(bool saveAs)
         return;
     }
 
+    data->scene->SaveSystemsLocalProperties(ctx->GetID());
+
     DAVA::FilePath saveAsPath;
     if (saveAs == true)
     {
         saveAsPath = GetSceneSavePath(data->scene);
     }
 
+    // if it wasn't, we should create properties holder for it
+    bool sceneWasLoaded = data->scene->IsLoaded();
+
     SaveSceneImpl(data->scene, saveAsPath);
+
+    if (sceneWasLoaded == false || saveAs == true)
+    {
+        CreateSceneProperties(data);
+    }
 }
 
 void SceneManagerModule::SaveScene()
 {
     SaveScene(false);
+}
+
+void SceneManagerModule::CreateSceneProperties(SceneData* const data, bool sceneIsTemp)
+{
+    DAVA::FilePath dirPath, fileName;
+    GetPropertiesFilePath(data->scene->GetScenePath(), dirPath, fileName, sceneIsTemp);
+    data->CreatePropertiesRoot(dirPath, fileName);
+}
+
+void SceneManagerModule::GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
+                                               DAVA::FilePath& fileName, bool sceneIsTemp)
+{
+    using namespace DAVA;
+
+    // documents directory
+    FileSystem* fs = FileSystem::Instance();
+    FilePath documentRoot = fs->GetCurrentDocumentsDirectory();
+
+    // scene properties subdirectory
+    static const String propertiesSubDir = "SceneProperties";
+
+    String projectHash, relativeSceneDirPath;
+    if (sceneIsTemp == true)
+    {
+        // default scene properties location
+        projectHash = "Default";
+        relativeSceneDirPath = scenePath.GetFilename() + "/";
+        fileName = scenePath.GetFilename();
+    }
+    else
+    {
+        // scene name and relative path
+        ProjectManagerData* projectData = REGlobal::GetDataNode<ProjectManagerData>();
+        FilePath projectPath(projectData->GetProjectPath());
+        fileName = FilePath(scenePath.GetFilename());
+        relativeSceneDirPath = FilePath(scenePath.GetDirectory()).GetRelativePathname(projectPath);
+
+        // project path hash
+        MD5::MD5Digest projectMD5;
+        String absPath = projectPath.GetAbsolutePathname();
+        MD5::ForData(reinterpret_cast<const uint8*>(absPath.c_str()),
+                     static_cast<uint32>(absPath.size()),
+                     projectMD5);
+        projectHash = MD5::HashToString(projectMD5);
+    }
+
+    // final path
+    path = FilePath(documentRoot.GetAbsolutePathname()
+                    + "/" + propertiesSubDir
+                    + "/" + projectHash
+                    + "/" + relativeSceneDirPath);
 }
 
 void SceneManagerModule::SaveSceneToFolder(bool compressedTextures)

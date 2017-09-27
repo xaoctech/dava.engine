@@ -25,6 +25,7 @@ public:
     ~PropertiesHolder();
 
     PropertiesItem CreateSubHolder(const String& name) const;
+    void CopyWithNewPath(const String& projectName, const FilePath& directory);
 
     void SaveToFile();
 
