@@ -107,6 +107,8 @@ private:
     EventFilterDoubleSpinBox* planeScaleSpin = nullptr;
     QCheckBox* normalAsReflectionVector = nullptr;
     QCheckBox* killParticlesAfterCollision = nullptr;
+    QLabel* reflectionChaosLabel = nullptr;
+    EventFilterDoubleSpinBox* reflectionChaosSpin = nullptr;
 
     bool blockSignals = false;
 

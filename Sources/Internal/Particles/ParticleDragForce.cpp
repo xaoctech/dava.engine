@@ -52,6 +52,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->windBias = windBias;
     dst->pointGravityRadius = pointGravityRadius;
     dst->planeScale = planeScale;
+    dst->reflectionChaos = reflectionChaos;
 
     return dst;
 }

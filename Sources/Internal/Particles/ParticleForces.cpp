@@ -279,6 +279,11 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
     Vector3 a = prevEffectSpacePosition - force->position;
     Vector3 b = effectSpacePosition - force->position;
     float32 bProj = b.DotProduct(normal);
+    if ((prevEffectSpacePosition - effectSpacePosition).SquareLength() < EPSILON * EPSILON)
+    {
+        particle->life = particle->lifeTime + 0.1f;
+        return;
+    }
     if (bProj <= 0 && a.DotProduct(normal) > 0)
     {
         if (force->killParticles)
@@ -288,10 +293,36 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
         }
 
         Vector3 newVel;
+
         if (force->normalAsReflectionVector)
-            newVel = normal * effectSpaceVelocity.Length(); // Artiom request.
+            newVel = (normal * effectSpaceVelocity.Length()); // Artiom request.
         else
             newVel = Reflect(effectSpaceVelocity, normal);
+        
+        Vector3 rndVec;
+        Quaternion q;
+
+        if (abs(force->reflectionChaos) > EPSILON)
+        {
+            intptr_t partInd = reinterpret_cast<intptr_t>(particle);
+            uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
+            particleIndex %= sphereRandSize;
+            rndVec = sphereRandomVectors[particleIndex];
+            if (rndVec.DotProduct(normal) < 0)
+                rndVec = -rndVec;
+
+            std::random_device rd;
+            std::mt19937 rng(rd());
+            std::uniform_real_distribution<float32> uni(-force->reflectionChaos, force->reflectionChaos);
+
+            float32 random_x = DegToRad(uni(rng));
+            float32 random_y = DegToRad(uni(rng));
+            float32 random_z = DegToRad(uni(rng));
+            q = Quaternion::MakeRotationFastX(random_x) * Quaternion::MakeRotationFastY(random_y) * Quaternion::MakeRotationFastZ(random_z);
+            newVel = q.ApplyToVectorFast(newVel);
+            if (newVel.DotProduct(normal) < 0)
+                newVel = -newVel;
+        }
         effectSpaceVelocity = newVel * force->forcePower;
 
         Vector3 dir = prevEffectSpacePosition - effectSpacePosition;

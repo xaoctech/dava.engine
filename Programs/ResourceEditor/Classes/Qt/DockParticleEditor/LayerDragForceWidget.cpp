@@ -253,6 +253,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     planeCollisionSeparator->setVisible(isPlaneCollision);
     planeScaleLabel->setVisible(isPlaneCollision);
     planeScaleSpin->setVisible(isPlaneCollision);
+    reflectionChaosLabel->setVisible(isPlaneCollision);
+    reflectionChaosSpin->setVisible(isPlaneCollision);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
@@ -355,6 +357,14 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     killParticlesAfterCollision = new QCheckBox("Kill particles after collision");
     connect(killParticlesAfterCollision, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(killParticlesAfterCollision);
+
+    QHBoxLayout* reflectionChaosLayout = new QHBoxLayout(this);
+    reflectionChaosLabel = new QLabel("Reflection chaos:");
+    reflectionChaosSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(reflectionChaosSpin);
+    reflectionChaosLayout->addWidget(reflectionChaosLabel);
+    reflectionChaosLayout->addWidget(reflectionChaosSpin);
+    mainLayout->addLayout(reflectionChaosLayout);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -394,6 +404,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     killParticlesAfterCollision->setChecked(selectedForce->killParticles);
     normalAsReflectionVector->setChecked(selectedForce->normalAsReflectionVector);
     planeScaleSpin->setValue(selectedForce->planeScale);
+    reflectionChaosSpin->setValue(selectedForce->reflectionChaos);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -494,15 +505,18 @@ void LayerDragForceWidget::OnValueChanged()
     params.backwardTurbulenceProbability = static_cast<uint32>(Clamp(backTurbSpin->value(), 0.0, 100.0));
     params.pointGravityRadius = pointGravityRadiusSpin->value();
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
+
     params.isGlobal = isGlobal->isChecked();
     if (selectedForce->type != ForceType::PLANE_COLLISION)
         params.killParticles = killParticles->isChecked();
     else
         params.killParticles = killParticlesAfterCollision->isChecked();
     params.planeScale = planeScaleSpin->value();
+    params.reflectionChaos = Clamp(static_cast<float32>(reflectionChaosSpin->value()), 0.0f, 360.0f);
     params.normalAsReflectionVector = normalAsReflectionVector->isChecked();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
+    reflectionChaosSpin->setValue(params.reflectionChaos);
 
     UpdateVisibility(shape, timingType, selectedForce->type, params.useInfinityRange);
 

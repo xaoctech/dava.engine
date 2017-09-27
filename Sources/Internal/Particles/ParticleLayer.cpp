@@ -1259,8 +1259,11 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("pointGravityRadius%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->pointGravityRadius);
 
-        forceDataName = Format("planeScale %d", i);
+        forceDataName = Format("planeScale%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->planeScale);
+
+        forceDataName = Format("reflectionChaos%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->reflectionChaos);
 
         forceDataName = Format("backwardTurbulenceProbability%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, forceDataName, static_cast<int32>(currentForce->backwardTurbulenceProbability));
@@ -1583,10 +1586,15 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         if (pointGravityRadiusNode)
             dragForce->pointGravityRadius = pointGravityRadiusNode->AsFloat();
 
-        forceDataName = Format("planeScale %d", i);
+        forceDataName = Format("planeScale%d", i);
         const YamlNode* planeScaleNode = node->Get(forceDataName);
         if (planeScaleNode)
             dragForce->planeScale = planeScaleNode->AsFloat();
+
+        forceDataName = Format("reflectionChaos%d", i);
+        const YamlNode* reflectionChaosNode = node->Get(forceDataName);
+        if (reflectionChaosNode)
+            dragForce->reflectionChaos = reflectionChaosNode->AsFloat();
 
         forceDataName = Format("backwardTurbulenceProbability%d", i);
         const YamlNode* backwardTurbulenceProbabilityNode = node->Get(forceDataName);
