@@ -861,6 +861,30 @@ void SceneEditor2::EnableEditorSystems()
     }
 }
 
+void SceneEditor2::SaveSystemsLocalProperties(DAVA::uint64 contextId)
+{
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        DVASSERT(system != nullptr);
+        if (system->SaveLocalProperties(contextId) == false)
+        {
+            DAVA::Logger::Warning("Failed to save local properties for system");
+        }
+    }
+}
+
+void SceneEditor2::LoadSystemsLocalProperties()
+{
+    for (EditorSceneSystem* system : editorSystems)
+    {
+        DVASSERT(system != nullptr);
+        if (system->LoadLocalProperties() == false)
+        {
+            DAVA::Logger::Warning("Failed to load local properties for system");
+        }
+    }
+}
+
 DAVA::uint32 SceneEditor2::GetFramesCount() const
 {
     return framesCount;

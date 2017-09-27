@@ -848,6 +848,8 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     initialData.emplace_back(std::move(sceneData));
     DataContext::ContextID newContext = contextManager->CreateContext(std::move(initialData));
     contextManager->ActivateContext(newContext);
+
+    scene->LoadSystemsLocalProperties();
 }
 
 void SceneManagerModule::AddSceneByPath(const DAVA::FilePath& scenePath)
@@ -1665,6 +1667,8 @@ bool SceneManagerModule::CloseSceneImpl(DAVA::uint64 id, bool needSavingRequest)
     SceneData* data = context->GetData<SceneData>();
     DVASSERT(data != nullptr);
     DVASSERT(data->scene.Get() != nullptr);
+
+    data->scene->SaveSystemsLocalProperties(id);
 
     if (needSavingRequest == false || CanCloseScene(data))
     {

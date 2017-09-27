@@ -21,6 +21,16 @@ public:
         systemIsEnabled = false;
     }
 
+    virtual bool LoadLocalProperties()
+    {
+        return true;
+    }
+
+    virtual bool SaveLocalProperties(DAVA::uint64 contextId)
+    {
+        return true;
+    }
+
     bool IsSystemEnabled() const
     {
         return systemIsEnabled;

@@ -167,6 +167,8 @@ public:
     void Deactivate() override;
 
     void EnableEditorSystems();
+    void LoadSystemsLocalProperties();
+    void SaveSystemsLocalProperties(DAVA::uint64 contextId);
 
     DAVA::uint32 GetFramesCount() const;
     void ResetFramesCount();
