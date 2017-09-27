@@ -327,20 +327,25 @@ void WindowImpl::OnWheel(QWheelEvent* qtEvent)
     //most mouse types work in steps of 15 degrees, in which case the delta value is a multiple of 120
     QPointF angleDelta = QPointF(qtEvent->angleDelta()) / 120.0f;
     QPoint pixelDelta = qtEvent->pixelDelta();
-    if (angleDelta.isNull() == false
+
+// for non gesture events we always take angleDelta, because wheel in editors is usually used for scale
+// and scale must have a constant speed, not depended on mouse wheel speed
+// better to send both pixelDelta and angleDelta to a DAVA event system, but it is impossible right now
 #ifdef Q_OS_MAC
-        && qtEvent->source() != Qt::MouseEventSynthesizedBySystem
-#endif
-        )
+    if (qtEvent->source() == Qt::MouseEventSynthesizedBySystem)
     {
-        deltaX = angleDelta.x();
-        deltaY = angleDelta.y();
-    }
-    else if (pixelDelta.isNull() == false)
-    {
+        // Pixel delta should always be provided for MouseEventSynthesizedBySystem
         deltaX = static_cast<float32>(pixelDelta.x());
         deltaY = static_cast<float32>(pixelDelta.y());
     }
+    else
+    {
+#endif //Q_OS_MAC
+        deltaX = angleDelta.x();
+        deltaY = angleDelta.y();
+#ifdef Q_OS_MAC
+    }
+#endif //Q_OS_MAC
 
     eModifierKeys modifierKeys = GetModifierKeys();
 #ifdef Q_OS_MAC
