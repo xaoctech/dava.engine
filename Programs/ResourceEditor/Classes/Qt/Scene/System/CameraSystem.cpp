@@ -43,6 +43,44 @@ SceneCameraSystem::~SceneCameraSystem()
     SafeRelease(curSceneCamera);
 }
 
+bool SceneCameraSystem::SaveLocalProperties(DAVA::uint64 contextId)
+{
+    DAVA::TArc::DataContext* ctx = REGlobal::GetAccessor()->GetContext(contextId);
+    DVASSERT(ctx != nullptr);
+    SceneData* data = ctx->GetData<SceneData>();
+    DVASSERT(data != nullptr);
+
+    DAVA::TArc::PropertiesItem cameraProps = data->GetPropertiesSection("camera");
+    // Debug camera whole object archive
+    DAVA::Camera* debugCam = GetCamera(topCameraEntity);
+    DAVA::RefPtr<DAVA::KeyedArchive> camArch;
+    camArch.ConstructInplace();
+    debugCam->SaveObject(camArch.Get());
+    cameraProps.Set("archive", camArch);
+
+    return true;
+}
+
+bool SceneCameraSystem::LoadLocalProperties()
+{
+    DAVA::TArc::DataContext* ctx = REGlobal::GetAccessor()->GetActiveContext();
+    DVASSERT(ctx != nullptr);
+    SceneData* data = ctx->GetData<SceneData>();
+    DVASSERT(data != nullptr);
+
+    DAVA::TArc::PropertiesItem cameraProps = data->GetPropertiesSection("camera");
+    DAVA::Camera* cur = GetCamera(topCameraEntity);
+
+    // set debug camera position
+    DAVA::RefPtr<DAVA::KeyedArchive> camArch;
+    camArch.ConstructInplace();
+    cur->SaveObject(camArch.Get());
+    camArch = cameraProps.Get<DAVA::RefPtr<DAVA::KeyedArchive>>("archive", camArch);
+    cur->LoadObject(camArch.Get());
+
+    return true;
+}
+
 DAVA::Camera* SceneCameraSystem::GetCurCamera() const
 {
     return curSceneCamera;
