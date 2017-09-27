@@ -276,9 +276,10 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
     Vector3 normal = force->direction;
     float32 invLen = 1.0f / sqrt(sqrLen);
     normal *= invLen;
-    Vector3 posDiff = effectSpacePosition - force->position;
-    Vector3 prevPosDiff = prevEffectSpacePosition - force->position;
-    if (posDiff.DotProduct(normal) <= 0 && prevPosDiff.DotProduct(normal) > 0)
+    Vector3 a = prevEffectSpacePosition - force->position;
+    Vector3 b = effectSpacePosition - force->position;
+    float32 bProj = b.DotProduct(normal);
+    if (bProj <= 0 && a.DotProduct(normal) > 0)
     {
         if (force->killParticles)
         {
@@ -288,16 +289,17 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
 
         Vector3 newVel;
         if (force->normalAsReflectionVector)
-            newVel = normal * effectSpaceVelocity.Length();
+            newVel = normal * effectSpaceVelocity.Length(); // Artiom request.
         else
             newVel = Reflect(effectSpaceVelocity, normal);
         effectSpaceVelocity = newVel * force->forcePower;
-        Vector3 diffVector = prevEffectSpacePosition - effectSpacePosition;
-        float32 projDiffVector = diffVector.DotProduct(normal);
-        if (abs(projDiffVector) < EPSILON)
+
+        Vector3 dir = prevEffectSpacePosition - effectSpacePosition;
+        float32 abProj = dir.DotProduct(normal);
+        if (abs(abProj) < EPSILON)
             return;
 
-        //effectSpacePosition = effectSpacePosition + diffVector *  posDiff / projDiffVector; TODO
+        effectSpacePosition = effectSpacePosition + dir * bProj / abProj;
     }
 }
 
