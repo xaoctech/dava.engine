@@ -63,6 +63,7 @@ public:
     float32 windTurbulence = 0.0f;
 
     float32 pointGravityRadius = 1.0f;
+    float32 planeScale = 5.0f; // Editor only.
 
     RefPtr<PropertyLine<float32>> turbulenceLine;
 

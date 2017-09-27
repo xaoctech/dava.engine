@@ -496,6 +496,7 @@ public:
         DAVA::float32 windBias = 1.0f;
         DAVA::uint32 backwardTurbulenceProbability = 0;
         DAVA::float32 pointGravityRadius = 1.0f;
+        DAVA::float32 planeScale = 1.0f;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
     };
 

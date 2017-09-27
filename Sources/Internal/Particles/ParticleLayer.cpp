@@ -1256,6 +1256,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("pointGravityRadius%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->pointGravityRadius);
 
+        forceDataName = Format("planeScale %d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->planeScale);
+
         forceDataName = Format("backwardTurbulenceProbability%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, forceDataName, static_cast<int32>(currentForce->backwardTurbulenceProbability));
 
@@ -1571,6 +1574,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* pointGravityRadiusNode = node->Get(forceDataName);
         if (pointGravityRadiusNode)
             dragForce->pointGravityRadius = pointGravityRadiusNode->AsFloat();
+
+        forceDataName = Format("planeScale %d", i);
+        const YamlNode* planeScaleNode = node->Get(forceDataName);
+        if (planeScaleNode)
+            dragForce->planeScale = planeScaleNode->AsFloat();
 
         forceDataName = Format("backwardTurbulenceProbability%d", i);
         const YamlNode* backwardTurbulenceProbabilityNode = node->Get(forceDataName);

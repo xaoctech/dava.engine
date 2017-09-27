@@ -78,6 +78,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     BuilDirectionSection();
     BuildWindSection();
     BuildPointGravitySection();
+    BuildPlaneCollisionSection();
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     blockSignals = false;
@@ -246,6 +247,12 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     pointGravityRadiusSpin->setVisible(isPointGravity);
     pointGravityUseRnd->setVisible(isPointGravity);
     killParticles->setVisible(isPointGravity);
+
+    // Plane collision
+    bool isPlaneCollision = forceType == ForceType::PLANE_COLLISION;
+    planeCollisionSeparator->setVisible(isPlaneCollision);
+    planeScaleLabel->setVisible(isPlaneCollision);
+    planeScaleSpin->setVisible(isPlaneCollision);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
@@ -328,6 +335,20 @@ void LayerDragForceWidget::BuildPointGravitySection()
     mainLayout->addWidget(killParticles);
 }
 
+void LayerDragForceWidget::BuildPlaneCollisionSection()
+{
+    planeCollisionSeparator = new QFrame();
+    planeCollisionSeparator->setFrameShape(QFrame::HLine);
+    mainLayout->addWidget(planeCollisionSeparator);
+    QHBoxLayout* planeScaleLayout = new QHBoxLayout(this);
+    planeScaleLabel = new QLabel("Plane scale (editor visualization):");
+    planeScaleSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(planeScaleSpin);
+    planeScaleLayout->addWidget(planeScaleLabel);
+    planeScaleLayout->addWidget(planeScaleSpin);
+    mainLayout->addLayout(planeScaleLayout);
+}
+
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
     using namespace DAVA;
@@ -362,6 +383,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     pointGravityUseRnd->setChecked(selectedForce->pointGravityUseRandomPointsOnSphere);
     isGlobal->setChecked(selectedForce->isGlobal);
     killParticles->setChecked(selectedForce->killParticles);
+    planeScaleSpin->setValue(selectedForce->planeScale);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -464,6 +486,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
     params.isGlobal = isGlobal->isChecked();
     params.killParticles = killParticles->isChecked();
+    params.planeScale = planeScaleSpin->value();
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
 

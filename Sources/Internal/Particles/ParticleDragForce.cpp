@@ -50,6 +50,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->backwardTurbulenceProbability = backwardTurbulenceProbability;
     dst->windBias = windBias;
     dst->pointGravityRadius = pointGravityRadius;
+    dst->planeScale = planeScale;
 
     return dst;
 }

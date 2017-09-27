@@ -51,6 +51,7 @@ private:
     void BuildGravitySection();
     void BuildWindSection();
     void BuildPointGravitySection();
+    void BuildPlaneCollisionSection();
     void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange);
     void SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep = 0.0001, DAVA::int32 decimals = 4);
 
@@ -101,6 +102,9 @@ private:
     EventFilterDoubleSpinBox* pointGravityRadiusSpin = nullptr;
     QCheckBox* pointGravityUseRnd = nullptr;
 
+    QFrame* planeCollisionSeparator = nullptr;
+    QLabel* planeScaleLabel = nullptr;
+    EventFilterDoubleSpinBox* planeScaleSpin = nullptr;
     bool blockSignals = false;
 
     DAVA::ParticleDragForce* selectedForce = nullptr;

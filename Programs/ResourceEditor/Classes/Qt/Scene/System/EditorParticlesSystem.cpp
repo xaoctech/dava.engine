@@ -245,8 +245,30 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
             Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
     }
-    
+
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    if (force->type == ForceType::PLANE_COLLISION)
+    {
+        auto layer = GetDragForceOwner(force);
+        auto ent = GetLayerOwner(layer);
+        Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
+        Vector3 wNormal = force->direction * Matrix3(wMat);
+        wNormal.Normalize();
+        Vector3 cV(0.0f, 0.0f, 1.0f);
+        if (abs(cV.DotProduct(wNormal)) - 1.0f < EPSILON)
+            cV = Vector3(1.0f, 0.0f, 0.0f);
+        Vector3 position = force->position;
+        position = force->position * wMat;
+        Matrix4 transform;
+        transform.BuildLookAtMatrix(position, position + wNormal, cV);
+        transform.Inverse();
+        float32 bbsize = force->planeScale * 0.5f;
+        drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
+            Color(0.0f, 0.7f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
+            Color(0.0f, 0.35f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+    
     if (force->type == ForceType::POINT_GRAVITY)
     {
         Matrix4 wMat = Selectable(force).GetWorldTransform();

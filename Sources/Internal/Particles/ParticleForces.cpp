@@ -265,21 +265,22 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
 
 void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
 {
-    if (force->direction.SquareLength() < EPSILON * EPSILON)
+    float32 sqrLen = force->direction.SquareLength();
+    if (sqrLen < EPSILON * EPSILON)
         return;
     if (!force->isInfinityRange)
     {
         if (!IsPositionInForceShape(parent, force, effectSpacePosition))
             return;
     }
-    Vector3 normal = force->direction; // todo dir can be 0
-    normal.Normalize();
+    Vector3 normal = force->direction;
+    float32 invLen = 1.0f / sqrt(sqrLen);
+    normal *= invLen;
     Vector3 posDiff = effectSpacePosition - force->position;
-    //Vector3 prevPosDiff = effectSpacePosition 
     if (posDiff.DotProduct(normal) <= 0)
     {
         Vector3 newVel = Reflect(effectSpaceVelocity, normal);
-        effectSpaceVelocity = newVel;
+        effectSpaceVelocity = newVel * force->forcePower;
     }
 }
 
