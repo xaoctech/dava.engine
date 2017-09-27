@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Input/InputDevice.h"
-#include "Engine/Window.h"
+#include "Engine/EngineTypes.h"
 
 namespace DAVA
 {
 class InputSystem;
+class Window;
 
 namespace Private
 {
