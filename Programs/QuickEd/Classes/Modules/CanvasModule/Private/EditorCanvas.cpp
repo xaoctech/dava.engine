@@ -44,6 +44,14 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
 {
     using namespace DAVA;
 
+#if defined __DAVAENGINE_MACOS__
+    const float32 direction = -1.0f;
+#elif defined __DAVAENGINE_WINDOWS__
+    const float32 direction = 1.0f;
+#else
+#error "unsupported platform"
+#endif
+
     if (currentInput->device == eInputDevices::TOUCH_PAD)
     {
         if (currentInput->phase == UIEvent::Phase::GESTURE)
@@ -60,7 +68,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                     //later we can move it to preferences
                     const float32 scaleDelta = 0.003f;
 
-                    float32 newScale = scale * (1.0f + (scaleDelta * gestureDelta.dy * -1.0f));
+                    float32 newScale = scale * (1.0f + (scaleDelta * gestureDelta.dy * direction));
 
                     canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
                 }
@@ -90,7 +98,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 //magic value to convert ticsCount to visible scale changing
                 //later we can move it to preferences
                 const float32 scaleDelta = 0.07f;
-                float32 newScale = scale * (1.0f + (scaleDelta * ticksCount * -1.0f));
+                float32 newScale = scale * (1.0f + (scaleDelta * ticksCount * direction));
                 canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
             }
             else
