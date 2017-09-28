@@ -902,10 +902,6 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         loopEndTime = loopEndTimeNode->AsFloat();
 
     /*validate all time depended property lines*/
-    UpdatePropertyLineOnLoad(stripeSizeOverLife.Get(), startTime, endTime);
-
-    UpdatePropertyLineOnLoad(alphaRemapOverLife.Get(), startTime, endTime);
-
     UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowSpeedVariation.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowOffset.Get(), startTime, endTime);
@@ -913,13 +909,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
 
     UpdatePropertyLineOnLoad(noiseScale.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(noiseScaleVariation.Get(), startTime, endTime);
-    UpdatePropertyLineOnLoad(noiseScaleOverLife.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(noiseUScrollSpeed.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(noiseUScrollSpeedVariation.Get(), startTime, endTime);
-    UpdatePropertyLineOnLoad(noiseUScrollSpeedOverLife.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(noiseVScrollSpeed.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(noiseVScrollSpeedVariation.Get(), startTime, endTime);
-    UpdatePropertyLineOnLoad(noiseVScrollSpeedOverLife.Get(), startTime, endTime);
 
     UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
