@@ -114,6 +114,8 @@ private:
     EventFilterDoubleSpinBox* rndReflectionForceMinSpin = nullptr;
     QLabel* rndReflectionForceMaxLabel = nullptr;
     EventFilterDoubleSpinBox* rndReflectionForceMaxSpin = nullptr;
+    QLabel* reflectionPercentLabel = nullptr;
+    EventFilterDoubleSpinBox* reflectionPercentSpin = nullptr;
 
     bool blockSignals = false;
 

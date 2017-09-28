@@ -497,6 +497,7 @@ public:
         DAVA::float32 windTurbulenceFrequency = 0.0f;
         DAVA::float32 windBias = 1.0f;
         DAVA::uint32 backwardTurbulenceProbability = 0;
+        DAVA::uint32 reflectionPercent = 0;
         DAVA::float32 pointGravityRadius = 1.0f;
         DAVA::float32 planeScale = 1.0f;
         DAVA::float32 reflectionChaos = 0.0f;

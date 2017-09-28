@@ -41,6 +41,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->killParticles = killParticles;
     dst->normalAsReflectionVector = normalAsReflectionVector;
     dst->randomizeReflectionForce = randomizeReflectionForce;
+    dst->reflectionPercent = reflectionPercent;
     dst->rndReflectionForceMin = rndReflectionForceMin;
     dst->rndReflectionForceMax = rndReflectionForceMax;
     dst->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphere;

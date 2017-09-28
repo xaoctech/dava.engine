@@ -67,6 +67,7 @@ public:
     float32 reflectionChaos = 0.0f;
     float32 rndReflectionForceMin = 1.0f;
     float32 rndReflectionForceMax = 1.1f;
+    uint32 reflectionPercent = 100;
 
     RefPtr<PropertyLine<float32>> turbulenceLine;
 

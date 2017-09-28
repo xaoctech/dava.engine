@@ -260,6 +260,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     rndReflectionForceMinSpin->setVisible(isPlaneCollision);
     rndReflectionForceMaxLabel->setVisible(isPlaneCollision);
     rndReflectionForceMaxSpin->setVisible(isPlaneCollision);
+    reflectionPercentLabel->setVisible(isPlaneCollision);
+    reflectionPercentSpin->setVisible(isPlaneCollision);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
@@ -386,6 +388,14 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     rndForceLayout->addWidget(rndReflectionForceMaxLabel);
     rndForceLayout->addWidget(rndReflectionForceMaxSpin);
     mainLayout->addLayout(rndForceLayout);
+
+    QHBoxLayout* reflectionPercentLayout = new QHBoxLayout(this);
+    reflectionPercentLabel = new QLabel("Reflection percent:");
+    reflectionPercentSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(reflectionPercentSpin, 1.0f, 0);
+    reflectionPercentLayout->addWidget(reflectionPercentLabel);
+    reflectionPercentLayout->addWidget(reflectionPercentSpin);
+    mainLayout->addLayout(reflectionPercentLayout);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -429,6 +439,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     randomizeReflectionForce->setChecked(selectedForce->randomizeReflectionForce);
     rndReflectionForceMinSpin->setValue(selectedForce->rndReflectionForceMin);
     rndReflectionForceMaxSpin->setValue(selectedForce->rndReflectionForceMax);
+    reflectionPercentSpin->setValue(selectedForce->reflectionPercent);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -530,6 +541,7 @@ void LayerDragForceWidget::OnValueChanged()
     params.pointGravityRadius = pointGravityRadiusSpin->value();
     params.pointGravityUseRandomPointsOnSphere = pointGravityUseRnd->isChecked();
     params.randomizeReflectionForce = randomizeReflectionForce->isChecked();
+    params.reflectionPercent = static_cast<uint32>(Clamp(reflectionPercentSpin->value(), 0.0, 100.0));
 
     params.isGlobal = isGlobal->isChecked();
     if (selectedForce->type != ForceType::PLANE_COLLISION)
@@ -548,6 +560,8 @@ void LayerDragForceWidget::OnValueChanged()
     params.rndReflectionForceMax = rndReflForceMaxMult;
     rndReflectionForceMinSpin->setValue(rndReflForceMinMult);
     rndReflectionForceMaxSpin->setValue(rndReflForceMaxMult);
+
+    reflectionPercentSpin->setValue(params.reflectionPercent);
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
     reflectionChaosSpin->setValue(params.reflectionChaos);

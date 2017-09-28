@@ -1277,6 +1277,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("backwardTurbulenceProbability%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, forceDataName, static_cast<int32>(currentForce->backwardTurbulenceProbability));
 
+        forceDataName = Format("reflectionPercent%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, forceDataName, static_cast<int32>(currentForce->reflectionPercent));
+
         forceDataName = Format("forceWindBias%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->windBias);
 
@@ -1624,6 +1627,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* backwardTurbulenceProbabilityNode = node->Get(forceDataName);
         if (backwardTurbulenceProbabilityNode)
             dragForce->backwardTurbulenceProbability = backwardTurbulenceProbabilityNode->AsUInt32();
+
+        forceDataName = Format("reflectionPercent%d", i);
+        const YamlNode* reflectionPercentNode = node->Get(forceDataName);
+        if (reflectionPercentNode)
+            dragForce->reflectionPercent = reflectionPercentNode->AsUInt32();
 
         forceDataName = Format("forceWindBias%d", i);
         const YamlNode* windBiasNode = node->Get(forceDataName);

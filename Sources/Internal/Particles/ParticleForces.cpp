@@ -279,14 +279,14 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
     Vector3 a = prevEffectSpacePosition - force->position;
     Vector3 b = effectSpacePosition - force->position;
     float32 bProj = b.DotProduct(normal);
-    if ((prevEffectSpacePosition - effectSpacePosition).SquareLength() < EPSILON * EPSILON)
-    {
-        particle->life = particle->lifeTime + 0.1f;
-        return;
-    }
     if (bProj <= 0 && a.DotProduct(normal) > 0)
     {
-        if (force->killParticles)
+        std::random_device rd;
+        std::mt19937 rng(rd());
+        std::uniform_int_distribution<int32> uniInt(0, 99);
+        int32 rnd100 = uniInt(rng);
+        bool reflectParticle = static_cast<uint32>(rnd100) < force->reflectionPercent;
+        if (force->killParticles && !reflectParticle)
         {
             particle->life = particle->lifeTime + 0.1f;
             return;
@@ -333,11 +333,27 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
         }
 
         Vector3 dir = prevEffectSpacePosition - effectSpacePosition;
-        float32 abProj = dir.DotProduct(normal);
-        if (abs(abProj) < EPSILON)
+        float32 abProj = abs(dir.DotProduct(normal));
+        if (abProj < EPSILON)
             return;
 
-        effectSpacePosition = effectSpacePosition + dir * bProj / abProj;
+        effectSpacePosition = effectSpacePosition + dir * (-bProj) / abProj;
+
+        if (!reflectParticle)
+        {
+            if (force->killParticles)
+                particle->life = particle->lifeTime + 0.1f;
+            else
+                effectSpaceVelocity = Vector3::Zero;
+        }
+
+    }
+    else if ((bProj < 0.0f && a.DotProduct(normal) < 0.0f))
+    {
+        if (force->killParticles)
+            particle->life = particle->lifeTime + 0.1f;
+        else
+            effectSpaceVelocity = Vector3::Zero;
     }
 }
 
