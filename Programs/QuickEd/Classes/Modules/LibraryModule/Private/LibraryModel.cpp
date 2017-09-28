@@ -22,8 +22,8 @@
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Qt/QtIcon.h>
 
-#include <QIcon>
 #include <QMimeData>
 
 using namespace DAVA;

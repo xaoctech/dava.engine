@@ -494,28 +494,44 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
     }
 }
 
-void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& path, const QString& actionName)
+void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& pathToAction, const QString& actionName)
 {
     if (currentLevelMenu == nullptr)
     {
         return;
     }
 
-    if (path.empty())
+    auto deleteMenu = [currentLevelMenu](QMenu* deletedMenu)
     {
-        QAction* action = FindAction(currentLevelMenu, actionName);
-        currentLevelMenu->removeAction(action);
-        action->deleteLater();
+        currentLevelMenu->removeAction(deletedMenu->menuAction());
+        deletedMenu->setParent(nullptr);
+        deletedMenu->deleteLater();
+    };
+
+    if (pathToAction.empty())
+    {
+        QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(actionName);
+        if (menuToRemove != nullptr)
+        {
+            deleteMenu(menuToRemove);
+        }
+        else
+        {
+            QAction* action = FindAction(currentLevelMenu, actionName);
+            currentLevelMenu->removeAction(action);
+            action->deleteLater();
+        }
     }
     else
     {
-        QString nextLevelName = path.front();
-        path.pop_front();
-        QMenu* nextLevelMenu = currentLevelMenu->findChild<QMenu*>(nextLevelName);
-        RemoveActionFromMenu(nextLevelMenu, path, actionName);
-        if (nextLevelMenu != nullptr && nextLevelMenu->isEmpty())
+        QString deeperLevelName = pathToAction.front();
+        pathToAction.pop_front();
+        QMenu* deeperLevelMenu = currentLevelMenu->findChild<QMenu*>(deeperLevelName);
+        RemoveActionFromMenu(deeperLevelMenu, pathToAction, actionName);
+        if (deeperLevelMenu != nullptr && deeperLevelMenu->isEmpty())
         {
-            nextLevelMenu->setEnabled(false);
+            deleteMenu(deeperLevelMenu);
+            //deeperLevelMenu->setEnabled(false);
             //currentLevelMenu->removeAction(nextLevelMenu->menuAction());
         }
     }

@@ -103,36 +103,32 @@ void ProjectModule::CreateActions()
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
-    // RecentProjects
+    //Recent content
     {
-        QAction* recentProjects = new QAction(recentProjectsActionName, nullptr);
-        DAVA::TArc::ActionPlacementInfo placementInfo(DAVA::TArc::CreateMenuPoint(MenuItems::menuFile, DAVA::TArc::InsertionParams(InsertionParams::eInsertionMethod::AfterItem, closeProjectActionName)));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, recentProjects);
+        RecentMenuItems::Params params(DAVA::TArc::mainWindowKey, accessor, ProjectModuleDetails::projectsHistoryKey);
+        params.ui = GetUI();
+        params.getMaximumCount = []() {
+            return ProjectModuleDetails::projectsHistoryMaxSize;
+        };
+
+        params.recentMenuName = recentProjectsActionName;
+        params.recentMenuPlacementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, InsertionParams(InsertionParams::eInsertionMethod::AfterItem, closeProjectActionName)));
+
+        params.menuSubPath << MenuItems::menuFile << recentProjectsActionName;
+        recentProjects.reset(new RecentMenuItems(std::move(params)));
+        recentProjects->actionTriggered.Connect([this](const DAVA::String& projectPath) {
+            OpenProject(projectPath);
+        });
     }
 
     // Separator
     {
         QAction* separator = new QAction(nullptr);
-        separator->setObjectName("project actions separator");
+        separator->setObjectName("projectActionsSeparator");
         separator->setSeparator(true);
         DAVA::TArc::ActionPlacementInfo placementInfo(DAVA::TArc::CreateMenuPoint("File", DAVA::TArc::InsertionParams(InsertionParams::eInsertionMethod::AfterItem, recentProjectsActionName)));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
-    }
-
-    //Recent content
-    {
-        RecentMenuItems::Params params(DAVA::TArc::mainWindowKey, accessor, ProjectModuleDetails::projectsHistoryKey);
-        params.ui = GetUI();
-        params.getMaximumCount = [this]() {
-            return ProjectModuleDetails::projectsHistoryMaxSize;
-        };
-        params.menuSubPath << MenuItems::menuFile << recentProjectsActionName;
-        params.insertionParams.method = InsertionParams::eInsertionMethod::BeforeItem;
-        recentProjects.reset(new RecentMenuItems(std::move(params)));
-        recentProjects->actionTriggered.Connect([this](const DAVA::String& projectPath) {
-            OpenProject(projectPath);
-        });
     }
 }
 
@@ -221,7 +217,7 @@ void ProjectModule::OpenProject(const DAVA::String& path)
     ContextAccessor* accessor = GetAccessor();
 
     ResultList resultList;
-    std::unique_ptr<ProjectData> newProjectData = std::make_unique<ProjectData>();
+    std::unique_ptr<ProjectData> newProjectData = std::make_unique<ProjectData>(path);
 
     resultList = newProjectData->LoadProject(QString::fromStdString(path));
 

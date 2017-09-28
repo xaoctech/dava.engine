@@ -28,7 +28,6 @@ Matrix4 ConvertMatrixT(FMMatrix44& matrix)
 
 ColladaSceneNode::ColladaSceneNode(ColladaScene* _scene, FCDSceneNode* _node)
 {
-    isJoint = false;
     originalNode = _node;
     localTransform.Identity();
     parent = 0;
@@ -84,7 +83,7 @@ void ColladaSceneNode::Render(Matrix4 currentMatrix)
     glPushMatrix();
     glMultMatrixf(worldTransform.data);
 
-    if (isJoint)
+    if (originalNode->GetJointFlag())
     {
         glDisable(GL_LIGHTING);
         glColor3f(0.984375, 0.078125, 0.64453125);
@@ -108,11 +107,6 @@ void ColladaSceneNode::Render(Matrix4 currentMatrix)
 void ColladaSceneNode::AddLight(ColladaLight* light)
 {
     lights.push_back(light);
-}
-
-void ColladaSceneNode::MarkJoint()
-{
-    isJoint = true;
 }
 
 void ColladaSceneNode::UpdateTransforms(float time)
@@ -222,6 +216,7 @@ bool ColladaSceneNode::IsAnimated(FCDSceneNode* originalNode)
         {
             return true;
         }
+
         if (transform->GetType() == FCDTransform::TRANSLATION)
         {
             FCDTTranslation* translation = dynamic_cast<FCDTTranslation*>(transform);
@@ -234,6 +229,22 @@ bool ColladaSceneNode::IsAnimated(FCDSceneNode* originalNode)
         {
             FCDTRotation* rotation = dynamic_cast<FCDTRotation*>(transform);
             if (rotation->IsAnimated())
+            {
+                return true;
+            }
+        }
+        else if (transform->GetType() == FCDTransform::SCALE)
+        {
+            FCDTScale* scale = dynamic_cast<FCDTScale*>(transform);
+            if (scale->IsAnimated())
+            {
+                return true;
+            }
+        }
+        else if (transform->GetType() == FCDTransform::MATRIX)
+        {
+            FCDTMatrix* matrix = dynamic_cast<FCDTMatrix*>(transform);
+            if (matrix->IsAnimated())
             {
                 return true;
             }
@@ -375,8 +386,9 @@ Matrix4 ColladaSceneNode::AccumulateTransformUptoFarParent(ColladaSceneNode* far
 {
     if (farParent == this)
     {
-        return Matrix4::IDENTITY;
+        return localTransform;
     }
+
     return localTransform * parent->AccumulateTransformUptoFarParent(farParent);
 }
 
@@ -398,7 +410,7 @@ bool ColladaSceneNode::KeyTimeEqual(float32 first, float32 second)
 
 SceneNodeAnimation* ColladaSceneNode::ExportNodeAnimation(FCDSceneNode* originalNode, float32 startTime, float32 endTime, float32 fps)
 {
-    if (!IsAnimated(originalNode))
+    if (!originalNode->GetJointFlag() && !IsAnimated(originalNode))
         return 0;
 
     Vector<float32> keyTimes;
@@ -431,6 +443,13 @@ SceneNodeAnimation* ColladaSceneNode::ExportNodeAnimation(FCDSceneNode* original
                         }
                     }
                 }
+            }
+        }
+        else
+        {
+            if (!std::binary_search(keyTimes.begin(), keyTimes.end(), 0.f))
+            {
+                keyTimes.insert(std::lower_bound(keyTimes.begin(), keyTimes.end(), 0.f), 0.f);
             }
         }
     }

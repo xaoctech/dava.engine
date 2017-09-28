@@ -1,12 +1,9 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include <vector>
-#include <unordered_map>
+#include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 
-using DAVA::uint32;
-using DAVA::float32;
-
+namespace DAVA
+{
 class ExpressionEvaluator
 {
 public:
@@ -34,31 +31,29 @@ public:
 private:
     struct SyntaxTreeNode;
 
+    enum : uint32
+    {
+        EXPRERR_NONE = 0,
+        EXPRERR_MISSING_OPERAND = 1,
+        EXPRERR_UNMATCHED_PARENTHESIS = 2,
+        EXPRERR_UNKNOWN_SYMBOL = 3,
+
+        EXPRESSION_BUFFER_SIZE = 4096
+    };
+
     void Reset();
     void PopConnectPush();
     bool EvaluateInternal(const SyntaxTreeNode* node, float32* out, uint32* err_code, uint32* err_index);
 
-    char* expressionText;
-    std::vector<SyntaxTreeNode> operatorStack;
-    std::vector<uint32> nodeStack;
-    std::vector<SyntaxTreeNode> nodeArray;
+private:
+    char expressionText[EXPRESSION_BUFFER_SIZE];
+    Vector<SyntaxTreeNode> operatorStack;
+    Vector<uint32> nodeStack;
+    Vector<SyntaxTreeNode> nodeArray;
+    UnorderedMap<uint32, float32> varMap;
+    uint32 lastErrorCode = 0;
+    uint32 lastErrorIndex = EXPRERR_NONE;
 
-    std::unordered_map<uint32, float32> varMap;
-
-    static std::unordered_map<uint32, FuncImpl> FuncImplMap;
-
-    mutable uint32 lastErrorCode;
-    mutable uint32 lastErrorIndex;
-
-    static uint32 OperationPriority(char operation);
-
-    static const char* Operators;
-    static const char OpEqual;
-    static const char OpNotEqual;
-    static const char OpLogicalAnd;
-    static const char OpLogicalOr;
-    static const char OpLogicalNot;
-    static const char OpFunctionCall;
-    static const char OpDefined;
-    static const char OpNotDefined;
+    static UnorderedMap<uint32, FuncImpl> FuncImplMap;
 };
+}

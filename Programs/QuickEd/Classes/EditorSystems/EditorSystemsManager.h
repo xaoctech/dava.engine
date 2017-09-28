@@ -173,7 +173,6 @@ private:
     void InitDAVAScreen();
 
     void OnDragStateChanged(eDragState currentState, eDragState previousState);
-    void OnDisplayStateChanged(eDisplayState currentState, eDisplayState previousState);
 
     void OnPackageChanged(const DAVA::Any& package);
 
@@ -184,7 +183,6 @@ private:
     void UnregisterEditorSystem(BaseEditorSystem* editorSystem) override;
 
     DAVA::RefPtr<DAVA::UIControl> rootControl;
-    DAVA::RefPtr<DAVA::UIControl> inputLayerControl;
 
     DAVA::Map<DAVA::uint32, BaseEditorSystem*> systems;
     DAVA::Map<BaseEditorSystem*, DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>> systemsControls;

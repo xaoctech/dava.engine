@@ -10,5 +10,6 @@ IMPL_OPERATION_ID(SelectControl);
 IMPL_OPERATION_ID(FindInProject);
 IMPL_OPERATION_ID(FindInDocument);
 IMPL_OPERATION_ID(SelectAndRename);
+IMPL_OPERATION_ID(ReloadSprites);
 IMPL_OPERATION_ID(CreateByClick);
 }

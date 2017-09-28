@@ -328,6 +328,9 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
     {
         QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertDae()));
         actionConvert->setData(fileInfoAsVariant);
+
+        QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsDae()));
+        actionConvertAnimations->setData(fileInfoAsVariant);
     }
 
     contextMenu.addSeparator();
@@ -363,7 +366,7 @@ void LibraryWidget::OnAddModel()
 
 void LibraryWidget::OnEditModel()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit EditSceneRequested(fileInfo.absoluteFilePath().toStdString());
@@ -371,15 +374,23 @@ void LibraryWidget::OnEditModel()
 
 void LibraryWidget::OnConvertDae()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEConvertionRequested(fileInfo.absoluteFilePath().toStdString());
 }
 
+void LibraryWidget::OnConvertAnimationsDae()
+{
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
+    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
+
+    emit DAEAnimationConvertionRequested(fileInfo.absoluteFilePath().toStdString());
+}
+
 void LibraryWidget::OnRevealAtFolder()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     QtHelpers::ShowInOSFileManager(fileInfo.absoluteFilePath());

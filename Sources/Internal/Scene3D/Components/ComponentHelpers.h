@@ -9,6 +9,7 @@ namespace DAVA
 class ParticleEmitter;
 class ParticleEffectComponent;
 class SkeletonComponent;
+class MotionComponent;
 class Entity;
 class RenderObject;
 class Light;
@@ -45,6 +46,7 @@ AnimationComponent* GetAnimationComponent(const Entity* fromEntity);
 TransformComponent* GetTransformComponent(const Entity* fromEntity);
 RenderComponent* GetRenderComponent(const Entity* fromEntity);
 SkeletonComponent* GetSkeletonComponent(const Entity* fromEntity);
+MotionComponent* GetMotionComponent(const Entity* fromEntity);
 RenderObject* GetRenderObject(const Entity* fromEntity);
 VegetationRenderObject* GetVegetation(const Entity* fromEntity);
 SpeedTreeObject* GetSpeedTreeObject(const Entity* fromEntity);

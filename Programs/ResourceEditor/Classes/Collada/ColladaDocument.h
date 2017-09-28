@@ -20,11 +20,9 @@ public:
     void Close();
 
     void Render();
-    void LoadTextures();
-
-    bool IsEmptyNode(ColladaSceneNode* node);
 
     eColladaErrorCodes SaveSC2(const FilePath& scenePath) const;
+    eColladaErrorCodes SaveAnimations(const FilePath& dir) const;
     String GetTextureName(const FilePath& scenePath, ColladaTexture* texture);
 
     void GetAnimationTimeInfo(FCDocument* document, float32& timeStart, float32& timeEnd);

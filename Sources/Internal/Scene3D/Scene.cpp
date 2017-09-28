@@ -18,6 +18,7 @@
 #include "Render/Texture.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/DataNode.h"
@@ -32,6 +33,7 @@
 #include "Scene3D/Systems/GeoDecalSystem.h"
 #include "Scene3D/Systems/LandscapeSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
+#include "Scene3D/Systems/MotionSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/RenderUpdateSystem.h"
@@ -49,6 +51,11 @@
 #include "Time/SystemTimer.h"
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/WASDPhysicsControllerSystem.h>
+#include <Physics/PhysicsSystem.h>
+#endif
 
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
@@ -250,6 +257,9 @@ void Scene::CreateSystems()
 
         physicsSystem = new PhysicsSystem(this);
         AddSystem(physicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS);
+
+        WASDPhysicsControllerSystem* wasdPhysicsSystem = new WASDPhysicsControllerSystem(this);
+        AddSystem(wasdPhysicsSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS, physicsSystem, physicsSystem);
     }
 #endif
 
@@ -257,7 +267,15 @@ void Scene::CreateSystems()
     AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
 
-    if (SCENE_SYSTEM_SKELETON_UPDATE_FLAG & systemsMask)
+    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
+    {
+        motionSystem = new MotionSystem(this);
+        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+
+        motionSingleComponent = new MotionSingleComponent();
+    }
+
+    if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
     {
         skeletonSystem = new SkeletonSystem(this);
         AddSystem(skeletonSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
@@ -397,22 +415,23 @@ Scene::~Scene()
 
     SafeRelease(sceneGlobalMaterial);
 
-    transformSystem = 0;
-    renderUpdateSystem = 0;
-    lodSystem = 0;
-    debugRenderSystem = 0;
-    particleEffectSystem = 0;
-    updatableSystem = 0;
-    lightUpdateSystem = 0;
-    switchSystem = 0;
-    soundSystem = 0;
-    actionSystem = 0;
-    staticOcclusionSystem = 0;
-    speedTreeUpdateSystem = 0;
-    foliageSystem = 0;
-    windSystem = 0;
-    waveSystem = 0;
-    animationSystem = 0;
+    transformSystem = nullptr;
+    renderUpdateSystem = nullptr;
+    lodSystem = nullptr;
+    debugRenderSystem = nullptr;
+    particleEffectSystem = nullptr;
+    updatableSystem = nullptr;
+    lightUpdateSystem = nullptr;
+    switchSystem = nullptr;
+    soundSystem = nullptr;
+    actionSystem = nullptr;
+    staticOcclusionSystem = nullptr;
+    speedTreeUpdateSystem = nullptr;
+    foliageSystem = nullptr;
+    windSystem = nullptr;
+    waveSystem = nullptr;
+    animationSystem = nullptr;
+    motionSystem = nullptr;
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     physicsSystem = nullptr;
 #endif
@@ -429,6 +448,7 @@ Scene::~Scene()
     singletonComponents.clear();
 
     SafeDelete(transformSingleComponent);
+    SafeDelete(motionSingleComponent);
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     SafeDelete(collisionSingleComponent);
 #endif
@@ -463,6 +483,10 @@ void Scene::UnregisterEntity(Entity* entity)
     if (transformSingleComponent)
     {
         transformSingleComponent->EraseEntity(entity);
+    }
+    if (motionSingleComponent)
+    {
+        motionSingleComponent->EntityRemoved(entity);
     }
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)

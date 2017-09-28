@@ -1,6 +1,6 @@
 #include "Classes/Application/REGlobal.h"
 
-#include "TArc/Core/Core.h"
+#include <TArc/Core/Core.h>
 
 namespace REGlobal
 {

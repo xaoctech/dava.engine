@@ -13,9 +13,6 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Scene3D/SceneFileV2.h"
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/PhysicsSystem.h>
-#endif
 
 namespace DAVA
 {
@@ -49,6 +46,7 @@ class FoliageSystem;
 class WindSystem;
 class WaveSystem;
 class SkeletonSystem;
+class MotionSystem;
 class AnimationSystem;
 class LandscapeSystem;
 class LodSystem;
@@ -56,10 +54,9 @@ class ParticleEffectDebugDrawSystem;
 class GeoDecalSystem;
 class SlotSystem;
 class TransformSingleComponent;
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+class MotionSingleComponent;
+class PhysicsSystem;
 class CollisionSingleComponent;
-#endif
 
 class UIEvent;
 class RenderPass;
@@ -111,10 +108,11 @@ public:
         SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG = 1 << 14,
         SCENE_SYSTEM_WIND_UPDATE_FLAG = 1 << 15,
         SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
-        SCENE_SYSTEM_SKELETON_UPDATE_FLAG = 1 << 17,
+        SCENE_SYSTEM_SKELETON_FLAG = 1 << 17,
         SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
         SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
-        SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 20,
+        SCENE_SYSTEM_MOTION_FLAG = 1 << 20,
+        SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 21,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
@@ -179,16 +177,16 @@ public:
     AnimationSystem* animationSystem = nullptr;
     StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem = nullptr;
     SkeletonSystem* skeletonSystem = nullptr;
+    MotionSystem* motionSystem = nullptr;
     LandscapeSystem* landscapeSystem = nullptr;
     ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
     SlotSystem* slotSystem = nullptr;
     GeoDecalSystem* geoDecalSystem = nullptr;
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     PhysicsSystem* physicsSystem = nullptr;
 
     CollisionSingleComponent* collisionSingleComponent = nullptr;
-#endif
     TransformSingleComponent* transformSingleComponent = nullptr;
+    MotionSingleComponent* motionSingleComponent = nullptr;
 
     void AddSingletonComponent(SingletonComponent* component);
     template <class T>

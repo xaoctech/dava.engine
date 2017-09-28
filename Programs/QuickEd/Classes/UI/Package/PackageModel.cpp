@@ -29,11 +29,11 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Qt/QtIcon.h>
 
 #include <Base/ObjectFactory.h>
 #include <UI/UIControl.h>
 
-#include <QIcon>
 #include <QAction>
 #include <QUrl>
 

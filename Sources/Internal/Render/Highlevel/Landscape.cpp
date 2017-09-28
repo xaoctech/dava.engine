@@ -1242,9 +1242,9 @@ void Landscape::DrawPatchInstancing(uint32 level, uint32 xx, uint32 yy, const Ve
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Landscape::BindDynamicParameters(Camera* camera)
+void Landscape::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
-    RenderObject::BindDynamicParameters(camera);
+    RenderObject::BindDynamicParameters(camera, batch);
 
     if (heightmap)
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_TEXTURE_SIZE, &heightmapSizef, pointer_size(&heightmapSizef));

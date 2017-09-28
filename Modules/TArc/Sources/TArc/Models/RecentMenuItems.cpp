@@ -1,10 +1,8 @@
 #include "TArc/Models/RecentMenuItems.h"
-
 #include "TArc/WindowSubSystem/QtAction.h"
 
-#include "FileSystem/KeyedArchive.h"
-
-#include "Utils/StringFormat.h"
+#include <FileSystem/KeyedArchive.h>
+#include <Utils/StringFormat.h>
 
 #include <QMenu>
 #include <QAction>
@@ -35,11 +33,24 @@ void RecentMenuItems::RemoveMenuItems()
         DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(params.menuSubPath));
         params.ui->RemoveAction(params.windowKey, placement, QString::fromStdString(action));
     }
+
+    if (actions.empty() && params.recentMenuName.isEmpty() == false)
+    { // // remove menu for recent items without recent items
+        params.ui->RemoveAction(params.windowKey, params.recentMenuPlacementInfo, params.recentMenuName);
+    }
 }
 
 void RecentMenuItems::InitMenuItems()
 {
     DAVA::Vector<DAVA::String> pathList = Get();
+
+    if (params.recentMenuName.isEmpty() == false)
+    { // create menu for recent items
+        QAction* recentMenu = new QAction(params.recentMenuName, nullptr);
+        recentMenu->setEnabled(pathList.empty() == false);
+        params.ui->AddAction(params.windowKey, params.recentMenuPlacementInfo, recentMenu);
+    }
+
     for (const DAVA::String& path : pathList)
     {
         if (path.empty())

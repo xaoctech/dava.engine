@@ -1,5 +1,4 @@
-#ifndef __BOOL_PROPERTY_DELEGATE_H__
-#define __BOOL_PROPERTY_DELEGATE_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 class PropertiesTreeItemDelegate;
@@ -17,6 +16,3 @@ public:
 private slots:
     void OnCurrentIndexChanged();
 };
-
-
-#endif // __BOOL_PROPERTY_DELEGATE_H__

@@ -304,6 +304,7 @@ void DocumentsModule::CreateDocumentsActions()
     // Separator
     {
         QAction* separator = new QAction(toolBarSeparatorName, nullptr);
+        separator->setObjectName(toolBarSeparatorName);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));

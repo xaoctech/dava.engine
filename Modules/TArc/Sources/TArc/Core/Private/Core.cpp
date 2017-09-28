@@ -13,6 +13,8 @@
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/QtDelayedExecutor.h"
+#include "TArc/Qt/QtIcon.h"
+
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"
@@ -34,7 +36,6 @@
 #include <QApplication>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
-#include <QIcon>
 #include <QCloseEvent>
 
 namespace DAVA

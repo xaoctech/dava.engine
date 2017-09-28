@@ -26,9 +26,9 @@ protected:
     {
         //this system creates new controls above
         CREATING_CONTROLS,
-        //this system place root controls on the screen. Must be updated first
+        //this system place root controls on the screen
         CONTROLS_VIEW,
-        //this system move root control to it position. Controls positions used by other systems, so this system must be updated second
+        //this system move root control to it position. Controls positions are used by other systems, so this system must be updated before them
         CANVAS,
         //this system must be drawn in background of all other systems
         PIXEL_GRID,
@@ -40,7 +40,9 @@ protected:
         //Cursor system must be called after the HUD system to check current HUD area under cursor
         CURSOR,
         //this system doesn't require OnUpdate and don't create any controls. Can be less ordered than another systems
-        SELECTION
+        SELECTION,
+        //this system must be on bottom of all other systems, because modal control searching starting from end
+        INPUT
     };
 
     //some systems can process OnUpdate from UpdateViewsSystem

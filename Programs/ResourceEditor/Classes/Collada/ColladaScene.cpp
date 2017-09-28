@@ -12,6 +12,11 @@ ColladaScene::ColladaScene(FCDSceneNode* _rootNode)
     currentTime = 0.0f;
 }
 
+ColladaScene::~ColladaScene()
+{
+    SafeDelete(rootNode);
+}
+
 void ColladaScene::ExportAnimations(ColladaAnimation* colladaAnimation, FCDSceneNode* currentNode, float32 anStart, float32 anEnd)
 {
     ColladaSceneNode* node = rootNode->FindNode(currentNode->GetDaeId());
@@ -58,24 +63,24 @@ void ColladaScene::ExportScene(FCDSceneNode* fcdNode /* = 0 */, ColladaSceneNode
         ColladaMesh* mesh = FindMeshWithName(name);
         if (mesh)
         {
-            ColladaMeshInstance* meshInstance = CreateMeshInstance(mesh, dynamic_cast<FCDGeometryInstance*>(instance), false);
+            ColladaMeshInstance* meshInstance = CreateMeshInstance(mesh, dynamic_cast<FCDGeometryInstance*>(instance));
             node->AddMeshInstance(meshInstance);
+        }
+
+        ColladaSkinnedMesh* sMesh = FindSkinnedMeshWithName(name);
+        if (sMesh)
+        {
+            if (sMesh->mesh)
+            {
+                ColladaMeshInstance* meshInstance = CreateMeshInstance(sMesh->mesh, dynamic_cast<FCDGeometryInstance*>(instance), sMesh);
+                node->AddMeshInstance(meshInstance);
+            }
         }
 
         ColladaLight* light = FindLightWithName(name);
         if (light)
         {
             node->AddLight(light);
-        }
-
-        ColladaAnimatedMesh* aMesh = FindAnimatedMeshWithName(name);
-        if (aMesh)
-        {
-            if (aMesh->mesh)
-            {
-                ColladaMeshInstance* meshInstance = CreateMeshInstance(aMesh->mesh, dynamic_cast<FCDGeometryInstance*>(instance), true);
-                node->AddMeshInstance(meshInstance);
-            }
         }
 
         ColladaCamera* aCam = FindCameraWithName(name);
@@ -124,9 +129,9 @@ void ColladaScene::Render()
         currentTime = 0;
 
     rootNode->UpdateTransforms(currentTime);
-    for (int ameshIndex = 0; ameshIndex < (int)colladaAnimatedMeshes.size(); ++ameshIndex)
+    for (int ameshIndex = 0; ameshIndex < (int)colladaSkinnedMeshes.size(); ++ameshIndex)
     {
-        ColladaAnimatedMesh* animMesh = colladaAnimatedMeshes[ameshIndex];
+        ColladaSkinnedMesh* animMesh = colladaSkinnedMeshes[ameshIndex];
         animMesh->UpdateSkinnedMesh(currentTime);
     }
 
@@ -140,70 +145,90 @@ void ColladaScene::Render()
 ColladaMesh* ColladaScene::FindMeshWithName(const fm::string& name)
 {
     for (int m = 0; m < (int)colladaMeshes.size(); ++m)
+    {
         if (colladaMeshes[m]->mesh->GetDaeId() == name)
         {
             return colladaMeshes[m];
         }
-    return 0;
+    }
+
+    return nullptr;
 }
 
 ColladaMaterial* ColladaScene::FindMaterialWithName(const fm::string& name)
 {
     for (int m = 0; m < (int)colladaMaterials.size(); ++m)
+    {
         if (colladaMaterials[m]->material->GetDaeId() == name)
         {
             return colladaMaterials[m];
         }
-    return 0;
+    }
+
+    return nullptr;
 }
 
 ColladaTexture* ColladaScene::FindTextureWithName(const fm::string& name)
 {
     for (int m = 0; m < (int)colladaTextures.size(); ++m)
+    {
         if (colladaTextures[m]->image->GetDaeId() == name)
         {
             return colladaTextures[m];
         }
-    return 0;
+    }
+
+    return nullptr;
 }
 
 ColladaLight* ColladaScene::FindLightWithName(const fm::string& name)
 {
     for (int m = 0; m < (int)colladaLights.size(); ++m)
+    {
         if (colladaLights[m]->light->GetDaeId() == name)
         {
             return colladaLights[m];
         }
-    return 0;
+    }
+
+    return nullptr;
 }
 
-ColladaAnimatedMesh* ColladaScene::FindAnimatedMeshWithName(const fm::string& name)
+ColladaSkinnedMesh* ColladaScene::FindSkinnedMeshWithName(const fm::string& name)
 {
-    for (int m = 0; m < (int)colladaAnimatedMeshes.size(); ++m)
-        if (colladaAnimatedMeshes[m]->controller->GetDaeId() == name)
+    for (int m = 0; m < (int)colladaSkinnedMeshes.size(); ++m)
+    {
+        if (colladaSkinnedMeshes[m]->controller->GetDaeId() == name)
         {
-            return colladaAnimatedMeshes[m];
+            return colladaSkinnedMeshes[m];
         }
-    return 0;
+    }
+
+    return nullptr;
 }
 
 int ColladaScene::FindMaterialIndex(ColladaMaterial* material)
 {
     for (int m = 0; m < (int)colladaMaterials.size(); ++m)
+    {
         if (material == colladaMaterials[m])
         {
             return m;
         }
+    }
+
     return -1;
 }
 
 int ColladaScene::FindMeshIndex(ColladaMesh* mesh)
 {
     for (int m = 0; m < (int)colladaMeshes.size(); ++m)
+    {
         if (mesh == colladaMeshes[m])
         {
             return m;
         }
+    }
 
     return -1;
 }
@@ -224,9 +249,9 @@ bool ColladaScene::FindPolyGroupIndex(ColladaPolygonGroup* group, int& meshIndex
         }
     }
 
-    for (int m = 0; m < (int)colladaAnimatedMeshes.size(); ++m)
+    for (int m = 0; m < (int)colladaSkinnedMeshes.size(); ++m)
     {
-        ColladaAnimatedMesh* mesh = colladaAnimatedMeshes[m];
+        ColladaSkinnedMesh* mesh = colladaSkinnedMeshes[m];
         for (int p = 0; p < (int)mesh->mesh->polygons.size(); ++p)
         {
             if (mesh->mesh->polygons[p] == group)
@@ -241,9 +266,9 @@ bool ColladaScene::FindPolyGroupIndex(ColladaPolygonGroup* group, int& meshIndex
     return false;
 }
 
-ColladaMeshInstance* ColladaScene::CreateMeshInstance(ColladaMesh* mesh, FCDGeometryInstance* geometryInstance, bool animated)
+ColladaMeshInstance* ColladaScene::CreateMeshInstance(ColladaMesh* mesh, FCDGeometryInstance* geometryInstance, ColladaSkinnedMesh* skinned)
 {
-    ColladaMeshInstance* meshInstance = new ColladaMeshInstance(animated);
+    ColladaMeshInstance* meshInstance = new ColladaMeshInstance(skinned);
     meshInstance->geometryInstance = geometryInstance;
 
     // now the most difficult, material binding
