@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "ColladaAnimatedMesh.h"
+#include "ColladaSkinnedMesh.h"
 #include "Scene3D/SceneNodeAnimation.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
-ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
+ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
 {
-    mesh = 0;
-    controller = animationController;
-    bool isSkin = animationController->IsSkin();
+    controller = colladaController;
+    bool isSkin = colladaController->IsSkin();
 
     if (isSkin)
     {
-        FCDSkinController* skinController = animationController->GetSkinController();
+        FCDSkinController* skinController = colladaController->GetSkinController();
         size_t jointCount = skinController->GetJointCount();
         FCDSkinControllerJoint* origJoints = skinController->GetJoints();
 
@@ -20,10 +20,11 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
         for (size_t j = 0; j < jointCount; ++j)
         {
             joints[j].joint = &origJoints[j];
-            joints[j].parentJoint = 0;
-            joints[j].node = 0;
-            joints[j].index = static_cast<int32>(j);
+            joints[j].parentJoint = nullptr;
+            joints[j].node = nullptr;
+            joints[j].index = -1;
             joints[j].parentIndex = -1;
+            joints[j].hierarhyDepth = 0;
 
             FMMatrix44 bindPoseInverse = joints[j].joint->GetBindPoseInverse();
             joints[j].colladaInverse0 = bindPoseInverse;
@@ -35,10 +36,10 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
         colladaBindShapeMatrix = skinController->GetBindShapeTransform();
         bindShapeMatrix = ConvertMatrix(colladaBindShapeMatrix);
 
-        printf("- controller: %s influence: %ld influence-entity: %s\n", animationController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
+        printf("- controller: %s influence: %ld influence-entity: %s\n", colladaController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
 
         vertexWeights.resize(skinController->GetInfluenceCount());
-        int maxJoints = 0;
+        int32 maxJoints = 0;
         for (int index = 0; index < (int)skinController->GetInfluenceCount(); ++index)
         {
             FCDSkinControllerVertex* vert = skinController->GetVertexInfluence(index);
@@ -56,8 +57,13 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController* animationController)
         }
         printf("- max joints: %d\n", maxJoints);
 
-        mesh = new ColladaMesh(animationController->GetBaseGeometry()->GetMesh(), &(vertexWeights.front()));
+        mesh = new ColladaMesh(colladaController->GetBaseGeometry()->GetMesh(), &(vertexWeights.front()), uint32(maxJoints));
     }
+}
+
+ColladaSkinnedMesh::~ColladaSkinnedMesh()
+{
+    SafeDelete(mesh);
 }
 
 void PrintMatrix(Matrix4& m, bool finishLine = true)
@@ -68,7 +74,7 @@ void PrintMatrix(Matrix4& m, bool finishLine = true)
         printf("\n");
 }
 
-void ColladaAnimatedMesh::UpdateSkinnedMesh(float32 time)
+void ColladaSkinnedMesh::UpdateSkinnedMesh(float32 time)
 {
     if (mesh == 0)
         return;
@@ -173,39 +179,37 @@ void ColladaAnimatedMesh::UpdateSkinnedMesh(float32 time)
     }
 }
 
-void ColladaAnimatedMesh::MarkJoints(ColladaSceneNode* node)
+void ColladaSkinnedMesh::BuildJoints(ColladaSceneNode* node)
 {
     sceneRootNode = node;
-    BuildJointsHierarhy(sceneRootNode, 0);
+    LinkJoints(sceneRootNode, nullptr);
+
+    BuildJointsHierarhy();
 }
 
-void ColladaAnimatedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* parentJoint)
+void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
 {
-    static int depth = 0;
-
-    depth++;
-
-    for (int d = 0; d < depth; ++d)
-        printf("-");
-    printf("%s %s\n", node->originalNode->GetDaeId().c_str(), node->originalNode->GetSubId().c_str());
-
-    Joint* currentJoint = 0;
+    Joint* currentJoint = nullptr;
     for (int j = 0; j < (int)joints.size(); ++j)
     {
         if (node->originalNode->GetSubId() == joints[j].joint->GetId())
         {
-            joints[j].node = node;
-            if (parentJoint != 0)
-                joints[j].parentIndex = parentJoint->index;
+            Joint& joint = joints[j];
 
-            node->inverse0 = joints[j].inverse0; // copy bindpos inverse matrix to node
+            joint.node = node;
+            if (parentJoint != nullptr)
+            {
+                joint.index = j;
+                joint.parentJoint = parentJoint->joint;
+                joint.hierarhyDepth = parentJoint->hierarhyDepth + 1;
+            }
 
-            node->MarkJoint();
-            for (int d = 0; d < depth; ++d)
-                printf("-");
+            joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
+            joint.jointUID = node->originalNode->GetDaeId();
 
-            currentJoint = &joints[j];
-            printf("Joint founded: %s i:%d p:%d\n", node->originalNode->GetDaeId().c_str(), currentJoint->index, currentJoint->parentIndex);
+            node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
+
+            currentJoint = &joint;
             break;
         }
     }
@@ -213,8 +217,55 @@ void ColladaAnimatedMesh::BuildJointsHierarhy(ColladaSceneNode* node, Joint* par
     for (int i = 0; i < (int)node->childs.size(); i++)
     {
         ColladaSceneNode* childNode = node->childs[i];
-        BuildJointsHierarhy(childNode, currentJoint);
+        LinkJoints(childNode, currentJoint);
     }
-    depth--;
+}
+
+void ColladaSkinnedMesh::BuildJointsHierarhy()
+{
+    std::sort(joints.begin(), joints.end(), [](const Joint& l, const Joint& r)
+              {
+                  if (l.hierarhyDepth == r.hierarhyDepth)
+                      return l.jointUID < r.jointUID;
+                  else
+                      return l.hierarhyDepth < r.hierarhyDepth;
+              });
+
+    //////////////////////////////////////////////////////////////////////////
+    //rebind joints indices in geometry after sorting
+    Map<int32, int32> sortedJointsMapping;
+    for (int32 j = 0; j < int32(joints.size()); ++j)
+        sortedJointsMapping[joints[j].index] = j;
+
+    for (int32 p = 0; p < mesh->GetPolygonGroupCount(); ++p)
+    {
+        ColladaPolygonGroup* pg = mesh->GetPolygonGroup(p);
+
+        std::vector<ColladaVertex>& vertices = pg->GetVertices();
+        std::vector<ColladaVertex> originalVertices = vertices; //copy
+
+        int32 vertexCount = int32(vertices.size());
+        for (int32 v = 0; v < vertexCount; ++v)
+        {
+            for (int32 j = 0; j < vertices[v].jointCount; ++j)
+            {
+                vertices[v].joint[j] = sortedJointsMapping[originalVertices[v].joint[j]];
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    for (int32 j = 0; j < int32(joints.size()); ++j)
+    {
+        Joint& joint = joints[j];
+
+        size_t parentIndex = std::distance(joints.begin(), std::find_if(joints.begin(), joints.end(), [&joint](const Joint& item) {
+                                               return (item.joint == joint.parentJoint);
+                                           }));
+
+        joint.parentIndex = (parentIndex == joints.size()) ? -1 : int32(parentIndex);
+        joint.index = j;
+    }
 }
 };

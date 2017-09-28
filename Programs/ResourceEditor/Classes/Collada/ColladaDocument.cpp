@@ -2,7 +2,7 @@
 #include "ColladaDocument.h"
 #include "ColladaPolygonGroup.h"
 #include "CommandLine/CommandLineParser.h"
-#include "Collada/ColladaToSc2Importer/ColladaToSc2Importer.h"
+#include "Collada/ColladaToSc2Importer/ColladaImporter.h"
 
 ///*
 // INCLUDE DevIL
@@ -29,6 +29,8 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
     if (!val)
         return COLLADA_ERROR;
 
+    FCDocumentTools::StandardizeUpAxisAndLength(document, FMVector3(0.f, 0.f, 1.f));
+
     FCDSceneNode* loadedRootNode = document->GetVisualSceneInstance();
     if (!loadedRootNode)
     {
@@ -46,7 +48,7 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
         if (geometry->IsMesh())
         {
             FCDGeometryMesh* geometryMesh = geometry->GetMesh();
-            colladaScene->colladaMeshes.push_back(new ColladaMesh(geometryMesh, 0));
+            colladaScene->colladaMeshes.push_back(new ColladaMesh(geometryMesh, 0, 0));
         }
     }
 
@@ -99,14 +101,14 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
     for (int entityIndex = 0; entityIndex < (int)controllerLibrary->GetEntityCount(); ++entityIndex)
     {
         FCDController* controller = controllerLibrary->GetEntity(entityIndex);
-        colladaScene->colladaAnimatedMeshes.push_back(new ColladaAnimatedMesh(controller));
+        colladaScene->colladaSkinnedMeshes.push_back(new ColladaSkinnedMesh(controller));
     }
 
     colladaScene->ExportScene();
 
-    for (int k = 0; k < (int)colladaScene->colladaAnimatedMeshes.size(); ++k)
+    for (int k = 0; k < (int)colladaScene->colladaSkinnedMeshes.size(); ++k)
     {
-        colladaScene->colladaAnimatedMeshes[k]->MarkJoints(colladaScene->rootNode);
+        colladaScene->colladaSkinnedMeshes[k]->BuildJoints(colladaScene->rootNode);
     }
 
     ExportNodeAnimations(document, document->GetVisualSceneInstance());
@@ -224,7 +226,13 @@ String ColladaDocument::GetTextureName(const FilePath& scenePath, ColladaTexture
 
 eColladaErrorCodes ColladaDocument::SaveSC2(const FilePath& scenePath) const
 {
-    ColladaToSc2Importer importer;
+    ColladaImporter importer;
     return importer.SaveSC2(colladaScene, scenePath);
+}
+
+eColladaErrorCodes ColladaDocument::SaveAnimations(const FilePath& dir) const
+{
+    ColladaImporter importer;
+    return importer.SaveAnimations(colladaScene, dir);
 }
 };

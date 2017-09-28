@@ -1,5 +1,4 @@
-#ifndef __COLLADA_TO_SC2_IMPORTER_H__
-#define __COLLADA_TO_SC2_IMPORTER_H__
+#pragma once
 
 #include "Collada/ColladaToSc2Importer/ImportLibrary.h"
 #include "Collada/ColladaErrorCodes.h"
@@ -10,24 +9,24 @@ class Entity;
 class ColladaSceneNode;
 class ImportLibrary;
 
-class ColladaToSc2Importer
+class ColladaImporter
 {
 public:
-    ColladaToSc2Importer();
+    ColladaImporter();
     eColladaErrorCodes SaveSC2(ColladaScene* colladaScene, const FilePath& scenePath);
+    eColladaErrorCodes SaveAnimations(ColladaScene* colladaScene, const FilePath& dir);
 
 private:
     void ImportAnimation(ColladaSceneNode* colladaNode, Entity* nodeEntity);
+    void ImportSkeleton(ColladaSceneNode* colladaNode, Entity* node);
     void LoadMaterialParents(ColladaScene* colladaScene);
     void LoadAnimations(ColladaScene* colladaScene);
     bool VerifyColladaMesh(ColladaMeshInstance* mesh, const FastName& nodeName);
     eColladaErrorCodes VerifyDavaMesh(RenderObject* mesh, const FastName name);
     eColladaErrorCodes ImportMeshes(const Vector<ColladaMeshInstance*>& meshInstances, Entity* node);
     eColladaErrorCodes BuildSceneAsCollada(Entity* root, ColladaSceneNode* colladaNode);
-    Mesh* GetMeshFromCollada(ColladaMeshInstance* mesh, const bool isShadow);
+    RenderObject* GetMeshFromCollada(ColladaMeshInstance* mesh, const FastName& name);
 
     ImportLibrary library;
 };
 };
-
-#endif
