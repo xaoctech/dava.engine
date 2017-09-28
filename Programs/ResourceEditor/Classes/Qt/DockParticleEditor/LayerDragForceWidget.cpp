@@ -262,6 +262,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     rndReflectionForceMaxSpin->setVisible(isPlaneCollision);
     reflectionPercentLabel->setVisible(isPlaneCollision);
     reflectionPercentSpin->setVisible(isPlaneCollision);
+    normalAsReflectionVector->setVisible(isPlaneCollision);
+    killParticlesAfterCollision->setVisible(isPlaneCollision);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
