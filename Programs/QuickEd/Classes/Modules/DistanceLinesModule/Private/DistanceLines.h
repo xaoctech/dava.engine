@@ -22,6 +22,7 @@ struct LineParams
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::Vector2 startPoint;
     DAVA::Vector2 endPoint;
+    DAVA::float32 length = 0.0f;
     const DAVA::UIGeometricData& gd;
     DAVA::Vector2::eAxis axis;
     DAVA::Vector2::eAxis oppositeAxis;

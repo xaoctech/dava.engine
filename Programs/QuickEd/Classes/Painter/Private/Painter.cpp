@@ -15,8 +15,8 @@ using namespace DAVA;
 
 Painter::Painter()
 {
-    FilePath fntPath = FilePath("~res:/QuickEd/Fonts/DejaVuSans.fnt");
-    FilePath texPath = FilePath("~res:/QuickEd/Fonts/DejaVuSans.tex");
+    FilePath fntPath = FilePath("~res:/QuickEd/Fonts/korinna.fnt");
+    FilePath texPath = FilePath("~res:/QuickEd/Fonts/korinna.tex");
     font = GraphicFont::Create(fntPath, texPath);
     DVASSERT(font != nullptr);
 
@@ -148,8 +148,7 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     Font::StringMetrics metrics = font->GetStringMetrics(UTF8Utils::EncodeToWideString(params.text));
     //while we using hard-coded font we need to fix it base line manually
     //DejaVuSans have a very big height which is invalid for digits. So while we use only digits, and font DejaVuSans and GraphicsFont have no GetBaseLine member function - i will change metrics height manually
-    const float32 padding = 6.0f;
-    Vector2 size = Vector2(metrics.width, metrics.height - padding);
+    Vector2 size = Vector2(metrics.width, metrics.height);
 
     size /= params.scale;
     params.margin /= params.scale;
@@ -187,5 +186,15 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     {
         DVASSERT(false, "vertical direction must be specified");
     }
+
+    //font have a little padding inside it draw rect
+    params.pos.y -= 2.0f;
+    params.pos.x -= 2.0f;
+
+    Rect rect;
+    rect.SetPosition(params.pos * params.transformMatrix);
+    rect.SetSize(size);
+
+    //RenderSystem2D::Instance()->DrawRect(rect, Color::Red);
 }
 }

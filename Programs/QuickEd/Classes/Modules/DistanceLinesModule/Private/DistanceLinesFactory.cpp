@@ -1,6 +1,7 @@
 #include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesFactory.h"
 
 #include <UI/UIControl.h>
+#include <Logger/Logger.h>
 
 namespace DistanceLinesFactoryDetails
 {
@@ -81,6 +82,8 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> DistanceLinesFactory::CreateLines(co
                 AddLine<SolidLine>(params, axis, startPos, endPos, lines);
                 SurroundWithDotLines(params, oppositeAxis, endPos, lines);
 
+                float32 length = fabs((endPos - startPos)[axis]);
+
                 startPos[axis] = params.selectedRect.GetPosition()[axis] + params.selectedRect.GetSize()[axis];
                 endPos[axis] = params.highlightedRect.GetPosition()[axis] + params.highlightedRect.GetSize()[axis];
                 AddLine<SolidLine>(params, axis, startPos, endPos, lines);
@@ -91,14 +94,15 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> DistanceLinesFactory::CreateLines(co
     return lines;
 }
 
-LineParams DistanceLinesFactory::CreateLineParams(const Params& params, const DAVA::Vector2& startPoint, const DAVA::Vector2& endPos, DAVA::eAlign direction) const
+LineParams DistanceLinesFactory::CreateLineParams(const Params& params, const DAVA::Vector2& startPoint, const DAVA::Vector2& endPoint, DAVA::eAlign direction) const
 {
     using namespace DAVA;
 
     LineParams lineParams(params.parentGd);
     lineParams.accessor = params.accessor;
     lineParams.startPoint = startPoint;
-    lineParams.endPoint = endPos;
+    lineParams.endPoint = endPoint;
+    lineParams.length = fabs((endPoint - startPoint).Length());
     lineParams.direction = direction;
     lineParams.axis = (direction == ALIGN_LEFT || direction == ALIGN_RIGHT) ? Vector2::AXIS_X : Vector2::AXIS_Y;
     lineParams.oppositeAxis = (lineParams.axis == Vector2::AXIS_X) ? Vector2::AXIS_Y : Vector2::AXIS_X;

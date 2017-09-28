@@ -19,7 +19,7 @@ using namespace DAVA;
 struct DrawTextParams
 {
     String text;
-    float32 textSize = 10.0f;
+    float32 textSize = 12.0f;
     //text color
     Color color = Color::Black;
     //position of item in screen coordinates

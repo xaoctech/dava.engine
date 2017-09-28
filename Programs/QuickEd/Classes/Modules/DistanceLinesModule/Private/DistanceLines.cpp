@@ -77,8 +77,8 @@ void SolidLine::DrawEndLine()
     lineParams.color = preferences->linesColor;
     lineParams.startPos = params.endPoint;
     lineParams.endPos = params.endPoint;
-    lineParams.startPos[params.oppositeAxis] -= endLineLength / 2.0f;
-    lineParams.endPos[params.oppositeAxis] += endLineLength / 2.0f;
+    lineParams.startPos[params.oppositeAxis] -= endLineLength / 2.0f / params.gd.scale[params.oppositeAxis];
+    lineParams.endPos[params.oppositeAxis] += endLineLength / 2.0f / params.gd.scale[params.oppositeAxis];
     params.gd.BuildTransformMatrix(lineParams.transformMatrix);
     params.painter->Add(params.order, lineParams);
 }
@@ -87,21 +87,19 @@ void SolidLine::DrawLineText()
 {
     using namespace DAVA;
 
-    float32 length = fabs((params.endPoint - params.startPoint)[params.axis]);
-
     Painting::DrawTextParams textParams;
 
     DistanceSystemPreferences* preferences = params.accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     textParams.color = preferences->textColor;
-    textParams.text = Format("%.0f", length);
-    textParams.margin = Vector2(3.0f, 3.0f);
+    textParams.text = Format("%.0f", params.length);
+    textParams.margin = Vector2(5.0f, 5.0f);
     textParams.scale = params.gd.scale;
     textParams.angle = params.gd.angle;
     params.gd.BuildTransformMatrix(textParams.transformMatrix);
 
     //margin around text
     const float32 minLength = 20.0f;
-    if (length > minLength)
+    if (params.length > minLength)
     {
         if (params.axis == Vector2::AXIS_X)
         {
