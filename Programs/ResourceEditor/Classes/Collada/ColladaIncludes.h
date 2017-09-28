@@ -1,5 +1,6 @@
-#ifndef __COLLADAINCLUDES_H__
-#define __COLLADAINCLUDES_H__
+#pragma once
+
+#include "Base/BaseMath.h"
 
 #include "FCollada.h"
 
@@ -31,15 +32,7 @@
 #include "FCDocument/FCDAnimationKey.h"
 #include "FCDocument/FCDCamera.h"
 
-
 #include <FMath/FMMatrix44.h>
-
-#include "Base/BaseMath.h"
-
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
 
 #define COLLADA_GLUT_RENDER
 
@@ -65,4 +58,3 @@ namespace DAVA
 Matrix4 ConvertMatrix(FMMatrix44& matrix);
 Matrix4 ConvertMatrixT(FMMatrix44& matrix);
 };
-#endif // __COLLADAINCLUDES_H__
