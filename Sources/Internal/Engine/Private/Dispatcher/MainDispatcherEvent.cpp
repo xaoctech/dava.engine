@@ -249,15 +249,15 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowRotationGestureEvent(Window
     return e;
 }
 
-MainDispatcherEvent MainDispatcherEvent::CreateWindowSwipeGestureEvent(Window* window, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys)
+MainDispatcherEvent MainDispatcherEvent::CreateWindowSwipeGestureEvent(Window* window, float32 x, float32 y, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys)
 {
     MainDispatcherEvent e(TRACKPAD_GESTURE, window);
     e.trackpadGestureEvent.magnification = 0.0f;
     e.trackpadGestureEvent.rotation = 0.0f;
     e.trackpadGestureEvent.deltaX = deltaX;
     e.trackpadGestureEvent.deltaY = deltaY;
-    e.trackpadGestureEvent.x = 0.0f;
-    e.trackpadGestureEvent.y = 0.0f;
+    e.trackpadGestureEvent.x = x;
+    e.trackpadGestureEvent.y = y;
     e.trackpadGestureEvent.modifierKeys = modifierKeys;
     return e;
 }

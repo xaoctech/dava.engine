@@ -1,73 +1,62 @@
 #pragma once
 
-#include <vector>
-#include "FileSystem/File.h"
 #include "ExpressionEvaluator.h"
 
-typedef std::vector<char> TextBuf;
-
+namespace DAVA
+{
 class PreProc
 {
 public:
-    class FileCallback;
+    struct FileCallback
+    {
+        virtual ~FileCallback() = default;
+        virtual bool Open(const char* /*file_name*/) = 0;
+        virtual void Close() = 0;
+        virtual uint32 Size() const = 0;
+        virtual uint32 Read(uint32 /*max_sz*/, void* /*dst*/) = 0;
+    };
+    using TextBuffer = std::vector<char>;
 
+public:
     PreProc(FileCallback* fc = nullptr);
     ~PreProc();
 
-    bool ProcessFile(const char* file_name, TextBuf* output);
-    bool ProcessInplace(char* src_text, TextBuf* output);
-    bool Process(const char* src_text, TextBuf* output);
+    bool ProcessFile(const char* file_name, TextBuffer* output);
+    bool Process(const char* src_text, TextBuffer* output);
     void Clear();
 
     bool AddDefine(const char* name, const char* value);
 
-    void Dump() const;
-
-public:
-    class FileCallback
-    {
-    public:
-        virtual ~FileCallback()
-        {
-        }
-
-        virtual bool Open(const char* /*file_name*/) = 0;
-        virtual void Close() = 0;
-        virtual unsigned Size() const = 0;
-        virtual unsigned Read(unsigned /*max_sz*/, void* /*dst*/) = 0;
-    };
-
 private:
-    struct Line;
-    struct Buffer;
-    struct Var;
-
-    void Reset();
-    char* AllocBuffer(unsigned sz);
-    bool ProcessInplaceInternal(char* src_text, TextBuf* output);
-    bool ProcessBuffer(char* text, std::vector<Line>* line);
-    bool ProcessInclude(const char* file_name, std::vector<Line>* line);
-    bool ProcessDefine(const char* name, const char* val);
-    void Undefine(const char* name);
-    void GenerateOutput(TextBuf* output);
-
-    char* GetExpression(char* txt, char** end) const;
-    char* GetIdentifier(char* txt, char** end) const;
-    int GetNameAndValue(char* txt, char** name, char** value, char** end) const;
-    void ReportExprEvalError(unsigned line_n);
-
     struct Line
     {
-        char* text;
-        unsigned line_n;
-
-        Line(char* t, unsigned n)
+        uint32 line_n;
+        const char* text;
+        Line(const char* t, uint32 n)
             : text(t)
             , line_n(n)
         {
         }
     };
+    using LineVector = std::vector<Line>;
 
+    void Reset();
+    char* AllocBuffer(uint32 sz);
+    bool ProcessInplaceInternal(char* src_text, TextBuffer* output);
+    bool ProcessBuffer(char* text, LineVector& line);
+    bool ProcessInclude(const char* file_name, LineVector& line);
+    bool ProcessDefine(const char* name, const char* val);
+    void Undefine(const char* name);
+    void GenerateOutput(TextBuffer* output, LineVector& line);
+
+    char* GetExpression(char* txt, char** end) const;
+    char* GetIdentifier(char* txt, char** end) const;
+    int32 GetNameAndValue(char* txt, char** name, char** value, char** end) const;
+    void ReportExprEvalError(uint32 line_n);
+    char* ExpandMacroInLine(char* txt);
+    char* GetToken(char* str, ptrdiff_t strSize, const char* m, ptrdiff_t tokenSize);
+
+private:
     struct Buffer
     {
         void* mem;
@@ -76,60 +65,56 @@ private:
     struct Var
     {
         char name[64];
-        int val;
+        int32 val;
     };
 
-    std::vector<Buffer> buffer;
-    std::vector<Line> line;
-    std::vector<Var> variable;
-    ExpressionEvaluator evaluator;
-
-    FileCallback* fileCB;
-    const char* curFileName;
-
-    class DefaultFileCallback
-    : public FileCallback
-    {
-    public:
-        ~DefaultFileCallback()
-        {
-            if (in)
-                in->Release();
-        }
-        virtual bool Open(const char* file_name)
-        {
-            in = DAVA::File::Create(file_name, DAVA::File::READ | DAVA::File::OPEN);
-            return (in) ? true : false;
-        }
-        virtual void Close()
-        {
-            DVASSERT(in);
-            in->Release();
-            in = nullptr;
-        }
-        virtual unsigned Size() const
-        {
-            return (in) ? unsigned(in->GetSize()) : 0;
-        }
-        virtual unsigned Read(unsigned max_sz, void* dst)
-        {
-            return (in) ? in->Read(dst, max_sz) : 0;
-        }
-
-    private:
-        DAVA::File* in = nullptr;
-    };
-
-    struct macro_t
+    struct Macro
     {
         char name[128];
         char value[128];
-        unsigned name_len;
-        unsigned value_len;
+        uint32 name_len = 0;
+        uint32 value_len = 0;
+
+        Macro(const char* nm, uint32 nmLen, const char* val, uint32 valLen)
+            : name_len(nmLen)
+            , value_len(valLen)
+        {
+            memset(name, 0, sizeof(name));
+            memset(value, 0, sizeof(value));
+            strncpy(name, nm, std::min<size_t>(name_len, sizeof(name)));
+            strncpy(value, val, std::min<size_t>(value_len, sizeof(value)));
+        }
+
+        bool operator<(const Macro& r) const
+        {
+            if (name_len == r.name_len)
+                return strcmp(name, r.name) > 0;
+
+            return name_len > r.name_len;
+        }
     };
 
-    std::vector<macro_t> macro;
-    unsigned minMacroLength;
+    enum : uint32
+    {
+        InvalidValue = static_cast<uint32>(-1)
+    };
 
-    static DefaultFileCallback DefFileCallback;
+    enum : char
+    {
+        Tab = '\t',
+        Zero = '\0',
+        Space = ' ',
+        NewLine = '\n',
+        DoubleQuotes = '\"',
+        CarriageReturn = '\r',
+    };
+
+    Vector<Buffer> buffer;
+    Vector<Var> variable;
+    Set<Macro> macro;
+    ExpressionEvaluator evaluator;
+    FileCallback* fileCB = nullptr;
+    const char* curFileName = "<buffer>";
+    uint32 minMacroLength = InvalidValue;
 };
+}

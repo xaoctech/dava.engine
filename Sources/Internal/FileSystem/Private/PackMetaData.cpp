@@ -166,12 +166,12 @@ Vector<uint32> PackMetaData::GetFileIndexes(const String& requestedPackName) con
 
 uint32 PackMetaData::GetPackIndexForFile(const uint32 fileIndex) const
 {
-    return packIndexes.at(fileIndex);
+    return packIndexes[fileIndex];
 }
 
 const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const uint32 packIndex) const
 {
-    return packDependencies.at(packIndex);
+    return packDependencies[packIndex];
 }
 
 const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) const

@@ -173,7 +173,7 @@ void Metal_InitContext()
 
     if (iosVersion10 && !([_Metal_Device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]))
     {
-        DAVA::Logger::Error("A7 ios 10 detected");
+        DAVA::Logger::Warning("A7 ios 10 detected");
         _Metal_DrawableDispatchSemaphore = new DAVA::Semaphore(_Metal_DrawableDispatchSemaphoreFrameCount);
     }
 

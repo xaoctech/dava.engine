@@ -1,5 +1,4 @@
-#ifndef __FONT_PROPERTY_DELEGATE_H__
-#define __FONT_PROPERTY_DELEGATE_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 class QAction;
@@ -25,5 +24,3 @@ private:
     mutable QAction* configurePresetAction;
     const Project* project = nullptr;
 };
-
-#endif // __FONT_PROPERTY_DELEGATE_H__s
