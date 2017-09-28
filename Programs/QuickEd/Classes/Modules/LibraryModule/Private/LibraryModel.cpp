@@ -1,4 +1,5 @@
-#include "LibraryModel.h"
+#include "Modules/LibraryModule/Private/LibraryModel.h"
+#include "Modules/LibraryModule/Private/LibraryHelpers.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ImportedPackagesNode.h"
@@ -27,52 +28,14 @@
 
 using namespace DAVA;
 
-LibraryModel::LibraryModel(QObject* parent)
+LibraryModel::LibraryModel(DAVA::TArc::UI* ui_, DAVA::TArc::ContextAccessor* accessor_, QObject* parent)
     : QStandardItemModel(parent)
     , defaultControlsRootItem(nullptr)
     , controlsRootItem(nullptr)
     , importedPackageRootItem(nullptr)
+    , ui(ui_)
+    , accessor(accessor_)
 {
-    Vector<std::pair<String, bool>> controlDescrs =
-    {
-      { "UIControl", false },
-      { "UIStaticText", false },
-      { "UITextField", false },
-      { "UISlider", true },
-      { "UIList", false },
-      { "UIListCell", false },
-      { "UIScrollBar", true },
-      { "UIScrollView", true },
-      { "UISpinner", true },
-      { "UISwitch", true },
-      { "UIParticles", false },
-      { "UIWebView", false },
-      { "UIMovieView", false },
-      { "UI3DView", false },
-      { "UIJoypad", true }
-    };
-
-    for (std::pair<String, bool>& descr : controlDescrs)
-    {
-        ScopedPtr<UIControl> control(ObjectFactory::Instance()->New<UIControl>(descr.first));
-        if (control)
-        {
-            control->SetName(descr.first);
-            if (descr.second)
-                defaultControls.emplace_back(ControlNode::CreateFromControlWithChildren(control));
-            else
-                defaultControls.emplace_back(ControlNode::CreateFromControl(control));
-
-            AbstractProperty* prop = defaultControls.back()->GetRootProperty()->FindPropertyByName("size");
-
-            prop->SetValue(Vector2(32.0f, 32.0f));
-        }
-        else
-        {
-            DVASSERT(false);
-        }
-    }
-
     controlsRootItem = new QStandardItem(tr("Prototypes"));
     controlsRootItem->setData(QVariant::fromValue(static_cast<void*>(nullptr)));
     invisibleRootItem()->appendRow(controlsRootItem);
@@ -85,19 +48,16 @@ LibraryModel::LibraryModel(QObject* parent)
     defaultControlsRootItem->setData(QVariant::fromValue(static_cast<void*>(nullptr)));
     invisibleRootItem()->appendRow(defaultControlsRootItem);
 
-    for (RefPtr<ControlNode> defaultControl : defaultControls)
+    LibraryData* libraryData = accessor->GetGlobalContext()->GetData<LibraryData>();
+    DVASSERT(libraryData != nullptr);
+
+    for (const RefPtr<ControlNode>& defaultControl : libraryData->GetDefaultControls())
     {
         AddControl(defaultControl.Get(), defaultControlsRootItem, false);
     }
 }
 
 LibraryModel::~LibraryModel() = default;
-
-void LibraryModel::Setup(DAVA::TArc::UI* ui_, DAVA::TArc::ContextAccessor* accessor_)
-{
-    ui = ui_;
-    accessor = accessor_;
-}
 
 void LibraryModel::SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& packages)
 {
@@ -163,27 +123,8 @@ QMimeData* LibraryModel::mimeData(const QModelIndexList& indexes) const
             bool makePrototype = item->data(PROTOTYPE).value<bool>();
             if (control)
             {
-                Vector<ControlNode*> controls;
-                Vector<StyleSheetNode*> styles;
-
-                RefPtr<ControlNode> resultControl;
-                if (makePrototype)
-                {
-                    resultControl = RefPtr<ControlNode>(ControlNode::CreateFromPrototype(control));
-                }
-                else
-                {
-                    resultControl = control;
-                }
-
-                controls.push_back(resultControl.Get());
-
-                YamlPackageSerializer serializer;
-
-                serializer.SerializePackageNodes(package.Get(), controls, styles);
-                String str = serializer.WriteToString();
+                String str = LibraryHelpers::SerializeToYamlString(package.Get(), control, makePrototype);
                 data->setText(QString::fromStdString(str));
-
                 return data;
             }
         }

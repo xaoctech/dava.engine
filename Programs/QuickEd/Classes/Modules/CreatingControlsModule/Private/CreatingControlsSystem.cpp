@@ -1,18 +1,51 @@
 #include "Modules/CreatingControlsModule/CreatingControlsSystem.h"
 #include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/ProjectModule/ProjectData.h"
 #include "UI/CommandExecutor.h"
 #include "Utils/ControlPlacementUtils.h"
+
+#include <Functional/Functional.h>
 
 CreatingControlsSystem::CreatingControlsSystem(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui)
     : BaseEditorSystem(accessor)
     , ui(ui)
 {
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
+    BindFields();
+}
+
+void CreatingControlsSystem::BindFields()
+{
+    using namespace DAVA::TArc;
+
+    fieldBinder.reset(new FieldBinder(accessor));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<ProjectData>();
+        fieldDescr.fieldName = FastName(ProjectData::projectPathPropertyName);
+        fieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &CreatingControlsSystem::OnProjectPathChanged));
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
+        fieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &CreatingControlsSystem::OnPackageChanged));
+    }
+}
+
+void CreatingControlsSystem::OnPackageChanged(const DAVA::Any& package)
+{
+    CancelCreateByClick();
+}
+
+void CreatingControlsSystem::OnProjectPathChanged(const DAVA::Any& projectPath)
+{
+    CancelCreateByClick();
 }
 
 EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::UIEvent* currentInput)
 {
-    return createFromControl == nullptr ? EditorSystemsManager::NoDrag : EditorSystemsManager::AddingControl;
+    return controlYamlString.empty() ? EditorSystemsManager::NoDrag : EditorSystemsManager::AddingControl;
 }
 
 bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -24,13 +57,9 @@ void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput)
 {
     using namespace DAVA;
 
-    if (currentInput->device == eInputDevices::MOUSE && currentInput->phase == UIEvent::Phase::ENDED)
+    if (currentInput->device == eInputDevices::MOUSE && currentInput->phase == UIEvent::Phase::ENDED && currentInput->mouseButton == eMouseButtons::LEFT)
     {
         AddControlAtPoint(currentInput->point);
-    }
-    else if (currentInput->device == eInputDevices::KEYBOARD && currentInput->key == eInputElements::KB_ESCAPE)
-    {
-        ClearAddingTask();
     }
 }
 
@@ -38,32 +67,8 @@ void CreatingControlsSystem::OnDragStateChanged(EditorSystemsManager::eDragState
 {
     if (previousState == EditorSystemsManager::AddingControl)
     {
-        ClearAddingTask();
+        CancelCreateByClick();
     }
-}
-
-bool CreatingControlsSystem::IsDependsOnCurrentPackage(ControlNode* control) const
-{
-    using namespace DAVA::TArc;
-
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return false;
-    }
-    DocumentData* documentData = activeContext->GetData<DocumentData>();
-    if (documentData == nullptr)
-    {
-        return false;
-    }
-
-    PackageNode* currentPackage = documentData->GetPackageNode();
-    if (currentPackage != nullptr)
-    {
-        return false;
-    }
-
-    return control->IsDependsOnPackage(currentPackage);
 }
 
 BaseEditorSystem::eSystems CreatingControlsSystem::GetOrder() const
@@ -71,19 +76,9 @@ BaseEditorSystem::eSystems CreatingControlsSystem::GetOrder() const
     return CREATING_CONTROLS;
 }
 
-void CreatingControlsSystem::SetCreateByClick(ControlNode* control)
+void CreatingControlsSystem::SetCreateByClick(const DAVA::String& _controlYamlString)
 {
-    createFromControl = control;
-    controlDependsOnPackage = (createFromControl == nullptr ? false : IsDependsOnCurrentPackage(createFromControl));
-}
-
-void CreatingControlsSystem::OnPackageChanged()
-{
-    using namespace DAVA::TArc;
-    if (controlDependsOnPackage)
-    {
-        ClearAddingTask();
-    }
+    controlYamlString = _controlYamlString;
 }
 
 void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
@@ -114,14 +109,14 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
             docData->BeginBatch("Copy control from library");
             CommandExecutor executor(accessor, ui);
 
-            Vector<ControlNode*> newNodes;
-            newNodes = executor.CopyControls({ createFromControl }, destControlContainer, destIndex);
+            DAVA::Set<PackageBaseNode*> newNodes = executor.Paste(docData->GetPackageNode(), destNode, destIndex, controlYamlString);
+
             if (destNode != package->GetPackageControlsNode())
             {
                 ControlNode* destControl = dynamic_cast<ControlNode*>(destNode);
                 if (destControl != nullptr && newNodes.size() == 1)
                 {
-                    ControlNode* newNode = newNodes.front();
+                    ControlNode* newNode = dynamic_cast<ControlNode*>(*(newNodes.begin()));
                     ControlPlacementUtils::SetAbsoulutePosToControlNode(package, newNode, destControl, point);
                     AbstractProperty* postionProperty = newNode->GetRootProperty()->FindPropertyByName("position");
                     AbstractProperty* sizeProperty = newNode->GetRootProperty()->FindPropertyByName("size");
@@ -137,10 +132,10 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
         }
     }
 
-    ClearAddingTask();
+    CancelCreateByClick();
 }
 
-void CreatingControlsSystem::ClearAddingTask()
+void CreatingControlsSystem::CancelCreateByClick()
 {
-    createFromControl = nullptr;
+    controlYamlString.clear();
 }

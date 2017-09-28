@@ -21,24 +21,30 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
     void InitUI();
     void BindFields();
 
-    void AddControlsMenus(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
-    void RemoveControlsMenus();
+    void AddProjectControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
+    void RemoveProjectControls();
+    void SetProjectControlsEnabled(bool active);
 
-    void AddPrototypesMenus(PackageNode* packageNode);
-    void RemovePrototypesMenus();
+    void AddProjectPinnedControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
+    void AddProjectLibraryControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
+    void AddDefaultControls();
 
-    void AddImportedPackageControlsActions(const PackageNode* package);
-    void RemoveImportedPackageControlsActions(const PackageNode* package);
+    void AddPrototypes(const PackageNode* packageNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint);
+
+    void AddPackagePrototypes(PackageNode* packageNode);
+    void RemovePackagePrototypes();
+
+    void AddImportedPrototypes(const PackageNode* importedPackage);
+    void RemoveImportedPrototypes(const PackageNode* importedPackage);
 
     void ClearActions(LibraryData::ActionsMap&);
 
-    void AddControlAction(ControlNode* controlNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap);
-    void AddPackageControlsActions(PackageControlsNode* controls, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap);
+    void AddControlAction(ControlNode* controlNode, bool isPrototype, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap);
     void RemoveControlAction(ControlNode* node, LibraryData::ActionsMap& actionsMap);
 
     void OnPackageChanged(const DAVA::Any& package);
     void OnProjectPathChanged(const DAVA::Any& projectPath);
-    void OnControlCreateTriggered(ControlNode* node);
+    void OnControlCreateTriggered(ControlNode* node, bool makePrototype);
 
     // PackageListener
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;

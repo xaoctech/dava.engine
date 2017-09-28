@@ -15,7 +15,8 @@ public:
     // BaseEditorSystem
     eSystems GetOrder() const override;
 
-    void SetCreateByClick(ControlNode* control);
+    void SetCreateByClick(const DAVA::String& controlYamlString);
+    void CancelCreateByClick();
 
 private:
     // BaseEditorSystem
@@ -24,16 +25,16 @@ private:
     void ProcessInput(DAVA::UIEvent* currentInput) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
 
-    void OnPackageChanged();
+    void BindFields();
 
-    bool IsDependsOnCurrentPackage(ControlNode* control) const;
+    void OnPackageChanged(const DAVA::Any& package);
+    void OnProjectPathChanged(const DAVA::Any& projectPath);
+
     void AddControlAtPoint(const DAVA::Vector2& point);
-    void ClearAddingTask();
 
 private:
     DAVA::TArc::UI* ui = nullptr;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::DataWrapper documentDataWrapper;
-    ControlNode* createFromControl = nullptr;
-    bool controlDependsOnPackage = false;
+    DAVA::String controlYamlString;
 };

@@ -9,6 +9,8 @@ class LibraryData : public DAVA::TArc::DataNode
 public:
     LibraryData() = default;
 
+    const DAVA::Vector<DAVA::RefPtr<ControlNode>>& GetDefaultControls() const;
+
 private:
     friend class LibraryModule;
 
@@ -17,12 +19,14 @@ private:
         DAVA::TArc::QtAction* action = nullptr;
         DAVA::TArc::ActionPlacementInfo placement;
     };
-    using ActionsMap = DAVA::UnorderedMap<ControlNode*, ActionInfo>;
+    using ActionsMap = DAVA::UnorderedMultiMap<ControlNode*, ActionInfo>;
 
     LibraryWidget* libraryWidget = nullptr;
 
     ActionsMap controlsActions;
     ActionsMap prototypesActions;
+
+    DAVA::Vector<DAVA::RefPtr<ControlNode>> defaultControls;
 
     PackageNode* currentPackageNode = nullptr;
 

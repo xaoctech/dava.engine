@@ -484,6 +484,7 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
             if (action->parent() == nullptr)
             {
                 action->setParent(windowInfo.window);
+                windowInfo.window->addAction(action);
             }
         }
         else
@@ -515,6 +516,7 @@ void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& path, const QStr
         if (nextLevelMenu != nullptr && nextLevelMenu->isEmpty())
         {
             nextLevelMenu->setEnabled(false);
+            //currentLevelMenu->removeAction(nextLevelMenu->menuAction());
         }
     }
 }

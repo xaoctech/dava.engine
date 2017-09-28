@@ -31,10 +31,9 @@ class LibraryModel : public QStandardItemModel, PackageListener
     };
 
 public:
-    LibraryModel(QObject* parent = nullptr);
+    LibraryModel(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor, QObject* parent = nullptr);
     ~LibraryModel() override;
 
-    void Setup(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
     void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;

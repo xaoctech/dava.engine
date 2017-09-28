@@ -6,3 +6,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LibraryData)
     .ConstructorByPointer()
     .End();
 }
+
+const DAVA::Vector<DAVA::RefPtr<ControlNode>>& LibraryData::GetDefaultControls() const
+{
+    return defaultControls;
+}

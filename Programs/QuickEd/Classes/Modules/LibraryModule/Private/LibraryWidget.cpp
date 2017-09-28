@@ -9,12 +9,11 @@
 
 LibraryWidget::LibraryWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent)
     : QWidget(parent)
-    , libraryModel(new LibraryModel(this))
+    , libraryModel(new LibraryModel(ui, accessor, this))
     , accessor(accessor)
 {
     InitUI();
     treeView->setModel(libraryModel);
-    libraryModel->Setup(ui, accessor);
 }
 
 LibraryWidget::~LibraryWidget() = default;
