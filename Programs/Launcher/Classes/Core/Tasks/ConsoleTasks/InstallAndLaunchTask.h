@@ -2,6 +2,8 @@
 
 #include "Core/Tasks/ConsoleTasks/ConsoleBaseTask.h"
 
+#include <memory>
+
 struct ApplicationContext;
 struct ConfigHolder;
 
@@ -16,8 +18,8 @@ private:
     void Run(const QStringList& arguments) override;
     void OnUpdateConfigFinished(const QStringList& arguments);
 
-    ApplicationContext* appContext = nullptr;
-    ConfigHolder* configHolder = nullptr;
+    ApplicationContext* appContext;
+    ConfigHolder* configHolder;
 
     QString appName;
 };

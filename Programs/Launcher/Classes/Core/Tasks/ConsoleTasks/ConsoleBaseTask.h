@@ -8,7 +8,7 @@
 class ConsoleBaseTask
 {
 public:
-    virtual ~ConsoleBaseTask();
+    virtual ~ConsoleBaseTask() = default;
     virtual QCommandLineOption CreateOption() const = 0;
     virtual void Run(const QStringList& arguments) = 0;
 };

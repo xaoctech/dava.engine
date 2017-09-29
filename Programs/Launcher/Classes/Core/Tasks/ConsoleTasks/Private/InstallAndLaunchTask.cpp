@@ -37,7 +37,7 @@ QCommandLineOption InstallAndLaunchTask::CreateOption() const
                                             << "install",
                               QObject::tr("install <application> <branch> <version> and launch it;\n"
                                           "if no <version> is set - will be used most recent version\n"
-                                          "if no <branch> is set - will be used Stable"
+                                          "if no <branch> is set - will be used Stable\n"
                                           "example -i QuickEd Stable 4389"));
 }
 
@@ -53,8 +53,8 @@ void InstallAndLaunchTask::Run(const QStringList& arguments)
 
     appName = arguments.at(0);
 
-    Receiver receiver;
-    receiver.onFinished = [](const BaseTask* task) {
+    Receiver loadConfigReceiver;
+    loadConfigReceiver.onFinished = [](const BaseTask* task) {
         if (task->HasError())
         {
             qDebug() << "error: " + task->GetError();
@@ -63,28 +63,29 @@ void InstallAndLaunchTask::Run(const QStringList& arguments)
     };
 
     std::unique_ptr<BaseTask> loadConfigTask = appContext->CreateTask<LoadLocalConfigTask>(configHolder, FileManager::GetLocalConfigFilePath());
-    appContext->taskManager.AddTask(std::move(loadConfigTask), receiver);
-    receiver.onStarted = [](const BaseTask* task) {
+    appContext->taskManager.AddTask(std::move(loadConfigTask), loadConfigReceiver);
+
+    Receiver updateConfigReceiver;
+    updateConfigReceiver.onStarted = [](const BaseTask* task) {
         qDebug() << task->GetDescription();
     };
-    receiver.onProgress = [](const BaseTask* task, quint32 progress) {
+    updateConfigReceiver.onProgress = [](const BaseTask* task, quint32 progress) {
         std::cout << "progress: " << progress << "\r";
     };
-    receiver.onFinished = [arguments, this](const BaseTask* task) {
+    updateConfigReceiver.onFinished = [arguments, this](const BaseTask* task) {
         if (task->HasError())
         {
             qDebug() << "error: " + task->GetError();
             exit(1);
         }
         else if (dynamic_cast<const UpdateConfigTask*>(task) != nullptr)
-
         {
             OnUpdateConfigFinished(arguments);
         }
     };
 
     std::unique_ptr<BaseTask> updateTask = appContext->CreateTask<UpdateConfigTask>(configHolder, appContext->urlsHolder.GetURLs());
-    appContext->taskManager.AddTask(std::move(updateTask), receiver);
+    appContext->taskManager.AddTask(std::move(updateTask), updateConfigReceiver);
 }
 
 void InstallAndLaunchTask::OnUpdateConfigFinished(const QStringList& arguments)
@@ -143,8 +144,7 @@ void InstallAndLaunchTask::OnUpdateConfigFinished(const QStringList& arguments)
                 Application* app = LauncherUtils::FindApplication(branch, appName, false);
                 std::unique_ptr<BaseTask> runTask = appContext->CreateTask<RunApplicationTask>(configHolder, branch->id, app->id, localVersion->id);
                 appContext->taskManager.AddTask(std::move(runTask), runReceiver);
-                //this return must be not called
-                return;
+                Q_ASSERT(false && "exit was not called after task finished");
             }
         }
 

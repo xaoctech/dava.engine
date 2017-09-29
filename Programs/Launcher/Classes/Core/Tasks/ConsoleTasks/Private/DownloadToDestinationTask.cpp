@@ -3,6 +3,7 @@
 #include "Core/Tasks/LoadLocalConfigTask.h"
 #include "Core/Tasks/UpdateConfigTask.h"
 #include "Core/Tasks/DownloadTask.h"
+#include "Core/Tasks/UnzipTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 #include "Core/UrlsHolder.h"
@@ -35,7 +36,7 @@ QCommandLineOption DownloadToDestinationTask::CreateOption() const
                               QObject::tr("download file to <destination> from <application> <branch> <version>;\n"
                                           "if no <branch> is set - will be used Stable\n"
                                           "if no <version> is set - will be used most recent version\n"
-                                          "example: -d c:/temp QuickEd 3444/from 4.4.0_2017-09-06_20-00-24_4296"
+                                          "example: -d c:/temp QuickEd 3444/from 4.4.0_2017-09-06_20-00-24_4296\n"
                                           "another example: -d c:/temp QuickEd 3444 4296"));
 }
 
@@ -128,8 +129,8 @@ void DownloadToDestinationTask::OnUpdateConfigFinished(const QStringList& argume
     }
 
     QString fileName = FileManager::GetFileNameFromURL(version->url);
-    QString fullPath = destPath + "/" + fileName;
-    QFile* file = new QFile(fullPath);
+    archivePath = destPath + "/" + fileName;
+    QFile* file = new QFile(archivePath);
     if (file->open(QFile::Truncate | QFile::WriteOnly) == false)
     {
         qDebug() << "error: can not open file" << destPath;
@@ -143,22 +144,53 @@ void DownloadToDestinationTask::OnUpdateConfigFinished(const QStringList& argume
     receiver.onProgress = [](const BaseTask* task, quint32 progress) {
         std::cout << "progress: " << progress << "\r";
     };
-    receiver.onFinished = [file, fullPath, fileName](const BaseTask* task) {
+    receiver.onFinished = [file, fileName, arguments, this](const BaseTask* task) {
+        file->close();
+        delete file;
+
         if (task->HasError())
         {
             qDebug() << "error: " + task->GetError();
             exit(1);
         }
-        else if (dynamic_cast<const DownloadTask*>(task) != nullptr)
+        else
         {
             qDebug() << "loaded file with name:" << fileName;
-            qDebug() << "full path:" << fullPath;
-            file->close();
-            delete file;
-            exit(0);
+            OnDownloadFinished(arguments);
         }
     };
 
     std::unique_ptr<BaseTask> downloadTask = appContext->CreateTask<DownloadTask>("loading application " + applicationName, version->url, file);
     appContext->taskManager.AddTask(std::move(downloadTask), receiver);
+}
+
+void DownloadToDestinationTask::OnDownloadFinished(const QStringList& arguments)
+{
+    Receiver receiver;
+    receiver.onStarted = [](const BaseTask* task) {
+        qDebug() << "unpacking";
+    };
+    receiver.onProgress = [](const BaseTask* task, quint32 progress) {
+        std::cout << "progress: " << progress << "\r";
+    };
+
+    receiver.onFinished = [this](const BaseTask* task) {
+        if (QFile::remove(archivePath) == false)
+        {
+            qDebug() << "can not remove tmp file" << archivePath;
+        }
+        if (task->HasError())
+        {
+            qDebug() << "error: " + task->GetError();
+            exit(1);
+        }
+        else
+        {
+            qDebug() << "task finished!";
+            exit(0);
+        }
+    };
+
+    std::unique_ptr<BaseTask> task = appContext->CreateTask<UnzipTask>(archivePath, destPath);
+    appContext->taskManager.AddTask(std::move(task), receiver);
 }
