@@ -6,12 +6,27 @@
 
 #include <Base/BaseTypes.h>
 
+#include <QPointer>
+#include <QAction>
+
 class QMainWindow;
 namespace DAVA
 {
 namespace TArc
 {
 class PropertiesItem;
+
+struct KeyBindableAction
+{
+    QString blockName;
+    QString actionName;
+    Qt::ShortcutContext context = Qt::WidgetShortcut;
+    Qt::ShortcutContext defaultContext = Qt::WidgetShortcut;
+    QList<QKeySequence> sequences;
+    QList<QKeySequence> defaultSequences;
+    QPointer<QAction> action;
+    bool isReadOnly = false;
+};
 
 class UIManager final : public UI
 {
@@ -37,7 +52,7 @@ public:
     void ClearMessage(const WindowKey& windowKey) override;
     int ShowModalDialog(const WindowKey& windowKey, QDialog* dialog) override;
     ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) override;
-    void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) override;
+    void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const override;
 
     QString GetSaveFileName(const WindowKey& windowKey, const FileDialogParams& params) override;
     QString GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params) override;
@@ -50,8 +65,28 @@ public:
     DAVA_DEPRECATED(void InjectWindow(const WindowKey& windowKey, QMainWindow* window) override);
     void ModuleDestroyed(ClientModule* module);
 
+    String GetCurrentKeyBindingsScheme() const;
+    void SetCurrentKeyBindingsScheme(const String& schemeName);
+    Vector<String> GetKeyBindingsSchemeNames() const;
+    void AddKeyBindingsScheme(const String& schemeName);
+    void RemoveKeyBindingsScheme(const String& schemeName);
+    String ImportKeyBindingsScheme(const FilePath& path);
+    void ExportKeyBindingsScheme(const FilePath& path, const String& schemeName) const;
+
+    const Vector<KeyBindableAction>& GetKeyBindableActions() const;
+    void AddShortcut(const QKeySequence& shortcut, QPointer<QAction> action);
+    void RemoveShortcut(const QKeySequence& shortcut, QPointer<QAction> action);
+    void SetActionContext(QPointer<QAction> action, Qt::ShortcutContext context);
+
 protected:
     void SetCurrentModule(ClientModule* module) override;
+
+private:
+    void RegisterAction(QAction* action);
+    void LoadScheme();
+    void SaveScheme() const;
+    FilePath BuildSchemePath(const String& scheme) const;
+    void SaveSchemeNames(const Vector<String>& schemes) const;
 
 private:
     struct Impl;

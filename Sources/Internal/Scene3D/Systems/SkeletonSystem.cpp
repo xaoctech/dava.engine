@@ -82,11 +82,9 @@ void SkeletonSystem::Process(float32 timeElapsed)
             {
                 UpdateJointTransforms(component);
                 RenderObject* ro = GetRenderObject(entities[i]);
-                if (ro && (RenderObject::TYPE_SKINNED_MESH == ro->GetType()))
+                if (ro != nullptr && (RenderObject::TYPE_SKINNED_MESH == ro->GetType()))
                 {
-                    SkinnedMesh* skinnedMeshObject = static_cast<SkinnedMesh*>(ro);
-                    DVASSERT(skinnedMeshObject);
-                    UpdateSkinnedMesh(component, skinnedMeshObject);
+                    UpdateSkinnedMesh(component, static_cast<SkinnedMesh*>(ro));
                 }
             }
         }
@@ -153,10 +151,18 @@ void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
             {
                 skeleton->objectSpaceTransforms[currJoint] = skeleton->objectSpaceTransforms[parentJoint].AppendTransform(skeleton->localSpaceTransforms[currJoint]);
             }
-            skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].ApplyToAABBox(skeleton->jointsArray[currJoint].bbox);
 
             //calculate final transform including bindTransform
             skeleton->finalTransforms[currJoint] = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
+
+            if (!skeleton->jointsArray[currJoint].bbox.IsEmpty())
+            {
+                skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].ApplyToAABBox(skeleton->jointsArray[currJoint].bbox);
+            }
+            else
+            {
+                skeleton->objectSpaceBoxes[currJoint].Empty();
+            }
 
             //  add [was updated]  remove [marked for update]
             skeleton->jointInfo[currJoint] &= ~SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
@@ -180,11 +186,13 @@ void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh*
     AABBox3 resBox;
     for (uint32 currJoint = 0; currJoint < count; ++currJoint)
     {
-        resBox.AddAABBox(skeleton->objectSpaceBoxes[currJoint]);
+        if (!skeleton->objectSpaceBoxes[currJoint].IsEmpty())
+        {
+            resBox.AddAABBox(skeleton->objectSpaceBoxes[currJoint]);
+        }
     }
 
-    //set data to SkinnedMesh
-    skinnedMeshObject->SetFinalJointTransformsPtr(skeleton->finalTransforms.data(), skeleton->GetJointsCount());
+    skinnedMeshObject->UpdateJointTransforms(skeleton->finalTransforms);
     skinnedMeshObject->SetBoundingBox(resBox); //TODO: *Skinning* decide on bbox calculation
 
     GetScene()->GetRenderSystem()->MarkForUpdate(skinnedMeshObject);

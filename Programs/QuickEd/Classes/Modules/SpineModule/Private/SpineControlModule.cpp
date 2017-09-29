@@ -5,6 +5,7 @@
 
 #include <UI/Spine/UISpineSystem.h>
 
+#include <TArc/Qt/QtIcon.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Core/ContextAccessor.h>

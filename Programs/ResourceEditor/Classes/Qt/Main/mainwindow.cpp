@@ -90,7 +90,6 @@
 #include <QMessageBox>
 #include <QMetaObject>
 #include <QMetaType>
-#include <QShortcut>
 #include <QList>
 
 #define CHECK_GLOBAL_OPERATIONS(retValue) \
@@ -197,7 +196,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     projectDataWrapper = REGlobal::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<ProjectManagerData>());
     projectDataWrapper.SetListener(this);
 
-    ActiveSceneHolder::Init();
     globalOperations.reset(new MainWindowDetails::GlobalOperationsProxy(this));
 
     DAVA::TArc::DataContext* globalContext = REGlobal::GetGlobalContext();
@@ -265,7 +263,6 @@ QtMainWindow::~QtMainWindow()
 
     std::static_pointer_cast<MainWindowDetails::GlobalOperationsProxy>(globalOperations)->Reset();
     globalOperations.reset();
-    ActiveSceneHolder::Deinit();
 }
 
 void QtMainWindow::OnRenderingInitialized()
@@ -612,7 +609,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionModifyScale->setEnabled(enable);
     ui->actionModifyPlaceOnLandscape->setEnabled(enable);
     ui->actionModifySnapToLandscape->setEnabled(enable);
-    ui->actionConvertToShadow->setEnabled(enable);
     ui->actionPivotCenter->setEnabled(enable);
     ui->actionPivotCommon->setEnabled(enable);
     ui->actionCenterPivotPoint->setEnabled(enable);

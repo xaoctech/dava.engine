@@ -185,23 +185,11 @@ void PreviewWidget::SetActualScale()
     canvasDataAdapter.SetScale(1.0f);
 }
 
-void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
-{
-    const EngineContext* engineContext = GetEngineContext();
-    VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-    vcs->UnregisterAllAvailableResourceSizes();
-    vcs->SetVirtualScreenSize(width, height);
-    vcs->RegisterAvailableResourceSize(width, height, "Gfx");
-    vcs->RegisterAvailableResourceSize(width, height, "Gfx2");
-}
-
 void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
 {
     DVASSERT(renderWidget_ != nullptr);
     renderWidget = renderWidget_;
     CreateActions();
-
-    renderWidget->resized.Connect(this, &PreviewWidget::OnResized);
 
     renderWidget->SetClientDelegate(this);
 }
@@ -217,6 +205,7 @@ void PreviewWidget::InitUI()
 
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
     DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
+    addActions(tabBar->actions());
     tabBar->closeTab.Connect(&requestCloseTab, &DAVA::Signal<DAVA::uint64>::Emit);
     tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tabBar, &QWidget::customContextMenuRequested, this, &PreviewWidget::OnTabBarContextMenuRequested);

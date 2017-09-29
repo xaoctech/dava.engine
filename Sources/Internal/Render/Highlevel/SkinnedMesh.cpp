@@ -78,20 +78,6 @@ void SkinnedMesh::Load(KeyedArchive* archive, SerializationContext* serializatio
     }
 }
 
-void SkinnedMesh::RecalcBoundingBox()
-{
-    AABBox3 geometryBBox;
-
-    for (const RenderBatchWithOptions& i : renderBatchArray)
-    {
-        RenderBatch* batch = i.renderBatch;
-        geometryBBox.AddAABBox(batch->GetBoundingBox());
-    }
-
-    float32 radius = geometryBBox.GetBoundingSphereRadius();
-    bbox = AABBox3(geometryBBox.GetCenter(), 2.f * radius);
-}
-
 void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     auto found = jointTargetsDataMap.find(batch);
@@ -107,37 +93,22 @@ void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
     RenderObject::BindDynamicParameters(camera, batch);
 }
 
-void SkinnedMesh::PrepareToRender(Camera* camera)
+void SkinnedMesh::UpdateJointTransforms(const Vector<JointTransform>& finalTransforms)
 {
-    if (!jointTargetsDataMap.empty() && skeletonFinalJointTransforms)
+    for (auto& jointsData : jointTargetsData)
     {
-        jointTargetsDataToPrepare.clear();
-        for (RenderBatch* b : activeRenderBatchArray)
+        const JointTargets& targets = jointsData.first;
+        JointTargetsData& data = jointsData.second;
+
+        for (uint32 j = 0; j < data.jointsDataCount; ++j)
         {
-            auto found = jointTargetsDataMap.find(b);
-            if (found != jointTargetsDataMap.end())
-                jointTargetsDataToPrepare.insert(found->second);
+            uint32 transformIndex = targets[j];
+            DVASSERT(transformIndex < uint32(finalTransforms.size()));
+
+            const JointTransform& finalTransform = finalTransforms[transformIndex];
+            data.positions[j] = Vector4(Vector3(finalTransform.GetPosition().data), finalTransform.GetScale());
+            data.quaternions[j] = Vector4(finalTransform.GetOrientation().data);
         }
-
-        for (uint32 dataIndex : jointTargetsDataToPrepare)
-            PrepareJointTargetsData(dataIndex);
-    }
-}
-
-void SkinnedMesh::PrepareJointTargetsData(uint32 dataIndex)
-{
-    DVASSERT(dataIndex < uint32(jointTargetsData.size()));
-
-    const JointTargets& targets = jointTargetsData[dataIndex].first;
-    JointTargetsData& data = jointTargetsData[dataIndex].second;
-    for (uint32 j = 0; j < data.jointsDataCount; ++j)
-    {
-        uint32 transformIndex = targets[j];
-        DVASSERT(transformIndex < skeletonJointCount);
-
-        const JointTransform& finalTransform = skeletonFinalJointTransforms[transformIndex];
-        data.positions[j] = Vector4(Vector3(finalTransform.GetPosition().data), finalTransform.GetScale());
-        data.quaternions[j] = Vector4(finalTransform.GetOrientation().data);
     }
 }
 
@@ -183,8 +154,6 @@ SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batc
     if (found != jointTargetsDataMap.end())
     {
         uint32 dataIndex = found->second;
-        PrepareJointTargetsData(dataIndex);
-
         return jointTargetsData[dataIndex].second;
     }
 

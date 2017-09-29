@@ -1,20 +1,37 @@
-#include "AddSwitchEntityDialog.h"
+#include "Classes/Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
+#include "Classes/Qt/Tools/MimeDataHelper/MimeDataHelper.h"
+#include "Classes/Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
+#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
-#include "Tools/MimeDataHelper/MimeDataHelper.h"
-#include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
-#include "Main/mainwindow.h"
-#include "Qt/Main/QtUtils.h"
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
 #include "Classes/Commands2/EntityAddCommand.h"
-#include "Commands2/EntityRemoveCommand.h"
-#include "SwitchEntityCreator.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
+
+#include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
-#include "TArc/DataProcessing/DataContext.h"
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+
+#include <TArc/DataProcessing/DataContext.h>
 
 #include <QLabel>
+
+namespace AddSwitchEntityDialogDetails
+{
+SceneEditor2* GetActiveScene()
+{
+    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    if (data != nullptr)
+    {
+        return data->GetScene().Get();
+    }
+    return nullptr;
+}
+}
 
 AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
     : BaseAddEntityDialog(parent, QDialogButtonBox::Ok | QDialogButtonBox::Cancel)
@@ -25,8 +42,8 @@ AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
     DVASSERT(data != nullptr);
     DAVA::FilePath defaultPath(data->GetDataSource3DPath());
 
-    SceneEditor2* scene = sceneHolder.GetScene();
-    if (scene)
+    SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
+    if (scene != nullptr)
     {
         DAVA::FilePath scenePath = scene->GetScenePath();
         if (scenePath.Exists())
@@ -83,7 +100,7 @@ void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entitie
 
 void AddSwitchEntityDialog::accept()
 {
-    SceneEditor2* scene = sceneHolder.GetScene();
+    SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
     if (scene == nullptr)
     {
         CleanupPathWidgets();
