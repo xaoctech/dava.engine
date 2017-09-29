@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 
 class UnzipTask final : public BaseTask
 {

@@ -7,7 +7,7 @@
 #include "Data/ConfigParser.h"
 
 #include "Core/GuiApplicationManager.h"
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/CommonTasks/DownloadTask.h"
 
 #include "Utils/ErrorMessenger.h"
 

@@ -1,4 +1,4 @@
-#include "Core/Tasks/RemoveApplicationTask.h"
+#include "Core/CommonTasks/RemoveApplicationTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 

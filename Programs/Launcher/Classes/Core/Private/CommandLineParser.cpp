@@ -1,6 +1,6 @@
 #include "Core/CommandLineParser.h"
-#include "Core/Tasks/ConsoleTasks/ConsoleTasksCollection.h"
-#include "Core/Tasks/ConsoleTasks/ConsoleBaseTask.h"
+#include "Core/ConsoleTasks/ConsoleTasksCollection.h"
+#include "Core/ConsoleTasks/ConsoleBaseTask.h"
 
 #include <QMetaType>
 #include <QMetaObject>

@@ -1,4 +1,4 @@
-#include "Core/Tasks/AsyncChainTask.h"
+#include "Core/GuiTasks/AsyncChainTask.h"
 
 AsyncChainTask::AsyncChainTask(ApplicationContext* appContext)
     : BaseTask(appContext)

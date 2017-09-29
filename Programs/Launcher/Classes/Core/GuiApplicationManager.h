@@ -4,7 +4,7 @@
 #include "Core/ApplicationContext.h"
 #include "Core/Receiver.h"
 #include "Core/ApplicationQuitController.h"
-#include "Core/Tasks/InstallApplicationTask.h"
+#include "Core/GuiTasks/InstallApplicationTask.h"
 #include "Core/TaskManager.h"
 #include "Core/TasksLogger.h"
 #include "Core/ConfigHolder.h"

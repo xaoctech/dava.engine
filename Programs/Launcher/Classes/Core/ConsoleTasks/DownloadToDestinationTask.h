@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Tasks/ConsoleTasks/ConsoleBaseTask.h"
+#include "Core/ConsoleTasks/ConsoleBaseTask.h"
 
 struct ApplicationContext;
 struct ConfigHolder;

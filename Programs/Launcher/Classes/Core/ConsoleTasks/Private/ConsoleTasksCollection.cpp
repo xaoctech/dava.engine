@@ -1,4 +1,4 @@
-#include "Core/Tasks/ConsoleTasks/ConsoleTasksCollection.h"
+#include "Core/ConsoleTasks/ConsoleTasksCollection.h"
 
 #include <QMetaType>
 

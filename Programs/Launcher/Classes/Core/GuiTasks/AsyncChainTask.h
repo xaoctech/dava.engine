@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 #include "Core/Receiver.h"
 
 #include <QObject>

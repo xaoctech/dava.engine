@@ -2,7 +2,7 @@
 
 #include "Core/TaskManager.h"
 #include "Core/UrlsHolder.h"
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 
 #include "Utils/FileManager.h"
 #include "Utils/AppsCommandsSender.h"

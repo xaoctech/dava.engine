@@ -1,6 +1,6 @@
-#include "Core/Tasks/SelfUpdateTask.h"
-#include "Core/Tasks/UnzipTask.h"
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/GuiTasks/SelfUpdateTask.h"
+#include "Core/CommonTasks/UnzipTask.h"
+#include "Core/CommonTasks/DownloadTask.h"
 #include "Core/ApplicationQuitController.h"
 #include "Core/ApplicationContext.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Tasks/AsyncChainTask.h"
+#include "Core/GuiTasks/AsyncChainTask.h"
 #include "Data/ConfigParser.h"
 
 #include <QFile>

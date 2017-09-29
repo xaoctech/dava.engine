@@ -1,4 +1,4 @@
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 #include "Core/ApplicationContext.h"
 
 void TaskDataHolder::SetUserData(const QVariant& data)

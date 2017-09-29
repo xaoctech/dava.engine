@@ -1,4 +1,4 @@
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/CommonTasks/DownloadTask.h"
 #include "Core/ApplicationContext.h"
 
 #include <QIODevice>

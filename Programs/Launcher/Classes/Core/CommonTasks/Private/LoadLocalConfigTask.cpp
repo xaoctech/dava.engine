@@ -1,4 +1,4 @@
-#include "Core/Tasks/LoadLocalConfigTask.h"
+#include "Core/CommonTasks/LoadLocalConfigTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 

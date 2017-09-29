@@ -1,11 +1,11 @@
-#include "Core/Tasks/ConsoleTasks/SelfTestTask.h"
-#include "Core/Tasks/ConsoleTasks/ConsoleTasksCollection.h"
+#include "Core/ConsoleTasks/SelfTestTask.h"
+#include "Core/ConsoleTasks/ConsoleTasksCollection.h"
 
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 
-#include "Core/Tasks/LoadLocalConfigTask.h"
-#include "Core/Tasks/UpdateConfigTask.h"
+#include "Core/CommonTasks/LoadLocalConfigTask.h"
+#include "Core/CommonTasks/UpdateConfigTask.h"
 
 #include "Gui/PreferencesDialog.h"
 

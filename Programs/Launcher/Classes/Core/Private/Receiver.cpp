@@ -1,5 +1,5 @@
 #include "Core/Receiver.h"
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 
 Notifier::Notifier(const Receiver& receiver)
     : receivers(1, receiver)

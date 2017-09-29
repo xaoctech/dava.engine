@@ -1,5 +1,5 @@
-#include "Core/Tasks/UpdateConfigTask.h"
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/CommonTasks/UpdateConfigTask.h"
+#include "Core/CommonTasks/DownloadTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 

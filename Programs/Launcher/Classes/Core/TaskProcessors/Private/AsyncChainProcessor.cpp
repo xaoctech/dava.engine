@@ -1,5 +1,5 @@
 #include "Core/TaskProcessors/AsyncChainProcessor.h"
-#include "Core/Tasks/AsyncChainTask.h"
+#include "Core/GuiTasks/AsyncChainTask.h"
 
 AsyncChainProcessor::AsyncChainProcessor(QObject* parent)
     : QObject(parent)

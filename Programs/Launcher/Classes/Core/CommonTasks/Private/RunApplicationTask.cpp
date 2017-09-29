@@ -1,4 +1,4 @@
-#include "Core/Tasks/RunApplicationTask.h"
+#include "Core/CommonTasks/RunApplicationTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 
