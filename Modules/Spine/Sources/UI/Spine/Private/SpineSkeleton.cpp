@@ -52,6 +52,15 @@ FilePath GetScaledName(const FilePath& path)
             pathname.replace(pos, baseGfxFolderName.length(), desirableGfxFolderName);
             return FilePath(pathname);
         }
+        else if (vcs->GetResourceFoldersCount() == 1 && baseGfxFolderName != "Gfx")
+        { // magic for QE
+            String::size_type startPos = pathname.find("/Gfx/");
+            if (String::npos != startPos)
+            {
+                pathname.replace(startPos, 5, "/" + baseGfxFolderName + "/");
+                return pathname;
+            }
+        }
     }
     return path;
 }
@@ -133,7 +142,8 @@ bool SpineSkeleton::Load(const FilePath& dataPath_, const FilePath& atlasPath_)
 
     // Check scaled resource (only atlas)
     FilePath scaledPath = SpinePrivate::GetScaledName(atlasPath);
-    if (scaledPath.Exists())
+    VirtualCoordinatesSystem* vcs = Engine::Instance()->GetContext()->uiControlSystem->vcs;
+    if (vcs->GetResourceFoldersCount() == 1 || scaledPath.Exists()) // magic for QE: we don't need try generates same file path twice for situations with only one Gfx2 folder (without Gfx)
     {
         atlasPath = scaledPath;
     }

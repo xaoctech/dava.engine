@@ -1,6 +1,7 @@
 #include "Classes/Qt/Tools/HeightDeltaTool/HeightDeltaTool.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/HeightDeltaTool/PaintHeightDelta.h"
 #include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
@@ -15,6 +16,19 @@
 #include <QFileInfo>
 #include <QImageReader>
 #include <QMessageBox>
+
+namespace HeightDeltaToolDetails
+{
+SceneEditor2* GetActiveScene()
+{
+    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    if (data != nullptr)
+    {
+        return data->GetScene().Get();
+    }
+    return nullptr;
+}
+}
 
 HeightDeltaTool::HeightDeltaTool(QWidget* p)
     : QWidget(p)
@@ -46,7 +60,7 @@ void HeightDeltaTool::OnRun()
 {
     DVASSERT(!outputFilePath.isEmpty());
 
-    SceneEditor2* scene = sceneholder.GetScene();
+    SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
     DVASSERT(scene);
     DAVA::Landscape* landscapeRO = FindLandscape(scene);
     DVASSERT(landscapeRO);
@@ -78,7 +92,7 @@ void HeightDeltaTool::OnValueChanged(double /*v*/)
 {
     ui->run->setEnabled(false);
 
-    SceneEditor2* scene = sceneholder.GetScene();
+    SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
     DVASSERT(scene != nullptr);
     DAVA::Landscape* landscape = FindLandscape(scene);
     if (landscape == nullptr)

@@ -33,6 +33,12 @@ public:
     float32 GetMass() const;
     void SetMass(float32 mass);
 
+    void SetTypeMask(uint32 typeMask);
+    uint32 GetTypeMask() const;
+
+    void SetTypeMaskToCollideWith(uint32 typeMaskToCollideWith);
+    uint32 GetTypeMaskToCollideWith() const;
+
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
 
 protected:
@@ -53,6 +59,8 @@ private:
     FastName name = FastName("");
     bool overrideMass = false;
     float32 mass = 1.0f;
+    uint32 typeMask = 0;
+    uint32 typeMaskToCollideWith = 0;
 
     physx::PxShape* shape = nullptr;
 

@@ -8,6 +8,9 @@
 #include "Physics/MeshShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
 #include "Physics/HeightFieldShapeComponent.h"
+#include "Physics/BoxCharacterControllerComponent.h"
+#include "Physics/CapsuleCharacterControllerComponent.h"
+#include "Physics/WASDPhysicsControllerComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/Private/PhysicsMath.h"
 
@@ -172,6 +175,10 @@ PhysicsModule::PhysicsModule(Engine* engine)
     shapeComponents.push_back(Component::MESH_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
     shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
+
+    characterControllerComponents.reserve(2);
+    characterControllerComponents.push_back(Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
+    characterControllerComponents.push_back(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
 }
 
 void PhysicsModule::Init()
@@ -208,6 +215,9 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConvexHullShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxCharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleCharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WASDPhysicsControllerComponent);
 }
 
 void PhysicsModule::Shutdown()
@@ -245,7 +255,7 @@ void PhysicsModule::Deallocate(void* ptr)
     allocator->deallocate(ptr);
 }
 
-physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) const
+physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config, physx::PxSimulationFilterShader filterShader, physx::PxSimulationEventCallback* callback) const
 {
     using namespace physx;
 
@@ -254,6 +264,8 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) con
     PxSceneDesc sceneDesc(physics->getTolerancesScale());
     sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVE_ACTORS;
     sceneDesc.gravity = PhysicsMath::Vector3ToPxVec3(config.gravity);
+    sceneDesc.filterShader = filterShader;
+    sceneDesc.simulationEventCallback = callback;
 
     if (cpuDispatcher == nullptr)
     {
@@ -261,8 +273,6 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config) con
     }
     DVASSERT(cpuDispatcher);
     sceneDesc.cpuDispatcher = cpuDispatcher;
-
-    sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 
     PxScene* scene = physics->createScene(sceneDesc);
     DVASSERT(scene);
@@ -465,6 +475,11 @@ const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
 const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
 {
     return shapeComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
+{
+    return characterControllerComponents;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)

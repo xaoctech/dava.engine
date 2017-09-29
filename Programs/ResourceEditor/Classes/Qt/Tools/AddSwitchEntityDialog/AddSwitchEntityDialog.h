@@ -1,12 +1,15 @@
-#ifndef __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
-#define __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
+#pragma once
 
-#include "DAVAEngine.h"
-#include "Qt/Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-#include "Qt/Scene/ActiveSceneHolder.h"
+#include "Classes/Qt/Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
+
+#include <Base/Vector.h>
+
+namespace DAVA
+{
+class Entity;
+}
 
 class SelectEntityPathWidget;
-
 class AddSwitchEntityDialog : public BaseAddEntityDialog
 {
     Q_OBJECT
@@ -25,10 +28,6 @@ protected:
 private:
     void CleanupPathWidgets();
 
-    ActiveSceneHolder sceneHolder;
     DAVA::Vector<SelectEntityPathWidget*> pathWidgets;
-
     DAVA::Vector<QWidget*> additionalWidgets;
 };
-
-#endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */

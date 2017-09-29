@@ -56,6 +56,7 @@ class SlotSystem;
 class TransformSingleComponent;
 class MotionSingleComponent;
 class PhysicsSystem;
+class CollisionSingleComponent;
 
 class UIEvent;
 class RenderPass;
@@ -183,6 +184,7 @@ public:
     GeoDecalSystem* geoDecalSystem = nullptr;
     PhysicsSystem* physicsSystem = nullptr;
 
+    CollisionSingleComponent* collisionSingleComponent = nullptr;
     TransformSingleComponent* transformSingleComponent = nullptr;
     MotionSingleComponent* motionSingleComponent = nullptr;
 
