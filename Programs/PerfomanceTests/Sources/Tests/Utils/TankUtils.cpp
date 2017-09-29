@@ -7,7 +7,7 @@ const FastName TankUtils::TankNode::L_WHEELS = FastName("l_wheels");
 const FastName TankUtils::TankNode::R_WHEELS = FastName("r_wheels");
 const FastName TankUtils::TankNode::SKINNED_TANK = FastName("SKINNED_TANK");
 
-void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint16>& outJointIndexes)
+void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint32>& outJointIndexes)
 {
     ScopedPtr<Entity> skinnedTank(new Entity());
     skinnedTank->SetName(TankUtils::TankNode::SKINNED_TANK);
@@ -16,12 +16,20 @@ void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint16>& outJointInde
     Entity* rWheelsRoot = sourceTank->FindByName(TankNode::R_WHEELS);
 
     Vector<Entity*> wheels;
-
     lWheelsRoot->GetChildNodes(wheels);
     rWheelsRoot->GetChildNodes(wheels);
 
-    Vector<SkeletonComponent::JointConfig> tankJoints;
-    ScopedPtr<RenderObject> skinnedRo(MeshUtils::CreateSkinnedMesh(sourceTank, tankJoints));
+    for (Entity* wheel : wheels)
+    {
+        RenderObject* wheelObject = GetRenderObject(wheel);
+        DVASSERT(wheelObject);
+
+        const Vector3& centerPos = wheelObject->GetBoundingBox().GetCenter();
+        wheel->SetLocalTransform(Matrix4::MakeTranslation(centerPos));
+    }
+
+    Vector<SkeletonComponent::Joint> tankJoints;
+    ScopedPtr<RenderObject> skinnedRo(MeshUtils::CreateHardSkinnedMesh(sourceTank, tankJoints));
     skinnedRo->AddFlag(RenderObject::VISIBLE_REFLECTION | RenderObject::VISIBLE_REFRACTION);
 
     RenderComponent* renderComponent = static_cast<RenderComponent*>(skinnedTank->GetOrCreateComponent(Component::RENDER_COMPONENT));
@@ -37,27 +45,12 @@ void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint16>& outJointInde
         for (uint32 i = 0; i < jointsCount; i++)
         {
             if (tankJoints[i].name == wheel->GetName())
-            {
                 outJointIndexes.push_back(i);
-                tankJoints[i].position = centerPos;
-            }
-        }
-    }
-
-    for (uint32 i = 0; i < jointsCount; i++)
-    {
-        if (tankJoints[i].name == TankNode::TURRET)
-        {
-            Entity* turret = sourceTank->FindByName(TankNode::TURRET);
-            RenderComponent* renderComponent = static_cast<RenderComponent*>(turret->GetComponent(Component::RENDER_COMPONENT));
-
-            tankJoints[i].position = renderComponent->GetRenderObject()->GetBoundingBox().GetCenter();
         }
     }
 
     SkeletonComponent* conquerorSkeleton = new SkeletonComponent();
-    conquerorSkeleton->SetConfigJoints(tankJoints);
-    conquerorSkeleton->RebuildFromConfig();
+    conquerorSkeleton->SetJoints(tankJoints);
 
     skinnedTank->AddComponent(conquerorSkeleton);
 
@@ -75,7 +68,7 @@ void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint16>& outJointInde
     sourceTank->AddNode(skinnedTank);
 }
 
-void TankUtils::Animate(Entity* tank, const Vector<uint16>& jointIndexes, float32 angle)
+void TankUtils::Animate(Entity* tank, const Vector<uint32>& jointIndexes, float32 angle)
 {
     Entity* skinnedTank = tank->FindByName(TankUtils::TankNode::SKINNED_TANK);
     Entity* turret = tank->FindByName(TankUtils::TankNode::TURRET);
@@ -87,10 +80,17 @@ void TankUtils::Animate(Entity* tank, const Vector<uint16>& jointIndexes, float3
 
     for (uint32 i = 0; i < jointIndexes.size(); i++)
     {
-        skeleton->SetJointOrientation(jointIndexes[i], wheelsRotation);
+        JointTransform transform = skeleton->GetJointTransform(jointIndexes[i]);
+        transform.orientation = wheelsRotation;
+        skeleton->SetJointTransform(jointIndexes[i], transform);
     }
 
     // rotate gun shot effect
     turret->SetLocalTransform(turrentRotation.GetMatrix());
-    skeleton->SetJointOrientation(skeleton->GetJointId(TankUtils::TankNode::TURRET), turrentRotation);
+
+    uint32 turretJoint = skeleton->GetJointIndex(TankUtils::TankNode::TURRET);
+    JointTransform transform = skeleton->GetJointTransform(turretJoint);
+
+    transform.orientation = turrentRotation;
+    skeleton->SetJointTransform(turretJoint, transform);
 }

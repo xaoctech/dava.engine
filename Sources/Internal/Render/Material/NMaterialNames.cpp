@@ -66,6 +66,14 @@ const FastName NMaterialName::DEBUG_DRAW_PARTICLES_NO_DEPTH = FastName("~res:/Ma
 
 const FastName NMaterialName::WATER_ALL_QUALITIES = FastName("~res:/Materials/WaterAllQualities.material");
 
+const FastName NMaterialName::WATER_PER_PIXEL_REAL_REFLECTIONS = FastName("~res:/Materials/WaterPerPixelRealReflections.material");
+const FastName NMaterialName::WATER_PER_PIXEL_CUBEMAP_ALPHABLEND = FastName("~res:/Materials/WaterPerPixelCubemapAlphablend.material");
+const FastName NMaterialName::WATER_PER_VERTEX_CUBEMAP_DECAL = FastName("~res:/Materials/WaterPerVertexCubemapDecal.material");
+
+const FastName NMaterialName::NORMALIZED_BLINN_PHONG_PER_PIXEL_OPAQUE = FastName("~res:/Materials/NormalizedBlinnPhongPerPixel.Opaque.material");
+const FastName NMaterialName::NORMALIZED_BLINN_PHONG_PER_PIXEL_FAST_OPAQUE = FastName("~res:/Materials/NormalizedBlinnPhongPerPixelFast.Opaque.material");
+const FastName NMaterialName::NORMALIZED_BLINN_PHONG_PER_VERTEX_OPAQUE = FastName("~res:/Materials/NormalizedBlinnPhongPerVertex.Opaque.material");
+
 const FastName NMaterialTextureName::TEXTURE_ALBEDO("albedo");
 const FastName NMaterialTextureName::TEXTURE_NORMAL("normalmap");
 const FastName NMaterialTextureName::TEXTURE_SPECULAR("specularmap");
@@ -162,7 +170,8 @@ const FastName NMaterialFlagName::FLAG_DEBUG_UNITY_Z_NORMAL = FastName("DEBUG_UN
 const FastName NMaterialFlagName::FLAG_DEBUG_Z_NORMAL_SCALE = FastName("DEBUG_Z_NORMAL_SCALE");
 const FastName NMaterialFlagName::FLAG_DEBUG_NORMAL_ROTATION = FastName("DEBUG_NORMAL_ROTATION");
 
-const FastName NMaterialFlagName::FLAG_SKINNING = FastName("SKINNING");
+const FastName NMaterialFlagName::FLAG_HARD_SKINNING = FastName("HARD_SKINNING");
+const FastName NMaterialFlagName::FLAG_SOFT_SKINNING = FastName("SOFT_SKINNING");
 
 const FastName NMaterialFlagName::FLAG_FLOWMAP_SKY = FastName("FLOWMAP_SKY");
 const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP = FastName("PARTICLES_FLOWMAP");

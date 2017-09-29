@@ -9,7 +9,6 @@
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Base/HashMap.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/EntityFamily.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"

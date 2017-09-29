@@ -470,60 +470,56 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
                 int32 width = bitmap->width;
                 int32 height = bitmap->rows;
 
-                if (top < 0)
+                if (top >= 0)
                 {
-                    pen.x += advances[i].x;
-                    pen.y += advances[i].y;
-                    continue;
-                }
-
-                if (glyph.index == 0) // guess bitmap dimensions for empty bitmap
-                {
-                    width = int32(advances[i].x) >> ftToPixelShift;
-                    height = int32(std::ceil(2 * metrics.baseline - metrics.height));
-                    left = int32(pen.x) >> ftToPixelShift;
-                    top = multilineOffsetY - (int32(pen.y) >> ftToPixelShift) - height;
-                }
-
-                uint8* resultBuf = static_cast<uint8*>(buffer);
-                int32 realH = Min(height, bufHeight - top);
-                int32 realW = Min(width, bufWidth - left);
-                int32 ind = top * bufWidth + left;
-                DVASSERT(((ind >= 0) && (ind < bufWidth * bufHeight)) || (realW * realH == 0));
-                uint8* writeBuf = resultBuf + ind;
-
-                if (glyph.index == 0)
-                {
-                    for (int32 h = 0; h < realH; h++)
+                    if (glyph.index == 0) // guess bitmap dimensions for empty bitmap
                     {
-                        for (int32 w = 0; w < realW; w++)
-                        {
-                            if (w == 0 || w == realW - 1 || h == 0 || h == realH - 1)
-                                *writeBuf++ = 255;
-                            else
-                                *writeBuf++ = 0;
-                        }
-                        writeBuf += bufWidth - realW;
+                        width = int32(advances[i].x) >> ftToPixelShift;
+                        height = int32(std::ceil(2 * metrics.baseline - metrics.height));
+                        left = int32(pen.x) >> ftToPixelShift;
+                        top = multilineOffsetY - (int32(pen.y) >> ftToPixelShift) - height;
                     }
-                }
-                else
-                {
-                    uint8* readBuf = bitmap->buffer;
-                    for (int32 h = 0; h < realH; h++)
-                    {
-                        for (int32 w = 0; w < realW; w++)
-                        {
-                            *writeBuf++ |= *readBuf++;
-                        }
-                        writeBuf += bufWidth - realW;
-                        // DF-1827 - Increment read buffer with proper value
-                        readBuf += width - realW;
-                    }
-                }
 
-                if (writeBuf > resultBuf + ind)
-                {
-                    DVASSERT((writeBuf - resultBuf - (bufWidth - realW)) <= (bufWidth * bufHeight));
+                    uint8* resultBuf = static_cast<uint8*>(buffer);
+                    int32 realH = Min(height, bufHeight - top);
+                    int32 realW = Min(width, bufWidth - left);
+                    int32 ind = top * bufWidth + left;
+                    DVASSERT(((ind >= 0) && (ind < bufWidth * bufHeight)) || (realW * realH == 0));
+                    uint8* writeBuf = resultBuf + ind;
+
+                    if (glyph.index == 0)
+                    {
+                        for (int32 h = 0; h < realH; h++)
+                        {
+                            for (int32 w = 0; w < realW; w++)
+                            {
+                                if (w == 0 || w == realW - 1 || h == 0 || h == realH - 1)
+                                    *writeBuf++ = 255;
+                                else
+                                    *writeBuf++ = 0;
+                            }
+                            writeBuf += bufWidth - realW;
+                        }
+                    }
+                    else
+                    {
+                        uint8* readBuf = bitmap->buffer;
+                        for (int32 h = 0; h < realH; h++)
+                        {
+                            for (int32 w = 0; w < realW; w++)
+                            {
+                                *writeBuf++ |= *readBuf++;
+                            }
+                            writeBuf += bufWidth - realW;
+                            // DF-1827 - Increment read buffer with proper value
+                            readBuf += width - realW;
+                        }
+                    }
+
+                    if (writeBuf > resultBuf + ind)
+                    {
+                        DVASSERT((writeBuf - resultBuf - (bufWidth - realW)) <= (bufWidth * bufHeight));
+                    }
                 }
             }
 

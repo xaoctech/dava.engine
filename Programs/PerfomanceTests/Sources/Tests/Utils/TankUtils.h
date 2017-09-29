@@ -17,8 +17,8 @@ struct TankNode
     const static FastName SKINNED_TANK;
 };
 
-void Animate(Entity* skinnedTank, const Vector<uint16>& jointIndexes, float32 angle);
-void MakeSkinnedTank(Entity* entity, Vector<uint16>& jointsInfo);
+void Animate(Entity* skinnedTank, const Vector<uint32>& jointIndexes, float32 angle);
+void MakeSkinnedTank(Entity* entity, Vector<uint32>& jointsInfo);
 }
 }
 

@@ -2,7 +2,6 @@
 #define __DAVAENGINE_SCENE3D_RENDERUPDATESYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
 #include "Entity/SceneSystem.h"
 
 namespace DAVA
@@ -29,7 +28,7 @@ public:
 
 private:
     void UpdateActiveIndexes(Entity* entity, RenderObject* object);
-    HashMap<Entity*, RenderObject*> entityObjectMap;
+    UnorderedMap<Entity*, RenderObject*> entityObjectMap;
 };
 
 } // ns

@@ -51,7 +51,7 @@ void LightUpdateSystem::AddEntity(Entity* entity)
     if (!lightObject)
         return;
 
-    entityObjectMap.insert(entity, lightObject);
+    entityObjectMap[entity] = lightObject;
     GetScene()->GetRenderSystem()->AddLight(lightObject);
 
     RecalcLight(entity);
@@ -59,14 +59,18 @@ void LightUpdateSystem::AddEntity(Entity* entity)
 
 void LightUpdateSystem::RemoveEntity(Entity* entity)
 {
-    Light* lightObject = entityObjectMap.at(entity);
-    if (!lightObject)
-    {
-        return;
-    }
+    auto lightObjectIter = entityObjectMap.find(entity);
 
-    GetScene()->GetRenderSystem()->RemoveLight(lightObject);
-    entityObjectMap.erase(entity);
+    if (lightObjectIter != entityObjectMap.end())
+    {
+        Light* lightObject = lightObjectIter->second;
+
+        if (lightObject != nullptr)
+        {
+            GetScene()->GetRenderSystem()->RemoveLight(lightObject);
+            entityObjectMap.erase(entity);
+        }
+    }
 }
 
 void LightUpdateSystem::PrepareForRemove()

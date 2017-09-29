@@ -2,7 +2,6 @@
 #define __DAVAENGINE_SCENE3D_LIGHTUPDATESYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
 #include "Entity/SceneSystem.h"
 
 namespace DAVA
@@ -30,7 +29,7 @@ public:
 
 private:
     void RecalcLight(Entity* entity);
-    HashMap<Entity*, Light*> entityObjectMap;
+    UnorderedMap<Entity*, Light*> entityObjectMap;
 };
 
 } // ns

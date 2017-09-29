@@ -2,11 +2,13 @@
 #include "Particles/ParticleEmitter.h"
 #include "Sound/SoundEvent.h"
 #include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/AnimationComponent.h"
-#include "Scene3D/Components/WaveComponent.h"
+#include "Scene3D/Components/MotionComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
@@ -538,6 +540,12 @@ void ActionComponent::OnActionAnimationStart(const Action& action)
             component->Stop();
             component->Start();
         }
+
+        MotionComponent* motionComponent = GetMotionComponent(target);
+        if (motionComponent)
+        {
+            target->GetScene()->motionSingleComponent->startAnimation.push_back(motionComponent);
+        }
     }
 }
 
@@ -551,6 +559,12 @@ void ActionComponent::OnActionAnimationStop(const Action& action)
         {
             component->StopAfterNRepeats(action.stopAfterNRepeats);
             component->Stop();
+        }
+
+        MotionComponent* motionComponent = GetMotionComponent(target);
+        if (motionComponent)
+        {
+            target->GetScene()->motionSingleComponent->stopAnimation.push_back(motionComponent);
         }
     }
 }
