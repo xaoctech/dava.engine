@@ -46,8 +46,11 @@ vertex_in
     float3 binormal : BINORMAL;
     #endif
     
-    #if SKINNING
-    float index : BLENDINDICES;
+    #if SOFT_SKINNING
+    float4 index  : BLENDINDICES;
+    float4 weight : BLENDWEIGHT;
+    #elif HARD_SKINNING
+    float  index  : BLENDINDICES;
     #endif
 
 
@@ -180,7 +183,7 @@ vertex_out
 [material][a] property float3 metalFresnelReflectance = float3(0.5,0.5,0.5);
 #endif
 
-#if SKINNING
+#if SOFT_SKINNING || HARD_SKINNING
 [auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray" ; // (x, y, z, scale)
 [auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
 #endif
@@ -275,11 +278,23 @@ inline float3 FresnelShlickVec3( float NdotL, float3 Cspec )
     return (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent)) + Cspec;
 }
 
-inline float3 JointTransformTangent( float3 inVec, float4 jointQuaternion )
+#if SOFT_SKINNING
+
+inline float3 JointTransformTangent( float3 tangent, float4 quaternion, float jWeight)
 {
-    float3 t = 2.0 * cross( jointQuaternion.xyz, inVec );
-    return inVec + jointQuaternion.w * t + cross(jointQuaternion.xyz, t); 
+    float3 tmp = 2.0 * cross(quaternion.xyz, tangent);
+    return tangent + (quaternion.w * tmp + cross(quaternion.xyz, tmp)) * jWeight;
 }
+
+#elif HARD_SKINNING
+
+inline float3 JointTransformTangent( float3 tangent, float4 quaternion )
+{
+    float3 tmp = 2.0 * cross(quaternion.xyz, tangent);
+    return tangent + quaternion.w * tmp + cross(quaternion.xyz, tmp);
+}
+
+#endif
 
 inline float4 Wave( float time, float4 pos, float2 uv )
 {
@@ -319,13 +334,6 @@ inline float4 Wave( float time, float4 pos, float2 uv )
 vertex_out vp_main( vertex_in input )
 {
     vertex_out  output;
-
-#if SKINNING
-    // compute final state - for now just effected by 1 bone - later blend everything here
-    int     index                    = int(input.index);
-    float4  weightedVertexPosition   = jointPositions[index];
-    float4  weightedVertexQuaternion = jointQuaternions[index];
-#endif
 
 #if FLOWMAP || PARTICLES_FLOWMAP
 #if FLOWMAP
@@ -405,10 +413,42 @@ vertex_out vp_main( vertex_in input )
             float4 waveValue = Wave(globalTime, float4(input.position.xyz, 1.0), input.texcoord0);
             output.position = mul( waveValue, worldViewProjMatrix );
         #else
-            #if SKINNING
-                float3 tmpVec = 2.0 * cross(weightedVertexQuaternion.xyz, input.position.xyz);
-                float4 skinnedPosition = float4(weightedVertexPosition.xyz + (input.position.xyz + weightedVertexQuaternion.w * tmpVec + cross(weightedVertexQuaternion.xyz, tmpVec))*weightedVertexPosition.w, 1.0);
+            #if SOFT_SKINNING || HARD_SKINNING
+            
+                float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
+                
+                #if SOFT_SKINNING
+                {
+                    float4 indices = input.index;
+                    float4 weights = input.weight;
+                    for(int i = 0; i < SOFT_SKINNING; ++i)
+                    {
+                        int jIndex = int(indices.x);
+                        
+                        float4 jP = jointPositions[jIndex];
+                        float4 jQ = jointQuaternions[jIndex];
+                    
+                        float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
+                        skinnedPosition += float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0) * weights.x;
+                        
+                        indices = indices.yzwx;
+                        weights = weights.yzwx;
+                    }
+                }
+                #else 
+                {
+                    int jIndex = int(input.index);
+                    
+                    float4 jP = jointPositions[jIndex];
+                    float4 jQ = jointQuaternions[jIndex];
+
+                    float3 tmp = 2.0 * cross(jQ.xyz, input.position.xyz);
+                    skinnedPosition = float4(jP.xyz + (input.position.xyz + jQ.w * tmp + cross(jQ.xyz, tmp)) * jP.w, 1.0);
+                }
+                #endif
+                    
                 output.position = mul( skinnedPosition, worldViewProjMatrix );
+                    
             #else
                 output.position = mul( float4(input.position.xyz,1.0), worldViewProjMatrix );
             #endif
@@ -422,7 +462,7 @@ vertex_out vp_main( vertex_in input )
 #if SPEED_TREE_OBJECT
     float3 eyeCoordsPosition = eyeCoordsPosition4.xyz;
 #elif VERTEX_LIT || PIXEL_LIT || VERTEX_FOG || SPHERICAL_LIT
-    #if SKINNING
+    #if SOFT_SKINNING || HARD_SKINNING
         float3 eyeCoordsPosition = mul( skinnedPosition, worldViewMatrix ).xyz; // view direction in view space
     #else
         // view direction in view space
@@ -500,14 +540,43 @@ vertex_out vp_main( vertex_in input )
     float3  inTangent   = input.tangent;
     float3  inBinormal  = input.binormal;
     
-    #if SKINNING
-        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, weightedVertexQuaternion),1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, weightedVertexQuaternion),1.0), worldViewInvTransposeMatrix ).xyz );
-        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, weightedVertexQuaternion),1.0), worldViewInvTransposeMatrix ).xyz );
+    #if SOFT_SKINNING
+
+        float3 n = inNormal;
+        float3 t = inTangent;
+        float3 b = inBinormal;
+
+        float4 indices = input.index;
+        float4 weights = input.weight;
+        for(int i = 0; i < SOFT_SKINNING; ++i)
+        {
+            float4 jointQuaternion = jointQuaternions[int(indices.x)];
+
+            n = JointTransformTangent(n, jointQuaternion, weights.x);
+            t = JointTransformTangent(t, jointQuaternion, weights.x);
+            b = JointTransformTangent(b, jointQuaternion, weights.x);
+
+            indices = indices.yzwx;
+            weights = weights.yzwx;
+        }
+
+        n = normalize( mul( float4(n, 1.0), worldViewInvTransposeMatrix ).xyz );
+        t = normalize( mul( float4(t, 1.0), worldViewInvTransposeMatrix ).xyz );
+        b = normalize( mul( float4(b, 1.0), worldViewInvTransposeMatrix ).xyz );
+
+    #elif HARD_SKINNING
+
+        float4 jointQuaternion = jointQuaternions[int(input.index)];
+        float3 n = normalize( mul( float4(JointTransformTangent(inNormal, jointQuaternion), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 t = normalize( mul( float4(JointTransformTangent(inTangent, jointQuaternion), 1.0), worldViewInvTransposeMatrix ).xyz );
+        float3 b = normalize( mul( float4(JointTransformTangent(inBinormal, jointQuaternion), 1.0), worldViewInvTransposeMatrix ).xyz );
+
     #else
+
         float3 n = normalize( mul( float4(inNormal,1.0), worldViewInvTransposeMatrix ).xyz );
         float3 t = normalize( mul( float4(inTangent,1.0), worldViewInvTransposeMatrix ).xyz );
         float3 b = normalize( mul( float4(inBinormal,1.0), worldViewInvTransposeMatrix ).xyz );
+
     #endif       
     
     // transform light and half angle vectors by tangent basis
@@ -637,7 +706,12 @@ vertex_out vp_main( vertex_in input )
 
     #endif // !CUT_LEAF
 
-    output.varVertexColor.xyz = half3(sphericalLightFactor * 2.0);
+    #if VERTEX_COLOR
+        output.varVertexColor.xyz = half3(input.color0.xyz) * half3(sphericalLightFactor * 2.0);
+    #else
+        output.varVertexColor.xyz = half3(sphericalLightFactor * 2.0);
+    #endif
+
     output.varVertexColor.w = half(1.0);    
 
 #elif SPEED_TREE_OBJECT //legacy for old tree lighting

@@ -1,8 +1,0 @@
-MACRO EXPANSION
-
-#define AAA 111
-#define BBB 222
-
-AAA
-
-last

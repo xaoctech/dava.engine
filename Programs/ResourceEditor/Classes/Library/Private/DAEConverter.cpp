@@ -48,4 +48,27 @@ bool Convert(const DAVA::FilePath& daePath)
 
     return false;
 }
+
+bool ConvertAnimations(const DAVA::FilePath& daePath)
+{
+    DAVA::FileSystem* fileSystem = DAVA::GetEngineContext()->fileSystem;
+    if (fileSystem->Exists(daePath) && daePath.IsEqualToExtension(".dae"))
+    {
+        eColladaErrorCodes code = ConvertDaeToAnimations(daePath);
+        if (code == COLLADA_OK)
+        {
+            return true;
+        }
+        else
+        {
+            DAVA::Logger::Error("[DAE to animations] Can't convert from DAE.");
+        }
+    }
+    else
+    {
+        DAVA::Logger::Error("[DAE to animations] Wrong pathname: %s.", daePath.GetStringValue().c_str());
+    }
+
+    return false;
+}
 }

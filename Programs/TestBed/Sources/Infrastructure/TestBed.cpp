@@ -57,6 +57,7 @@
 #include "Tests/PhysicsTest.h"
 #endif
 #include "Tests/SpineTest.h"
+#include "Tests/SkeletonAnimationTest.h"
 //$UNITTEST_INCLUDE
 
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -422,6 +423,7 @@ void TestBed::RegisterTests()
 #endif
     new TextSystemTest(*this);
     new SpineTest(*this);
+    new SkeletonAnimationTest(*this);
     //$UNITTEST_CTOR
 }
 

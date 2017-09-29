@@ -40,8 +40,6 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Command/Command.h>
 
-#include <QShortcut>
-
 namespace SceneEditorDetail
 {
 struct EmitterDescriptor

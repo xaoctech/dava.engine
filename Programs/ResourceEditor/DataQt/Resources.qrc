@@ -72,6 +72,7 @@
         <file>QtIcons/box_closed.png</file>
         <file>QtIcons/box_open.png</file>
         <file>QtIcons/render_object.png</file>
+        <file>QtIcons/skinned_object.png</file>
         <file>QtIcons/lock_add.png</file>
         <file>QtIcons/lock_delete.png</file>
         <file>QtIcons/locked.png</file>
@@ -167,5 +168,7 @@
         <file>QtIcons/rspeaker_off.png</file>
         <file>QtIcons/rspeaker_on.png</file>
         <file>QtIcons/text_component.png</file>
+        <file>QtIcons/rebuild_name.png</file>
+        <file>QtIcons/clone_inplace.png</file>
     </qresource>
 </RCC>

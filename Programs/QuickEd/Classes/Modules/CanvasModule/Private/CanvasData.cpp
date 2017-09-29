@@ -11,6 +11,7 @@ DAVA::FastName CanvasData::rootPositionPropertyName{ "root control position" };
 DAVA::FastName CanvasData::scalePropertyName{ "scale" };
 DAVA::FastName CanvasData::predefinedScalesPropertyName{ "predefined scales" };
 DAVA::FastName CanvasData::referencePointPropertyName{ "reference point" };
+DAVA::FastName CanvasData::needCentralizePropertyName{ "need centralize" };
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CanvasData)
 {
@@ -21,6 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CanvasData)
     .Field(rootPositionPropertyName.c_str(), &CanvasData::GetRootPosition, &CanvasData::SetRootPosition)
     .Field(scalePropertyName.c_str(), &CanvasData::GetScale, &CanvasData::SetScale)
     .Field(predefinedScalesPropertyName.c_str(), &CanvasData::GetPredefinedScales, nullptr)
+    .Field(needCentralizePropertyName.c_str(), &CanvasData::needCentralize)
     .End();
 }
 
@@ -60,7 +62,7 @@ void CanvasData::SetPosition(const DAVA::Vector2& position_)
     using namespace DAVA;
     needCentralize = false;
 
-    position.Set(std::floor(position_.x), std::floor(position_.y));
+    position = position_;
 }
 
 DAVA::Vector2 CanvasData::GetRootPosition() const

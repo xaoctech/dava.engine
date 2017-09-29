@@ -1,9 +1,0 @@
-BLOCK-COMMENT
-
-ignored /*text
-#define BLA_BLA 111
-should be ignored
-something */else
-
-    not bla-bla
-last
