@@ -24,6 +24,12 @@ void Notifier::NotifyStarted(const BaseTask* task)
 
 void Notifier::NotifyProgress(const BaseTask* task, quint32 progress)
 {
+    if (progress < lastProgress)
+    {
+        step++;
+    }
+    lastProgress = progress;
+
     for (Receiver& receiver : receivers)
     {
         if (receiver.onProgress)
@@ -56,9 +62,4 @@ void Notifier::SetProgressDelimiter(int delimiter_)
 {
     Q_ASSERT(delimiter_ > 0);
     delimiter = delimiter_;
-}
-
-void Notifier::IncrementStep()
-{
-    step++;
 }

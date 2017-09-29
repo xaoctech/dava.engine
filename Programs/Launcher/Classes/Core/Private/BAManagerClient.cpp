@@ -305,6 +305,11 @@ void BAManagerClient::SilentUpdate(const QJsonObject& requestObj, const QString&
 
 void BAManagerClient::OnTaskFinished(const BaseTask* task)
 {
+    if (task->GetTaskType() != BaseTask::ASYNC_CHAIN)
+    {
+        return;
+    }
+
     const QVariant& data = task->GetUserData();
     if (data.canConvert<QString>())
     {

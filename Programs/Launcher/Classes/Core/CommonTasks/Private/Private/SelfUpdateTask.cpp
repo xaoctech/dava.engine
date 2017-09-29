@@ -1,4 +1,4 @@
-#include "Core/GuiTasks/SelfUpdateTask.h"
+#include "Core/CommonTasks/SelfUpdateTask.h"
 #include "Core/CommonTasks/UnzipTask.h"
 #include "Core/CommonTasks/DownloadTask.h"
 #include "Core/ApplicationQuitController.h"
@@ -40,7 +40,20 @@ void SelfUpdateTask::Run()
 
     QString description = QObject::tr("Loading new launcher");
     std::unique_ptr<BaseTask> task = appContext->CreateTask<DownloadTask>(description, url, &fileToWrite);
-    appContext->taskManager.AddTask(std::move(task), notifier);
+
+    Receiver receiver;
+    receiver.onFinished = [this](const BaseTask* task) {
+        if (task->HasError())
+        {
+            emit Finished();
+        }
+        else
+        {
+            OnLoaded();
+        }
+    };
+
+    appContext->taskManager.AddTask(std::move(task), Notifier({ transparentReceiver, receiver }));
 }
 
 int SelfUpdateTask::GetSubtasksCount() const
@@ -48,32 +61,7 @@ int SelfUpdateTask::GetSubtasksCount() const
     return 2;
 }
 
-void SelfUpdateTask::OnFinished(const BaseTask* task)
-{
-    if (task->HasError())
-    {
-        emit Finished();
-        return;
-    }
-    else
-    {
-        switch (state)
-        {
-        case LOADING:
-            notifier.IncrementStep();
-            OnLoaded(task);
-            break;
-        case UNPACKING:
-            OnUnpacked();
-            break;
-        default:
-            Q_ASSERT(false);
-            break;
-        }
-    }
-}
-
-void SelfUpdateTask::OnLoaded(const BaseTask* task)
+void SelfUpdateTask::OnLoaded()
 {
     fileToWrite.close();
 
@@ -92,7 +80,19 @@ void SelfUpdateTask::OnLoaded(const BaseTask* task)
 
     std::unique_ptr<BaseTask> zipTask = appContext->CreateTask<UnzipTask>(filePath, selfUpdateDirPath);
 
-    appContext->taskManager.AddTask(std::move(zipTask), notifier);
+    Receiver receiver;
+    receiver.onFinished = [this](const BaseTask* task) {
+        if (task->HasError())
+        {
+            emit Finished();
+        }
+        else
+        {
+            OnUnpacked();
+        }
+    };
+
+    appContext->taskManager.AddTask(std::move(zipTask), Notifier({ transparentReceiver, receiver }));
 }
 
 void SelfUpdateTask::OnUnpacked()

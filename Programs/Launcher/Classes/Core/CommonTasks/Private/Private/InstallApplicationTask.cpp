@@ -1,4 +1,4 @@
-#include "Core/GuiTasks/InstallApplicationTask.h"
+#include "Core/CommonTasks/InstallApplicationTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/CommonTasks/DownloadTask.h"
 #include "Core/CommonTasks/RemoveApplicationTask.h"
@@ -40,7 +40,20 @@ void InstallApplicationTask::Run()
     QString description = QObject::tr("Downloading application %1").arg(LauncherUtils::GetAppName(params.app, params.newVersion.isToolSet));
     std::unique_ptr<BaseTask> task = appContext->CreateTask<DownloadTask>(description, params.newVersion.url, &fileToWrite);
 
-    appContext->taskManager.AddTask(std::move(task), notifier);
+    Receiver receiver;
+    receiver.onFinished = [this](const BaseTask* task) {
+        if (task->HasError())
+        {
+            emit Finished();
+            return;
+        }
+        else
+        {
+            OnLoaded();
+        }
+    };
+
+    appContext->taskManager.AddTask(std::move(task), Notifier({ transparentReceiver, receiver }));
 }
 
 int InstallApplicationTask::GetSubtasksCount() const
@@ -48,36 +61,7 @@ int InstallApplicationTask::GetSubtasksCount() const
     return NeedUnpack() ? 2 : 1;
 }
 
-void InstallApplicationTask::OnFinished(const BaseTask* task)
-{
-    //ignore children run tasks
-    if (dynamic_cast<const RunApplicationTask*>(task) != nullptr)
-    {
-        return;
-    }
-    if (task->HasError() == false)
-    {
-        switch (state)
-        {
-        case LOADING:
-            notifier.IncrementStep();
-            OnLoaded(task);
-            return;
-        case UNPACKING:
-            Install();
-            return;
-        case POST_INSTALL:
-            OnInstalled();
-            return;
-        default:
-            Q_ASSERT(false);
-            break;
-        }
-    }
-    emit Finished();
-}
-
-void InstallApplicationTask::OnLoaded(const BaseTask* task)
+void InstallApplicationTask::OnLoaded()
 {
     QString filePath = appContext->fileManager.GetTempDownloadFilePath(params.newVersion.url);
 
@@ -89,7 +73,6 @@ void InstallApplicationTask::OnLoaded(const BaseTask* task)
         return;
     }
 
-    state = UNPACKING;
     applicationsToRestart = GetApplicationsToRestart(params.branch, params.app);
 
     //remove application if was installed
@@ -100,11 +83,10 @@ void InstallApplicationTask::OnLoaded(const BaseTask* task)
         if (localVersion != nullptr)
         {
             std::unique_ptr<BaseTask> task = appContext->CreateTask<RemoveApplicationTask>(configHolder, params.branch, params.app);
-            appContext->taskManager.AddTask(std::move(task), notifier);
-            return;
+            appContext->taskManager.AddTask(std::move(task), transparentReceiver);
         }
     }
-    //will not start remove task, can start install manually
+
     Install();
 }
 
@@ -112,12 +94,28 @@ void InstallApplicationTask::Install()
 {
     QString filePath = appContext->fileManager.GetTempDownloadFilePath(params.newVersion.url);
 
-    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, params.branch, params.app, params.newVersion.isToolSet, false);
-    state = POST_INSTALL;
+    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, params.branch, params.app, params.newVersion.isToolSet);
+    if (QFile::exists(appDirPath) == false)
+    {
+        FileManager::MakeDirectory(appDirPath);
+    }
+
     if (NeedUnpack())
     {
+        Receiver receiver;
+        receiver.onFinished = [this](const BaseTask* task) {
+            if (task->HasError())
+            {
+                emit Finished();
+            }
+            else
+            {
+                OnInstalled();
+            }
+        };
+
         std::unique_ptr<BaseTask> task = appContext->CreateTask<UnzipTask>(filePath, appDirPath);
-        appContext->taskManager.AddTask(std::move(task), notifier);
+        appContext->taskManager.AddTask(std::move(task), Notifier({ transparentReceiver, receiver }));
         return;
     }
     else
@@ -145,18 +143,18 @@ void InstallApplicationTask::OnInstalled()
     for (const QString& appToRestart : applicationsToRestart)
     {
         AppVersion* installedAppVersion = configHolder->localConfig.GetAppVersion(params.branch, appToRestart);
-        appContext->taskManager.AddTask(appContext->CreateTask<RunApplicationTask>(configHolder, params.branch, appToRestart, installedAppVersion->id), notifier);
+        appContext->taskManager.AddTask(appContext->CreateTask<RunApplicationTask>(configHolder, params.branch, appToRestart, installedAppVersion->id), transparentReceiver);
     }
 
     if (params.appToStart.isEmpty() == false)
     {
-        Application* app = LauncherUtils::FindApplication(&configHolder->localConfig, params.branch, params.appToStart, true);
+        Application* app = LauncherUtils::FindApplication(&configHolder->localConfig, params.branch, params.appToStart);
         if (app != nullptr)
         {
-            AppVersion* version = LauncherUtils::FindVersion(app, QString(), true);
+            AppVersion* version = LauncherUtils::FindVersion(app, QString());
             if (version != nullptr)
             {
-                appContext->taskManager.AddTask(appContext->CreateTask<RunApplicationTask>(configHolder, params.branch, app->id, version->id), notifier);
+                appContext->taskManager.AddTask(appContext->CreateTask<RunApplicationTask>(configHolder, params.branch, app->id, version->id), transparentReceiver);
             }
         }
     }
@@ -191,7 +189,7 @@ QStringList InstallApplicationTask::GetApplicationsToRestart(const QString& bran
     {
         if (LauncherUtils::CanTryStopApplication(appName))
         {
-            QString dirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, installedVersion->isToolSet, false);
+            QString dirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, installedVersion->isToolSet);
             QString localPath = LauncherUtils::GetLocalAppPath(installedVersion, appID);
             if (appContext->appsCommandsSender.HostIsAvailable(dirPath + localPath))
             {

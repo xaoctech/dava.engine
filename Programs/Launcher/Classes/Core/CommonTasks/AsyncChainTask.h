@@ -14,9 +14,8 @@ class AsyncChainTask : public QObject, public BaseTask
 public:
     AsyncChainTask(ApplicationContext* appContext);
 
-    void SetNotifier(const Notifier& notifier);
-
     virtual void Run() = 0;
+    virtual int GetSubtasksCount() const;
 
     //this signal is used only by AsyncChainTaskProcessor
     //later AsyncChainProcessor and AsyncChainTask must be replaced by std::function
@@ -24,12 +23,14 @@ public:
 signals:
     void Finished() const;
 
+    void ChildStarted(const BaseTask* task);
+    void ChildProgress(const BaseTask* task, quint32 progress);
+    void ChildFinished(const BaseTask* task);
+
 protected:
-    Notifier notifier;
+    //this receiver resend data to users
+    Receiver transparentReceiver;
 
 private:
-    virtual int GetSubtasksCount() const;
-
     eTaskType GetTaskType() const override;
-    virtual void OnFinished(const BaseTask* task) = 0;
 };

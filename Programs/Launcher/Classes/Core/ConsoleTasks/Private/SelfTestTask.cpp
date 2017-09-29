@@ -68,7 +68,7 @@ QCommandLineOption SelfTestTask::CreateOption() const
 void SelfTestTask::Run(const QStringList& arguments)
 {
     qInstallMessageHandler(SelfTestTaskDetails::TeamcityOutput);
-    ::LoadPreferences(appContext);
+    PreferencesDialog::LoadPreferences(appContext);
 
     Receiver receiver;
     receiver.onStarted = [](const BaseTask* task) {

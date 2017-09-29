@@ -31,32 +31,38 @@ void UpdateConfigTask::Run()
     QString description = QObject::tr("Downloading configuration");
     std::unique_ptr<BaseTask> task = appContext->CreateTask<DownloadTask>(description, buffers);
     Q_ASSERT(task != nullptr);
-    appContext->taskManager.AddTask(std::move(task), notifier);
+
+    Receiver receiver;
+    receiver.onFinished = [this](const BaseTask* task) {
+        if (task->HasError())
+        {
+            emit Finished();
+        }
+        else
+        {
+            OnLoaded();
+        }
+    };
+    appContext->taskManager.AddTask(std::move(task), Notifier({ transparentReceiver, receiver }));
 }
 
-void UpdateConfigTask::OnFinished(const BaseTask* task)
+void UpdateConfigTask::OnLoaded()
 {
-    if (task->HasError() == false)
+    for (auto& bufferItem : buffers)
     {
-        Q_ASSERT(task->GetTaskType() == BaseTask::DOWNLOAD_TASK);
-
-        for (auto& bufferItem : buffers)
+        QBuffer* buffer = static_cast<QBuffer*>(bufferItem.second);
+        Q_ASSERT(buffer->size() > 0);
+        if (configHolder->remoteConfig.ParseJSON(buffer->data(), this))
         {
-            QBuffer* buffer = static_cast<QBuffer*>(bufferItem.second);
-            Q_ASSERT(buffer->size() > 0);
-            if (configHolder->remoteConfig.ParseJSON(buffer->data(), this))
+            QString webPageUrl = configHolder->remoteConfig.GetWebpageURL();
+            if (webPageUrl.isEmpty() == false)
             {
-                QString webPageUrl = configHolder->remoteConfig.GetWebpageURL();
-                if (webPageUrl.isEmpty() == false)
-                {
-                    configHolder->localConfig.SetWebpageURL(webPageUrl);
-                }
-                configHolder->localConfig.CopyStringsAndFavsFromConfig(&configHolder->remoteConfig);
+                configHolder->localConfig.SetWebpageURL(webPageUrl);
             }
+            configHolder->localConfig.CopyStringsAndFavsFromConfig(&configHolder->remoteConfig);
         }
-        configHolder->remoteConfig.UpdateApplicationsNames();
-        configHolder->localConfig.UpdateApplicationsNames();
     }
-
+    configHolder->remoteConfig.UpdateApplicationsNames();
+    configHolder->localConfig.UpdateApplicationsNames();
     emit Finished();
 }

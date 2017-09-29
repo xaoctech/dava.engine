@@ -89,12 +89,13 @@ void RemoveApplicationTask::Run()
 
 bool RemoveApplicationTask::CanRemoveApp(const QString& branchID, const QString& appID, AppVersion* localVersion) const
 {
-    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, localVersion->isToolSet, false);
-    if (appDirPath.isEmpty())
+    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, localVersion->isToolSet);
+    if (QFile::exists(appDirPath) == false)
     {
         SetError(QObject::tr("Can not find application %1 in branch %2").arg(appID).arg(branchID));
         return true;
     }
+
     QString runPath = appDirPath + LauncherUtils::GetLocalAppPath(localVersion, appID);
     if (appContext->appsCommandsSender.HostIsAvailable(runPath))
     {
@@ -137,18 +138,16 @@ bool RemoveApplicationTask::TryStopApp(const QString& runPath) const
 
 bool RemoveApplicationTask::RemoveApplicationImpl(const QString& branchID, const QString& appID, AppVersion* localVersion)
 {
-    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, localVersion->isToolSet, false);
-    bool success = FileManager::DeleteDirectory(appDirPath);
-    if (success)
-    {
-        configHolder->localConfig.RemoveApplication(branchID, appID, localVersion->id);
-        configHolder->localConfig.SaveToFile(FileManager::GetLocalConfigFilePath());
-    }
-    else
+    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, localVersion->isToolSet);
+    if (QFile::exists(appDirPath) && FileManager::DeleteDirectory(appDirPath) == false)
     {
         SetError(QObject::tr("Can not remove directory %1\nApplication need to be reinstalled!\n"
                              "If this error occurs again - remove directory by yourself, please")
                  .arg(appDirPath));
+        return false;
     }
-    return success;
+    configHolder->localConfig.RemoveApplication(branchID, appID, localVersion->id);
+    configHolder->localConfig.SaveToFile(FileManager::GetLocalConfigFilePath());
+
+    return true;
 }

@@ -36,11 +36,10 @@ public:
     void AddReceiver(const Receiver& receiver);
 
     void SetProgressDelimiter(int delimiter);
-    void IncrementStep();
-
 private:
     std::vector<Receiver> receivers;
 
     int delimiter = 1;
     int step = 0;
+    quint32 lastProgress = 0;
 };

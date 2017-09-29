@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GuiTasks/AsyncChainTask.h"
+#include "Core/CommonTasks/AsyncChainTask.h"
 #include "Data/ConfigParser.h"
 
 #include <QFile>
@@ -21,20 +21,12 @@ public:
     InstallApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder, const InstallApplicationParams& params);
 
 private:
-    enum eState
-    {
-        LOADING,
-        UNPACKING,
-        POST_INSTALL
-    };
-
     QString GetDescription() const override;
     void Run() override;
 
     int GetSubtasksCount() const override;
-    void OnFinished(const BaseTask* task) override;
 
-    void OnLoaded(const BaseTask* task);
+    void OnLoaded();
     void Install();
     void OnInstalled();
 
@@ -46,7 +38,6 @@ private:
     InstallApplicationParams params;
     QStringList applicationsToRestart;
 
-    eState state = LOADING;
     QFile fileToWrite;
     ConfigHolder* configHolder = nullptr;
 };

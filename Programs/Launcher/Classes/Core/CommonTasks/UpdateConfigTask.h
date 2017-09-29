@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GuiTasks/AsyncChainTask.h"
+#include "Core/CommonTasks/AsyncChainTask.h"
 
 #include <QUrl>
 #include <QString>
@@ -17,7 +17,7 @@ private:
     QString GetDescription() const override;
     void Run() override;
 
-    void OnFinished(const BaseTask* task) override;
+    void OnLoaded();
 
     std::map<QUrl, QIODevice*> buffers;
     ConfigHolder* configHolder = nullptr;

@@ -4,7 +4,7 @@
 #include "Core/CommonTasks/LoadLocalConfigTask.h"
 #include "Core/CommonTasks/UpdateConfigTask.h"
 #include "Core/CommonTasks/RunApplicationTask.h"
-#include "Core/GuiTasks/InstallApplicationTask.h"
+#include "Core/CommonTasks/InstallApplicationTask.h"
 #include "Core/ApplicationContext.h"
 #include "Core/ConfigHolder.h"
 #include "Core/UrlsHolder.h"
@@ -43,7 +43,7 @@ QCommandLineOption InstallAndLaunchTask::CreateOption() const
 
 void InstallAndLaunchTask::Run(const QStringList& arguments)
 {
-    ::LoadPreferences(appContext);
+    PreferencesDialog::LoadPreferences(appContext);
 
     if (arguments.isEmpty())
     {
@@ -102,8 +102,8 @@ void InstallAndLaunchTask::OnUpdateConfigFinished(const QStringList& arguments)
         versionName = arguments.at(2);
     }
 
-    AppVersion* localVersion = LauncherUtils::FindVersion(&configHolder->localConfig, branchName, appName, versionName, true);
-    AppVersion* remoteVersion = LauncherUtils::FindVersion(&configHolder->remoteConfig, branchName, appName, versionName, true);
+    AppVersion* localVersion = LauncherUtils::FindVersion(&configHolder->localConfig, branchName, appName, versionName);
+    AppVersion* remoteVersion = LauncherUtils::FindVersion(&configHolder->remoteConfig, branchName, appName, versionName);
 
     Receiver runReceiver;
     runReceiver.onFinished = [this](const BaseTask* task) {
@@ -128,8 +128,18 @@ void InstallAndLaunchTask::OnUpdateConfigFinished(const QStringList& arguments)
         }
         else
         {
-            Branch* branch = LauncherUtils::FindBranch(&configHolder->localConfig, branchName, false);
-            Application* app = LauncherUtils::FindApplication(branch, appName, false);
+            Branch* branch = LauncherUtils::FindBranch(&configHolder->localConfig, branchName);
+            if (branch == nullptr)
+            {
+                qDebug() << "branch " << branchName << "not found!";
+                exit(1);
+            }
+            Application* app = LauncherUtils::FindApplication(branch, appName);
+            if (app == nullptr)
+            {
+                qDebug() << "application" << appName << "int branch" << branchName << "not found!";
+                exit(1);
+            }
             std::unique_ptr<BaseTask> runTask = appContext->CreateTask<RunApplicationTask>(configHolder, branch->id, app->id, localVersion->id);
             appContext->taskManager.AddTask(std::move(runTask), runReceiver);
         }
@@ -140,16 +150,36 @@ void InstallAndLaunchTask::OnUpdateConfigFinished(const QStringList& arguments)
         {
             if (localVersion->id == remoteVersion->id)
             {
-                Branch* branch = LauncherUtils::FindBranch(&configHolder->localConfig, branchName, false);
-                Application* app = LauncherUtils::FindApplication(branch, appName, false);
+                Branch* branch = LauncherUtils::FindBranch(&configHolder->localConfig, branchName);
+                if (branch == nullptr)
+                {
+                    qDebug() << "branch" << branchName << "not found!";
+                    exit(1);
+                }
+                Application* app = LauncherUtils::FindApplication(branch, appName);
+                if (app == nullptr)
+                {
+                    qDebug() << "application" << appName << "in branch" << branchName << "not found";
+                    exit(1);
+                }
                 std::unique_ptr<BaseTask> runTask = appContext->CreateTask<RunApplicationTask>(configHolder, branch->id, app->id, localVersion->id);
                 appContext->taskManager.AddTask(std::move(runTask), runReceiver);
                 Q_ASSERT(false && "exit was not called after task finished");
             }
         }
 
-        Branch* branch = LauncherUtils::FindBranch(&configHolder->remoteConfig, branchName, false);
-        Application* app = LauncherUtils::FindApplication(branch, appName, false);
+        Branch* branch = LauncherUtils::FindBranch(&configHolder->remoteConfig, branchName);
+        if (branch == nullptr)
+        {
+            qDebug() << "branch" << branchName << "not found!";
+            exit(1);
+        }
+        Application* app = LauncherUtils::FindApplication(branch, appName);
+        if (app == nullptr)
+        {
+            qDebug() << "application" << appName << "in branch" << branchName << "not found";
+            exit(1);
+        }
 
         InstallApplicationParams params;
         params.branch = branch->id;

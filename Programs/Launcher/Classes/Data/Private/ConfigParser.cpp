@@ -89,7 +89,7 @@ bool ExtractApp(const QString& appName, const QJsonObject& entry, Branch* branch
 }
 }
 
-bool VersionListComparator(const AppVersion& leftVer, const AppVersion& rightVer);
+bool LessThan(const AppVersion& leftVer, const AppVersion& rightVer);
 
 bool ConfigParser::ExtractLauncherVersionAndURL(const QJsonValue& value)
 {
@@ -391,7 +391,7 @@ bool ConfigParser::ParseJSON(const QByteArray& configData, BaseTask* task)
         {
             for (Application& application : branch.applications)
             {
-                qSort(application.versions.begin(), application.versions.end(), VersionListComparator);
+                qSort(application.versions.begin(), application.versions.end(), LessThan);
             }
         }
     }
@@ -559,7 +559,7 @@ void ConfigParser::InsertApplicationImpl(const QString& branchID, const QString&
 
     app->versions.clear();
     app->versions.push_back(version);
-    qSort(app->versions.begin(), app->versions.end(), VersionListComparator);
+    qSort(app->versions.begin(), app->versions.end(), LessThan);
 }
 
 void ConfigParser::RemoveApplication(const QString& branchID, const QString& appID, const QString& versionID)
@@ -778,7 +778,7 @@ const QStringList& ConfigParser::GetFavorites()
 //expected format of input string: 0.8_2015-02-14_11.20.12_0000,
 //where 0.8 - DAVA version, 2015-02-14 - build date, 11.20.12 - build time and 0000 - build version
 //all blocks can be modified or empty
-bool VersionListComparator(const AppVersion& leftVer, const AppVersion& rightVer)
+bool LessThan(const AppVersion& leftVer, const AppVersion& rightVer)
 {
     const QString& left = leftVer.id;
     const QString& right = rightVer.id;

@@ -4,7 +4,7 @@
 #include "Core/ApplicationContext.h"
 #include "Core/Receiver.h"
 #include "Core/ApplicationQuitController.h"
-#include "Core/GuiTasks/InstallApplicationTask.h"
+#include "Core/CommonTasks/InstallApplicationTask.h"
 #include "Core/TaskManager.h"
 #include "Core/TasksLogger.h"
 #include "Core/ConfigHolder.h"
@@ -79,7 +79,7 @@ private:
 
     ConfigHolder configHolder;
 
-    ApplicationContext* context;
+    ApplicationContext* context = nullptr;
 };
 
 template <typename T, typename... Arguments>

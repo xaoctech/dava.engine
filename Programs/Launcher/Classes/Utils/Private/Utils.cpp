@@ -15,7 +15,7 @@
 namespace LauncherUtilsDetails
 {
 template <typename T>
-T* FindItemWithName(QList<T>& cont, const QString& name, bool silent)
+T* FindItemWithName(QList<T>& cont, const QString& name)
 {
     QList<T*> items;
     for (T& item : cont)
@@ -25,21 +25,13 @@ T* FindItemWithName(QList<T>& cont, const QString& name, bool silent)
             items.push_back(&item);
         }
     }
-    if (items.size() == 1)
+    if (items.isEmpty())
+    {
+        return nullptr;
+    }
+    else if (items.size() == 1)
     {
         return items.front();
-    }
-    else if (items.isEmpty())
-    {
-        if (silent)
-        {
-            return nullptr;
-        }
-        else
-        {
-            qDebug() << "error: no items found for branch " << name;
-            exit(1);
-        }
     }
     else
     {
@@ -53,19 +45,7 @@ T* FindItemWithName(QList<T>& cont, const QString& name, bool silent)
         }
         if (foundItems.isEmpty())
         {
-            if (silent)
-            {
-                return nullptr;
-            }
-            else
-            {
-                qDebug() << "error: found more than one item with name" << name << ", but no one matches:b";
-                for (T* item : foundItems)
-                {
-                    qDebug() << item->id;
-                }
-                exit(1);
-            }
+            return nullptr;
         }
         else if (foundItems.size() == 1)
         {
@@ -81,21 +61,14 @@ T* FindItemWithName(QList<T>& cont, const QString& name, bool silent)
                     foundItems.push_back(item);
                 }
             }
+
             if (foundItems.size() == 1)
             {
                 return foundItems.front();
             }
             else
             {
-                if (silent)
-                {
-                    return nullptr;
-                }
-                else
-                {
-                    qDebug() << "error: internal error! More than one item with name" << name;
-                    exit(1);
-                }
+                return nullptr;
             }
         }
     }
@@ -109,9 +82,9 @@ QString RemoveWhitespace(const QString& str)
     return replacedStr;
 }
 
-QString GetApplicationDirectory_kostil(const ApplicationContext* context, const QString& branchID, const QString& appID)
+QString GetApplicationDirectory_kostil(const ApplicationContext* context, const QString& branchName, const QString& appName)
 {
-    QString path = context->fileManager.GetBaseAppsDirectory() + branchID + "/" + appID + "/";
+    QString path = context->fileManager.GetBaseAppsDirectory() + branchName + "/" + appName + "/";
     return path;
 }
 }
@@ -121,9 +94,9 @@ QString LauncherUtils::GetAppName(const QString& appName, bool isToolSet)
     return isToolSet ? "Toolset" : appName;
 }
 
-QString LauncherUtils::GetLocalAppPath(const AppVersion* version, const QString& appID)
+QString LauncherUtils::GetLocalAppPath(const AppVersion* version, const QString& appName)
 {
-    Q_ASSERT(!appID.isEmpty());
+    Q_ASSERT(!appName.isEmpty());
     if (version == nullptr)
     {
         return QString();
@@ -131,7 +104,7 @@ QString LauncherUtils::GetLocalAppPath(const AppVersion* version, const QString&
     QString runPath = version->runPath;
     if (runPath.isEmpty())
     {
-        QString correctID = LauncherUtilsDetails::RemoveWhitespace(appID);
+        QString correctID = LauncherUtilsDetails::RemoveWhitespace(appName);
 #ifdef Q_OS_WIN
         runPath = correctID + ".exe";
 #elif defined(Q_OS_MAC)
@@ -143,34 +116,34 @@ QString LauncherUtils::GetLocalAppPath(const AppVersion* version, const QString&
     return runPath;
 }
 
-QString LauncherUtils::GetApplicationDirectory(const ConfigHolder* configHolder, const ApplicationContext* context, QString branchID, QString appID, bool isToolSet, bool mustExists)
+QString LauncherUtils::GetApplicationDirectory(const ConfigHolder* configHolder, const ApplicationContext* context, QString branchName, QString appName, bool isToolSet)
 {
-    appID = LauncherUtils::GetAppName(appID, isToolSet);
+    appName = LauncherUtils::GetAppName(appName, isToolSet);
 
-    branchID = LauncherUtilsDetails::RemoveWhitespace(branchID);
-    appID = LauncherUtilsDetails::RemoveWhitespace(appID);
+    branchName = LauncherUtilsDetails::RemoveWhitespace(branchName);
+    appName = LauncherUtilsDetails::RemoveWhitespace(appName);
 
     //try to get right path
-    QString runPath = context->fileManager.GetApplicationDirectory(branchID, appID);
+    QString runPath = context->fileManager.GetApplicationDirectory(branchName, appName);
     if (QFile::exists(runPath))
     {
         return runPath;
     }
 
     //try to get old ugly path with a bug on "/" symbol
-    QString tmpRunPath = LauncherUtilsDetails::GetApplicationDirectory_kostil(context, branchID, appID);
+    QString tmpRunPath = LauncherUtilsDetails::GetApplicationDirectory_kostil(context, branchName, appName);
     if (QFile::exists(tmpRunPath))
     {
         return tmpRunPath;
     }
     //we can have old branch name or old app name
-    QList<QString> branchKeys = configHolder->localConfig.GetStrings().keys(branchID);
+    QList<QString> branchKeys = configHolder->localConfig.GetStrings().keys(branchName);
     //it can be combination of old and new names
-    branchKeys.append(branchID);
+    branchKeys.append(branchName);
     for (const QString& branchKey : branchKeys)
     {
-        QList<QString> appKeys = configHolder->localConfig.GetStrings().keys(appID);
-        appKeys.append(appID);
+        QList<QString> appKeys = configHolder->localConfig.GetStrings().keys(appName);
+        appKeys.append(appName);
         for (const QString& appKey : appKeys)
         {
             QString newRunPath = context->fileManager.GetApplicationDirectory(branchKey, appKey);
@@ -185,17 +158,7 @@ QString LauncherUtils::GetApplicationDirectory(const ConfigHolder* configHolder,
             }
         }
     }
-    //we expect that folder exists
-    //or we just downloaded it and did not find original folder? make new folder with a correct name
-    if (mustExists)
-    {
-        return "";
-    }
-    else
-    {
-        FileManager::MakeDirectory(runPath);
-        return runPath;
-    }
+    return runPath;
 }
 
 bool LauncherUtils::CanTryStopApplication(const QString& applicationName)
@@ -203,39 +166,26 @@ bool LauncherUtils::CanTryStopApplication(const QString& applicationName)
     return applicationName.contains("assetcacheserver", Qt::CaseInsensitive);
 }
 
-Branch* LauncherUtils::FindBranch(ConfigParser* config, const QString& branchName, bool silent)
+Branch* LauncherUtils::FindBranch(ConfigParser* config, const QString& branchName)
 {
     assert(config != nullptr);
-    return LauncherUtilsDetails::FindItemWithName(config->GetBranches(), branchName, silent);
+    return LauncherUtilsDetails::FindItemWithName(config->GetBranches(), branchName);
 }
 
-Application* LauncherUtils::FindApplication(Branch* branch, QString appName, bool silent)
+Application* LauncherUtils::FindApplication(Branch* branch, QString appName)
 {
     assert(branch != nullptr);
-    if (appName.compare("QE", Qt::CaseInsensitive) == 0)
-    {
-        appName = "QuickEd";
-    }
-
-    return LauncherUtilsDetails::FindItemWithName(branch->applications, appName, silent);
+    return LauncherUtilsDetails::FindItemWithName(branch->applications, appName);
 }
 
-AppVersion* LauncherUtils::FindVersion(Application* app, QString versionName, bool silent)
+AppVersion* LauncherUtils::FindVersion(Application* app, QString versionName)
 {
     assert(app != nullptr);
     if (versionName.isEmpty() || versionName.compare("recent", Qt::CaseInsensitive) == 0)
     {
         if (app->versions.isEmpty())
         {
-            if (silent)
-            {
-                return nullptr;
-            }
-            else
-            {
-                qDebug() << "Error: no versions in application" << app->id;
-                exit(1);
-            }
+            return nullptr;
         }
         else
         {
@@ -243,36 +193,36 @@ AppVersion* LauncherUtils::FindVersion(Application* app, QString versionName, bo
         }
     }
 
-    return LauncherUtilsDetails::FindItemWithName(app->versions, versionName, silent);
+    return LauncherUtilsDetails::FindItemWithName(app->versions, versionName);
 }
 
-Application* LauncherUtils::FindApplication(ConfigParser* config, const QString& branchName, const QString& appName, bool silent)
+Application* LauncherUtils::FindApplication(ConfigParser* config, const QString& branchName, const QString& appName)
 {
-    Branch* branch = FindBranch(config, branchName, silent);
+    Branch* branch = FindBranch(config, branchName);
     if (branch != nullptr)
     {
-        return FindApplication(branch, appName, silent);
+        return FindApplication(branch, appName);
     }
     return nullptr;
 }
 
-AppVersion* LauncherUtils::FindVersion(Branch* branch, const QString& appName, const QString& versionName, bool silent)
+AppVersion* LauncherUtils::FindVersion(Branch* branch, const QString& appName, const QString& versionName)
 {
-    Application* app = FindApplication(branch, appName, silent);
+    Application* app = FindApplication(branch, appName);
     if (app != nullptr)
     {
-        return FindVersion(app, versionName, silent);
+        return FindVersion(app, versionName);
     }
 
     return nullptr;
 }
 
-AppVersion* LauncherUtils::FindVersion(ConfigParser* config, const QString& branchName, const QString& appName, const QString& versionName, bool silent)
+AppVersion* LauncherUtils::FindVersion(ConfigParser* config, const QString& branchName, const QString& appName, const QString& versionName)
 {
-    Branch* branch = FindBranch(config, branchName, silent);
+    Branch* branch = FindBranch(config, branchName);
     if (branch != nullptr)
     {
-        return FindVersion(branch, appName, versionName, silent);
+        return FindVersion(branch, appName, versionName);
     }
     return nullptr;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GuiTasks/AsyncChainTask.h"
+#include "Core/CommonTasks/AsyncChainTask.h"
 
 #include <QFile>
 
@@ -22,9 +22,8 @@ private:
     void Run() override;
 
     int GetSubtasksCount() const override;
-    void OnFinished(const BaseTask* task) override;
 
-    void OnLoaded(const BaseTask* task);
+    void OnLoaded();
     void OnUnpacked();
 
     ApplicationQuitController* quitController = nullptr;

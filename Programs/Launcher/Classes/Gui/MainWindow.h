@@ -49,7 +49,6 @@ signals:
 
 private slots:
     void OnRun(int rowNumber);
-    void OnInstall(int rowNumber);
     void OnRemove(int rowNumber);
 
     void OnListItemClicked(QModelIndex);
@@ -60,7 +59,6 @@ private slots:
 
 private:
     void RefreshBranchesList();
-    void UpdateButtonsState(int rowNumber, ButtonsWidget::ButtonsState state);
     void OnConnectedChanged(bool connected);
     void AddText(const QString& text, const QColor& color = Qt::black);
 

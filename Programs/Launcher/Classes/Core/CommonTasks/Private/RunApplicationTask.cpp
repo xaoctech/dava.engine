@@ -53,8 +53,8 @@ void RunApplicationTask::Run()
         SetError(QObject::tr("Version %1 of application %2 is not installed").arg(version).arg(app));
         return;
     }
-    QString runPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branch, app, localVersion->isToolSet, false);
-    if (runPath.isEmpty())
+    QString runPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branch, app, localVersion->isToolSet);
+    if (QFile::exists(runPath) == false)
     {
         SetError(QObject::tr("Application %1 in branch %2 not exists!").arg(app).arg(branch));
         return;

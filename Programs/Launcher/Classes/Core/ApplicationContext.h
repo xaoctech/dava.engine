@@ -9,7 +9,7 @@
 
 struct ApplicationContext
 {
-    ApplicationContext();
+    ApplicationContext() = default;
     ApplicationContext(const ApplicationContext&) = delete;
     ApplicationContext(ApplicationContext&&) = delete;
 

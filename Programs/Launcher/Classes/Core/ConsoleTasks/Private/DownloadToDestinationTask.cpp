@@ -121,7 +121,7 @@ void DownloadToDestinationTask::OnUpdateConfigFinished(const QStringList& argume
         versionName = arguments.at(3);
     }
 
-    AppVersion* version = LauncherUtils::FindVersion(&configHolder->remoteConfig, branchName, applicationName, versionName, false);
+    AppVersion* version = LauncherUtils::FindVersion(&configHolder->remoteConfig, branchName, applicationName, versionName);
     if (version == nullptr)
     {
         qDebug() << "error: version " << versionName << "for application" << applicationName << "in branch" << branchName << "not found";
