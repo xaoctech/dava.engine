@@ -174,6 +174,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
             this,
             SLOT(OnValueChanged()));
 
+    applyGlobalForcesCheckBox = new QCheckBox("Apply Global Forces");
+    mainBox->addWidget(applyGlobalForcesCheckBox);
+    connect(applyGlobalForcesCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnValueChanged()));
+
     QHBoxLayout* longLayout = new QHBoxLayout();
     isLongCheckBox = new QCheckBox("Long");
     longLayout->addWidget(isLongCheckBox);
@@ -788,7 +795,8 @@ void EmitterLayerWidget::OnValueChanged()
                          loopSpriteAnimationCheckBox->isChecked(),
                          propAnimSpeedOverLife.GetPropLine(),
                          static_cast<DAVA::float32>(pivotPointXSpinBox->value()),
-                         static_cast<DAVA::float32>(pivotPointYSpinBox->value()));
+                         static_cast<DAVA::float32>(pivotPointYSpinBox->value()),
+                         applyGlobalForcesCheckBox->isChecked());
 
     DVASSERT(GetActiveScene() != nullptr);
     GetActiveScene()->Exec(std::move(updateLayerCmd));
@@ -1177,6 +1185,8 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     enableCheckBox->setChecked(!layer->isDisabled);
     inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
+
+    applyGlobalForcesCheckBox->setChecked(layer->applyGlobalForces);
 
     isLongCheckBox->setChecked(layer->isLong);
     scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
@@ -2142,6 +2152,8 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
 
     spinTimeLine->setVisible(!isStripe);
     spinOverLifeTimeLine->setVisible(!isStripe);
+
+    applyGlobalForcesCheckBox->setVisible(!isSuperemitter);
 
     enableFlowCheckBox->setVisible(!isSuperemitter && !isStripe);
     flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked() && !isStripe);

@@ -301,19 +301,6 @@ void ParticleEffectSystem::AddComponent(Entity* entity, Component* component)
 {
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
     PrebuildMaterials(effect);
-    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
-    {
-        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
-        ParticleEmitter* emitter = emitterInst->GetEmitter();
-        for (auto& layer : emitter->layers)
-        {
-            for (auto& force : layer->GetDragForces())
-            {
-                if (force->isGlobal)
-                    globalForces.push_back(force);
-            }
-        }
-    }
 }
 
 void ParticleEffectSystem::RemoveEntity(Entity* entity)
@@ -328,19 +315,6 @@ void ParticleEffectSystem::RemoveComponent(Entity* entity, Component* component)
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
     if (effect && effect->state != ParticleEffectComponent::STATE_STOPPED)
         RemoveFromActive(effect);
-    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
-    {
-        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
-        ParticleEmitter* emitter = emitterInst->GetEmitter();
-        for (auto& layer : emitter->layers)
-        {
-            for (auto& force : layer->GetDragForces())
-            {
-                if (force->isGlobal)
-                    globalForces.erase(std::remove(globalForces.begin(), globalForces.end(), force), globalForces.end());
-            }
-        }
-    }
 }
 
 void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
@@ -353,9 +327,15 @@ void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
             AddToActive(effect);
         effect->state = ParticleEffectComponent::STATE_STARTING;
         effect->currRepeatsCont = 0;
+
+        ExtractGlobalForces(effect);
     }
     else if (event == EventSystem::STOP_PARTICLE_EFFECT)
+    {
         RemoveFromActive(effect);
+
+        RemoveForcesFromGlobal(effect);
+    }
 }
 
 void ParticleEffectSystem::Process(float32 timeElapsed)
@@ -914,23 +894,23 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     return particle;
 }
 
-void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& layer, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox, Vector<ParticleDragForce*> dForces, uint32 dForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife)
+void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox, Vector<ParticleDragForce*> dForces, uint32 dForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife)
 {
     float32 currVelocityOverLife = 1.0f;
-    if (layer.layer->velocityOverLife)
-        currVelocityOverLife = layer.layer->velocityOverLife->GetValue(overLife);
+    if (group.layer->velocityOverLife)
+        currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLife);
     particle->prevPosition = particle->position;
     particle->position += particle->speed * (currVelocityOverLife * dt);
 
     float32 currSpinOverLife = 1.0f;
-    if (layer.layer->spinOverLife)
-        currSpinOverLife = layer.layer->spinOverLife->GetValue(overLife);
+    if (group.layer->spinOverLife)
+        currSpinOverLife = group.layer->spinOverLife->GetValue(overLife);
     particle->angle += particle->spin * currSpinOverLife * dt;
 
     Vector3 acceleration(0.0f, 0.0f, 0.0f);
     for (int32 i = 0; i < forcesCount; ++i)
     {
-        acceleration += (layer.layer->forces[i]->forceOverLife) ? (currForceValues[i] * layer.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+        acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
     }
 
     Vector3 effectSpacePosition;
@@ -957,36 +937,56 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
         particle->position = effectSpacePosition * world;
     }
 
+    if (group.layer->applyGlobalForces)
+    {
+        for (auto& forcePair : globalForces)
+        {
+            ParticleEffectComponent* effect = forcePair.first;
+            TransformComponent* tr = GetTransformComponent(effect->GetEntity());
+            Matrix4* worldTransformPtr = tr->GetWorldTransformPtr();
+            Matrix4 invWorld;
+            worldTransformPtr->GetInverse(invWorld);
+            effectSpacePosition = particle->position * invWorld;
+            prevEffectSpacePosition = particle->prevPosition * invWorld;
+            effectSpaceSpeed = particle->speed * Matrix3(invWorld);
+            effectSpaceDown = Vector3(0.0f, 0.0f, -1.0f) * Matrix3(invWorld);
+            for (auto& force : forcePair.second)
+                ParticleForces::ApplyForce(effect->GetEntity(), force, effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle, prevEffectSpacePosition);
+            particle->speed = effectSpaceSpeed * Matrix3(*worldTransformPtr);
+            particle->position = effectSpacePosition * (*worldTransformPtr);
+        }
+    }
+
     particle->speed += acceleration * dt;
 
-    if (layer.layer->sizeOverLifeXY)
+    if (group.layer->sizeOverLifeXY)
     {
-        particle->currSize = particle->baseSize * layer.layer->sizeOverLifeXY->GetValue(overLife);
-        Vector2 pivotSize = particle->currSize * layer.layer->layerPivotSizeOffsets;
+        particle->currSize = particle->baseSize * group.layer->sizeOverLifeXY->GetValue(overLife);
+        Vector2 pivotSize = particle->currSize * group.layer->layerPivotSizeOffsets;
         particle->currRadius = pivotSize.Length();
     }
-    if (layer.layer->GetInheritPosition())
-        AddParticleToBBox(particle->position + effect->effectData.infoSources[layer.positionSource].position, particle->currRadius, bbox);
+    if (group.layer->GetInheritPosition())
+        AddParticleToBBox(particle->position + effect->effectData.infoSources[group.positionSource].position, particle->currRadius, bbox);
     else
         AddParticleToBBox(particle->position, particle->currRadius, bbox);
 
-    if (layer.layer->frameOverLifeEnabled && layer.layer->sprite)
+    if (group.layer->frameOverLifeEnabled && group.layer->sprite)
     {
-        float32 animDelta = layer.layer->frameOverLifeFPS;
-        if (layer.layer->animSpeedOverLife)
-            animDelta *= layer.layer->animSpeedOverLife->GetValue(overLife);
+        float32 animDelta = group.layer->frameOverLifeFPS;
+        if (group.layer->animSpeedOverLife)
+            animDelta *= group.layer->animSpeedOverLife->GetValue(overLife);
         particle->animTime += animDelta * dt;
 
         while (particle->animTime > 1.0f)
         {
             particle->frame++;
             particle->animTime -= 1.0f;
-            if (particle->frame >= layer.layer->sprite->GetFrameCount())
+            if (particle->frame >= group.layer->sprite->GetFrameCount())
             {
-                if (layer.layer->loopSpriteAnimation)
+                if (group.layer->loopSpriteAnimation)
                     particle->frame = 0;
                 else
-                    particle->frame = layer.layer->sprite->GetFrameCount() - 1;
+                    particle->frame = group.layer->sprite->GetFrameCount() - 1;
             }
         }
     }
@@ -1112,5 +1112,37 @@ void ParticleEffectSystem::SimulateEffect(ParticleEffectComponent* effect)
     uint32 frames = static_cast<uint32>(effect->GetStartFromTime() * particleSystemFps);
     for (uint32 i = 0; i < frames; ++i)
         UpdateEffect(effect, delta, delta);
+}
+
+void ParticleEffectSystem::ExtractGlobalForces(ParticleEffectComponent* effect)
+{
+    auto it = globalForces.find(effect);
+    if (it != globalForces.end())
+        globalForces.erase(it);
+    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
+    {
+        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
+        ParticleEmitter* emitter = emitterInst->GetEmitter();
+        for (auto& layer : emitter->layers)
+        {
+            for (auto& force : layer->GetDragForces())
+            {
+                if (force->isGlobal)
+                    globalForces[effect].push_back(force);
+            }
+        }
+    }
+}
+
+void ParticleEffectSystem::RemoveForcesFromGlobal(ParticleEffectComponent* effect)
+{
+    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
+    {
+        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
+        ParticleEmitter* emitter = emitterInst->GetEmitter();
+        auto it = globalForces.find(effect);
+        if (it != globalForces.end())
+            globalForces.erase(it);
+    }
 }
 }

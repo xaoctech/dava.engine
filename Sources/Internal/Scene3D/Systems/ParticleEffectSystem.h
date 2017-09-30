@@ -83,7 +83,7 @@ protected:
     void UpdateActiveLod(ParticleEffectComponent* effect);
     void UpdateEffect(ParticleEffectComponent* effect, float32 deltaTime, float32 shortEffectTime);
     Particle* GenerateNewParticle(ParticleEffectComponent* effect, ParticleGroup& group, float32 currLoopTime, const Matrix4& worldTransform);
-    void UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& layer, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox, Vector<ParticleDragForce*> dForces, uint32 dForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife);
+    void UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox, Vector<ParticleDragForce*> dForces, uint32 dForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife);
 
     void PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform);
     void AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox);
@@ -100,12 +100,14 @@ private:
 private: //materials stuff
     NMaterial* particleBaseMaterial;
     Vector<std::pair<MaterialData, NMaterial*>> particlesMaterials;
-    Vector<ParticleDragForce*> globalForces;
+    Map<ParticleEffectComponent*, Vector<ParticleDragForce*>> globalForces;
     NMaterial* AcquireMaterial(const MaterialData& materialData);
 
     bool allowLodDegrade;
 
     bool is2DMode;
+    void RemoveForcesFromGlobal(ParticleEffectComponent* effect);
+    void ExtractGlobalForces(ParticleEffectComponent* effect);
 };
 
 inline const Vector<std::pair<ParticleEffectSystem::MaterialData, NMaterial*>>& ParticleEffectSystem::GetMaterialInstances() const

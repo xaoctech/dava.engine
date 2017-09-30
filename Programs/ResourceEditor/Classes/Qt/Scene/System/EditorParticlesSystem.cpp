@@ -243,7 +243,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         Vector3 center = force->position * wMat;
 
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
-            Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
+                                                                   Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
     }
 
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
@@ -264,11 +264,11 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         transform.Inverse();
         float32 bbsize = force->planeScale * 0.5f;
         drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
-            Color(0.0f, 0.7f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+                                     Color(0.0f, 0.7f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
         drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
-            Color(0.0f, 0.35f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+                                     Color(0.0f, 0.35f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
-    
+
     if (force->type == ForceType::POINT_GRAVITY)
     {
         Matrix4 wMat = Selectable(force).GetWorldTransform();

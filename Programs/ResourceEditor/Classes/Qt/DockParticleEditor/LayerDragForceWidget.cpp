@@ -42,12 +42,12 @@ const DAVA::Array<TimingMap, 3> timingMap =
 
 DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
 {
-    { DAVA::ParticleDragForce::eType::DRAG_FORCE, "Drag Force" },
-    { DAVA::ParticleDragForce::eType::LORENTZ_FORCE, "Lorentz Force" },
-    { DAVA::ParticleDragForce::eType::GRAVITY, "Gravity" },
-    { DAVA::ParticleDragForce::eType::WIND, "Wind" },
-    { DAVA::ParticleDragForce::eType::POINT_GRAVITY, "Point Gravity" },
-    { DAVA::ParticleDragForce::eType::PLANE_COLLISION, "Plane Collision" }
+  { DAVA::ParticleDragForce::eType::DRAG_FORCE, "Drag Force" },
+  { DAVA::ParticleDragForce::eType::LORENTZ_FORCE, "Lorentz Force" },
+  { DAVA::ParticleDragForce::eType::GRAVITY, "Gravity" },
+  { DAVA::ParticleDragForce::eType::WIND, "Wind" },
+  { DAVA::ParticleDragForce::eType::POINT_GRAVITY, "Point Gravity" },
+  { DAVA::ParticleDragForce::eType::PLANE_COLLISION, "Plane Collision" }
 };
 
 template <typename T, typename U, size_t sz>

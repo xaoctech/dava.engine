@@ -13,7 +13,7 @@ namespace DAVA
 DAVA_VIRTUAL_REFLECTION_IMPL(ParticleLayer)
 {
     ReflectionRegistrator<ParticleLayer>::Begin()
-        .End();
+    .End();
 }
 
 using ForceShape = ParticleDragForce::eShape;
@@ -54,10 +54,10 @@ const Array<ForceTypeMap, 6> forceTypesMap =
 { {
 { ForceType::DRAG_FORCE, "drag" },
 { ForceType::LORENTZ_FORCE, "lorentz" },
-{ ForceType::POINT_GRAVITY, "pointgr"},
-{ ForceType::PLANE_COLLISION, "plncoll"},
+{ ForceType::POINT_GRAVITY, "pointgr" },
+{ ForceType::PLANE_COLLISION, "plncoll" },
 { ForceType::GRAVITY, "grav" },
-{ ForceType::WIND, "wind"}
+{ ForceType::WIND, "wind" }
 } };
 
 template <typename T, typename U, size_t sz>
@@ -343,6 +343,8 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->noisePath = noisePath;
     dstLayer->enableNoise = enableNoise;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
+
+    dstLayer->applyGlobalForces = applyGlobalForces;
 
     dstLayer->alphaRemapPath = alphaRemapPath;
     if (alphaRemapOverLife)
@@ -945,6 +947,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (usePerspectiveMappingNode)
         usePerspectiveMapping = usePerspectiveMappingNode->AsBool();
 
+    const YamlNode* applyGlobalForcesNode = node->Get("applyGlobalForces");
+    if (applyGlobalForcesNode)
+        applyGlobalForces = applyGlobalForcesNode->AsBool();
+
     // Load the Inner Emitter parameters.
     const YamlNode* innerEmitterPathNode = node->Get("innerEmitterPath");
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitterPathNode)
@@ -1120,6 +1126,7 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Set("inheritPosition", inheritPosition);
     layerNode->Set("stripeInheritPositionForBase", stripeInheritPositionOnlyForBaseVertex);
     layerNode->Set("usePerspectiveMapping", usePerspectiveMapping);
+    layerNode->Set("applyGlobalForces", applyGlobalForces);
 
     layerNode->Set("particleOrientation", particleOrientation);
 
@@ -1278,7 +1285,6 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("turbulenceLine%d", i);
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, forceDataName, currentForce->turbulenceLine);
-
     }
 }
 
@@ -1570,7 +1576,7 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
             String name = timingNode->AsString();
             dragForce->timingType = StringToType(name, ForceTimingType::CONSTANT, timingTypesMap);
         }
-        
+
         forceDataName = Format("forceDirection%d", i);
         const YamlNode* directionNode = node->Get(forceDataName);
         if (directionNode)

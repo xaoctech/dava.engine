@@ -7,7 +7,7 @@ namespace DAVA
 DAVA_VIRTUAL_REFLECTION_IMPL(ParticleDragForce)
 {
     ReflectionRegistrator<ParticleDragForce>::Begin()
-        .End();
+    .End();
 }
 
 ParticleDragForce::ParticleDragForce(ParticleLayer* parent)

@@ -12,12 +12,12 @@ float Step(float y, float x)
 
 Vector4 operator*(const Vector4& a, const Vector4& b)
 {
-    return 
+    return
     {
-        a.x * b.x,
-        a.y * b.y,
-        a.z * b.z,
-        a.w * b.w
+      a.x * b.x,
+      a.y * b.y,
+      a.z * b.z,
+      a.w * b.w
     };
 }
 
@@ -33,22 +33,22 @@ Vector2 lerp(const Vector2& a, const Vector2& b, const Vector2& val)
 
 Vector4 Step(const Vector4& y, const Vector4& x)
 {
-    return 
+    return
     {
-        Step(y.x, x.x),
-        Step(y.y, x.y),
-        Step(y.z, x.z),
-        Step(y.w, x.w)
+      Step(y.x, x.x),
+      Step(y.y, x.y),
+      Step(y.z, x.z),
+      Step(y.w, x.w)
     };
 }
 
 Vector3 Floor(const Vector3& val)
 {
-    return 
-    { 
-        floor(val.x),
-        floor(val.y),
-        floor(val.z) 
+    return
+    {
+      floor(val.x),
+      floor(val.y),
+      floor(val.z)
     };
 }
 
@@ -59,11 +59,11 @@ Vector3 Frac(const Vector3& val)
 
 Vector3 Fmod(const Vector3& v, const Vector3& m)
 {
-    return 
+    return
     {
-        fmod(v.x, m.x),
-        fmod(v.y, m.y),
-        fmod(v.z, m.z) 
+      fmod(v.x, m.x),
+      fmod(v.y, m.y),
+      fmod(v.z, m.z)
     };
 }
 
@@ -71,10 +71,10 @@ Vector4 Floor(const Vector4& val)
 {
     return
     {
-        floor(val.x),
-        floor(val.y),
-        floor(val.z),
-        floor(val.w)
+      floor(val.x),
+      floor(val.y),
+      floor(val.z),
+      floor(val.w)
     };
 }
 
@@ -87,10 +87,10 @@ Vector4 Fmod(const Vector4& v, const Vector4& m)
 {
     return
     {
-        fmod(v.x, m.x),
-        fmod(v.y, m.y),
-        fmod(v.z, m.z),
-        fmod(v.w, m.w)
+      fmod(v.x, m.x),
+      fmod(v.y, m.y),
+      fmod(v.z, m.z),
+      fmod(v.w, m.w)
     };
 }
 
@@ -98,22 +98,22 @@ Vector4 Abs(const Vector4& v)
 {
     return
     {
-        Abs(v.x),
-        Abs(v.y),
-        Abs(v.z),
-        Abs(v.w)
+      Abs(v.x),
+      Abs(v.y),
+      Abs(v.z),
+      Abs(v.w)
     };
 }
 
 Vector4 Permute(const Vector4& v)
 {
     Vector4 vs = v * 34.0f;
-    return 
+    return
     {
-        std::fmod((vs.x + 1.0f) * v.x, 289.0f),
-        std::fmod((vs.y + 1.0f) * v.y, 289.0f),
-        std::fmod((vs.z + 1.0f) * v.z, 289.0f),
-        std::fmod((vs.w + 1.0f) * v.w, 289.0f)
+      std::fmod((vs.x + 1.0f) * v.x, 289.0f),
+      std::fmod((vs.y + 1.0f) * v.y, 289.0f),
+      std::fmod((vs.z + 1.0f) * v.z, 289.0f),
+      std::fmod((vs.w + 1.0f) * v.w, 289.0f)
     };
 }
 
@@ -123,10 +123,10 @@ Vector4 TaylorInvSqrt(const Vector4& r)
     static const float32 num = 1.79284291400159f;
     return
     {
-        num - rs.x,
-        num - rs.y,
-        num - rs.z,
-        num - rs.w
+      num - rs.x,
+      num - rs.y,
+      num - rs.z,
+      num - rs.w
     };
 }
 
@@ -134,9 +134,9 @@ Vector3 Fade(const Vector3& t)
 {
     return
     {
-        t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
-        t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f),
-        t.z * t.z * t.z * (t.z * (t.z * 6.0f - 15.0f) + 10.0f)
+      t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
+      t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f),
+      t.z * t.z * t.z * (t.z * (t.z * 6.0f - 15.0f) + 10.0f)
     };
 }
 
@@ -144,8 +144,8 @@ Vector2 Fade(const Vector2& t)
 {
     return
     {
-        t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
-        t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
+      t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
+      t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
     };
 }
 
@@ -186,7 +186,7 @@ float32 PerlinNoise2d(const Vector2& p, float32 wrap)
     Vector4 fx = Vector4(pf.x, pf.z, pf.x, pf.z);
     Vector4 fy = Vector4(pf.y, pf.y, pf.w, pf.w);
 
-    Vector4 i = Permute(Permute((ix)+iy));
+    Vector4 i = Permute(Permute((ix) + iy));
 
     Vector4 gx = 2.0f * Frac(i / 41.0f) - 1.0f;
     Vector4 gy = Abs(gx) - 0.5f;
@@ -282,7 +282,7 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
 
     Vector3 fade_xyz = Fade(pf0);
     Vector4 n_z = lerp(Vector4(n000, n100, n010, n110), Vector4(n001, n101, n011, n111), { fade_xyz.z, fade_xyz.z, fade_xyz.z, fade_xyz.z });
-    Vector2 n_yz = lerp({ n_z.x, n_z.y }, { n_z.z, n_z.w }, { fade_xyz.y, fade_xyz.y } );
+    Vector2 n_yz = lerp({ n_z.x, n_z.y }, { n_z.z, n_z.w }, { fade_xyz.y, fade_xyz.y });
     float32 n_xyz = Lerp(n_yz.x, n_yz.y, fade_xyz.x);
     return n_xyz;
 }

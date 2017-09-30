@@ -210,7 +210,7 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
         effectSpacePosition += turbulence; // how with drug and other forces, turb not adding to velocity? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
     }
     static const float32 windScale = 100.0f; // Artiom request.
-    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex) * forceStrength.x * windScale;// +turbulence;
+    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex) * forceStrength.x * windScale; // +turbulence;
 }
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle)
@@ -298,7 +298,7 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
             newVel = (normal * effectSpaceVelocity.Length()); // Artiom request.
         else
             newVel = Reflect(effectSpaceVelocity, normal);
-        
+
         Vector3 rndVec;
         Quaternion q;
 
@@ -346,7 +346,6 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
             else
                 effectSpaceVelocity = Vector3::Zero;
         }
-
     }
     else if ((bProj < 0.0f && a.DotProduct(normal) < 0.0f))
     {

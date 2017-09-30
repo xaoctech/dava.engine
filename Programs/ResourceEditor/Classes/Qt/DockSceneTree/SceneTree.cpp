@@ -1312,8 +1312,8 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     } };
     static const DAVA::Vector<DAVA::uint32> idsForTreeUpdate =
     { {
-         CMDID_PARTICLE_DRAG_FORCE_UPDATE,
-         CMDID_PARTICLE_LAYER_UPDATE
+    CMDID_PARTICLE_DRAG_FORCE_UPDATE,
+    CMDID_PARTICLE_LAYER_UPDATE
     } };
 
     if (commandNotification.MatchCommandIDs(idsForUpdate))

@@ -130,7 +130,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
                                       RefPtr<PropertyLine<float32>> animSpeedOverLife,
 
                                       float32 pivotPointX,
-                                      float32 pivotPointY)
+                                      float32 pivotPointY,
+                                      bool applyGlobalForces)
 {
     this->layerName = layerName;
     this->layerType = layerType;
@@ -177,6 +178,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 
     this->pivotPointX = pivotPointX;
     this->pivotPointY = pivotPointY;
+
+    this->applyGlobalForces = applyGlobalForces;
 }
 
 void CommandUpdateParticleLayer::Redo()
@@ -223,6 +226,8 @@ void CommandUpdateParticleLayer::Redo()
     layer->deltaVariation = deltaVariation;
     layer->loopEndTime = loopEndTime;
     layer->loopVariation = loopVariation;
+
+    layer->applyGlobalForces = applyGlobalForces;
 
     layer->SetPivotPoint(Vector2(pivotPointX, pivotPointY));
 
@@ -601,7 +606,6 @@ void CommandAddParticleDrag::Redo()
     AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::DRAG_FORCE);
 }
 
-
 CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_LORENTZ_FORCE_ADD)
     , selectedLayer(layer)
@@ -776,4 +780,3 @@ void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType
     layer->AddDrag(newForce);
     SafeRelease(newForce);
 }
-
