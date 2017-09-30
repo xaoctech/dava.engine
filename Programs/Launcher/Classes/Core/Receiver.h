@@ -36,6 +36,7 @@ public:
     void AddReceiver(const Receiver& receiver);
 
     void SetProgressDelimiter(int delimiter);
+
 private:
     std::vector<Receiver> receivers;
 
