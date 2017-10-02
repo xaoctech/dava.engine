@@ -163,7 +163,7 @@ inline int wcsicmp(const wchar_t* s1, const wchar_t* s2)
     return 0;
 }
 #ifndef isinf
-#define isinf __isinff
+#define isinf __inff
 #endif
 #define _stricmp strcasecmp
 #define _getcwd getcwd
