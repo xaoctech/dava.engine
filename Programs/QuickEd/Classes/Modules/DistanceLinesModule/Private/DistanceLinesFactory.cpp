@@ -1,7 +1,6 @@
 #include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesFactory.h"
 
 #include <UI/UIControl.h>
-#include <Logger/Logger.h>
 
 namespace DistanceLinesFactoryDetails
 {
@@ -143,13 +142,13 @@ void DistanceLinesFactory::SurroundWithDotLines(const Params& params, DAVA::Vect
 template <typename T>
 void DistanceLinesFactory::AddLine(const Params& params, DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const
 {
-        DAVA::eAlign direction = DistanceLinesFactoryDetails::GetDirection(axis, startPos, endPos);
-        LineParams lineParams = CreateLineParams(params, startPos, endPos, direction);
-        const DAVA::float32 maximumDisplayedLength = 0.1f;
-        if (lineParams.length > maximumDisplayedLength)
-        {
-            lines.push_back(std::make_unique<T>(lineParams));
-        }
+    DAVA::eAlign direction = DistanceLinesFactoryDetails::GetDirection(axis, startPos, endPos);
+    LineParams lineParams = CreateLineParams(params, startPos, endPos, direction);
+    const DAVA::float32 maximumDisplayedLength = 0.1f;
+    if (lineParams.length > maximumDisplayedLength)
+    {
+        lines.push_back(std::make_unique<T>(lineParams));
+    }
 }
 
 DistanceLinesFactory::Params::Params(DAVA::UIControl* selectedControl, DAVA::UIControl* highlightedControl)

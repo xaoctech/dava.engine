@@ -7,7 +7,6 @@
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/TextBlockGraphicRender.h>
 #include <Utils/UTF8Utils.h>
-#include <Logger/Logger.h>
 
 namespace Painting
 {
