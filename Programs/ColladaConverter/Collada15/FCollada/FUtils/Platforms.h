@@ -2,7 +2,7 @@
 	Copyright (C) 2005-2007 Feeling Software Inc.
 	Portions of the code are:
 	Copyright (C) 2005-2007 Sony Computer Entertainment America
-	
+
 	MIT License: http://www.opensource.org/licenses/mit-license.php
 */
 /*
@@ -19,7 +19,7 @@
 #ifdef WIN32
 // Disable the "private member not available for export" warning,
 // because I don't feel like writing interfaces
-#pragma warning(disable : 4251) 
+#pragma warning(disable : 4251)
 #ifdef FCOLLADA_INTERNAL
 #define FCOLLADA_EXPORT __declspec(dllexport)
 #define FCOLLADA_LOCAL
@@ -58,7 +58,7 @@
 #ifdef WIN32
 
 #pragma warning(disable : 4702)
-#ifndef _WIN32_WINNT // Allow use of features specific to Windows XP or later.                   
+#ifndef _WIN32_WINNT // Allow use of features specific to Windows XP or later.
 #define _WIN32_WINNT 0x0501 // Change this to the appropriate value to target other versions of Windows.
 #endif
 
@@ -85,7 +85,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#else // OTHER... 
+#else // OTHER...
 #error "Unsupported platform."
 #endif // LINUX || __PPU__
 #endif // __APPLE__
