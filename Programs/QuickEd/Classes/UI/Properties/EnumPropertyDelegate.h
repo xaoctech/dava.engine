@@ -1,5 +1,4 @@
-#ifndef __ITEMDELEGATEFORPROPERTYENUM_H__
-#define __ITEMDELEGATEFORPROPERTYENUM_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 #include <QComboBox>
@@ -22,5 +21,3 @@ public:
 private slots:
     void OnCurrentIndexChanged();
 };
-
-#endif // __ITEMDELEGATEFORPROPERTYENUM_H__

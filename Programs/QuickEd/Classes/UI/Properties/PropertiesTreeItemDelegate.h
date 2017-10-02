@@ -1,5 +1,4 @@
-#ifndef __PROPERTIESTREEITEMDELEGATE_H__
-#define __PROPERTIESTREEITEMDELEGATE_H__
+#pragma once
 
 #include <QWidget>
 #include <QVector2D>
@@ -11,10 +10,19 @@ class AbstractPropertyDelegate;
 class QToolButton;
 class Project;
 
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+}
+}
+
 class PropertiesContext
 {
 public:
     const Project* project = nullptr;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
 };
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
@@ -32,6 +40,7 @@ public:
     virtual AbstractPropertyDelegate* GetCustomItemDelegateForIndex(const QModelIndex& index) const;
 
     void SetProject(const Project* project);
+    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
 
     void emitCommitData(QWidget* editor);
     void emitCloseEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint);
@@ -91,4 +100,3 @@ public:
 public:
     QWidget* editWidget;
 };
-#endif // __PROPERTIESTREEITEMDELEGATE_H__

@@ -1,5 +1,0 @@
-DEFINED()
-
-expected line
-
-last

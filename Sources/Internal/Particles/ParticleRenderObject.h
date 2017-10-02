@@ -39,14 +39,10 @@ public:
 
     void SetSortingOffset(uint32 offset);
 
-    void BindDynamicParameters(Camera* camera) override;
-    void RecalcBoundingBox() override
-    {
-    }
-    void RecalculateWorldBoundingBox() override
-    {
-        worldBBox = bbox;
-    }
+    void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
+
+    void RecalcBoundingBox() override;
+    void RecalculateWorldBoundingBox() override;
 
 private:
     enum eParticlePropsOffsets
@@ -88,6 +84,15 @@ private:
     bool CheckGroup(const ParticleGroup& group) const;
     int32 PrepareBasisIndexes(const ParticleGroup& group, int32(&basises)[4]) const;
 };
+
+inline void ParticleRenderObject::RecalcBoundingBox()
+{
+}
+
+inline void ParticleRenderObject::RecalculateWorldBoundingBox()
+{
+    worldBBox = bbox;
+}
 
 inline float ParticleRenderObject::FresnelShlick(float32 nDotVInv, float32 bias, float32 power) const
 {

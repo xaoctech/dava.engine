@@ -172,7 +172,7 @@ DAVA::Vector2 CanvasDataAdapter::GetMovableControlPosition() const
         }
     }
 
-    return Vector2(std::floor(movableControlPosition.x), std::floor(movableControlPosition.y));
+    return Vector2(movableControlPosition.x, movableControlPosition.y);
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetViewSize() const
