@@ -1118,21 +1118,20 @@ bool SceneExporter::ExportSlotObject(const ExportedObject& object)
 {
     using namespace DAVA;
 
-    bool filesCopied = true;
-
-    FileSystem* fs = GetEngineContext()->fileSystem;
-
     FilePath fromPath = exportingParams.dataSourceFolder + object.relativePathname;
-    if (fs->GetFilenamesTag().empty() == false)
+    if (exportingParams.filenamesTag.empty() == false)
     {
         FilePath fromPathTagged = fromPath;
-        fromPathTagged.ReplaceBasename(fromPath.GetBasename() + fs->GetFilenamesTag());
+        fromPathTagged.ReplaceBasename(fromPath.GetBasename() + exportingParams.filenamesTag);
+
+        FileSystem* fs = GetEngineContext()->fileSystem;
         if (fs->Exists(fromPathTagged))
         {
             fromPath = fromPathTagged;
         }
     }
 
+    bool filesCopied = true;
     for (const Params::Output& output : exportingParams.outputs)
     {
         filesCopied = CopyFile(fromPath, output.dataFolder + object.relativePathname) && filesCopied;
