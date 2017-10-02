@@ -152,6 +152,7 @@ eErrorCode LibHDRHelper::ReadFile(File* infile, Vector<Image*>& imageSet, const 
     }
 
     Image* image = Image::Create(desc.width, desc.height, PixelFormat::FORMAT_RGBA32F);
+    image->mipmapLevel = 0;
     Vector4* floatData = reinterpret_cast<Vector4*>(image->data);
     for (const LibHDRDetails::RGBE& rgbe : rgbeData)
         *floatData++ = LibHDRDetails::RGBEToFloat(rgbe);
