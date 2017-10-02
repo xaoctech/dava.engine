@@ -397,7 +397,7 @@ void CollectAnimationClips(DAVA::Scene* scene, const DAVA::FilePath& dataSourceF
                 if (!animationPath.IsEmpty())
                 {
                     String relativePath = animationPath.GetRelativePathname(dataSourceFolder);
-                    exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SLOT_CONFIG, relativePath);
+                    exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_ANIMATION_CLIP, relativePath);
                 }
             }
         }
@@ -1003,21 +1003,25 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
     using namespace DAVA;
 
     Array<Function<bool(const ExportedObject&)>, OBJECT_COUNT> exporters =
-    { { MakeFunction(this, &SceneExporter::ExportSceneObject),
-        MakeFunction(this, &SceneExporter::ExportTextureObjectTagged),
-        MakeFunction(this, &SceneExporter::CopyObject),
-        MakeFunction(this, &SceneExporter::CopyObject),
-        MakeFunction(this, &SceneExporter::CopyObject) } };
+    { {
+    MakeFunction(this, &SceneExporter::ExportSceneObject), // scene
+    MakeFunction(this, &SceneExporter::ExportTextureObjectTagged), //texture
+    MakeFunction(this, &SceneExporter::CopyObject), // heightmap
+    MakeFunction(this, &SceneExporter::CopyObject), // emitter config
+    MakeFunction(this, &SceneExporter::ExportSlotObject), //slot config
+    MakeFunction(this, &SceneExporter::CopyObject), //anim clip
+    } };
 
     // divide objects into different collections
     bool exportIsOk = PrepareData(exportedObjects);
 
     //export scenes only. Add textures, heightmaps to objectsToExport
     const ExportedObjectCollection& scenes = objectsToExport[eExportedObjectType::OBJECT_SCENE];
-    CreateFoldersStructure(scenes);
     for (uint32 i = 0; i < static_cast<uint32>(scenes.size()); ++i)
     {
         const ExportedObject& sceneObj = scenes[i];
+        CreateFoldersStructure(sceneObj);
+
         DAVA::FilePath fullScenePath(exportingParams.dataSourceFolder + sceneObj.relativePathname);
         if (alreadyExportedScenes.count(fullScenePath) == 0)
         {
@@ -1039,6 +1043,9 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
             for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
             {
                 ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
+                CreateFoldersStructure(sceneObject);
+
+                //create folders structure
                 exportIsOk = ExportSceneObject(sceneObject) & exportIsOk;
             }
         }
@@ -1048,11 +1055,10 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
     for (int32 i = eExportedObjectType::OBJECT_SCENE + 1; i < eExportedObjectType::OBJECT_COUNT; ++i)
     {
         SceneExporterDetails::RemoveDuplicates(objectsToExport[i]);
-        CreateFoldersStructure(objectsToExport[i]);
         for (const ExportedObject& object : objectsToExport[i])
         {
-            DVASSERT(object.type != eExportedObjectType::OBJECT_SCENE && object.type != eExportedObjectType::OBJECT_SLOT_CONFIG);
-
+            DVASSERT(object.type != eExportedObjectType::OBJECT_SCENE);
+            CreateFoldersStructure(object);
             exportIsOk = exporters[i](object) && exportIsOk;
         }
     }
@@ -1082,35 +1088,57 @@ bool SceneExporter::PrepareData(const ExportedObjectCollection& exportedObjects)
     return dataIsValid;
 }
 
-void SceneExporter::CreateFoldersStructure(const ExportedObjectCollection& exportedObjects)
+void SceneExporter::CreateFoldersStructure(const ExportedObject& object)
 {
     using namespace DAVA;
 
-    UnorderedSet<String> foldersStructure;
-    foldersStructure.reserve(exportedObjects.size());
-
-    for (const ExportedObject& object : exportedObjects)
+    String folder = object.relativePathname;
+    const String::size_type slashpos = folder.rfind("/");
+    if (slashpos != String::npos)
     {
-        const String& link = object.relativePathname;
-        const String::size_type slashpos = link.rfind("/");
-        if (slashpos != String::npos)
-        {
-            foldersStructure.insert(link.substr(0, slashpos + 1));
-        }
-        else
-        {
-            foldersStructure.insert("/");
-        }
+        folder = folder.substr(0, slashpos + 1);
+    }
+    else
+    {
+        folder = "/";
     }
 
-    FileSystem* fileSystem = GetEngineContext()->fileSystem;
-    for (const Params::Output& output : exportingParams.outputs)
+    if (cachedFoldersForCreation.count(folder) == 0)
     {
-        for (const String& folder : foldersStructure)
+        cachedFoldersForCreation.insert(folder);
+        FileSystem* fileSystem = GetEngineContext()->fileSystem;
+        for (const Params::Output& output : exportingParams.outputs)
         {
             fileSystem->CreateDirectory(output.dataFolder + folder, true);
         }
     }
+}
+
+bool SceneExporter::ExportSlotObject(const ExportedObject& object)
+{
+    using namespace DAVA;
+
+    bool filesCopied = true;
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+
+    FilePath fromPath = exportingParams.dataSourceFolder + object.relativePathname;
+    if (fs->GetFilenamesTag().empty() == false)
+    {
+        FilePath fromPathTagged = fromPath;
+        fromPathTagged.ReplaceBasename(fromPath.GetBasename() + fs->GetFilenamesTag());
+        if (fs->Exists(fromPathTagged))
+        {
+            fromPath = fromPathTagged;
+        }
+    }
+
+    for (const Params::Output& output : exportingParams.outputs)
+    {
+        filesCopied = CopyFile(fromPath, output.dataFolder + object.relativePathname) && filesCopied;
+    }
+
+    return filesCopied;
 }
 
 bool SceneExporter::CopyFileToOutput(const DAVA::FilePath& fromPath, const Params::Output& output) const

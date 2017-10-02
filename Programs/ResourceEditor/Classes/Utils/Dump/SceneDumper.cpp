@@ -22,6 +22,8 @@
 
 DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, const DAVA::Vector<DAVA::String>& tags)
 {
+    DVASSERT(tags.empty() == false && tags[0].empty() == true); // mean that we have "" in tags for default behavior
+
     DAVA::Set<DAVA::FilePath> dumpedLinks;
     return DumpLinks(scenePath, mode, compressedGPUs, tags, dumpedLinks);
 }
@@ -183,9 +185,6 @@ void SceneDumper::DumpRenderObject(DAVA::RenderObject* renderObject, DAVA::Set<D
     for (const FilePath& descriptorPath : descriptorPathnames)
     {
         DVASSERT(descriptorPath.IsEmpty() == false);
-
-        DumpTextureDescriptor(descriptorPath, links);
-
         for (const DAVA::String& tag : tags)
         {
             FilePath path = descriptorPath;
@@ -356,8 +355,6 @@ void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>&
     };
 
     FilePath configPathOriginal = slot->GetConfigFilePath();
-    dumpConfig(configPathOriginal);
-
     FileSystem* fs = GetEngineContext()->fileSystem;
     for (const DAVA::String& tag : tags)
     {

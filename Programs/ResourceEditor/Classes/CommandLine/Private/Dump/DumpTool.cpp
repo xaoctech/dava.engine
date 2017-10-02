@@ -108,10 +108,11 @@ bool DumpTool::PostInitInternal()
         return false;
     }
 
+    tags.push_back(""); // empty string means non-tagged behavior
     DAVA::uint32 tagsCount = options.GetOptionValuesCount(OptionName::TagList);
     if (tagsCount > 0)
     {
-        tags.reserve(tagsCount);
+        tags.reserve(tagsCount + 1);
         for (DAVA::uint32 i = 0; i < tagsCount; ++i)
         {
             tags.push_back(options.GetOption(OptionName::TagList, i).AsString());

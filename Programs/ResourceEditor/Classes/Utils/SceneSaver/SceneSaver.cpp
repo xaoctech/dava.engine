@@ -36,6 +36,7 @@ void SceneSaver::EnableCopyConverted(bool enabled)
 
 void SceneSaver::SetTags(const DAVA::Vector<DAVA::String>& tags_)
 {
+    DVASSERT(tags_.empty() == false && tags_[0].empty() == true); // mean that we have "" in tags for default behavior
     tags = tags_;
 }
 
@@ -183,8 +184,6 @@ void SceneSaver::CopyTextures(DAVA::Scene* scene)
             continue;
         }
 
-        CopyTexture(it.first);
-
         FileSystem* fs = GetEngineContext()->fileSystem;
         for (const DAVA::String& tag : tags)
         {
@@ -330,7 +329,6 @@ void SceneSaver::CopySlots(DAVA::Entity* node, DAVA::Set<DAVA::FilePath>& extern
         SlotComponent* component = static_cast<SlotComponent*>(node->GetComponent(Component::SLOT_COMPONENT, i));
         FilePath originalConfigPath = component->GetConfigFilePath();
 
-        processConfig(scene, originalConfigPath);
         for (const DAVA::String& tag : tags)
         {
             FilePath path = originalConfigPath;
