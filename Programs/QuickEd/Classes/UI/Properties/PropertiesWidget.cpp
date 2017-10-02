@@ -96,6 +96,7 @@ void PropertiesWidget::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
     documentDataWrapper.SetListener(this);
 
     propertiesModel->SetAccessor(accessor);
+    propertiesItemsDelegate->SetAccessor(accessor);
 }
 
 void PropertiesWidget::SetUI(DAVA::TArc::UI* ui_)

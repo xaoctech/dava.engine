@@ -6,8 +6,9 @@
 #include "Classes/StringConstants.h"
 
 #include <Scene3D/Components/CustomPropertiesComponent.h>
-#include <Scene3D/Systems/SlotSystem.h>
+#include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Systems/SlotSystem.h>
 #include <FileSystem/FileList.h>
 #include <FileSystem/FileSystem.h>
 #include <Engine/Engine.h>
@@ -134,6 +135,7 @@ void SceneSaver::SaveScene(DAVA::Scene* scene, const DAVA::FilePath& fileName)
     }
 
     CopyReferencedObject(scene);
+    CopyAnimationClips(scene);
     CopyEffects(scene);
     CopyCustomColorTexture(scene, fileName.GetDirectory());
 
@@ -273,6 +275,26 @@ void SceneSaver::CopyReferencedObject(DAVA::Entity* node)
     for (int32 i = 0; i < node->GetChildrenCount(); i++)
     {
         CopyReferencedObject(node->GetChild(i));
+    }
+}
+
+void SceneSaver::CopyAnimationClips(DAVA::Entity* node)
+{
+    for (DAVA::uint32 i = 0; i < node->GetComponentCount(DAVA::Component::MOTION_COMPONENT); ++i)
+    {
+        DAVA::MotionComponent* component = static_cast<DAVA::MotionComponent*>(node->GetComponent(DAVA::Component::MOTION_COMPONENT, i));
+        const DAVA::MotionComponent::SimpleMotion* motion = component->GetSimpleMotion();
+        if (motion)
+        {
+            const DAVA::FilePath& animationPath = motion->GetAnimationPath();
+            if (!animationPath.IsEmpty())
+                sceneUtils.AddFile(animationPath);
+        }
+    }
+
+    for (DAVA::int32 i = 0; i < node->GetChildrenCount(); i++)
+    {
+        CopyAnimationClips(node->GetChild(i));
     }
 }
 

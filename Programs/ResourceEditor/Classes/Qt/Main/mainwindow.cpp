@@ -212,7 +212,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
         fieldBinderTagged->BindField(fsFieldDescr, DAVA::MakeFunction(this, &QtMainWindow::UpdateTagDependentActionsState));
     }
 
-    ActiveSceneHolder::Init();
     globalOperations.reset(new MainWindowDetails::GlobalOperationsProxy(this));
 
     DAVA::TArc::DataContext* globalContext = REGlobal::GetGlobalContext();
@@ -280,7 +279,6 @@ QtMainWindow::~QtMainWindow()
 
     std::static_pointer_cast<MainWindowDetails::GlobalOperationsProxy>(globalOperations)->Reset();
     globalOperations.reset();
-    ActiveSceneHolder::Deinit();
 }
 
 void QtMainWindow::OnRenderingInitialized()
@@ -562,7 +560,8 @@ void QtMainWindow::SetupActions()
         DAVA::Sprite::DumpSprites();
     });
 
-    connect(ui->actionCreateTestSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestSkinnedObject()));
+    connect(ui->actionCreateTestHardSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestHardSkinnedObject()));
+    connect(ui->actionCreateTestSoftSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestSoftSkinnedObject()));
 
     QObject::connect(ui->actionBatchProcess, SIGNAL(triggered(bool)), this, SLOT(OnBatchProcessScene()));
 

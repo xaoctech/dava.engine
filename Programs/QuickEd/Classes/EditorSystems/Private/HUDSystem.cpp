@@ -149,6 +149,8 @@ void HUDSystem::OnUpdate()
     if (activeContext == nullptr)
     {
         hudMap.clear();
+        SetNewArea(HUDAreaInfo());
+        OnHighlightNode(nullptr);
         return;
     }
 

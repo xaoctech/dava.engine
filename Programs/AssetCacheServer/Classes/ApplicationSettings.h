@@ -181,6 +181,9 @@ public:
     EnabledRemote GetEnabledRemote();
     void DisableRemote();
 
+    void DumpStorageSettings();
+    void DumpSharingSettings();
+
 signals:
     void SettingsUpdated(const ApplicationSettings* settings) const;
 

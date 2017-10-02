@@ -15,6 +15,7 @@
 #include <Render/Material/NMaterial.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/Systems/SlotSystem.h>
@@ -83,6 +84,9 @@ void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FileP
 
     //Effects
     DumpEffect(GetEffectComponent(entity), links);
+
+    //Animations
+    DumpAnimations(GetMotionComponent(entity), links);
 
     for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
     {
@@ -363,6 +367,20 @@ void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>&
         if (fs->Exists(path) == true)
         {
             dumpConfig(path);
+        }
+    }
+}
+
+void SceneDumper::DumpAnimations(DAVA::MotionComponent* motionComponent, DAVA::Set<DAVA::FilePath>& links) const
+{
+    if (motionComponent != nullptr)
+    {
+        const DAVA::MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
+        if (motion)
+        {
+            const DAVA::FilePath& animationPath = motion->GetAnimationPath();
+            if (!animationPath.IsEmpty())
+                links.insert(animationPath.GetAbsolutePathname());
         }
     }
 }

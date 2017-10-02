@@ -23,6 +23,7 @@
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Image/ImageSystem.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/SceneFile/VersionInfo.h>
@@ -373,6 +374,31 @@ void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFold
             {
                 String configRelativePath = configPath.GetRelativePathname(dataSourceFolder);
                 exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SLOT_CONFIG, configRelativePath);
+            }
+        }
+    }
+}
+
+void CollectAnimationClips(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFolder, SceneExporter::ExportedObjectCollection& exportedObjects)
+{
+    using namespace DAVA;
+    Vector<Entity*> animationHolders;
+    scene->GetChildEntitiesWithComponent(animationHolders, Component::MOTION_COMPONENT);
+    for (Entity* entity : animationHolders)
+    {
+        uint32 componentCount = entity->GetComponentCount(Component::MOTION_COMPONENT);
+        for (uint32 i = 0; i < componentCount; ++i)
+        {
+            MotionComponent* motionComponent = static_cast<MotionComponent*>(entity->GetComponent(Component::MOTION_COMPONENT, i));
+            const MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
+            if (motion)
+            {
+                const FilePath& animationPath = motion->GetAnimationPath();
+                if (!animationPath.IsEmpty())
+                {
+                    String relativePath = animationPath.GetRelativePathname(dataSourceFolder);
+                    exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_SLOT_CONFIG, relativePath);
+                }
             }
         }
     }
@@ -1118,7 +1144,8 @@ const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT
       ExportedObjectDesc(OBJECT_TEXTURE, DAVA::Vector<DAVA::String>{ ".tex" }),
       ExportedObjectDesc(OBJECT_HEIGHTMAP, DAVA::Vector<DAVA::String>{ DAVA::Heightmap::FileExtension() }),
       ExportedObjectDesc(OBJECT_EMITTER_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml" }),
-      ExportedObjectDesc(OBJECT_SLOT_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml", ".xml" })
+      ExportedObjectDesc(OBJECT_SLOT_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml", ".xml" }),
+      ExportedObjectDesc(OBJECT_ANIMATION_CLIP, DAVA::Vector<DAVA::String>{ ".anim" })
     };
 
     return desc;
@@ -1132,6 +1159,7 @@ void SceneExporter::CollectObjects(DAVA::Scene* scene, DAVA::Vector<ExportedObje
     SceneExporterDetails::CollectTextureDescriptors(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_TEXTURE]);
     SceneExporterDetails::CollectParticleConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_EMITTER_CONFIG]);
     SceneExporterDetails::CollectSlotConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_SLOT_CONFIG]);
+    SceneExporterDetails::CollectAnimationClips(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_ANIMATION_CLIP]);
 }
 
 bool operator==(const SceneExporter::ExportedObject& left, const SceneExporter::ExportedObject& right)
