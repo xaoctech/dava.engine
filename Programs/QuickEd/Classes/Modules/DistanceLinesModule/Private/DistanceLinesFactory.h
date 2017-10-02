@@ -8,6 +8,7 @@
 
 namespace DAVA
 {
+class UIControl;
 namespace TArc
 {
 class ContextAccessor;
