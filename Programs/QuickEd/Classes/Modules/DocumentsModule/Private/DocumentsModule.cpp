@@ -1,6 +1,6 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
 

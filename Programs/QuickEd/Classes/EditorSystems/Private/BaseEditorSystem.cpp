@@ -1,5 +1,5 @@
 #include "EditorSystems/BaseEditorSystem.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <UI/UIEvent.h>

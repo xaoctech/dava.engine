@@ -2,7 +2,7 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/CanvasModule/CanvasModuleData.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
