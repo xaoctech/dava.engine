@@ -44,6 +44,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->reflectionPercent = reflectionPercent;
     dst->rndReflectionForceMin = rndReflectionForceMin;
     dst->rndReflectionForceMax = rndReflectionForceMax;
+    dst->velocityThreshold = velocityThreshold;
     dst->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphere;
     dst->isGlobal = isGlobal;
     dst->boxSize = boxSize;

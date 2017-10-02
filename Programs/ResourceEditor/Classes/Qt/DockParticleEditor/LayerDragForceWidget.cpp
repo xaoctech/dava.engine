@@ -264,6 +264,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     reflectionPercentSpin->setVisible(isPlaneCollision);
     normalAsReflectionVector->setVisible(isPlaneCollision);
     killParticlesAfterCollision->setVisible(isPlaneCollision);
+    velocityThresholdLabel->setVisible(isPlaneCollision);
+    velocityThresholdSpin->setVisible(isPlaneCollision);
 }
 
 void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
@@ -363,9 +365,6 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     connect(normalAsReflectionVector, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(normalAsReflectionVector);
 
-    killParticlesAfterCollision = new QCheckBox("Kill particles after collision");
-    connect(killParticlesAfterCollision, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
-    mainLayout->addWidget(killParticlesAfterCollision);
     QHBoxLayout* reflectionChaosLayout = new QHBoxLayout(this);
     reflectionChaosLabel = new QLabel("Reflection chaos:");
     reflectionChaosSpin = new EventFilterDoubleSpinBox();
@@ -391,6 +390,14 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     rndForceLayout->addWidget(rndReflectionForceMaxSpin);
     mainLayout->addLayout(rndForceLayout);
 
+    QHBoxLayout* velocityThresholdLayout = new QHBoxLayout(this);
+    velocityThresholdLabel = new QLabel("Velocity threshold:");
+    velocityThresholdSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(velocityThresholdSpin);
+    velocityThresholdLayout->addWidget(velocityThresholdLabel);
+    velocityThresholdLayout->addWidget(velocityThresholdSpin);
+    mainLayout->addLayout(velocityThresholdLayout);
+
     QHBoxLayout* reflectionPercentLayout = new QHBoxLayout(this);
     reflectionPercentLabel = new QLabel("Reflection percent:");
     reflectionPercentSpin = new EventFilterDoubleSpinBox();
@@ -398,6 +405,10 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     reflectionPercentLayout->addWidget(reflectionPercentLabel);
     reflectionPercentLayout->addWidget(reflectionPercentSpin);
     mainLayout->addLayout(reflectionPercentLayout);
+
+    killParticlesAfterCollision = new QCheckBox("Kill particles after collision");
+    connect(killParticlesAfterCollision, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(killParticlesAfterCollision);
 }
 
 void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
@@ -441,6 +452,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     randomizeReflectionForce->setChecked(selectedForce->randomizeReflectionForce);
     rndReflectionForceMinSpin->setValue(selectedForce->rndReflectionForceMin);
     rndReflectionForceMaxSpin->setValue(selectedForce->rndReflectionForceMax);
+    velocityThresholdSpin->setValue(selectedForce->velocityThreshold);
     reflectionPercentSpin->setValue(selectedForce->reflectionPercent);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
@@ -567,6 +579,8 @@ void LayerDragForceWidget::OnValueChanged()
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
     reflectionChaosSpin->setValue(params.reflectionChaos);
+
+    params.velocityThreshold = velocityThresholdSpin->value();
 
     UpdateVisibility(shape, timingType, selectedForce->type, params.useInfinityRange);
 

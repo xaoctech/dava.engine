@@ -506,6 +506,7 @@ public:
         DAVA::float32 reflectionChaos = 0.0f;
         DAVA::float32 rndReflectionForceMin = 1.0f;
         DAVA::float32 rndReflectionForceMax = 1.0f;
+        DAVA::float32 velocityThreshold = 1.0f;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
     };
 

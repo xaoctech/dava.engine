@@ -117,6 +117,8 @@ private:
     QLabel* reflectionPercentLabel = nullptr;
     EventFilterDoubleSpinBox* reflectionPercentSpin = nullptr;
 
+    QLabel* velocityThresholdLabel = nullptr;
+    EventFilterDoubleSpinBox* velocityThresholdSpin = nullptr;
     bool blockSignals = false;
 
     DAVA::ParticleDragForce* selectedForce = nullptr;

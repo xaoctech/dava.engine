@@ -345,9 +345,14 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 {
                     ey = current->speed;
                     float32 vel = ey.Length();
+                    float32 base = 0.0f;
+                    if (vel < EPSILON)
+                        ey = Vector3(0.0f, 0.0f, 1.0f);
+                    else
+                        base = group.layer->scaleVelocityBase / vel;
                     ex = ey.CrossProduct(cameraDirection);
                     ex.Normalize();
-                    ey *= (group.layer->scaleVelocityBase / vel + group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
+                    ey *= (base + group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
                 }
 
                 Vector3 left = ex * cos_angle + ey * sin_angle;

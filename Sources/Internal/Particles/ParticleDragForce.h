@@ -30,12 +30,12 @@ public:
 
     enum class eType
     {
-        DRAG_FORCE,
+        DRAG_FORCE = 0, // Also force priority.
+        WIND,
         LORENTZ_FORCE,
-        POINT_GRAVITY,
-        PLANE_COLLISION,
         GRAVITY,
-        WIND
+        POINT_GRAVITY,
+        PLANE_COLLISION
     } type = eType::DRAG_FORCE;
 
     ParticleDragForce(ParticleLayer* parent);
@@ -68,6 +68,7 @@ public:
     float32 rndReflectionForceMin = 1.0f;
     float32 rndReflectionForceMax = 1.1f;
     uint32 reflectionPercent = 100;
+    float32 velocityThreshold = 0.3f;
 
     RefPtr<PropertyLine<float32>> turbulenceLine;
 

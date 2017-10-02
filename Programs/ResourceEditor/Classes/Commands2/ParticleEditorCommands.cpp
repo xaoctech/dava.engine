@@ -362,6 +362,7 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.windBias = force->windBias;
         oldParams.backwardTurbulenceProbability = force->backwardTurbulenceProbability;
         oldParams.reflectionPercent = force->reflectionPercent;
+        oldParams.velocityThreshold = force->velocityThreshold;
     }
 }
 
@@ -404,6 +405,7 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
         force->randomizeReflectionForce = params.randomizeReflectionForce;
         force->rndReflectionForceMin = params.rndReflectionForceMin;
         force->rndReflectionForceMax = params.rndReflectionForceMax;
+        force->velocityThreshold = params.velocityThreshold;
         force->reflectionPercent = params.reflectionPercent;
         PropertyLineHelper::SetValueLine(force->forcePowerLine, params.forcePowerLine);
         PropertyLineHelper::SetValueLine(force->turbulenceLine, params.turbulenceLine);

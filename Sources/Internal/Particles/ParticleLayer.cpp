@@ -1268,6 +1268,9 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("rndReflectionForceMax%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->rndReflectionForceMax);
 
+        forceDataName = Format("velocityThreshold%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->velocityThreshold);
+
         forceDataName = Format("planeScale%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->planeScale);
 
@@ -1389,6 +1392,10 @@ void ParticleLayer::AddDrag(ParticleDragForce* drag)
 {
     SafeRetain(drag);
     dragForces.push_back(drag);
+    std::sort(dragForces.begin(), dragForces.end(), [](const ParticleDragForce* a, const ParticleDragForce* b) 
+    {
+        return static_cast<int32>(a->type) < static_cast<int32>(b->type);
+    });
 }
 
 void ParticleLayer::RemoveDrag(ParticleDragForce* drag)
@@ -1611,6 +1618,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* rndReflectionForceMaxNode = node->Get(forceDataName);
         if (rndReflectionForceMaxNode)
             dragForce->rndReflectionForceMax = rndReflectionForceMaxNode->AsFloat();
+
+        forceDataName = Format("velocityThreshold%d", i);
+        const YamlNode* velocityThresholdNode = node->Get(forceDataName);
+        if (velocityThresholdNode)
+            dragForce->velocityThreshold = velocityThresholdNode->AsFloat();
 
         forceDataName = Format("planeScale%d", i);
         const YamlNode* planeScaleNode = node->Get(forceDataName);

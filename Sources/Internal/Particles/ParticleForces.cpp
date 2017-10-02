@@ -185,9 +185,11 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
     uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
     Vector3 turbulence;
     float32 tubulencePower = GetTurbulenceValue(force, particleOverLife, layerOverLife);
-    if (Abs(tubulencePower) > EPSILON)
+
+    uint32 offset = particleIndex % noiseWidth;
+    float32 windMultiplier = 1.0f;
+    if (Abs(tubulencePower) > EPSILON || Abs(force->windFrequency) > EPSILON)
     {
-        uint32 offset = particleIndex % noiseWidth;
         float32 indexUnclamped = particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset;
         float32 intPart = 0.0f;
         float32 fractPart = modf(particleOverLife * noiseWidth * force->windTurbulenceFrequency + offset, &intPart);
@@ -199,6 +201,11 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
         Vector3 t1 = noise[xindex][yindex];
         Vector3 t2 = noise[nextIndex][yindex];
         turbulence = Lerp(t1, t2, fractPart);
+    }
+    if (Abs(force->windFrequency) > EPSILON)
+        windMultiplier = turbulence.x + force->windBias; // TODO wind freq
+    if (Abs(tubulencePower) > EPSILON)
+    {
         //turbulence *= Vector3(sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency), cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency), sin(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * cos(particleOverLife * 2 * PI * force->windTurbulenceFrequency) * 2.0f);
         if ((100 - force->backwardTurbulenceProbability) > offset % 100)
         {
@@ -210,7 +217,7 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
         effectSpacePosition += turbulence; // how with drug and other forces, turb not adding to velocity? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
     }
     static const float32 windScale = 100.0f; // Artiom request.
-    effectSpaceVelocity += force->direction * dt * GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex) * forceStrength.x * windScale; // +turbulence;
+    effectSpaceVelocity += force->direction * dt * /*GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex)*/ windMultiplier * forceStrength.x * windScale; // +turbulence;
 }
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle)
@@ -281,6 +288,11 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
     float32 bProj = b.DotProduct(normal);
     if (bProj <= 0 && a.DotProduct(normal) > 0)
     {
+        if (effectSpaceVelocity.SquareLength() < force->velocityThreshold * force->velocityThreshold)
+        {
+            effectSpaceVelocity = Vector3::Zero;
+            return;
+        }
         std::random_device rd;
         std::mt19937 rng(rd());
         std::uniform_int_distribution<int32> uniInt(0, 99);
