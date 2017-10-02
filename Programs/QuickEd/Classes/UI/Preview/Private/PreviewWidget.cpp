@@ -128,8 +128,8 @@ void PreviewWidget::CreateActions()
     connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
 
     FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-    fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+    fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+    fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
 
     QtAction* focusNextChildAction = new QtAction(accessor, tr("Focus next child"), this);
     focusNextChildAction->setShortcut(Qt::Key_Tab);

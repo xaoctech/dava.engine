@@ -101,8 +101,8 @@ void EditorSystemsManager::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-        fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+        fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+        fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnEmulationModeChanged));
     }
 }

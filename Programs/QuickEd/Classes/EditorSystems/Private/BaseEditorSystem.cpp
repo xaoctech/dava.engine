@@ -13,7 +13,7 @@ const EditorSystemsManager* BaseEditorSystem::GetSystemsManager() const
 {
     using namespace DAVA::TArc;
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     DVASSERT(editorData != nullptr);
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
     DVASSERT(systemsManager != nullptr);
@@ -24,7 +24,7 @@ EditorSystemsManager* BaseEditorSystem::GetSystemsManager()
 {
     using namespace DAVA::TArc;
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     DVASSERT(editorData != nullptr);
     EditorSystemsManager* systemsManager = editorData->systemsManager.get();
     DVASSERT(systemsManager != nullptr);
