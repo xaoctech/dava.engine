@@ -28,6 +28,10 @@ public:
     DAVA::Signal<ControlNode*> highlightChanged;
     void HighlightNode(ControlNode* highLight);
 
+    DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
+    DAVA::Signal<> selectionByRectStarted;
+    DAVA::Signal<> selectionByRectFinished;
+
 private:
     enum eSearchOrder
     {

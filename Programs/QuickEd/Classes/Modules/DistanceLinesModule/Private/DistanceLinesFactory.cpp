@@ -31,20 +31,31 @@ DAVA::Vector<std::unique_ptr<DistanceLine>> DistanceLinesFactory::CreateLines(co
             Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
             Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
 
-            Vector2 startPos;
-            Vector2 endPos;
+            Vector2 startPos1;
+            Vector2 startPos2;
+            Vector2 endPos1;
+            Vector2 endPos2;
 
             float32 selectedRectMiddle = params.selectedRect.GetPosition()[oppositeAxis] + params.selectedRect.GetSize()[oppositeAxis] / 2.0f;
-            startPos[oppositeAxis] = selectedRectMiddle;
-            endPos[oppositeAxis] = selectedRectMiddle;
+            startPos1[oppositeAxis] = selectedRectMiddle;
+            startPos2[oppositeAxis] = selectedRectMiddle;
+            endPos1[oppositeAxis] = selectedRectMiddle;
+            endPos2[oppositeAxis] = selectedRectMiddle;
 
-            startPos[axis] = params.selectedRect.GetPosition()[axis];
-            endPos[axis] = params.highlightedRect.GetPosition()[axis];
-            AddLine<SolidLine>(params, axis, startPos, endPos, lines);
+            startPos1[axis] = params.selectedRect.GetPosition()[axis];
+            endPos1[axis] = params.highlightedRect.GetPosition()[axis];
+            startPos2[axis] = params.selectedRect.GetPosition()[axis] + params.selectedRect.GetSize()[axis];
+            endPos2[axis] = params.highlightedRect.GetPosition()[axis] + params.highlightedRect.GetSize()[axis];
 
-            startPos[axis] += params.selectedRect.GetSize()[axis];
-            endPos[axis] += params.highlightedRect.GetSize()[axis];
-            AddLine<SolidLine>(params, axis, startPos, endPos, lines);
+            //do not draw distances if rect have common point
+            if (startPos1 == endPos1 || startPos2 == endPos2 || startPos1 == endPos2 || startPos2 == endPos1)
+            {
+                continue;
+            }
+
+            AddLine<SolidLine>(params, axis, startPos1, endPos1, lines);
+
+            AddLine<SolidLine>(params, axis, startPos2, endPos2, lines);
         }
     }
     else
@@ -132,11 +143,13 @@ void DistanceLinesFactory::SurroundWithDotLines(const Params& params, DAVA::Vect
 template <typename T>
 void DistanceLinesFactory::AddLine(const Params& params, DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos, DAVA::Vector<std::unique_ptr<DistanceLine>>& lines) const
 {
-    if (startPos[axis] != endPos[axis])
-    {
         DAVA::eAlign direction = DistanceLinesFactoryDetails::GetDirection(axis, startPos, endPos);
-        lines.push_back(std::make_unique<T>(CreateLineParams(params, startPos, endPos, direction)));
-    }
+        LineParams lineParams = CreateLineParams(params, startPos, endPos, direction);
+        const DAVA::float32 maximumDisplayedLength = 0.1f;
+        if (lineParams.length > maximumDisplayedLength)
+        {
+            lines.push_back(std::make_unique<T>(lineParams));
+        }
 }
 
 DistanceLinesFactory::Params::Params(DAVA::UIControl* selectedControl, DAVA::UIControl* highlightedControl)

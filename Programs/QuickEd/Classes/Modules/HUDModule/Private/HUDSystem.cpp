@@ -204,6 +204,7 @@ void HUDSystem::OnUpdate()
 
     EditorSystemsData* systemsData = accessor->GetGlobalContext()->GetData<EditorSystemsData>();
     if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag &&
+        GetSystemsManager()->GetDisplayState() != EditorSystemsManager::Emulation &&
         systemsData->IsHighlightDisabled() == false)
     {
         ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
@@ -249,7 +250,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
             }
 
             selectionRectControl->SetRect(Rect(point, size));
-            GetSystemsManager()->selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
+            selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
         break;
     default:
@@ -440,6 +441,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         DVASSERT(selectionRectControl == nullptr);
         selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT, accessor));
         selectionRectControl->AddToParent(hudControl.Get());
+        selectionByRectStarted.Emit();
         break;
     case EditorSystemsManager::DragScreen:
         UpdateHUDEnabled();
@@ -454,6 +456,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         DVASSERT(selectionRectControl != nullptr);
         selectionRectControl->RemoveFromParent(hudControl.Get());
         selectionRectControl = nullptr;
+        selectionByRectFinished.Emit();
         break;
     case EditorSystemsManager::Transform:
         ClearMagnetLines();

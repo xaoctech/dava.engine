@@ -37,8 +37,9 @@ Painter::Painter()
     textureMaterial = SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 }
 
-void Painter::Add(uint32 order, const DrawTextParams& params)
+void Painter::Add(uint32 order, DrawTextParams params)
 {
+    ApplyParamPos(params);
     Vector<DrawTextParams>& items = drawItems[order].drawTextItems;
     items.push_back(params);
 }
@@ -57,9 +58,8 @@ void Painter::Draw(Window* window)
         {
             Draw(params);
         }
-        for (DrawTextParams& params : pair.second.drawTextItems)
+        for (const DrawTextParams& params : pair.second.drawTextItems)
         {
-            ApplyParamPos(params);
             Draw(params);
         }
     }
@@ -188,13 +188,8 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     }
 
     //font have a little padding inside it draw rect
-    params.pos.y -= 2.0f;
-    params.pos.x -= 2.0f;
-
-    Rect rect;
-    rect.SetPosition(params.pos * params.transformMatrix);
-    rect.SetSize(size);
-
-    //RenderSystem2D::Instance()->DrawRect(rect, Color::Red);
+    const Vector2 padding = Vector2(2.0f, 2.0f) / params.scale;
+    params.pos.x -= padding.x;
+    params.pos.y -= padding.y;
 }
 }

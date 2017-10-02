@@ -65,7 +65,7 @@ class Painter final
 public:
     Painter();
 
-    void Add(uint32 order, const DrawTextParams& params);
+    void Add(uint32 order, DrawTextParams params);
     void Add(uint32 order, const DrawLineParams& params);
 
     void Draw(Window* window);

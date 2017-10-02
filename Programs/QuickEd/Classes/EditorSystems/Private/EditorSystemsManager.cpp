@@ -149,7 +149,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::ALT))
+    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }

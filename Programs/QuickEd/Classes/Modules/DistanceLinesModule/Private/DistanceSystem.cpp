@@ -34,6 +34,11 @@ bool DistanceSystem::CanDrawDistances() const
     using namespace DAVA;
     using namespace DAVA::TArc;
 
+    if (canDrawDistancesAfterInput == false)
+    {
+        return false;
+    }
+
     if (IsKeyPressed(eModifierKeys::ALT) == false)
     {
         return false;
@@ -60,7 +65,13 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
-    PackageBaseNode* parent = (*selectedControls.begin())->GetParent();
+    ControlNode* selectedControl = *selectedControls.begin();
+    if (selectedControl->GetControl()->IsHiddenForDebug())
+    {
+        return false;
+    }
+
+    PackageBaseNode* parent = selectedControl->GetParent();
 
     if (selectedControls.find(highlightedNode) != selectedControls.end())
     {
@@ -106,4 +117,15 @@ void DistanceSystem::OnUpdate()
     {
         line->Draw();
     }
+}
+
+bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+{
+    //ignore keyboard events to not enable distances on alt+scroll combinations
+    return currentInput->device != DAVA::eInputDevices::KEYBOARD;
+}
+
+void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput)
+{
+    canDrawDistancesAfterInput = (currentInput->phase == DAVA::UIEvent::Phase::MOVE);
 }

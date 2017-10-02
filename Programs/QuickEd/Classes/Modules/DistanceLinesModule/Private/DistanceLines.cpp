@@ -99,7 +99,7 @@ void SolidLine::DrawLineText()
 
     //margin around text
     const float32 minLength = 20.0f;
-    if (params.length > minLength)
+    if (params.length * params.gd.scale[params.axis] > minLength)
     {
         if (params.axis == Vector2::AXIS_X)
         {
