@@ -9,7 +9,6 @@
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Base/HashMap.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/EntityFamily.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
@@ -283,6 +282,7 @@ public:
     static const char* SCENE_NODE_IS_NOT_REMOVABLE_PROPERTY_NAME;
 
     static FastName EntityNameFieldName;
+    static const char* componentFieldString;
 
     void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*>& components);
 
@@ -321,8 +321,6 @@ private:
 
     friend class Scene;
     friend class SceneFileV2;
-
-    static const char* componentFieldString;
 };
 
 inline uint32 Entity::GetID() const

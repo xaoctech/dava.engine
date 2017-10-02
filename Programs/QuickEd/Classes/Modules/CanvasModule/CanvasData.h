@@ -31,6 +31,9 @@ public:
     //predefined scales list
     static DAVA::FastName predefinedScalesPropertyName;
 
+    //centralize control on view
+    static DAVA::FastName needCentralizePropertyName;
+
     //reference point are set to keep visible some area. Usually it's a cursor position or screen center
     //later it can be selection area center
     //reference point must be set before changing scale

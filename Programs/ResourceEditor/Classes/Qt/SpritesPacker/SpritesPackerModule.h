@@ -2,6 +2,8 @@
 
 #include <Tools/TextureCompression/TextureConverter.h>
 
+#include <TArc/Core/ContextAccessor.h>
+
 #include <Render/RenderBase.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>

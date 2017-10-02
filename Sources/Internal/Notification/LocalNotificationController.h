@@ -30,7 +30,7 @@ public:
     bool Remove(LocalNotification* const notification);
     bool RemoveById(const String& notificationId);
     void Clear();
-    void Update();
+    void Update(float32);
 
     void RequestPermissions();
 
