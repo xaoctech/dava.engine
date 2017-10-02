@@ -62,7 +62,7 @@ void ObjectPlacementSystem::Process(DAVA::float32 time)
         if (landscapes.empty())
         {
             snapToLandscape = false;
-            modificationSystem->SetLandscapeSnap(snapToLandscape);
+            modificationSystem->SetLandscapeSnap(false);
         }
         needCheckLandscapes = false;
     }
@@ -84,7 +84,8 @@ void ObjectPlacementSystem::PlaceAndAlign() const
     {
         Matrix4 translation;
         Vector3 collisionNormal;
-        bool hitObject = false, hitLandscape = false;
+        bool hitObject = false;
+        bool hitLandscape = false;
 
         Vector3 originalPos = etm.originalTransform.GetTranslationVector();
         Ray3 ray(originalPos, Vector3(0.0f, 0.0f, -1.0f));
@@ -118,7 +119,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         if (!(hitLandscape || hitObject))
             continue;
 
-        Vector3 currentUp = Vector3(0.0, 0.0, 1.0);
+        Vector3 currentUp = Vector3(0.0f, 0.0f, 1.0f);
         Quaternion rotationQuaternion;
         Vector3 pos, scale;
         etm.originalTransform.Decomposition(pos, scale, rotationQuaternion);
@@ -136,14 +137,14 @@ void ObjectPlacementSystem::PlaceAndAlign() const
 void ObjectPlacementSystem::GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
                                                               DAVA::Matrix4& translation, DAVA::Vector3& normal) const
 {
-    DAVA::uint16 vertIndices[3];
-    collision.geometry->GetTriangleIndices(collision.triangleIndex * 3, vertIndices);
+    DAVA::Array<DAVA::uint16, 3> vertIndices;
+    collision.geometry->GetTriangleIndices(collision.triangleIndex * 3, vertIndices.data());
     DAVA::Vector3 v[3];
     collision.geometry->GetCoord(vertIndices[0], v[0]);
     collision.geometry->GetCoord(vertIndices[1], v[1]);
     collision.geometry->GetCoord(vertIndices[2], v[2]);
     normal = (v[1] - v[0]).CrossProduct(v[2] - v[0]);
-    translation.SetTranslationVector(DAVA::Vector3(0.0, 0.0, -collision.t));
+    translation.SetTranslationVector(DAVA::Vector3(0.0f, 0.0f, -collision.t));
     DAVA::Matrix4* hitWorldTransform = collision.renderObject->GetWorldTransformPtr();
     DAVA::Quaternion rotationQuaternion;
     DAVA::Vector3 pos, scale;

@@ -48,12 +48,12 @@ void ObjectPlacementModule::PostInit()
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
+    FieldDescriptor fieldDescr;
 
     // Place on landscape
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_placeonland.png"), QString("Place on landscape"));
         { // enable/disable
-            FieldDescriptor fieldDescr;
             fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
             fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
             action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
@@ -75,7 +75,6 @@ void ObjectPlacementModule::PostInit()
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_snaptoland.png"), "Enable snap to landscape");
         { // check/uncheck
-            FieldDescriptor fieldDescr;
             fieldDescr.fieldName = DAVA::FastName(ObjectPlacementData::snapToLandscapePropertyName);
             fieldDescr.type = DAVA::ReflectedTypeDB::Get<ObjectPlacementData>();
             action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
@@ -84,7 +83,6 @@ void ObjectPlacementModule::PostInit()
         }
 
         { // enable/disable
-            FieldDescriptor fieldDescr;
             fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
             fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
             action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
@@ -93,7 +91,6 @@ void ObjectPlacementModule::PostInit()
         }
 
         { // tooltip text
-            FieldDescriptor fieldDescr;
             fieldDescr.fieldName = DAVA::FastName(ObjectPlacementData::snapToLandscapePropertyName);
             fieldDescr.type = DAVA::ReflectedTypeDB::Get<ObjectPlacementData>();
             action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
@@ -117,7 +114,6 @@ void ObjectPlacementModule::PostInit()
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_placeonobj.png"), QString("Place and align"));
         { // enable/disable
-            FieldDescriptor fieldDescr;
             fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
             fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
             action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {

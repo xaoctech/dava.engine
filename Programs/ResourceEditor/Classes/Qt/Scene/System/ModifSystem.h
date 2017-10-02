@@ -30,7 +30,7 @@ struct EntityToModify
     DAVA::Matrix4 fromWorldZero;
 };
 
-DAVA::Vector<EntityToModify> CreateEntityToModifyVector(const SelectableGroup& inputEntities);
+DAVA::Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities);
 void ApplyModificationToScene(DAVA::Scene* scene, const DAVA::Vector<EntityToModify>& entities);
 
 class EntityModificationSystem : public DAVA::SceneSystem, public SelectionSystemDelegate
