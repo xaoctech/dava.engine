@@ -62,7 +62,7 @@ void CanvasData::SetPosition(const DAVA::Vector2& position_)
     using namespace DAVA;
     needCentralize = false;
 
-    position.Set(std::floor(position_.x), std::floor(position_.y));
+    position = position_;
 }
 
 DAVA::Vector2 CanvasData::GetRootPosition() const
