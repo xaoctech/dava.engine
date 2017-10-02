@@ -181,7 +181,7 @@ public:
 
     virtual void RecalculateWorldBoundingBox();
 
-    virtual void BindDynamicParameters(Camera* camera);
+    virtual void BindDynamicParameters(Camera* camera, RenderBatch* batch);
 
     inline uint16 GetStaticOcclusionIndex() const;
     inline void SetStaticOcclusionIndex(uint16 index);

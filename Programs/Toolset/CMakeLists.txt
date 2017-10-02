@@ -66,7 +66,6 @@ set( UNITY_BUILD_OLD_VALUE ${UNITY_BUILD} )
 
 set( JOIN_PROJECT_NAME 1 )
 set( DAVA_MEGASOLUTION      1 )
-set( IGNORE_FILE_TREE_CHECK 1 )
 
 if( NOT DEPLOY_DIR )
     set( DEPLOY_DIR_MACOS             ${CMAKE_BINARY_DIR}/app )
@@ -140,10 +139,7 @@ reset_property ( MIX_APP_DATA )
     add_tool     ( ResourceArchiver )
     add_tool     ( ResourcePacker   )
     add_tool     ( ResourcePatcher  )
-
-if (NOT DEPLOY OR IMAGE_UNPACKER)    
     add_tool     ( ImageUnpacker    )
-endif ()
 
 if (NOT DEPLOY OR CACHE_CLIENT)    
     add_tool     ( AssetCacheClient )

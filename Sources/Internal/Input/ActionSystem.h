@@ -28,7 +28,9 @@ struct Action final
     /** Id of the action */
     FastName actionId;
 
-    /** Id of the device whose event triggered the action. This field is always non-null. */
+    /** Pointer to the device whose event triggered the action. This field is always non-null. 
+		You can't rely on this for digital bindings, because for digital bindings this field will contain random triggered device pointer.
+	*/
     InputDevice* triggeredDevice;
 
     /**
@@ -53,6 +55,35 @@ struct ActionSet final
 
     /** List of bindings to analog elements. */
     Vector<AnalogBinding> analogBindings;
+};
+
+/** Describes analog action state */
+struct AnalogActionState final
+{
+    /** Indicates if analog action is active. 
+		An analog action is considered to always be active if there are no digital elements requirements, 
+		otherwise it's active only if these digital elements are in required state  
+	*/
+    bool active;
+
+    /** Analog X value */
+    float32 x;
+
+    /** Analog Y value */
+    float32 y;
+
+    /** Analog Z value */
+    float32 z;
+
+    AnalogActionState() = default;
+
+    AnalogActionState(bool active, const AnalogElementState& state)
+        : active(active)
+        , x(state.x)
+        , y(state.y)
+        , z(state.z)
+    {
+    }
 };
 
 // TODO: do we need fabric methods for easier creation of Digital/Analog binding instances?
@@ -118,6 +149,13 @@ public:
 
     /** Unbind all the sets. */
     void UnbindAllSets();
+
+public:
+    /** Returns digital action state for digital binding. 'actionId' should correspond to DigitalBinding  */
+    bool GetDigitalActionState(FastName actionId) const;
+
+    /** Returns analog action state for analog binding. 'actionId' should correspond to AnalogBinding */
+    AnalogActionState GetAnalogActionState(FastName actionId) const;
 
 public:
     /** Emits when an action is triggered. */

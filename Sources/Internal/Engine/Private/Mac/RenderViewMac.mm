@@ -90,6 +90,26 @@
     return YES;
 }
 
+- (CALayer*)makeBackingLayer
+{
+    // Our NSOpenGLView is not layer-backed on purpose (i.e. wantsLayer is NO),
+    // but native controls we add to it via PlatformApiMac::AddNSView are layer-backed (see WebViewControlMac and MovieViewControlMac).
+    // Starting with macOS 10.13 adding layer-backed view to non layer-backed view makes parent also layer-backed (at least in case of our hierarchy)
+    // This behaviour does not seem to match Apple's documentation, which says that:
+    // `Creating a layer-backed view implicitly causes the entire view hierarchy UNDER that view to become layer-backed.`
+    // So in this case, as a workaround on macOS 10.13 and higher, we suppress our RenderView from becoming layer-backed by returning nil from this method
+    //
+    // This method override should be removed in case if high resolution support will be reimplemented in a way requiring this view to be layer-backed
+    if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:{ 10, 13, 0 }])
+    {
+        return nil;
+    }
+    else
+    {
+        return [super makeBackingLayer];
+    }
+}
+
 - (void)mouseMoved:(NSEvent*)theEvent
 {
     bridge->MouseMove(theEvent);
