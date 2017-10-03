@@ -23,7 +23,6 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
 
     void AddProjectControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
     void RemoveProjectControls();
-    void SetProjectControlsEnabled(bool active);
 
     void AddProjectPinnedControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
     void AddProjectLibraryControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);

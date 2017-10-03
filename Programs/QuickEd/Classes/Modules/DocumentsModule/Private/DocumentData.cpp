@@ -258,7 +258,6 @@ DAVA::FastName DocumentData::currentNodePropertyName{ "current node" };
 DAVA::FastName DocumentData::selectionPropertyName{ "selection" };
 DAVA::FastName DocumentData::displayedRootControlsPropertyName{ "displayed root controls" };
 DAVA::FastName DocumentData::guidesPropertyName{ "guides" };
-DAVA::FastName DocumentData::nodeToAddOnClickPropertyName{ "node to add" };
 
 template <>
 bool DAVA::AnyCompare<PackageNode::Guides>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)

@@ -11,7 +11,7 @@ public:
 
 private:
     friend class CreatingControlsModule;
-    CreatingControlsSystem* creatingControlsSystem = nullptr;
+    std::unique_ptr<CreatingControlsSystem> creatingControlsSystem;
 
     DAVA_VIRTUAL_REFLECTION(CreatingControlsData, DAVA::TArc::DataNode);
 };

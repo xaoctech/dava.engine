@@ -66,7 +66,6 @@ public:
     static DAVA::FastName selectionPropertyName;
     static DAVA::FastName displayedRootControlsPropertyName;
     static DAVA::FastName guidesPropertyName;
-    static DAVA::FastName nodeToAddOnClickPropertyName;
 
 private:
     friend class DocumentsModule;

@@ -132,12 +132,6 @@ void LibraryModule::OnPackageChanged(const DAVA::Any& package)
         data->currentPackageNode = nullptr;
     }
 
-    if (previousPackageNode != data->currentPackageNode)
-    {
-        bool enableControls = (data->currentPackageNode != nullptr);
-        SetProjectControlsEnabled(enableControls);
-    }
-
     data->libraryWidget->SetCurrentPackage(data->currentPackageNode);
 }
 
@@ -227,6 +221,10 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
     using namespace DAVA::TArc;
     using namespace LibraryModuleDetails;
 
+    FieldDescriptor packageField;
+    packageField.type = ReflectedTypeDB::Get<DocumentData>();
+    packageField.fieldName = FastName(DocumentData::packagePropertyName);
+
     LibraryData* libraryData = GetLibraryData();
 
     const Vector<ProjectData::PinnedControl>& pinnedControls = projectData->GetPinnedControls();
@@ -263,6 +261,10 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
                 InsertionParams insertionParams = { InsertionParams::eInsertionMethod::BeforeItem, menuNameLibrary };
                 actionInfo.placement.AddPlacementPoint(CreateMenuPoint("Controls", insertionParams));
                 actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(LibraryModuleDetails::controlsToolbarName, insertionParams));
+                actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
+                    PackageNode* package = fieldValue.Cast<PackageNode*>(nullptr);
+                    return (package != nullptr);
+                });
                 connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, controlNode, false));
                 GetUI()->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
 
@@ -285,6 +287,10 @@ void LibraryModule::AddProjectLibraryControls(const ProjectData* projectData, co
     using namespace DAVA;
     using namespace DAVA::TArc;
     using namespace LibraryModuleDetails;
+
+    FieldDescriptor packageField;
+    packageField.type = ReflectedTypeDB::Get<DocumentData>();
+    packageField.fieldName = FastName(DocumentData::packagePropertyName);
 
     LibraryData* libraryData = GetLibraryData();
 
@@ -347,6 +353,10 @@ void LibraryModule::AddProjectLibraryControls(const ProjectData* projectData, co
                     actionInfo.placement.AddPlacementPoint(pinnedMenuPoint);
                     actionInfo.placement.AddPlacementPoint(pinnedToolbarMenuPoint);
                 }
+                actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
+                    PackageNode* package = fieldValue.Cast<PackageNode*>(nullptr);
+                    return (package != nullptr);
+                });
                 connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, node, false));
 
                 GetUI()->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
@@ -361,6 +371,10 @@ void LibraryModule::AddDefaultControls()
     using namespace DAVA;
     using namespace DAVA::TArc;
     using namespace LibraryModuleDetails;
+
+    FieldDescriptor packageField;
+    packageField.type = ReflectedTypeDB::Get<DocumentData>();
+    packageField.fieldName = FastName(DocumentData::packagePropertyName);
 
     LibraryData* libraryData = GetLibraryData();
 
@@ -387,6 +401,10 @@ void LibraryModule::AddDefaultControls()
         actionInfo.action->setEnabled(false);
         actionInfo.placement.AddPlacementPoint(menuPoint);
         actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
+        actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
+            PackageNode* package = fieldValue.Cast<PackageNode*>(nullptr);
+            return (package != nullptr);
+        });
         connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, control.Get(), false));
 
         GetUI()->AddAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action);
@@ -397,15 +415,6 @@ void LibraryModule::AddDefaultControls()
 void LibraryModule::RemoveProjectControls()
 {
     ClearActions(GetLibraryData()->controlsActions);
-}
-
-void LibraryModule::SetProjectControlsEnabled(bool enabled)
-{
-    for (const std::pair<ControlNode*, LibraryData::ActionInfo>& entry : GetLibraryData()->controlsActions)
-    {
-        const LibraryData::ActionInfo& actionInfo = entry.second;
-        actionInfo.action->setEnabled(enabled);
-    }
 }
 
 void LibraryModule::AddControlAction(ControlNode* controlNode, bool isPrototype, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap)
