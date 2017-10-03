@@ -16,6 +16,7 @@ class ParticleEmitter;
 class SceneSaver final
 {
 public:
+    SceneSaver();
     ~SceneSaver();
 
     void SetInFolder(const DAVA::FilePath& folderPathname);

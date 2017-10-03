@@ -14,6 +14,11 @@
 #include <Engine/Engine.h>
 #include <Time/SystemTimer.h>
 
+SceneSaver::SceneSaver()
+{
+    tags.push_back(""); // we have "" in tags for default behavior
+}
+
 SceneSaver::~SceneSaver()
 {
     ReleaseTextures();
