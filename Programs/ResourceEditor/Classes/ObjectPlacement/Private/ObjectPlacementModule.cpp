@@ -48,15 +48,20 @@ void ObjectPlacementModule::PostInit()
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
-    FieldDescriptor fieldDescr;
+    FieldDescriptor sceneDataFieldDescr;
+    sceneDataFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+    sceneDataFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+
+    FieldDescriptor landscapeSnapFieldDescr;
+    landscapeSnapFieldDescr.fieldName = DAVA::FastName(ObjectPlacementData::snapToLandscapePropertyName);
+    landscapeSnapFieldDescr.type = DAVA::ReflectedTypeDB::Get<ObjectPlacementData>();
 
     // Place on landscape
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_placeonland.png"), QString("Place on landscape"));
         { // enable/disable
-            fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-            fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-            action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+
+            action->SetStateUpdationFunction(QtAction::Enabled, sceneDataFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
                 return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
             });
         }
@@ -75,25 +80,19 @@ void ObjectPlacementModule::PostInit()
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_snaptoland.png"), "Enable snap to landscape");
         { // check/uncheck
-            fieldDescr.fieldName = DAVA::FastName(ObjectPlacementData::snapToLandscapePropertyName);
-            fieldDescr.type = DAVA::ReflectedTypeDB::Get<ObjectPlacementData>();
-            action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            action->SetStateUpdationFunction(QtAction::Checked, landscapeSnapFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
                 return value.Get<bool>(false);
             });
         }
 
         { // enable/disable
-            fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-            fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-            action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            action->SetStateUpdationFunction(QtAction::Enabled, sceneDataFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
                 return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
             });
         }
 
         { // tooltip text
-            fieldDescr.fieldName = DAVA::FastName(ObjectPlacementData::snapToLandscapePropertyName);
-            fieldDescr.type = DAVA::ReflectedTypeDB::Get<ObjectPlacementData>();
-            action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            action->SetStateUpdationFunction(QtAction::Text, landscapeSnapFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
                 bool checked = value.Get<bool>(false);
                 if (checked)
                     return DAVA::String("Disable snap to landscape");
@@ -114,9 +113,7 @@ void ObjectPlacementModule::PostInit()
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_placeonobj.png"), QString("Place and align"));
         { // enable/disable
-            fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-            fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-            action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            action->SetStateUpdationFunction(QtAction::Enabled, sceneDataFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
                 return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
             });
         }
