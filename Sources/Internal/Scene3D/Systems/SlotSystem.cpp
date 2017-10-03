@@ -424,6 +424,11 @@ void SlotSystem::RemoveComponent(Entity* entity, Component* component)
     RemoveExchangingWithLast(nodes, index);
 }
 
+void SlotSystem::PrepareForRemove()
+{
+    nodes.clear();
+}
+
 void SlotSystem::Process(float32 timeElapsed)
 {
     for (uint32 i = 0; i < loadedItemsCount; ++i)

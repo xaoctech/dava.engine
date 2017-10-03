@@ -170,6 +170,13 @@ void PathSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void PathSystem::PrepareForRemove()
+{
+    pathes.clear();
+    currentPath = nullptr;
+    entitiesForCollapse.clear();
+}
+
 void PathSystem::WillClone(DAVA::Entity* originalEntity)
 {
     DAVA::PathComponent* pc = DAVA::GetPathComponent(originalEntity);

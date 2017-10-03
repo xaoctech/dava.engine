@@ -52,16 +52,13 @@
 #include "UI/UIEvent.h"
 #include "Utils/Utils.h"
 
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/WASDPhysicsControllerSystem.h>
-#include <Physics/PhysicsSystem.h>
-#endif
-
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
 #endif
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/WASDPhysicsControllerSystem.h>
+#include <Physics/PhysicsSystem.h>
 #include <Physics/CollisionSingleComponent.h>
 #endif
 
@@ -403,18 +400,6 @@ Scene::~Scene()
 {
     Renderer::GetOptions()->RemoveObserver(this);
 
-    SafeRelease(mainCamera);
-    SafeRelease(drawCamera);
-
-    for (Camera*& c : cameras)
-        SafeRelease(c);
-    cameras.clear();
-
-    // Children should be removed first because they should unregister themselves in managers
-    RemoveAllChildren();
-
-    SafeRelease(sceneGlobalMaterial);
-
     transformSystem = nullptr;
     renderUpdateSystem = nullptr;
     lodSystem = nullptr;
@@ -438,8 +423,24 @@ Scene::~Scene()
 
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
+    {
+        systems[k]->PrepareForRemove();
+    }
+
+    for (size_t k = 0; k < size; ++k)
+    {
         SafeDelete(systems[k]);
+    }
     systems.clear();
+
+    SafeRelease(mainCamera);
+    SafeRelease(drawCamera);
+    for (Camera*& c : cameras)
+        SafeRelease(c);
+    cameras.clear();
+
+    RemoveAllChildren();
+    SafeRelease(sceneGlobalMaterial);
 
     for (SingletonComponent* s : singletonComponents)
     {
@@ -507,12 +508,6 @@ void Scene::RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* ent
     system->RegisterEntity(entity);
     for (int32 i = 0, sz = entity->GetChildrenCount(); i < sz; ++i)
         RegisterEntitiesInSystemRecursively(system, entity->GetChild(i));
-}
-void Scene::UnregisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity)
-{
-    system->UnregisterEntity(entity);
-    for (int32 i = 0, sz = entity->GetChildrenCount(); i < sz; ++i)
-        UnregisterEntitiesInSystemRecursively(system, entity->GetChild(i));
 }
 
 void Scene::RegisterComponent(Entity* entity, Component* component)
@@ -587,7 +582,7 @@ void Scene::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 pr
 
 void Scene::RemoveSystem(SceneSystem* sceneSystem)
 {
-    UnregisterEntitiesInSystemRecursively(sceneSystem, this);
+    sceneSystem->PrepareForRemove();
 
     RemoveSystem(systemsToProcess, sceneSystem);
     RemoveSystem(systemsToInput, sceneSystem);
