@@ -10,6 +10,7 @@
 
 namespace DAVA
 {
+struct ImageInfo;
 class TextureDescriptor;
 class PVRConverter : public StaticSingleton<PVRConverter>
 {
@@ -25,6 +26,8 @@ public:
     FilePath GetConvertedTexturePath(const TextureDescriptor& descriptor, eGPUFamily gpuFamily);
 
 protected:
+    FilePath ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo);
+    FilePath ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo);
     FilePath PrepareCubeMapForPvrConvert(const TextureDescriptor& descriptor);
     void CleanupCubemapAfterConversion(const TextureDescriptor& descriptor);
 

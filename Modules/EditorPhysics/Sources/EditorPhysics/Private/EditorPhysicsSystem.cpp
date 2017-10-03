@@ -61,6 +61,11 @@ void EditorPhysicsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Compon
     }
 }
 
+void EditorPhysicsSystem::PrepareForRemove()
+{
+    transformMap.clear();
+}
+
 void EditorPhysicsSystem::Process(DAVA::float32 timeElapsed)
 {
     if (state != eSimulationState::STOPPED)

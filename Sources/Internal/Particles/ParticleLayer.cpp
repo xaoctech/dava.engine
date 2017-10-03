@@ -823,8 +823,6 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     /*validate all time depended property lines*/
     UpdatePropertyLineOnLoad(stripeSizeOverLife.Get(), startTime, endTime);
 
-    UpdatePropertyLineOnLoad(alphaRemapOverLife.Get(), startTime, endTime);
-
     UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowSpeedVariation.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(flowOffset.Get(), startTime, endTime);

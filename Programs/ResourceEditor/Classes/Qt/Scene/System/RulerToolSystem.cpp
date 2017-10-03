@@ -51,7 +51,7 @@ LandscapeEditorDrawSystem::eErrorType RulerToolSystem::EnableLandscapeEditing()
     previewLength = -1.f;
     previewEnabled = true;
 
-    Clear();
+    ClearInternal();
     DrawPoints();
 
     SendUpdatedLength();
@@ -74,12 +74,17 @@ bool RulerToolSystem::DisableLandscapeEdititing()
 
     drawSystem->GetLandscapeProxy()->SetToolTexture(nullptr, false);
 
-    Clear();
+    ClearInternal();
     previewLength = -1.f;
     SendUpdatedLength();
 
     enabled = false;
     return !enabled;
+}
+
+void RulerToolSystem::PrepareForRemove()
+{
+    ClearInternal();
 }
 
 void RulerToolSystem::Process(DAVA::float32 timeElapsed)
@@ -157,7 +162,7 @@ bool RulerToolSystem::Input(DAVA::UIEvent* event)
 
 void RulerToolSystem::SetStartPoint(const DAVA::Vector2& point)
 {
-    Clear();
+    ClearInternal();
 
     previewPoint = point;
     linePoints.push_back(point);
@@ -307,7 +312,7 @@ void RulerToolSystem::DrawPoints()
     DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
 }
 
-void RulerToolSystem::Clear()
+void RulerToolSystem::ClearInternal()
 {
     linePoints.clear();
     lengths.clear();
