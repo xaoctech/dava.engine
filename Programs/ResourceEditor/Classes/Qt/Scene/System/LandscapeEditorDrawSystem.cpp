@@ -490,6 +490,11 @@ void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void LandscapeEditorDrawSystem::PrepareForRemove()
+{
+    DeinitLandscape();
+}
+
 bool LandscapeEditorDrawSystem::SaveTileMaskTexture()
 {
     if (baseLandscape == nullptr || !GetLandscapeProxy()->IsTilemaskChanged())

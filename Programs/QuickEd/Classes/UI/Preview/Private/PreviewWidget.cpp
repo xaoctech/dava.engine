@@ -2,6 +2,7 @@
 #include "Application/QEGlobal.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
