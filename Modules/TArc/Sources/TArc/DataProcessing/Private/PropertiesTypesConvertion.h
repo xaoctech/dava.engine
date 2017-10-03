@@ -215,6 +215,19 @@ Vector<Color> PropertiesItem::Impl::FromValue(const QJsonValue& value, const Vec
     }
 }
 
+template<>
+RefPtr<KeyedArchive> PropertiesItem::Impl::FromValue(const QJsonValue& value, const RefPtr<KeyedArchive>& defaultValue)
+{
+    if (value.isString() == true)
+    {
+        QByteArray raw = QByteArray::fromBase64(value.toString().toStdString().c_str());
+        RefPtr<KeyedArchive> retVal(new KeyedArchive);
+        retVal->Load(reinterpret_cast<uint8*>(raw.data()), raw.size());
+        return retVal;
+    }
+    return defaultValue;
+}
+
 template <>
 QJsonValue PropertiesItem::Impl::ToValue(const bool& value)
 {
@@ -354,6 +367,17 @@ QJsonValue PropertiesItem::Impl::ToValue(const Vector<Color>& value)
                        return jsonColor;
                    });
     return jsonResult;
+}
+
+template<>
+QJsonValue PropertiesItem::Impl::ToValue(const RefPtr<KeyedArchive>& value)
+{
+    uint32 requiredSize = value->Save(nullptr, 0);
+    Vector<uint8> data(requiredSize);
+    value->Save(data.data(), requiredSize);
+
+    QByteArray ba(reinterpret_cast<char*>(data.data()), static_cast<int>(requiredSize));
+    return QString(ba.toBase64());
 }
 
 } // namespace TArc
