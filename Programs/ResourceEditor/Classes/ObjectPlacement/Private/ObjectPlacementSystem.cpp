@@ -151,3 +151,7 @@ void ObjectPlacementSystem::GetObjectCollisionMatrixAndNormal(DAVA::RayTraceColl
     hitWorldTransform->Decomposition(pos, scale, rotationQuaternion);
     normal = MultiplyVectorMat3x3(normal, rotationQuaternion.GetMatrix());
 }
+
+void ObjectPlacementSystem::PrepareForRemove()
+{
+}

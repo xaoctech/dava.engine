@@ -29,6 +29,8 @@ public:
     void RemoveEntity(DAVA::Entity* entity) override;
     void Process(DAVA::float32 time) override;
 
+    void PrepareForRemove() override;
+
 private:
     void GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
                                            DAVA::Matrix4& translation, DAVA::Vector3& normal) const;
