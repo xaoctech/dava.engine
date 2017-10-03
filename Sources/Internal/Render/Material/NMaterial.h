@@ -238,7 +238,7 @@ private:
     FastName activeVariantName;
     RenderVariantInstance* activeVariantInstance = nullptr;
 
-    HashMap<UniquePropertyLayout, MaterialBufferBinding*> localConstBuffers;
+    UnorderedMap<UniquePropertyLayout, MaterialBufferBinding*> localConstBuffers;
 
     // this is for render passes - not used right now - only active variant instance
     UnorderedMap<FastName, RenderVariantInstance*> renderVariants;

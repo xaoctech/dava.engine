@@ -1,4 +1,4 @@
-#include "TArc/Utils/Private/CrashDumpHandler.h"
+#include "QtHelpers/CrashDumpHandler.h"
 
 #include <Base/Platform.h>
 #include <Debug/DebuggerDetection.h>
@@ -7,8 +7,6 @@
 #endif
 
 namespace DAVA
-{
-namespace TArc
 {
 #if defined(__DAVAENGINE_WIN32__)
 PTOP_LEVEL_EXCEPTION_FILTER prevFilter = nullptr;
@@ -77,5 +75,4 @@ void InitCrashDumpHandler()
 }
 #endif
 
-} // namespace TArc
 } // namespace DAVA
