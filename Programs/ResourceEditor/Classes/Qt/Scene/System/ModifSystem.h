@@ -64,6 +64,8 @@ public:
     bool ModifCanStart(const SelectableGroup& objects) const;
     bool ModifCanStartByMouse(const SelectableGroup& objects) const;
 
+    void PrepareForRemove() override;
+
     bool Input(DAVA::UIEvent* event) override;
 
     void AddDelegate(EntityModificationSystemDelegate* delegate);

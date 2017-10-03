@@ -2,7 +2,7 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/CanvasModule/CanvasModuleData.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -101,8 +101,8 @@ void EditorSystemsManager::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-        fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+        fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+        fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnEmulationModeChanged));
     }
 }

@@ -102,6 +102,16 @@ void UserNodeSystem::RemoveEntity(DAVA::Entity* entity)
     DAVA::FindAndRemoveExchangingWithLast(userNodes, entity);
 }
 
+void UserNodeSystem::PrepareForRemove()
+{
+    for (const auto& node : spawnNodes)
+    {
+        RemoveObject(node.second.ro);
+    }
+    spawnNodes.clear();
+    userNodes.clear();
+}
+
 void UserNodeSystem::Process(DAVA::float32 timeElapsed)
 {
     using namespace DAVA;

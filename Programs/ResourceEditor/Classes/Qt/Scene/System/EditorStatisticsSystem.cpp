@@ -160,6 +160,10 @@ void EditorStatisticsSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Compone
 {
 }
 
+void EditorStatisticsSystem::PrepareForRemove()
+{
+}
+
 const DAVA::Vector<DAVA::uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, bool allTriangles) const
 {
     if (allTriangles)

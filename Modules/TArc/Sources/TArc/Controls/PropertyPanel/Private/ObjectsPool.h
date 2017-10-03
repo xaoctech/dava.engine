@@ -156,7 +156,6 @@ std::shared_ptr<T> ObjectsPool<T, TLockStrategy>::RequestObject()
     if (poolNode == nullptr)
     {
         poolNode = AllocateNewBatch();
-        Logger::FrameworkDebug("ObjectsPool: allocate new batch");
     }
 
     ObjectNode* result = poolNode->batchHead;

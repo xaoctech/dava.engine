@@ -69,6 +69,9 @@ AssetCacheServerWindow::AssetCacheServerWindow(ServerCore& core, QWidget* parent
     connect(ui->shareButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnShareButtonClicked);
     connect(ui->unshareButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnUnshareButtonClicked);
 
+    connect(ui->assertButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnGenerateAssertButtonClicked);
+    connect(ui->crashButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnGenerateCrashButtonClicked);
+
     connect(ui->applyButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnApplyButtonClicked);
     connect(ui->closeButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnCloseButtonClicked);
 
@@ -790,6 +793,19 @@ void AssetCacheServerWindow::OnShareButtonClicked()
 void AssetCacheServerWindow::OnUnshareButtonClicked()
 {
     serverCore.InitiateUnshareRequest();
+}
+
+void AssetCacheServerWindow::OnGenerateAssertButtonClicked()
+{
+    DAVA::Logger::Info("Manual assert generation");
+    DVASSERT(false, "Manual assert generation");
+}
+
+void AssetCacheServerWindow::OnGenerateCrashButtonClicked()
+{
+    DAVA::Logger::Info("Manual crash generation");
+    int* a = nullptr;
+    *a = 1;
 }
 
 void AssetCacheServerWindow::OnApplyButtonClicked()

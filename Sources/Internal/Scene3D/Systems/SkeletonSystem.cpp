@@ -52,6 +52,11 @@ void SkeletonSystem::RemoveEntity(Entity* entity)
     DVASSERT(0);
 }
 
+void SkeletonSystem::PrepareForRemove()
+{
+    entities.clear();
+}
+
 void SkeletonSystem::ImmediateEvent(Component* component, uint32 event)
 {
     if (event == EventSystem::SKELETON_CONFIG_CHANGED)
