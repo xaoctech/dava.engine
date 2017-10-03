@@ -93,10 +93,12 @@ private:
 VehicleSceneQueryData::VehicleSceneQueryData()
     : numQueriesPerBatch(0)
     , numHitResultsPerQuery(0)
-    , raycastResults(NULL)
-    , raycastHitBuffer(NULL)
-    , preFilterShader(NULL)
-    , postFilterShader(NULL)
+    , raycastResults(nullptr)
+    , sweepResults(nullptr)
+    , raycastHitBuffer(nullptr)
+    , sweepHitBuffer(nullptr)
+    , preFilterShader(nullptr)
+    , postFilterShader(nullptr)
 {
 }
 
@@ -614,8 +616,8 @@ VehicleChassisComponent* PhysicsVehiclesSubsystem::GetChassis(VehicleComponent* 
     Entity* entity = vehicle->GetEntity();
     DVASSERT(entity != nullptr);
 
-    const size_t childrenCount = entity->GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; ++i)
+    const uint32 childrenCount = entity->GetChildrenCount();
+    for (uint32 i = 0; i < childrenCount; ++i)
     {
         Entity* child = entity->GetChild(i);
         DVASSERT(child != nullptr);
@@ -639,8 +641,8 @@ Vector<VehicleWheelComponent*> PhysicsVehiclesSubsystem::GetWheels(VehicleCompon
 
     Vector<VehicleWheelComponent*> wheels;
 
-    const size_t childrenCount = entity->GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; ++i)
+    const uint32 childrenCount = entity->GetChildrenCount();
+    for (uint32 i = 0; i < childrenCount; ++i)
     {
         Entity* child = entity->GetChild(i);
         DVASSERT(child != nullptr);
