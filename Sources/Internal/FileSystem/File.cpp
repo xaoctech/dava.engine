@@ -92,7 +92,17 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     if (!(attributes & (WRITE | CREATE | APPEND)) && fs->filenamesTag.empty() == false)
     {
         FilePath taggedFilename = filename;
-        taggedFilename.ReplaceBasename(filename.GetBasename() + fs->filenamesTag);
+        String basename = filename.GetBasename();
+        String::size_type pointPos = basename.find(".");
+        if (pointPos == String::npos)
+        { // ... any file
+            taggedFilename.ReplaceBasename(basename + fs->filenamesTag);
+        }
+        else
+        { // ... texture.PowerVR_iOS.pvr
+            basename.insert(pointPos, fs->filenamesTag);
+            taggedFilename.ReplaceBasename(basename);
+        }
 
         File* result = PureCreate(taggedFilename, attributes);
         if (result != nullptr)
