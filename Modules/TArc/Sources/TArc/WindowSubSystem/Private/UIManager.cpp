@@ -630,33 +630,23 @@ protected:
 
         newDockWidget->setVisible(true);
         newDockWidget->setWidget(widget);
-        if (!mainWindow->restoreDockWidget(newDockWidget))
-        {
-            if (info.tabbed == true)
-            {
-                QList<QDockWidget*> dockWidgets = mainWindow->findChildren<QDockWidget*>();
-                QDockWidget* dockToTabbify = nullptr;
-                foreach (QDockWidget* dock, dockWidgets)
-                {
-                    if (mainWindow->dockWidgetArea(dock) == info.area)
-                    {
-                        dockToTabbify = dock;
-                        break;
-                    }
-                }
 
-                if (dockToTabbify != nullptr)
-                {
-                    mainWindow->tabifyDockWidget(dockToTabbify, newDockWidget);
-                }
-                else
-                {
-                    mainWindow->addDockWidget(info.area, newDockWidget);
-                }
-            }
-            else
+        bool restored = mainWindow->restoreDockWidget(newDockWidget);
+        if (!restored)
+        {
+            mainWindow->addDockWidget(info.area, newDockWidget);
+        }
+
+        if (info.tabbed == true && (restored == false || info.forceOnTop == true))
+        {
+            QList<QDockWidget*> dockWidgets = mainWindow->findChildren<QDockWidget*>();
+            foreach (QDockWidget* dock, dockWidgets)
             {
-                mainWindow->addDockWidget(info.area, newDockWidget);
+                if (dock != newDockWidget && mainWindow->dockWidgetArea(dock) == info.area)
+                {
+                    mainWindow->tabifyDockWidget(dock, newDockWidget);
+                    break;
+                }
             }
         }
     }

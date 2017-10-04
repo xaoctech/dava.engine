@@ -41,7 +41,6 @@ void RemoteToolModule::Show()
     if (!deviceListController)
     {
         deviceListWidget = new DeviceListWidget();
-        deviceListWidget->setAttribute(Qt::WA_DeleteOnClose);
 
         deviceListController = new DeviceListController(GetUI(), deviceListWidget);
         deviceListController->SetView(deviceListWidget);
