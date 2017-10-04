@@ -1436,6 +1436,8 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     using namespace DAVA;
     using namespace PackFormat;
 
+    DVASSERT(Thread::IsMainThread());
+
     if (!IsInitialized())
     {
         lastProgress.isRequestingEnabled = false;
@@ -1492,6 +1494,7 @@ DLCManager::Progress DLCManager::GetProgressForPacks(const Vector<String>& packN
 DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& packNames) const
 {
     using namespace DAVA;
+    DVASSERT(Thread::IsMainThread());
 
     if (!IsInitialized())
     {
@@ -1504,9 +1507,13 @@ DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& p
     // 1. make flat set with all pack with it's dependencies
     // 2. go throw all files and check if it's pack in set
 
-    Set<uint32> allPacks;
-    PackMetaData::Children childrenPacks;
-    childrenPacks.reserve(64); // just reserve some size
+    allPacks.clear();
+    childrenPacks.clear();
+
+    size_t packsCount = meta->GetPacksCount();
+    allPacks.reserve(packsCount);
+    childrenPacks.reserve(packsCount);
+
     for (const String& packName : packNames)
     {
         uint32 packIndex = meta->GetPackIndex(packName);
