@@ -499,11 +499,9 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
 
     forcePowerTimeLine->Init(start, end, updateMinimized, true, false);
     forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(selectedForce->forcePowerLine)).GetProps(), colors, *currLegends);
-    forcePowerTimeLine->EnableLock(true);
 
     turbulenceTimeLine->Init(start, end, updateMinimized, true, false);
     turbulenceTimeLine->AddLine(0, PropLineWrapper<float32>(LineHelper::GetValueLine(selectedForce->turbulenceLine)).GetProps(), Qt::red, "Turbulence");
-    turbulenceTimeLine->EnableLock(true);
 
     shapeComboBox->setCurrentIndex(ElementToIndex(selectedForce->shape, shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(selectedForce->timingType, timingMap));
