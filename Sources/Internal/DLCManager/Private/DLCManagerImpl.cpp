@@ -1250,7 +1250,7 @@ uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
 
     for (uint32 fileIndex : fileIndexes)
     {
-        const auto& fileInfo = allFiles.at(fileIndex);
+        const auto& fileInfo = allFiles[fileIndex];
         result += fileInfo.compressedSize;
     }
 
@@ -1482,6 +1482,60 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     lastProgress.isRequestingEnabled = true;
 
     return lastProgress;
+}
+
+DLCManager::Progress DLCManager::GetProgressForPacks(const Vector<String>& packNames) const
+{
+    return Progress();
+}
+
+DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& packNames) const
+{
+    using namespace DAVA;
+
+    if (!IsInitialized())
+    {
+        return Progress();
+    }
+
+    Progress result;
+    result.isRequestingEnabled = IsRequestingEnabled();
+
+    // 1. make flat set with all pack with it's dependencies
+    // 2. go throw all files and check if it's pack in set
+
+    Set<uint32> allPacks;
+    PackMetaData::Children childrenPacks;
+    childrenPacks.reserve(64); // just reserve some size
+    for (const String& packName : packNames)
+    {
+        uint32 packIndex = meta->GetPackIndex(packName);
+        childrenPacks.clear();
+        meta->CollectDependencies(packIndex, childrenPacks);
+        for (const uint32 childPackIndex : childrenPacks)
+        {
+            allPacks.insert(childPackIndex);
+        }
+        allPacks.insert(packIndex);
+    }
+
+    // go throw all files
+    const auto& allFiles = usedPackFile.filesTable.data.files;
+    uint32 numFiles = allFiles.size();
+    for (uint32 fileIndex = 0; fileIndex < numFiles; ++fileIndex)
+    {
+        const auto& fileInfo = allFiles[fileIndex];
+        if (allPacks.find(fileInfo.metaIndex) != end(allPacks))
+        {
+            result.total += fileInfo.compressedSize;
+            if (IsFileReady(fileIndex))
+            {
+                result.alreadyDownloaded += fileInfo.compressedSize;
+            }
+        }
+    }
+
+    return result;
 }
 
 DLCManager::Info DLCManager::GetInfo() const

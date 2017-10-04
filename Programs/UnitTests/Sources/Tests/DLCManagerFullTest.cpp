@@ -148,10 +148,38 @@ struct FSMTest02
                 auto r3 = dlcManager.RequestPack("3");
                 TEST_VERIFY(r3->IsDownloaded());
 
+                DLCManager::Progress progressForPack = dlcManager.GetProgressForPacks({ "3" }); // 3 depends on 2, on 1, on 0
+                DLCManager::Progress progressAll = dlcManager.GetProgress();
+                // now progress should match
+                TEST_VERIFY(progressForPack.total < progressAll.total);
+                TEST_VERIFY(progressForPack.total == progressAll.alreadyDownloaded);
+                TEST_VERIFY(progressForPack.alreadyDownloaded == progressForPack.total); // all downloaded value = 13669086
+                TEST_VERIFY(progressForPack.total == 13669086); // check it out
+
                 // now stop server for next tests
                 Cleanup(dlcManager);
                 return true;
             }
+
+            DLCManager::Progress progress0 = dlcManager.GetProgressForPacks({ "0" });
+            DLCManager::Progress progress1 = dlcManager.GetProgressForPacks({ "1" });
+            DLCManager::Progress progress2 = dlcManager.GetProgressForPacks({ "2" });
+            DLCManager::Progress progress3 = dlcManager.GetProgressForPacks({ "3" });
+            DLCManager::Progress progress4 = dlcManager.GetProgressForPacks({ "4" });
+            DLCManager::Progress progress5 = dlcManager.GetProgressForPacks({ "5" });
+            DLCManager::Progress progress6 = dlcManager.GetProgressForPacks({ "6" });
+            DLCManager::Progress progress7 = dlcManager.GetProgressForPacks({ "7" });
+            DLCManager::Progress progress8 = dlcManager.GetProgressForPacks({ "8" });
+            DLCManager::Progress progressAll = dlcManager.GetProgress();
+            TEST_VERIFY(progress0.total < progress1.total);
+            TEST_VERIFY(progress1.total < progress2.total);
+            TEST_VERIFY(progress2.total < progress3.total);
+            TEST_VERIFY(progress3.total < progress4.total);
+            TEST_VERIFY(progress4.total < progress5.total);
+            TEST_VERIFY(progress5.total < progress6.total);
+            TEST_VERIFY(progress6.total < progress7.total);
+            TEST_VERIFY(progress7.total < progress8.total);
+            TEST_VERIFY(progress8.total == progressAll.total);
         }
         break;
         }

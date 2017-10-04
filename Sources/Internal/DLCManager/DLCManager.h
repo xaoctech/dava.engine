@@ -198,6 +198,9 @@ public:
     /** Calculate statistic about downloading progress */
     virtual Progress GetProgress() const = 0;
 
+    /** Calculate statistic only for packNames with dependencies */
+    virtual Progress GetProgressForPacks(const Vector<String>& packNames) const;
+
     struct Info
     {
         uint32 infoCrc32 = 0; //!< this mean server version of superpack

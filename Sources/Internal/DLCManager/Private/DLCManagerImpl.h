@@ -150,6 +150,8 @@ public:
 
     Progress GetProgress() const override;
 
+    Progress GetProgressForPacks(const Vector<String>& packNames) const override;
+
     Info GetInfo() const override;
 
     const FilePath& GetLocalPacksDirectory() const;
