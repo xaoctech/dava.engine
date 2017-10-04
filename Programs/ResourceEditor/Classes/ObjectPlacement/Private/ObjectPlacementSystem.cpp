@@ -19,13 +19,11 @@ ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
 
 bool ObjectPlacementSystem::GetSnapToLandscape() const
 {
-    DVASSERT(GetScene() != nullptr);
     return snapToLandscape;
 }
 
 void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 {
-    DVASSERT(GetScene() != nullptr);
     const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
     if (landscapes.empty())
     {
@@ -38,7 +36,6 @@ void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
 
 void ObjectPlacementSystem::PlaceOnLandscape() const
 {
-    DVASSERT(GetScene() != nullptr);
     const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
     if (landscapes.empty())
     {
@@ -70,8 +67,6 @@ void ObjectPlacementSystem::Process(DAVA::float32 time)
 
 void ObjectPlacementSystem::PlaceAndAlign() const
 {
-    DVASSERT(GetScene() != nullptr);
-
     using namespace DAVA;
 
     const SelectableGroup& entities = Selection::GetSelection();
