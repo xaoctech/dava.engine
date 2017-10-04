@@ -67,8 +67,11 @@ void Painter::Draw(Window* window)
 
 void Painter::Draw(const DrawLineParams& params)
 {
-    Vector2 start = params.startPos * params.transformMatrix;
-    Vector2 end = params.endPos * params.transformMatrix;
+    Matrix3 transformMatrix;
+    params.gd.BuildTransformMatrix(transformMatrix);
+
+    Vector2 start = params.startPos * transformMatrix;
+    Vector2 end = params.endPos * transformMatrix;
     if (params.type == DrawLineParams::SOLID)
     {
         RenderSystem2D::Instance()->DrawLine(start, end, params.width, params.color);
@@ -98,7 +101,7 @@ void Painter::Draw(const DrawTextParams& params)
 
     int32 charactersDrawn = 0;
 
-    font->DrawStringToBuffer(UTF8Utils::EncodeToWideString(params.text), static_cast<int32>(params.scale.x * params.pos.x), static_cast<int32>(params.scale.x * params.pos.y), vertices.data(), charactersDrawn);
+    font->DrawStringToBuffer(UTF8Utils::EncodeToWideString(params.text), static_cast<int32>(params.gd.scale.x * params.pos.x), static_cast<int32>(params.gd.scale.x * params.pos.y), vertices.data(), charactersDrawn);
     DVASSERT(charactersDrawn == params.text.length());
 
     uint32 vertexCount = static_cast<uint32>(vertices.size());
@@ -115,15 +118,15 @@ void Painter::Draw(const DrawTextParams& params)
     }
 
     Matrix4 rotateMatrix;
-    rotateMatrix.BuildRotation(Vector3(0.f, 0.f, -1.0f), params.angle);
+    rotateMatrix.BuildRotation(Vector3(0.f, 0.f, -1.0f), params.gd.angle);
 
-    Matrix4 scaleMatrix;
-    scaleMatrix.BuildScale(Vector3(params.scale.x, params.scale.y, 1.0f));
+    Matrix3 transformMatrix;
+    params.gd.BuildTransformMatrix(transformMatrix);
 
     Matrix4 worldMatrix;
-    worldMatrix.BuildTranslation(Vector3(params.transformMatrix._20, params.transformMatrix._21, 0.f));
+    worldMatrix.BuildTranslation(Vector3(transformMatrix._20, transformMatrix._21, 0.f));
 
-    Matrix4 resultMatrix = (rotateMatrix)*worldMatrix;
+    Matrix4 resultMatrix = rotateMatrix * worldMatrix;
 
     BatchDescriptor2D batchDescriptor;
     batchDescriptor.singleColor = params.color;
@@ -149,8 +152,8 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     //DejaVuSans have a very big height which is invalid for digits. So while we use only digits, and font DejaVuSans and GraphicsFont have no GetBaseLine member function - i will change metrics height manually
     Vector2 size = Vector2(metrics.width, metrics.height);
 
-    size /= params.scale;
-    params.margin /= params.scale;
+    size /= params.gd.scale;
+    params.margin /= params.gd.scale;
 
     if (params.direction & ALIGN_LEFT)
     {
@@ -187,7 +190,7 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     }
 
     //font have a little padding inside it draw rect
-    const Vector2 padding = Vector2(2.0f, 2.0f) / params.scale;
+    const Vector2 padding = Vector2(2.0f, 2.0f) / params.gd.scale;
     params.pos.x -= padding.x;
     params.pos.y -= padding.y;
 }

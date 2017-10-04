@@ -32,7 +32,7 @@ EditorSystemsManager* BaseEditorSystem::GetSystemsManager()
     return systemsManager;
 }
 
-Painting::Painter* BaseEditorSystem::GetPainter()
+Painting::Painter* BaseEditorSystem::GetPainter() const
 {
     using namespace DAVA::TArc;
     DataContext* globalContext = accessor->GetGlobalContext();

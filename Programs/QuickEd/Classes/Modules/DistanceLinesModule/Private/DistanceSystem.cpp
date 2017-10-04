@@ -1,12 +1,12 @@
 #include "Classes/Modules/DistanceLinesModule/Private/DistanceSystem.h"
-#include "Classes/Modules/DistanceLinesModule/Private/DistanceLines.h"
-#include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesFactory.h"
+#include "Classes/Modules/DistanceLinesModule/Private/DistanceLinesPreferences.h"
 
 #include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
 #include "Classes/Modules/CanvasModule/CanvasData.h"
 #include "Classes/Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 #include "Classes/EditorSystems/UIControlUtils.h"
+#include "Classes/Painter/Painter.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/Utils.h>
@@ -15,14 +15,45 @@
 #include <UI/UIControl.h>
 #include <Render/2D/FTFont.h>
 
+namespace DistanceSystemDetails
+{
+DAVA::eAlign GetDirection(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startPos, const DAVA::Vector2& endPos)
+{
+    using namespace DAVA;
+    if (axis == Vector2::AXIS_X)
+    {
+        return startPos.x < endPos.x ? eAlign::ALIGN_RIGHT : eAlign::ALIGN_LEFT;
+    }
+    else
+    {
+        return startPos.y < endPos.y ? eAlign::ALIGN_BOTTOM : eAlign::ALIGN_TOP;
+    }
+}
+
+//control highlight is drawed inside of control
+//in some directions line can be under highlight
+void FixLinePosition(DAVA::Vector2& pos, const DAVA::UIGeometricData& gd, DAVA::eAlign direction)
+{
+    using namespace DAVA;
+    if (direction == ALIGN_BOTTOM)
+    {
+        pos.y -= 1.0f / gd.scale.y;
+    }
+    else if (direction == ALIGN_RIGHT)
+    {
+        pos.x -= 1.0f / gd.scale.x;
+    }
+}
+}
+
 DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
-    , canvasDataAdapter(accessor)
-    , factory(new DistanceLinesFactory())
 {
 }
 
-DistanceSystem::~DistanceSystem() = default;
+DistanceSystem::~DistanceSystem()
+{
+}
 
 BaseEditorSystem::eSystems DistanceSystem::GetOrder() const
 {
@@ -102,21 +133,37 @@ void DistanceSystem::OnUpdate()
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     Set<ControlNode*> selectedControls = documentData->GetSelectedControls();
 
-    ControlNode* firstSelected = *selectedControls.begin();
-    UIControl* selectionParent = firstSelected->GetControl()->GetParent();
     ControlNode* selectedNode = *selectedControls.begin();
+    UIControl* selectionParent = selectedNode->GetControl()->GetParent();
     UIControl* selectedControl = selectedNode->GetControl();
 
-    DistanceLinesFactory::Params params(selectedControl, highlightedControl);
-    params.accessor = accessor;
-    params.painter = GetPainter();
-    params.order = GetOrder();
-    Vector<std::unique_ptr<DistanceLine>> lines = factory->CreateLines(params);
-
-    for (const std::unique_ptr<DistanceLine>& line : lines)
+    Rect selectedRect;
+    Rect highlightedRect;
+    UIGeometricData gd;
+    if (highlightedControl->GetParent() == selectedControl->GetParent())
     {
-        line->Draw();
+        selectedRect = selectedControl->GetLocalGeometricData().GetAABBox();
+        highlightedRect = highlightedControl->GetLocalGeometricData().GetAABBox();
+        gd = highlightedControl->GetParent()->GetGeometricData();
     }
+    else if (highlightedControl->GetParent() == selectedControl)
+    {
+        selectedRect = Rect(Vector2(0.0f, 0.0f), selectedControl->GetSize());
+        highlightedRect = highlightedControl->GetLocalGeometricData().GetAABBox();
+        gd = selectedControl->GetGeometricData();
+    }
+    else if (selectedControl->GetParent() == highlightedControl)
+    {
+        selectedRect = selectedControl->GetLocalGeometricData().GetAABBox();
+        highlightedRect = Rect(Vector2(0.0f, 0.0f), highlightedControl->GetSize());
+        gd = highlightedControl->GetGeometricData();
+    }
+    else
+    {
+        DVASSERT("selected and highlighted nodes must be child and parent or be neighbours");
+    }
+
+    DrawLines(selectedRect, highlightedRect, gd);
 }
 
 bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -128,4 +175,184 @@ bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
 void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput)
 {
     canDrawDistancesAfterInput = (currentInput->phase == DAVA::UIEvent::Phase::MOVE);
+}
+
+void DistanceSystem::DrawLines(const DAVA::Rect& selectedRect, const DAVA::Rect& highlightedRect, const DAVA::UIGeometricData& gd) const
+{
+    using namespace DAVA;
+
+    if (highlightedRect.RectIntersects(selectedRect))
+    {
+        for (int i = 0; i < Vector2::AXIS_COUNT; ++i)
+        {
+            Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
+            Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
+
+            Vector2 startPos1;
+            Vector2 startPos2;
+            Vector2 endPos1;
+            Vector2 endPos2;
+
+            float32 selectedRectMiddle = selectedRect.GetPosition()[oppositeAxis] + selectedRect.GetSize()[oppositeAxis] / 2.0f;
+            startPos1[oppositeAxis] = selectedRectMiddle;
+            startPos2[oppositeAxis] = selectedRectMiddle;
+            endPos1[oppositeAxis] = selectedRectMiddle;
+            endPos2[oppositeAxis] = selectedRectMiddle;
+
+            startPos1[axis] = selectedRect.GetPosition()[axis];
+            endPos1[axis] = highlightedRect.GetPosition()[axis];
+            startPos2[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
+            endPos2[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
+
+            //do not draw distances if rect have common point
+            if (startPos1 == endPos1 || startPos2 == endPos2 || startPos1 == endPos2 || startPos2 == endPos1)
+            {
+                continue;
+            }
+            DrawSolidLine(startPos1, endPos1, gd, axis);
+            DrawSolidLine(startPos2, endPos2, gd, axis);
+        }
+    }
+    else
+    {
+        for (int i = 0; i < Vector2::AXIS_COUNT; ++i)
+        {
+            Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
+            Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
+
+            Vector2 startPos;
+            Vector2 endPos;
+            float32 selectedRectMiddle = selectedRect.GetPosition()[oppositeAxis] + selectedRect.GetSize()[oppositeAxis] / 2.0f;
+            startPos[oppositeAxis] = selectedRectMiddle;
+            endPos[oppositeAxis] = selectedRectMiddle;
+
+            if (highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis] < selectedRect.GetPosition()[axis])
+            { //if highlighted control at the left / top of the selected control
+
+                startPos[axis] = selectedRect.GetPosition()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
+                DrawSolidLine(startPos, endPos, gd, axis);
+                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+            }
+            else if (highlightedRect.GetPosition()[axis] > selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis])
+            {
+                startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis];
+                DrawSolidLine(startPos, endPos, gd, axis);
+                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+            }
+            else
+            {
+                startPos[axis] = selectedRect.GetPosition()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis];
+                DrawSolidLine(startPos, endPos, gd, axis);
+                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+
+                startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
+                endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
+                DrawSolidLine(startPos, endPos, gd, axis);
+                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+            }
+        }
+    }
+}
+
+void DistanceSystem::DrawSolidLine(const DAVA::Vector2& startPos, DAVA::Vector2 endPos, const DAVA::UIGeometricData& gd, DAVA::Vector2::eAxis axis) const
+{
+    using namespace DAVA;
+
+    const DAVA::float32 maximumDisplayedLength = 0.1f;
+
+    float32 length = (endPos - startPos).Length();
+    if (length < maximumDisplayedLength)
+    {
+        return;
+    }
+
+    Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
+
+    Painting::DrawLineParams lineParams;
+    lineParams.gd = gd;
+
+    eAlign direction = DistanceSystemDetails::GetDirection(axis, startPos, endPos);
+
+    DistanceSystemDetails::FixLinePosition(endPos, gd, direction);
+
+    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    lineParams.color = preferences->linesColor;
+
+    lineParams.startPos = startPos;
+    lineParams.endPos = endPos;
+    GetPainter()->Add(GetOrder(), lineParams);
+
+    //draw close line
+    const float32 endLineLength = 8.0f;
+
+    lineParams.startPos = endPos;
+    lineParams.endPos = endPos;
+    lineParams.startPos[oppositeAxis] -= endLineLength / 2.0f / gd.scale[oppositeAxis];
+    lineParams.endPos[oppositeAxis] += endLineLength / 2.0f / gd.scale[oppositeAxis];
+    GetPainter()->Add(GetOrder(), lineParams);
+
+    Painting::DrawTextParams textParams;
+    textParams.gd = gd;
+    textParams.color = preferences->textColor;
+
+    textParams.text = Format("%.0f", length);
+    textParams.margin = Vector2(5.0f, 5.0f);
+
+    //margin around text
+    const float32 minLength = 20.0f;
+    if (length * gd.scale[axis] > minLength)
+    {
+        if (axis == Vector2::AXIS_X)
+        {
+            textParams.direction = ALIGN_HCENTER | (direction == ALIGN_RIGHT ? ALIGN_BOTTOM : ALIGN_TOP);
+        }
+        else
+        {
+            textParams.direction = ALIGN_VCENTER | (direction == ALIGN_BOTTOM ? ALIGN_LEFT : ALIGN_RIGHT);
+        }
+
+        textParams.pos[axis] = (startPos[axis] + endPos[axis]) / 2.0f;
+        textParams.pos[oppositeAxis] = endPos[oppositeAxis];
+    }
+    else
+    {
+        textParams.direction = direction | (axis == Vector2::AXIS_X ? ALIGN_VCENTER : ALIGN_HCENTER);
+        textParams.pos[axis] = endPos[axis];
+        textParams.pos[oppositeAxis] = endPos[oppositeAxis];
+    }
+    GetPainter()->Add(GetOrder(), textParams);
+}
+
+void DistanceSystem::DrawDotLine(const DAVA::Rect& rect, DAVA::Vector2 endPos, const DAVA::UIGeometricData& gd, DAVA::Vector2::eAxis axis) const
+{
+    DAVA::Vector2 startPos = endPos;
+    if (rect.GetPosition()[axis] + rect.GetSize()[axis] < endPos[axis])
+    {
+        startPos[axis] = rect.GetPosition()[axis] + rect.GetSize()[axis];
+    }
+    else if (rect.GetPosition()[axis] > endPos[axis])
+    {
+        startPos[axis] = rect.GetPosition()[axis];
+    }
+    else
+    {
+        return;
+    }
+
+    DAVA::eAlign direction = DistanceSystemDetails::GetDirection(axis, startPos, endPos);
+    DistanceSystemDetails::FixLinePosition(endPos, gd, direction);
+
+    Painting::DrawLineParams lineParams;
+    lineParams.gd = gd;
+
+    DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
+    lineParams.color = preferences->linesColor;
+    lineParams.startPos = startPos;
+    lineParams.endPos = endPos;
+    lineParams.type = Painting::DrawLineParams::DOT;
+
+    GetPainter()->Add(GetOrder(), lineParams);
 }

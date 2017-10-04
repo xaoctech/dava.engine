@@ -55,7 +55,7 @@ protected:
 
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
-    Painting::Painter* GetPainter();
+    Painting::Painter* GetPainter() const;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
