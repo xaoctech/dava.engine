@@ -421,6 +421,8 @@ Scene::~Scene()
     physicsSystem = nullptr;
 #endif
 
+    renderSystem->PrepareForShoutdown();
+
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
     {
@@ -439,9 +441,6 @@ Scene::~Scene()
         SafeRelease(c);
     cameras.clear();
 
-    RemoveAllChildren();
-    SafeRelease(sceneGlobalMaterial);
-
     for (SingletonComponent* s : singletonComponents)
     {
         SafeDelete(s);
@@ -457,6 +456,10 @@ Scene::~Scene()
     systemsToProcess.clear();
     systemsToInput.clear();
     systemsToFixedProcess.clear();
+
+    RemoveAllChildren();
+    SafeRelease(sceneGlobalMaterial);
+
     cache.ClearAll();
 
     SafeDelete(eventSystem);

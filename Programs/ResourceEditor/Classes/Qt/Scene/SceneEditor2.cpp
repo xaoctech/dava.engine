@@ -201,7 +201,7 @@ DAVA::SceneFileV2::eError SceneEditor2::LoadScene(const DAVA::FilePath& path)
     {
         validator.SetPathForChecking(data->GetProjectPath());
     }
-    validator.ValidateScene(this, path);
+    //validator.ValidateScene(this, path);
 
     SceneSignals::Instance()->EmitLoaded(this);
 

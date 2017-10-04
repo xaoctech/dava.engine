@@ -55,8 +55,6 @@ public:
     physx::PxShape* CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const;
     physx::PxShape* CreateHeightField(Landscape* landscape, Matrix4& localPose) const;
 
-    physx::PxConvexMesh* CreateConvexMesh(const DAVA::Vector<DAVA::Vector3>& points) const;
-
     physx::PxMaterial* GetDefaultMaterial() const;
 
     const Vector<uint32>& GetBodyComponentTypes() const;

@@ -212,6 +212,12 @@ CollisionObj CreateLandscape(bool createCollision, DAVA::Landscape* landscape, v
     return result;
 }
 
+AABBox3* GetBounds(physx::PxShape* shape)
+{
+    DVASSERT(shape->userData != nullptr);
+    return reinterpret_cast<AABBox3*>(shape->userData);
+}
+
 AABBox3* GetBounds(physx::PxRigidActor* actor)
 {
     DVASSERT(actor != nullptr);
@@ -219,9 +225,160 @@ AABBox3* GetBounds(physx::PxRigidActor* actor)
 
     physx::PxShape* shape = nullptr;
     actor->getShapes(&shape, 1, 0);
-    DVASSERT(shape->userData != nullptr);
+    return GetBounds(shape);
+}
 
-    return reinterpret_cast<AABBox3*>(shape->userData);
+enum class ClassifyPlaneResult
+{
+    InFront,
+    Intersects,
+    Behind
+};
+
+enum class ClassifyPlanesResult
+{
+    ContainsOrIntersects,
+    Outside
+};
+
+inline DAVA::Plane TransformPlaneToLocalSpace(const Selectable& object, const DAVA::Plane& plane)
+{
+    DAVA::Matrix4 transform = object.GetWorldTransform();
+    transform.Transpose();
+    return DAVA::Plane(DAVA::Vector4(plane.n.x, plane.n.y, plane.n.z, plane.d) * transform);
+}
+
+inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const DAVA::AABBox3& bbox, const DAVA::Plane& plane)
+{
+    char cornersData[8 * sizeof(DAVA::Vector3)];
+    DAVA::Vector3* corners = reinterpret_cast<DAVA::Vector3*>(cornersData);
+    bbox.GetCorners(corners);
+
+    DAVA::float32 minDistance = std::numeric_limits<float>::max();
+    DAVA::float32 maxDistance = -minDistance;
+    for (DAVA::uint32 i = 0; i < 8; ++i)
+    {
+        float d = plane.DistanceToPoint(corners[i]);
+        minDistance = std::min(minDistance, d);
+        maxDistance = std::max(maxDistance, d);
+    }
+
+    if ((minDistance > 0.0f) && (maxDistance > 0.0f))
+        return ClassifyPlaneResult::InFront;
+
+    if ((minDistance < 0.0f) && (maxDistance < 0.0f))
+        return ClassifyPlaneResult::Behind;
+
+    return ClassifyPlaneResult::Intersects;
+}
+
+ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+{
+    DAVA::AABBox3 bounds = *GetBounds(shape);
+    for (const DAVA::Plane& globalPlane : planes)
+    {
+        DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
+        if (ClassifyBoundingBoxToPlane(bounds, localPlane) == ClassifyPlaneResult::Behind)
+        {
+            return ClassifyPlanesResult::Outside;
+        }
+    }
+    return ClassifyPlanesResult::ContainsOrIntersects;
+}
+
+inline bool IsBothNegative(float v1, float v2)
+{
+    return (((reinterpret_cast<uint32_t&>(v1) & 0x80000000) & (reinterpret_cast<uint32_t&>(v2) & 0x80000000)) >> 31) != 0;
+}
+
+inline void SortDistances(float values[3])
+{
+    if (values[1] > values[0])
+        std::swap(values[1], values[0]);
+    if (values[2] > values[1])
+        std::swap(values[2], values[1]);
+    if (values[1] > values[0])
+        std::swap(values[1], values[0]);
+}
+
+ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+{
+    DAVA::AABBox3 bounds = *GetBounds(shape);
+    for (const DAVA::Plane& globalPlane : planes)
+    {
+        DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
+        if (ClassifyBoundingBoxToPlane(bounds, localPlane) == ClassifyPlaneResult::Behind)
+        {
+            return ClassifyPlanesResult::Outside;
+        }
+    }
+
+    physx::PxTriangleMeshGeometry geomHolder;
+    bool extractSuccessed = shape->getTriangleMeshGeometry(geomHolder);
+    DVASSERT(extractSuccessed == true);
+
+    const physx::PxTriangleMesh* mesh = geomHolder.triangleMesh;
+    const physx::PxU32 triangleCount = mesh->getNbTriangles();
+    const physx::PxVec3* verticesPtr = mesh->getVertices();
+    const void* indicesPtr = mesh->getTriangles();
+
+    const bool indices16Bits = mesh->getTriangleMeshFlags() & physx::PxTriangleMeshFlag::e16_BIT_INDICES;
+
+    for (physx::PxU32 i = 0; i < triangleCount; ++i)
+    {
+        physx::PxU32 i0 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i];
+        physx::PxU32 i1 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i + 1] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i + 1];
+        physx::PxU32 i2 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i + 2] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i + 2];
+
+        physx::PxVec3 v0 = verticesPtr[i0];
+        physx::PxVec3 v1 = verticesPtr[i1];
+        physx::PxVec3 v2 = verticesPtr[i2];
+
+        bool isOutSideFound = false;
+        for (const DAVA::Plane& globalPlane : planes)
+        {
+            DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
+
+            float distances[3] = {
+                localPlane.DistanceToPoint(v0.x, v0.y, v0.z),
+                localPlane.DistanceToPoint(v1.x, v1.y, v1.z),
+                localPlane.DistanceToPoint(v2.x, v2.y, v2.z)
+            };
+
+            SortDistances(distances);
+            if (IsBothNegative(distances[0], distances[2]) == true)
+            {
+                isOutSideFound = true;
+                break;
+            }
+        }
+
+        if (isOutSideFound == false)
+        {
+            return ClassifyPlanesResult::ContainsOrIntersects;
+        }
+    }
+
+    return ClassifyPlanesResult::Outside;
+}
+
+ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+{
+    physx::PxGeometryType::Enum type = shape->getGeometryType();
+    switch (type)
+    {
+    case physx::PxGeometryType::eBOX:
+        return ClassifyBoxToPlanes(object, shape, planes);
+    case physx::PxGeometryType::eTRIANGLEMESH:
+        return ClassifyMeshToPlanes(object, shape, planes);
+    case physx::PxGeometryType::eHEIGHTFIELD:
+        return ClassifyPlanesResult::Outside;
+    default:
+        DVASSERT(false);
+        break;
+    }
+
+    return ClassifyPlanesResult::Outside;
 }
 } // namespace SceneCollisionSystemDetail
 
@@ -338,40 +495,26 @@ bool SceneCollisionSystem::LandRayTestFromCamera(DAVA::Vector3& intersectionPoin
     return LandRayTest(traceFrom, traceTo, intersectionPoint);
 }
 
-void SceneCollisionSystem::OverlapRectTest(const DAVA::Array<DAVA::Vector3, 8>& volume, SelectableGroup::CollectionType& result) const
+void SceneCollisionSystem::ClipObjectsToPlanes(const DAVA::Vector<DAVA::Plane>& planes, SelectableGroup::CollectionType& result)
 {
-    using namespace DAVA;
-    using namespace physx;
+    using namespace SceneCollisionSystemDetail;
 
-    Vector<Vector3> hullGeometry(volume.begin(), volume.end());
-
-    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-    PxConvexMesh* convexMesh = module->CreateConvexMesh(hullGeometry);
-    DVASSERT(convexMesh != nullptr);
-
-    PxOverlapHit hit[SceneCollisionSystemDetail::maxOverlapTouchCount];
-    PxOverlapBuffer buffer(hit, SceneCollisionSystemDetail::maxOverlapTouchCount);
-
-    PxQueryFilterData filterData;
-    filterData.data = SceneCollisionSystemDetail::objectFilterData;
-    filterData.flags = PxQueryFlag::eSTATIC;
-
-    PxConvexMeshGeometry geometry(convexMesh);
-    physicsScene->overlap(geometry, PxTransform(PxIdentity), buffer, filterData);
-
-    convexMesh->release();
-
-    result.reserve(buffer.nbTouches);
-    for (PxU32 i = 0; i < buffer.nbTouches; ++i)
+    result.reserve(64);
+    for (const auto& objToPhysxNode : objToPhysx)
     {
-        PxOverlapHit& currentHit = hit[i];
-        DVASSERT(currentHit.actor != nullptr);
-        DAVA::Any objPtr(currentHit.actor->userData);
-        auto iter = objToPhysx.find(objPtr);
-        DVASSERT(iter != objToPhysx.end());
-        Selectable hitObject(iter->first);
-        hitObject.SetBoundingBox(GetBoundingBox(iter->first));
-        result.push_back(hitObject);
+        if (objToPhysxNode.first.IsEmpty() == true || objToPhysxNode.second == nullptr)
+        {
+            continue;
+        }
+
+        Selectable object(objToPhysxNode.first);
+        physx::PxShape* shape = nullptr;
+        objToPhysxNode.second->getShapes(&shape, 1, 0);
+        DVASSERT(shape != nullptr);
+        if (ClassifyToPlanes(object, shape, planes) == ClassifyPlanesResult::ContainsOrIntersects)
+        {
+            result.push_back(object);
+        }
     }
 }
 
@@ -691,7 +834,11 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
 
 void SceneCollisionSystem::PrepareForRemove()
 {
-	// TODO
+    objectsToAdd.clear();
+    objectsToRemove.clear();
+    objectsToUpdateTransform.clear();
+    objToPhysx.clear();
+    curLandscapeEntity = nullptr;
 }
 
 void SceneCollisionSystem::EnableSystem()

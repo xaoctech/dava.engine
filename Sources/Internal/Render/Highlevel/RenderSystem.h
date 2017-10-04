@@ -53,6 +53,8 @@ public:
     void RegisterMaterial(NMaterial* material);
     void UnregisterMaterial(NMaterial* material);
 
+    void PrepareForShoutdown();
+
     /**
         \brief Set main camera
      */
