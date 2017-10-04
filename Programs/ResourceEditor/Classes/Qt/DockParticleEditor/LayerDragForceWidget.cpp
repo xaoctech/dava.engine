@@ -603,8 +603,12 @@ void LayerDragForceWidget::OnValueChanged()
     rndReflectionForceMinSpin->setValue(rndReflForceMinMult);
     rndReflectionForceMaxSpin->setValue(rndReflForceMaxMult);
 
-    params.startTime = startTimeSpin->value();
-    params.endTime = endTimeSpin->value();
+    float32 startTimeVal = startTimeSpin->value();
+    float32 endTimeVal = endTimeSpin->value();
+    startTimeVal = Max(startTimeVal, 0.0f);
+    endTimeVal = Max(startTimeVal + 0.0001f, endTimeVal);
+    params.startTime = startTimeVal;
+    params.endTime = endTimeVal;
 
     reflectionPercentSpin->setValue(params.reflectionPercent);
 
@@ -629,8 +633,8 @@ void LayerDragForceWidget::OnValueChanged()
     float32 endTime = 1.0f;
     if (timingType == TimingType::SECONDS_PARTICLE_LIFE)
     {
-        startTime = startTimeSpin->value();
-        endTime = endTimeSpin->value();
+        startTime = startTimeVal;
+        endTime = endTimeVal;
     }
 
     UpdateKeys(DAVA::PropertyLineHelper::GetValueLine(selectedForce->forcePowerLine).Get(), startTime, endTime);
