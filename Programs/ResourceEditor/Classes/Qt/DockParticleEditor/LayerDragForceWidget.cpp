@@ -134,6 +134,22 @@ void LayerDragForceWidget::BuildTimingSection()
     startEndTimeLayout->addWidget(endTimeSpin);
     mainLayout->addLayout(startEndTimeLayout);
 
+    randomizeReflectionForce = new QCheckBox("Randomize reflection force");
+    connect(randomizeReflectionForce, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(randomizeReflectionForce);
+    QHBoxLayout* rndForceLayout = new QHBoxLayout(this);
+    rndReflectionForceMinLabel = new QLabel("Force random min multiplier:");
+    rndReflectionForceMinSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(rndReflectionForceMinSpin);
+    rndReflectionForceMaxLabel = new QLabel("Force random max multiplier:");
+    rndReflectionForceMaxSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(rndReflectionForceMaxSpin);
+    rndForceLayout->addWidget(rndReflectionForceMinLabel);
+    rndForceLayout->addWidget(rndReflectionForceMinSpin);
+    rndForceLayout->addWidget(rndReflectionForceMaxLabel);
+    rndForceLayout->addWidget(rndReflectionForceMaxSpin);
+    mainLayout->addLayout(rndForceLayout);
+
     QHBoxLayout* freqLayout = new QHBoxLayout(this);
     windFreqLabel = new QLabel("Wind frequency:");
     windFreqSpin = new EventFilterDoubleSpinBox();
@@ -392,23 +408,6 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     reflectionChaosLayout->addWidget(reflectionChaosSpin);
     mainLayout->addLayout(reflectionChaosLayout);
 
-    randomizeReflectionForce = new QCheckBox("Randomize reflection force");
-    connect(randomizeReflectionForce, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
-    mainLayout->addWidget(randomizeReflectionForce);
-
-    QHBoxLayout* rndForceLayout = new QHBoxLayout(this);
-    rndReflectionForceMinLabel = new QLabel("Force random min multiplier:");
-    rndReflectionForceMinSpin = new EventFilterDoubleSpinBox();
-    SetupSpin(rndReflectionForceMinSpin);
-    rndReflectionForceMaxLabel = new QLabel("Force random max multiplier:");
-    rndReflectionForceMaxSpin = new EventFilterDoubleSpinBox();
-    SetupSpin(rndReflectionForceMaxSpin);
-    rndForceLayout->addWidget(rndReflectionForceMinLabel);
-    rndForceLayout->addWidget(rndReflectionForceMinSpin);
-    rndForceLayout->addWidget(rndReflectionForceMaxLabel);
-    rndForceLayout->addWidget(rndReflectionForceMaxSpin);
-    mainLayout->addLayout(rndForceLayout);
-
     QHBoxLayout* velocityThresholdLayout = new QHBoxLayout(this);
     velocityThresholdLabel = new QLabel("Velocity threshold:");
     velocityThresholdSpin = new EventFilterDoubleSpinBox();
@@ -425,7 +424,7 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     reflectionPercentLayout->addWidget(reflectionPercentSpin);
     mainLayout->addLayout(reflectionPercentLayout);
 
-    killParticlesAfterCollision = new QCheckBox("Kill particles after collision");
+    killParticlesAfterCollision = new QCheckBox("Kill not reflected particles");
     connect(killParticlesAfterCollision, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(killParticlesAfterCollision);
 }
