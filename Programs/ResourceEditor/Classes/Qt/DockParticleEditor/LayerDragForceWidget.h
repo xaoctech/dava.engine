@@ -78,6 +78,11 @@ private:
     EventFilterDoubleSpinBox* forcePowerSpin = nullptr;
     TimeLineWidget* forcePowerTimeLine = nullptr;
 
+    QLabel* startTimeLabel = nullptr;
+    EventFilterDoubleSpinBox* startTimeSpin = nullptr;
+    QLabel* endTimeLabel = nullptr;
+    EventFilterDoubleSpinBox* endTimeSpin = nullptr;
+
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::int32 forceIndex = -1;
 
@@ -122,7 +127,80 @@ private:
     bool blockSignals = false;
 
     DAVA::ParticleDragForce* selectedForce = nullptr;
+
+    template <typename T>
+    void UpdateKeys(DAVA::PropertyLine<T>* line, DAVA::float32 startTime, DAVA::float32 endTime);
+    template <typename T>
+    void ResetKeys(DAVA::Vector<typename DAVA::PropertyLine<T>::PropertyKey>& keys, const T& newValue, DAVA::float32 time);
+    template <typename T>
+    DAVA::int32 FindKeyIndex(DAVA::Vector<typename DAVA::PropertyLine<T>::PropertyKey>& keys, DAVA::float32 time, typename DAVA::PropertyLine<T>::PropertyKey& interpolatedKey);
 };
+
+template <typename T>
+void LayerDragForceWidget::UpdateKeys(DAVA::PropertyLine<T>* line, DAVA::float32 startTime, DAVA::float32 endTime)
+{
+    if (line == nullptr || line->GetValues().empty())
+        return;
+    DAVA::Vector<typename DAVA::PropertyLine<T>::PropertyKey>& keys = line->GetValues();
+    if (keys.front().t > endTime)
+    {
+        ResetKeys(keys, keys.front().value, startTime);
+        return;
+    }
+    if (keys.back().t < startTime)
+    {
+        ResetKeys(keys, keys.back().value, startTime);
+        return;
+    }
+    if (keys.front().t < startTime)
+    {
+        DAVA::PropertyLine<T>::PropertyKey key;
+        DAVA::int32 index = FindKeyIndex<T>(keys, startTime, key);
+        if (index != -1)
+        {
+            keys.erase(keys.begin(), keys.begin() + index + 1);
+            keys.insert(keys.begin(), key);
+        }
+    }
+    if (keys.back().t > endTime)
+    {
+        DAVA::PropertyLine<T>::PropertyKey key;
+        DAVA::int32 index = FindKeyIndex<T>(keys, endTime, key);
+        if (index != -1)
+        {
+            keys.erase(keys.begin() + index + 1, keys.end());
+            keys.push_back(key);
+        }
+    }
+}
+
+template <typename T>
+void LayerDragForceWidget::ResetKeys(DAVA::Vector<typename DAVA::PropertyLine<T>::PropertyKey>& keys, const T& newValue, DAVA::float32 time)
+{
+    DAVA::PropertyLine<T>::PropertyKey key;
+    key.t = time;
+    key.value = newValue;
+    keys.clear();
+    keys.push_back(key);
+}
+
+template <typename T>
+DAVA::int32 LayerDragForceWidget::FindKeyIndex(DAVA::Vector<typename DAVA::PropertyLine<T>::PropertyKey>& keys, DAVA::float32 time, typename DAVA::PropertyLine<T>::PropertyKey& interpolatedKey)
+{
+    DAVA::int32 size = static_cast<DAVA::int32>(keys.size());
+    for (int i = 0; i < size - 1; ++i)
+    {
+        if (keys[i].t < time && keys[i + 1].t > time)
+        {
+            float32 t = (time - keys[i].t) / (keys[i + 1].t - keys[i].t);
+            T v = Lerp(keys[i].value, keys[i + 1].value, t);
+            interpolatedKey.t = time;
+            interpolatedKey.value = v;
+            return i;
+        }
+    }
+    return -1;
+}
 
 inline DAVA::ParticleLayer* LayerDragForceWidget::GetLayer() const
 {

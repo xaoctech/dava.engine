@@ -25,7 +25,8 @@ public:
     {
         CONSTANT,
         OVER_LAYER_LIFE,
-        OVER_PARTICLE_LIFE
+        OVER_PARTICLE_LIFE,
+        SECONDS_PARTICLE_LIFE
     } timingType = eTimingType::CONSTANT;
 
     enum class eType
@@ -78,6 +79,10 @@ public:
     bool killParticles = false;
     bool normalAsReflectionVector = true;
     bool randomizeReflectionForce = false;
+
+    float32 startTime = 0.0f;
+    float32 endTime = 15.0f;
+
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
 public:

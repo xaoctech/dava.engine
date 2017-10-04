@@ -38,11 +38,12 @@ struct TimingTypeMap
     ForceTimingType elemType;
     String name;
 };
-const Array<TimingTypeMap, 3> timingTypesMap =
+const Array<TimingTypeMap, 4> timingTypesMap =
 { {
 { ForceTimingType::CONSTANT, "const" },
 { ForceTimingType::OVER_LAYER_LIFE, "ovr_layer" },
-{ ForceTimingType::OVER_PARTICLE_LIFE, "ovr_prt" }
+{ ForceTimingType::OVER_PARTICLE_LIFE, "ovr_prt" },
+{ ForceTimingType::SECONDS_PARTICLE_LIFE, "sec" }
 } };
 
 struct ForceTypeMap
@@ -1288,6 +1289,12 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
 
         forceDataName = Format("turbulenceLine%d", i);
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, forceDataName, currentForce->turbulenceLine);
+
+        forceDataName = Format("startTime%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->startTime);
+
+        forceDataName = Format("endTime%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->endTime);
     }
 }
 
@@ -1623,6 +1630,16 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* velocityThresholdNode = node->Get(forceDataName);
         if (velocityThresholdNode)
             dragForce->velocityThreshold = velocityThresholdNode->AsFloat();
+
+        forceDataName = Format("startTime%d", i);
+        const YamlNode* startTimeNode = node->Get(forceDataName);
+        if (startTimeNode)
+            dragForce->startTime = startTimeNode->AsFloat();
+
+        forceDataName = Format("endTime%d", i);
+        const YamlNode* endTimeNode = node->Get(forceDataName);
+        if (endTimeNode)
+            dragForce->endTime = endTimeNode->AsFloat();
 
         forceDataName = Format("planeScale%d", i);
         const YamlNode* planeScaleNode = node->Get(forceDataName);

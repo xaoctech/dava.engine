@@ -59,6 +59,9 @@ ParticleDragForce* ParticleDragForce::Clone()
     dst->planeScale = planeScale;
     dst->reflectionChaos = reflectionChaos;
 
+    dst->startTime = startTime;
+    dst->endTime = endTime;
+
     return dst;
 }
 

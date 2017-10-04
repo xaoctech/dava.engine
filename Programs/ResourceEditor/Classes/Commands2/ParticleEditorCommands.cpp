@@ -13,6 +13,20 @@
 
 using namespace DAVA;
 
+namespace ParticleEditorCommandsDetail
+{
+using ForceType = DAVA::ParticleDragForce::eType;
+DAVA::Map<ForceType, String> forceNames =
+{
+    { ForceType::DRAG_FORCE, "Drag" },
+    { ForceType::WIND, "Wind" },
+    { ForceType::LORENTZ_FORCE, "Vortex" },
+    { ForceType::GRAVITY, "Gravity" },
+    { ForceType::POINT_GRAVITY, "Magnet" },
+    { ForceType::PLANE_COLLISION, "Plane Collision"}
+};
+}
+
 void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType);
 
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* effect)
@@ -363,6 +377,8 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.backwardTurbulenceProbability = force->backwardTurbulenceProbability;
         oldParams.reflectionPercent = force->reflectionPercent;
         oldParams.velocityThreshold = force->velocityThreshold;
+        oldParams.startTime = force->startTime;
+        oldParams.endTime = force->endTime;
     }
 }
 
@@ -407,6 +423,8 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
         force->rndReflectionForceMax = params.rndReflectionForceMax;
         force->velocityThreshold = params.velocityThreshold;
         force->reflectionPercent = params.reflectionPercent;
+        force->startTime = params.startTime;
+        force->endTime = params.endTime;
         PropertyLineHelper::SetValueLine(force->forcePowerLine, params.forcePowerLine);
         PropertyLineHelper::SetValueLine(force->turbulenceLine, params.turbulenceLine);
     }
@@ -778,6 +796,7 @@ void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType
         return;
     ParticleDragForce* newForce = new ParticleDragForce(layer);
     newForce->type = forceType;
+    newForce->forceName = ParticleEditorCommandsDetail::forceNames[forceType];
 
     layer->AddDrag(newForce);
     SafeRelease(newForce);

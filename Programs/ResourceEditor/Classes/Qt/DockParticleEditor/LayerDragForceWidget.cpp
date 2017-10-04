@@ -33,11 +33,12 @@ struct TimingMap
     DAVA::ParticleDragForce::eTimingType elemType;
     QString name;
 };
-const DAVA::Array<TimingMap, 3> timingMap =
+const DAVA::Array<TimingMap, 4> timingMap =
 { {
 { DAVA::ParticleDragForce::eTimingType::CONSTANT, "Constant" },
 { DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
-{ DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life" }
+{ DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life" },
+{ DAVA::ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE, "Seconds particle life" }
 } };
 
 DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
@@ -119,6 +120,19 @@ void LayerDragForceWidget::BuildTimingSection()
     forcePowerSpin = new EventFilterDoubleSpinBox();
     SetupSpin(forcePowerSpin);
     mainLayout->addWidget(forcePowerSpin);
+
+    QHBoxLayout* startEndTimeLayout = new QHBoxLayout(this);
+    startTimeLabel = new QLabel("Start time:");
+    startTimeSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(startTimeSpin);
+    startEndTimeLayout->addWidget(startTimeLabel);
+    startEndTimeLayout->addWidget(startTimeSpin);
+    endTimeLabel = new QLabel("End time:");
+    endTimeSpin = new EventFilterDoubleSpinBox();
+    SetupSpin(endTimeSpin);
+    startEndTimeLayout->addWidget(endTimeLabel);
+    startEndTimeLayout->addWidget(endTimeSpin);
+    mainLayout->addLayout(startEndTimeLayout);
 
     QHBoxLayout* freqLayout = new QHBoxLayout(this);
     windFreqLabel = new QLabel("Wind frequency:");
@@ -220,6 +234,11 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     forcePowerTimeLine->setVisible(timingType != TimingType::CONSTANT);
     forcePowerLabel->setVisible(timingType != TimingType::CONSTANT || (timingType == TimingType::CONSTANT && isWind) || (timingType == TimingType::CONSTANT && isGravity));
     forcePowerSpin->setVisible(timingType == TimingType::CONSTANT && (isWind || isGravity));
+
+    startTimeLabel->setVisible(timingType == TimingType::SECONDS_PARTICLE_LIFE);
+    startTimeSpin->setVisible(timingType == TimingType::SECONDS_PARTICLE_LIFE);
+    endTimeLabel->setVisible(timingType == TimingType::SECONDS_PARTICLE_LIFE);
+    endTimeSpin->setVisible(timingType == TimingType::SECONDS_PARTICLE_LIFE);
 
     direction->setVisible(isDirectionalForce);
     directionSeparator->setVisible(isDirectionalForce);
@@ -454,6 +473,8 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     rndReflectionForceMaxSpin->setValue(selectedForce->rndReflectionForceMax);
     velocityThresholdSpin->setValue(selectedForce->velocityThreshold);
     reflectionPercentSpin->setValue(selectedForce->reflectionPercent);
+    startTimeSpin->setValue(selectedForce->startTime);
+    endTimeSpin->setValue(selectedForce->endTime);
 
     UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
@@ -469,11 +490,19 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     else
         currLegends = &legends;
 
-    forcePowerTimeLine->Init(0, 1, updateMinimized, true, false);
+    float32 start = 0.0f;
+    float32 end = 1.0f;
+    if (selectedForce->timingType == ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE)
+    {
+        start = selectedForce->startTime;
+        end = selectedForce->endTime;
+    }
+
+    forcePowerTimeLine->Init(start, end, updateMinimized, true, false);
     forcePowerTimeLine->AddLines(LineWrapper(LineHelper::GetValueLine(selectedForce->forcePowerLine)).GetProps(), colors, *currLegends);
     forcePowerTimeLine->EnableLock(true);
 
-    turbulenceTimeLine->Init(0, 1, updateMinimized);
+    turbulenceTimeLine->Init(start, end, updateMinimized, true, false);
     turbulenceTimeLine->AddLine(0, PropLineWrapper<float32>(LineHelper::GetValueLine(selectedForce->turbulenceLine)).GetProps(), Qt::red, "Turbulence");
     turbulenceTimeLine->EnableLock(true);
 
@@ -575,6 +604,9 @@ void LayerDragForceWidget::OnValueChanged()
     rndReflectionForceMinSpin->setValue(rndReflForceMinMult);
     rndReflectionForceMaxSpin->setValue(rndReflForceMaxMult);
 
+    params.startTime = startTimeSpin->value();
+    params.endTime = endTimeSpin->value();
+
     reflectionPercentSpin->setValue(params.reflectionPercent);
 
     backTurbSpin->setValue(params.backwardTurbulenceProbability);
@@ -594,5 +626,17 @@ void LayerDragForceWidget::OnValueChanged()
     activeScene->Exec(std::move(updateDragForceCmd));
     activeScene->MarkAsChanged();
 
+    float32 startTime = 0.0f;
+    float32 endTime = 1.0f;
+    if (timingType == TimingType::SECONDS_PARTICLE_LIFE)
+    {
+        startTime = startTimeSpin->value();
+        endTime = endTimeSpin->value();
+    }
+
+    UpdateKeys(DAVA::PropertyLineHelper::GetValueLine(selectedForce->forcePowerLine).Get(), startTime, endTime);
+    UpdateKeys(DAVA::PropertyLineHelper::GetValueLine(selectedForce->turbulenceLine).Get(), startTime, endTime);
+
+    Init(GetActiveScene(), layer, forceIndex, false);
     emit ValueChanged();
 }
