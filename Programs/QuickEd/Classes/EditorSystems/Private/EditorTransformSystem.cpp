@@ -580,7 +580,7 @@ void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, con
             { 0.0f, 0.0f }, { 0.0f, 0.5f }, { 0.5f, 0.5f }, { 1.0f, 0.5f }, { 1.0f, 1.0f }
         };
 
-        lines.reserve(lines.capacity() + bordersToMagnet.size());
+        lines.reserve(lines.size() + bordersToMagnet.size());
 
         for (const auto& bordersPair : bordersToMagnet)
         {
@@ -598,7 +598,7 @@ void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, 
         { 0.0f, 0.0f }, { 0.0f, 0.5f }, { 0.5f, 0.5f }, { 1.0f, 0.5f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f }
     };
 
-    lines.reserve(lines.capacity() + neighbours.size() * bordersToMagnet.size());
+    lines.reserve(lines.size() + neighbours.size() * bordersToMagnet.size());
 
     for (UIControl* neighbour : neighbours)
     {
@@ -633,7 +633,7 @@ void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, con
 
         Vector<float32> bordersToMagnet = { 0.0f, 0.5f, 1.0f };
 
-        lines.reserve(lines.capacity() + values.size() * bordersToMagnet.size());
+        lines.reserve(lines.size() + values.size() * bordersToMagnet.size());
 
         const UIGeometricData rootGD = root->GetControl()->GetGeometricData();
         for (float32 value : values)
@@ -660,7 +660,7 @@ void EditorTransformSystem::CreateMagnetLinesToChildren(const DAVA::Rect& box, c
     };
 
     List<UIControl*> children = activeControlNode->GetControl()->GetChildren();
-    lines.reserve(lines.capacity() + children.size() * bordersToMagnet.size());
+    lines.reserve(lines.size() + children.size() * bordersToMagnet.size());
 
     for (UIControl* child : children)
     {
@@ -1227,7 +1227,6 @@ void EditorTransformSystem::UpdateNeighbours()
         DAVA::UIControl* parent = activeControlNode->GetControl()->GetParent();
         if (nullptr != parent)
         {
-            DVASSERT(nullptr != parent);
             Set<UIControl*> ignoredNeighbours;
             for (ControlNode* node : selectedControlNodes)
             {
