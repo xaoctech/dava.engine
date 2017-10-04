@@ -630,22 +630,45 @@ protected:
 
         newDockWidget->setVisible(true);
         newDockWidget->setWidget(widget);
-
-        bool restored = mainWindow->restoreDockWidget(newDockWidget);
-        if (!restored)
+        if (!mainWindow->restoreDockWidget(newDockWidget))
         {
-            mainWindow->addDockWidget(info.area, newDockWidget);
+            if (info.tabbed == true)
+            {
+                QList<QDockWidget*> dockWidgets = mainWindow->findChildren<QDockWidget*>();
+                QDockWidget* dockToTabbify = nullptr;
+                foreach (QDockWidget* dock, dockWidgets)
+                {
+                    if (mainWindow->dockWidgetArea(dock) == info.area)
+                    {
+                        dockToTabbify = dock;
+                        break;
+                    }
+                }
+
+                if (dockToTabbify != nullptr)
+                {
+                    mainWindow->tabifyDockWidget(dockToTabbify, newDockWidget);
+                }
+                else
+                {
+                    mainWindow->addDockWidget(info.area, newDockWidget);
+                }
+            }
+            else
+            {
+                mainWindow->addDockWidget(info.area, newDockWidget);
+            }
         }
 
-        if (info.tabbed == true && (restored == false || info.forceOnTop == true))
+        if (info.ensureVisible)
         {
-            QList<QDockWidget*> dockWidgets = mainWindow->findChildren<QDockWidget*>();
-            foreach (QDockWidget* dock, dockWidgets)
+            newDockWidget->setVisible(true);
+            if (newDockWidget->isFloating() == false)
             {
-                if (dock != newDockWidget && mainWindow->dockWidgetArea(dock) == info.area)
+                QList<QDockWidget*> tabifiedWidgets = mainWindow->tabifiedDockWidgets(newDockWidget);
+                if (tabifiedWidgets.isEmpty() == false)
                 {
-                    mainWindow->tabifyDockWidget(dock, newDockWidget);
-                    break;
+                    mainWindow->tabifyDockWidget(tabifiedWidgets.front(), newDockWidget);
                 }
             }
         }

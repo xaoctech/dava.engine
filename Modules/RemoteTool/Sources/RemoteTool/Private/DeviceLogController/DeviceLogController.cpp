@@ -100,7 +100,7 @@ LogWidget* DeviceLogController::GetOrCreateLogView(const QString& title, QWidget
         DAVA::TArc::DockPanelInfo panelInfo;
         panelInfo.title = title;
         panelInfo.area = Qt::RightDockWidgetArea;
-        panelInfo.forceOnTop = true;
+        panelInfo.ensureVisible = true;
         DAVA::TArc::PanelKey panelKey(title, panelInfo);
         ui->AddView(DAVA::TArc::mainWindowKey, panelKey, view);
 
