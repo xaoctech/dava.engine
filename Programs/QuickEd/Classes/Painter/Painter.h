@@ -30,9 +30,6 @@ struct DrawTextParams
     //margin between params position and actual text item position.
     //As an example if direction is equal to ALIGN_LEFT item X position will be equal to params.pos.x - params.size.x - margin.x
     Vector2 margin = Vector2(0.0f, 0.0f);
-
-    //geometric data to map to screen coordinates
-    UIGeometricData gd;
 };
 
 struct DrawLineParams
@@ -46,9 +43,6 @@ struct DrawLineParams
 
     //line width in pixels
     float32 width = 1.0f;
-
-    //geometric data to map to screen coordinates
-    UIGeometricData gd;
 
     enum eType
     {

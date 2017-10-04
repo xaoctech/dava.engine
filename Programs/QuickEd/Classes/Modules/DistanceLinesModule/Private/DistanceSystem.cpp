@@ -29,21 +29,6 @@ DAVA::eAlign GetDirection(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startP
         return startPos.y < endPos.y ? eAlign::ALIGN_BOTTOM : eAlign::ALIGN_TOP;
     }
 }
-
-//control highlight is drawed inside of control
-//in some directions line can be under highlight
-void FixLinePosition(DAVA::Vector2& pos, const DAVA::UIGeometricData& gd, DAVA::eAlign direction)
-{
-    using namespace DAVA;
-    if (direction == ALIGN_BOTTOM)
-    {
-        pos.y -= 1.0f / gd.scale.y;
-    }
-    else if (direction == ALIGN_RIGHT)
-    {
-        pos.x -= 1.0f / gd.scale.x;
-    }
-}
 }
 
 DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
@@ -139,31 +124,33 @@ void DistanceSystem::OnUpdate()
 
     Rect selectedRect;
     Rect highlightedRect;
-    UIGeometricData gd;
+
+    Matrix3 transformMatrix;
+
     if (highlightedControl->GetParent() == selectedControl->GetParent())
     {
         selectedRect = selectedControl->GetLocalGeometricData().GetAABBox();
         highlightedRect = highlightedControl->GetLocalGeometricData().GetAABBox();
-        gd = highlightedControl->GetParent()->GetGeometricData();
+        highlightedControl->GetParent()->GetGeometricData().BuildTransformMatrix(transformMatrix);
     }
     else if (highlightedControl->GetParent() == selectedControl)
     {
         selectedRect = Rect(Vector2(0.0f, 0.0f), selectedControl->GetSize());
         highlightedRect = highlightedControl->GetLocalGeometricData().GetAABBox();
-        gd = selectedControl->GetGeometricData();
+        selectedControl->GetGeometricData().BuildTransformMatrix(transformMatrix);
     }
     else if (selectedControl->GetParent() == highlightedControl)
     {
         selectedRect = selectedControl->GetLocalGeometricData().GetAABBox();
         highlightedRect = Rect(Vector2(0.0f, 0.0f), highlightedControl->GetSize());
-        gd = highlightedControl->GetGeometricData();
+        highlightedControl->GetGeometricData().BuildTransformMatrix(transformMatrix);
     }
     else
     {
         DVASSERT("selected and highlighted nodes must be child and parent or be neighbours");
     }
 
-    DrawLines(selectedRect, highlightedRect, gd);
+    DrawLines(selectedRect, highlightedRect, transformMatrix);
 }
 
 bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -177,7 +164,7 @@ void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput)
     canDrawDistancesAfterInput = (currentInput->phase == DAVA::UIEvent::Phase::MOVE);
 }
 
-void DistanceSystem::DrawLines(const DAVA::Rect& selectedRect, const DAVA::Rect& highlightedRect, const DAVA::UIGeometricData& gd) const
+void DistanceSystem::DrawLines(const DAVA::Rect& selectedRect, const DAVA::Rect& highlightedRect, const DAVA::Matrix3& transformMatrix) const
 {
     using namespace DAVA;
 
@@ -209,8 +196,8 @@ void DistanceSystem::DrawLines(const DAVA::Rect& selectedRect, const DAVA::Rect&
             {
                 continue;
             }
-            DrawSolidLine(startPos1, endPos1, gd, axis);
-            DrawSolidLine(startPos2, endPos2, gd, axis);
+            DrawSolidLine(startPos1, endPos1, transformMatrix, axis);
+            DrawSolidLine(startPos2, endPos2, transformMatrix, axis);
         }
     }
     else
@@ -231,33 +218,33 @@ void DistanceSystem::DrawLines(const DAVA::Rect& selectedRect, const DAVA::Rect&
 
                 startPos[axis] = selectedRect.GetPosition()[axis];
                 endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
-                DrawSolidLine(startPos, endPos, gd, axis);
-                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+                DrawSolidLine(startPos, endPos, transformMatrix, axis);
+                DrawDotLine(highlightedRect, endPos, transformMatrix, oppositeAxis);
             }
             else if (highlightedRect.GetPosition()[axis] > selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis])
             {
                 startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
                 endPos[axis] = highlightedRect.GetPosition()[axis];
-                DrawSolidLine(startPos, endPos, gd, axis);
-                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+                DrawSolidLine(startPos, endPos, transformMatrix, axis);
+                DrawDotLine(highlightedRect, endPos, transformMatrix, oppositeAxis);
             }
             else
             {
                 startPos[axis] = selectedRect.GetPosition()[axis];
                 endPos[axis] = highlightedRect.GetPosition()[axis];
-                DrawSolidLine(startPos, endPos, gd, axis);
-                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+                DrawSolidLine(startPos, endPos, transformMatrix, axis);
+                DrawDotLine(highlightedRect, endPos, transformMatrix, oppositeAxis);
 
                 startPos[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
                 endPos[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
-                DrawSolidLine(startPos, endPos, gd, axis);
-                DrawDotLine(highlightedRect, endPos, gd, oppositeAxis);
+                DrawSolidLine(startPos, endPos, transformMatrix, axis);
+                DrawDotLine(highlightedRect, endPos, transformMatrix, oppositeAxis);
             }
         }
     }
 }
 
-void DistanceSystem::DrawSolidLine(const DAVA::Vector2& startPos, DAVA::Vector2 endPos, const DAVA::UIGeometricData& gd, DAVA::Vector2::eAxis axis) const
+void DistanceSystem::DrawSolidLine(DAVA::Vector2 startPos, DAVA::Vector2 endPos, const DAVA::Matrix3& transformMatrix, DAVA::Vector2::eAxis axis) const
 {
     using namespace DAVA;
 
@@ -272,38 +259,40 @@ void DistanceSystem::DrawSolidLine(const DAVA::Vector2& startPos, DAVA::Vector2 
     Vector2::eAxis oppositeAxis = axis == Vector2::AXIS_X ? Vector2::AXIS_Y : Vector2::AXIS_X;
 
     Painting::DrawLineParams lineParams;
-    lineParams.gd = gd;
-
-    eAlign direction = DistanceSystemDetails::GetDirection(axis, startPos, endPos);
-
-    DistanceSystemDetails::FixLinePosition(endPos, gd, direction);
 
     DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     lineParams.color = preferences->linesColor;
 
-    lineParams.startPos = startPos;
-    lineParams.endPos = endPos;
+    lineParams.startPos = startPos * transformMatrix;
+    lineParams.endPos = endPos * transformMatrix;
     GetPainter()->Add(GetOrder(), lineParams);
 
     //draw close line
     const float32 endLineLength = 8.0f;
 
-    lineParams.startPos = endPos;
-    lineParams.endPos = endPos;
-    lineParams.startPos[oppositeAxis] -= endLineLength / 2.0f / gd.scale[oppositeAxis];
-    lineParams.endPos[oppositeAxis] += endLineLength / 2.0f / gd.scale[oppositeAxis];
+    Vector2 lineVector = (startPos * transformMatrix - endPos * transformMatrix);
+    lineVector.Set(lineVector.y, lineVector.x * -1.0f);
+
+    lineVector.Normalize();
+
+    Vector2 closeLineStart = endPos * transformMatrix + lineVector * endLineLength / 2.0f;
+    Vector2 closeLineEnd = endPos * transformMatrix - lineVector * endLineLength / 2.0f;
+
+    lineParams.startPos = closeLineStart;
+    lineParams.endPos = closeLineEnd;
     GetPainter()->Add(GetOrder(), lineParams);
 
     Painting::DrawTextParams textParams;
-    textParams.gd = gd;
     textParams.color = preferences->textColor;
 
     textParams.text = Format("%.0f", length);
     textParams.margin = Vector2(5.0f, 5.0f);
 
+    eAlign direction = DistanceSystemDetails::GetDirection(axis, startPos, endPos);
+
     //margin around text
     const float32 minLength = 20.0f;
-    if (length * gd.scale[axis] > minLength)
+    if (length > minLength)
     {
         if (axis == Vector2::AXIS_X)
         {
@@ -323,12 +312,16 @@ void DistanceSystem::DrawSolidLine(const DAVA::Vector2& startPos, DAVA::Vector2 
         textParams.pos[axis] = endPos[axis];
         textParams.pos[oppositeAxis] = endPos[oppositeAxis];
     }
+    textParams.pos = textParams.pos * transformMatrix;
+
     GetPainter()->Add(GetOrder(), textParams);
 }
 
-void DistanceSystem::DrawDotLine(const DAVA::Rect& rect, DAVA::Vector2 endPos, const DAVA::UIGeometricData& gd, DAVA::Vector2::eAxis axis) const
+void DistanceSystem::DrawDotLine(const DAVA::Rect& rect, DAVA::Vector2 endPos, const DAVA::Matrix3& transformMatrix, DAVA::Vector2::eAxis axis) const
 {
-    DAVA::Vector2 startPos = endPos;
+    using namespace DAVA;
+
+    Vector2 startPos = endPos;
     if (rect.GetPosition()[axis] + rect.GetSize()[axis] < endPos[axis])
     {
         startPos[axis] = rect.GetPosition()[axis] + rect.GetSize()[axis];
@@ -342,16 +335,12 @@ void DistanceSystem::DrawDotLine(const DAVA::Rect& rect, DAVA::Vector2 endPos, c
         return;
     }
 
-    DAVA::eAlign direction = DistanceSystemDetails::GetDirection(axis, startPos, endPos);
-    DistanceSystemDetails::FixLinePosition(endPos, gd, direction);
-
     Painting::DrawLineParams lineParams;
-    lineParams.gd = gd;
 
     DistanceSystemPreferences* preferences = accessor->GetGlobalContext()->GetData<DistanceSystemPreferences>();
     lineParams.color = preferences->linesColor;
-    lineParams.startPos = startPos;
-    lineParams.endPos = endPos;
+    lineParams.startPos = startPos * transformMatrix;
+    lineParams.endPos = endPos * transformMatrix;
     lineParams.type = Painting::DrawLineParams::DOT;
 
     GetPainter()->Add(GetOrder(), lineParams);

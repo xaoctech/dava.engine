@@ -67,26 +67,21 @@ void Painter::Draw(Window* window)
 
 void Painter::Draw(const DrawLineParams& params)
 {
-    Matrix3 transformMatrix;
-    params.gd.BuildTransformMatrix(transformMatrix);
-
-    Vector2 start = params.startPos * transformMatrix;
-    Vector2 end = params.endPos * transformMatrix;
     if (params.type == DrawLineParams::SOLID)
     {
-        RenderSystem2D::Instance()->DrawLine(start, end, params.width, params.color);
+        RenderSystem2D::Instance()->DrawLine(params.startPos, params.endPos, params.width, params.color);
     }
     else
     {
-        Vector2 arrow = end - start;
+        Vector2 arrow = params.endPos - params.startPos;
         float32 length = arrow.Length();
         arrow.Normalize();
         bool dot = true;
         const uint32 dotStep = 3;
         for (float32 i = 0.0f; i < length; i += dotStep)
         {
-            Vector2 relativeStart = start + arrow * i;
-            Vector2 relativeEnd = start + arrow * (i + dotStep);
+            Vector2 relativeStart = params.startPos + arrow * i;
+            Vector2 relativeEnd = params.startPos + arrow * (i + dotStep);
             Color color = dot ? params.color : Color::Transparent;
             dot = !dot;
             RenderSystem2D::Instance()->DrawLine(relativeStart, relativeEnd, params.width, color);
@@ -101,7 +96,7 @@ void Painter::Draw(const DrawTextParams& params)
 
     int32 charactersDrawn = 0;
 
-    font->DrawStringToBuffer(UTF8Utils::EncodeToWideString(params.text), static_cast<int32>(params.gd.scale.x * params.pos.x), static_cast<int32>(params.gd.scale.x * params.pos.y), vertices.data(), charactersDrawn);
+    font->DrawStringToBuffer(UTF8Utils::EncodeToWideString(params.text), static_cast<int32>(params.pos.x), static_cast<int32>(params.pos.y), vertices.data(), charactersDrawn);
     DVASSERT(charactersDrawn == params.text.length());
 
     uint32 vertexCount = static_cast<uint32>(vertices.size());
@@ -117,17 +112,6 @@ void Painter::Draw(const DrawTextParams& params)
         }
     }
 
-    Matrix4 rotateMatrix;
-    rotateMatrix.BuildRotation(Vector3(0.f, 0.f, -1.0f), params.gd.angle);
-
-    Matrix3 transformMatrix;
-    params.gd.BuildTransformMatrix(transformMatrix);
-
-    Matrix4 worldMatrix;
-    worldMatrix.BuildTranslation(Vector3(transformMatrix._20, transformMatrix._21, 0.f));
-
-    Matrix4 resultMatrix = rotateMatrix * worldMatrix;
-
     BatchDescriptor2D batchDescriptor;
     batchDescriptor.singleColor = params.color;
     batchDescriptor.vertexCount = vertexCount;
@@ -140,7 +124,7 @@ void Painter::Draw(const DrawTextParams& params)
     batchDescriptor.material = fontMaterial.Get();
     batchDescriptor.textureSetHandle = font->GetTexture()->singleTextureSet;
     batchDescriptor.samplerStateHandle = font->GetTexture()->samplerStateHandle;
-    batchDescriptor.worldMatrix = &resultMatrix;
+    batchDescriptor.worldMatrix = &Matrix4::IDENTITY;
 
     RenderSystem2D::Instance()->PushBatch(batchDescriptor);
 }
@@ -151,9 +135,6 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     //while we using hard-coded font we need to fix it base line manually
     //DejaVuSans have a very big height which is invalid for digits. So while we use only digits, and font DejaVuSans and GraphicsFont have no GetBaseLine member function - i will change metrics height manually
     Vector2 size = Vector2(metrics.width, metrics.height);
-
-    size /= params.gd.scale;
-    params.margin /= params.gd.scale;
 
     if (params.direction & ALIGN_LEFT)
     {
@@ -190,7 +171,7 @@ void Painter::ApplyParamPos(DrawTextParams& params) const
     }
 
     //font have a little padding inside it draw rect
-    const Vector2 padding = Vector2(2.0f, 2.0f) / params.gd.scale;
+    const Vector2 padding = Vector2(2.0f, 2.0f);
     params.pos.x -= padding.x;
     params.pos.y -= padding.y;
 }
