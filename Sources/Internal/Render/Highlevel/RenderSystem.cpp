@@ -150,7 +150,7 @@ void RenderSystem::UnregisterMaterial(NMaterial* material)
 
 void RenderSystem::PrepareForShoutdown()
 {
-    renderHierarchy->PrepareForShoutdown();
+    renderHierarchy->PrepareForShutdown();
 }
 
 void RenderSystem::SetGlobalMaterial(NMaterial* newGlobalMaterial)

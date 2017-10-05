@@ -13,9 +13,9 @@
 class SceneCollisionDebugDrawer final : public btIDebugDraw
 {
 public:
-    SceneCollisionDebugDrawer(DAVA::RenderHelper* _drawer)
+    SceneCollisionDebugDrawer(DAVA::RenderHelper* drawer_)
         : dbgMode(0)
-        , drawer(_drawer)
+        , drawer(drawer_)
     {
     }
 

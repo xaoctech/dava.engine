@@ -86,6 +86,7 @@ void InitBounds(physx::PxRigidActor* actor, physx::PxShape* shape)
         bounds.minimum.z -= eps;
         bounds.maximum.z += eps;
     }
+    DVASSERT(shape->userData == nullptr);
     shape->userData = new AABBox3(DAVA::PhysicsMath::PxBounds3ToAABox3(bounds));
 }
 
@@ -250,7 +251,7 @@ inline DAVA::Plane TransformPlaneToLocalSpace(const Selectable& object, const DA
 
 inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const DAVA::AABBox3& bbox, const DAVA::Plane& plane)
 {
-    char cornersData[8 * sizeof(DAVA::Vector3)];
+    DAVA::uint8 cornersData[8 * sizeof(DAVA::Vector3)];
     DAVA::Vector3* corners = reinterpret_cast<DAVA::Vector3*>(cornersData);
     bbox.GetCorners(corners);
 
@@ -258,7 +259,7 @@ inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const DAVA::AABBox3& bbox,
     DAVA::float32 maxDistance = -minDistance;
     for (DAVA::uint32 i = 0; i < 8; ++i)
     {
-        float d = plane.DistanceToPoint(corners[i]);
+        DAVA::float32 d = plane.DistanceToPoint(corners[i]);
         minDistance = std::min(minDistance, d);
         maxDistance = std::max(maxDistance, d);
     }
@@ -272,9 +273,8 @@ inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const DAVA::AABBox3& bbox,
     return ClassifyPlaneResult::Intersects;
 }
 
-ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+ClassifyPlanesResult ClassifyObjectBoundingBox(const Selectable& object, const DAVA::AABBox3& bounds, const DAVA::Vector<DAVA::Plane>& planes)
 {
-    DAVA::AABBox3 bounds = *GetBounds(shape);
     for (const DAVA::Plane& globalPlane : planes)
     {
         DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
@@ -286,12 +286,18 @@ ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShap
     return ClassifyPlanesResult::ContainsOrIntersects;
 }
 
+ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+{
+    DAVA::AABBox3 bounds = *GetBounds(shape);
+    return ClassifyObjectBoundingBox(object, bounds, planes);
+}
+
 inline bool IsBothNegative(float v1, float v2)
 {
     return (((reinterpret_cast<uint32_t&>(v1) & 0x80000000) & (reinterpret_cast<uint32_t&>(v2) & 0x80000000)) >> 31) != 0;
 }
 
-inline void SortDistances(float values[3])
+inline void SortDistances(DAVA::float32 values[3])
 {
     if (values[1] > values[0])
         std::swap(values[1], values[0]);
@@ -304,13 +310,9 @@ inline void SortDistances(float values[3])
 ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
 {
     DAVA::AABBox3 bounds = *GetBounds(shape);
-    for (const DAVA::Plane& globalPlane : planes)
+    if (ClassifyObjectBoundingBox(object, bounds, planes) == ClassifyPlanesResult::Outside)
     {
-        DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
-        if (ClassifyBoundingBoxToPlane(bounds, localPlane) == ClassifyPlaneResult::Behind)
-        {
-            return ClassifyPlanesResult::Outside;
-        }
+        return ClassifyPlanesResult::Outside;
     }
 
     physx::PxTriangleMeshGeometry geomHolder;
@@ -339,7 +341,7 @@ ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxSha
         {
             DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
 
-            float distances[3] = {
+            DAVA::float32 distances[3] = {
                 localPlane.DistanceToPoint(v0.x, v0.y, v0.z),
                 localPlane.DistanceToPoint(v1.x, v1.y, v1.z),
                 localPlane.DistanceToPoint(v2.x, v2.y, v2.z)
