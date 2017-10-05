@@ -504,6 +504,16 @@ CommandBufferGLES2_t::~CommandBufferGLES2_t()
 
 void CommandBufferGLES2_t::Execute()
 {
+#if defined(DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
+    #define ACQUIRE_CONTEXT() _GLES2_AcquireContext()
+    #define RELEASE_CONTEXT() _GLES2_ReleaseContext()
+#else
+    #define ACQUIRE_CONTEXT()
+    #define RELEASE_CONTEXT()
+#endif
+
+    ACQUIRE_CONTEXT();
+
     DAVA_PROFILER_CPU_SCOPE(DAVA::ProfilerCPUMarkerName::RHI_CMD_BUFFER_EXECUTE);
 
     Handle cur_ps = InvalidHandle;
@@ -1210,6 +1220,7 @@ void CommandBufferGLES2_t::Execute()
         c += cmd->size;
     }
 
+    RELEASE_CONTEXT();
     //Logger::Info("exec cb  = %.2f Kb  in %u cmds (DIP=%u  STCB=%u  STTX=%u)",float(curUsedSize)/1024.0f,cmd_cnt,dip_cnt,stcb_cnt,sttx_cnt);
 }
 

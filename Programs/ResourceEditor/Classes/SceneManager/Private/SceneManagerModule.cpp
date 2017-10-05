@@ -962,21 +962,24 @@ void SceneManagerModule::ExportScene()
     dlg.exec();
     if (dlg.result() == QDialog::Accepted && SaveTileMaskInScene(scene))
     {
-        WaitDialogParams params;
-        params.needProgressBar = false;
-        params.message = QStringLiteral("Scene exporting.\nPlease wait...");
-
         ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
         DVASSERT(data != nullptr);
         const DAVA::FilePath& projectPath = data->GetProjectPath();
         DAVA::FilePath dataSourceFolder = projectPath + "DataSource/3d/";
 
-        SceneExporter::Params exportingParams;
-        exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
-        exportingParams.dataSourceFolder = dataSourceFolder;
-        exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
+        {
+            WaitDialogParams params;
+            params.needProgressBar = false;
+            params.message = QStringLiteral("Scene exporting.\nPlease wait...");
+            std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
 
-        scene->Export(exportingParams);
+            SceneExporter::Params exportingParams;
+            exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
+            exportingParams.dataSourceFolder = dataSourceFolder;
+            exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
+
+            scene->Export(exportingParams);
+        }
 
         ReloadTextures(DAVA::Texture::GetPrimaryGPUForLoading());
     }
