@@ -484,6 +484,8 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
         DocumentData* data = GetDocumentData();
         data->BeginBatch(Format("Move Controls %s", CommandExecutorDetails::FormatNodeNames(nodes).c_str()), static_cast<uint32>(nodesToMove.size()));
         int index = destIndex;
+
+        Vector<String> notMovedNodesNames;
         for (ControlNode* node : nodesToMove)
         {
             ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
@@ -503,15 +505,26 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
             }
             else
             {
-                NotificationParams notificationParams;
-                notificationParams.title = "Can not move control";
-                notificationParams.message = Result(Result::RESULT_WARNING, Format("Can not move control %s because it already removed", node->GetName().c_str()));
-                ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+                notMovedNodesNames.push_back(node->GetName());
             }
         }
 
         data->EndBatch();
+
+        if (notMovedNodesNames.empty() == false)
+        {
+            NotificationParams notificationParams;
+            notificationParams.title = "Can not move controls";
+            String message = "Can not move controls:";
+            for (const String& name : notMovedNodesNames)
+            {
+                message.append("\n\t" + name);
+            }
+            notificationParams.message = Result(Result::RESULT_WARNING, message);
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
     }
+
     return movedNodes;
 }
 
