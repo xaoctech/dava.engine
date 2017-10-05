@@ -1486,12 +1486,12 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     return lastProgress;
 }
 
-DLCManager::Progress DLCManager::GetPackProgress(const Vector<String>& packNames) const
+DLCManager::Progress DLCManager::GetPacksProgress(const Vector<String>& packNames) const
 {
     return Progress();
 }
 
-DLCManager::Progress DLCManagerImpl::GetPackProgress(const Vector<String>& packNames) const
+DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& packNames) const
 {
     using namespace DAVA;
     DVASSERT(Thread::IsMainThread());

@@ -148,7 +148,7 @@ struct FSMTest02
                 auto r3 = dlcManager.RequestPack("3");
                 TEST_VERIFY(r3->IsDownloaded());
 
-                DLCManager::Progress progressForPack = dlcManager.GetPackProgress({ "3" }); // 3 depends on 2, on 1, on 0
+                DLCManager::Progress progressForPack = dlcManager.GetPacksProgress({ "3" }); // 3 depends on 2, on 1, on 0
                 DLCManager::Progress progressAll = dlcManager.GetProgress();
                 // now progress should match
                 TEST_VERIFY(progressForPack.total < progressAll.total);
@@ -161,15 +161,15 @@ struct FSMTest02
                 return true;
             }
 
-            DLCManager::Progress progress0 = dlcManager.GetPackProgress({ "0" });
-            DLCManager::Progress progress1 = dlcManager.GetPackProgress({ "1" });
-            DLCManager::Progress progress2 = dlcManager.GetPackProgress({ "2" });
-            DLCManager::Progress progress3 = dlcManager.GetPackProgress({ "3" });
-            DLCManager::Progress progress4 = dlcManager.GetPackProgress({ "4" });
-            DLCManager::Progress progress5 = dlcManager.GetPackProgress({ "5" });
-            DLCManager::Progress progress6 = dlcManager.GetPackProgress({ "6" });
-            DLCManager::Progress progress7 = dlcManager.GetPackProgress({ "7" });
-            DLCManager::Progress progress8 = dlcManager.GetPackProgress({ "8" });
+            DLCManager::Progress progress0 = dlcManager.GetPacksProgress({ "0" });
+            DLCManager::Progress progress1 = dlcManager.GetPacksProgress({ "1" });
+            DLCManager::Progress progress2 = dlcManager.GetPacksProgress({ "2" });
+            DLCManager::Progress progress3 = dlcManager.GetPacksProgress({ "3" });
+            DLCManager::Progress progress4 = dlcManager.GetPacksProgress({ "4" });
+            DLCManager::Progress progress5 = dlcManager.GetPacksProgress({ "5" });
+            DLCManager::Progress progress6 = dlcManager.GetPacksProgress({ "6" });
+            DLCManager::Progress progress7 = dlcManager.GetPacksProgress({ "7" });
+            DLCManager::Progress progress8 = dlcManager.GetPacksProgress({ "8" });
             DLCManager::Progress progressAll = dlcManager.GetProgress();
             TEST_VERIFY(progress0.total < progress1.total);
             TEST_VERIFY(progress1.total < progress2.total);

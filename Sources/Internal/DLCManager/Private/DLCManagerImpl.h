@@ -150,7 +150,7 @@ public:
 
     Progress GetProgress() const override;
 
-    Progress GetPackProgress(const Vector<String>& packNames) const override;
+    Progress GetPacksProgress(const Vector<String>& packNames) const override;
 
     Info GetInfo() const override;
 
