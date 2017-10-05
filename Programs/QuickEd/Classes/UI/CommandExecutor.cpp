@@ -467,6 +467,9 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
 
 DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
     for (ControlNode* node : nodes)
@@ -500,7 +503,10 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
             }
             else
             {
-                DVASSERT(false);
+                NotificationParams notificationParams;
+                notificationParams.title = "Can not move control";
+                notificationParams.message = Result(Result::RESULT_WARNING, Format("Can not move control %s because it already removed", node->GetName().c_str()));
+                ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
             }
         }
 
