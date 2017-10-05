@@ -1,6 +1,7 @@
 #include "Classes/Application/REGlobal.h"
 
 #include <TArc/Core/Core.h>
+#include <TArc/Core/FieldBinder.h>
 
 namespace REGlobal
 {
@@ -45,6 +46,11 @@ DAVA::TArc::ContextAccessor* GetAccessor()
     return REGlobalDetails::GetCoreInterface();
 }
 
+DAVA::TArc::FieldBinder* CreateFieldBinder()
+{
+    return new DAVA::TArc::FieldBinder(GetAccessor());
+}
+
 DAVA::TArc::DataWrapper CreateDataWrapper(const DAVA::ReflectedType* type)
 {
     DAVA::TArc::CoreInterface* coreInterface = REGlobalDetails::GetCoreInterface();
@@ -87,5 +93,6 @@ IMPL_OPERATION_ID(SaveCurrentScene);
 IMPL_OPERATION_ID(CloseAllScenesOperation);
 IMPL_OPERATION_ID(ReloadTexturesOperation);
 IMPL_OPERATION_ID(ShowMaterial);
+IMPL_OPERATION_ID(ConvertTaggedTextures);
 
 } // namespace REGlobal
