@@ -1486,12 +1486,12 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     return lastProgress;
 }
 
-DLCManager::Progress DLCManager::GetProgressForPacks(const Vector<String>& packNames) const
+DLCManager::Progress DLCManager::GetPackProgress(const Vector<String>& packNames) const
 {
     return Progress();
 }
 
-DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& packNames) const
+DLCManager::Progress DLCManagerImpl::GetPackProgress(const Vector<String>& packNames) const
 {
     using namespace DAVA;
     DVASSERT(Thread::IsMainThread());
@@ -1501,9 +1501,6 @@ DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& p
         return Progress();
     }
 
-    Progress result;
-    result.isRequestingEnabled = IsRequestingEnabled();
-
     // 1. make flat set with all pack with it's dependencies
     // 2. go throw all files and check if it's pack in set
 
@@ -1511,13 +1508,13 @@ DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& p
     childrenPacks.clear();
 
     size_t packsCount = meta->GetPacksCount();
+
     allPacks.reserve(packsCount);
     childrenPacks.reserve(packsCount);
 
     for (const String& packName : packNames)
     {
         uint32 packIndex = meta->GetPackIndex(packName);
-        childrenPacks.clear();
         meta->CollectDependencies(packIndex, childrenPacks);
         for (const uint32 childPackIndex : childrenPacks)
         {
@@ -1526,10 +1523,12 @@ DLCManager::Progress DLCManagerImpl::GetProgressForPacks(const Vector<String>& p
         allPacks.insert(packIndex);
     }
 
+    Progress result;
+    result.isRequestingEnabled = IsRequestingEnabled();
     // go throw all files
     const auto& allFiles = usedPackFile.filesTable.data.files;
-    uint32 numFiles = allFiles.size();
-    for (uint32 fileIndex = 0; fileIndex < numFiles; ++fileIndex)
+    size_t numFiles = allFiles.size();
+    for (size_t fileIndex = 0; fileIndex < numFiles; ++fileIndex)
     {
         const auto& fileInfo = allFiles[fileIndex];
         if (allPacks.find(fileInfo.metaIndex) != end(allPacks))

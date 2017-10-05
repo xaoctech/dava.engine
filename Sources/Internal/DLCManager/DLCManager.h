@@ -199,7 +199,7 @@ public:
     virtual Progress GetProgress() const = 0;
 
     /** Calculate statistic only for packNames with dependencies */
-    virtual Progress GetProgressForPacks(const Vector<String>& packNames) const;
+    virtual Progress GetPackProgress(const Vector<String>& packNames) const;
 
     struct Info
     {
