@@ -933,7 +933,7 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(DAVA::Vect
     using namespace DAVA;
     Vector<MagnetLineInfo> magnets;
 
-    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
+    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f;
     Vector2 adjustedDeltaToBorder(deltaSize);
     if (canAdjustResize)
     {
