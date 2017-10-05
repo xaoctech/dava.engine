@@ -93,6 +93,8 @@ private:
     void DeleteSelection();
     void MoveToSelection();
 
+    bool SaveToFolderAvailable() const;
+
 private:
     DAVA::TArc::QtConnections connections;
     DAVA::uint32 newSceneCounter = 0;
@@ -109,6 +111,7 @@ private:
     {
         DAVA::ReflectionRegistrator<SceneManagerModule>::Begin()
         .ConstructorByPointer()
+        .Field("saveToFolderAvailable", &SceneManagerModule::SaveToFolderAvailable, nullptr)
         .End();
     }
 };

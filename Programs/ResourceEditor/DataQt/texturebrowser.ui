@@ -36,16 +36,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>3</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>3</number>
    </property>
    <item>
@@ -76,16 +67,7 @@
        <property name="spacing">
         <number>1</number>
        </property>
-       <property name="leftMargin">
-        <number>2</number>
-       </property>
-       <property name="topMargin">
-        <number>2</number>
-       </property>
-       <property name="rightMargin">
-        <number>2</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>2</number>
        </property>
        <item>
@@ -103,6 +85,7 @@
          <addaction name="actionConvertForAllGPU"/>
          <addaction name="actionConvertAll"/>
          <addaction name="actionConvertModified"/>
+         <addaction name="actionConvertTagged"/>
         </widget>
        </item>
        <item>
@@ -123,16 +106,7 @@
           <property name="spacing">
            <number>3</number>
           </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>
@@ -172,7 +146,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="Resources.qrc">
+             <iconset>
               <normaloff>:/QtTools/Icons/close-10.png</normaloff>:/QtTools/Icons/close-10.png</iconset>
             </property>
             <property name="autoRaise">
@@ -190,9 +164,6 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QAbstractScrollArea::AdjustIgnored</enum>
          </property>
          <property name="verticalScrollMode">
           <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -219,16 +190,7 @@
        <property name="spacing">
         <number>5</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -296,16 +258,7 @@
           <property name="spacing">
            <number>1</number>
           </property>
-          <property name="leftMargin">
-           <number>5</number>
-          </property>
-          <property name="topMargin">
-           <number>5</number>
-          </property>
-          <property name="rightMargin">
-           <number>5</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>5</number>
           </property>
           <item>
@@ -343,16 +296,7 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_3" columnstretch="1,1">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>0</number>
               </property>
               <property name="spacing">
@@ -881,6 +825,18 @@
    </property>
    <property name="toolTip">
     <string>Convert current texture for all GPU</string>
+   </property>
+  </action>
+  <action name="actionConvertTagged">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/QtIconsTextureDialog/convertTagged.png</normaloff>:/QtIconsTextureDialog/convertTagged.png</iconset>
+   </property>
+   <property name="text">
+    <string>Convert tagged</string>
+   </property>
+   <property name="toolTip">
+    <string>Convert tagged textures</string>
    </property>
   </action>
  </widget>

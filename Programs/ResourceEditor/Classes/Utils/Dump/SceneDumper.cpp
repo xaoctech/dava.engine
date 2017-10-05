@@ -1,35 +1,37 @@
-#include "Utils/Dump/SceneDumper.h"
-#include "Utils/SceneUtils/SceneUtils.h"
+#include "Classes/Utils/Dump/SceneDumper.h"
+#include "Classes/Utils/SceneUtils/SceneUtils.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/StringConstants.h"
 
-#include "FileSystem/KeyedArchive.h"
-#include "Render/2D/Sprite.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
-#include "Render/TextureDescriptor.h"
-#include "Render/Material/NMaterial.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/MotionComponent.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/SlotComponent.h"
-#include "Scene3D/Systems/SlotSystem.h"
+#include <FileSystem/KeyedArchive.h>
+#include <FileSystem/FileSystem.h>
+#include <Engine/Engine.h>
+#include <Render/2D/Sprite.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
+#include <Render/TextureDescriptor.h>
+#include <Render/Material/NMaterial.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Systems/SlotSystem.h>
 
-#include "Main/QtUtils.h"
-
-#include "StringConstants.h"
-
-DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
+DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, const DAVA::Vector<DAVA::String>& tags)
 {
+    DVASSERT(tags.empty() == false && tags[0].empty() == true); // mean that we have "" in tags for default behavior
+
     DAVA::Set<DAVA::FilePath> dumpedLinks;
-    return DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks);
+    return DumpLinks(scenePath, mode, compressedGPUs, tags, dumpedLinks);
 }
 
-DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, DAVA::Set<DAVA::FilePath>& dumpedLinks)
+DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath, SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs, const DAVA::Vector<DAVA::String>& tags, DAVA::Set<DAVA::FilePath>& dumpedLinks)
 {
     DAVA::Set<DAVA::FilePath> links;
-    SceneDumper dumper(scenePath, mode, compressedGPUs);
+    SceneDumper dumper(scenePath, mode, compressedGPUs, tags);
 
     DAVA::Set<DAVA::FilePath> redumpScenes;
     if (nullptr != dumper.scene)
@@ -41,16 +43,17 @@ DAVA::Set<DAVA::FilePath> SceneDumper::DumpLinks(const DAVA::FilePath& scenePath
 
     for (const DAVA::FilePath& scenePath : redumpScenes)
     {
-        DAVA::Set<DAVA::FilePath> result = SceneDumper::DumpLinks(scenePath, mode, compressedGPUs, dumpedLinks);
+        DAVA::Set<DAVA::FilePath> result = SceneDumper::DumpLinks(scenePath, mode, compressedGPUs, tags, dumpedLinks);
         links.insert(result.begin(), result.end());
     }
 
     return links;
 }
 
-SceneDumper::SceneDumper(const DAVA::FilePath& scenePath, SceneDumper::eMode mode_, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs_)
+SceneDumper::SceneDumper(const DAVA::FilePath& scenePath, SceneDumper::eMode mode_, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs_, const DAVA::Vector<DAVA::String>& tags_)
     : scenePathname(scenePath)
     , compressedGPUs(compressedGPUs_)
+    , tags(tags_)
     , mode(mode_)
 {
     scene = new DAVA::Scene();
@@ -178,59 +181,18 @@ void SceneDumper::DumpRenderObject(DAVA::RenderObject* renderObject, DAVA::Set<D
     }
 
     // create pathnames for textures
-    for (const auto& descriptorPath : descriptorPathnames)
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    for (const FilePath& descriptorPath : descriptorPathnames)
     {
         DVASSERT(descriptorPath.IsEmpty() == false);
-
-        links.insert(descriptorPath);
-
-        std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(descriptorPath));
-        if (descriptor)
+        for (const DAVA::String& tag : tags)
         {
-            if (descriptor->IsCompressedFile())
+            FilePath path = descriptorPath;
+            path.ReplaceBasename(path.GetBasename() + tag);
+
+            if (fs->Exists(path) == true)
             {
-                Vector<FilePath> compressedTexureNames;
-                descriptor->CreateLoadPathnamesForGPU(descriptor->gpu, compressedTexureNames);
-
-                if (compressedTexureNames.empty() == false)
-                {
-                    if (descriptor->IsCubeMap() && (TextureDescriptor::IsCompressedTextureExtension(compressedTexureNames[0].GetExtension()) == false))
-                    {
-                        Vector<FilePath> faceNames;
-                        descriptor->GetFacePathnames(faceNames);
-                        links.insert(faceNames.cbegin(), faceNames.cend());
-                    }
-                    else
-                    {
-                        links.insert(compressedTexureNames.begin(), compressedTexureNames.end());
-                    }
-                }
-            }
-            else
-            {
-                bool isCompressedSource = TextureDescriptor::IsSupportedCompressedFormat(descriptor->dataSettings.sourceFileFormat);
-                if (descriptor->IsCubeMap() && !isCompressedSource)
-                {
-                    Vector<FilePath> faceNames;
-                    descriptor->GetFacePathnames(faceNames);
-
-                    links.insert(faceNames.cbegin(), faceNames.cend());
-                }
-                else
-                {
-                    links.insert(descriptor->GetSourceTexturePathname());
-                }
-
-                for (eGPUFamily gpu : compressedGPUs)
-                {
-                    const TextureDescriptor::Compression& compression = descriptor->compression[gpu];
-                    if (compression.format != FORMAT_INVALID)
-                    {
-                        Vector<FilePath> compressedTexureNames;
-                        descriptor->CreateLoadPathnamesForGPU(static_cast<eGPUFamily>(gpu), compressedTexureNames);
-                        links.insert(compressedTexureNames.begin(), compressedTexureNames.end());
-                    }
-                }
+                DumpTextureDescriptor(path, links);
             }
         }
     }
@@ -251,6 +213,63 @@ void SceneDumper::DumpMaterial(DAVA::NMaterial* material, DAVA::Set<DAVA::FilePa
     for (const DAVA::MaterialTextureInfo* matTex : materialTextures)
     {
         descriptorPathnames.insert(matTex->path);
+    }
+}
+
+void SceneDumper::DumpTextureDescriptor(const DAVA::FilePath& descriptorPathname, DAVA::Set<DAVA::FilePath>& links) const
+{
+    using namespace DAVA;
+
+    links.insert(descriptorPathname);
+
+    std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(descriptorPathname));
+    if (descriptor)
+    {
+        if (descriptor->IsCompressedFile())
+        {
+            Vector<FilePath> compressedTexureNames;
+            descriptor->CreateLoadPathnamesForGPU(descriptor->gpu, compressedTexureNames);
+
+            if (compressedTexureNames.empty() == false)
+            {
+                if (descriptor->IsCubeMap() && (TextureDescriptor::IsCompressedTextureExtension(compressedTexureNames[0].GetExtension()) == false))
+                {
+                    Vector<FilePath> faceNames;
+                    descriptor->GetFacePathnames(faceNames);
+                    links.insert(faceNames.cbegin(), faceNames.cend());
+                }
+                else
+                {
+                    links.insert(compressedTexureNames.begin(), compressedTexureNames.end());
+                }
+            }
+        }
+        else
+        {
+            bool isCompressedSource = TextureDescriptor::IsSupportedCompressedFormat(descriptor->dataSettings.sourceFileFormat);
+            if (descriptor->IsCubeMap() && !isCompressedSource)
+            {
+                Vector<FilePath> faceNames;
+                descriptor->GetFacePathnames(faceNames);
+
+                links.insert(faceNames.cbegin(), faceNames.cend());
+            }
+            else
+            {
+                links.insert(descriptor->GetSourceTexturePathname());
+            }
+
+            for (eGPUFamily gpu : compressedGPUs)
+            {
+                const TextureDescriptor::Compression& compression = descriptor->compression[gpu];
+                if (compression.format != FORMAT_INVALID)
+                {
+                    Vector<FilePath> compressedTexureNames;
+                    descriptor->CreateLoadPathnamesForGPU(static_cast<eGPUFamily>(gpu), compressedTexureNames);
+                    links.insert(compressedTexureNames.begin(), compressedTexureNames.end());
+                }
+            }
+        }
     }
 }
 
@@ -322,13 +341,30 @@ void SceneDumper::ProcessSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::FilePath>&
 
 void SceneDumper::DumpSlot(DAVA::SlotComponent* slot, DAVA::Set<DAVA::FilePath>& links, DAVA::Set<DAVA::FilePath>& redumpScenes) const
 {
-    DAVA::FilePath configPath = slot->GetConfigFilePath();
-    links.insert(configPath.GetAbsolutePathname());
-    DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
-    for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+    using namespace DAVA;
+
+    auto dumpConfig = [&](const FilePath& configPath)
     {
-        links.insert(item.scenePath.GetAbsolutePathname());
-        redumpScenes.insert(item.scenePath.GetAbsolutePathname());
+        links.insert(configPath.GetAbsolutePathname());
+        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
+        for (const SlotSystem::ItemsCache::Item& item : items)
+        {
+            links.insert(item.scenePath.GetAbsolutePathname());
+            redumpScenes.insert(item.scenePath.GetAbsolutePathname());
+        }
+    };
+
+    FilePath configPathOriginal = slot->GetConfigFilePath();
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    for (const DAVA::String& tag : tags)
+    {
+        FilePath path = configPathOriginal;
+        path.ReplaceBasename(path.GetBasename() + tag);
+
+        if (fs->Exists(path) == true)
+        {
+            dumpConfig(path);
+        }
     }
 }
 
