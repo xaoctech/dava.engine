@@ -485,7 +485,7 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
         data->BeginBatch(Format("Move Controls %s", CommandExecutorDetails::FormatNodeNames(nodes).c_str()), static_cast<uint32>(nodesToMove.size()));
         int index = destIndex;
 
-        Vector<String> notMovedNodesNames;
+        Vector<ControlNode*> notMovedNodes;
         for (ControlNode* node : nodesToMove)
         {
             ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
@@ -505,21 +505,18 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
             }
             else
             {
-                notMovedNodesNames.push_back(node->GetName());
+                notMovedNodes.push_back(node);
             }
         }
 
         data->EndBatch();
 
-        if (notMovedNodesNames.empty() == false)
+        if (notMovedNodes.empty() == false)
         {
             NotificationParams notificationParams;
             notificationParams.title = "Can not move controls";
-            String message = "Can not move controls:";
-            for (const String& name : notMovedNodesNames)
-            {
-                message.append("\n\t" + name);
-            }
+            String message = "Can not move controls: " + CommandExecutorDetails::FormatNodeNames(notMovedNodes);
+
             notificationParams.message = Result(Result::RESULT_WARNING, message);
             ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
         }
