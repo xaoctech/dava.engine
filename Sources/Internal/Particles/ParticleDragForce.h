@@ -19,7 +19,7 @@ public:
     {
         BOX,
         SPHERE
-    } shape = eShape::BOX;
+    };
 
     enum class eTimingType
     {
@@ -51,10 +51,8 @@ public:
     Vector3 rotation;
     Vector3 direction{ 0.0f, 0.0f, 1.0f };
 
-    Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
     Vector3 forcePower{ 1.0f, 1.0f, 1.0f };
     RefPtr<PropertyLine<Vector3>> forcePowerLine;
-    float32 radius = 1.0f;
 
     float32 windFrequency = 0.0f;
     float32 windTurbulenceFrequency = 0.0f;
@@ -84,11 +82,76 @@ public:
     float32 endTime = 15.0f;
 
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
+    void SetRadius(float32 radius);
+    void SetBoxSize(const Vector3& boxSize);
+    float32 GetRadius() const;
+    const Vector3& GetBoxSize() const;
+    const Vector3& GetHalfBoxSize() const;
+    float32 GetSquareRadius() const;
+    void SetShape(eShape shape);
+    eShape GetShape() const;
 
 public:
     DAVA_VIRTUAL_REFLECTION(ParticleDragForce, BaseObject);
 
 private:
+    eShape shape = eShape::BOX;
+    float32 radius = 1.0f;
+    Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
     ParticleLayer* parentLayer = nullptr;
+    float32 squareRadius = 0.75f; // For default box with 0.5f edges.
+    Vector3 halfBoxSize{ 0.5f, 0.5f, 0.5f };
 };
+
+inline void ParticleDragForce::SetRadius(float32 radius_)
+{
+    radius = radius_;
+    if (shape == eShape::SPHERE)
+        squareRadius = radius * radius;
+}
+
+inline void ParticleDragForce::SetBoxSize(const Vector3& boxSize_)
+{
+    boxSize = boxSize_;
+    halfBoxSize = boxSize * 0.5f;
+    if (shape == eShape::BOX)
+        squareRadius = halfBoxSize.DotProduct(halfBoxSize);
+}
+
+inline float32 ParticleDragForce::GetRadius() const
+{
+    return radius;
+}
+
+inline const Vector3& ParticleDragForce::GetBoxSize() const
+{
+    return boxSize;
+}
+
+inline const Vector3& ParticleDragForce::GetHalfBoxSize() const
+{
+    return halfBoxSize;
+}
+
+inline float32 ParticleDragForce::GetSquareRadius() const
+{
+    return squareRadius;
+}
+
+inline void ParticleDragForce::SetShape(ParticleDragForce::eShape shape_)
+{
+    shape = shape_;
+    if (shape == eShape::BOX)
+    {
+        halfBoxSize = boxSize * 0.5f;
+        squareRadius = boxSize.DotProduct(halfBoxSize);
+    }
+    else if (shape == eShape::SPHERE)
+        squareRadius = radius * radius;
+}
+
+inline ParticleDragForce::eShape ParticleDragForce::GetShape() const
+{
+    return shape;
+}
 }

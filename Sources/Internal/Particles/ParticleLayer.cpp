@@ -1234,13 +1234,13 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->forcePower);
 
         forceDataName = Format("dragForceBoxSize%d", i);
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->boxSize);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector3>(layerNode, forceDataName, currentForce->GetBoxSize());
 
         forceDataName = Format("dragForceRadius%d", i);
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->radius);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, forceDataName, currentForce->GetRadius());
 
         forceDataName = Format("dragForceShape%d", i);
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, TypeToString(currentForce->shape, "box", shapeMap));
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, TypeToString(currentForce->GetShape(), "box", shapeMap));
 
         forceDataName = Format("dragForceTimingType%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, TypeToString(currentForce->timingType, "const", timingTypesMap));
@@ -1568,19 +1568,19 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         forceDataName = Format("dragForceBoxSize%d", i);
         const YamlNode* sizeNode = node->Get(forceDataName);
         if (sizeNode)
-            dragForce->boxSize = sizeNode->AsVector3();
+            dragForce->SetBoxSize(sizeNode->AsVector3());
 
         forceDataName = Format("dragForceRadius%d", i);
         const YamlNode* radiusNode = node->Get(forceDataName);
         if (radiusNode)
-            dragForce->radius = radiusNode->AsFloat();
+            dragForce->SetRadius(radiusNode->AsFloat());
 
         forceDataName = Format("dragForceShape%d", i);
         const YamlNode* shapeNode = node->Get(forceDataName);
         if (shapeNode)
         {
             String shapeName = shapeNode->AsString();
-            dragForce->shape = StringToType(shapeName, ForceShape::BOX, shapeMap);
+            dragForce->SetShape(StringToType(shapeName, ForceShape::BOX, shapeMap));
         }
 
         forceDataName = Format("dragForceTimingType%d", i);

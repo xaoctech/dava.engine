@@ -922,7 +922,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
         effectSpacePosition = particle->position * invWorld;
         prevEffectSpacePosition = particle->prevPosition * invWorld;
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
-        effectSpaceDown = Vector3(0.0f, 0.0f, -1.0f) * Matrix3(invWorld); // TODO: take from matrix.
+        effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
     }
 
     for (uint32 i = 0; i < dForcesCount; ++i)
@@ -944,12 +944,31 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
             ParticleEffectComponent* effect = forcePair.first;
             TransformComponent* tr = GetTransformComponent(effect->GetEntity());
             Matrix4* worldTransformPtr = tr->GetWorldTransformPtr();
+            bool inForceBoundingSphere = false;
+            for (auto& force : forcePair.second)
+            {
+                if (force->isInfinityRange)
+                {
+                    inForceBoundingSphere = true;
+                    break;
+                }
+                Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position;
+                float32 sqrDist = (forceWorldPosition - particle->position).SquareLength();
+                if (sqrDist < force->GetSquareRadius())
+                {
+                    inForceBoundingSphere = true;
+                    break;
+                }
+            }
+            if (!inForceBoundingSphere)
+                continue;
+
             Matrix4 invWorld;
             worldTransformPtr->GetInverse(invWorld);
             effectSpacePosition = particle->position * invWorld;
             prevEffectSpacePosition = particle->prevPosition * invWorld;
             effectSpaceSpeed = particle->speed * Matrix3(invWorld);
-            effectSpaceDown = Vector3(0.0f, 0.0f, -1.0f) * Matrix3(invWorld);
+            effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
             for (auto& force : forcePair.second)
                 ParticleForces::ApplyForce(effect->GetEntity(), force, effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle, prevEffectSpacePosition);
             particle->speed = effectSpaceSpeed * Matrix3(*worldTransformPtr);

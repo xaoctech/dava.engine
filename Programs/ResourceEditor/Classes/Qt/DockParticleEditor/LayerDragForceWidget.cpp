@@ -447,9 +447,9 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     selectedForce = layer->GetDragForces()[forceIndex];
     infinityRange->setChecked(selectedForce->isInfinityRange);
     isActive->setChecked(selectedForce->isActive);
-    boxSize->SetValue(selectedForce->boxSize);
+    boxSize->SetValue(selectedForce->GetBoxSize());
     forcePower->SetValue(selectedForce->forcePower);
-    radiusSpin->setValue(selectedForce->radius);
+    radiusSpin->setValue(selectedForce->GetRadius());
     forceNameEdit->setText(QString::fromStdString(selectedForce->forceName));
     forceTypeLabel->setText(forceTypes[selectedForce->type]);
     direction->SetValue(selectedForce->direction);
@@ -475,7 +475,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     startTimeSpin->setValue(selectedForce->startTime);
     endTimeSpin->setValue(selectedForce->endTime);
 
-    UpdateVisibility(selectedForce->shape, selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
+    UpdateVisibility(selectedForce->GetShape(), selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
 
     static const Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
     static const Vector<QString> legends{ "Force x", "Force y", "Force z" };
@@ -503,7 +503,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     turbulenceTimeLine->Init(start, end, updateMinimized, true, false);
     turbulenceTimeLine->AddLine(0, PropLineWrapper<float32>(LineHelper::GetValueLine(selectedForce->turbulenceLine)).GetProps(), Qt::red, "Turbulence");
 
-    shapeComboBox->setCurrentIndex(ElementToIndex(selectedForce->shape, shapeMap));
+    shapeComboBox->setCurrentIndex(ElementToIndex(selectedForce->GetShape(), shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(selectedForce->timingType, timingMap));
 
     blockSignals = false;

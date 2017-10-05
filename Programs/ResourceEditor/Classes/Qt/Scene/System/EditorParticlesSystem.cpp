@@ -279,7 +279,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
 
     if (force->isInfinityRange)
         return;
-    if (force->shape == ParticleDragForce::eShape::BOX)
+    if (force->GetShape() == ParticleDragForce::eShape::BOX)
     {
         auto layer = GetDragForceOwner(force);
         auto ent = GetLayerOwner(layer);
@@ -287,16 +287,16 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
         wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
 
-        drawer->DrawAABoxTransformed(AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
+        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
                                      Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
 
-        drawer->DrawAABoxTransformed(AABBox3(-0.5f * force->boxSize, 0.5f * force->boxSize), wMat,
+        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
                                      Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
-    else if (force->shape == ParticleDragForce::eShape::SPHERE)
+    else if (force->GetShape() == ParticleDragForce::eShape::SPHERE)
     {
         Matrix4 wMat = Selectable(force).GetWorldTransform();
-        float32 radius = force->radius;
+        float32 radius = force->GetRadius();
         drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
         drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }

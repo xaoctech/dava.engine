@@ -115,20 +115,19 @@ void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectS
 bool IsPositionInForceShape(const Entity* parent, const ParticleDragForce* force, const Vector3& effectSpacePosition)
 {
     Vector3 center = force->position;
-    if (force->shape == ParticleDragForce::eShape::BOX)
+    if (force->GetShape() == ParticleDragForce::eShape::BOX)
     {
-        Vector3 size = force->boxSize * 0.5f;
-        Vector3 p1 = center - size;
-        Vector3 p2 = center + size;
+        Vector3 p1 = center - force->GetHalfBoxSize();
+        Vector3 p2 = center + force->GetHalfBoxSize();
         AABBox3 box(p1, p2);
 
         if (box.IsInside(effectSpacePosition))
             return true;
     }
-    else if (force->shape == ParticleDragForce::eShape::SPHERE)
+    else if (force->GetShape() == ParticleDragForce::eShape::SPHERE)
     {
         float32 distSqr = (center - effectSpacePosition).SquareLength();
-        if (distSqr <= force->radius * force->radius)
+        if (distSqr <= force->GetSquareRadius())
             return true;
     }
     return false;

@@ -356,10 +356,10 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
         oldParams.randomizeReflectionForce = force->randomizeReflectionForce;
         oldParams.pointGravityUseRandomPointsOnSphere = force->pointGravityUseRandomPointsOnSphere;
         oldParams.isGlobal = force->isGlobal;
-        oldParams.boxSize = force->boxSize;
-        oldParams.radius = force->radius;
+        oldParams.boxSize = force->GetBoxSize();
+        oldParams.radius = force->GetRadius();
         oldParams.forcePower = force->forcePower;
-        oldParams.shape = force->shape;
+        oldParams.shape = force->GetShape();
         oldParams.forceName = force->forceName;
         oldParams.timingType = force->timingType;
         oldParams.forcePowerLine = force->forcePowerLine;
@@ -398,10 +398,10 @@ void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
     {
         DAVA::ParticleDragForce* force = layer->GetDragForces()[forceId];
         force->isActive = params.isActive;
-        force->boxSize = params.boxSize;
-        force->radius = params.radius;
+        force->SetBoxSize(params.boxSize);
+        force->SetRadius(params.radius);
         force->forcePower = params.forcePower;
-        force->shape = params.shape;
+        force->SetShape(params.shape);
         force->isInfinityRange = params.useInfinityRange;
         force->killParticles = params.killParticles;
         force->pointGravityUseRandomPointsOnSphere = params.pointGravityUseRandomPointsOnSphere;
