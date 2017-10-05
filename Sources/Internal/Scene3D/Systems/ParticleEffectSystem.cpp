@@ -525,9 +525,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             {
                 if (!isInverseCalculated)
                 {
-                    bool sucess = worldTransformPtr->GetInverse(invWorld);
-                    if (!sucess)
-                        invWorld = Matrix4::IDENTITY;
+                    invWorld = GetInverseWithRemovedScale(*worldTransformPtr);
                     isInverseCalculated = true;
                 }
 
@@ -963,8 +961,8 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
             if (!inForceBoundingSphere)
                 continue;
 
-            Matrix4 invWorld;
-            worldTransformPtr->GetInverse(invWorld);
+            Matrix4 invWorld = GetInverseWithRemovedScale(*worldTransformPtr);
+
             effectSpacePosition = particle->position * invWorld;
             prevEffectSpacePosition = particle->prevPosition * invWorld;
             effectSpaceSpeed = particle->speed * Matrix3(invWorld);
