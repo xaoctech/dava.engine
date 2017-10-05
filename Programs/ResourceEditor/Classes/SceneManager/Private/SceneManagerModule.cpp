@@ -15,6 +15,7 @@
 #include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
+#include "Classes/Deprecated/EditorConfig.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -27,6 +28,8 @@
 
 #include <Engine/EngineContext.h>
 #include <Reflection/ReflectedType.h>
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/Reflection.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <FileSystem/FileSystem.h>
@@ -419,10 +422,9 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
-        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        action->SetStateUpdationFunction(QtAction::Enabled, model, DAVA::FastName("saveToFolderAvailable"), [](const DAVA::Any& fieldValue) -> DAVA::Any {
+            return fieldValue.Get<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -436,11 +438,9 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Save To Folder
     {
         QtAction* action = new QtAction(accessor, QStringLiteral("Save To Folder With Children"));
-        FieldDescriptor fieldDescr;
-        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        action->SetStateUpdationFunction(QtAction::Enabled, model, DAVA::FastName("saveToFolderAvailable"), [](const DAVA::Any& fieldValue) -> DAVA::Any {
+            return fieldValue.Get<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -942,6 +942,20 @@ void SceneManagerModule::SaveSceneToFolder(bool compressedTextures)
     sceneSaver.SetOutFolder(folder);
     sceneSaver.EnableCopyConverted(compressedTextures);
 
+    { //tags
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
+        if (data->GetEditorConfig()->HasProperty("Tags"))
+        {
+            DAVA::Vector<DAVA::String> projectTags = data->GetEditorConfig()->GetComboPropertyValues("Tags");
+            projectTags.insert(projectTags.begin(), "");
+            sceneSaver.SetTags(projectTags);
+        }
+        else
+        {
+            sceneSaver.SetTags({ "" });
+        }
+    }
+
     SceneEditor2* sceneForSaving = scene->CreateCopyForExport();
     sceneSaver.SaveScene(sceneForSaving, scene->GetScenePath());
     sceneForSaving->Release();
@@ -977,7 +991,7 @@ void SceneManagerModule::ExportScene()
             exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
             exportingParams.dataSourceFolder = dataSourceFolder;
             exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
-
+            exportingParams.filenamesTag = dlg.GetFilenamesTag();
             scene->Export(exportingParams);
         }
 
@@ -1636,4 +1650,15 @@ void SceneManagerModule::MoveToSelection()
 
     DAVA::RefPtr<SceneEditor2> scene = ctx->GetData<SceneData>()->scene;
     scene->cameraSystem->MoveToSelection();
+}
+
+bool SceneManagerModule::SaveToFolderAvailable() const
+{
+    if (GetAccessor()->GetActiveContext() != nullptr)
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        return fs->GetFilenamesTag().empty() == true;
+    }
+
+    return false;
 }

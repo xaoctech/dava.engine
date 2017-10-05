@@ -1,10 +1,10 @@
 #pragma once
 
-#include "FileSystem/FilePath.h"
-#include "Render/Texture.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Classes/Utils/SceneUtils/SceneUtils.h"
 
-#include "Utils/SceneUtils/SceneUtils.h"
+#include <FileSystem/FilePath.h>
+#include <Render/Texture.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
 
 namespace DAVA
 {
@@ -13,11 +13,11 @@ class Scene;
 class ParticleEmitter;
 }
 
-class SceneSaver
+class SceneSaver final
 {
 public:
     SceneSaver();
-    virtual ~SceneSaver();
+    ~SceneSaver();
 
     void SetInFolder(const DAVA::FilePath& folderPathname);
     void SetOutFolder(const DAVA::FilePath& folderPathname);
@@ -27,6 +27,7 @@ public:
     void SaveScene(DAVA::Scene* scene, const DAVA::FilePath& fileName);
 
     void EnableCopyConverted(bool enabled);
+    void SetTags(const DAVA::Vector<DAVA::String>& tags);
 
     void ResaveYamlFilesRecursive(const DAVA::FilePath& folder) const;
 
@@ -53,5 +54,7 @@ private:
     DAVA::TexturesMap texturesForSave;
     DAVA::Set<DAVA::FilePath> effectFolders;
     DAVA::Set<DAVA::FilePath> savedExternalScenes;
+
+    DAVA::Vector<DAVA::String> tags;
     bool copyConverted = false;
 };
