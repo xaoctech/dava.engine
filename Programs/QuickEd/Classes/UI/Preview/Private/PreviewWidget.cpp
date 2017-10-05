@@ -415,7 +415,7 @@ void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
     if (mimeData->hasFormat("text/uri-list"))
     {
         bool canDropAnyFile = false;
-        QStringList strList = mimeData->text().split("\n");
+        QStringList strList = mimeData->text().split("\n", QString::SkipEmptyParts);
         for (const QString& str : strList)
         {
             canDropAnyFile |= IsFileValid(str);
@@ -528,19 +528,20 @@ void PreviewWidget::OnDrop(QDropEvent* event)
     }
     else if (mimeData->hasFormat("text/uri-list"))
     {
-        QStringList list = mimeData->text().split("\n");
+        QStringList list = mimeData->text().split("\n", QString::SkipEmptyParts);
         for (const QString& str : list)
         {
+            QUrl url(str);
+            QString path = url.toLocalFile();
             if (IsFileValid(str))
             {
-                QUrl url(str);
-                emit OpenPackageFile(url.toLocalFile());
+                emit OpenPackageFile(path);
             }
             else
             {
                 NotificationParams notificationParams;
                 notificationParams.title = "can not drop";
-                notificationParams.message = Result(Result::RESULT_WARNING, Format("will not process file %s", str.toStdString().c_str()));
+                notificationParams.message = Result(Result::RESULT_WARNING, Format("will not process file %s", path.toStdString().c_str()));
                 ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
             }
         }
