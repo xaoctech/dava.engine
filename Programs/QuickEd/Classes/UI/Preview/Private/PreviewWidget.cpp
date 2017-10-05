@@ -3,9 +3,16 @@
 #include "EditorSystems/EditorSystemsManager.h"
 
 #include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/CanvasModule/CanvasData.h"
+#include "Modules/HUDModule/HUDModuleData.h"
+#include "Modules/ProjectModule/ProjectData.h"
+
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
@@ -14,13 +21,6 @@
 #include "Model/PackageHierarchy/PackageBaseNode.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
-
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/CanvasModule/CanvasData.h"
-#include "Modules/HUDModule/HUDModuleData.h"
-
-#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -414,9 +414,27 @@ void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/uri-list"))
     {
-        droppingFile.Emit(true);
+        bool canDropAnyFile = false;
+        QStringList strList = mimeData->text().split("\n");
+        for (const QString& str : strList)
+        {
+            canDropAnyFile |= IsFileValid(str);
+        }
+
+        if (canDropAnyFile)
+        {
+            droppingFile.Emit(true);
+            event->accept();
+        }
+        else
+        {
+            event->ignore();
+        }
     }
-    event->accept();
+    else
+    {
+        event->accept();
+    }
 }
 
 void PreviewWidget::OnDragMoved(QDragMoveEvent* event)
@@ -431,17 +449,8 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/uri-list"))
     {
-        QStringList strList = mimeData->text().split("\n");
-        for (const auto& str : strList)
-        {
-            QUrl url(str);
-            if (url.isLocalFile())
-            {
-                QString path = url.toLocalFile();
-                QFileInfo fileInfo(path);
-                return fileInfo.isFile() && fileInfo.suffix() == "yaml";
-            }
-        }
+        //filter this format on drag entered
+        return true;
     }
     else if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))
     {
@@ -488,6 +497,9 @@ void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
     droppingFile.Emit(false);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
@@ -500,7 +512,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
         uint32 index = 0;
         if (node == nullptr)
         {
-            DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+            DataContext* active = accessor->GetActiveContext();
             DVASSERT(active != nullptr);
             const DocumentData* data = active->GetData<DocumentData>();
             DVASSERT(data != nullptr);
@@ -517,13 +529,19 @@ void PreviewWidget::OnDrop(QDropEvent* event)
     else if (mimeData->hasFormat("text/uri-list"))
     {
         QStringList list = mimeData->text().split("\n");
-        Vector<FilePath> packages;
         for (const QString& str : list)
         {
-            QUrl url(str);
-            if (url.isLocalFile())
+            if (IsFileValid(str))
             {
+                QUrl url(str);
                 emit OpenPackageFile(url.toLocalFile());
+            }
+            else
+            {
+                NotificationParams notificationParams;
+                notificationParams.title = "can not drop";
+                notificationParams.message = Result(Result::RESULT_WARNING, Format("will not process file %s", str.toStdString().c_str()));
+                ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
             }
         }
     }
@@ -557,6 +575,41 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
             }
         }
     }
+}
+
+bool PreviewWidget::IsFileValid(const QString& str) const
+{
+    using namespace DAVA;
+
+    QUrl url(str);
+    if (url.isLocalFile())
+    {
+        QString path = url.toLocalFile();
+        QFileInfo fileInfo(path);
+        if (fileInfo.isFile() && fileInfo.suffix() == "yaml")
+        {
+            ProjectData* projectData = accessor->GetGlobalContext()->GetData<ProjectData>();
+            if (projectData == nullptr)
+            {
+                return false;
+            }
+
+            Vector<FilePath> allowedPathes = {
+                projectData->GetResourceDirectory().absolute,
+                projectData->GetAdditionalResourceDirectory().absolute,
+                projectData->GetConvertedResourceDirectory().absolute
+            };
+
+            for (const FilePath& allowedPath : allowedPathes)
+            {
+                if (allowedPath.IsEmpty() == false && path.startsWith(QString::fromStdString(allowedPath.GetAbsolutePathname())))
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
