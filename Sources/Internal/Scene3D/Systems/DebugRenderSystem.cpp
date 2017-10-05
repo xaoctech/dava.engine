@@ -205,6 +205,11 @@ void DebugRenderSystem::RemoveEntity(Entity* entity)
     DVASSERT(0);
 }
 
+void DebugRenderSystem::PrepareForRemove()
+{
+    entities.clear();
+}
+
 void DebugRenderSystem::SetCamera(Camera* _camera)
 {
     camera = _camera;

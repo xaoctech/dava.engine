@@ -534,6 +534,13 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void SceneCollisionSystem::PrepareForRemove()
+{
+    objectsToAdd.clear();
+    objectsToRemove.clear();
+    objectToCollision.clear();
+}
+
 void SceneCollisionSystem::DestroyFromObject(const DAVA::Any& entity)
 {
     CollisionBaseObject* cObj = objectToCollision[entity];

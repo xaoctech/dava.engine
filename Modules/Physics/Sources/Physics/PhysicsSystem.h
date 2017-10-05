@@ -38,6 +38,8 @@ public:
     void RegisterComponent(Entity* entity, Component* component) override;
     void UnregisterComponent(Entity* entity, Component* component) override;
 
+    void PrepareForRemove() override;
+
     void Process(float32 timeElapsed) override;
 
     void SetSimulationEnabled(bool isEnabled);

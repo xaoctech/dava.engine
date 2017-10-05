@@ -317,6 +317,22 @@ void ParticleEffectSystem::RemoveComponent(Entity* entity, Component* component)
         RemoveFromActive(effect);
 }
 
+void ParticleEffectSystem::PrepareForRemove()
+{
+    if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_DISABLE_EFFECTS) == false)
+    {
+        for (ParticleEffectComponent* component : activeComponents)
+        {
+            component->state = ParticleEffectComponent::STATE_STOPPED;
+            Scene* scene = GetScene();
+            if (scene)
+                scene->GetRenderSystem()->RemoveFromRender(component->effectRenderObject);
+        }
+    }
+    activeComponents.clear();
+    globalExternalValues.clear();
+}
+
 void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
 {
     DVASSERT(component->GetType() == Component::PARTICLE_EFFECT_COMPONENT);

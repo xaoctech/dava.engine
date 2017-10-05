@@ -434,6 +434,11 @@ void StructureSystem::RemoveEntity(DAVA::Entity* entity)
     EmitChanged();
 }
 
+void StructureSystem::PrepareForRemove()
+{
+    EmitChanged();
+}
+
 void StructureSystem::CheckAndMarkSolid(DAVA::Entity* entity)
 {
     if (nullptr != entity)

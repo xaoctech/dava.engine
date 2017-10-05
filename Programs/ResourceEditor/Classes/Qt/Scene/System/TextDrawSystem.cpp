@@ -40,6 +40,10 @@ TextDrawSystem::~TextDrawSystem()
     SafeRelease(font);
 }
 
+void TextDrawSystem::PrepareForRemove()
+{
+}
+
 Vector2 TextDrawSystem::ToPos2d(const Vector3& pos3d) const
 {
     Vector3 pos2ddepth = cameraSystem->GetScreenPosAndDepth(pos3d);

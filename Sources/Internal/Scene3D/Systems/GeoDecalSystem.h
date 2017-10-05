@@ -19,6 +19,7 @@ public:
     void RemoveEntity(Entity* entity) override;
     void AddComponent(Entity* entity, Component* component) override;
     void RemoveComponent(Entity* entity, Component* component) override;
+    void PrepareForRemove() override;
 
 private:
     struct DecalBuildInfo

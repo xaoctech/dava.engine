@@ -4,11 +4,11 @@
 
 class EditorSystemsManager;
 
-class EditorData : public DAVA::TArc::DataNode
+class EditorSystemsData : public DAVA::TArc::DataNode
 {
 public:
-    EditorData();
-    ~EditorData() override;
+    EditorSystemsData();
+    ~EditorSystemsData() override;
     static DAVA::FastName emulationModePropertyName;
 
 private:

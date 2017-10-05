@@ -119,6 +119,16 @@ void OverdrawTesterSystem::RemoveEntity(Entity* entity)
     }
 }
 
+void OverdrawTesterSystem::PrepareForRemove()
+{
+    DAVA::RenderSystem* renderSystem = GetScene()->GetRenderSystem();
+    for (OverdrawTesterRenderObject* ro : activeRenderObjects)
+    {
+        renderSystem->RemoveFromRender(ro);
+    }
+    activeRenderObjects.clear();
+}
+
 void OverdrawTesterSystem::Process(DAVA::float32 timeElapsed)
 {
     if (isFinished)
