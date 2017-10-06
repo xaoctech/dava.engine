@@ -285,7 +285,7 @@ void DistanceSystem::DrawSolidLine(DAVA::Vector2 startPos, DAVA::Vector2 endPos,
     Painting::DrawTextParams textParams;
     textParams.color = preferences->textColor;
 
-    textParams.text = Format("%.0f", length);
+    textParams.text = Format("%.1f", length);
     textParams.margin = Vector2(5.0f, 5.0f);
 
     eAlign direction = DistanceSystemDetails::GetDirection(axis, startPos, endPos);
