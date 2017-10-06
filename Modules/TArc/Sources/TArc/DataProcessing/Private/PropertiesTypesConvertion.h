@@ -229,6 +229,19 @@ RefPtr<KeyedArchive> PropertiesItem::Impl::FromValue(const QJsonValue& value, co
 }
 
 template <>
+FastName PropertiesItem::Impl::FromValue(const QJsonValue& value, const FastName& defaultValue)
+{
+    if (value.isString())
+    {
+        return FastName(value.toString().toStdString());
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
+
+template <>
 QJsonValue PropertiesItem::Impl::ToValue(const bool& value)
 {
     return QJsonValue(value);
@@ -378,6 +391,16 @@ QJsonValue PropertiesItem::Impl::ToValue(const RefPtr<KeyedArchive>& value)
 
     QByteArray ba(reinterpret_cast<char*>(data.data()), static_cast<int>(requiredSize));
     return QString(ba.toBase64());
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const FastName& value)
+{
+#ifdef __DAVAENGINE_DEBUG__
+    String errorMessage = Format("string to save %s contains special character used to save: %s", value.c_str(), PropertiesHolderDetails::stringListDelimiter);
+    DVASSERT(value.find(PropertiesHolderDetails::stringListDelimiter) == String::npos, errorMessage.c_str());
+#endif //__DAVAENGINE_DEBUG__
+    return QString(value.c_str());
 }
 
 } // namespace TArc
