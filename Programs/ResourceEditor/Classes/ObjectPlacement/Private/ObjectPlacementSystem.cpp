@@ -82,7 +82,8 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         bool hitObject = false;
         bool hitLandscape = false;
 
-        Vector3 originalPos = etm.originalTransform.GetTranslationVector();
+        Vector3 originalPos = etm.originalTransform.GetTranslationVector()
+            * etm.originalParentWorldTransform;
         Ray3 ray(originalPos, Vector3(0.0f, 0.0f, -1.0f));
         RayTraceCollision collision;
 
