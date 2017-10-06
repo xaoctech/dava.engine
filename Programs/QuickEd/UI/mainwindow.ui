@@ -70,7 +70,7 @@
     </property>
     <widget class="QMenu" name="menuGridColor">
      <property name="title">
-      <string>Grid Color</string>
+      <string>Background Color</string>
      </property>
     </widget>
     <widget class="QMenu" name="Dock">

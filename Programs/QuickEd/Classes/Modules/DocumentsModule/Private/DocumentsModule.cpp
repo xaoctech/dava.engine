@@ -33,14 +33,18 @@
 #include "Model/QuickEdPackageBuilder.h"
 #include "Model/YamlPackageSerializer.h"
 
-#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
-#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <QtTools/InputDialogs/MultilineTextInputDialog.h>
 
 #include <Base/Any.h>
+#include <Command/Command.h>
 #include <Command/CommandStack.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/Text/UITextComponent.h>
@@ -56,6 +60,62 @@
 #include <QApplication>
 #include <QFileSystemWatcher>
 #include <QMouseEvent>
+
+namespace DocumentsModuleDetails
+{
+class AddBgrColorCommand : public DAVA::Command
+{
+public:
+    AddBgrColorCommand(DAVA::TArc::ContextAccessor* accessor)
+        : accessor(accessor)
+    {
+    }
+
+private:
+    void Undo()
+    {
+    }
+    void Redo()
+    {
+        PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+        settings->backgroundColors.emplace_back(DAVA::Color::White);
+    }
+
+private:
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+};
+
+class AddBgrColorProducer : public DAVA::M::CommandProducer
+{
+public:
+    AddBgrColorProducer(DAVA::TArc::ContextAccessor* accessor)
+        : accessor(accessor)
+    {
+    }
+
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.icon = DAVA::TArc::SharedIcon(":/Icons/add.png");
+        info.tooltip = "add background color";
+        info.description = "add background color";
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        return std::make_unique<AddBgrColorCommand>(accessor);
+    }
+
+private:
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
+};
+}
 
 DAVA_VIRTUAL_REFLECTION_IMPL(DocumentsModule)
 {
@@ -550,6 +610,52 @@ void DocumentsModule::CreateViewActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomOutActionName }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+
+    // Background colors
+    {
+        using namespace DocumentsModuleDetails;
+
+        M::CommandProducerHolder holder;
+        holder.AddCommandProducer(std::make_shared<AddBgrColorProducer>(accessor));
+        EmplaceFieldMeta<PreviewWidgetSettings>(FastName("backgroundColors"), std::move(holder));
+
+        FieldDescriptor indexFieldDescr;
+        indexFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
+        indexFieldDescr.fieldName = FastName("backgroundColorIndex");
+
+        FieldDescriptor colorsFieldDescr;
+        colorsFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
+        colorsFieldDescr.fieldName = DAVA::FastName("backgroundColors");
+
+        ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
+                                                                  << "menuGridColor"));
+
+        PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+        const Vector<Color>& colors = settings->backgroundColors;
+
+        for (DAVA::uint32 currentIndex = 0; currentIndex < colors.size(); ++currentIndex)
+        {
+            QtAction* action = new QtAction(accessor, QString("Background color %1").arg(currentIndex));
+            action->SetStateUpdationFunction(QtAction::Icon, colorsFieldDescr, [currentIndex](const Any& v)
+                                             {
+                                                 const Vector<Color>& colors = v.Cast<Vector<Color>>();
+                                                 Any color = colors[currentIndex];
+                                                 return color.Cast<QIcon>(QIcon());
+                                             });
+
+            action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
+                                             {
+                                                 return v.Cast<DAVA::uint32>(-1) == currentIndex;
+                                             });
+            connections.AddConnection(action, &QAction::triggered, [this, currentIndex]()
+                                      {
+                                          PreviewWidgetSettings* settings = GetAccessor()->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+                                          settings->backgroundColorIndex = currentIndex;
+                                      });
+
+            ui->AddAction(DAVA::TArc::mainWindowKey, info, action);
+        }
     }
 }
 
