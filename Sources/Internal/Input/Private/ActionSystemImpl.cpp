@@ -37,15 +37,11 @@ bool AnalogBindingCompare::operator()(const AnalogBinding& first, const AnalogBi
 ActionSystemImpl::ActionSystemImpl(ActionSystem* actionSystem)
     : actionSystem(actionSystem)
 {
-    inputHandlerToken = GetEngineContext()->inputSystem->AddHandler(eInputDeviceTypes::CLASS_ALL, MakeFunction(this, &ActionSystemImpl::OnInputEvent));
-
     Engine::Instance()->update.Connect(this, &ActionSystemImpl::OnUpdate);
 }
 
 ActionSystemImpl::~ActionSystemImpl()
 {
-    GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
-
     Engine::Instance()->update.Disconnect(this);
 }
 
@@ -129,8 +125,16 @@ void ActionSystemImpl::BindSet(const ActionSet& set, Vector<uint32> devices)
 
         InternalAnalogActionState internalAnalogActionState;
 
-        internalAnalogActionState.action.actionId = analogBinding.actionId;
-        internalAnalogActionState.action.analogState = GetAnalogElementStateFromSupportedDevice(analogBinding.analogElementId, devices);
+        internalAnalogActionState.actionId = analogBinding.actionId;
+        internalAnalogActionState.stateType = analogBinding.analogStateType;
+
+        InputDevice* device = GetDeviceForAnalogElement(analogBinding.analogElementId, devices);
+
+        DVASSERT(device != nullptr);
+
+        AnalogElementState initialState = device->GetAnalogElementState(analogBinding.analogElementId);
+        internalAnalogActionState.previousElementState = initialState;
+        internalAnalogActionState.currentElementState = initialState;
 
         analogActionsStates[analogBinding.actionId] = internalAnalogActionState;
     }
@@ -174,11 +178,21 @@ AnalogActionState ActionSystemImpl::GetAnalogActionState(FastName actionId) cons
     DVASSERT(analogActionStateIter != analogActionsStates.end());
 
     const InternalAnalogActionState& analogActionState = analogActionStateIter->second;
-    return AnalogActionState(analogActionState.active, analogActionState.action.analogState);
+
+    AnalogElementState analogElementState = analogActionState.currentElementState;
+
+    if (analogActionState.stateType == AnalogBinding::eAnalogStateType::RELATIVE_STATE)
+    {
+        analogElementState.x -= analogActionState.previousElementState.x;
+        analogElementState.y -= analogActionState.previousElementState.y;
+        analogElementState.z -= analogActionState.previousElementState.z;
+    }
+
+    return AnalogActionState(analogActionState.active, analogElementState);
 }
 
 // Helper function to check if specified states are active
-bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices, InputDevice** deviceOut)
+bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSystem::MAX_DIGITAL_STATES_COUNT>& elements, const Array<DigitalElementState, ActionSystem::MAX_DIGITAL_STATES_COUNT>& states, const Vector<uint32>& devices)
 {
     DeviceManager* deviceManager = GetEngineContext()->deviceManager;
 
@@ -205,10 +219,6 @@ bool ActionSystemImpl::CheckDigitalStates(const Array<eInputElements, ActionSyst
                     const DigitalElementState state = device->GetDigitalElementState(elementId);
                     if (CompareDigitalStates(requiredState, state))
                     {
-                        if (deviceOut)
-                        {
-                            *deviceOut = device;
-                        }
                         requiredStateMatches = true;
                         break;
                     }
@@ -245,65 +255,31 @@ bool ActionSystemImpl::CompareDigitalStates(const DigitalElementState& requiredS
     }
 }
 
-AnalogElementState ActionSystemImpl::GetAnalogElementStateFromSupportedDevice(eInputElements analogElementId, const Vector<uint32>& devices)
+InputDevice* ActionSystemImpl::GetDeviceForAnalogElement(eInputElements analogElementId, const Vector<uint32>& devices)
 {
     DeviceManager* deviceManager = GetEngineContext()->deviceManager;
 
     for (const uint32 deviceId : devices)
     {
-        const InputDevice* device = deviceManager->GetInputDevice(deviceId);
+        InputDevice* device = deviceManager->GetInputDevice(deviceId);
         if (device != nullptr)
         {
             if (device->IsElementSupported(analogElementId))
             {
-                return device->GetAnalogElementState(analogElementId);
+                return device;
             }
         }
     }
 
-    DVASSERT(false);
-
-    return AnalogElementState();
-}
-
-bool ActionSystemImpl::OnInputEvent(const InputEvent& event)
-{
-    if (event.deviceType == eInputDeviceTypes::KEYBOARD && event.keyboardEvent.charCode > 0)
-    {
-        return false;
-    }
-
-    InputElementInfo eventElementInfo = GetInputElementInfo(event.elementId);
-
-    // Check if any analog action is changed
-    if (eventElementInfo.type == eInputElementTypes::ANALOG)
-    {
-        for (const BoundActionSet& setBinding : boundSets)
-        {
-            for (const AnalogBinding& analogbinding : setBinding.analogBindings)
-            {
-                if (event.elementId != analogbinding.analogElementId)
-                {
-                    continue;
-                }
-
-                auto analogActionStateIter = analogActionsStates.find(analogbinding.actionId);
-
-                DVASSERT(analogActionStateIter != analogActionsStates.end());
-
-                InternalAnalogActionState& analogActionState = analogActionStateIter->second;
-                analogActionState.action.analogState = event.analogState;
-                analogActionState.action.triggeredDevice = event.device;
-                analogActionState.changedInCurrentFrame = true;
-            }
-        }
-    }
-
-    return false;
+    return nullptr;
 }
 
 void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 {
+    // TODO: handle multi window case (check pinning on focused window)
+    Window* primaryWindow = Engine::Instance()->PrimaryWindow();
+    bool isPinningEnabled = primaryWindow->GetCursorCapture() == eCursorCapture::PINNING;
+
     for (const BoundActionSet& setBinding : boundSets)
     {
         for (const DigitalBinding& digitalBinding : setBinding.digitalBindings)
@@ -331,13 +307,11 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
                 continue;
             }
 
-            InputDevice* device;
-            bool active = CheckDigitalStates(digitalBinding.digitalElements, digitalBinding.digitalStates, setBinding.devices, &device);
+            bool active = CheckDigitalStates(digitalBinding.digitalElements, digitalBinding.digitalStates, setBinding.devices);
 
             if (active)
             {
                 digitalActionState.active = true;
-                digitalActionState.action.triggeredDevice = device;
 
                 for (const eInputElements element : digitalBinding.digitalElements)
                 {
@@ -358,6 +332,27 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
 
             InternalAnalogActionState& analogActionState = analogActionStateIter->second;
             analogActionState.active = false;
+
+            InputDevice* device = GetDeviceForAnalogElement(analogBinding.analogElementId, setBinding.devices);
+
+            DVASSERT(device != nullptr);
+
+            analogActionState.previousElementState = analogActionState.currentElementState;
+            analogActionState.currentElementState = device->GetAnalogElementState(analogBinding.analogElementId);
+
+            // Handle pinning
+            if (analogBinding.analogElementId == eInputElements::MOUSE_POSITION)
+            {
+                if (isPinningEnabled)
+                {
+                    analogActionState.previousElementState = { 0.f, 0.f, 0.f };
+
+                    if (analogActionState.stateType == AnalogBinding::eAnalogStateType::ABSOLUTE_STATE)
+                    {
+                        analogActionState.currentElementState = { 0.f, 0.f, 0.f };
+                    }
+                }
+            }
 
             bool skipBinding = false;
 
@@ -424,11 +419,28 @@ void ActionSystemImpl::OnUpdate(float32 elapsedTime)
     for (auto& analogStatesMapPair : analogActionsStates)
     {
         InternalAnalogActionState& analogActionState = analogStatesMapPair.second;
-        if (analogActionState.changedInCurrentFrame && analogActionState.active)
+        if (analogActionState.active)
         {
-            actionSystem->ActionTriggered.Emit(analogActionState.action);
+            if (analogActionState.currentElementState.x == analogActionState.previousElementState.x &&
+                analogActionState.currentElementState.y == analogActionState.previousElementState.y &&
+                analogActionState.currentElementState.z == analogActionState.previousElementState.z)
+            {
+                continue;
+            }
+
+            Action action;
+            action.actionId = analogActionState.actionId;
+            action.analogState = analogActionState.currentElementState;
+
+            if (analogActionState.stateType == AnalogBinding::eAnalogStateType::RELATIVE_STATE)
+            {
+                action.analogState.x -= analogActionState.previousElementState.x;
+                action.analogState.y -= analogActionState.previousElementState.y;
+                action.analogState.z -= analogActionState.previousElementState.z;
+            }
+
+            actionSystem->ActionTriggered.Emit(action);
         }
-        analogActionState.changedInCurrentFrame = false;
     }
 }
 
