@@ -58,6 +58,10 @@ bool SceneCameraSystem::SaveLocalProperties(DAVA::uint64 contextId)
     debugCam->SaveObject(camArch.Get());
     cameraProps.Set("archive", camArch);
 
+    // Current active camera name
+    DAVA::FastName curCamName = GetEntityFromCamera(curSceneCamera)->GetName();
+    cameraProps.Set("activeCameraName", curCamName);
+
     return true;
 }
 
@@ -77,6 +81,20 @@ bool SceneCameraSystem::LoadLocalProperties()
     cur->SaveObject(camArch.Get());
     camArch = cameraProps.Get<DAVA::RefPtr<DAVA::KeyedArchive>>("archive", camArch);
     cur->LoadObject(camArch.Get());
+
+    // set active scene camera
+    DAVA::FastName camName = cameraProps.Get<DAVA::FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
+    auto camEntityIt = std::find_if(std::begin(sceneCameras), std::end(sceneCameras),
+                                    [&camName](DAVA::Entity* cam)
+                                    {
+                                        return cam->GetName() == camName;
+                                    });
+    if (camEntityIt != std::end(sceneCameras))
+    {
+        cur = GetCamera(*camEntityIt);
+        DAVA::Scene* scene = GetScene();
+        scene->SetCurrentCamera(cur);
+    }
 
     return true;
 }
