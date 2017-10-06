@@ -52,7 +52,7 @@ endif ()
 
 if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
 
-    copy_libraies_subset_for_qt_tools()
+    copy_libraries_subset_for_qt_tools()
 
     add_custom_target( "createPackageInfo" ALL
         COMMAND "python" "${CMAKE_CURRENT_LIST_DIR}/Teamcity/createPackageInfo.py"

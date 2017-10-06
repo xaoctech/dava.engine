@@ -35,5 +35,5 @@ set( ADDED_BINARY_DIR     ${QT_ACTUAL_PATH}/bin )
 setup_main_executable()
 
 if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
-        copy_libraies_subset_for_qt_tools()
+        copy_libraries_subset_for_qt_tools()
 endif()

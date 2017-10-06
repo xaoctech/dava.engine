@@ -1,7 +1,7 @@
 include ( GlobalVariables )
 include ( CMake-common )
 
-function(copy_libraies_subset_for_qt_tools)
+function(copy_libraries_subset_for_qt_tools)
     ADD_CUSTOM_COMMAND( TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy ${DAVA_BINARY_WIN_DIR_RELEASE}/api-ms-win-core-console-l1-1-0.dll $(OutDir)
             COMMAND ${CMAKE_COMMAND} -E copy ${DAVA_BINARY_WIN_DIR_RELEASE}/api-ms-win-core-datetime-l1-1-0.dll $(OutDir)
@@ -47,4 +47,4 @@ function(copy_libraies_subset_for_qt_tools)
             COMMAND ${CMAKE_COMMAND} -E copy ${DAVA_BINARY_WIN_DIR_RELEASE}/ucrtbase.dll $(OutDir)
             COMMAND ${CMAKE_COMMAND} -E copy ${DAVA_BINARY_WIN_DIR_RELEASE}/vcruntime140.dll $(OutDir)
         )
-endfunction(copy_libraies_subset_for_qt_tools)
+endfunction()
