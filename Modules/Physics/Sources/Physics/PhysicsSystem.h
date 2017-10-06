@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Entity/SceneSystem.h>
+#include <Math/Vector.h>
 #include <Base/BaseTypes.h>
 
 #include <physx/PxQueryReport.h>
@@ -11,6 +12,7 @@ namespace physx
 class PxScene;
 class PxRigidActor;
 class PxShape;
+class PxControllerManager;
 }
 
 namespace DAVA
@@ -22,6 +24,7 @@ class PhysicsModule;
 class PhysicsComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
+class CharacterControllerComponent;
 
 class PhysicsSystem final : public SceneSystem
 {
@@ -35,6 +38,8 @@ public:
     void RegisterComponent(Entity* entity, Component* component) override;
     void UnregisterComponent(Entity* entity, Component* component) override;
 
+    void PrepareForRemove() override;
+
     void Process(float32 timeElapsed) override;
 
     void SetSimulationEnabled(bool isEnabled);
@@ -45,6 +50,7 @@ public:
 
     void ScheduleUpdate(PhysicsComponent* component);
     void ScheduleUpdate(CollisionShapeComponent* component);
+    void ScheduleUpdate(CharacterControllerComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
@@ -63,6 +69,8 @@ private:
     void SyncTransformToPhysx();
     void SyncEntityTransformToPhysx(Entity* entity);
     void UpdateComponents();
+
+    void MoveCharacterControllers(float32 timeElapsed);
 
 private:
     class SimulationEventCallback : public physx::PxSimulationEventCallback
@@ -89,6 +97,7 @@ private:
     bool isSimulationEnabled = true;
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
+    physx::PxControllerManager* controllerManager = nullptr;
     PhysicsGeometryCache* geometryCache = nullptr;
 
     Vector<PhysicsComponent*> physicsComponents;
@@ -97,10 +106,14 @@ private:
     Vector<CollisionShapeComponent*> collisionComponents;
     Vector<CollisionShapeComponent*> pendingAddCollisionComponents;
 
+    Vector<CharacterControllerComponent*> characterControllerComponents;
+    Vector<CharacterControllerComponent*> pendingAddCharacterControllerComponents;
+
     UnorderedMap<Entity*, Vector<CollisionShapeComponent*>> waitRenderInfoComponents;
 
     Set<PhysicsComponent*> physicsComponensUpdatePending;
     Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
+    Set<CharacterControllerComponent*> characterControllerComponentsUpdatePending;
 
     SimulationEventCallback simulationEventCallback;
 

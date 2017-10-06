@@ -1,6 +1,0 @@
-INCLUDE CORNER-CASE (NO LINES INCLUDE DIRECTIVES)
-
-first
-#include "CC02-included-1.txt"
-#include "CC02-included-2.txt"
-last

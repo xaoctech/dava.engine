@@ -16,18 +16,20 @@ public class LocalNotificationListener extends DavaActivity.ActivityListenerImpl
         localNotificationController = controller;
         DavaActivity.instance().registerActivityListener(this);
         DavaNotificationProvider.Init(DavaActivity.instance());
+        DavaNotificationProvider.CancelAllNotifications();
         DavaLog.d(DavaActivity.LOG_TAG, "LocalNotificationListener.<init> Create class instance.");
     }
 
     void release()
     {
+        DavaNotificationProvider.CancelAllNotifications();
         DavaActivity.instance().unregisterActivityListener(this);
     }
 
     @Override
     public void onDestroy()
     {
-		release();
+        release();
     }
 
     @Override

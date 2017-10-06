@@ -10,6 +10,7 @@
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FilePath.h>
+#include <FileSystem/FileList.h>
 #include <FileSystem/FileSystem.h>
 #include <Functional/Function.h>
 #include <Logger/Logger.h>
@@ -22,6 +23,7 @@
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Image/ImageSystem.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/SceneFile/VersionInfo.h>
@@ -73,6 +75,26 @@ void CalculateSceneKey(const DAVA::FilePath& scenePathname, const DAVA::String& 
 
 namespace SceneExporterDetails
 {
+class FileSystemTagGuard final
+{
+public:
+    FileSystemTagGuard(const DAVA::String newFilenamesTag)
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        oldFilenamesTag = fs->GetFilenamesTag();
+        fs->SetFilenamesTag(newFilenamesTag);
+    }
+
+    ~FileSystemTagGuard()
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        fs->SetFilenamesTag(oldFilenamesTag);
+    }
+
+private:
+    DAVA::String oldFilenamesTag;
+};
+
 bool SaveExportedObjects(const DAVA::FilePath& linkPathname, const DAVA::Vector<SceneExporter::ExportedObjectCollection>& exportedObjects)
 {
     using namespace DAVA;
@@ -357,6 +379,31 @@ void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFold
     }
 }
 
+void CollectAnimationClips(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFolder, SceneExporter::ExportedObjectCollection& exportedObjects)
+{
+    using namespace DAVA;
+    Vector<Entity*> animationHolders;
+    scene->GetChildEntitiesWithComponent(animationHolders, Component::MOTION_COMPONENT);
+    for (Entity* entity : animationHolders)
+    {
+        uint32 componentCount = entity->GetComponentCount(Component::MOTION_COMPONENT);
+        for (uint32 i = 0; i < componentCount; ++i)
+        {
+            MotionComponent* motionComponent = static_cast<MotionComponent*>(entity->GetComponent(Component::MOTION_COMPONENT, i));
+            const MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
+            if (motion)
+            {
+                const FilePath& animationPath = motion->GetAnimationPath();
+                if (!animationPath.IsEmpty())
+                {
+                    String relativePath = animationPath.GetRelativePathname(dataSourceFolder);
+                    exportedObjects.emplace_back(SceneExporter::eExportedObjectType::OBJECT_ANIMATION_CLIP, relativePath);
+                }
+            }
+        }
+    }
+}
+
 void RemoveDuplicates(SceneExporter::ExportedObjectCollection& exportedObjects)
 {
     std::sort(exportedObjects.begin(), exportedObjects.end());
@@ -554,6 +601,66 @@ void CollectSourceImageInfo(const DAVA::TextureDescriptor& descriptor, DAVA::Vec
         sourceImageInfos.push_back(DAVA::ImageSystem::GetImageInfo(path));
     }
 }
+}
+
+bool SceneExporter::ExportTextureObjectTagged(const ExportedObject& object)
+{
+    using namespace DAVA;
+
+    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+
+    FilePath taggedPathname;
+    String nonTaggedBasename;
+    String taggedBasename;
+
+    bool needExportTagged = exportingParams.filenamesTag.empty() == false;
+    if (needExportTagged)
+    { // try to find tagget texture file
+        taggedPathname = exportingParams.dataSourceFolder + object.relativePathname;
+        nonTaggedBasename = taggedPathname.GetBasename();
+        taggedBasename = nonTaggedBasename + exportingParams.filenamesTag;
+        taggedPathname.ReplaceBasename(taggedBasename);
+        needExportTagged = fs->Exists(taggedPathname);
+    }
+
+    if (needExportTagged)
+    { // export tagged texure
+        ExportedObject taggedObject = object;
+        taggedObject.relativePathname = taggedPathname.GetRelativePathname(exportingParams.dataSourceFolder);
+
+        //real export of tagged file
+        bool exported = ExportTextureObject(taggedObject);
+
+        //restore filenames to non-tagged style
+        for (const Params::Output& output : exportingParams.outputs)
+        {
+            FilePath texPath = output.dataFolder + object.relativePathname;
+
+            ScopedPtr<FileList> fileList(new FileList(texPath.GetDirectory(), false));
+            for (uint32 index = 0; index < fileList->GetCount(); ++index)
+            {
+                const FilePath& path = fileList->GetPathname(index);
+                if (path.IsDirectoryPathname() == false)
+                {
+                    String name = path.GetBasename();
+                    if (name.find(taggedBasename) != String::npos)
+                    {
+                        String nontaggedFileName = path.GetAbsolutePathname();
+                        String::size_type pos = nontaggedFileName.find(taggedBasename);
+
+                        nontaggedFileName.replace(pos, taggedBasename.length(), nonTaggedBasename);
+
+                        exported = fs->MoveFile(path, nontaggedFileName, true) && exported;
+                    }
+                }
+            }
+        }
+
+        return exported;
+    }
+
+    // export non-tagged file
+    return ExportTextureObject(object);
 }
 
 bool SceneExporter::ExportTextureObject(const ExportedObject& object)
@@ -896,21 +1003,25 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
     using namespace DAVA;
 
     Array<Function<bool(const ExportedObject&)>, OBJECT_COUNT> exporters =
-    { { MakeFunction(this, &SceneExporter::ExportSceneObject),
-        MakeFunction(this, &SceneExporter::ExportTextureObject),
-        MakeFunction(this, &SceneExporter::CopyObject),
-        MakeFunction(this, &SceneExporter::CopyObject),
-        MakeFunction(this, &SceneExporter::CopyObject) } };
+    { {
+    MakeFunction(this, &SceneExporter::ExportSceneObject), // scene
+    MakeFunction(this, &SceneExporter::ExportTextureObjectTagged), //texture
+    MakeFunction(this, &SceneExporter::CopyObject), // heightmap
+    MakeFunction(this, &SceneExporter::CopyObject), // emitter config
+    MakeFunction(this, &SceneExporter::ExportSlotObject), //slot config
+    MakeFunction(this, &SceneExporter::CopyObject), //anim clip
+    } };
 
     // divide objects into different collections
     bool exportIsOk = PrepareData(exportedObjects);
 
     //export scenes only. Add textures, heightmaps to objectsToExport
     const ExportedObjectCollection& scenes = objectsToExport[eExportedObjectType::OBJECT_SCENE];
-    CreateFoldersStructure(scenes);
     for (uint32 i = 0; i < static_cast<uint32>(scenes.size()); ++i)
     {
         const ExportedObject& sceneObj = scenes[i];
+        CreateFoldersStructure(sceneObj);
+
         DAVA::FilePath fullScenePath(exportingParams.dataSourceFolder + sceneObj.relativePathname);
         if (alreadyExportedScenes.count(fullScenePath) == 0)
         {
@@ -919,15 +1030,24 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
         }
     }
 
-    //export only slot objects
-    SceneExporterDetails::RemoveDuplicates(objectsToExport[OBJECT_SLOT_CONFIG]);
-    for (const ExportedObject& slot : objectsToExport[OBJECT_SLOT_CONFIG])
-    {
-        DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
-        for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+    { //export only slot objects
+        SceneExporterDetails::RemoveDuplicates(objectsToExport[OBJECT_SLOT_CONFIG]);
+        for (const ExportedObject& slot : objectsToExport[OBJECT_SLOT_CONFIG])
         {
-            ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
-            exportIsOk = ExportSceneObject(sceneObject) & exportIsOk;
+            DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items;
+            { // load tagged config
+                SceneExporterDetails::FileSystemTagGuard tagGuard(exportingParams.filenamesTag);
+                items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
+            }
+
+            for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+            {
+                ExportedObject sceneObject(OBJECT_SCENE, item.scenePath.GetRelativePathname(exportingParams.dataSourceFolder));
+                CreateFoldersStructure(sceneObject);
+
+                //create folders structure
+                exportIsOk = ExportSceneObject(sceneObject) & exportIsOk;
+            }
         }
     }
 
@@ -935,9 +1055,10 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
     for (int32 i = eExportedObjectType::OBJECT_SCENE + 1; i < eExportedObjectType::OBJECT_COUNT; ++i)
     {
         SceneExporterDetails::RemoveDuplicates(objectsToExport[i]);
-        CreateFoldersStructure(objectsToExport[i]);
         for (const ExportedObject& object : objectsToExport[i])
         {
+            DVASSERT(object.type != eExportedObjectType::OBJECT_SCENE);
+            CreateFoldersStructure(object);
             exportIsOk = exporters[i](object) && exportIsOk;
         }
     }
@@ -967,35 +1088,56 @@ bool SceneExporter::PrepareData(const ExportedObjectCollection& exportedObjects)
     return dataIsValid;
 }
 
-void SceneExporter::CreateFoldersStructure(const ExportedObjectCollection& exportedObjects)
+void SceneExporter::CreateFoldersStructure(const ExportedObject& object)
 {
     using namespace DAVA;
 
-    UnorderedSet<String> foldersStructure;
-    foldersStructure.reserve(exportedObjects.size());
-
-    for (const ExportedObject& object : exportedObjects)
+    String folder = object.relativePathname;
+    const String::size_type slashpos = folder.rfind("/");
+    if (slashpos != String::npos)
     {
-        const String& link = object.relativePathname;
-        const String::size_type slashpos = link.rfind("/");
-        if (slashpos != String::npos)
-        {
-            foldersStructure.insert(link.substr(0, slashpos + 1));
-        }
-        else
-        {
-            foldersStructure.insert("/");
-        }
+        folder = folder.substr(0, slashpos + 1);
+    }
+    else
+    {
+        folder = "/";
     }
 
-    FileSystem* fileSystem = GetEngineContext()->fileSystem;
-    for (const Params::Output& output : exportingParams.outputs)
+    if (cachedFoldersForCreation.count(folder) == 0)
     {
-        for (const String& folder : foldersStructure)
+        cachedFoldersForCreation.insert(folder);
+        FileSystem* fileSystem = GetEngineContext()->fileSystem;
+        for (const Params::Output& output : exportingParams.outputs)
         {
             fileSystem->CreateDirectory(output.dataFolder + folder, true);
         }
     }
+}
+
+bool SceneExporter::ExportSlotObject(const ExportedObject& object)
+{
+    using namespace DAVA;
+
+    FilePath fromPath = exportingParams.dataSourceFolder + object.relativePathname;
+    if (exportingParams.filenamesTag.empty() == false)
+    {
+        FilePath fromPathTagged = fromPath;
+        fromPathTagged.ReplaceBasename(fromPath.GetBasename() + exportingParams.filenamesTag);
+
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        if (fs->Exists(fromPathTagged))
+        {
+            fromPath = fromPathTagged;
+        }
+    }
+
+    bool filesCopied = true;
+    for (const Params::Output& output : exportingParams.outputs)
+    {
+        filesCopied = CopyFile(fromPath, output.dataFolder + object.relativePathname) && filesCopied;
+    }
+
+    return filesCopied;
 }
 
 bool SceneExporter::CopyFileToOutput(const DAVA::FilePath& fromPath, const Params::Output& output) const
@@ -1029,7 +1171,8 @@ const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT
       ExportedObjectDesc(OBJECT_TEXTURE, DAVA::Vector<DAVA::String>{ ".tex" }),
       ExportedObjectDesc(OBJECT_HEIGHTMAP, DAVA::Vector<DAVA::String>{ DAVA::Heightmap::FileExtension() }),
       ExportedObjectDesc(OBJECT_EMITTER_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml" }),
-      ExportedObjectDesc(OBJECT_SLOT_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml", ".xml" })
+      ExportedObjectDesc(OBJECT_SLOT_CONFIG, DAVA::Vector<DAVA::String>{ ".yaml", ".xml" }),
+      ExportedObjectDesc(OBJECT_ANIMATION_CLIP, DAVA::Vector<DAVA::String>{ ".anim" })
     };
 
     return desc;
@@ -1043,6 +1186,7 @@ void SceneExporter::CollectObjects(DAVA::Scene* scene, DAVA::Vector<ExportedObje
     SceneExporterDetails::CollectTextureDescriptors(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_TEXTURE]);
     SceneExporterDetails::CollectParticleConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_EMITTER_CONFIG]);
     SceneExporterDetails::CollectSlotConfigs(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_SLOT_CONFIG]);
+    SceneExporterDetails::CollectAnimationClips(scene, exportingParams.dataSourceFolder, exportedObjects[eExportedObjectType::OBJECT_ANIMATION_CLIP]);
 }
 
 bool operator==(const SceneExporter::ExportedObject& left, const SceneExporter::ExportedObject& right)

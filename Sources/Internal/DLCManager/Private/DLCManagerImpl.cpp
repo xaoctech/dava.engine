@@ -1501,8 +1501,32 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
         }
     }
 
-    // inQueue, - calculated in runtime in PackRequest
-    // alreadyDownloaded, - calculated in runtime in PackRequest
+    // TODO remove this code in future (after new meta data)
+    {
+        lastProgress.alreadyDownloaded = 0;
+        lastProgress.inQueue = 0;
+        const Vector<PackFile::FilesTableBlock::FilesData::Data>& files = usedPackFile.filesTable.data.files;
+        const size_t numFiles = files.size();
+        for (size_t fileIndex = 0; fileIndex < numFiles; ++fileIndex)
+        {
+            const auto& fileData = files[fileIndex];
+            if (IsFileReady(fileIndex))
+            {
+                lastProgress.alreadyDownloaded += fileData.compressedSize;
+            }
+            else
+            {
+                const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(fileData.metaIndex);
+                if (requestManager->IsInQueue(packInfo.packName))
+                {
+                    lastProgress.inQueue += fileData.compressedSize;
+                }
+            }
+        }
+    }
+
+    // TODO inQueue, - calculated in runtime in PackRequest
+    // TODO alreadyDownloaded, - calculated in runtime in PackRequest
 
     lastProgress.isRequestingEnabled = true;
 

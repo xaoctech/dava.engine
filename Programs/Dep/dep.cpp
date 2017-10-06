@@ -15,7 +15,7 @@
 
 #ifdef _MSC_VER
 #include <filesystem>
-namespace fs = std::tr2::sys;
+namespace fs = std::experimental::filesystem;
 #endif
 
 static const uint32_t crc32_tab[256] =
@@ -595,7 +595,7 @@ int main(int argc, const char* argv[])
         }
         cerr << '\n';
 #ifdef _MSC_VER
-        cerr << "current pwd: " << fs::current_path<fs::path>() << '\n';
+        cerr << "current pwd: " << fs::current_path() << '\n';
 #endif
         cerr << "Use --help for help" << '\n';
 

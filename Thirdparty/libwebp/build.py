@@ -1,4 +1,5 @@
 import os
+import shutil
 import build_utils
 
 
@@ -33,7 +34,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'https://github.com/webmproject/libwebp/archive/v0.5.1.tar.gz'
+    return 'https://github.com/webmproject/libwebp/archive/v0.4.3.tar.gz'
 
 
 def _download_and_extract(working_directory_path):
@@ -43,28 +44,60 @@ def _download_and_extract(working_directory_path):
         url,
         working_directory_path,
         source_folder_path,
-        'libwebp-0.5.1')
+        'libwebp-0.4.3')
     return source_folder_path
 
 
 @build_utils.run_once
 def _patch_sources(source_folder_path, working_directory_path):
     build_utils.apply_patch(
-        os.path.abspath('patch.diff'), working_directory_path)
+        os.path.abspath('patch_win.diff'), working_directory_path)
 
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources(source_folder_path, working_directory_path)
 
-    build_utils.build_and_copy_libraries_win32_cmake(
-        os.path.join(working_directory_path, 'gen'),
-        source_folder_path,
-        root_project_path,
-        'libwebp.sln', 'webp',
-        'webp.lib', 'webp.lib',
-        'libwebp.lib', 'libwebp.lib',
-        'libwebp.lib', 'libwebp.lib')
+    # x86
+    x86_env = build_utils.get_win32_vs_x86_env()
+    build_utils.run_process(
+        ['nmake', '-f', 'Makefile.vc', 'CFG=release-static', 'RTLIBCFG=dynamic', 'OBJDIR=output'],
+        process_cwd=source_folder_path,
+        environment=x86_env,
+        shell=True)
+    build_utils.run_process(
+        ['nmake', '-f', 'Makefile.vc', 'CFG=debug-static', 'RTLIBCFG=dynamic', 'OBJDIR=output'],
+        process_cwd=source_folder_path,
+        environment=x86_env,
+        shell=True)
+
+    # x64
+    x64_env = build_utils.get_win32_vs_x64_env()
+    build_utils.run_process(
+        ['nmake', '-f', 'Makefile.vc', 'CFG=release-static', 'RTLIBCFG=dynamic', 'OBJDIR=output'],
+        process_cwd=source_folder_path,
+        environment=x64_env,
+        shell=True)
+    build_utils.run_process(
+        ['nmake', '-f', 'Makefile.vc', 'CFG=debug-static', 'RTLIBCFG=dynamic', 'OBJDIR=output'],
+        process_cwd=source_folder_path,
+        environment=x64_env,
+        shell=True)
+
+    libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'output/debug-static/x86/lib/libwebp_debug.lib'),
+        os.path.join(libs_win_root, 'x86/Debug/libwebp.lib'))
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'output/release-static/x86/lib/libwebp.lib'),
+        os.path.join(libs_win_root, 'x86/Release/libwebp.lib'))
+
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'output/debug-static/x64/lib/libwebp_debug.lib'),
+        os.path.join(libs_win_root, 'x64/Debug/libwebp.lib'))
+    shutil.copyfile(
+        os.path.join(source_folder_path, 'output/release-static/x64/lib/libwebp.lib'),
+        os.path.join(libs_win_root, 'x64/Release/libwebp.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
 

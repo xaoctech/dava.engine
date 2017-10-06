@@ -8,11 +8,15 @@
 #include "Render/Renderer.h"
 #include <unistd.h>
 
-JNIEXPORT void JNICALL Java_com_dava_framework_PhoneStateListener_OnCarrierNameChanged(JNIEnv* env, jobject jclazz)
+extern "C"
+{
+
+JNIEXPORT void JNICALL Java_com_dava_engine_PhoneStateListener_OnCarrierNameChanged(JNIEnv* env, jobject jclazz)
 {
     DAVA::RunOnMainThreadAsync([]() {
         DAVA::DeviceInfo::carrierNameChanged.Emit(DAVA::DeviceInfo::GetCarrierName());
     });
+}
 }
 
 namespace DAVA
