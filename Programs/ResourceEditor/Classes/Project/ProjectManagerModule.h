@@ -11,6 +11,7 @@ class ProjectManagerData;
 class ProjectManagerModule : public DAVA::TArc::ClientModule
 {
 public:
+    ProjectManagerModule();
     ~ProjectManagerModule();
 
 protected:
@@ -18,6 +19,8 @@ protected:
 
 private:
     void CreateActions();
+    void CreateTagsActions();
+    void RemoveTagsActions();
     void RegisterOperations();
 
     void OpenProject();
@@ -26,6 +29,9 @@ private:
     void OpenLastProject();
     bool CloseProject();
     void ReloadSprites();
+
+    bool GetTagsEnabled();
+    void SetFilenamesTag(const DAVA::String& tag);
 
 private:
     ProjectManagerData* GetData();
@@ -40,6 +46,7 @@ private:
     {
         DAVA::ReflectionRegistrator<ProjectManagerModule>::Begin()
         .ConstructorByPointer()
+        .Field("tagsEnabled", &ProjectManagerModule::GetTagsEnabled, nullptr)
         .End();
     }
 };

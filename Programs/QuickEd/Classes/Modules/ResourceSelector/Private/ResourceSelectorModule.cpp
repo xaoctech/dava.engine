@@ -206,34 +206,35 @@ void ResourceSelectorModule::RegisterGfxFolders()
     ResourceSelectorData* selectorData = globalContext->GetData<ResourceSelectorData>();
     DVASSERT(selectorData != nullptr);
     ProjectData* projectData = globalContext->GetData<ProjectData>();
-    if (projectData != nullptr)
+    if (projectData == nullptr)
+    { // open quicked without last project ("clear settings")
+        return;
+    }
+    const EngineContext* engineContext = GetEngineContext();
+    VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
+
+    const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
+    int32 gfxCount = static_cast<int32>(gfxDirectories.size());
+    int32 gfxMode = settingsAreFiltered ? selectorData->preferredMode : 0;
+    Size2i currentSize = vcs->GetVirtualScreenSize();
+
+    vcs->UnregisterAllAvailableResourceSizes();
+    if (gfxMode < gfxCount)
     {
-        const EngineContext* engineContext = GetEngineContext();
-        VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-
-        const Vector<ProjectData::GfxDir>& gfxDirectories = projectData->GetGfxDirectories();
-        int32 gfxCount = static_cast<int32>(gfxDirectories.size());
-        int32 gfxMode = settingsAreFiltered ? selectorData->preferredMode : 0;
-        Size2i currentSize = vcs->GetVirtualScreenSize();
-
-        vcs->UnregisterAllAvailableResourceSizes();
-        if (gfxMode < gfxCount)
+        String name = GetNameFromGfxFolder(gfxDirectories[gfxMode].directory.relative);
+        vcs->RegisterAvailableResourceSize(currentSize.dx, currentSize.dy, name);
+    }
+    else if (gfxMode == gfxCount)
+    {
+        for (const ProjectData::GfxDir& dir : gfxDirectories)
         {
-            String name = GetNameFromGfxFolder(gfxDirectories[gfxMode].directory.relative);
-            vcs->RegisterAvailableResourceSize(currentSize.dx, currentSize.dy, name);
+            String name = GetNameFromGfxFolder(dir.directory.relative);
+            vcs->RegisterAvailableResourceSize(static_cast<int32>(currentSize.dx * dir.scale), static_cast<int32>(currentSize.dy * dir.scale), name);
         }
-        else if (gfxMode == gfxCount)
-        {
-            for (const ProjectData::GfxDir& dir : gfxDirectories)
-            {
-                String name = GetNameFromGfxFolder(dir.directory.relative);
-                vcs->RegisterAvailableResourceSize(static_cast<int32>(currentSize.dx * dir.scale), static_cast<int32>(currentSize.dy * dir.scale), name);
-            }
-        }
-        else
-        {
-            DVASSERT(false);
-        }
+    }
+    else
+    {
+        DVASSERT(false);
     }
 }
 
