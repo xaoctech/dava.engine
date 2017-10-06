@@ -1,5 +1,6 @@
 import os
 import shutil
+import build_config
 import build_utils
 
 libcurl_version = '7.53.1'
@@ -36,6 +37,7 @@ def build_for_target(target, working_directory_path, root_project_path):
     elif target == 'linux':
         _build_linux(working_directory_path, root_project_path)
 
+
 def _download_and_extract(working_directory_path):
     source_folder_path = os.path.join(working_directory_path, 'libcurl_source')
 
@@ -58,32 +60,35 @@ def _patch_sources(source_folder_path, working_directory_path, patch_name):
 
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path, 'patch_win32.diff')
 
-    vc12_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC12/lib/libcurl.sln')
+    vc14_solution_file_path = os.path.join(source_folder_path, 'projects/Windows/VC14/lib/libcurl.sln')
 
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug - LIB OpenSSL', 'Win32', 'libcurl')
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Release - LIB OpenSSL', 'Win32', 'libcurl')
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Debug - LIB OpenSSL', 'x64', 'libcurl')
-    build_utils.build_vs(vc12_solution_file_path, 'LIB Release - LIB OpenSSL', 'x64', 'libcurl')
+    override_props_file=os.path.abspath('override_win32.props')
+    msbuild_args=["/p:ForceImportBeforeCppTargets={}".format(override_props_file)]
+    toolset=build_config.get_msvc_toolset_ver_win32()
+
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'Win32', 'libcurl', toolset=toolset, msbuild_args=msbuild_args)
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'Win32', 'libcurl', toolset=toolset, msbuild_args=msbuild_args)
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Debug', 'x64', 'libcurl', toolset=toolset, msbuild_args=msbuild_args)
+    build_utils.build_vs(vc14_solution_file_path, 'LIB Release', 'x64', 'libcurl', toolset=toolset, msbuild_args=msbuild_args)
 
     libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
 
     shutil.copyfile(
-        os.path.join(source_folder_path,'build/Win32/VC12/LIB Debug - LIB OpenSSL/libcurld.lib'),
+        os.path.join(source_folder_path,'build/Win32/VC14/LIB Debug/libcurld.lib'),
         os.path.join(libs_win_root, 'x86/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win32/VC12/LIB Release - LIB OpenSSL/libcurl.lib'),
+        os.path.join(source_folder_path, 'build/Win32/VC14/LIB Release/libcurl.lib'),
         os.path.join(libs_win_root, 'x86/Release/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Debug - LIB OpenSSL/libcurld.lib'),
-        os.path.join(libs_win_root, 'x64/Debug/libcurl_a_debug.lib'))
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Debug/libcurld.lib'),
+        os.path.join(libs_win_root, 'x64/Debug/libcurl.lib'))
 
     shutil.copyfile(
-        os.path.join(source_folder_path, 'build/Win64/VC12/LIB Release - LIB OpenSSL/libcurl.lib'),
-        os.path.join(libs_win_root, 'x64/Release/libcurl_a.lib'))
+        os.path.join(source_folder_path, 'build/Win64/VC14/LIB Release/libcurl.lib'),
+        os.path.join(libs_win_root, 'x64/Release/libcurl.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
 

@@ -15,7 +15,10 @@
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/Core/ContextAccessor.h>
 
+#include <Engine/EngineContext.h>
+#include <FileSystem/FileSystem.h>
 #include <Reflection/ReflectionRegistrator.h>
 
 #include <QMessageBox>
@@ -27,11 +30,8 @@ void BeastModule::PostInit()
 
     QtAction* action = new QtAction(GetAccessor(), QString("Run Beast"));
     { // enabled/disabled state
-        FieldDescriptor fieldDescr;
-        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        action->SetStateUpdationFunction(QtAction::Enabled, Reflection::Create(ReflectedObject(this)), FastName("beastAvailable"), [](const Any& fieldValue) -> Any {
+            return fieldValue.Get<bool>(false);
         });
     }
 
@@ -120,10 +120,22 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     }
 }
 
+bool BeastModule::GetBeastAvailable() const
+{
+    if (GetAccessor()->GetActiveContext() != nullptr)
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        return fs->GetFilenamesTag().empty() == true;
+    }
+
+    return false;
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(BeastModule)
 {
     DAVA::ReflectionRegistrator<BeastModule>::Begin()
     .ConstructorByPointer()
+    .Field("beastAvailable", &BeastModule::GetBeastAvailable, nullptr)
     .End();
 }
 

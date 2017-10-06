@@ -31,6 +31,7 @@ public:
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
+    void PrepareForRemove() override;
     void Process(float32 timeElapsed) override;
 
     void AddRenderObjectToOcclusion(RenderObject* renderObject);
@@ -67,6 +68,7 @@ public:
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
     void ImmediateEvent(Component* component, uint32 event) override;
+    void PrepareForRemove() override;
 
     /*HVertexBuffer CreateStaticOcclusionDebugDrawGrid(const AABBox3& boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset);
     PolygonGroup* CreateStaticOcclusionDebugDrawCover(const AABBox3& boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup);*/

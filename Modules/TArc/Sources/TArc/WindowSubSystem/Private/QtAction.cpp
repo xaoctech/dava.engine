@@ -1,5 +1,7 @@
 #include "TArc/WindowSubSystem/QtAction.h"
 
+#include <QMenu>
+
 namespace DAVA
 {
 namespace TArc
@@ -30,6 +32,13 @@ void QtAction::SetStateUpdationFunction(eActionState state, const FieldDescripto
     fieldBinder.BindField(fieldDescr, Bind(&QtAction::OnFieldValueChanged, this, _1, state));
 }
 
+void QtAction::SetStateUpdationFunction(eActionState state, const Reflection& model, const FastName& name, const Function<Any(const Any&)>& fn)
+{
+    DVASSERT(functorsMap.count(state) == 0);
+    functorsMap.emplace(state, fn);
+    fieldBinder.BindField(model, name, Bind(&QtAction::OnFieldValueChanged, this, _1, state));
+}
+
 void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
 {
     const auto iter = functorsMap.find(state);
@@ -44,6 +53,11 @@ void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
         if (stateEnabled != isEnabled())
         {
             setEnabled(stateEnabled);
+            QMenu* m = menu();
+            if (m != nullptr)
+            {
+                m->setEnabled(stateEnabled);
+            }
         }
     }
     break;
