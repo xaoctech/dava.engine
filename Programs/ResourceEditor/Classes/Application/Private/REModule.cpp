@@ -1,6 +1,7 @@
 #include "Classes/Application/REModule.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/RESettings.h"
+#include "Classes/Application/FileSystemData.h"
 #include "Classes/Application/Private/SettingsConverter.h"
 
 #include "Main/mainwindow.h"
@@ -74,6 +75,8 @@ void REModule::PostInit()
     globalData->mainWindow->EnableGlobalTimeout(true);
 
     RegisterOperation(REGlobal::ShowMaterial.ID, this, &REModule::ShowMaterial);
+
+    globalContext->CreateData(std::make_unique<FileSystemData>());
 }
 
 void REModule::ShowMaterial(DAVA::NMaterial* material)

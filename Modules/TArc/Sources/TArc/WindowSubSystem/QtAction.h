@@ -7,6 +7,8 @@
 #include "TArc/Core/FieldBinder.h"
 #include "TArc/DataProcessing/Common.h"
 
+#include <Reflection/Reflection.h>
+
 #include <QAction>
 
 namespace DAVA
@@ -30,6 +32,7 @@ public:
     };
 
     void SetStateUpdationFunction(eActionState state, const FieldDescriptor& fieldDescr, const Function<Any(const Any&)>& fn);
+    void SetStateUpdationFunction(eActionState state, const Reflection& model, const FastName& name, const Function<Any(const Any&)>& fn);
 
 private:
     void OnFieldValueChanged(const Any& value, eActionState state);

@@ -38,34 +38,29 @@ extern "C" {
 struct spAttachmentLoader;
 
 typedef enum {
-    SP_ATTACHMENT_REGION,
-    SP_ATTACHMENT_BOUNDING_BOX,
-    SP_ATTACHMENT_MESH,
-    SP_ATTACHMENT_LINKED_MESH,
-    SP_ATTACHMENT_PATH
+	SP_ATTACHMENT_REGION,
+	SP_ATTACHMENT_BOUNDING_BOX,
+	SP_ATTACHMENT_MESH,
+	SP_ATTACHMENT_LINKED_MESH,
+	SP_ATTACHMENT_PATH
 } spAttachmentType;
 
-typedef struct spAttachment
-{
-    const char* const name;
-    const spAttachmentType type;
-    const void* const vtable;
-    struct spAttachmentLoader* attachmentLoader;
+typedef struct spAttachment {
+	const char* const name;
+	const spAttachmentType type;
+	const void* const vtable;
+	struct spAttachmentLoader* attachmentLoader;
 
 #ifdef __cplusplus
-    spAttachment()
-        :
-        name(0)
-        ,
-        type(SP_ATTACHMENT_REGION)
-        ,
-        vtable(0)
-    {
-    }
+	spAttachment() :
+		name(0),
+		type(SP_ATTACHMENT_REGION),
+		vtable(0) {
+	}
 #endif
 } spAttachment;
 
-void spAttachment_dispose(spAttachment* self);
+void spAttachment_dispose (spAttachment* self);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAttachmentType AttachmentType;

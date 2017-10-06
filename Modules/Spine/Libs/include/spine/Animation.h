@@ -41,44 +41,38 @@ extern "C" {
 typedef struct spTimeline spTimeline;
 struct spSkeleton;
 
-typedef struct spAnimation
-{
-    const char* const name;
-    float duration;
+typedef struct spAnimation {
+	const char* const name;
+	float duration;
 
-    int timelinesCount;
-    spTimeline** timelines;
+	int timelinesCount;
+	spTimeline** timelines;
 
 #ifdef __cplusplus
-    spAnimation()
-        :
-        name(0)
-        ,
-        duration(0)
-        ,
-        timelinesCount(0)
-        ,
-        timelines(0)
-    {
-    }
+	spAnimation() :
+		name(0),
+		duration(0),
+		timelinesCount(0),
+		timelines(0) {
+	}
 #endif
 } spAnimation;
 
-spAnimation* spAnimation_create(const char* name, int timelinesCount);
-void spAnimation_dispose(spAnimation* self);
+spAnimation* spAnimation_create (const char* name, int timelinesCount);
+void spAnimation_dispose (spAnimation* self);
 
 /** Poses the skeleton at the specified time for this animation.
  * @param lastTime The last time the animation was applied.
  * @param events Any triggered events are added. May be null.*/
-void spAnimation_apply(const spAnimation* self, struct spSkeleton* skeleton, float lastTime, float time, int loop,
-                       spEvent** events, int* eventsCount);
+void spAnimation_apply (const spAnimation* self, struct spSkeleton* skeleton, float lastTime, float time, int loop,
+		spEvent** events, int* eventsCount);
 
 /** Poses the skeleton at the specified time for this animation mixed with the current pose.
  * @param lastTime The last time the animation was applied.
  * @param events Any triggered events are added. May be null.
  * @param alpha The amount of this animation that affects the current pose. */
-void spAnimation_mix(const spAnimation* self, struct spSkeleton* skeleton, float lastTime, float time, int loop,
-                     spEvent** events, int* eventsCount, float alpha);
+void spAnimation_mix (const spAnimation* self, struct spSkeleton* skeleton, float lastTime, float time, int loop,
+		spEvent** events, int* eventsCount, float alpha);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAnimation Animation;
@@ -91,41 +85,37 @@ typedef spAnimation Animation;
 /**/
 
 typedef enum {
-    SP_TIMELINE_SCALE,
-    SP_TIMELINE_ROTATE,
-    SP_TIMELINE_TRANSLATE,
-    SP_TIMELINE_SHEAR,
-    SP_TIMELINE_COLOR,
-    SP_TIMELINE_ATTACHMENT,
-    SP_TIMELINE_EVENT,
-    SP_TIMELINE_DRAWORDER,
-    SP_TIMELINE_DEFORM,
-    SP_TIMELINE_IKCONSTRAINT,
-    SP_TIMELINE_TRANSFORMCONSTRAINT,
-    SP_TIMELINE_PATHCONSTRAINTPOSITION,
-    SP_TIMELINE_PATHCONSTRAINTSPACING,
-    SP_TIMELINE_PATHCONSTRAINTMIX
+	SP_TIMELINE_SCALE,
+	SP_TIMELINE_ROTATE,
+	SP_TIMELINE_TRANSLATE,
+	SP_TIMELINE_SHEAR,
+	SP_TIMELINE_COLOR,
+	SP_TIMELINE_ATTACHMENT,
+	SP_TIMELINE_EVENT,
+	SP_TIMELINE_DRAWORDER,
+	SP_TIMELINE_DEFORM,
+	SP_TIMELINE_IKCONSTRAINT,
+	SP_TIMELINE_TRANSFORMCONSTRAINT,
+	SP_TIMELINE_PATHCONSTRAINTPOSITION,
+	SP_TIMELINE_PATHCONSTRAINTSPACING,
+	SP_TIMELINE_PATHCONSTRAINTMIX
 } spTimelineType;
 
-struct spTimeline
-{
-    const spTimelineType type;
-    const void* const vtable;
+struct spTimeline {
+	const spTimelineType type;
+	const void* const vtable;
 
 #ifdef __cplusplus
-    spTimeline()
-        :
-        type(SP_TIMELINE_SCALE)
-        ,
-        vtable(0)
-    {
-    }
+	spTimeline() :
+		type(SP_TIMELINE_SCALE),
+		vtable(0) {
+	}
 #endif
 };
 
-void spTimeline_dispose(spTimeline* self);
-void spTimeline_apply(const spTimeline* self, struct spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
-                      int* eventsCount, float alpha);
+void spTimeline_dispose (spTimeline* self);
+void spTimeline_apply (const spTimeline* self, struct spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
+		int* eventsCount, float alpha);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spTimeline Timeline;
@@ -142,30 +132,26 @@ typedef spTimeline Timeline;
 
 /**/
 
-typedef struct spCurveTimeline
-{
-    spTimeline super;
-    float* curves; /* type, x, y, ... */
+typedef struct spCurveTimeline {
+	spTimeline super;
+	float* curves; /* type, x, y, ... */
 
 #ifdef __cplusplus
-    spCurveTimeline()
-        :
-        super()
-        ,
-        curves(0)
-    {
-    }
+	spCurveTimeline() :
+		super(),
+		curves(0) {
+	}
 #endif
 } spCurveTimeline;
 
-void spCurveTimeline_setLinear(spCurveTimeline* self, int frameIndex);
-void spCurveTimeline_setStepped(spCurveTimeline* self, int frameIndex);
+void spCurveTimeline_setLinear (spCurveTimeline* self, int frameIndex);
+void spCurveTimeline_setStepped (spCurveTimeline* self, int frameIndex);
 
 /* Sets the control handle positions for an interpolation bezier curve used to transition from this keyframe to the next.
  * cx1 and cx2 are from 0 to 1, representing the percent of time between the two keyframes. cy1 and cy2 are the percent of
  * the difference between the keyframe's values. */
-void spCurveTimeline_setCurve(spCurveTimeline* self, int frameIndex, float cx1, float cy1, float cx2, float cy2);
-float spCurveTimeline_getCurvePercent(const spCurveTimeline* self, int frameIndex, float percent);
+void spCurveTimeline_setCurve (spCurveTimeline* self, int frameIndex, float cx1, float cy1, float cx2, float cy2);
+float spCurveTimeline_getCurvePercent (const spCurveTimeline* self, int frameIndex, float percent);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spCurveTimeline CurveTimeline;
@@ -177,25 +163,19 @@ typedef spCurveTimeline CurveTimeline;
 
 /**/
 
-typedef struct spBaseTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, angle, ... for rotate. time, x, y, ... for translate and scale. */
-    int boneIndex;
+typedef struct spBaseTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, angle, ... for rotate. time, x, y, ... for translate and scale. */
+	int boneIndex;
 
 #ifdef __cplusplus
-    spBaseTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        boneIndex(0)
-    {
-    }
+	spBaseTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		boneIndex(0) {
+	}
 #endif
 } spBaseTimeline;
 
@@ -205,9 +185,9 @@ static const int ROTATE_ENTRIES = 2;
 
 typedef struct spBaseTimeline spRotateTimeline;
 
-spRotateTimeline* spRotateTimeline_create(int framesCount);
+spRotateTimeline* spRotateTimeline_create (int framesCount);
 
-void spRotateTimeline_setFrame(spRotateTimeline* self, int frameIndex, float time, float angle);
+void spRotateTimeline_setFrame (spRotateTimeline* self, int frameIndex, float time, float angle);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spRotateTimeline RotateTimeline;
@@ -221,9 +201,9 @@ static const int TRANSLATE_ENTRIES = 3;
 
 typedef struct spBaseTimeline spTranslateTimeline;
 
-spTranslateTimeline* spTranslateTimeline_create(int framesCount);
+spTranslateTimeline* spTranslateTimeline_create (int framesCount);
 
-void spTranslateTimeline_setFrame(spTranslateTimeline* self, int frameIndex, float time, float x, float y);
+void spTranslateTimeline_setFrame (spTranslateTimeline* self, int frameIndex, float time, float x, float y);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spTranslateTimeline TranslateTimeline;
@@ -235,9 +215,9 @@ typedef spTranslateTimeline TranslateTimeline;
 
 typedef struct spBaseTimeline spScaleTimeline;
 
-spScaleTimeline* spScaleTimeline_create(int framesCount);
+spScaleTimeline* spScaleTimeline_create (int framesCount);
 
-void spScaleTimeline_setFrame(spScaleTimeline* self, int frameIndex, float time, float x, float y);
+void spScaleTimeline_setFrame (spScaleTimeline* self, int frameIndex, float time, float x, float y);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spScaleTimeline ScaleTimeline;
@@ -249,9 +229,9 @@ typedef spScaleTimeline ScaleTimeline;
 
 typedef struct spBaseTimeline spShearTimeline;
 
-spShearTimeline* spShearTimeline_create(int framesCount);
+spShearTimeline* spShearTimeline_create (int framesCount);
 
-void spShearTimeline_setFrame(spShearTimeline* self, int frameIndex, float time, float x, float y);
+void spShearTimeline_setFrame (spShearTimeline* self, int frameIndex, float time, float x, float y);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spShearTimeline ShearTimeline;
@@ -263,31 +243,25 @@ typedef spShearTimeline ShearTimeline;
 
 static const int COLOR_ENTRIES = 5;
 
-typedef struct spColorTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, r, g, b, a, ... */
-    int slotIndex;
+typedef struct spColorTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, r, g, b, a, ... */
+	int slotIndex;
 
 #ifdef __cplusplus
-    spColorTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        slotIndex(0)
-    {
-    }
+	spColorTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		slotIndex(0) {
+	}
 #endif
 } spColorTimeline;
 
-spColorTimeline* spColorTimeline_create(int framesCount);
+spColorTimeline* spColorTimeline_create (int framesCount);
 
-void spColorTimeline_setFrame(spColorTimeline* self, int frameIndex, float time, float r, float g, float b, float a);
+void spColorTimeline_setFrame (spColorTimeline* self, int frameIndex, float time, float r, float g, float b, float a);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spColorTimeline ColorTimeline;
@@ -297,35 +271,28 @@ typedef spColorTimeline ColorTimeline;
 
 /**/
 
-typedef struct spAttachmentTimeline
-{
-    spTimeline super;
-    int const framesCount;
-    float* const frames; /* time, ... */
-    int slotIndex;
-    const char** const attachmentNames;
+typedef struct spAttachmentTimeline {
+	spTimeline super;
+	int const framesCount;
+	float* const frames; /* time, ... */
+	int slotIndex;
+	const char** const attachmentNames;
 
 #ifdef __cplusplus
-    spAttachmentTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        slotIndex(0)
-        ,
-        attachmentNames(0)
-    {
-    }
+	spAttachmentTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		slotIndex(0),
+		attachmentNames(0) {
+	}
 #endif
 } spAttachmentTimeline;
 
-spAttachmentTimeline* spAttachmentTimeline_create(int framesCount);
+spAttachmentTimeline* spAttachmentTimeline_create (int framesCount);
 
 /* @param attachmentName May be 0. */
-void spAttachmentTimeline_setFrame(spAttachmentTimeline* self, int frameIndex, float time, const char* attachmentName);
+void spAttachmentTimeline_setFrame (spAttachmentTimeline* self, int frameIndex, float time, const char* attachmentName);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spAttachmentTimeline AttachmentTimeline;
@@ -335,31 +302,25 @@ typedef spAttachmentTimeline AttachmentTimeline;
 
 /**/
 
-typedef struct spEventTimeline
-{
-    spTimeline super;
-    int const framesCount;
-    float* const frames; /* time, ... */
-    spEvent** const events;
+typedef struct spEventTimeline {
+	spTimeline super;
+	int const framesCount;
+	float* const frames; /* time, ... */
+	spEvent** const events;
 
 #ifdef __cplusplus
-    spEventTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        events(0)
-    {
-    }
+	spEventTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		events(0) {
+	}
 #endif
 } spEventTimeline;
 
-spEventTimeline* spEventTimeline_create(int framesCount);
+spEventTimeline* spEventTimeline_create (int framesCount);
 
-void spEventTimeline_setFrame(spEventTimeline* self, int frameIndex, spEvent* event);
+void spEventTimeline_setFrame (spEventTimeline* self, int frameIndex, spEvent* event);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spEventTimeline EventTimeline;
@@ -369,34 +330,27 @@ typedef spEventTimeline EventTimeline;
 
 /**/
 
-typedef struct spDrawOrderTimeline
-{
-    spTimeline super;
-    int const framesCount;
-    float* const frames; /* time, ... */
-    const int** const drawOrders;
-    int const slotsCount;
+typedef struct spDrawOrderTimeline {
+	spTimeline super;
+	int const framesCount;
+	float* const frames; /* time, ... */
+	const int** const drawOrders;
+	int const slotsCount;
 
 #ifdef __cplusplus
-    spDrawOrderTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        drawOrders(0)
-        ,
-        slotsCount(0)
-    {
-    }
+	spDrawOrderTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		drawOrders(0),
+		slotsCount(0) {
+	}
 #endif
 } spDrawOrderTimeline;
 
-spDrawOrderTimeline* spDrawOrderTimeline_create(int framesCount, int slotsCount);
+spDrawOrderTimeline* spDrawOrderTimeline_create (int framesCount, int slotsCount);
 
-void spDrawOrderTimeline_setFrame(spDrawOrderTimeline* self, int frameIndex, float time, const int* drawOrder);
+void spDrawOrderTimeline_setFrame (spDrawOrderTimeline* self, int frameIndex, float time, const int* drawOrder);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spDrawOrderTimeline DrawOrderTimeline;
@@ -406,38 +360,30 @@ typedef spDrawOrderTimeline DrawOrderTimeline;
 
 /**/
 
-typedef struct spDeformTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, ... */
-    int const frameVerticesCount;
-    const float** const frameVertices;
-    int slotIndex;
-    spAttachment* attachment;
+typedef struct spDeformTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, ... */
+	int const frameVerticesCount;
+	const float** const frameVertices;
+	int slotIndex;
+	spAttachment* attachment;
 
 #ifdef __cplusplus
-    spDeformTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        frameVerticesCount(0)
-        ,
-        frameVertices(0)
-        ,
-        slotIndex(0)
-    {
-    }
+	spDeformTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		frameVerticesCount(0),
+		frameVertices(0),
+		slotIndex(0) {
+	}
 #endif
 } spDeformTimeline;
 
-spDeformTimeline* spDeformTimeline_create(int framesCount, int frameVerticesCount);
+spDeformTimeline* spDeformTimeline_create (int framesCount, int frameVerticesCount);
 
-void spDeformTimeline_setFrame(spDeformTimeline* self, int frameIndex, float time, float* vertices);
+void spDeformTimeline_setFrame (spDeformTimeline* self, int frameIndex, float time, float* vertices);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spDeformTimeline DeformTimeline;
@@ -449,31 +395,25 @@ typedef spDeformTimeline DeformTimeline;
 
 static const int IKCONSTRAINT_ENTRIES = 3;
 
-typedef struct spIkConstraintTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, mix, bendDirection, ... */
-    int ikConstraintIndex;
+typedef struct spIkConstraintTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, mix, bendDirection, ... */
+	int ikConstraintIndex;
 
 #ifdef __cplusplus
-    spIkConstraintTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        ikConstraintIndex(0)
-    {
-    }
+	spIkConstraintTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		ikConstraintIndex(0) {
+	}
 #endif
 } spIkConstraintTimeline;
 
-spIkConstraintTimeline* spIkConstraintTimeline_create(int framesCount);
+spIkConstraintTimeline* spIkConstraintTimeline_create (int framesCount);
 
-void spIkConstraintTimeline_setFrame(spIkConstraintTimeline* self, int frameIndex, float time, float mix, int bendDirection);
+void spIkConstraintTimeline_setFrame (spIkConstraintTimeline* self, int frameIndex, float time, float mix, int bendDirection);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spIkConstraintTimeline IkConstraintTimeline;
@@ -485,31 +425,25 @@ typedef spIkConstraintTimeline IkConstraintTimeline;
 
 static const int TRANSFORMCONSTRAINT_ENTRIES = 5;
 
-typedef struct spTransformConstraintTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
-    int transformConstraintIndex;
+typedef struct spTransformConstraintTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
+	int transformConstraintIndex;
 
 #ifdef __cplusplus
-    spTransformConstraintTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        transformConstraintIndex(0)
-    {
-    }
+	spTransformConstraintTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		transformConstraintIndex(0) {
+	}
 #endif
 } spTransformConstraintTimeline;
 
-spTransformConstraintTimeline* spTransformConstraintTimeline_create(int framesCount);
+spTransformConstraintTimeline* spTransformConstraintTimeline_create (int framesCount);
 
-void spTransformConstraintTimeline_setFrame(spTransformConstraintTimeline* self, int frameIndex, float time, float rotateMix, float translateMix, float scaleMix, float shearMix);
+void spTransformConstraintTimeline_setFrame (spTransformConstraintTimeline* self, int frameIndex, float time, float rotateMix, float translateMix, float scaleMix, float shearMix);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spTransformConstraintTimeline TransformConstraintTimeline;
@@ -521,31 +455,25 @@ typedef spTransformConstraintTimeline TransformConstraintTimeline;
 
 static const int PATHCONSTRAINTPOSITION_ENTRIES = 2;
 
-typedef struct spPathConstraintPositionTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
-    int pathConstraintIndex;
+typedef struct spPathConstraintPositionTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
+	int pathConstraintIndex;
 
 #ifdef __cplusplus
-    spPathConstraintPositionTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        pathConstraintIndex(0)
-    {
-    }
+	spPathConstraintPositionTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		pathConstraintIndex(0) {
+	}
 #endif
 } spPathConstraintPositionTimeline;
 
-spPathConstraintPositionTimeline* spPathConstraintPositionTimeline_create(int framesCount);
+spPathConstraintPositionTimeline* spPathConstraintPositionTimeline_create (int framesCount);
 
-void spPathConstraintPositionTimeline_setFrame(spPathConstraintPositionTimeline* self, int frameIndex, float time, float value);
+void spPathConstraintPositionTimeline_setFrame (spPathConstraintPositionTimeline* self, int frameIndex, float time, float value);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spPathConstraintPositionTimeline PathConstraintPositionTimeline;
@@ -557,31 +485,25 @@ typedef spPathConstraintPositionTimeline PathConstraintPositionTimeline;
 
 static const int PATHCONSTRAINTSPACING_ENTRIES = 2;
 
-typedef struct spPathConstraintSpacingTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
-    int pathConstraintIndex;
+typedef struct spPathConstraintSpacingTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
+	int pathConstraintIndex;
 
 #ifdef __cplusplus
-    spPathConstraintSpacingTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        pathConstraintIndex(0)
-    {
-    }
+	spPathConstraintSpacingTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		pathConstraintIndex(0) {
+	}
 #endif
 } spPathConstraintSpacingTimeline;
 
-spPathConstraintSpacingTimeline* spPathConstraintSpacingTimeline_create(int framesCount);
+spPathConstraintSpacingTimeline* spPathConstraintSpacingTimeline_create (int framesCount);
 
-void spPathConstraintSpacingTimeline_setFrame(spPathConstraintSpacingTimeline* self, int frameIndex, float time, float value);
+void spPathConstraintSpacingTimeline_setFrame (spPathConstraintSpacingTimeline* self, int frameIndex, float time, float value);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spPathConstraintSpacingTimeline PathConstraintSpacingTimeline;
@@ -593,31 +515,25 @@ typedef spPathConstraintSpacingTimeline PathConstraintSpacingTimeline;
 
 static const int PATHCONSTRAINTMIX_ENTRIES = 3;
 
-typedef struct spPathConstraintMixTimeline
-{
-    spCurveTimeline super;
-    int const framesCount;
-    float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
-    int pathConstraintIndex;
+typedef struct spPathConstraintMixTimeline {
+	spCurveTimeline super;
+	int const framesCount;
+	float* const frames; /* time, rotate mix, translate mix, scale mix, shear mix, ... */
+	int pathConstraintIndex;
 
 #ifdef __cplusplus
-    spPathConstraintMixTimeline()
-        :
-        super()
-        ,
-        framesCount(0)
-        ,
-        frames(0)
-        ,
-        pathConstraintIndex(0)
-    {
-    }
+	spPathConstraintMixTimeline() :
+		super(),
+		framesCount(0),
+		frames(0),
+		pathConstraintIndex(0) {
+	}
 #endif
 } spPathConstraintMixTimeline;
 
-spPathConstraintMixTimeline* spPathConstraintMixTimeline_create(int framesCount);
+spPathConstraintMixTimeline* spPathConstraintMixTimeline_create (int framesCount);
 
-void spPathConstraintMixTimeline_setFrame(spPathConstraintMixTimeline* self, int frameIndex, float time, float rotateMix, float translateMix);
+void spPathConstraintMixTimeline_setFrame (spPathConstraintMixTimeline* self, int frameIndex, float time, float rotateMix, float translateMix);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spPathConstraintMixTimeline PathConstraintMixTimeline;
