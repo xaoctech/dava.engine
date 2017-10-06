@@ -44,7 +44,7 @@ ParticleVector3Widget::ParticleVector3Widget(const std::string& label, const DAV
 
 DAVA::Vector3 ParticleVector3Widget::GetValue() const
 {
-    return { xSpin->value(), ySpin->value(), zSpin->value() };
+    return { static_cast<DAVA::float32>(xSpin->value()), static_cast<DAVA::float32>(ySpin->value()), static_cast<DAVA::float32>(zSpin->value()) };
 }
 
 void ParticleVector3Widget::SetValue(const DAVA::Vector3& value)
