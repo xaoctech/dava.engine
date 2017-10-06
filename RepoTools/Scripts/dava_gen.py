@@ -7,6 +7,7 @@ import platform
 import argparse
 from subprocess import call
 
+g_engine_dir_name="dava.framework"
 g_framework_path = ""
 g_toolchains_full_path = ""
 g_toolchains_relative_framework_path = "Sources/CMake/Toolchains/"
@@ -25,23 +26,21 @@ g_is_unity_build = False
 def is_exe(fpath):
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-def search_program(program):
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        folders = os.environ["PATH"].split(os.pathsep)
-        folders.append("/Applications/CMake.app/Contents/bin")
-        for path in folders:
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if platform.system() == 'Windows':
-                exe_file = exe_file + '.exe'
-            if is_exe(exe_file):
-                return exe_file
+def get_cmake_executable():
+    host=sys.platform
+    cmake_executable=None
+    if host == "win32":
+        cmake_executable=os.path.join(g_framework_path, 'Bin', 'CMakeWin32', 'bin', 'cmake.exe')
+    elif host == "darwin":
+        cmake_executable=os.path.join(g_framework_path, 'Bin', 'CMakeMac', 'CMake.app', 'Contents', 'bin', 'cmake')
 
+    if not os.path.isfile(cmake_executable):
+        cmake_executable=None
+
+    if cmake_executable is not None:
+        return cmake_executable
     return False
+
 
 def parse_additional_params(additional):
     global g_is_console
@@ -76,27 +75,13 @@ def setup_framework_env():
     global g_toolchains_relative_framework_path
     global g_cmake_file_path
 
-    # take current path and make it easier understandable
-    path = os.path.realpath(sys.argv[0])
-    path = path.replace('\\', '/')
-    path = os.path.normpath(path)
-    path = path if path.endswith('/') else path + '/'
-
-    # take path like "some/folder/dava.framework.something/inside/"
-    # and split it to "some/folder/" + "dava.framework.something/" + "inside/"
-    regex = r"(dava\.framework[^/]*/)"
-    tail = re.split(regex, path)
-
-    # determine full path to dava.framework folder
-    g_framework_path = ""
-    if len(tail) >= 3:
-        g_framework_path = tail[0] + tail[1]
-
-    if "" == g_framework_path:
+    script_path=os.path.abspath(__file__)
+    i=script_path.find(g_engine_dir_name)
+    if i == -1:
         return False
 
-    g_toolchains_full_path = os.path.realpath( g_framework_path + g_toolchains_relative_framework_path )
-    g_toolchains_full_path = g_toolchains_full_path + '/'
+    g_framework_path=script_path[0:i+len(g_engine_dir_name)]
+    g_toolchains_full_path = os.path.realpath(os.path.join(g_framework_path, g_toolchains_relative_framework_path))
 
     return True
 
@@ -109,7 +94,7 @@ def get_project_type(dst_platform, is_console):
         project_string += "Xcode"
 
     if "windows" == dst_platform:
-        project_string += "Visual Studio 12"
+        project_string += "Visual Studio 15 2017"
 
     if "android" == dst_platform:
         current_platform = platform.system()
@@ -132,15 +117,15 @@ def get_toolchain(input_platform, input_project_type):
     global g_android_toolchain
     global g_is_x64
 
-    toolchain_base = "-DCMAKE_TOOLCHAIN_FILE=" + g_toolchains_full_path;
+    toolchain_base = "-DCMAKE_TOOLCHAIN_FILE="
     toolchain_string = ""
     output_project = input_project_type
 
     if "ios" == input_platform:
-        toolchain_string = toolchain_base + g_ios_toolchain
+        toolchain_string = toolchain_base + os.path.join(g_toolchains_full_path, g_ios_toolchain)
 
     if "android" == input_platform:
-        toolchain_string = toolchain_base + g_android_toolchain
+        toolchain_string = toolchain_base + os.path.join(g_toolchains_full_path, g_android_toolchain)
 
     if "windows" == input_platform and g_is_x64:
         output_project += " Win64";
@@ -202,7 +187,7 @@ def main():
             os.makedirs(g_generation_dir)
         os.chdir( g_generation_dir )
 
-    cmake_program = search_program("cmake")
+    cmake_program = get_cmake_executable()
 
     if False == cmake_program:
         print "cmake command not found."

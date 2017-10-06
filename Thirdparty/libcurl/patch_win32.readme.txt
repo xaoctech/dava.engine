@@ -1,4 +1,4 @@
-Whats changed: 
+Whats changed (overrided in override_win32.props):
 1. Added ipv6 support
 2. Added curl build definitions: 
   CURL_DISABLE_FTP

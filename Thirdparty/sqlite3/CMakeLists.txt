@@ -8,8 +8,6 @@ set(SOURCE_FILES sqlite3.c)
 add_library(sqlite3 STATIC ${SOURCE_FILES})
 
 if(WIN32)
-  set ( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd" ) 
-  set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT" ) 
   if(WIN_UWP)
      add_definitions(-DSQLITE_OS_WINRT=1)
   endif()
