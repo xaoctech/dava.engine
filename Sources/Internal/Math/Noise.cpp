@@ -286,27 +286,8 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
     float32 n_xyz = Lerp(n_yz.x, n_yz.y, fade_xyz.x);
     return n_xyz;
 }
-/*
-Vector3 Generate4OctavesPerlin(const Vector3& p)
-{
-    Vector3 total(0.0f, 0.0f, 0.0f);
-    float frequency = 8.f;
-    float amplitude = 1.0f;
-    float persistence = 0.5f;
-    uint32 octaves = 4;
-    for (uint32 i = 0; i < octaves; ++i)
-    {
-        float n0 = 0.5f * PerlinNoise3d(p * frequency, frequency) + 0.5f;
-        float n1 = 0.5f * PerlinNoise3d(p + Vector3(123.4f, 129845.6f, -1239.1f), frequency) + 0.5f;
-        float n2 = 0.5f * PerlinNoise3d(p + Vector3(-9519.0, 9051.0, -123.0), frequency) + 0.5f;
-        total += Vector3(n0, n1, n2) * amplitude;
-        frequency *= 2.0f;
-        amplitude *= persistence;
-    }
-    return total;
-}
-*/
-Vector3 Generate4OctavesPerlin(const Vector2& p)
+
+Vector3 Generate2OctavesPerlin(const Vector2& p)
 {
     Vector3 total(0.0f, 0.0f, 0.0f);
     float frequency = 8.f;
@@ -315,9 +296,6 @@ Vector3 Generate4OctavesPerlin(const Vector2& p)
     uint32 octaves = 2;
     for (uint32 i = 0; i < octaves; ++i)
     {
-        //float n0 = 0.5f * PerlinNoise3d(p3 * frequency, frequency) + 0.5f;
-        //float n1 = 0.5f * PerlinNoise3d(p3 + Vector3(123.4f, 129845.6f, -1239.1f), frequency) + 0.5f;
-        //float n2 = 0.5f * PerlinNoise3d(p3 + Vector3(-9519.0f, 9051.0f, -123.0f), frequency) + 0.5f;
         float n0 = PerlinNoise2d(p, frequency);
         float n1 = PerlinNoise2d(p + Vector2(123.4f, 129845.6f), frequency);
         float n2 = PerlinNoise2d(p + Vector2(-9519.0f, 9051.0f), frequency);

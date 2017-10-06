@@ -13,6 +13,8 @@ namespace DAVA
 {
 namespace ParticleForces
 {
+namespace ParticleForcesDetail
+{
 const int32 noiseWidth = 256;
 const int32 noiseHeight = 256;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
@@ -27,19 +29,19 @@ void GenerateNoise()
         for (int32 j = 0; j < noiseHeight; ++j)
         {
             q.y = j * yFactor;
-            noise[i][j] = Generate4OctavesPerlin(q);
+            noise[i][j] = Generate2OctavesPerlin(q);
         }
     }
 }
 
-const uint32 sphereRandSize = 1024;
-Array<Vector3, sphereRandSize> sphereRandomVectors;
+const uint32 sphereRandVectorsSize = 1024;
+Array<Vector3, sphereRandVectorsSize> sphereRandomVectors;
 void GenerateSphereRandomVectors()
 {
     uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
     std::mt19937 generator(seed);
     std::uniform_real_distribution<float32> uinform01(0.0f, 1.0f);
-    for (uint32 i = 0; i < sphereRandSize; ++i)
+    for (uint32 i = 0; i < sphereRandVectorsSize; ++i)
     {
         float32 theta = 2 * PI * uinform01(generator);
         float32 phi = acos(1 - 2 * uinform01(generator));
@@ -47,20 +49,30 @@ void GenerateSphereRandomVectors()
         sphereRandomVectors[i] = { sinPhi * cos(theta), sinPhi * sin(theta), cos(phi) };
     }
 }
-
-const float32 windPeriod = 2 * PI;
-const uint32 windTableSize = 64;
-Array<float32, windTableSize> windValuesTable;
+}
 
 void Init()
 {
-    for (int32 i = 0; i < windTableSize; i++) // Taken from wind system.
-    {
-        float32 t = windPeriod * i / static_cast<float32>(windTableSize);
-        windValuesTable[i] = (2.f + std::sin(t) * 0.7f + std::cos(t * 10) * 0.3f) * 0.5f;
-    }
-    GenerateNoise();
-    GenerateSphereRandomVectors();
+    ParticleForcesDetail::GenerateNoise();
+    ParticleForcesDetail::GenerateSphereRandomVectors();
+}
+
+template <typename T>
+T GetValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife, PropertyLine<T>* line, T value)
+{
+    if (force->timingType == ParticleDragForce::eTimingType::CONSTANT || line == nullptr)
+        return value;
+
+    if (force->timingType == ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE)
+        return line->GetValue(particleOverLife);
+
+    if (force->timingType == ParticleDragForce::eTimingType::OVER_LAYER_LIFE)
+        return line->GetValue(layerOverLife);
+
+    if (force->timingType == ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE)
+        return line->GetValue(particleLife);
+
+    return value;
 }
 
 void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
@@ -69,10 +81,6 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition);
-
-Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife);
-float32 GetTurbulenceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife);
-float32 GetWindValueFromTable(const Vector3& inPosition, const ParticleDragForce* force, float32 layerOverLife, int32 index);
 
 void ApplyForce(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, Particle* particle, const Vector3& prevEffectSpacePosition)
 {
@@ -141,7 +149,7 @@ void ApplyDragForce(Entity* parent, const ParticleDragForce* force, Vector3& eff
             return;
     }
 
-    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife, particle->life) * dt;
+    Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
     Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z));
     effectSpaceVelocity *= v;
 }
@@ -161,28 +169,29 @@ void ApplyLorentzForce(Entity* parent, const ParticleDragForce* force, Vector3& 
         float32 d = 1.0f / std::sqrt(len);
         forceDir *= d;
     }
-    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife, particle->life) * dt;
+    Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
     effectSpaceVelocity += forceStrength * forceDir;
 }
 
 void ApplyGravity(const ParticleDragForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
 {
-    effectSpaceVelocity += effectSpaceDown * GetForceValue(force, particleOverLife, layerOverLife, particle->life).x * dt;
+    effectSpaceVelocity += effectSpaceDown * GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower).x * dt;
 }
 
 void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
 {
+    using namespace ParticleForcesDetail;
     if (!force->isInfinityRange)
     {
         if (!IsPositionInForceShape(parent, force, effectSpacePosition))
             return;
     }
-    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife, particle->life) * dt;
+    Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
 
     intptr_t partInd = reinterpret_cast<intptr_t>(particle);
     uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
     Vector3 turbulence;
-    float32 tubulencePower = GetTurbulenceValue(force, particleOverLife, layerOverLife, particle->life);
+    float32 tubulencePower = GetValue(force, particleOverLife, layerOverLife, particle->life, force->turbulenceLine.Get(), force->windTurbulence);
 
     uint32 offset = particleIndex % noiseWidth;
     float32 windMultiplier = 1.0f;
@@ -212,10 +221,10 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
                 turbulence *= -1.0f;
         }
         turbulence *= tubulencePower * dt;
-        effectSpacePosition += turbulence; // how with drug and other forces, turb not adding to velocity? turbulence to drug and multiply by v. add to position when velocity added. note add drug to v.
+        effectSpacePosition += turbulence;
     }
     static const float32 windScale = 100.0f; // Artiom request.
-    effectSpaceVelocity += force->direction * dt * /*GetWindValueFromTable(effectSpacePosition, force, particleOverLife, particleIndex)*/ windMultiplier * forceStrength.x * windScale; // +turbulence;
+    effectSpaceVelocity += force->direction * dt * windMultiplier * forceStrength.x * windScale;
 }
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle)
@@ -225,7 +234,7 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
         if (!IsPositionInForceShape(parent, force, effectSpacePosition))
             return;
     }
-    Vector3 forceStrength = GetForceValue(force, particleOverLife, layerOverLife, particle->life) * dt;
+    Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
     Vector3 forcePosition = force->position;
     Vector3 forceDirection;
     Vector3 toCenter;
@@ -235,8 +244,8 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
     {
         intptr_t partInd = reinterpret_cast<intptr_t>(particle);
         uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
-        particleIndex %= sphereRandSize;
-        forcePosition += sphereRandomVectors[particleIndex] * force->pointGravityRadius;
+        particleIndex %= ParticleForcesDetail::sphereRandVectorsSize;
+        forcePosition += ParticleForcesDetail::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
         forceDirection = forcePosition - effectSpacePosition;
         toCenter = (force->position - effectSpacePosition);
         toCenterDist = toCenter.SquareLength();
@@ -316,8 +325,8 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
         {
             intptr_t partInd = reinterpret_cast<intptr_t>(particle);
             uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
-            particleIndex %= sphereRandSize;
-            rndVec = sphereRandomVectors[particleIndex];
+            particleIndex %= ParticleForcesDetail::sphereRandVectorsSize;
+            rndVec = ParticleForcesDetail::sphereRandomVectors[particleIndex];
             if (rndVec.DotProduct(normal) < 0)
                 rndVec = -rndVec;
 
@@ -364,54 +373,6 @@ void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3
         else
             effectSpaceVelocity = Vector3::Zero;
     }
-}
-
-Vector3 GetForceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife)
-{
-    if (force->timingType == ParticleDragForce::eTimingType::CONSTANT || force->forcePowerLine == nullptr)
-        return force->forcePower;
-
-    if (force->timingType == ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE)
-        return force->forcePowerLine->GetValue(particleOverLife);
-
-    if (force->timingType == ParticleDragForce::eTimingType::OVER_LAYER_LIFE)
-        return force->forcePowerLine->GetValue(layerOverLife);
-
-    if (force->timingType == ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE)
-        return force->forcePowerLine->GetValue(particleLife);
-
-    return force->forcePower;
-}
-
-float32 GetTurbulenceValue(const ParticleDragForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife)
-{
-    if (force->timingType == ParticleDragForce::eTimingType::CONSTANT || force->turbulenceLine == nullptr)
-        return force->windTurbulence;
-
-    if (force->timingType == ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE)
-        return force->turbulenceLine->GetValue(particleOverLife);
-
-    if (force->timingType == ParticleDragForce::eTimingType::OVER_LAYER_LIFE)
-        return force->turbulenceLine->GetValue(layerOverLife);
-
-    if (force->timingType == ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE)
-        return force->turbulenceLine->GetValue(particleLife);
-
-    return force->windTurbulence;
-}
-
-float32 GetWindValueFromTable(const Vector3& inPosition, const ParticleDragForce* force, float32 layerOverLife, int32 index)
-{
-    if (abs(force->windFrequency) < EPSILON)
-        return 1.0f;
-
-    Vector3 dir = force->direction;
-    Vector3 projPt = dir * inPosition.DotProduct(dir);
-    float32 tMod = std::fmod((Abs(index) + layerOverLife) * force->windFrequency, windPeriod);
-    int32 i = static_cast<int32>(std::floor(tMod / windPeriod * windTableSize));
-    return (std::sin(Abs(index) % 255 + layerOverLife * force->windFrequency) * 0.6f + std::cos(Abs(index) % 255 + layerOverLife * force->windFrequency) * 0.4f) + force->windBias;
-    DVASSERT(i >= 0 && i < windTableSize);
-    return windValuesTable[i];
 }
 }
 }
