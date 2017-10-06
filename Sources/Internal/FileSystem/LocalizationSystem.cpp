@@ -13,6 +13,7 @@
 #include "Utils/UTF8Utils.h"
 #include "Utils/Utils.h"
 
+#define YAML_DECLARE_STATIC
 #include "yaml/yaml.h"
 
 #if defined(__DAVAENGINE_ANDROID__)

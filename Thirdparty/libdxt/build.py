@@ -8,9 +8,9 @@ def get_supported_targets(platform):
     if platform == 'win32':
         return ['win32']
     elif platform == 'darwin':
-        return ['macos', 'ios', 'android']
+        return ['macos']
     elif platform == 'linux':
-        return ['android', 'linux']
+        return ['linux']
     else:
         return []
 
@@ -24,10 +24,6 @@ def build_for_target(target, working_directory_path, root_project_path):
         _build_win32(working_directory_path, root_project_path)
     elif target == 'macos':
         _build_macos(working_directory_path, root_project_path)
-    elif target == 'ios':
-        _build_ios(working_directory_path, root_project_path)
-    elif target == 'android':
-        _build_android(working_directory_path, root_project_path)
     elif target == 'linux':
         _build_linux(working_directory_path, root_project_path)
 
@@ -39,25 +35,26 @@ def get_download_info():
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
 
-    # TODO: implement win32
+    build_utils.build_and_copy_libraries_win32_cmake(
+        os.path.join(working_directory_path, '_build'),
+        source_folder_path,
+        root_project_path,
+        "dxt.sln",
+        "dxt",
+        "dxt.lib", "dxt.lib",
+        "libdxt.lib", "libdxt.lib",
+        "libdxt.lib", "libdxt.lib",
+        static_runtime=False)
+
+    _copy_headers(source_folder_path, root_project_path)
 
 
 def _build_macos(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
 
     # TODO: implement macos
+    raise RuntimeError('Building for macos is not implemented. Do it yourself')
 
-
-def _build_ios(working_directory_path, root_project_path):
-    source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
-
-    # TODO: implement ios
-
-
-def _build_android(working_directory_path, root_project_path):
-    source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')
-
-    # TODO: implement android
 
 def _build_linux(working_directory_path, root_project_path):
     source_folder_path=os.path.join(root_project_path, 'Libs/NVTT')

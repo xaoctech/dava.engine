@@ -39,21 +39,20 @@ extern "C" {
 #endif
 
 typedef struct spVertexAttachment spVertexAttachment;
-struct spVertexAttachment
-{
-    spAttachment super;
+struct spVertexAttachment {
+	spAttachment super;
 
-    int bonesCount;
-    int* bones;
+	int bonesCount;
+	int* bones;
 
-    int verticesCount;
-    float* vertices;
+	int verticesCount;
+	float* vertices;
 
-    int worldVerticesLength;
+	int worldVerticesLength;
 };
 
-void spVertexAttachment_computeWorldVertices(spVertexAttachment* self, spSlot* slot, float* worldVertices);
-void spVertexAttachment_computeWorldVertices1(spVertexAttachment* self, int start, int count, spSlot* slot, float* worldVertices, int offset);
+void spVertexAttachment_computeWorldVertices (spVertexAttachment* self, spSlot* slot, float* worldVertices);
+void spVertexAttachment_computeWorldVertices1 (spVertexAttachment* self, int start, int count, spSlot* slot, float* worldVertices, int offset);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spVertexAttachment VertexAttachment;

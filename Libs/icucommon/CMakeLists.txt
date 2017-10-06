@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(icucommon)
 
-option(BUILD_STUBDATA "Build stundata library" ON)
+option(BUILD_STUBDATA "Build stubdata library" ON)
 
 #TODO: Commented sources fails under UWP
 
@@ -174,10 +174,7 @@ target_include_directories(icucommon PUBLIC
     source/i18n
 )
 
-if(WIN32)
-  set ( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd" ) 
-  set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT" ) 
-elseif(APPLE)
+if(APPLE)
   if(IOS)
     set( CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY iPhone/iPad )
     set( CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 7.0)
