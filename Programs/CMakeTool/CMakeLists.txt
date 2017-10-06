@@ -15,11 +15,6 @@ include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)
 include_directories   ( "Classes" )
 
-if ( WIN32 )
-    set( LIBRARIES_RELEASE  "msvcrt.lib" )
-    set( LIBRARIES_DEBUG    "msvcrtd.lib" )
-endif()
-
 file                          ( GLOB RCC_LIST "DataQt/*.qrc" )
 qt5_add_resources             ( RCC_APP_SRCS  ${RCC_LIST} )
 

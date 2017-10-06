@@ -15,11 +15,6 @@ include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)             
 include_directories   ( "Classes" )
 
-if ( WIN32 )
-    set( LIB_RELEASE  "msvcrt.lib" )
-    set( LIB_DEBUG    "msvcrtd.lib" )
-endif()
-
 file                  ( GLOB UI_LIST "DataQt/*.ui" )
 qt5_wrap_ui           ( UI_APP_HDRS  ${UI_LIST} )
                    
