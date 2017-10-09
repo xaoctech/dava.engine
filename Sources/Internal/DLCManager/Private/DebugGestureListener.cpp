@@ -3,6 +3,7 @@
 #include "Input/InputSystem.h"
 #include "Input/Mouse.h"
 #include "DeviceManager/DeviceManager.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -15,13 +16,13 @@ DebugGestureListener::DebugGestureListener()
     }
     else
     {
-        Engine::Instance()->windowCreated.Connect(this, &DebugGestureListener::OnWindowCreated);
+        Engine::Instance()->gameLoopStarted.Connect(this, &DebugGestureListener::OnGameLoopStarted);
     }
 }
 
 DebugGestureListener::~DebugGestureListener()
 {
-    Engine::Instance()->windowCreated.Disconnect(this);
+    Engine::Instance()->gameLoopStarted.Disconnect(this);
 
     InputSystem* inputSys = GetEngineContext()->inputSystem;
     if (inputSys)
@@ -39,9 +40,13 @@ void DebugGestureListener::AddListenerOnMouseAndTouch()
         eInputDevices deviceMask = eInputDeviceTypes::MOUSE | eInputDeviceTypes::TOUCH_SURFACE;
         handlerToken = inputSystem->AddHandler(deviceMask, Function<bool(const InputEvent&)>(this, &DebugGestureListener::OnMouseOrTouch));
     }
+    else
+    {
+        Logger::Error("can't add handler for debug gesture listener");
+    }
 }
 
-void DebugGestureListener::OnWindowCreated(Window*)
+void DebugGestureListener::OnGameLoopStarted()
 {
     AddListenerOnMouseAndTouch();
 }

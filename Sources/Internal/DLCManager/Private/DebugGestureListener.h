@@ -17,7 +17,7 @@ public:
     Signal<> debugGestureMatch;
 
 private:
-    void OnWindowCreated(Window* window);
+    void OnGameLoopStarted();
     bool OnMouseOrTouch(const InputEvent& ev);
     RingArray<InputEvent> history;
     uint32 handlerToken = 0;

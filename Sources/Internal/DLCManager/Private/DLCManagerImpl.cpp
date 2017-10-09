@@ -183,16 +183,19 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
 
 void DLCManagerImpl::DumpToJsonProfilerTrace()
 {
-    FileSystem* fs = GetEngineContext()->fileSystem;
-    FilePath docPath = fs->GetPublicDocumentsPath();
-    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-    std::ofstream file(name);
-    char buf[16 * 1024];
-    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
-    if (file)
+    if (profiler.IsStarted() == false)
     {
-        Vector<TraceEvent> events = profiler.GetTrace();
-        TraceEvent::DumpJSON(events, file);
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        FilePath docPath = fs->GetPublicDocumentsPath();
+        String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+        std::ofstream file(name);
+        char buf[16 * 1024];
+        file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+        if (file)
+        {
+            Vector<TraceEvent> events = profiler.GetTrace();
+            TraceEvent::DumpJSON(events, file);
+        }
     }
 }
 
