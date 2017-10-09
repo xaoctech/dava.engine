@@ -459,7 +459,14 @@ void WindowNativeBridge::SwipeWithEvent(NSEvent* theEvent)
     eModifierKeys modifierKeys = GetModifierKeys(theEvent);
     float32 deltaX = [theEvent deltaX];
     float32 deltaY = [theEvent deltaY];
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, deltaX, deltaY, modifierKeys));
+
+    NSSize sz = [renderView frame].size;
+    NSPoint pt = [theEvent locationInWindow];
+
+    float32 x = pt.x;
+    float32 y = sz.height - pt.y;
+
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, x, y, deltaX, deltaY, modifierKeys));
 }
 
 eModifierKeys WindowNativeBridge::GetModifierKeys(NSEvent* theEvent)
@@ -577,18 +584,24 @@ void WindowNativeBridge::SetSystemCursorCapture(bool capture)
 void WindowNativeBridge::UpdateSystemCursorVisible()
 {
     static bool mouseVisibleState = true;
-
+    
+#ifdef __DAVAENGINE_STEAM__ // fix for Steam overlay only
     bool visible = !cursorInside || mouseVisible;
+#else
+    bool visible = mouseVisible;
+#endif
     if (mouseVisibleState != visible)
     {
         mouseVisibleState = visible;
         if (visible)
         {
-            CGDisplayShowCursor(kCGDirectMainDisplay);
+            CGError check = CGDisplayShowCursor(kCGDirectMainDisplay);
+            DVASSERT(kCGErrorSuccess == check);
         }
         else
         {
-            CGDisplayHideCursor(kCGDirectMainDisplay);
+            CGError check = CGDisplayHideCursor(kCGDirectMainDisplay);
+            DVASSERT(kCGErrorSuccess == check);
         }
     }
 }

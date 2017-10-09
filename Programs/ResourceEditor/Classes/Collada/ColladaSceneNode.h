@@ -32,9 +32,7 @@ public:
     void AddLight(ColladaLight* light);
     void AddCamera(ColladaCamera* cam);
 
-    // skeletal animation functions & variables
-    void MarkJoint();
-    bool isJoint;
+    // skeletal variables
     Matrix4 inverse0;
 
     // recursive light setup function

@@ -13,6 +13,7 @@ import time
 # Allow importing from Private folder
 sys.path.append('Private')
 import build_utils
+import build_config
 
 
 # Path for temporary output produced by builders
@@ -197,6 +198,10 @@ def parse_args():
         '--ignore-errors',
         action='store_true',
         help='do not halt execution if a builder failed')
+    parser.add_argument(
+        '--suppress_build_warnings',
+        action='store_true',
+        help='Do not output compiler warning messages while building libraries')
 
     args = parser.parse_args()
 
@@ -225,8 +230,11 @@ if __name__ == "__main__":
     args = parse_args()
 
     build_utils.verbose = args.verbose
+    build_utils.suppress_build_warnings = args.suppress_build_warnings;
     build_utils.output_folder_path = output_path
     build_utils.dava_folder_path = os.path.abspath('..')
+
+    build_config.configure(host_platform, build_utils.dava_folder_path)
 
     targets_to_process = all_targets if args.target == 'all' else [args.target]
 

@@ -80,6 +80,7 @@ struct DockPanelInfo
     //path where action for change dock visibility will be placed
     ActionPlacementInfo actionPlacementInfo;
     bool tabbed = true;
+    bool ensureVisible = false; // force make panel visible in its dock area on create
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
     enum class Fields
@@ -245,7 +246,7 @@ public:
     virtual void ClearMessage(const WindowKey& windowKey) = 0;
     virtual int ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog) = 0;
     virtual ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) = 0;
-    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) = 0;
+    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const = 0;
 
     virtual QString GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;
     virtual QString GetSaveFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;

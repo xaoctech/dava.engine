@@ -56,6 +56,16 @@ inline Vector3 PxVec3ToVector3(const physx::PxVec3& in)
     return Vector3(in.x, in.y, in.z);
 }
 
+inline Vector3 PxExtendedVec3ToVector3(const physx::PxExtendedVec3 in)
+{
+    return Vector3(static_cast<float>(in.x), static_cast<float>(in.y), static_cast<float>(in.z));
+}
+
+inline physx::PxExtendedVec3 Vector3ToPxExtendedVec3(const Vector3& in)
+{
+    return physx::PxExtendedVec3(static_cast<physx::PxExtended>(in.x), static_cast<physx::PxExtended>(in.y), static_cast<physx::PxExtended>(in.z));
+}
+
 inline physx::PxQuat QuaternionToPxQuat(const Quaternion& in)
 {
     return physx::PxQuat(in.x, in.y, in.z, in.w);

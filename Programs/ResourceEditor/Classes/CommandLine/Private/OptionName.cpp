@@ -58,6 +58,9 @@ const DAVA::String OptionName::Camera("-camera");
 const DAVA::String OptionName::Validate("-validate");
 const DAVA::String OptionName::Count("-count");
 
+const DAVA::String OptionName::Tag("-tag");
+const DAVA::String OptionName::TagList("-taglist");
+
 const DAVA::String OptionName::MakeNameForGPU(DAVA::eGPUFamily gpuFamily)
 {
     return ("-" + DAVA::GPUFamilyDescriptor::GetGPUName(gpuFamily));

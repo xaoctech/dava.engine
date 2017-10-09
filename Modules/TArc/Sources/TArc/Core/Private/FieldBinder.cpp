@@ -1,5 +1,7 @@
 #include "TArc/Core/FieldBinder.h"
 #include "TArc/DataProcessing/DataListener.h"
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 namespace DAVA
 {
@@ -8,6 +10,23 @@ namespace TArc
 class UniversalDataListener : public DataListener
 {
 public:
+    UniversalDataListener(const Reflection& model_, ContextAccessor* accessor_)
+        : type(nullptr)
+        , accessor(accessor_)
+        , model(model_)
+    {
+        const Type* t = model.GetValueType();
+        if (t->IsPointer())
+        {
+            t = t->Deref();
+        }
+        type = ReflectedTypeDB::GetByType(t);
+        wrapper = accessor->CreateWrapper([this](const DataContext*) {
+            return model;
+        });
+        wrapper.SetListener(this);
+    }
+
     UniversalDataListener(const ReflectedType* type_, ContextAccessor* accessor_)
         : type(type_)
         , accessor(accessor_)
@@ -22,6 +41,7 @@ public:
     UniversalDataListener(UniversalDataListener&& other)
     {
         std::swap(type, other.type);
+        model = std::move(other.model);
         listeners = std::move(other.listeners);
         std::swap(accessor, other.accessor);
 
@@ -53,15 +73,20 @@ public:
             return;
         }
 
-        DataContext* ctx = accessor->GetActiveContext();
-        if (ctx == nullptr)
+        Reflection reflection = model;
+        if (reflection.IsValid() == false)
         {
-            ctx = accessor->GetGlobalContext();
+            DataContext* ctx = accessor->GetActiveContext();
+            if (ctx == nullptr)
+            {
+                ctx = accessor->GetGlobalContext();
+            }
+            DVASSERT(ctx);
+            DataNode* dataNode = ctx->GetData(type);
+            DVASSERT(dataNode);
+            reflection = Reflection::Create(dataNode);
         }
-        DVASSERT(ctx);
-        DataNode* dataNode = ctx->GetData(type);
-        DVASSERT(dataNode);
-        Reflection reflection = Reflection::Create(dataNode);
+
         if (changedFields.empty())
         {
             // Data appeared. All fields was changed
@@ -123,9 +148,15 @@ public:
         return type;
     }
 
+    bool IsSameReflectedObject(const Reflection& ref) const
+    {
+        return model.GetValueObject() == ref.GetValueObject();
+    }
+
 private:
     friend class FieldBinder;
     const ReflectedType* type = nullptr;
+    Reflection model;
     UnorderedMap<FastName, Vector<Function<void(const Any&)>>> listeners;
     ContextAccessor* accessor = nullptr;
     DataWrapper wrapper;
@@ -135,7 +166,7 @@ class FieldBinder::Impl
 {
 public:
     ContextAccessor* accessor = nullptr;
-    Vector<UniversalDataListener> listeners;
+    Vector<std::unique_ptr<UniversalDataListener>> listeners;
 };
 
 FieldBinder::FieldBinder(ContextAccessor* accessor_)
@@ -148,26 +179,42 @@ FieldBinder::~FieldBinder() = default;
 
 void FieldBinder::BindField(const FieldDescriptor& fieldDescr, const Function<void(const Any&)>& fn)
 {
-    for (UniversalDataListener& listener : impl->listeners)
+    for (std::unique_ptr<UniversalDataListener>& listener : impl->listeners)
     {
-        if (listener.GetType() == fieldDescr.type)
+        if (listener->GetType() == fieldDescr.type)
         {
-            listener.BindField(fieldDescr.fieldName, fn);
+            listener->BindField(fieldDescr.fieldName, fn);
             return;
         }
     }
 
-    impl->listeners.emplace_back(fieldDescr.type, impl->accessor);
-    impl->listeners.back().BindField(fieldDescr.fieldName, fn);
+    impl->listeners.push_back(std::make_unique<UniversalDataListener>(fieldDescr.type, impl->accessor));
+    impl->listeners.back()->BindField(fieldDescr.fieldName, fn);
+}
+
+void FieldBinder::BindField(const Reflection& model, const FastName& fieldName, const Function<void(const Any&)>& fn)
+{
+    for (std::unique_ptr<UniversalDataListener>& listener : impl->listeners)
+    {
+        if (listener->GetType() == ReflectedTypeDB::GetByType(model.GetValueType()))
+        {
+            DVASSERT(listener->IsSameReflectedObject(model));
+            listener->BindField(fieldName, fn);
+            return;
+        }
+    }
+
+    impl->listeners.emplace_back(std::make_unique<UniversalDataListener>(model, impl->accessor));
+    impl->listeners.back()->BindField(fieldName, fn);
 }
 
 void FieldBinder::SetValue(const FieldDescriptor& fieldDescr, const Any& v)
 {
-    for (UniversalDataListener& listener : impl->listeners)
+    for (std::unique_ptr<UniversalDataListener>& listener : impl->listeners)
     {
-        if (listener.GetType() == fieldDescr.type)
+        if (listener->GetType() == fieldDescr.type)
         {
-            listener.wrapper.SetFieldValue(fieldDescr.fieldName, v);
+            listener->wrapper.SetFieldValue(fieldDescr.fieldName, v);
         }
     }
 }

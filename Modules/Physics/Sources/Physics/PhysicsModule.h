@@ -8,6 +8,8 @@
 #include <Math/Vector.h>
 #include <Base/BaseTypes.h>
 
+#include <physx/PxFiltering.h>
+
 namespace physx
 {
 class PxFoundation;
@@ -17,6 +19,7 @@ class PxScene;
 class PxActor;
 class PxShape;
 class PxMaterial;
+class PxSimulationEventCallback;
 class PxDefaultCpuDispatcher;
 }
 
@@ -39,7 +42,7 @@ public:
     void* Allocate(size_t size, const char* typeName, const char* filename, int line);
     void Deallocate(void* ptr);
 
-    physx::PxScene* CreateScene(const PhysicsSceneConfig& config) const;
+    physx::PxScene* CreateScene(const PhysicsSceneConfig& config, physx::PxSimulationFilterShader filterShader, physx::PxSimulationEventCallback* callback) const;
 
     physx::PxActor* CreateStaticActor() const;
     physx::PxActor* CreateDynamicActor() const;
@@ -56,6 +59,7 @@ public:
 
     const Vector<uint32>& GetBodyComponentTypes() const;
     const Vector<uint32>& GetShapeComponentTypes() const;
+    const Vector<uint32>& GetCharacterControllerComponentTypes() const;
 
 private:
     physx::PxFoundation* foundation = nullptr;
@@ -73,6 +77,7 @@ private:
 
     Vector<uint32> bodyComponents;
     Vector<uint32> shapeComponents;
+    Vector<uint32> characterControllerComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

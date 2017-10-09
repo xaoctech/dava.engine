@@ -291,6 +291,9 @@ public:
 
     FilePath GetTempDirectoryPath() const;
 
+    void SetFilenamesTag(const String& newTag);
+    const String& GetFilenamesTag() const;
+
 private:
     bool HasLineEnding(File* f);
 
@@ -318,6 +321,8 @@ private:
     mutable Mutex accessArchiveMap;
     UnorderedMap<String, ResourceArchiveItem> resArchiveMap;
     Map<String, void*> lockedFileHandles;
+
+    String filenamesTag;
 
     friend class File;
 };

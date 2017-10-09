@@ -41,11 +41,6 @@ bool CombineEntityLods(Entity* forRootNode);
 void BakeTransformsUpToFarParent(Entity* parent, Entity* currentNode);
 
 /*
- \brief Takes all childs render batches of node Entity recursive and puts them into node entity as render batches for one lod.
- */
-void CollapseRenderBatchesRecursiveAsLod(Entity* node, uint32 lod, RenderObject* ro);
-
-/*
  brief Takes all node childs animations and puts them into node.
  */
 void CollapseAnimationsUpToFarParent(Entity* node, Entity* parent);

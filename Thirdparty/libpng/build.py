@@ -85,9 +85,10 @@ def _build_win32(working_directory_path, root_project_path):
         root_project_path,
         'libpng.sln', 'png_static',
         'libpng16_staticd.lib', 'libpng16_static.lib',
-        'pnglib_wind.lib', 'pnglib_win.lib',
-        'pnglib_wind.lib', 'pnglib_win.lib',
-        cmake_flags)
+        'libpng.lib', 'libpng.lib',
+        'libpng.lib', 'libpng.lib',
+        cmake_flags,
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 

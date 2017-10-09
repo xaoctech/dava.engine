@@ -15,6 +15,7 @@
 #include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/Utils/SceneSaver/SceneSaver.h"
+#include "Classes/Deprecated/EditorConfig.h"
 
 #include "Commands2/Base/RECommandStack.h"
 
@@ -27,6 +28,8 @@
 
 #include <Engine/EngineContext.h>
 #include <Reflection/ReflectedType.h>
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/Reflection.h>
 #include <Render/Renderer.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <FileSystem/FileSystem.h>
@@ -38,7 +41,6 @@
 
 #include <QList>
 #include <QString>
-#include <QShortcut>
 #include <QtGlobal>
 #include <QUrl>
 #include <QMimeData>
@@ -211,8 +213,6 @@ void SceneManagerModule::PostInit()
     params.getMaximumCount = []() {
         return 5;
     };
-    params.insertionParams.method = InsertionParams::eInsertionMethod::AfterItem;
-    params.insertionParams.item = QString("importSeparator");
 
     recentItems.reset(new RecentMenuItems(std::move(params)));
     recentItems->actionTriggered.Connect([this](const DAVA::String& scenePath)
@@ -231,14 +231,25 @@ void SceneManagerModule::CreateModuleControls(DAVA::TArc::UI* ui)
     renderWidget = new SceneRenderWidget(accessor, engineRenderWidget, this);
 
     QAction* deleteSelection = new QAction("Delete Selection", engineRenderWidget);
-    deleteSelection->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace);
-    deleteSelection->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    {
+        KeyBindableActionInfo info;
+        info.blockName = "Scene Modification";
+        info.context = Qt::WidgetWithChildrenShortcut;
+        info.defaultShortcuts << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace;
+        info.readOnly = true;
+        MakeActionKeyBindable(deleteSelection, info);
+    }
     engineRenderWidget->addAction(deleteSelection);
     connections.AddConnection(deleteSelection, &QAction::triggered, DAVA::MakeFunction(this, &SceneManagerModule::DeleteSelection));
 
     QAction* moveToSelection = new QAction("Move to selection", engineRenderWidget);
-    moveToSelection->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-    moveToSelection->setShortcutContext(Qt::WindowShortcut);
+    {
+        KeyBindableActionInfo info;
+        info.blockName = "Scene Modification";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts << QKeySequence(Qt::CTRL + Qt::Key_D);
+        MakeActionKeyBindable(moveToSelection, info);
+    }
     engineRenderWidget->addAction(moveToSelection);
     connections.AddConnection(moveToSelection, &QAction::triggered, DAVA::MakeFunction(this, &SceneManagerModule::MoveToSelection));
 
@@ -254,8 +265,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // New Scene action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/newscene.png"), QString("New Scene"));
-        action->setShortcut(QKeySequence("Ctrl+N"));
-        action->setShortcutContext(Qt::WindowShortcut);
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+N"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
@@ -278,8 +292,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Open Scene action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/openscene.png"), QString("Open Scene"));
-        action->setShortcut(QKeySequence("Ctrl+O"));
-        action->setShortcutContext(Qt::WindowShortcut);
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+O"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
@@ -300,13 +317,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Open Scene Quickly Action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/openscene.png"), QString("Open Scene Quickly"));
-        action->setShortcutContext(Qt::ApplicationShortcut);
-
-        QList<QKeySequence> keySequences;
-        keySequences << Qt::CTRL + Qt::SHIFT + Qt::Key_O;
-        keySequences << Qt::ALT + Qt::SHIFT + Qt::Key_O;
-
-        action->setShortcuts(keySequences);
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+        info.defaultShortcuts.push_back(QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_O));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
@@ -338,8 +354,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Save Scene Action
     {
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/savescene.png"), QString("Save Scene"));
-        action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+S"));
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+S"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -360,8 +379,11 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Save Scene As Action
     {
         QtAction* action = new QtAction(accessor, QString("Save Scene As"));
-        action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+Shift+S"));
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        info.defaultShortcuts.push_back(QKeySequence("Ctrl+Shift+S"));
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
         fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
@@ -394,12 +416,15 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Export
     {
         QtAction* action = new QtAction(accessor, QString("Export"));
+        KeyBindableActionInfo info;
+        info.blockName = "File";
+        info.context = Qt::WindowShortcut;
+        MakeActionKeyBindable(action, info);
 
         FieldDescriptor fieldDescr;
-        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        action->SetStateUpdationFunction(QtAction::Enabled, model, DAVA::FastName("saveToFolderAvailable"), [](const DAVA::Any& fieldValue) -> DAVA::Any {
+            return fieldValue.Get<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -413,11 +438,9 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
     // Save To Folder
     {
         QtAction* action = new QtAction(accessor, QStringLiteral("Save To Folder With Children"));
-        FieldDescriptor fieldDescr;
-        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        action->SetStateUpdationFunction(QtAction::Enabled, model, DAVA::FastName("saveToFolderAvailable"), [](const DAVA::Any& fieldValue) -> DAVA::Any {
+            return fieldValue.Get<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -477,9 +500,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
         undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
 
-        undo->setShortcutContext(Qt::ApplicationShortcut);
-        undo->setAutoRepeat(false);
-        undo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+        KeyBindableActionInfo info;
+        info.blockName = "Scene modification";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::Key_Z));
+        info.readOnly = true;
+        MakeActionKeyBindable(undo, info);
 
         connections.AddConnection(undo, &QAction::triggered, [this]() {
             ContextAccessor* accessor = GetAccessor();
@@ -501,9 +527,12 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
         redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
 
-        redo->setShortcutContext(Qt::ApplicationShortcut);
-        redo->setAutoRepeat(false);
-        redo->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        KeyBindableActionInfo info;
+        info.blockName = "Scene modification";
+        info.context = Qt::ApplicationShortcut;
+        info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        info.readOnly = true;
+        MakeActionKeyBindable(redo, info);
 
         connections.AddConnection(redo, &QAction::triggered, [this]() {
             ContextAccessor* accessor = GetAccessor();
@@ -913,6 +942,20 @@ void SceneManagerModule::SaveSceneToFolder(bool compressedTextures)
     sceneSaver.SetOutFolder(folder);
     sceneSaver.EnableCopyConverted(compressedTextures);
 
+    { //tags
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
+        if (data->GetEditorConfig()->HasProperty("Tags"))
+        {
+            DAVA::Vector<DAVA::String> projectTags = data->GetEditorConfig()->GetComboPropertyValues("Tags");
+            projectTags.insert(projectTags.begin(), "");
+            sceneSaver.SetTags(projectTags);
+        }
+        else
+        {
+            sceneSaver.SetTags({ "" });
+        }
+    }
+
     SceneEditor2* sceneForSaving = scene->CreateCopyForExport();
     sceneSaver.SaveScene(sceneForSaving, scene->GetScenePath());
     sceneForSaving->Release();
@@ -946,6 +989,7 @@ void SceneManagerModule::ExportScene()
         exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
         exportingParams.dataSourceFolder = dataSourceFolder;
         exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
+        exportingParams.filenamesTag = dlg.GetFilenamesTag();
 
         scene->Export(exportingParams);
 
@@ -1604,4 +1648,15 @@ void SceneManagerModule::MoveToSelection()
 
     DAVA::RefPtr<SceneEditor2> scene = ctx->GetData<SceneData>()->scene;
     scene->cameraSystem->MoveToSelection();
+}
+
+bool SceneManagerModule::SaveToFolderAvailable() const
+{
+    if (GetAccessor()->GetActiveContext() != nullptr)
+    {
+        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+        return fs->GetFilenamesTag().empty() == true;
+    }
+
+    return false;
 }

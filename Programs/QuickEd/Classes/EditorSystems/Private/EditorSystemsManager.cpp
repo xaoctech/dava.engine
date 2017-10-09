@@ -2,7 +2,7 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/CanvasModule/CanvasModuleData.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -10,7 +10,6 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 
 #include "EditorSystems/SelectionSystem.h"
-#include "EditorSystems/HUDSystem.h"
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/CursorSystem.h"
 
@@ -31,30 +30,6 @@ using namespace DAVA;
 
 EditorSystemsManager::StopPredicate EditorSystemsManager::defaultStopPredicate = [](const ControlNode*) { return false; };
 
-namespace EditorSystemsManagerDetails
-{
-class InputLayerControl : public UIControl
-{
-public:
-    InputLayerControl(EditorSystemsManager* systemManager_)
-        : UIControl()
-        , systemManager(systemManager_)
-    {
-        GetOrCreateComponent<UIModalInputComponent>();
-    }
-
-    bool SystemProcessInput(UIEvent* currentInput) override
-    {
-        //redirect input from the framework to the editor
-        systemManager->OnInput(currentInput);
-        return true;
-    }
-
-private:
-    EditorSystemsManager* systemManager = nullptr;
-};
-}
-
 EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor_)
     : rootControl(new UIControl())
     , accessor(accessor_)
@@ -64,12 +39,7 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
 
     rootControl->SetName(FastName("root_control"));
 
-    inputLayerControl.Set(new EditorSystemsManagerDetails::InputLayerControl(this));
-    inputLayerControl->SetName("input_layer_control");
-    rootControl->AddControl(inputLayerControl.Get());
-
     dragStateChanged.Connect(this, &EditorSystemsManager::OnDragStateChanged);
-    displayStateChanged.Connect(this, &EditorSystemsManager::OnDisplayStateChanged);
     activeAreaChanged.Connect(this, &EditorSystemsManager::OnActiveHUDAreaChanged);
 
     InitDAVAScreen();
@@ -105,7 +75,6 @@ void EditorSystemsManager::InitSystems()
 {
     selectionSystemPtr = new SelectionSystem(accessor);
     RegisterEditorSystem(selectionSystemPtr);
-    RegisterEditorSystem(new HUDSystem(accessor));
     RegisterEditorSystem(new EditorTransformSystem(accessor));
     RegisterEditorSystem(new CursorSystem(accessor));
 }
@@ -130,8 +99,8 @@ void EditorSystemsManager::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-        fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+        fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+        fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnEmulationModeChanged));
     }
 }
@@ -167,16 +136,6 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
     }
 }
 
-void EditorSystemsManager::HighlightNode(ControlNode* node)
-{
-    highlightNode.Emit(node);
-}
-
-void EditorSystemsManager::ClearHighlight()
-{
-    highlightNode.Emit(nullptr);
-}
-
 void EditorSystemsManager::OnEmulationModeChanged(const DAVA::Any& emulationModeValue)
 {
     bool emulationMode = emulationModeValue.Cast<bool>(false);
@@ -190,7 +149,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::ALT))
+    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }
@@ -274,7 +233,7 @@ void EditorSystemsManager::SetDisplayState(eDisplayState newDisplayState)
 void EditorSystemsManager::OnRootContolsChanged(const DAVA::Any& rootControlsValue)
 {
     const EngineContext* engineContext = GetEngineContext();
-    // reset current screen
+    // reset current screen to apply correct modal control
     engineContext->uiControlSystem->GetInputSystem()->SetCurrentScreen(engineContext->uiControlSystem->GetScreen());
 }
 
@@ -351,19 +310,6 @@ void EditorSystemsManager::OnDragStateChanged(eDragState currentState, eDragStat
     }
 }
 
-void EditorSystemsManager::OnDisplayStateChanged(eDisplayState currentState, eDisplayState previousState)
-{
-    DVASSERT(currentState != previousState);
-    if (currentState == Emulation)
-    {
-        rootControl->RemoveControl(inputLayerControl.Get());
-    }
-    if (previousState == Emulation)
-    {
-        rootControl->AddControl(inputLayerControl.Get());
-    }
-}
-
 Vector2 EditorSystemsManager::GetMouseDelta() const
 {
     return mouseDelta;
@@ -378,7 +324,6 @@ void EditorSystemsManager::OnPackageChanged(const DAVA::Any& /*packageValue*/)
 {
     magnetLinesChanged.Emit({});
     SetDragState(NoDrag);
-    ClearHighlight();
 }
 
 EditorSystemsManager::eDragState EditorSystemsManager::GetDragState() const

@@ -8,9 +8,9 @@ set(CPP_FILES_RECURSE Sources/*.cpp)
 set(PhysicsRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(INCLUDES "${PhysicsRootDir}/Sources"
-             "${PhysicsRootDir}/Libs/include/"
-             "${PhysicsRootDir}/Libs/include/physx"
-             "${PhysicsRootDir}/Libs/include/PxShared")
+             "${PhysicsRootDir}/Libs/Include/"
+             "${PhysicsRootDir}/Libs/Include/physx"
+             "${PhysicsRootDir}/Libs/Include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
 set(MODULE_INITIALIZATION_CODE Sources/Physics/PhysicsModule.h )
 set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")

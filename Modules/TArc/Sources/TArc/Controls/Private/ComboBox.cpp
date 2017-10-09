@@ -178,6 +178,11 @@ void ComboBox::CurrentIndexChanged(int newCurrentItem)
     }
 
     wrapper.SetFieldValue(GetFieldName(Fields::Value), itemData(newCurrentItem).value<Any>());
+    int index = findText(multipleValueText);
+    if (index != -1 && index != newCurrentItem)
+    {
+        removeItem(index);
+    }
 }
 
 } // namespace TArc

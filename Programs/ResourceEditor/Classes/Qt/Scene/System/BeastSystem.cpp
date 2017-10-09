@@ -18,6 +18,10 @@ void BeastSystem::AddEntity(DAVA::Entity* entity)
     SetDefaultPropertyValues(entity);
 }
 
+void BeastSystem::PrepareForRemove()
+{
+}
+
 void BeastSystem::SetDefaultPropertyValues(DAVA::Entity* entity)
 {
     DAVA::KeyedArchive* propertyList = GetOrCreateCustomProperties(entity)->GetArchive();

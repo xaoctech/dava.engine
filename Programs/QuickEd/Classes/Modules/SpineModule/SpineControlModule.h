@@ -1,11 +1,10 @@
 #pragma once
 
 #include <TArc/Core/ClientModule.h>
+#include <TArc/Qt/QtIcon.h>
 
 #include <Base/BaseTypes.h>
 #include <Reflection/Reflection.h>
-
-#include <QIcon>
 
 namespace DAVA
 {

@@ -66,6 +66,7 @@ private:
 
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     void AddMaterials(DAVA::Entity* entity);
     void AddMaterial(DAVA::NMaterial*, const MaterialMapping& mapping);

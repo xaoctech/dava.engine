@@ -14,6 +14,7 @@ namespace TArc
 {
 class Core;
 class DataContext;
+class FieldBinder;
 }
 }
 
@@ -26,6 +27,8 @@ DAVA::TArc::DataContext* GetActiveContext();
 
 DAVA::TArc::OperationInvoker* GetInvoker();
 DAVA::TArc::ContextAccessor* GetAccessor();
+
+DAVA::TArc::FieldBinder* CreateFieldBinder();
 
 DAVA::TArc::DataWrapper CreateDataWrapper(const DAVA::ReflectedType* type);
 DAVA::TArc::ModalMessageParams::Button ShowModalMessage(const DAVA::TArc::ModalMessageParams& params);
@@ -57,4 +60,5 @@ DECLARE_OPERATION_ID(SaveCurrentScene); // Args - empty
 DECLARE_OPERATION_ID(CloseAllScenesOperation); // Args - need ask user about saving scenes : bool
 DECLARE_OPERATION_ID(ReloadTexturesOperation); // Args - gpu : eGpuFamily
 DECLARE_OPERATION_ID(ShowMaterial); // Args - NMaterial*
+DECLARE_OPERATION_ID(ConvertTaggedTextures); // Args - empty
 }

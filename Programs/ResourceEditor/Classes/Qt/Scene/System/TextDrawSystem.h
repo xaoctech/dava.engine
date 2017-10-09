@@ -32,6 +32,7 @@ public:
     TextDrawSystem(DAVA::Scene* scene, SceneCameraSystem* cameraSystem);
     ~TextDrawSystem();
 
+    void PrepareForRemove() override;
     DAVA::Vector2 ToPos2d(const DAVA::Vector3& pos3d) const;
 
     void DrawText(const DAVA::Vector2& pos2d, const DAVA::String& text, const DAVA::Color& color, Align align = Align::TopLeft);

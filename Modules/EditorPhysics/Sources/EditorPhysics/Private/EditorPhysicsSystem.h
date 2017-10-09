@@ -22,6 +22,8 @@ public:
     void RegisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
     void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
+    void PrepareForRemove() override;
+
     void Process(DAVA::float32 timeElapsed) override;
 
     void SetSimulationState(eSimulationState newState);
