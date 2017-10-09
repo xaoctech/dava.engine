@@ -77,7 +77,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
 
     for (EntityToModify& etm : modifEntities)
     {
-        Matrix4 translation;
+        Vector3 translationVector = Vector3(0.0f, 0.0f, 0.0f);
         Vector3 collisionNormal;
         bool hitObject = false;
         bool hitLandscape = false;
@@ -96,7 +96,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         hitObject = renderSystem->GetRenderHierarchy()->RayTrace(ray, collision, selectedObjects);
         if (hitObject)
         {
-            GetObjectCollisionMatrixAndNormal(collision, translation, collisionNormal);
+            GetObjectCollisionMatrixAndNormal(collision, translationVector, collisionNormal);
         }
         else
         {
@@ -107,7 +107,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
                 hitLandscape = landscape->PlacePoint(originalPos, landscapeCollision, &collisionNormal);
                 if (hitLandscape)
                 {
-                    translation.SetTranslationVector(landscapeCollision - originalPos);
+                    translationVector.z = landscapeCollision.z - originalPos.z;
                 }
             }
         }
@@ -116,22 +116,32 @@ void ObjectPlacementSystem::PlaceAndAlign() const
             continue;
 
         Vector3 currentUp = Vector3(0.0f, 0.0f, 1.0f);
+        Matrix4 originalRotation = etm.originalTransform;
+        originalRotation.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
+        etm.originalParentWorldTransform.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
+        currentUp = currentUp * originalRotation * etm.originalParentWorldTransform;
+
         Quaternion rotationQuaternion;
-        Vector3 pos, scale;
-        etm.originalTransform.Decomposition(pos, scale, rotationQuaternion);
-        currentUp = currentUp * rotationQuaternion.GetMatrix();
         rotationQuaternion = Quaternion::MakeRotation(currentUp, collisionNormal);
         Matrix4 rotation = rotationQuaternion.GetMatrix();
 
+        Matrix4 translation;
+        translation.SetTranslationVector(translationVector * etm.inversedParentWorldTransform);
+
         etm.object.SetLocalTransform(etm.originalTransform
-                                     * etm.toLocalZero * rotation * etm.fromLocalZero
-                                     * translation);
+                                     * etm.toLocalZero
+                                     * etm.inversedParentWorldTransform
+                                     * rotation
+                                     * etm.originalParentWorldTransform
+                                     * etm.fromLocalZero
+                                     * translation
+                                     );
     }
     ApplyModificationToScene(GetScene(), modifEntities);
 }
 
 void ObjectPlacementSystem::GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
-                                                              DAVA::Matrix4& translation, DAVA::Vector3& normal) const
+                                                              DAVA::Vector3& translationVector, DAVA::Vector3& normal) const
 {
     DAVA::Array<DAVA::uint16, 3> vertIndices;
     collision.geometry->GetTriangleIndices(collision.triangleIndex * 3, vertIndices.data());
@@ -140,7 +150,7 @@ void ObjectPlacementSystem::GetObjectCollisionMatrixAndNormal(DAVA::RayTraceColl
     collision.geometry->GetCoord(vertIndices[1], v[1]);
     collision.geometry->GetCoord(vertIndices[2], v[2]);
     normal = (v[1] - v[0]).CrossProduct(v[2] - v[0]);
-    translation.SetTranslationVector(DAVA::Vector3(0.0f, 0.0f, -collision.t));
+    translationVector = DAVA::Vector3(0.0f, 0.0f, -collision.t);
     DAVA::Matrix4* hitWorldTransform = collision.renderObject->GetWorldTransformPtr();
     DAVA::Quaternion rotationQuaternion;
     DAVA::Vector3 pos, scale;

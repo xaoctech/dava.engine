@@ -33,7 +33,7 @@ public:
 
 private:
     void GetObjectCollisionMatrixAndNormal(DAVA::RayTraceCollision& collision,
-                                           DAVA::Matrix4& translation, DAVA::Vector3& normal) const;
+                                           DAVA::Vector3& translationVector, DAVA::Vector3& normal) const;
 
     // FIXME: pointer to scene modification system in ObjectPlacementSystem
     // As for now, Modification System is not reflective, doesn't
