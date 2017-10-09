@@ -1,4 +1,7 @@
-#include "EditorSystems/HUDSystem.h"
+#include "Classes/Modules/HUDModule/Private/HUDSystem.h"
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
+
+#include "Classes/Modules/HUDModule/Private/HUDControls.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
 
@@ -8,7 +11,6 @@
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
-#include "Classes/EditorSystems/HUDControls.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
 
 #include <TArc/Core/ContextAccessor.h>
@@ -19,7 +21,6 @@
 #include <Base/BaseTypes.h>
 #include <UI/UIControl.h>
 #include <UI/UIEvent.h>
-#include <UI/UIControlSystem.h>
 
 using namespace DAVA;
 
@@ -127,13 +128,11 @@ class HUDControl : public UIControl
 HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
 {
-    GetSystemsManager()->highlightNode.Connect(this, &HUDSystem::OnHighlightNode);
+    systemsDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorSystemsData>());
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
 }
 
-HUDSystem::~HUDSystem()
-{
-}
+HUDSystem::~HUDSystem() = default;
 
 BaseEditorSystem::eSystems HUDSystem::GetOrder() const
 {
@@ -150,7 +149,7 @@ void HUDSystem::OnUpdate()
     {
         hudMap.clear();
         SetNewArea(HUDAreaInfo());
-        OnHighlightNode(nullptr);
+        SetHighlight(nullptr);
         return;
     }
 
@@ -203,14 +202,17 @@ void HUDSystem::OnUpdate()
         hudPair.second->container->InitFromGD(controlGD);
     }
 
-    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
+    EditorSystemsData* systemsData = accessor->GetGlobalContext()->GetData<EditorSystemsData>();
+    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag &&
+        GetSystemsManager()->GetDisplayState() != EditorSystemsManager::Emulation &&
+        systemsData->IsHighlightDisabled() == false)
     {
         ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
-        OnHighlightNode(node);
+        SetHighlight(node);
     }
     else
     {
-        OnHighlightNode(nullptr);
+        SetHighlight(nullptr);
     }
 
     if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
@@ -248,7 +250,7 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
             }
 
             selectionRectControl->SetRect(Rect(point, size));
-            GetSystemsManager()->selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
+            selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
         break;
     default:
@@ -256,9 +258,16 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
     }
 }
 
-void HUDSystem::OnHighlightNode(ControlNode* node)
+void HUDSystem::SetHighlight(ControlNode* node)
+{
+    highlightChanged.Emit(node);
+    HighlightNode(node);
+}
+
+void HUDSystem::HighlightNode(ControlNode* node)
 {
     using namespace DAVA::TArc;
+
     if (hoveredNodeControl != nullptr && node != nullptr && hoveredNodeControl->IsDrawableControl(node->GetControl()))
     {
         return;
@@ -432,6 +441,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         DVASSERT(selectionRectControl == nullptr);
         selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT, accessor));
         selectionRectControl->AddToParent(hudControl.Get());
+        selectionByRectStarted.Emit();
         break;
     case EditorSystemsManager::DragScreen:
         UpdateHUDEnabled();
@@ -446,6 +456,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
         DVASSERT(selectionRectControl != nullptr);
         selectionRectControl->RemoveFromParent(hudControl.Get());
         selectionRectControl = nullptr;
+        selectionByRectFinished.Emit();
         break;
     case EditorSystemsManager::Transform:
         ClearMagnetLines();
@@ -475,6 +486,7 @@ CanvasControls HUDSystem::CreateCanvasControls()
 
 void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 {
+    hudMap.clear();
     hudControl = nullptr;
 }
 

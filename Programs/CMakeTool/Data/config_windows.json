@@ -2,7 +2,7 @@
     "platforms": [
         {
             "name": "Windows",
-            "value": "$CMAKE_PATH -G \"Visual Studio 12%1\" $SOURCE_PATH %2",
+            "value": "$CMAKE_PATH -G \"Visual Studio 15%1\" $SOURCE_PATH %2",
             "defaults": [
                 "",
                 ""
