@@ -1399,6 +1399,8 @@ void ParticleLayer::AddDrag(ParticleDragForce* drag)
 {
     if (drag->IsForceCanAlterPosition())
         ++alterPositionForcesCount;
+    if (drag->type == ParticleDragForce::eType::PLANE_COLLISION)
+        ++planeCollisionForcesCount;
 
     SafeRetain(drag);
     dragForces.push_back(drag);
@@ -1412,6 +1414,8 @@ void ParticleLayer::RemoveDrag(ParticleDragForce* drag)
 {
     if (drag->IsForceCanAlterPosition())
         --alterPositionForcesCount;
+    if (drag->type == ParticleDragForce::eType::PLANE_COLLISION)
+        --planeCollisionForcesCount;
 
     auto iter = std::find(dragForces.begin(), dragForces.end(), drag);
     if (iter != dragForces.end())

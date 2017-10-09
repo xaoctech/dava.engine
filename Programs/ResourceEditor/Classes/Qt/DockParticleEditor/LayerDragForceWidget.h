@@ -52,7 +52,7 @@ private:
     void BuildWindSection();
     void BuildPointGravitySection();
     void BuildPlaneCollisionSection();
-    void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange);
+    void UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange, bool isGlobalForce);
     void SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep = 0.0001, DAVA::int32 decimals = 4);
 
     QVBoxLayout* mainLayout = nullptr;
@@ -61,6 +61,7 @@ private:
     QCheckBox* isActive = nullptr;
     QCheckBox* infinityRange = nullptr;
     QCheckBox* isGlobal = nullptr;
+    QLabel* isGlobalWarning = nullptr;
     QCheckBox* killParticles = nullptr;
 
     QFrame* shapeSeparator = nullptr;

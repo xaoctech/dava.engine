@@ -937,7 +937,8 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
         effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
 
-        prevEffectSpacePosition = prevForcePosition * invWorld;
+        if (group.layer->GetPlaneCollisiontForcesCount() > 0)
+            prevEffectSpacePosition = prevForcePosition * invWorld;
     }
 
     for (uint32 i = 0; i < dForcesCount; ++i)

@@ -228,9 +228,12 @@ void LayerDragForceWidget::BuildCommonSection()
     isGlobal = new QCheckBox("Is global force");
     connect(isGlobal, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(isGlobal);
+
+    isGlobalWarning = new QLabel("NOTE: Particle effect with global force (with box or sphere range) should not be rotated.");
+    mainLayout->addWidget(isGlobalWarning);
 }
 
-void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange)
+void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange, bool isGlobalForce)
 {
     using Shape = DAVA::ParticleDragForce::eShape;
     using TimingType = DAVA::ParticleDragForce::eTimingType;
@@ -239,6 +242,8 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     bool isWind = forceType == ForceType::WIND;
     bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND || forceType == ForceType::PLANE_COLLISION;
     bool isPointGravity = forceType == ForceType::POINT_GRAVITY;
+
+    isGlobalWarning->setVisible(isGlobalForce);
 
     boxSize->setVisible(shape == Shape::BOX && !isInfinityRange && !isGravity);
     radiusWidget->setVisible(shape == Shape::SPHERE && !isInfinityRange && !isGravity);
@@ -475,7 +480,7 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     startTimeSpin->setValue(selectedForce->startTime);
     endTimeSpin->setValue(selectedForce->endTime);
 
-    UpdateVisibility(selectedForce->GetShape(), selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange);
+    UpdateVisibility(selectedForce->GetShape(), selectedForce->timingType, selectedForce->type, selectedForce->isInfinityRange, selectedForce->isGlobal);
 
     static const Vector<QColor> colors{ Qt::red, Qt::darkGreen, Qt::blue };
     static const Vector<QString> legends{ "Force x", "Force y", "Force z" };
@@ -615,7 +620,7 @@ void LayerDragForceWidget::OnValueChanged()
 
     params.velocityThreshold = velocityThresholdSpin->value();
 
-    UpdateVisibility(shape, timingType, selectedForce->type, params.useInfinityRange);
+    UpdateVisibility(shape, timingType, selectedForce->type, params.useInfinityRange, params.isGlobal);
 
     shapeComboBox->setCurrentIndex(ElementToIndex(shape, shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(timingType, timingMap));
