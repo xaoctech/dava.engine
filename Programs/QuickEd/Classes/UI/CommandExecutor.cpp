@@ -155,12 +155,11 @@ Rect GetConstraintBox(const Vector<ControlNode*> nodes)
     return constraintBox;
 }
 
-void ShiftPositionsRelativeToBox(const Vector<ControlNode*>& nodes, const Rect& constraintBox, DocumentData* data)
+void ShiftPositions(const Vector<ControlNode*>& nodes, const Vector2& offsetPoint, DocumentData* data)
 {
-    const Vector2& constraintPos = constraintBox.GetPosition();
     for (ControlNode* node : nodes)
     {
-        Vector2 newPositionValue = node->GetControl()->GetPosition() - constraintPos;
+        Vector2 newPositionValue = node->GetControl()->GetPosition() - offsetPoint;
 
         std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
         RootProperty* rootProperty = node->GetRootProperty();
@@ -612,7 +611,7 @@ void CommandExecutor::MoveStyles(const DAVA::Vector<StyleSheetNode*>& nodes, Sty
     }
 }
 
-void CommandExecutor::Remove(const Vector<ControlNode*>& controls, const Vector<StyleSheetNode*>& styles)
+void CommandExecutor::Remove(const Vector<ControlNode*>& controls, const Vector<StyleSheetNode*>& styles) const
 {
     Vector<PackageBaseNode*> nodesToRemove;
 
@@ -828,7 +827,7 @@ ControlNode* CommandExecutor::GroupSelectedNodes() const
     data->BeginBatch("Group controls");
 
     Rect constraintBox = GetConstraintBox(selectedControlNodes);
-    ShiftPositionsRelativeToBox(selectedControlNodes, constraintBox, data);
+    ShiftPositions(selectedControlNodes, constraintBox.GetPosition(), data);
 
     ScopedPtr<UIControl> control(new UIControl(constraintBox));
     control->SetName("Group");
@@ -846,6 +845,50 @@ ControlNode* CommandExecutor::GroupSelectedNodes() const
     data->EndBatch();
 
     return newGroupControl;
+}
+
+DAVA::Vector<ControlNode*> CommandExecutor::UngroupSelectedNode() const
+{
+    using namespace DAVA;
+    using namespace CommandExecutorDetails;
+
+    DocumentData* data = GetDocumentData();
+    const SelectedNodes& selectedNodes = data->GetSelectedNodes();
+    DVASSERT(selectedNodes.size() == 1);
+    ControlNode* selectedGroupControl = dynamic_cast<ControlNode*>(*selectedNodes.begin());
+
+    Result result = CanUngroupNode(selectedGroupControl);
+
+    if (result.type == Result::RESULT_ERROR)
+    {
+        DAVA::TArc::NotificationParams params;
+        params.title = "Can't group selected nodes";
+        params.message = result;
+        ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+        return DAVA::Vector<ControlNode*>();
+    }
+
+    data->BeginBatch("Ungroup control");
+
+    DAVA::Vector<ControlNode*> childNodes;
+    childNodes.reserve(selectedGroupControl->GetCount());
+    std::copy(selectedGroupControl->begin(), selectedGroupControl->end(), std::back_inserter(childNodes));
+
+    Vector2 offset = selectedGroupControl->GetControl()->GetPosition();
+    offset.x = -offset.x;
+    offset.y = -offset.y;
+    ShiftPositions(childNodes, offset, data);
+
+    ControlNode* parent = dynamic_cast<ControlNode*>(selectedGroupControl->GetParent());
+    MoveControls(childNodes, parent, parent->GetCount());
+
+    DAVA::Vector<ControlNode*> removedControls = { selectedGroupControl };
+    DAVA::Vector<StyleSheetNode*> styles;
+    Remove(removedControls, styles);
+
+    data->EndBatch();
+
+    return childNodes;
 }
 
 void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package)
@@ -1036,6 +1079,37 @@ DAVA::Result CommandExecutor::CanGroupSelectedNodes(const SelectedNodes& selecte
     if (!allCanBeMoved)
     {
         return Result(Result::RESULT_ERROR, "all selected nodes must be movable");
+    }
+
+    return Result(Result::RESULT_SUCCESS);
+}
+
+DAVA::Result CommandExecutor::CanUngroupNode(ControlNode* node) const
+{
+    PackageBaseNode* parent = node->GetParent();
+    ControlNode* parentControl = dynamic_cast<ControlNode*>(parent);
+    //     if (!parent->CanInsertControl(sampleGroupNode.Get(), parent->GetCount()))
+    //     {
+    //         return Result(Result::RESULT_ERROR, "not allowed to insert into parent control");
+    //     }
+
+    if (node->GetCount() == 0)
+    {
+        return Result(Result::RESULT_ERROR, "Ungrouped control must contain children");
+    }
+
+    bool allChildrenCanBeMoved = std::all_of(node->begin(), node->end(), [parentControl](ControlNode* child)
+                                             {
+                                                 return (child->CanMoveTo(parentControl, parentControl->GetCount()));
+                                             });
+    if (allChildrenCanBeMoved == false)
+    {
+        return Result(Result::RESULT_ERROR, "all children of selected group must be movable");
+    }
+
+    if (node->CanRemove() == false)
+    {
+        return Result(Result::RESULT_ERROR, "selected group node is not removable");
     }
 
     return Result(Result::RESULT_SUCCESS);

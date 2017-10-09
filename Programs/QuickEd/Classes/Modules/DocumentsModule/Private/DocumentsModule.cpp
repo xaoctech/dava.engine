@@ -405,9 +405,8 @@ void DocumentsModule::CreateEditActions()
     }
 
     // Group
+    const QString groupActionName("Group");
     {
-        const QString groupActionName("Group");
-
         QtAction* action = new QtAction(accessor, groupActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
         action->setShortcut(QKeySequence("Ctrl+G"));
@@ -424,6 +423,30 @@ void DocumentsModule::CreateEditActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
+
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+
+    // Ungroup
+    {
+        const QString ungroupActionName("Ungroup");
+
+        QtAction* action = new QtAction(accessor, ungroupActionName, nullptr);
+        action->setShortcutContext(Qt::WindowShortcut);
+        action->setShortcut(QKeySequence("Ctrl+Alt+G"));
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
+                                         {
+                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).size() == 1);
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoUngroupSelection));
+
+        ActionPlacementInfo placementInfo;
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, groupActionName }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
@@ -462,6 +485,18 @@ void DocumentsModule::DoGroupSelection()
     if (newGroupControl != nullptr)
     {
         GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
+    }
+}
+
+void DocumentsModule::DoUngroupSelection()
+{
+    CommandExecutor commandExecutor(GetAccessor(), GetUI());
+    Vector<ControlNode*> ungroupedNodes = commandExecutor.UngroupSelectedNode();
+    if (ungroupedNodes.empty() == false)
+    {
+        SelectedNodes nodesToSelect;
+        std::copy(ungroupedNodes.begin(), ungroupedNodes.end(), std::inserter(nodesToSelect, nodesToSelect.begin()));
+        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes(nodesToSelect);
     }
 }
 

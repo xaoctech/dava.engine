@@ -47,6 +47,7 @@ private:
     void OnRedo();
 
     void DoGroupSelection();
+    void DoUngroupSelection();
 
     //View
     void CreateViewActions();
