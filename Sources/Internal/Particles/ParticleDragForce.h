@@ -91,6 +91,8 @@ public:
     void SetShape(eShape shape);
     eShape GetShape() const;
 
+    bool IsForceCanAlterPosition() const;
+
 public:
     DAVA_VIRTUAL_REFLECTION(ParticleDragForce, BaseObject);
 
@@ -153,5 +155,10 @@ inline void ParticleDragForce::SetShape(ParticleDragForce::eShape shape_)
 inline ParticleDragForce::eShape ParticleDragForce::GetShape() const
 {
     return shape;
+}
+
+inline bool ParticleDragForce::IsForceCanAlterPosition() const
+{
+    return type == ParticleDragForce::eType::POINT_GRAVITY || type == ParticleDragForce::eType::PLANE_COLLISION || type == ParticleDragForce::eType::WIND;
 }
 }

@@ -948,7 +948,8 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     if (dForcesCount > 0)
     {
         particle->speed = effectSpaceSpeed * Matrix3(world);
-        particle->position = effectSpacePosition * world;
+        if (group.layer->GetAlterPositionForcesCount() > 0)
+            particle->position = effectSpacePosition * world;
     }
 
     if (group.layer->applyGlobalForces)

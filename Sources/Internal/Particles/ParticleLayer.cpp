@@ -1397,6 +1397,9 @@ void ParticleLayer::CleanupForces()
 
 void ParticleLayer::AddDrag(ParticleDragForce* drag)
 {
+    if (drag->IsForceCanAlterPosition())
+        ++alterPositionForcesCount;
+
     SafeRetain(drag);
     dragForces.push_back(drag);
     std::sort(dragForces.begin(), dragForces.end(), [](const ParticleDragForce* a, const ParticleDragForce* b) 
@@ -1407,6 +1410,9 @@ void ParticleLayer::AddDrag(ParticleDragForce* drag)
 
 void ParticleLayer::RemoveDrag(ParticleDragForce* drag)
 {
+    if (drag->IsForceCanAlterPosition())
+        --alterPositionForcesCount;
+
     auto iter = std::find(dragForces.begin(), dragForces.end(), drag);
     if (iter != dragForces.end())
     {
