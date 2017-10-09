@@ -217,7 +217,7 @@ private:
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
-    void DumpToJsonProfilerTrace();
+    String DumpToJsonProfilerTrace();
 
     enum class ScanState : uint32
     {
@@ -307,6 +307,7 @@ private:
 
     Hints hints;
 
+    String profilerState;
     DebugGestureListener gestureChecker;
 
     float32 timeWaitingNextInitializationAttempt = 0;

@@ -152,22 +152,22 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                     {
                         if (ImGui::Button("start dlc profiler"))
                         {
-                            Logger::Debug("start dlc profiler");
                             profiler.Start();
+                            profilerState = "started";
                         }
 
                         if (ImGui::Button("stop dlc profiler"))
                         {
                             profiler.Stop();
-                            Logger::Debug("stop dlc profiler");
+                            profilerState = "stopped";
                         }
 
                         if (ImGui::Button("dump to"))
                         {
-                            Logger::Debug("start dumping...");
-                            DumpToJsonProfilerTrace();
-                            Logger::Debug("finish dumping.");
+                            profilerState = "dumpped: (" + DumpToJsonProfilerTrace() + ")";
                         }
+
+                        ImGui::Text("profiler state: %s", profilerState.c_str());
                     }
                     else
                     {
@@ -181,13 +181,14 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     });
 }
 
-void DLCManagerImpl::DumpToJsonProfilerTrace()
+String DLCManagerImpl::DumpToJsonProfilerTrace()
 {
+    String outputPath;
     if (profiler.IsStarted() == false)
     {
         FileSystem* fs = GetEngineContext()->fileSystem;
         FilePath docPath = fs->GetPublicDocumentsPath();
-        String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+        String name = docPath.GetAbsolutePathname() + "dlc_prof.json";
         std::ofstream file(name);
         char buf[16 * 1024];
         file.rdbuf()->pubsetbuf(buf, sizeof(buf));
@@ -195,8 +196,18 @@ void DLCManagerImpl::DumpToJsonProfilerTrace()
         {
             Vector<TraceEvent> events = profiler.GetTrace();
             TraceEvent::DumpJSON(events, file);
+            outputPath = name;
+        }
+        else
+        {
+            outputPath = "cant' open file: " + name;
         }
     }
+    else
+    {
+        outputPath = "error: profiler is started";
+    }
+    return outputPath;
 }
 
 void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
