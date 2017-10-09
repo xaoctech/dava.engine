@@ -913,7 +913,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     float32 currVelocityOverLife = 1.0f;
     if (group.layer->velocityOverLife)
         currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLife);
-    particle->prevPosition = particle->position;
+    Vector3 prevForcePosition = particle->position;
     particle->position += particle->speed * (currVelocityOverLife * dt);
 
     float32 currSpinOverLife = 1.0f;
@@ -934,9 +934,10 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     if (dForcesCount > 0)
     {
         effectSpacePosition = particle->position * invWorld;
-        prevEffectSpacePosition = particle->prevPosition * invWorld;
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
         effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
+
+        prevEffectSpacePosition = prevForcePosition * invWorld;
     }
 
     for (uint32 i = 0; i < dForcesCount; ++i)
@@ -981,7 +982,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
             Matrix4 invWorld = GetInverseWithRemovedScale(*worldTransformPtr);
 
             effectSpacePosition = particle->position * invWorld;
-            prevEffectSpacePosition = particle->prevPosition * invWorld;
+            prevEffectSpacePosition = prevForcePosition * invWorld;
             effectSpaceSpeed = particle->speed * Matrix3(invWorld);
             effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
             for (auto& force : forcePair.second)
@@ -1115,7 +1116,6 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     particle->position += group.spawnPosition;
     TransformPerserveLength(particle->speed, newTransform);
     TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)
-    particle->prevPosition = particle->position;
 }
 
 void ParticleEffectSystem::SetGlobalExtertnalValue(const String& name, float32 value)
