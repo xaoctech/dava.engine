@@ -1155,12 +1155,12 @@ void SceneTree::dragEnterEvent(QDragEnterEvent* event)
 
 void SceneTree::SceneActivated(SceneEditor2* scene)
 {
-    treeModel->SetScene(scene);
+    /*treeModel->SetScene(scene);
     selectionModel()->clear();
     SyncSelectionToTree();
     filteringProxyModel->invalidate();
 
-    PropagateSolidFlag();
+    PropagateSolidFlag();*/
 }
 
 void SceneTree::SceneDeactivated(SceneEditor2* scene)

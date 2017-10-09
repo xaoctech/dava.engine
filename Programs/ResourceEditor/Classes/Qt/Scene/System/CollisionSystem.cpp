@@ -4,32 +4,33 @@
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
 #include "Classes/Commands2/TransformCommand.h"
 #include "Classes/Commands2/ParticleEditorCommands.h"
-#include "Classes/Commands2/EntityParentChangeCommand.h"
+#include "Classes/Commands2/ConvertToBillboardCommand.h"
 #include "Classes/Commands2/CreatePlaneLODCommand.h"
 #include "Classes/Commands2/DeleteLODCommand.h"
+#include "Classes/Commands2/EntityParentChangeCommand.h"
 #include "Classes/Commands2/InspMemberModifyCommand.h"
-#include "Classes/Commands2/ConvertToBillboardCommand.h"
 
 #include "Classes/Selection/Selection.h"
 
 #include "Classes/Qt/Scene/System/CollisionSystem.h"
-#include "Classes/Qt/Scene/System/CameraSystem.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Qt/Scene/System/CameraSystem.h"
 
-#include <Physics/PhysicsModule.h>
 #include <Physics/PhysicsGeometryCache.h>
+#include <Physics/PhysicsModule.h>
 #include <Physics/Private/PhysicsMath.h>
 
-#include <Scene3D/Components/ComponentHelpers.h>
-#include <Scene3D/Components/TransformComponent.h>
-#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
-#include <Scene3D/Scene.h>
-#include <Engine/EngineContext.h>
-#include <Engine/Engine.h>
-#include <ModuleManager/ModuleManager.h>
-#include <Math/AABBox3.h>
-#include <Functional/Function.h>
 #include <Base/AlignedAllocator.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Functional/Function.h>
+#include <Math/AABBox3.h>
+#include <Math/Matrix4.h>
+#include <ModuleManager/ModuleManager.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Scene.h>
 
 #include <physx/PxScene.h>
 #include <physx/PxQueryReport.h>
@@ -39,6 +40,7 @@
 namespace SceneCollisionSystemDetail
 {
 using namespace physx;
+using namespace DAVA;
 
 const PxFilterData landscapeFilterData = PxFilterData(1, 0, 0, 0);
 const PxFilterData objectFilterData = PxFilterData(0, 1, 0, 0);
@@ -47,9 +49,9 @@ const PxU32 maxOverlapTouchCount = 30000;
 
 void UpdateActorTransform(const Matrix4& tranform, physx::PxRigidActor* actor)
 {
-    DAVA::Vector3 position;
-    DAVA::Vector3 scale;
-    DAVA::Quaternion rotation;
+    Vector3 position;
+    Vector3 scale;
+    Quaternion rotation;
     tranform.Decomposition(position, scale, rotation);
 
     actor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
@@ -60,7 +62,7 @@ void UpdateActorTransform(const Matrix4& tranform, physx::PxRigidActor* actor)
     {
         physx::PxTriangleMeshGeometry geom;
         shape->getTriangleMeshGeometry(geom);
-        geom.scale.scale = DAVA::PhysicsMath::Vector3ToPxVec3(scale);
+        geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
         shape->setGeometry(geom);
     }
 }
@@ -87,7 +89,7 @@ void InitBounds(physx::PxRigidActor* actor, physx::PxShape* shape)
         bounds.maximum.z += eps;
     }
     DVASSERT(shape->userData == nullptr);
-    shape->userData = new AABBox3(DAVA::PhysicsMath::PxBounds3ToAABox3(bounds));
+    shape->userData = new AABBox3(PhysicsMath::PxBounds3ToAABox3(bounds));
 }
 
 struct CollisionObj
@@ -97,7 +99,7 @@ struct CollisionObj
     bool shouldRecreate = false;
 };
 
-CollisionObj CreateBox(bool createCollision, bool recreate, const DAVA::Matrix4& transform, const Vector3& halfSize, void* userData)
+CollisionObj CreateBox(bool createCollision, bool recreate, const Matrix4& transform, const Vector3& halfSize, void* userData)
 {
     using namespace DAVA;
 
@@ -125,7 +127,7 @@ CollisionObj CreateBox(bool createCollision, bool recreate, const DAVA::Matrix4&
     return result;
 }
 
-CollisionObj CreateMesh(bool createCollision, const DAVA::Matrix4& transform, DAVA::RenderObject* ro, DAVA::PhysicsGeometryCache* cache, void* userData)
+CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderObject* ro, PhysicsGeometryCache* cache, void* userData)
 {
     using namespace DAVA;
 
@@ -172,7 +174,7 @@ CollisionObj CreateMesh(bool createCollision, const DAVA::Matrix4& transform, DA
         DVASSERT(rigidActor);
         rigidActor->userData = userData;
 
-        PxShape* shape = module->CreateMeshShape(std::move(polygons), DAVA::Vector3(1.0, 1.0, 1.0), cache);
+        PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), cache);
         shape->setQueryFilterData(objectFilterData);
         rigidActor->attachShape(*shape);
 
@@ -184,7 +186,7 @@ CollisionObj CreateMesh(bool createCollision, const DAVA::Matrix4& transform, DA
     return result;
 }
 
-CollisionObj CreateLandscape(bool createCollision, DAVA::Landscape* landscape, void* userData)
+CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* userData)
 {
     using namespace DAVA;
 
@@ -200,7 +202,7 @@ CollisionObj CreateLandscape(bool createCollision, DAVA::Landscape* landscape, v
         DVASSERT(rigidActor);
         rigidActor->userData = userData;
 
-        DAVA::Matrix4 localPose;
+        Matrix4 localPose;
         PxShape* shape = module->CreateHeightField(landscape, localPose);
         rigidActor->attachShape(*shape);
 
@@ -242,24 +244,24 @@ enum class ClassifyPlanesResult
     Outside
 };
 
-inline DAVA::Plane TransformPlaneToLocalSpace(const Selectable& object, const DAVA::Plane& plane)
+inline Plane TransformPlaneToLocalSpace(const Selectable& object, const Plane& plane)
 {
-    DAVA::Matrix4 transform = object.GetWorldTransform();
+    Matrix4 transform = object.GetWorldTransform();
     transform.Transpose();
-    return DAVA::Plane(DAVA::Vector4(plane.n.x, plane.n.y, plane.n.z, plane.d) * transform);
+    return Plane(Vector4(plane.n.x, plane.n.y, plane.n.z, plane.d) * transform);
 }
 
-inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const DAVA::AABBox3& bbox, const DAVA::Plane& plane)
+inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const AABBox3& bbox, const Plane& plane)
 {
-    DAVA::uint8 cornersData[8 * sizeof(DAVA::Vector3)];
-    DAVA::Vector3* corners = reinterpret_cast<DAVA::Vector3*>(cornersData);
+    uint8 cornersData[8 * sizeof(Vector3)];
+    Vector3* corners = reinterpret_cast<Vector3*>(cornersData);
     bbox.GetCorners(corners);
 
-    DAVA::float32 minDistance = std::numeric_limits<float>::max();
-    DAVA::float32 maxDistance = -minDistance;
-    for (DAVA::uint32 i = 0; i < 8; ++i)
+    float32 minDistance = std::numeric_limits<float>::max();
+    float32 maxDistance = -minDistance;
+    for (uint32 i = 0; i < 8; ++i)
     {
-        DAVA::float32 d = plane.DistanceToPoint(corners[i]);
+        float32 d = plane.DistanceToPoint(corners[i]);
         minDistance = std::min(minDistance, d);
         maxDistance = std::max(maxDistance, d);
     }
@@ -273,11 +275,11 @@ inline ClassifyPlaneResult ClassifyBoundingBoxToPlane(const DAVA::AABBox3& bbox,
     return ClassifyPlaneResult::Intersects;
 }
 
-ClassifyPlanesResult ClassifyObjectBoundingBox(const Selectable& object, const DAVA::AABBox3& bounds, const DAVA::Vector<DAVA::Plane>& planes)
+ClassifyPlanesResult ClassifyObjectBoundingBox(const Selectable& object, const AABBox3& bounds, const Vector<Plane>& planes)
 {
-    for (const DAVA::Plane& globalPlane : planes)
+    for (const Plane& globalPlane : planes)
     {
-        DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
+        Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
         if (ClassifyBoundingBoxToPlane(bounds, localPlane) == ClassifyPlaneResult::Behind)
         {
             return ClassifyPlanesResult::Outside;
@@ -286,9 +288,9 @@ ClassifyPlanesResult ClassifyObjectBoundingBox(const Selectable& object, const D
     return ClassifyPlanesResult::ContainsOrIntersects;
 }
 
-ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShape* shape, const Vector<Plane>& planes)
 {
-    DAVA::AABBox3 bounds = *GetBounds(shape);
+    AABBox3 bounds = *GetBounds(shape);
     return ClassifyObjectBoundingBox(object, bounds, planes);
 }
 
@@ -297,7 +299,7 @@ inline bool IsBothNegative(float v1, float v2)
     return (((reinterpret_cast<uint32_t&>(v1) & 0x80000000) & (reinterpret_cast<uint32_t&>(v2) & 0x80000000)) >> 31) != 0;
 }
 
-inline void SortDistances(DAVA::float32 values[3])
+inline void SortDistances(float32 values[3])
 {
     if (values[1] > values[0])
         std::swap(values[1], values[0]);
@@ -307,9 +309,9 @@ inline void SortDistances(DAVA::float32 values[3])
         std::swap(values[1], values[0]);
 }
 
-ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxShape* shape, const Vector<Plane>& planes)
 {
-    DAVA::AABBox3 bounds = *GetBounds(shape);
+    AABBox3 bounds = *GetBounds(shape);
     if (ClassifyObjectBoundingBox(object, bounds, planes) == ClassifyPlanesResult::Outside)
     {
         return ClassifyPlanesResult::Outside;
@@ -337,11 +339,11 @@ ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxSha
         physx::PxVec3 v2 = verticesPtr[i2];
 
         bool isOutSideFound = false;
-        for (const DAVA::Plane& globalPlane : planes)
+        for (const Plane& globalPlane : planes)
         {
-            DAVA::Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
+            Plane localPlane = TransformPlaneToLocalSpace(object, globalPlane);
 
-            DAVA::float32 distances[3] = {
+            float32 distances[3] = {
                 localPlane.DistanceToPoint(v0.x, v0.y, v0.z),
                 localPlane.DistanceToPoint(v1.x, v1.y, v1.z),
                 localPlane.DistanceToPoint(v2.x, v2.y, v2.z)
@@ -364,7 +366,7 @@ ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxSha
     return ClassifyPlanesResult::Outside;
 }
 
-ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, physx::PxShape* shape, const DAVA::Vector<DAVA::Plane>& planes)
+ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, physx::PxShape* shape, const Vector<Plane>& planes)
 {
     physx::PxGeometryType::Enum type = shape->getGeometryType();
     switch (type)
@@ -387,13 +389,13 @@ ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, physx::PxShape* 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
 {
-    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+    DAVA::PhysicsModule* module = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::PhysicsModule>();
     DVASSERT(module != nullptr);
 
-    PhysicsSceneConfig config;
+    DAVA::PhysicsSceneConfig config;
     config.threadCount = 0;
     physicsScene = module->CreateScene(config, physx::PxDefaultSimulationFilterShader, nullptr);
-    geometryCache = new PhysicsGeometryCache();
+    geometryCache = new DAVA::PhysicsGeometryCache();
 }
 
 SceneCollisionSystem::~SceneCollisionSystem()
@@ -607,8 +609,8 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
                 DVASSERT(iter != objToPhysx.end());
                 physx::PxRigidActor* rigidActor = iter->second;
                 DVASSERT(rigidActor != nullptr);
-                AABBox3* bounds = SceneCollisionSystemDetail::GetBounds(rigidActor);
-                SafeDelete(bounds);
+                DAVA::AABBox3* bounds = SceneCollisionSystemDetail::GetBounds(rigidActor);
+                DAVA::SafeDelete(bounds);
 
                 physicsScene->removeActor(*rigidActor);
                 rigidActor->release();
@@ -690,13 +692,13 @@ void SceneCollisionSystem::SetScene(DAVA::Scene* scene)
             currentScene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
             currentScene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
 
-            PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+            DAVA::PhysicsModule* module = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::PhysicsModule>();
             DVASSERT(module != nullptr);
 
-            PhysicsSceneConfig config;
+            DAVA::PhysicsSceneConfig config;
             config.threadCount = 0;
             physicsScene = module->CreateScene(config, physx::PxDefaultSimulationFilterShader, nullptr);
-            geometryCache = new PhysicsGeometryCache();
+            geometryCache = new DAVA::PhysicsGeometryCache();
         }
     }
 }
