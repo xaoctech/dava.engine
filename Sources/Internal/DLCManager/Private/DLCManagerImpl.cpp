@@ -15,6 +15,7 @@
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
+#include "Debug/Private/ImGui.h"
 
 #include <iomanip>
 
@@ -130,13 +131,65 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                           {
                                                               OnSettingsChanged(value);
                                                           });
+    /* TODO merge later with development (uncomment it)
+    gestureChecker.debugGestureMatch.DisconnectAll();
+
+    gestureChecker.debugGestureMatch.Connect(this, [this]() {
+        Logger::Debug("enable mini imgui for dlc profiling");
+        GetPrimaryWindow()->draw.Disconnect(this);
+        GetPrimaryWindow()->draw.Connect(this, [this](Window*) {
+            // TODO move it later to common ImGui setting system
+            if (ImGui::IsInitialized())
+            {
+                {
+                    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
+                    ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
+
+                    bool isImWindowOpened = true;
+                    ImGui::Begin("DLC Profiling Window", &isImWindowOpened);
+
+                    if (isImWindowOpened)
+                    {
+                        if (ImGui::Button("start dlc profiler"))
+                        {
+                            profiler.Start();
+                            profilerState = "started";
+                        }
+
+                        if (ImGui::Button("stop dlc profiler"))
+                        {
+                            profiler.Stop();
+                            profilerState = "stopped";
+                        }
+
+                        if (ImGui::Button("dump to"))
+                        {
+                            profilerState = "dumpped: (" + DumpToJsonProfilerTrace() + ")";
+                        }
+
+                        ImGui::Text("profiler state: %s", profilerState.c_str());
+                    }
+                    else
+                    {
+                        profiler.Stop();
+                        GetPrimaryWindow()->draw.Disconnect(this);
+                    }
+                    ImGui::End();
+                }
+            }
+        });
+    });
+    */
 }
 
-void DLCManagerImpl::DumpToJsonProfilerTrace()
+String DLCManagerImpl::DumpToJsonProfilerTrace()
 {
+    String outputPath;
+    if (profiler.IsStarted() == false)
+    {
     FileSystem* fs = GetEngineContext()->fileSystem;
     FilePath docPath = fs->GetPublicDocumentsPath();
-    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
+    String name = docPath.GetAbsolutePathname() + "dlc_prof.json";
     std::ofstream file(name);
     char buf[16 * 1024];
     file.rdbuf()->pubsetbuf(buf, sizeof(buf));
@@ -144,7 +197,18 @@ void DLCManagerImpl::DumpToJsonProfilerTrace()
     {
         Vector<TraceEvent> events = profiler.GetTrace();
         TraceEvent::DumpJSON(events, file);
+        outputPath = name;
     }
+    else
+    {
+        outputPath = "cant' open file: " + name;
+    }
+    }
+    else
+    {
+        outputPath = "error: profiler is started";
+    }
+    return outputPath;
 }
 
 void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
