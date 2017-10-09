@@ -966,7 +966,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
                     inForceBoundingSphere = true;
                     break;
                 }
-                Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position;
+                Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position; // Do not rotate global forces.
                 float32 sqrDist = (forceWorldPosition - particle->position).SquareLength();
                 if (sqrDist < force->GetSquareRadius())
                 {

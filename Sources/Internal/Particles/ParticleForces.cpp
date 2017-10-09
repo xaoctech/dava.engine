@@ -69,6 +69,14 @@ inline void KillParticle(Particle* particle)
 {
     particle->life = particle->lifeTime + 0.1f;
 }
+
+inline void KillParticlePlaneCollision(const ParticleDragForce* force, Particle* particle, Vector3& effectSpaceVelocity)
+{
+    if (force->killParticles)
+        KillParticle(particle);
+    else
+        effectSpaceVelocity = Vector3::Zero;
+}
 }
 
 void Init()
@@ -227,11 +235,9 @@ void ApplyWind(Entity* parent, const ParticleDragForce* force, Vector3& effectSp
 
 void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle)
 {
-    if (!force->isInfinityRange)
-    {
-        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
-            return;
-    }
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+        return;
+
     Vector3 toCenter = force->position - effectSpacePosition;
     float32 sqrToCenterDist = toCenter.SquareLength();
     if (sqrToCenterDist > 0)
@@ -264,95 +270,56 @@ void ApplyPointGravity(Entity* parent, const ParticleDragForce* force, Vector3& 
 
 void ApplyPlaneCollision(Entity* parent, const ParticleDragForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition)
 {
-    float32 sqrLen = force->direction.SquareLength();
-    if (sqrLen < EPSILON * EPSILON)
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
         return;
-    if (!force->isInfinityRange)
-    {
-        if (!IsPositionInForceShape(parent, force, effectSpacePosition))
-            return;
-    }
-    Vector3 normal = force->direction;
-    float32 invLen = 1.0f / sqrt(sqrLen);
-    normal *= invLen;
+
+    Vector3 normal = Normalize(force->direction);
     Vector3 a = prevEffectSpacePosition - force->position;
     Vector3 b = effectSpacePosition - force->position;
     float32 bProj = b.DotProduct(normal);
-    if (bProj <= 0 && a.DotProduct(normal) > 0)
+    float32 aProj = a.DotProduct(normal);
+    if (bProj <= 0 && aProj > 0)
     {
         if (effectSpaceVelocity.SquareLength() < force->velocityThreshold * force->velocityThreshold)
         {
-            effectSpaceVelocity = Vector3::Zero;
+            ParticleForcesDetail::KillParticlePlaneCollision(force, particle, effectSpaceVelocity);
             return;
-        }
-        std::random_device rd;
-        std::mt19937 rng(rd());
-        std::uniform_int_distribution<int32> uniInt(0, 99);
-        int32 rnd100 = uniInt(rng);
-        bool reflectParticle = static_cast<uint32>(rnd100) < force->reflectionPercent;
-        if (force->killParticles && !reflectParticle)
-        {
-            ParticleForcesDetail::KillParticle(particle);
-            return;
-        }
-
-        Vector3 newVel;
-        if (force->normalAsReflectionVector)
-            newVel = (normal * effectSpaceVelocity.Length()); // Artiom request.
-        else
-            newVel = Reflect(effectSpaceVelocity, normal);
-
-        Vector3 rndVec;
-        Quaternion q;
-
-        if (abs(force->reflectionChaos) > EPSILON)
-        {
-            intptr_t partInd = reinterpret_cast<intptr_t>(particle);
-            uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
-            particleIndex %= ParticleForcesDetail::sphereRandomVectorsSize;
-            rndVec = ParticleForcesDetail::sphereRandomVectors[particleIndex];
-            if (rndVec.DotProduct(normal) < 0)
-                rndVec = -rndVec;
-
-            std::uniform_real_distribution<float32> uni(-force->reflectionChaos, force->reflectionChaos);
-
-            float32 random_x = DegToRad(uni(rng));
-            float32 random_y = DegToRad(uni(rng));
-            float32 random_z = DegToRad(uni(rng));
-            q = Quaternion::MakeRotationFastX(random_x) * Quaternion::MakeRotationFastY(random_y) * Quaternion::MakeRotationFastZ(random_z);
-            newVel = q.ApplyToVectorFast(newVel);
-            if (newVel.DotProduct(normal) < 0)
-                newVel = -newVel;
-        }
-        effectSpaceVelocity = newVel * force->forcePower;
-        if (force->randomizeReflectionForce)
-        {
-            std::uniform_real_distribution<float32> uni(force->rndReflectionForceMin, force->rndReflectionForceMax);
-            effectSpaceVelocity *= uni(rng);
         }
 
         Vector3 dir = prevEffectSpacePosition - effectSpacePosition;
         float32 abProj = abs(dir.DotProduct(normal));
         if (abProj < EPSILON)
             return;
-
         effectSpacePosition = effectSpacePosition + dir * (-bProj) / abProj;
 
-        if (!reflectParticle)
+        std::mt19937 rng(std::random_device{}());
+        std::uniform_int_distribution<int32> uniInt(0, 99);
+        bool reflectParticle = static_cast<uint32>(uniInt(rng)) < force->reflectionPercent;
+        if (reflectParticle)
         {
-            if (force->killParticles)
-                particle->life = particle->lifeTime + 0.1f;
+            Vector3 newVel;
+            if (force->normalAsReflectionVector)
+                newVel = (normal * effectSpaceVelocity.Length()); // Artiom request.
             else
-                effectSpaceVelocity = Vector3::Zero;
+                newVel = Reflect(effectSpaceVelocity, normal);
+
+            if (abs(force->reflectionChaos) > EPSILON)
+            {
+                std::uniform_real_distribution<float32> uni(-DegToRad(force->reflectionChaos), DegToRad(force->reflectionChaos));
+                Quaternion q = Quaternion::MakeRotationFastX(uni(rng)) * Quaternion::MakeRotationFastY(uni(rng)) * Quaternion::MakeRotationFastZ(uni(rng));
+                newVel = q.ApplyToVectorFast(newVel);
+                if (newVel.DotProduct(normal) < 0)
+                    newVel = -newVel;
+            }
+            effectSpaceVelocity = newVel * force->forcePower;
+            if (force->randomizeReflectionForce)
+                effectSpaceVelocity *= std::uniform_real_distribution<float32>(force->rndReflectionForceMin, force->rndReflectionForceMax)(rng);
         }
-    }
-    else if ((bProj < 0.0f && a.DotProduct(normal) < 0.0f))
-    {
-        if (force->killParticles)
-            particle->life = particle->lifeTime + 0.1f;
         else
-            effectSpaceVelocity = Vector3::Zero;
+            ParticleForcesDetail::KillParticlePlaneCollision(force, particle, effectSpaceVelocity);
     }
+    else if (bProj < 0.0f && aProj < 0.0f)
+        ParticleForcesDetail::KillParticlePlaneCollision(force, particle, effectSpaceVelocity);
 }
 }
 }
