@@ -148,7 +148,7 @@ void RenderSystem::UnregisterMaterial(NMaterial* material)
     */
 }
 
-void RenderSystem::PrepareForShoutdown()
+void RenderSystem::PrepareForShutdown()
 {
     renderHierarchy->PrepareForShutdown();
 }

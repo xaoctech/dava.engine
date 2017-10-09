@@ -421,7 +421,7 @@ Scene::~Scene()
     physicsSystem = nullptr;
 #endif
 
-    renderSystem->PrepareForShoutdown();
+    renderSystem->PrepareForShutdown();
 
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
