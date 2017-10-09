@@ -8,8 +8,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PixelGridData)
     .End();
 }
 
-PixelGridData::PixelGridData()
-{
-}
-
 PixelGridData::~PixelGridData() = default;

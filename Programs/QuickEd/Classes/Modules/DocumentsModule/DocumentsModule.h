@@ -89,6 +89,7 @@ private:
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
 
     void OnSelectInFileSystem();
+    void OnDroppingFile(bool droppingFile);
 
     PreviewWidget* previewWidget = nullptr;
     DAVA::TArc::QtConnections connections;

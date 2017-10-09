@@ -1,4 +1,4 @@
-#include "EditorSystems/HUDControls.h"
+#include "Classes/Modules/HUDModule/Private/HUDControls.h"
 
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
@@ -419,6 +419,7 @@ std::unique_ptr<ControlContainer> CreateHighlightRect(const ControlNode* node, D
     frame->SetName("HUD_rect_frame_control");
     container->AddChild(std::move(frame));
 
-    container->InitFromGD(node->GetControl()->GetGeometricData());
+    const UIGeometricData& gd = node->GetControl()->GetGeometricData();
+    container->InitFromGD(gd);
     return container;
 }
