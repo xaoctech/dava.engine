@@ -191,11 +191,11 @@ void DistanceSystem::DrawLines(const DAVA::Rect& selectedRect, const DAVA::Rect&
             startPos2[axis] = selectedRect.GetPosition()[axis] + selectedRect.GetSize()[axis];
             endPos2[axis] = highlightedRect.GetPosition()[axis] + highlightedRect.GetSize()[axis];
 
-            //do not draw distances if rect have common point
-            if (startPos1 == endPos1 || startPos2 == endPos2 || startPos1 == endPos2 || startPos2 == endPos1)
+            if (startPos1 == endPos2 || endPos1 == startPos2)
             {
                 continue;
             }
+
             DrawSolidLine(startPos1, endPos1, transformMatrix, axis);
             DrawSolidLine(startPos2, endPos2, transformMatrix, axis);
         }
