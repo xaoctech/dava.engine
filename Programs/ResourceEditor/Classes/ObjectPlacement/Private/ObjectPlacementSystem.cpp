@@ -90,7 +90,23 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         Vector<RenderObject*> selectedObjects;
         for (const Selectable& item : entities.GetContent())
         {
-            selectedObjects.push_back(GetRenderObject(item.AsEntity()));
+            auto addRo = [&selectedObjects](Entity* entity)
+            {
+                RenderObject* ro = GetRenderObject(entity);
+                if (ro != nullptr)
+                {
+                    selectedObjects.push_back(ro);
+                }
+            };
+
+            addRo(item.AsEntity());
+
+            Vector<Entity*> children;
+            item.AsEntity()->GetChildEntitiesWithComponent(children, Component::RENDER_COMPONENT);
+            for (Entity* entity : children)
+            {
+                addRo(entity);
+            }
         }
 
         hitObject = renderSystem->GetRenderHierarchy()->RayTrace(ray, collision, selectedObjects);
