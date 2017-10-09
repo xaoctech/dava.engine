@@ -842,8 +842,12 @@ macro( setup_main_module )
                 endif()             
             endif()
 
-            reset_property( INCLUDES_PRIVATE )
-                
+            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} )
+            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE )
+            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG )
+            reset_property( STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} )
+            reset_property( INCLUDES_PRIVATE )       
+                     
         endif()
 
         #"find root call"
