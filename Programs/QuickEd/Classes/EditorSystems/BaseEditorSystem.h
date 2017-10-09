@@ -11,6 +11,11 @@ class ContextAccessor;
 }
 }
 
+namespace Painting
+{
+class Painter;
+}
+
 using CanvasControls = DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>;
 
 class BaseEditorSystem
@@ -32,6 +37,8 @@ protected:
         PIXEL_GRID,
         //this system creates HUD around controls and must be updated before HUD users
         HUD,
+        //this system draw distance lines between controls
+        DISTANCE_LINES,
         //this system can draw magnet lines and must be updated after the HUD system
         TRANSFORM,
 
@@ -44,10 +51,12 @@ protected:
     };
 
     //some systems can process OnUpdate from UpdateViewsSystem
-    //order of update is metter, because without it canvas views will be in invalid state during the frame
+    //order of update is matter, because without it canvas views will be in invalid state during the frame
 
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
+    Painting::Painter* GetPainter() const;
+
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
 private:
