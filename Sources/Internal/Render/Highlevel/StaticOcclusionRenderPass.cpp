@@ -191,7 +191,7 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
     {
         rhi::Packet packet;
         RenderObject* renderObject = batch->GetRenderObject();
-        renderObject->BindDynamicParameters(occlusionCamera);
+        renderObject->BindDynamicParameters(occlusionCamera, batch);
         NMaterial* mat = batch->GetMaterial();
         DVASSERT(mat);
         batch->BindGeometryData(packet);
@@ -205,7 +205,7 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
     for (const auto& batch : meshRenderBatches)
     {
         RenderObject* renderObject = batch.first->GetRenderObject();
-        renderObject->BindDynamicParameters(occlusionCamera);
+        renderObject->BindDynamicParameters(occlusionCamera, batch.first);
 
         rhi::Packet packet;
         batch.first->BindGeometryData(packet);

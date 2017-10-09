@@ -9,11 +9,12 @@ class SingleComponentSystem : public SceneSystem
 public:
     SingleComponentSystem(Scene* scene);
 
-    virtual void AddEntity(Entity* entity);
-    virtual void RemoveEntity(Entity* entity);
+    void AddEntity(Entity* entity) override;
+    void RemoveEntity(Entity* entity) override;
 
-    virtual void AddComponent(Entity* entity, Component* component);
-    virtual void RemoveComponent(Entity* entity, Component* component);
+    void AddComponent(Entity* entity, Component* component) override;
+    void RemoveComponent(Entity* entity, Component* component) override;
+    void PrepareForRemove() override;
 
     uint32 GetEnititesCount() const;
     uint32 GetComponentsCount() const;
@@ -27,11 +28,12 @@ class MultiComponentSystem : public SceneSystem
 public:
     MultiComponentSystem(Scene* scene);
 
-    virtual void AddEntity(Entity* entity);
-    virtual void RemoveEntity(Entity* entity);
+    void AddEntity(Entity* entity) override;
+    void RemoveEntity(Entity* entity) override;
 
-    virtual void AddComponent(Entity* entity, Component* component);
-    virtual void RemoveComponent(Entity* entity, Component* component);
+    void AddComponent(Entity* entity, Component* component) override;
+    void RemoveComponent(Entity* entity, Component* component) override;
+    void PrepareForRemove() override;
 
     uint32 GetEnititesCount() const;
     uint32 GetComponentsCount(uint32 componentType) const;
@@ -105,6 +107,12 @@ void SingleComponentSystem::RemoveComponent(Entity* entity, Component* component
     RemovePointerFromVector(components, component);
 }
 
+void SingleComponentSystem::PrepareForRemove()
+{
+    entities.clear();
+    components.clear();
+}
+
 uint32 SingleComponentSystem::GetEnititesCount() const
 {
     return static_cast<uint32>(entities.size());
@@ -164,6 +172,12 @@ void MultiComponentSystem::AddComponent(Entity* entity, Component* component)
 void MultiComponentSystem::RemoveComponent(Entity* entity, Component* component)
 {
     RemovePointerFromVector(components[component->GetType()], component);
+}
+
+void MultiComponentSystem::PrepareForRemove()
+{
+    entities.clear();
+    components.clear();
 }
 
 uint32 MultiComponentSystem::GetEnititesCount() const

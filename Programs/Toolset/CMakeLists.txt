@@ -52,9 +52,7 @@ add_tool_package     ( ResourcePatcher  DEPENDS ResourceEditor )
 add_tool_package     ( AssetCacheServer )
 add_tool_package     ( Dep )
 
-if (NOT DEPLOY OR IMAGE_UNPACKER)    
-    add_tool_package     ( ImageUnpacker    )
-endif ()
+add_tool_package     ( ImageUnpacker    )
 
 if (NOT DEPLOY OR CACHE_CLIENT)    
     add_tool_package     ( AssetCacheClient )

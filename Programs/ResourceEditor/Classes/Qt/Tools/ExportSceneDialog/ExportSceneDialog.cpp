@@ -1,21 +1,21 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
-
+#include "Classes/Deprecated/EditorConfig.h"
 #include <Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h>
 #include "Classes/Qt/Tools/Widgets/FilePathBrowser.h"
 
 #include <TArc/DataProcessing/DataContext.h>
+
 #include <Base/GlobalEnum.h>
+#include <Base/BaseTypes.h>
 #include <Debug/DVAssert.h>
 
 #include <QCheckBox>
 #include <QComboBox>
-
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-
 #include <QPushButton>
 
 ExportSceneDialog::ExportSceneDialog(QWidget* parent)
@@ -91,6 +91,30 @@ void ExportSceneDialog::SetupUI()
             if (ok)
             {
                 qualitySelector->addItem(qualityMap->ToString(value), value);
+            }
+        }
+
+        QLabel* tagLabel = new QLabel(this);
+        tagLabel->setText("Select Tag:");
+        tagLabel->setMinimumSize(UI_WIDTH, UI_HEIGHT);
+        optionsLayout->addWidget(tagLabel);
+
+        tagSelector = new QComboBox(this);
+        tagSelector->setMinimumSize(UI_WIDTH, UI_HEIGHT);
+        optionsLayout->addWidget(tagSelector);
+
+        tagSelector->addItem("No tags", "");
+
+        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DVASSERT(data != nullptr);
+        const EditorConfig* editorConfig = data->GetEditorConfig();
+        if (editorConfig->HasProperty("Tags"))
+        {
+            const DAVA::Vector<DAVA::String>& projectTags = editorConfig->GetComboPropertyValues("Tags");
+            for (const DAVA::String& tag : projectTags)
+            {
+                QString qTag = QString::fromStdString(tag);
+                tagSelector->addItem(qTag, qTag);
             }
         }
 
@@ -196,4 +220,9 @@ bool ExportSceneDialog::GetOptimizeOnExport() const
 bool ExportSceneDialog::GetUseHDTextures() const
 {
     return useHDtextures->checkState() == Qt::Checked;
+}
+
+DAVA::String ExportSceneDialog::GetFilenamesTag() const
+{
+    return tagSelector->currentData(Qt::UserRole).toString().toStdString();
 }

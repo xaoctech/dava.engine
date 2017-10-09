@@ -56,6 +56,7 @@ protected:
 private:
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     void ReloadInternal(InternalMapping& mapping, const DAVA::FilePath& newModelPath, bool saveLightmapSettings);
     DAVA::Entity* LoadInternal(const DAVA::FilePath& sc2path, bool clearCached);

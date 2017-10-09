@@ -121,7 +121,7 @@ void SpritesPackerModule::DisableCacheClient()
 
 void SpritesPackerModule::OnReloadFinished()
 {
-    DAVA::Sprite::ReloadSprites();
+    InvokeOperation(QEGlobal::ReloadSprites.ID);
 }
 
 void SpritesPackerModule::OnReloadSprites()
@@ -129,11 +129,6 @@ void SpritesPackerModule::OnReloadSprites()
     using namespace DAVA;
     using namespace TArc;
     ContextAccessor* accessor = GetAccessor();
-    InvokeOperation(QEGlobal::CloseAllDocuments.ID);
-    if (accessor->GetContextCount() != 0)
-    {
-        return;
-    }
     DataContext* globalContext = accessor->GetGlobalContext();
     SpritesPackerData* spritesPackerData = GetAccessor()->GetGlobalContext()->GetData<SpritesPackerData>();
     ProjectData* projectData = globalContext->GetData<ProjectData>();

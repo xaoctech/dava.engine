@@ -1,6 +1,6 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
 
@@ -138,7 +138,7 @@ void DocumentsModule::PostInit()
     CreateViewActions();
     CreateFindActions();
 
-    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
     RegisterInterface(static_cast<Interfaces::EditorSystemsManagerInterface*>(systemsManager));
 }
 
@@ -185,7 +185,7 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
     previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
@@ -221,11 +221,11 @@ void DocumentsModule::InitGlobalData()
     connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
     globalContext->CreateData(std::move(watcherData));
 
-    std::unique_ptr<EditorData> editorData(new EditorData());
+    std::unique_ptr<EditorSystemsData> editorData(new EditorSystemsData());
     editorData->systemsManager = std::make_unique<EditorSystemsManager>(GetAccessor());
     globalContext->CreateData(std::move(editorData));
 
-    EditorSystemsManager* systemsManager = globalContext->GetData<EditorData>()->systemsManager.get();
+    EditorSystemsManager* systemsManager = globalContext->GetData<EditorSystemsData>()->systemsManager.get();
     systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
     systemsManager->InitSystems();
 }
@@ -240,7 +240,6 @@ void DocumentsModule::CreateDocumentsActions()
     const QString saveDocumentActionName("Save document");
     const QString saveAllDocumentsActionName("Force save all");
     const QString reloadDocumentActionName("Reload document");
-    const QString closeDocumentActionName("Close document");
     const QString toolBarSeparatorName("documents separator");
 
     ContextAccessor* accessor = GetAccessor();
@@ -261,7 +260,7 @@ void DocumentsModule::CreateDocumentsActions()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "Close project" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "projectActionsSeparator" }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
@@ -299,13 +298,14 @@ void DocumentsModule::CreateDocumentsActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::ReloadCurrentDocument, this));
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, closeDocumentActionName }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, saveAllDocumentsActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
     // Separator
     {
         QAction* separator = new QAction(toolBarSeparatorName, nullptr);
+        separator->setObjectName(toolBarSeparatorName);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
@@ -702,7 +702,7 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
 
 void DocumentsModule::OnEmulationModeChanged(bool mode)
 {
-    GetAccessor()->GetGlobalContext()->GetData<EditorData>()->emulationMode = mode;
+    GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->emulationMode = mode;
 }
 
 //TODO: generalize changes in central widget
@@ -713,7 +713,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorSystemsData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorSystemsData = globalContext->GetData<EditorSystemsData>();
     if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
     {
         return;
@@ -1198,7 +1198,7 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     DocumentData* documentData = activeContext->GetData<DocumentData>();
 
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
 
     EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();

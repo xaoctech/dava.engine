@@ -1,7 +1,4 @@
 include ( CMake-common )
-if( WIN32 AND NOT WINDOWS_UAP )
-    include( FindWindowsSDK )
-endif()
 
 if( NOT DAVA_LIBRARY )
     set( DAVA_LIBRARY    "DavaFramework" )
@@ -22,8 +19,7 @@ set( MODULE_TYPE STATIC )#INLINE STATIC DYNAMIC
 set( INCLUDES_PRIVATE               ${DAVA_ENGINE_DIR}
                                     ${DAVA_THIRD_PARTY_INCLUDES_PATH}  )
 
-set( INCLUDES_WIN                   ${WINDOWSSDK_LATEST_DIR}/include/shared
-                                    $ENV{DXSDK_DIR}/include
+set( INCLUDES_WIN                   $ENV{DXSDK_DIR}/include
                                     ${DAVA_THIRD_PARTY_ROOT_PATH}/include/ffmpeg )
 
 
@@ -121,7 +117,7 @@ set( DEFINITIONS_PRIVATE            -D_UNICODE
                                     -DUNICODE
                                     -D_CRT_SECURE_NO_DEPRECATE
                                     -D_CRT_NON_CONFORMING_SWPRINTFS
-                                    -DCURL_STATICLIB  )
+)
 
 # Define __STDC_FORMAT_MACROS for PRIdXX macros used in printf and friends
 set( DEFINITIONS_PRIVATE_LINUX      -D__STDC_FORMAT_MACROS=1)

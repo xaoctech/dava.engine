@@ -703,7 +703,7 @@ macro( setup_main_module )
 
                 if( WIN32 )
                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/DEBUG" )
-                    set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib /SAFESEH:NO" )
+                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SAFESEH:NO" )
 
                     # Generate debug info also in release builds
                     set_target_properties ( ${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/DEBUG /SUBSYSTEM:WINDOWS" )
@@ -765,6 +765,16 @@ macro( setup_main_module )
                 endif()
 
             endif()
+
+            if( CREATE_NEW_MODULE )
+                file_tree_check( "${CMAKE_CURRENT_LIST_DIR}" )
+
+                if( TARGET_FILE_TREE_FOUND )
+                    add_dependencies(  ${MODULE_NAME} FILE_TREE_${MODULE_NAME} )
+                endif()
+
+            endif()
+
 
             if( DEFINITIONS_PRIVATE )
                 add_definitions( ${DEFINITIONS_PRIVATE} )

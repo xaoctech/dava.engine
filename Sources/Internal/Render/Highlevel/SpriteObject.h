@@ -67,7 +67,7 @@ public:
 
     void RecalcBoundingBox() override;
 
-    void BindDynamicParameters(Camera* camera) override;
+    void BindDynamicParameters(Camera* camera, RenderBatch* batch) override;
 
 private:
     void Clear();

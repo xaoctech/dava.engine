@@ -2,7 +2,7 @@
 #include "Application/QEGlobal.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
@@ -128,8 +128,8 @@ void PreviewWidget::CreateActions()
     connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
 
     FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-    fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+    fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+    fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
 
     QtAction* focusNextChildAction = new QtAction(accessor, tr("Focus next child"), this);
     focusNextChildAction->setShortcut(Qt::Key_Tab);
@@ -185,23 +185,11 @@ void PreviewWidget::SetActualScale()
     canvasDataAdapter.SetScale(1.0f);
 }
 
-void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
-{
-    const EngineContext* engineContext = GetEngineContext();
-    VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-    vcs->UnregisterAllAvailableResourceSizes();
-    vcs->SetVirtualScreenSize(width, height);
-    vcs->RegisterAvailableResourceSize(width, height, "Gfx");
-    vcs->RegisterAvailableResourceSize(width, height, "Gfx2");
-}
-
 void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
 {
     DVASSERT(renderWidget_ != nullptr);
     renderWidget = renderWidget_;
     CreateActions();
-
-    renderWidget->resized.Connect(this, &PreviewWidget::OnResized);
 
     renderWidget->SetClientDelegate(this);
 }

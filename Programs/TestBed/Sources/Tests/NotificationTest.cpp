@@ -4,6 +4,8 @@
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 
+#include "Engine/Engine.h"
+
 using namespace DAVA;
 
 NotificationScreen::NotificationScreen(TestBed& app)
@@ -100,10 +102,17 @@ void NotificationScreen::LoadResources()
     LocalNotificationController::Instance()->RequestPermissions();
 
     SafeRelease(font);
+
+    Engine::Instance()->backgroundUpdate.Connect(this, &NotificationScreen::UpdateNotification);
 }
 
 void NotificationScreen::UnloadResources()
 {
+    Engine::Instance()->backgroundUpdate.Disconnect(this);
+
+    LocalNotificationController::Instance()->Remove(notificationProgress);
+    LocalNotificationController::Instance()->Remove(notificationText);
+
     BaseScreen::UnloadResources();
 
     RemoveAllControls();
@@ -117,7 +126,15 @@ void NotificationScreen::UnloadResources()
 void NotificationScreen::Update(float32 timeElapsed)
 {
     BaseScreen::Update(timeElapsed);
+    UpdateNotification(timeElapsed);
+}
 
+void NotificationScreen::Draw(const UIGeometricData& geometricData)
+{
+}
+
+void NotificationScreen::UpdateNotification(float32 timeElapsed)
+{
     if (nullptr == notificationProgress)
         return;
 
@@ -135,23 +152,6 @@ void NotificationScreen::Update(float32 timeElapsed)
 
         notificationProgress->SetProgressCurrent(progress++);
     }
-}
-
-void NotificationScreen::Draw(const UIGeometricData& geometricData)
-{
-}
-
-void NotificationScreen::UpdateNotification()
-{
-    if (nullptr == notificationProgress)
-        return;
-
-    if (100 == progress)
-    {
-        progress = 0;
-    }
-
-    notificationProgress->SetProgressCurrent(progress++);
 }
 
 void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerData)

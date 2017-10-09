@@ -1,6 +1,7 @@
 import os
 import shutil
 import build_utils
+import build_config
 
 
 def get_supported_targets(platform):
@@ -34,7 +35,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'ftp://xmlsoft.org/libxml2/libxml2-2.9.4.tar.gz'
+    return 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'
 
 
 def _download_and_extract(working_directory_path):
@@ -73,12 +74,19 @@ def _patch_sources_windows(source_folder_path, working_directory_path):
         _patch_sources_windows.cache = []
         pass
 
+    """ Patch for libxml2 v2.7.8 """
+    build_utils.apply_patch(
+        os.path.abspath('patch_win_v2.7.8.diff'),
+        working_directory_path)
+
+    """ Patch for libxml2 v2.9.0 and later
     shutil.copytree(
         os.path.join(source_folder_path, 'win32/VC10'),
         os.path.join(source_folder_path, 'win32/Win10'))
     build_utils.apply_patch(
         os.path.abspath('patch_win.diff'),
         working_directory_path)
+    """
 
     _patch_sources_windows.cache.append(source_folder_path)
 
@@ -87,35 +95,99 @@ def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources_windows(source_folder_path, working_directory_path)
 
+    """ Build instructions for libxml2 v2.7.8 """
+    libraries_win_root=os.path.join(root_project_path, 'Libs/lib_CMake/win')
+    makefile_path=os.path.join(source_folder_path, 'win32')
+
+    cscript_debug=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MDd', 'debug=yes']
+    cscript_release=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MD', 'debug=no']
+    nmake_clean=['nmake', 'clean']
+
+    # Generate makefile for debug build
+    build_utils.run_process(
+        cscript_debug,
+        process_cwd=makefile_path,
+        shell=True,
+        environment=None)
+
+    # Build and copy x86 debug static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x86_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x86/Debug/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x86_env())
+
+    # Build and copy x64 debug static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x64_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x64/Debug/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x64_env())
+
+    # Generate makefile for release build
+    build_utils.run_process(
+        cscript_release,
+        process_cwd=makefile_path,
+        shell=True,
+        environment=None)
+
+    # Build and copy x86 release static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x86_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x86/Release/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x86_env())
+
+    # Build and copy x64 release static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x64_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x64/Release/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x64_env())
+
+    """ Build instructions for libxml2 v2.9.0 and later
     sln_path = os.path.join(source_folder_path, 'win32/VC10/libxml2.sln')
-    build_utils.build_vs(sln_path, 'Debug', 'Win32', target='libxml2')
-    build_utils.build_vs(sln_path, 'Release', 'Win32', target='libxml2')
-    build_utils.build_vs(sln_path, 'Debug', 'x64', target='libxml2')
-    build_utils.build_vs(sln_path, 'Release', 'x64', target='libxml2')
-
+    build_utils.build_vs(sln_path, 'Debug', 'Win32', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    build_utils.build_vs(sln_path, 'Release', 'Win32', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    build_utils.build_vs(sln_path, 'Debug', 'x64', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    build_utils.build_vs(sln_path, 'Release', 'x64', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    
     libraries_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
-
+    
     lib_path_x86_debug = os.path.join(
         source_folder_path, 'win32/VC10/Debug/libxml2.lib')
     lib_path_x86_release = os.path.join(
         source_folder_path, 'win32/VC10/Release/libxml2.lib')
     shutil.copyfile(
         lib_path_x86_debug,
-        os.path.join(libraries_win_root, 'x86/Debug/libxml_wind.lib'))
+        os.path.join(libraries_win_root, 'x86/Debug/libxml2.lib'))
     shutil.copyfile(
         lib_path_x86_release,
-        os.path.join(libraries_win_root, 'x86/Release/libxml_win.lib'))
-
+        os.path.join(libraries_win_root, 'x86/Release/libxml2.lib'))
+    
     lib_path_x64_debug = os.path.join(
         source_folder_path, 'win32/VC10/x64/Debug/libxml2.lib')
     lib_path_x64_release = os.path.join(
         source_folder_path, 'win32/VC10/x64/Release/libxml2.lib')
     shutil.copyfile(
         lib_path_x64_debug,
-        os.path.join(libraries_win_root, 'x64/Debug/libxml_wind.lib'))
+        os.path.join(libraries_win_root, 'x64/Debug/libxml2.lib'))
     shutil.copyfile(
         lib_path_x64_release,
-        os.path.join(libraries_win_root, 'x64/Release/libxml_win.lib'))
+        os.path.join(libraries_win_root, 'x64/Release/libxml2.lib'))
+    """
 
     _copy_headers(source_folder_path, root_project_path)
 

@@ -15,7 +15,7 @@ uint32 GetSizeInBytes(uint32 width, uint32 height, PixelFormat format)
     DVASSERT(format != PixelFormat::FORMAT_INVALID);
 
     Size2i blockSize = PixelFormatDescriptor::GetPixelFormatBlockSize(format);
-    if (blockSize.dx != 1 || blockSize.dy != 1)
+    if (blockSize.dx > 1 || blockSize.dy > 1)
     { // mathematics from PVR SDK
         width = width + ((-1 * width) % blockSize.dx);
         height = height + ((-1 * height) % blockSize.dy);

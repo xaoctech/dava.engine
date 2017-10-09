@@ -13,11 +13,9 @@ struct GeoDecalManager::DecalBuildInfo
     AABBox3 boundingBox;
     PolygonGroup* polygonGroup = nullptr;
     NMaterial* material = nullptr;
-    Vector4* jointPositions = nullptr;
-    Vector4* jointQuaternions = nullptr;
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
-    int32 jointCount = 0;
+    SkinnedMesh::JointTargetsData jointsData;
     int32 lodIndex = -1;
     int32 switchIndex = -1;
     bool useCustomNormal = false;
@@ -186,18 +184,6 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     info.useCustomSpecular = FileSystem::Instance()->Exists(config.specular);
     info.useSkinning = ro->GetType() == RenderObject::TYPE_SKINNED_MESH;
 
-    if (info.useSkinning)
-    {
-        SkinnedMesh* mesh = static_cast<SkinnedMesh*>(ro);
-        info.jointPositions = mesh->GetPositionArray();
-        DVASSERT(info.jointPositions != nullptr);
-
-        info.jointQuaternions = mesh->GetQuaternionArray();
-        DVASSERT(info.jointQuaternions != nullptr);
-
-        info.jointCount = mesh->GetJointsArraySize();
-    }
-
     worldSpaceBox.GetTransformedBox(ro->GetInverseWorldTransform(), info.boundingBox);
 
     BuiltDecal& builtDecal = builtDecals[decal];
@@ -215,6 +201,13 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
             info.material = sourceBatch->GetMaterial();
             info.lodIndex = lodIndex;
             info.switchIndex = switchIndex;
+
+            if (info.useSkinning)
+            {
+                SkinnedMesh* mesh = static_cast<SkinnedMesh*>(ro);
+                info.jointsData = mesh->GetJointTargetsData(sourceBatch);
+            }
+
             BuildDecal(info, config, decalBatchProvider);
         }
     }
@@ -405,6 +398,8 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, const D
     DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
+    DVASSERT((geometryFormat & EVF_JOINTINDEX) == 0); //not support soft-skinning yet
+
     uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetIndexCount() / 3);
     for (uint32 triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
     {
@@ -427,11 +422,11 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, const D
             if (geometryFormat & EVF_BINORMAL)
                 info.polygonGroup->GetBinormal(idx[j], points[j].binormal);
 
-            info.polygonGroup->GetJointIndex(idx[j], points[j].jointIndex);
-            DVASSERT(points[j].jointIndex < info.jointCount);
+            info.polygonGroup->GetHardJointIndex(idx[j], points[j].jointIndex);
+            DVASSERT(points[j].jointIndex < int32(info.jointsData.jointsDataCount));
 
-            Vector4 weightedVertexPosition = info.jointPositions[points[j].jointIndex];
-            Vector4 weightedVertexQuaternion = info.jointQuaternions[points[j].jointIndex];
+            Vector4 weightedVertexPosition = info.jointsData.positions[points[j].jointIndex];
+            Vector4 weightedVertexQuaternion = info.jointsData.quaternions[points[j].jointIndex];
             Vector3 tmpVec = 2.0f * weightedVertexQuaternion.GetVector3().CrossProduct(points[j].originalPoint);
             points[j].actualPoint = weightedVertexPosition.GetVector3() + weightedVertexPosition.w *
             (points[j].originalPoint + weightedVertexQuaternion.w * tmpVec + weightedVertexQuaternion.GetVector3().CrossProduct(tmpVec));
@@ -462,7 +457,7 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
 
     Vector<uint8_t> buffer;
     buffer.reserve(3 * sizeof(DecalVertex) * info.polygonGroup->GetIndexCount());
-    if ((geometryFormat & EVF_JOINTINDEX) == EVF_JOINTINDEX)
+    if ((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_HARD_JOINTINDEX))
     {
         GetSkinnedMeshGeometry(info, config, buffer);
     }
@@ -505,12 +500,8 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
         if (geometryFormat & EVF_BINORMAL)
             newPolygonGroup->SetBinormal(index, c.binormal);
 
-        if (geometryFormat & EVF_JOINTINDEX)
-        {
-            newPolygonGroup->SetJointCount(index, 1);
-            newPolygonGroup->SetJointWeight(index, 0, 1.0f);
-            newPolygonGroup->SetJointIndex(index, 0, c.jointIndex);
-        }
+        if (geometryFormat & EVF_HARD_JOINTINDEX)
+            newPolygonGroup->SetHardJointIndex(index, c.jointIndex);
     }
     newPolygonGroup->BuildBuffers();
 

@@ -1,6 +1,5 @@
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/REGlobal.h"
-
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/Main/QtUtils.h"
@@ -12,7 +11,6 @@
 
 #include <Render/Image/LibDdsHelper.h>
 #include <FileSystem/FileSystem.h>
-
 
 #include <QPainter>
 #include <QProcess>

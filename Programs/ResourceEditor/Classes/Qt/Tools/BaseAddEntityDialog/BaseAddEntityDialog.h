@@ -6,7 +6,6 @@
 
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/ActiveSceneHolder.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 
@@ -65,7 +64,6 @@ protected:
     Ui::BaseAddEntityDialog* ui;
 
     DAVA::Map<QWidget*, QWidget*> additionalWidgetMap;
-    ActiveSceneHolder sceneHolder;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__BASEADDENTITYDIALOG__) */

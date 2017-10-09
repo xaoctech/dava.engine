@@ -18,6 +18,8 @@ protected:
     void PostInit() override;
 
 private:
+    bool GetBeastAvailable() const;
+
     void OnBeastAndSave();
     void RunBeast(const QString& outputPath, Beast::eBeastMode mode);
 

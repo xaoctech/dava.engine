@@ -40,13 +40,12 @@
 extern "C" {
 #endif
 
-typedef struct spBoundingBoxAttachment
-{
-    spVertexAttachment super;
+typedef struct spBoundingBoxAttachment {
+	spVertexAttachment super;
 } spBoundingBoxAttachment;
 
-spBoundingBoxAttachment* spBoundingBoxAttachment_create(const char* name);
-void spBoundingBoxAttachment_computeWorldVertices(spBoundingBoxAttachment* self, spSlot* slot, float* worldVertices);
+spBoundingBoxAttachment* spBoundingBoxAttachment_create (const char* name);
+void spBoundingBoxAttachment_computeWorldVertices (spBoundingBoxAttachment* self, spSlot* slot, float* worldVertices);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spBoundingBoxAttachment BoundingBoxAttachment;

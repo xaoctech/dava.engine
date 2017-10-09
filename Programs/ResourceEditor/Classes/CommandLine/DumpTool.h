@@ -28,6 +28,7 @@ private:
     DAVA::FilePath outFile;
 
     DAVA::Vector<DAVA::eGPUFamily> compressedGPUs;
+    DAVA::Vector<DAVA::String> tags;
     SceneDumper::eMode mode = SceneDumper::eMode::REQUIRED;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(DumpTool, CommandLineModule)

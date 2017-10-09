@@ -60,6 +60,7 @@ public:
 
     void RemoveEntity(Entity* entity) override;
     void RemoveComponent(Entity* entity, Component* component) override;
+    void PrepareForRemove() override;
 
     void SetGlobalMaterial(NMaterial* material);
     void SetGlobalExtertnalValue(const String& name, float32 value);

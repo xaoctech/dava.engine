@@ -86,20 +86,12 @@ elseif ( MACOS )
     set( CMAKE_EXE_LINKER_FLAGS "-ObjC" )
 
 elseif ( WIN32 )
-    #dynamic runtime on windows store
+    # dynamic runtime on windows
+    set ( CRT_TYPE_DEBUG "/MDd" )
+    set ( CRT_TYPE_RELEASE "/MD" )
     if ( WINDOWS_UAP )
-        set ( CRT_TYPE_DEBUG "/MDd" )
-        set ( CRT_TYPE_RELEASE "/MD" )
         #consume windows runtime extension (C++/CX)
         set ( ADDITIONAL_CXX_FLAGS "/ZW")
-    else ()
-        if (USE_DYNAMIC_CRT)
-            set ( CRT_TYPE_DEBUG "/MDd" )
-            set ( CRT_TYPE_RELEASE "/MD" )
-        else()
-            set ( CRT_TYPE_DEBUG "/MTd" )
-            set ( CRT_TYPE_RELEASE "/MT" )
-        endif()
     endif ()
 
     # ignorance of linker warnings
@@ -278,7 +270,9 @@ elseif( WARNINGS_AS_ERRORS )
 
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
     elseif( WIN32 )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
+        # Temporarily disable treating warnings as errors to speed up porting to Visual Studio 2017
+        # TODO: do not forget to enable warnings as errors
+        # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
     endif()
 
 endif()

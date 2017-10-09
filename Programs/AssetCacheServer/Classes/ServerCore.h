@@ -3,7 +3,6 @@
 #include <DavaTools/AssetCache/ServerNetProxy.h>
 #include <DavaTools/AssetCache/ClientNetProxy.h>
 
-#include "AssetCacheHttpServer.h"
 #include "ServerLogics.h"
 #include "ApplicationSettings.h"
 #include "SharedDataRequester.h"
@@ -15,8 +14,7 @@ class QTimer;
 
 class ServerCore : public QObject,
                    public DAVA::AssetCache::ClientNetProxyListener,
-                   public CacheDBOwner,
-                   public AssetCacheHttpServerListener
+                   public CacheDBOwner
 {
     Q_OBJECT
 
@@ -68,9 +66,6 @@ public:
     // CacheDBOwner
     void OnStorageSizeChanged(DAVA::uint64 occupied, DAVA::uint64 overall) override;
 
-    // AssetCacheHttpServerListener
-    void OnStatusRequested(ClientID clientId) override;
-
 signals:
     void ServerStateChanged(const ServerCore* serverCore) const;
     void StorageSizeChanged(DAVA::uint64 occupied, DAVA::uint64 overall) const;
@@ -110,7 +105,6 @@ private:
     CompareResult CompareWithRemoteList(const DAVA::List<RemoteServerParams>& updatedRemotesList);
 
 private:
-    AssetCacheHttpServer httpServer;
     DAVA::AssetCache::ServerNetProxy serverProxy;
     DAVA::AssetCache::ClientNetProxy clientProxy;
     CacheDB dataBase;

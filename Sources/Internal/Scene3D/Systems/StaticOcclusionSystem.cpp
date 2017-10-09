@@ -273,6 +273,13 @@ void StaticOcclusionSystem::RemoveEntity(Entity* entity)
     }
 }
 
+void StaticOcclusionSystem::PrepareForRemove()
+{
+    ClearOcclusionObjects();
+    indexedRenderObjects.clear();
+    staticOcclusionComponents.clear();
+}
+
 void StaticOcclusionSystem::ClearOcclusionObjects()
 {
     for (size_t i = 0, sz = indexedRenderObjects.size(); i < sz; ++i)
@@ -407,6 +414,10 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Component* component, uint32
     {
         UpdateGeometry(debugDrawComponent);
     }
+}
+
+void StaticOcclusionDebugDrawSystem::PrepareForRemove()
+{
 }
 
 void StaticOcclusionDebugDrawSystem::UpdateGeometry(StaticOcclusionDebugDrawComponent* component)
