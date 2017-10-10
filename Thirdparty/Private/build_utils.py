@@ -741,6 +741,8 @@ def build_and_copy_libraries_linux_cmake(
         target_lib_subdir=''):
 
     build_folder = os.path.join(gen_folder_path, 'build_linux')
+    cmake_additional_args.append('-DCMAKE_C_COMPILER=clang')
+    cmake_additional_args.append('-DCMAKE_CXX_COMPILER=clang++')
     cmake_generate_build_make(build_folder, source_folder_path, build_config.get_cmake_generator_linux(), target, cmake_additional_args)
 
     # Move built files into Libs/lib_CMake
