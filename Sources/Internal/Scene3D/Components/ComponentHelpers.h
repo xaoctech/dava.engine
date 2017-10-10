@@ -7,7 +7,6 @@ namespace DAVA
 {
 class ParticleEmitter;
 class ParticleEffectComponent;
-class ParticleDragForceComponent;
 class SkeletonComponent;
 class MotionComponent;
 class Entity;
@@ -42,7 +41,6 @@ class GeoDecalComponent;
 bool HasComponent(const Entity* fromEntity, const Component::eType componentType);
 
 ParticleEffectComponent* GetEffectComponent(const Entity* fromEntity);
-ParticleDragForceComponent* GetDragForceComponent(const Entity* fromEntity);
 AnimationComponent* GetAnimationComponent(const Entity* fromEntity);
 TransformComponent* GetTransformComponent(const Entity* fromEntity);
 RenderComponent* GetRenderComponent(const Entity* fromEntity);

@@ -5,7 +5,6 @@
 #include "Scene3D/Lod/LodComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/ParticleDragForceComponent.h"
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
@@ -109,13 +108,6 @@ ParticleEffectComponent* GetEffectComponent(const Entity* fromEntity)
         return static_cast<ParticleEffectComponent*>(fromEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     }
 
-    return nullptr;
-}
-
-DAVA::ParticleDragForceComponent* GetDragForceComponent(const Entity* fromEntity)
-{
-    if (fromEntity)
-        return static_cast<ParticleDragForceComponent*>(fromEntity->GetComponent(Component::PARTICLE_DRAG_FORCE_COMPONENT));
     return nullptr;
 }
 
