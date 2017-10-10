@@ -72,21 +72,6 @@ void LibraryModule::InitUI()
                                                                                     << "Toolbars"));
         GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, LibraryModuleDetails::controlsToolbarName);
     }
-
-    { // create menu "Controls", insert before "Help"
-        QMenu* controlsMenu = new QMenu(QStringLiteral("Controls"), nullptr);
-        ActionPlacementInfo controlsMenuPlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
-        GetUI()->AddAction(mainWindowKey, controlsMenuPlacement, controlsMenu->menuAction());
-    }
-
-    { // create menu "Library", insert into Controls menu and Controls toolbar
-        QAction* libraryMenu = new QAction(menuNameLibrary, nullptr);
-        libraryMenu->setObjectName(menuNameLibrary);
-        ActionPlacementInfo placement;
-        placement.AddPlacementPoint(CreateMenuPoint("Controls"));
-        placement.AddPlacementPoint(CreateToolbarPoint(controlsToolbarName));
-        GetUI()->AddAction(mainWindowKey, placement, libraryMenu);
-    }
 }
 
 void LibraryModule::BindFields()
@@ -210,6 +195,22 @@ LibraryData* LibraryModule::GetLibraryData()
 
 void LibraryModule::AddProjectControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages)
 {
+    using namespace DAVA::TArc;
+    using namespace LibraryModuleDetails;
+
+    { // create menu "Controls", insert before "Help"
+        QMenu* controlsMenu = new QMenu(QStringLiteral("Controls"), nullptr);
+        ActionPlacementInfo controlsMenuPlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
+        GetUI()->AddAction(mainWindowKey, controlsMenuPlacement, controlsMenu->menuAction());
+    }
+
+    { // create menu "Library", insert into Controls menu and Controls toolbar
+        QMenu* libraryMenu = new QMenu(menuNameLibrary, nullptr);
+        ActionPlacementInfo placement;
+        placement.AddPlacementPoint(CreateMenuPoint("Controls"));
+        GetUI()->AddAction(mainWindowKey, placement, libraryMenu->menuAction());
+    }
+
     AddProjectPinnedControls(projectData, libraryPackages);
     AddProjectLibraryControls(projectData, libraryPackages);
     AddDefaultControls();
@@ -377,14 +378,6 @@ void LibraryModule::AddDefaultControls()
     packageField.fieldName = FastName(DocumentData::packagePropertyName);
 
     LibraryData* libraryData = GetLibraryData();
-
-    { // create menu, insert into Controls/Library menu
-        QAction* defaultControlsMenu = new QAction("Default Controls", nullptr);
-        ActionPlacementInfo placement;
-        placement.AddPlacementPoint(CreateMenuPoint(QList<QString>() << "Controls" << menuNameLibrary, { DAVA::TArc::InsertionParams::eInsertionMethod::AfterItem }));
-        placement.AddPlacementPoint(CreateToolbarMenuPoint(controlsToolbarName, QList<QString>() << menuNameLibrary, { DAVA::TArc::InsertionParams::eInsertionMethod::AfterItem }));
-        GetUI()->AddAction(mainWindowKey, placement, defaultControlsMenu);
-    }
 
     QUrl menuPoint = CreateMenuPoint(QList<QString>() << "Controls" << menuNameLibrary << "Default Controls");
     QUrl toolbarMenuPoint = CreateToolbarMenuPoint(LibraryModuleDetails::controlsToolbarName, QList<QString>() << menuNameLibrary << "Default Controls");

@@ -16,7 +16,6 @@ private:
     void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
     void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
-    void CreateActions();
     void CreateData();
 
     void OnCreateByClick(DAVA::String controlYaml);

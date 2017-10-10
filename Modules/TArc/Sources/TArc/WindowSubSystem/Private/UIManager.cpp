@@ -509,7 +509,7 @@ void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& pathToAction, co
 
     if (pathToAction.empty())
     {
-        QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(actionName);
+        QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(actionName, Qt::FindDirectChildrenOnly);
         if (menuToRemove != nullptr)
         {
             deleteMenu(menuToRemove);
@@ -525,7 +525,7 @@ void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& pathToAction, co
     {
         QString deeperLevelName = pathToAction.front();
         pathToAction.pop_front();
-        QMenu* deeperLevelMenu = currentLevelMenu->findChild<QMenu*>(deeperLevelName);
+        QMenu* deeperLevelMenu = currentLevelMenu->findChild<QMenu*>(deeperLevelName, Qt::FindDirectChildrenOnly);
         RemoveActionFromMenu(deeperLevelMenu, pathToAction, actionName);
         if (deeperLevelMenu != nullptr && deeperLevelMenu->isEmpty())
         {
@@ -544,6 +544,13 @@ void RemoveMenuPoint(const QUrl& url, const QString& actionName, MainWindowInfo&
     QMenu* topLevelMenu = windowInfo.menuBar->findChild<QMenu*>(topLevelTitle, Qt::FindDirectChildrenOnly);
 
     RemoveActionFromMenu(topLevelMenu, path, actionName);
+
+    if (topLevelMenu != nullptr && topLevelMenu->isEmpty())
+    {
+        windowInfo.menuBar->removeAction(topLevelMenu->menuAction());
+        topLevelMenu->setParent(nullptr);
+        topLevelMenu->deleteLater();
+    }
 }
 
 void RemoveToolbarPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)

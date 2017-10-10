@@ -6,6 +6,16 @@
 
 #include <Functional/Functional.h>
 
+namespace CreatingControlsSystemDetails
+{
+using namespace DAVA;
+
+bool IsEscPressed(UIEvent* input)
+{
+    return input->device == eInputDevices::KEYBOARD && input->key == eInputElements::KB_ESCAPE;
+}
+}
+
 CreatingControlsSystem::CreatingControlsSystem(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui)
     : BaseEditorSystem(accessor)
     , ui(ui)
@@ -45,7 +55,8 @@ void CreatingControlsSystem::OnProjectPathChanged(const DAVA::Any& projectPath)
 
 EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::UIEvent* currentInput)
 {
-    return controlYamlString.empty() ? EditorSystemsManager::NoDrag : EditorSystemsManager::AddingControl;
+    using namespace CreatingControlsSystemDetails;
+    return (controlYamlString.empty() || IsEscPressed(currentInput)) ? EditorSystemsManager::NoDrag : EditorSystemsManager::AddingControl;
 }
 
 bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
@@ -79,6 +90,10 @@ BaseEditorSystem::eSystems CreatingControlsSystem::GetOrder() const
 void CreatingControlsSystem::SetCreateByClick(const DAVA::String& _controlYamlString)
 {
     controlYamlString = _controlYamlString;
+    if (controlYamlString.empty() == false)
+    {
+        PlatformApi::Qt::GetRenderWidget()->setFocus();
+    }
 }
 
 void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
@@ -110,23 +125,24 @@ void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
             CommandExecutor executor(accessor, ui);
 
             DAVA::Set<PackageBaseNode*> newNodes = executor.Paste(docData->GetPackageNode(), destNode, destIndex, controlYamlString);
+            DVASSERT(newNodes.size() == 1);
+            ControlNode* newNode = dynamic_cast<ControlNode*>(*(newNodes.begin()));
 
             if (destNode != package->GetPackageControlsNode())
             {
                 ControlNode* destControl = dynamic_cast<ControlNode*>(destNode);
-                if (destControl != nullptr && newNodes.size() == 1)
+                if (destControl != nullptr)
                 {
-                    ControlNode* newNode = dynamic_cast<ControlNode*>(*(newNodes.begin()));
                     ControlPlacementUtils::SetAbsoulutePosToControlNode(package, newNode, destControl, point);
                     AbstractProperty* postionProperty = newNode->GetRootProperty()->FindPropertyByName("position");
                     AbstractProperty* sizeProperty = newNode->GetRootProperty()->FindPropertyByName("size");
                     newNode->GetRootProperty()->SetProperty(postionProperty, Any(newNode->GetControl()->GetPosition()));
                     newNode->GetRootProperty()->SetProperty(sizeProperty, Any(newNode->GetControl()->GetSize()));
-
-                    SelectedNodes newSelection = { newNode };
-                    documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, newSelection);
                 }
             }
+
+            SelectedNodes newSelection = { newNode };
+            documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, newSelection);
 
             docData->EndBatch();
         }
