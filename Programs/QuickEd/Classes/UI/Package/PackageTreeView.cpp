@@ -23,10 +23,9 @@ void PackageTreeView::drawRow(QPainter* painter, const QStyleOptionViewItem& opt
     if (IsIndexCheckable(index))
     {
         QStyleOptionViewItem checkBoxOption(option);
-        checkBoxOption.rect = checkBoxOption.rect;
+        checkBoxOption.rect.setX(columnViewportPosition(0));
 
         checkBoxOption.displayAlignment = Qt::AlignLeft | Qt::AlignTop;
-        checkBoxOption.state = checkBoxOption.state & ~QStyle::State_HasFocus;
 
         switch (index.data(PackageModel::PackageCheckStateRole).toInt())
         {
@@ -42,10 +41,12 @@ void PackageTreeView::drawRow(QPainter* painter, const QStyleOptionViewItem& opt
         }
         checkBoxOption.features |= QStyleOptionViewItem::HasCheckIndicator;
 
-        checkBoxRect = style()->subElementRect(QStyle::SE_ItemViewItemCheckIndicator, &checkBoxOption, this);
+        QStyle* currentStyle = style();
+
+        checkBoxRect = currentStyle->subElementRect(QStyle::SE_ItemViewItemCheckIndicator, &checkBoxOption, this);
         checkBoxOption.rect = checkBoxRect;
 
-        style()->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &checkBoxOption, painter, this);
+        currentStyle->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &checkBoxOption, painter, this);
     }
 }
 
