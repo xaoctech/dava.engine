@@ -433,7 +433,7 @@ void DocumentsModule::CreateEditActions()
 
         QtAction* action = new QtAction(accessor, ungroupActionName, nullptr);
         action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+Alt+G"));
+        action->setShortcut(QKeySequence("Ctrl+Shift+G"));
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
