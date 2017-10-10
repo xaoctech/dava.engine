@@ -1,4 +1,6 @@
 #include "Classes/UI/Package/PackageTreeView.h"
+#include "Classes/UI/Package/PackageModel.h"
+
 #include <QPainter>
 #include <QHeaderView>
 #include <QApplication>
@@ -26,7 +28,7 @@ void PackageTreeView::drawRow(QPainter* painter, const QStyleOptionViewItem& opt
         checkBoxOption.displayAlignment = Qt::AlignLeft | Qt::AlignTop;
         checkBoxOption.state = checkBoxOption.state & ~QStyle::State_HasFocus;
 
-        switch (index.data(Qt::CheckStateRole).toInt())
+        switch (index.data(PackageModel::PackageCheckStateRole).toInt())
         {
         case Qt::Unchecked:
             checkBoxOption.state |= QStyle::State_Off;
@@ -49,7 +51,7 @@ void PackageTreeView::drawRow(QPainter* painter, const QStyleOptionViewItem& opt
 
 bool PackageTreeView::IsIndexCheckable(const QModelIndex& index) const
 {
-    return (index.flags() & Qt::ItemIsUserCheckable) && (index.data(Qt::CheckStateRole).isValid());
+    return index.data(PackageModel::PackageCheckStateRole).isValid();
 }
 
 bool PackageTreeView::IsMouseUnderCheckBox(const QPoint& pos) const
@@ -81,9 +83,9 @@ bool PackageTreeView::eventFilter(QObject* obj, QEvent* event)
                 if (event->type() == QEvent::MouseButtonRelease)
                 {
                     QModelIndex index = indexAt(pos);
-                    QVariant checked = index.data(Qt::CheckStateRole);
+                    QVariant checked = index.data(PackageModel::PackageCheckStateRole);
                     Qt::CheckState newState = checked.toInt() == Qt::Checked ? Qt::Unchecked : Qt::Checked;
-                    model()->setData(index, newState, Qt::CheckStateRole);
+                    model()->setData(index, newState, PackageModel::PackageCheckStateRole);
                     viewport()->update();
                 }
                 return true;
