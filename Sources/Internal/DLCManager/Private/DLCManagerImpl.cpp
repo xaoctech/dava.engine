@@ -187,22 +187,22 @@ String DLCManagerImpl::DumpToJsonProfilerTrace()
     String outputPath;
     if (profiler.IsStarted() == false)
     {
-    FileSystem* fs = GetEngineContext()->fileSystem;
-    FilePath docPath = fs->GetPublicDocumentsPath();
-    String name = docPath.GetAbsolutePathname() + "dlc_prof.json";
-    std::ofstream file(name);
-    char buf[16 * 1024];
-    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
-    if (file)
-    {
-        Vector<TraceEvent> events = profiler.GetTrace();
-        TraceEvent::DumpJSON(events, file);
-        outputPath = name;
-    }
-    else
-    {
-        outputPath = "cant' open file: " + name;
-    }
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        FilePath docPath = fs->GetPublicDocumentsPath();
+        String name = docPath.GetAbsolutePathname() + "dlc_prof.json";
+        std::ofstream file(name);
+        char buf[16 * 1024];
+        file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+        if (file)
+        {
+            Vector<TraceEvent> events = profiler.GetTrace();
+            TraceEvent::DumpJSON(events, file);
+            outputPath = name;
+        }
+        else
+        {
+            outputPath = "cant' open file: " + name;
+        }
     }
     else
     {
