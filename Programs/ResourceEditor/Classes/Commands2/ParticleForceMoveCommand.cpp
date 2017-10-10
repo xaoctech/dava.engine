@@ -3,8 +3,8 @@
 
 #include <Particles/ParticleDragForce.h>
 
-ParticleForceMoveCommand::ParticleForceMoveCommand(DAVA::ParticleForce* _force, DAVA::ParticleLayer* _oldLayer, DAVA::ParticleLayer* _newLayer)
-    : RECommand(CMDID_PARTICLE_FORCE_MOVE, "Move particle force")
+ParticleSimplifiedForceMoveCommand::ParticleSimplifiedForceMoveCommand(DAVA::ParticleForceSimplified* _force, DAVA::ParticleLayer* _oldLayer, DAVA::ParticleLayer* _newLayer)
+    : RECommand(CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, "Move particle simplified force")
     , force(_force)
     , oldLayer(_oldLayer)
     , newLayer(_newLayer)
@@ -12,39 +12,39 @@ ParticleForceMoveCommand::ParticleForceMoveCommand(DAVA::ParticleForce* _force, 
     SafeRetain(force);
 }
 
-ParticleForceMoveCommand::~ParticleForceMoveCommand()
+ParticleSimplifiedForceMoveCommand::~ParticleSimplifiedForceMoveCommand()
 {
     SafeRelease(force);
 }
 
-void ParticleForceMoveCommand::Undo()
+void ParticleSimplifiedForceMoveCommand::Undo()
 {
     if (NULL != force)
     {
         if (NULL != newLayer)
         {
-            newLayer->RemoveForce(force);
+            newLayer->RemoveSimplifiedForce(force);
         }
 
         if (NULL != oldLayer)
         {
-            oldLayer->AddForce(force);
+            oldLayer->AddSimplifiedForce(force);
         }
     }
 }
 
-void ParticleForceMoveCommand::Redo()
+void ParticleSimplifiedForceMoveCommand::Redo()
 {
     if (NULL != force)
     {
         if (NULL != oldLayer)
         {
-            oldLayer->RemoveForce(force);
+            oldLayer->RemoveSimplifiedForce(force);
         }
 
         if (NULL != newLayer)
         {
-            newLayer->AddForce(force);
+            newLayer->AddSimplifiedForce(force);
         }
     }
 }

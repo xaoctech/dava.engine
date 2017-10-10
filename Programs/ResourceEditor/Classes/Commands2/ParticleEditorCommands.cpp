@@ -317,24 +317,24 @@ void CommandUpdateParticleLayerLods::Redo()
     }
 }
 
-CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId)
+CommandUpdateParticleSimplifiedForce::CommandUpdateParticleSimplifiedForce(ParticleLayer* layer, uint32 forceId)
     : CommandAction(CMDID_PARTICLE_FORCE_UPDATE)
 {
     this->layer = layer;
     this->forceId = forceId;
 }
 
-void CommandUpdateParticleForce::Init(RefPtr<PropertyLine<Vector3>> force,
+void CommandUpdateParticleSimplifiedForce::Init(RefPtr<PropertyLine<Vector3>> force,
                                       RefPtr<PropertyLine<float32>> forcesOverLife)
 {
     PropertyLineHelper::SetValueLine(this->force, force);
     PropertyLineHelper::SetValueLine(this->forcesOverLife, forcesOverLife);
 }
 
-void CommandUpdateParticleForce::Redo()
+void CommandUpdateParticleSimplifiedForce::Redo()
 {
-    layer->forces[forceId]->force = force;
-    layer->forces[forceId]->forceOverLife = forcesOverLife;
+    layer->forcesSimplified[forceId]->force = force;
+    layer->forcesSimplified[forceId]->forceOverLife = forcesOverLife;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -583,36 +583,36 @@ void CommandCloneParticleEmitterLayer::Redo()
     instance->GetEmitter()->AddLayer(clonedLayer);
 }
 
-CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(ParticleLayer* layer)
-    : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_ADD)
+CommandAddParticleEmitterSimplifiedForce::CommandAddParticleEmitterSimplifiedForce(ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_ADD)
     , selectedLayer(layer)
 {
 }
 
-void CommandAddParticleEmitterForce::Redo()
+void CommandAddParticleEmitterSimplifiedForce::Redo()
 {
     if (selectedLayer == nullptr)
         return;
 
     // Add the new Force to the Layer.
-    ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3>>(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32>>(NULL));
-    selectedLayer->AddForce(newForce);
+    ParticleForceSimplified* newForce = new ParticleForceSimplified(RefPtr<PropertyLine<Vector3>>(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32>>(NULL));
+    selectedLayer->AddSimplifiedForce(newForce);
     newForce->Release();
 }
 
-CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force)
-    : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
+CommandRemoveParticleEmitterSimplifiedForce::CommandRemoveParticleEmitterSimplifiedForce(ParticleLayer* layer, ParticleForceSimplified* force)
+    : CommandAction(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE)
     , selectedLayer(layer)
     , selectedForce(force)
 {
 }
 
-void CommandRemoveParticleEmitterForce::Redo()
+void CommandRemoveParticleEmitterSimplifiedForce::Redo()
 {
     if ((selectedLayer == nullptr) || (selectedForce == nullptr))
         return;
 
-    selectedLayer->RemoveForce(selectedForce);
+    selectedLayer->RemoveSimplifiedForce(selectedForce);
 }
 
 CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)

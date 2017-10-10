@@ -769,7 +769,7 @@ private:
 
     void AddForce()
     {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterForce(layerItem->GetLayer())));
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterSimplifiedForce(layerItem->GetLayer())));
         MarkStructureChanged();
     }
 
@@ -812,12 +812,12 @@ private:
     SceneTreeItemParticleLayer* layerItem;
 };
 
-class SceneTree::ParticleForceContextMenu : public SceneTree::BaseContextMenu
+class SceneTree::ParticleSimplifiedForceContextMenu : public SceneTree::BaseContextMenu
 {
     using TBase = BaseContextMenu;
 
 public:
-    ParticleForceContextMenu(SceneTree* treeWidget)
+    ParticleSimplifiedForceContextMenu(SceneTree* treeWidget)
         : TBase(treeWidget)
     {
     }
@@ -827,17 +827,17 @@ protected:
     {
         using namespace DAVA::TArc;
         QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Force") : QStringLiteral("Remove Forces");
-        Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleForceContextMenu::RemoveForce);
+        Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleSimplifiedForceContextMenu::RemoveForce);
     }
 
 private:
     void RemoveForce()
     {
-        RemoveCommandsHelper("Remove forces", SceneTreeItem::EIT_Force, [](SceneTreeItem* item)
+        RemoveCommandsHelper("Remove simplified forces", SceneTreeItem::EIT_ForceSimplified, [](SceneTreeItem* item)
                              {
-                                 SceneTreeItemParticleForce* forceItem = static_cast<SceneTreeItemParticleForce*>(item);
-                                 DAVA::ParticleForce* force = forceItem->GetForce();
-                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterForce(forceItem->layer, force)), force);
+                                 SceneTreeItemParticleForceSimplified* forceItem = static_cast<SceneTreeItemParticleForceSimplified*>(item);
+                                 DAVA::ParticleForceSimplified* force = forceItem->GetForce();
+                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterSimplifiedForce(forceItem->layer, force)), force);
                              });
     }
 };
@@ -1292,14 +1292,14 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_LAYER_REMOVE,
     CMDID_PARTICLE_LAYER_MOVE,
     CMDID_PARTICLE_FORCE_REMOVE,
-    CMDID_PARTICLE_FORCE_MOVE,
+    CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE,
     CMDID_PARTICLE_DRAG_FORCE_MOVE,
     CMDID_META_OBJ_MODIFY,
     CMDID_PARTICLE_EMITTER_LAYER_ADD,
     CMDID_PARTICLE_EMITTER_LAYER_REMOVE,
     CMDID_PARTICLE_EMITTER_LAYER_CLONE,
-    CMDID_PARTICLE_EMITTER_FORCE_ADD,
-    CMDID_PARTICLE_EMITTER_FORCE_REMOVE,
+    CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_ADD,
+    CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE,
     CMDID_PARTICLE_EMITTER_DRAG_ADD,
     CMDID_PARTICLE_EMITTER_LORENTZ_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_GRAVITY_ADD,
@@ -1419,8 +1419,8 @@ void SceneTree::ShowContextMenu(const QPoint& pos)
     case SceneTreeItem::EIT_Layer:
         showMenuFn(ParticleLayerContextMenu(static_cast<SceneTreeItemParticleLayer*>(item), this));
         break;
-    case SceneTreeItem::EIT_Force:
-        showMenuFn(ParticleForceContextMenu(this));
+    case SceneTreeItem::EIT_ForceSimplified:
+        showMenuFn(ParticleSimplifiedForceContextMenu(this));
         break;
     case SceneTreeItem::EIT_InnerEmitter:
         showMenuFn(ParticleInnerEmitterContextMenu(static_cast<SceneTreeItemParticleInnerEmitter*>(item), this));

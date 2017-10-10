@@ -487,7 +487,7 @@ DAVA::ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetLayerLine(D
     }
     return NULL;
 }
-DAVA::ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetForceLine(DAVA::ParticleForce* force, ForceExternals lineId)
+DAVA::ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetForceLine(DAVA::ParticleForceSimplified* force, ForceExternals lineId)
 {
     switch (lineId)
     {
@@ -591,7 +591,7 @@ void ParticleEffectPropertiesWidget::SetLayerLineModifiable(DAVA::ParticleLayer*
         break;
     }
 }
-void ParticleEffectPropertiesWidget::SetForceLineModifiable(DAVA::ParticleForce* force, ForceExternals lineId)
+void ParticleEffectPropertiesWidget::SetForceLineModifiable(DAVA::ParticleForceSimplified* force, ForceExternals lineId)
 {
     switch (lineId)
     {
@@ -697,7 +697,7 @@ void ParticleEffectPropertiesWidget::RemoveLayerLineModifiable(DAVA::ParticleLay
         break;
     }
 }
-void ParticleEffectPropertiesWidget::RemoveForceLineModifiable(DAVA::ParticleForce* force, ForceExternals lineId)
+void ParticleEffectPropertiesWidget::RemoveForceLineModifiable(DAVA::ParticleForceSimplified* force, ForceExternals lineId)
 {
     switch (lineId)
     {
@@ -779,7 +779,7 @@ bool ParticleEffectPropertiesWidget::EditLayerModifiable(DAVA::ParticleLayer* la
     }
     return false;
 }
-bool ParticleEffectPropertiesWidget::EditForceModifiable(DAVA::ParticleForce* force, ForceExternals lineId, bool onAdd)
+bool ParticleEffectPropertiesWidget::EditForceModifiable(DAVA::ParticleForceSimplified* force, ForceExternals lineId, bool onAdd)
 {
     switch (lineId)
     {
@@ -850,7 +850,7 @@ void ParticleEffectPropertiesWidget::BuildEffectTree()
             data.externalParamId = 0;
 
             // forces
-            for (auto force : layer->forces)
+            for (auto force : layer->forcesSimplified)
             {
                 data.force = force;
                 QTreeWidgetItem* forceItem = new QTreeWidgetItem(layerItem, TreeItemTypeForce);

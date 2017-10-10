@@ -1,7 +1,6 @@
 #pragma once
 
 #include <DAVAEngine.h>
-
 #include <Particles/ParticleDragForce.h>
 
 #include "Commands2/Base/RECommand.h"
@@ -131,10 +130,10 @@ protected:
 };
 
 // Add new force to Particle Emitter layer.
-class CommandAddParticleEmitterForce : public CommandAction
+class CommandAddParticleEmitterSimplifiedForce : public CommandAction
 {
 public:
-    CommandAddParticleEmitterForce(DAVA::ParticleLayer* layer);
+    CommandAddParticleEmitterSimplifiedForce(DAVA::ParticleLayer* layer);
     void Redo() override;
 
 protected:
@@ -142,18 +141,17 @@ protected:
 };
 
 // Remove a force from Particle Emitter layer.
-class CommandRemoveParticleEmitterForce : public CommandAction
+class CommandRemoveParticleEmitterSimplifiedForce : public CommandAction
 {
 public:
-    CommandRemoveParticleEmitterForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
+    CommandRemoveParticleEmitterSimplifiedForce(DAVA::ParticleLayer* layer, DAVA::ParticleForceSimplified* force);
     void Redo() override;
 
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::ParticleForce* selectedForce = nullptr;
+    DAVA::ParticleForceSimplified* selectedForce = nullptr;
 };
 
-// Add drag
 class CommandAddParticleDrag : public CommandAction
 {
 public:
@@ -214,7 +212,6 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
-// Remove particle drag
 class CommandRemoveParticleDrag : public CommandAction
 {
 public:
@@ -226,7 +223,6 @@ protected:
     DAVA::ParticleDragForce* selectedDrag = nullptr;
 };
 
-// CloneParticleDrag
 class CommandCloneParticleDrag : public CommandAction
 {
 public:
@@ -237,9 +233,6 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
     DAVA::ParticleDragForce* selectedDrag = nullptr;
 };
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
 
 class CommandUpdateEffect : public CommandAction
 {
@@ -448,10 +441,10 @@ protected:
     DAVA::Vector<bool> lods;
 };
 
-class CommandUpdateParticleForce : public CommandAction
+class CommandUpdateParticleSimplifiedForce : public CommandAction
 {
 public:
-    CommandUpdateParticleForce(DAVA::ParticleLayer* layer, DAVA::uint32 forceId);
+    CommandUpdateParticleSimplifiedForce(DAVA::ParticleLayer* layer, DAVA::uint32 forceId);
 
     void Init(DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> force,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> forcesOverLife);

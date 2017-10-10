@@ -26,7 +26,7 @@ public:
         DropingEntity,
         DropingLayer,
         DropingEmitter,
-        DropingForce,
+        DropingForceSimplified,
         DropingDragForce
     };
 

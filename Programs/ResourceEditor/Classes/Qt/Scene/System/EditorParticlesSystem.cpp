@@ -330,9 +330,9 @@ void EditorParticlesSystem::RestartParticleEffects()
     }
 }
 
-DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* force) const
+DAVA::ParticleLayer* EditorParticlesSystem::GetSimplifiedForceOwner(DAVA::ParticleForceSimplified* force) const
 {
-    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForce* force) -> DAVA::ParticleLayer*
+    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForceSimplified*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForceSimplified* force) -> DAVA::ParticleLayer*
     {
         for (DAVA::ParticleLayer* layer : emitter->layers)
         {
@@ -345,7 +345,7 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* f
                 }
             }
 
-            if (std::find(layer->forces.begin(), layer->forces.end(), force) != layer->forces.end())
+            if (std::find(layer->forcesSimplified.begin(), layer->forcesSimplified.end(), force) != layer->forcesSimplified.end())
             {
                 return layer;
             }
@@ -531,7 +531,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
 
         case CMDID_PARTICLE_FORCE_UPDATE:
         {
-            const CommandUpdateParticleForce* castedCmd = static_cast<const CommandUpdateParticleForce*>(command);
+            const CommandUpdateParticleSimplifiedForce* castedCmd = static_cast<const CommandUpdateParticleSimplifiedForce*>(command);
             SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
             break;
         }

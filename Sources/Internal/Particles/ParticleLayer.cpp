@@ -147,7 +147,7 @@ ParticleLayer::~ParticleLayer()
 {
     SafeRelease(innerEmitter);
 
-    CleanupForces();
+    CleanupSimplifiedForces();
     // dynamic cache automatically delete all particles
 }
 
@@ -240,12 +240,12 @@ ParticleLayer* ParticleLayer::Clone()
         dstLayer->velocityOverLife.Set(velocityOverLife->Clone());
 
     // Copy the forces.
-    dstLayer->CleanupForces();
-    dstLayer->forces.reserve(forces.size());
-    for (size_t f = 0; f < forces.size(); ++f)
+    dstLayer->CleanupSimplifiedForces();
+    dstLayer->forcesSimplified.reserve(forcesSimplified.size());
+    for (size_t f = 0; f < forcesSimplified.size(); ++f)
     {
-        ParticleForce* clonedForce = this->forces[f]->Clone();
-        dstLayer->AddForce(clonedForce);
+        ParticleForceSimplified* clonedForce = this->forcesSimplified[f]->Clone();
+        dstLayer->AddSimplifiedForce(clonedForce);
         clonedForce->Release();
     }
 
@@ -771,8 +771,8 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             }
         }
 
-        ParticleForce* particleForce = new ParticleForce(force, forceOverLife);
-        AddForce(particleForce);
+        ParticleForceSimplified* particleForce = new ParticleForceSimplified(force, forceOverLife);
+        AddSimplifiedForce(particleForce);
         particleForce->Release();
     }
 
@@ -1162,7 +1162,7 @@ void ParticleLayer::SaveSpritePath(FilePath& path, const FilePath& configPath, Y
 
 void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 {
-    int32 forceCount = static_cast<int32>(this->forces.size());
+    int32 forceCount = static_cast<int32>(this->forcesSimplified.size());
     if (forceCount == 0)
     {
         // No forces to write.
@@ -1172,7 +1172,7 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "forceCount", forceCount);
     for (int32 i = 0; i < forceCount; i++)
     {
-        ParticleForce* currentForce = this->forces[i];
+        ParticleForceSimplified* currentForce = this->forcesSimplified[i];
 
         String forceDataName = Format("force%d", i);
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->force);
@@ -1341,10 +1341,10 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(angleVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(animSpeedOverLife.Get(), modifiables);
 
-    int32 forceCount = static_cast<int32>(this->forces.size());
+    int32 forceCount = static_cast<int32>(this->forcesSimplified.size());
     for (int32 i = 0; i < forceCount; i++)
     {
-        forces[i]->GetModifableLines(modifiables);
+        forcesSimplified[i]->GetModifableLines(modifiables);
     }
 
     size_t dragForcesCount = dragForces.size();
@@ -1357,42 +1357,42 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     }
 }
 
-void ParticleLayer::AddForce(ParticleForce* force)
+void ParticleLayer::AddSimplifiedForce(ParticleForceSimplified* force)
 {
     SafeRetain(force);
-    this->forces.push_back(force);
+    this->forcesSimplified.push_back(force);
 }
 
-void ParticleLayer::RemoveForce(ParticleForce* force)
+void ParticleLayer::RemoveSimplifiedForce(ParticleForceSimplified* force)
 {
-    Vector<ParticleForce*>::iterator iter = std::find(this->forces.begin(),
-                                                      this->forces.end(),
+    Vector<ParticleForceSimplified*>::iterator iter = std::find(this->forcesSimplified.begin(),
+                                                      this->forcesSimplified.end(),
                                                       force);
-    if (iter != this->forces.end())
+    if (iter != this->forcesSimplified.end())
     {
         SafeRelease(*iter);
-        this->forces.erase(iter);
+        this->forcesSimplified.erase(iter);
     }
 }
 
-void ParticleLayer::RemoveForce(int32 forceIndex)
+void ParticleLayer::RemoveSimplifiedForce(int32 forceIndex)
 {
-    if (forceIndex <= static_cast<int32>(this->forces.size()))
+    if (forceIndex <= static_cast<int32>(this->forcesSimplified.size()))
     {
-        SafeRelease(this->forces[forceIndex]);
-        this->forces.erase(this->forces.begin() + forceIndex);
+        SafeRelease(this->forcesSimplified[forceIndex]);
+        this->forcesSimplified.erase(this->forcesSimplified.begin() + forceIndex);
     }
 }
 
-void ParticleLayer::CleanupForces()
+void ParticleLayer::CleanupSimplifiedForces()
 {
-    for (Vector<ParticleForce*>::iterator iter = this->forces.begin();
-         iter != this->forces.end(); iter++)
+    for (Vector<ParticleForceSimplified*>::iterator iter = this->forcesSimplified.begin();
+         iter != this->forcesSimplified.end(); iter++)
     {
         SafeRelease(*iter);
     }
 
-    this->forces.clear();
+    this->forcesSimplified.clear();
 }
 
 void ParticleLayer::AddDrag(ParticleDragForce* drag)

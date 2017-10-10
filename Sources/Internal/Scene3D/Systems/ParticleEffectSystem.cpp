@@ -523,14 +523,14 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         static Matrix4 invWorld;
         if (group.head)
         {
-            forcesCount = static_cast<int32>(group.layer->forces.size());
+            forcesCount = static_cast<int32>(group.layer->forcesSimplified.size());
             if (forcesCount)
             {
                 currForceValues.resize(forcesCount);
                 for (int32 i = 0; i < forcesCount; ++i)
                 {
-                    if (group.layer->forces[i]->force)
-                        currForceValues[i] = group.layer->forces[i]->force->GetValue(currLoopTime);
+                    if (group.layer->forcesSimplified[i]->force)
+                        currForceValues[i] = group.layer->forcesSimplified[i]->force->GetValue(currLoopTime);
                     else
                         currForceValues[i] = Vector3(0, 0, 0);
                 }
@@ -732,7 +732,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             Vector3 acceleration;
             for (int32 i = 0; i < forcesCount; ++i)
             {
-                acceleration += (layer->forces[i]->forceOverLife) ? (currForceValues[i] * layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+                acceleration += (layer->forcesSimplified[i]->forceOverLife) ? (currForceValues[i] * layer->forcesSimplified[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
             }
             nodeIter->speed += acceleration * dt;
         }
@@ -924,7 +924,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     Vector3 acceleration(0.0f, 0.0f, 0.0f);
     for (int32 i = 0; i < forcesCount; ++i)
     {
-        acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+        acceleration += (group.layer->forcesSimplified[i]->forceOverLife) ? (currForceValues[i] * group.layer->forcesSimplified[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
     }
 
     Vector3 effectSpacePosition;

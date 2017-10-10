@@ -569,12 +569,12 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
             }
         }
 
-        size_t itemsCount = layer->forces.size();
+        size_t itemsCount = layer->forcesSimplified.size();
         QList<QStandardItem*> items;
 
         for (size_t i = 0; i < itemsCount; ++i)
         {
-            items.push_back(new SceneTreeItemParticleForce(layer, layer->forces[i]));
+            items.push_back(new SceneTreeItemParticleForceSimplified(layer, layer->forcesSimplified[i]));
         }
 
         if (items.size() > 0)
@@ -602,42 +602,42 @@ const QIcon& SceneTreeItemParticleLayer::ItemIcon() const
 }
 
 // =========================================================================================
-// SceneTreeItemParticleForce
+// SceneTreeItemParticleForceSimplified
 // =========================================================================================
 
-SceneTreeItemParticleForce::SceneTreeItemParticleForce(DAVA::ParticleLayer* _layer, DAVA::ParticleForce* _force)
-    : SceneTreeItem(SceneTreeItem::EIT_Force, _force)
+SceneTreeItemParticleForceSimplified::SceneTreeItemParticleForceSimplified(DAVA::ParticleLayer* _layer, DAVA::ParticleForceSimplified* _force)
+    : SceneTreeItem(SceneTreeItem::EIT_ForceSimplified, _force)
     , layer(_layer)
 {
 }
 
-DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce() const
+DAVA::ParticleForceSimplified* SceneTreeItemParticleForceSimplified::GetForce() const
 {
-    return object.Cast<DAVA::ParticleForce>();
+    return object.Cast<DAVA::ParticleForceSimplified>();
 }
 
-DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce(SceneTreeItem* item)
+DAVA::ParticleForceSimplified* SceneTreeItemParticleForceSimplified::GetForce(SceneTreeItem* item)
 {
-    if ((nullptr != item) && (item->ItemType() == SceneTreeItem::EIT_Force))
+    if ((nullptr != item) && (item->ItemType() == SceneTreeItem::EIT_ForceSimplified))
     {
-        SceneTreeItemParticleForce* itemForce = (SceneTreeItemParticleForce*)item;
+        SceneTreeItemParticleForceSimplified* itemForce = (SceneTreeItemParticleForceSimplified*)item;
         return itemForce->GetForce();
     }
 
     return nullptr;
 }
 
-QString SceneTreeItemParticleForce::ItemName() const
+QString SceneTreeItemParticleForceSimplified::ItemName() const
 {
     return "force";
 }
 
-QVariant SceneTreeItemParticleForce::ItemData() const
+QVariant SceneTreeItemParticleForceSimplified::ItemData() const
 {
     return qVariantFromValue(GetForce());
 }
 
-const QIcon& SceneTreeItemParticleForce::ItemIcon() const
+const QIcon& SceneTreeItemParticleForceSimplified::ItemIcon() const
 {
     return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
 }

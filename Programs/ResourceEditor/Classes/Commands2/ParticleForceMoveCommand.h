@@ -2,23 +2,23 @@
 
 #include "Commands2/Base/RECommand.h"
 #include "Particles/ParticleLayer.h"
-#include "Particles/ParticleForce.h"
+#include "Particles/ParticleForceSimplified.h"
 
 namespace DAVA
 {
 class ParticleDragForce;
 }
 
-class ParticleForceMoveCommand : public RECommand
+class ParticleSimplifiedForceMoveCommand : public RECommand
 {
 public:
-    ParticleForceMoveCommand(DAVA::ParticleForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer);
-    ~ParticleForceMoveCommand();
+    ParticleSimplifiedForceMoveCommand(DAVA::ParticleForceSimplified* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer);
+    ~ParticleSimplifiedForceMoveCommand();
 
     void Undo() override;
     void Redo() override;
 
-    DAVA::ParticleForce* force;
+    DAVA::ParticleForceSimplified* force;
     DAVA::ParticleLayer* oldLayer;
     DAVA::ParticleLayer* newLayer;
 };
