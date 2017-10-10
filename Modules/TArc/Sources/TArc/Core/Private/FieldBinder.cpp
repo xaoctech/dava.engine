@@ -219,5 +219,17 @@ void FieldBinder::SetValue(const FieldDescriptor& fieldDescr, const Any& v)
     }
 }
 
+Any FieldBinder::GetValue(const FieldDescriptor& fieldDescr) const
+{
+    for (const std::unique_ptr<UniversalDataListener>& listener : impl->listeners)
+    {
+        if (listener->GetType() == fieldDescr.type)
+        {
+            return listener->wrapper.GetFieldValue(fieldDescr.fieldName);
+        }
+    }
+    return Any();
+}
+
 } // namespace TArc
 } // namespace DAVA

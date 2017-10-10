@@ -104,6 +104,7 @@
         <file>QtIcons/modify_move.png</file>
         <file>QtIcons/modify_rotate.png</file>
         <file>QtIcons/modify_placeonland.png</file>
+        <file>QtIcons/modify_placeonobj.png</file>
         <file>QtIcons/modify_snaptoland.png</file>
         <file>QtIcons/modify_scale.png</file>
         <file>QtIcons/expand_all.png</file>
