@@ -7,11 +7,12 @@ set(PLATFORMS_IGNORE ANDROID WINUAP_ARM )
 set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
 set(CPP_FILES_RECURSE Sources/*.cpp)
 
-set(INCLUDES Sources
-             Libs/include
-             Libs/include/physx
-             Libs/include/PxShared)
+set(PhysicsRootDir "${CMAKE_CURRENT_SOURCE_DIR}")
 
+set(INCLUDES "${PhysicsRootDir}/Sources"
+             "${PhysicsRootDir}/Libs/Include/"
+             "${PhysicsRootDir}/Libs/Include/physx"
+             "${PhysicsRootDir}/Libs/Include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
 
 set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
