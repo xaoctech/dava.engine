@@ -50,9 +50,7 @@ def _download_and_extract(working_directory_path):
 @build_utils.run_once
 def _patch_sources(source_folder_path, working_directory_path):
     build_utils.apply_patch(
-        os.path.abspath('patch.diff'), working_directory_path)
-    build_utils.apply_patch(
-        os.path.abspath('patch_fix_64bit_v0.9.diff'), working_directory_path)
+        os.path.abspath('patch_v0.9.diff'), working_directory_path)
     shutil.copyfile(
         'CMakeLists.txt', os.path.join(source_folder_path, 'CMakeLists.txt'))
 
