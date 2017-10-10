@@ -92,6 +92,14 @@ void EditorSlotSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* co
     }
 }
 
+void EditorSlotSystem::PrepareForRemove()
+{
+    entities.clear();
+    pendingOnInitialize.clear();
+    DVASSERT(clonedEntityes.empty());
+    DVASSERT(inClonedState.empty());
+}
+
 void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
 {
     using namespace DAVA;

@@ -307,6 +307,15 @@ void EditorLODSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* com
     }
 }
 
+void EditorLODSystem::PrepareForRemove()
+{
+    for (DAVA::uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
+    {
+        lodData[m].lodComponents.clear();
+    }
+    componentsToAdd.clear();
+}
+
 void EditorLODSystem::SceneDidLoaded()
 {
     lodData[eEditorMode::MODE_ALL_SCENE].SummarizeValues();

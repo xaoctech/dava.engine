@@ -19,6 +19,7 @@ public:
     void static SetDefaultPropertyValues(DAVA::Entity* entity);
 
     void AddEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     static DAVA::float32 DEFAULT_FALLOFFCUTOFF_VALUE;
 

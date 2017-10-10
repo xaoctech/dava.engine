@@ -388,7 +388,7 @@ void EditorTransformSystem::PrepareDrag()
         nodesToMoveInfos.emplace_back(new MoveInfo(selectedControl, nullptr, nullptr));
     }
     CorrectNodesToMove();
-    UpdateNeighboursToMove();
+    UpdateNeighbours();
 }
 
 void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
@@ -549,7 +549,7 @@ void EditorTransformSystem::MoveAllSelectedControlsByMouse(DAVA::Vector2 mouseDe
 }
 
 DAVA::Vector<EditorTransformSystem::MagnetLine> EditorTransformSystem::CreateMagnetLines(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD,
-                                                                                         const DAVA::Vector<DAVA::UIControl*>& neighbours, DAVA::Vector2::eAxis axis)
+                                                                                         DAVA::Vector2::eAxis axis, eTransformType type) const
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -558,13 +558,16 @@ DAVA::Vector<EditorTransformSystem::MagnetLine> EditorTransformSystem::CreateMag
     Vector<MagnetLine> magnets;
 
     CreateMagnetLinesToParent(box, parentGD, axis, magnets);
-    CreateMagnetLinesToNeghbours(box, neighbours, axis, magnets);
+    CreateMagnetLinesToNeghbours(box, axis, magnets);
     CreateMagnetLinesToGuides(box, parentGD, axis, magnets);
-
+    if (type == RESIZE)
+    {
+        CreateMagnetLinesToChildren(box, parentGD, axis, magnets);
+    }
     return magnets;
 }
 
-void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines)
+void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const
 {
     using namespace DAVA;
     Rect parentBox(Vector2(), parentGD->size);
@@ -577,7 +580,7 @@ void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, con
             { 0.0f, 0.0f }, { 0.0f, 0.5f }, { 0.5f, 0.5f }, { 1.0f, 0.5f }, { 1.0f, 1.0f }
         };
 
-        lines.reserve(lines.capacity() + bordersToMagnet.size());
+        lines.reserve(lines.size() + bordersToMagnet.size());
 
         for (const auto& bordersPair : bordersToMagnet)
         {
@@ -586,7 +589,7 @@ void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, con
     }
 }
 
-void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, const DAVA::Vector<DAVA::UIControl*>& neighbours, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines)
+void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const
 {
     using namespace DAVA;
     //0.0f is equal to control left and 1.0f is equal to control right
@@ -595,7 +598,7 @@ void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, 
         { 0.0f, 0.0f }, { 0.0f, 0.5f }, { 0.5f, 0.5f }, { 1.0f, 0.5f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 0.0f }
     };
 
-    lines.reserve(lines.capacity() + neighbours.size() * bordersToMagnet.size());
+    lines.reserve(lines.size() + neighbours.size() * bordersToMagnet.size());
 
     for (UIControl* neighbour : neighbours)
     {
@@ -609,7 +612,7 @@ void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, 
     }
 }
 
-void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines)
+void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -630,7 +633,7 @@ void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, con
 
         Vector<float32> bordersToMagnet = { 0.0f, 0.5f, 1.0f };
 
-        lines.reserve(lines.capacity() + values.size() * bordersToMagnet.size());
+        lines.reserve(lines.size() + values.size() * bordersToMagnet.size());
 
         const UIGeometricData rootGD = root->GetControl()->GetGeometricData();
         for (float32 value : values)
@@ -643,6 +646,30 @@ void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, con
             {
                 lines.emplace_back(borderToManget, box, valueInControlCoordinates, axis);
             }
+        }
+    }
+}
+
+void EditorTransformSystem::CreateMagnetLinesToChildren(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const
+{
+    using namespace DAVA;
+    //0.0f is equal to control left and 1.0f is equal to control right
+    //first value is share of selected control and second value is share of neighbour
+    Vector<std::pair<float32, float32>> bordersToMagnet = {
+        { 1.0f, 1.0f }
+    };
+
+    List<UIControl*> children = activeControlNode->GetControl()->GetChildren();
+    lines.reserve(lines.size() + children.size() * bordersToMagnet.size());
+
+    for (UIControl* child : children)
+    {
+        Rect neighbourBox = child->GetLocalGeometricData().GetAABBox();
+        neighbourBox.SetPosition(neighbourBox.GetPosition() + box.GetPosition());
+
+        for (const auto& bordersPair : bordersToMagnet)
+        {
+            lines.emplace_back(bordersPair.first, box, bordersPair.second, neighbourBox, axis);
         }
     }
 }
@@ -693,7 +720,7 @@ DAVA::Vector2 EditorTransformSystem::AdjustMoveToNearestBorder(DAVA::Vector2 del
     for (int32 axisInt = Vector2::AXIS_X; axisInt < Vector2::AXIS_COUNT; ++axisInt)
     {
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
-        magnetLines[axis] = CreateMagnetLines(box, parentGD, neighbours, axis);
+        magnetLines[axis] = CreateMagnetLines(box, parentGD, axis, MOVE);
 
         //get nearest magnet line
         std::function<bool(const MagnetLine&, const MagnetLine&)> predicate = [](const MagnetLine& left, const MagnetLine& right) -> bool {
@@ -906,7 +933,7 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(DAVA::Vect
     using namespace DAVA;
     Vector<MagnetLineInfo> magnets;
 
-    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f && activeControlNode->GetParent()->GetControl() != nullptr;
+    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f;
     Vector2 adjustedDeltaToBorder(deltaSize);
     if (canAdjustResize)
     {
@@ -943,7 +970,7 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorder(DAVA::Vector2 deltaSiz
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
         if (directions[axis] != NO_DIRECTION)
         {
-            Vector<MagnetLine> magnetLines = CreateMagnetLines(box, &parentGeometricData, neighbours, axis);
+            Vector<MagnetLine> magnetLines = CreateMagnetLines(box, &parentGeometricData, axis, RESIZE);
             if (magnetLines.empty())
             {
                 continue;
@@ -1190,33 +1217,28 @@ void EditorTransformSystem::CorrectNodesToMove()
     }
 }
 
-void CollectNeighbours(DAVA::Vector<DAVA::UIControl*>& neighbours, const SelectedControls& selectedControlNodes, DAVA::UIControl* controlParent)
+void EditorTransformSystem::UpdateNeighbours()
 {
     using namespace DAVA;
-    DVASSERT(nullptr != controlParent);
-    Set<UIControl*> ignoredNeighbours;
-    for (ControlNode* node : selectedControlNodes)
-    {
-        if (node->GetControl()->GetParent() == controlParent)
-        {
-            ignoredNeighbours.insert(node->GetControl());
-        }
-    }
 
-    const List<UIControl*>& children = controlParent->GetChildren();
-    Set<UIControl*> sortedChildren(children.begin(), children.end());
-    std::set_difference(sortedChildren.begin(), sortedChildren.end(), ignoredNeighbours.begin(), ignoredNeighbours.end(), std::back_inserter(neighbours));
-}
-
-void EditorTransformSystem::UpdateNeighboursToMove()
-{
     neighbours.clear();
     if (nullptr != activeControlNode)
     {
         DAVA::UIControl* parent = activeControlNode->GetControl()->GetParent();
         if (nullptr != parent)
         {
-            CollectNeighbours(neighbours, selectedControlNodes, parent);
+            Set<UIControl*> ignoredNeighbours;
+            for (ControlNode* node : selectedControlNodes)
+            {
+                if (node->GetControl()->GetParent() == parent)
+                {
+                    ignoredNeighbours.insert(node->GetControl());
+                }
+            }
+
+            const List<UIControl*>& children = parent->GetChildren();
+            Set<UIControl*> sortedChildren(children.begin(), children.end());
+            std::set_difference(sortedChildren.begin(), sortedChildren.end(), ignoredNeighbours.begin(), ignoredNeighbours.end(), std::back_inserter(neighbours));
         }
     }
 }

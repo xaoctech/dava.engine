@@ -1,24 +1,22 @@
-#include "Utils/SceneSaver/SceneSaver.h"
-
-#include "Deprecated/SceneValidator.h"
-
-#include "Scene/SceneHelper.h"
-
-#include "StringConstants.h"
-#include "Main/QtUtils.h"
+#include "Classes/Utils/SceneSaver/SceneSaver.h"
+#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Deprecated/SceneValidator.h"
+#include "Classes/StringConstants.h"
 
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/Systems/SlotSystem.h>
 #include <FileSystem/FileList.h>
+#include <FileSystem/FileSystem.h>
+#include <Engine/Engine.h>
 #include <Time/SystemTimer.h>
-
-using namespace DAVA;
 
 SceneSaver::SceneSaver()
 {
+    tags.push_back(""); // we have "" in tags for default behavior
 }
 
 SceneSaver::~SceneSaver()
@@ -26,12 +24,12 @@ SceneSaver::~SceneSaver()
     ReleaseTextures();
 }
 
-void SceneSaver::SetInFolder(const FilePath& folderPathname)
+void SceneSaver::SetInFolder(const DAVA::FilePath& folderPathname)
 {
     sceneUtils.SetInFolder(folderPathname);
 }
 
-void SceneSaver::SetOutFolder(const FilePath& folderPathname)
+void SceneSaver::SetOutFolder(const DAVA::FilePath& folderPathname)
 {
     sceneUtils.SetOutFolder(folderPathname);
 }
@@ -41,8 +39,16 @@ void SceneSaver::EnableCopyConverted(bool enabled)
     copyConverted = enabled;
 }
 
-void SceneSaver::SaveFile(const String& fileName)
+void SceneSaver::SetTags(const DAVA::Vector<DAVA::String>& tags_)
 {
+    DVASSERT(tags_.empty() == false && tags_[0].empty() == true); // mean that we have "" in tags for default behavior
+    tags = tags_;
+}
+
+void SceneSaver::SaveFile(const DAVA::String& fileName)
+{
+    using namespace DAVA;
+
     Logger::FrameworkDebug("[SceneSaver::SaveFile] %s", fileName.c_str());
 
     FilePath filePath = sceneUtils.dataSourceFolder + fileName;
@@ -61,8 +67,10 @@ void SceneSaver::SaveFile(const String& fileName)
     SafeRelease(scene);
 }
 
-void SceneSaver::ResaveFile(const String& fileName)
+void SceneSaver::ResaveFile(const DAVA::String& fileName)
 {
+    using namespace DAVA;
+
     Logger::FrameworkDebug("[SceneSaver::ResaveFile] %s", fileName.c_str());
 
     FilePath sc2Filename = sceneUtils.dataSourceFolder + fileName;
@@ -81,9 +89,11 @@ void SceneSaver::ResaveFile(const String& fileName)
     SafeRelease(scene);
 }
 
-void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
+void SceneSaver::SaveScene(DAVA::Scene* scene, const DAVA::FilePath& fileName)
 {
-    DAVA::String absScenePath = fileName.GetAbsolutePathname();
+    using namespace DAVA;
+
+    String absScenePath = fileName.GetAbsolutePathname();
     if (savedExternalScenes.count(absScenePath) > 0)
     {
         return;
@@ -135,7 +145,7 @@ void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
     CopyEffects(scene);
     CopyCustomColorTexture(scene, fileName.GetDirectory());
 
-    DAVA::Set<DAVA::FilePath> externalScenes;
+    Set<FilePath> externalScenes;
     CopySlots(scene, externalScenes);
 
     //save scene to new place
@@ -154,9 +164,9 @@ void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
     uint64 saveTime = SystemTimer::GetMs() - startTime;
     Logger::FrameworkDebug("Save of %s to folder was done for %ldms", fileName.GetStringValue().c_str(), saveTime);
 
-    for (const DAVA::FilePath& externalScene : externalScenes)
+    for (const FilePath& externalScene : externalScenes)
     {
-        DAVA::ScopedPtr<Scene> scene(new Scene());
+        ScopedPtr<Scene> scene(new Scene());
         if (SceneFileV2::ERROR_NO_ERROR == scene->LoadScene(externalScene))
         {
             SaveScene(scene, externalScene.GetAbsolutePathname());
@@ -170,14 +180,25 @@ void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
 
 void SceneSaver::CopyTextures(DAVA::Scene* scene)
 {
+    using namespace DAVA;
+
     for (const auto& it : texturesForSave)
     {
-        if (it.first.GetType() == FilePath::PATH_IN_MEMORY)
+        if (it.first.GetType() == DAVA::FilePath::PATH_IN_MEMORY)
         {
             continue;
         }
 
-        CopyTexture(it.first);
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        for (const DAVA::String& tag : tags)
+        {
+            FilePath path = it.first;
+            path.ReplaceBasename(path.GetBasename() + tag);
+            if (fs->Exists(path) == true)
+            {
+                CopyTexture(path);
+            }
+        }
     }
 }
 
@@ -186,8 +207,10 @@ void SceneSaver::ReleaseTextures()
     texturesForSave.clear();
 }
 
-void SceneSaver::CopyTexture(const FilePath& texturePathname)
+void SceneSaver::CopyTexture(const DAVA::FilePath& texturePathname)
 {
+    using namespace DAVA;
+
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
 
     TextureDescriptor* desc = TextureDescriptor::CreateFromFile(descriptorPathname);
@@ -242,8 +265,10 @@ void SceneSaver::CopyTexture(const FilePath& texturePathname)
     delete desc;
 }
 
-void SceneSaver::CopyReferencedObject(Entity* node)
+void SceneSaver::CopyReferencedObject(DAVA::Entity* node)
 {
+    using namespace DAVA;
+
     KeyedArchive* customProperties = GetCustomPropertiesArchieve(node);
     if (customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
     {
@@ -251,7 +276,7 @@ void SceneSaver::CopyReferencedObject(Entity* node)
         sceneUtils.AddFile(path);
     }
 
-    for (DAVA::int32 i = 0; i < node->GetChildrenCount(); i++)
+    for (int32 i = 0; i < node->GetChildrenCount(); i++)
     {
         CopyReferencedObject(node->GetChild(i));
     }
@@ -279,21 +304,14 @@ void SceneSaver::CopyAnimationClips(DAVA::Entity* node)
 
 void SceneSaver::CopySlots(DAVA::Entity* node, DAVA::Set<DAVA::FilePath>& externalScenes)
 {
-    for (DAVA::uint32 i = 0; i < node->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+    using namespace DAVA;
+
+    auto processConfig = [&](Scene* scene, const FilePath& configPath)
     {
-        DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(node->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
-        DAVA::FilePath configPath = component->GetConfigFilePath();
         sceneUtils.AddFile(configPath);
 
-        Scene* scene = node->GetScene();
-        if (scene == nullptr)
-        {
-            scene = dynamic_cast<Scene*>(node);
-        }
-
-        DVASSERT(scene != nullptr);
-        DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
-        for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
+        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
+        for (const SlotSystem::ItemsCache::Item& item : items)
         {
             if (savedExternalScenes.count(item.scenePath) == 0)
             {
@@ -301,16 +319,42 @@ void SceneSaver::CopySlots(DAVA::Entity* node, DAVA::Set<DAVA::FilePath>& extern
                 externalScenes.insert(item.scenePath);
             }
         }
+    };
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    for (uint32 i = 0; i < node->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+    {
+        Scene* scene = node->GetScene();
+        if (scene == nullptr)
+        {
+            scene = dynamic_cast<Scene*>(node);
+            DVASSERT(scene != nullptr);
+        }
+
+        SlotComponent* component = static_cast<SlotComponent*>(node->GetComponent(Component::SLOT_COMPONENT, i));
+        FilePath originalConfigPath = component->GetConfigFilePath();
+
+        for (const DAVA::String& tag : tags)
+        {
+            FilePath path = originalConfigPath;
+            path.ReplaceBasename(path.GetBasename() + tag);
+            if (fs->Exists(path) == true)
+            {
+                processConfig(scene, path);
+            }
+        }
     }
 
-    for (DAVA::int32 i = 0; i < node->GetChildrenCount(); i++)
+    for (int32 i = 0; i < node->GetChildrenCount(); i++)
     {
         CopySlots(node->GetChild(i), externalScenes);
     }
 }
 
-void SceneSaver::CopyEffects(Entity* node)
+void SceneSaver::CopyEffects(DAVA::Entity* node)
 {
+    using namespace DAVA;
+
     ParticleEffectComponent* effect = GetEffectComponent(node);
     if (effect)
     {
@@ -338,8 +382,10 @@ void SceneSaver::CopyEffects(Entity* node)
     effectFolders.clear();
 }
 
-void SceneSaver::CopyAllParticlesEmitters(ParticleEmitterInstance* instance)
+void SceneSaver::CopyAllParticlesEmitters(DAVA::ParticleEmitterInstance* instance)
 {
+    using namespace DAVA;
+
     const Set<FilePath>& paths = EnumAlternativeEmittersFilepaths(instance->GetFilePath());
     for (const FilePath& alternativeFilepath : paths)
     {
@@ -355,15 +401,16 @@ void SceneSaver::CopyAllParticlesEmitters(ParticleEmitterInstance* instance)
     }
 }
 
-void SceneSaver::CopyEmitterByPath(const FilePath& emitterConfigPath)
+void SceneSaver::CopyEmitterByPath(const DAVA::FilePath& emitterConfigPath)
 {
-    RefPtr<ParticleEmitter> emitter(ParticleEmitter::LoadEmitter(emitterConfigPath));
-
+    DAVA::RefPtr<DAVA::ParticleEmitter> emitter(DAVA::ParticleEmitter::LoadEmitter(emitterConfigPath));
     CopyEmitter(emitter.Get());
 }
 
-void SceneSaver::CopyEmitter(ParticleEmitter* emitter)
+void SceneSaver::CopyEmitter(DAVA::ParticleEmitter* emitter)
 {
+    using namespace DAVA;
+
     if (emitter->configPath.IsEmpty() == false)
     {
         sceneUtils.AddFile(emitter->configPath);
@@ -395,6 +442,7 @@ void SceneSaver::CopyEmitter(ParticleEmitter* emitter)
 void SceneSaver::ProcessSprite(DAVA::Sprite* sprite)
 {
     using namespace DAVA;
+
     if (sprite == nullptr)
         return;
 
@@ -405,8 +453,10 @@ void SceneSaver::ProcessSprite(DAVA::Sprite* sprite)
     effectFolders.insert(psdPath.GetDirectory());
 }
 
-Set<FilePath> SceneSaver::EnumAlternativeEmittersFilepaths(const FilePath& originalFilepath) const
+DAVA::Set<DAVA::FilePath> SceneSaver::EnumAlternativeEmittersFilepaths(const DAVA::FilePath& originalFilepath) const
 {
+    using namespace DAVA;
+
     Set<FilePath> qualityFilepaths;
     const ParticlesQualitySettings& particlesSettings = QualitySettingsSystem::Instance()->GetParticlesQualitySettings();
 
@@ -427,8 +477,10 @@ Set<FilePath> SceneSaver::EnumAlternativeEmittersFilepaths(const FilePath& origi
     return qualityFilepaths;
 }
 
-void SceneSaver::CopyCustomColorTexture(Scene* scene, const FilePath& sceneFolder)
+void SceneSaver::CopyCustomColorTexture(DAVA::Scene* scene, const DAVA::FilePath& sceneFolder)
 {
+    using namespace DAVA;
+
     Entity* land = FindLandscapeEntity(scene);
     if (!land)
         return;
@@ -463,8 +515,10 @@ void SceneSaver::CopyCustomColorTexture(Scene* scene, const FilePath& sceneFolde
     customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, newTexPathname.GetRelativePathname(newProjectPathname));
 }
 
-void SceneSaver::ResaveYamlFilesRecursive(const FilePath& folder) const
+void SceneSaver::ResaveYamlFilesRecursive(const DAVA::FilePath& folder) const
 {
+    using namespace DAVA;
+
     ScopedPtr<FileList> fileList(new FileList(folder));
     for (uint32 i = 0; i < fileList->GetCount(); ++i)
     {

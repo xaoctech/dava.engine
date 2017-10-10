@@ -35,6 +35,11 @@ void MotionSystem::RemoveEntity(Entity* entity)
     FindAndRemoveExchangingWithLast(activeMotions, GetMotionComponent(entity));
 }
 
+void MotionSystem::PrepareForRemove()
+{
+    activeMotions.clear();
+}
+
 void MotionSystem::ImmediateEvent(Component* component, uint32 event)
 {
     if (event == EventSystem::SKELETON_CONFIG_CHANGED)

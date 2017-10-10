@@ -282,6 +282,13 @@ void LodSystem::UnregisterComponent(Entity* entity, Component* component)
     SceneSystem::UnregisterComponent(entity, component);
 }
 
+void LodSystem::PrepareForRemove()
+{
+    slowVector.clear();
+    fastVector.clear();
+    fastMap.clear();
+}
+
 void LodSystem::ImmediateEvent(Component* component, uint32 event)
 {
     switch (event)
