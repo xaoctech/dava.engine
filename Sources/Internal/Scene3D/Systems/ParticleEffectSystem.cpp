@@ -930,13 +930,10 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     Vector3 effectSpacePosition;
     Vector3 prevEffectSpacePosition;
     Vector3 effectSpaceSpeed;
-    Vector3 effectSpaceDown;
     if (dForcesCount > 0)
     {
         effectSpacePosition = particle->position * invWorld;
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
-        effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
-
         if (group.layer->GetPlaneCollisiontForcesCount() > 0)
             prevEffectSpacePosition = prevForcePosition * invWorld;
     }
@@ -944,7 +941,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     for (uint32 i = 0; i < dForcesCount; ++i)
     {
         if (!dForces[i]->isGlobal)
-            ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle, prevEffectSpacePosition);
+            ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition);
     }
 
     if (dForcesCount > 0)
@@ -985,11 +982,16 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
             effectSpacePosition = particle->position * invWorld;
             prevEffectSpacePosition = prevForcePosition * invWorld;
             effectSpaceSpeed = particle->speed * Matrix3(invWorld);
-            effectSpaceDown = -Vector3(invWorld._20, invWorld._21, invWorld._22);
+            bool transformPosition = false;
             for (auto& force : forcePair.second)
-                ParticleForces::ApplyForce(effect->GetEntity(), force, effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, effectSpaceDown, particle, prevEffectSpacePosition);
+            {
+                if (force->IsForceCanAlterPosition())
+                    transformPosition = true;
+                ParticleForces::ApplyForce(effect->GetEntity(), force, effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition);
+            }
             particle->speed = effectSpaceSpeed * Matrix3(*worldTransformPtr);
-            particle->position = effectSpacePosition * (*worldTransformPtr);
+            if (transformPosition)
+                particle->position = effectSpacePosition * (*worldTransformPtr);
         }
     }
 

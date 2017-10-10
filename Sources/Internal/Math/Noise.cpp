@@ -10,27 +10,6 @@ float Step(float y, float x)
     return (x >= y) ? 1.0f : 0.0f;
 }
 
-Vector4 operator*(const Vector4& a, const Vector4& b)
-{
-    return
-    {
-      a.x * b.x,
-      a.y * b.y,
-      a.z * b.z,
-      a.w * b.w
-    };
-}
-
-Vector4 lerp(const Vector4& a, const Vector4& b, const Vector4& val)
-{
-    return a + (b - a) * val;
-}
-
-Vector2 lerp(const Vector2& a, const Vector2& b, const Vector2& val)
-{
-    return a + (b - a) * val;
-}
-
 Vector4 Step(const Vector4& y, const Vector4& x)
 {
     return
@@ -39,69 +18,6 @@ Vector4 Step(const Vector4& y, const Vector4& x)
       Step(y.y, x.y),
       Step(y.z, x.z),
       Step(y.w, x.w)
-    };
-}
-
-Vector3 Floor(const Vector3& val)
-{
-    return
-    {
-      floor(val.x),
-      floor(val.y),
-      floor(val.z)
-    };
-}
-
-Vector3 Frac(const Vector3& val)
-{
-    return val - Floor(val);
-}
-
-Vector3 Fmod(const Vector3& v, const Vector3& m)
-{
-    return
-    {
-      fmod(v.x, m.x),
-      fmod(v.y, m.y),
-      fmod(v.z, m.z)
-    };
-}
-
-Vector4 Floor(const Vector4& val)
-{
-    return
-    {
-      floor(val.x),
-      floor(val.y),
-      floor(val.z),
-      floor(val.w)
-    };
-}
-
-Vector4 Frac(const Vector4& val)
-{
-    return val - Floor(val);
-}
-
-Vector4 Fmod(const Vector4& v, const Vector4& m)
-{
-    return
-    {
-      fmod(v.x, m.x),
-      fmod(v.y, m.y),
-      fmod(v.z, m.z),
-      fmod(v.w, m.w)
-    };
-}
-
-Vector4 Abs(const Vector4& v)
-{
-    return
-    {
-      Abs(v.x),
-      Abs(v.y),
-      Abs(v.z),
-      Abs(v.w)
     };
 }
 
@@ -217,14 +133,14 @@ float32 PerlinNoise2d(const Vector2& p, float32 wrap)
 
 float32 PerlinNoise3d(const Vector3& p, float32 wrap)
 {
-    Vector3 pi0 = Floor(p); // Integer part for indexing
-    Vector3 pi1 = pi0 + Vector3(1.0f, 1.0f, 1.0f); // Integer part + 1
+    Vector3 pi0 = Floor(p);
+    Vector3 pi1 = pi0 + Vector3(1.0f, 1.0f, 1.0f);
 
     pi0 = Fmod(pi0, Vector3(wrap, wrap, wrap));
     pi1 = Fmod(pi1, Vector3(wrap, wrap, wrap));
 
-    Vector3 pf0 = Frac(p); // Fractional part for interpolation
-    Vector3 pf1 = pf0 - Vector3(1.0f, 1.0f, 1.0f); // Fractional part - 1.0f
+    Vector3 pf0 = Frac(p);
+    Vector3 pf1 = pf0 - Vector3(1.0f, 1.0f, 1.0f);
     Vector4 ix = Vector4(pi0.x, pi1.x, pi0.x, pi1.x);
     Vector4 iy = Vector4(pi0.y, pi0.y, pi1.y, pi1.y);
     Vector4 iz0 = Vector4(pi0.z, pi0.z, pi0.z, pi0.z);
@@ -281,8 +197,8 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
     float32 n111 = g111.DotProduct(pf1);
 
     Vector3 fade_xyz = Fade(pf0);
-    Vector4 n_z = lerp(Vector4(n000, n100, n010, n110), Vector4(n001, n101, n011, n111), { fade_xyz.z, fade_xyz.z, fade_xyz.z, fade_xyz.z });
-    Vector2 n_yz = lerp({ n_z.x, n_z.y }, { n_z.z, n_z.w }, { fade_xyz.y, fade_xyz.y });
+    Vector4 n_z = Lerp<Vector4>({ n000, n100, n010, n110 }, { n001, n101, n011, n111 }, { fade_xyz.z, fade_xyz.z, fade_xyz.z, fade_xyz.z });
+    Vector2 n_yz = Lerp<Vector2>({ n_z.x, n_z.y }, { n_z.z, n_z.w }, { fade_xyz.y, fade_xyz.y });
     float32 n_xyz = Lerp(n_yz.x, n_yz.y, fade_xyz.x);
     return n_xyz;
 }

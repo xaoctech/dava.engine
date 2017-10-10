@@ -61,7 +61,7 @@ public:
     float32 velocityThreshold = 0.3f;
     float32 startTime = 0.0f;
     float32 endTime = 15.0f;
-    
+
     uint32 backwardTurbulenceProbability = 0;
     uint32 reflectionPercent = 100;
 

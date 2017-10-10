@@ -18,12 +18,12 @@ namespace ParticleEditorCommandsDetail
 using ForceType = DAVA::ParticleDragForce::eType;
 DAVA::Map<ForceType, String> forceNames =
 {
-    { ForceType::DRAG_FORCE, "Drag" },
-    { ForceType::WIND, "Wind" },
-    { ForceType::LORENTZ_FORCE, "Vortex" },
-    { ForceType::GRAVITY, "Gravity" },
-    { ForceType::POINT_GRAVITY, "Magnet" },
-    { ForceType::PLANE_COLLISION, "Plane Collision"}
+  { ForceType::DRAG_FORCE, "Drag" },
+  { ForceType::WIND, "Wind" },
+  { ForceType::LORENTZ_FORCE, "Vortex" },
+  { ForceType::GRAVITY, "Gravity" },
+  { ForceType::POINT_GRAVITY, "Magnet" },
+  { ForceType::PLANE_COLLISION, "Plane Collision" }
 };
 }
 

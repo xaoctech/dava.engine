@@ -1404,10 +1404,10 @@ void ParticleLayer::AddDrag(ParticleDragForce* drag)
 
     SafeRetain(drag);
     dragForces.push_back(drag);
-    std::sort(dragForces.begin(), dragForces.end(), [](const ParticleDragForce* a, const ParticleDragForce* b) 
-    {
-        return static_cast<int32>(a->type) < static_cast<int32>(b->type);
-    });
+    std::sort(dragForces.begin(), dragForces.end(), [](const ParticleDragForce* a, const ParticleDragForce* b)
+              {
+                  return static_cast<int32>(a->type) < static_cast<int32>(b->type);
+              });
 }
 
 void ParticleLayer::RemoveDrag(ParticleDragForce* drag)
