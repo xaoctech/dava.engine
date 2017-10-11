@@ -189,7 +189,7 @@ AppVersion* LauncherUtils::FindVersion(Application* app, QString versionName)
         }
         else
         {
-            return &app->versions.front();
+            return &app->versions.back();
         }
     }
 
