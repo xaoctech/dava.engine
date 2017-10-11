@@ -2,6 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include <cctype>
+#include <locale>
 
 namespace DAVA
 {
@@ -213,5 +214,24 @@ inline bool EndsWith(const String& str, const String& end)
     return lineSize >= endSize &&
     0 == str.compare(lineSize - endSize, endSize, end);
 }
+
+template <typename StringType>
+bool ContainsIgnoreCase(const StringType& string, const StringType& toFind,
+                        const std::locale& locale = std::locale())
+{
+    using CharType = typename StringType::value_type;
+    auto findIt = std::search(std::begin(string), std::end(string),
+                              std::begin(toFind), std::end(toFind),
+                              [&locale](CharType char1, CharType char2)
+                              {
+                                  return std::toupper(char1, locale) == std::toupper(char2, locale);
+                              });
+    if (findIt != std::end(string))
+    {
+        return true;
+    }
+    return false;
+}
+
 } // end namespace StringUtils
 } // end namespace DAVA
