@@ -684,6 +684,19 @@ protected:
                 mainWindow->addDockWidget(info.area, newDockWidget);
             }
         }
+
+        if (info.ensureVisible)
+        {
+            newDockWidget->setVisible(true);
+            if (newDockWidget->isFloating() == false)
+            {
+                QList<QDockWidget*> tabifiedWidgets = mainWindow->tabifiedDockWidgets(newDockWidget);
+                if (tabifiedWidgets.isEmpty() == false)
+                {
+                    mainWindow->tabifyDockWidget(tabifiedWidgets.front(), newDockWidget);
+                }
+            }
+        }
     }
 
     void AddCentralPanel(const PanelKey& key, const WindowKey& windowKey, QWidget* widget)

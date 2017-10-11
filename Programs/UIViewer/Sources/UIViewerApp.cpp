@@ -1,20 +1,26 @@
 #include "UIViewerApp.h"
 #include "UIScreens/UIViewScreen.h"
 
-#include <DocDirSetup/DocDirSetup.h>
-
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <Network/ServicesProvider.h>
 #include <Render/RHI/rhi_Public.h>
 #include <Utils/StringFormat.h>
 #include <UI/UIScreenManager.h>
+
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <LoggerService/NetLogger.h>
+#include <LoggerService/ServiceInfo.h>
 
 UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>& cmdLine)
     : engine(engine_)
     , options("options")
     , physicalToVirtualScale(1.f, 1.f)
+    , servicesProvider(std::make_unique<DAVA::Net::ServicesProvider>(engine, "UIViewer"))
+    , netLogger(std::make_shared<DAVA::Net::NetLogger>())
 {
     using namespace DAVA;
 
@@ -51,6 +57,8 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
 
 void UIViewerApp::OnAppStarted()
 {
+    servicesProvider->AddService(DAVA::Net::LOG_SERVICE_ID, netLogger);
+    servicesProvider->Start();
 }
 
 void UIViewerApp::OnWindowCreated(DAVA::Window* w)
@@ -108,6 +116,8 @@ void UIViewerApp::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, D
 
 void UIViewerApp::OnAppFinished()
 {
+    servicesProvider.reset();
+    netLogger.reset();
     SafeRelease(uiViewScreen);
 }
 

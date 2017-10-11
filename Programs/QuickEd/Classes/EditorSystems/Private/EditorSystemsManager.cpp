@@ -10,7 +10,6 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 
 #include "EditorSystems/SelectionSystem.h"
-#include "EditorSystems/HUDSystem.h"
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/CursorSystem.h"
 
@@ -76,7 +75,6 @@ void EditorSystemsManager::InitSystems()
 {
     selectionSystemPtr = new SelectionSystem(accessor);
     RegisterEditorSystem(selectionSystemPtr);
-    RegisterEditorSystem(new HUDSystem(accessor));
     RegisterEditorSystem(new EditorTransformSystem(accessor));
     RegisterEditorSystem(new CursorSystem(accessor));
 }
@@ -138,16 +136,6 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
     }
 }
 
-void EditorSystemsManager::HighlightNode(ControlNode* node)
-{
-    highlightNode.Emit(node);
-}
-
-void EditorSystemsManager::ClearHighlight()
-{
-    highlightNode.Emit(nullptr);
-}
-
 void EditorSystemsManager::OnEmulationModeChanged(const DAVA::Any& emulationModeValue)
 {
     bool emulationMode = emulationModeValue.Cast<bool>(false);
@@ -161,7 +149,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::ALT))
+    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }
@@ -336,7 +324,6 @@ void EditorSystemsManager::OnPackageChanged(const DAVA::Any& /*packageValue*/)
 {
     magnetLinesChanged.Emit({});
     SetDragState(NoDrag);
-    ClearHighlight();
 }
 
 EditorSystemsManager::eDragState EditorSystemsManager::GetDragState() const

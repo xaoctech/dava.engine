@@ -2,6 +2,8 @@
 
 #include "EditorSystems/BaseEditorSystem.h"
 
+#include <TArc/DataProcessing/DataWrapper.h>
+
 #include <Math/Vector.h>
 
 namespace DAVA
@@ -21,7 +23,14 @@ class HUDSystem : public BaseEditorSystem
 {
 public:
     HUDSystem(DAVA::TArc::ContextAccessor* accessor);
-    ~HUDSystem() override;
+    ~HUDSystem();
+
+    DAVA::Signal<ControlNode*> highlightChanged;
+    void HighlightNode(ControlNode* highLight);
+
+    DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
+    DAVA::Signal<> selectionByRectStarted;
+    DAVA::Signal<> selectionByRectFinished;
 
 private:
     enum eSearchOrder
@@ -42,7 +51,7 @@ private:
     eSystems GetOrder() const override;
     void OnUpdate() override;
 
-    void OnHighlightNode(ControlNode* node);
+    void SetHighlight(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
     void ClearMagnetLines();
@@ -52,7 +61,6 @@ private:
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
 
     void UpdateHUDEnabled();
-
     SortedControlNodeSet GetSortedControlList() const;
 
     ControlTransformationSettings* GetSettings();
@@ -67,8 +75,10 @@ private:
     std::unique_ptr<FrameControl> selectionRectControl;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetControls;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;
+    SortedControlNodeSet sortedControlList;
     std::unique_ptr<ControlContainer> hoveredNodeControl;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
+    DAVA::TArc::DataWrapper systemsDataWrapper;
     DAVA::RefPtr<DAVA::UIControl> hudControl;
 };
