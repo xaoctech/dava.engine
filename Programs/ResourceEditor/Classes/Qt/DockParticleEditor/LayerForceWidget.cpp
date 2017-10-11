@@ -73,7 +73,6 @@ LayerForceWidget::LayerForceWidget(QWidget* parent /* = nullptr */)
     setLayout(mainLayout);
 
     BuildCommonSection();
-    BuildGravitySection();
     BuildShapeSection();
     BuildTimingSection();
     BuilDirectionSection();
@@ -326,10 +325,6 @@ void LayerForceWidget::BuilDirectionSection()
     direction = new ParticleVector3Widget("Force direction", DAVA::Vector3::Zero);
     connect(direction, SIGNAL(valueChanged()), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(direction);
-}
-
-void LayerForceWidget::BuildGravitySection()
-{
 }
 
 void LayerForceWidget::BuildWindSection()
