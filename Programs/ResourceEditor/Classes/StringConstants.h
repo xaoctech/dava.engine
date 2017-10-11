@@ -21,7 +21,6 @@ static const DAVA::FastName WIND_NODE_NAME = DAVA::FastName("Wind");
 static const DAVA::FastName PATH_NODE_NAME = DAVA::FastName("Path");
 static const DAVA::String LAYER_NODE_NAME = "Layer";
 static const DAVA::FastName ENTITY_NAME = DAVA::FastName("Entity");
-static const DAVA::FastName DRAG_FORCE_NAME = DAVA::FastName("Drag Force");
 
 // Base node names
 static const DAVA::String EDITOR_BASE = "editor.";

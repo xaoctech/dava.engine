@@ -1,13 +1,13 @@
 #include "Particles/ParticleForces.h"
 
-#include "Particles/ParticleForce.h"
-#include "Scene3D/Entity.h"
-#include "Math/MathHelpers.h"
-#include "Math/Noise.h"
-#include "Particles/Particle.h"
-
 #include <random>
 #include <chrono>
+
+#include "Particles/Particle.h"
+#include "Particles/ParticleForce.h"
+#include "Math/MathHelpers.h"
+#include "Math/Noise.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {

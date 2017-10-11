@@ -2,6 +2,8 @@
 #include "Commands2/RECommandIDs.h"
 
 #include <Particles/ParticleForce.h>
+#include <Particles/ParticleForceSimplified.h>
+#include <Particles/ParticleLayer.h>
 
 ParticleSimplifiedForceMoveCommand::ParticleSimplifiedForceMoveCommand(DAVA::ParticleForceSimplified* _force, DAVA::ParticleLayer* _oldLayer, DAVA::ParticleLayer* _newLayer)
     : RECommand(CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, "Move particle simplified force")

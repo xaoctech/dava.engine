@@ -1,10 +1,10 @@
 #pragma once
 
-#include <DAVAEngine.h>
-#include <Particles/ParticleForce.h>
-
 #include "Commands2/Base/RECommand.h"
 #include "Commands2/Base/CommandAction.h"
+
+#include <DAVAEngine.h>
+#include <Particles/ParticleForce.h>
 
 class CommandAddParticleEmitter : public CommandAction
 {

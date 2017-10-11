@@ -11,6 +11,7 @@
 #include <TArc/Controls/ComboBox.h>
 #include <TArc/Controls/Widget.h>
 #include <TArc/Controls/CommonStrings.h>
+#include <TArc/DataProcessing/DataWrappersProcessor.h>
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Utils/Utils.h>
@@ -31,7 +32,6 @@
 #include <QHBoxLayout>
 #include <QPalette>
 #include <QPointer>
-#include "TArc/DataProcessing/DataWrappersProcessor.h"
 
 namespace PropertyModelExtDetails
 {

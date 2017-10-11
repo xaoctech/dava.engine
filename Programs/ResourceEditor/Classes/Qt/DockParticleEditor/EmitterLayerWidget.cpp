@@ -8,17 +8,14 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Base/Result.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Utils/Utils.h>
 #include <QtTools/FileDialogs/FileDialog.h>
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
 #include <QFile>
 #include <QMessageBox>
-#include <QToolButton>
 
 namespace EmitterLayerWidgetDetails
 {
@@ -31,32 +28,6 @@ QString ConvertPSDPathToSprite(QString& pathToSprite)
 {
     return pathToSprite.replace("/DataSource/", "/Data/");
 }
-
-void ClearLayout(QLayout* layout)
-{
-    QLayoutItem* item;
-    while ((item = layout->takeAt(0)) != nullptr)
-    {
-        if (item->layout())
-        {
-            ClearLayout(item->layout());
-            delete item->layout();
-            item = nullptr;
-        }
-        else if (item->widget())
-        {
-            delete item->widget();
-            item = nullptr;
-        }
-        else
-        {
-            delete item;
-            item = nullptr;
-        }
-    }
-}
-
-QString undefinedForce = QStringLiteral("Undefined");
 }
 
 static const DAVA::uint32 SPRITE_SIZE = 60;

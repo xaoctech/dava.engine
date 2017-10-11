@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Commands2/Base/RECommand.h"
-#include "Particles/ParticleLayer.h"
-#include "Particles/ParticleForceSimplified.h"
 
 namespace DAVA
 {
 class ParticleForce;
+class ParticleForceSimplified;
+struct ParticleLayer;
 }
 
 class ParticleSimplifiedForceMoveCommand : public RECommand

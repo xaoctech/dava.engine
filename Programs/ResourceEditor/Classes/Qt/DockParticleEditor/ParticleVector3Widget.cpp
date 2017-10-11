@@ -1,10 +1,10 @@
 #include "Classes/Qt/DockParticleEditor/ParticleVector3Widget.h"
 
+#include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-
-#include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 ParticleVector3Widget::ParticleVector3Widget(const std::string& label, const DAVA::Vector3& initVector)
 {

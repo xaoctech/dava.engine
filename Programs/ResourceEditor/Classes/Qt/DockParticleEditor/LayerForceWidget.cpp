@@ -1,11 +1,5 @@
 #include "Classes/Qt/DockParticleEditor/LayerForceWidget.h"
 
-#include <QVBoxLayout>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QLabel>
-#include <QFrame>
-
 #include "Classes/Qt/DockParticleEditor/ParticleVector3Widget.h"
 #include "Classes/Qt/DockParticleEditor/TimeLineWidget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
@@ -14,6 +8,12 @@
 
 #include <Base/Array.h>
 #include <Base/Map.h>
+
+#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QLabel>
+#include <QFrame>
 
 namespace LayerDragForceWidgetDetail
 {
