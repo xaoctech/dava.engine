@@ -640,13 +640,20 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
         // or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
         if (!DAVA::GPUFamilyDescriptor::IsGPUForDevice(gpu) || gpu == curEditorImageGPUForTextures)
         {
-            DAVA::Vector<DAVA::Texture*> reloadTextures;
-            reloadTextures.push_back(texture);
-
-            delayedReloadTextures.DelayedExecute([reloadTextures]() {
-                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
-            });
+            texture->ReloadAs(curEditorImageGPUForTextures);
+            UpdateSceneMaterialsWithTexture(texture);
         }
+    }
+}
+
+void TextureBrowser::UpdateSceneMaterialsWithTexture(DAVA::Texture* texture)
+{
+    DAVA::Set<DAVA::NMaterial*> materials;
+    SceneHelper::EnumerateMaterials(curScene, materials);
+    for (auto mat : materials)
+    {
+        if (mat->ContainsTexture(texture))
+            mat->InvalidateTextureBindings();
     }
 }
 

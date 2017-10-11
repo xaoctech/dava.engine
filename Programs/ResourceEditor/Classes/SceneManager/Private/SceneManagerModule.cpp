@@ -1097,20 +1097,38 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
         DAVA::TexturesMap& allScenesTextures = collector.GetTextures();
         if (!allScenesTextures.empty())
         {
-            DAVA::Vector<DAVA::Texture*> reloadTextures;
+            int progress = 0;
+            WaitDialogParams params;
+            params.needProgressBar = true;
+            params.message = "Reloading textures.";
+            params.min = 0;
+            params.max = static_cast<int>(allScenesTextures.size());
+
+            std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
 
             DAVA::TexturesMap::const_iterator it = allScenesTextures.begin();
             DAVA::TexturesMap::const_iterator end = allScenesTextures.end();
 
             for (; it != end; ++it)
             {
-                reloadTextures.push_back(it->second);
+                QString message = QString("Reloading texture:%1");
+                message = message.arg(it->first.GetAbsolutePathname().c_str());
+                waitHandle->SetMessage(message);
+                waitHandle->SetProgressValue(progress++);
+
+                it->second->ReloadAs(gpu);
             }
 
-            ReloadTextures(reloadTextures);
+            TextureCache::Instance()->ClearCache();
         }
 
-        TextureCache::Instance()->ClearCache();
+        if (!allSceneMaterials.empty())
+        {
+            for (auto m : allSceneMaterials)
+            {
+                m->InvalidateTextureBindings();
+            }
+        }
 
         accessor->ForEachContext([](DataContext& ctx)
                                  {
