@@ -509,7 +509,7 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
     return EditorComponentExtension::GetEditor(node);
 }
 
-std::unique_ptr<DAVA::TArc::BaseComponentValue> ParticleDragForceCreator::GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const
+std::unique_ptr<DAVA::TArc::BaseComponentValue> ParticleForceCreator::GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const
 {
     using namespace DAVA;
     using namespace PropertyModelExtDetails;
