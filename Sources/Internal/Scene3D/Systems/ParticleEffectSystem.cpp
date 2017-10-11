@@ -936,16 +936,13 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
         if (group.layer->GetPlaneCollisiontForcesCount() > 0)
             prevEffectSpacePosition = prevForcePosition * invWorld;
-    }
 
-    for (uint32 i = 0; i < forcesCount; ++i)
-    {
-        if (!forces[i]->isGlobal)
-            ParticleForces::ApplyForce(effect->GetEntity(), forces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition);
-    }
+        for (uint32 i = 0; i < forcesCount; ++i)
+        {
+            if (!forces[i]->isGlobal)
+                ParticleForces::ApplyForce(effect->GetEntity(), forces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition);
+        }
 
-    if (forcesCount > 0)
-    {
         particle->speed = effectSpaceSpeed * Matrix3(world);
         if (group.layer->GetAlterPositionForcesCount() > 0)
             particle->position = effectSpacePosition * world;

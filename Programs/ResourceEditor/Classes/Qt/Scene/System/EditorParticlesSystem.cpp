@@ -169,12 +169,8 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
     }
 
     DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
-    // static DAVA::float32 angle = 0.0f;
-    // angle += DAVA::SystemTimer::GetFrameDelta();
-    // DAVA::Matrix4 rot;
-    // rot.BuildRotation(DAVA::Vector3(0.0f, 1.0f, 0.0f), DAVA::DegToRad(angle));
+    
     wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
-    // wMat *= rot;
 
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     drawer->DrawAABoxCornersTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
@@ -268,8 +264,7 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
         drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
                                      Color(0.0f, 0.35f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
-
-    if (force->type == ForceType::POINT_GRAVITY)
+    else if (force->type == ForceType::POINT_GRAVITY)
     {
         Matrix4 wMat = Selectable(force).GetWorldTransform();
         float32 radius = force->pointGravityRadius;

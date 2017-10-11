@@ -643,7 +643,7 @@ const QIcon& SceneTreeItemParticleForceSimplified::ItemIcon() const
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Scene tree item particle drag force
+// Scene tree item particle force
 //////////////////////////////////////////////////////////////////////////
 
 SceneTreeItemParticleForce::SceneTreeItemParticleForce(DAVA::ParticleLayer* layer_, DAVA::ParticleForce* force)

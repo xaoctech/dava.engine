@@ -599,18 +599,6 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData* data, Qt::DropAction act
     }
     break;
     case DropingForceSimplified:
-    {
-        // accept force to be dropped only to particle layer
-        if (NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Layer)
-        {
-            // accept only add (no insertion)
-            if (-1 == row && -1 == column)
-            {
-                ret = true;
-            }
-        }
-    }
-    break;
     case DropingParticleForce:
     {
         // accept force to be dropped only to particle layer
