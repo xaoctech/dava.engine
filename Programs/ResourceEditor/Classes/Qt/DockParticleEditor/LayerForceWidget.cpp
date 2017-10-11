@@ -1,4 +1,4 @@
-#include "Classes/Qt/DockParticleEditor/LayerDragForceWidget.h"
+#include "Classes/Qt/DockParticleEditor/LayerForceWidget.h"
 
 #include <QVBoxLayout>
 #include <QCheckBox>
@@ -19,36 +19,36 @@ namespace LayerDragForceWidgetDetail
 {
 struct ShapeMap
 {
-    DAVA::ParticleDragForce::eShape elemType;
+    DAVA::ParticleForce::eShape elemType;
     QString name;
 };
 const DAVA::Array<ShapeMap, 2> shapeMap =
 { {
-{ DAVA::ParticleDragForce::eShape::BOX, "Box" },
-{ DAVA::ParticleDragForce::eShape::SPHERE, "Sphere" }
+{ DAVA::ParticleForce::eShape::BOX, "Box" },
+{ DAVA::ParticleForce::eShape::SPHERE, "Sphere" }
 } };
 
 struct TimingMap
 {
-    DAVA::ParticleDragForce::eTimingType elemType;
+    DAVA::ParticleForce::eTimingType elemType;
     QString name;
 };
 const DAVA::Array<TimingMap, 4> timingMap =
 { {
-{ DAVA::ParticleDragForce::eTimingType::CONSTANT, "Constant" },
-{ DAVA::ParticleDragForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
-{ DAVA::ParticleDragForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life" },
-{ DAVA::ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE, "Seconds particle life" }
+{ DAVA::ParticleForce::eTimingType::CONSTANT, "Constant" },
+{ DAVA::ParticleForce::eTimingType::OVER_LAYER_LIFE, "Over layer life" },
+{ DAVA::ParticleForce::eTimingType::OVER_PARTICLE_LIFE, "Over particle life" },
+{ DAVA::ParticleForce::eTimingType::SECONDS_PARTICLE_LIFE, "Seconds particle life" }
 } };
 
-DAVA::Map<DAVA::ParticleDragForce::eType, QString> forceTypes =
+DAVA::Map<DAVA::ParticleForce::eType, QString> forceTypes =
 {
-  { DAVA::ParticleDragForce::eType::DRAG_FORCE, "Drag Force" },
-  { DAVA::ParticleDragForce::eType::LORENTZ_FORCE, "Lorentz Force" },
-  { DAVA::ParticleDragForce::eType::GRAVITY, "Gravity" },
-  { DAVA::ParticleDragForce::eType::WIND, "Wind" },
-  { DAVA::ParticleDragForce::eType::POINT_GRAVITY, "Point Gravity" },
-  { DAVA::ParticleDragForce::eType::PLANE_COLLISION, "Plane Collision" }
+  { DAVA::ParticleForce::eType::DRAG_FORCE, "Drag Force" },
+  { DAVA::ParticleForce::eType::LORENTZ_FORCE, "Lorentz Force" },
+  { DAVA::ParticleForce::eType::GRAVITY, "Gravity" },
+  { DAVA::ParticleForce::eType::WIND, "Wind" },
+  { DAVA::ParticleForce::eType::POINT_GRAVITY, "Point Gravity" },
+  { DAVA::ParticleForce::eType::PLANE_COLLISION, "Plane Collision" }
 };
 
 template <typename T, typename U, size_t sz>
@@ -66,7 +66,7 @@ int ElementToIndex(T elem, const DAVA::Array<U, sz> map)
 }
 }
 
-LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
+LayerForceWidget::LayerForceWidget(QWidget* parent /* = nullptr */)
     : BaseParticleEditorContentWidget(parent)
 {
     mainLayout = new QVBoxLayout();
@@ -85,7 +85,7 @@ LayerDragForceWidget::LayerDragForceWidget(QWidget* parent /* = nullptr */)
     blockSignals = false;
 }
 
-void LayerDragForceWidget::BuildTimingSection()
+void LayerForceWidget::BuildTimingSection()
 {
     using namespace LayerDragForceWidgetDetail;
 
@@ -167,7 +167,7 @@ void LayerDragForceWidget::BuildTimingSection()
     mainLayout->addLayout(biasLayout);
 }
 
-void LayerDragForceWidget::BuildShapeSection()
+void LayerForceWidget::BuildShapeSection()
 {
     using namespace LayerDragForceWidgetDetail;
 
@@ -205,7 +205,7 @@ void LayerDragForceWidget::BuildShapeSection()
     layout->addWidget(radiusSpin);
 }
 
-void LayerDragForceWidget::BuildCommonSection()
+void LayerForceWidget::BuildCommonSection()
 {
     forceTypeLabel = new QLabel("OLOLABEL");
     forceTypeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -233,11 +233,11 @@ void LayerDragForceWidget::BuildCommonSection()
     mainLayout->addWidget(isGlobalWarning);
 }
 
-void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shape, DAVA::ParticleDragForce::eTimingType timingType, DAVA::ParticleDragForce::eType forceType, bool isInfinityRange, bool isGlobalForce)
+void LayerForceWidget::UpdateVisibility(DAVA::ParticleForce::eShape shape, DAVA::ParticleForce::eTimingType timingType, DAVA::ParticleForce::eType forceType, bool isInfinityRange, bool isGlobalForce)
 {
-    using Shape = DAVA::ParticleDragForce::eShape;
-    using TimingType = DAVA::ParticleDragForce::eTimingType;
-    using ForceType = DAVA::ParticleDragForce::eType;
+    using Shape = DAVA::ParticleForce::eShape;
+    using TimingType = DAVA::ParticleForce::eTimingType;
+    using ForceType = DAVA::ParticleForce::eType;
     bool isGravity = forceType == ForceType::GRAVITY;
     bool isWind = forceType == ForceType::WIND;
     bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND || forceType == ForceType::PLANE_COLLISION;
@@ -308,7 +308,7 @@ void LayerDragForceWidget::UpdateVisibility(DAVA::ParticleDragForce::eShape shap
     velocityThresholdSpin->setVisible(isPlaneCollision);
 }
 
-void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
+void LayerForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
 {
     spin->setMinimum(-100000000000000000000.0);
     spin->setMaximum(100000000000000000000.0);
@@ -318,7 +318,7 @@ void LayerDragForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float
     spin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 }
 
-void LayerDragForceWidget::BuilDirectionSection()
+void LayerForceWidget::BuilDirectionSection()
 {
     directionSeparator = new QFrame();
     directionSeparator->setFrameShape(QFrame::HLine);
@@ -328,11 +328,11 @@ void LayerDragForceWidget::BuilDirectionSection()
     mainLayout->addWidget(direction);
 }
 
-void LayerDragForceWidget::BuildGravitySection()
+void LayerForceWidget::BuildGravitySection()
 {
 }
 
-void LayerDragForceWidget::BuildWindSection()
+void LayerForceWidget::BuildWindSection()
 {
     windSeparator = new QFrame();
     windSeparator->setFrameShape(QFrame::HLine);
@@ -367,7 +367,7 @@ void LayerDragForceWidget::BuildWindSection()
     mainLayout->addLayout(backTurbLayout);
 }
 
-void LayerDragForceWidget::BuildPointGravitySection()
+void LayerForceWidget::BuildPointGravitySection()
 {
     pointGravitySeparator = new QFrame();
     pointGravitySeparator->setFrameShape(QFrame::HLine);
@@ -388,7 +388,7 @@ void LayerDragForceWidget::BuildPointGravitySection()
     mainLayout->addWidget(killParticles);
 }
 
-void LayerDragForceWidget::BuildPlaneCollisionSection()
+void LayerForceWidget::BuildPlaneCollisionSection()
 {
     planeCollisionSeparator = new QFrame();
     planeCollisionSeparator->setFrameShape(QFrame::HLine);
@@ -434,7 +434,7 @@ void LayerDragForceWidget::BuildPlaneCollisionSection()
     mainLayout->addWidget(killParticlesAfterCollision);
 }
 
-void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
+void LayerForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
     using namespace DAVA;
     using namespace LayerDragForceWidgetDetail;
@@ -442,14 +442,14 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     using LineWrapper = PropLineWrapper<Vector3>;
     using LineHelper = PropertyLineHelper;
 
-    if (!layer_ || layer_->GetDragForces().size() <= forceIndex_ || blockSignals)
+    if (!layer_ || layer_->GetParticleForces().size() <= forceIndex_ || blockSignals)
         return;
 
     layer = layer_;
     forceIndex = forceIndex_;
     blockSignals = true;
 
-    selectedForce = layer->GetDragForces()[forceIndex];
+    selectedForce = layer->GetParticleForces()[forceIndex];
     infinityRange->setChecked(selectedForce->isInfinityRange);
     isActive->setChecked(selectedForce->isActive);
     boxSize->SetValue(selectedForce->GetBoxSize());
@@ -487,16 +487,16 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     static const Vector<QString> windLegends{ "Wind force", "none", "none" };
     static const Vector<QString> gravityLegends{ "Gravity force", "none", "none" };
     const Vector<QString>* currLegends = nullptr;
-    if (selectedForce->type == ParticleDragForce::eType::WIND)
+    if (selectedForce->type == ParticleForce::eType::WIND)
         currLegends = &windLegends;
-    else if (selectedForce->type == ParticleDragForce::eType::GRAVITY)
+    else if (selectedForce->type == ParticleForce::eType::GRAVITY)
         currLegends = &gravityLegends;
     else
         currLegends = &legends;
 
     float32 start = 0.0f;
     float32 end = 1.0f;
-    if (selectedForce->timingType == ParticleDragForce::eTimingType::SECONDS_PARTICLE_LIFE)
+    if (selectedForce->timingType == ParticleForce::eTimingType::SECONDS_PARTICLE_LIFE)
     {
         start = selectedForce->startTime;
         end = selectedForce->endTime;
@@ -514,12 +514,12 @@ void LayerDragForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_
     blockSignals = false;
 }
 
-void LayerDragForceWidget::Update()
+void LayerForceWidget::Update()
 {
     Init(GetActiveScene(), layer, forceIndex, false);
 }
 
-void LayerDragForceWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
+void LayerForceWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps)
 {
     if (!visualStateProps)
         return;
@@ -534,7 +534,7 @@ void LayerDragForceWidget::StoreVisualState(DAVA::KeyedArchive* visualStateProps
     DAVA::SafeRelease(props);
 }
 
-void LayerDragForceWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps)
+void LayerForceWidget::RestoreVisualState(DAVA::KeyedArchive* visualStateProps)
 {
     if (!visualStateProps)
         return;
@@ -542,13 +542,13 @@ void LayerDragForceWidget::RestoreVisualState(DAVA::KeyedArchive* visualStatePro
     turbulenceTimeLine->SetVisualState(visualStateProps->GetArchive("TURB_PROPS"));
 }
 
-void LayerDragForceWidget::OnValueChanged()
+void LayerForceWidget::OnValueChanged()
 {
     using namespace DAVA;
     using namespace LayerDragForceWidgetDetail;
-    using Shape = ParticleDragForce::eShape;
-    using TimingType = ParticleDragForce::eTimingType;
-    using ForceType = ParticleDragForce::eType;
+    using Shape = ParticleForce::eShape;
+    using TimingType = ParticleForce::eTimingType;
+    using ForceType = ParticleForce::eType;
 
     if (blockSignals)
         return;
@@ -562,7 +562,7 @@ void LayerDragForceWidget::OnValueChanged()
     PropLineWrapper<float32> propTurb;
     turbulenceTimeLine->GetValue(0, propTurb.GetPropsPtr());
 
-    CommandUpdateParticleDragForce::ForceParams params;
+    CommandUpdateParticleForce::ForceParams params;
     params.isActive = isActive->isChecked();
     params.forceName = forceNameEdit->text().toStdString();
     params.shape = shape;
@@ -625,7 +625,7 @@ void LayerDragForceWidget::OnValueChanged()
     shapeComboBox->setCurrentIndex(ElementToIndex(shape, shapeMap));
     timingTypeComboBox->setCurrentIndex(ElementToIndex(timingType, timingMap));
 
-    std::unique_ptr<CommandUpdateParticleDragForce> updateDragForceCmd(new CommandUpdateParticleDragForce(layer, forceIndex, std::move(params)));
+    std::unique_ptr<CommandUpdateParticleForce> updateDragForceCmd(new CommandUpdateParticleForce(layer, forceIndex, std::move(params)));
 
     SceneEditor2* activeScene = GetActiveScene();
     DVASSERT(activeScene != nullptr);

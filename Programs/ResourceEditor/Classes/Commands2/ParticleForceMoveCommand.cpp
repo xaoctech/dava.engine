@@ -1,7 +1,7 @@
 #include "Commands2/ParticleForceMoveCommand.h"
 #include "Commands2/RECommandIDs.h"
 
-#include <Particles/ParticleDragForce.h>
+#include <Particles/ParticleForce.h>
 
 ParticleSimplifiedForceMoveCommand::ParticleSimplifiedForceMoveCommand(DAVA::ParticleForceSimplified* _force, DAVA::ParticleLayer* _oldLayer, DAVA::ParticleLayer* _newLayer)
     : RECommand(CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, "Move particle simplified force")
@@ -49,8 +49,8 @@ void ParticleSimplifiedForceMoveCommand::Redo()
     }
 }
 
-ParticleDragForceMoveCommand::ParticleDragForceMoveCommand(DAVA::ParticleDragForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer)
-    : RECommand(CMDID_PARTICLE_DRAG_FORCE_MOVE, "Move particle drag force")
+ParticleForceMoveCommand::ParticleForceMoveCommand(DAVA::ParticleForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer)
+    : RECommand(CMDID_PARTICLE_FORCE_MOVE, "Move particle force")
     , force(force)
     , oldLayer(oldLayer)
     , newLayer(newLayer)
@@ -58,39 +58,39 @@ ParticleDragForceMoveCommand::ParticleDragForceMoveCommand(DAVA::ParticleDragFor
     SafeRetain(force);
 }
 
-ParticleDragForceMoveCommand::~ParticleDragForceMoveCommand()
+ParticleForceMoveCommand::~ParticleForceMoveCommand()
 {
     SafeRelease(force);
 }
 
-void ParticleDragForceMoveCommand::Undo()
+void ParticleForceMoveCommand::Undo()
 {
     if (force != nullptr)
     {
         if (newLayer != nullptr)
         {
-            newLayer->RemoveDrag(force);
+            newLayer->RemoveForce(force);
         }
 
         if (oldLayer != nullptr)
         {
-            oldLayer->AddDrag(force);
+            oldLayer->AddForce(force);
         }
     }
 }
 
-void ParticleDragForceMoveCommand::Redo()
+void ParticleForceMoveCommand::Redo()
 {
     if (force != nullptr)
     {
         if (oldLayer != nullptr)
         {
-            oldLayer->RemoveDrag(force);
+            oldLayer->RemoveForce(force);
         }
 
         if (newLayer != nullptr)
         {
-            newLayer->AddDrag(force);
+            newLayer->AddForce(force);
         }
     }
 }

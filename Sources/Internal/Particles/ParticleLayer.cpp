@@ -4,7 +4,7 @@
 #include "Render/Image/Image.h"
 #include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
-#include "Particles/ParticleDragForce.h"
+#include "Particles/ParticleForce.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 
@@ -16,9 +16,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ParticleLayer)
     .End();
 }
 
-using ForceShape = ParticleDragForce::eShape;
-using ForceTimingType = ParticleDragForce::eTimingType;
-using ForceType = ParticleDragForce::eType;
+using ForceShape = ParticleForce::eShape;
+using ForceTimingType = ParticleForce::eTimingType;
+using ForceType = ParticleForce::eType;
 
 namespace ParticleLayerDetail
 {
@@ -249,12 +249,12 @@ ParticleLayer* ParticleLayer::Clone()
         clonedForce->Release();
     }
 
-    dstLayer->CleanupDrag();
-    dstLayer->dragForces.reserve(dragForces.size());
-    for (size_t f = 0; f < dragForces.size(); ++f)
+    dstLayer->CleanupForces();
+    dstLayer->particleForces.reserve(particleForces.size());
+    for (size_t f = 0; f < particleForces.size(); ++f)
     {
-        ParticleDragForce* clonedForce = dragForces[f]->Clone();
-        dstLayer->AddDrag(clonedForce);
+        ParticleForce* clonedForce = particleForces[f]->Clone();
+        dstLayer->AddForce(clonedForce);
         clonedForce->Release();
     }
 
@@ -1145,9 +1145,9 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "effectFormat", 1);
 
     // Now write the forces.
-    SaveForcesToYamlNode(layerNode);
+    SaveSimplifiedForcesToYamlNode(layerNode);
 
-    SaveDragForcesToYamlNode(layerNode);
+    SaveForcesToYamlNode(layerNode);
 }
 
 void ParticleLayer::SaveSpritePath(FilePath& path, const FilePath& configPath, YamlNode* layerNode, std::string name)
@@ -1160,7 +1160,7 @@ void ParticleLayer::SaveSpritePath(FilePath& path, const FilePath& configPath, Y
     }
 }
 
-void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
+void ParticleLayer::SaveSimplifiedForcesToYamlNode(YamlNode* layerNode)
 {
     int32 forceCount = static_cast<int32>(this->forcesSimplified.size());
     if (forceCount == 0)
@@ -1182,10 +1182,10 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
     }
 }
 
-void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
+void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 {
     using namespace ParticleLayerDetail;
-    int32 forceCount = static_cast<int32>(dragForces.size());
+    int32 forceCount = static_cast<int32>(particleForces.size());
     if (forceCount == 0)
     {
         // No forces to write.
@@ -1195,7 +1195,7 @@ void ParticleLayer::SaveDragForcesToYamlNode(YamlNode* layerNode)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "dragForceCount", forceCount);
     for (int32 i = 0; i < forceCount; i++)
     {
-        ParticleDragForce* currentForce = dragForces[i];
+        ParticleForce* currentForce = particleForces[i];
 
         String forceDataName = Format("forceName%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, forceDataName, currentForce->forceName);
@@ -1341,15 +1341,15 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(angleVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(animSpeedOverLife.Get(), modifiables);
 
-    int32 forceCount = static_cast<int32>(this->forcesSimplified.size());
-    for (int32 i = 0; i < forceCount; i++)
+    int32 simplifiedForceCount = static_cast<int32>(this->forcesSimplified.size());
+    for (int32 i = 0; i < simplifiedForceCount; i++)
     {
         forcesSimplified[i]->GetModifableLines(modifiables);
     }
 
-    size_t dragForcesCount = dragForces.size();
-    for (size_t i = 0; i < dragForcesCount; ++i)
-        dragForces[i]->GetModifableLines(modifiables);
+    size_t forcesCount = particleForces.size();
+    for (size_t i = 0; i < forcesCount; ++i)
+        particleForces[i]->GetModifableLines(modifiables);
 
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitter)
     {
@@ -1395,53 +1395,53 @@ void ParticleLayer::CleanupSimplifiedForces()
     this->forcesSimplified.clear();
 }
 
-void ParticleLayer::AddDrag(ParticleDragForce* drag)
+void ParticleLayer::AddForce(ParticleForce* force)
 {
-    if (drag->IsForceCanAlterPosition())
+    if (force->IsForceCanAlterPosition())
         ++alterPositionForcesCount;
-    if (drag->type == ParticleDragForce::eType::PLANE_COLLISION)
+    if (force->type == ParticleForce::eType::PLANE_COLLISION)
         ++planeCollisionForcesCount;
 
-    SafeRetain(drag);
-    dragForces.push_back(drag);
-    std::sort(dragForces.begin(), dragForces.end(), [](const ParticleDragForce* a, const ParticleDragForce* b)
+    SafeRetain(force);
+    particleForces.push_back(force);
+    std::sort(particleForces.begin(), particleForces.end(), [](const ParticleForce* a, const ParticleForce* b)
               {
                   return static_cast<int32>(a->type) < static_cast<int32>(b->type);
               });
 }
 
-void ParticleLayer::RemoveDrag(ParticleDragForce* drag)
+void ParticleLayer::RemoveForce(ParticleForce* force)
 {
-    if (drag->IsForceCanAlterPosition())
+    if (force->IsForceCanAlterPosition())
         --alterPositionForcesCount;
-    if (drag->type == ParticleDragForce::eType::PLANE_COLLISION)
+    if (force->type == ParticleForce::eType::PLANE_COLLISION)
         --planeCollisionForcesCount;
 
-    auto iter = std::find(dragForces.begin(), dragForces.end(), drag);
-    if (iter != dragForces.end())
+    auto iter = std::find(particleForces.begin(), particleForces.end(), force);
+    if (iter != particleForces.end())
     {
         SafeRelease(*iter);
-        dragForces.erase(iter);
+        particleForces.erase(iter);
     }
 }
 
-void ParticleLayer::RemoveDrag(int32 dragIndex)
+void ParticleLayer::RemoveForce(int32 forceIndex)
 {
-    if (dragIndex <= static_cast<int32>(dragForces.size()))
+    if (forceIndex <= static_cast<int32>(particleForces.size()))
     {
-        SafeRelease(dragForces[dragIndex]);
-        dragForces.erase(dragForces.begin() + dragIndex);
+        SafeRelease(particleForces[forceIndex]);
+        particleForces.erase(particleForces.begin() + forceIndex);
     }
 }
 
-void ParticleLayer::CleanupDrag()
+void ParticleLayer::CleanupForces()
 {
-    for (auto& force : dragForces)
+    for (auto& force : particleForces)
     {
         SafeRelease(force);
     }
 
-    dragForces.clear();
+    particleForces.clear();
 }
 
 void ParticleLayer::FillSizeOverlifeXY(RefPtr<PropertyLine<float32>> sizeOverLife)
@@ -1503,94 +1503,94 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
 {
     using namespace ParticleLayerDetail;
 
-    int32 dragForceCount = 0;
-    const YamlNode* dragForceCountNode = node->Get("dragForceCount");
-    if (dragForceCountNode)
-        dragForceCount = dragForceCountNode->AsInt();
+    int32 forcesCount = 0;
+    const YamlNode* forceCountNode = node->Get("dragForceCount");
+    if (forceCountNode)
+        forcesCount = forceCountNode->AsInt();
 
-    for (int32 i = 0; i < dragForceCount; ++i)
+    for (int32 i = 0; i < forcesCount; ++i)
     {
-        ParticleDragForce* dragForce = new ParticleDragForce(this);
+        ParticleForce* force = new ParticleForce(this);
 
         String forceDataName = Format("forceName%d", i);
         const YamlNode* nameNode = node->Get(forceDataName);
         if (nameNode)
-            dragForce->forceName = nameNode->AsString();
+            force->forceName = nameNode->AsString();
 
         forceDataName = Format("forceType%d", i);
         const YamlNode* typeNode = node->Get(forceDataName);
         if (typeNode)
         {
             String type = typeNode->AsString();
-            dragForce->type = StringToType(type, ForceType::DRAG_FORCE, forceTypesMap);
+            force->type = StringToType(type, ForceType::DRAG_FORCE, forceTypesMap);
         }
 
         forceDataName = Format("forceIsActive%d", i);
         const YamlNode* activeNode = node->Get(forceDataName);
         if (activeNode)
-            dragForce->isActive = activeNode->AsBool();
+            force->isActive = activeNode->AsBool();
 
         forceDataName = Format("dragForcePosition%d", i);
         const YamlNode* positionNode = node->Get(forceDataName);
         if (positionNode)
-            dragForce->position = positionNode->AsVector3();
+            force->position = positionNode->AsVector3();
 
         forceDataName = Format("dragForceRotation%d", i);
         const YamlNode* rotationNode = node->Get(forceDataName);
         if (rotationNode)
-            dragForce->rotation = rotationNode->AsVector3();
+            force->rotation = rotationNode->AsVector3();
 
         forceDataName = Format("dragForceInfinityRange%d", i);
         const YamlNode* rangeNode = node->Get(forceDataName);
         if (rangeNode)
-            dragForce->isInfinityRange = rangeNode->AsBool();
+            force->isInfinityRange = rangeNode->AsBool();
 
         forceDataName = Format("killParticles%d", i);
         const YamlNode* killParticlesNode = node->Get(forceDataName);
         if (killParticlesNode)
-            dragForce->killParticles = killParticlesNode->AsBool();
+            force->killParticles = killParticlesNode->AsBool();
 
         forceDataName = Format("normalAsReflectionVector%d", i);
         const YamlNode* normalAsReflectionVectorNode = node->Get(forceDataName);
         if (normalAsReflectionVectorNode)
-            dragForce->normalAsReflectionVector = normalAsReflectionVectorNode->AsBool();
+            force->normalAsReflectionVector = normalAsReflectionVectorNode->AsBool();
 
         forceDataName = Format("randomizeReflectionForce%d", i);
         const YamlNode* randomizeReflectionForceNode = node->Get(forceDataName);
         if (randomizeReflectionForceNode)
-            dragForce->randomizeReflectionForce = randomizeReflectionForceNode->AsBool();
+            force->randomizeReflectionForce = randomizeReflectionForceNode->AsBool();
 
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         const YamlNode* pointGravityUseRandomPointsOnSphereNode = node->Get(forceDataName);
         if (pointGravityUseRandomPointsOnSphereNode)
-            dragForce->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphereNode->AsBool();
+            force->pointGravityUseRandomPointsOnSphere = pointGravityUseRandomPointsOnSphereNode->AsBool();
 
         forceDataName = Format("isGlobal%d", i);
         const YamlNode* isGlobalNode = node->Get(forceDataName);
         if (isGlobalNode)
-            dragForce->isGlobal = isGlobalNode->AsBool();
+            force->isGlobal = isGlobalNode->AsBool();
 
         forceDataName = Format("dragForcePower%d", i);
         const YamlNode* powerNode = node->Get(forceDataName);
         if (powerNode)
-            dragForce->forcePower = powerNode->AsVector3();
+            force->forcePower = powerNode->AsVector3();
 
         forceDataName = Format("dragForceBoxSize%d", i);
         const YamlNode* sizeNode = node->Get(forceDataName);
         if (sizeNode)
-            dragForce->SetBoxSize(sizeNode->AsVector3());
+            force->SetBoxSize(sizeNode->AsVector3());
 
         forceDataName = Format("dragForceRadius%d", i);
         const YamlNode* radiusNode = node->Get(forceDataName);
         if (radiusNode)
-            dragForce->SetRadius(radiusNode->AsFloat());
+            force->SetRadius(radiusNode->AsFloat());
 
         forceDataName = Format("dragForceShape%d", i);
         const YamlNode* shapeNode = node->Get(forceDataName);
         if (shapeNode)
         {
             String shapeName = shapeNode->AsString();
-            dragForce->SetShape(StringToType(shapeName, ForceShape::BOX, shapeMap));
+            force->SetShape(StringToType(shapeName, ForceShape::BOX, shapeMap));
         }
 
         forceDataName = Format("dragForceTimingType%d", i);
@@ -1598,92 +1598,92 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         if (timingNode)
         {
             String name = timingNode->AsString();
-            dragForce->timingType = StringToType(name, ForceTimingType::CONSTANT, timingTypesMap);
+            force->timingType = StringToType(name, ForceTimingType::CONSTANT, timingTypesMap);
         }
 
         forceDataName = Format("forceDirection%d", i);
         const YamlNode* directionNode = node->Get(forceDataName);
         if (directionNode)
-            dragForce->direction = directionNode->AsVector3();
+            force->direction = directionNode->AsVector3();
 
         forceDataName = Format("forceWindFreq%d", i);
         const YamlNode* windFreqNode = node->Get(forceDataName);
         if (windFreqNode)
-            dragForce->windFrequency = windFreqNode->AsFloat();
+            force->windFrequency = windFreqNode->AsFloat();
 
         forceDataName = Format("windTurbulenceFrequency%d", i);
         const YamlNode* windTurbFreqNode = node->Get(forceDataName);
         if (windTurbFreqNode)
-            dragForce->windTurbulenceFrequency = windTurbFreqNode->AsFloat();
+            force->windTurbulenceFrequency = windTurbFreqNode->AsFloat();
 
         forceDataName = Format("forceWindTurb%d", i);
         const YamlNode* windTurbNode = node->Get(forceDataName);
         if (windTurbNode)
-            dragForce->windTurbulence = windTurbNode->AsFloat();
+            force->windTurbulence = windTurbNode->AsFloat();
 
         forceDataName = Format("pointGravityRadius%d", i);
         const YamlNode* pointGravityRadiusNode = node->Get(forceDataName);
         if (pointGravityRadiusNode)
-            dragForce->pointGravityRadius = pointGravityRadiusNode->AsFloat();
+            force->pointGravityRadius = pointGravityRadiusNode->AsFloat();
 
         forceDataName = Format("rndReflectionForceMin%d", i);
         const YamlNode* rndReflectionForceMinNode = node->Get(forceDataName);
         if (rndReflectionForceMinNode)
-            dragForce->rndReflectionForceMin = rndReflectionForceMinNode->AsFloat();
+            force->rndReflectionForceMin = rndReflectionForceMinNode->AsFloat();
 
         forceDataName = Format("rndReflectionForceMax%d", i);
         const YamlNode* rndReflectionForceMaxNode = node->Get(forceDataName);
         if (rndReflectionForceMaxNode)
-            dragForce->rndReflectionForceMax = rndReflectionForceMaxNode->AsFloat();
+            force->rndReflectionForceMax = rndReflectionForceMaxNode->AsFloat();
 
         forceDataName = Format("velocityThreshold%d", i);
         const YamlNode* velocityThresholdNode = node->Get(forceDataName);
         if (velocityThresholdNode)
-            dragForce->velocityThreshold = velocityThresholdNode->AsFloat();
+            force->velocityThreshold = velocityThresholdNode->AsFloat();
 
         forceDataName = Format("startTime%d", i);
         const YamlNode* startTimeNode = node->Get(forceDataName);
         if (startTimeNode)
-            dragForce->startTime = startTimeNode->AsFloat();
+            force->startTime = startTimeNode->AsFloat();
 
         forceDataName = Format("endTime%d", i);
         const YamlNode* endTimeNode = node->Get(forceDataName);
         if (endTimeNode)
-            dragForce->endTime = endTimeNode->AsFloat();
+            force->endTime = endTimeNode->AsFloat();
 
         forceDataName = Format("planeScale%d", i);
         const YamlNode* planeScaleNode = node->Get(forceDataName);
         if (planeScaleNode)
-            dragForce->planeScale = planeScaleNode->AsFloat();
+            force->planeScale = planeScaleNode->AsFloat();
 
         forceDataName = Format("reflectionChaos%d", i);
         const YamlNode* reflectionChaosNode = node->Get(forceDataName);
         if (reflectionChaosNode)
-            dragForce->reflectionChaos = reflectionChaosNode->AsFloat();
+            force->reflectionChaos = reflectionChaosNode->AsFloat();
 
         forceDataName = Format("backwardTurbulenceProbability%d", i);
         const YamlNode* backwardTurbulenceProbabilityNode = node->Get(forceDataName);
         if (backwardTurbulenceProbabilityNode)
-            dragForce->backwardTurbulenceProbability = backwardTurbulenceProbabilityNode->AsUInt32();
+            force->backwardTurbulenceProbability = backwardTurbulenceProbabilityNode->AsUInt32();
 
         forceDataName = Format("reflectionPercent%d", i);
         const YamlNode* reflectionPercentNode = node->Get(forceDataName);
         if (reflectionPercentNode)
-            dragForce->reflectionPercent = reflectionPercentNode->AsUInt32();
+            force->reflectionPercent = reflectionPercentNode->AsUInt32();
 
         forceDataName = Format("forceWindBias%d", i);
         const YamlNode* windBiasNode = node->Get(forceDataName);
         if (windBiasNode)
-            dragForce->windBias = windBiasNode->AsFloat();
+            force->windBias = windBiasNode->AsFloat();
 
         RefPtr<PropertyLine<Vector3>> forcePowerLine = PropertyLineYamlReader::CreatePropertyLine<Vector3>(node->Get(Format("dragForceLine%d", i)));
-        dragForce->forcePowerLine = forcePowerLine;
+        force->forcePowerLine = forcePowerLine;
 
         RefPtr<PropertyLine<float32>> turbulenceLine = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get(Format("turbulenceLine%d", i)));
-        dragForce->turbulenceLine = turbulenceLine;
+        force->turbulenceLine = turbulenceLine;
 
-        AddDrag(dragForce);
-        dragForce->Release();
+        AddForce(force);
+        force->Release();
     }
 }
 };

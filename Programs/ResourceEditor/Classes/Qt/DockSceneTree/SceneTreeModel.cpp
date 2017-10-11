@@ -292,13 +292,13 @@ QMimeData* SceneTreeModel::mimeData(const QModelIndexList& indexes) const
                     ret = MimeDataHelper2<DAVA::ParticleForceSimplified>::EncodeMimeData(data);
                 }
                 break;
-                case SceneTreeItem::EIT_DragForce:
+                case SceneTreeItem::EIT_ParticleForce:
                 {
-                    QVector<DAVA::ParticleDragForce*> data;
+                    QVector<DAVA::ParticleForce*> data;
                     foreach (QModelIndex index, indexes)
-                        data.push_back(SceneTreeItemParticleDragForce::GetDragForce(GetItem(index)));
+                        data.push_back(SceneTreeItemParticleForce::GetForce(GetItem(index)));
 
-                    ret = MimeDataHelper2<DAVA::ParticleDragForce>::EncodeMimeData(data);
+                    ret = MimeDataHelper2<DAVA::ParticleForce>::EncodeMimeData(data);
                 }
                 default:
                     break;
@@ -323,7 +323,7 @@ QStringList SceneTreeModel::mimeTypes() const
     types << MimeDataHelper2<DAVA::ParticleEmitterInstance>::GetMimeType();
     types << MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType();
     types << MimeDataHelper2<DAVA::ParticleForceSimplified>::GetMimeType();
-    types << MimeDataHelper2<DAVA::ParticleDragForce>::GetMimeType();
+    types << MimeDataHelper2<DAVA::ParticleForce>::GetMimeType();
 
     return types;
 }
@@ -450,29 +450,29 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
         }
     }
     break;
-    case DropingDragForce:
+    case DropingParticleForce:
     {
         DAVA::ParticleLayer* newLayer = SceneTreeItemParticleLayer::GetLayer(parentItem);
 
-        QVector<DAVA::ParticleDragForce*> dragForcesV = MimeDataHelper2<DAVA::ParticleDragForce>::DecodeMimeData(data);
-        if (newLayer != nullptr && !dragForcesV.empty())
+        QVector<DAVA::ParticleForce*> forcesV = MimeDataHelper2<DAVA::ParticleForce>::DecodeMimeData(data);
+        if (newLayer != nullptr && !forcesV.empty())
         {
-            DAVA::Vector<DAVA::ParticleDragForce*> dragForcesGroup;
-            dragForcesGroup.reserve(dragForcesV.size());
+            DAVA::Vector<DAVA::ParticleForce*> forcesGroup;
+            forcesGroup.reserve(forcesV.size());
 
             DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
-            layersGroup.reserve(dragForcesV.size());
+            layersGroup.reserve(forcesV.size());
 
-            for (int i = 0; i < dragForcesV.size(); ++i)
+            for (int i = 0; i < forcesV.size(); ++i)
             {
-                QModelIndex forceIndex = GetIndex((DAVA::ParticleDragForce*)dragForcesV[i]);
+                QModelIndex forceIndex = GetIndex((DAVA::ParticleForce*)forcesV[i]);
                 DAVA::ParticleLayer* oldLayer = SceneTreeItemParticleLayer::GetLayer(GetItem(forceIndex.parent()));
 
-                dragForcesGroup.push_back((DAVA::ParticleDragForce*)dragForcesV[i]);
+                forcesGroup.push_back((DAVA::ParticleForce*)forcesV[i]);
                 layersGroup.push_back(oldLayer);
             }
 
-            curScene->structureSystem->MoveDragForce(dragForcesGroup, layersGroup, newLayer);
+            curScene->structureSystem->MoveParticleForce(forcesGroup, layersGroup, newLayer);
             ret = true;
         }
     }
@@ -611,7 +611,7 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData* data, Qt::DropAction act
         }
     }
     break;
-    case DropingDragForce:
+    case DropingParticleForce:
     {
         // accept force to be dropped only to particle layer
         if (NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Layer)
@@ -805,9 +805,9 @@ int SceneTreeModel::GetDropType(const QMimeData* data) const
         {
             ret = DropingForceSimplified;
         }
-        else if (MimeDataHelper2<DAVA::ParticleDragForce>::IsValid(data))
+        else if (MimeDataHelper2<DAVA::ParticleForce>::IsValid(data))
         {
-            ret = DropingDragForce;
+            ret = DropingParticleForce;
         }
     }
 

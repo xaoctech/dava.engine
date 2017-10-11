@@ -7,7 +7,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleForces.h"
-#include "Particles/ParticleDragForce.h"
+#include "Particles/ParticleForce.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Time/SystemTimer.h"
 #include "Utils/Random.h"
@@ -515,29 +515,29 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         }
 
         //prepare forces as they will now actually change in time even for already generated particles
-        static Vector<Vector3> currForceValues;
-        int32 forcesCount;
+        static Vector<Vector3> currSimplifiedForceValues;
+        int32 simplifiedForcesCount;
 
-        static Vector<ParticleDragForce*> currDForces;
-        uint32 dForcesCount = 0;
+        static Vector<ParticleForce*> currForces;
+        uint32 forcesCount = 0;
         static Matrix4 invWorld;
         if (group.head)
         {
-            forcesCount = static_cast<int32>(group.layer->forcesSimplified.size());
-            if (forcesCount)
+            simplifiedForcesCount = static_cast<int32>(group.layer->forcesSimplified.size());
+            if (simplifiedForcesCount)
             {
-                currForceValues.resize(forcesCount);
-                for (int32 i = 0; i < forcesCount; ++i)
+                currSimplifiedForceValues.resize(simplifiedForcesCount);
+                for (int32 i = 0; i < simplifiedForcesCount; ++i)
                 {
                     if (group.layer->forcesSimplified[i]->force)
-                        currForceValues[i] = group.layer->forcesSimplified[i]->force->GetValue(currLoopTime);
+                        currSimplifiedForceValues[i] = group.layer->forcesSimplified[i]->force->GetValue(currLoopTime);
                     else
-                        currForceValues[i] = Vector3(0, 0, 0);
+                        currSimplifiedForceValues[i] = Vector3(0, 0, 0);
                 }
             }
 
-            dForcesCount = static_cast<uint32>(group.layer->GetDragForces().size());
-            if (dForcesCount > 0)
+            forcesCount = static_cast<uint32>(group.layer->GetParticleForces().size());
+            if (forcesCount > 0)
             {
                 if (!isInverseCalculated)
                 {
@@ -545,10 +545,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                     isInverseCalculated = true;
                 }
 
-                currDForces.resize(dForcesCount);
-                for (uint32 i = 0; i < dForcesCount; ++i)
+                currForces.resize(forcesCount);
+                for (uint32 i = 0; i < forcesCount; ++i)
                 {
-                    currDForces[i] = group.layer->GetDragForces()[i];
+                    currForces[i] = group.layer->GetParticleForces()[i];
                 }
             }
         }
@@ -576,7 +576,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
-                UpdateRegularParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox, currDForces, dForcesCount, *worldTransformPtr, invWorld, currLoopTimeNormalized);
+                UpdateRegularParticleData(effect, current, group, overLifeTime, simplifiedForcesCount, currSimplifiedForceValues, dt, bbox, currForces, forcesCount, *worldTransformPtr, invWorld, currLoopTimeNormalized);
             }
 
             if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
@@ -613,7 +613,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount, group.layer->IsLodActive(effect->activeLodLevel));
+                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currSimplifiedForceValues, simplifiedForcesCount, group.layer->IsLodActive(effect->activeLodLevel));
 
             prev = current;
             current = current->next;
@@ -908,7 +908,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     return particle;
 }
 
-void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox, Vector<ParticleDragForce*> dForces, uint32 dForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife)
+void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 simplifiedForcesCount, Vector<Vector3>& currSimplifiedForceValues, float32 dt, AABBox3& bbox, Vector<ParticleForce*> forces, uint32 forcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife)
 {
     float32 currVelocityOverLife = 1.0f;
     if (group.layer->velocityOverLife)
@@ -922,15 +922,15 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     particle->angle += particle->spin * currSpinOverLife * dt;
 
     Vector3 acceleration(0.0f, 0.0f, 0.0f);
-    for (int32 i = 0; i < forcesCount; ++i)
+    for (int32 i = 0; i < simplifiedForcesCount; ++i)
     {
-        acceleration += (group.layer->forcesSimplified[i]->forceOverLife) ? (currForceValues[i] * group.layer->forcesSimplified[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+        acceleration += (group.layer->forcesSimplified[i]->forceOverLife) ? (currSimplifiedForceValues[i] * group.layer->forcesSimplified[i]->forceOverLife->GetValue(overLife)) : currSimplifiedForceValues[i];
     }
 
     Vector3 effectSpacePosition;
     Vector3 prevEffectSpacePosition;
     Vector3 effectSpaceSpeed;
-    if (dForcesCount > 0)
+    if (forcesCount > 0)
     {
         effectSpacePosition = particle->position * invWorld;
         effectSpaceSpeed = particle->speed * Matrix3(invWorld);
@@ -938,13 +938,13 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
             prevEffectSpacePosition = prevForcePosition * invWorld;
     }
 
-    for (uint32 i = 0; i < dForcesCount; ++i)
+    for (uint32 i = 0; i < forcesCount; ++i)
     {
-        if (!dForces[i]->isGlobal)
-            ParticleForces::ApplyForce(effect->GetEntity(), dForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition);
+        if (!forces[i]->isGlobal)
+            ParticleForces::ApplyForce(effect->GetEntity(), forces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition);
     }
 
-    if (dForcesCount > 0)
+    if (forcesCount > 0)
     {
         particle->speed = effectSpaceSpeed * Matrix3(world);
         if (group.layer->GetAlterPositionForcesCount() > 0)
@@ -1162,7 +1162,7 @@ void ParticleEffectSystem::ExtractGlobalForces(ParticleEffectComponent* effect)
         ParticleEmitter* emitter = emitterInst->GetEmitter();
         for (auto& layer : emitter->layers)
         {
-            for (auto& force : layer->GetDragForces())
+            for (auto& force : layer->GetParticleForces())
             {
                 if (force->isGlobal)
                     globalForces[effect].push_back(force);

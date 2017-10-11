@@ -1,23 +1,23 @@
-#include "Particles/ParticleDragForce.h"
+#include "Particles/ParticleForce.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
-DAVA_VIRTUAL_REFLECTION_IMPL(ParticleDragForce)
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleForce)
 {
-    ReflectionRegistrator<ParticleDragForce>::Begin()
+    ReflectionRegistrator<ParticleForce>::Begin()
     .End();
 }
 
-ParticleDragForce::ParticleDragForce(ParticleLayer* parent)
+ParticleForce::ParticleForce(ParticleLayer* parent)
     : parentLayer(parent)
 {
 }
 
-ParticleDragForce* ParticleDragForce::Clone()
+ParticleForce* ParticleForce::Clone()
 {
-    ParticleDragForce* dst = new ParticleDragForce(parentLayer);
+    ParticleForce* dst = new ParticleForce(parentLayer);
     if (forcePowerLine != nullptr)
     {
         dst->forcePowerLine = forcePowerLine->Clone();
@@ -65,7 +65,7 @@ ParticleDragForce* ParticleDragForce::Clone()
     return dst;
 }
 
-void ParticleDragForce::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
+void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
     PropertyLineHelper::AddIfModifiable(forcePowerLine.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(turbulenceLine.Get(), modifiables);

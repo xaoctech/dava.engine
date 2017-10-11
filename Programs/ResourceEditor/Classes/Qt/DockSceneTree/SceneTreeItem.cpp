@@ -582,12 +582,12 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
             rootItem->insertRows(0, items);
         }
 
-        size_t dragCount = layer->GetDragForces().size();
-        QList<QStandardItem*> dragItems;
-        for (size_t i = 0; i < dragCount; ++i)
-            dragItems.push_back(new SceneTreeItemParticleDragForce(layer, layer->GetDragForces()[i]));
-        if (!dragItems.empty())
-            rootItem->insertRows(0, dragItems);
+        size_t forceCount = layer->GetParticleForces().size();
+        QList<QStandardItem*> forceItems;
+        for (size_t i = 0; i < forceCount; ++i)
+            forceItems.push_back(new SceneTreeItemParticleForce(layer, layer->GetParticleForces()[i]));
+        if (!forceItems.empty())
+            rootItem->insertRows(0, forceItems);
 
         if (!hadInnerEmmiter && (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
         {
@@ -646,69 +646,69 @@ const QIcon& SceneTreeItemParticleForceSimplified::ItemIcon() const
 // Scene tree item particle drag force
 //////////////////////////////////////////////////////////////////////////
 
-SceneTreeItemParticleDragForce::SceneTreeItemParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::ParticleDragForce* drag)
-    : SceneTreeItem(SceneTreeItem::EIT_DragForce, drag)
+SceneTreeItemParticleForce::SceneTreeItemParticleForce(DAVA::ParticleLayer* layer_, DAVA::ParticleForce* force)
+    : SceneTreeItem(SceneTreeItem::EIT_ParticleForce, force)
     , layer(layer_)
 {
 }
 
-DAVA::ParticleDragForce* SceneTreeItemParticleDragForce::GetDragForce(SceneTreeItem* rootItem)
+DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce(SceneTreeItem* rootItem)
 {
-    if ((nullptr != rootItem) && (rootItem->ItemType() == SceneTreeItem::EIT_DragForce))
+    if ((nullptr != rootItem) && (rootItem->ItemType() == SceneTreeItem::EIT_ParticleForce))
     {
-        SceneTreeItemParticleDragForce* itemForce = (SceneTreeItemParticleDragForce*)rootItem;
-        return itemForce->GetDragForce();
+        SceneTreeItemParticleForce* itemForce = (SceneTreeItemParticleForce*)rootItem;
+        return itemForce->GetForce();
     }
 
     return nullptr;
 }
 
-DAVA::ParticleDragForce* SceneTreeItemParticleDragForce::GetDragForce() const
+DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce() const
 {
-    return object.Cast<DAVA::ParticleDragForce>();
+    return object.Cast<DAVA::ParticleForce>();
 }
 
-QString SceneTreeItemParticleDragForce::ItemName() const
+QString SceneTreeItemParticleForce::ItemName() const
 {
     QString ret;
 
     if (object.ContainsObject())
     {
-        ret = GetDragForce()->forceName.c_str();
+        ret = GetForce()->forceName.c_str();
     }
 
     return ret;
 }
 
-QVariant SceneTreeItemParticleDragForce::ItemData() const
+QVariant SceneTreeItemParticleForce::ItemData() const
 {
-    return qVariantFromValue(GetDragForce());
+    return qVariantFromValue(GetForce());
 }
 
-const QIcon& SceneTreeItemParticleDragForce::ItemIcon() const
+const QIcon& SceneTreeItemParticleForce::ItemIcon() const
 {
-    DAVA::ParticleDragForce* force = GetDragForce();
-    if (force->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+    DAVA::ParticleForce* force = GetForce();
+    if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
     }
-    else if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+    else if (force->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico.png") : DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_red.png");
     }
-    else if (force->type == DAVA::ParticleDragForce::eType::GRAVITY)
+    else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/gravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/gravity_red.png");
     }
-    else if (force->type == DAVA::ParticleDragForce::eType::WIND)
+    else if (force->type == DAVA::ParticleForce::eType::WIND)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/wind_p.png") : DAVA::TArc::SharedIcon(":/QtIcons/wind_p_red.png");
     }
-    else if (force->type == DAVA::ParticleDragForce::eType::POINT_GRAVITY)
+    else if (force->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/pointGravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/pointGravity_red.png");
     }
-    else if (force->type == DAVA::ParticleDragForce::eType::PLANE_COLLISION)
+    else if (force->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/plane_coll.png") : DAVA::TArc::SharedIcon(":/QtIcons/plane_coll_red.png");
     }

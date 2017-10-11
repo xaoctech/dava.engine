@@ -91,10 +91,10 @@ void EditorParticlesSystem::Draw()
     {
         selectedEmitterInstances.insert(instance);
     }
-    DAVA::Set<DAVA::ParticleDragForce*> selectedDragForces;
-    for (DAVA::ParticleDragForce* force : selection.ObjectsOfType<DAVA::ParticleDragForce>())
+    DAVA::Set<DAVA::ParticleForce*> selectedForces;
+    for (DAVA::ParticleForce* force : selection.ObjectsOfType<DAVA::ParticleForce>())
     {
-        DrawDragForces(nullptr, force);
+        DrawParticleForces(force);
     }
 
     for (auto entity : entities)
@@ -213,10 +213,10 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
                                                                DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
-void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::ParticleDragForce* force)
+void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
 {
     using namespace DAVA;
-    using ForceType = ParticleDragForce::eType;
+    using ForceType = ParticleForce::eType;
 
     if (force->type == ForceType::GRAVITY)
         return;
@@ -229,7 +229,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         {
             scale = hoodSystem->GetScale();
         }
-        auto layer = GetDragForceOwner(force);
+        auto layer = GetParticleForceOwner(force);
         auto ent = GetLayerOwner(layer);
 
         float32 arrowSize = scale;
@@ -249,7 +249,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->type == ForceType::PLANE_COLLISION)
     {
-        auto layer = GetDragForceOwner(force);
+        auto layer = GetParticleForceOwner(force);
         auto ent = GetLayerOwner(layer);
         Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
         Vector3 wNormal = force->direction * Matrix3(wMat);
@@ -279,9 +279,9 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
 
     if (force->isInfinityRange)
         return;
-    if (force->GetShape() == ParticleDragForce::eShape::BOX)
+    if (force->GetShape() == ParticleForce::eShape::BOX)
     {
-        auto layer = GetDragForceOwner(force);
+        auto layer = GetParticleForceOwner(force);
         auto ent = GetLayerOwner(layer);
 
         Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
@@ -293,7 +293,7 @@ void EditorParticlesSystem::DrawDragForces(DAVA::Entity* effectEntity, DAVA::Par
         drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
                                      Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
-    else if (force->GetShape() == ParticleDragForce::eShape::SPHERE)
+    else if (force->GetShape() == ParticleForce::eShape::SPHERE)
     {
         Matrix4 wMat = Selectable(force).GetWorldTransform();
         float32 radius = force->GetRadius();
@@ -377,9 +377,9 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetSimplifiedForceOwner(DAVA::Partic
     return nullptr;
 }
 
-DAVA::ParticleLayer* EditorParticlesSystem::GetDragForceOwner(DAVA::ParticleDragForce* force) const
+DAVA::ParticleLayer* EditorParticlesSystem::GetParticleForceOwner(DAVA::ParticleForce* force) const
 {
-    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleDragForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleDragForce* force) -> DAVA::ParticleLayer*
+    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForce* force) -> DAVA::ParticleLayer*
     {
         for (DAVA::ParticleLayer* layer : emitter->layers)
         {
@@ -392,7 +392,7 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetDragForceOwner(DAVA::ParticleDrag
                 }
             }
 
-            if (std::find(layer->GetDragForces().begin(), layer->GetDragForces().end(), force) != layer->GetDragForces().end())
+            if (std::find(layer->GetParticleForces().begin(), layer->GetParticleForces().end(), force) != layer->GetParticleForces().end())
             {
                 return layer;
             }
@@ -529,15 +529,15 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
             break;
         }
 
-        case CMDID_PARTICLE_FORCE_UPDATE:
+        case CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE:
         {
             const CommandUpdateParticleSimplifiedForce* castedCmd = static_cast<const CommandUpdateParticleSimplifiedForce*>(command);
             SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
             break;
         }
-        case CMDID_PARTICLE_DRAG_FORCE_UPDATE:
+        case CMDID_PARTICLE_FORCE_UPDATE:
         {
-            const CommandUpdateParticleDragForce* castedCmd = static_cast<const CommandUpdateParticleDragForce*>(command);
+            const CommandUpdateParticleForce* castedCmd = static_cast<const CommandUpdateParticleForce*>(command);
             SceneSignals::Instance()->EmitParticleDragForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
         }
 
@@ -609,7 +609,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
       CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES, CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP,
-      CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE, CMDID_PARTICLE_DRAG_FORCE_UPDATE,
+      CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE, CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE,
       CMDID_PARTICLE_EFFECT_START_STOP, CMDID_PARTICLE_EFFECT_RESTART, CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML,
       CMDID_PARTICLE_EMITTER_SAVE_TO_YAML,
       CMDID_PARTICLE_INNER_EMITTER_LOAD_FROM_YAML, CMDID_PARTICLE_INNER_EMITTER_SAVE_TO_YAML,

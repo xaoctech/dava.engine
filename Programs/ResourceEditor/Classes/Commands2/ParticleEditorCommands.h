@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DAVAEngine.h>
-#include <Particles/ParticleDragForce.h>
+#include <Particles/ParticleForce.h>
 
 #include "Commands2/Base/RECommand.h"
 #include "Commands2/Base/CommandAction.h"
@@ -212,26 +212,26 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
-class CommandRemoveParticleDrag : public CommandAction
+class CommandRemoveParticleForce : public CommandAction
 {
 public:
-    CommandRemoveParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag);
+    CommandRemoveParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
     void Redo() override;
 
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::ParticleDragForce* selectedDrag = nullptr;
+    DAVA::ParticleForce* selectedForce = nullptr;
 };
 
-class CommandCloneParticleDrag : public CommandAction
+class CommandCloneParticleForce : public CommandAction
 {
 public:
-    CommandCloneParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag);
+    CommandCloneParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
     void Redo() override;
 
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::ParticleDragForce* selectedDrag = nullptr;
+    DAVA::ParticleForce* selectedForce = nullptr;
 };
 
 class CommandUpdateEffect : public CommandAction
@@ -468,7 +468,7 @@ protected:
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> forcesOverLife;
 };
 
-class CommandUpdateParticleDragForce : public CommandAction
+class CommandUpdateParticleForce : public CommandAction
 {
 public:
     struct ForceParams
@@ -485,8 +485,8 @@ public:
         DAVA::Vector3 boxSize;
         DAVA::Vector3 forcePower;
         DAVA::Vector3 direction;
-        DAVA::ParticleDragForce::eShape shape = DAVA::ParticleDragForce::eShape::BOX;
-        DAVA::ParticleDragForce::eTimingType timingType = DAVA::ParticleDragForce::eTimingType::CONSTANT;
+        DAVA::ParticleForce::eShape shape = DAVA::ParticleForce::eShape::BOX;
+        DAVA::ParticleForce::eTimingType timingType = DAVA::ParticleForce::eTimingType::CONSTANT;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> forcePowerLine;
         DAVA::float32 windFrequency = 0.0f;
         DAVA::float32 windTurbulence = 0.0f;
@@ -505,7 +505,7 @@ public:
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
     };
 
-    CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params);
+    CommandUpdateParticleForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params);
 
     void Redo() override;
     void Undo() override;
@@ -522,12 +522,12 @@ protected:
     DAVA::uint32 forceId = -1;
 };
 
-inline DAVA::ParticleLayer* CommandUpdateParticleDragForce::GetLayer() const
+inline DAVA::ParticleLayer* CommandUpdateParticleForce::GetLayer() const
 {
     return layer;
 }
 
-inline DAVA::uint32 CommandUpdateParticleDragForce::GetForceIndex() const
+inline DAVA::uint32 CommandUpdateParticleForce::GetForceIndex() const
 {
     return forceId;
 }

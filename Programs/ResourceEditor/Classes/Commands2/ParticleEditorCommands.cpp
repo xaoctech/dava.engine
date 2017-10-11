@@ -15,7 +15,7 @@ using namespace DAVA;
 
 namespace ParticleEditorCommandsDetail
 {
-using ForceType = DAVA::ParticleDragForce::eType;
+using ForceType = DAVA::ParticleForce::eType;
 DAVA::Map<ForceType, String> forceNames =
 {
   { ForceType::DRAG_FORCE, "Drag" },
@@ -27,7 +27,7 @@ DAVA::Map<ForceType, String> forceNames =
 };
 }
 
-void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType);
+void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType);
 
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* effect)
     : CommandAction(CMDID_PARTICLE_EFFECT_UPDATE)
@@ -318,7 +318,7 @@ void CommandUpdateParticleLayerLods::Redo()
 }
 
 CommandUpdateParticleSimplifiedForce::CommandUpdateParticleSimplifiedForce(ParticleLayer* layer, uint32 forceId)
-    : CommandAction(CMDID_PARTICLE_FORCE_UPDATE)
+    : CommandAction(CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE)
 {
     this->layer = layer;
     this->forceId = forceId;
@@ -338,17 +338,17 @@ void CommandUpdateParticleSimplifiedForce::Redo()
 }
 
 //////////////////////////////////////////////////////////////////////////
-CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params)
-    : CommandAction(CMDID_PARTICLE_DRAG_FORCE_UPDATE)
+CommandUpdateParticleForce::CommandUpdateParticleForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params)
+    : CommandAction(CMDID_PARTICLE_FORCE_UPDATE)
     , layer(layer_)
     , forceId(forceId_)
     , newParams(params)
 {
-    DVASSERT(forceId < static_cast<uint32>(layer->GetDragForces().size()));
+    DVASSERT(forceId < static_cast<uint32>(layer->GetParticleForces().size()));
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
     {
-        DAVA::ParticleDragForce* force = layer->GetDragForces()[forceId];
+        DAVA::ParticleForce* force = layer->GetParticleForces()[forceId];
         oldParams.isActive = force->isActive;
         oldParams.useInfinityRange = force->isInfinityRange;
         oldParams.killParticles = force->killParticles;
@@ -382,21 +382,21 @@ CommandUpdateParticleDragForce::CommandUpdateParticleDragForce(DAVA::ParticleLay
     }
 }
 
-void CommandUpdateParticleDragForce::Redo()
+void CommandUpdateParticleForce::Redo()
 {
     ApplyParams(newParams);
 }
 
-void CommandUpdateParticleDragForce::Undo()
+void CommandUpdateParticleForce::Undo()
 {
     ApplyParams(oldParams);
 }
 
-void CommandUpdateParticleDragForce::ApplyParams(ForceParams& params)
+void CommandUpdateParticleForce::ApplyParams(ForceParams& params)
 {
-    if (layer != nullptr && forceId < layer->GetDragForces().size())
+    if (layer != nullptr && forceId < layer->GetParticleForces().size())
     {
-        DAVA::ParticleDragForce* force = layer->GetDragForces()[forceId];
+        DAVA::ParticleForce* force = layer->GetParticleForces()[forceId];
         force->isActive = params.isActive;
         force->SetBoxSize(params.boxSize);
         force->SetRadius(params.radius);
@@ -623,7 +623,7 @@ CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleDrag::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::DRAG_FORCE);
+    AddNewForceToLayer(selectedLayer, ParticleForce::eType::DRAG_FORCE);
 }
 
 CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLayer* layer)
@@ -634,7 +634,7 @@ CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLay
 
 void CommandAddParticleLorentzForce::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::LORENTZ_FORCE);
+    AddNewForceToLayer(selectedLayer, ParticleForce::eType::LORENTZ_FORCE);
 }
 
 CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)
@@ -645,7 +645,7 @@ CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleGravity::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::GRAVITY);
+    AddNewForceToLayer(selectedLayer, ParticleForce::eType::GRAVITY);
 }
 
 CommandAddParticleWind::CommandAddParticleWind(DAVA::ParticleLayer* layer)
@@ -656,7 +656,7 @@ CommandAddParticleWind::CommandAddParticleWind(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleWind::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::WIND);
+    AddNewForceToLayer(selectedLayer, ParticleForce::eType::WIND);
 }
 
 CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleLayer* layer)
@@ -667,7 +667,7 @@ CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleLay
 
 void CommandAddParticlePointGravity::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::POINT_GRAVITY);
+    AddNewForceToLayer(selectedLayer, ParticleForce::eType::POINT_GRAVITY);
 }
 
 CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::ParticleLayer* layer)
@@ -678,21 +678,21 @@ CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::Particl
 
 void CommandAddParticlePlaneCollision::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleDragForce::eType::PLANE_COLLISION);
+    AddNewForceToLayer(selectedLayer, ParticleForce::eType::PLANE_COLLISION);
 }
 
-CommandRemoveParticleDrag::CommandRemoveParticleDrag(ParticleLayer* layer, ParticleDragForce* drag)
-    : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_REMOVE)
+CommandRemoveParticleForce::CommandRemoveParticleForce(ParticleLayer* layer, ParticleForce* force)
+    : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
     , selectedLayer(layer)
-    , selectedDrag(drag)
+    , selectedForce(force)
 {
 }
 
-void CommandRemoveParticleDrag::Redo()
+void CommandRemoveParticleForce::Redo()
 {
-    if (selectedLayer == nullptr || selectedDrag == nullptr)
+    if (selectedLayer == nullptr || selectedForce == nullptr)
         return;
-    selectedLayer->RemoveDrag(selectedDrag);
+    selectedLayer->RemoveForce(selectedForce);
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEffectComponent* effect, ParticleEmitterInstance* emitter, const FilePath& path)
@@ -773,31 +773,31 @@ void CommandSaveInnerParticleEmitterToYaml::Redo()
     instance->GetEmitter()->SaveToYaml(filePath);
 }
 
-CommandCloneParticleDrag::CommandCloneParticleDrag(DAVA::ParticleLayer* layer, DAVA::ParticleDragForce* drag)
-    : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_CLONE)
+CommandCloneParticleForce::CommandCloneParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force)
+    : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_CLONE)
     , selectedLayer(layer)
-    , selectedDrag(drag)
+    , selectedForce(force)
 {
 }
 
-void CommandCloneParticleDrag::Redo()
+void CommandCloneParticleForce::Redo()
 {
-    if ((selectedLayer == nullptr) || (selectedDrag == nullptr))
+    if ((selectedLayer == nullptr) || (selectedForce == nullptr))
         return;
 
-    ScopedPtr<ParticleDragForce> clonedForce(selectedDrag->Clone());
-    clonedForce->forceName = selectedDrag->forceName + " Clone";
-    selectedLayer->AddDrag(clonedForce);
+    ScopedPtr<ParticleForce> clonedForce(selectedForce->Clone());
+    clonedForce->forceName = selectedForce->forceName + " Clone";
+    selectedLayer->AddForce(clonedForce);
 }
 
-void AddNewForceToLayer(ParticleLayer* layer, ParticleDragForce::eType forceType)
+void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType)
 {
     if (layer == nullptr)
         return;
-    ParticleDragForce* newForce = new ParticleDragForce(layer);
+    ParticleForce* newForce = new ParticleForce(layer);
     newForce->type = forceType;
     newForce->forceName = ParticleEditorCommandsDetail::forceNames[forceType];
 
-    layer->AddDrag(newForce);
+    layer->AddForce(newForce);
     SafeRelease(newForce);
 }

@@ -12,7 +12,7 @@ namespace DAVA
 {
 struct ParticleLayer;
 
-class ParticleDragForce : public BaseObject
+class ParticleForce : public BaseObject
 {
 public:
     enum class eShape
@@ -74,8 +74,8 @@ public:
     bool normalAsReflectionVector = true;
     bool randomizeReflectionForce = false;
 
-    ParticleDragForce(ParticleLayer* parent);
-    ParticleDragForce* Clone();
+    ParticleForce(ParticleLayer* parent);
+    ParticleForce* Clone();
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
     void SetRadius(float32 radius);
     void SetBoxSize(const Vector3& boxSize);
@@ -89,7 +89,7 @@ public:
     bool IsForceCanAlterPosition() const;
 
 public:
-    DAVA_VIRTUAL_REFLECTION(ParticleDragForce, BaseObject);
+    DAVA_VIRTUAL_REFLECTION(ParticleForce, BaseObject);
 
 private:
     Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
@@ -100,14 +100,14 @@ private:
     ParticleLayer* parentLayer = nullptr;
 };
 
-inline void ParticleDragForce::SetRadius(float32 radius_)
+inline void ParticleForce::SetRadius(float32 radius_)
 {
     radius = radius_;
     if (shape == eShape::SPHERE)
         squareRadius = radius * radius;
 }
 
-inline void ParticleDragForce::SetBoxSize(const Vector3& boxSize_)
+inline void ParticleForce::SetBoxSize(const Vector3& boxSize_)
 {
     boxSize = boxSize_;
     halfBoxSize = boxSize * 0.5f;
@@ -115,27 +115,27 @@ inline void ParticleDragForce::SetBoxSize(const Vector3& boxSize_)
         squareRadius = halfBoxSize.DotProduct(halfBoxSize);
 }
 
-inline float32 ParticleDragForce::GetRadius() const
+inline float32 ParticleForce::GetRadius() const
 {
     return radius;
 }
 
-inline const Vector3& ParticleDragForce::GetBoxSize() const
+inline const Vector3& ParticleForce::GetBoxSize() const
 {
     return boxSize;
 }
 
-inline const Vector3& ParticleDragForce::GetHalfBoxSize() const
+inline const Vector3& ParticleForce::GetHalfBoxSize() const
 {
     return halfBoxSize;
 }
 
-inline float32 ParticleDragForce::GetSquareRadius() const
+inline float32 ParticleForce::GetSquareRadius() const
 {
     return squareRadius;
 }
 
-inline void ParticleDragForce::SetShape(ParticleDragForce::eShape shape_)
+inline void ParticleForce::SetShape(ParticleForce::eShape shape_)
 {
     shape = shape_;
     if (shape == eShape::BOX)
@@ -147,13 +147,13 @@ inline void ParticleDragForce::SetShape(ParticleDragForce::eShape shape_)
         squareRadius = radius * radius;
 }
 
-inline ParticleDragForce::eShape ParticleDragForce::GetShape() const
+inline ParticleForce::eShape ParticleForce::GetShape() const
 {
     return shape;
 }
 
-inline bool ParticleDragForce::IsForceCanAlterPosition() const
+inline bool ParticleForce::IsForceCanAlterPosition() const
 {
-    return type == ParticleDragForce::eType::POINT_GRAVITY || type == ParticleDragForce::eType::PLANE_COLLISION || type == ParticleDragForce::eType::WIND;
+    return type == ParticleForce::eType::POINT_GRAVITY || type == ParticleForce::eType::PLANE_COLLISION || type == ParticleForce::eType::WIND;
 }
 }

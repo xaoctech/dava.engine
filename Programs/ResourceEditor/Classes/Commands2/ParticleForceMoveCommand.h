@@ -6,7 +6,7 @@
 
 namespace DAVA
 {
-class ParticleDragForce;
+class ParticleForce;
 }
 
 class ParticleSimplifiedForceMoveCommand : public RECommand
@@ -23,16 +23,16 @@ public:
     DAVA::ParticleLayer* newLayer;
 };
 
-class ParticleDragForceMoveCommand : public RECommand
+class ParticleForceMoveCommand : public RECommand
 {
 public:
-    ParticleDragForceMoveCommand(DAVA::ParticleDragForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer);
-    ~ParticleDragForceMoveCommand();
+    ParticleForceMoveCommand(DAVA::ParticleForce* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer);
+    ~ParticleForceMoveCommand();
 
     void Undo() override;
     void Redo() override;
 
-    DAVA::ParticleDragForce* force;
+    DAVA::ParticleForce* force;
     DAVA::ParticleLayer* oldLayer;
     DAVA::ParticleLayer* newLayer;
 };

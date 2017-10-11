@@ -201,16 +201,16 @@ void StructureSystem::MoveSimplifiedForce(const DAVA::Vector<DAVA::ParticleForce
     EmitChanged();
 }
 
-void StructureSystem::MoveDragForce(const DAVA::Vector<DAVA::ParticleDragForce*>& forces, const DAVA::Vector<DAVA::ParticleLayer*>& oldLayers, DAVA::ParticleLayer* newLayer)
+void StructureSystem::MoveParticleForce(const DAVA::Vector<DAVA::ParticleForce*>& forces, const DAVA::Vector<DAVA::ParticleLayer*>& oldLayers, DAVA::ParticleLayer* newLayer)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     if (sceneEditor == nullptr)
         return;
 
-    sceneEditor->BeginBatch("Move particle drag force", static_cast<DAVA::uint32>(forces.size()));
+    sceneEditor->BeginBatch("Move particle force", static_cast<DAVA::uint32>(forces.size()));
     for (size_t i = 0; i < forces.size(); ++i)
     {
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new ParticleDragForceMoveCommand(forces[i], oldLayers[i], newLayer)));
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new ParticleForceMoveCommand(forces[i], oldLayers[i], newLayer)));
     }
     sceneEditor->EndBatch();
     EmitChanged();
@@ -418,7 +418,7 @@ void StructureSystem::Process(DAVA::float32 timeElapsed)
 
 void StructureSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
 {
-    if (commandNotification.MatchCommandIDs({ CMDID_PARTICLE_LAYER_REMOVE, CMDID_PARTICLE_LAYER_MOVE, CMDID_PARTICLE_FORCE_REMOVE, CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, CMDID_PARTICLE_DRAG_FORCE_MOVE }))
+    if (commandNotification.MatchCommandIDs({ CMDID_PARTICLE_LAYER_REMOVE, CMDID_PARTICLE_LAYER_MOVE, CMDID_PARTICLE_FORCE_REMOVE, CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, CMDID_PARTICLE_FORCE_MOVE }))
     {
         EmitChanged();
     }

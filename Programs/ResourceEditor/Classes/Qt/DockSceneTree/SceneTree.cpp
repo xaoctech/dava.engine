@@ -842,91 +842,91 @@ private:
     }
 };
 
-class SceneTree::ParticleDragForceContextMenu : public SceneTree::BaseContextMenu
+class SceneTree::ParticleForceContextMenu : public SceneTree::BaseContextMenu
 {
     //////////////////////////////////////////////////////////////////////////
     using TBase = BaseContextMenu;
 
 public:
-    ParticleDragForceContextMenu(SceneTreeItemParticleDragForce* dragForce_, SceneTree* treeWidget)
+    ParticleForceContextMenu(SceneTreeItemParticleForce* force_, SceneTree* treeWidget)
         : TBase(treeWidget)
-        , dragForce(dragForce_)
+        , forceItem(force_)
     {
     }
 
 protected:
     void FillActions(QMenu& menu) override
     {
-        Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleDragForceContextMenu::CloneForce);
-        QString removeDragForce;
+        Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleForceContextMenu::CloneForce);
+        QString removeForceHint;
         const QIcon* icon = nullptr;
-        if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+        if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::DRAG_FORCE)
         {
-            removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
+            removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/remove_turtle.png");
         }
-        else if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
         {
-            removeDragForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Lorentz Force") : QStringLiteral("Remove Lorentz Forces");
+            removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Lorentz Force") : QStringLiteral("Remove Lorentz Forces");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_remove.png");
         }
-        else if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::GRAVITY)
+        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::GRAVITY)
         {
-            removeDragForce = QStringLiteral("Remove Gravity");
+            removeForceHint = QStringLiteral("Remove Gravity");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/gravity_remove.png");
         }
-        else if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::WIND)
+        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::WIND)
         {
-            removeDragForce = QStringLiteral("Remove Wind");
+            removeForceHint = QStringLiteral("Remove Wind");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/wind_p_remove.png");
         }
-        else if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::POINT_GRAVITY)
+        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
         {
-            removeDragForce = QStringLiteral("Remove Point Gravity");
+            removeForceHint = QStringLiteral("Remove Point Gravity");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/pointGravity_remove.png");
         }
-        else if (dragForce->GetDragForce()->type == DAVA::ParticleDragForce::eType::PLANE_COLLISION)
+        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
         {
-            removeDragForce = QStringLiteral("Remove Plane Collision");
+            removeForceHint = QStringLiteral("Remove Plane Collision");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/plane_coll_remove.png");
         }
 
-        Connect(menu.addAction(*icon, removeDragForce), this, &ParticleDragForceContextMenu::RemoveDragForce);
+        Connect(menu.addAction(*icon, removeForceHint), this, &ParticleForceContextMenu::RemoveForce);
     }
 
 private:
     void CloneForce()
     {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandCloneParticleDrag(dragForce->layer, dragForce->GetDragForce())));
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandCloneParticleForce(forceItem->layer, forceItem->GetForce())));
         MarkStructureChanged();
     }
 
-    void RemoveDragForce()
+    void RemoveForce()
     {
-        DAVA::ParticleDragForce* force = dragForce->GetDragForce();
+        DAVA::ParticleForce* force = forceItem->GetForce();
         DAVA::String commandName;
-        if (force->type == DAVA::ParticleDragForce::eType::DRAG_FORCE)
+        if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
             commandName = "Remove drag force";
-        else if (force->type == DAVA::ParticleDragForce::eType::LORENTZ_FORCE)
+        else if (force->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
             commandName = "Remove Lorentz force";
-        else if (force->type == DAVA::ParticleDragForce::eType::GRAVITY)
+        else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
             commandName = "Remove Gravity";
-        else if (force->type == DAVA::ParticleDragForce::eType::WIND)
+        else if (force->type == DAVA::ParticleForce::eType::WIND)
             commandName = "Remove Wind";
-        else if (force->type == DAVA::ParticleDragForce::eType::POINT_GRAVITY)
+        else if (force->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
             commandName = "Remove Point Gravity";
-        else if (force->type == DAVA::ParticleDragForce::eType::PLANE_COLLISION)
+        else if (force->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
             commandName = "Remove Plane Collision";
 
-        RemoveCommandsHelper(commandName, SceneTreeItem::EIT_DragForce, [](SceneTreeItem* item)
+        RemoveCommandsHelper(commandName, SceneTreeItem::EIT_ParticleForce, [](SceneTreeItem* item)
                              {
-                                 SceneTreeItemParticleDragForce* dragForceItem = static_cast<SceneTreeItemParticleDragForce*>(item);
-                                 DAVA::ParticleDragForce* dragForce = dragForceItem->GetDragForce();
-                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleDrag(dragForceItem->layer, dragForce)), dragForce);
+                                 SceneTreeItemParticleForce* forceItem = static_cast<SceneTreeItemParticleForce*>(item);
+                                 DAVA::ParticleForce* force = forceItem->GetForce();
+                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleForce(forceItem->layer, force)), force);
                              });
     }
 
-    SceneTreeItemParticleDragForce* dragForce;
+    SceneTreeItemParticleForce* forceItem;
 };
 
 class SceneTree::ParticleEmitterContextMenu : public SceneTree::BaseContextMenu
@@ -1293,7 +1293,7 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_LAYER_MOVE,
     CMDID_PARTICLE_FORCE_REMOVE,
     CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE,
-    CMDID_PARTICLE_DRAG_FORCE_MOVE,
+    CMDID_PARTICLE_FORCE_MOVE,
     CMDID_META_OBJ_MODIFY,
     CMDID_PARTICLE_EMITTER_LAYER_ADD,
     CMDID_PARTICLE_EMITTER_LAYER_REMOVE,
@@ -1306,14 +1306,14 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_EMITTER_WIND_ADD,
     CMDID_PARTICLE_EMITTER_POINT_GRAVITY_ADD,
     CMDID_PARTICLE_EMITTER_PLANE_COLLISION_ADD,
-    CMDID_PARTICLE_EMITTER_DRAG_REMOVE,
+    CMDID_PARTICLE_EMITTER_FORCE_REMOVE,
     CMDID_PARTICLE_EFFECT_EMITTER_REMOVE,
     CMDID_REFLECTED_FIELD_MODIFY,
     } };
     static const DAVA::Vector<DAVA::uint32> idsForTreeUpdate =
     { {
-    CMDID_PARTICLE_DRAG_FORCE_UPDATE,
-    CMDID_PARTICLE_LAYER_UPDATE
+    CMDID_PARTICLE_FORCE_UPDATE,
+    CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE
     } };
 
     if (commandNotification.MatchCommandIDs(idsForUpdate))
@@ -1425,8 +1425,8 @@ void SceneTree::ShowContextMenu(const QPoint& pos)
     case SceneTreeItem::EIT_InnerEmitter:
         showMenuFn(ParticleInnerEmitterContextMenu(static_cast<SceneTreeItemParticleInnerEmitter*>(item), this));
         break;
-    case SceneTreeItem::EIT_DragForce:
-        showMenuFn(ParticleDragForceContextMenu(static_cast<SceneTreeItemParticleDragForce*>(item), this));
+    case SceneTreeItem::EIT_ParticleForce:
+        showMenuFn(ParticleForceContextMenu(static_cast<SceneTreeItemParticleForce*>(item), this));
         break;
     default:
         break;

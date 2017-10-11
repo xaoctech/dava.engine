@@ -2,7 +2,7 @@
 
 #include "Classes/Selection/Selectable.h"
 #include <Reflection/Reflection.h>
-#include <Particles/ParticleDragForce.h>
+#include <Particles/ParticleForce.h>
 
 namespace DAVA
 {
@@ -29,7 +29,7 @@ public:
     bool TransformDependsFromObject(const DAVA::Any& dependant, const DAVA::Any& dependsOn) const override;
 };
 
-class DragForceTransformProxy : public Selectable::TransformProxy
+class ParticleForceTransformProxy : public Selectable::TransformProxy
 {
 public:
     const DAVA::Matrix4& GetWorldTransform(const DAVA::Any& object) override;
@@ -39,5 +39,5 @@ public:
     bool TransformDependsFromObject(const DAVA::Any& dependant, const DAVA::Any& dependsOn) const override;
 
 private:
-    DAVA::ParticleEmitterInstance* GetEmitterInstance(DAVA::ParticleDragForce* force) const;
+    DAVA::ParticleEmitterInstance* GetEmitterInstance(DAVA::ParticleForce* force) const;
 };
