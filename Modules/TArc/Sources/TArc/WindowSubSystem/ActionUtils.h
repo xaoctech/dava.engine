@@ -4,6 +4,7 @@
 #include <Base/BaseTypes.h>
 
 #include <QUrl>
+#include <QKeySequence>
 
 class QAction;
 class QWidget;
@@ -14,6 +15,7 @@ namespace TArc
 static const QString menuScheme = QStringLiteral("menu");
 static const QString toolbarScheme = QStringLiteral("toolbar");
 static const QString statusbarScheme = QStringLiteral("statusbar");
+static const QString invisibleScheme = QStringLiteral("invisible");
 
 static const QString permanentStatusbarAction = QStringLiteral("permanent");
 
@@ -42,10 +44,22 @@ QUrl CreateMenuPoint(const QString& menuName, const InsertionParams& params = In
 QUrl CreateMenuPoint(QList<QString> menusPath, const InsertionParams& params = InsertionParams());
 QUrl CreateToolbarPoint(const QString& toolbarName, const InsertionParams& params = InsertionParams());
 QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor = 0, const InsertionParams& params = InsertionParams());
+QUrl CreateInvisiblePoint();
 
 /// You can attach widget to Action. This widget will be used to appear action on toolbar or in status bar
 void AttachWidgetToAction(QAction* action, QWidget* widget);
 void AttachWidgetToAction(QAction* action, ControlProxy* control);
 QWidget* GetAttachedWidget(QAction* action);
+
+struct KeyBindableActionInfo
+{
+    QString blockName;
+    Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
+    QList<QKeySequence> defaultShortcuts;
+    bool readOnly = false;
+};
+
+void MakeActionKeyBindable(QAction* action, const KeyBindableActionInfo& info);
+bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info);
 } // namespace TArc
 } // namespace DAVA

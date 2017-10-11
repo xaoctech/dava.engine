@@ -459,7 +459,14 @@ void WindowNativeBridge::SwipeWithEvent(NSEvent* theEvent)
     eModifierKeys modifierKeys = GetModifierKeys(theEvent);
     float32 deltaX = [theEvent deltaX];
     float32 deltaY = [theEvent deltaY];
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, deltaX, deltaY, modifierKeys));
+
+    NSSize sz = [renderView frame].size;
+    NSPoint pt = [theEvent locationInWindow];
+
+    float32 x = pt.x;
+    float32 y = sz.height - pt.y;
+
+    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, x, y, deltaX, deltaY, modifierKeys));
 }
 
 eModifierKeys WindowNativeBridge::GetModifierKeys(NSEvent* theEvent)

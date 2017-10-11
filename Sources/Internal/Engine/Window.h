@@ -306,6 +306,7 @@ public:
     // Signals
     Signal<Window*, bool /*visible*/> visibilityChanged; //<! Emitted when window visibility has changed.
     Signal<Window*, bool /*hasFocus*/> focusChanged; //<! Emitted when window has gained or lost keyboard focus.
+    Signal<Window*, eCursorCapture /*cursorCapture*/> cursorCaptureChanged; //<!Emitted when window cursor capture mode has changed.
     Signal<Window*, float32> dpiChanged; //<! Emitted when DPI of the display where window is on has changed.
     Signal<Window*, Size2f /* windowSize*/, Size2f /* surfaceSize */> sizeChanged; //<! Emitted when window client ares size or surface size has changed.
     Signal<Window*, float32> update; //!< Emitted on each frame if window is visible.

@@ -33,22 +33,22 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'http://dist.libuv.org/dist/v1.9.1/libuv-v1.9.1.tar.gz'
+    return 'https://github.com/kkdaemon/libuv.git'
 
 
-def _download_and_extract(working_directory_path):
-    source_folder_path = os.path.join(working_directory_path, 'libuv_source')
+def _download(working_directory_path):
+    source_folder_path = os.path.join(working_directory_path, 'libuv')
 
-    url = get_download_info()
-    build_utils.download_and_extract(
-        url, working_directory_path,
-        source_folder_path,
-        build_utils.get_url_file_name_no_ext(url))
+    build_utils.run_process(
+        ['git', 'clone', '-b', 'winuap_support', get_download_info()],
+        process_cwd=working_directory_path,
+        shell=True)
 
     return source_folder_path
 
+
 def _build_win32(working_directory_path, root_project_path):
-    source_folder_path = _download_and_extract(working_directory_path)
+    source_folder_path = _download(working_directory_path)
 
     build_folder_path = os.path.join(working_directory_path, 'gen/build_win32')
     build_folder_path_x86 = os.path.join(build_folder_path, 'x86')
@@ -63,21 +63,28 @@ def _build_win32(working_directory_path, root_project_path):
     os.makedirs(build_folder_path_x64_debug)
     os.makedirs(build_folder_path_x64_release)
 
+    vc_solution_file=os.path.join(source_folder_path, 'uv.sln')
+    override_props_file=os.path.abspath('override_win32.props')
+    toolset=build_config.get_msvc_toolset_ver_win32()
+    msbuild_args=[
+        "/p:ForceImportBeforeCppTargets={}".format(override_props_file),
+        "/p:WindowsTargetPlatformVersion={}".format(build_config.get_msvc_sdk_version_win32())
+    ]
+
+    # x86
     x86_env = build_utils.get_win32_vs_x86_env()
     x86_env['GYP_MSVS_VERSION'] = build_config.get_gyp_msvs_version()
     build_utils.run_process(
-        ['vcbuild.bat', 'debug', 'x86'],
+        ['vcbuild.bat', 'x86', 'nobuild'],
         process_cwd=source_folder_path,
         environment=x86_env,
         shell=True)
-    build_utils.run_process(
-        ['vcbuild.bat', 'release', 'x86'],
-        process_cwd=source_folder_path,
-        environment=x86_env,
-        shell=True)
+
+    build_utils.build_vs(vc_solution_file, 'Debug', 'Win32', 'libuv', toolset, msbuild_args=msbuild_args)
+    build_utils.build_vs(vc_solution_file, 'Release', 'Win32', 'libuv', toolset, msbuild_args=msbuild_args)
+
     lib_path_x86_debug = os.path.join(build_folder_path_x86_debug, 'libuv.lib')
-    lib_path_x86_release = os.path.join(
-        build_folder_path_x86_release, 'libuv.lib')
+    lib_path_x86_release = os.path.join(build_folder_path_x86_release, 'libuv.lib')
     shutil.copyfile(
         os.path.join(source_folder_path, 'Debug/lib/libuv.lib'),
         lib_path_x86_debug)
@@ -88,23 +95,23 @@ def _build_win32(working_directory_path, root_project_path):
     build_utils.run_process(
         ['vcbuild.bat', 'clean'],
         process_cwd=source_folder_path,
+        environment=x86_env,
         shell=True)
 
+    # x64
     x64_env = build_utils.get_win32_vs_x64_env()
     x64_env['GYP_MSVS_VERSION'] = build_config.get_gyp_msvs_version()
     build_utils.run_process(
-        ['vcbuild.bat', 'debug', 'x64'],
+        ['vcbuild.bat', 'x64', 'nobuild'],
         process_cwd=source_folder_path,
         environment=x64_env,
         shell=True)
-    build_utils.run_process(
-        ['vcbuild.bat', 'release', 'x64'],
-        process_cwd=source_folder_path,
-        environment=x64_env,
-        shell=True)
+
+    build_utils.build_vs(vc_solution_file, 'Debug', 'x64', 'libuv', toolset, msbuild_args=msbuild_args)
+    build_utils.build_vs(vc_solution_file, 'Release', 'x64', 'libuv', toolset, msbuild_args=msbuild_args)
+
     lib_path_x64_debug = os.path.join(build_folder_path_x64_debug, 'libuv.lib')
-    lib_path_x64_release = os.path.join(
-        build_folder_path_x64_release, 'libuv.lib')
+    lib_path_x64_release = os.path.join(build_folder_path_x64_release, 'libuv.lib')
     shutil.copyfile(
         os.path.join(source_folder_path, 'Debug/lib/libuv.lib'),
         lib_path_x64_debug)
@@ -112,8 +119,8 @@ def _build_win32(working_directory_path, root_project_path):
         os.path.join(source_folder_path, 'Release/lib/libuv.lib'),
         lib_path_x64_release)
 
+    # copy libs
     libs_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
-
     shutil.copyfile(
         lib_path_x86_debug,
         os.path.join(libs_win_root, 'x86/Debug/libuv.lib'))
@@ -125,7 +132,7 @@ def _build_win32(working_directory_path, root_project_path):
         os.path.join(libs_win_root, 'x64/Debug/libuv.lib'))
     shutil.copyfile(
         lib_path_x64_release,
-        os.path.join(libs_win_root, 'x64/Release/uv.lib'))
+        os.path.join(libs_win_root, 'x64/Release/libuv.lib'))
 
     _copy_headers(source_folder_path, root_project_path)
 

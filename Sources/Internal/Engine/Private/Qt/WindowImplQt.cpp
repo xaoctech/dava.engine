@@ -324,24 +324,34 @@ void WindowImpl::OnWheel(QWheelEvent* qtEvent)
     float32 deltaX = 0.f;
     float32 deltaY = 0.f;
 
+    //most mouse types work in steps of 15 degrees, in which case the delta value is a multiple of 120
+    QPointF angleDelta = QPointF(qtEvent->angleDelta()) / 120.0f;
     QPoint pixelDelta = qtEvent->pixelDelta();
-    if (!pixelDelta.isNull())
+
+// for non gesture events we always take angleDelta, because wheel in editors is usually used for scale
+// and scale must have a constant speed, not depended on mouse wheel speed
+// better to send both pixelDelta and angleDelta to a DAVA event system, but it is impossible right now
+#ifdef Q_OS_MAC
+    if (qtEvent->source() == Qt::MouseEventSynthesizedBySystem)
     {
+        // Pixel delta should always be provided for MouseEventSynthesizedBySystem
         deltaX = static_cast<float32>(pixelDelta.x());
         deltaY = static_cast<float32>(pixelDelta.y());
     }
     else
     {
-        //most mouse types work in steps of 15 degrees, in which case the delta value is a multiple of 120
-        QPointF delta = QPointF(qtEvent->angleDelta()) / 120.0f;
-        deltaX = delta.x();
-        deltaY = delta.y();
+#endif //Q_OS_MAC
+        deltaX = angleDelta.x();
+        deltaY = angleDelta.y();
+#ifdef Q_OS_MAC
     }
+#endif //Q_OS_MAC
+
     eModifierKeys modifierKeys = GetModifierKeys();
 #ifdef Q_OS_MAC
     if (qtEvent->source() == Qt::MouseEventSynthesizedBySystem)
     {
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, deltaX, deltaY, modifierKeys));
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSwipeGestureEvent(window, x, y, deltaX, deltaY, modifierKeys));
         return;
     }
 #endif

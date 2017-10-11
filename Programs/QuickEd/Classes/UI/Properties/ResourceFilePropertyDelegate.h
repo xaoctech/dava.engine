@@ -1,5 +1,4 @@
-#ifndef __RESOURCE_FILE_PROPERTY_DELEGATE_H__
-#define __RESOURCE_FILE_PROPERTY_DELEGATE_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 
@@ -41,5 +40,3 @@ private:
 #endif
     bool allowAnyExtension = false;
 };
-
-#endif // __RESOURCE_FILE_PROPERTY_DELEGATE_H__

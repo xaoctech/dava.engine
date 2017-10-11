@@ -64,6 +64,16 @@ void FoliageSystem::RemoveEntity(Entity* entity)
     }
 }
 
+void FoliageSystem::PrepareForRemove()
+{
+    for (Entity* e : foliageEntities)
+    {
+        SafeRelease(e);
+    }
+    SafeRelease(landscapeEntity);
+    foliageEntities.clear();
+}
+
 void FoliageSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_FOLIAGE_SYSTEM);

@@ -60,7 +60,7 @@ void LinearRenderHierarchy::GetAllObjectsInBBox(const AABBox3& bbox, Vector<Rend
     }
 }
 
-bool LinearRenderHierarchy::RayTrace(const Ray3& ray, RayTraceCollision& collision)
+bool LinearRenderHierarchy::RayTrace(const Ray3& ray, RayTraceCollision& collision, const Vector<RenderObject*>& ignoreObjects)
 {
     broadPhaseCollisions.clear();
 

@@ -37,8 +37,6 @@ private:
 
     void InitControls();
 
-    void OnVisualSettingsChanged(const DAVA::Any&);
-
     bool CanShowGrid() const;
 
     DAVA::RefPtr<DAVA::UIControl> vLinesContainer;

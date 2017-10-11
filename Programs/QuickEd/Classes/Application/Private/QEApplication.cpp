@@ -13,6 +13,7 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 
 #include <DocDirSetup/DocDirSetup.h>
@@ -143,13 +144,9 @@ void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
     InitColorPickerOptions(true);
     InitQtTools();
 
-    ActionPlacementInfo info;
-    info.AddPlacementPoint(CreateMenuPoint(QList<QString>() << "Tools", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "ToolsSeparator")));
-    info.AddPlacementPoint(CreateToolbarPoint("Main Toolbar"));
-    tarcCore->CreateModule<SettingsModule>(info, QString("Preferences"));
-
-    InsertionParams params(InsertionParams::eInsertionMethod::AfterItem, "Dock");
-    tarcCore->CreateModule<ThemesModule>(params);
+    tarcCore->CreateModule<SettingsModule>();
+    tarcCore->CreateModule<ThemesModule>();
+    tarcCore->CreateModule<ActionManagementModule>();
     tarcCore->CreateModule<LegacySupportModule>();
     tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<ProjectModule>();

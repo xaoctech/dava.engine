@@ -269,6 +269,11 @@ void PropertiesTreeItemDelegate::SetProject(const Project* project)
     context.project = project;
 }
 
+void PropertiesTreeItemDelegate::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+{
+    context.accessor = accessor_;
+}
+
 void PropertiesTreeItemDelegate::emitCommitData(QWidget* editor)
 {
     emit commitData(editor);

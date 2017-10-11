@@ -2,8 +2,7 @@
 #include "Application/QEGlobal.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "Modules/DocumentsModule/EditorData.h"
-
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
@@ -17,8 +16,11 @@
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/CanvasModule/CanvasData.h"
+#include "Modules/HUDModule/HUDModuleData.h"
+
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -70,8 +72,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InjectRenderWidget(renderWidget);
 
     InitUI();
-
-    centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -128,8 +128,8 @@ void PreviewWidget::CreateActions()
     connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
 
     FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-    fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+    fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+    fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
 
     QtAction* focusNextChildAction = new QtAction(accessor, tr("Focus next child"), this);
     focusNextChildAction->setShortcut(Qt::Key_Tab);
@@ -185,23 +185,11 @@ void PreviewWidget::SetActualScale()
     canvasDataAdapter.SetScale(1.0f);
 }
 
-void PreviewWidget::OnResized(DAVA::uint32 width, DAVA::uint32 height)
-{
-    const EngineContext* engineContext = GetEngineContext();
-    VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
-    vcs->UnregisterAllAvailableResourceSizes();
-    vcs->SetVirtualScreenSize(width, height);
-    vcs->RegisterAvailableResourceSize(width, height, "Gfx");
-    vcs->RegisterAvailableResourceSize(width, height, "Gfx2");
-}
-
 void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
 {
     DVASSERT(renderWidget_ != nullptr);
     renderWidget = renderWidget_;
     CreateActions();
-
-    renderWidget->resized.Connect(this, &PreviewWidget::OnResized);
 
     renderWidget->SetClientDelegate(this);
 }
@@ -217,6 +205,7 @@ void PreviewWidget::InitUI()
 
     DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
     DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
+    addActions(tabBar->actions());
     tabBar->closeTab.Connect(&requestCloseTab, &DAVA::Signal<DAVA::uint64>::Emit);
     tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tabBar, &QWidget::customContextMenuRequested, this, &PreviewWidget::OnTabBarContextMenuRequested);
@@ -422,6 +411,11 @@ void PreviewWidget::OnMouseMove(QMouseEvent* event)
 
 void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
 {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasFormat("text/uri-list"))
+    {
+        droppingFile.Emit(true);
+    }
     event->accept();
 }
 
@@ -454,7 +448,6 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
         QPoint pos = event->pos();
         DAVA::Vector2 davaPos(pos.x(), pos.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPos);
-        systemsManager->HighlightNode(node);
 
         if (nullptr != node)
         {
@@ -490,12 +483,12 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 
 void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 {
-    systemsManager->ClearHighlight();
+    droppingFile.Emit(false);
 }
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
-    systemsManager->ClearHighlight();
+    droppingFile.Emit(false);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))

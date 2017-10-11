@@ -504,6 +504,7 @@ void TextureBrowser::setupTextureToolbar()
     QObject::connect(ui->actionConvert, SIGNAL(triggered(bool)), this, SLOT(textureConver(bool)));
     QObject::connect(ui->actionConvertAll, SIGNAL(triggered(bool)), this, SLOT(textureConverAll(bool)));
     QObject::connect(ui->actionConvertModified, SIGNAL(triggered(bool)), this, SLOT(ConvertModifiedTextures(bool)));
+    QObject::connect(ui->actionConvertTagged, &QAction::triggered, this, &TextureBrowser::ConvertTaggedTextures);
 }
 
 void TextureBrowser::setupTextureListToolbar()
@@ -940,6 +941,11 @@ void TextureBrowser::ConvertModifiedTextures(bool)
     ConvertMultipleTextures(CONVERT_MODIFIED);
 }
 
+void TextureBrowser::ConvertTaggedTextures()
+{
+    REGlobal::GetInvoker()->Invoke(REGlobal::ConvertTaggedTextures.ID);
+}
+
 void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
 {
     if (convertMode != CONVERT_FORCE && convertMode != CONVERT_MODIFIED)
@@ -947,8 +953,7 @@ void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
         return;
     }
 
-    DAVA::Scene* activeScene = curScene;
-    if (NULL != activeScene)
+    if (nullptr != curScene)
     {
         QMessageBox msgBox(this);
 
@@ -978,7 +983,7 @@ void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
 
         if (ret == QMessageBox::Ok)
         {
-            TextureConvertor::Instance()->Reconvert(activeScene, convertMode);
+            TextureConvertor::Instance()->Reconvert(curScene, convertMode);
             TextureConvertor::Instance()->WaitConvertedAll(this);
         }
     }

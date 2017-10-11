@@ -142,20 +142,6 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
         control->GetControl()->SetName(newName);
     }
 }
-Vector<ControlNode*> ToControlNodesVector(const SelectedNodes& selectedNodes)
-{
-    Vector<ControlNode*> controlNodes;
-    controlNodes.reserve(selectedNodes.size());
-    for (PackageBaseNode* node : selectedNodes)
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (controlNode)
-        {
-            controlNodes.push_back(controlNode);
-        }
-    }
-    return controlNodes;
-}
 
 Rect GetConstraintBox(const Vector<ControlNode*> nodes)
 {
@@ -481,6 +467,9 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
 
 DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
     for (ControlNode* node : nodes)
@@ -495,6 +484,8 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
         DocumentData* data = GetDocumentData();
         data->BeginBatch(Format("Move Controls %s", CommandExecutorDetails::FormatNodeNames(nodes).c_str()), static_cast<uint32>(nodesToMove.size()));
         int index = destIndex;
+
+        Vector<ControlNode*> notMovedNodes;
         for (ControlNode* node : nodesToMove)
         {
             ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
@@ -514,12 +505,23 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
             }
             else
             {
-                DVASSERT(false);
+                notMovedNodes.push_back(node);
             }
         }
 
         data->EndBatch();
+
+        if (notMovedNodes.empty() == false)
+        {
+            NotificationParams notificationParams;
+            notificationParams.title = "Can not move controls";
+            String message = "Can not move controls: " + CommandExecutorDetails::FormatNodeNames(notMovedNodes);
+
+            notificationParams.message = Result(Result::RESULT_WARNING, message);
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
     }
+
     return movedNodes;
 }
 
@@ -796,7 +798,18 @@ ControlNode* CommandExecutor::GroupSelectedNodes() const
 
     if (result.type != Result::RESULT_ERROR)
     {
-        selectedControlNodes = ToControlNodesVector(data->GetSelectedNodes());
+        selectedControlNodes.reserve(selectedNodes.size());
+        for (PackageBaseNode* node : selectedNodes)
+        {
+            ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+            if (controlNode)
+            {
+                selectedControlNodes.push_back(controlNode);
+            }
+        }
+
+        std::sort(selectedControlNodes.begin(), selectedControlNodes.end(), CompareByLCA);
+
         if (data->GetSelectedNodes().size() != selectedControlNodes.size())
         {
             result = Result(Result::RESULT_ERROR, "only controls can be grouped");

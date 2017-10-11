@@ -1,5 +1,7 @@
 #include "TArc/WindowSubSystem/QtAction.h"
 
+#include <QMenu>
+
 namespace DAVA
 {
 namespace TArc
@@ -13,7 +15,6 @@ QtAction::QtAction(ContextAccessor* accessor, QObject* parent)
 QtAction::QtAction(ContextAccessor* accessor, const QString& text, QObject* parent)
     : QAction(text, parent)
     , fieldBinder(accessor)
-
 {
 }
 
@@ -23,11 +24,26 @@ QtAction::QtAction(ContextAccessor* accessor, const QIcon& icon, const QString& 
 {
 }
 
+void QtAction::OnActionTriggered(bool checked, eActionState state, const FieldDescriptor& fieldDescr)
+{
+    Any value = fieldBinder.GetValue(fieldDescr);
+    DVASSERT(!value.IsEmpty());
+    OnFieldValueChanged(value, state);
+}
+
 void QtAction::SetStateUpdationFunction(eActionState state, const FieldDescriptor& fieldDescr, const Function<Any(const Any&)>& fn)
 {
     DVASSERT(functorsMap.count(state) == 0);
     functorsMap.emplace(state, fn);
     fieldBinder.BindField(fieldDescr, Bind(&QtAction::OnFieldValueChanged, this, _1, state));
+    connect(this, &QAction::triggered, this, Bind(&QtAction::OnActionTriggered, this, _1, state, fieldDescr));
+}
+
+void QtAction::SetStateUpdationFunction(eActionState state, const Reflection& model, const FastName& name, const Function<Any(const Any&)>& fn)
+{
+    DVASSERT(functorsMap.count(state) == 0);
+    functorsMap.emplace(state, fn);
+    fieldBinder.BindField(model, name, Bind(&QtAction::OnFieldValueChanged, this, _1, state));
 }
 
 void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
@@ -44,6 +60,11 @@ void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
         if (stateEnabled != isEnabled())
         {
             setEnabled(stateEnabled);
+            QMenu* m = menu();
+            if (m != nullptr)
+            {
+                m->setEnabled(stateEnabled);
+            }
         }
     }
     break;

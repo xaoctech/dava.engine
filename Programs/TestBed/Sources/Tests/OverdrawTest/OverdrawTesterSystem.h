@@ -31,6 +31,7 @@ public:
 
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     virtual void Process(DAVA::float32 timeElapsed) override;
 
