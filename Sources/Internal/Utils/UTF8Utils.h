@@ -17,7 +17,7 @@ enum eSafeEncodeError
 {
     NONE = 0, //!< no errors
     NON_UTF8_SYMBOLS_REPLACED, //!< original string contains non-utf8 symbols which was replaced by '?'
-    STRING_NOT_ENCODED //!< original string wasn't be encoded
+    STRING_NOT_ENCODED //!< original string wasn't encoded
 };
 
 /**
