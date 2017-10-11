@@ -598,7 +598,7 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
         {
             DAVA::TArc::NotificationParams notificationParams;
             notificationParams.title = "can not drop";
-            notificationParams.message = Result(Result::RESULT_WARNING, Format("next files is not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
+            notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
             ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
         }
 
