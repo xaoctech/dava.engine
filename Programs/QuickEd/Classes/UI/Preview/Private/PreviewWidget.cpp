@@ -3,23 +3,24 @@
 #include "EditorSystems/EditorSystemsManager.h"
 
 #include "Modules/DocumentsModule/EditorSystemsData.h"
-
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
 
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 #include "Model/PackageHierarchy/PackageBaseNode.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
-#include "UI/Preview/PreviewWidgetSettings.h"
 #include "Modules/CanvasModule/CanvasData.h"
+#include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/HUDModule/HUDModuleData.h"
+#include "UI/Preview/PreviewWidgetSettings.h"
 
 #include "Controls/ScaleComboBox.h"
 
@@ -71,8 +72,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InjectRenderWidget(renderWidget);
 
     InitUI();
-
-    centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -461,6 +460,11 @@ void PreviewWidget::OnMouseMove(QMouseEvent* event)
 
 void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
 {
+    auto mimeData = event->mimeData();
+    if (mimeData->hasFormat("text/uri-list"))
+    {
+        droppingFile.Emit(true);
+    }
     event->accept();
 }
 
@@ -493,7 +497,6 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
         QPoint pos = event->pos();
         DAVA::Vector2 davaPos(pos.x(), pos.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPos);
-        systemsManager->HighlightNode(node);
 
         if (nullptr != node)
         {
@@ -529,12 +532,12 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 
 void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 {
-    systemsManager->ClearHighlight();
+    droppingFile.Emit(false);
 }
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
-    systemsManager->ClearHighlight();
+    droppingFile.Emit(false);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))

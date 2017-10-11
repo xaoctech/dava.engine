@@ -13,6 +13,8 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
+#include "Classes/Painter/Painter.h"
+
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
@@ -51,6 +53,9 @@
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
 #include <Reflection/Reflection.h>
+#include <Engine/Window.h>
+#include <Engine/Engine.h>
+#include <Functional/Signal.h>
 
 #include <QAction>
 #include <QApplication>
@@ -81,6 +86,13 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
 
     Renderer::SetDesiredFPS(60);
     DynamicBufferAllocator::SetPageSize(DynamicBufferAllocator::DEFAULT_PAGE_SIZE);
+
+    //we can create graphic items only when render is initialized
+    EditorSystemsData* systemsData = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>();
+    systemsData->painter = std::make_unique<Painting::Painter>();
+    Vector<Window*> windows = Engine::Instance()->GetWindows();
+    DVASSERT(windows.size() == 1);
+    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::Draw));
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -189,6 +201,7 @@ void DocumentsModule::InitCentralWidget()
     previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
+    previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
@@ -1225,4 +1238,11 @@ void DocumentsModule::OnSelectInFileSystem()
     DocumentData* documentData = context->GetData<DocumentData>();
     QString filePath = documentData->GetPackageAbsolutePath();
     InvokeOperation(QEGlobal::SelectFile.ID, filePath);
+}
+
+void DocumentsModule::OnDroppingFile(bool droppingFile)
+{
+    DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    EditorSystemsData* systemsData = globalContext->GetData<EditorSystemsData>();
+    systemsData->highlightDisabled = droppingFile;
 }
