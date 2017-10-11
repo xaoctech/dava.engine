@@ -24,6 +24,8 @@
 
 #include "Controls/ScaleComboBox.h"
 
+#include "Utils/DragNDropHelper.h"
+
 #include <TArc/Controls/SceneTabbar.h>
 #include <TArc/Controls/ScrollBar.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -418,7 +420,12 @@ void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
         QStringList strList = mimeData->text().split("\n", QString::SkipEmptyParts);
         for (const QString& str : strList)
         {
-            canDropAnyFile |= IsFileValid(str);
+            QUrl url(str);
+            if (url.isLocalFile())
+            {
+                QString path = url.toLocalFile();
+                canDropAnyFile |= DragNDropHelper::IsExtensionSupported(path) && DragNDropHelper::IsFileFromProject(accessor, path);
+            }
         }
 
         if (canDropAnyFile)
@@ -531,19 +538,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
         QStringList list = mimeData->text().split("\n", QString::SkipEmptyParts);
         for (const QString& str : list)
         {
-            QUrl url(str);
-            QString path = url.toLocalFile();
-            if (IsFileValid(str))
-            {
-                emit OpenPackageFile(path);
-            }
-            else
-            {
-                NotificationParams notificationParams;
-                notificationParams.title = "can not drop";
-                notificationParams.message = Result(Result::RESULT_WARNING, Format("will not process file %s", path.toStdString().c_str()));
-                ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
-            }
+            emit OpenPackageFile(str);
         }
     }
     renderWidget->setFocus();
@@ -576,41 +571,6 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
             }
         }
     }
-}
-
-bool PreviewWidget::IsFileValid(const QString& str) const
-{
-    using namespace DAVA;
-
-    QUrl url(str);
-    if (url.isLocalFile())
-    {
-        QString path = url.toLocalFile();
-        QFileInfo fileInfo(path);
-        if (fileInfo.isFile() && fileInfo.suffix() == "yaml")
-        {
-            ProjectData* projectData = accessor->GetGlobalContext()->GetData<ProjectData>();
-            if (projectData == nullptr)
-            {
-                return false;
-            }
-
-            Vector<FilePath> allowedPathes = {
-                projectData->GetResourceDirectory().absolute,
-                projectData->GetAdditionalResourceDirectory().absolute,
-                projectData->GetConvertedResourceDirectory().absolute
-            };
-
-            for (const FilePath& allowedPath : allowedPathes)
-            {
-                if (allowedPath.IsEmpty() == false && path.startsWith(QString::fromStdString(allowedPath.GetAbsolutePathname())))
-                {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
 }
 
 void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
