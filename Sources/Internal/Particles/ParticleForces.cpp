@@ -40,13 +40,14 @@ void GenerateSphereRandomVectors()
 {
     uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
     std::mt19937 generator(seed);
+    
     std::uniform_real_distribution<float32> uinform01(0.0f, 1.0f);
     for (uint32 i = 0; i < sphereRandomVectorsSize; ++i)
     {
         float32 theta = 2 * PI * uinform01(generator);
         float32 phi = acos(1 - 2 * uinform01(generator));
-        float32 sinPhi = sin(phi);
-        sphereRandomVectors[i] = { sinPhi * cos(theta), sinPhi * sin(theta), cos(phi) };
+        float32 sinPhi = sinf(phi);
+        sphereRandomVectors[i] = { sinPhi * cosf(theta), sinPhi * sinf(theta), cosf(phi) };
     }
 }
 
@@ -54,7 +55,7 @@ Vector3 GetNoiseValue(float32 particleOverLife, float32 frequency, uint32 clampe
 {
     float32 indexUnclamped = particleOverLife * noiseWidth * frequency + clampedIndex;
     float32 intPart = 0.0f;
-    float32 fractPart = modf(particleOverLife * noiseWidth * frequency + clampedIndex, &intPart);
+    float32 fractPart = modff(particleOverLife * noiseWidth * frequency + clampedIndex, &intPart);
     uint32 xindex = static_cast<uint32>(intPart);
 
     xindex %= noiseWidth;
@@ -287,7 +288,7 @@ void ApplyPlaneCollision(Entity* parent, const ParticleForce* force, Vector3& ef
         }
 
         Vector3 dir = prevEffectSpacePosition - effectSpacePosition;
-        float32 abProj = abs(dir.DotProduct(normal));
+        float32 abProj = Abs(dir.DotProduct(normal));
         if (abProj < EPSILON)
             return;
         effectSpacePosition = effectSpacePosition + dir * (-bProj) / abProj;
@@ -303,7 +304,7 @@ void ApplyPlaneCollision(Entity* parent, const ParticleForce* force, Vector3& ef
             else
                 newVel = Reflect(effectSpaceVelocity, normal);
 
-            if (abs(force->reflectionChaos) > EPSILON)
+            if (Abs(force->reflectionChaos) > EPSILON)
             {
                 std::uniform_real_distribution<float32> uni(-DegToRad(force->reflectionChaos), DegToRad(force->reflectionChaos));
                 Quaternion q = Quaternion::MakeRotationFastX(uni(rng)) * Quaternion::MakeRotationFastY(uni(rng)) * Quaternion::MakeRotationFastZ(uni(rng));
