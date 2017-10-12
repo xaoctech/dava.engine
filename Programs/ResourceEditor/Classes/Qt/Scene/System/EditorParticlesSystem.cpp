@@ -251,7 +251,7 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
         Vector3 wNormal = force->direction * Matrix3(wMat);
         wNormal.Normalize();
         Vector3 cV(0.0f, 0.0f, 1.0f);
-        if (1.0f - abs(cV.DotProduct(wNormal)) < EPSILON)
+        if (1.0f - Abs(cV.DotProduct(wNormal)) < EPSILON)
             cV = Vector3(1.0f, 0.0f, 0.0f);
         Vector3 position = force->position;
         position = force->position * wMat;
