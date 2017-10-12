@@ -9,6 +9,12 @@ SceneTreeView::SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* 
     : ControlProxyImpl<QTreeView>(params, DAVA::TArc::ControlDescriptor(params.fields), accessor, model, parent)
     , defaultSelectionModel(new QItemSelectionModel(nullptr, this))
 {
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setExpandsOnDoubleClick(false);
+    setUniformRowHeights(true);
+
     connections.AddConnection(this, &QTreeView::expanded, DAVA::MakeFunction(this, &SceneTreeView::OnItemExpanded));
     connections.AddConnection(this, &QTreeView::collapsed, DAVA::MakeFunction(this, &SceneTreeView::OnItemCollapsed));
 }

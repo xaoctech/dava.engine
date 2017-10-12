@@ -216,6 +216,27 @@ QModelIndex SceneTreeModelV2::GetRootIndex() const
     return MapItem(rootItem.get());
 }
 
+QModelIndex SceneTreeModelV2::GetIndexByObject(const Selectable& object) const
+{
+    auto iter = mapping.find(object);
+    if (iter == mapping.end())
+    {
+        DVASSERT(false);
+        return QModelIndex();
+    }
+
+    SceneTreeItemV2* item = iter->second.get();
+    return MapItem(item);
+}
+
+Selectable SceneTreeModelV2::GetObjectByIndex(const QModelIndex& index) const
+{
+    DVASSERT(index.model() == this);
+    SceneTreeItemV2* item = MapItem(index);
+    DVASSERT(item != nullptr);
+    return item->object;
+}
+
 void SceneTreeModelV2::OnSyncSignal()
 {
     executor.DelayedExecute([this]() {

@@ -2,7 +2,10 @@
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/Application/REGlobal.h"
 
-#include "TArc/DataProcessing/DataContext.h"
+#include <TArc/DataProcessing/DataContext.h>
+
+#include <Scene3D/Entity.h>
+#include <Particles/ParticleEmitterInstance.h>
 
 namespace Selection
 {
@@ -25,6 +28,42 @@ void CancelSelection()
     {
         selectionData->CancelSelection();
     }
+}
+
+Selectable GetSelectableObject(const Selectable& object)
+{
+    if (object.CanBeCastedTo<DAVA::Entity>())
+    {
+        DAVA::Entity* obj = object.Cast<DAVA::Entity>();
+        obj = GetSelectableEntity(obj);
+        return Selectable(DAVA::Any(obj));
+    }
+    else if (object.CanBeCastedTo<DAVA::ParticleEmitterInstance>())
+    {
+        DAVA::ParticleEmitterInstance* instance = object.Cast<DAVA::ParticleEmitterInstance>();
+        DAVA::ParticleEffectComponent* component = instance->GetOwner();
+        if (component == nullptr)
+        {
+            return Selectable();
+        }
+
+        Selectable result = object;
+        DAVA::Entity* entity = component->GetEntity();
+        while (entity != nullptr)
+        {
+            if (entity->GetSolid() == true)
+            {
+                result = Selectable(DAVA::Any(entity));
+                break;
+            }
+            entity = entity->GetParent();
+        }
+
+        return result;
+    }
+
+    DVASSERT(false);
+    return Selectable();
 }
 
 void SetSelection(SelectableGroup& newSelection)
