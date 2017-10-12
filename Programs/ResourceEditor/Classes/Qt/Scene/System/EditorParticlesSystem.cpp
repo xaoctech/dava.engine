@@ -225,7 +225,7 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
         {
             scale = hoodSystem->GetScale();
         }
-        auto layer = GetParticleForceOwner(force);
+        auto layer = GetForceOwner(force);
         auto ent = GetLayerOwner(layer);
 
         float32 arrowSize = scale;
@@ -245,7 +245,7 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->type == ForceType::PLANE_COLLISION)
     {
-        auto layer = GetParticleForceOwner(force);
+        auto layer = GetForceOwner(force);
         auto ent = GetLayerOwner(layer);
         Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
         Vector3 wNormal = force->direction * Matrix3(wMat);
@@ -276,7 +276,7 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
         return;
     if (force->GetShape() == ParticleForce::eShape::BOX)
     {
-        auto layer = GetParticleForceOwner(force);
+        auto layer = GetForceOwner(force);
         auto ent = GetLayerOwner(layer);
 
         Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
@@ -323,100 +323,6 @@ void EditorParticlesSystem::RestartParticleEffects()
             effectComponent->Restart();
         }
     }
-}
-
-DAVA::ParticleLayer* EditorParticlesSystem::GetSimplifiedForceOwner(DAVA::ParticleForceSimplified* force) const
-{
-    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForceSimplified*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForceSimplified* force) -> DAVA::ParticleLayer*
-    {
-        for (DAVA::ParticleLayer* layer : emitter->layers)
-        {
-            if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
-            {
-                DAVA::ParticleLayer* foundLayer = getForceOwner(layer->innerEmitter, force);
-                if (foundLayer != nullptr)
-                {
-                    return foundLayer;
-                }
-            }
-
-            if (std::find(layer->forcesSimplified.begin(), layer->forcesSimplified.end(), force) != layer->forcesSimplified.end())
-            {
-                return layer;
-            }
-        }
-
-        return nullptr;
-    };
-
-    for (DAVA::Entity* entity : entities)
-    {
-        DAVA::ParticleEffectComponent* effectComponent = DAVA::GetEffectComponent(entity);
-        DAVA::uint32 emittersCount = effectComponent->GetEmittersCount();
-        for (DAVA::uint32 id = 0; id < emittersCount; ++id)
-        {
-            DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
-            DVASSERT(emitterInstance != nullptr);
-
-            DAVA::ParticleEmitter* emitter = emitterInstance->GetEmitter();
-            DVASSERT(emitter != nullptr);
-
-            DAVA::ParticleLayer* owner = getForceOwner(emitter, force);
-            if (owner != nullptr)
-            {
-                return owner;
-            }
-        }
-    }
-
-    return nullptr;
-}
-
-DAVA::ParticleLayer* EditorParticlesSystem::GetParticleForceOwner(DAVA::ParticleForce* force) const
-{
-    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForce* force) -> DAVA::ParticleLayer*
-    {
-        for (DAVA::ParticleLayer* layer : emitter->layers)
-        {
-            if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
-            {
-                DAVA::ParticleLayer* foundLayer = getForceOwner(layer->innerEmitter, force);
-                if (foundLayer != nullptr)
-                {
-                    return foundLayer;
-                }
-            }
-
-            if (std::find(layer->GetParticleForces().begin(), layer->GetParticleForces().end(), force) != layer->GetParticleForces().end())
-            {
-                return layer;
-            }
-        }
-
-        return nullptr;
-    };
-
-    for (DAVA::Entity* entity : entities)
-    {
-        DAVA::ParticleEffectComponent* effectComponent = DAVA::GetEffectComponent(entity);
-        DAVA::uint32 emittersCount = effectComponent->GetEmittersCount();
-        for (DAVA::uint32 id = 0; id < emittersCount; ++id)
-        {
-            DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
-            DVASSERT(emitterInstance != nullptr);
-
-            DAVA::ParticleEmitter* emitter = emitterInstance->GetEmitter();
-            DVASSERT(emitter != nullptr);
-
-            DAVA::ParticleLayer* owner = getForceOwner(emitter, force);
-            if (owner != nullptr)
-            {
-                return owner;
-            }
-        }
-    }
-
-    return nullptr;
 }
 
 DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetLayerOwner(DAVA::ParticleLayer* layer) const

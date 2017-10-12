@@ -259,7 +259,7 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
     else if (obj.CanBeCastedTo<DAVA::ParticleForceSimplified>())
     {
         DAVA::ParticleForceSimplified* force = obj.Cast<DAVA::ParticleForceSimplified>();
-        DAVA::ParticleLayer* layer = scene->particlesSystem->GetSimplifiedForceOwner(force);
+        DAVA::ParticleLayer* layer = scene->particlesSystem->GetForceOwner(force);
         if (layer != nullptr)
         {
             auto i = std::find(layer->forcesSimplified.begin(), layer->forcesSimplified.end(), force);
@@ -273,7 +273,7 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
     else if (obj.CanBeCastedTo<DAVA::ParticleForce>())
     {
         DAVA::ParticleForce* force = obj.Cast<DAVA::ParticleForce>();
-        DAVA::ParticleLayer* layer = scene->particlesSystem->GetParticleForceOwner(force);
+        DAVA::ParticleLayer* layer = scene->particlesSystem->GetForceOwner(force);
         if (layer != nullptr)
         {
             auto i = std::find(layer->GetParticleForces().begin(), layer->GetParticleForces().end(), force);
