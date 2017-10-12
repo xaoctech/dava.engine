@@ -4,6 +4,7 @@
 
 class RECommandNotificationObject;
 class REDependentCommandsHolder;
+class SceneData;
 class EditorSceneSystem
 {
     friend class SceneEditor2;
@@ -21,12 +22,12 @@ public:
         systemIsEnabled = false;
     }
 
-    virtual bool LoadLocalProperties()
+    virtual bool LoadLocalProperties(SceneData *data)
     {
         return true;
     }
 
-    virtual bool SaveLocalProperties(DAVA::uint64 contextId)
+    virtual bool SaveLocalProperties(SceneData* data)
     {
         return true;
     }

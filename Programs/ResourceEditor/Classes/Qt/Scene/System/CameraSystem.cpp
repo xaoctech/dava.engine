@@ -44,13 +44,8 @@ SceneCameraSystem::~SceneCameraSystem()
     SafeRelease(curSceneCamera);
 }
 
-bool SceneCameraSystem::SaveLocalProperties(DAVA::uint64 contextId)
+bool SceneCameraSystem::SaveLocalProperties(SceneData* data)
 {
-    DAVA::TArc::DataContext* ctx = REGlobal::GetAccessor()->GetContext(contextId);
-    DVASSERT(ctx != nullptr);
-    SceneData* data = ctx->GetData<SceneData>();
-    DVASSERT(data != nullptr);
-
     DAVA::TArc::PropertiesItem cameraProps = data->GetPropertiesSection("camera");
     // Debug camera whole object archive
     DAVA::Camera* debugCam = GetCamera(topCameraEntity);
@@ -66,13 +61,8 @@ bool SceneCameraSystem::SaveLocalProperties(DAVA::uint64 contextId)
     return true;
 }
 
-bool SceneCameraSystem::LoadLocalProperties()
+bool SceneCameraSystem::LoadLocalProperties(SceneData* data)
 {
-    DAVA::TArc::DataContext* ctx = REGlobal::GetAccessor()->GetActiveContext();
-    DVASSERT(ctx != nullptr);
-    SceneData* data = ctx->GetData<SceneData>();
-    DVASSERT(data != nullptr);
-
     DAVA::TArc::PropertiesItem cameraProps = data->GetPropertiesSection("camera");
     DAVA::Camera* cur = GetCamera(topCameraEntity);
 
