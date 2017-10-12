@@ -10,8 +10,8 @@ SceneTreeModelV2::SceneTreeModelV2(DAVA::Scene* scene)
 {
     DVASSERT(scene != nullptr);
     rootItem = objectsPool.RequestObject();
-    rootItem->entity = scene;
-    mapping.emplace(rootItem->entity, rootItem);
+    rootItem->object = Selectable(DAVA::Any(scene));
+    mapping.emplace(rootItem->object, rootItem);
 
     {
         DAVA::Scene* scene = GetScene();
@@ -59,8 +59,7 @@ bool SceneTreeModelV2::hasChildren(const QModelIndex& parent) const
 
     SceneTreeItemV2* item = MapItem(parent);
     DVASSERT(item != nullptr);
-    DVASSERT(item->entity != nullptr);
-    return item->entity->GetChildrenCount() > 0;
+    return traits.GetChildrenCount(item->object) > 0;
 }
 
 QModelIndex SceneTreeModelV2::index(int row, int column, const QModelIndex& parent) const
@@ -96,18 +95,49 @@ QModelIndex SceneTreeModelV2::parent(const QModelIndex& child) const
 
 QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
 {
-    if (role == Qt::DisplayRole)
+    switch (role)
+    {
+    case Qt::DisplayRole:
     {
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
-        DAVA::Entity* entity = item->entity;
-        DVASSERT(entity != nullptr);
-        DAVA::FastName name = entity->GetName();
-        DVASSERT(name.IsValid());
-        return QString(name.c_str());
+        return traits.GetName(item->object);
+    }
+    break;
+    case Qt::DecorationRole:
+    {
+        SceneTreeItemV2* item = MapItem(index);
+        DVASSERT(item != nullptr);
+        return traits.GetIcon(item->object);
+    }
+    break;
+    case Qt::ToolTipRole:
+    {
+        SceneTreeItemV2* item = MapItem(index);
+        DVASSERT(item != nullptr);
+        return traits.GetTooltip(item->object);
+    }
+    break;
+    default:
+        break;
     }
 
-    return QVariant();
+    SceneTreeItemV2* item = MapItem(index);
+    DVASSERT(item != nullptr);
+    return traits.GetValue(item->object, role);
+}
+
+bool SceneTreeModelV2::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    SceneTreeItemV2* item = MapItem(index);
+    return traits.SetValue(item->object, value, role, GetScene());
+}
+
+Qt::ItemFlags SceneTreeModelV2::flags(const QModelIndex& index) const
+{
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+    SceneTreeItemV2* item = MapItem(index);
+    return traits.GetItemFlags(item->object, defaultFlags);
 }
 
 QVariant SceneTreeModelV2::headerData(int section, Qt::Orientation orientation, int role) const
@@ -124,46 +154,34 @@ bool SceneTreeModelV2::canFetchMore(const QModelIndex& parent) const
 {
     SceneTreeItemV2* item = MapItem(parent);
     DVASSERT(item->unfetchedChildren.empty() == true);
-    DVASSERT(item->entity != nullptr);
-    DAVA::Entity* entity = item->entity;
-    DAVA::int32 childCount = entity->GetChildrenCount();
+    DAVA::int32 childCount = traits.GetChildrenCount(item->object);
     if (childCount == static_cast<DAVA::int32>(item->children.size()))
     {
         return false;
     }
 
-    for (DAVA::int32 childIndex = 0; childIndex < childCount; ++childIndex)
-    {
-        DAVA::Entity* childEntity = entity->GetChild(childIndex);
-        if (std::binary_search(fetchedEntities.begin(), fetchedEntities.end(), childEntity) == false)
-        {
-            item->unfetchedChildren.push_back(childIndex);
-        }
-    }
+    auto isFetched = [this](const Selectable& object) -> bool {
+        return fetchedObjects.count(object);
+    };
+
+    traits.BuildUnfetchedList(item->object, isFetched, item->unfetchedChildren);
     return item->unfetchedChildren.empty() == false;
 }
 
 void SceneTreeModelV2::fetchMore(const QModelIndex& parent)
 {
     SceneTreeItemV2* item = MapItem(parent);
-    DVASSERT(item->entity != nullptr);
     DVASSERT(item->unfetchedChildren.empty() == false);
     std::sort(item->unfetchedChildren.begin(), item->unfetchedChildren.end());
 
-    DAVA::int32 childCount = item->entity->GetChildrenCount();
-    DVASSERT(childCount > 0);
-    item->children.reserve(childCount);
-    for (DAVA::int32 index : item->unfetchedChildren)
-    {
-        DVASSERT(index < childCount);
-
+    DAVA::int32 childCount = traits.GetChildrenCount(item->object);
+    traits.FetchMore(item->object, item->unfetchedChildren, [&](DAVA::int32 index, const Selectable& object) {
         beginInsertRows(parent, index, index);
-        DAVA::Entity* childEntity = item->entity->GetChild(index);
 
         std::shared_ptr<SceneTreeItemV2> childItem = objectsPool.RequestObject();
         childItem->parent = item;
-        childItem->positionInParent = static_cast<DAVA::int32>(item->children.size());
-        childItem->entity = childEntity;
+        childItem->positionInParent = index;
+        childItem->object = object;
 
         DAVA::int32 count = static_cast<DAVA::int32>(item->children.size());
         if (index == count)
@@ -174,7 +192,7 @@ void SceneTreeModelV2::fetchMore(const QModelIndex& parent)
         {
             auto insertItem = item->children.begin() + index;
             insertItem = item->children.insert(insertItem, childItem);
-            for (auto iter = insertItem; iter != insertItem; ++iter)
+            for (auto iter = insertItem + 1; iter != item->children.end(); ++iter)
             {
                 ++(*iter)->positionInParent;
             }
@@ -184,13 +202,13 @@ void SceneTreeModelV2::fetchMore(const QModelIndex& parent)
             DVASSERT(false);
         }
 
-        mapping.emplace(childItem->entity, childItem);
-        fetchedEntities.push_back(childEntity);
+        mapping.emplace(childItem->object, childItem);
+        fetchedObjects.insert(childItem->object);
+
         endInsertRows();
-    }
+    });
 
     item->unfetchedChildren.clear();
-    std::sort(fetchedEntities.begin(), fetchedEntities.end());
 }
 
 QModelIndex SceneTreeModelV2::GetRootIndex() const
@@ -211,13 +229,26 @@ void SceneTreeModelV2::SyncChanges()
     SceneTreeSystem* system = scene->GetSystem<SceneTreeSystem>();
     DVASSERT(system != nullptr);
 
-    const SceneTreeSystem::SyncSnapshot& snapShot = system->GetSyncSnapshot();
-    for (const auto& node : snapShot.removedEntities)
-    {
-        for (DAVA::Entity* entity : node.second)
+    DAVA::Function<void(SceneTreeItemV2*)> eraseObject = [this, &eraseObject](SceneTreeItemV2* item) {
+        fetchedObjects.erase(item->object);
+        mapping.erase(item->object);
+        for (const std::shared_ptr<SceneTreeItemV2>& child : item->children)
         {
-            auto iter = mapping.find(entity);
-            DVASSERT(iter != mapping.end());
+            eraseObject(child.get());
+        }
+    };
+
+    const SceneTreeSystem::SyncSnapshot& snapShot = system->GetSyncSnapshot();
+    for (const auto& node : snapShot.removedObjects)
+    {
+        for (Selectable object : node.second)
+        {
+            auto iter = mapping.find(object);
+            if (iter == mapping.end())
+            {
+                continue;
+            }
+
             SceneTreeItemV2* item = iter->second.get();
             DVASSERT(item != nullptr);
 
@@ -225,7 +256,7 @@ void SceneTreeModelV2::SyncChanges()
             DVASSERT(parentItem->children.empty() == false);
             QModelIndex parentIndex = MapItem(parentItem);
             beginRemoveRows(parentIndex, item->positionInParent, item->positionInParent);
-            DAVA::FindAndRemoveExchangingWithLast(fetchedEntities, item->entity);
+            eraseObject(item);
             DAVA::int32 childrenCount = static_cast<DAVA::int32>(parentItem->children.size());
             for (DAVA::int32 i = item->positionInParent; i < parentItem->children.size() - 1; ++i)
             {
@@ -237,23 +268,17 @@ void SceneTreeModelV2::SyncChanges()
         }
     }
 
-    DAVA::Set<DAVA::Entity*> refetchedParents;
-    for (const auto& node : snapShot.addedEntities)
+    for (const auto& node : snapShot.objectsToRefetch)
     {
-        for (DAVA::Entity* entity : node.second)
+        for (Selectable object : node.second)
         {
-            DAVA::Entity* parent = entity->GetParent();
-            DVASSERT(parent != nullptr);
-            if (refetchedParents.count(parent) > 0)
+            auto iter = mapping.find(object);
+            if (iter == mapping.end())
             {
                 continue;
             }
-            refetchedParents.insert(parent);
 
-            auto iter = mapping.find(parent);
-            DVASSERT(iter != mapping.end());
             SceneTreeItemV2* parentItem = iter->second.get();
-
             QModelIndex index = MapItem(parentItem);
             if (canFetchMore(index) == true)
             {
@@ -261,7 +286,22 @@ void SceneTreeModelV2::SyncChanges()
             }
         }
     }
-    std::sort(fetchedEntities.begin(), fetchedEntities.end());
+
+    for (const Selectable& object : snapShot.changedObjects)
+    {
+        auto iter = mapping.find(object);
+        if (iter == mapping.end())
+        {
+            continue;
+        }
+
+        SceneTreeItemV2* item = iter->second.get();
+        DVASSERT(item != nullptr);
+
+        QModelIndex index = MapItem(item);
+        dataChanged(index, index);
+    }
+
     system->SyncFinished();
 }
 
@@ -272,7 +312,10 @@ DAVA::Scene* SceneTreeModelV2::GetScene()
         return nullptr;
     }
 
-    DAVA::Scene* scene = dynamic_cast<DAVA::Scene*>(rootItem->entity);
+    DVASSERT(rootItem->object.CanBeCastedTo<DAVA::Entity>());
+    DAVA::Entity* entity = rootItem->object.Cast<DAVA::Entity>();
+
+    DAVA::Scene* scene = dynamic_cast<DAVA::Scene*>(entity);
     DVASSERT(scene != nullptr);
     return scene;
 }

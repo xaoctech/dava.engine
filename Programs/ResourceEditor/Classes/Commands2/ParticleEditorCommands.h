@@ -11,6 +11,8 @@ public:
     CommandAddParticleEmitter(DAVA::Entity* effect);
     void Redo() override;
 
+    DAVA::Entity* GetEntity() const;
+
 protected:
     DAVA::Entity* effectEntity = nullptr;
 };
@@ -60,7 +62,7 @@ protected:
 class CommandAddParticleEmitterLayer : public CommandAction
 {
 public:
-    CommandAddParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter);
+    CommandAddParticleEmitterLayer(DAVA::ParticleEffectComponent* component, DAVA::ParticleEmitterInstance* emitter);
     ~CommandAddParticleEmitterLayer();
 
     void Redo() override;
@@ -74,7 +76,13 @@ public:
         return instance;
     }
 
+    DAVA::ParticleEffectComponent* GetEffectComponent() const
+    {
+        return component;
+    }
+
 protected:
+    DAVA::ParticleEffectComponent* component = nullptr;
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::ParticleLayer* createdLayer = nullptr;
 };
@@ -83,10 +91,26 @@ protected:
 class CommandRemoveParticleEmitterLayer : public CommandAction
 {
 public:
-    CommandRemoveParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
+    CommandRemoveParticleEmitterLayer(DAVA::ParticleEffectComponent* component, DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
     void Redo() override;
 
+    DAVA::ParticleEffectComponent* GetEffectComponent() const
+    {
+        return component;
+    }
+
+    DAVA::ParticleEmitterInstance* GetEmitterInstance() const
+    {
+        return instance;
+    }
+
+    DAVA::ParticleLayer* GetLayer() const
+    {
+        return selectedLayer;
+    }
+
 protected:
+    DAVA::ParticleEffectComponent* component = nullptr;
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
@@ -123,6 +147,11 @@ public:
     CommandCloneParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
     void Redo() override;
 
+    DAVA::ParticleEmitterInstance* GetEmitterInstance() const
+    {
+        return instance;
+    }
+
 protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::ParticleLayer* selectedLayer = nullptr;
@@ -132,10 +161,21 @@ protected:
 class CommandAddParticleEmitterForce : public CommandAction
 {
 public:
-    CommandAddParticleEmitterForce(DAVA::ParticleLayer* layer);
+    CommandAddParticleEmitterForce(DAVA::ParticleEffectComponent* component, DAVA::ParticleLayer* layer);
     void Redo() override;
 
+    DAVA::ParticleEffectComponent* GetEffectComponent() const
+    {
+        return component;
+    }
+
+    DAVA::ParticleLayer* GetLayer() const
+    {
+        return selectedLayer;
+    }
+
 protected:
+    DAVA::ParticleEffectComponent* component = nullptr;
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
@@ -143,10 +183,26 @@ protected:
 class CommandRemoveParticleEmitterForce : public CommandAction
 {
 public:
-    CommandRemoveParticleEmitterForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
+    CommandRemoveParticleEmitterForce(DAVA::ParticleEffectComponent* component, DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
     void Redo() override;
 
+    DAVA::ParticleEffectComponent* GetEffectComponent() const
+    {
+        return component;
+    }
+
+    DAVA::ParticleLayer* GetLayer() const
+    {
+        return selectedLayer;
+    }
+
+    DAVA::ParticleForce* GetForce() const
+    {
+        return selectedForce;
+    }
+
 protected:
+    DAVA::ParticleEffectComponent* component = nullptr;
     DAVA::ParticleLayer* selectedLayer = nullptr;
     DAVA::ParticleForce* selectedForce = nullptr;
 };
@@ -272,6 +328,16 @@ public:
 
     void Redo() override;
 
+    DAVA::ParticleEmitterInstance* GetDeletedEmitter() const
+    {
+        return deletedEmitter.Get();
+    }
+
+    DAVA::ParticleEmitterInstance* GetCreatedEmitter() const
+    {
+        return createdEmitter.Get();
+    }
+
 protected:
     DAVA::ParticleEmitterInstance* emitter = nullptr;
 
@@ -320,6 +386,9 @@ protected:
 
     DAVA::float32 pivotPointX;
     DAVA::float32 pivotPointY;
+
+    DAVA::RefPtr<DAVA::ParticleEmitterInstance> deletedEmitter;
+    DAVA::RefPtr<DAVA::ParticleEmitterInstance> createdEmitter;
 };
 
 class CommandUpdateParticleLayerTime : public CommandUpdateParticleLayerBase

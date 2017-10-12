@@ -14,6 +14,21 @@ public:
     void Undo() override;
     void Redo() override;
 
+    DAVA::ParticleEffectComponent* GetOldComponent() const
+    {
+        return oldEffect;
+    }
+
+    DAVA::ParticleEffectComponent* GetNewComponent() const
+    {
+        return newEffect;
+    }
+
+    DAVA::ParticleEmitterInstance* GetEmitterInstance() const
+    {
+        return instance.Get();
+    }
+
 private:
     DAVA::RefPtr<DAVA::ParticleEmitterInstance> instance;
     DAVA::ParticleEffectComponent* oldEffect;

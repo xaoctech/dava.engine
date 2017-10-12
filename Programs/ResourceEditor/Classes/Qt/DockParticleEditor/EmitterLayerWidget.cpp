@@ -1998,7 +1998,7 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
 
     if (isSuperemitter && this->layer->innerEmitter)
     {
-        innerEmitterPathLabel->setText(QString::fromStdString(layer->innerEmitter->configPath.GetAbsolutePathname()));
+        innerEmitterPathLabel->setText(QString::fromStdString(layer->innerEmitter->GetEmitter()->configPath.GetAbsolutePathname()));
     }
 }
 

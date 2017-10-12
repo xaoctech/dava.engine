@@ -272,6 +272,22 @@ protected:
         return treeWidget;
     }
 
+    static DAVA::ParticleEffectComponent* GetParticleEffectComponent(SceneTreeItem* child)
+    {
+        DVASSERT(child->ItemType() != SceneTreeItem::EIT_Entity);
+        SceneTreeItem* parentItem = child;
+        while (parentItem != nullptr && parentItem->ItemType() != SceneTreeItem::EIT_Entity)
+        {
+            parentItem = static_cast<SceneTreeItem*>(parentItem->parent());
+        }
+
+        DVASSERT(parentItem != nullptr);
+        DAVA::ParticleEffectComponent* component = DAVA::GetEffectComponent(static_cast<SceneTreeItemEntity*>(parentItem)->GetEntity());
+        DVASSERT(component != nullptr);
+
+        return component;
+    }
+
 private:
     SceneTree* treeWidget;
     bool isStructureChanged = false;
@@ -786,14 +802,16 @@ private:
         RemoveCommandsHelper("Remove layers", SceneTreeItem::EIT_Layer, [](SceneTreeItem* item) -> RemoveInfo
                              {
                                  SceneTreeItemParticleLayer* layerItem = static_cast<SceneTreeItemParticleLayer*>(item);
+                                 DAVA::ParticleEffectComponent* component = BaseContextMenu::GetParticleEffectComponent(layerItem);
                                  DAVA::ParticleLayer* layer = layerItem->GetLayer();
-                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterLayer(layerItem->emitterInstance, layer)), layer);
+                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterLayer(component, layerItem->emitterInstance, layer)), layer);
                              });
     }
 
     void AddForce()
     {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterForce(layerItem->GetLayer())));
+        DAVA::ParticleEffectComponent* component = BaseContextMenu::GetParticleEffectComponent(layerItem);
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterForce(component, layerItem->GetLayer())));
         MarkStructureChanged();
     }
 
@@ -825,8 +843,9 @@ private:
         RemoveCommandsHelper("Remove forces", SceneTreeItem::EIT_Force, [](SceneTreeItem* item)
                              {
                                  SceneTreeItemParticleForce* forceItem = static_cast<SceneTreeItemParticleForce*>(item);
+                                 DAVA::ParticleEffectComponent* component = BaseContextMenu::GetParticleEffectComponent(forceItem);
                                  DAVA::ParticleForce* force = forceItem->GetForce();
-                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterForce(forceItem->layer, force)), force);
+                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterForce(component, forceItem->layer, force)), force);
                              });
     }
 };
@@ -881,7 +900,7 @@ protected:
 
     void AddLayer()
     {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterLayer(emitterItem->GetEmitterInstance())));
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterLayer(emitterItem->effect, emitterItem->GetEmitterInstance())));
         MarkStructureChanged();
     }
 
@@ -1155,12 +1174,12 @@ void SceneTree::dragEnterEvent(QDragEnterEvent* event)
 
 void SceneTree::SceneActivated(SceneEditor2* scene)
 {
-    /*treeModel->SetScene(scene);
+    treeModel->SetScene(scene);
     selectionModel()->clear();
     SyncSelectionToTree();
     filteringProxyModel->invalidate();
 
-    PropagateSolidFlag();*/
+    PropagateSolidFlag();
 }
 
 void SceneTree::SceneDeactivated(SceneEditor2* scene)

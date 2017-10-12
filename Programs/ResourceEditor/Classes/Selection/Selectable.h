@@ -55,6 +55,8 @@ public:
     // added for compatibility with sorted containers
     bool operator<(const Selectable& other) const;
 
+    const DAVA::ReflectedType* GetObjectType() const;
+
     template <typename T>
     bool CanBeCastedTo() const;
 
@@ -147,4 +149,18 @@ inline void Selectable::AddTransformProxyForClass()
 inline bool Selectable::ContainsObject() const
 {
     return object.IsEmpty() == false;
+}
+
+namespace std
+{
+template <>
+struct hash<Selectable>
+{
+    size_t operator()(const Selectable& object) const
+    {
+        const DAVA::Any& obj = object.GetContainedObject();
+        DVASSERT(obj.GetType()->IsPointer() == true);
+        return reinterpret_cast<size_t>(obj.Get<void*>());
+    }
+};
 }

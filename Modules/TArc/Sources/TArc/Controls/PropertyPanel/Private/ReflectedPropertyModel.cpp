@@ -304,6 +304,7 @@ void ReflectedPropertyModel::UpdateFast()
 
 void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
 {
+    Logger::Info("Selected objects count %d", static_cast<DAVA::int32>(objects.size()));
     wrappersProcessor.Shoutdown();
     fastWrappersProcessor.Shoutdown();
 

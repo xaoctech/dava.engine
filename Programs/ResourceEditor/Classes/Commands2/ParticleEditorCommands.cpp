@@ -227,19 +227,23 @@ void CommandUpdateParticleLayer::Redo()
     // The same is for emitter type.
     if (layer->type != layerType)
     {
-        if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+        if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
+            deletedEmitter = DAVA::RefPtr<DAVA::ParticleEmitterInstance>::ConstructWithRetain(layer->innerEmitter);
             SafeRelease(layer->innerEmitter);
         }
         layer->type = layerType;
         if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            SafeRelease(layer->innerEmitter);
-            layer->innerEmitter = new ParticleEmitter();
+            DVASSERT(layer->innerEmitter == nullptr);
+            DAVA::ScopedPtr<ParticleEmitter> emitter(new ParticleEmitter());
             if (!layer->innerEmitterPath.IsEmpty())
             {
-                layer->innerEmitter->LoadFromYaml(layer->innerEmitterPath);
+                emitter->LoadFromYaml(layer->innerEmitterPath);
             }
+
+            layer->innerEmitter = new ParticleEmitterInstance(emitter);
+            createdEmitter = DAVA::RefPtr<DAVA::ParticleEmitterInstance>::ConstructWithRetain(layer->innerEmitter);
         }
         //TODO: restart in effect
     }
@@ -332,6 +336,11 @@ void CommandAddParticleEmitter::Redo()
     effectComponent->AddEmitterInstance(ScopedPtr<ParticleEmitter>(new ParticleEmitter()));
 }
 
+DAVA::Entity* CommandAddParticleEmitter::GetEntity() const
+{
+    return effectEntity;
+}
+
 CommandStartStopParticleEffect::CommandStartStopParticleEffect(DAVA::Entity* effect, bool isStart)
     : CommandAction(CMDID_PARTICLE_EFFECT_START_STOP)
 {
@@ -385,8 +394,9 @@ DAVA::Entity* CommandRestartParticleEffect::GetEntity() const
     return this->effectEntity;
 }
 
-CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter)
+CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(DAVA::ParticleEffectComponent* component_, DAVA::ParticleEmitterInstance* emitter)
     : CommandAction(CMDID_PARTICLE_EMITTER_LAYER_ADD)
+    , component(component_)
     , instance(emitter)
 {
 }
@@ -413,8 +423,9 @@ void CommandAddParticleEmitterLayer::Redo()
     instance->GetEmitter()->AddLayer(createdLayer);
 }
 
-CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEmitterInstance* emitter, ParticleLayer* layer)
+CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(DAVA::ParticleEffectComponent* component_, ParticleEmitterInstance* emitter, ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_LAYER_REMOVE)
+    , component(component_)
     , instance(emitter)
     , selectedLayer(layer)
 {
@@ -469,8 +480,9 @@ void CommandCloneParticleEmitterLayer::Redo()
     instance->GetEmitter()->AddLayer(clonedLayer);
 }
 
-CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(ParticleLayer* layer)
+CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(DAVA::ParticleEffectComponent* component_, ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -486,8 +498,9 @@ void CommandAddParticleEmitterForce::Redo()
     newForce->Release();
 }
 
-CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force)
+CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(DAVA::ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForce* force)
     : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
+    , component(component_)
     , selectedLayer(layer)
     , selectedForce(force)
 {

@@ -558,8 +558,8 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
                 if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
                 {
                     keepItem = true;
-                    DAVA::ScopedPtr<DAVA::ParticleEmitterInstance> instance(new DAVA::ParticleEmitterInstance(nullptr, layer->innerEmitter, true));
-                    ((SceneTreeItemParticleInnerEmitter*)item)->DoSync(item, instance);
+                    SceneTreeItemParticleInnerEmitter* emitterInstaceItem = static_cast<SceneTreeItemParticleInnerEmitter*>(item);
+                    SceneTreeItemParticleInnerEmitter::DoSync(emitterInstaceItem, emitterInstaceItem->GetEmitterInstance());
                 }
             }
             if (!keepItem)
@@ -635,14 +635,13 @@ const QIcon& SceneTreeItemParticleForce::ItemIcon() const
     return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
 }
 
-SceneTreeItemParticleInnerEmitter::SceneTreeItemParticleInnerEmitter(DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitter* emitter_,
+SceneTreeItemParticleInnerEmitter::SceneTreeItemParticleInnerEmitter(DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitterInstance* emitter_,
                                                                      DAVA::ParticleLayer* parentLayer_)
-    : SceneTreeItemParticleEmitter(effect_, new DAVA::ParticleEmitterInstance(effect_, emitter_, true)) // local instance will be initialized after
+    : SceneTreeItemParticleEmitter(effect_, emitter_) // local instance will be initialized after
     , parent(parentLayer_)
-    , localInstance(object.Cast<DAVA::ParticleEmitterInstance>())
 {
     type = SceneTreeItem::EIT_InnerEmitter;
-    DoSync(this, localInstance);
+    DoSync(this, emitter_);
 }
 
 QString SceneTreeItemParticleInnerEmitter::ItemName() const

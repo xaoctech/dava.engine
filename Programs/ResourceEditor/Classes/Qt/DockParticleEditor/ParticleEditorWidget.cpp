@@ -233,16 +233,19 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
     {
         shouldReset = false;
         DAVA::ParticleEmitterInstance* instance = obj.Cast<DAVA::ParticleEmitterInstance>();
-        SwitchEditorToEmitterMode(scene, instance->GetOwner(), instance);
+        DAVA::ParticleEffectComponent* component = scene->particlesSystem->GetEmitterOwner(instance);
+        SwitchEditorToEmitterMode(scene, component, instance);
     }
     else if (obj.CanBeCastedTo<DAVA::ParticleLayer>())
     {
         DAVA::ParticleLayer* layer = obj.Cast<DAVA::ParticleLayer>();
-        DAVA::ParticleEmitterInstance* instance = scene->particlesSystem->GetLayerOwner(layer);
+        EditorParticlesSystem* system = scene->particlesSystem;
+        DAVA::ParticleEmitterInstance* instance = system->GetRootEmitterLayerOwner(layer);
         if (instance != nullptr)
         {
             shouldReset = false;
-            SwitchEditorToLayerMode(scene, instance->GetOwner(), instance, layer);
+            DAVA::ParticleEffectComponent* component = system->GetEmitterOwner(instance);
+            SwitchEditorToLayerMode(scene, component, instance, layer);
         }
     }
     else if (obj.CanBeCastedTo<DAVA::ParticleForce>())

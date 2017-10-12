@@ -427,7 +427,7 @@ void SceneSaver::CopyEmitter(DAVA::ParticleEmitter* emitter)
     {
         if (layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            CopyEmitter(layers[i]->innerEmitter);
+            CopyEmitter(layers[i]->innerEmitter->GetEmitter());
         }
         else
         {

@@ -333,7 +333,7 @@ void CollectParticleConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSource
         {
             if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
             {
-                collectSuperEmitters(layer->innerEmitter);
+                collectSuperEmitters(layer->innerEmitter->GetEmitter());
             }
         }
     };

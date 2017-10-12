@@ -172,7 +172,7 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
 
 void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitter, DAVA::Vector3 center)
 {
-    auto effect = emitter->GetOwner();
+    DAVA::ParticleEffectComponent* effect = emitter->GetOwner();
     if (effect == nullptr)
         return;
 
@@ -230,14 +230,65 @@ void EditorParticlesSystem::RestartParticleEffects()
     }
 }
 
-DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* force) const
+DAVA::ParticleEffectComponent* EditorParticlesSystem::GetEmitterOwner(DAVA::ParticleEmitterInstance* wantedEmitter) const
 {
-    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForce* force) -> DAVA::ParticleLayer*
+    DAVA::ParticleEffectComponent* component = wantedEmitter->GetOwner();
+    if (component != nullptr)
     {
-        for (DAVA::ParticleLayer* layer : emitter->layers)
+        return component;
+    }
+
+    using TFunctor = DAVA::Function<bool(DAVA::ParticleEmitterInstance*)>;
+    TFunctor lookUpEmitter = [&lookUpEmitter, &wantedEmitter](DAVA::ParticleEmitterInstance* emitter) {
+        if (emitter == wantedEmitter)
+        {
+            return true;
+        }
+
+        for (DAVA::ParticleLayer* layer : emitter->GetEmitter()->layers)
         {
             if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
             {
+                DVASSERT(layer->innerEmitter != nullptr);
+                if (lookUpEmitter(layer->innerEmitter) == true)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    for (DAVA::Entity* entity : entities)
+    {
+        DAVA::ParticleEffectComponent* effectComponent = DAVA::GetEffectComponent(entity);
+        DAVA::uint32 emittersCount = effectComponent->GetEmittersCount();
+        for (DAVA::uint32 id = 0; id < emittersCount; ++id)
+        {
+            DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
+            DVASSERT(emitterInstance != nullptr);
+
+            bool found = lookUpEmitter(emitterInstance);
+            if (found == true)
+            {
+                return effectComponent;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* force) const
+{
+    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitterInstance*, DAVA::ParticleForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleForce* force) -> DAVA::ParticleLayer*
+    {
+        for (DAVA::ParticleLayer* layer : emitter->GetEmitter()->layers)
+        {
+            if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+            {
+                DVASSERT(layer->innerEmitter != nullptr);
                 DAVA::ParticleLayer* foundLayer = getForceOwner(layer->innerEmitter, force);
                 if (foundLayer != nullptr)
                 {
@@ -263,10 +314,7 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* f
             DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
             DVASSERT(emitterInstance != nullptr);
 
-            DAVA::ParticleEmitter* emitter = emitterInstance->GetEmitter();
-            DVASSERT(emitter != nullptr);
-
-            DAVA::ParticleLayer* owner = getForceOwner(emitter, force);
+            DAVA::ParticleLayer* owner = getForceOwner(emitterInstance, force);
             if (owner != nullptr)
             {
                 return owner;
@@ -277,11 +325,11 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* f
     return nullptr;
 }
 
-DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetLayerOwner(DAVA::ParticleLayer* layer) const
+DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetRootEmitterLayerOwner(DAVA::ParticleLayer* layer) const
 {
-    DAVA::Function<bool(DAVA::ParticleEmitter*, DAVA::ParticleLayer*)> hasLayerOwner = [&hasLayerOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleLayer* layer) -> bool
+    DAVA::Function<bool(DAVA::ParticleEmitterInstance*, DAVA::ParticleLayer*)> hasLayerOwner = [&hasLayerOwner](DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer) -> bool
     {
-        for (DAVA::ParticleLayer* l : emitter->layers)
+        for (DAVA::ParticleLayer* l : emitter->GetEmitter()->layers)
         {
             if (l == layer)
             {
@@ -290,6 +338,7 @@ DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetLayerOwner(DAVA::Partic
 
             if (l->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
             {
+                DVASSERT(l->innerEmitter != nullptr);
                 bool found = hasLayerOwner(l->innerEmitter, layer);
                 if (found)
                 {
@@ -310,12 +359,55 @@ DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetLayerOwner(DAVA::Partic
             DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
             DVASSERT(emitterInstance != nullptr);
 
-            DAVA::ParticleEmitter* emitter = emitterInstance->GetEmitter();
-            DVASSERT(emitter != nullptr);
-
-            if (hasLayerOwner(emitter, layer))
+            if (hasLayerOwner(emitterInstance, layer))
             {
                 return emitterInstance;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+DAVA::ParticleEmitterInstance* EditorParticlesSystem::GetDirectEmitterLayerOwner(DAVA::ParticleLayer* layer) const
+{
+    using TFunctor = DAVA::Function<DAVA::ParticleEmitterInstance*(DAVA::ParticleEmitterInstance*, DAVA::ParticleLayer*)>;
+    TFunctor lookUpEmitter = [&lookUpEmitter](DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer) -> DAVA::ParticleEmitterInstance* {
+        for (DAVA::ParticleLayer* l : emitter->GetEmitter()->layers)
+        {
+            if (l == layer)
+            {
+                return emitter;
+            }
+
+            if (l->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+            {
+                DVASSERT(l->innerEmitter != nullptr);
+                DAVA::ParticleEmitterInstance* result = lookUpEmitter(l->innerEmitter, layer);
+                if (result != nullptr)
+                {
+                    return result;
+                }
+            }
+        }
+
+        return nullptr;
+    };
+
+    for (DAVA::Entity* entity : entities)
+    {
+        DAVA::ParticleEffectComponent* effectComponent = DAVA::GetEffectComponent(entity);
+        DAVA::uint32 emittersCount = effectComponent->GetEmittersCount();
+        for (DAVA::uint32 id = 0; id < emittersCount; ++id)
+        {
+            DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
+            DVASSERT(emitterInstance != nullptr);
+
+            DAVA::ParticleEmitterInstance* wantedEmitter = lookUpEmitter(emitterInstance, layer);
+
+            if (wantedEmitter != nullptr)
+            {
+                return wantedEmitter;
             }
         }
     }

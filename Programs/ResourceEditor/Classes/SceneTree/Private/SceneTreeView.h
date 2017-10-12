@@ -1,22 +1,43 @@
 #pragma once
 
-#include "TArc/Core/FieldBinder.h"
-#include "TArc/DataProcessing/Common.h"
+#include <TArc/Controls/ControlProxy.h>
+#include <TArc/Controls/ControlDescriptor.h>
+#include <TArc/Utils/QtConnections.h>
 
 #include <QTreeView>
 
-class SceneTreeView : public QTreeView
+class QItemSelectionModel;
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+} // namespace TArc
+} // namespace DAVA
+
+class SceneTreeView : public DAVA::TArc::ControlProxyImpl<QTreeView>
 {
 public:
-    struct Params
+    enum class Fields
     {
-        DAVA::TArc::ContextAccessor* accessor = nullptr;
-        DAVA::TArc::FieldDescriptor modelField;
+        DataModel,
+        SelectionModel,
+        ExpandedIndexList,
+        FieldCount
     };
 
-    SceneTreeView(const Params& params);
+    DECLARE_CONTROL_PARAMS(Fields);
+
+    SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
+
+protected:
+    void UpdateControl(const DAVA::TArc::ControlDescriptor& descriptor) override;
+
+    void OnItemExpanded(const QModelIndex& index);
+    void OnItemCollapsed(const QModelIndex& index);
 
 private:
-    Params params;
-    std::unique_ptr<DAVA::TArc::FieldBinder> binder;
+    DAVA::TArc::QtConnections connections;
+    DAVA::Set<QPersistentModelIndex> expandedIndexList;
+    QItemSelectionModel* defaultSelectionModel = nullptr;
 };

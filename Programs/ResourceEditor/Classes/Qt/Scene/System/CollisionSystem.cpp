@@ -193,24 +193,31 @@ CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* u
     CollisionObj result;
     result.isValid = true;
     result.shouldRecreate = true;
-    if (createCollision)
+    if (landscape->GetHeightmap() != nullptr)
     {
-        PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-        PxActor* actor = module->CreateStaticActor();
-        DVASSERT(actor != nullptr);
-        PxRigidActor* rigidActor = actor->is<PxRigidActor>();
-        DVASSERT(rigidActor);
-        rigidActor->userData = userData;
+        if (createCollision)
+        {
+            PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+            PxActor* actor = module->CreateStaticActor();
+            DVASSERT(actor != nullptr);
+            PxRigidActor* rigidActor = actor->is<PxRigidActor>();
+            DVASSERT(rigidActor);
+            rigidActor->userData = userData;
 
-        Matrix4 localPose;
-        PxShape* shape = module->CreateHeightField(landscape, localPose);
-        rigidActor->attachShape(*shape);
+            Matrix4 localPose;
+            PxShape* shape = module->CreateHeightField(landscape, localPose);
+            rigidActor->attachShape(*shape);
 
-        InitBounds(rigidActor, shape);
-        shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
-        shape->setQueryFilterData(landscapeFilterData);
+            InitBounds(rigidActor, shape);
+            shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+            shape->setQueryFilterData(landscapeFilterData);
 
-        result.collisionObject = rigidActor;
+            result.collisionObject = rigidActor;
+        }
+    }
+    else
+    {
+        result = CreateBox(createCollision, true, DAVA::Matrix4::IDENTITY, DAVA::Vector3(0.5f, 0.5f, 0.5f), userData);
     }
     return result;
 }
@@ -606,16 +613,18 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
             EnumerateObjectHierarchy(wrapper, false, [this](const DAVA::Any& object, physx::PxRigidActor*, bool) {
                 DVASSERT(object.IsEmpty() == false);
                 auto iter = objToPhysx.find(object);
-                DVASSERT(iter != objToPhysx.end());
-                physx::PxRigidActor* rigidActor = iter->second;
-                DVASSERT(rigidActor != nullptr);
-                DAVA::AABBox3* bounds = SceneCollisionSystemDetail::GetBounds(rigidActor);
-                DAVA::SafeDelete(bounds);
+                if (iter != objToPhysx.end())
+                {
+                    physx::PxRigidActor* rigidActor = iter->second;
+                    DVASSERT(rigidActor != nullptr);
+                    DAVA::AABBox3* bounds = SceneCollisionSystemDetail::GetBounds(rigidActor);
+                    DAVA::SafeDelete(bounds);
 
-                physicsScene->removeActor(*rigidActor);
-                rigidActor->release();
-                size_t removedCount = objToPhysx.erase(object);
-                DVASSERT(removedCount == 1);
+                    physicsScene->removeActor(*rigidActor);
+                    rigidActor->release();
+                    size_t removedCount = objToPhysx.erase(object);
+                    DVASSERT(removedCount == 1);
+                }
             });
         }
 

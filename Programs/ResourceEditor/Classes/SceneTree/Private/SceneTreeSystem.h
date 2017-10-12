@@ -1,13 +1,15 @@
 #pragma once
 
+#include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Functional/Signal.h>
 
-#include <functional>
+class RECommandNotificationObject;
 
-class SceneTreeSystem : public DAVA::SceneSystem
+class SceneTreeSystem : public DAVA::SceneSystem, public EditorSceneSystem
 {
 public:
     SceneTreeSystem(DAVA::Scene* scene);
@@ -20,13 +22,14 @@ public:
     void PrepareForRemove();
 
     void Process(DAVA::float32 timeElapsed) override;
+    void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
 
     struct SyncSnapshot
     {
-        DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::Entity*>> addedEntities;
-        DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::Entity*>, std::greater<DAVA::uint32>> removedEntities;
+        DAVA::Map<DAVA::uint32, DAVA::Vector<Selectable>> objectsToRefetch;
+        DAVA::Map<DAVA::uint32, DAVA::Vector<Selectable>, std::greater<DAVA::uint32>> removedObjects;
 
-        DAVA::UnorderedSet<DAVA::Entity*> changedEntities;
+        DAVA::UnorderedSet<Selectable> changedObjects;
 
         bool IsEmpty() const;
     };
@@ -63,5 +66,5 @@ inline void SceneTreeSystem::MoveToNextSnapshot()
 
 inline bool SceneTreeSystem::SyncSnapshot::IsEmpty() const
 {
-    return addedEntities.empty() == true && removedEntities.empty() == true && changedEntities.empty() == true;
+    return objectsToRefetch.empty() == true && removedObjects.empty() == true && changedObjects.empty() == true;
 }

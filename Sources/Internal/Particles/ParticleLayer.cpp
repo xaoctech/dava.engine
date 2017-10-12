@@ -1,5 +1,6 @@
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleEmitterInstance.h"
 #include "Utils/StringFormat.h"
 #include "Render/Image/Image.h"
 #include "FileSystem/FileSystem.h"
@@ -208,7 +209,7 @@ ParticleLayer* ParticleLayer::Clone()
 
     SafeRelease(dstLayer->innerEmitter);
     if (innerEmitter)
-        dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone());
+        dstLayer->innerEmitter = innerEmitter->Clone();
     dstLayer->innerEmitterPath = innerEmitterPath;
 
     dstLayer->layerName = layerName;
@@ -874,7 +875,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitterPathNode)
     {
         SafeRelease(innerEmitter);
-        innerEmitter = new ParticleEmitter();
+        ScopedPtr<ParticleEmitter> emitter(new ParticleEmitter());
         // Since Inner Emitter path is stored as Relative, convert it to absolute when loading.
         String relativePath = innerEmitterPathNode->AsString();
         if (relativePath.empty())
@@ -890,9 +891,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             }
             else
             {
-                innerEmitter->LoadFromYaml(this->innerEmitterPath, true);
+                emitter->LoadFromYaml(this->innerEmitterPath, true);
             }
         }
+        innerEmitter = new ParticleEmitterInstance(nullptr, emitter.get());
     }
     if (format == 0) //update old stuff
     {
@@ -1147,7 +1149,7 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
 
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitter)
     {
-        innerEmitter->GetModifableLines(modifiables);
+        innerEmitter->GetEmitter()->GetModifableLines(modifiables);
     }
 }
 
