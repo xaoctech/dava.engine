@@ -80,16 +80,16 @@ DAVA::TArc::PropertiesItem SceneData::GetPropertiesSection(const DAVA::String& n
     return std::move(newSection);
 }
 
-void SceneData::CreatePropertiesRoot(const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName)
+void SceneData::CreatePropertiesRoot(DAVA::FileSystem* fs, const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName)
 {
-    DAVA::FileSystem::Instance()->CreateDirectory(dirPath, true);
+    fs->CreateDirectory(dirPath, true);
     if (propertiesRoot.get() == nullptr)
     {
         propertiesRoot = std::make_unique<DAVA::TArc::PropertiesHolder>(fileName.GetFilename(), dirPath);
     }
     else
     {
-        propertiesRoot->CopyWithNewPath(fileName.GetFilename(), dirPath);
+        propertiesRoot->CopyWithNewPath(fs, fileName.GetFilename(), dirPath);
     }
 }
 

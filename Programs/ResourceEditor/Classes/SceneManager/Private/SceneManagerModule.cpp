@@ -913,7 +913,7 @@ void SceneManagerModule::CreateSceneProperties(SceneData* const data, bool scene
 {
     DAVA::FilePath dirPath, fileName;
     GetPropertiesFilePath(data->scene->GetScenePath(), dirPath, fileName, sceneIsTemp);
-    data->CreatePropertiesRoot(dirPath, fileName);
+    data->CreatePropertiesRoot(GetAccessor()->GetEngineContext()->fileSystem, dirPath, fileName);
 }
 
 void SceneManagerModule::GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
@@ -922,7 +922,7 @@ void SceneManagerModule::GetPropertiesFilePath(const DAVA::FilePath& scenePath, 
     using namespace DAVA;
 
     // documents directory
-    FileSystem* fs = FileSystem::Instance();
+    FileSystem* fs = GetAccessor()->GetEngineContext()->fileSystem;
     FilePath documentRoot = fs->GetCurrentDocumentsDirectory();
 
     // scene properties subdirectory

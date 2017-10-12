@@ -13,6 +13,7 @@ namespace DAVA
 {
 class FilePath;
 class Type;
+class FileSystem;
 
 namespace TArc
 {
@@ -25,7 +26,7 @@ public:
     ~PropertiesHolder();
 
     PropertiesItem CreateSubHolder(const String& name) const;
-    void CopyWithNewPath(const String& projectName, const FilePath& directory);
+    void CopyWithNewPath(DAVA::FileSystem* fs, const String& projectName, const FilePath& directory);
 
     void SaveToFile();
 

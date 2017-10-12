@@ -51,7 +51,7 @@ public:
 private:
     friend class SceneManagerModule;
 
-    void CreatePropertiesRoot(const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName);
+    void CreatePropertiesRoot(DAVA::FileSystem* fs, const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName);
 
     SceneEditor2* GetScenePtr() const;
     DAVA::RefPtr<SceneEditor2> scene;
