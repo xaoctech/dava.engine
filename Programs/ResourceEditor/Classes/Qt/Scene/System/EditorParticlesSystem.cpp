@@ -169,7 +169,7 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
     }
 
     DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
-    
+
     wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
 
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();

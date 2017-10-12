@@ -40,7 +40,7 @@ void GenerateSphereRandomVectors()
 {
     uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
     std::mt19937 generator(seed);
-    
+
     std::uniform_real_distribution<float32> uinform01(0.0f, 1.0f);
     for (uint32 i = 0; i < sphereRandomVectorsSize; ++i)
     {

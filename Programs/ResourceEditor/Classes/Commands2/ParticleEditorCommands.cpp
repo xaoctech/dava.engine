@@ -325,7 +325,7 @@ CommandUpdateParticleSimplifiedForce::CommandUpdateParticleSimplifiedForce(Parti
 }
 
 void CommandUpdateParticleSimplifiedForce::Init(RefPtr<PropertyLine<Vector3>> force,
-                                      RefPtr<PropertyLine<float32>> forcesOverLife)
+                                                RefPtr<PropertyLine<float32>> forcesOverLife)
 {
     PropertyLineHelper::SetValueLine(this->force, force);
     PropertyLineHelper::SetValueLine(this->forcesOverLife, forcesOverLife);

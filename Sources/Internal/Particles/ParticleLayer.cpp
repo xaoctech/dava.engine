@@ -1366,8 +1366,8 @@ void ParticleLayer::AddSimplifiedForce(ParticleForceSimplified* force)
 void ParticleLayer::RemoveSimplifiedForce(ParticleForceSimplified* force)
 {
     Vector<ParticleForceSimplified*>::iterator iter = std::find(this->forcesSimplified.begin(),
-                                                      this->forcesSimplified.end(),
-                                                      force);
+                                                                this->forcesSimplified.end(),
+                                                                force);
     if (iter != this->forcesSimplified.end())
     {
         SafeRelease(*iter);
