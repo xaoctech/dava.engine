@@ -6,7 +6,7 @@
 
 namespace DAVA
 {
-float Step(float y, float x)
+float Step(float32 y, float32 x)
 {
     return (x >= y) ? 1.0f : 0.0f;
 }
@@ -68,10 +68,10 @@ Vector2 Fade(const Vector2& t)
 
 int32 WrapBlock(const int32 block, const int32 numBlocks, const float32 scale)
 {
-    if ((float32)block >= numBlocks * scale)
+    if (static_cast<float32>(block) >= numBlocks * scale)
         return 0;
     if (block < 0)
-        return (int32)((float32)numBlocks * scale) - 1;
+        return static_cast<int32>(static_cast<float32>(numBlocks) * scale) - 1;
     return block;
 }
 
@@ -86,9 +86,9 @@ void GetPoint(int32 blockX, int32 blockY, int32 blockZ, int32 numBlocks, int32 b
     float32 py = *(array + 3 * offset + 1);
     float32 pz = *(array + 3 * offset + 2);
 
-    *x = ((float32)blockX + px) * (float32)blockSize;
-    *y = ((float32)blockY + py) * (float32)blockSize;
-    *z = ((float32)blockZ + pz) * (float32)blockSize;
+    *x = (static_cast<float32>(blockX) + px) * static_cast<float32>(blockSize);
+    *y = (static_cast<float32>(blockY) + py) * static_cast<float32>(blockSize);
+    *z = (static_cast<float32>(blockZ) + pz) * static_cast<float32>(blockSize);
 }
 
 float32 PerlinNoise2d(const Vector2& p, float32 wrap)
