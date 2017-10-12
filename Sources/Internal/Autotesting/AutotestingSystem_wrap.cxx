@@ -7602,6 +7602,7 @@ static swig_lua_method swig_AutotestingSystemLua_methods[] = {
     { "GetTaggedClass", _wrap_AutotestingSystemLua_GetTaggedClass },
     { "CheckMsgText", _wrap_AutotestingSystemLua_CheckMsgText },
     { "GetText", _wrap_AutotestingSystemLua_GetText },
+    { "GetRichText", _wrap_AutotestingSystemLua_GetRichText },
     { "GetTextColor", _wrap_AutotestingSystemLua_GetTextColor },
     { "GetServerQueueState", _wrap_AutotestingSystemLua_GetServerQueueState },
     { "SetServerQueueState", _wrap_AutotestingSystemLua_SetServerQueueState },
