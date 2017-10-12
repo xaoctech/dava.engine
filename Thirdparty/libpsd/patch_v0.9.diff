@@ -773,7 +773,7 @@ diff -ur ./libpsd_source_original/src/psd_system.h ./libpsd_source/src/psd_syste
  
  #if 1
 -#define psd_assert(x)			assert(x)
-+#define psd_assert(x)			do { assert(x); (void)(x); } while(0)
++#define psd_assert(x)			do { int r = (x); assert(r); (void)r; } while(0)
  #else
  #define psd_assert(x)			do {} while(0)
  // or
