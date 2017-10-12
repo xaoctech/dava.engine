@@ -12,6 +12,7 @@
 
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/StringConstants.h"
 
 #include <Scene3D/Components/CameraComponent.h>
@@ -718,32 +719,5 @@ void SceneCameraSystem::EnableSystem()
 
 std::unique_ptr<DAVA::Command> SceneCameraSystem::PrepareForSave(bool saveForGame)
 {
-    class CameraSaveCommand : public RECommand
-    {
-    public:
-        CameraSaveCommand(SceneCameraSystem* camSystem)
-            : RECommand(CMDID_USER, "Save/load camera settings")
-            , camSystem(camSystem)
-        {
-        }
-
-        void Redo() override
-        {
-            camEntity = camSystem->topCameraEntity;
-            camEntity->Retain();
-            camEntity->GetParent()->RemoveNode(camEntity);
-        }
-
-        void Undo() override
-        {
-            SceneEditor2* scene = static_cast<SceneEditor2*>(camSystem->GetScene());
-            scene->AddEditorEntity(camEntity);
-            camEntity->Release();
-        }
-
-    private:
-        SceneCameraSystem* camSystem{ nullptr };
-        DAVA::Entity* camEntity{ nullptr };
-    };
-    return std::make_unique<CameraSaveCommand>(CameraSaveCommand(this));
+    return std::make_unique<EntityRemoveCommand>(topCameraEntity);
 }
