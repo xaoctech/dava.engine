@@ -64,6 +64,7 @@ void ApplicationSettings::Load()
     DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(ApplicationSettingsDetails::SETTINGS_PATH, DAVA::File::OPEN | DAVA::File::READ));
     if (file)
     {
+        DAVA::Logger::Debug("Loading settings");
         isFirstLaunch = false;
         DAVA::ScopedPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
         archive->Load(file);
@@ -71,6 +72,7 @@ void ApplicationSettings::Load()
     }
     else
     {
+        DAVA::Logger::Debug("Settings are not found. First launch");
         isFirstLaunch = true;
     }
 
@@ -82,6 +84,7 @@ void ApplicationSettings::LoadFromOldPath()
     DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(ApplicationSettingsDetails::SETTINGS_PATH_OLD, DAVA::File::OPEN | DAVA::File::READ));
     if (file)
     {
+        DAVA::Logger::Debug("Loading settings from old path");
         isFirstLaunch = false;
         DAVA::ScopedPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
         archive->Load(file);
@@ -89,6 +92,7 @@ void ApplicationSettings::LoadFromOldPath()
     }
     else
     {
+        DAVA::Logger::Debug("Settings from old path are not found");
         isFirstLaunch = true;
     }
 
@@ -513,6 +517,16 @@ void ApplicationSettings::DisableRemote()
     default:
         break;
     }
+}
+
+void ApplicationSettings::DumpStorageSettings()
+{
+    DAVA::Logger::Info("Storage folder: %s", GetFolder().GetAbsolutePathname().c_str());
+}
+
+void ApplicationSettings::DumpSharingSettings()
+{
+    DAVA::Logger::Info("Shared for others: %s, ownID: %u, poolID: %u, name: %s", IsSharedForOthers() ? "YES" : "NO", GetOwnID(), GetOwnPoolID(), GetOwnName().c_str());
 }
 
 void ApplicationSettings::EnableSharedPool(PoolID poolID)

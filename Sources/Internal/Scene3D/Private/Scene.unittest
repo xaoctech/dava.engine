@@ -12,6 +12,10 @@ public:
         : SceneSystem(scene)
     {
     }
+
+    void PrepareForRemove() override
+    {
+    }
 };
 
 class MyComponent : public SingletonComponent

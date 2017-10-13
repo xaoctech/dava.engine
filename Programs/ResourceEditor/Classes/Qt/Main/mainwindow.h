@@ -32,6 +32,11 @@ class ErrorDialogOutput;
 namespace DAVA
 {
 class RenderWidget;
+
+namespace TArc
+{
+class FieldBinder;
+}
 }
 
 class QtMainWindow : public QMainWindow, public GlobalOperations, private DAVA::TArc::DataListener
@@ -91,8 +96,6 @@ public slots:
     void OnPivotCenterMode();
     void OnPivotCommonMode();
     void OnManualModifMode();
-    void OnPlaceOnLandscape();
-    void OnSnapToLandscape();
     void OnResetTransform();
     void OnLockTransform();
     void OnUnlockTransform();
@@ -181,7 +184,6 @@ private slots:
 
     void OnGlobalInvalidateTimeout();
     void EditorLightEnabled(bool enabled);
-    void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
     void UnmodalDialogFinished(int);
 
     void DebugVersionInfo();
@@ -214,7 +216,8 @@ private:
 
     // Landscape editor specific
     // TODO: remove later -->
-    bool LoadAppropriateTextureFormat();
+    bool CanEnableLandscapeEditor() const;
+    bool LoadAppropriateTextureFormat() const;
     // <--
 
     void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
@@ -234,5 +237,9 @@ private:
     std::unique_ptr<DAVA::TArc::WaitHandle> waitDialog;
     DAVA::TArc::DataWrapper projectDataWrapper;
     DAVA::TArc::DataWrapper selectionWrapper;
+
+    void UpdateTagDependentActionsState(const DAVA::Any& value);
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinderTagged;
+
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
 };

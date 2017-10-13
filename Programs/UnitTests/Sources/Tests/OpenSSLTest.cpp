@@ -10,6 +10,8 @@
 #include <openssl/err.h>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
+
+#define CURL_STATICLIB
 #include <curl/curl.h>
 
 using namespace DAVA;

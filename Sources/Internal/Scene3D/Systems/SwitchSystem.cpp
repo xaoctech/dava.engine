@@ -64,6 +64,11 @@ void SwitchSystem::RemoveEntity(Entity* entity)
     updatableEntities.erase(entity);
 }
 
+void SwitchSystem::PrepareForRemove()
+{
+    updatableEntities.clear();
+}
+
 void SwitchSystem::SetSwitchHierarchy(Entity* entity, int32 switchIndex)
 {
     RenderObject* ro = GetRenderObject(entity);

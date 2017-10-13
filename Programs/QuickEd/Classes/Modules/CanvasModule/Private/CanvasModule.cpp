@@ -30,36 +30,28 @@ void CanvasModule::PostInit()
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
-void CanvasModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
+void CanvasModule::CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::EditorSystemsManagerInterface>())
-    {
-        CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
-        DVASSERT(data != nullptr);
+    CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+    DVASSERT(data != nullptr);
 
-        EditorCanvas* editorCanvas = data->editorCanvas.get();
-        EditorControlsView* controlsView = data->controlsView.get();
+    EditorCanvas* editorCanvas = data->editorCanvas.get();
+    EditorControlsView* controlsView = data->controlsView.get();
 
-        Interfaces::EditorSystemsManagerInterface* systemsManager = QueryInterface<Interfaces::EditorSystemsManagerInterface>();
-        systemsManager->RegisterEditorSystem(editorCanvas);
-        systemsManager->RegisterEditorSystem(controlsView);
-    }
+    systemsManager->RegisterEditorSystem(editorCanvas);
+    systemsManager->RegisterEditorSystem(controlsView);
 }
 
-void CanvasModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
+void CanvasModule::DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::EditorSystemsManagerInterface>())
-    {
-        CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
-        DVASSERT(data != nullptr);
+    CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+    DVASSERT(data != nullptr);
 
-        EditorCanvas* editorCanvas = data->editorCanvas.get();
-        EditorControlsView* controlsView = data->controlsView.get();
+    EditorCanvas* editorCanvas = data->editorCanvas.get();
+    EditorControlsView* controlsView = data->controlsView.get();
 
-        Interfaces::EditorSystemsManagerInterface* systemsManager = QueryInterface<Interfaces::EditorSystemsManagerInterface>();
-        systemsManager->UnregisterEditorSystem(editorCanvas);
-        systemsManager->UnregisterEditorSystem(controlsView);
-    }
+    systemsManager->UnregisterEditorSystem(editorCanvas);
+    systemsManager->UnregisterEditorSystem(controlsView);
 }
 
 void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)

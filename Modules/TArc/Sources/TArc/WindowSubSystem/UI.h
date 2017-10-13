@@ -80,6 +80,7 @@ struct DockPanelInfo
     //path where action for change dock visibility will be placed
     ActionPlacementInfo actionPlacementInfo;
     bool tabbed = true;
+    bool ensureVisible = false; // force make panel visible in its dock area on create
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
     enum class Fields

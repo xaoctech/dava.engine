@@ -22,6 +22,7 @@ endif()
 
 include ( PlatformSettings     )
 include ( MergeStaticLibrarees )
+include ( FileTreeCheck        )
 include ( DavaTemplate         )
 include ( DavaTemplateModules  )
 include ( CMakeDependentOption )

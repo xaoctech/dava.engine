@@ -42,6 +42,11 @@ void MotionSystem::RemoveEntity(Entity* entity)
     FindAndRemoveExchangingWithLast(activeComponents, GetMotionComponent(entity));
 }
 
+void MotionSystem::PrepareForRemove()
+{
+    activeMotions.clear();
+}
+
 void MotionSystem::ImmediateEvent(Component* component, uint32 event)
 {
     DVASSERT(motionSingleComponent != nullptr);

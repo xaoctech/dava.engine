@@ -28,11 +28,6 @@ struct Action final
     /** Id of the action */
     FastName actionId;
 
-    /** Pointer to the device whose event triggered the action. This field is always non-null. 
-		You can't rely on this for digital bindings, because for digital bindings this field will contain random triggered device pointer.
-	*/
-    InputDevice* triggeredDevice;
-
     /**
         If the action was triggered using `AnalogBinding`, this field contains state of the element which triggered the action.
         If the action was triggered using `DigitalBinding`, this field contains value taken from `DigitalBinding::outputAnalogState` field (user-specified).
@@ -61,9 +56,9 @@ struct ActionSet final
 struct AnalogActionState final
 {
     /** Indicates if analog action is active. 
-		An analog action is considered to always be active if there are no digital elements requirements, 
-		otherwise it's active only if these digital elements are in required state  
-	*/
+        An analog action is considered to always be active if there are no digital elements requirements, 
+        otherwise it's active only if these digital elements are in required state  
+    */
     bool active;
 
     /** Analog X value */
@@ -226,6 +221,12 @@ struct DigitalBinding final
 */
 struct AnalogBinding final
 {
+    enum class eAnalogStateType
+    {
+        ABSOLUTE_STATE = 0,
+        RELATIVE_STATE
+    };
+
     AnalogBinding()
     {
         std::fill(digitalElements.begin(), digitalElements.end(), eInputElements::NONE);
@@ -233,6 +234,13 @@ struct AnalogBinding final
 
     /** Id of the action to trigger. */
     FastName actionId;
+
+    /** Type of analog state that will be emitted as 'Action' and returned as 'AnalogActionState' 
+        ABSOLUTE_STATE for absolute coordinates, RELATIVE_STATE for coordinates relative to the previous coordinates.
+        In pinning mode for ABSOLUTE_STATE action will not be emitted, x = 0, y = 0, z = 0 will be returned, 
+        for RELATIVE_STATE relative diff given by Window impl. will be returned/emitted
+    */
+    eAnalogStateType analogStateType = eAnalogStateType::ABSOLUTE_STATE;
 
     /** Id of the analog element whose state changes will trigger the action. */
     eInputElements analogElementId;

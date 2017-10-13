@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Input/InputDevice.h"
+#include "Engine/EngineTypes.h"
 
 namespace DAVA
 {
 class InputSystem;
+class Window;
 
 namespace Private
 {
@@ -76,6 +78,7 @@ private:
     Mouse& operator=(const Mouse&) = delete;
 
     void OnEndFrame();
+    void OnCursorCaptureChanged(Window*, eCursorCapture mode);
 
     bool HandleEvent(const Private::MainDispatcherEvent& e);
 
@@ -92,5 +95,6 @@ private:
     Array<DigitalElementState, INPUT_ELEMENTS_MOUSE_BUTTON_COUNT> buttons;
     AnalogElementState mousePosition;
     AnalogElementState mouseWheelDelta;
+    bool isRelative = false;
 };
 } // namespace DAVA

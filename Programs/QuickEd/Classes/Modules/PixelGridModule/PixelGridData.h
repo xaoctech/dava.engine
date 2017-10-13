@@ -7,7 +7,6 @@ class PixelGrid;
 class PixelGridData : public DAVA::TArc::DataNode
 {
 public:
-    PixelGridData();
     ~PixelGridData() override;
 
 private:

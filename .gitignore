@@ -70,6 +70,9 @@ AppPackages
 !/Libs/lib_CMake/win/x64/NGT/Release
 !/Libs/lib_CMake/win/x64/NGT/Debug
 !/Sources/Internal/Debug
+!/Modules/**/Libs
+!/Modules/**/Libs/**/Debug
+!/Modules/**/Libs/**/Release
 
 Programs/AndroidFramework/tmp-src
 Programs/UnitTests/android/assets

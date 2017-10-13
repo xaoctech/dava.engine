@@ -2,7 +2,7 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/CanvasModule/CanvasModuleData.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
@@ -10,7 +10,6 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 
 #include "EditorSystems/SelectionSystem.h"
-#include "EditorSystems/HUDSystem.h"
 #include "EditorSystems/EditorTransformSystem.h"
 #include "EditorSystems/CursorSystem.h"
 
@@ -76,7 +75,6 @@ void EditorSystemsManager::InitSystems()
 {
     selectionSystemPtr = new SelectionSystem(accessor);
     RegisterEditorSystem(selectionSystemPtr);
-    RegisterEditorSystem(new HUDSystem(accessor));
     RegisterEditorSystem(new EditorTransformSystem(accessor));
     RegisterEditorSystem(new CursorSystem(accessor));
 }
@@ -101,8 +99,8 @@ void EditorSystemsManager::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-        fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+        fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+        fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnEmulationModeChanged));
     }
 }
@@ -138,16 +136,6 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
     }
 }
 
-void EditorSystemsManager::HighlightNode(ControlNode* node)
-{
-    highlightNode.Emit(node);
-}
-
-void EditorSystemsManager::ClearHighlight()
-{
-    highlightNode.Emit(nullptr);
-}
-
 void EditorSystemsManager::OnEmulationModeChanged(const DAVA::Any& emulationModeValue)
 {
     bool emulationMode = emulationModeValue.Cast<bool>(false);
@@ -161,7 +149,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::ALT))
+    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }
@@ -336,7 +324,6 @@ void EditorSystemsManager::OnPackageChanged(const DAVA::Any& /*packageValue*/)
 {
     magnetLinesChanged.Emit({});
     SetDragState(NoDrag);
-    ClearHighlight();
 }
 
 EditorSystemsManager::eDragState EditorSystemsManager::GetDragState() const
