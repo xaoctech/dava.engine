@@ -44,7 +44,7 @@ void MotionSystem::RemoveEntity(Entity* entity)
 
 void MotionSystem::PrepareForRemove()
 {
-    activeMotions.clear();
+    activeComponents.clear();
 }
 
 void MotionSystem::ImmediateEvent(Component* component, uint32 event)

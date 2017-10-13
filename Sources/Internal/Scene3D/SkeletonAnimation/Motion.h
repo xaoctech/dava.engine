@@ -2,7 +2,7 @@
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
-#include "Base/FastNameMap.h"
+#include "Base/UnordererMap.h"
 #include "Reflection/Reflection.h"
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
 
@@ -67,7 +67,7 @@ protected:
     eMotionBlend blendMode = BLEND_COUNT;
 
     Vector<MotionState> states;
-    FastNameMap<MotionState*> statesMap;
+    UnorderedMap<FastName, MotionState*> statesMap;
     Vector<MotionTransitionInfo*> transitions;
 
     Vector<FastName> statesIDs;
