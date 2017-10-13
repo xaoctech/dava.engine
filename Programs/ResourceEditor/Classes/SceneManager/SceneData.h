@@ -46,7 +46,7 @@ public:
     static const char* sceneCanRedoPropertyName;
     static const char* sceneRedoDescriptionPropertyName;
 
-    DAVA::TArc::PropertiesItem GetPropertiesSection(const DAVA::String& name);
+    DAVA::TArc::PropertiesHolder* GetPropertiesRoot();
 
 private:
     friend class SceneManagerModule;

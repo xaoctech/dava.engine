@@ -844,7 +844,7 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     sceneData->scene = scene;
 
     CreateSceneProperties(sceneData.get());
-    scene->LoadSystemsLocalProperties(sceneData.get());
+    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot());
 
     DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
@@ -885,7 +885,7 @@ void SceneManagerModule::SaveScene(bool saveAs)
         return;
     }
 
-    data->scene->SaveSystemsLocalProperties(data);
+    data->scene->SaveSystemsLocalProperties(data->GetPropertiesRoot());
 
     DAVA::FilePath saveAsPath;
     if (saveAs == true)
@@ -1668,7 +1668,7 @@ bool SceneManagerModule::CloseSceneImpl(DAVA::uint64 id, bool needSavingRequest)
     DVASSERT(data != nullptr);
     DVASSERT(data->scene.Get() != nullptr);
 
-    data->scene->SaveSystemsLocalProperties(data);
+    data->scene->SaveSystemsLocalProperties(data->GetPropertiesRoot());
 
     if (needSavingRequest == false || CanCloseScene(data))
     {

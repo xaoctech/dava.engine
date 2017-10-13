@@ -45,6 +45,14 @@ class RECommandStack;
 class EditorSceneSystem;
 class EditorSlotSystem;
 
+namespace DAVA
+{
+namespace TArc
+{
+class PropertiesHolder;
+}
+}
+
 class SceneEditor2 : public DAVA::Scene
 {
 public:
@@ -167,8 +175,8 @@ public:
     void Deactivate() override;
 
     void EnableEditorSystems();
-    void LoadSystemsLocalProperties(SceneData* data);
-    void SaveSystemsLocalProperties(SceneData* data);
+    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder *holder);
+    void SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder *holder);
 
     DAVA::uint32 GetFramesCount() const;
     void ResetFramesCount();

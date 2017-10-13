@@ -74,10 +74,9 @@ bool SceneData::IsHUDVisible() const
     return scene->IsHUDVisible();
 }
 
-DAVA::TArc::PropertiesItem SceneData::GetPropertiesSection(const DAVA::String& name)
+DAVA::TArc::PropertiesHolder* SceneData::GetPropertiesRoot()
 {
-    DAVA::TArc::PropertiesItem newSection = propertiesRoot->CreateSubHolder(name);
-    return std::move(newSection);
+    return propertiesRoot.get();
 }
 
 void SceneData::CreatePropertiesRoot(DAVA::FileSystem* fs, const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName)

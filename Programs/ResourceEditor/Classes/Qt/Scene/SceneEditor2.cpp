@@ -861,27 +861,21 @@ void SceneEditor2::EnableEditorSystems()
     }
 }
 
-void SceneEditor2::SaveSystemsLocalProperties(SceneData* data)
+void SceneEditor2::SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder)
 {
     for (EditorSceneSystem* system : editorSystems)
     {
         DVASSERT(system != nullptr);
-        if (system->SaveLocalProperties(data) == false)
-        {
-            DAVA::Logger::Warning("Failed to save local properties for system");
-        }
+        system->SaveLocalProperties(holder);
     }
 }
 
-void SceneEditor2::LoadSystemsLocalProperties(SceneData* data)
+void SceneEditor2::LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder)
 {
     for (EditorSceneSystem* system : editorSystems)
     {
         DVASSERT(system != nullptr);
-        if (system->LoadLocalProperties(data) == false)
-        {
-            DAVA::Logger::Warning("Failed to load local properties for system");
-        }
+        system->LoadLocalProperties(holder);
     }
 }
 

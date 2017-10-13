@@ -4,7 +4,15 @@
 
 class RECommandNotificationObject;
 class REDependentCommandsHolder;
-class SceneData;
+
+namespace DAVA
+{
+namespace TArc
+{
+class PropertiesHolder;
+}
+}
+
 class EditorSceneSystem
 {
     friend class SceneEditor2;
@@ -22,14 +30,12 @@ public:
         systemIsEnabled = false;
     }
 
-    virtual bool LoadLocalProperties(SceneData *data)
+    virtual void LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder)
     {
-        return true;
     }
 
-    virtual bool SaveLocalProperties(SceneData* data)
+    virtual void SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder)
     {
-        return true;
     }
 
     bool IsSystemEnabled() const

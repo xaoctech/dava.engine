@@ -44,9 +44,9 @@ SceneCameraSystem::~SceneCameraSystem()
     SafeRelease(curSceneCamera);
 }
 
-bool SceneCameraSystem::SaveLocalProperties(SceneData* data)
+void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder *holder)
 {
-    DAVA::TArc::PropertiesItem cameraProps = data->GetPropertiesSection("camera");
+    DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     // Debug camera whole object archive
     DAVA::Camera* debugCam = GetCamera(topCameraEntity);
     DAVA::RefPtr<DAVA::KeyedArchive> camArch;
@@ -57,13 +57,11 @@ bool SceneCameraSystem::SaveLocalProperties(SceneData* data)
     // Current active camera name
     DAVA::FastName curCamName = GetEntityFromCamera(curSceneCamera)->GetName();
     cameraProps.Set("activeCameraName", curCamName);
-
-    return true;
 }
 
-bool SceneCameraSystem::LoadLocalProperties(SceneData* data)
+void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder *holder)
 {
-    DAVA::TArc::PropertiesItem cameraProps = data->GetPropertiesSection("camera");
+    DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     DAVA::Camera* cur = GetCamera(topCameraEntity);
 
     // set debug camera position
@@ -86,8 +84,6 @@ bool SceneCameraSystem::LoadLocalProperties(SceneData* data)
         DAVA::Scene* scene = GetScene();
         scene->SetCurrentCamera(cur);
     }
-
-    return true;
 }
 
 DAVA::Camera* SceneCameraSystem::GetCurCamera() const
