@@ -108,7 +108,6 @@ void ModificationWidget::ReloadValues()
     if (curScene == nullptr)
     {
         setEnabled(false);
-        OnSnapToLandscapeChanged();
         return;
     }
 
@@ -213,8 +212,6 @@ void ModificationWidget::ReloadValues()
     yAxisModify->setEnabled(canModify);
     zAxisModify->setEnabled(canModify);
     setEnabled(canModify);
-
-    OnSnapToLandscapeChanged();
 }
 
 void ModificationWidget::ApplyValues(ST_Axis axis)
@@ -273,20 +270,6 @@ void ModificationWidget::OnYChanged()
 void ModificationWidget::OnZChanged()
 {
     ApplyValues(ST_AXIS_Z);
-}
-
-void ModificationWidget::OnSnapToLandscapeChanged()
-{
-    if (curScene == nullptr)
-        return;
-
-    const SelectableGroup& selection = curScene->modifSystem->GetTransformableSelection();
-    if (selection.IsEmpty())
-        return;
-
-    const auto isSnappedToLandscape = curScene->modifSystem->GetLandscapeSnap();
-    const auto isMoveMode = (modifMode == Selectable::TransformType::Translation);
-    zAxisModify->setReadOnly(isSnappedToLandscape && isMoveMode);
 }
 
 void ModificationWidget::OnSceneActivated(SceneEditor2* scene)
