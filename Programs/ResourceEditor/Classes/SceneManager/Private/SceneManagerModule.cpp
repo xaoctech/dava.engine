@@ -688,7 +688,7 @@ void SceneManagerModule::CreateFirstScene()
         {
             FilePath lastOpenedScene = recentScenes[0];
 
-            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
             DVASSERT(data != nullptr);
             FilePath projectPath = data->GetProjectPath();
 
@@ -732,7 +732,7 @@ void SceneManagerModule::OpenScene()
 {
     using namespace DAVA::TArc;
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(data != nullptr);
 
     FileDialogParams params;
@@ -769,7 +769,7 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
         return;
     }
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(data != nullptr);
     DAVA::FilePath projectPath(data->GetProjectPath());
 
@@ -939,7 +939,7 @@ void SceneManagerModule::GetPropertiesFilePath(const DAVA::FilePath& scenePath, 
     else
     {
         // scene name and relative path
-        ProjectManagerData* projectData = REGlobal::GetDataNode<ProjectManagerData>();
+        ProjectManagerData* projectData = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
         FilePath projectPath(projectData->GetProjectPath());
         fileName = FilePath(scenePath.GetFilename());
         relativeSceneDirPath = FilePath(scenePath.GetDirectory()).GetRelativePathname(projectPath);
@@ -1045,7 +1045,7 @@ void SceneManagerModule::ExportScene()
     dlg.exec();
     if (dlg.result() == QDialog::Accepted && SaveTileMaskInScene(scene))
     {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
         DVASSERT(data != nullptr);
         const DAVA::FilePath& projectPath = data->GetProjectPath();
         DAVA::FilePath dataSourceFolder = projectPath + "DataSource/3d/";
@@ -1482,7 +1482,7 @@ DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entit
     DAVA::FilePath defaultPath = settings->emitterSaveDir;
     if (defaultPath.IsEmpty())
     {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
         DVASSERT(data != nullptr);
         defaultPath = data->GetParticlesConfigPath().GetAbsolutePathname();
     }
