@@ -1,8 +1,10 @@
 #include "Classes/SceneTree/Private/SceneTreeModelV2.h"
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
 
+#include <TArc/DataProcessing/AnyQMetaType.h>
+
 #include <Debug/DVAssert.h>
-#include "Utils/Utils.h"
+#include <Utils/Utils.h>
 
 SceneTreeModelV2::SceneTreeModelV2(DAVA::Scene* scene)
     : QAbstractItemModel(nullptr)
@@ -116,6 +118,13 @@ QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
         return traits.GetTooltip(item->object);
+    }
+    break;
+    case InternalObject:
+    {
+        SceneTreeItemV2* item = MapItem(index);
+        DVASSERT(item != nullptr);
+        return QVariant::fromValue(item->object.GetContainedObject());
     }
     break;
     default:

@@ -39,30 +39,9 @@ public:
     DAVA::Signal<> syncIsNecessary;
 
 private:
-    SyncSnapshot& GetNextSyncSnapshot();
-
-    DAVA::int32 GetCurrentSyncSnapshotIndex() const;
-    DAVA::int32 GetNextSyncSnapshotIndex() const;
-    void MoveToNextSnapshot();
-
-    DAVA::Array<SyncSnapshot, 2> syncSnapshots;
-    DAVA::int32 currentSnapshot = 0;
+    SyncSnapshot syncSnapshot;
+    bool syncRequested = false;
 };
-
-inline DAVA::int32 SceneTreeSystem::GetCurrentSyncSnapshotIndex() const
-{
-    return currentSnapshot;
-}
-
-inline DAVA::int32 SceneTreeSystem::GetNextSyncSnapshotIndex() const
-{
-    return ((currentSnapshot + 1) & 0x1);
-}
-
-inline void SceneTreeSystem::MoveToNextSnapshot()
-{
-    currentSnapshot = GetNextSyncSnapshotIndex();
-}
 
 inline bool SceneTreeSystem::SyncSnapshot::IsEmpty() const
 {

@@ -10,6 +10,7 @@
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/MockModules/MockProjectManagerModule.h"
 
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockDefine.h>
@@ -35,43 +36,7 @@
 
 namespace SMTest
 {
-const DAVA::String testFolder = DAVA::String("~doc:/Test/");
-const DAVA::String testProjectPath = DAVA::String("~doc:/Test/SceneManagerTest/");
-const DAVA::String testScenePath = DAVA::String("~doc:/Test/SceneManagerTest/DataSource/3d/Maps/scene.sc2");
 const DAVA::FastName allEntitiesName = DAVA::FastName("AllComponentsEntity");
-
-class ProjectManagerDummyModule : public DAVA::TArc::ClientModule
-{
-protected:
-    void PostInit() override
-    {
-        using namespace DAVA;
-        using namespace DAVA::TArc;
-
-        // prepare test environment
-        {
-            CommandLineModuleTestUtils::CreateTestFolder(testFolder);
-            CommandLineModuleTestUtils::CreateProjectInfrastructure(testProjectPath);
-        }
-
-        projectResources.reset(new ProjectResources(GetAccessor()));
-        projectResources->LoadProject(testProjectPath);
-    }
-
-    ~ProjectManagerDummyModule() override
-    {
-        CommandLineModuleTestUtils::ClearTestFolder(testFolder);
-    }
-
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerDummyModule, DAVA::TArc::ClientModule)
-    {
-        DAVA::ReflectionRegistrator<ProjectManagerDummyModule>::Begin()
-        .ConstructorByPointer()
-        .End();
-    }
-
-    std::unique_ptr<ProjectResources> projectResources;
-};
 }
 
 DAVA_TARC_TESTCLASS(SceneManagerModuleTests)
@@ -193,7 +158,7 @@ private:
             }
 
             scene->Update(0.16f);
-            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SMTest::testScenePath, scene.Get());
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(Mock::ProjectManagerModule::testScenePath, scene.Get());
         }
 
         CloseActiveScene();
@@ -215,7 +180,7 @@ private:
                 TEST_VERIFY(data != nullptr);
 
                 FilePath scenePath = data->GetScenePath();
-                TEST_VERIFY(scenePath == SMTest::testScenePath);
+                TEST_VERIFY(scenePath == Mock::ProjectManagerModule::testScenePath);
 
                 SceneData::TSceneType scene = data->GetScene();
                 TEST_VERIFY(scene);
@@ -263,12 +228,12 @@ private:
         TEST_VERIFY(wrapper.HasData() == false);
         if (wrapper.HasData() == false)
         {
-            InvokeOperation(REGlobal::OpenSceneOperation.ID, FilePath(SMTest::testScenePath));
+            InvokeOperation(REGlobal::OpenSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
 
             TEST_VERIFY(wrapper.HasData() == true);
 
             { //add scene
-                InvokeOperation(REGlobal::AddSceneOperation.ID, FilePath(SMTest::testScenePath));
+                InvokeOperation(REGlobal::AddSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
 
                 SceneData* data = GetAccessor()->GetActiveContext()->GetData<SceneData>();
                 TEST_VERIFY(data != nullptr);
@@ -277,7 +242,7 @@ private:
                 scene->Update(0.16f);
 
                 scene->SetName(FastName("OriginalScene"));
-                FastName loadedEntityName = FastName(FilePath(SMTest::testScenePath).GetFilename());
+                FastName loadedEntityName = FastName(FilePath(Mock::ProjectManagerModule::testScenePath).GetFilename());
                 Entity* loadedEntity = scene->FindByName(loadedEntityName);
                 TEST_VERIFY(loadedEntity != nullptr);
                 if (loadedEntity != nullptr)
@@ -311,7 +276,7 @@ private:
         TEST_VERIFY(wrapper.HasData() == false);
         if (wrapper.HasData() == false)
         {
-            InvokeOperation(REGlobal::OpenSceneOperation.ID, FilePath(SMTest::testScenePath));
+            InvokeOperation(REGlobal::OpenSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
 
             TEST_VERIFY(wrapper.HasData() == true);
 
@@ -385,15 +350,13 @@ private:
             recentSceneListener.reset();
             CloseActiveScene();
         }))
-        .WillRepeatedly(Return())
-        ;
+        .WillRepeatedly(Return());
     }
 
     DAVA_TEST (OpenResentSceneFromMenu)
     {
         using namespace DAVA;
         using namespace DAVA::TArc;
-        using namespace ::testing;
 
         recentSceneListener.reset(new OpenSavedSceneListener());
         recentSceneListener->accessor = GetAccessor();
@@ -416,7 +379,7 @@ private:
             TEST_VERIFY(actions.size() > 0);
 
             QAction* resentSceneAction = *actions.rbegin();
-            TEST_VERIFY(resentSceneAction->text() == QString::fromStdString(FilePath(SMTest::testScenePath).GetAbsolutePathname()));
+            TEST_VERIFY(resentSceneAction->text() == QString::fromStdString(FilePath(Mock::ProjectManagerModule::testScenePath).GetAbsolutePathname()));
 
             testCompleted = false;
             resentSceneAction->triggered(false);
@@ -462,7 +425,7 @@ private:
 
     BEGIN_TESTED_MODULES()
     DECLARE_TESTED_MODULE(ReflectionExtensionsModule)
-    DECLARE_TESTED_MODULE(SMTest::ProjectManagerDummyModule)
+    DECLARE_TESTED_MODULE(Mock::ProjectManagerModule)
     DECLARE_TESTED_MODULE(SceneManagerModule)
     END_TESTED_MODULES()
 };

@@ -10,6 +10,9 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 
+#include <QBrush>
+#include <QColor>
+
 QString BaseSceneTreeTraits::GetTooltip(const Selectable& object) const
 {
     return GetName(object);

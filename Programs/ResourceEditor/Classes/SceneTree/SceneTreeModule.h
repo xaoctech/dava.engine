@@ -6,6 +6,8 @@
 
 #include <Reflection/Reflection.h>
 
+class SceneTreeModelV2;
+class QItemSelectionModel;
 class SceneTreeModule : public DAVA::TArc::ClientModule
 {
 private:
