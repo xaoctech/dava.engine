@@ -158,6 +158,20 @@ void GeoDecalSystem::RemoveEntity(Entity* entity)
     }
 }
 
+void GeoDecalSystem::PrepareForRemove()
+{
+    GeoDecalManager* manager = GetScene()->GetRenderSystem()->GetGeoDecalManager();
+    for (const auto& node : decals)
+    {
+        for (const auto& geoDecal : node.second.decals)
+        {
+            manager->DeleteDecal(geoDecal.second);
+        }
+    }
+
+    decals.clear();
+}
+
 void GeoDecalSystem::GatherRenderableEntitiesInBox(Entity* top, const AABBox3& box, Vector<RenderableEntity>& entities)
 {
     RenderObject* object = GetRenderObject(top);

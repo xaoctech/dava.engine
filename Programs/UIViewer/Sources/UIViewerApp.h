@@ -9,6 +9,11 @@ namespace DAVA
 {
 class Engine;
 class Window;
+namespace Net
+{
+struct IChannelListener;
+class ServicesProvider;
+}
 }
 
 class UIViewScreen;
@@ -40,4 +45,7 @@ private:
 
     DAVA::ProgramOptions options;
     bool optionsAreParsed = true;
+
+    std::unique_ptr<DAVA::Net::ServicesProvider> servicesProvider;
+    std::shared_ptr<DAVA::Net::IChannelListener> netLogger;
 };

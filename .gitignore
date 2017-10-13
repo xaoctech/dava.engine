@@ -74,6 +74,9 @@ AppPackages
 !/Modules/FBX/Thirdparty/lib/Win32/x86/release
 !/Modules/FBX/Thirdparty/lib/Win32/x64/debug
 !/Modules/FBX/Thirdparty/lib/Win32/x64/release
+!/Modules/**/Libs
+!/Modules/**/Libs/**/Debug
+!/Modules/**/Libs/**/Release
 
 Programs/AndroidFramework/tmp-src
 Programs/UnitTests/android/assets

@@ -29,6 +29,14 @@ using DAVA::Logger;
 
 #include "_gl.h"
 
+#if defined(DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
+    #define ACQUIRE_CONTEXT() _GLES2_AcquireContext()
+    #define RELEASE_CONTEXT() _GLES2_ReleaseContext()
+#else
+    #define ACQUIRE_CONTEXT()
+    #define RELEASE_CONTEXT()
+#endif
+
 #define RHI_GL_ATTEMPT_TO_FORCE_PROGRAM_COMPILATION 1
 namespace rhi
 {
@@ -504,6 +512,8 @@ CommandBufferGLES2_t::~CommandBufferGLES2_t()
 
 void CommandBufferGLES2_t::Execute()
 {
+    ACQUIRE_CONTEXT();
+
     DAVA_PROFILER_CPU_SCOPE(DAVA::ProfilerCPUMarkerName::RHI_CMD_BUFFER_EXECUTE);
 
     Handle cur_ps = InvalidHandle;
@@ -1210,6 +1220,7 @@ void CommandBufferGLES2_t::Execute()
         c += cmd->size;
     }
 
+    RELEASE_CONTEXT();
     //Logger::Info("exec cb  = %.2f Kb  in %u cmds (DIP=%u  STCB=%u  STTX=%u)",float(curUsedSize)/1024.0f,cmd_cnt,dip_cnt,stcb_cnt,sttx_cnt);
 }
 
@@ -1425,14 +1436,6 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
     DAVA_PROFILER_CPU_SCOPE(DAVA::ProfilerCPUMarkerName::RHI_EXECUTE_IMMEDIATE_CMDS);
 
     int err = GL_NO_ERROR;
-
-#if defined(DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
-    #define ACQUIRE_CONTEXT() _GLES2_AcquireContext()
-    #define RELEASE_CONTEXT() _GLES2_ReleaseContext()
-#else
-    #define ACQUIRE_CONTEXT()
-    #define RELEASE_CONTEXT()
-#endif
 
     ACQUIRE_CONTEXT();
 

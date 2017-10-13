@@ -226,6 +226,8 @@ SceneExporterTool::SceneExporterTool(const DAVA::Vector<DAVA::String>& commandLi
     options.AddOption(OptionName::SaveNormals, VariantType(false), "Disable removing of normals from vertexes");
     options.AddOption(OptionName::HDTextures, VariantType(false), "Use 0-mip level as texture.hd.ext");
 
+    options.AddOption(OptionName::Tag, VariantType(String("")), "Tag for filenames, example: .china. Will export texture.china.tex instead of texture.tex");
+
     options.AddOption(OptionName::UseAssetCache, VariantType(useAssetCache), "Enables using AssetCache for scene");
     options.AddOption(OptionName::AssetCacheIP, VariantType(AssetCache::GetLocalHost()), "ip of adress of Asset Cache Server");
     options.AddOption(OptionName::AssetCachePort, VariantType(static_cast<uint32>(AssetCache::ASSET_SERVER_PORT)), "port of adress of Asset Cache Server");
@@ -296,6 +298,7 @@ bool SceneExporterTool::PostInitInternal()
     }
 
     filename = options.GetOption(OptionName::ProcessFile).AsString();
+    exportingParams.filenamesTag = options.GetOption(OptionName::Tag).AsString();
     foldername = options.GetOption(OptionName::ProcessDir).AsString();
     fileListPath = options.GetOption(OptionName::ProcessFileList).AsString();
 

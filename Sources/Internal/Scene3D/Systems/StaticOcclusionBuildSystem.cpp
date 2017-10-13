@@ -47,6 +47,11 @@ void StaticOcclusionBuildSystem::RemoveEntity(Entity* entity)
     occlusionEntities.erase(std::remove(occlusionEntities.begin(), occlusionEntities.end(), entity), occlusionEntities.end());
 }
 
+void StaticOcclusionBuildSystem::PrepareForRemove()
+{
+    occlusionEntities.clear();
+}
+
 void StaticOcclusionBuildSystem::ImmediateEvent(Component* _component, uint32 event)
 {
     Entity* entity = _component->GetEntity();

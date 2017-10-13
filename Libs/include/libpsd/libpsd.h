@@ -27,7 +27,7 @@
 #define __LIB_PSD_H__
 
 #include "psd_types.h"
-#include <string.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -255,7 +255,7 @@ typedef enum {
 	psd_layer_effects_bevel_emboss_inner_shadow,
 	psd_layer_effects_bevel_emboss_inner_light,
 	psd_layer_effects_bevel_emboss_texture
-} psd_layer_effects_bevel;
+} psd_layer_effects_bevel_emboss_type;
 #define psd_layer_effects_image_count		(psd_layer_effects_bevel_emboss_texture + 1)
 
 typedef enum {
@@ -615,7 +615,7 @@ struct _psd_layer_record
 	
 	psd_int						layer_info_count;
 	psd_layer_info_type			layer_info_type[psd_layer_info_type_count];
-	psd_ptr                     layer_info_data[psd_layer_info_type_count];
+	psd_pointer					layer_info_data[psd_layer_info_type_count];
 	psd_bool					adjustment_valid;
 	
 	psd_uchar 					fill_opacity;

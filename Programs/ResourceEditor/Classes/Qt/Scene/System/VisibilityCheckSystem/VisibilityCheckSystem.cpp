@@ -144,6 +144,15 @@ void VisibilityCheckSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void VisibilityCheckSystem::PrepareForRemove()
+{
+    entitiesWithVisibilityComponent.clear();
+    renderObjectToEntity.clear();
+    landscape = nullptr;
+    shouldPrerender = true;
+    forceRebuildPoints = true;
+}
+
 void VisibilityCheckSystem::Process(DAVA::float32 timeElapsed)
 {
     if (!DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_ENABLE_VISIBILITY_SYSTEM))

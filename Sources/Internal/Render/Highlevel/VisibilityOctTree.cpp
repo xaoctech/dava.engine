@@ -354,7 +354,7 @@ void VisibilityOctTree::BroadPhaseCollisions(const Ray3& rayInWorldSpace, Vector
                 uint32 xdiv = childBitIndex & 1;
                 uint32 ydiv = (childBitIndex >> 1) & 1;
                 uint32 zdiv = (childBitIndex >> 2) & 1;
-                
+
                 VoxelCoord childCoord;
                 childCoord.level = voxelCoord.level + 1;
                 childCoord.x = voxelCoord.x * 2 + xdiv;
@@ -427,7 +427,7 @@ void VisibilityOctTree::BroadPhaseCollisions(const Ray3& rayInWorldSpace, Vector
     std::sort(broadPhaseCollisions.begin(), broadPhaseCollisions.end(), lambda);
 }
 
-bool VisibilityOctTree::RayTrace(const Ray3& ray, RayTraceCollision& collision)
+bool VisibilityOctTree::RayTrace(const Ray3& ray, RayTraceCollision& collision, const Vector<RenderObject*>& ignoreObjects)
 {
     broadPhaseCollisions.clear();
     visibleObjects.Clear();

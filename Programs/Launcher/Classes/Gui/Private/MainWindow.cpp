@@ -6,8 +6,8 @@
 
 #include "Data/ConfigParser.h"
 
-#include "Core/ApplicationManager.h"
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/GuiApplicationManager.h"
+#include "Core/CommonTasks/DownloadTask.h"
 
 #include "Utils/ErrorMessenger.h"
 
@@ -26,6 +26,12 @@ namespace MainWindowDetails
 const QString stateKey = "mainWindow_state";
 const QString geometryKey = "mainWindow_geometry";
 const QString selectedBranchKey = "mainWindow_selectedBranch";
+
+struct ApplicationInfo
+{
+    Application* remote = nullptr;
+    Application* local = nullptr;
+};
 }
 
 class BranchListComparator
@@ -45,66 +51,7 @@ public:
     }
 };
 
-//expected format of input string: 0.8_2015-02-14_11.20.12_0000,
-//where 0.8 - DAVA version, 2015-02-14 - build date, 11.20.12 - build time and 0000 - build version
-//all blocks can be modified or empty
-bool VersionListComparator(const AppVersion& leftVer, const AppVersion& rightVer)
-{
-    const QString& left = leftVer.id;
-    const QString& right = rightVer.id;
-    if (left == right)
-    {
-        return leftVer.buildNum < rightVer.buildNum;
-    }
-    if (leftVer.isToolSet != rightVer.isToolSet)
-    {
-        //value with toolset == false must be less
-        return leftVer.isToolSet == false;
-    }
-    QStringList leftList = left.split('_', QString::SkipEmptyParts);
-    QStringList rightList = right.split('_', QString::SkipEmptyParts);
-
-    int minSize = qMin(leftList.size(), rightList.size());
-    for (int i = 0; i < minSize; ++i)
-    {
-        const QString& leftSubStr = leftList.at(i);
-        const QString& rightSubStr = rightList.at(i);
-        QStringList leftSubList = leftSubStr.split('.', QString::SkipEmptyParts);
-        QStringList rightSubList = rightSubStr.split('.', QString::SkipEmptyParts);
-        int subMinSize = qMin(leftSubList.size(), rightSubList.size());
-        for (int subStrIndex = 0; subStrIndex < subMinSize; ++subStrIndex)
-        {
-            bool leftOk;
-            bool rightOk;
-            const QString& leftSubSubStr = leftSubList.at(subStrIndex);
-            const QString& rightSubSubStr = rightSubList.at(subStrIndex);
-            qlonglong leftVal = leftSubSubStr.toLongLong(&leftOk);
-            qlonglong rightVal = rightSubSubStr.toLongLong(&rightOk);
-            if (leftOk && rightOk)
-            {
-                if (leftVal != rightVal)
-                {
-                    return leftVal < rightVal;
-                }
-            }
-            else //date format or other
-            {
-                if (leftSubSubStr != rightSubSubStr)
-                {
-                    return leftSubSubStr < rightSubSubStr;
-                }
-            }
-        }
-        //if version lists are equal - checking for extra subversion
-        if (leftSubList.size() != rightSubList.size())
-        {
-            return leftSubList.size() < rightSubList.size();
-        }
-    }
-    return false; // string are equal
-};
-
-MainWindow::MainWindow(ApplicationManager* appManager_, QWidget* parent)
+MainWindow::MainWindow(GuiApplicationManager* appManager_, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , appManager(appManager_)
@@ -187,27 +134,27 @@ void MainWindow::OnRun(int rowNumber)
 {
     QString appID, insVersionID, avVersionID;
     GetTableApplicationIDs(rowNumber, appID, insVersionID, avVersionID);
-    if (!appID.isEmpty() && !insVersionID.isEmpty())
-        appManager->RunApplication(selectedBranchID, appID, insVersionID);
-}
 
-void MainWindow::OnInstall(int rowNumber)
-{
-    QString appID, insVersionID, avVersionID;
-    GetTableApplicationIDs(rowNumber, appID, insVersionID, avVersionID);
-
-    AppVersion* newVersion = appManager->GetRemoteConfig()->GetAppVersion(selectedBranchID, appID, avVersionID);
-    Application* remoteApplication = appManager->GetRemoteConfig()->GetApplication(selectedBranchID, appID);
-    if (newVersion == nullptr || remoteApplication == nullptr)
+    if (insVersionID == avVersionID)
     {
-        ErrorMessenger::LogMessage(QtCriticalMsg, "can not found remote application or version OnInstall");
-        return;
+        appManager->RunApplication(selectedBranchID, appID, avVersionID);
     }
-    InstallApplicationParams params;
-    params.branch = selectedBranchID;
-    params.app = appID;
-    params.newVersion = *newVersion;
-    appManager->InstallApplication(params);
+    else
+    {
+        ConfigHolder* configHolder = appManager->GetConfigHolder();
+        AppVersion* newVersion = configHolder->remoteConfig.GetAppVersion(selectedBranchID, appID, avVersionID);
+        if (newVersion == nullptr)
+        {
+            ErrorMessenger::LogMessage(QtCriticalMsg, "can not found remote application or version OnInstall");
+            return;
+        }
+        InstallApplicationParams params;
+        params.branch = selectedBranchID;
+        params.app = appID;
+        params.newVersion = *newVersion;
+        params.appToStart = appID;
+        appManager->InstallApplication(params);
+    }
 }
 
 void MainWindow::OnRemove(int rowNumber)
@@ -262,26 +209,25 @@ void MainWindow::OnNewsLoaded(const BaseTask* task)
 
 void MainWindow::ShowTable(QString branchID)
 {
-    ConfigParser* localConfig = appManager->GetLocalConfig();
-    ConfigParser* remoteConfig = appManager->GetRemoteConfig();
+    ConfigHolder* configHolder = appManager->GetConfigHolder();
 
     if (branchID.isEmpty() || branchID == CONFIG_LAUNCHER_WEBPAGE_KEY)
     {
-        if (localConfig->GetWebpageURL().isEmpty() == false)
+        if (configHolder->localConfig.GetWebpageURL().isEmpty() == false)
         {
             ui->stackedWidget->setCurrentIndex(0);
             QString description = QObject::tr("Loading news");
             ui->textBrowser->setText(description);
-            Receiver tmpReceiver;
+            Receiver receiver;
             newsDataBuffer.open(QIODevice::ReadWrite);
-            tmpReceiver.onFinished = std::bind(&MainWindow::OnNewsLoaded, this, std::placeholders::_1);
-            std::unique_ptr<BaseTask> task = appManager->CreateTask<DownloadTask>(description, localConfig->GetWebpageURL(), &newsDataBuffer);
-            appManager->AddTaskWithCustomReceivers(std::move(task), { tmpReceiver });
+            receiver.onFinished = std::bind(&MainWindow::OnNewsLoaded, this, std::placeholders::_1);
+            std::unique_ptr<BaseTask> task = appManager->GetContext()->CreateTask<DownloadTask>(description, configHolder->localConfig.GetWebpageURL(), &newsDataBuffer);
+            appManager->AddTaskWithCustomReceivers(std::move(task), { receiver });
             return;
         }
         else
         {
-            Branch* firstAvailableBranch = localConfig->GetBranch(0);
+            Branch* firstAvailableBranch = configHolder->localConfig.GetBranch(0);
             if (firstAvailableBranch != nullptr)
             {
                 branchID = firstAvailableBranch->id;
@@ -292,95 +238,44 @@ void MainWindow::ShowTable(QString branchID)
     ui->stackedWidget->setCurrentIndex(1);
     ui->tableWidget->setRowCount(0);
 
-    QVector<int> states;
-    if (remoteConfig)
+    QMap<QString, MainWindowDetails::ApplicationInfo> applications;
+    Branch* remoteBranch = configHolder->remoteConfig.GetBranch(branchID);
+    if (remoteBranch != nullptr)
     {
-        Branch* remoteBranch = remoteConfig->GetBranch(branchID);
-        if (remoteBranch)
+        for (Application& app : remoteBranch->applications)
         {
-            int appCount = remoteBranch->GetAppCount();
-            ui->tableWidget->setRowCount(appCount);
-            for (int i = 0; i < appCount; ++i)
-            {
-                int state = 0;
-                QString avalibleVersion;
-                Application* remoteApp = remoteBranch->GetApplication(i);
-
-                QWidget* item = CreateAppNameTableItem(remoteApp->id, i);
-                item->setMinimumWidth(120);
-                ui->tableWidget->setCellWidget(i, COLUMN_APP_NAME, item);
-
-                ui->tableWidget->setCellWidget(i, COLUMN_APP_AVAL, CreateAppAvalibleTableItem(remoteApp, i));
-
-                int versCount = remoteApp->GetVerionsCount();
-                if (versCount == 1)
-                    avalibleVersion = remoteApp->GetVersion(0)->id;
-                else
-                    state |= ButtonsWidget::BUTTONS_STATE_AVALIBLE;
-
-                if (localConfig)
-                {
-                    Application* localApp = localConfig->GetApplication(branchID, remoteApp->id);
-                    if (localApp)
-                    {
-                        ui->tableWidget->setCellWidget(i, COLUMN_APP_INS, CreateAppInstalledTableItem(localApp->GetVersion(0)->id, i));
-
-                        state |= ButtonsWidget::BUTTONS_STATE_INSTALLED;
-                        if (avalibleVersion != localApp->GetVersion(0)->id)
-                            state |= ButtonsWidget::BUTTONS_STATE_AVALIBLE;
-                    }
-                    else
-                    {
-                        state |= ButtonsWidget::BUTTONS_STATE_AVALIBLE;
-                    }
-                }
-
-                states.push_back(state);
-            }
-        }
-        Branch* localBranch = localConfig->GetBranch(branchID);
-        if (localBranch)
-        {
-            int appCount = localBranch->GetAppCount();
-            for (int i = 0; i < appCount; ++i)
-            {
-                Application* localApp = localBranch->GetApplication(i);
-                if (remoteBranch != nullptr && remoteBranch->GetApplication(localApp->id) != nullptr)
-                {
-                    continue;
-                }
-                int rowCount = ui->tableWidget->rowCount();
-                ui->tableWidget->setRowCount(rowCount + 1);
-                ui->tableWidget->setCellWidget(rowCount, COLUMN_APP_NAME, CreateAppNameTableItem(localApp->id, i));
-                ui->tableWidget->setCellWidget(rowCount, COLUMN_APP_INS, CreateAppInstalledTableItem(localApp->GetVersion(0)->id, rowCount));
-
-                states.push_back(ButtonsWidget::BUTTONS_STATE_INSTALLED);
-            }
-        }
-    }
-    else if (localConfig)
-    {
-        Branch* localBranch = localConfig->GetBranch(branchID);
-        if (localBranch)
-        {
-            int appCount = localBranch->GetAppCount();
-            ui->tableWidget->setRowCount(appCount);
-            for (int i = 0; i < appCount; ++i)
-            {
-                Application* localApp = localBranch->GetApplication(i);
-                ui->tableWidget->setCellWidget(i, COLUMN_APP_NAME, CreateAppNameTableItem(localApp->id, i));
-                ui->tableWidget->setCellWidget(i, COLUMN_APP_INS, CreateAppInstalledTableItem(localApp->GetVersion(0)->id, i));
-
-                states.push_back(ButtonsWidget::BUTTONS_STATE_INSTALLED);
-            }
+            MainWindowDetails::ApplicationInfo& info = applications[app.id];
+            info.remote = &app;
         }
     }
 
-    for (int i = 0; i < ui->tableWidget->rowCount(); ++i)
+    Branch* localBranch = configHolder->localConfig.GetBranch(branchID);
+    if (localBranch != nullptr)
     {
-        ButtonsWidget* butts = new ButtonsWidget(i, this);
-        butts->SetButtonsState(states[i]);
-        ui->tableWidget->setCellWidget(i, COLUMN_BUTTONS, butts);
+        for (Application& app : localBranch->applications)
+        {
+            MainWindowDetails::ApplicationInfo& info = applications[app.id];
+            info.local = &app;
+        }
+    }
+
+    ui->tableWidget->setRowCount(applications.size());
+    int index = 0;
+    for (QMap<QString, MainWindowDetails::ApplicationInfo>::Iterator iter = applications.begin(); iter != applications.end(); ++iter, ++index)
+    {
+        ui->tableWidget->setCellWidget(index, COLUMN_APP_NAME, CreateAppNameTableItem(iter.key(), index));
+        if (iter->remote != nullptr)
+        {
+            ui->tableWidget->setCellWidget(index, COLUMN_APP_AVAL, CreateAppAvalibleTableItem(iter->remote, index));
+        }
+        if (iter->local != nullptr)
+        {
+            ui->tableWidget->setCellWidget(index, COLUMN_APP_INS, CreateAppInstalledTableItem(iter->local->GetVersion(0)->id, index));
+        }
+
+        ButtonsWidget* butts = new ButtonsWidget(index, this);
+        butts->setRemoveEnabled(iter->local != nullptr);
+        ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, butts);
     }
 
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -453,11 +348,10 @@ void MainWindow::OnTaskFinished(const BaseTask* task)
 
 void MainWindow::RefreshBranchesList()
 {
-    ConfigParser* localConfig = appManager->GetLocalConfig();
-    ConfigParser* remoteConfig = appManager->GetRemoteConfig();
+    ConfigHolder* configHolder = appManager->GetConfigHolder();
     listModel->ClearItems();
 
-    if (!localConfig->GetWebpageURL().isEmpty())
+    if (!configHolder->localConfig.GetWebpageURL().isEmpty())
     {
         listModel->AddItem(CONFIG_LAUNCHER_WEBPAGE_KEY, BranchesListModel::LIST_ITEM_NEWS);
         listModel->AddItem("", BranchesListModel::LIST_ITEM_SEPARATOR);
@@ -465,15 +359,9 @@ void MainWindow::RefreshBranchesList()
 
     QStringList favs;
     QSet<QString> branchIDs;
-    if (localConfig)
-    {
-        localConfig->MergeBranchesIDs(branchIDs);
-        favs = localConfig->GetFavorites();
-    }
-    if (remoteConfig)
-    {
-        remoteConfig->MergeBranchesIDs(branchIDs);
-    }
+    configHolder->localConfig.MergeBranchesIDs(branchIDs);
+    favs = configHolder->localConfig.GetFavorites();
+    configHolder->remoteConfig.MergeBranchesIDs(branchIDs);
 
     QList<QString> branchesList = branchIDs.toList();
     qSort(branchesList.begin(), branchesList.end(), BranchListComparator());
@@ -513,7 +401,7 @@ QWidget* MainWindow::CreateAppNameTableItem(const QString& stringID, int rowNum)
         QString appID, insVersionID, avVersionID;
         GetTableApplicationIDs(rowNum, appID, insVersionID, avVersionID);
 
-        AppVersion* version = appManager->GetRemoteConfig()->GetAppVersion(selectedBranchID, appID, avVersionID);
+        AppVersion* version = appManager->GetConfigHolder()->remoteConfig.GetAppVersion(selectedBranchID, appID, avVersionID);
         if (version == nullptr)
         {
             return;
@@ -576,8 +464,6 @@ QWidget* MainWindow::CreateAppAvalibleTableItem(Application* app, int rowNum)
     }
     else
     {
-        qSort(app->versions.begin(), app->versions.end(), VersionListComparator);
-
         QComboBox* comboBox = new QComboBox();
         for (int j = versCount - 1; j >= 0; --j)
         {
@@ -615,11 +501,4 @@ void MainWindow::GetTableApplicationIDs(int rowNumber, QString& appID,
         avalibleVersionID = cBox->currentText();
     else if (cell)
         avalibleVersionID = cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString();
-}
-
-void MainWindow::UpdateButtonsState(int rowNumber, ButtonsWidget::ButtonsState state)
-{
-    ButtonsWidget* buttons = dynamic_cast<ButtonsWidget*>(ui->tableWidget->cellWidget(rowNumber, COLUMN_BUTTONS));
-    if (buttons)
-        buttons->SetButtonsState(state);
 }

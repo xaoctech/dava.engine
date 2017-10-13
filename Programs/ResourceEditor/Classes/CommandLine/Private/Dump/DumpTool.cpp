@@ -25,6 +25,7 @@ DumpTool::DumpTool(const DAVA::Vector<DAVA::String>& commandLine)
     options.AddOption(OptionName::OutFile, VariantType(String("")), "Full path to file to write result of dumping");
     options.AddOption(OptionName::Mode, VariantType(String("e")), "Mode of dumping: r - required, e - extended. Extended mode is default.");
     options.AddOption(OptionName::GPU, VariantType(String("all")), "GPU family: PowerVR_iOS, PowerVR_Android, tegra, mali, adreno, origin, dx11. Can be multiple: -gpu mali,adreno,origin", true);
+    options.AddOption(OptionName::TagList, VariantType(String("")), "Tags for textures and slots, Can be multiple: -taglist .china,.japan", true);
 }
 
 bool DumpTool::PostInitInternal()
@@ -107,6 +108,17 @@ bool DumpTool::PostInitInternal()
         return false;
     }
 
+    tags.push_back(""); // empty string means non-tagged behavior
+    DAVA::uint32 tagsCount = options.GetOptionValuesCount(OptionName::TagList);
+    if (tagsCount > 0)
+    {
+        tags.reserve(tagsCount + 1);
+        for (DAVA::uint32 i = 0; i < tagsCount; ++i)
+        {
+            tags.push_back(options.GetOption(OptionName::TagList, i).AsString());
+        }
+    }
+
     DAVA::FindAndRemoveExchangingWithLast(compressedGPUs, DAVA::eGPUFamily::GPU_ORIGIN);
 
     bool qualityInitialized = SceneConsoleHelper::InitializeQualitySystem(options, inFolder + filename);
@@ -134,7 +146,7 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
     if (commandAction == ACTION_DUMP_LINKS)
     {
         DAVA::FilePath::AddResourcesFolder(resourceFolder);
-        DAVA::Set<DAVA::FilePath> links = SceneDumper::DumpLinks(inFolder + filename, mode, compressedGPUs);
+        DAVA::Set<DAVA::FilePath> links = SceneDumper::DumpLinks(inFolder + filename, mode, compressedGPUs, tags);
 
         DAVA::FileSystem::Instance()->CreateDirectory(outFile.GetDirectory(), true);
         DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(outFile, DAVA::File::WRITE | DAVA::File::CREATE));
@@ -167,6 +179,7 @@ void DumpTool::ShowHelpInternal()
     DAVA::Logger::Info("Examples:");
     DAVA::Logger::Info("\t-dump -indir /Users/SmokeTest/DataSource/3d/ -processfile Maps/11-grass/test_scene.sc2 -outfile /Users/Test/dump.txt -links -mode e -gpu all");
     DAVA::Logger::Info("\t-dump -indir /Users/SmokeTest/DataSource/3d/ -processfile Maps/11-grass/test_scene.sc2 -outfile /Users/Test/dump.txt -links -mode r -gpu mali,adreno");
+    DAVA::Logger::Info("\t-dump -indir /Users/SmokeTest/DataSource/3d/ -processfile Maps/11-grass/test_scene.sc2 -outfile /Users/Test/dump.txt -links -mode e -gpu mali,adreno -taglist .china,.japan");
 }
 
 DECL_CONSOLE_MODULE(DumpTool, "-dump");
