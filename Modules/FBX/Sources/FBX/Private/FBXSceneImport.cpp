@@ -1,0 +1,74 @@
+#include "FBXSceneImport.h"
+#include "FBXMeshImport.h"
+
+#include "Logger/Logger.h"
+#include "FileSystem/FilePath.h"
+#include "Scene3D/Entity.h"
+
+namespace DAVA
+{
+namespace FBXImporterDetails
+{
+FbxScene* ImportFbxScene(FbxManager* fbxManager, const FilePath& fbxPath)
+{
+    FbxIOSettings* fbxIOSettings = FbxIOSettings::Create(fbxManager, IOSROOT);
+    FbxImporter* importer = FbxImporter::Create(fbxManager, "fbxImporter");
+
+    bool initSuccess = importer->Initialize(fbxPath.GetAbsolutePathname().c_str());
+    if (!initSuccess)
+    {
+        Logger::Error("FbxImporter Initialization error: %s", importer->GetStatus().GetErrorString());
+        return nullptr;
+    }
+
+    FbxScene* fbxScene = FbxScene::Create(fbxManager, "importedScene");
+    bool importSuccess = importer->Import(fbxScene);
+    if (!importSuccess)
+    {
+        Logger::Error("FBX Import error: %s", importer->GetStatus().GetErrorString());
+        return nullptr;
+    }
+    importer->Destroy();
+
+    FbxAxisSystem::MayaZUp.ConvertScene(fbxScene); // UpVector = ZAxis, CoordSystem = RightHanded
+
+    FbxSystemUnit::ConversionOptions fbxConversionOptions = {
+        false, /* mConvertRrsNodes */
+        true, /* mConvertLimits */
+        true, /* mConvertClusters */
+        true, /* mConvertLightIntensity */
+        true, /* mConvertPhotometricLProperties */
+        true /* mConvertCameraClipPlanes */
+    };
+    FbxSystemUnit::m.ConvertScene(fbxScene, fbxConversionOptions); //Unit = meter
+
+    return fbxScene;
+}
+
+void ProcessSceneHierarchyRecursive(FbxNode* fbxNode, Entity* entity)
+{
+    entity->SetName(fbxNode->GetName());
+
+    const FbxMesh* fbxMesh = fbxNode->GetMesh();
+    if (fbxMesh != nullptr)
+    {
+        ImportMeshToEntity(fbxNode, entity);
+    }
+    else
+    {
+        Matrix4 transform = ToMatrix4(fbxNode->EvaluateLocalTransform());
+        entity->SetLocalTransform(transform);
+    }
+
+    int32 childCount = fbxNode->GetChildCount();
+    for (int32 c = 0; c < childCount; ++c)
+    {
+        ScopedPtr<Entity> childEntity(new Entity());
+        entity->AddNode(childEntity);
+
+        ProcessSceneHierarchyRecursive(fbxNode->GetChild(c), childEntity);
+    }
+}
+
+}; //ns FBXImporterDetails
+}; //ns DAVA
