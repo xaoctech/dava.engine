@@ -71,6 +71,8 @@ struct Matrix4
     inline bool Decomposition(Vector3& position, Vector3& scale, Vector3& orientation) const;
     void Decomposition(Vector3& position, Vector3& scale, Quaternion& orientation) const;
 
+    Quaternion GetRotation() const;
+
     //!
     inline static Matrix4 MakeTranslation(const Vector3& translationVector);
     inline static Matrix4 MakeRotation(const Vector3& axis, float32 angleInRadians);
