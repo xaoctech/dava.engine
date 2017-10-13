@@ -1,5 +1,5 @@
-#include "Core/Tasks/BaseTask.h"
-#include "Core/ApplicationManager.h"
+#include "Core/CommonTasks/BaseTask.h"
+#include "Core/ApplicationContext.h"
 
 void TaskDataHolder::SetUserData(const QVariant& data)
 {
@@ -26,13 +26,13 @@ bool ErrorHolder::HasError() const
     return errorText.isEmpty() == false;
 }
 
-BaseTask::BaseTask(ApplicationManager* appManager_)
-    : appManager(appManager_)
+BaseTask::BaseTask(ApplicationContext* appContext_)
+    : appContext(appContext_)
 {
 }
 
-RunTask::RunTask(ApplicationManager* appManager)
-    : BaseTask(appManager)
+RunTask::RunTask(ApplicationContext* appContext)
+    : BaseTask(appContext)
 {
 }
 

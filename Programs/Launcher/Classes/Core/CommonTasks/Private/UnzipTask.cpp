@@ -1,8 +1,8 @@
-#include "Core/Tasks/UnzipTask.h"
+#include "Core/CommonTasks/UnzipTask.h"
 #include <QObject>
 
-UnzipTask::UnzipTask(ApplicationManager* appManager, const QString& archivePath, const QString& outputPath)
-    : BaseTask(appManager)
+UnzipTask::UnzipTask(ApplicationContext* appContext, const QString& archivePath, const QString& outputPath)
+    : BaseTask(appContext)
     , archivePath(archivePath)
     , outputPath(outputPath)
 {

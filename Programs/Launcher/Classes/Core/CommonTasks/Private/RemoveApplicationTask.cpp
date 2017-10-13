@@ -1,9 +1,10 @@
-#include "Core/Tasks/RemoveApplicationTask.h"
-
-#include "Core/ApplicationManager.h"
+#include "Core/CommonTasks/RemoveApplicationTask.h"
+#include "Core/ApplicationContext.h"
+#include "Core/ConfigHolder.h"
 
 #include "Utils/AppsCommandsSender.h"
 #include "Utils/FileManager.h"
+#include "Utils/Utils.h"
 
 #include <QtHelpers/ProcessHelper.h>
 #include <QtHelpers/HelperFunctions.h>
@@ -14,23 +15,23 @@
 #include <atomic>
 #include <thread>
 
-RemoveApplicationTask::RemoveApplicationTask(ApplicationManager* appManager, const QString& branch_, const QString& app_)
-    : RunTask(appManager)
+RemoveApplicationTask::RemoveApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder_, const QString& branch_, const QString& app_)
+    : RunTask(appContext)
     , branch(branch_)
     , app(app_)
+    , configHolder(configHolder_)
 {
 }
 
 QString RemoveApplicationTask::GetDescription() const
 {
-    ConfigParser* localConfig = appManager->GetLocalConfig();
-    Application* localApp = localConfig->GetApplication(branch, app);
+    Application* localApp = configHolder->localConfig.GetApplication(branch, app);
     if (localApp != nullptr)
     {
         AppVersion* localVersion = localApp->GetVersion(0);
         if (localVersion != nullptr)
         {
-            return QObject::tr("Removing application %1").arg(appManager->GetAppName(app, localVersion->isToolSet));
+            return QObject::tr("Removing application %1").arg(LauncherUtils::GetAppName(app, localVersion->isToolSet));
         }
     }
     return QObject::tr("Removing application %1").arg(app);
@@ -38,8 +39,7 @@ QString RemoveApplicationTask::GetDescription() const
 
 void RemoveApplicationTask::Run()
 {
-    ConfigParser* localConfig = appManager->GetLocalConfig();
-    Application* localApp = localConfig->GetApplication(branch, app);
+    Application* localApp = configHolder->localConfig.GetApplication(branch, app);
     if (localApp == nullptr)
     {
         return;
@@ -53,7 +53,7 @@ void RemoveApplicationTask::Run()
     bool isToolSet = localVersion->isToolSet;
     if (isToolSet)
     {
-        appNames << localConfig->GetTranslatedToolsetApplications();
+        appNames << configHolder->localConfig.GetTranslatedToolsetApplications();
     }
     else
     {
@@ -61,10 +61,10 @@ void RemoveApplicationTask::Run()
     }
 
     using appWorkerFn = std::function<bool(const QString&, const QString&, AppVersion*)>;
-    auto forEachApp = [&appNames, localConfig, this](appWorkerFn fn) -> bool {
+    auto forEachApp = [&appNames, this](appWorkerFn fn) -> bool {
         for (const QString& fakeName : appNames)
         {
-            Application* fakeApp = localConfig->GetApplication(branch, fakeName);
+            Application* fakeApp = configHolder->localConfig.GetApplication(branch, fakeName);
             if (fakeApp != nullptr)
             {
                 AppVersion* fakeVersion = fakeApp->GetVersion(0);
@@ -89,16 +89,17 @@ void RemoveApplicationTask::Run()
 
 bool RemoveApplicationTask::CanRemoveApp(const QString& branchID, const QString& appID, AppVersion* localVersion) const
 {
-    QString appDirPath = appManager->GetApplicationDirectory(branchID, appID, localVersion->isToolSet, false);
-    if (appDirPath.isEmpty())
+    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, localVersion->isToolSet);
+    if (QFile::exists(appDirPath) == false)
     {
         SetError(QObject::tr("Can not find application %1 in branch %2").arg(appID).arg(branchID));
         return true;
     }
-    QString runPath = appDirPath + appManager->GetLocalAppPath(localVersion, appID);
-    if (appManager->GetAppsCommandsSender()->HostIsAvailable(runPath))
+
+    QString runPath = appDirPath + LauncherUtils::GetLocalAppPath(localVersion, appID);
+    if (appContext->appsCommandsSender.HostIsAvailable(runPath))
     {
-        if (appManager->CanTryStopApplication(appID))
+        if (LauncherUtils::CanTryStopApplication(appID))
         {
             if (TryStopApp(runPath))
             {
@@ -118,7 +119,7 @@ bool RemoveApplicationTask::CanRemoveApp(const QString& branchID, const QString&
 bool RemoveApplicationTask::TryStopApp(const QString& runPath) const
 {
     using namespace std;
-    if (appManager->GetAppsCommandsSender()->RequestQuit(runPath))
+    if (appContext->appsCommandsSender.RequestQuit(runPath))
     {
         bool isStillRunning = true;
         QElapsedTimer timer;
@@ -137,18 +138,16 @@ bool RemoveApplicationTask::TryStopApp(const QString& runPath) const
 
 bool RemoveApplicationTask::RemoveApplicationImpl(const QString& branchID, const QString& appID, AppVersion* localVersion)
 {
-    QString appDirPath = appManager->GetApplicationDirectory(branchID, appID, localVersion->isToolSet, false);
-    bool success = FileManager::DeleteDirectory(appDirPath);
-    if (success)
-    {
-        appManager->GetLocalConfig()->RemoveApplication(branchID, appID, localVersion->id);
-        appManager->SaveLocalConfig();
-    }
-    else
+    QString appDirPath = LauncherUtils::GetApplicationDirectory(configHolder, appContext, branchID, appID, localVersion->isToolSet);
+    if (QFile::exists(appDirPath) && FileManager::DeleteDirectory(appDirPath) == false)
     {
         SetError(QObject::tr("Can not remove directory %1\nApplication need to be reinstalled!\n"
                              "If this error occurs again - remove directory by yourself, please")
                  .arg(appDirPath));
+        return false;
     }
-    return success;
+    configHolder->localConfig.RemoveApplication(branchID, appID, localVersion->id);
+    configHolder->localConfig.SaveToFile(FileManager::GetLocalConfigFilePath());
+
+    return true;
 }
