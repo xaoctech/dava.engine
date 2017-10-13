@@ -1,5 +1,4 @@
 #include "FBXImporter.h"
-#include "DAVAEngine.h"
 
 #include "Private/FBXAnimationImport.h"
 #include "Private/FBXMaterialImport.h"
@@ -7,6 +6,9 @@
 #include "Private/FBXSceneImport.h"
 #include "Private/FBXSkeletonImport.h"
 #include "Private/FBXUtils.h"
+
+#include "Scene3D/Scene.h"
+#include "Scene3D/SceneUtils.h"
 
 namespace DAVA
 {
@@ -39,10 +41,14 @@ Scene* FBXImporter::ConstructSceneFromFBX(const FilePath& fbxPath)
 bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
 {
     Scene* scene = ConstructSceneFromFBX(fbxPath);
-    if (scene)
+    if (scene != nullptr)
     {
-        scene->SaveScene(sc2Path);
-        return true;
+        bool combinedSuccessfull = SceneUtils::CombineLods(scene);
+        if (combinedSuccessfull)
+        {
+            scene->SaveScene(sc2Path);
+            return true;
+        }
     }
 
     return false;

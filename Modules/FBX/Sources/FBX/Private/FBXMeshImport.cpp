@@ -40,12 +40,14 @@ struct FBXVertex
 
     union
     {
-        float32 data[14];
+        float32 data[20];
         struct
         {
             Vector3 position;
             Vector2 texCoord[4];
             Vector3 normal;
+            Vector3 tangent;
+            Vector3 binormal;
         };
     };
 
@@ -79,6 +81,8 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         FbxAMatrix meshTransform = fbxNode->EvaluateLocalTransform();
 
         bool hasNormal = fbxMesh->GetElementNormalCount() > 0;
+        bool hasTangent = fbxMesh->GetElementTangentCount() > 0;
+        bool hasBinormal = fbxMesh->GetElementBinormalCount() > 0;
         bool hasSkinning = fbxMesh->GetDeformerCount(FbxDeformer::eSkin) > 0;
 
         uint32 maxControlPointInfluence = 0;
@@ -105,15 +109,15 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         if (uvCount > 3)
             meshFormat |= EVF_TEXCOORD3;
         if (hasNormal)
-            meshFormat |= EVF_NORMAL | EVF_TANGENT | EVF_BINORMAL;
+            meshFormat |= EVF_NORMAL;
+        if (hasTangent)
+            meshFormat |= EVF_TANGENT;
+        if (hasBinormal)
+            meshFormat |= EVF_BINORMAL;
         if (maxControlPointInfluence == 1)
             meshFormat |= EVF_HARD_JOINTINDEX;
         if (maxControlPointInfluence > 1)
             meshFormat |= EVF_JOINTINDEX | EVF_JOINTWEIGHT;
-
-        FbxVector4 tmpNormal;
-        FbxVector2 tmpUV;
-        bool tmpUnmapped = false;
 
         using VerticesMap = Map<FBXVertex, Vector<int32>>; //[vertex, indices]
         using MaterialGeometryMap = Map<FbxSurfaceMaterial*, VerticesMap>;
@@ -130,19 +134,21 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
                 FBXVertex vertex;
 
                 int32 vIndex = fbxMesh->GetPolygonVertex(p, v);
-                const FbxVector4& coords = fbxMesh->GetControlPointAt(vIndex);
-                vertex.position = ToVector3(coords);
+                vertex.position = ToVector3(fbxMesh->GetControlPointAt(vIndex));
 
                 if (hasNormal)
-                {
-                    fbxMesh->GetPolygonVertexNormal(p, v, tmpNormal);
-                    vertex.normal = ToVector3(tmpNormal);
-                }
+                    vertex.normal = ToVector3(GetFbxMeshLayerElementValue<FbxVector4>(fbxMesh->GetElementNormal(), vIndex, p, v));
+
+                if (hasTangent)
+                    vertex.tangent = ToVector3(GetFbxMeshLayerElementValue<FbxVector4>(fbxMesh->GetElementTangent(), vIndex, p, v));
+
+                if (hasBinormal)
+                    vertex.binormal = ToVector3(GetFbxMeshLayerElementValue<FbxVector4>(fbxMesh->GetElementBinormal(), vIndex, p, v));
 
                 for (int32 t = 0; t < uvCount; ++t)
                 {
-                    fbxMesh->GetPolygonVertexUV(p, v, uvNames[t], tmpUV, tmpUnmapped);
-                    vertex.texCoord[t] = Vector2(float32(tmpUV[0]), -float32(tmpUV[1]));
+                    vertex.texCoord[t] = ToVector2(GetFbxMeshLayerElementValue<FbxVector2>(fbxMesh->GetElementUV(uvNames[t]), vIndex, p, v));
+                    vertex.texCoord[t].y = -vertex.texCoord[t].y;
                 }
 
                 if (hasSkinning)
@@ -194,6 +200,12 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
                 if (hasNormal)
                     polygonGroup->SetNormal(vertexIndex, fbxVertex.normal);
 
+                if (hasTangent)
+                    polygonGroup->SetTangent(vertexIndex, fbxVertex.tangent);
+
+                if (hasBinormal)
+                    polygonGroup->SetBinormal(vertexIndex, fbxVertex.binormal);
+
                 if (hasSkinning)
                 {
                     if (maxControlPointInfluence == 1) //hard-skinning
@@ -226,9 +238,6 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 
                 ++vertexIndex;
             }
-
-            if (hasNormal)
-                MeshUtils::RebuildMeshTangentSpace(polygonGroup);
 
             polygonGroup->ApplyMatrix(ToMatrix4(meshTransform));
 
