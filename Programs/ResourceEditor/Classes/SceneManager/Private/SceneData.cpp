@@ -89,7 +89,7 @@ void SceneData::CreatePropertiesRoot(DAVA::FileSystem* fs, const DAVA::FilePath&
     }
     else
     {
-        propertiesRoot->CopyWithNewPath(fs, fileName.GetFilename(), dirPath);
+        propertiesRoot = DAVA::TArc::PropertiesHolder::CopyWithNewPath(*propertiesRoot, fs, fileName.GetFilename(), dirPath);
     }
 }
 

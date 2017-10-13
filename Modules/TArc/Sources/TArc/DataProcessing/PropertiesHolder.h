@@ -26,8 +26,10 @@ public:
     ~PropertiesHolder();
 
     PropertiesItem CreateSubHolder(const String& name) const;
-    void CopyWithNewPath(DAVA::FileSystem* fs, const String& projectName, const FilePath& directory);
-
+    static std::unique_ptr<PropertiesHolder> CopyWithNewPath(PropertiesHolder& holder,
+                                                             DAVA::FileSystem* fs,
+                                                             const String& projectName,
+                                                             const FilePath& directory);
     void SaveToFile();
 
 private:
