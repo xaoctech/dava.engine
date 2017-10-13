@@ -55,7 +55,7 @@ private:
 
     SceneEditor2* GetScenePtr() const;
     DAVA::RefPtr<SceneEditor2> scene;
-    std::unique_ptr<DAVA::TArc::PropertiesHolder> propertiesRoot{ nullptr };
+    std::unique_ptr<DAVA::TArc::PropertiesHolder> propertiesRoot = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneData, DAVA::TArc::DataNode)
     {
