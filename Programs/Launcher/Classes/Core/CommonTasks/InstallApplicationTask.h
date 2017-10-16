@@ -1,50 +1,43 @@
 #pragma once
 
-#include "Core/Tasks/AsyncChainTask.h"
+#include "Core/CommonTasks/AsyncChainTask.h"
 #include "Data/ConfigParser.h"
 
 #include <QFile>
+
+struct ConfigHolder;
 
 struct InstallApplicationParams
 {
     QString branch;
     QString app;
     AppVersion newVersion;
+    QString appToStart;
 };
 
 class InstallApplicationTask final : public AsyncChainTask
 {
 public:
-    InstallApplicationTask(ApplicationManager* appManager, const InstallApplicationParams& params);
+    InstallApplicationTask(ApplicationContext* appContext, ConfigHolder* configHolder, const InstallApplicationParams& params);
 
 private:
-    enum eState
-    {
-        LOADING,
-        UNPACKING,
-        POST_INSTALL
-    };
-
     QString GetDescription() const override;
     void Run() override;
 
     int GetSubtasksCount() const override;
-    void OnFinished(const BaseTask* task) override;
 
-    void OnLoaded(const BaseTask* task);
+    void OnLoaded();
     void Install();
     void OnInstalled();
 
     QStringList GetApplicationsToRestart(const QString& branchID, const QString& appID);
     bool CanTryStopApplication(const QString& applicationName) const;
 
-    QString GetAppName() const;
-
     bool NeedUnpack() const;
 
     InstallApplicationParams params;
     QStringList applicationsToRestart;
 
-    eState state = LOADING;
     QFile fileToWrite;
+    ConfigHolder* configHolder = nullptr;
 };

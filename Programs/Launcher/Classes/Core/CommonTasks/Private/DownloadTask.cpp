@@ -1,16 +1,17 @@
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/CommonTasks/DownloadTask.h"
+#include "Core/ApplicationContext.h"
 
 #include <QIODevice>
 
-DownloadTask::DownloadTask(ApplicationManager* appManager, const QString& description_, const std::map<QUrl, QIODevice*>& buffers_)
-    : BaseTask(appManager)
+DownloadTask::DownloadTask(ApplicationContext* appContext, const QString& description_, const std::map<QUrl, QIODevice*>& buffers_)
+    : BaseTask(appContext)
     , description(description_)
     , buffers(buffers_)
 {
 }
 
-DownloadTask::DownloadTask(ApplicationManager* appManager, const QString& description_, const QUrl& url, QIODevice* writeBuffer)
-    : BaseTask(appManager)
+DownloadTask::DownloadTask(ApplicationContext* appContext, const QString& description_, const QUrl& url, QIODevice* writeBuffer)
+    : BaseTask(appContext)
     , description(description_)
 {
     buffers[url] = writeBuffer;
