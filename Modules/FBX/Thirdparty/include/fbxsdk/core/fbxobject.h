@@ -61,7 +61,7 @@ protected:\
 #define FBXSDK_OBJECT_DECLARE(Class, Parent)\
 	FBXSDK_FBXOBJECT_DECLARE(Class, Parent) \
     \
-protected : \
+protected: \
     Class(FbxManager& pManager, const char* pName) \
         : Parent(pManager, pName){};\
 private: /* end of object declaration, put back private */
@@ -70,7 +70,7 @@ private: /* end of object declaration, put back private */
 #define FBXSDK_ABSTRACT_OBJECT_DECLARE(Class, Parent)\
 	FBXSDK_CLASS_DECLARE(Class, Parent) \
     \
-protected : \
+protected: \
     static FbxObjectCreateProc Allocate;\
 	Class(FbxManager& pManager, const char* pName) \
         : Parent(pManager, pName){};\

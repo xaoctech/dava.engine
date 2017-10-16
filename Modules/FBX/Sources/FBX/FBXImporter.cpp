@@ -12,7 +12,6 @@
 
 namespace DAVA
 {
-
 Scene* FBXImporter::ConstructSceneFromFBX(const FilePath& fbxPath)
 {
     FbxManager* fbxManager = FbxManager::Create();
