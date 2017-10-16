@@ -794,15 +794,19 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     }
 
     // Create physx shapes to wheels mapping
-    // To handle different layouts among vehicle children (chassis-wheel0-wheel1 or wheel0-wheel1-chassis or event wheel0-chassis-wheel1 etc.)
+    // To handle different layouts among vehicle children (chassis-wheel0-wheel1 or wheel0-wheel1-chassis or even wheel0-chassis-wheel1 etc.)
     PxI32 wheelShapeMapping[PX_MAX_NB_WHEELS];
     uint32 wheelShapeMappingCurrentIndex = 0;
-    PxShape* wheelPhysxShapes[PX_MAX_NB_WHEELS];
-    vehicleRigidActor->getShapes(&wheelPhysxShapes[0], PX_MAX_NB_WHEELS);
-    for (uint32 i = 0; i < wheelsCount; ++i)
+    PxShape* actorShapes[PX_MAX_NB_WHEELS + 1];
+    uint32 actorShapesCount = vehicleRigidActor->getShapes(&actorShapes[0], PX_MAX_NB_WHEELS + 1);
+    for (uint32 i = 0; i < actorShapesCount; ++i)
     {
-        PxShape* shape = wheelPhysxShapes[i];
+        PxShape* shape = actorShapes[i];
+        DVASSERT(shape != nullptr);
+
         CollisionShapeComponent* collisionShape = CollisionShapeComponent::GetComponent(shape);
+        DVASSERT(collisionShape != nullptr);
+
         if (collisionShape->GetEntity()->GetComponent(Component::VEHICLE_WHEEL_COMPONENT))
         {
             wheelShapeMapping[wheelShapeMappingCurrentIndex] = i;
