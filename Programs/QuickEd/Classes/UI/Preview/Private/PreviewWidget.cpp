@@ -536,10 +536,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
     else if (mimeData->hasFormat("text/uri-list"))
     {
         QStringList list = mimeData->text().split("\n", QString::SkipEmptyParts);
-        for (const QString& str : list)
-        {
-            emit OpenPackageFile(str);
-        }
+        emit OpenPackageFiles(list);
     }
     renderWidget->setFocus();
 }

@@ -31,6 +31,8 @@
 #include "UI/Package/PackageModel.h"
 #include "UI/UIControl.h"
 
+#include "Classes/Utils/DragNDropHelper.h"
+
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
 #include "Model/YamlPackageSerializer.h"
@@ -202,7 +204,7 @@ void DocumentsModule::InitCentralWidget()
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
-    connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
+    connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFiles, MakeFunction(this, &DocumentsModule::OpenPackageFiles));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
     ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget);
@@ -589,6 +591,51 @@ void DocumentsModule::CreateFindActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFind, { InsertionParams::eInsertionMethod::AfterItem }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+}
+
+void DocumentsModule::OpenPackageFiles(const QStringList& links)
+{
+    using namespace DAVA;
+
+    ResultList wrongExtensionResults;
+    ResultList wrongSourceResults;
+    for (const QString& str : links)
+    {
+        QUrl url(str);
+        if (url.isLocalFile())
+        {
+            QString path = url.toLocalFile();
+
+            if (DragNDropHelper::IsExtensionSupported(path) == false)
+            {
+                wrongExtensionResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+            }
+            else if (DragNDropHelper::IsFileFromProject(GetAccessor(), path) == false)
+            {
+                wrongSourceResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+            }
+            else
+            {
+                OpenDocument(path);
+            }
+        }
+    }
+
+    if (wrongExtensionResults.HasWarnings())
+    {
+        DAVA::TArc::NotificationParams notificationParams;
+        notificationParams.title = "can not drop";
+        notificationParams.message = Result(Result::RESULT_WARNING, Format("next files have unsupported extension:\n%s", wrongExtensionResults.GetResultMessages().c_str()));
+        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+    }
+
+    if (wrongSourceResults.HasWarnings())
+    {
+        DAVA::TArc::NotificationParams notificationParams;
+        notificationParams.title = "can not drop";
+        notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
+        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
     }
 }
 
