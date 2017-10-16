@@ -208,6 +208,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
             // Append text with space for additional empty line
             RefPtr<UIControl> ctrl(new UIControl());
             PrepareControl(ctrl.Get(), true);
+            ctrl->SetInputEnabled(false, false);
             UITextComponent* txt = ctrl->GetOrCreateComponent<UITextComponent>();
             txt->SetText(" ");
             AppendControl(ctrl.Get());
@@ -229,6 +230,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
         {
             RefPtr<UIControl> img(new UIControl());
             PrepareControl(img.Get(), true);
+            img->SetInputEnabled(false, false);
             UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
             bg->SetDrawType(UIControlBackground::DRAW_STRETCH_BOTH);
             bg->SetSprite(FilePath(src));
@@ -378,6 +380,7 @@ void XMLRichContentBuilder::ProcessText(const String& text)
 
             RefPtr<UIControl> ctrl(new UIControl());
             PrepareControl(ctrl.Get(), true);
+            ctrl->SetInputEnabled(false, false);
             UITextComponent* txt = ctrl->GetOrCreateComponent<UITextComponent>();
             txt->SetText(token);
             AppendControl(ctrl.Get());

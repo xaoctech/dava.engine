@@ -22,13 +22,13 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'http://zlib.net/zlib128.zip'
+    return 'http://zlib.net/fossils/zlib-1.2.5.tar.gz'
 
 
 def _get_downloaded_archive_inner_dir():
     # Because zlib archive inner folder and archive file name do not match
     # If you change download link - change this one too
-    return 'zlib-1.2.8'
+    return 'zlib-1.2.5'
 
 
 def _download_and_extract(working_directory_path):
@@ -44,15 +44,22 @@ def _download_and_extract(working_directory_path):
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
 
+    # zlib's CMakeLists.txt states:
+    #   You must remove zconf.h from the source tree.  This file is included with zlib
+    #   but CMake generates this file for you automatically in the build directory.
+    os.remove(os.path.join(source_folder_path, 'zconf.h'))
+
     build_x86_folder, build_x64_folder = (
         build_utils.build_and_copy_libraries_win32_cmake(
             os.path.join(working_directory_path, 'gen'),
             source_folder_path,
             root_project_path,
-            'zlib.sln', 'zlibstatic',
-            'zlibstaticd.lib', 'zlibstatic.lib',
+            'zlib.sln', 'zlib',
+            'zlibd.lib', 'zlib.lib',
             'zlib.lib', 'zlib.lib',
-            'z.lib', 'z.lib'))
+            'zlib.lib', 'zlib.lib',
+            cmake_additional_args=['-DBUILD_SHARED_LIBS=0'],
+            static_runtime=False))
 
     _copy_headers(source_folder_path, build_x86_folder, root_project_path)
 

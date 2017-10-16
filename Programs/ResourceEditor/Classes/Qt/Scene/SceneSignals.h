@@ -58,7 +58,6 @@ signals:
 
     void DropperHeightChanged(SceneEditor2* scene, double height);
     void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
-    void SnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
     void LandscapeEditorToggled(SceneEditor2* scene);
 
@@ -174,10 +173,5 @@ public:
     void EmitParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter)
     {
         emit ParticleLayerRemoved(scene, emitter);
-    }
-
-    void EmitSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
-    {
-        emit SnapToLandscapeChanged(scene, isSpanToLandscape);
     }
 };

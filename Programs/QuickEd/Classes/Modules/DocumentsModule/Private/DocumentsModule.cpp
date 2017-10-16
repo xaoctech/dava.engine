@@ -1,6 +1,6 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 #include "Modules/LegacySupportModule/Private/Project.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
 
@@ -12,6 +12,8 @@
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
+
+#include "Classes/Painter/Painter.h"
 
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
@@ -51,6 +53,9 @@
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
 #include <Reflection/Reflection.h>
+#include <Engine/Window.h>
+#include <Engine/Engine.h>
+#include <Functional/Signal.h>
 
 #include <QAction>
 #include <QApplication>
@@ -81,6 +86,13 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
 
     Renderer::SetDesiredFPS(60);
     DynamicBufferAllocator::SetPageSize(DynamicBufferAllocator::DEFAULT_PAGE_SIZE);
+
+    //we can create graphic items only when render is initialized
+    EditorSystemsData* systemsData = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>();
+    systemsData->painter = std::make_unique<Painting::Painter>();
+    Vector<Window*> windows = Engine::Instance()->GetWindows();
+    DVASSERT(windows.size() == 1);
+    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::Draw));
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -138,7 +150,7 @@ void DocumentsModule::PostInit()
     CreateViewActions();
     CreateFindActions();
 
-    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
     RegisterInterface(static_cast<Interfaces::EditorSystemsManagerInterface*>(systemsManager));
 }
 
@@ -185,10 +197,11 @@ void DocumentsModule::InitCentralWidget()
 
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
-    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorData>()->systemsManager.get();
+    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
     previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
+    previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
     connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
@@ -221,11 +234,11 @@ void DocumentsModule::InitGlobalData()
     connections.AddConnection(app, &QApplication::applicationStateChanged, MakeFunction(this, &DocumentsModule::OnApplicationStateChanged));
     globalContext->CreateData(std::move(watcherData));
 
-    std::unique_ptr<EditorData> editorData(new EditorData());
+    std::unique_ptr<EditorSystemsData> editorData(new EditorSystemsData());
     editorData->systemsManager = std::make_unique<EditorSystemsManager>(GetAccessor());
     globalContext->CreateData(std::move(editorData));
 
-    EditorSystemsManager* systemsManager = globalContext->GetData<EditorData>()->systemsManager.get();
+    EditorSystemsManager* systemsManager = globalContext->GetData<EditorSystemsData>()->systemsManager.get();
     systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
     systemsManager->InitSystems();
 }
@@ -702,7 +715,7 @@ void DocumentsModule::SelectControl(const QString& documentPath, const QString& 
 
 void DocumentsModule::OnEmulationModeChanged(bool mode)
 {
-    GetAccessor()->GetGlobalContext()->GetData<EditorData>()->emulationMode = mode;
+    GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->emulationMode = mode;
 }
 
 //TODO: generalize changes in central widget
@@ -713,7 +726,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorSystemsData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorSystemsData = globalContext->GetData<EditorSystemsData>();
     if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
     {
         return;
@@ -1198,7 +1211,7 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     DocumentData* documentData = activeContext->GetData<DocumentData>();
 
     DataContext* globalContext = accessor->GetGlobalContext();
-    EditorData* editorData = globalContext->GetData<EditorData>();
+    EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
 
     EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
@@ -1225,4 +1238,11 @@ void DocumentsModule::OnSelectInFileSystem()
     DocumentData* documentData = context->GetData<DocumentData>();
     QString filePath = documentData->GetPackageAbsolutePath();
     InvokeOperation(QEGlobal::SelectFile.ID, filePath);
+}
+
+void DocumentsModule::OnDroppingFile(bool droppingFile)
+{
+    DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    EditorSystemsData* systemsData = globalContext->GetData<EditorSystemsData>();
+    systemsData->highlightDisabled = droppingFile;
 }

@@ -206,8 +206,10 @@ void ResourceSelectorModule::RegisterGfxFolders()
     ResourceSelectorData* selectorData = globalContext->GetData<ResourceSelectorData>();
     DVASSERT(selectorData != nullptr);
     ProjectData* projectData = globalContext->GetData<ProjectData>();
-    DVASSERT(projectData != nullptr);
-
+    if (projectData == nullptr)
+    { // open quicked without last project ("clear settings")
+        return;
+    }
     const EngineContext* engineContext = GetEngineContext();
     VirtualCoordinatesSystem* vcs = engineContext->uiControlSystem->vcs;
 

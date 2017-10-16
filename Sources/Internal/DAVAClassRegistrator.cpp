@@ -32,10 +32,6 @@ void DAVA::RegisterDAVAClasses()
         log->Log(Logger::LEVEL__DISABLE, "");
 }
 
-#if !defined(__DAVAENGINE_ANDROID__)
-REGISTER_CLASS(TheoraPlayer);
-#endif
-
 REGISTER_CLASS(BaseObject);
 REGISTER_CLASS(PolygonGroup);
 REGISTER_CLASS(StaticMesh);

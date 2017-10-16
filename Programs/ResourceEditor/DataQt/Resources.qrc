@@ -20,6 +20,7 @@
         <file>QtIcons/layer_visible.png</file>
         <file>QtIcons/land_gras.png</file>
         <file>QtIconsTextureDialog/convertModified.png</file>
+        <file>QtIconsTextureDialog/convertTagged.png</file>
         <file>QtIcons/light_settings.png</file>
         <file>QtIcons/sphere_add.png</file>
         <file>QtIcons/sphere-clone.png</file>
@@ -103,6 +104,7 @@
         <file>QtIcons/modify_move.png</file>
         <file>QtIcons/modify_rotate.png</file>
         <file>QtIcons/modify_placeonland.png</file>
+        <file>QtIcons/modify_placeonobj.png</file>
         <file>QtIcons/modify_snaptoland.png</file>
         <file>QtIcons/modify_scale.png</file>
         <file>QtIcons/expand_all.png</file>
