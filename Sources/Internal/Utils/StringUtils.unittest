@@ -2,6 +2,8 @@
 
 #include <UnitTests/UnitTests.h>
 
+using namespace DAVA;
+
 DAVA_TESTCLASS(StringUtilsTest)
 {
     BEGIN_FILES_COVERED_BY_TESTS()
@@ -10,10 +12,47 @@ DAVA_TESTCLASS(StringUtilsTest)
     DECLARE_COVERED_FILES("StringUtils.cpp")
     END_FILES_COVERED_BY_TESTS()
 
+    // Utils::Trim
+    DAVA_TEST (TrimTest)
+    {
+        TEST_VERIFY(StringUtils::Trim(String("abc")) == "abc");
+        TEST_VERIFY(StringUtils::Trim(String("   abc")) == "abc");
+        TEST_VERIFY(StringUtils::Trim(String("abc     ")) == "abc");
+        TEST_VERIFY(StringUtils::Trim(String("   abc    ")) == "abc");
+        TEST_VERIFY(StringUtils::Trim(String("\tabc\t")) == "abc");
+        TEST_VERIFY(StringUtils::Trim(String("    ")) == "");
+        TEST_VERIFY(StringUtils::Trim(String("\t\t")) == "");
+
+        TEST_VERIFY(StringUtils::TrimLeft(String("abc")) == "abc");
+        TEST_VERIFY(StringUtils::TrimLeft(String("   abc")) == "abc");
+        TEST_VERIFY(StringUtils::TrimLeft(String("abc     ")) == "abc     ");
+        TEST_VERIFY(StringUtils::TrimLeft(String("   abc    ")) == "abc    ");
+        TEST_VERIFY(StringUtils::TrimLeft(String("\tabc\t")) == "abc\t");
+        TEST_VERIFY(StringUtils::TrimLeft(String("    ")) == "");
+        TEST_VERIFY(StringUtils::TrimLeft(String("\t\t")) == "");
+
+        TEST_VERIFY(StringUtils::TrimRight(String("abc")) == "abc");
+        TEST_VERIFY(StringUtils::TrimRight(String("   abc")) == "   abc");
+        TEST_VERIFY(StringUtils::TrimRight(String("abc     ")) == "abc");
+        TEST_VERIFY(StringUtils::TrimRight(String("   abc    ")) == "   abc");
+        TEST_VERIFY(StringUtils::TrimRight(String("\tabc\t")) == "\tabc");
+        TEST_VERIFY(StringUtils::TrimRight(String("    ")) == "");
+        TEST_VERIFY(StringUtils::TrimRight(String("\t\t")) == "");
+    }
+
+    DAVA_TEST (StartsWithTest)
+    {
+        TEST_VERIFY(StringUtils::StartsWith("abcdef", "abc") == true);
+        TEST_VERIFY(StringUtils::StartsWith("abc", "abc") == true);
+        TEST_VERIFY(StringUtils::StartsWith("ab", "abc") == false);
+        TEST_VERIFY(StringUtils::StartsWith("", "abc") == false);
+        TEST_VERIFY(StringUtils::StartsWith("abcdef", "ac") == false);
+    }
+
     DAVA_TEST(ContainsIgnoreCaseTest)
     {
-        using DAVA::StringUtils::ContainsIgnoreCase;
-        DAVA::String str1, str2;
+        using StringUtils::ContainsIgnoreCase;
+        String str1, str2;
         str1 = "TEST";
         str2 = "test";
         TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
@@ -36,38 +75,38 @@ DAVA_TESTCLASS(StringUtilsTest)
 
         str1 = "TEST";
         str2 = "not found";
-        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == false);
     }
 
     DAVA_TEST(RemoveNonPrintableTest)
     {
-        using DAVA::StringUtils::RemoveNonPrintable;
-        DAVA::WideString str1, str2;
-        str1 = L"abc";
-        str2 = L"a\tbc";
-        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+        using StringUtils::RemoveNonPrintable;
+        WideString str1;
+        str1 = L"\ta\tbc\t";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str1));
 
+        WideString str2;
         str1 = L"abc";
         str2 = L"a\tbc";
-        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 0));
 
         str1 = L"abc";
         str2 = L"\tabc";
-        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 0));
 
         str1 = L"abc";
         str2 = L"abc\t";
-        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 0));
 
         str1 = L"abc";
         str2 = L"\t\ta\tbc\t\t";
-        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 0));
 
         str1 = L" abc";
         str2 = L"\tabc";
         TEST_VERIFY(str1 == RemoveNonPrintable(str2, 1));
 
-        str1 = L"abc";
+        str1 = L"abc ";
         str2 = L"abc\t";
         TEST_VERIFY(str1 == RemoveNonPrintable(str2, 1));
 
@@ -76,8 +115,8 @@ DAVA_TESTCLASS(StringUtilsTest)
         TEST_VERIFY(str1 == RemoveNonPrintable(str2, 2));
 
         str1 = L" abc";
-        str1[0] = 0x00A0; // non-breaking space
-        str2 = L" abc";
+        str2 = L"*abc";
+        str2[0] = 0x00A0; // non-breaking space
         TEST_VERIFY(str1 == RemoveNonPrintable(str2));
     }
 };
