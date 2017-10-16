@@ -855,10 +855,7 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
 
     Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
     Vector2 finalPosition = originalPosition;
-    if (activeControlNode->GetParent() != nullptr && activeControlNode->GetParent()->GetControl() != nullptr)
-    {
-        finalPosition += deltaPosition;
-    }
+    finalPosition += deltaPosition;
 
     Any positionValue(finalPosition);
 
