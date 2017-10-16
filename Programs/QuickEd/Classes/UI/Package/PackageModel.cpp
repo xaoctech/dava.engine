@@ -209,7 +209,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
                 return QIcon(IconHelper::GetIconPathForClassName(QString::fromStdString(className)));
             }
 
-        case Qt::CheckStateRole:
+        case PackageCheckStateRole:
         {
             auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
             return prop->GetVisibleInEditor() ? Qt::Checked : Qt::Unchecked;
@@ -353,7 +353,7 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
     DVASSERT(controlNode);
 
-    if (role == Qt::CheckStateRole)
+    if (role == PackageCheckStateRole)
     {
         auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
         prop->SetVisibleInEditor(value.toBool());
