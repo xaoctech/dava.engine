@@ -175,8 +175,8 @@ public:
     void Deactivate() override;
 
     void EnableEditorSystems();
-    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder *holder);
-    void SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder *holder);
+    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
+    void SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
 
     DAVA::uint32 GetFramesCount() const;
     void ResetFramesCount();

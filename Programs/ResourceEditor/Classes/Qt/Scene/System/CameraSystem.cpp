@@ -44,7 +44,7 @@ SceneCameraSystem::~SceneCameraSystem()
     SafeRelease(curSceneCamera);
 }
 
-void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder *holder)
+void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder)
 {
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     // Debug camera whole object archive
@@ -59,7 +59,7 @@ void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder *holder
     cameraProps.Set("activeCameraName", curCamName);
 }
 
-void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder *holder)
+void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder)
 {
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     DAVA::Camera* cur = GetCamera(topCameraEntity);
