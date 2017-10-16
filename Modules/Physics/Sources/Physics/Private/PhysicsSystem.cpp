@@ -816,10 +816,10 @@ void PhysicsSystem::AttachShapesRecursively(Entity* entity, PhysicsComponent* bo
         }
     }
 
-    const size_t childrenCount = entity->GetChildrenCount();
-    for (size_t i = 0; i < childrenCount; ++i)
+    const int32 childrenCount = entity->GetChildrenCount();
+    for (int32 i = 0; i < childrenCount; ++i)
     {
-        Entity* child = entity->GetChild(0);
+        Entity* child = entity->GetChild(i);
         if (child->GetComponent(Component::DYNAMIC_BODY_COMPONENT) || child->GetComponent(Component::STATIC_BODY_COMPONENT))
         {
             continue;
