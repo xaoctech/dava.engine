@@ -1,0 +1,83 @@
+#include "StringUtils.h"
+
+#include <UnitTests/UnitTests.h>
+
+DAVA_TESTCLASS(StringUtilsTest)
+{
+    BEGIN_FILES_COVERED_BY_TESTS()
+    FIND_FILES_IN_TARGET(DavaFramework)
+    DECLARE_COVERED_FILES("StringUtils.h")
+    DECLARE_COVERED_FILES("StringUtils.cpp")
+    END_FILES_COVERED_BY_TESTS()
+
+    DAVA_TEST(ContainsIgnoreCaseTest)
+    {
+        using DAVA::StringUtils::ContainsIgnoreCase;
+        DAVA::String str1, str2;
+        str1 = "TEST";
+        str2 = "test";
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+
+        str1 = "someTEST";
+        str2 = "test";
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+
+        str1 = "TESTsome";
+        str2 = "test";
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+
+        str1 = "TEST";
+        str2 = "TEST";
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+
+        str1 = "test";
+        str2 = "test";
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+
+        str1 = "TEST";
+        str2 = "not found";
+        TEST_VERIFY(ContainsIgnoreCase(str1, str2) == true);
+    }
+
+    DAVA_TEST(RemoveNonPrintableTest)
+    {
+        using DAVA::StringUtils::RemoveNonPrintable;
+        DAVA::WideString str1, str2;
+        str1 = L"abc";
+        str2 = L"a\tbc";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+
+        str1 = L"abc";
+        str2 = L"a\tbc";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+
+        str1 = L"abc";
+        str2 = L"\tabc";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+
+        str1 = L"abc";
+        str2 = L"abc\t";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+
+        str1 = L"abc";
+        str2 = L"\t\ta\tbc\t\t";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+
+        str1 = L" abc";
+        str2 = L"\tabc";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 1));
+
+        str1 = L"abc";
+        str2 = L"abc\t";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 1));
+
+        str1 = L"  abc  ";
+        str2 = L"\tabc\t";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2, 2));
+
+        str1 = L" abc";
+        str1[0] = 0x00A0; // non-breaking space
+        str2 = L" abc";
+        TEST_VERIFY(str1 == RemoveNonPrintable(str2));
+    }
+};
