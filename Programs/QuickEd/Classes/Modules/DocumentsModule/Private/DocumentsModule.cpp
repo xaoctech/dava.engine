@@ -1,10 +1,8 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/LegacySupportModule/Private/Project.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
+#include "Modules/LegacySupportModule/Private/Project.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -200,7 +198,7 @@ void DocumentsModule::InitCentralWidget()
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
     EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
@@ -210,7 +208,7 @@ void DocumentsModule::InitCentralWidget()
     ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget);
 
     //legacy part. Remove it when package will be refactored
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
 
     connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
     QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);
@@ -258,6 +256,7 @@ void DocumentsModule::CreateDocumentsActions()
     const QString toolBarSeparatorName("documents separator");
 
     ContextAccessor* accessor = GetAccessor();
+
     UI* ui = GetUI();
     //action save document
     {
@@ -275,7 +274,7 @@ void DocumentsModule::CreateDocumentsActions()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "projectActionsSeparator" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
