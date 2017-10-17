@@ -137,7 +137,7 @@ void SkillSystemTest::UpdateCd(float32 timeElapsed)
     {
         Skill* skill = p.second;
 
-        if (skill->enabled && skill->currentCd != 0.f)
+        if (skill->currentCd != 0.f)
         {
             if (skill->currentCd - timeElapsed > 0.f)
             {
