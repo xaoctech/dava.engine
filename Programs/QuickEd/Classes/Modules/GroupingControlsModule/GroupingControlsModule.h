@@ -21,8 +21,8 @@ private:
     void DoGroup();
     void DoUngroup();
 
-    DAVA::Result CanGroupSelectedNodes(const SelectedNodes& selectedNodes) const;
-    DAVA::Result CanUngroupNode(ControlNode* node) const;
+    DAVA::Result CanGroupSelection(const SelectedNodes& selectedNodes) const;
+    DAVA::Result CanUngroupSelection(const SelectedNodes& selectedNodes) const;
 
     DAVA::TArc::QtConnections connections;
     DAVA::TArc::DataWrapper documentDataWrapper;

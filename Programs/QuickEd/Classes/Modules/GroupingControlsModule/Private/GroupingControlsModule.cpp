@@ -123,7 +123,7 @@ void GroupingControlsModule::DoGroup()
     const SelectedNodes& selectedNodes = data->GetSelectedNodes();
     Vector<ControlNode*> selectedControlNodes;
 
-    Result result = CanGroupSelectedNodes(selectedNodes);
+    Result result = CanGroupSelection(selectedNodes);
 
     if (result.type != Result::RESULT_ERROR)
     {
@@ -177,7 +177,8 @@ void GroupingControlsModule::DoGroup()
 
     if (newGroupControl != nullptr)
     {
-        documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, { newGroupControl });
+        SelectedNodes newSelection = { newGroupControl };
+        documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, newSelection);
     }
 }
 
@@ -189,9 +190,8 @@ void GroupingControlsModule::DoUngroup()
     DocumentData* data = GetAccessor()->GetActiveContext()->GetData<DocumentData>();
     const SelectedNodes& selectedNodes = data->GetSelectedNodes();
     DVASSERT(selectedNodes.size() == 1);
-    ControlNode* selectedGroupControl = dynamic_cast<ControlNode*>(*selectedNodes.begin());
 
-    Result result = CanUngroupNode(selectedGroupControl);
+    Result result = CanUngroupSelection(selectedNodes);
 
     if (result.type == Result::RESULT_ERROR)
     {
@@ -202,13 +202,16 @@ void GroupingControlsModule::DoUngroup()
         return;
     }
 
+    ControlNode* selectedGroupControl = dynamic_cast<ControlNode*>(*selectedNodes.begin());
+    DVASSERT(selectedGroupControl != nullptr);
+
     data->BeginBatch("Ungroup control");
 
     Vector<ControlNode*> ungroupedNodes;
     ungroupedNodes.reserve(selectedGroupControl->GetCount());
     std::copy(selectedGroupControl->begin(), selectedGroupControl->end(), std::back_inserter(ungroupedNodes));
 
-    Vector2 offset = selectedGroupControl->GetControl()->GetPosition();
+    Vector2 offset = selectedGroupControl->GetControl()->GetRect().GetPosition();
     offset.x = -offset.x;
     offset.y = -offset.y;
     ShiftPositions(ungroupedNodes, offset, data);
@@ -232,7 +235,7 @@ void GroupingControlsModule::DoUngroup()
     }
 }
 
-DAVA::Result GroupingControlsModule::CanGroupSelectedNodes(const SelectedNodes& selectedNodes) const
+DAVA::Result GroupingControlsModule::CanGroupSelection(const SelectedNodes& selectedNodes) const
 {
     using namespace DAVA;
 
@@ -274,9 +277,16 @@ DAVA::Result GroupingControlsModule::CanGroupSelectedNodes(const SelectedNodes& 
     return Result(Result::RESULT_SUCCESS);
 }
 
-DAVA::Result GroupingControlsModule::CanUngroupNode(ControlNode* groupNode) const
+DAVA::Result GroupingControlsModule::CanUngroupSelection(const SelectedNodes& selectedNodes) const
 {
     using namespace DAVA;
+
+    ControlNode* groupNode = dynamic_cast<ControlNode*>(*(selectedNodes.begin()));
+
+    if (groupNode == nullptr)
+    {
+        return Result(Result::RESULT_ERROR, "only controls can be ungrouped");
+    }
 
     if (groupNode->CanRemove() == false)
     {
@@ -289,6 +299,11 @@ DAVA::Result GroupingControlsModule::CanUngroupNode(ControlNode* groupNode) cons
     }
 
     ControlNode* parent = dynamic_cast<ControlNode*>(groupNode->GetParent());
+    if (parent == nullptr)
+    {
+        return Result(Result::RESULT_ERROR, "selected group should be the child of a control");
+    }
+
     bool allChildrenCanBeMoved = std::all_of(groupNode->begin(), groupNode->end(), [parent](ControlNode* child)
                                              {
                                                  return (child->CanMoveTo(parent, parent->GetCount()));
