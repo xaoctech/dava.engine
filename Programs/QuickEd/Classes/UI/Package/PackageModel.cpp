@@ -4,6 +4,7 @@
 
 #include "UI/CommandExecutor.h"
 #include "UI/IconHelper.h"
+#include "Utils/DragNDropHelper.h"
 #include "Utils/QtDavaConvertion.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
@@ -209,7 +210,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
                 return QIcon(IconHelper::GetIconPathForClassName(QString::fromStdString(className)));
             }
 
-        case Qt::CheckStateRole:
+        case PackageCheckStateRole:
         {
             auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
             return prop->GetVisibleInEditor() ? Qt::Checked : Qt::Unchecked;
@@ -353,7 +354,7 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
     DVASSERT(controlNode);
 
-    if (role == Qt::CheckStateRole)
+    if (role == PackageCheckStateRole)
     {
         auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
         prop->SetVisibleInEditor(value.toBool());
@@ -560,14 +561,47 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
     {
         QStringList list = data->text().split("\n");
         Vector<FilePath> packages;
+        ResultList wrongExtensionResults;
+        ResultList wrongSourceResults;
+
         for (const QString& str : list)
         {
             QUrl url(str);
             if (url.isLocalFile())
             {
-                packages.push_back(FilePath(url.toLocalFile().toStdString()));
+                QString path = url.toLocalFile();
+
+                if (DragNDropHelper::IsExtensionSupported(path) == false)
+                {
+                    wrongExtensionResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+                }
+                else if (DragNDropHelper::IsFileFromProject(accessor, path) == false)
+                {
+                    wrongSourceResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+                }
+                else
+                {
+                    packages.push_back(FilePath(path.toStdString()));
+                }
             }
         }
+
+        if (wrongExtensionResults.HasWarnings())
+        {
+            DAVA::TArc::NotificationParams notificationParams;
+            notificationParams.title = "can not drop";
+            notificationParams.message = Result(Result::RESULT_WARNING, Format("next files have unsupported extension:\n%s", wrongExtensionResults.GetResultMessages().c_str()));
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
+
+        if (wrongSourceResults.HasWarnings())
+        {
+            DAVA::TArc::NotificationParams notificationParams;
+            notificationParams.title = "can not drop";
+            notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
+
         if (!packages.empty())
         {
             executor.AddImportedPackagesIntoPackage(packages, package.Get());

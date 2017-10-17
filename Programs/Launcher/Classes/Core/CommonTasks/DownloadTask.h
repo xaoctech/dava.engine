@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 
 #include <QString>
 #include <QUrl>
@@ -11,8 +11,8 @@ class QIODevice;
 class DownloadTask final : public BaseTask
 {
 public:
-    DownloadTask(ApplicationManager* appManager, const QString& description, const std::map<QUrl, QIODevice*>& buffers);
-    DownloadTask(ApplicationManager* appManager, const QString& description, const QUrl& url, QIODevice* writeBuffer);
+    DownloadTask(ApplicationContext* appContext, const QString& description, const std::map<QUrl, QIODevice*>& buffers);
+    DownloadTask(ApplicationContext* appContext, const QString& description, const QUrl& url, QIODevice* writeBuffer);
 
     QString GetDescription() const override;
     eTaskType GetTaskType() const override;
