@@ -43,6 +43,11 @@ void WASDControllerSystem::RemoveEntity(Entity* entity)
     DVASSERT(removeResult);
 }
 
+void WASDControllerSystem::PrepareForRemove()
+{
+    entities.clear();
+}
+
 void WASDControllerSystem::Process(float32 timeElapsed)
 {
     float32 actualMoveSpeed = moveSpeed * timeElapsed;

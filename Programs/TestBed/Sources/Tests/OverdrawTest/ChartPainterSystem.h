@@ -14,6 +14,7 @@ public:
     ChartPainterSystem(DAVA::Scene* scene, DAVA::float32 maxFrametime_);
 
     void AddEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     void Process(DAVA::float32 timeElapsed) override;
 

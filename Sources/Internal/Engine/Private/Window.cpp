@@ -134,6 +134,7 @@ void Window::SetCursorCapture(eCursorCapture mode)
         if (cursorCapture != mode)
         {
             cursorCapture = mode;
+            cursorCaptureChanged.Emit(this, cursorCapture);
             if (cursorCapture == eCursorCapture::PINNING)
             {
                 waitInputActivation |= !hasFocus;

@@ -407,6 +407,11 @@ void SceneCameraSystem::RemoveEntity(DAVA::Entity* entity)
     FindAndRemoveExchangingWithLast(sceneCameras, entity);
 }
 
+void SceneCameraSystem::PrepareForRemove()
+{
+    sceneCameras.clear();
+}
+
 void SceneCameraSystem::CreateDebugCameras()
 {
     DAVA::Scene* scene = GetScene();

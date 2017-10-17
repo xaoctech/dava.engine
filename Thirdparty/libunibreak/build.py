@@ -67,8 +67,9 @@ def _build_win32(working_directory_path, root_project_path):
         root_project_path,
         'unibreak.sln', 'unibreak',
         'unibreak.lib', 'unibreak.lib',
-        'unibreak_wind.lib', 'unibreak_win.lib',
-        'unibreak.lib', 'unibreak.lib')
+        'unibreak.lib', 'unibreak.lib',
+        'unibreak.lib', 'unibreak.lib',
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 

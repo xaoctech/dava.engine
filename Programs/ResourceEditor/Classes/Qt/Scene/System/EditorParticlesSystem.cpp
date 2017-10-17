@@ -212,6 +212,11 @@ void EditorParticlesSystem::RemoveEntity(DAVA::Entity* entity)
     DAVA::FindAndRemoveExchangingWithLast(entities, entity);
 }
 
+void EditorParticlesSystem::PrepareForRemove()
+{
+    entities.clear();
+}
+
 void EditorParticlesSystem::RestartParticleEffects()
 {
     for (DAVA::Entity* entity : entities)

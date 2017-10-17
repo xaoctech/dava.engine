@@ -1026,8 +1026,12 @@ DLCDownloader::Task* DLCDownloaderImpl::AddOneMoreTask()
     {
         return nullptr;
     }
-    Task* task = inputList.front();
-    inputList.pop_front();
+    Task* task = nullptr;
+    {
+        LockGuard<Mutex> lock(mutexInputList);
+        task = inputList.front();
+        inputList.pop_front();
+    }
     return task;
 }
 
@@ -1362,7 +1366,6 @@ void DLCDownloaderImpl::SignalOnFinishedWaitingTasks()
 
 void DLCDownloaderImpl::AddNewTasks()
 {
-    LockGuard<Mutex> lock(mutexInputList);
     if (!inputList.empty() && GetFreeHandleCount() > 0)
     {
         while (!inputList.empty() && GetFreeHandleCount() > 0)

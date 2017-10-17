@@ -19,7 +19,8 @@ public:
     void ObjectUpdated(RenderObject* renderObject) override;
     void Clip(Camera* camera, Vector<RenderObject*>& visibilityArray, uint32 visibilityCriteria) override;
     void GetAllObjectsInBBox(const AABBox3& bbox, Vector<RenderObject*>& visibilityArray) override;
-    bool RayTrace(const Ray3& ray, RayTraceCollision& collision) override;
+    bool RayTrace(const Ray3& ray, RayTraceCollision& collision,
+                  const Vector<RenderObject*>& ignoreObjects) override;
     void Initialize() override;
     void Update() override;
     void DebugDraw(const Matrix4& cameraMatrix, RenderHelper* renderHelper) override;

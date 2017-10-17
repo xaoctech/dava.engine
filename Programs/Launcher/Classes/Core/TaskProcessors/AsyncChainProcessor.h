@@ -6,6 +6,23 @@
 
 class AsyncChainTask;
 
+class AsyncTaskParams : public QObject
+{
+    Q_OBJECT
+
+public:
+    AsyncTaskParams(std::unique_ptr<BaseTask>&& task, Notifier notifier);
+    ~AsyncTaskParams();
+
+    std::unique_ptr<AsyncChainTask> task;
+    Notifier notifier;
+
+private slots:
+    void OnStarted(const BaseTask* task);
+    void OnProgress(const BaseTask* task, quint32 progress);
+    void OnFinished(const BaseTask* task);
+};
+
 //designed only to manage memory for async chain tasks
 class AsyncChainProcessor final : public QObject, public BaseTaskProcessor
 {
@@ -24,15 +41,7 @@ private:
 
     void StartNextTask();
 
-    struct TaskParams
-    {
-        TaskParams(std::unique_ptr<BaseTask>&& task, Notifier notifier);
-        ~TaskParams();
-
-        std::unique_ptr<AsyncChainTask> task;
-        Notifier notifier;
-    };
-    std::list<TaskParams> tasks;
+    std::list<AsyncTaskParams> tasks;
 
     bool running = false;
 };

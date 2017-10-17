@@ -25,30 +25,22 @@ void PixelGridModule::PostInit()
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
-void PixelGridModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
+void PixelGridModule::CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::EditorSystemsManagerInterface>())
-    {
-        PixelGridData* data = GetAccessor()->GetGlobalContext()->GetData<PixelGridData>();
-        DVASSERT(data != nullptr);
-        PixelGrid* pixelGrid = data->pixelGrid.get();
+    PixelGridData* data = GetAccessor()->GetGlobalContext()->GetData<PixelGridData>();
+    DVASSERT(data != nullptr);
+    PixelGrid* pixelGrid = data->pixelGrid.get();
 
-        Interfaces::EditorSystemsManagerInterface* systemsManager = QueryInterface<Interfaces::EditorSystemsManagerInterface>();
-        systemsManager->RegisterEditorSystem(pixelGrid);
-    }
+    systemsManager->RegisterEditorSystem(pixelGrid);
 }
 
-void PixelGridModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
+void PixelGridModule::DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::EditorSystemsManagerInterface>())
-    {
-        PixelGridData* data = GetAccessor()->GetGlobalContext()->GetData<PixelGridData>();
-        DVASSERT(data != nullptr);
-        PixelGrid* pixelGrid = data->pixelGrid.get();
+    PixelGridData* data = GetAccessor()->GetGlobalContext()->GetData<PixelGridData>();
+    DVASSERT(data != nullptr);
+    PixelGrid* pixelGrid = data->pixelGrid.get();
 
-        Interfaces::EditorSystemsManagerInterface* systemsManager = QueryInterface<Interfaces::EditorSystemsManagerInterface>();
-        systemsManager->UnregisterEditorSystem(pixelGrid);
-    }
+    systemsManager->UnregisterEditorSystem(pixelGrid);
 }
 
 DECL_GUI_MODULE(PixelGridModule);

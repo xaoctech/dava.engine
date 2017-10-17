@@ -2,11 +2,17 @@
 #include "Application/QEGlobal.h"
 #include "EditorSystems/EditorSystemsManager.h"
 
-#include "Modules/DocumentsModule/EditorData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/CanvasModule/CanvasData.h"
+#include "Modules/HUDModule/HUDModuleData.h"
+#include "Modules/ProjectModule/ProjectData.h"
 
 #include "UI/Preview/Ruler/RulerWidget.h"
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
@@ -16,11 +22,9 @@
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
-#include "Modules/CanvasModule/CanvasData.h"
-
 #include "Controls/ScaleComboBox.h"
+
+#include "Utils/DragNDropHelper.h"
 
 #include <TArc/Controls/SceneTabbar.h>
 #include <TArc/Controls/ScrollBar.h>
@@ -70,8 +74,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     InjectRenderWidget(renderWidget);
 
     InitUI();
-
-    centralWidgetDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<CentralWidgetData>());
 }
 
 PreviewWidget::~PreviewWidget() = default;
@@ -128,8 +130,8 @@ void PreviewWidget::CreateActions()
     connect(selectAllAction, &QAction::triggered, std::bind(&EditorSystemsManager::SelectAll, systemsManager));
 
     FieldDescriptor fieldDescr;
-    fieldDescr.type = ReflectedTypeDB::Get<EditorData>();
-    fieldDescr.fieldName = FastName(EditorData::emulationModePropertyName);
+    fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
+    fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
 
     QtAction* focusNextChildAction = new QtAction(accessor, tr("Focus next child"), this);
     focusNextChildAction->setShortcut(Qt::Key_Tab);
@@ -411,7 +413,35 @@ void PreviewWidget::OnMouseMove(QMouseEvent* event)
 
 void PreviewWidget::OnDragEntered(QDragEnterEvent* event)
 {
-    event->accept();
+    auto mimeData = event->mimeData();
+    if (mimeData->hasFormat("text/uri-list"))
+    {
+        bool canDropAnyFile = false;
+        QStringList strList = mimeData->text().split("\n", QString::SkipEmptyParts);
+        for (const QString& str : strList)
+        {
+            QUrl url(str);
+            if (url.isLocalFile())
+            {
+                QString path = url.toLocalFile();
+                canDropAnyFile |= DragNDropHelper::IsExtensionSupported(path) && DragNDropHelper::IsFileFromProject(accessor, path);
+            }
+        }
+
+        if (canDropAnyFile)
+        {
+            droppingFile.Emit(true);
+            event->accept();
+        }
+        else
+        {
+            event->ignore();
+        }
+    }
+    else
+    {
+        event->accept();
+    }
 }
 
 void PreviewWidget::OnDragMoved(QDragMoveEvent* event)
@@ -426,24 +456,14 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/uri-list"))
     {
-        QStringList strList = mimeData->text().split("\n");
-        for (const auto& str : strList)
-        {
-            QUrl url(str);
-            if (url.isLocalFile())
-            {
-                QString path = url.toLocalFile();
-                QFileInfo fileInfo(path);
-                return fileInfo.isFile() && fileInfo.suffix() == "yaml";
-            }
-        }
+        //filter this format on drag entered
+        return true;
     }
     else if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))
     {
         QPoint pos = event->pos();
         DAVA::Vector2 davaPos(pos.x(), pos.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPos);
-        systemsManager->HighlightNode(node);
 
         if (nullptr != node)
         {
@@ -479,12 +499,15 @@ bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 
 void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 {
-    systemsManager->ClearHighlight();
+    droppingFile.Emit(false);
 }
 
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
-    systemsManager->ClearHighlight();
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    droppingFile.Emit(false);
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/plain") || mimeData->hasFormat(PackageMimeData::MIME_TYPE))
@@ -496,7 +519,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
         uint32 index = 0;
         if (node == nullptr)
         {
-            DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+            DataContext* active = accessor->GetActiveContext();
             DVASSERT(active != nullptr);
             const DocumentData* data = active->GetData<DocumentData>();
             DVASSERT(data != nullptr);
@@ -512,16 +535,8 @@ void PreviewWidget::OnDrop(QDropEvent* event)
     }
     else if (mimeData->hasFormat("text/uri-list"))
     {
-        QStringList list = mimeData->text().split("\n");
-        Vector<FilePath> packages;
-        for (const QString& str : list)
-        {
-            QUrl url(str);
-            if (url.isLocalFile())
-            {
-                emit OpenPackageFile(url.toLocalFile());
-            }
-        }
+        QStringList list = mimeData->text().split("\n", QString::SkipEmptyParts);
+        emit OpenPackageFiles(list);
     }
     renderWidget->setFocus();
 }

@@ -467,6 +467,9 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
 
 DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
     for (ControlNode* node : nodes)
@@ -481,6 +484,8 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
         DocumentData* data = GetDocumentData();
         data->BeginBatch(Format("Move Controls %s", CommandExecutorDetails::FormatNodeNames(nodes).c_str()), static_cast<uint32>(nodesToMove.size()));
         int index = destIndex;
+
+        Vector<ControlNode*> notMovedNodes;
         for (ControlNode* node : nodesToMove)
         {
             ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
@@ -500,12 +505,23 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
             }
             else
             {
-                DVASSERT(false);
+                notMovedNodes.push_back(node);
             }
         }
 
         data->EndBatch();
+
+        if (notMovedNodes.empty() == false)
+        {
+            NotificationParams notificationParams;
+            notificationParams.title = "Can not move controls";
+            String message = "Can not move controls: " + CommandExecutorDetails::FormatNodeNames(notMovedNodes);
+
+            notificationParams.message = Result(Result::RESULT_WARNING, message);
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
     }
+
     return movedNodes;
 }
 
@@ -659,20 +675,34 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
 {
     using namespace DAVA::TArc;
 
-    SelectedNodes createdNodes;
+    auto ShowWarnNotification = [this](String msg)
+    {
+        NotificationParams notificationParams;
+        notificationParams.title = "Can't paste";
+        notificationParams.message = Result(Result::RESULT_WARNING, msg);
+        ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+    };
+
     if (dest->IsReadOnly())
-        return createdNodes;
+    {
+        ShowWarnNotification("paste destination is read-only");
+        return SelectedNodes();
+    }
 
     ControlsContainerNode* controlsDest = dynamic_cast<ControlsContainerNode*>(dest);
     StyleSheetsNode* stylesDest = dynamic_cast<StyleSheetsNode*>(dest);
 
     if (controlsDest == nullptr && stylesDest == nullptr)
-        return createdNodes;
+    {
+        ShowWarnNotification("destination is not a controls/styles container");
+        return SelectedNodes();
+    }
 
     RefPtr<YamlParser> parser(YamlParser::CreateAndParseString(data));
     if (!parser.Valid() || !parser->GetRootNode())
     {
-        return createdNodes;
+        DAVA::Logger::Error("pasted data is not a valid yaml");
+        return SelectedNodes();
     }
 
     QuickEdPackageBuilder builder(GetEngineContext());
@@ -688,6 +718,8 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
     {
         if (!builder.GetResults().HasErrors())
         {
+            SelectedNodes createdNodes;
+
             const Vector<PackageNode*>& importedPackages = builder.GetImportedPackages();
             const Vector<ControlNode*>& controls = builder.GetRootControls();
             const Vector<StyleSheetNode*>& styles = builder.GetStyles();
@@ -764,9 +796,20 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
 
                 documentData->EndBatch();
             }
+
+            return createdNodes;
+        }
+        else
+        {
+            ShowWarnNotification(builder.GetResults().GetResultMessages());
+            return SelectedNodes();
         }
     }
-    return createdNodes;
+    else
+    {
+        ShowWarnNotification(Format("Can't load package '%s'", root->GetPath().GetAbsolutePathname().c_str()));
+        return SelectedNodes();
+    }
 }
 
 ControlNode* CommandExecutor::GroupSelectedNodes() const
