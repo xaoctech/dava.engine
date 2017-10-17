@@ -208,8 +208,23 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
 
                 DVASSERT(status == 0);
 
+                // UCKeyTranslate can produce characters we don't want to show to a user.
+                // For example, backspace, delete and enter keys will be translated to control characters,
+                // but we want to to use GetInputElementInfo(elementId).name for them instead to show meaningful string.
+                // So we trim all the characters except for letters, numbers and punctuation symbols.
+                // If resulting string is empty, the character is non-printable
+                static NSMutableCharacterSet* charactersToRemove = nil;
+                if (charactersToRemove == nil)
+                {
+                    charactersToRemove = [[NSMutableCharacterSet alloc] init];
+                    [charactersToRemove formUnionWithCharacterSet:[NSMutableCharacterSet alphanumericCharacterSet]];
+                    [charactersToRemove formUnionWithCharacterSet:[NSMutableCharacterSet punctuationCharacterSet]];
+                    [charactersToRemove invert];
+                }
+
+                DVASSERT(charactersToRemove != nil);
+
                 NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
-                NSCharacterSet* charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
                 NSString* trimmedString = [string stringByTrimmingCharactersInSet:charactersToRemove];
 
                 if ([trimmedString length] == 0)
