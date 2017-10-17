@@ -63,7 +63,6 @@ private:
     Skill* fireball;
     Skill* frostBite;
     Skill* lightningStrike;
-    Skill* godPunch;
 
     SkillBtn* fireballBtn;
     SkillBtn* frostBiteBtn;

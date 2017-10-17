@@ -158,7 +158,6 @@ void SkillSystemTest::OnAction(FastName actionId)
     if (skill->enabled && skill->currentCd == 0.f)
     {
         skill->currentCd = skill->cd;
-        return;
     }
 }
 
@@ -187,8 +186,6 @@ void SkillSystemTest::LoadResources()
     fireball = new Skill(5.f);
     frostBite = new Skill(6.f);
     lightningStrike = new Skill(7.f);
-    godPunch = new Skill(0.f);
-    godPunch->enabled = false;
 
     Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
@@ -296,5 +293,4 @@ void SkillSystemTest::UnloadResources()
     delete fireball;
     delete frostBite;
     delete lightningStrike;
-    delete godPunch;
 }
