@@ -548,9 +548,20 @@ void EditorControlsView::Layout()
         controller->GetControl()->SetPosition(pos);
     }
 
-    workAreaSizeChanged.Emit(Vector2(maxWidth, totalHeight));
+    Vector2 workAreaSize(maxWidth, totalHeight);
+    workAreaSizeChanged.Emit(workAreaSize);
 
     OnRootControlPosChanged();
+
+    if (gridControls.size() == 1)
+    {
+        const std::unique_ptr<BackgroundController>& grid = gridControls.front();
+        rootControlSizeChanged.Emit(grid->GetControl()->GetSize());
+    }
+    else
+    {
+        rootControlSizeChanged.Emit(workAreaSize);
+    }
 }
 
 void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRootControls, const SortedControlNodeSet& oldRootControls)

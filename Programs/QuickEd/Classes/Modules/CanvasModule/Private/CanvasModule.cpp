@@ -75,7 +75,7 @@ void CanvasModule::OnNeedCentralizeChanged(bool needCentralize)
     }
 
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
-    canvasData->needCentralize = needCentralize;
+    canvasData->displacement.SetZero();
 }
 
 void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControlPos)

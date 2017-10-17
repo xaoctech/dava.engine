@@ -31,9 +31,6 @@ public:
     //predefined scales list
     static DAVA::FastName predefinedScalesPropertyName;
 
-    //centralize control on view
-    static DAVA::FastName needCentralizePropertyName;
-
     //reference point are set to keep visible some area. Usually it's a cursor position or screen center
     //later it can be selection area center
     //reference point must be set before changing scale
@@ -55,7 +52,6 @@ public:
 
     DAVA::Vector2 GetRootPosition() const;
 
-    bool IsCentralizeRequired() const;
     DAVA::Vector2 GetMargin() const;
 
 private:
@@ -76,8 +72,6 @@ private:
     DAVA::Vector<DAVA::float32> predefinedScales;
 
     const DAVA::Vector2 margin = DAVA::Vector2(50.0f, 50.0f);
-
-    bool needCentralize = false;
 
     DAVA_VIRTUAL_REFLECTION(CanvasData, DAVA::TArc::DataNode);
 };
