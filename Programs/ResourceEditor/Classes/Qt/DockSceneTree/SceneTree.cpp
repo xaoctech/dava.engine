@@ -392,7 +392,6 @@ protected:
             {
                 DAVA::TexturesMap textures;
 
-                const SelectableGroup& selection = Selection::GetSelection();
                 for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
                 {
                     SceneHelper::TextureCollector collector;
@@ -1331,6 +1330,32 @@ void SceneTree::CollapseSwitch()
             expand(index);
         }
     }
+}
+
+void SceneTree::ReloadSelectedEntitiesTextures()
+{
+    using namespace DAVA::TArc;
+    const SelectableGroup& selection = Selection::GetSelection();
+    DAVA::Vector<DAVA::Texture*> reloadTextures;
+
+    for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
+    {
+        SceneHelper::TextureCollector collector;
+        SceneHelper::EnumerateEntityTextures(selectEntity->GetScene(), selectEntity, collector);
+        DAVA::TexturesMap& textures = collector.GetTextures();
+
+        for (auto& tex : textures)
+        {
+            auto found = std::find(reloadTextures.begin(), reloadTextures.end(), tex.second);
+
+            if (found == reloadTextures.end())
+            {
+                reloadTextures.push_back(tex.second);
+            }
+        }
+    }
+
+    REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
 }
 
 void SceneTree::CollapseAll()
