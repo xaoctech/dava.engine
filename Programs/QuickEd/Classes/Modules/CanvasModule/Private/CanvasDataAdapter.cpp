@@ -193,7 +193,7 @@ void CanvasDataAdapter::SetScale(DAVA::float32 scale, const DAVA::Vector2& refer
     const Vector<float32>& predefinedScales = canvasData->GetPredefinedScales();
 
     Vector2 margin = canvasData->GetMargin();
-    Vector2 position = margin - GetDisplacementPosition();
+    Vector2 position = GetDisplacementPosition();
 
     scale = Clamp(scale, predefinedScales.front(), predefinedScales.back());
     DVASSERT(scale != 0.0f);
@@ -202,7 +202,7 @@ void CanvasDataAdapter::SetScale(DAVA::float32 scale, const DAVA::Vector2& refer
     canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, scale);
 
     //recalculate new position to keep referncePoint on the same visible pos
-    Vector2 newPosition = (referencePoint + position - margin * scaleDiff - referencePoint + margin);
+    Vector2 newPosition = (referencePoint + position - margin) * scaleDiff - referencePoint + margin;
     SetDisplacementPosition(newPosition);
 }
 
