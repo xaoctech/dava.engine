@@ -61,8 +61,6 @@ EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::U
 {
     using namespace CreatingControlsSystemDetails;
 
-    (controlYamlString.empty() || IsEscPressed(currentInput) || IsLMBPressed(currentInput)) ? EditorSystemsManager::NoDrag : EditorSystemsManager::AddingControl;
-
     if (controlYamlString.empty())
     {
         return EditorSystemsManager::NoDrag;
