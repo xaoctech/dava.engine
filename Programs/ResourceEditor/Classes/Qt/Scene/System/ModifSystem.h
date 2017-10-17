@@ -16,6 +16,23 @@ class SceneCollisionSystem;
 class SceneCameraSystem;
 class HoodSystem;
 
+struct EntityToModify
+{
+    Selectable object;
+
+    DAVA::Matrix4 inversedParentWorldTransform;
+    DAVA::Matrix4 originalParentWorldTransform;
+    DAVA::Matrix4 originalTransform;
+
+    DAVA::Matrix4 toLocalZero;
+    DAVA::Matrix4 fromLocalZero;
+    DAVA::Matrix4 toWorldZero;
+    DAVA::Matrix4 fromWorldZero;
+};
+
+DAVA::Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities);
+void ApplyModificationToScene(DAVA::Scene* scene, const DAVA::Vector<EntityToModify>& entities);
+
 class EntityModificationSystem : public DAVA::SceneSystem, public SelectionSystemDelegate
 {
     friend class SceneEditor2;
@@ -47,8 +64,8 @@ public:
     bool ModifCanStart(const SelectableGroup& objects) const;
     bool ModifCanStartByMouse(const SelectableGroup& objects) const;
 
-    void RemoveEntity(DAVA::Entity* entity) override;
     void PrepareForRemove() override;
+
     bool Input(DAVA::UIEvent* event) override;
 
     void AddDelegate(EntityModificationSystemDelegate* delegate);
@@ -64,20 +81,6 @@ public:
     Selectable::TransformPivot GetPivotPoint() const;
 
 private:
-    struct EntityToModify
-    {
-        Selectable object;
-
-        DAVA::Matrix4 inversedParentWorldTransform;
-        DAVA::Matrix4 originalParentWorldTransform;
-        DAVA::Matrix4 originalTransform;
-
-        DAVA::Matrix4 toLocalZero;
-        DAVA::Matrix4 fromLocalZero;
-        DAVA::Matrix4 toWorldZero;
-        DAVA::Matrix4 fromWorldZero;
-    };
-
     enum CloneState : DAVA::uint32
     {
         CLONE_DONT,
@@ -91,7 +94,7 @@ private:
         BAKE_CENTER_PIVOT
     };
 
-    SelectableGroup BeginModification(const SelectableGroup& entities);
+    void BeginModification(const SelectableGroup& entities);
     void EndModification();
 
     void CloneBegin();

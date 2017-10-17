@@ -13,12 +13,11 @@
 #include "UI/Find/Filters/PrototypeUsagesFilter.h"
 #include "UI/Preview/PreviewWidgetSettings.h"
 
-#include <TArc/Qt/QtIcon.h>
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/DataProcessing/Common.h>
+#include <TArc/Qt/QtIcon.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
-#include <TArc/Qt/QtIcon.h>
-#include <TArc/DataProcessing/Common.h>
 
 #include <Tools/Version.h>
 #include <DAVAVersion.h>

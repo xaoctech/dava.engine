@@ -383,7 +383,6 @@ void QtMainWindow::SetupToolBars()
     // modification widget
     modificationWidget = new ModificationWidget(nullptr);
     ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
-    connect(ui->actionModifySnapToLandscape, &QAction::triggered, modificationWidget, &ModificationWidget::OnSnapToLandscapeChanged);
 
     // adding menu for material light view mode
     {
@@ -481,8 +480,6 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionPivotCenter, SIGNAL(triggered()), this, SLOT(OnPivotCenterMode()));
     QObject::connect(ui->actionPivotCommon, SIGNAL(triggered()), this, SLOT(OnPivotCommonMode()));
     QObject::connect(ui->actionManualModifMode, SIGNAL(triggered()), this, SLOT(OnManualModifMode()));
-    QObject::connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), this, SLOT(OnPlaceOnLandscape()));
-    QObject::connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), this, SLOT(OnSnapToLandscape()));
     QObject::connect(ui->actionModifyReset, SIGNAL(triggered()), this, SLOT(OnResetTransform()));
     QObject::connect(ui->actionLockTransform, SIGNAL(triggered()), this, SLOT(OnLockTransform()));
     QObject::connect(ui->actionUnlockTransform, SIGNAL(triggered()), this, SLOT(OnUnlockTransform()));
@@ -513,9 +510,11 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(On2DCameraDialog()));
     QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(On2DSpriteDialog()));
     QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
+
     QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), this, SLOT(RemoveSelection()));
     QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
     QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
+    QObject::connect(ui->actionReloadSelectedEntitiesTextures, SIGNAL(triggered()), ui->sceneTree, SLOT(ReloadSelectedEntitiesTextures()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
@@ -536,9 +535,6 @@ void QtMainWindow::SetupActions()
     //Landscape editors toggled
     QObject::connect(SceneSignals::Instance(), SIGNAL(LandscapeEditorToggled(SceneEditor2*)),
                      this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
-
-    QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
-                     this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
     // Debug functions
     QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
@@ -621,8 +617,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionModifyReset->setEnabled(enable);
     ui->actionModifyRotate->setEnabled(enable);
     ui->actionModifyScale->setEnabled(enable);
-    ui->actionModifyPlaceOnLandscape->setEnabled(enable);
-    ui->actionModifySnapToLandscape->setEnabled(enable);
     ui->actionPivotCenter->setEnabled(enable);
     ui->actionPivotCommon->setEnabled(enable);
     ui->actionCenterPivotPoint->setEnabled(enable);
@@ -901,41 +895,6 @@ void QtMainWindow::OnManualModifMode()
     else
     {
         modificationWidget->SetPivotMode(ModificationWidget::PivotAbsolute);
-    }
-}
-
-void QtMainWindow::OnPlaceOnLandscape()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() != nullptr)
-    {
-        DAVA::Entity* landscapeEntity = FindLandscapeEntity(scene.Get());
-        if (landscapeEntity == nullptr || GetLandscape(landscapeEntity) == nullptr)
-        {
-            DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
-            return;
-        }
-
-        const SelectableGroup& selection = Selection::GetSelection();
-        scene->modifSystem->PlaceOnLandscape(selection);
-    }
-}
-
-void QtMainWindow::OnSnapToLandscape()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() != nullptr)
-    {
-        DAVA::Entity* landscapeEntity = FindLandscapeEntity(scene.Get());
-        if (landscapeEntity == nullptr || GetLandscape(landscapeEntity) == nullptr)
-        {
-            DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
-            ui->actionModifySnapToLandscape->setChecked(false);
-            return;
-        }
-
-        scene->modifSystem->SetLandscapeSnap(ui->actionModifySnapToLandscape->isChecked());
-        LoadModificationState(scene.Get());
     }
 }
 
@@ -1298,9 +1257,6 @@ void QtMainWindow::LoadModificationState(SceneEditor2* scene)
             ui->actionPivotCenter->setChecked(false);
             ui->actionPivotCommon->setChecked(true);
         }
-
-        // landscape snap
-        ui->actionModifySnapToLandscape->setChecked(scene->modifSystem->GetLandscapeSnap());
 
         // way editor
         ui->actionWayEditor->setChecked(scene->wayEditSystem->IsWayEditEnabled());
@@ -1773,16 +1729,6 @@ void QtMainWindow::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const D
     }
 }
 
-void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
-{
-    if (MainWindowDetails::GetCurrentScene() != scene)
-    {
-        return;
-    }
-
-    ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
-}
-
 void QtMainWindow::OnMaterialLightViewChanged(bool)
 {
     int newMode = EditorMaterialSystem::LIGHTVIEW_NOTHING;
@@ -1892,7 +1838,7 @@ bool QtMainWindow::LoadAppropriateTextureFormat() const
             return false;
         }
 
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, DAVA::eGPUFamily::GPU_ORIGIN);
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadAllTextures.ID, DAVA::eGPUFamily::GPU_ORIGIN);
     }
 
     return settings->textureViewGPU == DAVA::GPU_ORIGIN;
@@ -2081,7 +2027,7 @@ void QtMainWindow::CallAction(ID id, DAVA::Any&& args)
         OnMaterialEditor(args.Cast<DAVA::NMaterial*>());
         break;
     case GlobalOperations::ReloadTexture:
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadAllTextures.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         break;
     default:
         DVASSERT(false, DAVA::Format("Not implemented action : %d", static_cast<DAVA::int32>(id)).c_str());

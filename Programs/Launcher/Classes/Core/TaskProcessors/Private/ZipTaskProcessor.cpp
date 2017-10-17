@@ -1,5 +1,5 @@
 #include "Core/TaskProcessors/ZipTaskProcessor.h"
-#include "Core/Tasks/UnzipTask.h"
+#include "Core/CommonTasks/UnzipTask.h"
 
 #include <QApplication>
 #include <QDir>
