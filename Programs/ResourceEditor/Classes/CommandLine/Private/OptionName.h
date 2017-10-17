@@ -11,6 +11,8 @@ public:
     static const DAVA::String OutFile;
     static const DAVA::String OutDir;
 
+    static const DAVA::String ResourceDir;
+
     static const DAVA::String File;
     static const DAVA::String ProcessFile;
 
