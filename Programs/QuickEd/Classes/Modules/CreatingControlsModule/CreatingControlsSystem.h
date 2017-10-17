@@ -23,7 +23,6 @@ private:
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
     bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
     void ProcessInput(DAVA::UIEvent* currentInput) override;
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
 
     void BindFields();
 
@@ -37,4 +36,6 @@ private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::DataWrapper documentDataWrapper;
     DAVA::String controlYamlString;
+    bool isEscPressed = false;
+    bool isLMBPressed = false;
 };
