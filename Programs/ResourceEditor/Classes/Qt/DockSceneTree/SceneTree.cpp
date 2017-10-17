@@ -388,11 +388,19 @@ protected:
                 Connect(particleEffectMenu->addAction(SharedIcon(":/QtIcons/restart.png"), QStringLiteral("Restart")), this, &EntityContextMenu::RestartEffect);
             }
 
-            if (entity != nullptr)
+            if (selectionSize)
             {
-                SceneHelper::TextureCollector collector;
-                SceneHelper::EnumerateEntityTextures(scene, entity, collector);
-                DAVA::TexturesMap& textures = collector.GetTextures();
+                DAVA::TexturesMap textures;
+
+                const SelectableGroup& selection = Selection::GetSelection();
+                for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
+                {
+                    SceneHelper::TextureCollector collector;
+                    SceneHelper::EnumerateEntityTextures(scene, selectEntity, collector);
+                    DAVA::TexturesMap& collectorTextures = collector.GetTextures();
+
+                    textures.insert(collectorTextures.begin(), collectorTextures.end());
+                }
 
                 if (textures.empty() == false)
                 {
