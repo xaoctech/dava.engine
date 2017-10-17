@@ -167,21 +167,28 @@ CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderOb
             }
         }
 
-        PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-        PxActor* actor = module->CreateStaticActor();
-        DVASSERT(actor != nullptr);
-        PxRigidActor* rigidActor = actor->is<PxRigidActor>();
-        DVASSERT(rigidActor);
-        rigidActor->userData = userData;
+        if (polygons.empty() == false)
+        {
+            PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+            PxActor* actor = module->CreateStaticActor();
+            DVASSERT(actor != nullptr);
+            PxRigidActor* rigidActor = actor->is<PxRigidActor>();
+            DVASSERT(rigidActor);
+            rigidActor->userData = userData;
 
-        PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), cache);
-        shape->setQueryFilterData(objectFilterData);
-        rigidActor->attachShape(*shape);
+            PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), cache);
+            shape->setQueryFilterData(objectFilterData);
+            rigidActor->attachShape(*shape);
 
-        InitBounds(rigidActor, shape);
-        UpdateActorTransform(transform, rigidActor);
+            InitBounds(rigidActor, shape);
+            UpdateActorTransform(transform, rigidActor);
 
-        result.collisionObject = rigidActor;
+            result.collisionObject = rigidActor;
+        }
+        else
+        {
+            result.isValid = false;
+        }
     }
     return result;
 }
@@ -208,8 +215,8 @@ CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* u
             PxShape* shape = module->CreateHeightField(landscape, localPose);
             rigidActor->attachShape(*shape);
 
-            InitBounds(rigidActor, shape);
             shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+            InitBounds(rigidActor, shape);
             shape->setQueryFilterData(landscapeFilterData);
 
             result.collisionObject = rigidActor;

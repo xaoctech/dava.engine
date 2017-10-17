@@ -22,6 +22,7 @@ public:
 
     void ClearMessage(const WindowKey& windowKey) override;
     int ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog) override;
+    void ShowUnmodalDialog(const WindowKey& parentWindow, QDialog* dialog) override;
     ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) override;
     QString GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params) override;
     QString GetSaveFileName(const WindowKey& windowKey, const FileDialogParams& params) override;

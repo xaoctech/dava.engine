@@ -1,47 +1,82 @@
 #include "Classes/SceneTree/Private/SceneTreeModelV2.h"
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
 
+#include "Classes/DragNDropSupport/ReflectedMimeData.h"
+
 #include <TArc/DataProcessing/AnyQMetaType.h>
 
 #include <Debug/DVAssert.h>
 #include <Utils/Utils.h>
 
-SceneTreeModelV2::SceneTreeModelV2(DAVA::Scene* scene)
+SceneTreeModelV2::SceneTreeModelV2(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor)
     : QAbstractItemModel(nullptr)
     , objectsPool(10000, 5)
+    , traits(accessor)
 {
     DVASSERT(scene != nullptr);
     rootItem = objectsPool.RequestObject();
     rootItem->object = Selectable(DAVA::Any(scene));
     mapping.emplace(rootItem->object, rootItem);
-
-    {
-        DAVA::Scene* scene = GetScene();
-        DVASSERT(scene != nullptr);
-        SceneTreeSystem* system = scene->GetSystem<SceneTreeSystem>();
-        DVASSERT(system != nullptr);
-        system->syncIsNecessary.Connect(this, &SceneTreeModelV2::OnSyncSignal);
-    }
 }
 
 SceneTreeModelV2::~SceneTreeModelV2()
 {
-    DAVA::Scene* scene = GetScene();
-    DVASSERT(scene != nullptr);
-    SceneTreeSystem* system = scene->GetSystem<SceneTreeSystem>();
-    DVASSERT(system != nullptr);
-    system->syncIsNecessary.DisconnectAll();
-
     rootItem.reset();
+}
+
+bool SceneTreeModelV2::canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
+                                       const QModelIndex& parent) const
+{
+    const ReflectedMimeData* mimeData = dynamic_cast<const ReflectedMimeData*>(data);
+    if (mimeData == nullptr)
+    {
+        return false;
+    }
+
+    return traits.CanBeDroped(mimeData, action, MapItem(parent)->object, row);
+}
+
+bool SceneTreeModelV2::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
+                                    const QModelIndex& parent)
+{
+    const ReflectedMimeData* mimeData = dynamic_cast<const ReflectedMimeData*>(data);
+    if (mimeData == nullptr)
+    {
+        return false;
+    }
+
+    return traits.Drop(mimeData, action, MapItem(parent)->object, row, static_cast<SceneEditor2*>(GetScene()));
+}
+
+QMimeData* SceneTreeModelV2::mimeData(const QModelIndexList& indexes) const
+{
+    if (indexes.isEmpty() == true)
+    {
+        return nullptr;
+    }
+
+    DAVA::Vector<Selectable> objects;
+    objects.reserve(indexes.size());
+
+    foreach (const QModelIndex& index, indexes)
+    {
+        objects.push_back(GetObjectByIndex(index));
+    }
+
+    const DAVA::ReflectedType* frontType = objects.front().GetObjectType();
+    for (const Selectable& obj : objects)
+    {
+        if (frontType != obj.GetObjectType())
+        {
+            return nullptr;
+        }
+    }
+
+    return new ReflectedMimeData(objects);
 }
 
 int SceneTreeModelV2::rowCount(const QModelIndex& parent) const
 {
-    if (parent.isValid() == false)
-    {
-        return 0;
-    }
-
     SceneTreeItemV2* item = MapItem(parent);
     DVASSERT(item != nullptr);
     return static_cast<int>(item->children.size());
@@ -54,11 +89,6 @@ int SceneTreeModelV2::columnCount(const QModelIndex& parent) const
 
 bool SceneTreeModelV2::hasChildren(const QModelIndex& parent) const
 {
-    if (parent.isValid() == false)
-    {
-        return false;
-    }
-
     SceneTreeItemV2* item = MapItem(parent);
     DVASSERT(item != nullptr);
     return traits.GetChildrenCount(item->object) > 0;
@@ -66,30 +96,21 @@ bool SceneTreeModelV2::hasChildren(const QModelIndex& parent) const
 
 QModelIndex SceneTreeModelV2::index(int row, int column, const QModelIndex& parent) const
 {
-    if (parent.isValid())
-    {
-        SceneTreeItemV2* item = MapItem(parent);
-        if (item != nullptr && row < static_cast<int>(item->children.size()))
-            return createIndex(row, column, item);
+    SceneTreeItemV2* item = MapItem(parent);
+    if (item != nullptr && row < static_cast<int>(item->children.size()))
+        return createIndex(row, column, item);
 
-        return QModelIndex();
-    }
-
-    return MapItem(rootItem.get());
+    return QModelIndex();
 }
 
 QModelIndex SceneTreeModelV2::parent(const QModelIndex& child) const
 {
     DVASSERT(child.isValid());
     SceneTreeItemV2* item = reinterpret_cast<SceneTreeItemV2*>(child.internalPointer());
-    if (item == nullptr)
-    {
-        return QModelIndex();
-    }
-
+    DVASSERT(item != nullptr);
     if (item == rootItem.get())
     {
-        return MapItem(rootItem.get());
+        return QModelIndex();
     }
 
     return createIndex(item->positionInParent, 0, item->parent);
@@ -120,7 +141,7 @@ QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
         return traits.GetTooltip(item->object);
     }
     break;
-    case InternalObject:
+    case ToItemRoleCast(eSceneTreeRoles::InternalObjectRole):
     {
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
@@ -139,13 +160,14 @@ QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
 bool SceneTreeModelV2::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     SceneTreeItemV2* item = MapItem(index);
-    return traits.SetValue(item->object, value, role, GetScene());
+    return traits.SetValue(item->object, value, role, static_cast<SceneEditor2*>(GetScene()));
 }
 
 Qt::ItemFlags SceneTreeModelV2::flags(const QModelIndex& index) const
 {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
     SceneTreeItemV2* item = MapItem(index);
+
     return traits.GetItemFlags(item->object, defaultFlags);
 }
 
@@ -162,7 +184,7 @@ QVariant SceneTreeModelV2::headerData(int section, Qt::Orientation orientation, 
 bool SceneTreeModelV2::canFetchMore(const QModelIndex& parent) const
 {
     SceneTreeItemV2* item = MapItem(parent);
-    DVASSERT(item->unfetchedChildren.empty() == true);
+    item->unfetchedChildren.clear();
     DAVA::int32 childCount = traits.GetChildrenCount(item->object);
     if (childCount == static_cast<DAVA::int32>(item->children.size()))
     {
@@ -220,9 +242,14 @@ void SceneTreeModelV2::fetchMore(const QModelIndex& parent)
     item->unfetchedChildren.clear();
 }
 
-QModelIndex SceneTreeModelV2::GetRootIndex() const
+Qt::DropActions SceneTreeModelV2::supportedDropActions() const
 {
-    return MapItem(rootItem.get());
+    return Qt::MoveAction;
+}
+
+Qt::DropActions SceneTreeModelV2::supportedDragActions() const
+{
+    return Qt::MoveAction | Qt::LinkAction;
 }
 
 QModelIndex SceneTreeModelV2::GetIndexByObject(const Selectable& object) const
@@ -230,7 +257,6 @@ QModelIndex SceneTreeModelV2::GetIndexByObject(const Selectable& object) const
     auto iter = mapping.find(object);
     if (iter == mapping.end())
     {
-        DVASSERT(false);
         return QModelIndex();
     }
 
@@ -240,17 +266,10 @@ QModelIndex SceneTreeModelV2::GetIndexByObject(const Selectable& object) const
 
 Selectable SceneTreeModelV2::GetObjectByIndex(const QModelIndex& index) const
 {
-    DVASSERT(index.model() == this);
+    DVASSERT(index.isValid() == false || index.model() == this);
     SceneTreeItemV2* item = MapItem(index);
     DVASSERT(item != nullptr);
     return item->object;
-}
-
-void SceneTreeModelV2::OnSyncSignal()
-{
-    executor.DelayedExecute([this]() {
-        SyncChanges();
-    });
 }
 
 void SceneTreeModelV2::SyncChanges()
@@ -354,14 +373,11 @@ SceneTreeItemV2* SceneTreeModelV2::MapItem(const QModelIndex& index) const
 {
     if (index.isValid() == false)
     {
-        return nullptr;
+        return rootItem.get();
     }
 
     SceneTreeItemV2* p = reinterpret_cast<SceneTreeItemV2*>(index.internalPointer());
-    if (p == nullptr)
-    {
-        return rootItem.get();
-    }
+    DVASSERT(p != nullptr);
     return p->children[index.row()].get();
 }
 
@@ -370,7 +386,7 @@ QModelIndex SceneTreeModelV2::MapItem(SceneTreeItemV2* item) const
     DVASSERT(item != nullptr);
     if (item == rootItem.get())
     {
-        return createIndex(0, 0, nullptr);
+        return QModelIndex();
     }
 
     return createIndex(item->positionInParent, 0, item->parent);

@@ -2,6 +2,7 @@
 
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
 
+#include <Command/Command.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
@@ -19,7 +20,7 @@ public:
 
     void UnregisterEntity(DAVA::Entity* entity) override;
     void UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component) override;
-    void PrepareForRemove();
+    void PrepareForRemove() override;
 
     void Process(DAVA::float32 timeElapsed) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
@@ -37,6 +38,9 @@ public:
     const SyncSnapshot& GetSyncSnapshot() const;
     void SyncFinished();
     DAVA::Signal<> syncIsNecessary;
+
+protected:
+    std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame) override;
 
 private:
     SyncSnapshot syncSnapshot;

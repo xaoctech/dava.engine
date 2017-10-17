@@ -90,7 +90,10 @@ private:
 template <typename T>
 bool Selectable::CanBeCastedTo() const
 {
-    DVASSERT(ContainsObject() == true);
+    if (ContainsObject() == false)
+    {
+        return false;
+    }
     DVASSERT(object.GetType()->IsPointer());
     const DAVA::ReflectedType* t = DAVA::TArc::GetValueReflectedType(object);
     DVASSERT(t != nullptr);

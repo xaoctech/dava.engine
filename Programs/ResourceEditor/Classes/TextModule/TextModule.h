@@ -7,6 +7,9 @@
 
 class TextModule : public DAVA::TArc::ClientModule
 {
+public:
+    TextModule();
+
 protected:
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;

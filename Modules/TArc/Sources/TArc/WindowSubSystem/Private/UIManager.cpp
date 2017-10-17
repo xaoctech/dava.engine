@@ -635,6 +635,8 @@ struct UIManager::Impl : public QObject
     ClientModule* currentModule = nullptr;
     NotificationLayout notificationLayout;
 
+    QtConnections connections;
+
     struct ModuleResources
     {
         Vector<QPointer<QAction>> actions;
@@ -1077,6 +1079,47 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
     int result = dlg->exec();
     pi.Set("geometry", dlg->geometry());
     return result;
+}
+
+void UIManager::ShowUnmodalDialog(const WindowKey& windowKey, QDialog* dlg)
+{
+    bool isStayOnTop = dlg->windowFlags().testFlag(Qt::WindowStaysOnTopHint);
+
+    DVASSERT(dlg != nullptr);
+    UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
+    if (windowInfo != nullptr)
+    {
+        if (dlg->parent() != windowInfo->window.data())
+        {
+            dlg->setParent(windowInfo->window.data());
+        }
+    }
+
+    dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
+    if (isStayOnTop == true)
+    {
+        dlg->setWindowFlags(dlg->windowFlags() | Qt::WindowStaysOnTopHint);
+    }
+
+    QString dialogName = dlg->objectName();
+    if (dialogName.isEmpty() == true)
+    {
+        dialogName = dlg->windowTitle();
+    }
+
+    PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+    QRect dialogRect = pi.Get("geometry", QRect());
+    if (dialogRect.isValid())
+    {
+        dlg->setGeometry(dialogRect);
+    }
+
+    impl->connections.AddConnection(dlg, &QDialog::finished, [this, dialogName, dlg](int) {
+        PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+        pi.Set("geometry", dlg->geometry());
+    });
+
+    dlg->show();
 }
 
 ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)

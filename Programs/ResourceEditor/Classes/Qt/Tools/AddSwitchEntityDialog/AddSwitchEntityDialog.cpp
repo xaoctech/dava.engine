@@ -1,6 +1,5 @@
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
-#include "Classes/Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Classes/Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
 #include "Classes/Qt/Main/QtUtils.h"
 #include "Classes/Qt/Main/mainwindow.h"

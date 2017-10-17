@@ -130,7 +130,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
         DAVA::ScopedPtr<DAVA::Entity> newNode(new DAVA::Entity());
         newNode->SetName("dummyEntity");
-        newNode->AddComponent(new WASDControllerComponent());
+        newNode->AddComponent(new DAVA::WASDControllerComponent());
         sceneData->GetScene()->AddNode(newNode.get());
 
         auto step1 = [this]() {
@@ -174,7 +174,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
         DAVA::ScopedPtr<DAVA::Entity> newNode(new DAVA::Entity());
         newNode->SetName("dummyEntity");
-        newNode->AddComponent(new WASDControllerComponent());
+        newNode->AddComponent(new DAVA::WASDControllerComponent());
         sceneData->GetScene()->AddNode(newNode.get());
 
         DAVA::Entity* entityForDelete = new DAVA::Entity();

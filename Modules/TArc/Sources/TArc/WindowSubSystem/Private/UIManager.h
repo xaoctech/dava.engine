@@ -51,6 +51,7 @@ public:
     void ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration = 0) override;
     void ClearMessage(const WindowKey& windowKey) override;
     int ShowModalDialog(const WindowKey& windowKey, QDialog* dialog) override;
+    void ShowUnmodalDialog(const WindowKey& windowKey, QDialog* dialog) override;
     ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) override;
     void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const override;
 

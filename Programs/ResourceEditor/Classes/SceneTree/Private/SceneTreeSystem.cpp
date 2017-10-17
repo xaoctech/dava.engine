@@ -9,8 +9,35 @@
 
 #include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
 
+#include <Command/CommandBatch.h>
+
 namespace SceneTreeSystemDetail
 {
+class SetSolidFlagForSave : public DAVA::Command
+{
+public:
+    SetSolidFlagForSave(DAVA::Entity* e)
+        : DAVA::Command("")
+        , entity(e)
+    {
+        prevValue = entity->GetSolid();
+    }
+
+    void Redo() override
+    {
+        entity->SetSolid(false);
+    }
+
+    void Undo() override
+    {
+        entity->SetSolid(prevValue);
+    }
+
+private:
+    DAVA::Entity* entity = nullptr;
+    bool prevValue = false;
+};
+
 DAVA::uint32 CalcEntityDepth(DAVA::Entity* e)
 {
     DAVA::uint32 depth = 0;
@@ -374,4 +401,21 @@ void SceneTreeSystem::SyncFinished()
 {
     syncSnapshot = SyncSnapshot();
     syncRequested = false;
+}
+
+std::unique_ptr<DAVA::Command> SceneTreeSystem::PrepareForSave(bool saveForGame)
+{
+    DAVA::CommandBatch* batch = new DAVA::CommandBatch();
+    DAVA::Scene* scene = GetScene();
+
+    DAVA::Function<void(DAVA::Entity*)> fn = [batch, &fn](DAVA::Entity* e) {
+        batch->Add(std::make_unique<SceneTreeSystemDetail::SetSolidFlagForSave>(e));
+        for (DAVA::int32 i = 0; i < e->GetChildrenCount(); ++i)
+        {
+            fn(e->GetChild(i));
+        }
+    };
+
+    fn(scene);
+    return std::unique_ptr<DAVA::Command>(batch);
 }

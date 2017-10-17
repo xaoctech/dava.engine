@@ -36,7 +36,16 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
    </layout>
@@ -78,35 +87,6 @@
     <property name="title">
      <string>File</string>
     </property>
-   </widget>
-   <widget class="QMenu" name="menuCreateNode">
-    <property name="title">
-     <string>Entity</string>
-    </property>
-    <widget class="QMenu" name="menuAdd">
-     <property name="title">
-      <string>Add Entity</string>
-     </property>
-     <addaction name="actionAddEmptyEntity"/>
-     <addaction name="actionLight"/>
-     <addaction name="actionCamera"/>
-     <addaction name="actionEditor_2D_Camera"/>
-     <addaction name="actionUserNode"/>
-     <addaction name="actionSwitchNode"/>
-     <addaction name="actionParticleEffectNode"/>
-     <addaction name="actionAddLandscape"/>
-     <addaction name="actionAddWind"/>
-     <addaction name="actionAddVegetation"/>
-     <addaction name="actionAddPath"/>
-     <addaction name="actionTextEntity"/>
-     <addaction name="separator"/>
-     <addaction name="actionEditor_Sprite"/>
-    </widget>
-    <addaction name="actionParticleEmitter"/>
-    <addaction name="actionParticle_Emitter"/>
-    <addaction name="menuAdd"/>
-    <addaction name="actionRemoveEntity"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="Tools">
     <property name="title">
@@ -250,7 +230,6 @@
    <addaction name="Edit"/>
    <addaction name="View"/>
    <addaction name="Quality"/>
-   <addaction name="menuCreateNode"/>
    <addaction name="Scene"/>
    <addaction name="Tools"/>
    <addaction name="Help"/>
@@ -332,7 +311,16 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -366,103 +354,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockSceneTree">
-   <property name="windowTitle">
-    <string>Scene Tree</string>
-   </property>
-   <property name="layoutTags" stdset="0">
-    <stringlist>
-     <string>history</string>
-     <string>default</string>
-    </stringlist>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockSceneTreeContent">
-    <layout class="QVBoxLayout" name="verticalLayout_9">
-     <property name="spacing">
-      <number>2</number>
-     </property>
-     <property name="margin">
-      <number>1</number>
-     </property>
-     <item>
-      <widget class="QToolBar" name="scenegraphToolBar">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
-       </property>
-       <property name="floatable">
-        <bool>true</bool>
-       </property>
-       <addaction name="actionAddNewEntity"/>
-       <addaction name="actionRemoveEntity"/>
-       <addaction name="actionExpandSceneTree"/>
-       <addaction name="actionCollapseSceneTree"/>
-       <addaction name="actionReloadSelectedEntitiesTextures"/>
-      </widget>
-     </item>
-     <item>
-      <widget class="QFrame" name="frame_5">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>3</number>
-        </property>
-        <property name="margin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLineEdit" name="sceneTreeFilterEdit">
-          <property name="placeholderText">
-           <string>Type here to search</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="sceneTreeFilterClear">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>:/QtTools/Icons/close-10.png</normaloff>:/QtTools/Icons/close-10.png</iconset>
-          </property>
-          <property name="autoRaise">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="SceneTree" name="sceneTree">
-       <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
-       </property>
-       <property name="uniformRowHeights">
-        <bool>true</bool>
-       </property>
-       <property name="expandsOnDoubleClick">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QDockWidget" name="dockLODEditor">
    <property name="windowTitle">
     <string>LOD Editor</string>
@@ -472,7 +363,16 @@
    </attribute>
    <widget class="QWidget" name="dockLODEditorContent">
     <layout class="QVBoxLayout" name="verticalLayout_2">
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -485,8 +385,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>76</height>
+          <width>254</width>
+          <height>136</height>
          </rect>
         </property>
        </widget>
@@ -564,7 +464,16 @@
    </attribute>
    <widget class="QWidget" name="dockLandscapeEditorControlsContent">
     <layout class="QVBoxLayout" name="verticalLayout_3">
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -577,8 +486,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>76</height>
+          <width>254</width>
+          <height>136</height>
          </rect>
         </property>
        </widget>
@@ -587,33 +496,6 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionLight">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/light.png</normaloff>:/QtIcons/light.png</iconset>
-   </property>
-   <property name="text">
-    <string>Light</string>
-   </property>
-  </action>
-  <action name="actionCamera">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
-   </property>
-   <property name="text">
-    <string>Camera</string>
-   </property>
-  </action>
-  <action name="actionUserNode">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/user_object.png</normaloff>:/QtIcons/user_object.png</iconset>
-   </property>
-   <property name="text">
-    <string>User Node</string>
-   </property>
-  </action>
   <action name="actionMaterialEditor">
    <property name="icon">
     <iconset resource="Resources.qrc">
@@ -692,23 +574,6 @@
     <string>Editor</string>
    </property>
   </action>
-  <action name="actionParticleEmitter">
-   <property name="text">
-    <string>Particle Emitter</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-  </action>
-  <action name="actionSwitchNode">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/switch.png</normaloff>:/QtIcons/switch.png</iconset>
-   </property>
-   <property name="text">
-    <string>Switch</string>
-   </property>
-  </action>
   <action name="actionShowNotPassableLandscape">
    <property name="checkable">
     <bool>true</bool>
@@ -752,23 +617,6 @@
    </property>
    <property name="blockName" stdset="0">
     <string>Editor</string>
-   </property>
-  </action>
-  <action name="actionParticleEffectNode">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/effect.png</normaloff>:/QtIcons/effect.png</iconset>
-   </property>
-   <property name="text">
-    <string>Particle Effect Node</string>
-   </property>
-  </action>
-  <action name="actionParticle_Emitter">
-   <property name="text">
-    <string>Particle Emitter</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
    </property>
   </action>
   <action name="actionModifyMove">
@@ -856,30 +704,6 @@
    </property>
    <property name="text">
     <string>ModifyReset</string>
-   </property>
-  </action>
-  <action name="actionAddNewEntity">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/add_green.png</normaloff>:/QtIcons/add_green.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Entity</string>
-   </property>
-   <property name="toolTip">
-    <string>Add new entity</string>
-   </property>
-  </action>
-  <action name="actionRemoveEntity">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/remove.png</normaloff>:/QtIcons/remove.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove Entity</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove entity</string>
    </property>
   </action>
   <action name="actionEnableCameraLight">
@@ -995,38 +819,6 @@
     <string>Custom Colors Editor</string>
    </property>
   </action>
-  <action name="actionVisibilityCheckTool">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/land_visibility.png</normaloff>:/QtIcons/land_visibility.png</iconset>
-   </property>
-   <property name="text">
-    <string>Visibility Check Tool</string>
-   </property>
-   <property name="toolTip">
-    <string>Visibility Check Tool</string>
-   </property>
-  </action>
-  <action name="actionInvisibleWall">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Invisible Wall</string>
-   </property>
-  </action>
-  <action name="actionAddEmptyEntity">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/node.png</normaloff>:/QtIcons/node.png</iconset>
-   </property>
-   <property name="text">
-    <string>Empty Entity</string>
-   </property>
-  </action>
   <action name="actionShowEditorGizmo">
    <property name="checkable">
     <bool>true</bool>
@@ -1051,53 +843,9 @@
     <string>Editor</string>
    </property>
   </action>
-  <action name="actionExpandSceneTree">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/expand_all.png</normaloff>:/QtIcons/expand_all.png</iconset>
-   </property>
-   <property name="text">
-    <string>Expand all.</string>
-   </property>
-   <property name="toolTip">
-    <string>Expand all.</string>
-   </property>
-  </action>
-  <action name="actionReloadSelectedEntitiesTextures">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-    <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
-   </property>
-   <property name="text">
-    <string>Reload Textures...</string>
-   </property>
-   <property name="toolTip">
-    <string>Reload Textures...</string>
-   </property>
-  </action>
-  <action name="actionCollapseSceneTree">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/collapse_all.png</normaloff>:/QtIcons/collapse_all.png</iconset>
-   </property>
-   <property name="text">
-    <string>Collapse all.</string>
-   </property>
-   <property name="toolTip">
-    <string>Collapse all.</string>
-   </property>
-  </action>
   <action name="actionBuildStaticOcclusion">
    <property name="text">
     <string>Build Static Occlusion</string>
-   </property>
-  </action>
-  <action name="actionSpeedTree">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Speed Tree</string>
    </property>
   </action>
   <action name="actionConvertModifiedTextures">
@@ -1153,36 +901,6 @@
     <string>Specular</string>
    </property>
   </action>
-  <action name="actionEditor_Sprite">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/map.png</normaloff>:/QtIcons/map.png</iconset>
-   </property>
-   <property name="text">
-    <string>Editor Sprite</string>
-   </property>
-  </action>
-  <action name="actionEditor_2D_Camera">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
-   </property>
-   <property name="text">
-    <string>Camera 2D</string>
-   </property>
-  </action>
-  <action name="actionAddLandscape">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>Landscape</string>
-   </property>
-   <property name="toolTip">
-    <string>Add landscape</string>
-   </property>
-  </action>
   <action name="actionCustomQuality">
    <property name="text">
     <string>Custom...</string>
@@ -1226,27 +944,6 @@
    </property>
    <property name="text">
     <string>ImageSplitter</string>
-   </property>
-  </action>
-  <action name="actionAddWind">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/wind.png</normaloff>:/QtIcons/wind.png</iconset>
-   </property>
-   <property name="text">
-    <string>Wind</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Wind</string>
-   </property>
-  </action>
-  <action name="actionAddVegetation">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
-   </property>
-   <property name="text">
-    <string>Vegetation</string>
    </property>
   </action>
   <action name="actionCenterPivotPoint">
@@ -1333,18 +1030,6 @@
    </property>
    <property name="text">
     <string>WayEditor</string>
-   </property>
-  </action>
-  <action name="actionAddPath">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/path.png</normaloff>:/QtIcons/path.png</iconset>
-   </property>
-   <property name="text">
-    <string>Path</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Path</string>
    </property>
   </action>
   <action name="actionSnapCameraToLandscape">
@@ -1507,24 +1192,6 @@
     <string>Create Test Hard Skinned Object</string>
    </property>
   </action>
-  <action name="actionAddGeoDecalComponent">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/mipmap.png</normaloff>:/QtIcons/mipmap.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Geo Decal Component</string>
-   </property>
-  </action>
-  <action name="actionTextEntity">
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/text_component.png</normaloff>:/QtIcons/text_component.png</iconset>
-   </property>
-   <property name="text">
-    <string>Text Entity</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1543,12 +1210,6 @@
    <class>SceneInfo</class>
    <extends>QTreeView</extends>
    <header>DockSceneInfo/SceneInfo.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SceneTree</class>
-   <extends>QTreeView</extends>
-   <header>DockSceneTree/SceneTree.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>LODEditor</class>

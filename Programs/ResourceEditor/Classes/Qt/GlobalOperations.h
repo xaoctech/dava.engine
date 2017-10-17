@@ -13,7 +13,6 @@ public:
     enum ID
     {
         OpenScene, // args - scenePath: DAVA::String
-        SetNameAsFilter, // args - name: DAVA::String
         ShowMaterial, // args - material::DAVA::NMaterial*
         ReloadTexture, // args - empty
     };

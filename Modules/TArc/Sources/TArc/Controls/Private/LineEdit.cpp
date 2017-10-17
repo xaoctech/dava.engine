@@ -23,6 +23,7 @@ LineEdit::LineEdit(const Params& params, ContextAccessor* accessor, Reflection m
 void LineEdit::SetupControl()
 {
     connections.AddConnection(this, &QLineEdit::editingFinished, MakeFunction(this, &LineEdit::EditingFinished));
+    connections.AddConnection(this, &QLineEdit::textChanged, MakeFunction(this, &LineEdit::TextChanged));
     TextValidator* validator = new TextValidator(this, this);
     setValidator(validator);
 }
@@ -48,14 +49,11 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
     bool textChanged = descriptor.IsChanged(Fields::Text);
     if (readOnlyChanged || textChanged)
     {
-        DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Text));
-        DVASSERT(fieldValue.IsValid());
-
         setReadOnly(IsValueReadOnly(descriptor, Fields::Text, Fields::IsReadOnly));
 
         if (textChanged)
         {
-            QString newText = QString::fromStdString(fieldValue.GetValue().Cast<String>());
+            QString newText = QString::fromStdString(GetFieldValue(Fields::Text, DAVA::String()));
             if (newText != text())
             {
                 setText(newText);
@@ -110,6 +108,23 @@ void LineEdit::ShowHint(const QString& message)
     notifParams.message.message = message.toStdString();
     notifParams.message.type = ::DAVA::Result::RESULT_ERROR;
     controlParams.ui->ShowNotification(controlParams.wndKey, notifParams);
+}
+
+void LineEdit::TextChanged(const QString& newText)
+{
+    RETURN_IF_MODEL_LOST(void());
+    if (!isReadOnly())
+    {
+        FastName immediateFieldName = GetFieldName(Fields::ImmediateText);
+        if (immediateFieldName.IsValid())
+        {
+            AnyFn method = model.GetMethod(immediateFieldName.c_str());
+            if (method.IsValid())
+            {
+                method.Invoke(newText.toStdString());
+            }
+        }
+    }
 }
 
 } // namespace TArc
