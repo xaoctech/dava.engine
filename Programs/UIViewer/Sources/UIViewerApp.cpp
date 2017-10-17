@@ -1,19 +1,28 @@
 #include "UIViewerApp.h"
 #include "UIScreens/UIViewScreen.h"
 
-#include <Engine/Engine.h>
-#include <Engine/Window.h>
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <DeviceManager/DeviceManager.h>
+#include <Engine/Engine.h>
+#include <Engine/Window.h>
+#include <Input/ActionSystem.h>
+#include <Input/InputSystem.h>
+#include <Input/Keyboard.h>
 #include <Network/ServicesProvider.h>
 #include <Render/RHI/rhi_Public.h>
-#include <Utils/StringFormat.h>
 #include <UI/UIScreenManager.h>
+#include <Utils/StringFormat.h>
 
 #include <DocDirSetup/DocDirSetup.h>
 
 #include <LoggerService/NetLogger.h>
 #include <LoggerService/ServiceInfo.h>
+
+namespace UIViewerAppPrivate
+{
+static const DAVA::FastName SHOW_VIRTUAL_KEYBOARD_ACTION("showVirtualKeyboard");
+}
 
 UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>& cmdLine)
     : engine(engine_)
@@ -45,6 +54,8 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
     options.AddOption("-virtualWidth", VariantType(1024), "Requested virtual width of screen");
     options.AddOption("-virtualHeight", VariantType(1024), "Requested virtual height of screen");
 
+    options.AddOption("-virtualKeyboardHeight", VariantType(0), "Requested height of virtual keyboard placeholder");
+
     options.AddOption("-fontsDir", VariantType(String("~res:/")), "Fonts Directory");
 
     options.AddOption("-locale", VariantType(String("en")), "Language");
@@ -57,8 +68,49 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
 
 void UIViewerApp::OnAppStarted()
 {
+    using namespace DAVA;
+
     servicesProvider->AddService(DAVA::Net::LOG_SERVICE_ID, netLogger);
     servicesProvider->Start();
+
+    ActionSystem* actionSystem = GetEngineContext()->actionSystem;
+    actionSystem->ActionTriggered.Connect(this, &UIViewerApp::OnActionTriggered);
+
+    Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
+    if (kb != nullptr)
+    {
+        ActionSet set;
+        set.name = "Shortcuts";
+
+        DigitalBinding db;
+        db.actionId = UIViewerAppPrivate::SHOW_VIRTUAL_KEYBOARD_ACTION;
+        db.digitalStates[0] = DigitalElementState::JustPressed();
+        db.digitalElements[0] = eInputElements::KB_F7;
+        set.digitalBindings.push_back(db);
+
+        actionSystem->BindSet(set, kb->GetId());
+    }
+}
+
+void UIViewerApp::OnActionTriggered(DAVA::Action action)
+{
+    using namespace DAVA;
+
+    if (action.actionId == UIViewerAppPrivate::SHOW_VIRTUAL_KEYBOARD_ACTION)
+    {
+        static bool keyboardShowed = false;
+        Window* w = GetPrimaryWindow();
+        int32 virtualKeyboardHeight = options.GetOption("-virtualKeyboardHeight").AsInt32();
+        keyboardShowed = !keyboardShowed;
+        if (keyboardShowed)
+        {
+            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, virtualKeyboardHeight));
+        }
+        else
+        {
+            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, w->GetSize().dy));
+        }
+    }
 }
 
 void UIViewerApp::OnWindowCreated(DAVA::Window* w)

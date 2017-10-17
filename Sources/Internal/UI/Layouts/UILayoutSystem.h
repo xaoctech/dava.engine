@@ -2,6 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
+#include "Base/Token.h"
 #include "UI/UISystem.h"
 
 struct UILayoutSystemTest;
@@ -53,7 +54,8 @@ private:
     void ProcessControlHierarhy(UIControl* control);
     void ProcessControl(UIControl* control);
 
-    bool isRtl = false;
+    void UpdateVisibilityMargins(const Vector2& windowSize, const Rect& visibilityRect);
+
     bool autoupdatesEnabled = true;
     bool dirty = false;
     bool needUpdate = false;
@@ -62,6 +64,9 @@ private:
     RefPtr<UIControl> popupContainer;
 
     Vector<UILayoutSystemListener*> listeners;
+
+    Token visibleFrameChangedToken;
+    Token windowSizeChangedToken;
 
     friend UILayoutSystemTest;
 };

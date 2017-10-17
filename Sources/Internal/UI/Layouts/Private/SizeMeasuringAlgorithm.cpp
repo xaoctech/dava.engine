@@ -1,11 +1,11 @@
 #include "SizeMeasuringAlgorithm.h"
 
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/Layouts/UILinearLayoutComponent.h"
+#include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/UIFlowLayoutComponent.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
+#include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
-#include "UI/Layouts/LayoutFormula.h"
 #include "UI/Text/UITextComponent.h"
 
 #include "UI/UIControl.h"
@@ -26,14 +26,15 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SizeMeasuringAlgorithm)
     .Field("minLimit", &SizeMeasuringAlgorithm::GetMinLimit, nullptr)
     .Field("maxLimit", &SizeMeasuringAlgorithm::GetMaxLimit, nullptr)
     .Field("value", &SizeMeasuringAlgorithm::GetValue, nullptr)
+    .Field("visibleMargins", &SizeMeasuringAlgorithm::GetVisibilityMargins, nullptr)
     .Method("min", &SizeMeasuringAlgorithm::Min)
     .Method("max", &SizeMeasuringAlgorithm::Max)
     .Method("clamp", &SizeMeasuringAlgorithm::Clamp)
     .End();
 }
 
-SizeMeasuringAlgorithm::SizeMeasuringAlgorithm(Vector<ControlLayoutData>& layoutData_, ControlLayoutData& data_, Vector2::eAxis axis_, const UISizePolicyComponent* sizePolicy_)
-    : layoutData(layoutData_)
+SizeMeasuringAlgorithm::SizeMeasuringAlgorithm(Layouter& layouter_, ControlLayoutData& data_, Vector2::eAxis axis_, const UISizePolicyComponent* sizePolicy_)
+    : layouter(layouter_)
     , data(data_)
     , axis(axis_)
     , sizePolicy(sizePolicy_)
@@ -183,6 +184,7 @@ float32 SizeMeasuringAlgorithm::CalculateDefaultChildrenSum() const
 {
     float32 value = 0;
     int32 processedChildrenCount = 0;
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
 
     bool newLineBeforeNext = false;
     for (int32 i = data.GetFirstChildIndex(); i <= data.GetLastChildIndex(); i++)
@@ -220,6 +222,7 @@ float32 SizeMeasuringAlgorithm::CalculateHorizontalFlowLayoutChildrenSum() const
     float32 maxWidth = 0.0f;
     bool newLineBeforeNext = false;
     bool firstInLine = true;
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
 
     for (int32 i = data.GetFirstChildIndex(); i <= data.GetLastChildIndex(); i++)
     {
@@ -267,9 +270,9 @@ float32 SizeMeasuringAlgorithm::CalculateVerticalFlowLayoutChildrenSum() const
     DVASSERT(flowLayout && flowLayout->IsEnabled());
 
     float32 value = 0;
-
     int32 linesCount = 0;
     float32 lineHeight = 0;
+    Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
 
     for (int32 index = data.GetFirstChildIndex(); index <= data.GetLastChildIndex(); index++)
     {
@@ -297,6 +300,7 @@ float32 SizeMeasuringAlgorithm::CalculateVerticalFlowLayoutChildrenSum() const
 float32 SizeMeasuringAlgorithm::CalculateMaxChild() const
 {
     float32 value = 0.0f;
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
     for (int32 i = data.GetFirstChildIndex(); i <= data.GetLastChildIndex(); i++)
     {
         const ControlLayoutData& childData = layoutData[i];
@@ -312,6 +316,7 @@ float32 SizeMeasuringAlgorithm::CalculateMaxChild() const
 float32 SizeMeasuringAlgorithm::CalculateFirstChild() const
 {
     float32 value = 0.0f;
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
     for (int32 i = data.GetFirstChildIndex(); i <= data.GetLastChildIndex(); i++)
     {
         const ControlLayoutData& childData = layoutData[i];
@@ -328,6 +333,7 @@ float32 SizeMeasuringAlgorithm::CalculateFirstChild() const
 float32 SizeMeasuringAlgorithm::CalculateLastChild() const
 {
     float32 value = 0.0f;
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
     for (int32 i = data.GetLastChildIndex(); i >= data.GetFirstChildIndex(); i--)
     {
         const ControlLayoutData& childData = layoutData[i];
@@ -458,5 +464,10 @@ float32 SizeMeasuringAlgorithm::Max(float32 a, float32 b) const
 float32 SizeMeasuringAlgorithm::Clamp(float32 val, float32 a, float32 b) const
 {
     return DAVA::Clamp(val, a, b);
+}
+
+const Margins& SizeMeasuringAlgorithm::GetVisibilityMargins() const
+{
+    return layouter.GetVisibilityMargins();
 }
 }

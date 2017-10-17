@@ -3,40 +3,48 @@
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Engine/Window.h"
 #include "Entity/Component.h"
+#include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/Private/Layouter.h"
 #include "UI/Layouts/UIAnchorComponent.h"
 #include "UI/Layouts/UIFlowLayoutComponent.h"
-#include "UI/Layouts/UISizePolicyComponent.h"
-#include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILayoutIsolationComponent.h"
-#include "UI/Layouts/UILinearLayoutComponent.h"
-#include "UI/Layouts/LayoutFormula.h"
+#include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILayoutSystemListener.h"
+#include "UI/Layouts/UILinearLayoutComponent.h"
+#include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Text/UITextComponent.h"
+#include "UI/Text/UITextSystem.h"
 #include "UI/UIControl.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
-#include "UI/Text/UITextComponent.h"
-#include "UI/Text/UITextSystem.h"
-#include <Engine/Engine.h>
-#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
 UILayoutSystem::UILayoutSystem()
     : sharedLayouter(std::make_unique<Layouter>())
 {
-    sharedLayouter->SetRtl(isRtl);
-    sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
-    {
+    visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect rect) {
+        Rect vr = GetScene()->vcs->ConvertInputToVirtual(rect);
+        Vector2 ws = GetScene()->vcs->ConvertInputToVirtual(Vector2(w->GetSize().dx, w->GetSize().dy));
+        UpdateVisibilityMargins(ws, vr);
+    });
+    windowSizeChangedToken = GetPrimaryWindow()->sizeChanged.Connect([&](Window* w, Size2f size, Size2f) {
+        Vector2 ws = GetScene()->vcs->ConvertInputToVirtual(Vector2(w->GetSize().dx, w->GetSize().dy));
+        UpdateVisibilityMargins(ws, Rect(Vector2(), ws));
+    });
+
+    sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
         for (UILayoutSystemListener* listener : listeners)
         {
             listener->OnFormulaProcessed(control, axis, formula);
         }
     };
 
-    sharedLayouter->onFormulaRemoved = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
-    {
+    sharedLayouter->onFormulaRemoved = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
         for (UILayoutSystemListener* listener : listeners)
         {
             listener->OnFormulaRemoved(control, axis, formula);
@@ -46,6 +54,9 @@ UILayoutSystem::UILayoutSystem()
 
 UILayoutSystem::~UILayoutSystem()
 {
+    GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+    GetPrimaryWindow()->visibleFrameChanged.Disconnect(windowSizeChangedToken);
+
     DVASSERT(listeners.empty());
 }
 
@@ -135,13 +146,12 @@ void UILayoutSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
 
 bool UILayoutSystem::IsRtl() const
 {
-    return isRtl;
+    return sharedLayouter->IsRtl();
 }
 
 void UILayoutSystem::SetRtl(bool rtl)
 {
-    isRtl = rtl;
-    sharedLayouter->SetRtl(isRtl);
+    sharedLayouter->SetRtl(rtl);
 }
 
 void UILayoutSystem::ProcessControl(UIControl* control)
@@ -187,7 +197,8 @@ void UILayoutSystem::ManualApplyLayout(UIControl* control)
     }
 
     Layouter localLayouter;
-    localLayouter.SetRtl(isRtl);
+    localLayouter.SetRtl(sharedLayouter->IsRtl());
+    localLayouter.SetVisibilityMargins(sharedLayouter->GetVisibilityMargins());
     localLayouter.ApplyLayout(control);
 }
 
@@ -309,6 +320,25 @@ void UILayoutSystem::ProcessControlHierarhy(UIControl* control)
             continue;
         }
         ++it;
+    }
+}
+
+void UILayoutSystem::UpdateVisibilityMargins(const Vector2& windowSize, const Rect& visibilityRect)
+{
+    Margins m{ visibilityRect.x,
+               visibilityRect.y,
+               windowSize.dx - (visibilityRect.x + visibilityRect.dx),
+               windowSize.dy - (visibilityRect.y + visibilityRect.dy) };
+
+    sharedLayouter->SetVisibilityMargins(m);
+
+    if (currentScreen.Valid())
+    {
+        currentScreen->SetLayoutDirty();
+    }
+    if (popupContainer.Valid())
+    {
+        popupContainer->SetLayoutDirty();
     }
 }
 }
