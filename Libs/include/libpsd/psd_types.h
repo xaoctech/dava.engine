@@ -2,7 +2,6 @@
 #define __PSD_TYPES_H__
 
 #include <stddef.h>
-#include <stdint.h>
 
 
 typedef unsigned char			psd_bool;
@@ -18,7 +17,8 @@ typedef int						psd_int;
 typedef unsigned int			psd_uint;
 typedef float					psd_float;
 typedef double					psd_double;
-typedef uintptr_t				psd_pointer;
+typedef size_t					psd_pointer;
+
 
 typedef unsigned char			psd_color_component;
 typedef unsigned int			psd_argb_color;

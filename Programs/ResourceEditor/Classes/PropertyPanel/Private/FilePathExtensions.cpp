@@ -253,7 +253,6 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
 
         if (texturePath.GetExtension() != TextureDescriptor::GetDescriptorExtension())
         {
-            CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
             result.state = M::ValidationResult::eState::Invalid;
             const EngineContext* ctx = GetEngineContext();
             if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
@@ -264,7 +263,10 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
                 auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
                 if (found != texturesMap.end())
                 {
-                    found->second->ReloadAs(settings->textureViewGPU);
+                    DAVA::Vector<DAVA::Texture*> reloadTextures;
+                    reloadTextures.push_back(found->second);
+
+                    REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
                 }
 
                 result.fixedValue = FilePath(descriptorPath);

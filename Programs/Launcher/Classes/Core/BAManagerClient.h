@@ -8,7 +8,7 @@
 #include <QProcess>
 
 class SilentUpdater;
-class ApplicationManager;
+class GuiApplicationManager;
 class QTimer;
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -19,7 +19,7 @@ class BAManagerClient : public QObject
     Q_OBJECT
 
 public:
-    BAManagerClient(ApplicationManager* appManager, QObject* parent = nullptr);
+    BAManagerClient(GuiApplicationManager* appManager, QObject* parent = nullptr);
 
     void AskForCommands();
 
@@ -50,7 +50,7 @@ private:
     void OnTaskFinished(const BaseTask* task);
 
     SilentUpdater* silentUpdater = nullptr;
-    ApplicationManager* applicationManager = nullptr;
+    GuiApplicationManager* applicationManager = nullptr;
     QTimer* updateTimer = nullptr;
     QNetworkAccessManager* networkManager = nullptr;
 
