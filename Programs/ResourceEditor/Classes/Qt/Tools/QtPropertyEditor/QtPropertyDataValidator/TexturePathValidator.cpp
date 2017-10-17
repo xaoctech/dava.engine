@@ -37,7 +37,10 @@ void TexturePathValidator::FixupInternal(QVariant& v) const
             auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
             if (found != texturesMap.end())
             {
-                found->second->ReloadAs(settings->textureViewGPU);
+                DAVA::Vector<DAVA::Texture*> reloadTextures;
+                reloadTextures.push_back(found->second);
+
+                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
             }
 
             v = QVariant(QString::fromStdString(descriptorPath.GetAbsolutePathname()));
