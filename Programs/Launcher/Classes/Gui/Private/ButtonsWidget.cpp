@@ -12,7 +12,6 @@ ButtonsWidget::ButtonsWidget(int rowNum, QWidget* parent)
 
     setRemoveEnabled(false);
 
-    connect(this, SIGNAL(OnInstall(int)), parent, SLOT(OnInstall(int)));
     connect(this, SIGNAL(OnRun(int)), parent, SLOT(OnRun(int)));
     connect(this, SIGNAL(OnRemove(int)), parent, SLOT(OnRemove(int)));
 
