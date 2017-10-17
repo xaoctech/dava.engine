@@ -18,7 +18,7 @@ Controls:
         components:
             SizePolicy:
                 horizontalPolicy: "Formula"
-                horizontalFormula: "visibleMargins.left"
+                horizontalFormula: "visibilityMargins.left"
                 verticalPolicy: "PercentOfParent"
     -   class: "UIControl"
         name: "Center"
@@ -37,7 +37,7 @@ Controls:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
                     verticalPolicy: "Formula"
-                    verticalFormula: "visibleMargins.top"
+                    verticalFormula: "visibilityMargins.top"
         -   class: "UIControl"
             name: "VisibleFrame"
             position: [0.000000, 0.000000]
@@ -270,12 +270,12 @@ Controls:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
                     verticalPolicy: "Formula"
-                    verticalFormula: "visibleMargins.bottom"
+                    verticalFormula: "visibilityMargins.bottom"
     -   class: "UIControl"
         name: "Right"
         size: [0.000000, 263.000000]
         components:
             SizePolicy:
                 horizontalPolicy: "Formula"
-                horizontalFormula: "visibleMargins.right"
+                horizontalFormula: "visibilityMargins.right"
                 verticalPolicy: "PercentOfParent"

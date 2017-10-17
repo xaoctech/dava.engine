@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
 #include "Base/Token.h"
+#include "Math/Rect.h"
 #include "UI/UISystem.h"
 
 struct UILayoutSystemTest;
