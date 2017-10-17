@@ -1,28 +1,30 @@
-#include "Modules/LibraryModule/Private/LibraryModel.h"
-#include "Modules/LibraryModule/Private/LibraryHelpers.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryModel.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryHelpers.h"
+#include "Classes/Modules/LibraryModule/LibraryData.h"
 
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/ImportedPackagesNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/ControlProperties/RootProperty.h"
-#include "Model/ControlProperties/ClassProperty.h"
-#include "Model/ControlProperties/CustomClassProperty.h"
-#include "Model/YamlPackageSerializer.h"
-#include "Model/QuickEdPackageBuilder.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/ImportedPackagesNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/ControlProperties/ClassProperty.h"
+#include "Classes/Model/ControlProperties/CustomClassProperty.h"
+#include "Classes/Model/YamlPackageSerializer.h"
+#include "Classes/Model/QuickEdPackageBuilder.h"
 
-#include "Base/ObjectFactory.h"
-#include "UI/UIControl.h"
-#include "UI/UIPackageLoader.h"
-
-#include "Utils/QtDavaConvertion.h"
-#include "UI/IconHelper.h"
+#include "Classes/Utils/QtDavaConvertion.h"
+#include "Classes/UI/IconHelper.h"
 
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Qt/QtIcon.h>
+
+#include <Base/ObjectFactory.h>
+#include <UI/UIControl.h>
+#include <UI/UIPackageLoader.h>
+
 
 #include <QMimeData>
 

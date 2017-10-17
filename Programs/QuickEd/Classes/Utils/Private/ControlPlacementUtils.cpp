@@ -1,9 +1,12 @@
-#include "Utils/ControlPlacementUtils.h"
+#include "Classes/Utils/ControlPlacementUtils.h"
 
-#include "Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
 
 #include <Base/BaseTypes.h>
 #include <Debug/DVAssert.h>
+#include <UI/UIControl.h>
 
 namespace ControlPlacementUtils
 {
@@ -22,7 +25,7 @@ void SetAbsoulutePosToControlNode(PackageNode* package, ControlNode* node, Contr
     const Vector2& nodeSize = node->GetControl()->GetSize();
     sizeOffset -= nodeSize / 2;
     sizeOffset *= gd.scale;
-    Vector2 controlPos = gd.position - ::Rotate(sizeOffset, angle); //top left corner of dest control
+    Vector2 controlPos = gd.position - DAVA::Rotate(sizeOffset, angle); //top left corner of dest control
     Vector2 relativePos = pos - controlPos; //new abs pos
 
     //now calculate new relative pos
@@ -36,7 +39,7 @@ void SetAbsoulutePosToControlNode(PackageNode* package, ControlNode* node, Contr
     {
         relativePos /= scale;
     }
-    relativePos = ::Rotate(relativePos, -angle);
+    relativePos = DAVA::Rotate(relativePos, -angle);
     RootProperty* rootProperty = node->GetRootProperty();
     AbstractProperty* positionProperty = rootProperty->FindPropertyByName("position");
     DVASSERT(nullptr != positionProperty);

@@ -1,4 +1,6 @@
-#include "Modules/LibraryModule/LibraryData.h"
+#include "Classes/Modules/LibraryModule/LibraryData.h"
+
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LibraryData)
 {
@@ -6,6 +8,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LibraryData)
     .ConstructorByPointer()
     .End();
 }
+
+LibraryData::LibraryData() = default;
+LibraryData::~LibraryData() = default;
 
 const DAVA::Vector<DAVA::RefPtr<ControlNode>>& LibraryData::GetDefaultControls() const
 {
