@@ -8,7 +8,6 @@
 #include "Model/ControlProperties/RootProperty.h"
 
 #include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/CanvasModule/CanvasData.h"
 #include "UI/Preview/PreviewWidgetSettings.h"
 
 #include <TArc/Core/FieldBinder.h>
@@ -167,6 +166,7 @@ public:
     DAVA::UIControl* GetControl() const;
     bool IsNestedControl(const DAVA::UIControl* control) const;
     DAVA::Vector2 GetRootControlPos() const;
+    DAVA::Vector2 GetWorkAreaSize() const;
 
     void RecalculateBackgroundProperties(DAVA::UIControl* control);
     void ControlWasRemoved(ControlNode* node, ControlsContainerNode* from);
@@ -187,6 +187,7 @@ private:
     //after all - sometimes we need to add additional position to a root control
     DAVA::RefPtr<DAVA::UIControl> positionHolderControl;
 
+    DAVA::Vector2 workAreaSize = DAVA::Vector2(0.0f, 0.0f);
     DAVA::Vector2 rootControlPos = DAVA::Vector2(0.0f, 0.0f);
     DAVA::UIControl* nestedControl = nullptr;
 };
@@ -231,6 +232,11 @@ DAVA::Vector2 BackgroundController::GetRootControlPos() const
     return rootControlPos;
 }
 
+DAVA::Vector2 BackgroundController::GetWorkAreaSize() const
+{
+    return workAreaSize;
+}
+
 void BackgroundController::RecalculateBackgroundProperties(DAVA::UIControl* control)
 {
     if (control == nestedControl)
@@ -269,9 +275,9 @@ void BackgroundController::AdjustToNestedControl()
     Rect rect;
     Vector2 pos;
     CalculateTotalRect(rect, pos);
-    Vector2 size = rect.GetSize();
-    positionHolderControl->SetPosition(pos);
-    gridControl->SetSize(size);
+    workAreaSize = rect.GetSize();
+    gridControl->SetSize(nestedControl->GetSize());
+
     rootControlPos = pos;
     rootControlPosChanged.Emit();
 }
@@ -335,8 +341,6 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::Cont
 
     canvas->AddControl(controlsCanvas.Get());
     controlsCanvas->SetName(FastName("controls_canvas"));
-
-    canvasDataWrapper = accessor->CreateWrapper(ReflectedTypeDB::Get<CanvasData>());
 
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 
@@ -515,42 +519,36 @@ void EditorControlsView::Layout()
 {
     using namespace DAVA;
 
-    if (canvasDataWrapper.HasData() == false)
-    {
-        return;
-    }
-
     float32 maxWidth = 0.0f;
     float32 totalHeight = 0.0f;
     const int spacing = 5;
-    const List<UIControl*>& children = controlsCanvas->GetChildren();
-    size_t childrenCount = children.size();
+
+    size_t childrenCount = gridControls.size();
     if (childrenCount > 1)
     {
         totalHeight += spacing * (childrenCount - 1);
     }
 
     //collect current geometry
-    for (const UIControl* control : children)
+    for (const std::unique_ptr<BackgroundController>& controller : gridControls)
     {
-        Vector2 childSize = control->GetSize();
-        maxWidth = Max(maxWidth, childSize.dx);
-        totalHeight += childSize.dy;
+        Vector2 size = controller->GetWorkAreaSize();
+        maxWidth = Max(maxWidth, size.dx);
+        totalHeight += size.dy;
     }
 
     //place all grids in a column
     float32 curY = 0.0f;
-    for (UIControl* child : children)
+    for (std::unique_ptr<BackgroundController>& controller : gridControls)
     {
-        Rect rect = child->GetRect();
-        rect.y = curY;
-        rect.x = (maxWidth - rect.dx) / 2.0f;
-        child->SetRect(rect);
-        curY += rect.dy + spacing;
-    }
-    Vector2 size(maxWidth, totalHeight);
+        Vector2 size = controller->GetWorkAreaSize();
+        Vector2 pos((maxWidth - size.dx) / 2.0f, curY);
+        curY += size.dy + spacing;
 
-    canvasDataWrapper.SetFieldValue(CanvasData::workAreaSizePropertyName, size);
+        controller->GetControl()->SetPosition(pos);
+    }
+
+    workAreaSizeChanged.Emit(Vector2(maxWidth, totalHeight));
 
     OnRootControlPosChanged();
 }
@@ -610,11 +608,7 @@ void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRoo
     }
     needRecalculateBgrBeforeRender = true;
 
-    //centralize new displayed root controls while we have no ensure visible functions
-    if (canvasDataWrapper.HasData())
-    {
-        canvasDataWrapper.SetFieldValue(CanvasData::needCentralizePropertyName, true);
-    }
+    needCentralizeChanged.Emit(true);
 }
 
 //later background controls must be a part of data and rootControlPos must be simple getter
@@ -623,12 +617,15 @@ void EditorControlsView::OnRootControlPosChanged()
     if (gridControls.size() == 1)
     {
         const std::unique_ptr<BackgroundController>& grid = gridControls.front();
-        canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, grid->GetRootControlPos());
+        rootControlPositionChanged.Emit(grid->GetRootControlPos());
+
+        rootControlSizeChanged.Emit(grid->GetControl()->GetSize());
     }
     else
     {
         //force show 0, 0 at top left corner if many root controls displayed
-        canvasDataWrapper.SetFieldValue(CanvasData::rootPositionPropertyName, DAVA::Vector2(0.0f, 0.0f));
+        rootControlPositionChanged.Emit(DAVA::Vector2(0.0f, 0.0f));
+        rootControlSizeChanged.Emit(DAVA::Vector2(0.0f, 0.0f));
     }
 }
 

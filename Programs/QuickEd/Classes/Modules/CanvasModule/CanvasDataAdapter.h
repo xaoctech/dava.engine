@@ -32,14 +32,16 @@ public:
     static DAVA::FastName startValuePropertyName;
     static DAVA::FastName lastValuePropertyName;
 
-    //current screen position in abs coordinates
-    static DAVA::FastName movableControlPositionPropertyName;
+    DAVA::Vector2 GetDisplacementPosition() const;
+    void SetDisplacementPosition(const DAVA::Vector2& displacement);
 
     DAVA::Vector2 GetPosition() const;
-    void SetPosition(const DAVA::Vector2& pos);
 
     DAVA::Vector2 GetMinimumPosition() const;
     DAVA::Vector2 GetMaximumPosition() const;
+
+    DAVA::Vector2 GetTopLeftOverflow() const;
+    DAVA::Vector2 GetBottomRightOverflow() const;
 
     DAVA::Vector2 GetStartValue() const;
     DAVA::Vector2 GetLastValue() const;
@@ -47,8 +49,6 @@ public:
     DAVA::float32 GetScale() const;
     void SetScale(DAVA::float32 scale);
     void SetScale(DAVA::float32 scale, const DAVA::Vector2& referencePoint);
-
-    DAVA::Vector2 GetMovableControlPosition() const;
 
     DAVA::Vector2 GetViewSize() const;
 

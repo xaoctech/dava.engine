@@ -25,11 +25,8 @@ private:
     eSystems GetOrder() const override;
     void OnUpdate() override;
 
-    void InitFieldBinder();
-    void OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition);
+    void OnPositionChanged(const DAVA::Any& movableControlPosition);
     void OnScaleChanged(const DAVA::Any& scale);
-
-    void UpdateMovableControlState();
 
     CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::DataWrapper canvasDataAdapterWrapper;

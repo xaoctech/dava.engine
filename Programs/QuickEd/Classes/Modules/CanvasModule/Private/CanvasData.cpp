@@ -4,9 +4,9 @@
 #include <Math/Vector.h>
 #include <Logger/Logger.h>
 
+DAVA::FastName CanvasData::displacementPropertyName{ "displacement" };
 DAVA::FastName CanvasData::workAreaSizePropertyName{ "work area size" };
 DAVA::FastName CanvasData::canvasSizePropertyName{ "canvas size" };
-DAVA::FastName CanvasData::positionPropertyName{ "position" };
 DAVA::FastName CanvasData::rootPositionPropertyName{ "root control position" };
 DAVA::FastName CanvasData::scalePropertyName{ "scale" };
 DAVA::FastName CanvasData::predefinedScalesPropertyName{ "predefined scales" };
@@ -18,7 +18,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CanvasData)
     DAVA::ReflectionRegistrator<CanvasData>::Begin()
     .Field(workAreaSizePropertyName.c_str(), &CanvasData::GetWorkAreaSize, &CanvasData::SetWorkAreaSize)
     .Field(canvasSizePropertyName.c_str(), &CanvasData::GetCanvasSize, nullptr)
-    .Field(positionPropertyName.c_str(), &CanvasData::GetPosition, &CanvasData::SetPosition)
+    .Field(displacementPropertyName.c_str(), &CanvasData::GetDisplacement, &CanvasData::SetDisplacement)
     .Field(rootPositionPropertyName.c_str(), &CanvasData::GetRootPosition, &CanvasData::SetRootPosition)
     .Field(scalePropertyName.c_str(), &CanvasData::GetScale, &CanvasData::SetScale)
     .Field(predefinedScalesPropertyName.c_str(), &CanvasData::GetPredefinedScales, nullptr)
@@ -37,6 +37,11 @@ DAVA::Vector2 CanvasData::GetWorkAreaSize() const
     return workAreaSize;
 }
 
+DAVA::Vector2 CanvasData::GetRootControlSize() const
+{
+    return rootControlSize;
+}
+
 void CanvasData::SetWorkAreaSize(const DAVA::Vector2& size)
 {
     DVASSERT(size.dx >= 0.0f && size.dy >= 0.0f);
@@ -49,20 +54,17 @@ void CanvasData::SetWorkAreaSize(const DAVA::Vector2& size)
 
 DAVA::Vector2 CanvasData::GetCanvasSize() const
 {
-    return workAreaSize * scale + DAVA::Vector2(margin, margin) * 2.0f;
+    return workAreaSize * scale + margin * 2.0f;
 }
 
-DAVA::Vector2 CanvasData::GetPosition() const
+DAVA::Vector2 CanvasData::GetDisplacement() const
 {
-    return position;
+    return displacement;
 }
 
-void CanvasData::SetPosition(const DAVA::Vector2& position_)
+void CanvasData::SetDisplacement(const DAVA::Vector2& displacement_)
 {
-    using namespace DAVA;
-    needCentralize = false;
-
-    position = position_;
+    displacement = displacement_;
 }
 
 DAVA::Vector2 CanvasData::GetRootPosition() const
@@ -129,7 +131,7 @@ bool CanvasData::IsCentralizeRequired() const
     return needCentralize;
 }
 
-DAVA::float32 CanvasData::GetMargin() const
+DAVA::Vector2 CanvasData::GetMargin() const
 {
     return margin;
 }

@@ -74,9 +74,9 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 }
                 else
                 {
-                    Vector2 position = canvasDataAdapter.GetPosition();
+                    Vector2 position = canvasDataAdapter.GetDisplacementPosition();
                     Vector2 newPosition = position - gestureDelta;
-                    canvasDataAdapter.SetPosition(newPosition);
+                    canvasDataAdapter.SetDisplacementPosition(newPosition);
                 }
             }
             else if (gesture.magnification != 0.0f)
@@ -103,21 +103,21 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
             }
             else
             {
-                Vector2 position = canvasDataAdapter.GetPosition();
+                Vector2 position = canvasDataAdapter.GetDisplacementPosition();
                 Vector2 additionalPos(currentInput->wheelDelta.x, currentInput->wheelDelta.y);
 
                 additionalPos *= canvasDataAdapter.GetViewSize();
                 //custom delimiter to scroll widget by little chunks of visible area
                 static const float wheelDelta = 0.05f;
                 Vector2 newPosition = position - additionalPos * wheelDelta;
-                canvasDataAdapter.SetPosition(newPosition);
+                canvasDataAdapter.SetDisplacementPosition(newPosition);
             }
         }
         else
         {
-            Vector2 position = canvasDataAdapter.GetPosition();
+            Vector2 position = canvasDataAdapter.GetDisplacementPosition();
             Vector2 delta = GetSystemsManager()->GetMouseDelta();
-            canvasDataAdapter.SetPosition(position - delta);
+            canvasDataAdapter.SetDisplacementPosition(position - delta);
         }
     }
 }
@@ -141,7 +141,7 @@ BaseEditorSystem::eSystems EditorCanvas::GetOrder() const
 
 void EditorCanvas::OnUpdate()
 {
-    OnMovableControlPositionChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::movableControlPositionPropertyName));
+    OnPositionChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::positionPropertyName));
     OnScaleChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
 }
 
@@ -182,16 +182,16 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
     return inDragScreenState ? EditorSystemsManager::DragScreen : EditorSystemsManager::NoDrag;
 }
 
-void EditorCanvas::OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition)
+void EditorCanvas::OnPositionChanged(const DAVA::Any& positionValue)
 {
     using namespace DAVA;
     CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
     UIControl* canvas = canvasModuleData->canvas.Get();
     //right now we scale and move the same UIControl
     //because there is no reason to have another UIControl for moving only
-    if (movableControlPosition.CanGet<Vector2>())
+    if (positionValue.CanGet<Vector2>())
     {
-        Vector2 position = movableControlPosition.Get<Vector2>();
+        Vector2 position = positionValue.Get<Vector2>();
         canvas->SetPosition(position);
     }
     else

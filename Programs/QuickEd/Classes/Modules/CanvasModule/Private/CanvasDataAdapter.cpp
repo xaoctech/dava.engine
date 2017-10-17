@@ -12,18 +12,16 @@ DAVA::FastName CanvasDataAdapter::minimumPositionPropertyName{ "minimum position
 DAVA::FastName CanvasDataAdapter::maximumPositionPropertyName{ "maximum position" };
 DAVA::FastName CanvasDataAdapter::startValuePropertyName{ "start value" };
 DAVA::FastName CanvasDataAdapter::lastValuePropertyName{ "last value" };
-DAVA::FastName CanvasDataAdapter::movableControlPositionPropertyName{ "movable control position" };
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CanvasDataAdapter)
 {
     DAVA::ReflectionRegistrator<CanvasDataAdapter>::Begin()
     .Field(scalePropertyName.c_str(), &CanvasDataAdapter::GetScale, static_cast<void (CanvasDataAdapter::*)(DAVA::float32)>(&CanvasDataAdapter::SetScale))
-    .Field(positionPropertyName.c_str(), &CanvasDataAdapter::GetPosition, &CanvasDataAdapter::SetPosition)
+    .Field(positionPropertyName.c_str(), &CanvasDataAdapter::GetPosition, nullptr)
     .Field(minimumPositionPropertyName.c_str(), &CanvasDataAdapter::GetMinimumPosition, nullptr)
     .Field(maximumPositionPropertyName.c_str(), &CanvasDataAdapter::GetMaximumPosition, nullptr)
     .Field(startValuePropertyName.c_str(), &CanvasDataAdapter::GetStartValue, nullptr)
     .Field(lastValuePropertyName.c_str(), &CanvasDataAdapter::GetLastValue, nullptr)
-    .Field(movableControlPositionPropertyName.c_str(), &CanvasDataAdapter::GetMovableControlPosition, nullptr)
     .End();
 }
 
@@ -36,43 +34,35 @@ CanvasDataAdapter::CanvasDataAdapter(DAVA::TArc::ContextAccessor* accessor_)
 
 CanvasDataAdapter::~CanvasDataAdapter() = default;
 
-DAVA::Vector2 CanvasDataAdapter::GetPosition() const
+DAVA::Vector2 CanvasDataAdapter::GetDisplacementPosition() const
 {
+    using namespace DAVA;
+
     const CanvasData* canvasData = GetCanvasData();
     if (canvasData == nullptr)
     {
         return DAVA::Vector2(0.0f, 0.0f);
     }
-
-    if (canvasData->IsCentralizeRequired())
-    {
-        return GetMaximumPosition() / 2.0f;
-    }
-    else
-    {
-        return canvasData->GetPosition();
-    }
+    Vector2 topLeftOpverflow = GetTopLeftOverflow();
+    Vector2 displacement = canvasData->GetDisplacement();
+    return displacement + topLeftOpverflow;
 }
 
-void CanvasDataAdapter::SetPosition(const DAVA::Vector2& pos)
+void CanvasDataAdapter::SetDisplacementPosition(const DAVA::Vector2& displacement)
 {
     using namespace DAVA;
 
     Vector2 minPos = GetMinimumPosition();
     Vector2 maxPos = GetMaximumPosition();
 
-    DAVA::Vector2 clampedPosition = DAVA::Vector2(Clamp(pos.x, minPos.x, maxPos.x),
-                                                  Clamp(pos.y, minPos.y, maxPos.y));
+    DAVA::Vector2 clamped = DAVA::Vector2(Clamp(displacement.x, minPos.x, maxPos.x),
+                                          Clamp(displacement.y, minPos.y, maxPos.y));
 
-    canvasDataWrapper.SetFieldValue(CanvasData::positionPropertyName, clampedPosition);
+    Vector2 topLeftOpverflow = GetTopLeftOverflow();
+    canvasDataWrapper.SetFieldValue(CanvasData::displacementPropertyName, clamped - topLeftOpverflow);
 }
 
-DAVA::Vector2 CanvasDataAdapter::GetMinimumPosition() const
-{
-    return DAVA::Vector2(0.0f, 0.0f);
-}
-
-DAVA::Vector2 CanvasDataAdapter::GetMaximumPosition() const
+DAVA::Vector2 CanvasDataAdapter::GetPosition() const
 {
     using namespace DAVA;
 
@@ -82,20 +72,94 @@ DAVA::Vector2 CanvasDataAdapter::GetMaximumPosition() const
         return Vector2(0.0f, 0.0f);
     }
 
-    Vector2 sizeDiff = canvasData->GetCanvasSize() - GetViewSize();
-    return Vector2(std::max(0.0f, sizeDiff.dx), std::max(0.0f, sizeDiff.dy));
+    float32 scale = GetScale();
+    Vector2 maximumPosition = GetMaximumPosition();
+    Vector2 viewSize = GetViewSize();
+    Vector2 rootSize = canvasData->GetRootControlSize() * scale;
+    Vector2 displacement = canvasData->GetDisplacement();
+
+    Vector2 position = (viewSize - rootSize) / 2.0f;
+    for (int i = Vector2::AXIS_X; i < Vector2::AXIS_COUNT; ++i)
+    {
+        Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
+        if (maximumPosition[axis] > 0.0f)
+        {
+            position[axis] -= displacement[axis];
+        }
+    }
+
+    return position;
+}
+
+DAVA::Vector2 CanvasDataAdapter::GetMinimumPosition() const
+{
+    return DAVA::Vector2(0.0f, 0.0f);
+}
+
+DAVA::Vector2 CanvasDataAdapter::GetMaximumPosition() const
+{
+    return GetTopLeftOverflow() + GetBottomRightOverflow();
+}
+
+DAVA::Vector2 CanvasDataAdapter::GetTopLeftOverflow() const
+{
+    using namespace DAVA;
+    const CanvasData* canvasData = GetCanvasData();
+    if (canvasData == nullptr)
+    {
+        return Vector2(0.0f, 0.0f);
+    }
+
+    float32 scale = GetScale();
+    Vector2 rootPosition = canvasData->GetRootPosition() * scale;
+    Vector2 rootSize = canvasData->GetRootControlSize() * scale;
+    Vector2 margin = canvasData->GetMargin();
+    Vector2 viewSize = GetViewSize();
+
+    Vector2 workAreaTopLeft = rootPosition + rootSize / 2.0f + margin;
+    DVASSERT(workAreaTopLeft.dx >= 0.0f && workAreaTopLeft.dy >= 0.0f);
+    Vector2 topOverflow = workAreaTopLeft - viewSize / 2.0f;
+    topOverflow.Set(std::max(0.0f, topOverflow.dx), std::max(0.0f, topOverflow.dy));
+    return topOverflow;
+}
+
+DAVA::Vector2 CanvasDataAdapter::GetBottomRightOverflow() const
+{
+    using namespace DAVA;
+    const CanvasData* canvasData = GetCanvasData();
+    if (canvasData == nullptr)
+    {
+        return Vector2(0.0f, 0.0f);
+    }
+
+    float32 scale = GetScale();
+    Vector2 rootPosition = canvasData->GetRootPosition() * scale;
+    Vector2 rootSize = canvasData->GetRootControlSize() * scale;
+    Vector2 margin = canvasData->GetMargin();
+    Vector2 canvasSize = canvasData->GetCanvasSize();
+    Vector2 workAreaBottomRight = canvasSize - rootPosition - rootSize / 2.0f - margin;
+    Vector2 viewSize = GetViewSize();
+
+    DVASSERT(workAreaBottomRight.dx >= 0.0f && workAreaBottomRight.dy >= 0.0f);
+
+    Vector2 bottomOverflow = workAreaBottomRight - viewSize / 2.0f;
+    bottomOverflow.Set(std::max(0.0f, bottomOverflow.dx), std::max(0.0f, bottomOverflow.dy));
+    return bottomOverflow;
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetStartValue() const
 {
+    using namespace DAVA;
+
     const CanvasData* canvasData = GetCanvasData();
     if (canvasData == nullptr)
     {
-        return DAVA::Vector2(0.0f, 0.0f);
+        return Vector2(0.0f, 0.0f);
     }
 
-    DAVA::Vector2 startValue = (GetMovableControlPosition() + canvasData->GetRootPosition() * GetScale()) * -1;
-    return DAVA::Vector2(startValue.x, startValue.y);
+    float32 scale = GetScale();
+    Vector2 startValue = (GetPosition() + canvasData->GetRootPosition() * scale) * -1;
+    return Vector2(startValue.x, startValue.y);
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetLastValue() const
@@ -128,8 +192,8 @@ void CanvasDataAdapter::SetScale(DAVA::float32 scale, const DAVA::Vector2& refer
 
     const Vector<float32>& predefinedScales = canvasData->GetPredefinedScales();
 
-    float32 margin = canvasData->GetMargin();
-    Vector2 position = Vector2(margin, margin) - GetMovableControlPosition();
+    Vector2 margin = canvasData->GetMargin();
+    Vector2 position = margin - GetDisplacementPosition();
 
     scale = Clamp(scale, predefinedScales.front(), predefinedScales.back());
     DVASSERT(scale != 0.0f);
@@ -138,41 +202,8 @@ void CanvasDataAdapter::SetScale(DAVA::float32 scale, const DAVA::Vector2& refer
     canvasDataWrapper.SetFieldValue(CanvasData::scalePropertyName, scale);
 
     //recalculate new position to keep referncePoint on the same visible pos
-    Vector2 newPosition = (referencePoint + position - Vector2(margin, margin)) * scaleDiff - referencePoint + Vector2(margin, margin);
-    SetPosition(newPosition);
-}
-
-DAVA::Vector2 CanvasDataAdapter::GetMovableControlPosition() const
-{
-    using namespace DAVA;
-
-    const CanvasData* canvasData = GetCanvasData();
-    if (canvasData == nullptr)
-    {
-        return DAVA::Vector2(0.0f, 0.0f);
-    }
-
-    Vector2 canvasSize = canvasData->GetCanvasSize();
-    Vector2 viewSize = GetViewSize();
-    Vector2 workAreaSize = canvasData->GetWorkAreaSize();
-    float32 scale = canvasData->GetScale();
-    float32 margin = canvasData->GetMargin();
-
-    Vector2 movableControlPosition;
-    for (int i = 0; i < Vector2::AXIS_COUNT; ++i)
-    {
-        Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
-        if (canvasSize[axis] <= viewSize[axis])
-        {
-            movableControlPosition[axis] = (viewSize[axis] - workAreaSize[axis] * scale) / 2.0f;
-        }
-        else
-        {
-            movableControlPosition[axis] = margin - GetPosition()[axis];
-        }
-    }
-
-    return Vector2(movableControlPosition.x, movableControlPosition.y);
+    Vector2 newPosition = (referencePoint + position - margin * scaleDiff - referencePoint + margin);
+    SetDisplacementPosition(newPosition);
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetViewSize() const

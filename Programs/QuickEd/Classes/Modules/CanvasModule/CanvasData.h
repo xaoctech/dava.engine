@@ -20,7 +20,7 @@ public:
 
     //canvas position
     //used by scrollBars and inputs in CanvasSystem
-    static DAVA::FastName positionPropertyName;
+    static DAVA::FastName displacementPropertyName;
 
     //root control position for set only
     //used for start value on rulers, guides and grid
@@ -41,9 +41,10 @@ public:
     static DAVA::FastName referencePointPropertyName;
 
     DAVA::Vector2 GetWorkAreaSize() const;
+    DAVA::Vector2 GetRootControlSize() const;
     DAVA::Vector2 GetCanvasSize() const;
 
-    DAVA::Vector2 GetPosition() const;
+    DAVA::Vector2 GetDisplacement() const;
 
     DAVA::float32 GetScale() const;
     const DAVA::Vector<DAVA::float32>& GetPredefinedScales() const;
@@ -55,26 +56,26 @@ public:
     DAVA::Vector2 GetRootPosition() const;
 
     bool IsCentralizeRequired() const;
-    DAVA::float32 GetMargin() const;
+    DAVA::Vector2 GetMargin() const;
 
 private:
+    friend class CanvasModule;
+
     void SetWorkAreaSize(const DAVA::Vector2& size);
-    void SetPosition(const DAVA::Vector2& position);
+    void SetDisplacement(const DAVA::Vector2& displacement);
     void SetRootPosition(const DAVA::Vector2& rootPosition);
     void SetScale(DAVA::float32 scale);
 
     DAVA::Vector2 workAreaSize;
+    DAVA::Vector2 rootControlSize;
 
-    DAVA::Vector2 position;
+    DAVA::Vector2 displacement;
 
-    //root control position in a in abs coordinates hierarchy
     DAVA::Vector2 rootPosition;
-
-    //work area scale
     DAVA::float32 scale = 1.0f;
     DAVA::Vector<DAVA::float32> predefinedScales;
 
-    const DAVA::float32 margin = 50.0f;
+    const DAVA::Vector2 margin = DAVA::Vector2(50.0f, 50.0f);
 
     bool needCentralize = false;
 

@@ -34,14 +34,14 @@ ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::TArc
 
 int ScrollBarAdapter::GetPosition() const
 {
-    return static_cast<int>(canvasDataAdapter.GetPosition()[orientation]);
+    return static_cast<int>(canvasDataAdapter.GetDisplacementPosition()[orientation]);
 }
 
 void ScrollBarAdapter::SetPosition(int value)
 {
-    DAVA::Vector2 position = canvasDataAdapter.GetPosition();
-    position[orientation] = static_cast<DAVA::float32>(value);
-    canvasDataAdapter.SetPosition(position);
+    DAVA::Vector2 displacement = canvasDataAdapter.GetDisplacementPosition();
+    displacement[orientation] = value;
+    canvasDataAdapter.SetDisplacementPosition(displacement);
 }
 
 int ScrollBarAdapter::GetMinPos() const
