@@ -15,6 +15,8 @@
 #include <QLabel>
 #include <QFrame>
 
+#include <limits>
+
 namespace LayerDragForceWidgetDetail
 {
 struct ShapeMap
@@ -314,8 +316,8 @@ void LayerForceWidget::UpdateVisibility(DAVA::ParticleForce::eShape shape, DAVA:
 
 void LayerForceWidget::SetupSpin(EventFilterDoubleSpinBox* spin, DAVA::float32 singleStep /*= 0.0001*/, DAVA::int32 decimals /*= 4*/)
 {
-    spin->setMinimum(-100000000000000000000.0);
-    spin->setMaximum(100000000000000000000.0);
+    spin->setMinimum(-std::numeric_limits<DAVA::float32>::max());
+    spin->setMaximum(std::numeric_limits<DAVA::float32>::max());
     spin->setSingleStep(singleStep);
     spin->setDecimals(decimals);
     connect(spin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));

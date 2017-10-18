@@ -6,6 +6,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
+#include <limits>
+
 ParticleVector3Widget::ParticleVector3Widget(const std::string& label, const DAVA::Vector3& initVector)
 {
     QVBoxLayout* boxLayout = new QVBoxLayout(this);
@@ -61,8 +63,8 @@ void ParticleVector3Widget::OnValueChanged()
 
 void ParticleVector3Widget::InitSpinBox(EventFilterDoubleSpinBox* spin, DAVA::float32 value)
 {
-    spin->setMinimum(-100000000000000000000.0);
-    spin->setMaximum(100000000000000000000.0);
+    spin->setMinimum(-std::numeric_limits<DAVA::float32>::max());
+    spin->setMaximum(std::numeric_limits<DAVA::float32>::max());
     spin->setSingleStep(0.001);
     spin->setDecimals(4);
     spin->setValue(value);
