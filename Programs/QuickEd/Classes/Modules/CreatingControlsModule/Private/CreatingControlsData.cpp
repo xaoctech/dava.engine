@@ -1,4 +1,5 @@
-#include "Modules/CreatingControlsModule/CreatingControlsData.h"
+#include "Classes/Modules/CreatingControlsModule/CreatingControlsData.h"
+#include "Classes/Modules/CreatingControlsModule/CreatingControlsSystem.h"
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CreatingControlsData)
 {
@@ -6,3 +7,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CreatingControlsData)
     .ConstructorByPointer()
     .End();
 }
+
+CreatingControlsData::CreatingControlsData() = default;
+CreatingControlsData::~CreatingControlsData() = default;

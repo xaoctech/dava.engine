@@ -1,11 +1,13 @@
-#include "Modules/LibraryModule/Private/LibraryWidget.h"
-#include "Modules/LibraryModule/Private/LibraryModel.h"
-
-#include <QTreeView>
+#include "Classes/Modules/LibraryModule/Private/LibraryWidget.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryModel.h"
 
 #include <Base/Any.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIControl.h>
+
+#include <QTreeView>
+#include <QVBoxLayout>
+#include <QHeaderView>
 
 LibraryWidget::LibraryWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent)
     : QWidget(parent)

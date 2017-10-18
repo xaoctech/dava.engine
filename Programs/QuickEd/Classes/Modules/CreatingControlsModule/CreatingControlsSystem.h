@@ -1,11 +1,19 @@
 #pragma once
 
-#include "EditorSystems/BaseEditorSystem.h"
-#include "EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/BaseEditorSystem.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
 
 #include <TArc/Core/FieldBinder.h>
 
 #include <Math/Vector.h>
+
+namespace DAVA
+{
+namespace TArc
+{
+class UI;
+}
+}
 
 class CreatingControlsSystem final : public BaseEditorSystem
 {
