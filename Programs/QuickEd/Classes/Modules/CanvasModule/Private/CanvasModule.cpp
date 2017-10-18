@@ -8,6 +8,7 @@
 #include "Interfaces/EditorSystemsManagerInteface.h"
 
 #include <TArc/DataProcessing/Common.h>
+#include <TArc/Qt/QtIcon.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
