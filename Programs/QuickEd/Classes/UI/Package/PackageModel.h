@@ -33,6 +33,11 @@ public:
     PackageModel(QObject* parent = nullptr);
     ~PackageModel() override;
 
+    enum
+    {
+        PackageCheckStateRole = Qt::UserRole + 1
+    };
+
     void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
     void SetUI(DAVA::TArc::UI* ui);
 

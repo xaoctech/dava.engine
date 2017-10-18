@@ -134,8 +134,8 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
     { // remove old actions and old menu items
         for (const QString& actionName : gfxActionPlacementName)
         {
-            ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources << actionName));
-            ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo);
+            ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources));
+            ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo, actionName);
         }
         gfxActionPlacementName.clear();
         settingsAreFiltered = false;
