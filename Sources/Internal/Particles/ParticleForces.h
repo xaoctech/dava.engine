@@ -12,6 +12,6 @@ struct Particle;
 namespace ParticleForces
 {
 void Init();
-void ApplyForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, Particle* particle, const Vector3& prevEffectSpacePosition, const Vector3& forcePosition);
+void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& down, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition);
 }
 }

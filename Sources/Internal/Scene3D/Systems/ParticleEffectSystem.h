@@ -84,7 +84,7 @@ protected:
     void UpdateActiveLod(ParticleEffectComponent* effect);
     void UpdateEffect(ParticleEffectComponent* effect, float32 deltaTime, float32 shortEffectTime);
     Particle* GenerateNewParticle(ParticleEffectComponent* effect, ParticleGroup& group, float32 currLoopTime, const Matrix4& worldTransform);
-    void UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 simplifiedForcesCount, Vector<Vector3>& currSimplifiedForceValues, float32 dt, AABBox3& bbox, Vector<ParticleForce*> forces, uint32 forcesCount, Vector<ParticleForce*> worldAlignForces, uint32 worldAlignForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife);
+    void UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 simplifiedForcesCount, Vector<Vector3>& currSimplifiedForceValues, float32 dt, AABBox3& bbox, Vector<ParticleForce*> effectAlignForces, uint32 effectAlignForcesCount, Vector<ParticleForce*> worldAlignForces, uint32 worldAlignForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife);
 
     void PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform);
     void AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox);
