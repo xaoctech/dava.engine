@@ -1,7 +1,8 @@
 #### Win10dpa (list, deploy, attach, uninstall, stop)
 ###### Only devices with anniversary update (>= 10.0.14393) are supported.
-###### On some Win 10 builds (probably between 10.0.15043 - 10.0.16193) there is a bug in Microsoft system API that may effect attach mode.
-####### details: https://wpdev.uservoice.com/forums/110705-universal-windows-platform/suggestions/18591439-loggingchannel-not-showing-string-message-content
+###### On some Win 10 builds (probably between 10.0.15043 - 10.0.16193) there is a bug in Microsoft system API that may effect attach mode. 
+details: https://wpdev.uservoice.com/forums/110705-universal-windows-platform/suggestions/18591439-loggingchannel-not-showing-string-message-content 
+
 ###### At the end of this file you can find python script 'example.py' that shows how to run basic deploy & attach scenario.  
 <br>
 
