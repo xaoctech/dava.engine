@@ -1,10 +1,17 @@
-#include "Modules/CreatingControlsModule/CreatingControlsSystem.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/ProjectModule/ProjectData.h"
-#include "UI/CommandExecutor.h"
-#include "Utils/ControlPlacementUtils.h"
+#include "Classes/Modules/CreatingControlsModule/CreatingControlsSystem.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/ProjectModule/ProjectData.h"
+
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+
+#include "Classes/UI/CommandExecutor.h"
+#include "Classes/Utils/ControlPlacementUtils.h"
 
 #include <Functional/Functional.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Qt/RenderWidget.h>
 
 namespace CreatingControlsSystemDetails
 {
@@ -30,6 +37,7 @@ CreatingControlsSystem::CreatingControlsSystem(DAVA::TArc::ContextAccessor* acce
 
 void CreatingControlsSystem::BindFields()
 {
+    using namespace DAVA;
     using namespace DAVA::TArc;
 
     fieldBinder.reset(new FieldBinder(accessor));
@@ -112,13 +120,16 @@ void CreatingControlsSystem::SetCreateByClick(const DAVA::String& _controlYamlSt
     controlYamlString = _controlYamlString;
     if (controlYamlString.empty() == false)
     {
-        PlatformApi::Qt::GetRenderWidget()->setFocus();
+        DAVA::PlatformApi::Qt::GetRenderWidget()->setFocus();
     }
 }
 
 void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
 {
-    DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* active = accessor->GetActiveContext();
     DVASSERT(active != nullptr);
     DocumentData* docData = active->GetData<DocumentData>();
     if (docData != nullptr)

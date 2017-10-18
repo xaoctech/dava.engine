@@ -1,13 +1,27 @@
 #pragma once
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/WindowSubSystem/UI.h>
 
+#include <Base/RefPtr.h>
+
+class ControlNode;
+class PackageNode;
 class LibraryWidget;
+
+namespace DAVA
+{
+namespace TArc
+{
+class QtAction;
+}
+}
 
 class LibraryData : public DAVA::TArc::DataNode
 {
 public:
-    LibraryData() = default;
+    LibraryData();
+    ~LibraryData();
 
     const DAVA::Vector<DAVA::RefPtr<ControlNode>>& GetDefaultControls() const;
 
