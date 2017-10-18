@@ -232,7 +232,7 @@ void LayerForceWidget::BuildCommonSection()
     connect(isGlobal, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(isGlobal);
 
-    isGlobalWarning = new QLabel("NOTE: Particle effect with global force (with box or sphere range) should not be rotated.");
+    isGlobalWarning = new QLabel("NOTE: If you rotate particle effect with global force, force position should be (0, 0, 0)");
     mainLayout->addWidget(isGlobalWarning);
 }
 

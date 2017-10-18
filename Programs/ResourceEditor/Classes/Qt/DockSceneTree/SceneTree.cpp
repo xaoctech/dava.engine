@@ -906,7 +906,7 @@ private:
         DAVA::ParticleForce* force = forceItem->GetForce();
         DAVA::String commandName;
         if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
-            commandName = "Remove drag force";
+            commandName = "Remove Drag force";
         else if (force->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
             commandName = "Remove Lorentz force";
         else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
