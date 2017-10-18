@@ -498,7 +498,7 @@ void DocumentsModule::CreateViewActions()
         separator->setObjectName(zoomSeparator);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "menuGridColor" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 

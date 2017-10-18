@@ -8,14 +8,14 @@
 #include <Math/Color.h>
 #include <Reflection/Reflection.h>
 
+const DAVA::Color PreviewWidgetSettings::defaultBackgroundColor0 = DAVA::Color(0.0f, 0.0f, 0.0f, 0.5f);
+const DAVA::Color PreviewWidgetSettings::defaultBackgroundColor1 = DAVA::Color(0.242f, 0.242f, 0.242f, 1.0f);
+const DAVA::Color PreviewWidgetSettings::defaultBackgroundColor2 = DAVA::Color(0.159f, 0.159f, 0.159f, 1.0f);
+
 namespace PreviewWidgetSettingsDetail
 {
 using namespace DAVA;
 using namespace DAVA::TArc;
-
-const Color defaultBackgroundColor0 = Color(0.0f, 0.0f, 0.0f, 0.5f);
-const Color defaultBackgroundColor1 = Color(0.242f, 0.242f, 0.242f, 1.0f);
-const Color defaultBackgroundColor2 = Color(0.159f, 0.159f, 0.159f, 1.0f);
 
 void LoadIntoReflection(Reflection::Field& field, const PropertiesItem& node)
 {
@@ -41,9 +41,9 @@ void LoadIntoReflection(Reflection::Field& field, const PropertiesItem& node)
 
 struct PreviewWidgetSettingsV0
 {
-    DAVA::Color backgroundColor0 = PreviewWidgetSettingsDetail::defaultBackgroundColor0;
-    DAVA::Color backgroundColor1 = PreviewWidgetSettingsDetail::defaultBackgroundColor1;
-    DAVA::Color backgroundColor2 = PreviewWidgetSettingsDetail::defaultBackgroundColor2;
+    DAVA::Color backgroundColor0 = PreviewWidgetSettings::defaultBackgroundColor0;
+    DAVA::Color backgroundColor1 = PreviewWidgetSettings::defaultBackgroundColor1;
+    DAVA::Color backgroundColor2 = PreviewWidgetSettings::defaultBackgroundColor2;
     DAVA::uint32 backgroundColorIndex = 0;
 
     DAVA_REFLECTION(PreviewWidgetSettingsV0)
@@ -120,7 +120,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PreviewWidgetSettings)
     DAVA::ReflectionRegistrator<PreviewWidgetSettings>::Begin()[DAVA::M::DisplayName("Preview widget"), DAVA::M::SettingsSortKey(70)]
     .ConstructorByPointer()
     .Field("backgroundColors", &PreviewWidgetSettings::backgroundColors)[DAVA::M::DisplayName("Background colors"), AddBgrColorFeature()]
-    .Field("backgroundColorIndex", &PreviewWidgetSettings::backgroundColorIndex)[DAVA::M::HiddenField()]
+    .Field("backgroundColorIndex", &PreviewWidgetSettings::backgroundColorIndex)[DAVA::M::HiddenField(), DAVA::M::ForceResetToDefault()]
     .Field("version", &PreviewWidgetSettings::version)[DAVA::M::HiddenField()]
     .End();
 }

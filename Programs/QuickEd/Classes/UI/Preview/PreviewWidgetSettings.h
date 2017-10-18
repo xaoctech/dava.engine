@@ -9,7 +9,11 @@
 class PreviewWidgetSettings : public DAVA::TArc::SettingsNode
 {
 public:
-    DAVA::Vector<DAVA::Color> backgroundColors;
+    static const DAVA::Color defaultBackgroundColor0;
+    static const DAVA::Color defaultBackgroundColor1;
+    static const DAVA::Color defaultBackgroundColor2;
+
+    DAVA::Vector<DAVA::Color> backgroundColors = { defaultBackgroundColor0, defaultBackgroundColor1, defaultBackgroundColor2 };
     DAVA::uint32 backgroundColorIndex = 0;
 
     DAVA_VIRTUAL_REFLECTION(PreviewWidgetSettings, DAVA::TArc::SettingsNode);

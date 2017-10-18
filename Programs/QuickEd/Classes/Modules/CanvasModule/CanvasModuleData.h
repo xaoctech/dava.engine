@@ -1,8 +1,11 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
 #include <Base/RefPtr.h>
+#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/WindowSubSystem/UI.h>
 #include <UI/UIControl.h>
+
+#include <QString>
 
 class EditorCanvas;
 class EditorControlsView;
@@ -24,6 +27,13 @@ private:
     std::unique_ptr<EditorCanvas> editorCanvas;
     std::unique_ptr<EditorControlsView> controlsView;
     DAVA::RefPtr<DAVA::UIControl> canvas;
+
+    struct ActionInfo
+    {
+        QString name;
+        DAVA::TArc::ActionPlacementInfo placement;
+    };
+    DAVA::Vector<ActionInfo> bgrColorActions;
 
     DAVA_VIRTUAL_REFLECTION(CanvasModuleData, DAVA::TArc::DataNode);
 };

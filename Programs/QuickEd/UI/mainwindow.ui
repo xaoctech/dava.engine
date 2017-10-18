@@ -68,19 +68,12 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <widget class="QMenu" name="menuGridColor">
-     <property name="title">
-      <string>Background Color</string>
-     </property>
-    </widget>
     <widget class="QMenu" name="Dock">
      <property name="title">
       <string>Dock Windows</string>
      </property>
     </widget>
     <addaction name="Dock"/>
-    <addaction name="separator"/>
-    <addaction name="menuGridColor"/>
    </widget>
    <widget class="QMenu" name="Tools">
     <property name="title">

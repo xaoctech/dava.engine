@@ -17,6 +17,7 @@
 
 #include <QList>
 #include <QString>
+#include <QMenu>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CanvasModule)
 {
@@ -32,7 +33,11 @@ CanvasModule::CanvasModule()
 void CanvasModule::PostInit()
 {
     CreateData();
-    CreateActions();
+    CreateMenuSeparator();
+    RecreateBgrColorActions();
+
+    wrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreviewWidgetSettings>());
+    wrapper.SetListener(this);
 }
 
 void CanvasModule::CreateData()
@@ -43,10 +48,35 @@ void CanvasModule::CreateData()
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
-void CanvasModule::CreateActions()
+void CanvasModule::CreateMenuSeparator()
+{
+    using namespace DAVA::TArc;
+    QAction* separator = new QAction(nullptr);
+    separator->setObjectName("bgrMenuSeparator");
+    separator->setSeparator(true);
+    ActionPlacementInfo placementInfo;
+    placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
+    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+}
+
+void CanvasModule::RecreateBgrColorActions()
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
+
+    CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+    std::for_each(data->bgrColorActions.begin(), data->bgrColorActions.end(), [this](const CanvasModuleData::ActionInfo& actionInfo)
+                  {
+                      GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.name);
+                  });
+
+    QString menuBgrColor = "Background Color";
+    {
+        QMenu* backgroundMenu = new QMenu(menuBgrColor, nullptr);
+        ActionPlacementInfo placement;
+        placement.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "bgrMenuSeparator" }));
+        GetUI()->AddAction(mainWindowKey, placement, backgroundMenu->menuAction());
+    }
 
     FieldDescriptor indexFieldDescr;
     indexFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
@@ -56,20 +86,27 @@ void CanvasModule::CreateActions()
     colorsFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
     colorsFieldDescr.fieldName = DAVA::FastName("backgroundColors");
 
-    ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
-                                                              << "menuGridColor"));
+    ActionPlacementInfo placement(CreateMenuPoint(QList<QString>() << MenuItems::menuView << menuBgrColor));
 
     PreviewWidgetSettings* settings = GetAccessor()->GetGlobalContext()->GetData<PreviewWidgetSettings>();
     const Vector<Color>& colors = settings->backgroundColors;
 
+    data->bgrColorActions.resize(colors.size());
     for (DAVA::uint32 currentIndex = 0; currentIndex < colors.size(); ++currentIndex)
     {
         QtAction* action = new QtAction(GetAccessor(), QString("Background color %1").arg(currentIndex));
         action->SetStateUpdationFunction(QtAction::Icon, colorsFieldDescr, [currentIndex](const Any& v)
                                          {
                                              const Vector<Color>& colors = v.Cast<Vector<Color>>();
-                                             Any color = colors[currentIndex];
-                                             return color.Cast<QIcon>(QIcon());
+                                             if (currentIndex < colors.size())
+                                             {
+                                                 Any color = colors[currentIndex];
+                                                 return color.Cast<QIcon>(QIcon());
+                                             }
+                                             else
+                                             {
+                                                 return QIcon();
+                                             }
                                          });
 
         action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
@@ -82,7 +119,10 @@ void CanvasModule::CreateActions()
                                       settings->backgroundColorIndex = currentIndex;
                                   });
 
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, info, action);
+        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placement, action);
+        CanvasModuleData::ActionInfo& actionInfo = data->bgrColorActions[currentIndex];
+        actionInfo.name = action->text();
+        actionInfo.placement = placement;
     }
 }
 
@@ -114,6 +154,11 @@ void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
     std::unique_ptr<CanvasData> canvasData = std::make_unique<CanvasData>();
     context->CreateData(std::move(canvasData));
+}
+
+void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Vector<Any>& fields)
+{
+    RecreateBgrColorActions();
 }
 
 DECL_GUI_MODULE(CanvasModule);
