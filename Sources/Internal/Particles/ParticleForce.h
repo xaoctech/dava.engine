@@ -41,7 +41,6 @@ public:
 
     RefPtr<PropertyLine<Vector3>> forcePowerLine;
     RefPtr<PropertyLine<float32>> turbulenceLine;
-    Matrix4 localMatrix;
 
     Vector3 position;
     Vector3 rotation;
@@ -73,6 +72,7 @@ public:
     bool killParticles = false;
     bool normalAsReflectionVector = true;
     bool randomizeReflectionForce = false;
+    bool worldAlign = true;
 
     ParticleForce(ParticleLayer* parent);
     ParticleForce* Clone();
@@ -87,6 +87,8 @@ public:
     eShape GetShape() const;
 
     bool IsForceCanAlterPosition() const;
+
+    Vector3 worldPosition;
 
 public:
     DAVA_VIRTUAL_REFLECTION(ParticleForce, BaseObject);

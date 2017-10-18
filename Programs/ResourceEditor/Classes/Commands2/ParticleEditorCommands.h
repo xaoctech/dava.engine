@@ -473,21 +473,12 @@ class CommandUpdateParticleForce : public CommandAction
 public:
     struct ForceParams
     {
-        bool isActive = true;
         DAVA::String forceName;
-        bool useInfinityRange = false;
-        bool pointGravityUseRandomPointsOnSphere = false;
-        bool isGlobal = false;
-        bool killParticles = false;
-        bool normalAsReflectionVector = true;
-        bool randomizeReflectionForce = true;
-        DAVA::float32 radius = 0.0f;
-        DAVA::Vector3 boxSize;
-        DAVA::Vector3 forcePower;
-        DAVA::Vector3 direction;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> forcePowerLine;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
         DAVA::ParticleForce::eShape shape = DAVA::ParticleForce::eShape::BOX;
         DAVA::ParticleForce::eTimingType timingType = DAVA::ParticleForce::eTimingType::CONSTANT;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> forcePowerLine;
+        DAVA::float32 radius = 0.0f;
         DAVA::float32 windFrequency = 0.0f;
         DAVA::float32 windTurbulence = 0.0f;
         DAVA::float32 windTurbulenceFrequency = 0.0f;
@@ -502,7 +493,17 @@ public:
         DAVA::float32 velocityThreshold = 1.0f;
         DAVA::float32 startTime = 0.0f;
         DAVA::float32 endTime = 15.0f;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
+        DAVA::Vector3 boxSize;
+        DAVA::Vector3 forcePower;
+        DAVA::Vector3 direction;
+        bool isActive = true;
+        bool worldAlign = false;
+        bool useInfinityRange = false;
+        bool pointGravityUseRandomPointsOnSphere = false;
+        bool isGlobal = false;
+        bool killParticles = false;
+        bool normalAsReflectionVector = true;
+        bool randomizeReflectionForce = true;
     };
 
     CommandUpdateParticleForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params);

@@ -1224,6 +1224,9 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
         forceDataName = Format("randomizeReflectionForce%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->randomizeReflectionForce);
 
+        forceDataName = Format("worldAlign%d", i);
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->worldAlign);
+
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, forceDataName, currentForce->pointGravityUseRandomPointsOnSphere);
 
@@ -1559,6 +1562,11 @@ void ParticleLayer::LoadForcesFromYaml(const YamlNode* node)
         const YamlNode* randomizeReflectionForceNode = node->Get(forceDataName);
         if (randomizeReflectionForceNode)
             force->randomizeReflectionForce = randomizeReflectionForceNode->AsBool();
+
+        forceDataName = Format("worldAlign%d", i);
+        const YamlNode* worldAlignForceNode = node->Get(forceDataName);
+        if (worldAlignForceNode)
+            force->worldAlign = worldAlignForceNode->AsBool();
 
         forceDataName = Format("pointGravityUseRandomPointsOnSphere%d", i);
         const YamlNode* pointGravityUseRandomPointsOnSphereNode = node->Get(forceDataName);

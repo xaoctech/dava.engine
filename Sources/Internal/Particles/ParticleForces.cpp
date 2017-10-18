@@ -104,14 +104,14 @@ T GetValue(const ParticleForce* force, float32 particleOverLife, float32 layerOv
     return value;
 }
 
-void ApplyDragForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
-void ApplyLorentzForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
-void ApplyPointGravity(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle);
-void ApplyGravity(const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
-void ApplyWind(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
-void ApplyPlaneCollision(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition);
+void ApplyDragForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
+void ApplyLorentzForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
+void ApplyPointGravity(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& forcePosition);
+void ApplyGravity(const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
+void ApplyWind(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
+void ApplyPlaneCollision(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition, const Vector3& forcePosition);
 
-void ApplyForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, Particle* particle, const Vector3& prevEffectSpacePosition)
+void ApplyForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& effectSpaceDown, Particle* particle, const Vector3& prevEffectSpacePosition, const Vector3& forcePosition)
 {
     using ForceType = ParticleForce::eType;
 
@@ -119,58 +119,58 @@ void ApplyForce(Entity* parent, const ParticleForce* force, Vector3& effectSpace
         return;
     if (force->type == ForceType::DRAG_FORCE)
     {
-        ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        ApplyDragForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, forcePosition);
         return;
     }
     if (force->type == ForceType::LORENTZ_FORCE)
     {
-        ApplyLorentzForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        ApplyLorentzForce(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, forcePosition);
         return;
     }
     if (force->type == ForceType::GRAVITY)
     {
-        ApplyGravity(force, effectSpaceVelocity, effectSpaceDown, dt, particleOverLife, layerOverLife, particle);
+        ApplyGravity(force, effectSpaceVelocity, effectSpaceDown, dt, particleOverLife, layerOverLife, particle, forcePosition);
         return;
     }
     if (force->type == ForceType::WIND)
     {
-        ApplyWind(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        ApplyWind(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, forcePosition);
         return;
     }
     if (force->type == ForceType::POINT_GRAVITY)
     {
-        ApplyPointGravity(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle);
+        ApplyPointGravity(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, forcePosition);
         return;
     }
     if (force->type == ForceType::PLANE_COLLISION)
     {
-        ApplyPlaneCollision(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, prevEffectSpacePosition);
+        ApplyPlaneCollision(parent, force, effectSpaceVelocity, effectSpacePosition, dt, particleOverLife, layerOverLife, particle, prevEffectSpacePosition, forcePosition);
         return;
     }
 }
 
-inline bool IsPositionInForceShape(const Entity* parent, const ParticleForce* force, const Vector3& effectSpacePosition)
+inline bool IsPositionInForceShape(const Entity* parent, const ParticleForce* force, const Vector3& effectSpacePosition, const Vector3& forcePosition)
 {
     if (force->isInfinityRange)
         return true;
 
     if (force->GetShape() == ParticleForce::eShape::BOX)
     {
-        AABBox3 box(force->position - force->GetHalfBoxSize(), force->position + force->GetHalfBoxSize());
+        AABBox3 box(forcePosition - force->GetHalfBoxSize(), forcePosition + force->GetHalfBoxSize());
         if (box.IsInside(effectSpacePosition))
             return true;
     }
     else if (force->GetShape() == ParticleForce::eShape::SPHERE)
     {
-        if ((force->position - effectSpacePosition).SquareLength() <= force->GetSquareRadius())
+        if ((forcePosition - effectSpacePosition).SquareLength() <= force->GetSquareRadius())
             return true;
     }
     return false;
 }
 
-void ApplyDragForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+void ApplyDragForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition, forcePosition))
         return;
 
     Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
@@ -178,12 +178,12 @@ void ApplyDragForce(Entity* parent, const ParticleForce* force, Vector3& effectS
     effectSpaceVelocity *= v;
 }
 
-void ApplyLorentzForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+void ApplyLorentzForce(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition, forcePosition))
         return;
 
-    Vector3 forceDir = (effectSpacePosition - force->position).CrossProduct(force->direction);
+    Vector3 forceDir = (effectSpacePosition - forcePosition).CrossProduct(force->direction);
     float32 len = forceDir.SquareLength();
     if (len > 0.0f)
     {
@@ -194,16 +194,16 @@ void ApplyLorentzForce(Entity* parent, const ParticleForce* force, Vector3& effe
     effectSpaceVelocity += forceStrength * forceDir;
 }
 
-void ApplyGravity(const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+void ApplyGravity(const ParticleForce* force, Vector3& effectSpaceVelocity, const Vector3& effectSpaceDown, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
     effectSpaceVelocity += effectSpaceDown * GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower).x * dt;
 }
 
-void ApplyWind(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle)
+void ApplyWind(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
     static const float32 windScale = 100.0f; // Artiom request.
 
-    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition, forcePosition))
         return;
 
     intptr_t partInd = reinterpret_cast<intptr_t>(particle);
@@ -234,12 +234,12 @@ void ApplyWind(Entity* parent, const ParticleForce* force, Vector3& effectSpaceV
     effectSpaceVelocity += force->direction * dt * windMultiplier * forceStrength.x * windScale;
 }
 
-void ApplyPointGravity(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle)
+void ApplyPointGravity(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition, forcePosition))
         return;
 
-    Vector3 toCenter = force->position - effectSpacePosition;
+    Vector3 toCenter = forcePosition - effectSpacePosition;
     float32 sqrToCenterDist = toCenter.SquareLength();
     if (sqrToCenterDist > 0)
         toCenter /= sqrt(sqrToCenterDist);
@@ -250,8 +250,8 @@ void ApplyPointGravity(Entity* parent, const ParticleForce* force, Vector3& effe
         intptr_t partInd = reinterpret_cast<intptr_t>(particle);
         uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
         particleIndex %= ParticleForcesDetail::sphereRandomVectorsSize;
-        Vector3 forcePosition = force->position + ParticleForcesDetail::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
-        forceDirection = forcePosition - effectSpacePosition;
+        Vector3 forcePositionModified = forcePosition + ParticleForcesDetail::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
+        forceDirection = forcePositionModified - effectSpacePosition;
         float32 sqrDistToTarget = forceDirection.SquareLength();
         if (sqrDistToTarget > 0)
             forceDirection /= sqrt(sqrDistToTarget);
@@ -265,18 +265,18 @@ void ApplyPointGravity(Entity* parent, const ParticleForce* force, Vector3& effe
         if (force->killParticles)
             ParticleForcesDetail::KillParticle(particle);
         else
-            effectSpacePosition = force->position - force->pointGravityRadius * toCenter;
+            effectSpacePosition = forcePosition - force->pointGravityRadius * toCenter;
     }
 }
 
-void ApplyPlaneCollision(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition)
+void ApplyPlaneCollision(Entity* parent, const ParticleForce* force, Vector3& effectSpaceVelocity, Vector3& effectSpacePosition, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& prevEffectSpacePosition, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(parent, force, effectSpacePosition))
+    if (!IsPositionInForceShape(parent, force, effectSpacePosition, forcePosition))
         return;
 
     Vector3 normal = Normalize(force->direction);
-    Vector3 a = prevEffectSpacePosition - force->position;
-    Vector3 b = effectSpacePosition - force->position;
+    Vector3 a = prevEffectSpacePosition - forcePosition;
+    Vector3 b = effectSpacePosition - forcePosition;
     float32 bProj = b.DotProduct(normal);
     float32 aProj = a.DotProduct(normal);
     if (bProj <= 0 && aProj > 0)

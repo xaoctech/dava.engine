@@ -111,11 +111,9 @@ void EditorParticlesSystem::Draw()
     {
         selectedEmitterInstances.insert(instance);
     }
-    DAVA::Set<DAVA::ParticleForce*> selectedForces;
+
     for (DAVA::ParticleForce* force : selection.ObjectsOfType<DAVA::ParticleForce>())
-    {
         DrawParticleForces(force);
-    }
 
     for (auto entity : entities)
     {
@@ -237,47 +235,62 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
     if (force->type == ForceType::GRAVITY)
         return;
 
+    RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    DAVA::ParticleLayer* layer = GetForceOwner(force);
+    DAVA::ParticleEmitterInstance* emitterInstance = GetLayerOwner(layer);
+    DAVA::ParticleEffectComponent* effectComponent = emitterInstance->GetOwner();
+    DAVA::Entity* entity = effectComponent->GetEntity();
     if (force->type == ForceType::LORENTZ_FORCE || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
     {
         float32 scale = 1.0f;
-        HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;
+        HoodSystem* hoodSystem = static_cast<SceneEditor2*>(GetScene())->hoodSystem;
         if (hoodSystem != nullptr)
-        {
             scale = hoodSystem->GetScale();
-        }
-        auto layer = GetForceOwner(force);
-        auto ent = GetLayerOwner(layer);
 
         float32 arrowSize = scale;
         float32 arrowBaseSize = 5.0f;
         Vector3 emitterVector = force->direction;
-
-        Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
-        emitterVector = emitterVector * Matrix3(wMat);
+        Vector3 center;
+        if (force->worldAlign)
+        {
+            center = entity->GetWorldTransform().GetTranslationVector() + force->position;
+        }
+        else
+        {
+            Matrix4 wMat = entity->GetWorldTransform();
+            emitterVector = emitterVector * Matrix3(wMat);
+            center = force->position * wMat;
+        }
         emitterVector.Normalize();
         emitterVector *= arrowBaseSize * scale;
-        Vector3 center = force->position * wMat;
 
-        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
-                                                                   Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawArrow(center, center + emitterVector, arrowSize, Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
     }
 
-    RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     if (force->type == ForceType::PLANE_COLLISION)
     {
-        auto layer = GetForceOwner(force);
-        auto ent = GetLayerOwner(layer);
-        Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
-        Vector3 wNormal = force->direction * Matrix3(wMat);
+        Matrix4 wMat = entity->GetWorldTransform();
+        Vector3 forcePosition;
+        Vector3 wNormal;
+        if (force->worldAlign)
+        {
+            forcePosition = wMat.GetTranslationVector() + force->position;
+            wNormal = force->direction;
+        }
+        else
+        {
+            wNormal = force->direction * Matrix3(wMat);
+            forcePosition = force->position;
+            forcePosition = force->position * wMat;
+        }
         wNormal.Normalize();
         Vector3 cV(0.0f, 0.0f, 1.0f);
         if (1.0f - Abs(cV.DotProduct(wNormal)) < EPSILON)
             cV = Vector3(1.0f, 0.0f, 0.0f);
-        Vector3 position = force->position;
-        position = force->position * wMat;
         Matrix4 transform;
-        transform.BuildLookAtMatrix(position, position + wNormal, cV);
+        transform.BuildLookAtMatrix(forcePosition, forcePosition + wNormal, cV);
         transform.Inverse();
+
         float32 bbsize = force->planeScale * 0.5f;
         drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
                                      Color(0.0f, 0.7f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
@@ -286,21 +299,30 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
     }
     else if (force->type == ForceType::POINT_GRAVITY)
     {
-        Matrix4 wMat = Selectable(force).GetWorldTransform();
         float32 radius = force->pointGravityRadius;
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.3f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.15f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+        Vector3 translation;
+        if (force->worldAlign)
+            translation = entity->GetWorldTransform().GetTranslationVector() + force->position;
+        else
+            translation = Selectable(force).GetWorldTransform().GetTranslationVector();
+
+        drawer->DrawIcosahedron(translation, radius, Color(0.0f, 0.3f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(translation, radius, Color(0.0f, 0.15f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
 
     if (force->isInfinityRange)
         return;
     if (force->GetShape() == ParticleForce::eShape::BOX)
     {
-        auto layer = GetForceOwner(force);
-        auto ent = GetLayerOwner(layer);
-
-        Matrix4 wMat = ent->GetOwner()->GetEntity()->GetWorldTransform();
-        wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
+        Matrix4 wMat = entity->GetWorldTransform();
+        if (force->worldAlign)
+        {
+            Vector3 translation = wMat.GetTranslationVector();
+            wMat = Matrix4::IDENTITY;
+            wMat.SetTranslationVector(translation + force->position);
+        }
+        else
+            wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
 
         drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
                                      Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
@@ -311,6 +333,12 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
     else if (force->GetShape() == ParticleForce::eShape::SPHERE)
     {
         Matrix4 wMat = Selectable(force).GetWorldTransform();
+        if (force->worldAlign)
+        {
+            Vector3 translation = entity->GetWorldTransform().GetTranslationVector();
+            wMat = Matrix4::IDENTITY;
+            wMat.SetTranslationVector(translation + force->position);
+        }
         float32 radius = force->GetRadius();
         drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
         drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);

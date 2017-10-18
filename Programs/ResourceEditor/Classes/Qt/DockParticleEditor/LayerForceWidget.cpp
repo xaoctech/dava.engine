@@ -220,6 +220,10 @@ void LayerForceWidget::BuildCommonSection()
     mainLayout->addWidget(forceNameEdit);
     connect(forceNameEdit, SIGNAL(editingFinished()), this, SLOT(OnValueChanged()));
 
+    worldAlign = new QCheckBox("World align");
+    connect(worldAlign, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+    mainLayout->addWidget(worldAlign);
+
     infinityRange = new QCheckBox("Use infinity range");
     connect(infinityRange, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(infinityRange);
@@ -265,6 +269,7 @@ void LayerForceWidget::UpdateVisibility(DAVA::ParticleForce::eShape shape, DAVA:
 
     // Gravity
     infinityRange->setVisible(!isGravity);
+    worldAlign->setVisible(!isGravity);
 
     // Wind
     windSeparator->setVisible(isWind);
@@ -446,6 +451,7 @@ void LayerForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DA
 
     selectedForce = layer->GetParticleForces()[forceIndex];
     infinityRange->setChecked(selectedForce->isInfinityRange);
+    worldAlign->setChecked(selectedForce->worldAlign);
     isActive->setChecked(selectedForce->isActive);
     boxSize->SetValue(selectedForce->GetBoxSize());
     forcePower->SetValue(selectedForce->forcePower);
@@ -570,6 +576,7 @@ void LayerForceWidget::OnValueChanged()
 
     params.direction = direction->GetValue();
     params.useInfinityRange = infinityRange->isChecked();
+    params.worldAlign = worldAlign->isChecked();
     params.radius = radiusSpin->value();
     params.forcePowerLine = propForce.GetPropLine();
     params.turbulenceLine = propTurb.GetPropLine();

@@ -41,6 +41,7 @@ ParticleForce* ParticleForce::Clone()
     dst->killParticles = killParticles;
     dst->normalAsReflectionVector = normalAsReflectionVector;
     dst->randomizeReflectionForce = randomizeReflectionForce;
+    dst->worldAlign = worldAlign;
     dst->reflectionPercent = reflectionPercent;
     dst->rndReflectionForceMin = rndReflectionForceMin;
     dst->rndReflectionForceMax = rndReflectionForceMax;

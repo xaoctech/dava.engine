@@ -354,6 +354,7 @@ CommandUpdateParticleForce::CommandUpdateParticleForce(DAVA::ParticleLayer* laye
         oldParams.killParticles = force->killParticles;
         oldParams.normalAsReflectionVector = force->normalAsReflectionVector;
         oldParams.randomizeReflectionForce = force->randomizeReflectionForce;
+        oldParams.worldAlign = force->worldAlign;
         oldParams.pointGravityUseRandomPointsOnSphere = force->pointGravityUseRandomPointsOnSphere;
         oldParams.isGlobal = force->isGlobal;
         oldParams.boxSize = force->GetBoxSize();
@@ -419,6 +420,7 @@ void CommandUpdateParticleForce::ApplyParams(ForceParams& params)
         force->reflectionChaos = params.reflectionChaos;
         force->normalAsReflectionVector = params.normalAsReflectionVector;
         force->randomizeReflectionForce = params.randomizeReflectionForce;
+        force->worldAlign = params.worldAlign;
         force->rndReflectionForceMin = params.rndReflectionForceMin;
         force->rndReflectionForceMax = params.rndReflectionForceMax;
         force->velocityThreshold = params.velocityThreshold;
