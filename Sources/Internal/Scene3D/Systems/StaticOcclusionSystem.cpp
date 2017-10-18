@@ -354,6 +354,7 @@ StaticOcclusionDebugDrawSystem::~StaticOcclusionDebugDrawSystem()
     SetScene(nullptr);
     SafeRelease(gridMaterial);
     SafeRelease(coverMaterial);
+    DVASSERT(entities.empty() == true);
 }
 
 void StaticOcclusionDebugDrawSystem::SetScene(Scene* scene)
@@ -401,7 +402,8 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity* entity)
 void StaticOcclusionDebugDrawSystem::RemoveEntity(Entity* entity)
 {
     RemoveComponentFromEntity(entity);
-    DVASSERT(FindAndRemoveExchangingWithLast(entities, entity) == true);
+    bool removeSuccessful = FindAndRemoveExchangingWithLast(entities, entity);
+    DVASSERT(removeSuccessful == true);
 }
 
 void StaticOcclusionDebugDrawSystem::ImmediateEvent(Component* component, uint32 event)
@@ -422,6 +424,7 @@ void StaticOcclusionDebugDrawSystem::PrepareForRemove()
     {
         RemoveComponentFromEntity(entity);
     }
+    entities.clear();
 }
 
 void StaticOcclusionDebugDrawSystem::RemoveComponentFromEntity(Entity* entity)
