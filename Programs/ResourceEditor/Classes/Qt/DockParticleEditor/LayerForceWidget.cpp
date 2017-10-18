@@ -576,7 +576,7 @@ void LayerForceWidget::OnValueChanged()
 
     params.direction = direction->GetValue();
     params.useInfinityRange = infinityRange->isChecked();
-    params.worldAlign = worldAlign->isChecked();
+    params.worldAlign = selectedForce->type == ForceType::GRAVITY ? true : worldAlign->isChecked();
     params.radius = radiusSpin->value();
     params.forcePowerLine = propForce.GetPropLine();
     params.turbulenceLine = propTurb.GetPropLine();

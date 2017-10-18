@@ -945,7 +945,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     }
 
     for (uint32 i = 0; i < worldAlignForcesCount; ++i)
-        ParticleForces::ApplyForce(worldAlignForces[i], particle->speed, particle->position, dt, overLife, layerOverLife, Vector3(0.0f, -1.0f, 0.0f), particle, prevParticlePosition, worldAlignForces[i]->worldPosition);
+        ParticleForces::ApplyForce(worldAlignForces[i], particle->speed, particle->position, dt, overLife, layerOverLife, Vector3(0.0f, 0.0f, -1.0f), particle, prevParticlePosition, worldAlignForces[i]->worldPosition);
 
     if (effectAlignForcesCount > 0)
     {
