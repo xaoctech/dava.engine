@@ -157,7 +157,7 @@ void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(canvasData));
 }
 
-void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Vector<Any>& fields)
+void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     RecreateBgrColorActions();
 }
