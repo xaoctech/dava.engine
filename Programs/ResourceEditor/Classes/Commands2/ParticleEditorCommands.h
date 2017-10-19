@@ -172,6 +172,7 @@ public:
               DAVA::ParticleEmitter::eType emitterType,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> emissionRange,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> emissionVector,
+              DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> emissionVelocityVector,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> radius,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> emissionAngle,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> emissionAngleVariation,
@@ -196,6 +197,7 @@ protected:
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> emissionAngle;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> emissionAngleVariation;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> emissionVector;
+    DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> emissionVelocityVector;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> radius;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> colorOverLife;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> size;

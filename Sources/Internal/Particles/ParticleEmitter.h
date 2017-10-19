@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -87,6 +86,7 @@ public:
 
     RefPtr<PropertyLine<Vector3>> size;
     RefPtr<PropertyLine<Vector3>> emissionVector;
+    RefPtr<PropertyLine<Vector3>> emissionVelocityVector;
     RefPtr<PropertyLine<float32>> emissionRange;
     RefPtr<PropertyLine<float32>> radius;
     RefPtr<PropertyLine<float32>> emissionAngle;
@@ -111,5 +111,3 @@ private:
     static EmitterCacheMap emitterCache;
 };
 }
-
-#endif // __DAVAENGINE_PARTICLE_EMITTER_H__

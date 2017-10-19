@@ -40,6 +40,10 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
     emitterType = EMITTER_POINT;
     emissionVector.Set(NULL);
     emissionVector = RefPtr<PropertyLineValue<Vector3>>(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+
+    emissionVelocityVector.Set(nullptr);
+    emissionVelocityVector = RefPtr<PropertyLineValue<Vector3>>(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+
     emissionAngle = NULL;
     emissionAngleVariation = NULL;
     emissionRange.Set(NULL);
@@ -79,6 +83,11 @@ ParticleEmitter* ParticleEmitter::Clone()
     {
         clonedEmitter->emissionVector = this->emissionVector->Clone();
         clonedEmitter->emissionVector->Release();
+    }
+    if (this->emissionVelocityVector)
+    {
+        clonedEmitter->emissionVelocityVector = this->emissionVelocityVector->Clone();
+        clonedEmitter->emissionVelocityVector->Release();
     }
     if (this->emissionAngle)
     {
@@ -300,6 +309,9 @@ bool ParticleEmitter::LoadFromYaml(const FilePath& filename, bool preserveInheri
         if (emitterNode->Get("emissionVector"))
             emissionVector = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("emissionVector"));
 
+        if (emitterNode->Get("emissionVelocityVector"))
+            emissionVelocityVector = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("emissionVelocityVector"));
+
         const YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
         if (!emissionVectorInvertedNode)
         {
@@ -398,6 +410,7 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionAngleVariation", this->emissionAngleVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionRange", this->emissionRange);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "emissionVector", this->emissionVector);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "emissionVelocityVector", this->emissionVelocityVector);
 
     // Yuri Coder, 2013/04/12. After the coordinates inversion for the emission vector we need to introduce the
     // new "emissionVectorInverted" flag to mark we don't need to invert coordinates after re-loading the YAML.
@@ -422,6 +435,7 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
 void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
     PropertyLineHelper::AddIfModifiable(emissionVector.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(emissionVelocityVector.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(emissionRange.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(radius.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(size.Get(), modifiables);

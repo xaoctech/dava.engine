@@ -182,6 +182,12 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
         emitterVector = emitter->GetEmitter()->emissionVector->GetValue(effect->GetCurrTime());
         emitterVector.Normalize();
     }
+    DAVA::Vector3 emissionVelocityVector(0.0f, 0.0f, 1.0f);
+    if (emitter->GetEmitter()->emissionVelocityVector)
+    {
+        emissionVelocityVector = emitter->GetEmitter()->emissionVelocityVector->GetValue(effect->GetCurrTime());
+        emissionVelocityVector.Normalize();
+    }
 
     DAVA::float32 scale = 1.0f;
     HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;
@@ -198,8 +204,14 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
     wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
     TransformPerserveLength(emitterVector, wMat);
 
+    emissionVelocityVector *= arrowBaseSize * scale;
+    TransformPerserveLength(emissionVelocityVector, wMat);
+
     GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
                                                                DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+
+    GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emissionVelocityVector, arrowSize,
+                                                               DAVA::Color(0.0f, 0.0f, 0.7f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
 void EditorParticlesSystem::AddEntity(DAVA::Entity* entity)
