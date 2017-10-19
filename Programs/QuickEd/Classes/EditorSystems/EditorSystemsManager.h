@@ -99,7 +99,9 @@ public:
         //if cursor under selected control, pressed left mouse button and starts dragging
         Transform,
         //all user input used only to drag canvas inside render widget
-        DragScreen
+        DragScreen,
+        //if mouse clicked, new control will be added
+        AddingControl
     };
 
     enum eDisplayState

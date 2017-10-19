@@ -5,7 +5,7 @@
 #include <QAbstractListModel>
 #include <QFont>
 
-class ApplicationManager;
+class GuiApplicationManager;
 
 class BranchesListModel : public QAbstractListModel
 {
@@ -19,7 +19,7 @@ public:
         LIST_ITEM_SEPARATOR
     };
     static const int DAVA_WIDGET_ROLE = Qt::UserRole + 1;
-    BranchesListModel(const ApplicationManager* appManager_, QObject* parent = nullptr);
+    BranchesListModel(const GuiApplicationManager* appManager_, QObject* parent = nullptr);
     void ClearItems();
     void AddItem(const QString& dataText, ListItemType type);
     QVariant data(const QModelIndex& index, int role) const override;
@@ -37,7 +37,7 @@ private:
 
     QList<Item> items;
     QFont fontFavorites;
-    const ApplicationManager* appManager;
+    const GuiApplicationManager* appManager;
 };
 
 Q_DECLARE_METATYPE(BranchesListModel::ListItemType);

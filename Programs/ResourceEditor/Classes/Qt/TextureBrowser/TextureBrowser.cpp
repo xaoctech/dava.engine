@@ -53,6 +53,7 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     textureListModel = new TextureListModel();
     textureListImagesDelegate = new TextureListDelegate();
     QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorChanged, this, &TextureBrowser::textureDescriptorChanged);
+    QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorReload, this, &TextureBrowser::textureDescriptorReload);
 
     textureListSortModes["File size"] = TextureListModel::SortByFileSize;
     textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
@@ -137,6 +138,15 @@ void TextureBrowser::closeEvent(QCloseEvent* e)
 {
     QDialog::closeEvent(e);
     Close();
+}
+
+void TextureBrowser::UpdateTexture(DAVA::Texture* texture)
+{
+    if (curTexture == texture)
+    {
+        DAVA::TextureDescriptor* descriptor = texture->GetDescriptor();
+        setTexture(texture, descriptor);
+    }
 }
 
 void TextureBrowser::setTexture(DAVA::Texture* texture, DAVA::TextureDescriptor* descriptor)
@@ -1111,6 +1121,19 @@ void TextureBrowser::textureViewChanged(int index)
 void TextureBrowser::clearFilter()
 {
     ui->textureFilterEdit->setText("");
+}
+
+void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor)
+{
+    DAVA::Texture* texture = textureListModel->getTexture(descriptor);
+    if (nullptr != texture)
+    {
+        DAVA::Vector<DAVA::Texture*> reloadTextures;
+        reloadTextures.push_back(texture);
+
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+        setTexture(texture, descriptor);
+    }
 }
 
 void TextureBrowser::textureDescriptorChanged(DAVA::TextureDescriptor* descriptor)
