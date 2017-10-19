@@ -8,7 +8,6 @@ DAVA_TESTCLASS(StringUtilsTest)
 {
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(DavaFramework)
-    DECLARE_COVERED_FILES("StringUtils.h")
     DECLARE_COVERED_FILES("StringUtils.cpp")
     END_FILES_COVERED_BY_TESTS()
 
