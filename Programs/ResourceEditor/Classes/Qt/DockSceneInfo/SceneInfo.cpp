@@ -799,11 +799,13 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
 
     Matrix4* worldTransformPtr = renderObject->GetWorldTransformPtr();
     Vector3 objectScale = (worldTransformPtr != nullptr) ? worldTransformPtr->GetScaleVector() : Vector3(1.f, 1.f, 1.f);
-    info.leafsSquareAbsolute *= objectScale * objectScale; //here we multiply twice because it's square
+    info.leafsSquareAbsolute.x *= objectScale.y * objectScale.z;
+    info.leafsSquareAbsolute.y *= objectScale.x * objectScale.z;
+    info.leafsSquareAbsolute.z *= objectScale.x * objectScale.y;
 
     Vector3 bboxSize = renderObject->GetWorldBoundingBox().GetSize();
-    info.leafsSquareRelative.x = info.leafsSquareAbsolute.x / (bboxSize.x * bboxSize.z);
-    info.leafsSquareRelative.y = info.leafsSquareAbsolute.y / (bboxSize.y * bboxSize.z);
+    info.leafsSquareRelative.x = info.leafsSquareAbsolute.x / (bboxSize.y * bboxSize.z);
+    info.leafsSquareRelative.y = info.leafsSquareAbsolute.y / (bboxSize.x * bboxSize.z);
     info.leafsSquareRelative.z = info.leafsSquareAbsolute.z / (bboxSize.x * bboxSize.y);
 
     return info;
