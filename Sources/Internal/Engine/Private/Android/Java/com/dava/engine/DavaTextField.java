@@ -909,7 +909,7 @@ final class DavaTextField implements TextWatcher,
         boolean isRelative = (nativeTextField.getGravity() & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) != 0;
 
         int gravity = align;
-        if ((!isCenter && isRelative) || rtlAlign)
+        if (!isCenter && (isRelative || rtlAlign))
         {
             gravity |= Gravity.RELATIVE_LAYOUT_DIRECTION;
         }
