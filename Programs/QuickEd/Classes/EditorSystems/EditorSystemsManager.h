@@ -12,15 +12,16 @@
 #include <Base/RefPtr.h>
 #include <Functional/Signal.h>
 #include <UI/UIControl.h>
+
 #include <Math/Rect.h>
 #include <Math/Vector.h>
 
 namespace DAVA
 {
+class UIControl;
 class UIEvent;
 class UIGeometricData;
 class Any;
-
 namespace TArc
 {
 class ContextAccessor;
@@ -98,7 +99,9 @@ public:
         //if cursor under selected control, pressed left mouse button and starts dragging
         Transform,
         //all user input used only to drag canvas inside render widget
-        DragScreen
+        DragScreen,
+        //if mouse clicked, new control will be added
+        AddingControl
     };
 
     enum eDisplayState
@@ -126,9 +129,6 @@ public:
     template <class OutIt, class Predicate>
     void CollectControlNodes(OutIt destination, Predicate predicate, StopPredicate stopPredicate = defaultStopPredicate) const;
 
-    void HighlightNode(ControlNode* node);
-    void ClearHighlight();
-
     ControlNode* GetControlNodeAtPoint(const DAVA::Vector2& point, bool canGoDeeper = false) const;
     DAVA::uint32 GetIndexOfNearestRootControl(const DAVA::Vector2& point) const;
 
@@ -142,8 +142,6 @@ public:
 
     DAVA::Signal<const HUDAreaInfo& /*areaInfo*/> activeAreaChanged;
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
-    DAVA::Signal<ControlNode*> highlightNode;
-    DAVA::Signal<const DAVA::Rect& /*selectionRectControl*/> selectionRectChanged;
     DAVA::Signal<ControlNode*, AbstractProperty*, const DAVA::Any&> propertyChanged;
     DAVA::Signal<bool> emulationModeChanged;
     DAVA::Signal<eDragState /*currentState*/, eDragState /*previousState*/> dragStateChanged;
@@ -159,7 +157,6 @@ private:
     void SetDisplayState(eDisplayState displayState);
 
     void OnEmulationModeChanged(const DAVA::Any& emulationMode);
-
     void OnRootContolsChanged(const DAVA::Any& rootControls);
     void OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo);
 

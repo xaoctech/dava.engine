@@ -193,7 +193,7 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                 const size_t maxLength = 4;
                 UniChar unicodeString[maxLength];
                 UniCharCount realLength;
-                uint32 deadKeyState;
+                uint32 deadKeyState = 0;
 
                 OSStatus status = UCKeyTranslate(keyboardLayout,
                                                  i,

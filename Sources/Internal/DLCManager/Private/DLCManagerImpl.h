@@ -218,7 +218,7 @@ private:
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
-    void DumpToJsonProfilerTrace();
+    String DumpToJsonProfilerTrace();
 
     enum class ScanState : uint32
     {
@@ -307,6 +307,9 @@ private:
     mutable Progress lastProgress;
 
     Hints hints;
+
+    String profilerState;
+    //DebugGestureListener gestureChecker; // TODO merge later with development(uncoment it)
 
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session

@@ -82,6 +82,11 @@ QString FileManager::GetDocumentsDirectory()
     return documentsDirectory;
 }
 
+QString FileManager::GetLocalConfigFilePath()
+{
+    return GetDocumentsDirectory() + LOCAL_CONFIG_NAME;
+}
+
 FileManager::FileManager(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {

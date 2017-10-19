@@ -1,10 +1,8 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/LegacySupportModule/Private/Project.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
+#include "Modules/LegacySupportModule/Private/Project.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -12,6 +10,8 @@
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
+
+#include "Classes/Painter/Painter.h"
 
 #include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
@@ -28,6 +28,8 @@
 #include "UI/Package/PackageWidget.h"
 #include "UI/Package/PackageModel.h"
 #include "UI/UIControl.h"
+
+#include "Classes/Utils/DragNDropHelper.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/QuickEdPackageBuilder.h"
@@ -51,6 +53,9 @@
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
 #include <Reflection/Reflection.h>
+#include <Engine/Window.h>
+#include <Engine/Engine.h>
+#include <Functional/Signal.h>
 
 #include <QAction>
 #include <QApplication>
@@ -81,6 +86,13 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
 
     Renderer::SetDesiredFPS(60);
     DynamicBufferAllocator::SetPageSize(DynamicBufferAllocator::DEFAULT_PAGE_SIZE);
+
+    //we can create graphic items only when render is initialized
+    EditorSystemsData* systemsData = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>();
+    systemsData->painter = std::make_unique<Painting::Painter>();
+    Vector<Window*> windows = Engine::Instance()->GetWindows();
+    DVASSERT(windows.size() == 1);
+    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::Draw));
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -186,16 +198,17 @@ void DocumentsModule::InitCentralWidget()
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
     EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
-    connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFile, MakeFunction(this, &DocumentsModule::OpenDocument));
+    previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
+    connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFiles, MakeFunction(this, &DocumentsModule::OpenPackageFiles));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
     ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget);
 
     //legacy part. Remove it when package will be refactored
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
 
     connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
     QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);
@@ -243,6 +256,7 @@ void DocumentsModule::CreateDocumentsActions()
     const QString toolBarSeparatorName("documents separator");
 
     ContextAccessor* accessor = GetAccessor();
+
     UI* ui = GetUI();
     //action save document
     {
@@ -260,7 +274,7 @@ void DocumentsModule::CreateDocumentsActions()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "projectActionsSeparator" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
@@ -576,6 +590,51 @@ void DocumentsModule::CreateFindActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFind, { InsertionParams::eInsertionMethod::AfterItem }));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+}
+
+void DocumentsModule::OpenPackageFiles(const QStringList& links)
+{
+    using namespace DAVA;
+
+    ResultList wrongExtensionResults;
+    ResultList wrongSourceResults;
+    for (const QString& str : links)
+    {
+        QUrl url(str);
+        if (url.isLocalFile())
+        {
+            QString path = url.toLocalFile();
+
+            if (DragNDropHelper::IsExtensionSupported(path) == false)
+            {
+                wrongExtensionResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+            }
+            else if (DragNDropHelper::IsFileFromProject(GetAccessor(), path) == false)
+            {
+                wrongSourceResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+            }
+            else
+            {
+                OpenDocument(path);
+            }
+        }
+    }
+
+    if (wrongExtensionResults.HasWarnings())
+    {
+        DAVA::TArc::NotificationParams notificationParams;
+        notificationParams.title = "can not drop";
+        notificationParams.message = Result(Result::RESULT_WARNING, Format("next files have unsupported extension:\n%s", wrongExtensionResults.GetResultMessages().c_str()));
+        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+    }
+
+    if (wrongSourceResults.HasWarnings())
+    {
+        DAVA::TArc::NotificationParams notificationParams;
+        notificationParams.title = "can not drop";
+        notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
+        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
     }
 }
 
@@ -1225,4 +1284,11 @@ void DocumentsModule::OnSelectInFileSystem()
     DocumentData* documentData = context->GetData<DocumentData>();
     QString filePath = documentData->GetPackageAbsolutePath();
     InvokeOperation(QEGlobal::SelectFile.ID, filePath);
+}
+
+void DocumentsModule::OnDroppingFile(bool droppingFile)
+{
+    DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    EditorSystemsData* systemsData = globalContext->GetData<EditorSystemsData>();
+    systemsData->highlightDisabled = droppingFile;
 }

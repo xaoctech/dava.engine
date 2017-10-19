@@ -6,6 +6,7 @@
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/TextureBrowser/TextureBrowser.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
@@ -590,7 +591,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
                                          {
                                              return v.CanCast<DAVA::eGPUFamily>() && v.Cast<DAVA::eGPUFamily>() == gpu;
                                          });
-        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadTextures, this, gpu), Qt::QueuedConnection);
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&SceneManagerModule::ReloadAllTextures, this, gpu), Qt::QueuedConnection);
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placement, action);
         gpuFormatActions.push_back(action);
@@ -627,7 +628,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::TArc::UI* ui)
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/reloadtextures.png"), QString(""));
         connections.AddConnection(action, &QAction::triggered, [this]()
                                   {
-                                      ReloadTextures(DAVA::Texture::GetPrimaryGPUForLoading());
+                                      ReloadAllTextures(DAVA::Texture::GetPrimaryGPUForLoading());
                                   },
                                   Qt::QueuedConnection);
 
@@ -672,7 +673,8 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(REGlobal::OpenSceneOperation.ID, this, &SceneManagerModule::OpenSceneByPath);
     RegisterOperation(REGlobal::AddSceneOperation.ID, this, &SceneManagerModule::AddSceneByPath);
     RegisterOperation(REGlobal::SaveCurrentScene.ID, this, static_cast<void (SceneManagerModule::*)()>(&SceneManagerModule::SaveScene));
-    RegisterOperation(REGlobal::ReloadTexturesOperation.ID, this, &SceneManagerModule::ReloadTextures);
+    RegisterOperation(REGlobal::ReloadAllTextures.ID, this, &SceneManagerModule::ReloadAllTextures);
+    RegisterOperation(REGlobal::ReloadTextures.ID, this, &SceneManagerModule::ReloadTextures);
 }
 
 void SceneManagerModule::CreateFirstScene()
@@ -976,24 +978,26 @@ void SceneManagerModule::ExportScene()
     dlg.exec();
     if (dlg.result() == QDialog::Accepted && SaveTileMaskInScene(scene))
     {
-        WaitDialogParams params;
-        params.needProgressBar = false;
-        params.message = QStringLiteral("Scene exporting.\nPlease wait...");
-
         ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
         DVASSERT(data != nullptr);
         const DAVA::FilePath& projectPath = data->GetProjectPath();
         DAVA::FilePath dataSourceFolder = projectPath + "DataSource/3d/";
 
-        SceneExporter::Params exportingParams;
-        exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
-        exportingParams.dataSourceFolder = dataSourceFolder;
-        exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
-        exportingParams.filenamesTag = dlg.GetFilenamesTag();
+        {
+            WaitDialogParams params;
+            params.needProgressBar = false;
+            params.message = QStringLiteral("Scene exporting.\nPlease wait...");
+            std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
 
-        scene->Export(exportingParams);
+            SceneExporter::Params exportingParams;
+            exportingParams.outputs.emplace_back(dlg.GetDataFolder(), dlg.GetGPUs(), dlg.GetQuality(), dlg.GetUseHDTextures());
+            exportingParams.dataSourceFolder = dataSourceFolder;
+            exportingParams.optimizeOnExport = dlg.GetOptimizeOnExport();
+            exportingParams.filenamesTag = dlg.GetFilenamesTag();
+            scene->Export(exportingParams);
+        }
 
-        ReloadTextures(DAVA::Texture::GetPrimaryGPUForLoading());
+        ReloadAllTextures(DAVA::Texture::GetPrimaryGPUForLoading());
     }
 }
 
@@ -1015,7 +1019,61 @@ void SceneManagerModule::CloseAllScenes(bool needSavingReqiest)
     }
 }
 
-void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
+void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
+{
+    using namespace DAVA::TArc;
+
+    CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
+
+    DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::RefPtr<SceneEditor2> scene = activeContext->GetData<SceneData>()->scene;
+
+    DAVA::Set<DAVA::NMaterial*> materials;
+    SceneHelper::EnumerateMaterials(scene.Get(), materials);
+
+    int progress = 0;
+    WaitDialogParams params;
+    std::unique_ptr<WaitHandle> waitHandle;
+
+    if (textures.size() > 1)
+    {
+        params.needProgressBar = true;
+        params.message = "Reloading textures.";
+        params.min = 0;
+        params.max = static_cast<int>(textures.size());
+        waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
+    }
+
+    for (DAVA::Texture* tex : textures)
+    {
+        DAVA::TextureDescriptor* descriptor = tex->GetDescriptor();
+
+        if (textures.size() > 1)
+        {
+            QString message = QString("Reloading texture:%1");
+            message = message.arg(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+            waitHandle->SetMessage(message);
+            waitHandle->SetProgressValue(progress++);
+        }
+
+        tex->ReloadAs(gpuFormat);
+        TextureCache::Instance()->clearOriginal(descriptor);
+        TextureCache::Instance()->clearThumbnail(descriptor);
+
+        for (auto mat : materials)
+        {
+            if (mat->ContainsTexture(tex))
+                mat->InvalidateTextureBindings();
+        }
+
+        TextureBrowser::Instance()->UpdateTexture(tex);
+    }
+}
+
+void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 {
     using namespace DAVA::TArc;
     if (SaveTileMaskInAllScenes())
@@ -1044,7 +1102,7 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
             params.needProgressBar = true;
             params.message = "Reloading textures.";
             params.min = 0;
-            params.max = static_cast<int>(allScenesTextures.size());
+            params.max = static_cast<DAVA::uint32>(allScenesTextures.size());
 
             std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, params);
 
@@ -1054,11 +1112,7 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
             for (; it != end; ++it)
             {
                 QString message = QString("Reloading texture:%1");
-#if defined(USE_FILEPATH_IN_MAP)
                 message = message.arg(it->first.GetAbsolutePathname().c_str());
-#else //#if defined(USE_FILEPATH_IN_MAP)
-                message = message.arg(it->first.c_str());
-#endif //#if defined(USE_FILEPATH_IN_MAP)
                 waitHandle->SetMessage(message);
                 waitHandle->SetProgressValue(progress++);
 
@@ -1068,12 +1122,9 @@ void SceneManagerModule::ReloadTextures(DAVA::eGPUFamily gpu)
             TextureCache::Instance()->ClearCache();
         }
 
-        if (!allSceneMaterials.empty())
+        for (DAVA::NMaterial* m : allSceneMaterials)
         {
-            for (auto m : allSceneMaterials)
-            {
-                m->InvalidateTextureBindings();
-            }
+            m->InvalidateTextureBindings();
         }
 
         accessor->ForEachContext([](DataContext& ctx)

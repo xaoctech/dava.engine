@@ -38,6 +38,42 @@ void UTF8Utils::EncodeToWideString(const uint8* string, size_t size, WideString&
     }
 };
 
+void UTF8Utils::SafeEncodeToWideString(const uint8* string, size_t size, WideString& result, eSafeEncodeError& encodeError)
+{
+    DVASSERT(nullptr != string);
+    result.clear();
+    result.reserve(size); // minimum they will be same
+    encodeError = eSafeEncodeError::NONE;
+    try
+    {
+#ifdef __DAVAENGINE_WINDOWS__
+        utf8::utf8to16(string, string + size, std::back_inserter(result));
+#else
+        utf8::utf8to32(string, string + size, std::back_inserter(result));
+#endif
+    }
+    catch (const utf8::exception&)
+    {
+        String replacedString;
+        replacedString.reserve(size);
+        encodeError = eSafeEncodeError::NON_UTF8_SYMBOLS_REPLACED;
+        try
+        {
+            utf8::replace_invalid(string, string + size, std::back_inserter(replacedString), '?');
+            result.clear();
+#ifdef __DAVAENGINE_WINDOWS__
+            utf8::utf8to16(replacedString.begin(), replacedString.end(), std::back_inserter(result));
+#else
+            utf8::utf8to32(replacedString.begin(), replacedString.end(), std::back_inserter(result));
+#endif
+        }
+        catch (const utf8::exception&)
+        {
+            encodeError = eSafeEncodeError::STRING_NOT_ENCODED;
+        }
+    }
+};
+
 String UTF8Utils::EncodeToUTF8(const WideString& wstring)
 {
     String result;

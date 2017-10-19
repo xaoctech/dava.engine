@@ -35,6 +35,13 @@ private:
         NO_DIRECTION = 0,
         POSITIVE_DIRECTION = 1
     };
+
+    enum eTransformType
+    {
+        MOVE,
+        RESIZE
+    };
+
     using Directions = DAVA::Array<int, DAVA::Vector2::AXIS_COUNT>;
     using CornersDirections = DAVA::Array<Directions, HUDAreaInfo::CORNERS_COUNT>;
     static const CornersDirections cornersDirections;
@@ -71,14 +78,15 @@ private:
     DAVA::Vector2 AdjustMoveToNearestBorder(DAVA::Vector2 delta, DAVA::Vector<MagnetLineInfo>& magnetLines, const DAVA::UIGeometricData* parentGD, const DAVA::UIControl* control);
 
     void CorrectNodesToMove();
-    void UpdateNeighboursToMove();
+    void UpdateNeighbours();
 
     void ClampAngle();
     struct MagnetLine;
-    DAVA::Vector<MagnetLine> CreateMagnetLines(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, const DAVA::Vector<DAVA::UIControl*>& neighbours, DAVA::Vector2::eAxis axis);
-    void CreateMagnetLinesToParent(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines);
-    void CreateMagnetLinesToNeghbours(const DAVA::Rect& box, const DAVA::Vector<DAVA::UIControl*>& neighbours, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines);
-    void CreateMagnetLinesToGuides(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines);
+    DAVA::Vector<MagnetLine> CreateMagnetLines(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, eTransformType type) const;
+    void CreateMagnetLinesToParent(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const;
+    void CreateMagnetLinesToNeghbours(const DAVA::Rect& box, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const;
+    void CreateMagnetLinesToGuides(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const;
+    void CreateMagnetLinesToChildren(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const;
 
     void ExtractMatchedLines(DAVA::Vector<MagnetLineInfo>& magnets, const DAVA::Vector<MagnetLine>& magnetLines, const DAVA::UIControl* control, DAVA::Vector2::eAxis axis);
     bool IsShiftPressed() const;

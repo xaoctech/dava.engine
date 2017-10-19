@@ -43,6 +43,7 @@ struct InsertionParams
 QUrl CreateMenuPoint(const QString& menuName, const InsertionParams& params = InsertionParams());
 QUrl CreateMenuPoint(QList<QString> menusPath, const InsertionParams& params = InsertionParams());
 QUrl CreateToolbarPoint(const QString& toolbarName, const InsertionParams& params = InsertionParams());
+QUrl CreateToolbarMenuPoint(const QString& toolbarName, QList<QString> menusPath, const InsertionParams& params = InsertionParams());
 QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor = 0, const InsertionParams& params = InsertionParams());
 QUrl CreateInvisiblePoint();
 

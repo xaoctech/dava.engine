@@ -50,6 +50,7 @@ void SettingsModule::PostInit()
         ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"));
         {
             QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/TArc/Resources/settings.png"), "Settings");
+            settingsAction->setMenuRole(QAction::PreferencesRole);
             ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, settingsAction);
             connections.AddConnection(settingsAction, &QAction::triggered, DAVA::MakeFunction(this, &SettingsModule::ShowSettings));
         }

@@ -17,6 +17,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentData)
     .Field(redoTextPropertyName.c_str(), &DocumentData::GetRedoText, nullptr)
     .Field(currentNodePropertyName.c_str(), &DocumentData::GetCurrentNode, nullptr)
     .Field(selectionPropertyName.c_str(), &DocumentData::GetSelectedNodes, &DocumentData::SetSelectedNodes)
+    .Field(selectedControlsPropertyName.c_str(), &DocumentData::GetSelectedControls, nullptr)
     .Field(displayedRootControlsPropertyName.c_str(), &DocumentData::GetDisplayedRootControls, &DocumentData::SetDisplayedRootControls)
     .Field(guidesPropertyName.c_str(), &DocumentData::GetGuides, nullptr)
     .End();
@@ -61,7 +62,12 @@ PackageNode* DocumentData::GetPackageNode() const
 
 const SelectedNodes& DocumentData::GetSelectedNodes() const
 {
-    return selection.selectedNodes;
+    return selectedNodes;
+}
+
+const DAVA::Set<ControlNode*>& DocumentData::GetSelectedControls() const
+{
+    return selectedControls;
 }
 
 const SortedControlNodeSet& DocumentData::GetDisplayedRootControls() const
@@ -73,7 +79,16 @@ void DocumentData::SetSelectedNodes(const SelectedNodes& nodes)
 {
     RefreshCurrentNode(nodes);
 
-    selection.selectedNodes = nodes;
+    selectedNodes = nodes;
+    selectedControls.clear();
+    for (PackageBaseNode* node : selectedNodes)
+    {
+        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
+        if (controlNode != nullptr)
+        {
+            selectedControls.insert(controlNode);
+        }
+    }
 
     RefreshDisplayedRootControls();
 }
@@ -167,7 +182,7 @@ void DocumentData::RefreshAllControlProperties()
 void DocumentData::RefreshDisplayedRootControls()
 {
     SortedControlNodeSet newDisplayedRootControls(CompareByLCA);
-    for (PackageBaseNode* selectedNode : selection.selectedNodes)
+    for (PackageBaseNode* selectedNode : selectedNodes)
     {
         ControlNode* root = GetRootControlNode(dynamic_cast<ControlNode*>(selectedNode));
         if (nullptr != root)
@@ -190,7 +205,7 @@ void DocumentData::RefreshCurrentNode(const SelectedNodes& arg)
         return;
     }
 
-    const SelectedNodes& currentSelection = selection.selectedNodes;
+    const SelectedNodes& currentSelection = selectedNodes;
 
     SortedPackageBaseNodeSet newSelection(CompareByLCA);
     std::set_difference(arg.begin(),
@@ -256,6 +271,7 @@ DAVA::FastName DocumentData::undoTextPropertyName{ "undo text" };
 DAVA::FastName DocumentData::redoTextPropertyName{ "redo text" };
 DAVA::FastName DocumentData::currentNodePropertyName{ "current node" };
 DAVA::FastName DocumentData::selectionPropertyName{ "selection" };
+DAVA::FastName DocumentData::selectedControlsPropertyName{ "selected controls" };
 DAVA::FastName DocumentData::displayedRootControlsPropertyName{ "displayed root controls" };
 DAVA::FastName DocumentData::guidesPropertyName{ "guides" };
 

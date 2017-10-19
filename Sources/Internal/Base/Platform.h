@@ -34,9 +34,4 @@
 #define USE_CPP11_CONCURRENCY
 #endif
 
-#if !defined(__DAVAENGINE_WIN_UAP__)
-#define vsnprintf _vsnprintf
-#define snprintf _snprintf
-#endif
-
 #endif //__DAVAENGINE_WINDOWS__

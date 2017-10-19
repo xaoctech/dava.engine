@@ -11,6 +11,11 @@ class ContextAccessor;
 }
 }
 
+namespace Painting
+{
+class Painter;
+}
+
 using CanvasControls = DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>;
 
 class BaseEditorSystem
@@ -24,14 +29,18 @@ protected:
     //A client module can declare one or more own types and use them later, but can not use any other values
     enum eSystems
     {
-        //this system place root controls on the screen. Must be updated first
+        //this system creates new controls above
+        CREATING_CONTROLS,
+        //this system place root controls on the screen
         CONTROLS_VIEW,
-        //this system move root control to it position. Controls positions used by other systems, so this system must be updated second
+        //this system move root control to it position. Controls positions are used by other systems, so this system must be updated before them
         CANVAS,
-        //this system must be drawed in background of all other systems
+        //this system must be drawn in background of all other systems
         PIXEL_GRID,
         //this system creates HUD around controls and must be updated before HUD users
         HUD,
+        //this system draw distance lines between controls
+        DISTANCE_LINES,
         //this system can draw magnet lines and must be updated after the HUD system
         TRANSFORM,
 
@@ -44,10 +53,12 @@ protected:
     };
 
     //some systems can process OnUpdate from UpdateViewsSystem
-    //order of update is metter, because without it canvas views will be in invalid state during the frame
+    //order of update is matter, because without it canvas views will be in invalid state during the frame
 
     const EditorSystemsManager* GetSystemsManager() const;
     EditorSystemsManager* GetSystemsManager();
+    Painting::Painter* GetPainter() const;
+
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 
 private:
