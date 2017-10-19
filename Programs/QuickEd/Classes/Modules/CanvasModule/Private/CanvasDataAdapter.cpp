@@ -196,6 +196,26 @@ const CanvasData* CanvasDataAdapter::GetCanvasData() const
     return active->GetData<CanvasData>();
 }
 
+DAVA::Vector2 CanvasDataAdapter::RelativeValueToAbsoluteValue(DAVA::Vector2 relValue) const
+{
+    return DAVA::Vector2(RelativeValueToAbsoluteValue(relValue.x, DAVA::Vector2::AXIS_X), RelativeValueToAbsoluteValue(relValue.y, DAVA::Vector2::AXIS_Y));
+}
+
+DAVA::Vector2 CanvasDataAdapter::RelativeValueToPosition(DAVA::Vector2 relValue) const
+{
+    return DAVA::Vector2(RelativeValueToPosition(relValue.x, DAVA::Vector2::AXIS_X), RelativeValueToPosition(relValue.y, DAVA::Vector2::AXIS_Y));
+}
+
+DAVA::Vector2 CanvasDataAdapter::AbsoluteValueToPosition(DAVA::Vector2 absValue) const
+{
+    return DAVA::Vector2(AbsoluteValueToPosition(absValue.x, DAVA::Vector2::AXIS_X), AbsoluteValueToPosition(absValue.y, DAVA::Vector2::AXIS_Y));
+}
+
+DAVA::Vector2 CanvasDataAdapter::PositionToAbsoluteValue(DAVA::Vector2 position) const
+{
+    return DAVA::Vector2(PositionToAbsoluteValue(position.x, DAVA::Vector2::AXIS_X), PositionToAbsoluteValue(position.y, DAVA::Vector2::AXIS_Y));
+}
+
 DAVA::float32 CanvasDataAdapter::RelativeValueToAbsoluteValue(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const
 {
     using namespace DAVA;
