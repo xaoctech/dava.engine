@@ -32,7 +32,6 @@ struct PackageContext;
 class ControlNode;
 class StyleSheetNode;
 class PackageBaseNode;
-class FilteredPackageModel;
 class PackageModel;
 class PackageNode;
 class QItemSelection;
@@ -78,7 +77,6 @@ public slots:
     void OnImport();
 
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
-    void OnFilterTextChanged(const QString&);
     void OnSelectAndRename(ControlNode*);
     void OnRename();
     void OnAddStyle();
@@ -137,13 +135,11 @@ private:
     QAction* runUIViewerFast = nullptr;
     QAction* runUIViewer = nullptr;
 
-    FilteredPackageModel* filteredPackageModel = nullptr;
     PackageModel* packageModel = nullptr;
 
     SelectionContainer selectionContainer;
     SelectedNodes expandedNodes;
     //source indexes
-    bool lastFilterTextEmpty = true;
     PackageContext* currentContext = nullptr;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
@@ -154,5 +150,4 @@ private:
 struct PackageContext
 {
     PackageWidget::ExpandedIndexes expandedIndexes;
-    QString filterString;
 };
