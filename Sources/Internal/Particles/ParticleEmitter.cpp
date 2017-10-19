@@ -42,7 +42,6 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
     emissionVector = RefPtr<PropertyLineValue<Vector3>>(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
 
     emissionVelocityVector.Set(nullptr);
-    emissionVelocityVector = RefPtr<PropertyLineValue<Vector3>>(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
 
     emissionAngle = NULL;
     emissionAngleVariation = NULL;

@@ -965,6 +965,15 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     if (group.emitter->emissionVector)
         currEmissionVector = group.emitter->emissionVector->GetValue(group.time);
     float32 currEmissionPower = currEmissionVector.Length();
+
+    Vector3 currVelVector = currEmissionVector;
+    float32 currVelPower = currEmissionPower;
+    bool hasCustomEmissionVector = group.emitter->emissionVelocityVector != nullptr;
+    if (hasCustomEmissionVector)
+    {
+        currVelVector = group.emitter->emissionVelocityVector->GetValue(group.time);
+        currVelPower = currVelVector.Length();
+    }
     //calculate speed in emitter space not transformed by emission vector yet
     if (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE)
     {
@@ -972,7 +981,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         float32 spl = particle->speed.SquareLength();
         if (spl > EPSILON)
         {
-            particle->speed *= currEmissionPower / std::sqrt(spl);
+            particle->speed *= currVelPower / std::sqrt(spl);
         }
     }
     else
@@ -981,11 +990,11 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         {
             float32 theta = static_cast<float32>(Random::Instance()->RandFloat()) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
             float32 phi = static_cast<float32>(Random::Instance()->RandFloat()) * PI_2;
-            particle->speed = Vector3(currEmissionPower * cos(phi) * sin(theta), currEmissionPower * sin(phi) * sin(theta), currEmissionPower * cos(theta));
+            particle->speed = Vector3(currVelPower * cos(phi) * sin(theta), currVelPower * sin(phi) * sin(theta), currVelPower * cos(theta));
         }
         else
         {
-            particle->speed = Vector3(0, 0, currEmissionPower);
+            particle->speed = Vector3(0, 0, currVelPower);
         }
     }
 
@@ -997,9 +1006,10 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         {
             Matrix3 rotation;
             rotation.CreateRotation(Vector3(1, 0, 0), PI);
-            //newTransform = rotation*newTransform;
             particle->position = particle->position * rotation;
-            particle->speed = particle->speed * rotation;
+
+            if (!hasCustomEmissionVector)
+                particle->speed = particle->speed * rotation;
         }
     }
     else
@@ -1009,9 +1019,33 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         float32 angle = std::acos(currEmissionVector.z / currEmissionPower);
         Matrix3 rotation;
         rotation.CreateRotation(axis, angle);
-        //newTransform = rotation*newTransform;
         particle->position = particle->position * rotation;
-        particle->speed = particle->speed * rotation;
+
+        if (!hasCustomEmissionVector)
+            particle->speed = particle->speed * rotation;
+    }
+
+
+    if (hasCustomEmissionVector)
+    {
+        if ((std::abs(currVelVector.x) < EPSILON) && (std::abs(currVelVector.y) < EPSILON))
+        {
+            if (currVelVector.z < 0)
+            {
+                Matrix3 rotation;
+                rotation.CreateRotation(Vector3(1, 0, 0), PI);
+                particle->speed = particle->speed * rotation;
+            }
+        }
+        else
+        {
+            Vector3 axis(currVelVector.y, -currVelVector.x, 0);
+            axis.Normalize();
+            float32 angle = std::acos(currVelVector.z / currVelPower);
+            Matrix3 rotation;
+            rotation.CreateRotation(axis, angle);
+            particle->speed = particle->speed * rotation;
+        }
     }
     particle->position += group.spawnPosition;
     TransformPerserveLength(particle->speed, newTransform);
