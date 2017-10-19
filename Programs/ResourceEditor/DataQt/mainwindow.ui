@@ -169,8 +169,6 @@
     <addaction name="actionZeroPivotPoint"/>
     <addaction name="actionCenterPivotPoint"/>
     <addaction name="separator"/>
-    <addaction name="actionModifyPlaceOnLandscape"/>
-    <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="Help">
@@ -315,9 +313,6 @@
    <addaction name="actionZeroPivotPoint"/>
    <addaction name="actionCenterPivotPoint"/>
    <addaction name="separator"/>
-   <addaction name="actionModifyPlaceOnLandscape"/>
-   <addaction name="actionModifySnapToLandscape"/>
-   <addaction name="separator"/>
    <addaction name="actionManualModifMode"/>
    <addaction name="actionModifyReset"/>
   </widget>
@@ -413,6 +408,7 @@
        <addaction name="actionRemoveEntity"/>
        <addaction name="actionExpandSceneTree"/>
        <addaction name="actionCollapseSceneTree"/>
+       <addaction name="actionReloadSelectedEntitiesTextures"/>
       </widget>
      </item>
      <item>
@@ -838,42 +834,6 @@
     <string>Scene Modification</string>
    </property>
   </action>
-  <action name="actionModifyPlaceOnLandscape">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/modify_placeonland.png</normaloff>:/QtIcons/modify_placeonland.png</iconset>
-   </property>
-   <property name="text">
-    <string>Place On Landscape</string>
-   </property>
-   <property name="shortcut">
-    <string>P</string>
-   </property>
-   <property name="actionName" stdset="0">
-    <string>Place On Landscape</string>
-   </property>
-   <property name="blockName" stdset="0">
-    <string>Scene Modification</string>
-   </property>
-  </action>
-  <action name="actionModifySnapToLandscape">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="Resources.qrc">
-     <normaloff>:/QtIcons/modify_snaptoland.png</normaloff>:/QtIcons/modify_snaptoland.png</iconset>
-   </property>
-   <property name="text">
-    <string>Snap To Landscape</string>
-   </property>
-  </action>
   <action name="actionModifySelect">
    <property name="checkable">
     <bool>true</bool>
@@ -1101,6 +1061,18 @@
    </property>
    <property name="toolTip">
     <string>Expand all.</string>
+   </property>
+  </action>
+  <action name="actionReloadSelectedEntitiesTextures">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+    <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload Textures...</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload Textures...</string>
    </property>
   </action>
   <action name="actionCollapseSceneTree">

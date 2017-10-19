@@ -16,6 +16,7 @@
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
+#include "Debug/Private/ImGui.h"
 
 #include <iomanip>
 
