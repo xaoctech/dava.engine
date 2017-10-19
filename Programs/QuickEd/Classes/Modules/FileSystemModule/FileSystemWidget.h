@@ -64,6 +64,7 @@ private:
     QString GetPathByCurrentPos(ePathType pathType);
 
     QFileSystemModel* model = nullptr;
+    QAction* collapseAllAction = nullptr;
     QAction* newFolderAction = nullptr;
     QAction* newFileAction = nullptr;
     QAction* deleteAction = nullptr;

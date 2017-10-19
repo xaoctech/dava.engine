@@ -34,6 +34,9 @@ FileSystemWidget::FileSystemWidget(DAVA::TArc::ContextAccessor* accessor_, QWidg
     InitUI();
     BindFields();
 
+    collapseAllAction = new QAction(tr("Collapse all"), this);
+    connect(collapseAllAction, &QAction::triggered, treeView, &QTreeView::collapseAll);
+
     newFolderAction = new QAction(tr("Create folder"), this);
     connect(newFolderAction, &QAction::triggered, this, &FileSystemWidget::onNewFolder);
 
@@ -74,6 +77,7 @@ FileSystemWidget::FileSystemWidget(DAVA::TArc::ContextAccessor* accessor_, QWidg
     treeView->addAction(renameAction);
     treeView->addAction(openFileAction);
     treeView->addAction(copyInternalPathToFileAction);
+    treeView->addAction(collapseAllAction);
     RefreshActions();
 }
 
@@ -183,6 +187,8 @@ void FileSystemWidget::RefreshActions()
     showInSystemExplorerAction->setVisible(canShow);
     renameAction->setEnabled(canRename);
     renameAction->setVisible(canRename);
+    collapseAllAction->setEnabled(isProjectOpened);
+    collapseAllAction->setVisible(isProjectOpened);
 }
 
 bool FileSystemWidget::CanDelete(const QModelIndex& index) const

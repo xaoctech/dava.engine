@@ -116,6 +116,7 @@ private:
     ExpandedIndexes GetExpandedIndexes() const;
     void RestoreExpandedIndexes(const ExpandedIndexes& indexes);
 
+    QAction* collapseAllAction = nullptr;
     QAction* importPackageAction = nullptr;
     QAction* copyAction = nullptr;
     QAction* pasteAction = nullptr;
