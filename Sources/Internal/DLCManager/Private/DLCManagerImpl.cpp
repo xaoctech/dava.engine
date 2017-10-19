@@ -1314,7 +1314,7 @@ uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
 
     for (uint32 fileIndex : fileIndexes)
     {
-        const auto& fileInfo = allFiles.at(fileIndex);
+        const auto& fileInfo = allFiles[fileIndex];
         result += fileInfo.compressedSize;
     }
 
@@ -1500,6 +1500,8 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     using namespace DAVA;
     using namespace PackFormat;
 
+    DVASSERT(Thread::IsMainThread());
+
     if (!IsInitialized())
     {
         lastProgress.isRequestingEnabled = false;
@@ -1546,6 +1548,64 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     lastProgress.isRequestingEnabled = true;
 
     return lastProgress;
+}
+
+DLCManager::Progress DLCManager::GetPacksProgress(const Vector<String>& packNames) const
+{
+    return Progress();
+}
+
+DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& packNames) const
+{
+    using namespace DAVA;
+    DVASSERT(Thread::IsMainThread());
+
+    if (!IsInitialized())
+    {
+        return Progress();
+    }
+
+    // 1. make flat set with all pack with it's dependencies
+    // 2. go throw all files and check if it's pack in set
+
+    allPacks.clear();
+    childrenPacks.clear();
+
+    size_t packsCount = meta->GetPacksCount();
+
+    allPacks.reserve(packsCount);
+    childrenPacks.reserve(packsCount);
+
+    for (const String& packName : packNames)
+    {
+        uint32 packIndex = meta->GetPackIndex(packName);
+        meta->CollectDependencies(packIndex, childrenPacks);
+        for (const uint32 childPackIndex : childrenPacks)
+        {
+            allPacks.insert(childPackIndex);
+        }
+        allPacks.insert(packIndex);
+    }
+
+    Progress result;
+    result.isRequestingEnabled = IsRequestingEnabled();
+    // go throw all files
+    const auto& allFiles = usedPackFile.filesTable.data.files;
+    size_t numFiles = allFiles.size();
+    for (size_t fileIndex = 0; fileIndex < numFiles; ++fileIndex)
+    {
+        const auto& fileInfo = allFiles[fileIndex];
+        if (allPacks.find(fileInfo.metaIndex) != end(allPacks))
+        {
+            result.total += fileInfo.compressedSize;
+            if (IsFileReady(fileIndex))
+            {
+                result.alreadyDownloaded += fileInfo.compressedSize;
+            }
+        }
+    }
+
+    return result;
 }
 
 DLCManager::Info DLCManager::GetInfo() const

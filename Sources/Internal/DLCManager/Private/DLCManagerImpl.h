@@ -150,6 +150,8 @@ public:
 
     Progress GetProgress() const override;
 
+    Progress GetPacksProgress(const Vector<String>& packNames) const override;
+
     Info GetInfo() const override;
 
     const FilePath& GetLocalPacksDirectory() const;
@@ -313,6 +315,9 @@ private:
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+
+    mutable UnorderedSet<uint32> allPacks; // reuse memory
+    mutable PackMetaData::Children childrenPacks; // reuse memory
 
     // collect errno codes and count it, also remember last error code
     size_t errorCounter = 0;
