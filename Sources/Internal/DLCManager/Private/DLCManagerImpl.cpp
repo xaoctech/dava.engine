@@ -11,6 +11,7 @@
 #include "Time/SystemTimer.h"
 #include "Engine/Engine.h"
 #include "Debug/Backtrace.h"
+#include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
@@ -110,8 +111,8 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : engine(*engine_)
-    , profiler(1024 * 16)
+    : profiler(1024 * 16)
+    , engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -131,7 +132,7 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                           {
                                                               OnSettingsChanged(value);
                                                           });
-    /* TODO merge later with development (uncomment it)
+
     gestureChecker.debugGestureMatch.DisconnectAll();
 
     gestureChecker.debugGestureMatch.Connect(this, [this]() {
@@ -179,7 +180,6 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
             }
         });
     });
-    */
 }
 
 String DLCManagerImpl::DumpToJsonProfilerTrace()
