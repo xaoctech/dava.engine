@@ -26,7 +26,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SizeMeasuringAlgorithm)
     .Field("minLimit", &SizeMeasuringAlgorithm::GetMinLimit, nullptr)
     .Field("maxLimit", &SizeMeasuringAlgorithm::GetMaxLimit, nullptr)
     .Field("value", &SizeMeasuringAlgorithm::GetValue, nullptr)
-    .Field("visibilityMargins", &SizeMeasuringAlgorithm::GetVisibilityMargins, nullptr)
+    .Field("visibilityMargins", &SizeMeasuringAlgorithm::CalculateVisibilityMargins, nullptr)
     .Method("min", &SizeMeasuringAlgorithm::Min)
     .Method("max", &SizeMeasuringAlgorithm::Max)
     .Method("clamp", &SizeMeasuringAlgorithm::Clamp)
@@ -466,8 +466,32 @@ float32 SizeMeasuringAlgorithm::Clamp(float32 val, float32 a, float32 b) const
     return DAVA::Clamp(val, a, b);
 }
 
-const Margins& SizeMeasuringAlgorithm::GetVisibilityMargins() const
+const LayoutMargins& SizeMeasuringAlgorithm::CalculateVisibilityMargins()
 {
-    return layouter.GetVisibilityMargins();
+    const Rect& visibilityRect = layouter.GetVisibilityRect();
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
+
+    int32 parent = data.GetParentIndex();
+    float32 parentPos = 0.f;
+    while (parent >= 0)
+    {
+        const ControlLayoutData& d = layoutData[parent];
+        parentPos += d.GetPosition(axis);
+        parent = d.GetParentIndex();
+    }
+
+    if (axis == Vector2::AXIS_X)
+    {
+        visibilityMargins.top = visibilityMargins.bottom = 0.f;
+        visibilityMargins.left = DAVA::Max(0.f, visibilityRect.x - parentPos);
+        visibilityMargins.right = DAVA::Max(0.f, (parentPos + parentSize) - (visibilityRect.x + visibilityRect.dx));
+    }
+    else
+    {
+        visibilityMargins.left = visibilityMargins.right = 0.f;
+        visibilityMargins.top = DAVA::Max(0.f, visibilityRect.y - parentPos);
+        visibilityMargins.bottom = DAVA::Max(0.f, (parentPos + parentSize) - (visibilityRect.y + visibilityRect.dy));
+    }
+    return visibilityMargins;
 }
 }

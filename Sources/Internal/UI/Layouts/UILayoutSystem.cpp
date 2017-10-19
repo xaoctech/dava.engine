@@ -27,16 +27,6 @@ namespace DAVA
 UILayoutSystem::UILayoutSystem()
     : sharedLayouter(std::make_unique<Layouter>())
 {
-    visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect rect) {
-        Rect vr = GetScene()->vcs->ConvertInputToVirtual(rect);
-        Vector2 ws = GetScene()->vcs->ConvertInputToVirtual(Vector2(w->GetSize().dx, w->GetSize().dy));
-        UpdateVisibilityMargins(ws, vr);
-    });
-    windowSizeChangedToken = GetPrimaryWindow()->sizeChanged.Connect([&](Window* w, Size2f size, Size2f) {
-        Vector2 ws = GetScene()->vcs->ConvertInputToVirtual(Vector2(w->GetSize().dx, w->GetSize().dy));
-        UpdateVisibilityMargins(ws, Rect(Vector2(), ws));
-    });
-
     sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
         for (UILayoutSystemListener* listener : listeners)
         {
@@ -54,10 +44,29 @@ UILayoutSystem::UILayoutSystem()
 
 UILayoutSystem::~UILayoutSystem()
 {
-    GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
-    GetPrimaryWindow()->visibleFrameChanged.Disconnect(windowSizeChangedToken);
-
     DVASSERT(listeners.empty());
+}
+
+void UILayoutSystem::RegisterSystem()
+{
+    visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect rect) {
+        Rect vr = GetScene()->vcs->ConvertInputToVirtual(rect);
+        UpdateVisibilityRect(vr);
+    });
+    virtualSizeChangedToken = GetScene()->vcs->virtualSizeChanged.Connect([&](const Size2i& size) {
+        UpdateVisibilityRect(Rect(0.f, 0.f, static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+    });
+    inputSizeChangedToken = GetScene()->vcs->inputAreaSizeChanged.Connect([&](const Size2i& size) {
+        Vector2 s = GetScene()->vcs->ConvertInputToVirtual(Vector2(static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+        UpdateVisibilityRect(Rect(0.f, 0.f, s.x, s.y));
+    });
+}
+
+void UILayoutSystem::UnregisterSystem()
+{
+    GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+    GetScene()->vcs->virtualSizeChanged.Disconnect(virtualSizeChangedToken);
+    GetScene()->vcs->inputAreaSizeChanged.Disconnect(inputSizeChangedToken);
 }
 
 void UILayoutSystem::Process(float32 elapsedTime)
@@ -198,7 +207,7 @@ void UILayoutSystem::ManualApplyLayout(UIControl* control)
 
     Layouter localLayouter;
     localLayouter.SetRtl(sharedLayouter->IsRtl());
-    localLayouter.SetVisibilityMargins(sharedLayouter->GetVisibilityMargins());
+    localLayouter.SetVisibilityRect(sharedLayouter->GetVisibilityRect());
     localLayouter.ApplyLayout(control);
 }
 
@@ -323,15 +332,9 @@ void UILayoutSystem::ProcessControlHierarhy(UIControl* control)
     }
 }
 
-void UILayoutSystem::UpdateVisibilityMargins(const Vector2& windowSize, const Rect& visibilityRect)
+void UILayoutSystem::UpdateVisibilityRect(const Rect& visibilityRect)
 {
-    Margins m{ visibilityRect.x,
-               visibilityRect.y,
-               windowSize.dx - (visibilityRect.x + visibilityRect.dx),
-               windowSize.dy - (visibilityRect.y + visibilityRect.dy) };
-
-    sharedLayouter->SetVisibilityMargins(m);
-
+    sharedLayouter->SetVisibilityRect(visibilityRect);
     if (currentScreen.Valid())
     {
         currentScreen->SetLayoutDirty();

@@ -45,17 +45,19 @@ protected:
     void UnregisterControl(UIControl* control) override;
     void UnregisterComponent(UIControl* control, UIComponent* component) override;
 
+    void RegisterSystem() override;
+    void UnregisterSystem() override;
+
 private:
     UIControl* FindNotDependentOnChildrenControl(UIControl* control) const;
     bool HaveToLayoutAfterReorder(const UIControl* control) const;
     bool HaveToLayoutAfterReposition(const UIControl* control) const;
 
     void CollectControls(UIControl* control, bool recursive);
-    void CollectControlChildren(UIControl* control, int32 parentIndex, bool recursive);
     void ProcessControlHierarhy(UIControl* control);
     void ProcessControl(UIControl* control);
 
-    void UpdateVisibilityMargins(const Vector2& windowSize, const Rect& visibilityRect);
+    void UpdateVisibilityRect(const Rect& visibilityRect);
 
     bool autoupdatesEnabled = true;
     bool dirty = false;
@@ -67,7 +69,8 @@ private:
     Vector<UILayoutSystemListener*> listeners;
 
     Token visibleFrameChangedToken;
-    Token windowSizeChangedToken;
+    Token virtualSizeChangedToken;
+    Token inputSizeChangedToken;
 
     friend UILayoutSystemTest;
 };
