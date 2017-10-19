@@ -146,6 +146,19 @@ const eInputElements nativeScancodeToDavaScancode[] =
   eInputElements::KB_UP, // 0x7E
 };
 
+KeyboardImpl::KeyboardImpl()
+{
+    nonPrintableCharacters = [[NSMutableCharacterSet alloc] init];
+    [nonPrintableCharacters formUnionWithCharacterSet:[NSMutableCharacterSet alphanumericCharacterSet]];
+    [nonPrintableCharacters formUnionWithCharacterSet:[NSMutableCharacterSet punctuationCharacterSet]];
+    [nonPrintableCharacters invert];
+}
+
+KeyboardImpl::~KeyboardImpl()
+{
+    [nonPrintableCharacters release];
+}
+
 eInputElements KeyboardImpl::ConvertNativeScancodeToDavaScancode(uint32 nativeScancode, uint32 /*nativeVirtual*/)
 {
     if (nativeScancode >= COUNT_OF(nativeScancodeToDavaScancode))
@@ -213,19 +226,11 @@ String KeyboardImpl::TranslateElementToUTF8String(eInputElements elementId)
                 // but we want to use GetInputElementInfo(elementId).name for them instead to show meaningful string.
                 // So we trim all the characters except for letters, numbers and punctuation symbols.
                 // If resulting string is empty, the character is non-printable
-                static NSMutableCharacterSet* charactersToRemove = nil;
-                if (charactersToRemove == nil)
-                {
-                    charactersToRemove = [[NSMutableCharacterSet alloc] init];
-                    [charactersToRemove formUnionWithCharacterSet:[NSMutableCharacterSet alphanumericCharacterSet]];
-                    [charactersToRemove formUnionWithCharacterSet:[NSMutableCharacterSet punctuationCharacterSet]];
-                    [charactersToRemove invert];
-                }
 
-                DVASSERT(charactersToRemove != nil);
+                DVASSERT(nonPrintableCharacters != nil);
 
                 NSString* string = [NSString stringWithCharacters:unicodeString length:realLength];
-                NSString* trimmedString = [string stringByTrimmingCharactersInSet:charactersToRemove];
+                NSString* trimmedString = [string stringByTrimmingCharactersInSet:nonPrintableCharacters];
 
                 if ([trimmedString length] == 0)
                 {
