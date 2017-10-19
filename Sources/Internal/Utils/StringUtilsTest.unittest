@@ -118,4 +118,36 @@ DAVA_TESTCLASS (StringUtilsTest)
         str2[0] = 0x00A0; // non-breaking space
         TEST_VERIFY(str1 == RemoveNonPrintable(str2));
     }
+
+    DAVA_TEST (RemoveEmojiTest)
+    {
+        using StringUtils::RemoveEmoji;
+        WideString str1 = L"aa";
+        WideString str2 = L"aa";
+        bool ret = false;
+
+        ret = RemoveEmoji(str2);
+        TEST_VERIFY(ret == false);
+        TEST_VERIFY(str1 == str2);
+
+        str2 = L"a😂a";
+        ret = RemoveEmoji(str2);
+        TEST_VERIFY(ret == true);
+        TEST_VERIFY(str1 == str2);
+
+        str2 = L"😂aa";
+        ret = RemoveEmoji(str2);
+        TEST_VERIFY(ret == true);
+        TEST_VERIFY(str1 == str2);
+
+        str2 = L"aa😂";
+        ret = RemoveEmoji(str2);
+        TEST_VERIFY(ret == true);
+        TEST_VERIFY(str1 == str2);
+
+        str2 = L"😂😂😂a😂😂😂a😂😂😂";
+        ret = RemoveEmoji(str2);
+        TEST_VERIFY(ret == true);
+        TEST_VERIFY(str1 == str2);
+    }
 };
