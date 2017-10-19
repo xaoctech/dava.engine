@@ -6,7 +6,6 @@
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/BatchDescriptor2D.h"
 #include "Render/RenderBase.h"
-//#include "UI/UIControlBackground.h"
 
 namespace DAVA
 {
