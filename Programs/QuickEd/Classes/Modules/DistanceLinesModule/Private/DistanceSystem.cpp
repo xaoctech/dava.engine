@@ -13,6 +13,7 @@
 
 #include <Math/Vector.h>
 #include <UI/UIControl.h>
+#include <UI/UIEvent.h>
 #include <Render/2D/FTFont.h>
 
 namespace DistanceSystemDetails

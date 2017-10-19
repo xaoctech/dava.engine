@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Base/BaseObject.h"
-#include "Engine/Engine.h"
-#include "Entity/ComponentManager.h"
 #include "Reflection/Reflection.h"
 
 namespace DAVA
@@ -53,14 +51,14 @@ inline UIControl* UIComponent::GetControl() const
 
 // clang-format off
 #define DECLARE_UI_COMPONENT(TYPE) \
-    const Type* GetType() const override; \
-    int32 GetRuntimeType() const override; \
+    const DAVA::Type* GetType() const override; \
+    DAVA::int32 GetRuntimeType() const override; \
 
 #define IMPLEMENT_UI_COMPONENT(TYPE) \
-    const Type* TYPE::GetType() const { return Type::Instance<TYPE>(); }; \
-    int32 TYPE::GetRuntimeType() const \
+    const DAVA::Type* TYPE::GetType() const { return DAVA::Type::Instance<TYPE>(); }; \
+    DAVA::int32 TYPE::GetRuntimeType() const \
     { \
-        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(GetType()); \
+        static DAVA::int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(GetType()); \
         return runtimeType; \
     }
 // clang-format on

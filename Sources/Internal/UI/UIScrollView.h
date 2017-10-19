@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
-#include "UI/UIScrollBar.h"
+#include "UI/UIScrollBarDelegate.h"
 #include "Reflection/Reflection.h"
 
 namespace DAVA

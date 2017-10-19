@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 #import "UI/UITextField.h"
+#import "UI/UITextFieldDelegate.h"
 
 namespace DAVA
 {

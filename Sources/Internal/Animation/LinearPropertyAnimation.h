@@ -7,8 +7,21 @@
 
 namespace DAVA
 {
+class ReflectionAnyPropertyAnimation : public Animation
+{
+public:
+    ReflectionAnyPropertyAnimation(AnimatedObject* _owner, const Reflection& _ref, float32 _animationTimeLength, Interpolation::FuncType _iFuncType);
+
+protected:
+    ~ReflectionAnyPropertyAnimation();
+    void SetPropertyValue(const Any& value);
+
+private:
+    Reflection ref;
+};
+
 template <class T>
-class LinearPropertyAnimation : public Animation
+class LinearPropertyAnimation : public ReflectionAnyPropertyAnimation
 {
 protected:
     ~LinearPropertyAnimation()
@@ -24,15 +37,13 @@ public:
     const T& GetEndValue() const;
 
 protected:
-    Reflection ref;
     T startValue;
     T endValue;
 };
 
 template <class T>
 LinearPropertyAnimation<T>::LinearPropertyAnimation(AnimatedObject* _owner, const Reflection& _ref, const T& _startValue, const T& _endValue, float32 _animationTimeLength, Interpolation::FuncType _iFuncType)
-    : Animation(_owner, _animationTimeLength, _iFuncType)
-    , ref(_ref)
+    : ReflectionAnyPropertyAnimation(_owner, _ref, _animationTimeLength, _iFuncType)
     , startValue(_startValue)
     , endValue(_endValue)
 {
@@ -41,9 +52,9 @@ LinearPropertyAnimation<T>::LinearPropertyAnimation(AnimatedObject* _owner, cons
 template <class T>
 void LinearPropertyAnimation<T>::Update(float32 timeElapsed)
 {
-    Animation::Update(timeElapsed);
+    ReflectionAnyPropertyAnimation::Update(timeElapsed);
     T val = startValue + (endValue - startValue) * normalizedTime;
-    ref.SetValue(val);
+    SetPropertyValue(val);
 }
 
 template <class T>
