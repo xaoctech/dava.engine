@@ -37,6 +37,7 @@ public:
 
     void SetTexturePostfix(const String& postfix);
     void SetTag(const String& tag);
+    void SetAllTags(const Vector<String>& tags);
     void SetIgnoresFile(const String& ignoresPath);
 
     void PackResources(const Vector<eGPUFamily>& forGPUs);
@@ -82,7 +83,9 @@ private:
     AssetCache::CachedItemValue::Description cacheItemDescription;
 
     String tag;
-    List<String> ignoredNames;
+    FilePath ignoresListPath;
+    List<FilePath> ignoredFiles;
+    Vector<String> allTags;
 
     Set<String> errors;
 

@@ -23,6 +23,77 @@ namespace DAVA
 const String ResourcePacker2D::VERSION = "0.0.6";
 const String ResourcePacker2D::INTERNAL_LIBPSD_VERSION = "0.0.1";
 
+namespace ResourcePacker2DDetails
+{
+List<FilePath> ReadIgnoresList(const FilePath& ignoresListPath, const FilePath& baseDir)
+{
+    List<FilePath> result;
+
+    ScopedPtr<File> listFile(File::Create(ignoresListPath, File::OPEN | File::READ));
+    if (listFile)
+    {
+        while (!listFile->IsEof())
+        {
+            String str = StringUtils::Trim(listFile->ReadLine());
+            if (!str.empty())
+            {
+                result.emplace_back(baseDir + str);
+            }
+        }
+    }
+    else
+    {
+        Logger::Error("Can't open ignore list file %s", ignoresListPath.GetAbsolutePathname().c_str());
+    }
+
+    return result;
+}
+
+bool IsNameInHardcodedIgnoreList(const String& filename)
+{
+    static const Vector<String> hardcodeIgnoredNames = { ".DS_Store", "flags.txt", "Thumbs.db", ".gitignore" };
+    auto found = std::find_if(hardcodeIgnoredNames.begin(), hardcodeIgnoredNames.end(), [&filename](const String& name)
+                              {
+                                  return (CompareCaseInsensitive(filename, name) == 0);
+                              });
+    return (found != hardcodeIgnoredNames.end());
+}
+
+bool IsPathInIgnoreList(const FilePath& path, const List<FilePath>& ignoredFiles)
+{
+    return (std::find(ignoredFiles.begin(), ignoredFiles.end(), path) != ignoredFiles.end());
+}
+
+void SplitFileName(const String& filename, String& basename, String& ext)
+{
+    const String::size_type dotpos = filename.rfind(String("."));
+    basename = filename.substr(0, dotpos);
+    ext = filename.substr(dotpos, filename.size());
+}
+
+String GetBasenameWithoutTag(const String& basename, const String& tag)
+{
+    String result = basename;
+    const String::size_type tagPos = result.find(tag);
+    result.erase(tagPos, tag.size());
+    return result;
+}
+
+bool IsBasenameContainsTag(const String& basename, const String& tag)
+{
+    const String::size_type tagPos = basename.find(tag);
+    bool isTagged = (tagPos != String::npos && tagPos > 0); // tag can't be at beginning of the basename
+    if (isTagged)
+    {
+        if (basename.find(tag, tagPos + tag.size()) != String::npos)
+        {
+            Logger::Error("File name '%s' contains multiple '%s' tags", basename.c_str(), tag.c_str());
+        }
+    }
+    return isTagged;
+}
+} // namespace ResourcePacker2DDetails
+
 String ResourcePacker2D::GetProcessFolderName()
 {
     return "$process/";
@@ -105,6 +176,14 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
         AddError(Format("Unknown algorithm: '%s'", alg.c_str()));
         return;
     }
+
+    if (tag.empty() == false && std::find(allTags.begin(), allTags.end(), tag) == allTags.end())
+    {
+        AddError(Format("Tag '%s' is not found in allTags", tag.c_str()));
+        return;
+    }
+
+    ignoredFiles = ResourcePacker2DDetails::ReadIgnoresList(ignoresListPath, inputGfxDirectory);
 
     requestedGPUs = forGPUs;
     outputDirModified = false;
@@ -283,6 +362,8 @@ uint32 ResourcePacker2D::GetMaxTextureSize() const
 
 void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath& outputDir, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
 {
+    using namespace ResourcePacker2DDetails;
+
     DVASSERT(inputDir.IsDirectoryPathname() && outputDir.IsDirectoryPathname());
 
     if (!running)
@@ -343,54 +424,6 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
 
     uint64 allFilesSize = 0;
 
-    const Vector<String> hardcodeIgnoredNames = { ".DS_Store", "flags.txt", "Thumbs.db", ".gitignore" };
-    auto isNameHardcodeIgnored = [&hardcodeIgnoredNames](const String& filename) -> bool
-    {
-        auto found = std::find_if(hardcodeIgnoredNames.begin(), hardcodeIgnoredNames.end(), [&filename](const String& name)
-                                  {
-                                      return (CompareCaseInsensitive(filename, name) == 0);
-                                  });
-        return (found != hardcodeIgnoredNames.end());
-    };
-
-    auto isNameInIgnoreList = [this](const String& filename) -> bool
-    {
-        auto found = std::find_if(ignoredNames.begin(), ignoredNames.end(), [&filename](const String& name)
-                                  {
-                                      return (CompareCaseInsensitive(filename, name) == 0);
-                                  });
-        return (found != ignoredNames.end());
-    };
-
-    auto splitFileName = [](const String& filename, String& basename, String& ext)
-    {
-        const String::size_type dotpos = filename.rfind(String("."));
-        basename = filename.substr(0, dotpos);
-        ext = filename.substr(dotpos, filename.size());
-    };
-
-    auto getBasenameWithoutTag = [](const String& basename, const String& tag) -> String
-    {
-        String result = basename;
-        const String::size_type tagPos = result.find(tag);
-        result.erase(tagPos, tag.size());
-        return result;
-    };
-
-    auto isBasenameTagged = [](const String& basename, const String& tag) -> bool
-    {
-        const String::size_type tagPos = basename.find(tag);
-        bool isTagged = (tagPos != String::npos && tagPos > 0); // tag can't be at beginning of the basename
-        if (isTagged)
-        {
-            if (basename.find(tag, tagPos + tag.size()) != String::npos)
-            {
-                Logger::Error("File name '%s' contains multiple '%s' tags", basename.c_str(), tag.c_str());
-            }
-        }
-        return isTagged;
-    };
-
     struct PickedFile
     {
         String name;
@@ -398,7 +431,6 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
         String ext;
         uint32 index = 0;
         bool tagged = false;
-        bool eraseIfNotTagged = false;
         String outName;
         String outBasename;
     };
@@ -413,29 +445,43 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
         }
 
         String filename = fileList->GetFilename(fi);
-        if (isNameHardcodeIgnored(filename) || isNameInIgnoreList(filename))
+        if (IsNameInHardcodedIgnoreList(filename) || IsPathInIgnoreList(fileList->GetPathname(fi), ignoredFiles))
         {
             continue;
         }
 
-        pickedFiles.emplace_back(PickedFile());
-
-        PickedFile& file = pickedFiles.back();
-        file.name = filename;
+        PickedFile file;
+        file.name = std::move(filename);
         file.index = fi;
-        splitFileName(file.name, file.basename, file.ext);
+        SplitFileName(file.name, file.basename, file.ext);
+        file.tagged = IsBasenameContainsTag(file.basename, tag);
 
-        file.tagged = isBasenameTagged(file.basename, tag);
         if (file.tagged == true)
         {
-            file.outBasename = getBasenameWithoutTag(file.basename, tag);
+            file.outBasename = GetBasenameWithoutTag(file.basename, tag);
             file.outName = file.outBasename + file.ext;
-            taggedFiles.push_back(&file);
+            pickedFiles.emplace_back(std::move(file));
+            taggedFiles.push_back(&(pickedFiles.back()));
         }
         else
         {
+            bool containsExcludedTag = false;
+            for (const String& tagToExclude : allTags)
+            {
+                if (tagToExclude != tag && IsBasenameContainsTag(file.basename, tagToExclude) == true)
+                {
+                    containsExcludedTag = true;
+                    break;
+                }
+            }
+            if (containsExcludedTag)
+            {
+                continue;
+            }
+
             file.outBasename = file.basename;
             file.outName = file.name;
+            pickedFiles.emplace_back(std::move(file));
         }
     }
 
@@ -446,38 +492,16 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
                                                                            return (next.name == taggedFile->outName);
                                                                        });
 
-        if (substitutedFileFound != pickedFiles.end())
+        if (substitutedFileFound != pickedFiles.end() && substitutedFileFound->tagged == false)
         {
-            if (substitutedFileFound->tagged == false)
-            {
-                pickedFiles.erase(substitutedFileFound);
-            }
-            else
-            {
-                substitutedFileFound->eraseIfNotTagged = true;
-            }
-        }
-        else
-        {
-            taggedFile->tagged = false;
-            taggedFile->outBasename = taggedFile->basename;
-            taggedFile->outName = taggedFile->name;
+            pickedFiles.erase(substitutedFileFound);
         }
     }
 
-    for (List<PickedFile>::iterator it = pickedFiles.begin(); it != pickedFiles.end();)
+    for (const PickedFile& file : pickedFiles)
     {
-        PickedFile& file = *it;
-        if (file.tagged == false && file.eraseIfNotTagged == true)
-        {
-            it = pickedFiles.erase(it);
-        }
-        else
-        {
-            packingParams += file.name;
-            allFilesSize += fileList->GetFileSize(file.index);
-            ++it;
-        }
+        packingParams += file.name;
+        allFilesSize += fileList->GetFileSize(file.index);
     }
 
     packingParams += Format("FilesSize = %llu", allFilesSize);
@@ -545,16 +569,16 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
                     bool shouldAcceptFile = false;
 
                     FilePath path = fileList->GetPathname(file.index);
-                    if (file.ext == ".psd")
+                    if (CompareCaseInsensitive(file.ext, ".psd") == 0)
                     {
                         shouldAcceptFile = defFile->LoadPSD(path, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose, file.outBasename);
                     }
-                    else if (file.ext == ".png")
+                    else if (CompareCaseInsensitive(file.ext, ".png") == 0)
                     {
                         shouldAcceptFile = defFile->LoadPNG(path, processDir, file.outBasename);
                     }
-                    else if (file.ext == ".pngdef")
+                    else if (CompareCaseInsensitive(file.ext, ".pngdef") == 0)
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(path, processDir, file.outBasename);
                     }
@@ -685,29 +709,19 @@ void ResourcePacker2D::SetTexturePostfix(const String& postfix)
     texturePostfix = postfix;
 }
 
-void ResourcePacker2D::SetTag(const String& _tag)
+void ResourcePacker2D::SetTag(const String& tag_)
 {
-    tag = _tag;
+    tag = tag_;
+}
+
+void DAVA::ResourcePacker2D::SetAllTags(const Vector<String>& tags)
+{
+    allTags = tags;
 }
 
 void ResourcePacker2D::SetIgnoresFile(const String& ignoresPath)
 {
-    ScopedPtr<File> listFile(File::Create(ignoresPath, File::OPEN | File::READ));
-    if (listFile)
-    {
-        while (!listFile->IsEof())
-        {
-            String str = StringUtils::Trim(listFile->ReadLine());
-            if (!str.empty())
-            {
-                ignoredNames.emplace_back(std::move(str));
-            }
-        }
-    }
-    else
-    {
-        Logger::Error("Can't open ignore list file %s", ignoresPath.c_str());
-    }
+    ignoresListPath = ignoresPath;
 }
 
 bool ResourcePacker2D::GetFilesFromCache(const AssetCache::CacheItemKey& key, const FilePath& inputPath, const FilePath& outputPath)

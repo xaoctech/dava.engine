@@ -19,20 +19,20 @@ namespace DefinitionFileLocal
 bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bit_depth);
 }
 
-bool DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& processDir, String outputBasename)
+bool DefinitionFile::LoadPNG(const FilePath& filename_, const FilePath& processDir, String outputBasename)
 {
     DVASSERT(processDir.IsDirectoryPathname());
 
     if (outputBasename.empty())
     {
-        outputBasename = _filename.GetBasename();
+        outputBasename = filename_.GetBasename();
     }
 
     filename = processDir + outputBasename + ".txt";
     frameCount = 1;
 
     PngImageExt image;
-    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
+    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(filename_, ".png");
     bool read = image.Read(corespondingPngImage);
     if (read)
     {
@@ -47,7 +47,7 @@ bool DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& processD
         frameRects[0].dy = spriteHeight;
 
         FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, 0);
-        FileSystem::Instance()->CopyFile(_filename, fileWrite);
+        FileSystem::Instance()->CopyFile(filename_, fileWrite);
     }
 
     return read;
@@ -69,7 +69,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
 
     filename = processDir + outputBasename + ".txt";
 
-    String origBasename = _filename.GetBasename();
+    String originalBasename = _filename.GetBasename();
 
     PngImageExt image;
     FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
@@ -89,7 +89,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
 
         Rect2i reducedRect;
         frameX.FindNonOpaqueRect(reducedRect);
-        Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", origBasename.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
+        Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", originalBasename.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 
         PngImageExt frameX2;
         frameX2.Create(reducedRect.dx, reducedRect.dy);
