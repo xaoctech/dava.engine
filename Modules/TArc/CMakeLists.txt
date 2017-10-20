@@ -1,4 +1,4 @@
-set(NAME_MODULE TArc)
+set(MODULE_NAME TArc)
 
 set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
 
@@ -28,6 +28,8 @@ set(QT_UI_FILES "Sources/TArc/Controls/ColorPicker/Private/Resources/*.ui")
 
 set(FIND_PACKAGE QT5)
 set(PACKAGE_QT5_INCLUDES Qt5Widgets_PRIVATE_INCLUDE_DIRS)
+
+set(DEFINITIONS_PRIVATE -D__DAVAENGINE_QT__ )
 
 setup_main_module()
 
