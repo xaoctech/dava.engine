@@ -14,8 +14,8 @@ class UIScriptSystem : public UISystem
 public:
     ~UIScriptSystem() override;
 
-    void SetEditorMode(bool editorMode);
-    bool IsEditorMode() const;
+    void SetPauseProcessing(bool value);
+    bool IsPauseProcessing() const;
 
     bool ProcessEvent(UIControl* control, const FastName& event);
     void Process(float32 elapsedTime) override;
@@ -39,11 +39,11 @@ private:
     void RemoveScriptLink(UIScriptComponent* component);
 
     Vector<ScriptLink> links;
-    bool isEditorMode;
+    bool pauseProcessing = false;
 };
 
-inline bool UIScriptSystem::IsEditorMode() const
+inline bool UIScriptSystem::IsPauseProcessing() const
 {
-    return isEditorMode;
+    return pauseProcessing;
 }
 }

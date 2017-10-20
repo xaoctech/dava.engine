@@ -104,7 +104,7 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetLayoutSystem()->SetAutoupdatesEnabled(true);
     uiControlSystem->GetSystem<UIScrollBarLinkSystem>()->SetRestoreLinks(true);
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
-    uiControlSystem->GetSystem<UIScriptSystem>()->SetEditorMode(true);
+    uiControlSystem->GetSystem<UIScriptSystem>()->SetPauseProcessing(true);
 
     UIInputSystem* inputSystem = uiControlSystem->GetInputSystem();
     inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_LEFT), UIInputSystem::ACTION_FOCUS_LEFT);

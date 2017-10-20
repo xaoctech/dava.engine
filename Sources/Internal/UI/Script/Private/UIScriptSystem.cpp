@@ -64,7 +64,7 @@ void UIScriptSystem::Process(float32 elapsedTime)
                     link.controller->ParametersChanged(link.component);
                     link.component->SetModifiedParameters(false);
                 }
-                if ((!isEditorMode || link.component->GetProcessInEditor()))
+                if (!pauseProcessing)
                 {
                     link.controller->Process(link.component, elapsedTime);
                 }
@@ -159,8 +159,8 @@ void UIScriptSystem::RemoveScriptLink(UIScriptComponent* component)
     }
 }
 
-void UIScriptSystem::SetEditorMode(bool editorMode)
+void UIScriptSystem::SetPauseProcessing(bool value)
 {
-    isEditorMode = editorMode;
+    pauseProcessing = value;
 }
 }

@@ -11,7 +11,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIScriptComponent)
     .Field("reflectionTypeName", &UIScriptComponent::GetReflectionTypeName, &UIScriptComponent::SetReflectionTypeName)
     .Field("luaScriptPath", &UIScriptComponent::GetLuaScriptPath, &UIScriptComponent::SetLuaScriptPath)
     .Field("parameters", &UIScriptComponent::GetParameters, &UIScriptComponent::SetParameters)
-    .Field("processInEditor", &UIScriptComponent::GetProcessInEditor, &UIScriptComponent::SetProcessInEditor)
     .End();
 }
 
@@ -58,9 +57,5 @@ bool UIScriptComponent::GetModifiedScripts() const
 void UIScriptComponent::SetModifiedScripts(bool value)
 {
     modifiedScripts = value;
-}
-void UIScriptComponent::SetProcessInEditor(bool value)
-{
-    processInEditor = value;
 }
 }

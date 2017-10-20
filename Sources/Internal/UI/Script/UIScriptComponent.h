@@ -33,9 +33,6 @@ public:
     bool GetModifiedScripts() const;
     void SetModifiedScripts(bool value);
 
-    bool GetProcessInEditor() const;
-    void SetProcessInEditor(bool value);
-
 private:
     ~UIScriptComponent() override;
 
@@ -43,7 +40,6 @@ private:
     FilePath luaScriptPath;
     String parameters;
 
-    bool processInEditor = false;
     bool modifiedParameters = false;
     bool modifiedScripts = false;
 };
@@ -61,10 +57,5 @@ inline const FilePath& UIScriptComponent::GetLuaScriptPath() const
 inline const String& UIScriptComponent::GetParameters() const
 {
     return parameters;
-}
-
-inline bool UIScriptComponent::GetProcessInEditor() const
-{
-    return processInEditor;
 }
 }

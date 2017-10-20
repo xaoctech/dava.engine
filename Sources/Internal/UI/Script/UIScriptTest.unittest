@@ -114,6 +114,27 @@ DAVA_TESTCLASS (UIScriptTest)
         screen->RemoveControl(dummyText.Get());
     }
 
+    DAVA_TEST (PauseProcessingTest)
+    {
+        UIScriptSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIScriptSystem>();
+
+        text->SetUtf8Text("");
+
+        UIScriptComponent* scriptComp = text->GetOrCreateComponent<UIScriptComponent>();
+        scriptComp->SetReflectionTypeName("UIDemoController");
+
+        sys->Process(0.0f);
+        TEST_VERIFY(text->GetUtf8Text() == "TextFromCpp:init");
+
+        sys->SetPauseProcessing(true);
+        sys->Process(0.0f);
+        TEST_VERIFY(text->GetUtf8Text() == "TextFromCpp:init");
+
+        sys->SetPauseProcessing(false);
+        sys->Process(0.0f);
+        TEST_VERIFY(text->GetUtf8Text() == "TextFromCpp:process:1");
+    }
+
     DAVA_TEST (NativeTest)
     {
         UIScriptSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIScriptSystem>();
