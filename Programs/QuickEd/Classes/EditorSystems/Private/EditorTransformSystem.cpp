@@ -563,8 +563,7 @@ void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, con
 {
     using namespace DAVA;
     Rect parentBox(Vector2(), parentGD->size);
-
-    if (parentBox.GetSize()[axis] > 0.0f)
+    if (activeControlNode->GetParent()->GetControl() != nullptr && parentBox.GetSize()[axis] > 0.0f)
     {
         //0.0f is equal to control left and 1.0f is equal to control right
         //first value is share of selected control and second value is share of parent control
