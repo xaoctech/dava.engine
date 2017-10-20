@@ -196,47 +196,17 @@ const CanvasData* CanvasDataAdapter::GetCanvasData() const
     return active->GetData<CanvasData>();
 }
 
-DAVA::Vector2 CanvasDataAdapter::RelativeValueToAbsoluteValue(const DAVA::Vector2& relValue) const
+DAVA::Vector2 CanvasDataAdapter::MapFromRootToScreen(const DAVA::Vector2& absValue) const
 {
-    return DAVA::Vector2(RelativeValueToAbsoluteValue(relValue.x, DAVA::Vector2::AXIS_X), RelativeValueToAbsoluteValue(relValue.y, DAVA::Vector2::AXIS_Y));
+    return DAVA::Vector2(MapFromRootToScreen(absValue.x, DAVA::Vector2::AXIS_X), MapFromRootToScreen(absValue.y, DAVA::Vector2::AXIS_Y));
 }
 
-DAVA::Vector2 CanvasDataAdapter::RelativeValueToPosition(const DAVA::Vector2& relValue) const
+DAVA::Vector2 CanvasDataAdapter::MapFromScreenToRoot(const DAVA::Vector2& position) const
 {
-    return DAVA::Vector2(RelativeValueToPosition(relValue.x, DAVA::Vector2::AXIS_X), RelativeValueToPosition(relValue.y, DAVA::Vector2::AXIS_Y));
+    return DAVA::Vector2(MapFromScreenToRoot(position.x, DAVA::Vector2::AXIS_X), MapFromScreenToRoot(position.y, DAVA::Vector2::AXIS_Y));
 }
 
-DAVA::Vector2 CanvasDataAdapter::AbsoluteValueToPosition(const DAVA::Vector2& absValue) const
-{
-    return DAVA::Vector2(AbsoluteValueToPosition(absValue.x, DAVA::Vector2::AXIS_X), AbsoluteValueToPosition(absValue.y, DAVA::Vector2::AXIS_Y));
-}
-
-DAVA::Vector2 CanvasDataAdapter::PositionToAbsoluteValue(const DAVA::Vector2& position) const
-{
-    return DAVA::Vector2(PositionToAbsoluteValue(position.x, DAVA::Vector2::AXIS_X), PositionToAbsoluteValue(position.y, DAVA::Vector2::AXIS_Y));
-}
-
-DAVA::float32 CanvasDataAdapter::RelativeValueToAbsoluteValue(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const
-{
-    using namespace DAVA;
-    const CanvasData* canvasData = GetCanvasData();
-    if (canvasData == nullptr)
-    {
-        return relValue;
-    }
-
-    float32 scale = canvasData->GetScale();
-    Vector2 startValue = GetStartValue();
-    return std::ceilf((startValue[axis] + relValue * scale) / scale);
-}
-
-DAVA::float32 CanvasDataAdapter::RelativeValueToPosition(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const
-{
-    DAVA::float32 absValue = RelativeValueToAbsoluteValue(relValue, axis);
-    return AbsoluteValueToPosition(absValue, axis);
-}
-
-DAVA::float32 CanvasDataAdapter::AbsoluteValueToPosition(DAVA::float32 absValue, DAVA::Vector2::eAxis axis) const
+DAVA::float32 CanvasDataAdapter::MapFromRootToScreen(DAVA::float32 absValue, DAVA::Vector2::eAxis axis) const
 {
     using namespace DAVA;
     const CanvasData* canvasData = GetCanvasData();
@@ -250,7 +220,7 @@ DAVA::float32 CanvasDataAdapter::AbsoluteValueToPosition(DAVA::float32 absValue,
     return absValue * scale - startValue[axis];
 }
 
-DAVA::float32 CanvasDataAdapter::PositionToAbsoluteValue(DAVA::float32 position, DAVA::Vector2::eAxis axis) const
+DAVA::float32 CanvasDataAdapter::MapFromScreenToRoot(DAVA::float32 position, DAVA::Vector2::eAxis axis) const
 {
     using namespace DAVA;
     const CanvasData* canvasData = GetCanvasData();

@@ -52,15 +52,11 @@ public:
 
     DAVA::Vector2 GetViewSize() const;
 
-    DAVA::Vector2 RelativeValueToAbsoluteValue(const DAVA::Vector2& relValue) const;
-    DAVA::Vector2 RelativeValueToPosition(const DAVA::Vector2& relValue) const;
-    DAVA::Vector2 AbsoluteValueToPosition(const DAVA::Vector2& absValue) const;
-    DAVA::Vector2 PositionToAbsoluteValue(const DAVA::Vector2& position) const;
+    DAVA::Vector2 MapFromRootToScreen(const DAVA::Vector2& absValue) const;
+    DAVA::Vector2 MapFromScreenToRoot(const DAVA::Vector2& position) const;
 
-    DAVA::float32 RelativeValueToAbsoluteValue(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const;
-    DAVA::float32 RelativeValueToPosition(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const;
-    DAVA::float32 AbsoluteValueToPosition(DAVA::float32 absValue, DAVA::Vector2::eAxis axis) const;
-    DAVA::float32 PositionToAbsoluteValue(DAVA::float32 position, DAVA::Vector2::eAxis axis) const;
+    DAVA::float32 MapFromRootToScreen(DAVA::float32 absValue, DAVA::Vector2::eAxis axis) const;
+    DAVA::float32 MapFromScreenToRoot(DAVA::float32 position, DAVA::Vector2::eAxis axis) const;
 
 private:
     DAVA::TArc::DataWrapper canvasDataWrapper;
