@@ -91,6 +91,9 @@ public slots:
     void OnRunUIViewer();
     void OnRunUIViewerFast();
 
+private slots:
+    void ExpandToFirstChild();
+
 private:
     void PushErrorMessage(const DAVA::String& errorMessage);
 

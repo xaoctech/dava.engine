@@ -93,6 +93,7 @@ void FileSystemWidget::InitUI()
     verticalLayout->addWidget(treeView);
 
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    treeView->setHeaderHidden(true);
     connect(treeView, &QWidget::customContextMenuRequested, this, &FileSystemWidget::OnCustomContextMenuRequested);
     treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
