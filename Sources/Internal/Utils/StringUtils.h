@@ -99,13 +99,6 @@ StringType TrimRight(const StringType& string)
 WideString RemoveNonPrintable(const WideString& string, const int8 tabRule = -1);
 
 /**
- * \brief Remove unicode Emoji symbols and surrogates from given string.
- * \param [in/out] string The string to clearify.
- * \return output string.
- */
-bool RemoveEmoji(WideString& string);
-
-/**
  * \brief Replaces all occurrences of a search string in the specified string with replacement string
  * \param string Original string
  * \param search Seeking value
