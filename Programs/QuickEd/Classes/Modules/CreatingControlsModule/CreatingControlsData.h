@@ -7,7 +7,8 @@ class CreatingControlsSystem;
 class CreatingControlsData : public DAVA::TArc::DataNode
 {
 public:
-    CreatingControlsData() = default;
+    CreatingControlsData();
+    ~CreatingControlsData();
 
 private:
     friend class CreatingControlsModule;
