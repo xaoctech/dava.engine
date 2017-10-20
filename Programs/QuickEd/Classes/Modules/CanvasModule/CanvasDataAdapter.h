@@ -52,10 +52,10 @@ public:
 
     DAVA::Vector2 GetViewSize() const;
 
-    DAVA::Vector2 RelativeValueToAbsoluteValue(DAVA::Vector2 relValue) const;
-    DAVA::Vector2 RelativeValueToPosition(DAVA::Vector2 relValue) const;
-    DAVA::Vector2 AbsoluteValueToPosition(DAVA::Vector2 absValue) const;
-    DAVA::Vector2 PositionToAbsoluteValue(DAVA::Vector2 position) const;
+    DAVA::Vector2 RelativeValueToAbsoluteValue(const DAVA::Vector2& relValue) const;
+    DAVA::Vector2 RelativeValueToPosition(const DAVA::Vector2& relValue) const;
+    DAVA::Vector2 AbsoluteValueToPosition(const DAVA::Vector2& absValue) const;
+    DAVA::Vector2 PositionToAbsoluteValue(const DAVA::Vector2& position) const;
 
     DAVA::float32 RelativeValueToAbsoluteValue(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const;
     DAVA::float32 RelativeValueToPosition(DAVA::float32 relValue, DAVA::Vector2::eAxis axis) const;
