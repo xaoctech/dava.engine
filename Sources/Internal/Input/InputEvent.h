@@ -14,6 +14,9 @@ class Window;
 */
 struct InputEvent
 {
+    InputEvent();
+    ~InputEvent();
+
     /** The window this event is addressed to. */
     Window* window;
 
@@ -58,4 +61,19 @@ struct InputEvent
         KeyboardEvent keyboardEvent;
     };
 };
+
+inline InputEvent::InputEvent()
+    : window(nullptr)
+    , timestamp(0.0)
+    , deviceType(eInputDeviceTypes::UNKNOWN)
+    , device(nullptr)
+    , elementId(NONE)
+{
+    keyboardEvent = KeyboardEvent();
+}
+
+inline InputEvent::~InputEvent()
+{
+    // do nothing
+}
 }

@@ -1,6 +1,8 @@
-set(NAME_MODULE Physics )
+set(MODULE_NAME Physics )
 
-set(MODULE_TYPE STATIC)#INLINE STATIC DYNAMIC 
+set(MODULE_TYPE STATIC)
+
+set(PLATFORMS_IGNORE ANDROID WINUAP_ARM )
 
 set(HPP_FILES_RECURSE Sources/*.h Sources/*.hpp)
 set(CPP_FILES_RECURSE Sources/*.cpp)
@@ -12,11 +14,11 @@ set(INCLUDES "${PhysicsRootDir}/Sources"
              "${PhysicsRootDir}/Libs/Include/physx"
              "${PhysicsRootDir}/Libs/Include/PxShared")
 set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
-set(MODULE_INITIALIZATION_CODE Sources/Physics/PhysicsModule.h )
-set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
-set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
 
-set (LibsPath "${PhysicsRootDir}/Libs")
+set(DEFINITIONS_ANDROID "-D__STDC_LIMIT_MACROS")
+set(DEFINITIONS "-D__DAVAENGINE_PHYSICS_ENABLED__")
+
+set(LibsPath "${CMAKE_CURRENT_SOURCE_DIR}/Libs")
 
 set(WIN32_STATIC_DEBUG_LIBS "${LibsPath}/Win32/x86/LowLevelDEBUG.lib"
                             "${LibsPath}/Win32/x86/LowLevelAABBDEBUG.lib"
@@ -586,5 +588,7 @@ set(BINARY_WIN32_DIR_DEBUG "${LibsPath}/Win32/x86")
 set(BINARY_WIN64_DIR_RELEASE "${LibsPath}/Win32/x64")
 set(BINARY_WIN64_DIR_RELWITHDEB "${LibsPath}/Win32/x64")
 set(BINARY_WIN64_DIR_DEBUG "${LibsPath}/Win32/x64")
+
+set(MODULE_INITIALIZATION true )
 
 setup_main_module()

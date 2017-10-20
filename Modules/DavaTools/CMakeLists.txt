@@ -1,0 +1,16 @@
+set( MODULE_NAME DavaTools )
+
+set( MODULE_TYPE STATIC )
+
+set( HPP_FILES_RECURSE Sources/DavaTools/*.h )
+set( CPP_FILES_RECURSE Sources/DavaTools/*.cpp )
+
+set( INCLUDES Sources )
+set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR} )
+
+set( DEFINITIONS_PRIVATE_WIN      -D_CRT_SECURE_NO_WARNINGS )
+set( DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
+
+set( FIND_MODULE  NetworkHelpers ) 
+
+setup_main_module()
