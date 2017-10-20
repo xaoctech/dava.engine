@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <TArc/Core/ContextAccessor.h>
 

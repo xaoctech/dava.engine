@@ -283,6 +283,19 @@ uint32 ProgramOptions::GetOptionValuesCount(const String& optionName) const
     return 1; //default
 }
 
+bool ProgramOptions::IsOptionExists(const String& optionName) const
+{
+    for (auto& opt : options)
+    {
+        if (opt.name == optionName)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 VariantType ProgramOptions::GetOption(const String& optionName, uint32 pos) const
 {
     for (auto& opt : options)

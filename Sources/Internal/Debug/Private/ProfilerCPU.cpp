@@ -270,6 +270,10 @@ Vector<TraceEvent> ProfilerCPU::GetTrace(int32 snapshot) const
 
     const CounterArray* array = GetCounterArray(snapshot);
     Vector<TraceEvent> trace;
+    if (array == nullptr)
+    {
+        return trace;
+    }
     trace.reserve(array->size());
 
     for (const Counter& c : *array)

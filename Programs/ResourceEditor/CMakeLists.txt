@@ -12,35 +12,33 @@ set                   ( TOOL_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG
 
 include ( CMake-common )
 
-list(APPEND DAVA_COMPONENTS "Sound")
-list(APPEND DAVA_COMPONENTS "Physics")
-list(APPEND DAVA_COMPONENTS "PhysicsDebug")
-list(APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT)
-list(APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
-list(APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS)
-list(APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS)
-
-
-find_package( DavaTools REQUIRED )
-find_package( QT5 REQUIRED )
 find_package( GMock REQUIRED )
-find_package( QtHelpers REQUIRED )
-find_package( DocDirSetup REQUIRED )
-find_package( FBX REQUIRED )
+find_package( QT5 REQUIRED )
+
+find_dava_module( Spine )
+find_dava_module( QtHelpers )
+find_dava_module( DocDirSetup )
+find_dava_module( QtTools )
+find_dava_module( TArc )
+find_dava_module( RemoteTool )
+find_dava_module( EditorPhysics )
+find_dava_module( Physics )
+find_dava_module( PhysicsDebug )
+find_dava_module( DavaTools )
+find_dava_module( FBX )
 
 if (NOT PUBLIC_BUILD)
-    if( WIN32 )
-        find_package( Beast REQUIRED )
-    endif()
-    find_package( SpeedTree REQUIRED )
+    find_dava_module( SpeedTree )
+    find_dava_module( Beast )
 endif()
 
-find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
+list( APPEND DAVA_COMPONENTS Sound )
+list( APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT )
+list( APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
+list( APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
+list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
-find_package( TArc REQUIRED )
-find_package( QtTools REQUIRED )
-find_package( RemoteTool REQUIRED )
-find_package( EditorPhysics REQUIRED )
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR}/DavaTools/QtTools )
@@ -75,7 +73,6 @@ dava_add_definitions       (
 -D__DAVAENGINE_RESOURCEEDITOR__
 -DDAVA_QT
 )
-
 
 if (DEPLOY)
     dava_add_definitions(-DDEPLOY_BUILD)

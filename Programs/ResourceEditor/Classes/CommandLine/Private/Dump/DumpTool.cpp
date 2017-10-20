@@ -20,10 +20,11 @@ DumpTool::DumpTool(const DAVA::Vector<DAVA::String>& commandLine)
 
     options.AddOption(OptionName::Links, VariantType(false), "Target for dumping is links");
     options.AddOption(OptionName::InDir, VariantType(String("")), "Path for Project/DataSource/3d/ folder");
+    options.AddOption(OptionName::ResourceDir, VariantType(String("")), "Path to resource dir, only for compressed mode");
     options.AddOption(OptionName::ProcessFile, VariantType(String("")), "Filename from DataSource/3d/ for dumping");
     options.AddOption(OptionName::QualityConfig, VariantType(String("")), "Full path for quality.yaml file");
     options.AddOption(OptionName::OutFile, VariantType(String("")), "Full path to file to write result of dumping");
-    options.AddOption(OptionName::Mode, VariantType(String("e")), "Mode of dumping: r - required, e - extended. Extended mode is default.");
+    options.AddOption(OptionName::Mode, VariantType(String("")), "Mode of dumping: с - compressed, r - required, e - extended. Extended mode is default.");
     options.AddOption(OptionName::GPU, VariantType(String("all")), "GPU family: PowerVR_iOS, PowerVR_Android, tegra, mali, adreno, origin, dx11. Can be multiple: -gpu mali,adreno,origin", true);
     options.AddOption(OptionName::TagList, VariantType(String("")), "Tags for textures and slots, Can be multiple: -taglist .china,.japan", true);
 }
@@ -38,17 +39,6 @@ bool DumpTool::PostInitInternal()
     }
     inFolder.MakeDirectoryPathname();
 
-    resourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
-    if (resourceFolder.IsEmpty())
-    {
-        resourceFolder = ProjectManagerData::GetDataPath(inFolder);
-        if (resourceFolder.IsEmpty())
-        {
-            DAVA::Logger::Error("DataSource or Data folder was not found");
-            return false;
-        }
-    }
-
     filename = options.GetOption(OptionName::ProcessFile).AsString();
     if (filename.empty())
     {
@@ -62,16 +52,44 @@ bool DumpTool::PostInitInternal()
         DAVA::Logger::Error("Out file was not selected");
         return false;
     }
-
+    resourceFolder = options.GetOption(OptionName::ResourceDir).AsString();
     DAVA::String modeString = options.GetOption(OptionName::Mode).AsString();
+
+    if (!resourceFolder.IsEmpty() && modeString != "c")
+    {
+        DAVA::Logger::Error("Mode must be  <c(REQUIRED)>  with the resourceFolder set");
+        return false;
+    }
+
     if (modeString == "r")
     {
         mode = SceneDumper::eMode::REQUIRED;
+    }
+    else if (modeString == "c")
+    {
+        mode = SceneDumper::eMode::COMPRESSED;
     }
     else
     { // now we use extended mode in case of empty string or in case of error
         mode = SceneDumper::eMode::EXTENDED;
     }
+
+    if (resourceFolder.IsEmpty())
+    {
+        resourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+
+        if (resourceFolder.IsEmpty())
+        {
+            resourceFolder = ProjectManagerData::GetDataPath(inFolder);
+            if (resourceFolder.IsEmpty())
+            {
+                DAVA::Logger::Error("DataSource or Data folder was not found");
+                return false;
+            }
+        }
+    }
+
+    resourceFolder.MakeDirectoryPathname();
 
     DAVA::uint32 count = options.GetOptionValuesCount(OptionName::GPU);
     compressedGPUs.reserve(count);
@@ -156,7 +174,16 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
             {
                 if (!link.IsEmpty() && link.GetType() != DAVA::FilePath::PATH_IN_MEMORY)
                 {
-                    file->WriteLine(link.GetAbsolutePathname());
+                    DAVA::String link_path;
+                    if (mode == SceneDumper::eMode::COMPRESSED)
+                    {
+                        link_path = link.GetRelativePathname(resourceFolder);
+                    }
+                    else
+                    {
+                        link_path = link.GetAbsolutePathname();
+                    }
+                    file->WriteLine(link_path);
                 }
             }
         }
@@ -180,6 +207,7 @@ void DumpTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-dump -indir /Users/SmokeTest/DataSource/3d/ -processfile Maps/11-grass/test_scene.sc2 -outfile /Users/Test/dump.txt -links -mode e -gpu all");
     DAVA::Logger::Info("\t-dump -indir /Users/SmokeTest/DataSource/3d/ -processfile Maps/11-grass/test_scene.sc2 -outfile /Users/Test/dump.txt -links -mode r -gpu mali,adreno");
     DAVA::Logger::Info("\t-dump -indir /Users/SmokeTest/DataSource/3d/ -processfile Maps/11-grass/test_scene.sc2 -outfile /Users/Test/dump.txt -links -mode e -gpu mali,adreno -taglist .china,.japan");
+    DAVA::Logger::Info("\t-dump  -resdir /Users/resources  -indir /Users/resources/3d/Maps/20_lake_lk/ -processfile 20_lake_lk.sc2 -outfile /Users/resources/dump.txt -mode с  -qualitycfgpath /Users/resources/quality.yaml -gpu all");
 }
 
 DECL_CONSOLE_MODULE(DumpTool, "-dump");
