@@ -20,7 +20,7 @@ private:
     void UnloadResources() override;
 
     void Update(DAVA::float32 timeElapsed) override;
-    void UpdateProgress(float32 progress);
+    void UpdateProgress(DAVA::float32 progress);
 
     void OnInitClicked(BaseObject* sender, void* data, void* callerData);
     void OnIOErrorClicked(BaseObject* sender, void* data, void* callerData);
