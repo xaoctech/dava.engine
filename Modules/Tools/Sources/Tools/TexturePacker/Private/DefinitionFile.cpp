@@ -19,17 +19,20 @@ namespace DefinitionFileLocal
 bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bit_depth);
 }
 
-bool DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& pathToProcess)
+bool DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& processDir, String outputBasename)
 {
-    DVASSERT(pathToProcess.IsDirectoryPathname());
+    DVASSERT(processDir.IsDirectoryPathname());
 
-    String nameWithoutExt = _filename.GetBasename();
-    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
+    if (outputBasename.empty())
+    {
+        outputBasename = _filename.GetBasename();
+    }
 
-    filename = pathToProcess + (nameWithoutExt + String(".txt"));
+    filename = processDir + outputBasename + ".txt";
     frameCount = 1;
 
     PngImageExt image;
+    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
     bool read = image.Read(corespondingPngImage);
     if (read)
     {
@@ -43,28 +46,33 @@ bool DefinitionFile::LoadPNG(const FilePath& _filename, const FilePath& pathToPr
         frameRects[0].dx = spriteWidth;
         frameRects[0].dy = spriteHeight;
 
-        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(pathToProcess, nameWithoutExt, 0);
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, 0);
         FileSystem::Instance()->CopyFile(_filename, fileWrite);
     }
 
     return read;
 }
 
-bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& pathToProcess)
+bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& processDir, String outputBasename)
 {
-    DVASSERT(pathToProcess.IsDirectoryPathname());
+    DVASSERT(processDir.IsDirectoryPathname());
+
+    if (outputBasename.empty())
+    {
+        outputBasename = _filename.GetBasename();
+    }
 
     Logger::FrameworkDebug("* Load PNG Definition: %s", _filename.GetAbsolutePathname().c_str());
 
     FILE* fp = fopen(_filename.GetAbsolutePathname().c_str(), "rt");
     fscanf(fp, "%d", &frameCount);
 
-    String nameWithoutExt = _filename.GetBasename();
-    FilePath corespondingPngImage = _filename.GetDirectory() + (nameWithoutExt + String(".png"));
+    filename = processDir + outputBasename + ".txt";
 
-    filename = pathToProcess + (nameWithoutExt + String(".txt"));
+    String origBasename = _filename.GetBasename();
 
     PngImageExt image;
+    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
     image.Read(corespondingPngImage);
     spriteWidth = image.GetWidth() / frameCount;
     spriteHeight = image.GetHeight();
@@ -81,13 +89,13 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& pathT
 
         Rect2i reducedRect;
         frameX.FindNonOpaqueRect(reducedRect);
-        Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
+        Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", origBasename.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 
         PngImageExt frameX2;
         frameX2.Create(reducedRect.dx, reducedRect.dy);
         frameX2.DrawImage(0, 0, &frameX, reducedRect);
 
-        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(pathToProcess, nameWithoutExt, k);
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, k);
         frameX2.Write(fileWrite);
 
         frameRects[k].x = reducedRect.x;
@@ -143,8 +151,8 @@ int DefinitionFile::GetFrameHeight(uint32 frame) const
     return frameRects[frame].dy;
 }
 
-bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDirectoryPath, uint32 maxTextureSize,
-                             bool retainEmptyPixesl, bool useLayerNames, bool verboseOutput)
+bool DefinitionFile::LoadPSD(const FilePath& psdPath, const FilePath& processDirectoryPath, uint32 maxTextureSize,
+                             bool retainEmptyPixesl, bool useLayerNames, bool verboseOutput, String outputBasename)
 {
     if (FileSystem::Instance()->CreateDirectory(processDirectoryPath) == FileSystem::DIRECTORY_CANT_CREATE)
     {
@@ -155,8 +163,13 @@ bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDi
         return false;
     }
 
-    auto psdNameString = fullname.GetAbsolutePathname();
-    const char* psdName = psdNameString.c_str();
+    if (outputBasename.empty())
+    {
+        outputBasename = psdPath.GetBasename();
+    }
+
+    String pathString = psdPath.GetAbsolutePathname();
+    const char* psdName = pathString.c_str();
 
     psd_context* psd = nullptr;
     auto status = psd_image_load(&psd, const_cast<psd_char*>(psdName));
@@ -175,11 +188,8 @@ bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDi
         psd_image_free(psd);
     };
 
-    auto outImageBasePath = fullname;
-    outImageBasePath.ReplaceExtension(".png");
-
-    auto outImageBaseName = outImageBasePath.GetBasename();
-    filename = processDirectoryPath + outImageBaseName + ".txt";
+    filename = processDirectoryPath + outputBasename + ".txt";
+    FilePath outImagePath = processDirectoryPath + outputBasename + ".png";
 
     frameCount = psd->layer_count;
     frameRects.resize(frameCount);
@@ -187,7 +197,6 @@ bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDi
     spriteWidth = psd->width;
     spriteHeight = psd->height;
 
-    outImageBasePath.ReplaceDirectory(processDirectoryPath);
     for (uint32 lIndex = 0; lIndex < frameCount; ++lIndex)
     {
         auto& layer = psd->layer_records[lIndex];
@@ -211,7 +220,7 @@ bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDi
             return false;
         }
 
-        outImageBasePath.ReplaceBasename(outImageBaseName + "_" + std::to_string(lIndex));
+        outImagePath.ReplaceBasename(outputBasename + "_" + std::to_string(lIndex));
 
         if (verboseOutput && layerName.empty())
         {
@@ -334,7 +343,7 @@ bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDi
         }
         frameRects[lIndex] = Rect2i(imageLeft, imageTop, imageWidth, imageHeight);
 
-        bool writeSucceed = DefinitionFileLocal::WritePNGImage(imageWidth, imageHeight, dataToSave, outImageBasePath.GetAbsolutePathname().c_str(), 4, 8);
+        bool writeSucceed = DefinitionFileLocal::WritePNGImage(imageWidth, imageHeight, dataToSave, outImagePath.GetAbsolutePathname().c_str(), 4, 8);
         if (dataToSave != reinterpret_cast<char*>(layer.image_data))
         {
             free(dataToSave);
@@ -344,7 +353,7 @@ bool DefinitionFile::LoadPSD(const FilePath& fullname, const FilePath& processDi
         {
             Logger::Error("============================ ERROR ============================");
             Logger::Error("| Failed to write PNG to file:");
-            Logger::Error("| %s", outImageBasePath.GetAbsolutePathname().c_str());
+            Logger::Error("| %s", outImagePath.GetAbsolutePathname().c_str());
             Logger::Error("| Input file (layer %u):", static_cast<int32>(lIndex));
             Logger::Error("| %s", psdName);
             Logger::Error("===============================================================");

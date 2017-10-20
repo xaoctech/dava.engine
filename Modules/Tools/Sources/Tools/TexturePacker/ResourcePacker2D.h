@@ -36,6 +36,8 @@ public:
     bool IsUsingCache() const;
 
     void SetTexturePostfix(const String& postfix);
+    void SetTag(const String& tag);
+    void SetIgnoresFile(const String& ignoresPath);
 
     void PackResources(const Vector<eGPUFamily>& forGPUs);
 
@@ -78,6 +80,9 @@ public:
 private:
     AssetCacheClient* cacheClient = nullptr;
     AssetCache::CachedItemValue::Description cacheItemDescription;
+
+    String tag;
+    List<String> ignoredNames;
 
     Set<String> errors;
 
