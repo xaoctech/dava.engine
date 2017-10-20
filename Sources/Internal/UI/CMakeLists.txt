@@ -17,6 +17,8 @@ set( HPP_FILES *.h
     Text/*.h
     Text/Private/*.h
     Render/*.h
+    Script/*.h
+    Script/Private/*.h
     )
 
 set( CPP_FILES *.cpp
@@ -38,6 +40,8 @@ set( CPP_FILES *.cpp
     Text/*.cpp
     Text/Private/*.cpp
     Render/*.cpp
+    Script/*.cpp
+    Script/Private/*.cpp
     )
 
 set( CPP_FILES_APPLE *.mm )

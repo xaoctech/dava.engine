@@ -60,6 +60,28 @@ bool ContainsOnlyAllowedSymbols(const String& str, UIControlHelpers::NameCheckSt
 
 namespace DAVA
 {
+UIComponent* UIControlHelpers::GetComponentByName(const UIControl* control, const String& componentName, uint32 index)
+{
+    const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(componentName);
+    if (control && rType)
+    {
+        const Type* type = rType->GetType();
+        return control->GetComponent(type, index);
+    }
+    return nullptr;
+}
+
+UIComponent* UIControlHelpers::GetOrCreateComponentByName(UIControl* control, const String& componentName, uint32 index)
+{
+    const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(componentName);
+    if (control && rType)
+    {
+        const Type* type = rType->GetType();
+        return control->GetOrCreateComponent(type, index);
+    }
+    return nullptr;
+}
+
 String UIControlHelpers::GetControlPath(const UIControl* control, const UIControl* rootControl /*= NULL*/)
 {
     using namespace UIControlHelpersDetails;
@@ -292,6 +314,11 @@ bool UIControlHelpers::IsControlNameValid(const FastName& controlName, NameCheck
 {
     using namespace UIControlHelpersDetails;
     return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str(), strictness);
+}
+
+bool UIControlHelpers::IsControlNull(const UIControl* control)
+{
+    return control == nullptr;
 }
 
 void UIControlHelpers::ScrollToRect(DAVA::UIControl* control, const Rect& rect, float32 animationTime, bool toTopLeftForBigControls)

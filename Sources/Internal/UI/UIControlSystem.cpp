@@ -37,11 +37,13 @@
 #include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/Script/UIScriptSystem.h"
 
 namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
+    AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());

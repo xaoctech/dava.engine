@@ -27,6 +27,7 @@
 #include <UI/Layouts/UILayoutSystem.h>
 #include <UI/RichContent/UIRichContentSystem.h>
 #include <UI/Scroll/UIScrollBarLinkSystem.h>
+#include <UI/Script/UIScriptSystem.h>
 
 #include <FileSystem/FileSystem.h>
 
@@ -103,6 +104,7 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetLayoutSystem()->SetAutoupdatesEnabled(true);
     uiControlSystem->GetSystem<UIScrollBarLinkSystem>()->SetRestoreLinks(true);
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
+    uiControlSystem->GetSystem<UIScriptSystem>()->SetEditorMode(true);
 
     UIInputSystem* inputSystem = uiControlSystem->GetInputSystem();
     inputSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_LEFT), UIInputSystem::ACTION_FOCUS_LEFT);

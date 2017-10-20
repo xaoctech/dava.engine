@@ -4,9 +4,11 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Math/Rect.h"
+#include "Functional/Function.h"
 
 namespace DAVA
 {
+class UIComponent;
 class UIControl;
 class UIList;
 class UIScrollView;
@@ -14,6 +16,8 @@ class UIScrollView;
 class UIControlHelpers
 {
 public:
+    static UIComponent* GetComponentByName(const UIControl* control, const String& componentName, uint32 index = 0);
+    static UIComponent* GetOrCreateComponentByName(UIControl* control, const String& componentName, uint32 index = 0);
     static String GetControlPath(const UIControl* control, const UIControl* rootControl = NULL);
     static String GetPathToOtherControl(const UIControl* src, const UIControl* dst);
     static UIControl* FindChildControlByName(const String& controlName, const UIControl* rootControl, bool recursive);
@@ -32,6 +36,7 @@ public:
     static bool IsControlNameValid(const FastName& controlName, NameCheckStrictness = RegularCheck);
 
 private:
+    static bool IsControlNull(const UIControl* control);
     static const UIControl* FindControlByPathImpl(const String& controlPath, const UIControl* rootControl);
     static const UIControl* FindControlByPathImpl(Vector<FastName>::const_iterator begin, Vector<FastName>::const_iterator end, const UIControl* rootControl);
     static const UIControl* FindControlByPathRecursivelyImpl(Vector<FastName>::const_iterator begin, Vector<FastName>::const_iterator end, const UIControl* rootControl);

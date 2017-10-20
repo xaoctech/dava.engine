@@ -65,6 +65,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     const QList<QString> particleExtensions{ Project::Get3dFileExtension() };
     const QList<QString> spineSkeletonExtensions{ ".json", ".skel" };
     const QList<QString> spineAtlasExtensions{ ".atlas" };
+    const QList<QString> luaExtensions{ ".lua" };
 
     QStringList formulaCompletions;
     formulaCompletions << "childrenSum"
@@ -114,6 +115,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("UIScriptComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
