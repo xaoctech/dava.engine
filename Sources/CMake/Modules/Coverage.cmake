@@ -45,7 +45,7 @@ if( MACOS AND COVERAGE )
     add_custom_command( TARGET COVERAGE_${PROJECT_NAME} 
             COMMAND ${PYTHON_EXECUTABLE} ${COVERAGE_SCRIPT}
                     --pathExecut    ${EXECUT_FILE}
-                    --pathBuild     ${CMAKE_CURRENT_BINARY_DIR}
+                    --pathBuild     ${CMAKE_BINARY_DIR}
                     --pathReportOut ${CMAKE_CURRENT_BINARY_DIR}/Coverage
                     --buildConfig   $(CONFIGURATION)
                     --buildMode     true 
