@@ -57,8 +57,10 @@ object dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework : BuildType(
             schedulingPolicy = daily {
                 hour = 0
             }
+            branchFilter = "+:<default>"
             triggerBuild = always()
             withPendingChangesOnly = false
+            param("revisionRule", "lastFinished")
             param("dayOfWeek", "Sunday")
         }
     }
