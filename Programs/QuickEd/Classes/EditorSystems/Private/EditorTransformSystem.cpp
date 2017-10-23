@@ -854,7 +854,17 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
 
     Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
     Vector2 finalPosition = originalPosition;
-    finalPosition += deltaPosition;
+    if (activeControlNode->GetParent() != nullptr && activeControlNode->GetParent()->GetControl() != nullptr)
+    {
+        finalPosition += deltaPosition;
+    }
+    else
+    { //manually write position to a root control parent
+        //because it is the only way to change visual root control positiono utside of editorControlsView
+        UIControl* rootParent = control->GetParent();
+        Vector2 parentPosition = rootParent->GetPosition();
+        rootParent->SetPosition(parentPosition + deltaPosition);
+    }
 
     Any positionValue(finalPosition);
 
