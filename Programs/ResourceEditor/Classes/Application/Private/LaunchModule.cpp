@@ -7,7 +7,7 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/StringConstants.h"
 
-#include <Tools/Version.h>
+#include <DavaTools/Version.h>
 
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>

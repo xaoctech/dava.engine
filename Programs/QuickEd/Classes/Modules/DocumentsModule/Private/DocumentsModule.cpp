@@ -35,10 +35,10 @@
 #include "Model/QuickEdPackageBuilder.h"
 #include "Model/YamlPackageSerializer.h"
 
-#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
-#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <QtTools/InputDialogs/MultilineTextInputDialog.h>
 
@@ -92,7 +92,7 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
     systemsData->painter = std::make_unique<Painting::Painter>();
     Vector<Window*> windows = Engine::Instance()->GetWindows();
     DVASSERT(windows.size() == 1);
-    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::Draw));
+    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::OnFrame));
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -498,7 +498,7 @@ void DocumentsModule::CreateViewActions()
         separator->setObjectName(zoomSeparator);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "menuGridColor" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 
