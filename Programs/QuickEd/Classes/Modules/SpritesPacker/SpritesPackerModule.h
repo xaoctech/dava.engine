@@ -3,7 +3,7 @@
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
 
-#include <Tools/AssetCache/AssetCacheClient.h>
+#include <DavaTools/AssetCache/AssetCacheClient.h>
 
 class ProjectData;
 class SpritesPackerModule : public DAVA::TArc::ClientModule

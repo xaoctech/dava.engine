@@ -18,6 +18,9 @@ if (LINUX)
     set ( DAVA_MEMORY_PROFILER 0 )
 endif()
 
+# Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
+dava_add_definitions(-DLOCALIZATION_DEBUG)
+
 if (LINUX)
     dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
     dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
@@ -25,39 +28,29 @@ if (LINUX)
 endif()
 
 if ( WIN32 OR MACOS )
-    find_package(DavaTools REQUIRED )
+    find_dava_module( DavaTools )
 endif()
 
-# Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
-dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 if (NOT LINUX)
     # Enable sound after fmod libraries
-    set ( DAVA_COMPONENTS "Sound" "Spine" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
-else()
-    set ( DAVA_COMPONENTS "NetworkCore" DAVA_DISABLE_AUTOTESTS )
+    set ( DAVA_COMPONENTS Sound )
+    find_dava_module( Spine )
+    find_dava_module( NetworkCore )
 endif()
 
-if ( WIN32 AND NOT WINDOWS_UAP )
-    list ( APPEND DAVA_COMPONENTS "CEFWebview" )
-endif ()
-
-list ( APPEND DAVA_COMPONENTS "SampleModule" )
-
-# add physics
-if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
-    # we don't have physx for android x86, so skip this
-elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
-    # we don't have physx for win uap arm, so skip this
-else()
-    list ( APPEND DAVA_COMPONENTS "Physics" )
-endif()
+find_dava_module( Physics )
+find_dava_module( CEFWebview )
+find_dava_module( Sample )
+find_dava_module( LoggerService  )
+find_dava_module( EmbeddedWebServer  )
+find_dava_module( DocDirSetup  )
 
 find_package( Steam REQUIRED )
-find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )
-find_package( LoggerService REQUIRED )
-find_package( EmbeddedWebServer REQUIRED )
-find_package( DocDirSetup REQUIRED )
+
+
+find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" DAVA_DISABLE_AUTOTESTS )
+
 
 include_directories   ( "Sources" )
 

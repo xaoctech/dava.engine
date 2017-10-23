@@ -11,6 +11,7 @@
 #include "Time/SystemTimer.h"
 #include "Engine/Engine.h"
 #include "Debug/Backtrace.h"
+#include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
@@ -110,8 +111,8 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : engine(*engine_)
-    , profiler(1024 * 16)
+    : profiler(1024 * 16)
+    , engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -131,7 +132,7 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                           {
                                                               OnSettingsChanged(value);
                                                           });
-    /* TODO merge later with development (uncomment it)
+
     gestureChecker.debugGestureMatch.DisconnectAll();
 
     gestureChecker.debugGestureMatch.Connect(this, [this]() {
@@ -179,7 +180,6 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
             }
         });
     });
-    */
 }
 
 String DLCManagerImpl::DumpToJsonProfilerTrace()
@@ -1314,7 +1314,7 @@ uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
 
     for (uint32 fileIndex : fileIndexes)
     {
-        const auto& fileInfo = allFiles.at(fileIndex);
+        const auto& fileInfo = allFiles[fileIndex];
         result += fileInfo.compressedSize;
     }
 
@@ -1500,6 +1500,8 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     using namespace DAVA;
     using namespace PackFormat;
 
+    DVASSERT(Thread::IsMainThread());
+
     if (!IsInitialized())
     {
         lastProgress.isRequestingEnabled = false;
@@ -1546,6 +1548,64 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     lastProgress.isRequestingEnabled = true;
 
     return lastProgress;
+}
+
+DLCManager::Progress DLCManager::GetPacksProgress(const Vector<String>& packNames) const
+{
+    return Progress();
+}
+
+DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& packNames) const
+{
+    using namespace DAVA;
+    DVASSERT(Thread::IsMainThread());
+
+    if (!IsInitialized())
+    {
+        return Progress();
+    }
+
+    // 1. make flat set with all pack with it's dependencies
+    // 2. go throw all files and check if it's pack in set
+
+    allPacks.clear();
+    childrenPacks.clear();
+
+    size_t packsCount = meta->GetPacksCount();
+
+    allPacks.reserve(packsCount);
+    childrenPacks.reserve(packsCount);
+
+    for (const String& packName : packNames)
+    {
+        uint32 packIndex = meta->GetPackIndex(packName);
+        meta->CollectDependencies(packIndex, childrenPacks);
+        for (const uint32 childPackIndex : childrenPacks)
+        {
+            allPacks.insert(childPackIndex);
+        }
+        allPacks.insert(packIndex);
+    }
+
+    Progress result;
+    result.isRequestingEnabled = IsRequestingEnabled();
+    // go throw all files
+    const auto& allFiles = usedPackFile.filesTable.data.files;
+    size_t numFiles = allFiles.size();
+    for (size_t fileIndex = 0; fileIndex < numFiles; ++fileIndex)
+    {
+        const auto& fileInfo = allFiles[fileIndex];
+        if (allPacks.find(fileInfo.metaIndex) != end(allPacks))
+        {
+            result.total += fileInfo.compressedSize;
+            if (IsFileReady(fileIndex))
+            {
+                result.alreadyDownloaded += fileInfo.compressedSize;
+            }
+        }
+    }
+
+    return result;
 }
 
 DLCManager::Info DLCManager::GetInfo() const
