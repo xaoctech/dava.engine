@@ -26,6 +26,8 @@ public:
 template <typename T>
 void RECommandNotificationObject::ForEachWithCast(DAVA::uint32 commandId, const DAVA::Function<void(const T*)>& callback) const
 {
+    static_assert(std::is_base_of<RECommand, T>::value, "Cast target should be derived from RECommand");
+
     auto fn = [callback](const RECommand* command) {
         callback(static_cast<const T*>(command));
     };

@@ -185,7 +185,11 @@ void SceneManagerModule::PostInit()
     ProjectManagerData* projectData = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(projectData != nullptr);
 
-    connections.AddConnection(projectData->GetSpritesModules(), &SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
+    const SpritesPackerModule* packer = projectData->GetSpritesModules();
+    if (packer != nullptr)
+    {
+        connections.AddConnection(packer, &SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
+    }
 
     DAVA::TArc::UI* ui = GetUI();
 
@@ -706,13 +710,6 @@ void SceneManagerModule::CreateNewScene()
 {
     using namespace DAVA::TArc;
     ContextManager* contextManager = GetContextManager();
-
-    UI* ui = GetUI();
-    WaitDialogParams waitDlgParams;
-    waitDlgParams.message = QStringLiteral("Creating new scene");
-    waitDlgParams.needProgressBar = false;
-
-    std::unique_ptr<WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
 
     DAVA::FilePath scenePath = QString("newscene%1.sc2").arg(++newSceneCounter).toStdString();
     DAVA::RefPtr<SceneEditor2> scene = OpenSceneImpl(scenePath);

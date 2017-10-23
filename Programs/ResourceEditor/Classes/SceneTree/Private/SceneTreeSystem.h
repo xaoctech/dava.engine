@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+#include "Classes/Selection/Selectable.h"
 
+#include <Base/BaseTypes.h>
 #include <Command/Command.h>
 #include <Entity/SceneSystem.h>
+#include <Functional/Signal.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
-#include <Functional/Signal.h>
 
 class RECommandNotificationObject;
 

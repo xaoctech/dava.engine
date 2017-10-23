@@ -4,11 +4,12 @@
 #include "MaterialEditor/MaterialEditor.h"
 
 #include <QComboBox>
-#include <QPushButton>
 #include <QGridLayout>
-#include <QVBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 QualitySwitcher* QualitySwitcher::switcherDialog = nullptr;
 

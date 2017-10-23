@@ -230,11 +230,8 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
         return;
     }
 
-    auto checkCommandAction = [](const CommandAction* action) {
-    };
-
     commandNotification.ForEachWithCast<CommandAddParticleEmitter>(CMDID_PARTICLE_EMITTER_ADD, [&](const CommandAddParticleEmitter* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitter>::value, "You should support undo for this command here");
         DAVA::Entity* entity = command->GetEntity();
         syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(entity)));
     });
@@ -254,7 +251,7 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     });
 
     commandNotification.ForEachWithCast<CommandUpdateEmitter>(CMDID_PARTICLE_EMITTER_UPDATE, [&](const CommandUpdateEmitter* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandUpdateEmitter>::value, "You should support undo for this command here");
         DAVA::ParticleEmitterInstance* emitterInstance = command->GetEmitterInstance();
         syncSnapshot.changedObjects.insert(Selectable(DAVA::Any(emitterInstance)));
     });
@@ -279,7 +276,7 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     commandNotification.ForEachWithCast<CommandAddParticleEmitterLayer>(CMDID_PARTICLE_EMITTER_LAYER_ADD, [&](const CommandAddParticleEmitterLayer* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitterLayer>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleEmitterInstance* instance = command->GetParentEmitter();
@@ -288,7 +285,7 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     });
 
     commandNotification.ForEachWithCast<CommandCloneParticleEmitterLayer>(CMDID_PARTICLE_EMITTER_LAYER_CLONE, [&](const CommandCloneParticleEmitterLayer* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandCloneParticleEmitterLayer>::value, "You should support undo for this command here");
         DAVA::ParticleEmitterInstance* instance = command->GetEmitterInstance();
         DAVA::ParticleEffectComponent* component = GetScene()->GetSystem<EditorParticlesSystem>()->GetEmitterOwner(instance);
         DAVA::Entity* entity = component->GetEntity();
@@ -317,7 +314,7 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     });
 
     commandNotification.ForEachWithCast<CommandUpdateParticleLayer>(CMDID_PARTICLE_LAYER_UPDATE, [&](const CommandUpdateParticleLayer* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandUpdateParticleLayer>::value, "You should support undo for this command here");
 
         EditorParticlesSystem* system = GetScene()->GetSystem<EditorParticlesSystem>();
 
@@ -341,12 +338,12 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     });
 
     commandNotification.ForEachWithCast<CommandUpdateParticleLayerEnabled>(CMDID_PARTICLE_LAYER_UPDATE_ENABLED, [&](const CommandUpdateParticleLayerEnabled* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandUpdateParticleLayerEnabled>::value, "You should support undo for this command here");
         syncSnapshot.changedObjects.insert(Selectable(DAVA::Any(command->GetLayer())));
     });
 
     commandNotification.ForEachWithCast<CommandRemoveParticleEmitterLayer>(CMDID_PARTICLE_EMITTER_LAYER_REMOVE, [&](const CommandRemoveParticleEmitterLayer* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandRemoveParticleEmitterLayer>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleEmitterInstance* emitterInstance = command->GetEmitterInstance();
@@ -357,7 +354,7 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     commandNotification.ForEachWithCast<CommandAddParticleEmitterForce>(CMDID_PARTICLE_EMITTER_FORCE_ADD, [&](const CommandAddParticleEmitterForce* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitterForce>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
@@ -366,7 +363,7 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     });
 
     commandNotification.ForEachWithCast<CommandRemoveParticleEmitterForce>(CMDID_PARTICLE_EMITTER_FORCE_REMOVE, [&](const CommandRemoveParticleEmitterForce* command) {
-        checkCommandAction(command);
+        static_assert(std::is_base_of<CommandAction, CommandRemoveParticleEmitterForce>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();

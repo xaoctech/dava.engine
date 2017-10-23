@@ -1,6 +1,8 @@
 #include "Classes/SceneTree/Private/SceneTreeView.h"
 #include "Classes/SceneTree/Private/SceneTreeItemDelegateV2.h"
+
 #include "Classes/Application/RESettings.h"
+#include "Classes/SceneManager/SceneData.h"
 
 #include <TArc/Utils/ScopedValueGuard.h>
 #include <TArc/Core/ContextAccessor.h>
@@ -10,6 +12,10 @@
 
 #include <QAbstractItemView>
 #include <QItemSelectionModel>
+#include <QContextMenuEvent>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
 
 SceneTreeView::SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
     : ControlProxyImpl<QTreeView>(params, DAVA::TArc::ControlDescriptor(params.fields), accessor, model, parent)

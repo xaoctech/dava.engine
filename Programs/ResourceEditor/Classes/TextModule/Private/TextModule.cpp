@@ -9,6 +9,7 @@
 #include <TArc/DataProcessing/Common.h>
 
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>

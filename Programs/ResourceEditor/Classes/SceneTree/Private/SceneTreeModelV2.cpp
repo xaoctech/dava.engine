@@ -1,7 +1,9 @@
 #include "Classes/SceneTree/Private/SceneTreeModelV2.h"
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
+#include "Classes/SceneTree/Private/SceneTreeRoles.h"
 
 #include "Classes/DragNDropSupport/ReflectedMimeData.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include <TArc/DataProcessing/AnyQMetaType.h>
 

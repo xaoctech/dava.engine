@@ -3,6 +3,7 @@
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/QtConnections.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <Base/Set.h>
 #include <Reflection/Reflection.h>

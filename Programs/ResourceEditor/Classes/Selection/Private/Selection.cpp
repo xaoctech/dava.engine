@@ -4,6 +4,7 @@
 
 #include <TArc/DataProcessing/DataContext.h>
 
+#include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Entity.h>
 #include <Particles/ParticleEmitterInstance.h>
 
