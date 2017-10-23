@@ -98,6 +98,10 @@ void TextFieldPlatformImpl::SetTextColor(const DAVA::Color& color)
         if (![label.textColor isEqual:col])
         {
             label.textColor = col;
+
+            // Workaround for IOS 11 problem with updating font params.
+            // Solution is update text with same value.
+            label.text = label.text;
         }
     }
 
