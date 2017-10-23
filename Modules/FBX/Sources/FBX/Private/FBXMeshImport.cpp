@@ -93,7 +93,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             FbxSkin* skin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
             skeleton = ImportSkeleton(skin, meshTransform, &controlPointsInfluences, &maxControlPointInfluence);
         }
-        maxControlPointInfluence = Min(maxControlPointInfluence, PolygonGroup::MAX_JOINTS_COUNT);
+        maxControlPointInfluence = Min(maxControlPointInfluence, PolygonGroup::MAX_VERTEX_JOINTS_COUNT);
 
         FbxStringList uvNames;
         fbxMesh->GetUVSetNames(uvNames);
@@ -215,7 +215,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
                     else
                     {
                         auto vInf = fbxVertex.joints.cbegin();
-                        for (uint32 j = 0; j < PolygonGroup::MAX_JOINTS_COUNT; ++j)
+                        for (uint32 j = 0; j < PolygonGroup::MAX_VERTEX_JOINTS_COUNT; ++j)
                         {
                             if (vInf != fbxVertex.joints.end())
                             {

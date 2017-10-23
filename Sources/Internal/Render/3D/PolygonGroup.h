@@ -38,7 +38,7 @@ public:
         TEXTURE_COORDS_COUNT = 4
     };
 
-    static const uint32 MAX_JOINTS_COUNT = 4;
+    static const uint32 MAX_VERTEX_JOINTS_COUNT = 4;
 
 protected:
     virtual ~PolygonGroup();
@@ -281,13 +281,13 @@ inline void PolygonGroup::SetHardJointIndex(int32 i, int32 _v)
 
 inline void PolygonGroup::SetJointIndex(int32 i, int32 j, int32 _v)
 {
-    DVASSERT(j >= 0 && j < MAX_JOINTS_COUNT);
+    DVASSERT(j >= 0 && j < MAX_VERTEX_JOINTS_COUNT);
     reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointIndexArray) + i * vertexStride)->data[j] = float32(_v);
 }
 
 inline void PolygonGroup::SetJointWeight(int32 i, int32 j, float32 _v)
 {
-    DVASSERT(j >= 0 && j < MAX_JOINTS_COUNT);
+    DVASSERT(j >= 0 && j < MAX_VERTEX_JOINTS_COUNT);
     reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointWeightArray) + i * vertexStride)->data[j] = _v;
 }
 
@@ -371,13 +371,13 @@ inline void PolygonGroup::GetHardJointIndex(int32 vIndex, int32& indexValue)
 
 inline void PolygonGroup::GetJointIndex(int32 vIndex, int32 jointIndex, int32& indexValue)
 {
-    DVASSERT(jointIndex >= 0 && jointIndex < MAX_JOINTS_COUNT);
+    DVASSERT(jointIndex >= 0 && jointIndex < MAX_VERTEX_JOINTS_COUNT);
     indexValue = int32(reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointIndexArray) + vIndex * vertexStride)->data[jointIndex]);
 }
 
 inline void PolygonGroup::GetJointWeight(int32 vIndex, int32 jointIndex, float32& weightValue)
 {
-    DVASSERT(jointIndex >= 0 && jointIndex < MAX_JOINTS_COUNT);
+    DVASSERT(jointIndex >= 0 && jointIndex < MAX_VERTEX_JOINTS_COUNT);
     weightValue = reinterpret_cast<Vector4*>(reinterpret_cast<uint8*>(jointWeightArray) + vIndex * vertexStride)->data[jointIndex];
 }
 
