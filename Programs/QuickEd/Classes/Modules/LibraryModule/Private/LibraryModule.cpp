@@ -123,6 +123,11 @@ void LibraryModule::CreateActions()
     {
         QtAction* action = new QtAction(GetAccessor(), QObject::tr("Collapse all"), libraryWidget);
 
+        KeyBindableActionInfo info;
+        info.blockName = "Library";
+        info.context = Qt::WidgetWithChildrenShortcut;
+        MakeActionKeyBindable(action, info);
+
         QTreeView* libraryWidgetTreeView = libraryWidget->GetTreeView();
         QObject::connect(action, &QAction::triggered, libraryWidget->GetTreeView(), &QTreeView::collapseAll);
 
@@ -133,6 +138,7 @@ void LibraryModule::CreateActions()
             return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
         });
         libraryWidgetTreeView->addAction(action);
+        GetUI()->AddAction(DAVA::TArc::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);
     }
 }
 
