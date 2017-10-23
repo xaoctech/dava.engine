@@ -7,7 +7,7 @@
 #include "Classes/Deprecated/SceneValidator.h"
 #include "Classes/ImageTools/ImageTools.h"
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <Render/Image/LibDdsHelper.h>
 #include <FileSystem/FileSystem.h>

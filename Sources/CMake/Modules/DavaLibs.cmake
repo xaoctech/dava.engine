@@ -41,6 +41,9 @@ set( DAVA_STATIC_LIBRARIES_MACOS    ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libFColla
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libsqlite3.a
                                     )
 
+set( DAVA_DYNAMIC_LIBRARIES_MACOS   ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libTextureConverter.dylib 
+                                    )
+
 set( DAVA_STATIC_LIBRARIES_ANDROID  "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libxml.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libpng.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libfreetype.a"

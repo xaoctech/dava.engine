@@ -1,4 +1,4 @@
-set( NAME_MODULE FBX )
+set( MODULE_NAME FBX )
 
 set( MODULE_TYPE STATIC )
 
@@ -37,5 +37,7 @@ set(BINARY_WIN32_DIR_DEBUG       "${FbxThirdparty}/lib/Win32/x86/debug")
 set(BINARY_WIN64_DIR_RELEASE     "${FbxThirdparty}/lib/Win32/x64/release")
 set(BINARY_WIN64_DIR_RELWITHDEB  "${FbxThirdparty}/lib/Win32/x64/release")
 set(BINARY_WIN64_DIR_DEBUG       "${FbxThirdparty}/lib/Win32/x64/debug")
+
+set(MODULE_INITIALIZATION true )
 
 setup_main_module()
