@@ -35,10 +35,10 @@
 #include "Model/QuickEdPackageBuilder.h"
 #include "Model/YamlPackageSerializer.h"
 
-#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
-#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <QtTools/InputDialogs/MultilineTextInputDialog.h>
 
@@ -498,7 +498,7 @@ void DocumentsModule::CreateViewActions()
         separator->setObjectName(zoomSeparator);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "menuGridColor" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 
