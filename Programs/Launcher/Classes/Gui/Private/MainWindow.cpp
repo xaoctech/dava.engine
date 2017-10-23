@@ -69,6 +69,8 @@ MainWindow::MainWindow(GuiApplicationManager* appManager_, QWidget* parent)
     ui->tableWidget->setStyleSheet(TABLE_STYLESHEET);
     ui->tableWidget->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
+    ui->listView->setStyleSheet("QListView::item::selected {background: #805CADFF }");
+
     setWindowTitle(QString("DAVA Launcher %1").arg(LAUNCHER_VER));
 
     connect(ui->textBrowser, &QTextBrowser::anchorClicked, this, &MainWindow::OnlinkClicked);
@@ -135,9 +137,9 @@ void MainWindow::OnRun(int rowNumber)
     QString appID, insVersionID, avVersionID;
     GetTableApplicationIDs(rowNumber, appID, insVersionID, avVersionID);
 
-    if (insVersionID == avVersionID)
+    if (insVersionID.isEmpty() == false && (avVersionID.isEmpty() || insVersionID == avVersionID))
     {
-        appManager->RunApplication(selectedBranchID, appID, avVersionID);
+        appManager->RunApplication(selectedBranchID, appID, insVersionID);
     }
     else
     {

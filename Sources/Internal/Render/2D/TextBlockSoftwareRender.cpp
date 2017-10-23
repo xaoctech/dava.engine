@@ -46,8 +46,12 @@ void TextBlockSoftwareRender::Prepare()
         return;
     }
 
-    uint32 width = Max(textBlock->cacheDx, static_cast<int32>(Texture::MINIMAL_WIDTH));
-    uint32 height = Max(textBlock->cacheDy, static_cast<int32>(Texture::MINIMAL_HEIGHT));
+    // Fix buffer size according minimal size of texture
+    textBlock->cacheDx = Max(textBlock->cacheDx, static_cast<int32>(Texture::MINIMAL_WIDTH));
+    textBlock->cacheDy = Max(textBlock->cacheDy, static_cast<int32>(Texture::MINIMAL_HEIGHT));
+
+    uint32 width = textBlock->cacheDx;
+    uint32 height = textBlock->cacheDy;
 
     // Check that text can be rendered in available texture size otherwise don't draw it
     uint32 maxSize = rhi::DeviceCaps().maxTextureSize;

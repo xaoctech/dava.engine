@@ -30,18 +30,10 @@ public:
     ~PixelGrid() override;
 
 private:
-    CanvasControls CreateCanvasControls() override;
-    void DeleteCanvasControls(const CanvasControls& canvasControls) override;
     eSystems GetOrder() const override;
     void OnUpdate() override;
 
-    void InitControls();
-
     bool CanShowGrid() const;
 
-    DAVA::RefPtr<DAVA::UIControl> vLinesContainer;
-    DAVA::RefPtr<DAVA::UIControl> hLinesContainer;
-
     CanvasDataAdapter canvasDataAdapter;
-    DAVA::RefPtr<DAVA::UIControl> pixelGridControl;
 };

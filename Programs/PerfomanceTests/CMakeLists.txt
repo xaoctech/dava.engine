@@ -10,7 +10,26 @@ if ( ENABLE_MEM_PROFILING )
     dava_add_definitions( -DDAVA_MEMORY_PROFILING_ENABLE )
 endif()
 
-find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
+set ( DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
+
+find_dava_module( Sample )
+
+if (NOT LINUX)
+    list ( APPEND DAVA_COMPONENTS Sound  )
+    find_dava_module( Spine )
+endif()
+
+find_dava_module( CEFWebview )
+
+# add physics
+find_dava_module( Physics )
+find_dava_module( PhysicsDebug )
+
+#for toolset
+dava_add_definitions(-DLOCALIZATION_DEBUG)
+
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
+
 
 include_directories   ( "Sources" )
 include_directories   ( "Sources/Infrastructure" )

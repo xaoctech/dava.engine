@@ -43,6 +43,7 @@ private slots:
 
     void CollapseSwitch();
     void CollapseAll();
+    void ReloadSelectedEntitiesTextures();
 
     void SceneActivated(SceneEditor2* scene);
     void SceneDeactivated(SceneEditor2* scene);
