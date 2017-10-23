@@ -17,11 +17,17 @@ struct SettingsSortKey
 
     int32 sortKey = 0;
 };
+struct ForceResetToDefault
+{
+};
 } // namespace Metas
 namespace M
 {
 // Greater value of sort key mean that settings will be upper in settings dialog
 using SettingsSortKey = Meta<Metas::SettingsSortKey>;
+
+// force reset field to default even the field is hidden
+using ForceResetToDefault = Meta<Metas::ForceResetToDefault>;
 } // namespace M
 
 namespace TArc

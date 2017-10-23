@@ -2,16 +2,30 @@
 
 #include <TArc/DataProcessing/SettingsNode.h>
 
-#include <Math/Color.h>
 #include <Base/BaseTypes.h>
+#include <Math/Color.h>
+#include <Reflection/Reflection.h>
 
 class PreviewWidgetSettings : public DAVA::TArc::SettingsNode
 {
 public:
-    DAVA::Color backgroundColor0 = DAVA::Color(0.0f, 0.0f, 0.0f, 0.5f);
-    DAVA::Color backgroundColor1 = DAVA::Color(0.242f, 0.242f, 0.242f, 1.0f);
-    DAVA::Color backgroundColor2 = DAVA::Color(0.159f, 0.159f, 0.159f, 1.0f);
+    static const DAVA::Color defaultBackgroundColor0;
+    static const DAVA::Color defaultBackgroundColor1;
+    static const DAVA::Color defaultBackgroundColor2;
+
+    DAVA::Vector<DAVA::Color> backgroundColors = { defaultBackgroundColor0, defaultBackgroundColor1, defaultBackgroundColor2 };
     DAVA::uint32 backgroundColorIndex = 0;
 
     DAVA_VIRTUAL_REFLECTION(PreviewWidgetSettings, DAVA::TArc::SettingsNode);
+
+private:
+    // SettingsNode
+    void Load(const DAVA::TArc::PropertiesItem& settingsNode) override;
+    void Save(DAVA::TArc::PropertiesItem& settingsNode) const override;
+
+    void LoadVersion0(const DAVA::TArc::PropertiesItem& settingsNode);
+    void LoadVersion1(const DAVA::TArc::PropertiesItem& settingsNode, DAVA::Reflection& settingsReflection);
+    void LoadDefaultValues();
+
+    DAVA::uint32 version = 1;
 };

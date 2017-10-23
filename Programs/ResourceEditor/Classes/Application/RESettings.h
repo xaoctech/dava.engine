@@ -5,8 +5,8 @@
 #include <TArc/DataProcessing/SettingsNode.h>
 #include <TArc/Qt/QtByteArray.h>
 
-#include <Tools/AssetCache/AssetCacheConstants.h>
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/AssetCache/AssetCacheConstants.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <Scene3D/Components/ActionComponent.h>
 #include <Reflection/Reflection.h>

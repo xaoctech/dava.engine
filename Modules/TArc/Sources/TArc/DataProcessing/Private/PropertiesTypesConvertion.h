@@ -182,6 +182,40 @@ Vector<FastName> PropertiesItem::Impl::FromValue(const QJsonValue& value, const 
 }
 
 template <>
+Vector<Color> PropertiesItem::Impl::FromValue(const QJsonValue& value, const Vector<Color>& defaultValue)
+{
+    if (value.isArray())
+    {
+        Vector<Color> retVal;
+        QJsonArray colors = value.toArray();
+        foreach (const QJsonValue& color, colors)
+        {
+            if (color.isArray())
+            {
+                QJsonArray components = color.toArray();
+                if (components.size() == 4)
+                {
+                    retVal.emplace_back(Color(components[0].toDouble(), components[1].toDouble(), components[2].toDouble(), components[3].toDouble()));
+                }
+                else
+                {
+                    return defaultValue;
+                }
+            }
+            else
+            {
+                return defaultValue;
+            }
+        };
+        return retVal;
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
+
+template <>
 QJsonValue PropertiesItem::Impl::ToValue(const bool& value)
 {
     return QJsonValue(value);
@@ -307,6 +341,19 @@ QJsonValue PropertiesItem::Impl::ToValue(const Vector<FastName>& value)
                        return QString(string.c_str());
                    });
     return stringList.join(PropertiesHolderDetails::stringListDelimiter);
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const Vector<Color>& value)
+{
+    QJsonArray jsonResult;
+    std::transform(value.begin(), value.end(), std::back_inserter(jsonResult), [](const Color& color)
+                   {
+                       QJsonArray jsonColor;
+                       jsonColor << color.r << color.g << color.b << color.a;
+                       return jsonColor;
+                   });
+    return jsonResult;
 }
 
 } // namespace TArc

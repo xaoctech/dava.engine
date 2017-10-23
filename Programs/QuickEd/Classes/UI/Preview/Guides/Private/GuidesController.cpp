@@ -566,14 +566,14 @@ DocumentData* GuidesController::GetDocumentData() const
 
 DAVA::float32 GuidesController::PositionToValue(DAVA::float32 position) const
 {
-    return canvasDataAdapter.PositionToAbsoluteValue(position, orientation);
+    return canvasDataAdapter.MapFromScreenToRoot(position, orientation);
 }
 
 DAVA::float32 GuidesController::ValueToPosition(DAVA::float32 value) const
 {
     using namespace DAVA;
     float32 relativePos = GetCentralWidgetData()->GetGuidesRelativePos()[orientation];
-    float32 position = canvasDataAdapter.AbsoluteValueToPosition(value, orientation);
+    float32 position = canvasDataAdapter.MapFromRootToScreen(value, orientation);
     return relativePos + position;
 }
 

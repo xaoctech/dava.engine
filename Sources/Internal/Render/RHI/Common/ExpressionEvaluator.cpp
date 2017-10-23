@@ -22,7 +22,8 @@ const char Operators[] = {
     '+', '-', '*', '/', '^', '!', '>', '<',
     OpEqual, OpNotEqual, OpLogicalAnd, OpLogicalOr, OpLogicalNot,
     OpDefined, OpNotDefined,
-    OpGreaterOrEqual, OpLessOrEqual
+    OpGreaterOrEqual, OpLessOrEqual,
+    '\0'
 };
 
 uint32 OperationPriority(char operation)
