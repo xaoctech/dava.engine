@@ -37,11 +37,14 @@
 #include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/Events/UIEventsSystem.h"
 
 namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
+    AddSystem(std::make_unique<UIEventsSystem>());
+
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
@@ -60,6 +63,9 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
+    eventsSystem = GetSystem<UIEventsSystem>();
+
+    eventsSystem->RegisterCommands();
 
     vcs = new VirtualCoordinatesSystem();
     vcs->EnableReloadResourceOnResize(true);
@@ -100,6 +106,7 @@ UIControlSystem::~UIControlSystem()
     layoutSystem = nullptr;
     updateSystem = nullptr;
     renderSystem = nullptr;
+    eventsSystem = nullptr;
 
     systems.clear();
     SafeDelete(vcs);
@@ -509,6 +516,7 @@ UIControl* UIControlSystem::GetFocusedControl() const
 void UIControlSystem::ProcessControlEvent(int32 eventType, const UIEvent* uiEvent, UIControl* control)
 {
     soundSystem->ProcessControlEvent(eventType, uiEvent, control);
+    eventsSystem->ProcessControlEvent(eventType, uiEvent, control);
 }
 
 void UIControlSystem::ReplayEvents()
@@ -703,6 +711,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
     system->SetScene(this);
+    UISystem* weak = system.get();
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -717,6 +726,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
     {
         systems.push_back(std::move(system));
     }
+    weak->RegisterSystem();
 }
 
 std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
@@ -729,6 +739,7 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
 
     if (it != systems.end())
     {
+        (*it)->UnregisterSystem();
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
         systemPtr->SetScene(nullptr);
@@ -796,6 +807,11 @@ DAVA::UIRenderSystem* UIControlSystem::GetRenderSystem() const
 UIUpdateSystem* UIControlSystem::GetUpdateSystem() const
 {
     return updateSystem;
+}
+
+UIEventsSystem* UIControlSystem::GetEventsSystem() const
+{
+    return eventsSystem;
 }
 
 void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)

@@ -15,8 +15,9 @@ Controls:
             topAnchor: 10.000000
             bottomAnchorEnabled: true
             bottomAnchor: 10.000000
-        ActionBinding:
-            actions: "LOAD_SCRIPT; RUN_MAIN; RESET_SCRIPT; RUN_10000; RUN_MAIN_NOARGS; RUN_10000_NOARGS; DUMP_STACK"
+        UIShortcutEventComponent:
+            shortcuts: "LOAD_SCRIPT; RUN_MAIN; RESET_SCRIPT; RUN_10000; RUN_MAIN_NOARGS; RUN_10000_NOARGS; DUMP_STACK"
+        Focus: {}
     children:
     -   class: "UITextField"
         name: "ScriptText"
@@ -69,8 +70,8 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "LOAD_SCRIPT"
+            UIInputEventComponent:
+                onTouchUpInside: "LOAD_SCRIPT"
     -   class: "UIStaticText"
         name: "RunMainBtn"
         position: [528.479980, 43.000000]
@@ -85,8 +86,8 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "RUN_MAIN"
+            UIInputEventComponent:
+                onTouchUpInside: "RUN_MAIN"
     -   class: "UIStaticText"
         name: "ResetScriptBtn"
         position: [528.479980, 214.050003]
@@ -101,8 +102,8 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "RESET_SCRIPT"
+            UIInputEventComponent:
+                onTouchUpInside: "RESET_SCRIPT"
     -   class: "UIStaticText"
         name: "RunMainMultBtn"
         position: [528.479980, 129.000000]
@@ -117,8 +118,8 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "RUN_10000"
+            UIInputEventComponent:
+                onTouchUpInside: "RUN_10000"
     -   class: "UIStaticText"
         name: "TimeText"
         position: [528.479980, 317.000000]
@@ -275,8 +276,8 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "RUN_MAIN_NOARGS"
+            UIInputEventComponent:
+                onTouchUpInside: "RUN_MAIN_NOARGS"
     -   class: "UIStaticText"
         name: "RunMainMultBtn"
         position: [528.479980, 171.050003]
@@ -291,8 +292,8 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "RUN_10000_NOARGS"
+            UIInputEventComponent:
+                onTouchUpInside: "RUN_10000_NOARGS"
     -   class: "UIStaticText"
         name: "ResetScriptBtn"
         position: [528.479980, 257.049988]
@@ -307,5 +308,5 @@ Controls:
                 horizontalValue: 28.000000
             Anchor:
                 rightAnchorEnabled: true
-            Action:
-                action: "DUMP_STACK"
+            UIInputEventComponent:
+                onTouchUpInside: "DUMP_STACK"

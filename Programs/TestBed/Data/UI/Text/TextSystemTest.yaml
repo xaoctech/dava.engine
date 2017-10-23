@@ -671,8 +671,9 @@ Controls:
         SizePolicy:
             horizontalPolicy: "PercentOfParent"
             verticalPolicy: "PercentOfParent"
-        ActionBinding:
-            actions: "START; STOP; PREV; NEXT; BENCHMARK1; BENCHMARK2"
+        UIEventBindingComponent:
+            commands: "START; STOP; PREV; NEXT; BENCHMARK1; BENCHMARK2"
+        Focus: {}
     children:
     -   class: "UIControl"
         name: "Holder"
@@ -695,8 +696,8 @@ Controls:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
                     horizontalValue: 50.000000
-                Action:
-                    action: "START"
+                UIInputEventComponent:
+                    onTouchDown: "START"
                 DebugRender:
                     enabled: true
                 UITextComponent:
@@ -711,8 +712,8 @@ Controls:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
                     horizontalValue: 50.000000
-                Action:
-                    action: "STOP"
+                UIInputEventComponent:
+                    onTouchDown: "STOP"
                 DebugRender:
                     enabled: true
                 UITextComponent:
@@ -734,8 +735,8 @@ Controls:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
                     horizontalValue: 50.000000
-                Action:
-                    action: "PREV"
+                UIInputEventComponent:
+                    onTouchDown: "PREV"
                 DebugRender:
                     enabled: true
                 UITextComponent:
@@ -750,8 +751,8 @@ Controls:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
                     horizontalValue: 50.000000
-                Action:
-                    action: "NEXT"
+                UIInputEventComponent:
+                    onTouchDown: "NEXT"
                 DebugRender:
                     enabled: true
                 UITextComponent:
@@ -766,8 +767,8 @@ Controls:
             SizePolicy:
                 horizontalPolicy: "Ignore"
                 horizontalValue: 50.000000
-            Action:
-                action: "STOP"
+            UIInputEventComponent:
+                onTouchDown: "STOP"
             DebugRender:
                 enabled: true
             UITextComponent:

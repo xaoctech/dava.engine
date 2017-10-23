@@ -1,21 +1,13 @@
-#include "UIInputMap.h"
+#include "UI/Events/UIInputMap.h"
 
 namespace DAVA
 {
-UIInputMap::UIInputMap()
+void UIInputMap::BindEvent(const KeyboardShortcut& shortcut, const FastName& event)
 {
+    inputMap[shortcut] = event;
 }
 
-UIInputMap::~UIInputMap()
-{
-}
-
-void UIInputMap::BindAction(const KeyboardShortcut& shortcut, const FastName& action)
-{
-    inputMap[shortcut] = action;
-}
-
-FastName UIInputMap::FindAction(const KeyboardShortcut& shortcut) const
+FastName UIInputMap::FindEvent(const KeyboardShortcut& shortcut) const
 {
     auto it = inputMap.find(shortcut);
     if (it != inputMap.end())
@@ -35,12 +27,12 @@ void UIInputMap::RemoveShortcut(const KeyboardShortcut& shortcut)
     }
 }
 
-void UIInputMap::RemoveAction(const FastName& action)
+void UIInputMap::RemoveEvent(const FastName& event)
 {
     auto it = inputMap.begin();
     while (it != inputMap.end())
     {
-        if (it->second == action)
+        if (it->second == event)
         {
             it = inputMap.erase(it);
         }

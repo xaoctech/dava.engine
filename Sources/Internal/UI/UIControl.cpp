@@ -1218,18 +1218,6 @@ bool UIControl::SystemProcessInput(UIEvent* currentInput)
 #endif
                         PerformEventWithData(event, currentInput, currentInput);
 
-                        if (isPointInside)
-                        {
-                            if (scene)
-                            {
-                                scene->GetInputSystem()->PerformActionOnControl(this);
-                            }
-                            else
-                            {
-                                GetEngineContext()->uiControlSystem->GetInputSystem()->PerformActionOnControl(this);
-                            }
-                        }
-
                         AddState(STATE_NORMAL);
                         RemoveState(STATE_PRESSED_INSIDE | STATE_PRESSED_OUTSIDE);
                         if (scene)

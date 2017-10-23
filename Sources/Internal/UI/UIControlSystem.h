@@ -32,6 +32,7 @@ class UIScreenshoter;
 class UISoundSystem;
 class UIUpdateSystem;
 class UIRenderSystem;
+class UIEventsSystem;
 class UIScreenTransition;
 class UIPopup;
 
@@ -311,6 +312,7 @@ public:
     UIUpdateSystem* GetUpdateSystem() const;
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIRenderSystem* GetRenderSystem() const;
+    UIEventsSystem* GetEventsSystem() const;
 
     void SetDoubleTapSettings(float32 time, float32 inch);
 
@@ -344,6 +346,7 @@ private:
     UISoundSystem* soundSystem = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
     UIRenderSystem* renderSystem = nullptr;
+    UIEventsSystem* eventsSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 

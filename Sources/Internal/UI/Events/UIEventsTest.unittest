@@ -1,0 +1,147 @@
+#include <Base/BaseTypes.h>
+#include <Base/RefPtr.h>
+#include <Base/RefPtrUtils.h>
+#include <UI/DefaultUIPackageBuilder.h>
+#include <UI/UIPackageLoader.h>
+#include <UI/UIControlSystem.h>
+#include <UI/UIScreen.h>
+#include <UI/UIStaticText.h>
+#include <UI/UITextField.h>
+#include <UI/Text/UITextComponent.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
+
+#include <UI/Events/UIEventsSystem.h>
+#include <UI/Events/UIEventBindingComponent.h>
+#include <UI/Events/UIInputEventComponent.h>
+#include <UI/Events/UIShortcutEventComponent.h>
+#include <UI/Events/UIEventsSingleComponent.h>
+
+#include "UnitTests/UnitTests.h"
+
+using namespace DAVA;
+
+namespace UIEventsTestDetails
+{
+const FastName COMMAND_SET_TEXT_NAME("SetText");
+const FastName COMMAND_DISPATCH_EVENT_NAME("DispatchEvent");
+const FastName COMMAND_BROADCAST_EVENT_NAME("BroadcastEvent");
+}
+
+DAVA_TESTCLASS (UIEventsTest)
+{
+    BEGIN_FILES_COVERED_BY_TESTS()
+    FIND_FILES_IN_TARGET(DavaFramework)
+    DECLARE_COVERED_FILES("UIEventsSystem.cpp")
+    DECLARE_COVERED_FILES("UIEventsSingleComponent.cpp")
+    DECLARE_COVERED_FILES("UIEventBindingComponent.cpp")
+    // DECLARE_COVERED_FILES("UIInputEventComponent.cpp")
+    // DECLARE_COVERED_FILES("UIMovieEventComponent.cpp")
+    // DECLARE_COVERED_FILES("UIShortcutEventComponent.cpp")
+    END_FILES_COVERED_BY_TESTS();
+
+    RefPtr<UIScreen> screen;
+    RefPtr<UIStaticText> text;
+    RefPtr<UIStaticText> childText;
+
+    UIEventsTest()
+    {
+        using namespace UIEventsTestDetails;
+
+        screen = MakeRef<UIScreen>();
+        GetEngineContext()->uiControlSystem->SetScreen(screen.Get());
+        GetEngineContext()->uiControlSystem->Update();
+
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+
+        sys->RegisterCommand(COMMAND_SET_TEXT_NAME, [sys](UIControl* source, const UICommandMap::CommandParams& params) {
+            if (source)
+            {
+                UIControl* targetControl = sys->GetTargetEntity(params.targetPath, source);
+                UIStaticText* text = CastIfEqual<UIStaticText*>(targetControl);
+                if (text)
+                {
+                    text->SetUtf8Text(params.argument);
+                }
+            }
+        });
+        sys->RegisterCommand(COMMAND_DISPATCH_EVENT_NAME, [sys](UIControl* source, const UICommandMap::CommandParams& params) {
+            UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
+            eventsSingle->DispatchEvent(source, FastName(params.argument));
+        });
+        sys->RegisterCommand(COMMAND_BROADCAST_EVENT_NAME, [sys](UIControl* source, const UICommandMap::CommandParams& params) {
+            UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
+            eventsSingle->BroadcastEvent(source, FastName(params.argument));
+        });
+    }
+
+    ~UIEventsTest()
+    {
+        GetEngineContext()->uiControlSystem->Reset();
+    }
+
+    void SetUp(const String& testName) override
+    {
+        text = MakeRef<UIStaticText>();
+        childText = MakeRef<UIStaticText>();
+        screen->AddControl(text.Get());
+        text->AddControl(childText.Get());
+        text->SetName("text");
+        childText->SetName("childText");
+    }
+
+    void TearDown(const String& testName) override
+    {
+        screen->RemoveControl(text.Get());
+        text = nullptr;
+        childText = nullptr;
+    }
+
+    DAVA_TEST (CornerCasesTest)
+    {
+        using namespace UIEventsTestDetails;
+
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+        UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
+
+        bool dispatchTest = false;
+        bool broadcastTest = false;
+
+        auto actions = text->GetOrCreateComponent<UIEventBindingComponent>();
+
+        actions->BindAction(FastName("DISPATCH_TEST"), [&]() {
+            dispatchTest = true;
+        });
+
+        UIEventBindingComponent::CommandWithParams cmd;
+        cmd.commandName = COMMAND_SET_TEXT_NAME;
+        cmd.params.targetPath = FastName("childText");
+        cmd.params.argument = "OK";
+        actions->BindCommand(FastName("COMMAND_TEST"), cmd);
+
+        auto actionsChild = text->GetOrCreateComponent<UIEventBindingComponent>();
+        actionsChild->BindAction(FastName("BROADCAST_TEST"), [&]() {
+            broadcastTest = true;
+        });
+
+        TEST_VERIFY(!dispatchTest);
+        TEST_VERIFY(!broadcastTest);
+
+        eventsSingle->DispatchEvent(childText.Get(), FastName("DISPATCH_TEST"));
+        sys->Process(0.f);
+
+        TEST_VERIFY(dispatchTest);
+        TEST_VERIFY(!broadcastTest);
+
+        eventsSingle->DispatchEvent(text.Get(), FastName("BROADCAST_TEST"));
+        sys->Process(0.f);
+
+        TEST_VERIFY(dispatchTest);
+        TEST_VERIFY(broadcastTest);
+
+        TEST_VERIFY(childText->GetUtf8Text() == "");
+        eventsSingle->DispatchEvent(childText.Get(), FastName("COMMAND_TEST"));
+        sys->Process(0.f);
+        TEST_VERIFY(childText->GetUtf8Text() == "OK");
+    }
+};

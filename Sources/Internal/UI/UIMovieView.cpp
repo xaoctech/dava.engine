@@ -27,6 +27,8 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/Update/UIUpdateComponent.h"
+#include "UI/Events/UIMovieEventComponent.h"
+#include "UI/Events/UIEventsSingleComponent.h"
 
 namespace DAVA
 {
@@ -35,6 +37,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
     ReflectionRegistrator<UIMovieView>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieView* o) { o->Release(); })
+    .Method<void (UIMovieView::*)(const FilePath& moviePath)>("openMovie", &UIMovieView::OpenMovie)
+    .Method("play", &UIMovieView::Play)
+    .Method("stop", &UIMovieView::Stop)
+    .Method("pause", &UIMovieView::Pause)
+    .Method("resume", &UIMovieView::Resume)
+    .Method("isPlaying", &UIMovieView::IsPlaying)
     .End();
 }
 
@@ -50,6 +58,11 @@ UIMovieView::UIMovieView(const Rect& rect)
 UIMovieView::~UIMovieView()
 {
     movieViewControl->OwnerIsDying();
+}
+
+void UIMovieView::OpenMovie(const FilePath& moviePath)
+{
+    movieViewControl->OpenMovie(moviePath, OpenMovieParams());
 }
 
 void UIMovieView::OpenMovie(const FilePath& moviePath, const OpenMovieParams& params)
@@ -121,6 +134,28 @@ void UIMovieView::Update(float32 timeElapsed)
 {
     UIControl::Update(timeElapsed);
     movieViewControl->Update();
+
+    bool playing = IsPlaying();
+    if (lastPlayingState != playing)
+    {
+        UIMovieEventComponent* events = GetComponent<UIMovieEventComponent>();
+        if (events)
+        {
+            FastName event = lastPlayingState ? events->GetStopEvent() : events->GetStartEvent();
+            if (event.IsValid())
+            {
+                if (GetScene())
+                {
+                    UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+                    if (eventsSingle)
+                    {
+                        eventsSingle->DispatchEvent(this, event);
+                    }
+                }
+            }
+        }
+        lastPlayingState = playing;
+    }
 }
 
 void UIMovieView::OnVisible()

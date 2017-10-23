@@ -1,0 +1,103 @@
+#include "UI/Events/UIShortcutEventComponent.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "UI/UIControl.h"
+#include "UI/UIControlHelpers.h"
+#include "Utils/StringUtils.h"
+#include "Utils/Utils.h"
+
+namespace DAVA
+{
+DAVA_VIRTUAL_REFLECTION_IMPL(UIShortcutEventComponent)
+{
+    ReflectionRegistrator<UIShortcutEventComponent>::Begin()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIShortcutEventComponent* o) { o->Release(); })
+    .Field("shortcuts", &UIShortcutEventComponent::GetShortcutsAsString, &UIShortcutEventComponent::SetShortcutsFromString)
+    .End();
+}
+
+UIShortcutEventComponent::UIShortcutEventComponent()
+{
+}
+
+UIShortcutEventComponent::UIShortcutEventComponent(const UIShortcutEventComponent& src)
+{
+    // TODO
+    SetShortcutsFromString(src.GetShortcutsAsString());
+}
+
+UIShortcutEventComponent::~UIShortcutEventComponent()
+{
+}
+
+UIShortcutEventComponent* UIShortcutEventComponent::Clone() const
+{
+    return new UIShortcutEventComponent(*this);
+}
+
+UIInputMap& UIShortcutEventComponent::GetInputMap()
+{
+    return inputMap;
+}
+
+void UIShortcutEventComponent::BindShortcut(const KeyboardShortcut& shortcut, const FastName& eventName)
+{
+    inputMap.BindEvent(shortcut, eventName);
+}
+
+String UIShortcutEventComponent::GetShortcutsAsString() const
+{
+    StringStream stream;
+    bool first = true;
+    for (const KeyBinding& action : eventShortcuts)
+    {
+        if (first)
+        {
+            first = false;
+        }
+        else
+        {
+            stream << "; ";
+        }
+
+        if (action.shortcut1.GetKey() != eInputElements::NONE)
+        {
+            stream << action.eventName.c_str() << ", " << action.shortcut1.ToString();
+        }
+        else
+        {
+            stream << action.eventName.c_str();
+        }
+    }
+    return stream.str();
+}
+
+void UIShortcutEventComponent::SetShortcutsFromString(const String& value)
+{
+    eventShortcuts.clear();
+    inputMap.Clear();
+    Vector<String> actionsStr;
+    Split(value, ";", actionsStr);
+    for (const String& actionStr : actionsStr)
+    {
+        Vector<String> str;
+        Split(actionStr, ",", str);
+        if (str.size() > 0 && !str[0].empty())
+        {
+            FastName eventName(StringUtils::Trim(str[0]));
+            KeyboardShortcut shortcut;
+
+            if (str.size() > 1)
+            {
+                shortcut = KeyboardShortcut(StringUtils::Trim(str[1]));
+            }
+
+            eventShortcuts.push_back(KeyBinding(eventName, shortcut));
+            if (shortcut.GetKey() != eInputElements::NONE)
+            {
+                inputMap.BindEvent(shortcut, eventName);
+            }
+        }
+    }
+}
+}

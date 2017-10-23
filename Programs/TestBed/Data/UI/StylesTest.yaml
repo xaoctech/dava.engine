@@ -23,8 +23,9 @@ Controls:
         SizePolicy:
             horizontalPolicy: "PercentOfParent"
             verticalPolicy: "PercentOfParent"
-        ActionBinding:
-            actions: "ADD; REMOVE; MORE"
+        UIShortcutEventComponent:
+            shortcuts: "ADD; REMOVE; MORE"
+        Focus: {}
     children:
     -   class: "UIControl"
         name: "TopPanel"
@@ -64,8 +65,8 @@ Controls:
                 text: "Add style"
                 font: "Font_18"
                 components:
-                    Action:
-                        action: "ADD"
+                    UIInputEventComponent:
+                        onTouchUpInside: "ADD"
             -   class: "UIStaticText"
                 name: "RemoveStyleButton"
                 position: [140.000000, 0.000000]
@@ -76,8 +77,8 @@ Controls:
                 text: "Remove style"
                 font: "Font_18"
                 components:
-                    Action:
-                        action: "REMOVE"
+                    UIInputEventComponent:
+                        onTouchUpInside: "REMOVE"
             -   class: "UIStaticText"
                 name: "MoreButton"
                 position: [290.000000, 0.000000]
@@ -88,8 +89,8 @@ Controls:
                 text: "More controls"
                 font: "Font_18"
                 components:
-                    Action:
-                        action: "MORE"
+                    UIInputEventComponent:
+                        onTouchUpInside: "MORE"
             -   class: "UIStaticText"
                 name: "StatusText"
                 position: [440.000000, 0.000000]

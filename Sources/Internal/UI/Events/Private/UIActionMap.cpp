@@ -1,16 +1,8 @@
-#include "UIActionMap.h"
+#include "UI/Events/UIActionMap.h"
 
 namespace DAVA
 {
-UIActionMap::UIActionMap()
-{
-}
-
-UIActionMap::~UIActionMap()
-{
-}
-
-void UIActionMap::Put(const FastName& name, const Action& action)
+void UIActionMap::Put(const FastName& name, const SimpleAction& action)
 {
     actions[name] = action;
 }

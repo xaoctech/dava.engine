@@ -2,7 +2,7 @@
 #include "Infrastructure/TestBed.h"
 #include <Time/SystemTimer.h>
 #include <UI/UIPackageLoader.h>
-#include <UI/Input/UIActionBindingComponent.h>
+#include <UI/Events/UIEventBindingComponent.h>
 #include "UI/Update/UIUpdateComponent.h"
 #include <Utils/StringFormat.h>
 
@@ -24,18 +24,18 @@ void UIStylesTest::LoadResources()
     DefaultUIPackageBuilder pkgBuilder;
     UIPackageLoader().LoadPackage("~res:/UI/StylesTest.yaml", &pkgBuilder);
     UIControl* main = pkgBuilder.GetPackage()->GetControl("Window");
-    UIActionBindingComponent* actions = main->GetOrCreateComponent<UIActionBindingComponent>();
+    auto actions = main->GetOrCreateComponent<UIEventBindingComponent>();
     if (actions)
     {
-        actions->GetActionMap().Put(FastName("ADD"), [&]() {
+        actions->BindAction(FastName("ADD"), [&]() {
             container->RemoveClass(STYLE_OFF);
             container->AddClass(STYLE_ON);
         });
-        actions->GetActionMap().Put(FastName("REMOVE"), [&]() {
+        actions->BindAction(FastName("REMOVE"), [&]() {
             container->RemoveClass(STYLE_ON);
             container->AddClass(STYLE_OFF);
         });
-        actions->GetActionMap().Put(FastName("MORE"), [&]() {
+        actions->BindAction(FastName("MORE"), [&]() {
             for (uint32 i = 0; i < 1000; ++i)
             {
                 RefPtr<UIControl> c(proto->Clone());

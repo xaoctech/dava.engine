@@ -6,8 +6,9 @@ Controls:
     size: [479.000000, 457.000000]
     noInput: true
     components:
-        ActionBinding:
-            actions: "ASSERT_ALWAYS, F1; ASSERT, F2; DELAYED_ASSERT, F3"
+        UIShortcutEventComponent:
+            shortcuts: "ASSERT_ALWAYS, F1; ASSERT, F2; DELAYED_ASSERT, F3"
+        Focus: {}
     children:
     -   class: "UIStaticText"
         name: ""
@@ -23,8 +24,8 @@ Controls:
                 leftAnchor: 20.000000
                 rightAnchorEnabled: true
                 rightAnchor: 20.000000
-            Action:
-                action: "ASSERT_ALWAYS"
+            UIInputEventComponent:
+                onTouchUpInside: "ASSERT_ALWAYS"
     -   class: "UIStaticText"
         name: ""
         position: [20.000000, 57.000000]
@@ -39,8 +40,8 @@ Controls:
                 leftAnchor: 20.000000
                 rightAnchorEnabled: true
                 rightAnchor: 20.000000
-            Action:
-                action: "ASSERT"
+            UIInputEventComponent:
+                onTouchUpInside: "ASSERT"
     -   class: "UIStaticText"
         name: ""
         position: [20.000000, 94.000000]
@@ -55,8 +56,8 @@ Controls:
                 leftAnchor: 20.000000
                 rightAnchorEnabled: true
                 rightAnchor: 60.000000
-            Action:
-                action: "DELAYED_ASSERT"
+            UIInputEventComponent:
+                onTouchUpInside: "DELAYED_ASSERT"
     -   class: "UIStaticText"
         name: "Countdown"
         position: [427.000000, 94.000000]
@@ -81,8 +82,8 @@ Controls:
                 leftAnchor: 20.000000
                 rightAnchorEnabled: true
                 rightAnchor: 60.000000
-            Action:
-                action: "MSGBOX_MAINTHREAD"
+            UIInputEventComponent:
+                onTouchUpInside: "MSGBOX_MAINTHREAD"
     -   class: "UIStaticText"
         name: "msgbox_uithread"
         position: [20.000000, 168.000000]
@@ -97,8 +98,8 @@ Controls:
                 leftAnchor: 20.000000
                 rightAnchorEnabled: true
                 rightAnchor: 60.000000
-            Action:
-                action: "MSGBOX_UITHREAD"
+            UIInputEventComponent:
+                onTouchUpInside: "MSGBOX_UITHREAD"
     -   class: "UIStaticText"
         name: "msgbox_otherthreads"
         position: [20.000000, 205.000000]
@@ -113,5 +114,5 @@ Controls:
                 leftAnchor: 20.000000
                 rightAnchorEnabled: true
                 rightAnchor: 60.000000
-            Action:
-                action: "MSGBOX_OTHERTHREADS"
+            UIInputEventComponent:
+                onTouchUpInside: "MSGBOX_OTHERTHREADS"

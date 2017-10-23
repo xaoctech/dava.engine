@@ -6,12 +6,11 @@
 #include "UI/UIEvent.h"
 #include "UI/UIScreen.h"
 
+#include "UI/Events/UIEventsSingleComponent.h"
+#include "UI/Events/UIShortcutEventComponent.h"
+#include "UI/Events/UIEventsSystem.h"
 #include "UI/Focus/UIFocusSystem.h"
 #include "UI/Input/UIModalInputComponent.h"
-#include "UI/Input/UIActionBindingComponent.h"
-#include "UI/Input/UIActionComponent.h"
-
-#include "Input/InputSystem.h"
 
 #include "Engine/Engine.h"
 
@@ -31,16 +30,6 @@ const FastName UIInputSystem::ACTION_ESCAPE("Escape");
 UIInputSystem::UIInputSystem()
 {
     focusSystem = new UIFocusSystem();
-
-    BindGlobalAction(ACTION_FOCUS_LEFT, MakeFunction(this, &UIInputSystem::MoveFocusLeft));
-    BindGlobalAction(ACTION_FOCUS_RIGHT, MakeFunction(this, &UIInputSystem::MoveFocusRight));
-    BindGlobalAction(ACTION_FOCUS_UP, MakeFunction(this, &UIInputSystem::MoveFocusUp));
-    BindGlobalAction(ACTION_FOCUS_DOWN, MakeFunction(this, &UIInputSystem::MoveFocusDown));
-
-    BindGlobalAction(ACTION_FOCUS_NEXT, MakeFunction(this, &UIInputSystem::MoveFocusForward));
-    BindGlobalAction(ACTION_FOCUS_PREV, MakeFunction(this, &UIInputSystem::MoveFocusBackward));
-
-    BindGlobalAction(ACTION_PERFORM, MakeFunction(this, &UIInputSystem::PerformActionOnFocusedControl));
 }
 
 UIInputSystem::~UIInputSystem()
@@ -258,19 +247,14 @@ UIControl* UIInputSystem::GetHoveredControl() const
     return hovered;
 }
 
+UIControl* UIInputSystem::GetModalControl() const
+{
+    return modalControl.Get();
+}
+
 UIFocusSystem* UIInputSystem::GetFocusSystem() const
 {
     return focusSystem;
-}
-
-void UIInputSystem::BindGlobalShortcut(const KeyboardShortcut& shortcut, const FastName& actionName)
-{
-    globalInputMap.BindAction(shortcut, actionName);
-}
-
-void UIInputSystem::BindGlobalAction(const FastName& actionName, const UIActionMap::Action& action)
-{
-    globalActions.Put(actionName, action);
 }
 
 void UIInputSystem::MoveFocusLeft()
@@ -301,34 +285,6 @@ void UIInputSystem::MoveFocusForward()
 void UIInputSystem::MoveFocusBackward()
 {
     focusSystem->MoveFocus(UITabOrderComponent::Direction::BACKWARD, true);
-}
-
-void UIInputSystem::PerformActionOnControl(UIControl* control)
-{
-    if (control != nullptr)
-    {
-        UIActionComponent* actionComponent = control->GetComponent<UIActionComponent>();
-        if (actionComponent != nullptr && actionComponent->GetAction().IsValid())
-        {
-            UIControl* c = control;
-            bool processed = false;
-            while (!processed && c != nullptr)
-            {
-                UIActionBindingComponent* actionBindingComponent = c->GetComponent<UIActionBindingComponent>();
-                if (actionBindingComponent)
-                {
-                    processed = actionBindingComponent->GetActionMap().Perform(actionComponent->GetAction());
-                }
-
-                c = (c == modalControl.Get()) ? nullptr : c->GetParent();
-            }
-        }
-    }
-}
-
-void UIInputSystem::PerformActionOnFocusedControl()
-{
-    PerformActionOnControl(focusSystem->GetFocusedControl());
 }
 
 bool UIInputSystem::HandleTouchEvent(UIEvent* event)
@@ -429,13 +385,20 @@ bool UIInputSystem::HandleKeyEvent(UIEvent* event)
 
             if (phase == UIEvent::Phase::KEY_DOWN)
             {
-                UIActionBindingComponent* actionBindingComponent = current->GetComponent<UIActionBindingComponent>();
-                if (actionBindingComponent)
+                if (c != nullptr)
                 {
-                    FastName action = actionBindingComponent->GetInputMap().FindAction(shortcut);
-                    if (action.IsValid() && actionBindingComponent->GetActionMap().Perform(action))
+                    UIShortcutEventComponent* shortcutEvents = c->GetComponent<UIShortcutEventComponent>();
+                    if (shortcutEvents != nullptr)
                     {
-                        break;
+                        FastName event = shortcutEvents->GetInputMap().FindEvent(shortcut);
+                        UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+                        if (eventsSingle && event.IsValid())
+                        {
+                            if (eventsSingle->DispatchEvent(c, event))
+                            {
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -451,11 +414,7 @@ bool UIInputSystem::HandleKeyEvent(UIEvent* event)
 
     if (phase == UIEvent::Phase::KEY_DOWN || phase == UIEvent::Phase::KEY_DOWN_REPEAT)
     {
-        FastName action = globalInputMap.FindAction(shortcut);
-        if (action.IsValid())
-        {
-            globalActions.Perform(action);
-        }
+        GetScene()->GetEventsSystem()->PerformGlobalShortcut(shortcut);
     }
 
     return processed;

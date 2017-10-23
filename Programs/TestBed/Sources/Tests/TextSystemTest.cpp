@@ -7,7 +7,7 @@
 #include <UI/Update/UIUpdateComponent.h>
 #include <UI/Text/UITextComponent.h>
 #include <UI/Text/UITextSystem.h>
-#include <UI/Input/UIActionBindingComponent.h>
+#include <UI/Events/UIEventBindingComponent.h>
 
 using namespace DAVA;
 
@@ -74,18 +74,18 @@ void TextSystemTest::LoadResources()
     statusText = static_cast<UIStaticText*>(dialog->FindByName("StatusText"));
     holderControl = static_cast<UIStaticText*>(dialog->FindByName("Holder"));
 
-    UIActionMap& amap = dialog->GetOrCreateComponent<UIActionBindingComponent>()->GetActionMap();
-    amap.Put(FastName("START"), [&]() {
+    auto actions = dialog->GetOrCreateComponent<UIEventBindingComponent>();
+    actions->BindAction(FastName("START"), [&]() {
         state = PLAYING;
         ChangeCurrentTest(testIdx);
     });
-    amap.Put(FastName("STOP"), [&]() {
+    actions->BindAction(FastName("STOP"), [&]() {
         state = STOPPED;
     });
-    amap.Put(FastName("NEXT"), [&]() {
+    actions->BindAction(FastName("NEXT"), [&]() {
         ChangeCurrentTest(testIdx + 1);
     });
-    amap.Put(FastName("PREV"), [&]() {
+    actions->BindAction(FastName("PREV"), [&]() {
         ChangeCurrentTest(testIdx - 1);
     });
 
