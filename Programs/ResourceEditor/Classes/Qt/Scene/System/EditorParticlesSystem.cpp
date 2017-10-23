@@ -22,9 +22,7 @@
 namespace EditorParticlesSystemDetails
 {
 template <typename T>
-inline const DAVA::Vector<T*>& GetForceVector(T* force, DAVA::ParticleLayer* layer)
-{
-}
+inline const DAVA::Vector<T*>& GetForceVector(T* force, DAVA::ParticleLayer* layer);
 
 template <>
 inline const DAVA::Vector<DAVA::ParticleForce*>& GetForceVector(DAVA::ParticleForce* force, DAVA::ParticleLayer* layer)

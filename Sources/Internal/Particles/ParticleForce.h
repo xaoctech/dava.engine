@@ -43,6 +43,7 @@ public:
     RefPtr<PropertyLine<float32>> turbulenceLine;
 
     Vector3 position;
+    Vector3 worldPosition;
     Vector3 rotation;
     Vector3 direction{ 0.0f, 0.0f, 1.0f };
     Vector3 forcePower{ 1.0f, 1.0f, 1.0f };
@@ -74,6 +75,7 @@ public:
     bool randomizeReflectionForce = false;
     bool worldAlign = true;
 
+public:
     ParticleForce(ParticleLayer* parent);
     ParticleForce* Clone();
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
@@ -85,12 +87,8 @@ public:
     float32 GetSquareRadius() const;
     void SetShape(eShape shape);
     eShape GetShape() const;
-
     bool IsForceCanAlterPosition() const;
 
-    Vector3 worldPosition;
-
-public:
     DAVA_VIRTUAL_REFLECTION(ParticleForce, BaseObject);
 
 private:
