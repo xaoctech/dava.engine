@@ -15,6 +15,7 @@ Controls:
     -   class: "UIControl"
         name: "Left"
         size: [0.000000, 263.000000]
+        noInput: true
         components:
             SizePolicy:
                 horizontalPolicy: "Formula"
@@ -23,6 +24,7 @@ Controls:
     -   class: "UIControl"
         name: "Center"
         size: [391.000000, 263.000000]
+        noInput: true
         components:
             LinearLayout:
                 orientation: "TopDown"
@@ -33,6 +35,7 @@ Controls:
         -   class: "UIControl"
             name: "Top"
             size: [391.000000, 0.000000]
+            noInput: true
             components:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
@@ -129,6 +132,7 @@ Controls:
                 -   class: "UIControl"
                     name: "InfoPanel"
                     size: [351.000000, 158.000000]
+                    noInput: true
                     components:
                         LinearLayout:
                             orientation: "TopDown"
@@ -143,6 +147,7 @@ Controls:
                         name: "InputPanel"
                         position: [0.000000, 0.000000]
                         size: [351.000000, 32.000000]
+                        noInput: true
                         components:
                             LinearLayout: {}
                             SizePolicy:
@@ -175,6 +180,7 @@ Controls:
                     -   class: "UIControl"
                         name: "InputPanel"
                         size: [351.000000, 32.000000]
+                        noInput: true
                         components:
                             LinearLayout: {}
                             SizePolicy:
@@ -208,6 +214,7 @@ Controls:
                     -   class: "UIControl"
                         name: "Line"
                         size: [351.000000, 32.000000]
+                        noInput: true
                         components:
                             LinearLayout: {}
                             SizePolicy:
@@ -237,6 +244,7 @@ Controls:
                     -   class: "UIControl"
                         name: "Line"
                         size: [351.000000, 32.000000]
+                        noInput: true
                         components:
                             LinearLayout: {}
                             SizePolicy:
@@ -266,6 +274,7 @@ Controls:
         -   class: "UIControl"
             name: "Bottom"
             size: [391.000000, 0.000000]
+            noInput: true
             components:
                 SizePolicy:
                     horizontalPolicy: "PercentOfParent"
@@ -274,6 +283,7 @@ Controls:
     -   class: "UIControl"
         name: "Right"
         size: [0.000000, 263.000000]
+        noInput: true
         components:
             SizePolicy:
                 horizontalPolicy: "Formula"
