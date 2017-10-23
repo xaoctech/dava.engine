@@ -16,12 +16,11 @@ class SkeletonComponent;
 class YamlNode;
 class Motion;
 class MotionState;
-class MotionStateSequence;
 struct MotionTransitionInfo;
 
 class Motion
 {
-    Motion();
+    Motion() = default;
 
 public:
     enum eMotionBlend
@@ -43,8 +42,7 @@ public:
     const SkeletonPose& GetCurrentSkeletonPose() const;
     const Vector3& GetCurrentRootOffsetDelta() const;
 
-    bool RequestState(const FastName& stateID);
-    const FastName& GetRequestedState() const;
+    void TriggerEvent(const FastName& trigger); //TODO: *Skinning* make adequate naming
 
     void Update(float32 dTime);
 
@@ -67,32 +65,19 @@ protected:
     eMotionBlend blendMode = BLEND_COUNT;
 
     Vector<MotionState> states;
-    UnorderedMap<FastName, MotionState*> statesMap;
     Vector<MotionTransitionInfo*> transitions;
 
     Vector<FastName> statesIDs;
     Vector<FastName> parameterIDs;
 
-    MotionStateSequence* primaryStateSequence = nullptr;
-    MotionStateSequence* secondaryStateSequence = nullptr;
+    MotionTransition stateTransition; //transition from 'current' to 'next' state
+    MotionState* currentState = nullptr;
+    MotionState* nextState = nullptr;
     MotionState* pendingState = nullptr;
-
-    MotionTransition currentTransition; //use for transition between main and second
-    bool transitionIsActive = false;
 
     Vector3 currentRootOffsetDelta;
     SkeletonPose currentPose;
     Vector<std::pair<FastName, FastName>> endedPhases; /*[state-id, phase-id]*/
-
-    //////////////////////////////////////////////////////////////////////////
-    //temporary for debug
-    void SetStateID(const FastName& id)
-    {
-        RequestState(id);
-    }
-    //////////////////////////////////////////////////////////////////////////
-
-    friend class MotionStateSequence;
 
     DAVA_REFLECTION(Motion);
 };

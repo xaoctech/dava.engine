@@ -287,6 +287,8 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                             if (syncPointNode->GetType() == YamlNode::TYPE_STRING)
                             {
                                 float32 syncPointTimestamp = Clamp(syncPointNode->AsFloat(), 0.f, 1.f);
+
+                                DVASSERT(syncPointTimestamp > EPSILON); //TODO: *Skinning* resolve that
                                 DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < syncPointTimestamp);
 
                                 animation.phaseEnds.push_back(syncPointTimestamp);

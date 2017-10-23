@@ -11,7 +11,6 @@
 namespace DAVA
 {
 class MotionState;
-class MotionStateSequence;
 class SkeletonPose;
 class YamlNode;
 
@@ -29,11 +28,12 @@ public:
 
         TYPE_COUNT
     };
+
     enum eSync : uint8
     {
         SYNC_IMMIDIATE,
         SYNC_WAIT_END,
-        SYNC_WAIT_PHASE_END,
+        SYNC_WAIT_MARKER,
 
         SYNC_COUNT
     };
@@ -42,11 +42,10 @@ public:
 
     eType type = TYPE_COUNT;
     eSync sync = SYNC_COUNT;
-
     Interpolation::Func func;
+
+    FastName markerToWait;
     float32 duration = 0.f;
-    FastName waitPhaseID;
-    MotionState* transitionState = nullptr;
     bool syncPhases = false;
 };
 
@@ -56,11 +55,9 @@ public:
     MotionTransition() = default;
 
     void Reset(const MotionTransitionInfo* transitionInfo, MotionState* srcState, MotionState* dstState);
-    void Reset(const MotionTransitionInfo* transitionInfo, MotionStateSequence* srcSequence, MotionStateSequence* dstSequence);
 
     void Update(float32 dTime);
-    void EvaluatePose(SkeletonPose* outPose) const;
-    void EvaluateRootOffset(Vector3* outOffset);
+    void Evaluate(SkeletonPose* outPose, Vector3* outOffset);
 
     bool IsComplete() const;
     bool IsStarted() const;
@@ -68,34 +65,30 @@ public:
     bool CanBeInterrupted(const MotionTransitionInfo* other, const MotionState* srcState, const MotionState* dstState) const;
     void Interrupt(const MotionTransitionInfo* other, MotionState* srcState, MotionState* dstState);
 
-    MotionState* GetDstState() const;
-    MotionState* GetSrcState() const;
-
 protected:
     const MotionTransitionInfo* transitionInfo = nullptr;
 
     MotionState* srcState = nullptr;
     MotionState* dstState = nullptr;
-    MotionStateSequence* srcSequence = nullptr;
-    MotionStateSequence* dstSequence = nullptr;
 
     SkeletonPose frozenPose;
     Vector3 frozenOffset;
     float32 transitionPhase = 0.f;
-    bool started = false;
+
     bool srcFrozen = false;
     bool inversed = false;
+    bool started = false;
 };
+
+inline bool MotionTransition::IsStarted() const
+{
+    return started;
+}
 
 inline bool MotionTransition::IsComplete() const
 {
     DVASSERT(transitionInfo != nullptr);
     return IsStarted() && ((transitionPhase >= 1.f) || (transitionInfo->duration < EPSILON) || (transitionInfo->type == MotionTransitionInfo::TYPE_REPLACE));
-}
-
-inline bool MotionTransition::IsStarted() const
-{
-    return started;
 }
 
 } //ns

@@ -28,31 +28,35 @@ public:
     void GetRootOffsetDelta(Vector3* offset) const;
     void SyncPhase(const MotionState* withOther);
 
+    const UnorderedSet<FastName>& GetReachedMarkers() const;
+    bool IsEndReached() const;
+
     const FastName& GetID() const;
     const Vector<FastName>& GetBlendTreeParameters() const;
-
-    //TODO: *Skinning* think about interface or usage ?
-    bool IsPhaseEnd() const;
-    bool IsAnimationEnd() const;
-    const FastName& GetLastPhaseName() const;
 
     void BindSkeleton(const SkeletonComponent* skeleton);
 
     bool BindParameter(const FastName& parameterID, const float32* param);
     void UnbindParameters();
 
+    void AddTransitionState(const FastName& trigger, MotionState* dstState);
+    MotionState* GetTransitionState(const FastName& trigger) const;
+
 protected:
     FastName id;
     BlendTree* blendTree = nullptr;
 
     Vector<const float32*> boundParams;
-    Vector<FastName> phaseNames;
+
+    Vector<FastName> markers;
+    UnorderedSet<FastName> reachedMarkers;
+    UnorderedMap<FastName, MotionState*> transitions;
 
     Vector3 rootOffset;
     uint32 animationCurrPhaseIndex = 0u;
     uint32 animationPrevPhaseIndex = 0u;
     float32 animationPhase = 0.f;
-    bool anyPhaseEnd = false;
+    bool animationEndReached = false;
 };
 
 inline const FastName& MotionState::GetID() const
@@ -60,19 +64,14 @@ inline const FastName& MotionState::GetID() const
     return id;
 }
 
-inline bool MotionState::IsPhaseEnd() const
+inline const UnorderedSet<FastName>& MotionState::GetReachedMarkers() const
 {
-    return anyPhaseEnd;
+    return reachedMarkers;
 }
 
-inline bool MotionState::IsAnimationEnd() const
+inline bool MotionState::IsEndReached() const
 {
-    return (anyPhaseEnd && animationCurrPhaseIndex == 0);
-}
-
-inline const FastName& MotionState::GetLastPhaseName() const
-{
-    return phaseNames[animationPrevPhaseIndex];
+    return animationEndReached;
 }
 
 } //ns

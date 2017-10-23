@@ -17,27 +17,34 @@ void MotionState::Reset()
     animationPrevPhaseIndex = 0;
     animationCurrPhaseIndex = 0;
     animationPhase = 0.f;
-    anyPhaseEnd = false;
 }
 
 void MotionState::Update(float32 dTime)
 {
+    reachedMarkers.clear();
+    animationEndReached = false;
+
     animationPrevPhaseIndex = animationCurrPhaseIndex;
-    anyPhaseEnd = false;
 
     float32 animationPhase0 = animationPhase;
     uint32 animationCurrPhaseIndex0 = animationCurrPhaseIndex;
 
     float32 duration = blendTree->EvaluatePhaseDuration(animationCurrPhaseIndex, boundParams);
     animationPhase += dTime / duration;
-    if (animationPhase >= 1.f) //TODO: *Skinning* fix phase calculation on change phaseIndex
+    if (animationPhase >= 1.f)
     {
-        animationPhase -= 1.f;
+        //animationPhase -= 1.f; //TODO: *Skinning* fix phase calculation on change phaseIndex
+
+        if (animationCurrPhaseIndex < uint32(markers.size()) && !markers[animationCurrPhaseIndex].empty())
+            reachedMarkers.insert(markers[animationCurrPhaseIndex]);
+
+        animationPhase = 0.f;
         ++animationCurrPhaseIndex;
         if (animationCurrPhaseIndex == uint32(blendTree->GetPhasesCount()))
+        {
             animationCurrPhaseIndex = 0;
-
-        anyPhaseEnd = true;
+            animationEndReached = true;
+        }
     }
 
     blendTree->EvaluateRootOffset(animationCurrPhaseIndex0, animationPhase0, animationCurrPhaseIndex, animationPhase, boundParams, &rootOffset);
@@ -97,6 +104,20 @@ void MotionState::UnbindParameters()
     std::fill(boundParams.begin(), boundParams.end(), nullptr);
 }
 
+void MotionState::AddTransitionState(const FastName& trigger, MotionState* dstState)
+{
+    transitions[trigger] = dstState;
+}
+
+MotionState* MotionState::GetTransitionState(const FastName& trigger) const
+{
+    auto found = transitions.find(trigger);
+    if (found != transitions.end())
+        return found->second;
+
+    return nullptr;
+}
+
 void MotionState::LoadFromYaml(const YamlNode* stateNode)
 {
     DVASSERT(stateNode);
@@ -115,26 +136,30 @@ void MotionState::LoadFromYaml(const YamlNode* stateNode)
 
         size_t paramCount = blendTree->GetParameterIDs().size();
         uint32 phasesCount = blendTree->GetPhasesCount();
+        DVASSERT(phasesCount != 0);
 
         boundParams.resize(paramCount);
-        phaseNames.resize(phasesCount);
+        markers.resize(phasesCount);
     }
 
-    const YamlNode* phasesNode = stateNode->Get("phases");
-    if (phasesNode != nullptr)
+    const YamlNode* markersNode = stateNode->Get("markers");
+    if (markersNode != nullptr)
     {
-        if (phasesNode->GetType() == YamlNode::TYPE_STRING)
+        if (markersNode->GetType() == YamlNode::TYPE_STRING)
         {
-            phaseNames[0] = phasesNode->AsFastName();
-        }
-        else if (phasesNode->GetType() == YamlNode::TYPE_ARRAY)
-        {
-            uint32 phasesCount = phasesNode->GetCount();
-            DVASSERT(phasesCount <= blendTree->GetPhasesCount());
-
-            for (uint32 sp = 0; sp < phasesCount; ++sp)
+            if (!markers.empty())
             {
-                phaseNames[sp] = phasesNode->Get(sp)->AsFastName();
+                markers[0] = markersNode->AsFastName();
+            }
+        }
+        else if (markersNode->GetType() == YamlNode::TYPE_ARRAY)
+        {
+            uint32 markersCount = Min(markersNode->GetCount(), uint32(markers.size()));
+            for (uint32 mi = 0; mi < markersCount; ++mi)
+            {
+                FastName marker = markersNode->Get(mi)->AsFastName();
+                if (!marker.empty() && marker != FastName(""))
+                    markers[mi] = marker;
             }
         }
     }
