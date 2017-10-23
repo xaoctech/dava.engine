@@ -81,6 +81,12 @@ void MotionState::BindSkeleton(const SkeletonComponent* skeleton)
         blendTree->BindSkeleton(skeleton);
 }
 
+void MotionState::BindRootNode(const FastName& rootNodeID)
+{
+    if (blendTree != nullptr)
+        blendTree->BindRootNode(rootNodeID);
+}
+
 bool MotionState::BindParameter(const FastName& parameterID, const float32* param)
 {
     bool success = false;

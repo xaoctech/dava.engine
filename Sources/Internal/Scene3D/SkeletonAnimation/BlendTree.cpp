@@ -31,6 +31,12 @@ void BlendTree::BindSkeleton(const SkeletonComponent* skeleton)
         a.skeletonAnimation->BindSkeleton(skeleton);
 }
 
+void BlendTree::BindRootNode(const FastName& rootNodeID)
+{
+    for (const Animation& a : animations)
+        a.skeletonAnimation->BindRootNode(rootNodeID);
+}
+
 void BlendTree::EvaluatePose(uint32 phaseIndex, float32 phase, const Vector<const float32*>& parameters, SkeletonPose* outPose) const
 {
     EvaluateRecursive(phaseIndex, phase, 0, 0.f, nodes.front(), parameters, outPose, nullptr, nullptr);

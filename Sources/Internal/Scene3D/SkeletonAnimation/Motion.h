@@ -5,6 +5,7 @@
 #include "Base/UnordererMap.h"
 #include "Reflection/Reflection.h"
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
+#include "Scene3D/Components/SkeletonComponent.h"
 
 #include "Private/MotionState.h"
 #include "Private/MotionTransition.h"
@@ -12,7 +13,6 @@
 namespace DAVA
 {
 class BlendTree;
-class SkeletonComponent;
 class YamlNode;
 class Motion;
 class MotionState;
@@ -76,6 +76,12 @@ protected:
     MotionState* pendingState = nullptr;
 
     Vector3 currentRootOffsetDelta;
+    Vector3 rootExtractionMask = Vector3(0.f, 0.f, 0.f);
+    Vector3 rootResetMask = Vector3(1.f, 1.f, 1.f);
+
+    FastName rootNodeID;
+    uint32 rootNodeJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+
     SkeletonPose currentPose;
     Vector<std::pair<FastName, FastName>> endedPhases; /*[state-id, phase-id]*/
 

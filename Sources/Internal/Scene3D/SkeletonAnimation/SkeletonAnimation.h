@@ -13,7 +13,9 @@ public:
     SkeletonAnimation(AnimationClip* animationClip);
     ~SkeletonAnimation();
 
-    void BindSkeleton(const SkeletonComponent* skeleton, SkeletonPose* outInitialPose = nullptr);
+    void BindSkeleton(const SkeletonComponent* skeleton);
+    void BindRootNode(const FastName& rootNodeID);
+
     void EvaluatePose(float32 localTime, SkeletonPose* outPose);
     void EvaluateRootPosition(float32 localTime, Vector3* offset);
 
@@ -26,7 +28,7 @@ protected:
     Vector<AnimationTrack::State> animationStates;
 
     const AnimationTrack* rootTrack = nullptr;
-    uint32 rootTrackStateIndex = 0;
+    AnimationTrack::State rootAnimationState;
 
     AnimationClip* animationClip = nullptr;
 

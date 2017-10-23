@@ -35,6 +35,7 @@ public:
     const Vector<FastName>& GetBlendTreeParameters() const;
 
     void BindSkeleton(const SkeletonComponent* skeleton);
+    void BindRootNode(const FastName& rootNodeID);
 
     bool BindParameter(const FastName& parameterID, const float32* param);
     void UnbindParameters();

@@ -16,7 +16,7 @@ SkeletonAnimation::~SkeletonAnimation()
     SafeRelease(animationClip);
 }
 
-void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, SkeletonPose* outInitialPose)
+void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton)
 {
     DVASSERT(skeleton);
     DVASSERT(animationClip);
@@ -37,22 +37,32 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton, Skeleton
             {
                 const AnimationTrack* track = animationClip->GetTrack(t);
 
-                if (j == 0)
-                {
-                    rootTrack = track;
-                    rootTrackStateIndex = uint32(animationStates.size());
-                }
-
                 animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
                 track->Evaluate(0.f, &animationStates.back());
-
-                if (outInitialPose)
-                    outInitialPose->SetTransform(j, ConstructJointTransform(track, &animationStates.back())); //node index in pose equal bound track index
 
                 boundTracks.emplace_back(std::make_pair(j, track));
 
                 maxJointIndex = Max(maxJointIndex, j);
             }
+        }
+    }
+}
+
+void SkeletonAnimation::BindRootNode(const FastName& rootNodeID)
+{
+    rootTrack = nullptr;
+    rootAnimationState = AnimationTrack::State();
+
+    uint32 trackCount = animationClip->GetTrackCount();
+    for (uint32 t = 0; t < trackCount; ++t)
+    {
+        if (strcmp(animationClip->GetTrackUID(t), rootNodeID.c_str()) == 0)
+        {
+            rootTrack = animationClip->GetTrack(t);
+
+            rootAnimationState = AnimationTrack::State(rootTrack->GetChannelsCount());
+            rootTrack->Evaluate(0.f, &rootAnimationState);
+            break;
         }
     }
 }
@@ -79,14 +89,14 @@ void SkeletonAnimation::EvaluateRootPosition(float32 localTime, Vector3* offset)
 {
     if (rootTrack != nullptr)
     {
-        rootTrack->Evaluate(localTime, &animationStates[rootTrackStateIndex]);
+        rootTrack->Evaluate(localTime, &rootAnimationState);
 
         for (uint32 c = 0; c < rootTrack->GetChannelsCount(); ++c)
         {
             AnimationTrack::eChannelTarget target = rootTrack->GetChannelTarget(c);
             if (target == AnimationTrack::CHANNEL_TARGET_POSITION)
             {
-                *offset = Vector3(rootTrack->GetStateValue(&animationStates[rootTrackStateIndex], c));
+                *offset = Vector3(rootTrack->GetStateValue(&rootAnimationState, c));
                 break;
             }
         }

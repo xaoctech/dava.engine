@@ -124,12 +124,14 @@ void Motion::Update(float32 dTime)
 
     //////////////////////////////////////////////////////////////////////////
 
-    //Temp for debug
-    currentRootOffsetDelta.z = 0.f;
+    currentRootOffsetDelta *= rootExtractionMask;
 
-    Vector3 rootPosition = currentPose.GetJointTransform(0).GetPosition();
-    rootPosition.x = rootPosition.y = 0.f;
-    currentPose.SetPosition(0, rootPosition);
+    if (rootNodeJointIndex != SkeletonComponent::INVALID_JOINT_INDEX)
+    {
+        Vector3 rootPosition = currentPose.GetJointTransform(rootNodeJointIndex).GetPosition();
+        rootPosition *= rootResetMask;
+        currentPose.SetPosition(rootNodeJointIndex, rootPosition);
+    }
 }
 
 void Motion::BindSkeleton(const SkeletonComponent* skeleton)
@@ -144,6 +146,8 @@ void Motion::BindSkeleton(const SkeletonComponent* skeleton)
         currentState->EvaluatePose(&currentPose);
         currentState->GetRootOffsetDelta(&currentRootOffsetDelta);
     }
+
+    rootNodeJointIndex = skeleton->GetJointIndex(rootNodeID);
 }
 
 bool Motion::BindParameter(const FastName& parameterID, const float32* param)
@@ -267,6 +271,50 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 
                     foundSrc->AddTransitionState(trigger, &(*foundDst));
                 }
+            }
+        }
+    }
+
+    const YamlNode* rootTransformNode = motionNode->Get("root-transform");
+    if (rootTransformNode != nullptr && rootTransformNode->GetType() == YamlNode::TYPE_MAP)
+    {
+        const YamlNode* rootIDNode = rootTransformNode->Get("root-node");
+        if (rootIDNode != nullptr && rootIDNode->GetType() == YamlNode::TYPE_STRING)
+        {
+            FastName rootID = rootIDNode->AsFastName();
+            for (MotionState& state : motion->states)
+                state.BindRootNode(rootID);
+
+            motion->rootNodeID = rootID;
+
+            const YamlNode* extractPositionNode = nullptr;
+            {
+                extractPositionNode = rootTransformNode->Get("extract-position-x");
+                if (extractPositionNode != nullptr && extractPositionNode->GetType() == YamlNode::TYPE_STRING && extractPositionNode->AsBool() == true)
+                    motion->rootExtractionMask.x = 1.f;
+
+                extractPositionNode = rootTransformNode->Get("extract-position-y");
+                if (extractPositionNode != nullptr && extractPositionNode->GetType() == YamlNode::TYPE_STRING && extractPositionNode->AsBool() == true)
+                    motion->rootExtractionMask.y = 1.f;
+
+                extractPositionNode = rootTransformNode->Get("extract-position-z");
+                if (extractPositionNode != nullptr && extractPositionNode->GetType() == YamlNode::TYPE_STRING && extractPositionNode->AsBool() == true)
+                    motion->rootExtractionMask.z = 1.f;
+            }
+
+            const YamlNode* resetPositionNode = nullptr;
+            {
+                resetPositionNode = rootTransformNode->Get("reset-position-x");
+                if (resetPositionNode != nullptr && resetPositionNode->GetType() == YamlNode::TYPE_STRING && resetPositionNode->AsBool() == true)
+                    motion->rootResetMask.x = 0.f;
+
+                resetPositionNode = rootTransformNode->Get("reset-position-y");
+                if (resetPositionNode != nullptr && resetPositionNode->GetType() == YamlNode::TYPE_STRING && resetPositionNode->AsBool() == true)
+                    motion->rootResetMask.y = 0.f;
+
+                resetPositionNode = rootTransformNode->Get("reset-position-z");
+                if (resetPositionNode != nullptr && resetPositionNode->GetType() == YamlNode::TYPE_STRING && resetPositionNode->AsBool() == true)
+                    motion->rootResetMask.z = 0.f;
             }
         }
     }
