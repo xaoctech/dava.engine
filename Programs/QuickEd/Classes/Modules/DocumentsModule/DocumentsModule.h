@@ -46,8 +46,6 @@ private:
     void OnUndo();
     void OnRedo();
 
-    void DoGroupSelection();
-
     //View
     void CreateViewActions();
     void CreateFindActions();

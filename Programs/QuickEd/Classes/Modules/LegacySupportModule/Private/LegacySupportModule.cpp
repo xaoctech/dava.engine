@@ -19,7 +19,7 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 
-#include <Tools/Version.h>
+#include <DavaTools/Version.h>
 #include <DAVAVersion.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)
@@ -176,37 +176,6 @@ void LegacySupportModule::InitMainWindow()
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
     ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
-
-    FieldDescriptor indexFieldDescr;
-    indexFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
-    indexFieldDescr.fieldName = FastName("backgroundColorIndex");
-
-    ActionPlacementInfo info(CreateMenuPoint(QList<QString>() << "View"
-                                                              << "menuGridColor"));
-
-    for (DAVA::uint32 currentIndex = 0; currentIndex < 3; ++currentIndex)
-    {
-        FieldDescriptor descr;
-        descr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
-        descr.fieldName = DAVA::FastName(Format("backgroundColor%u", currentIndex));
-
-        QtAction* action = new QtAction(accessor, "Background color 0");
-        action->SetStateUpdationFunction(QtAction::Icon, descr, [](const Any& v)
-                                         {
-                                             return v.Cast<QIcon>(QIcon());
-                                         });
-
-        action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
-                                         {
-                                             return v.Cast<DAVA::uint32>(-1) == currentIndex;
-                                         });
-        connections.AddConnection(action, &QAction::triggered, [this, accessor, currentIndex]()
-                                  {
-                                      PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
-                                      settings->backgroundColorIndex = currentIndex;
-                                  });
-        ui->AddAction(DAVA::TArc::mainWindowKey, info, action);
-    }
 }
 
 void LegacySupportModule::OnFindPrototypeInstances()

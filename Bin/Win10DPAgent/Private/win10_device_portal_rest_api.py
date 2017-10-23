@@ -4,9 +4,21 @@ from ssl import CERT_NONE
 from base64 import b64encode
 
 #pip
+try:
+    import requests
+    from websocket import WebSocketApp
+    from requests_toolbelt.multipart import MultipartEncoder, MultipartEncoderMonitor
+except ImportError:
+    import subprocess
+    print "IMPORT ERROR. Some of the required modules probably are not installed. Attempting to install them via pip."
+    if subprocess.call("python -m pip install requests requests_toolbelt websocket_client") != 0:
+        print "Installation failed. Check your imports, python & pip installation and network connection."
+        exit(3)
+
 import requests
 from websocket import WebSocketApp
 from requests_toolbelt.multipart import MultipartEncoder, MultipartEncoderMonitor
+
 
 URL = "127.0.0.1:10080" # USB connection as default one
 RQ_PROTO = "http://"

@@ -1,4 +1,4 @@
-#include "PhysicsDebugModule.h"
+#include <PhysicsDebug/PhysicsDebugModule.h>
 
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectionRegistrator.h>

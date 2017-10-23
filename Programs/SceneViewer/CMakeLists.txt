@@ -6,11 +6,11 @@ set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}
 include      ( CMake-common )
 
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
-find_package( NetworkHelpers  REQUIRED)
-find_package( ScenePerformanceTests  REQUIRED)
-find_package( LoggerService  REQUIRED)
-find_package( MemoryProfilerService  REQUIRED)
-find_package( DocDirSetup REQUIRED )
+find_dava_module( NetworkHelpers )
+find_dava_module( ScenePerformanceTests )
+find_dava_module( LoggerService )
+find_dava_module( MemoryProfilerService )
+find_dava_module( DocDirSetup )
 
 include_directories   ( "Sources" )
 
