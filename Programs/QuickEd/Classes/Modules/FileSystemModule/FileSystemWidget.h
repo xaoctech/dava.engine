@@ -32,6 +32,8 @@ public:
 
     DAVA::Signal<const QString&> openFile;
 
+    QTreeView* GetTreeView();
+
 private slots:
     void onDoubleClicked(const QModelIndex& index);
     void onNewFolder();
@@ -64,7 +66,6 @@ private:
     QString GetPathByCurrentPos(ePathType pathType);
 
     QFileSystemModel* model = nullptr;
-    QAction* collapseAllAction = nullptr;
     QAction* newFolderAction = nullptr;
     QAction* newFileAction = nullptr;
     QAction* deleteAction = nullptr;

@@ -129,7 +129,7 @@ void LibraryModule::CreateActions()
         MakeActionKeyBindable(action, info);
 
         QTreeView* libraryWidgetTreeView = libraryWidget->GetTreeView();
-        QObject::connect(action, &QAction::triggered, libraryWidget->GetTreeView(), &QTreeView::collapseAll);
+        QObject::connect(action, &QAction::triggered, libraryWidgetTreeView, &QTreeView::collapseAll);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<ProjectData>();
