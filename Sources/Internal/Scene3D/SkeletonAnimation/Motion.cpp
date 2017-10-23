@@ -20,7 +20,6 @@ DAVA_REFLECTION_IMPL(Motion)
 {
     ReflectionRegistrator<Motion>::Begin()
     .Field("name", &Motion::name)[M::ReadOnly()]
-    .Field("state", &Motion::GetCurrentState, &Motion::SetStateID)[M::DisplayName("Motion State")]
     .End();
 }
 
@@ -37,35 +36,6 @@ void Motion::TriggerEvent(const FastName& trigger)
     {
         pendingState = state;
     }
-}
-
-bool Motion::RequestState(const FastName& stateUID)
-{
-    if (pendingState != nullptr && pendingState->GetID() == stateUID)
-        return true;
-
-    bool success = false;
-
-    auto foundState = statesMap.find(stateUID);
-    if (foundState != statesMap.end())
-    {
-        pendingState = foundState->second;
-        success = true;
-    }
-
-    return success;
-}
-
-const FastName& Motion::GetCurrentState() const
-{
-    static const FastName invalidID = FastName("#invalid-state");
-
-    if (nextState != nullptr)
-        return nextState->GetID();
-    else if (currentState != nullptr)
-        return currentState->GetID();
-    else
-        return invalidID;
 }
 
 void Motion::Update(float32 dTime)
@@ -249,7 +219,6 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
             state.LoadFromYaml(statesNode->Get(s));
 
             motion->statesIDs[s] = state.GetID();
-            motion->statesMap[state.GetID()] = &state;
 
             const Vector<FastName>& blendTreeParams = state.GetBlendTreeParameters();
             statesParameters.insert(blendTreeParams.begin(), blendTreeParams.end());
@@ -278,17 +247,25 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                 dstNode != nullptr && dstNode->GetType() == YamlNode::TYPE_STRING &&
                 triggerNode != nullptr && triggerNode->GetType() == YamlNode::TYPE_STRING)
             {
-                auto foundSrc = motion->statesMap.find(srcNode->AsFastName());
-                auto foundDst = motion->statesMap.find(dstNode->AsFastName());
+                FastName srcName = srcNode->AsFastName();
+                FastName dstName = dstNode->AsFastName();
                 FastName trigger = triggerNode->AsFastName();
 
-                if (foundSrc != motion->statesMap.end() && foundDst != motion->statesMap.end())
-                {
-                    uint32 transitionIndex = motion->GetTransitionIndex(foundSrc->second, foundDst->second);
-                    DVASSERT(motion->transitions[transitionIndex] == nullptr);
-                    motion->transitions[transitionIndex] = MotionTransitionInfo::LoadFromYaml(transitionNode, motion->statesMap);
+                auto foundSrc = std::find_if(motion->states.begin(), motion->states.end(), [&srcName](const MotionState& state) {
+                    return state.GetID() == srcName;
+                });
 
-                    foundSrc->second->AddTransitionState(trigger, foundDst->second);
+                auto foundDst = std::find_if(motion->states.begin(), motion->states.end(), [&dstName](const MotionState& state) {
+                    return state.GetID() == dstName;
+                });
+
+                if (foundSrc != motion->states.end() && foundDst != motion->states.end())
+                {
+                    uint32 transitionIndex = motion->GetTransitionIndex(&(*foundSrc), &(*foundDst));
+                    DVASSERT(motion->transitions[transitionIndex] == nullptr);
+                    motion->transitions[transitionIndex] = MotionTransitionInfo::LoadFromYaml(transitionNode);
+
+                    foundSrc->AddTransitionState(trigger, &(*foundDst));
                 }
             }
         }

@@ -38,7 +38,7 @@ public:
         SYNC_COUNT
     };
 
-    static MotionTransitionInfo* LoadFromYaml(const YamlNode* transitionNode, const UnorderedMap<FastName, MotionState*>& states);
+    static MotionTransitionInfo* LoadFromYaml(const YamlNode* transitionNode);
 
     eType type = TYPE_COUNT;
     eSync sync = SYNC_COUNT;

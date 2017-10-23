@@ -64,7 +64,7 @@ protected:
     FastName name;
     eMotionBlend blendMode = BLEND_COUNT;
 
-    Vector<MotionState> states;
+    Vector<MotionState> states; //TODO: *Skinning* think about state storage
     Vector<MotionTransitionInfo*> transitions;
 
     Vector<FastName> statesIDs;
