@@ -44,10 +44,11 @@ void GenerateSphereRandomVectors()
     std::uniform_real_distribution<float32> uinform01(0.0f, 1.0f);
     for (uint32 i = 0; i < sphereRandomVectorsSize; ++i)
     {
-        float32 theta = 2 * PI * uinform01(generator);
-        float32 phi = acos(1 - 2 * uinform01(generator));
-        float32 sinPhi = sinf(phi);
-        sphereRandomVectors[i] = { sinPhi * cosf(theta), sinPhi * sinf(theta), cosf(phi) };
+        float32 theta = 2.0f * PI * uinform01(generator);
+        float32 cosPhi = 1.0f - 2.0f * uinform01(generator);
+        float32 phi = std::acos(cosPhi);
+        float32 sinPhi = std::sin(phi);
+        sphereRandomVectors[i] = { sinPhi * std::cos(theta), sinPhi * std::sin(theta), cosPhi };
     }
 }
 
@@ -55,7 +56,7 @@ Vector3 GetNoiseValue(float32 particleOverLife, float32 frequency, uint32 clampe
 {
     float32 indexUnclamped = particleOverLife * noiseWidth * frequency + clampedIndex;
     float32 intPart = 0.0f;
-    float32 fractPart = modff(particleOverLife * noiseWidth * frequency + clampedIndex, &intPart);
+    float32 fractPart = std::modf(particleOverLife * noiseWidth * frequency + clampedIndex, &intPart);
     uint32 xindex = static_cast<uint32>(intPart);
 
     xindex %= noiseWidth;
@@ -159,7 +160,7 @@ inline bool IsPositionInForceShape(const ParticleForce* force, const Vector3& pa
     }
     else if (force->GetShape() == ParticleForce::eShape::SPHERE)
     {
-        if ((forcePosition - particlePosition).SquareLength() <= force->GetSquareRadius())
+        if ((forcePosition - particlePosition).SquareLength() <= force->GetSquaredRadius())
             return true;
     }
     return false;

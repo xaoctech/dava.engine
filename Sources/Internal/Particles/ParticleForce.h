@@ -84,7 +84,7 @@ public:
     float32 GetRadius() const;
     const Vector3& GetBoxSize() const;
     const Vector3& GetHalfBoxSize() const;
-    float32 GetSquareRadius() const;
+    float32 GetSquaredRadius() const;
     void SetShape(eShape shape);
     eShape GetShape() const;
     bool IsForceCanAlterPosition() const;
@@ -94,7 +94,7 @@ public:
 private:
     Vector3 boxSize{ 1.0f, 1.0f, 1.0f };
     Vector3 halfBoxSize{ 0.5f, 0.5f, 0.5f };
-    float32 squareRadius = 0.75f; // For default box with 0.5f edges.
+    float32 squaredRadius = 0.75f; // For default box with 0.5f edges.
     float32 radius = 1.0f;
     eShape shape = eShape::BOX;
     ParticleLayer* parentLayer = nullptr;
@@ -104,7 +104,7 @@ inline void ParticleForce::SetRadius(float32 radius_)
 {
     radius = radius_;
     if (shape == eShape::SPHERE)
-        squareRadius = radius * radius;
+        squaredRadius = radius * radius;
 }
 
 inline void ParticleForce::SetBoxSize(const Vector3& boxSize_)
@@ -112,7 +112,7 @@ inline void ParticleForce::SetBoxSize(const Vector3& boxSize_)
     boxSize = boxSize_;
     halfBoxSize = boxSize * 0.5f;
     if (shape == eShape::BOX)
-        squareRadius = halfBoxSize.DotProduct(halfBoxSize);
+        squaredRadius = halfBoxSize.DotProduct(halfBoxSize);
 }
 
 inline float32 ParticleForce::GetRadius() const
@@ -130,9 +130,9 @@ inline const Vector3& ParticleForce::GetHalfBoxSize() const
     return halfBoxSize;
 }
 
-inline float32 ParticleForce::GetSquareRadius() const
+inline float32 ParticleForce::GetSquaredRadius() const
 {
-    return squareRadius;
+    return squaredRadius;
 }
 
 inline void ParticleForce::SetShape(ParticleForce::eShape shape_)
@@ -141,10 +141,10 @@ inline void ParticleForce::SetShape(ParticleForce::eShape shape_)
     if (shape == eShape::BOX)
     {
         halfBoxSize = boxSize * 0.5f;
-        squareRadius = boxSize.DotProduct(halfBoxSize);
+        squaredRadius = boxSize.DotProduct(halfBoxSize);
     }
     else if (shape == eShape::SPHERE)
-        squareRadius = radius * radius;
+        squaredRadius = radius * radius;
 }
 
 inline ParticleForce::eShape ParticleForce::GetShape() const

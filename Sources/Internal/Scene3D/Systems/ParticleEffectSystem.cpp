@@ -1021,7 +1021,7 @@ void ParticleEffectSystem::ApplyGlobalForces(Particle* particle, float32 dt, flo
             }
             Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position; // Do not rotate global forces if force position is not zero.
             float32 sqrDist = (forceWorldPosition - particle->position).SquareLength();
-            if (sqrDist < force->GetSquareRadius())
+            if (sqrDist < force->GetSquaredRadius())
             {
                 inForceBoundingSphere = true;
                 break;
