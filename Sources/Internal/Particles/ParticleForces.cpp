@@ -110,13 +110,15 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
 void ApplyGravity(const ParticleForce* force, Vector3& velocity, const Vector3& down, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
 void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3& position, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition);
+bool IsPositionInForceShape(const ParticleForce* force, const Vector3& particlePosition, const Vector3& forcePosition);
 
 void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& down, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition)
 {
     using ForceType = ParticleForce::eType;
 
-    if (!force->isActive)
+    if (!force->isActive || !IsPositionInForceShape(force, position, forcePosition))
         return;
+
     if (force->type == ForceType::DRAG_FORCE)
     {
         ApplyDragForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
@@ -151,7 +153,7 @@ void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position
 
 inline bool IsPositionInForceShape(const ParticleForce* force, const Vector3& particlePosition, const Vector3& forcePosition)
 {
-    if (force->isInfinityRange)
+    if (force->isInfinityRange || force->type == ParticleForce::eType::GRAVITY)
         return true;
 
     if (force->GetShape() == ParticleForce::eShape::BOX)
@@ -170,9 +172,6 @@ inline bool IsPositionInForceShape(const ParticleForce* force, const Vector3& pa
 
 void ApplyDragForce(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(force, position, forcePosition))
-        return;
-
     Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
     Vector3 v(Max(Vector3::Zero, 1.0f - forceStrength));
     velocity *= v;
@@ -180,9 +179,6 @@ void ApplyDragForce(const ParticleForce* force, Vector3& velocity, const Vector3
 
 void ApplyLorentzForce(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(force, position, forcePosition))
-        return;
-
     Vector3 forceDir = (position - forcePosition).CrossProduct(force->direction);
     float32 len = forceDir.SquareLength();
     if (len > 0.0f)
@@ -202,9 +198,6 @@ void ApplyGravity(const ParticleForce* force, Vector3& velocity, const Vector3& 
 void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
     static const float32 windScale = 100.0f; // Artiom request.
-
-    if (!IsPositionInForceShape(force, position, forcePosition))
-        return;
 
     uintptr_t partInd = reinterpret_cast<uintptr_t>(particle);
     uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
@@ -236,9 +229,6 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
 
 void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(force, position, forcePosition))
-        return;
-
     Vector3 toCenter = forcePosition - position;
     float32 sqrToCenterDist = toCenter.SquareLength();
     if (sqrToCenterDist > 0)
@@ -271,9 +261,6 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
 
 void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3& position, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition)
 {
-    if (!IsPositionInForceShape(force, position, forcePosition))
-        return;
-
     Vector3 normal = Normalize(force->direction);
     Vector3 a = prevPosition - forcePosition;
     Vector3 b = position - forcePosition;
