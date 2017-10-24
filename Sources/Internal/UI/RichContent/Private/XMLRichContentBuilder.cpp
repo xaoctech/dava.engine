@@ -14,6 +14,7 @@
 #include "UI/RichContent/UIRichContentObjectComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIPackageLoader.h"
 #include "Utils/StringUtils.h"
 #include "Utils/UTF8Utils.h"

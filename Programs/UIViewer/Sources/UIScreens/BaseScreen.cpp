@@ -1,6 +1,7 @@
 #include "UIScreens/BaseScreen.h"
 
 #include <Input/InputElements.h>
+#include <Render/2D/FTFont.h>
 #include <UI/UIButton.h>
 #include <UI/UIScreenManager.h>
 

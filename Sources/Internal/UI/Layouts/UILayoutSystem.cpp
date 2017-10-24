@@ -7,6 +7,7 @@
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
 #include "Entity/Component.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/Private/Layouter.h"
 #include "UI/Layouts/UIAnchorComponent.h"
@@ -19,6 +20,7 @@
 #include "UI/Text/UITextComponent.h"
 #include "UI/Text/UITextSystem.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
 

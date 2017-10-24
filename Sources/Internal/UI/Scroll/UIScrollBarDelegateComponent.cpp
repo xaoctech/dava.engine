@@ -11,6 +11,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollBarDelegateComponent)
     .Field("delegate", &UIScrollBarDelegateComponent::GetPathToDelegate, &UIScrollBarDelegateComponent::SetPathToDelegate)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIScrollBarDelegateComponent);
+
 UIScrollBarDelegateComponent::UIScrollBarDelegateComponent()
 {
 }
