@@ -229,7 +229,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (SyncActivation)
     {
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         Update();
@@ -242,7 +242,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (AsyncActivation)
     {
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, true);
         Update();
@@ -253,7 +253,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (SyncSwitchingState)
     {
-        UIFlowStateComponent* state1 = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state1 = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         Update();
@@ -274,7 +274,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (AsyncSwitchingState)
     {
-        UIFlowStateComponent* state1 = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state1 = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, true);
         Update();
@@ -297,7 +297,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (HistoryBack)
     {
-        UIFlowStateComponent* state1 = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state1 = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         Update();
@@ -326,7 +326,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (HistorySiblings)
     {
-        UIFlowStateComponent* state1 = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state1 = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         Update();
@@ -352,7 +352,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (HistoryTop)
     {
-        UIFlowStateComponent* state1 = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state1 = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         Update();
@@ -392,7 +392,7 @@ DAVA_TESTCLASS (UIFlowTest)
         UIContext* context = stateSys->GetContext();
         TEST_VERIFY(context != nullptr);
 
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^");
+        UIFlowStateComponent* state = stateSys->FindStateByPath(".");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         Update();
@@ -414,7 +414,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
         data->SetInt32("testStep", 0);
 
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/LuaCtrlTest");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/LuaCtrlTest");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         Update();
@@ -445,7 +445,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
         data->SetInt32("testStep", 0);
 
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/NativeCtrlTest");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/NativeCtrlTest");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         Update();
@@ -461,11 +461,11 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (TransitionsByEvents)
     {
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^");
+        UIFlowStateComponent* state = stateSys->FindStateByPath(".");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         Update();
-        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("^/DefaultState"));
+        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("./DefaultState"));
 
         //        DispatchEvent("STATE1");
         //        Update();
@@ -500,7 +500,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (ControllerComponent)
     {
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
 
         UIControl* stateControl = state->GetControl();
@@ -519,7 +519,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (ViewComponent)
     {
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
 
         UIControl* stateControl = state->GetControl();
@@ -541,7 +541,7 @@ DAVA_TESTCLASS (UIFlowTest)
     {
         static const String TRANSITION_STR("EVENT,Activate,^;EVENT2,SendEvent,EVENT;");
 
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
 
         UIControl* stateControl = state->GetControl();
@@ -569,7 +569,7 @@ DAVA_TESTCLASS (UIFlowTest)
         static const String EVENTS_STR("EVENT1;EVENT2;");
         static const String SERVICES_STR("flow,FlowUIService;wrong,WRONG_SERVICE;");
 
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
 
         state->SetActivateEventsFromString(EVENTS_STR);
@@ -614,7 +614,7 @@ DAVA_TESTCLASS (UIFlowTest)
         model->SetInt32("a", 1);
         data->SetArchive("model", model.Get());
 
-        UIFlowStateComponent* state = stateSys->FindStateByPath("^/**/State1");
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
         UIControl* stateControl = state->GetControl();
         UIFlowViewComponent* viewCom = stateControl->GetComponent<UIFlowViewComponent>();
@@ -642,7 +642,7 @@ DAVA_TESTCLASS (UIFlowTest)
     {
         const float32 HALF_TIME = 0.051f;
         const Array<String, 8> STATES = {
-            "^/Effects/Static",
+            "./Effects/Static",
             "^/Effects/FadeAlpha",
             "^/Effects/Fade",
             "^/Effects/Scale",

@@ -237,7 +237,7 @@ const UIControl* UIControlHelpers::FindControlByPathImpl(Vector<FastName>::const
         }
         else if (name == WILDCARD_ROOT)
         {
-            control = control->GetParentWithContext() ? control->GetParentWithContext() : control;
+            control = control->GetParentWithContext();
         }
         else if (name == WILDCARD_MATCHES_ONE_LEVEL)
         {
