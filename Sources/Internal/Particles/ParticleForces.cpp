@@ -174,7 +174,7 @@ void ApplyDragForce(const ParticleForce* force, Vector3& velocity, const Vector3
         return;
 
     Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
-    Vector3 v(Max(0.0f, 1.0f - forceStrength.x), Max(0.0f, 1.0f - forceStrength.y), Max(0.0f, 1.0f - forceStrength.z));
+    Vector3 v(Max(Vector3::Zero, 1.0f - forceStrength));
     velocity *= v;
 }
 
