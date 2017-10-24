@@ -12,6 +12,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIUpdateComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIUpdateComponent);
+
 UIUpdateComponent::UIUpdateComponent() = default;
 UIUpdateComponent::~UIUpdateComponent() = default;
 
