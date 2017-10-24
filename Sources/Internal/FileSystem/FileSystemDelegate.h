@@ -6,7 +6,12 @@ namespace DAVA
 {
 /**
 	\ingroup filesystem
-	\brief FileSystemDelegate is a class that allows to control execution of FileSystem operations
+    FileSystemDelegate is a delegate to FileSystem that allows to control execution of FileSystem operations
+ 
+    Delegate control next operations
+    - FileSystem::IsFile()
+    - FileSystem::IsDirectory()
+    - File::Create()
 */
 
 class FileSystemDelegate
@@ -15,24 +20,20 @@ public:
     virtual ~FileSystemDelegate() = default;
 
     /**
-        \brief Function to control execution of FileSystem::IsFile
-        \param[in] absoluteFilePath resolved absolute path for the file we want to check
-        \returns true if delegate allow to check existence of file
+        Return true if delegate allows execution of FileSystem::IsFile() for specified 'absoluteFilePath'.
+        Result of FileSystem::IsFile() will be false if delegate returns false.
     */
     virtual bool IsFileExists(const String& absoluteFilePath) const = 0;
 
     /**
-        \brief Function to control execution of FileSystem::IsDirectory
-        \param[in] absoluteFilePath resolved absolute path for the directory we want to check
-        \returns true if delegate allow to check existence of directory
-     */
+        Return true if delegate allows execution of FileSystem::IsDirectory() for specified 'absoluteDirectoryPath'.
+        Result of FileSystem::IsDirectory() will be false if delegate returns false.
+    */
     virtual bool IsDirectoryExists(const String& absoluteDirectoryPath) const = 0;
 
     /**
-        \brief Function to control execution of File::Create
-        \param[in] absoluteFilePath resolved absolute path for the file we want to create
-        \param[in] attributes combinations of File::eFileAttributes
-        \returns true if delegate allow to create file with given attribures
+        Return true if delegate allows execution of File::Create() for specified 'absoluteFilePath' and 'attributes'.
+        Result of File::Create() will be nullptr if delegate returns false.
      */
     virtual bool CanCreateFile(const String& absoluteFilePath, uint32 attributes) const = 0;
 };
