@@ -4,7 +4,6 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Math/Rect.h"
-#include "Functional/Function.h"
 
 namespace DAVA
 {
@@ -36,7 +35,6 @@ public:
     static bool IsControlNameValid(const FastName& controlName, NameCheckStrictness = RegularCheck);
 
 private:
-    static bool IsControlNull(const UIControl* control);
     static const UIControl* FindControlByPathImpl(const String& controlPath, const UIControl* rootControl);
     static const UIControl* FindControlByPathImpl(Vector<FastName>::const_iterator begin, Vector<FastName>::const_iterator end, const UIControl* rootControl);
     static const UIControl* FindControlByPathRecursivelyImpl(Vector<FastName>::const_iterator begin, Vector<FastName>::const_iterator end, const UIControl* rootControl);

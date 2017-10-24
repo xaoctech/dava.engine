@@ -43,9 +43,9 @@ namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
-    AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
+    AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
     AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem

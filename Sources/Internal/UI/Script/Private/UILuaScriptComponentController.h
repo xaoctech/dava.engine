@@ -10,11 +10,19 @@ class UIContext;
 class UIControl;
 class LuaScript;
 
+/**
+    Lua Script component controller implementation.
+    Implementation of UIScriptComponentController interface that based on Lua-code.
+*/
 class UILuaScriptComponentController : public UIScriptComponentController
 {
     DAVA_VIRTUAL_REFLECTION(UILuaScriptComponentController, UIScriptComponentController);
 
 public:
+    /**
+    Constructor from file.
+     \param scriptPath Path to Lua-script file
+    */
     UILuaScriptComponentController(const FilePath& scriptPath);
     ~UILuaScriptComponentController() override;
 

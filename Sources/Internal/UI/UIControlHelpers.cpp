@@ -316,11 +316,6 @@ bool UIControlHelpers::IsControlNameValid(const FastName& controlName, NameCheck
     return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str(), strictness);
 }
 
-bool UIControlHelpers::IsControlNull(const UIControl* control)
-{
-    return control == nullptr;
-}
-
 void UIControlHelpers::ScrollToRect(DAVA::UIControl* control, const Rect& rect, float32 animationTime, bool toTopLeftForBigControls)
 {
     UIList* list = dynamic_cast<UIList*>(control);

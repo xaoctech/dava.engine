@@ -32,12 +32,8 @@ class UIDemoController : public UIScriptComponentController
     int count = 0;
 
 public:
-    UIDemoController()
-    {
-    }
-    ~UIDemoController() override
-    {
-    }
+    UIDemoController() = default;
+    ~UIDemoController() override = default;
 
     void Init(UIScriptComponent* component) override
     {

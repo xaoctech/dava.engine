@@ -9,16 +9,25 @@ namespace DAVA
 class UIScriptComponent;
 class UIScriptComponentController;
 
+/**
+    Manage all UIScriptComponent internals. Creates, handles and destroys component controllers. 
+*/
 class UIScriptSystem : public UISystem
 {
 public:
     ~UIScriptSystem() override;
 
+    /** Processing mode for editor */
     void SetPauseProcessing(bool value);
     bool IsPauseProcessing() const;
 
+    /** Send message to controller of this control. */
     bool ProcessEvent(UIControl* control, const FastName& event);
+
+    /** Process system*/
     void Process(float32 elapsedTime) override;
+
+    /** Get internal controller instance. */
     UIScriptComponentController* GetController(UIScriptComponent* component) const;
 
 protected:
@@ -35,6 +44,8 @@ private:
     };
 
     void AddScriptLink(UIScriptComponent* component);
+
+    /** Update controller instance. */
     void UpdateController(DAVA::UIScriptSystem::ScriptLink& l);
     void RemoveScriptLink(UIScriptComponent* component);
 
