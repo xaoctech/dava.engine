@@ -90,15 +90,15 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     //Tags
     FileSystem* fs = FileSystem::Instance();
     FileSystemHookDelegate* hookDelegate = fs->GetHookDelegate();
-    if(hookDelegate != nullptr)
+    if (hookDelegate != nullptr)
     { // hooked check: can we continue work with file?
         String path = filename.GetAbsolutePathname();
-        if(hookDelegate->CanCreateFile(path, attributes) == false)
+        if (hookDelegate->CanCreateFile(path, attributes) == false)
         {
             return nullptr;
         }
     }
-    
+
     if (!(attributes & (WRITE | CREATE | APPEND)) && fs->filenamesTag.empty() == false)
     {
         FilePath taggedFilename = filename;
