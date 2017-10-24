@@ -33,7 +33,6 @@ QString BaseSceneTreeTraits::GetTooltip(const Selectable& object) const
 Qt::ItemFlags BaseSceneTreeTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
-    ;
 }
 
 QVariant BaseSceneTreeTraits::GetValue(const Selectable& object, int itemRole) const
@@ -345,7 +344,7 @@ bool EntityTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action
             oldComponents.reserve(emitters.size());
 
             int dropEmittersAfter = 0;
-            if (positionInParent < targetEffectComponent->GetEmittersCount())
+            if (positionInParent < static_cast<DAVA::int32>(targetEffectComponent->GetEmittersCount()))
             {
                 dropEmittersAfter = positionInParent;
             }
@@ -534,7 +533,7 @@ QVariant ParticleEmitterInstanceTraits::GetValue(const Selectable& object, int i
 bool ParticleEmitterInstanceTraits::CanBeDroped(const ReflectedMimeData* mimeData, Qt::DropAction action,
                                                 const Selectable& parent, DAVA::int32 positionInParent) const
 {
-    return mimeData->GetObjects<DAVA::ParticleLayer>().empty() == false;
+    return mimeData->HasObjects<DAVA::ParticleLayer>();
 }
 
 bool ParticleEmitterInstanceTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,
@@ -690,8 +689,7 @@ bool ParticleLayerTraits::SetValue(const Selectable& object, const QVariant& val
 bool ParticleLayerTraits::CanBeDroped(const ReflectedMimeData* mimeData, Qt::DropAction action,
                                       const Selectable& parent, DAVA::int32 positionInParent) const
 {
-    DAVA::Vector<DAVA::ParticleForce*> forces = mimeData->GetObjects<DAVA::ParticleForce>();
-    return forces.size();
+    return mimeData->HasObjects<DAVA::ParticleForce>();
 }
 
 bool ParticleLayerTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,

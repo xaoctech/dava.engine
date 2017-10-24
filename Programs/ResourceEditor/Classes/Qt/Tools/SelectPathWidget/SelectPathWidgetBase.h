@@ -67,7 +67,7 @@ protected:
 
     virtual void Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath, DAVA::String _openFileDialogTitle, DAVA::String _fileFormatDescriotion);
 
-    virtual void HandlePathSelected(DAVA::String name);
+    virtual void HandlePathSelected(const DAVA::String& name);
 
     DAVA::String ConvertToRelativPath(const DAVA::String& path);
 

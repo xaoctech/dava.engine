@@ -13,6 +13,11 @@ const QString& SceneTreeFilterModelV2::GetFilter() const
 
 void SceneTreeFilterModelV2::SetFilter(const QString& filter_)
 {
+    if (filter == filter_)
+    {
+        return;
+    }
+
     filter = QString("");
     filtrationData.clear();
     FullFetchModel(sourceModel(), QModelIndex());
@@ -64,7 +69,7 @@ bool SceneTreeFilterModelV2::PrepareFiltrationData(QAbstractItemModel* model, co
 {
     bool isSomeChildIsMatched = false;
     int rowCount = model->rowCount(index);
-    for (int i = 0; i < rowCount; ++i)
+    for (int i = 0; (i < rowCount) && (isSomeChildIsMatched == false); ++i)
     {
         isSomeChildIsMatched |= PrepareFiltrationData(model, model->index(i, 0, index));
     }

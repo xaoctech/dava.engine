@@ -13,10 +13,10 @@
 
 namespace SceneTreeSystemDetail
 {
-class SetSolidFlagForSave : public DAVA::Command
+class ResetSolidFlagForSave : public DAVA::Command
 {
 public:
-    SetSolidFlagForSave(DAVA::Entity* e)
+    ResetSolidFlagForSave(DAVA::Entity* e)
         : DAVA::Command("")
         , entity(e)
     {
@@ -406,7 +406,7 @@ std::unique_ptr<DAVA::Command> SceneTreeSystem::PrepareForSave(bool saveForGame)
     DAVA::Scene* scene = GetScene();
 
     DAVA::Function<void(DAVA::Entity*)> fn = [batch, &fn](DAVA::Entity* e) {
-        batch->Add(std::make_unique<SceneTreeSystemDetail::SetSolidFlagForSave>(e));
+        batch->Add(std::make_unique<SceneTreeSystemDetail::ResetSolidFlagForSave>(e));
         for (DAVA::int32 i = 0; i < e->GetChildrenCount(); ++i)
         {
             fn(e->GetChild(i));

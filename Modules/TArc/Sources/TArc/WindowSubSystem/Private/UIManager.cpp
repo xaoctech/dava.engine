@@ -1070,18 +1070,15 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
     }
 
     PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
-    QRect dialogRect = pi.Get("geometry", QRect());
-    if (dialogRect.isValid())
-    {
-        dlg->setGeometry(dialogRect);
-    }
+    QByteArray dialogRect = pi.Get("geometry", QByteArray());
+    dlg->restoreGeometry(dialogRect);
 
     int result = dlg->exec();
-    pi.Set("geometry", dlg->geometry());
+    pi.Set("geometry", dlg->saveGeometry());
     return result;
 }
 
-void UIManager::ShowUnmodalDialog(const WindowKey& windowKey, QDialog* dlg)
+void UIManager::ShowDialog(const WindowKey& windowKey, QDialog* dlg)
 {
     bool isStayOnTop = dlg->windowFlags().testFlag(Qt::WindowStaysOnTopHint);
 
@@ -1108,15 +1105,12 @@ void UIManager::ShowUnmodalDialog(const WindowKey& windowKey, QDialog* dlg)
     }
 
     PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
-    QRect dialogRect = pi.Get("geometry", QRect());
-    if (dialogRect.isValid())
-    {
-        dlg->setGeometry(dialogRect);
-    }
+    QByteArray dialogGeometry = pi.Get("geometry", QByteArray());
+    dlg->restoreGeometry(dialogGeometry);
 
     impl->connections.AddConnection(dlg, &QDialog::finished, [this, dialogName, dlg](int) {
         PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
-        pi.Set("geometry", dlg->geometry());
+        pi.Set("geometry", dlg->saveGeometry());
     });
 
     dlg->show();

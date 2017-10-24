@@ -73,9 +73,9 @@ int UIProxy::ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog)
     return globalUI->ShowModalDialog(parentWindow, dialog);
 }
 
-void UIProxy::ShowUnmodalDialog(const WindowKey& parentWindow, QDialog* dialog)
+void UIProxy::ShowDialog(const WindowKey& parentWindow, QDialog* dialog)
 {
-    globalUI->ShowUnmodalDialog(parentWindow, dialog);
+    globalUI->ShowDialog(parentWindow, dialog);
 }
 
 ModalMessageParams::Button UIProxy::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)

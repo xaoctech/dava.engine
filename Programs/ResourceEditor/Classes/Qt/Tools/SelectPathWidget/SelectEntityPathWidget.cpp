@@ -41,7 +41,7 @@ void SelectEntityPathWidget::dragEnterEvent(QDragEnterEvent* event)
     {
         isFormatSupported = false;
         DAVA::FilePath path(event->mimeData()->urls().first().toLocalFile().toStdString());
-        Q_FOREACH (DAVA::String item, allowedFormatsList)
+        for (const DAVA::String& item : allowedFormatsList)
         {
             if (path.IsEqualToExtension(item))
             {
@@ -85,7 +85,18 @@ DAVA::Entity* SelectEntityPathWidget::ConvertQMimeDataFromFilePath(SceneEditor2*
     }
 
     DAVA::FilePath filePath(selectedPath.toStdString());
-    if (!(DAVA::GetEngineContext()->fileSystem->Exists(filePath) && filePath.GetExtension() == ".sc2"))
+    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+    bool pathIsValid = false;
+    for (const DAVA::String& ext : allowedFormatsList)
+    {
+        if (filePath.IsEqualToExtension(ext) && fs->Exists(filePath))
+        {
+            pathIsValid = true;
+            break;
+        }
+    }
+
+    if (pathIsValid == false)
     {
         return nullptr;
     }

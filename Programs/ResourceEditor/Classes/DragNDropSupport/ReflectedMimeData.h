@@ -57,16 +57,6 @@ public:
         return false;
     }
 
-    template <typename T>
-    static QString GetTypeName()
-    {
-        const DAVA::ReflectedType* type = DAVA::ReflectedTypeDB::Get<T>();
-        const DAVA::String& name = type->GetPermanentName();
-        DVASSERT(name.empty() == false);
-
-        return QString::fromStdString(name);
-    }
-
 private:
     DAVA::Vector<Selectable> objects;
 };

@@ -41,11 +41,10 @@ public:
     virtual ~BaseEntityCreator() = default;
 
     virtual eMenuPointOrder GetOrder() const;
+    void Init(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
 
     QIcon icon;
     QString text;
-
-    void Init(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
 
 protected:
     DAVA::TArc::ContextAccessor* accessor = nullptr;
