@@ -15,13 +15,13 @@ struct ParticleLayer;
 class ParticleForce : public BaseObject
 {
 public:
-    enum class eShape
+    enum class eShape : uint8
     {
         BOX,
         SPHERE
     };
 
-    enum class eTimingType
+    enum class eTimingType : uint8
     {
         CONSTANT,
         OVER_LAYER_LIFE,
@@ -29,7 +29,7 @@ public:
         SECONDS_PARTICLE_LIFE
     } timingType = eTimingType::CONSTANT;
 
-    enum class eType
+    enum class eType : uint8
     {
         DRAG_FORCE = 0, // Also force priority.
         WIND,
