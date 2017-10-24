@@ -2,6 +2,7 @@
 #include "UI/UIControlSystem.h"
 #include "Time/SystemTimer.h"
 #include "Render/RenderHelper.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/Renderer.h"
 
@@ -66,7 +67,7 @@ void UIHoleTransition::Draw(const UIGeometricData& geometricData)
 	 FROM_BOTTOM,
 	 */
 
-    Sprite::DrawState drawState;
+    SpriteDrawState drawState;
     drawState.SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 
     auto rect = Rect(0.0f, 0.0f, static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx), static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy));

@@ -11,6 +11,7 @@
 #include "Logger/Logger.h"
 #include "Logger/TeamCityTestsOutput.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/RHI/rhi_Public.h"
 #include "UI/UIControlSystem.h"
 #include "UnitTests/UnitTests.h"
 #include "Utils/StringFormat.h"

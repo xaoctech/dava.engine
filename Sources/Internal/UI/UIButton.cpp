@@ -1,13 +1,14 @@
 #include "UI/UIButton.h"
-#include "UI/UIStaticText.h"
-#include "UI/UIEvent.h"
-#include "Utils/StringFormat.h"
-#include "Utils/Utils.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/VariantType.h"
-#include "Render/2D/FontManager.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Render/2D/FontManager.h"
+#include "UI/UIControlBackground.h"
+#include "UI/UIEvent.h"
+#include "UI/UIStaticText.h"
 #include "UI/Update/UIUpdateComponent.h"
+#include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -489,6 +490,11 @@ void UIButton::SetBackground(eButtonDrawState drawState, UIControlBackground* ne
     stateBacks[drawState] = newBackground;
 
     UIControl::SetBackground(GetActualBackgroundForState(GetState()));
+}
+
+UIControlBackground* UIButton::CreateDefaultBackground() const
+{
+    return new UIControlBackground();
 }
 
 UIStaticText* UIButton::GetOrCreateTextBlock(eButtonDrawState drawState)
