@@ -25,17 +25,7 @@ namespace DAVA
 	\todo refactoring of utils and ~res:/ ~doc:/ access for the project files
 	\todo add support for pack files
 */
-
-class FileSystemHookDelegate
-{
-public:
-    virtual ~FileSystemHookDelegate() = default;
-
-    virtual bool IsFileExists(const String& absoluteFilePath) const = 0;
-    virtual bool IsDirectoryExists(const String& absoluteDirectoryPath) const = 0;
-    virtual bool CanCreateFile(const String& absoluteFilePath, uint32 attributes) const = 0;
-};
-
+class FileSystemDelegate;
 class FileSystem : public Singleton<FileSystem>
 {
 public:
@@ -305,8 +295,8 @@ public:
     void SetFilenamesTag(const String& newTag);
     const String& GetFilenamesTag() const;
 
-    void SetHookDelegate(FileSystemHookDelegate* delegate);
-    FileSystemHookDelegate* GetHookDelegate() const;
+    void SetDelegate(FileSystemDelegate* delegate);
+    FileSystemDelegate* GetDelegate() const;
 
 private:
     bool HasLineEnding(File* f);
@@ -338,7 +328,7 @@ private:
 
     String filenamesTag;
 
-    FileSystemHookDelegate* hookDelegate = nullptr;
+    FileSystemDelegate* fsDelegate = nullptr;
 
     friend class File;
 };
