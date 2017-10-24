@@ -112,6 +112,9 @@ DAVA_TESTCLASS (UIScriptTest)
         screen->AddControl(dummyText.Get());
         TEST_VERIFY(sys->ProcessEvent(dummyText.Get(), FastName("TestEvent")) == false);
         screen->RemoveControl(dummyText.Get());
+
+        RefPtr<UIScriptComponent> ref = MakeRef<UIScriptComponent>();
+        TEST_VERIFY(sys->GetController(ref.Get()) == nullptr);
     }
 
     DAVA_TEST (PauseProcessingTest)
@@ -209,6 +212,12 @@ DAVA_TESTCLASS (UIScriptTest)
         // switch controller
         scriptComp->SetLuaScriptPath("~res:/UI/Flow/Lua/TestComponent.lua");
         sys->Process(0.0f);
+
+        TEST_VERIFY(sys->GetController(scriptComp) != nullptr);
+        scriptComp->SetReflectionTypeName("Invalid Name");
+        sys->Process(0.0f);
+        TEST_VERIFY(!scriptComp->GetLuaScriptPath().Exists());
+        TEST_VERIFY(sys->GetController(scriptComp) == nullptr);
 
         // release
         text->RemoveComponent<UIScriptComponent>(0);
