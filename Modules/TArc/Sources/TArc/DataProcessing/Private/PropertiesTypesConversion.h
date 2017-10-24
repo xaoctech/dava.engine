@@ -215,7 +215,7 @@ Vector<Color> PropertiesItem::Impl::FromValue(const QJsonValue& value, const Vec
     }
 }
 
-template<>
+template <>
 RefPtr<KeyedArchive> PropertiesItem::Impl::FromValue(const QJsonValue& value, const RefPtr<KeyedArchive>& defaultValue)
 {
     if (value.isString() == true)
@@ -382,7 +382,7 @@ QJsonValue PropertiesItem::Impl::ToValue(const Vector<Color>& value)
     return jsonResult;
 }
 
-template<>
+template <>
 QJsonValue PropertiesItem::Impl::ToValue(const RefPtr<KeyedArchive>& value)
 {
     uint32 requiredSize = value->Save(nullptr, 0);
