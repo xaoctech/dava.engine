@@ -14,7 +14,7 @@ namespace DAVA
 class UIScriptComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIScriptComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIScriptComponent);
+    DECLARE_UI_COMPONENT(UIScriptComponent);
 
 public:
     UIScriptComponent();

@@ -14,6 +14,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UILayoutIsolationComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UILayoutIsolationComponent);
+
 UILayoutIsolationComponent::UILayoutIsolationComponent()
 {
 }

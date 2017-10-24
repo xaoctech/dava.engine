@@ -13,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIScriptComponent)
     .Field("parameters", &UIScriptComponent::GetParameters, &UIScriptComponent::SetParameters)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIScriptComponent);
 
 UIScriptComponent::UIScriptComponent() = default;
 

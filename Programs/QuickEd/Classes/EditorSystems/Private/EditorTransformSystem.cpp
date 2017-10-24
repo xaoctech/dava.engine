@@ -24,6 +24,7 @@
 #include <UI/UIControl.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Base/BaseTypes.h>
+#include <Math/MathHelpers.h>
 
 DAVA::Vector2 EditorTransformSystem::GetMinimumSize()
 {

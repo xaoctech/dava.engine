@@ -26,10 +26,11 @@
 #include "UI/Sound/UISoundSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/UIAnalytics.h"
-#include "UI/Update/UIUpdateComponent.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIControlHelpers.h"
 #include "UI/UIControlPackageContext.h"
 #include "UI/UIControlSystem.h"
+#include "UI/Update/UIUpdateComponent.h"
 #include "Utils/StringFormat.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
@@ -362,11 +363,6 @@ int32 UIControl::GetFrame() const
     return GetBackground()->GetFrame();
 }
 
-UIControlBackground::eDrawType UIControl::GetSpriteDrawType() const
-{
-    return GetBackground()->GetDrawType();
-}
-
 int32 UIControl::GetSpriteAlign() const
 {
     return GetBackground()->GetAlign();
@@ -390,11 +386,6 @@ void UIControl::SetSpriteFrame(int32 spriteFrame)
 void UIControl::SetSpriteFrame(const FastName& frameName)
 {
     GetBackground()->SetFrame(frameName);
-}
-
-void UIControl::SetSpriteDrawType(UIControlBackground::eDrawType drawType)
-{
-    GetBackground()->SetDrawType(drawType);
 }
 
 void UIControl::SetSpriteAlign(int32 align)
@@ -579,6 +570,11 @@ void UIControl::SetScaledRect(const Rect& rect, bool rectInAbsoluteCoordinates /
         scale.y = rect.dy / (size.y * gd.scale.y);
         SetAbsolutePosition(Vector2(rect.x + GetPivotPoint().x * scale.x, rect.y + GetPivotPoint().y * scale.y));
     }
+}
+
+float32 UIControl::GetAngleInDegrees() const
+{
+    return RadToDeg(angle);
 }
 
 void UIControl::SetVisibilityFlag(bool isVisible)

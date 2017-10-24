@@ -4,6 +4,10 @@
 
 #include "Base/BaseObject.h"
 #include "UI/UIScreenManager.h"
+#include "Engine/Engine.h"
+#include "Logger/Logger.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScreen.h"
 
 namespace DAVA
 {

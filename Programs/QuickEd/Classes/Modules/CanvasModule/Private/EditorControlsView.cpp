@@ -17,6 +17,7 @@
 #include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/UIControl.h>
+#include <UI/UIControlBackground.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/UIControlSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
