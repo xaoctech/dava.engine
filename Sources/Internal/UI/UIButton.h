@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlBackground.h"
 #include "Render/2D/TextBlock.h"
 
 namespace DAVA
@@ -299,10 +300,7 @@ private:
     }
     UIControlBackground* GetOrCreateBackground(eButtonDrawState drawState);
     void SetBackground(eButtonDrawState drawState, UIControlBackground* newBackground);
-    UIControlBackground* CreateDefaultBackground() const
-    {
-        return new UIControlBackground();
-    }
+    UIControlBackground* CreateDefaultBackground() const;
 
     eButtonDrawState GetActualTextBlockState(eButtonDrawState drawState) const;
     UIStaticText* GetActualTextBlockForState(int32 state) const;

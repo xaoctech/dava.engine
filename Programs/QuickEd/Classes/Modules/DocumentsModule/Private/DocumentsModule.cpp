@@ -1,10 +1,8 @@
 #include "Modules/DocumentsModule/DocumentsModule.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/LegacySupportModule/Private/Project.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-
 #include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
+#include "Modules/LegacySupportModule/Private/Project.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
@@ -37,10 +35,10 @@
 #include "Model/QuickEdPackageBuilder.h"
 #include "Model/YamlPackageSerializer.h"
 
-#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
-#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <QtTools/InputDialogs/MultilineTextInputDialog.h>
 
@@ -94,7 +92,7 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
     systemsData->painter = std::make_unique<Painting::Painter>();
     Vector<Window*> windows = Engine::Instance()->GetWindows();
     DVASSERT(windows.size() == 1);
-    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::Draw));
+    windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::OnFrame));
 }
 
 bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
@@ -200,7 +198,7 @@ void DocumentsModule::InitCentralWidget()
     RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
 
     EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
-    previewWidget = new PreviewWidget(accessor, GetInvoker(), GetUI(), renderWidget, systemsManager);
+    previewWidget = new PreviewWidget(accessor, GetInvoker(), ui, renderWidget, systemsManager);
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
@@ -210,7 +208,7 @@ void DocumentsModule::InitCentralWidget()
     ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget);
 
     //legacy part. Remove it when package will be refactored
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
 
     connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
     QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);
@@ -258,6 +256,7 @@ void DocumentsModule::CreateDocumentsActions()
     const QString toolBarSeparatorName("documents separator");
 
     ContextAccessor* accessor = GetAccessor();
+
     UI* ui = GetUI();
     //action save document
     {
@@ -275,7 +274,7 @@ void DocumentsModule::CreateDocumentsActions()
         });
 
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, "projectActionsSeparator" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
@@ -418,30 +417,6 @@ void DocumentsModule::CreateEditActions()
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
-
-    // Group
-    {
-        const QString groupActionName("Group");
-
-        QtAction* action = new QtAction(accessor, groupActionName, nullptr);
-        action->setShortcutContext(Qt::WindowShortcut);
-        action->setShortcut(QKeySequence("Ctrl+G"));
-
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
-                                         {
-                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
-                                         });
-
-        connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &DocumentsModule::DoGroupSelection));
-
-        ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
-
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
-    }
 }
 
 void DocumentsModule::OnUndo()
@@ -470,16 +445,6 @@ void DocumentsModule::OnRedo()
     data->commandStack->Redo();
 }
 
-void DocumentsModule::DoGroupSelection()
-{
-    CommandExecutor commandExecutor(GetAccessor(), GetUI());
-    ControlNode* newGroupControl = commandExecutor.GroupSelectedNodes();
-    if (newGroupControl != nullptr)
-    {
-        GetAccessor()->GetActiveContext()->GetData<DocumentData>()->SetSelectedNodes({ newGroupControl });
-    }
-}
-
 void DocumentsModule::CreateViewActions()
 {
     using namespace DAVA;
@@ -499,7 +464,7 @@ void DocumentsModule::CreateViewActions()
         separator->setObjectName(zoomSeparator);
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
-        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "menuGridColor" }));
+        placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
     }
 

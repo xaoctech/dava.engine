@@ -408,6 +408,7 @@
        <addaction name="actionRemoveEntity"/>
        <addaction name="actionExpandSceneTree"/>
        <addaction name="actionCollapseSceneTree"/>
+       <addaction name="actionReloadSelectedEntitiesTextures"/>
       </widget>
      </item>
      <item>
@@ -1060,6 +1061,18 @@
    </property>
    <property name="toolTip">
     <string>Expand all.</string>
+   </property>
+  </action>
+  <action name="actionReloadSelectedEntitiesTextures">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+    <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload Textures...</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload Textures...</string>
    </property>
   </action>
   <action name="actionCollapseSceneTree">

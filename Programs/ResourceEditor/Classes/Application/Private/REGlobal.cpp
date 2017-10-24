@@ -91,7 +91,8 @@ IMPL_OPERATION_ID(OpenSceneOperation);
 IMPL_OPERATION_ID(AddSceneOperation);
 IMPL_OPERATION_ID(SaveCurrentScene);
 IMPL_OPERATION_ID(CloseAllScenesOperation);
-IMPL_OPERATION_ID(ReloadTexturesOperation);
+IMPL_OPERATION_ID(ReloadAllTextures);
+IMPL_OPERATION_ID(ReloadTextures);
 IMPL_OPERATION_ID(ShowMaterial);
 IMPL_OPERATION_ID(ConvertTaggedTextures);
 

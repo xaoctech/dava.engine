@@ -20,7 +20,8 @@
 #include <Engine/EngineContext.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIControl.h>
-#include "UI/UIControlBackground.h"
+#include <UI/UIControlBackground.h>
+#include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Utils/Random.h>
 
@@ -133,8 +134,8 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
     { // remove old actions and old menu items
         for (const QString& actionName : gfxActionPlacementName)
         {
-            ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources << actionName));
-            ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo);
+            ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources));
+            ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo, actionName);
         }
         gfxActionPlacementName.clear();
         settingsAreFiltered = false;

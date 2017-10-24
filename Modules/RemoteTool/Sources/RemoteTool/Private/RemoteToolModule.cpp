@@ -9,6 +9,8 @@
 #include <Functional/Function.h>
 #include <Reflection/ReflectionRegistrator.h>
 
+#include <QMenu>
+
 RemoteToolModule::~RemoteToolModule()
 {
     DVASSERT(deviceListWidget == nullptr);
@@ -23,9 +25,9 @@ void RemoteToolModule::PostInit()
     using namespace DAVA::TArc;
 
     // create menu bar action "Remote", insert before "Help"
-    QAction* menuRemoteAction = new QAction(QStringLiteral("Remote"), nullptr);
+    QMenu* menuRemote = new QMenu(QStringLiteral("Remote"), nullptr);
     ActionPlacementInfo menuRemotePlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
-    GetUI()->AddAction(mainWindowKey, menuRemotePlacement, menuRemoteAction);
+    GetUI()->AddAction(mainWindowKey, menuRemotePlacement, menuRemote->menuAction());
 
     QtAction* toolAction = new QtAction(GetAccessor(), QString("Remote Inspect"));
 

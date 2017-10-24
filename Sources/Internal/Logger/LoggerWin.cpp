@@ -51,10 +51,17 @@ void Logger::PlatformLog(eLogLevel ll, const char8* text)
             return;
         }
 
-        WideString wtext = UTF8Utils::EncodeToWideString(text);
+        using UTF8Utils::eSafeEncodeError;
+
+        eSafeEncodeError encoderError = eSafeEncodeError::NONE;
+        WideString wtext = UTF8Utils::SafeEncodeToWideString(text, encoderError);
+        DVASSERT(encoderError == eSafeEncodeError::NONE, "Invalid UTF8 string.");
         // Platform::StringReference should prevent an extra copy here.
         // Details: https://docs.microsoft.com/en-us/cpp/cppcx/strings-c-cx#stringreference
-        lc->LogMessage(Platform::StringReference(wtext.c_str(), wtext.size()), lv);
+        if (encoderError != eSafeEncodeError::STRING_NOT_ENCODED)
+        {
+            lc->LogMessage(Platform::StringReference(wtext.c_str(), wtext.size()), lv);
+        }
     }
 #endif
 }

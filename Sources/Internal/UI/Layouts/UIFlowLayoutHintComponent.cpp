@@ -19,6 +19,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutHintComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIFlowLayoutHintComponent);
+
 UIFlowLayoutHintComponent::UIFlowLayoutHintComponent()
 {
 }

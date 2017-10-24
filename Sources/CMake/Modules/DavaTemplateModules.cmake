@@ -1,92 +1,104 @@
 
 set(  MAIN_MODULE_VALUES 
-NAME_MODULE                            #
-NAME_MODULE_STUB                       #
+MODULE_NAME                            #
+MODULE_NAME_STUB                       #
 MODULE_TYPE                            #"[ INLINE STATIC PLUGIN  ]"
 #
 IMPL_MODULE
-EXTERNAL_MODULES
-EXTERNAL_MODULES_${DAVA_PLATFORM_CURENT} 
-#
-MODULE_INITIALIZATION_CODE
-MODULE_INITIALIZATION_NAMESPACE
-MODULE_MANAGER_TEMPLATE
+MODULE_MANAGER
 #
 SRC_FOLDERS             
 ERASE_FOLDERS              
-ERASE_FOLDERS_${DAVA_PLATFORM_CURENT}   
+ERASE_FOLDERS_${DAVA_PLATFORM_CURRENT}   
 #
 CPP_FILES                  
 HPP_FILES                  
-CPP_FILES_${DAVA_PLATFORM_CURENT}       
-HPP_FILES_${DAVA_PLATFORM_CURENT}
+CPP_FILES_${DAVA_PLATFORM_CURRENT}       
+HPP_FILES_${DAVA_PLATFORM_CURRENT}
 #
 HPP_FILES_STUB
 HPP_FILES_IMPL
-HPP_FILES_STUB_${DAVA_PLATFORM_CURENT} 
-HPP_FILES_IMPL_${DAVA_PLATFORM_CURENT}   
+HPP_FILES_STUB_${DAVA_PLATFORM_CURRENT} 
+HPP_FILES_IMPL_${DAVA_PLATFORM_CURRENT}   
 #
 CPP_FILES_STUB
 CPP_FILES_IMPL
-CPP_FILES_STUB_${DAVA_PLATFORM_CURENT} 
-CPP_FILES_IMPL_${DAVA_PLATFORM_CURENT}        
+CPP_FILES_STUB_${DAVA_PLATFORM_CURRENT} 
+CPP_FILES_IMPL_${DAVA_PLATFORM_CURRENT}        
 #
 CPP_FILES_RECURSE            
 HPP_FILES_RECURSE            
-CPP_FILES_RECURSE_${DAVA_PLATFORM_CURENT} 
-HPP_FILES_RECURSE_${DAVA_PLATFORM_CURENT} 
+CPP_FILES_RECURSE_${DAVA_PLATFORM_CURRENT} 
+HPP_FILES_RECURSE_${DAVA_PLATFORM_CURRENT} 
 GROUP_SOURCE
 #
 HPP_FILES_RECURSE_STUB
 HPP_FILES_RECURSE_IMPL
-HPP_FILES_RECURSE_STUB_${DAVA_PLATFORM_CURENT} 
-HPP_FILES_RECURSE_IMPL_${DAVA_PLATFORM_CURENT}
+HPP_FILES_RECURSE_STUB_${DAVA_PLATFORM_CURRENT} 
+HPP_FILES_RECURSE_IMPL_${DAVA_PLATFORM_CURRENT}
 CPP_FILES_RECURSE_STUB
 CPP_FILES_RECURSE_IMPL
-CPP_FILES_RECURSE_STUB_${DAVA_PLATFORM_CURENT} 
-CPP_FILES_RECURSE_IMPL_${DAVA_PLATFORM_CURENT}
+CPP_FILES_RECURSE_STUB_${DAVA_PLATFORM_CURRENT} 
+CPP_FILES_RECURSE_IMPL_${DAVA_PLATFORM_CURRENT}
 #
 CPP_FILES_EXECUTE
 #
+PLATFORMS_SUPPORTED
+PLATFORMS_IGNORE    #ANDROID 
+                    #ANDROID_X86 
+                    #ANDROID_ARM 
+                    #WINUAP
+                    #WINUAP_WIN32 
+                    #WINUAP_ARM 
+                    #WINUAP_X64 
+                    #IOS
+                    #MACOS
+                    #WIN
+                    #LINUX
+#   
 ERASE_FILES                
-ERASE_FILES_${DAVA_PLATFORM_CURENT}     
-ERASE_FILES_NOT_${DAVA_PLATFORM_CURENT} 
+ERASE_FILES_${DAVA_PLATFORM_CURRENT}     
+ERASE_FILES_NOT_${DAVA_PLATFORM_CURRENT} 
 #
 UNITY_IGNORE_LIST             
-UNITY_IGNORE_LIST_${DAVA_PLATFORM_CURENT}
+UNITY_IGNORE_LIST_${DAVA_PLATFORM_CURRENT}
 #
 CUSTOM_PACK_1
-CUSTOM_PACK_1_${DAVA_PLATFORM_CURENT}
+CUSTOM_PACK_1_${DAVA_PLATFORM_CURRENT}
 #
 INCLUDES         
 INCLUDES_PRIVATE 
-INCLUDES_${DAVA_PLATFORM_CURENT} 
-INCLUDES_PRIVATE_${DAVA_PLATFORM_CURENT} 
+INCLUDES_${DAVA_PLATFORM_CURRENT} 
+INCLUDES_PRIVATE_${DAVA_PLATFORM_CURRENT} 
 #
 DEFINITIONS                
 DEFINITIONS_PRIVATE             
-DEFINITIONS_${DAVA_PLATFORM_CURENT}     
-DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURENT}  
+DEFINITIONS_${DAVA_PLATFORM_CURRENT}     
+DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURRENT}  
+USE_PARENT_DEFINITIONS
 #
-STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}           
-STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE   
-STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG     
+STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}           
+STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE   
+STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG     
 #
-DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}           
-DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE              
-DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG                
+DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}           
+DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE              
+DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG                
 #
 FIND_SYSTEM_LIBRARY                   
-FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}
+FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURRENT}
+#
+FIND_MODULE
+FIND_MODULE_${DAVA_PLATFORM_CURRENT}
 #
 FIND_PACKAGE
-FIND_PACKAGE_${DAVA_PLATFORM_CURENT}
+FIND_PACKAGE_${DAVA_PLATFORM_CURRENT}
 #
 QT_UI_FILES
 QT_RES_FILES
 #
 DEPLOY_TO_BIN
-DEPLOY_TO_BIN_${DAVA_PLATFORM_CURENT}
+DEPLOY_TO_BIN_${DAVA_PLATFORM_CURRENT}
 BINARY_WIN32_DIR_RELEASE
 BINARY_WIN32_DIR_DEBUG
 BINARY_WIN32_DIR_RELWITHDEB
@@ -100,7 +112,7 @@ JAR_FOLDERS_ANDROID
 JAVA_FOLDERS_ANDROID
 #
 PLUGIN_OUT_DIR
-PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURENT}
+PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURRENT}
 #
 PLUGIN_RELATIVE_PATH_TO_FOLDER
 PLUGIN_COPY_ADD_FILES 
@@ -124,23 +136,6 @@ set(  GLOBAL_PROPERTY_VALUES ${MAIN_MODULE_VALUES}  TARGET_MODULES_LIST
                                                     QT_LINKAGE_LIST_VALUE 
                                                     DEPENDENT_LIST
                                                     GROUP_SOURCE )
-#
-macro ( load_external_modules EXTERNAL_MODULES )
-    foreach( FOLDER_MODULE ${EXTERNAL_MODULES} )
-        file( GLOB FIND_CMAKELIST "${FOLDER_MODULE}/CMakeLists.txt" )
-        if( FIND_CMAKELIST )
-            get_filename_component ( FOLDER_NAME ${FOLDER_MODULE} NAME )
-            add_subdirectory ( ${FOLDER_MODULE}  ${FOLDER_NAME} )       
-        else()
-            file( GLOB LIST ${FOLDER_MODULE} )
-            foreach( ITEM ${LIST} )
-                if( IS_DIRECTORY ${ITEM} )
-                    load_external_modules( ${ITEM} )
-                endif()
-            endforeach()
-        endif()
-    endforeach()
-endmacro()
 #
 macro( reset_MAIN_MODULE_VALUES )
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} GLOBAL_DEFINITIONS )
@@ -178,9 +173,9 @@ macro( dump_module_log  )
             if( ${CACHE_LOG_${ITEM}_MODULE_UNIQUE} )
                 math( EXPR UNIQUE_COMPONENTS_NUMBER "${UNIQUE_COMPONENTS_NUMBER} + 1" )
                 file( APPEND ${MODULES_LOG_FILE} "-> ${UNIQUE_COMPONENTS_NUMBER}\n" )
-                file( APPEND ${MODULES_LOG_FILE} "    NAME_MODULE  - ${ITEM} [ ${CACHE_LOG_${ITEM}_MODULE_USES_LIST_LENGTH} ]\n" )
-                file( APPEND ${MODULES_LOG_FILE} "    MODULE_CACHE - ${CACHE_LOG_${ITEM}_MODULE_CACHE}\n" )
+                file( APPEND ${MODULES_LOG_FILE} "    MODULE_NAME  - ${ITEM} [ ${CACHE_LOG_${ITEM}_MODULE_USES_LIST_LENGTH} ]\n" )
                 file( APPEND ${MODULES_LOG_FILE} "    USES_LIST    - ${CACHE_LOG_${ITEM}_MODULE_USES_LIST}\n" )
+                file( APPEND ${MODULES_LOG_FILE} "    MODULE_CACHE - ${CACHE_LOG_${ITEM}_MODULE_CACHE}\n" )                
                 file( APPEND ${MODULES_LOG_FILE} "    MD5          - ${CACHE_LOG_${ITEM}_MODULE_MD5}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "\n" )
             endif()
@@ -200,7 +195,7 @@ macro( dump_module_log  )
             if( NOT ${CACHE_LOG_${ITEM}_MODULE_UNIQUE} )                
                 math( EXPR USED_UNIQUE_COMPONENTS_NUMBER "${USED_UNIQUE_COMPONENTS_NUMBER} + 1" )
                 file( APPEND ${MODULES_LOG_FILE} "-> ${USED_UNIQUE_COMPONENTS_NUMBER}\n" )
-                file( APPEND ${MODULES_LOG_FILE} "    NAME_MODULE  - ${ITEM}\n" )
+                file( APPEND ${MODULES_LOG_FILE} "    MODULE_NAME  - ${ITEM}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "    MODULE_CACHE - ${CACHE_LOG_${ITEM}_MODULE_CACHE}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "    MD5          - ${CACHE_LOG_${ITEM}_MODULE_MD5}\n" )
                 file( APPEND ${MODULES_LOG_FILE} "\n" )
@@ -225,18 +220,18 @@ macro( setup_main_module )
         set( MODULE_TYPE INLINE )
     endif()
 
-    set( ORIGINAL_NAME_MODULE ${NAME_MODULE} )
+    set( ORIGINAL_MODULE_NAME ${MODULE_NAME} )
 
     if( NOT ( ${MODULE_TYPE} STREQUAL "INLINE" ) )
         get_property( MODULES_ARRAY GLOBAL PROPERTY MODULES_ARRAY )
-        list (FIND MODULES_ARRAY ${NAME_MODULE} _index)
+        list (FIND MODULES_ARRAY ${MODULE_NAME} _index)
         if ( JOIN_PROJECT_NAME OR ${_index} GREATER -1)
-            set( NAME_MODULE ${NAME_MODULE}_${PROJECT_NAME} )
+            set( MODULE_NAME ${MODULE_NAME}_${PROJECT_NAME} )
         endif() 
-        list( APPEND MODULES_ARRAY ${NAME_MODULE} )
+        list( APPEND MODULES_ARRAY ${MODULE_NAME} )
         set_property( GLOBAL PROPERTY MODULES_ARRAY "${MODULES_ARRAY}" )
 
-        project ( ${NAME_MODULE} )
+        project ( ${MODULE_NAME} )
         include ( CMake-common )
     endif()
 
@@ -248,10 +243,11 @@ macro( setup_main_module )
 
     if( MODULE_COMPONENTS_VALUE_NAME )
         get_property(  MODULE_COMPONENTS GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME} )
-        if( ORIGINAL_NAME_MODULE )
-            list (FIND MODULE_COMPONENTS ${ORIGINAL_NAME_MODULE} _index)
+        if( ORIGINAL_MODULE_NAME )
+            list (FIND MODULE_COMPONENTS ${ORIGINAL_MODULE_NAME} _index)
             if ( ${_index} GREATER -1)
                 set( INIT true )
+                list( REMOVE_ITEM MODULE_COMPONENTS ${ORIGINAL_MODULE_NAME} )
             endif()
         else()
             set( INIT true )
@@ -261,33 +257,127 @@ macro( setup_main_module )
         set( INIT true )
     endif()
 
+###
+    if( PLATFORMS_IGNORE AND INIT )
+        foreach( PLATFORM ${PLATFORMS_IGNORE} )
+            if(${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURRENT} )
+                set( INIT )
+                break()
+            endif()
+            list (FIND DAVA_PLATFORM_CURRENT_POSTFIXES ${PLATFORM} _index)
+            if (${_index} GREATER -1)
+                set( INIT )
+                break()
+            endif()
+        endforeach()
+    elseif( PLATFORMS_SUPPORTED AND INIT ) 
+        set( INIT )
+        foreach( PLATFORM ${PLATFORMS_SUPPORTED} )
+            if(${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURRENT} )
+                set( INIT true )
+                break()
+            endif()
+            list (FIND DAVA_PLATFORM_CURRENT_POSTFIXES ${PLATFORM} _index)
+            if (${_index} GREATER -1)
+                set( INIT true )
+                break()
+            endif()
+        endforeach()
+    endif()       
+
+###
     if ( INIT )
-        #"hack - find first call"
+
+        #"find root call"
         get_property( MAIN_MODULES_FIND_FIRST_CALL_LIST GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST )
+        if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )  
+            # "root call" 
+        endif()
+
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )
         set_property(GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST ${MAIN_MODULES_FIND_FIRST_CALL_LIST} ) 
     endif()
 
     if ( INIT )
-        if( IOS AND ${MODULE_TYPE} STREQUAL "DYNAMIC" )
-            set( MODULE_TYPE "STATIC" )
+        
+        if (${MODULE_TYPE} STREQUAL "PLUGIN"  )
+            set( USE_PARENT_DEFINITIONS true )
+        endif()
+
+
+#####
+
+        if(  NOT USE_PARENT_DEFINITIONS  )
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
+
+        else()
+
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
+
+            load_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT}
+                GLOBAL_DEFINITIONS  ) 
+
+        endif()
+
+        set( DEFINITIONS_BACKUP ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} )
+
+        #"FIND LIBRARY"
+        foreach( NAME ${FIND_SYSTEM_LIBRARY} ${FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURRENT}} )
+            FIND_LIBRARY( ${NAME}_LIBRARY  ${NAME} )
+
+            if( ${NAME}_LIBRARY )
+                list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT} ${${NAME}_LIBRARY} )
+            else()
+                if ( NOT NOT_TARGET_EXECUTABLE )
+                    find_package( ${NAME} )
+                    list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT} ${${NAME}_LIBRARY} )
+                endif()
+            endif()
+        endforeach()
+
+        #"FIND_MODULE"
+        foreach( NAME ${FIND_MODULE} ${FIND_MODULE_${DAVA_PLATFORM_CURRENT}} )
+            find_dava_module( ${NAME} COMPONENTS ${MODULE_COMPONENTS_${NAME}} )
+        endforeach()
+
+        #"FIND PACKAGE"
+        foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURRENT}} )
+            find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} ${PACKAGE_COMPONENTS_${NAME}} )
+
+            if (PACKAGE_${NAME}_INCLUDES)
+                foreach( PACKAGE_INCLUDE ${PACKAGE_${NAME}_INCLUDES} )
+                    include_directories(${${PACKAGE_INCLUDE}})
+                endforeach()
+            endif()
+            list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT} ${PACKAGE_${NAME}_STATIC_LIBRARIES} )
+        endforeach()
+
+
+        load_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
+
+        set( PACKAGES_DEFINITIONS  ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} )
+
+        if( DEFINITIONS_BACKUP )
+            list(REMOVE_ITEM PACKAGES_DEFINITIONS "${DEFINITIONS_BACKUP}" )
         endif()
 
 #####
-        if (${MODULE_TYPE} STREQUAL "STATIC" OR ${MODULE_TYPE} STREQUAL "DYNAMIC" )
+        if (${MODULE_TYPE} STREQUAL "STATIC"  )
             append_property(EXTERNAL_TEST_FOLDERS ${CMAKE_CURRENT_LIST_DIR})
-        endif()
-        
-        if( ${MODULE_TYPE} STREQUAL "STATIC" )
 
             if( CPP_FILES_EXECUTE )
                 get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
-                save_property( PROPERTY_LIST DEFINITIONS CPP_FILES_EXECUTE )
+                save_property( PROPERTY_LIST CPP_FILES_EXECUTE )
             endif()
 
-            get_property( GLOBAL_DEFINITIONS_PROP GLOBAL PROPERTY GLOBAL_DEFINITIONS )
-            get_property( DEFINITIONS_PROP GLOBAL PROPERTY DEFINITIONS )
-            get_property( DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT} GLOBAL PROPERTY DEFINITIONS_${DAVA_PLATFORM_CURENT} )
 
             if( COVERAGE AND MACOS )
                 set( COVERAGE_STRING "COVERAGE" )
@@ -295,36 +385,40 @@ macro( setup_main_module )
                 set( COVERAGE_STRING  )                
             endif()
 
-            set( MODULE_CACHE   "ROOT_${ORIGINAL_NAME_MODULE}"
-                                ${LOADED_MODULES} 
-                                ${DEFINITIONS} 
-                                ${DEFINITIONS_${DAVA_PLATFORM_CURENT}}  
-                                ${GLOBAL_DEFINITIONS_PROP}
-                                ${DEFINITIONS_PROP} 
-                                ${DEFINITIONS_PROP_${DAVA_PLATFORM_CURENT}} 
-                                ${COVERAGE_STRING} )
+            set( MODULE_CACHE   ${COVERAGE_STRING}
+                                ${MODULE_COMPONENTS}  )
+            
+            if( USE_PARENT_DEFINITIONS  )
 
-            list( REMOVE_DUPLICATES MODULE_CACHE )
-            list( SORT MODULE_CACHE )
+                list( APPEND MODULE_CACHE ${DEFINITIONS} 
+                                          ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} 
+                                        )
+            else()
+                list( APPEND MODULE_CACHE ${PACKAGES_DEFINITIONS} 
+                                          ${PACKAGES_DEFINITIONS_${DAVA_PLATFORM_CURRENT}} 
+                                        )
+            endif()
 
-            append_property( MODULE_CACHE_LOG_LIST ${NAME_MODULE}  )
+            if( MODULE_CACHE )
+                list( REMOVE_DUPLICATES MODULE_CACHE )
+                list( SORT MODULE_CACHE )
+            endif()
+            
+            set( MODULE_CACHE   "ROOT_${ORIGINAL_MODULE_NAME}" ${MODULE_CACHE} )
 
-            set_property( GLOBAL PROPERTY CACHE_LOG_${NAME_MODULE}_MODULE_CACHE  ${MODULE_CACHE} )
+            append_property( MODULE_CACHE_LOG_LIST ${MODULE_NAME}  )
+
+            set_property( GLOBAL PROPERTY CACHE_LOG_${MODULE_NAME}_MODULE_CACHE  ${MODULE_CACHE} )
 
             string (REPLACE ";" " " MODULE_CACHE "${MODULE_CACHE}")
             string( MD5  MODULE_CACHE ${MODULE_CACHE} )
 
-            set_property( GLOBAL PROPERTY CACHE_LOG_${NAME_MODULE}_MODULE_MD5  ${MODULE_CACHE}  )
-            set_property( GLOBAL PROPERTY CACHE_LOG_${NAME_MODULE}_MODULE_UNIQUE  true )
-            set_property( GLOBAL PROPERTY CACHE_LOG_${NAME_MODULE}_MODULE_USES_LIST  )
+            set_property( GLOBAL PROPERTY CACHE_LOG_${MODULE_NAME}_MODULE_MD5  ${MODULE_CACHE}  )
+            set_property( GLOBAL PROPERTY CACHE_LOG_${MODULE_NAME}_MODULE_UNIQUE  true )
+            set_property( GLOBAL PROPERTY CACHE_LOG_${MODULE_NAME}_MODULE_USES_LIST  )
 
         endif()
 #####            
-
-        if( MODULE_INITIALIZATION_CODE )
-            ASSERT( NAME_MODULE "Please define the name of the module in the variable NAME MODULE")
-            list( APPEND CPP_FILES ${MODULE_INITIALIZATION_CODE} )
-        endif()
 
         #"APPLE VALUES"
         if( APPLE )
@@ -339,19 +433,19 @@ macro( setup_main_module )
                            UNITY_IGNORE_LIST
                            CUSTOM_PACK_1 )
                 if( ${VALUE}_APPLE)
-                    list( APPEND ${VALUE}_${DAVA_PLATFORM_CURENT} ${${VALUE}_APPLE} )  
+                    list( APPEND ${VALUE}_${DAVA_PLATFORM_CURRENT} ${${VALUE}_APPLE} )  
                 endif()
             endforeach()
         endif()
 
         #"INCLUDES"
         set( INCLUDES_LIST )
-        foreach( ITEM ${INCLUDES} ${INCLUDES_${DAVA_PLATFORM_CURENT}} )
+        foreach( ITEM ${INCLUDES} ${INCLUDES_${DAVA_PLATFORM_CURRENT}} )
             get_filename_component( ITEM ${ITEM} ABSOLUTE )
             list( APPEND INCLUDES_LIST ${ITEM} )
         endforeach()
         set( INCLUDES  ${INCLUDES_LIST} )
-        list( APPEND INCLUDES_PRIVATE  ${INCLUDES_PRIVATE_${DAVA_PLATFORM_CURENT}} )
+        list( APPEND INCLUDES_PRIVATE  ${INCLUDES_PRIVATE_${DAVA_PLATFORM_CURRENT}} )
         
         if( WIN )
             list( APPEND STATIC_LIBRARIES_WIN          ${STATIC_LIBRARIES_WIN${DAVA_PROJECT_BIT}} )
@@ -377,62 +471,31 @@ macro( setup_main_module )
 
         endif()      
        
-        #"FIND LIBRARY"
-        foreach( NAME ${FIND_SYSTEM_LIBRARY} ${FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURENT}} )
-            FIND_LIBRARY( ${NAME}_LIBRARY  ${NAME} )
-
-            if( ${NAME}_LIBRARY )
-                list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${${NAME}_LIBRARY} )
-            else()
-                if ( NOT NOT_TARGET_EXECUTABLE )
-                    find_package( ${NAME} )
-                    list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${${NAME}_LIBRARY} )
-                endif()
-            endif()
-        endforeach()
-
-        #"FIND PACKAGE"
-        foreach( NAME ${FIND_PACKAGE} ${FIND_PACKAGE${DAVA_PLATFORM_CURENT}} )
-            find_package( ${NAME} COMPONENTS ${MODULE_COMPONENTS} )
-
-            if (PACKAGE_${NAME}_INCLUDES)
-                foreach( PACKAGE_INCLUDE ${PACKAGE_${NAME}_INCLUDES} )
-                    include_directories(${${PACKAGE_INCLUDE}})
-                endforeach()
-            endif()
-            list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} ${PACKAGE_${NAME}_STATIC_LIBRARIES} )
-
-        endforeach()
-
+    
         #"ERASE FILES"
         foreach( PLATFORM  ${DAVA_PLATFORM_LIST} )
             if( NOT ${PLATFORM} AND ERASE_FILES_NOT_${PLATFORM} )
                 list( APPEND ERASE_FILES ${ERASE_FILES_NOT_${PLATFORM}} ) 
             endif()
         endforeach()
-        if( ERASE_FILES_NOT_${DAVA_PLATFORM_CURENT} AND ERASE_FILES )
-             list(REMOVE_ITEM ERASE_FILES ${ERASE_FILES_NOT_${DAVA_PLATFORM_CURENT}} )
+        if( ERASE_FILES_NOT_${DAVA_PLATFORM_CURRENT} AND ERASE_FILES )
+             list(REMOVE_ITEM ERASE_FILES ${ERASE_FILES_NOT_${DAVA_PLATFORM_CURRENT}} )
         endif()
 
         set( ALL_SRC )
         set( ALL_SRC_HEADER_FILE_ONLY )
-        set( EXTERNAL_MODULES ${EXTERNAL_MODULES} ${EXTERNAL_MODULES_${DAVA_PLATFORM_CURENT}} ${IMPL_MODULE} ) 
         
-        if( SRC_FOLDERS OR EXTERNAL_MODULES )
+        if( SRC_FOLDERS  )
 
             foreach( VALUE ${MAIN_MODULE_VALUES} )
                 set( ${VALUE}_DIR_NAME ${${VALUE}} )
                 set( ${VALUE})
             endforeach()
-
-            if( EXTERNAL_MODULES_DIR_NAME )
-                load_external_modules( "${EXTERNAL_MODULES_DIR_NAME}" )
-            endif()
             
             if( SRC_FOLDERS_DIR_NAME )
                 define_source( SOURCE        ${SRC_FOLDERS_DIR_NAME}
-                                           IGNORE_ITEMS  ${ERASE_FOLDERS_DIR_NAME} ${ERASE_FOLDERS_${DAVA_PLATFORM_CURENT}_DIR_NAME} 
-                                                                          ${ERASE_FILES_DIR_NAME} ${ERASE_FILES_${DAVA_PLATFORM_CURENT}_DIR_NAME}
+                                           IGNORE_ITEMS  ${ERASE_FOLDERS_DIR_NAME} ${ERASE_FOLDERS_${DAVA_PLATFORM_CURRENT}_DIR_NAME} 
+                                                                          ${ERASE_FILES_DIR_NAME} ${ERASE_FILES_${DAVA_PLATFORM_CURRENT}_DIR_NAME}
                                             GROUP_SOURCE ${GROUP_SOURCE}
                                          )
                                          
@@ -447,19 +510,22 @@ macro( setup_main_module )
 
         endif()
 
-        if( NAME_MODULE_STUB )
+        if( MODULE_NAME_STUB )
             set( CONECTION_TYPE STUB )
-            list (FIND DAVA_COMPONENTS ${NAME_MODULE_STUB} _index)
+            list (FIND MODULE_COMPONENTS ${MODULE_NAME_STUB} _index)
+
             if ( ${_index} GREATER -1 )
-                set( NAME_MODULE )
+                set( MODULE_NAME )
                 set( MODULE_TYPE INLINE )
                 set( CONECTION_TYPE IMPL )
+                add_module_subdirectory( ${MODULE_NAME_STUB}  "${IMPL_MODULE}" )
+
             endif()
 
             foreach ( ITEM  HPP_FILES_RECURSE HPP_FILES
                             CPP_FILES_RECURSE CPP_FILES )
                 list( APPEND ${ITEM}   ${${ITEM}_${CONECTION_TYPE}} )
-                list( APPEND ${ITEM}_${DAVA_PLATFORM_CURENT} ${${ITEM}_${CONECTION_TYPE}_${DAVA_PLATFORM_CURENT}} )
+                list( APPEND ${ITEM}_${DAVA_PLATFORM_CURRENT} ${${ITEM}_${CONECTION_TYPE}_${DAVA_PLATFORM_CURRENT}} )
             endforeach ()
 
         endif()
@@ -478,11 +544,11 @@ macro( setup_main_module )
             list(APPEND GROUP_SOURCE QtGenerated)
         endif()
 
-        define_source( SOURCE         ${CPP_FILES} ${CPP_FILES_${DAVA_PLATFORM_CURENT}}
-                                      ${HPP_FILES} ${HPP_FILES_${DAVA_PLATFORM_CURENT}}
-                       SOURCE_RECURSE ${CPP_FILES_RECURSE} ${CPP_FILES_RECURSE_${DAVA_PLATFORM_CURENT}}
-                                      ${HPP_FILES_RECURSE} ${HPP_FILES_RECURSE_${DAVA_PLATFORM_CURENT}}
-                       IGNORE_ITEMS   ${ERASE_FILES} ${ERASE_FILES_${DAVA_PLATFORM_CURENT}}
+        define_source( SOURCE         ${CPP_FILES} ${CPP_FILES_${DAVA_PLATFORM_CURRENT}}
+                                      ${HPP_FILES} ${HPP_FILES_${DAVA_PLATFORM_CURRENT}}
+                       SOURCE_RECURSE ${CPP_FILES_RECURSE} ${CPP_FILES_RECURSE_${DAVA_PLATFORM_CURRENT}}
+                                      ${HPP_FILES_RECURSE} ${HPP_FILES_RECURSE_${DAVA_PLATFORM_CURRENT}}
+                       IGNORE_ITEMS   ${ERASE_FILES} ${ERASE_FILES_${DAVA_PLATFORM_CURRENT}}
                        GROUP_SOURCE ${GROUP_SOURCE}
                        GROUP_STRINGS  ${MODULE_GROUP_STRINGS}
                      )
@@ -492,20 +558,18 @@ macro( setup_main_module )
         list( APPEND ALL_SRC_HEADER_FILE_ONLY  ${PROJECT_HEADER_FILE_ONLY} )
 
         set_project_files_properties( "${ALL_SRC}" )
-
+        
         #"SAVE PROPERTY"
         save_property( PROPERTY_LIST 
-                DEFINITIONS
-                DEFINITIONS_${DAVA_PLATFORM_CURENT}
-                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}          
-                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE
-                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG
-                STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} 
-                STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE 
-                STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG 
-                STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT}
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}          
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG
+                STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT} 
+                STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE 
+                STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG 
+                STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT}
                 DEPLOY_TO_BIN
-                DEPLOY_TO_BIN_${DAVA_PLATFORM_CURENT}
+                DEPLOY_TO_BIN_${DAVA_PLATFORM_CURRENT}
                 INCLUDES
                 INCLUDES_PRIVATE
                 BINARY_WIN32_DIR_RELEASE
@@ -519,26 +583,53 @@ macro( setup_main_module )
                 MIX_APP_DATA
                 )
 
-        load_property( PROPERTY_LIST 
-                DEFINITIONS
-                DEFINITIONS_${DAVA_PLATFORM_CURENT}
-                GLOBAL_DEFINITIONS                
-                STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} 
-                STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE 
-                STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG 
-                STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT}
+        load_property( PROPERTY_LIST                
+                STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT} 
+                STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE 
+                STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG 
+                STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT}
                 INCLUDES
                 INCLUDES_PRIVATE
+                PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURRENT}
                 )
 
-        list( APPEND DEFINITIONS ${GLOBAL_DEFINITIONS} )
+        if( ${MODULE_TYPE} STREQUAL "PLUGIN" )
+            load_property( PROPERTY_LIST
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}          
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE
+                DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG
+                )
+        endif()
+
+        if(  NOT USE_PARENT_DEFINITIONS  )
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
+
+        else()
+
+            save_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
+
+            load_property( PROPERTY_LIST 
+                DEFINITIONS
+                DEFINITIONS_${DAVA_PLATFORM_CURRENT}
+                GLOBAL_DEFINITIONS  ) 
+
+            list( APPEND DEFINITIONS ${GLOBAL_DEFINITIONS} )
+
+        endif()
+        
+        list( APPEND DEFINITIONS ${PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURRENT}} )
+
 
         #"DEFINITIONS"
         if( DEFINITIONS )
             add_definitions( ${DEFINITIONS} )
         endif()
-        if( DEFINITIONS_${DAVA_PLATFORM_CURENT} )
-            add_definitions( ${DEFINITIONS_${DAVA_PLATFORM_CURENT}} )
+        if( DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
+            add_definitions( ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} )
         endif()
 
         #"INCLUDES_DIR"
@@ -548,8 +639,8 @@ macro( setup_main_module )
         endif()
 
         #"PLUGIN_OUT_DIR"
-        if( PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURENT} )
-            set( PLUGIN_OUT_DIR PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURENT}  )
+        if( PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURRENT} )
+            set( PLUGIN_OUT_DIR PLUGIN_OUT_DIR_${DAVA_PLATFORM_CURRENT}  )
         endif()
 
         if( ${MODULE_TYPE} STREQUAL "INLINE" )
@@ -566,34 +657,48 @@ macro( setup_main_module )
                     set( CREATE_NEW_MODULE )
                     list(GET MODULE_CACHE_LIST ${_index}  MODULE_CACHE )
                     get_property( MODULE_CACHE_LOADED_NAME GLOBAL PROPERTY ${MODULE_CACHE} )
-                    set_property( GLOBAL PROPERTY CACHE_LOG_${NAME_MODULE}_MODULE_UNIQUE  false )
-                    append_property( CACHE_LOG_${MODULE_CACHE_LOADED_NAME}_MODULE_USES_LIST ${NAME_MODULE} )  
-                    set( NAME_MODULE ${MODULE_CACHE_LOADED_NAME} )
+                    set_property( GLOBAL PROPERTY CACHE_LOG_${MODULE_NAME}_MODULE_UNIQUE  false )
+                    append_property( CACHE_LOG_${MODULE_CACHE_LOADED_NAME}_MODULE_USES_LIST ${MODULE_NAME} )  
+                    set( MODULE_NAME ${MODULE_CACHE_LOADED_NAME} )
                 endif()
             endif()
 
 ######
 
             if( CREATE_NEW_MODULE )
-                project( ${NAME_MODULE} )
+                project( ${MODULE_NAME} )
                 
                 generated_unity_sources( ALL_SRC  IGNORE_LIST ${UNITY_IGNORE_LIST}
-                                                  IGNORE_LIST_${DAVA_PLATFORM_CURENT} ${UNITY_IGNORE_LIST_${DAVA_PLATFORM_CURENT}}
-                                                  CUSTOM_PACK_1 ${CUSTOM_PACK_1} ${CUSTOM_PACK_1_${DAVA_PLATFORM_CURENT}}) 
+                                                  IGNORE_LIST_${DAVA_PLATFORM_CURRENT} ${UNITY_IGNORE_LIST_${DAVA_PLATFORM_CURRENT}}
+                                                  CUSTOM_PACK_1 ${CUSTOM_PACK_1} ${CUSTOM_PACK_1_${DAVA_PLATFORM_CURRENT}}) 
             endif()
 
             if( ${MODULE_TYPE} STREQUAL "STATIC" )
-                if( CREATE_NEW_MODULE )
-                    add_library( ${NAME_MODULE} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
+
+                if( MODULE_MANAGER )
+                    set_property( GLOBAL PROPERTY MODULE_MANAGER  true )
+                    get_filename_component( MODULE_MANAGER_STUB ${MODULE_MANAGER_STUB} ABSOLUTE )
+                    set_property( GLOBAL PROPERTY MODULE_MANAGER_STUB  ${MODULE_MANAGER_STUB} )
                 endif()
-                append_property( TARGET_MODULES_LIST ${NAME_MODULE} )  
+
+                if( MODULE_INITIALIZATION )
+                    append_property( DAVA_LOADED_INITIALIZATION_MODULES ${ORIGINAL_MODULE_NAME} )
+                endif()
+
+                if( CREATE_NEW_MODULE )
+                    add_library( ${MODULE_NAME} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
+                endif()
+                append_property( TARGET_MODULES_LIST ${MODULE_NAME} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
-                add_library( ${NAME_MODULE} SHARED  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
-                append_property( PLUGIN_LIST ${NAME_MODULE} )
+
+                get_property( MODULE_MANAGER_STUB GLOBAL PROPERTY MODULE_MANAGER_STUB )
+
+                add_library( ${MODULE_NAME} SHARED  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} ${MODULE_MANAGER_STUB} )
+                append_property( PLUGIN_LIST ${MODULE_NAME} )
 
                 load_property( PROPERTY_LIST TARGET_MODULES_LIST ) 
-                list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} ${TARGET_MODULES_LIST} )  
+                list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT} ${TARGET_MODULES_LIST} )  
                 add_definitions( -DDAVA_IMPLEMENT_PLUGIN_MODULE )  
 
                 if( WIN32 )
@@ -610,8 +715,8 @@ macro( setup_main_module )
                 apply_default_value(PROFILE_POSTFIX " ")
                 apply_default_value(RELEASE_POSTFIX " ")
 
-                set_target_properties( ${NAME_MODULE} PROPERTIES
-                                                                 DEBUG_OUTPUT_NAME "${NAME_MODULE}" 
+                set_target_properties( ${MODULE_NAME} PROPERTIES
+                                                                 DEBUG_OUTPUT_NAME "${MODULE_NAME}" 
                                                                  DEBUG_POSTFIX ${DEBUG_POSTFIX}
                                                                  CHECKED_POSTFIX ${CHECKED_POSTFIX}
                                                                  PROFILE_POSTFIX ${PROFILE_POSTFIX}
@@ -632,25 +737,31 @@ macro( setup_main_module )
                                                  BINARY_WIN64_DIR_RELWITHDEB )
                 endif()
 
+                if( MACOS )
+                    list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}  ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}})
+                    list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE  ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE})
+                    list( APPEND STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG  ${DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG})
+                endif()
+
                 if( PLUGIN_OUT_DIR )
                     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
                         string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
                         
                         if( APPLE )
-                            set_target_properties( ${NAME_MODULE} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${PLUGIN_OUT_DIR} )                
+                            set_target_properties( ${MODULE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${PLUGIN_OUT_DIR} )                
                         else()
-                            set_target_properties( ${NAME_MODULE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${PLUGIN_OUT_DIR} )
+                            set_target_properties( ${MODULE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${PLUGIN_OUT_DIR} )
                         endif()
 
                     endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
                 endif()
                  
                 if( PLUGIN_RELATIVE_PATH_TO_FOLDER )
-                    set_property( GLOBAL PROPERTY ${NAME_MODULE}_RELATIVE_PATH_TO_FOLDER ${PLUGIN_RELATIVE_PATH_TO_FOLDER} )
+                    set_property( GLOBAL PROPERTY ${MODULE_NAME}_RELATIVE_PATH_TO_FOLDER ${PLUGIN_RELATIVE_PATH_TO_FOLDER} )
                 endif()
 
                 if( PLUGIN_COPY_ADD_FILES )
-                    set_property( GLOBAL PROPERTY ${NAME_MODULE}_PLUGIN_COPY_ADD_FILES ${PLUGIN_COPY_ADD_FILES} )                    
+                    set_property( GLOBAL PROPERTY ${MODULE_NAME}_PLUGIN_COPY_ADD_FILES ${PLUGIN_COPY_ADD_FILES} )                    
                 endif()
 
             endif()
@@ -659,7 +770,7 @@ macro( setup_main_module )
                 file_tree_check( "${CMAKE_CURRENT_LIST_DIR}" )
 
                 if( TARGET_FILE_TREE_FOUND )
-                    add_dependencies(  ${NAME_MODULE} FILE_TREE_${NAME_MODULE} )
+                    add_dependencies(  ${MODULE_NAME} FILE_TREE_${MODULE_NAME} )
                 endif()
 
             endif()
@@ -669,42 +780,39 @@ macro( setup_main_module )
                 add_definitions( ${DEFINITIONS_PRIVATE} )
             endif()
 
-            if( DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURENT} )
-                add_definitions( ${DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURENT}} )
+            if( DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURRENT} )
+                add_definitions( ${DEFINITIONS_PRIVATE_${DAVA_PLATFORM_CURRENT}} )
             endif()
 
             if( INCLUDES_PRIVATE )
                 include_directories( ${INCLUDES_PRIVATE} ) 
             endif() 
 
-            #include_directories( "Sources/" ) 
-
 
             if( CREATE_NEW_MODULE )
 
-
                 if( WIN32 )
-                    grab_libs(LIST_SHARED_LIBRARIES_DEBUG   "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG}"   EXCLUDE_LIBS ADDITIONAL_DEBUG_LIBS)
-                    grab_libs(LIST_SHARED_LIBRARIES_RELEASE "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE}" EXCLUDE_LIBS ADDITIONAL_RELEASE_LIBS)
-                    set( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG   ${LIST_SHARED_LIBRARIES_DEBUG} )
-                    set( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE ${LIST_SHARED_LIBRARIES_RELEASE} )
+                    grab_libs(LIST_SHARED_LIBRARIES_DEBUG   "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG}"   EXCLUDE_LIBS ADDITIONAL_DEBUG_LIBS)
+                    grab_libs(LIST_SHARED_LIBRARIES_RELEASE "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE}" EXCLUDE_LIBS ADDITIONAL_RELEASE_LIBS)
+                    set( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG   ${LIST_SHARED_LIBRARIES_DEBUG} )
+                    set( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE ${LIST_SHARED_LIBRARIES_RELEASE} )
                 endif()
 
                 if( LINK_THIRD_PARTY )                 
-                    MERGE_STATIC_LIBRARIES( ${NAME_MODULE} ALL "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}}" )
-                    MERGE_STATIC_LIBRARIES( ${PROJECT_NAME} DEBUG "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG}" )
-                    MERGE_STATIC_LIBRARIES( ${PROJECT_NAME} RELEASE "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE}" )
+                    MERGE_STATIC_LIBRARIES( ${MODULE_NAME} ALL "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}}" )
+                    MERGE_STATIC_LIBRARIES( ${PROJECT_NAME} DEBUG "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG}" )
+                    MERGE_STATIC_LIBRARIES( ${PROJECT_NAME} RELEASE "${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE}" )
                 endif()
 
-                target_link_libraries  ( ${NAME_MODULE}  ${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}}
-                                                         ${STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT}} )  
+                target_link_libraries  ( ${MODULE_NAME}  ${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}}
+                                                         ${STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT}} )  
 
-                foreach ( FILE ${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG} )
-                    target_link_libraries  ( ${NAME_MODULE} debug ${FILE} )
+                foreach ( FILE ${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG} )
+                    target_link_libraries  ( ${MODULE_NAME} debug ${FILE} )
                 endforeach ()
 
-                foreach ( FILE ${STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE} )
-                    target_link_libraries  ( ${NAME_MODULE} optimized ${FILE} )
+                foreach ( FILE ${STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE} )
+                    target_link_libraries  ( ${MODULE_NAME} optimized ${FILE} )
                 endforeach ()
 
                 if (QT5_FOUND)
@@ -720,47 +828,43 @@ macro( setup_main_module )
                     add_definitions( -DDAVA_FOLDERS="${DAVA_FOLDERS}" )
                     add_definitions( -DDAVA_UNITY_FOLDER="${CMAKE_BINARY_DIR}/unity_pack" )
 
-                    list( APPEND EXECUTE_DEFINITIONS -DTARGET_FOLDERS_${ORIGINAL_NAME_MODULE}="${TARGET_FOLDERS_${PROJECT_NAME}}" )
+                    list( APPEND EXECUTE_DEFINITIONS -DTARGET_FOLDERS_${ORIGINAL_MODULE_NAME}="${TARGET_FOLDERS_${PROJECT_NAME}}" )
 
-                    append_property( EXECUTE_DEFINITIONS_${NAME_MODULE} "${EXECUTE_DEFINITIONS}" )
+                    append_property( EXECUTE_DEFINITIONS_${MODULE_NAME} "${EXECUTE_DEFINITIONS}" )
 
-                    set_target_properties(${NAME_MODULE} PROPERTIES XCODE_ATTRIBUTE_GCC_GENERATE_TEST_COVERAGE_FILES YES )
-                    set_target_properties(${NAME_MODULE} PROPERTIES XCODE_ATTRIBUTE_GCC_INSTRUMENT_PROGRAM_FLOW_ARCS YES )
+                    set_target_properties(${MODULE_NAME} PROPERTIES XCODE_ATTRIBUTE_GCC_GENERATE_TEST_COVERAGE_FILES YES )
+                    set_target_properties(${MODULE_NAME} PROPERTIES XCODE_ATTRIBUTE_GCC_INSTRUMENT_PROGRAM_FLOW_ARCS YES )
 
                 endif()   
 
                 if ( WINDOWS_UAP )
-                    set_property(TARGET ${NAME_MODULE} PROPERTY VS_MOBILE_EXTENSIONS_VERSION ${WINDOWS_UAP_MOBILE_EXT_SDK_VERSION} )
+                    set_property(TARGET ${MODULE_NAME} PROPERTY VS_MOBILE_EXTENSIONS_VERSION ${WINDOWS_UAP_MOBILE_EXT_SDK_VERSION} )
                 endif()             
             endif()
 
-            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT} )
-            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_RELEASE )
-            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURENT}_DEBUG )
-            reset_property( STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURENT} )
-            reset_property( INCLUDES_PRIVATE )
-
-                
+            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT} )
+            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_RELEASE )
+            reset_property( STATIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}_DEBUG )
+            reset_property( STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT} )
+            reset_property( INCLUDES_PRIVATE )       
+                     
         endif()
 
-        #"hack - find first call"
+        #"find root call"
         get_property( MAIN_MODULES_FIND_FIRST_CALL_LIST GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST )
         list( REMOVE_AT  MAIN_MODULES_FIND_FIRST_CALL_LIST 0 )
         set_property(GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST ${MAIN_MODULES_FIND_FIRST_CALL_LIST} )        
         
         list( LENGTH MAIN_MODULES_FIND_FIRST_CALL_LIST LENGTH_DEFINE_SOURCE_LIST  )
         if ( NOT LENGTH_DEFINE_SOURCE_LIST )
-            #"first call"
-            set_property( GLOBAL PROPERTY MODULES_NAME "${NAME_MODULE}" )
-
+            #"root call"
+            set_property( GLOBAL PROPERTY MODULES_NAME "${MODULE_NAME}" )
         endif()
 
         if( CREATE_NEW_MODULE AND ${MODULE_TYPE} STREQUAL "STATIC" )
-            set_property( GLOBAL PROPERTY ${MODULE_CACHE} "${NAME_MODULE}" )
+            set_property( GLOBAL PROPERTY ${MODULE_CACHE} "${MODULE_NAME}" )
             append_property(  MODULE_CACHE_LIST ${MODULE_CACHE} )
-
         endif()
-
 
     endif()
 

@@ -50,6 +50,7 @@
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/Renderer.h"
+#include "Render/RHI/rhi_ShaderSource.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 #include "Sound/SoundEvent.h"
 #include "Sound/SoundSystem.h"

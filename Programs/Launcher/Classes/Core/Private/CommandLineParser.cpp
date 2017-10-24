@@ -11,8 +11,33 @@
 #include <QCommandLineParser>
 #include <QDebug>
 
+#include <iostream>
+
+namespace CommandLineParserDetails
+{
+void ConsoleOutput(QtMsgType type, const QMessageLogContext&, const QString& msg)
+{
+    QString status;
+    switch (type)
+    {
+    case QtCriticalMsg:
+    case QtFatalMsg:
+        status = "error: ";
+        break;
+    case QtWarningMsg:
+        status = "warning: ";
+        break;
+    default:
+        break;
+    }
+
+    std::cout << (status + msg).toStdString() << std::endl;
+}
+}
+
 void CommandLineParser::Parse(const QStringList& arguments)
 {
+    qInstallMessageHandler(CommandLineParserDetails::ConsoleOutput);
     QCommandLineParser parser;
 
     const QCommandLineOption helpOption = parser.addHelpOption();
