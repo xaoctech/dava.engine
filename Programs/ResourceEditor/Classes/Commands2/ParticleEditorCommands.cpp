@@ -25,9 +25,19 @@ DAVA::Map<ForceType, String> forceNames =
   { ForceType::POINT_GRAVITY, "Magnet" },
   { ForceType::PLANE_COLLISION, "Plane Collision" }
 };
-}
 
-void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType);
+void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType)
+{
+    if (layer == nullptr)
+        return;
+    ParticleForce* newForce = new ParticleForce(layer);
+    newForce->type = forceType;
+    newForce->forceName = ParticleEditorCommandsDetail::forceNames[forceType];
+
+    layer->AddForce(newForce);
+    SafeRelease(newForce);
+}
+}
 
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* effect)
     : CommandAction(CMDID_PARTICLE_EFFECT_UPDATE)
@@ -625,7 +635,7 @@ CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleDrag::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleForce::eType::DRAG_FORCE);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::DRAG_FORCE);
 }
 
 CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLayer* layer)
@@ -636,7 +646,7 @@ CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLay
 
 void CommandAddParticleLorentzForce::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleForce::eType::LORENTZ_FORCE);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::LORENTZ_FORCE);
 }
 
 CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)
@@ -647,7 +657,7 @@ CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleGravity::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleForce::eType::GRAVITY);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::GRAVITY);
 }
 
 CommandAddParticleWind::CommandAddParticleWind(DAVA::ParticleLayer* layer)
@@ -658,7 +668,7 @@ CommandAddParticleWind::CommandAddParticleWind(DAVA::ParticleLayer* layer)
 
 void CommandAddParticleWind::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleForce::eType::WIND);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::WIND);
 }
 
 CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleLayer* layer)
@@ -669,7 +679,7 @@ CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleLay
 
 void CommandAddParticlePointGravity::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleForce::eType::POINT_GRAVITY);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::POINT_GRAVITY);
 }
 
 CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::ParticleLayer* layer)
@@ -680,7 +690,7 @@ CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::Particl
 
 void CommandAddParticlePlaneCollision::Redo()
 {
-    AddNewForceToLayer(selectedLayer, ParticleForce::eType::PLANE_COLLISION);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::PLANE_COLLISION);
 }
 
 CommandRemoveParticleForce::CommandRemoveParticleForce(ParticleLayer* layer, ParticleForce* force)
@@ -790,16 +800,4 @@ void CommandCloneParticleForce::Redo()
     ScopedPtr<ParticleForce> clonedForce(selectedForce->Clone());
     clonedForce->forceName = selectedForce->forceName + " Clone";
     selectedLayer->AddForce(clonedForce);
-}
-
-void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType)
-{
-    if (layer == nullptr)
-        return;
-    ParticleForce* newForce = new ParticleForce(layer);
-    newForce->type = forceType;
-    newForce->forceName = ParticleEditorCommandsDetail::forceNames[forceType];
-
-    layer->AddForce(newForce);
-    SafeRelease(newForce);
 }
