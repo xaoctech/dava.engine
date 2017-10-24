@@ -48,6 +48,8 @@ private:
     const DAVA::Set<QPersistentModelIndex>& GetExpandedIndexList() const;
     void SetExpandedIndexList(const DAVA::Set<QPersistentModelIndex>& expandedIndexList);
 
+    void ReloadTexturesInSelected();
+
 private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::QtDelayedExecutor executor;
