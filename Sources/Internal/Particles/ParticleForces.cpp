@@ -89,18 +89,21 @@ void Init()
 template <typename T>
 T GetValue(const ParticleForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife, PropertyLine<T>* line, T value)
 {
-    if (force->timingType == ParticleForce::eTimingType::CONSTANT || line == nullptr)
+    if (line == nullptr)
         return value;
-
-    if (force->timingType == ParticleForce::eTimingType::OVER_PARTICLE_LIFE)
+    switch (force->timingType)
+    {
+    case ParticleForce::eTimingType::CONSTANT:
+        return value;
+    case ParticleForce::eTimingType::OVER_PARTICLE_LIFE:
         return line->GetValue(particleOverLife);
-
-    if (force->timingType == ParticleForce::eTimingType::OVER_LAYER_LIFE)
+    case ParticleForce::eTimingType::OVER_LAYER_LIFE:
         return line->GetValue(layerOverLife);
-
-    if (force->timingType == ParticleForce::eTimingType::SECONDS_PARTICLE_LIFE)
+    case ParticleForce::eTimingType::SECONDS_PARTICLE_LIFE:
         return line->GetValue(particleLife);
-
+    default:
+        return value;
+    }
     return value;
 }
 
@@ -118,36 +121,28 @@ void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position
 
     if (!force->isActive || !IsPositionInForceShape(force, position, forcePosition))
         return;
-
-    if (force->type == ForceType::DRAG_FORCE)
+    switch (force->type)
     {
+    case ForceType::DRAG_FORCE:
         ApplyDragForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        return;
-    }
-    if (force->type == ForceType::LORENTZ_FORCE)
-    {
+        break;
+    case ForceType::LORENTZ_FORCE:
         ApplyLorentzForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        return;
-    }
-    if (force->type == ForceType::GRAVITY)
-    {
+        break;
+    case ForceType::GRAVITY:
         ApplyGravity(force, velocity, down, dt, particleOverLife, layerOverLife, particle);
-        return;
-    }
-    if (force->type == ForceType::WIND)
-    {
+        break;
+    case ForceType::WIND:
         ApplyWind(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        return;
-    }
-    if (force->type == ForceType::POINT_GRAVITY)
-    {
+        break;
+    case ForceType::POINT_GRAVITY:
         ApplyPointGravity(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        return;
-    }
-    if (force->type == ForceType::PLANE_COLLISION)
-    {
+        break;
+    case ForceType::PLANE_COLLISION:
         ApplyPlaneCollision(force, velocity, position, particle, prevPosition, forcePosition);
-        return;
+        break;
+    default:
+        break;
     }
 }
 
