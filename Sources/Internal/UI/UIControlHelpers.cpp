@@ -60,6 +60,28 @@ bool ContainsOnlyAllowedSymbols(const String& str, UIControlHelpers::NameCheckSt
 
 namespace DAVA
 {
+UIComponent* UIControlHelpers::GetComponentByName(const UIControl* control, const String& componentName, uint32 index)
+{
+    const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(componentName);
+    if (control && rType)
+    {
+        const Type* type = rType->GetType();
+        return control->GetComponent(type, index);
+    }
+    return nullptr;
+}
+
+UIComponent* UIControlHelpers::GetOrCreateComponentByName(UIControl* control, const String& componentName, uint32 index)
+{
+    const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(componentName);
+    if (control && rType)
+    {
+        const Type* type = rType->GetType();
+        return control->GetOrCreateComponent(type, index);
+    }
+    return nullptr;
+}
+
 String UIControlHelpers::GetControlPath(const UIControl* control, const UIControl* rootControl /*= NULL*/)
 {
     using namespace UIControlHelpersDetails;
@@ -215,7 +237,7 @@ const UIControl* UIControlHelpers::FindControlByPathImpl(Vector<FastName>::const
         }
         else if (name == WILDCARD_ROOT)
         {
-            control = control->GetParentWithContext();
+            control = control->GetParentWithContext() ? control->GetParentWithContext() : control;
         }
         else if (name == WILDCARD_MATCHES_ONE_LEVEL)
         {

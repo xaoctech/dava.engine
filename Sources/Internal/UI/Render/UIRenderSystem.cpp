@@ -101,6 +101,11 @@ int32 UIRenderSystem::GetUI3DViewCount() const
     return ui3DViewCount;
 }
 
+RenderSystem2D* UIRenderSystem::GetRenderSystem2D() const
+{
+    return renderSystem2D;
+}
+
 void UIRenderSystem::SetClearColor(const Color& clearColor)
 {
     RenderSystem2D::RenderTargetPassDescriptor newDescr = renderSystem2D->GetMainTargetDescriptor();

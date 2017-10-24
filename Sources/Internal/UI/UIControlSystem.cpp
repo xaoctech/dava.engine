@@ -37,11 +37,19 @@
 #include "Input/Mouse.h"
 #include "UI/RichContent/UIRichContentSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/Flow/UIFlowStateSystem.h"
+#include "UI/Flow/UIFlowViewSystem.h"
+#include "UI/Flow/UIFlowControllerSystem.h"
+#include "UI/Flow/Private/UIFlowTransitionAnimationSystem.h"
 
 namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
+    AddSystem(std::make_unique<UIFlowStateSystem>());
+    AddSystem(std::make_unique<UIFlowViewSystem>());
+    AddSystem(std::make_unique<UIFlowControllerSystem>());
+
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
@@ -52,6 +60,8 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
     AddSystem(std::make_unique<UISoundSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
+
+    AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()));
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
@@ -318,14 +328,18 @@ void UIControlSystem::ProcessScreenLogic()
 
 void UIControlSystem::Update()
 {
+    float32 timeElapsed = SystemTimer::GetFrameDelta();
+    UpdateWithCustomTime(timeElapsed);
+}
+
+void UIControlSystem::UpdateWithCustomTime(float32 timeElapsed)
+{
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_UPDATE);
 
     ProcessScreenLogic();
 
     if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM))
     {
-        float32 timeElapsed = SystemTimer::GetFrameDelta();
-
         for (auto& system : systems)
         {
             system->Process(timeElapsed);
@@ -345,6 +359,7 @@ void UIControlSystem::Draw()
     resizePerFrame = 0;
 
     renderSystem->Render();
+    GetSystem<UIFlowTransitionAnimationSystem>()->Render();
 
     if (frameSkip > 0)
     {
@@ -649,7 +664,7 @@ void UIControlSystem::SetBiDiSupportEnabled(bool support)
 
 bool UIControlSystem::IsHostControl(const UIControl* control) const
 {
-    return (GetScreen() == control || GetPopupContainer() == control);
+    return (GetScreen() == control || GetPopupContainer() == control || GetFlowRoot() == control);
 }
 
 void UIControlSystem::RegisterControl(UIControl* control)
@@ -703,6 +718,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
     system->SetScene(this);
+    UISystem* weak = system.get();
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -717,6 +733,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
     {
         systems.push_back(std::move(system));
     }
+    weak->RegisterSystem();
 }
 
 std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
@@ -729,6 +746,7 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
 
     if (it != systems.end())
     {
+        (*it)->UnregisterSystem();
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
         systemPtr->SetScene(nullptr);
@@ -803,6 +821,33 @@ void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)
     DVASSERT((time > 0.0f) && (inch > 0.0f));
     doubleClickTime = time;
     doubleClickInchSquare = inch * inch;
+}
+
+void UIControlSystem::SetFlowRoot(UIControl* root)
+{
+    if (flowRoot == root)
+    {
+        return;
+    }
+
+    if (flowRoot)
+    {
+        flowRoot->InvokeInactive();
+        flowRoot->SetScene(nullptr);
+    }
+
+    flowRoot = root;
+
+    if (flowRoot)
+    {
+        flowRoot->SetScene(this);
+        flowRoot->InvokeActive(UIControl::eViewState::VISIBLE);
+    }
+}
+
+UIControl* UIControlSystem::GetFlowRoot() const
+{
+    return flowRoot.Get();
 }
 
 UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const

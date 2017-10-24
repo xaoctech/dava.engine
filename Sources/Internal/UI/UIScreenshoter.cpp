@@ -1,7 +1,8 @@
 #include "UIScreenshoter.h"
-#include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/RenderHelper.h"
 #include "Scene3D/Scene.h"
+#include "UI/Render/UIRenderSystem.h"
 #include "UI/UI3DView.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Update/UIUpdateSystem.h"
@@ -98,6 +99,8 @@ void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Texture* screens
     waiters.push_back(waiter);
     // End preparing
 
+    UIControlSystem* controlSystem = GetEngineContext()->uiControlSystem;
+
     // Render to texture
     RenderSystem2D::RenderTargetPassDescriptor desc;
     desc.colorAttachment = screenshot->handle;
@@ -106,11 +109,10 @@ void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Texture* screens
     desc.height = viewport.height ? viewport.height : screenshot->GetHeight();
     desc.format = screenshot->GetFormat();
     desc.priority = PRIORITY_SCREENSHOT + PRIORITY_MAIN_2D;
-    desc.clearTarget = false;
+    desc.clearTarget = controlSystem->GetRenderSystem()->GetUI3DViewCount() == 0;
     desc.transformVirtualToPhysical = true;
 
     RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
-    UIControlSystem* controlSystem = GetEngineContext()->uiControlSystem;
     if (prepareControl)
     {
         controlSystem->ForceUpdateControl(0.0f, control);

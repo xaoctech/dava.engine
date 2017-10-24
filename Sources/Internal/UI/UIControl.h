@@ -1050,6 +1050,9 @@ public:
         return DynamicTypeCheck<T*>(GetComponent(runtimeType, index));
     }
 
+    /** Return UIComponent with specified 'typeName' at specified 'index'. Return nullptr if such component is not found. */
+    UIComponent* GetComponentByName(const String& typeName, uint32 index = 0) const;
+
     /**
     Return index in UIControl::components of specified 'component'. Return -1 if 'component' is not found in control.
     The behavior is undefined unless 'component' is a valid pointer.
@@ -1069,6 +1072,11 @@ public:
     {
         return DynamicTypeCheck<T*>(GetOrCreateComponent(Type::Instance<T>(), index));
     }
+
+    /** Return UIComponent with specified 'typeName' at specified 'index'.
+    If such component is not found, new component with 'typeName' is created, added to control and returned.
+    In case of creation, the behavior is undefined until 'index' is 0. */
+    UIComponent* GetOrCreateComponentByName(const String& typeName, uint32 index = 0);
 
     /** Return total number of components. */
     uint32 GetComponentCount() const;

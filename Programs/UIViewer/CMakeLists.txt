@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.0)
 project ( UIViewer )
 
 set          ( WARNINGS_AS_ERRORS true )
-set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
+set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
 include      ( CMake-common )
 
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
@@ -23,7 +23,7 @@ endif()
 
 define_source ( SOURCE "Sources" ${PLATFORM_SPECIFIC_FOLDER} )
 
-set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
+set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data"
                                   "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
 set( IOS_PLISTT                 ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/UIVieweriPhone-Info.plist )

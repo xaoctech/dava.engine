@@ -35,6 +35,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
     ReflectionRegistrator<UIMovieView>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieView* o) { o->Release(); })
+    .Method<void (UIMovieView::*)(const FilePath& moviePath)>("openMovie", &UIMovieView::OpenMovie)
+    .Method("play", &UIMovieView::Play)
+    .Method("stop", &UIMovieView::Stop)
+    .Method("pause", &UIMovieView::Pause)
+    .Method("resume", &UIMovieView::Resume)
+    .Method("isPlaying", &UIMovieView::IsPlaying)
     .End();
 }
 
@@ -50,6 +56,11 @@ UIMovieView::UIMovieView(const Rect& rect)
 UIMovieView::~UIMovieView()
 {
     movieViewControl->OwnerIsDying();
+}
+
+void UIMovieView::OpenMovie(const FilePath& moviePath)
+{
+    movieViewControl->OpenMovie(moviePath, OpenMovieParams());
 }
 
 void UIMovieView::OpenMovie(const FilePath& moviePath, const OpenMovieParams& params)

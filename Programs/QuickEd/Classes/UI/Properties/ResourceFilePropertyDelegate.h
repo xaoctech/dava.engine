@@ -22,6 +22,7 @@ public:
 private slots:
     void selectFileClicked();
     void clearFileClicked();
+    void gotoFileClicked();
     void OnEditingFinished();
     void OnTextChanged(const QString& text);
 

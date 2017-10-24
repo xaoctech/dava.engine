@@ -15,6 +15,7 @@ namespace DAVA
 namespace TArc
 {
 class ContextAccessor;
+class OperationInvoker;
 }
 }
 
@@ -23,6 +24,7 @@ class PropertiesContext
 public:
     const Project* project = nullptr;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::OperationInvoker* invoker = nullptr;
 };
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
@@ -41,6 +43,9 @@ public:
 
     void SetProject(const Project* project);
     void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
+
+    void SetInvoker(DAVA::TArc::OperationInvoker* invoker);
+    DAVA::TArc::OperationInvoker* GetInvoker();
 
     void emitCommitData(QWidget* editor);
     void emitCloseEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint);

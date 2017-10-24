@@ -43,6 +43,7 @@ class PackageWidgetSettings : public DAVA::TArc::SettingsNode
 public:
     DAVA::uint32 selectedDevice = 0;
     DAVA::uint32 selectedBlank = 0;
+    bool flowFlag = false;
 
     bool useCustomUIViewerPath = false;
     DAVA::String customUIViewerPath;

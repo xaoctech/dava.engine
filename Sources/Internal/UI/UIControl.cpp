@@ -45,6 +45,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     ReflectionRegistrator<UIControl>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIControl* o) { o->Release(); })
+    .Field<const FastName& (UIControl::*)() const, void (UIControl::*)(const FastName&)>("name", &UIControl::GetName, &UIControl::SetName)[M::HiddenField()] // Hide because QE control Name property manually
     .Field("position", &UIControl::GetPosition, &UIControl::SetPosition)
     .Field("size", &UIControl::GetSize, &UIControl::SetSize)
     .Field("scale", &UIControl::GetScale, &UIControl::SetScale)
@@ -59,6 +60,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     .Field("tag", &UIControl::GetTag, &UIControl::SetTag)
     .Field("classes", &UIControl::GetClassesAsString, &UIControl::SetClassesFromString)
     //    .Field("components", &UIControl::GetComponents, nullptr)
+    .Method<UIControl* (UIControl::*)(const String&)>("findByPath", &UIControl::FindByPath)
+    .Method("getComponentByName", &UIControl::GetComponentByName)
+    .Method("getOrCreateComponentByName", &UIControl::GetOrCreateComponentByName)
     .End();
 }
 
@@ -2107,6 +2111,11 @@ UIComponent* UIControl::GetComponent(const Type* type, uint32 index /*= 0*/) con
     return GetComponent(cm->GetRuntimeType(type), index);
 }
 
+UIComponent* UIControl::GetComponentByName(const String& typeName, uint32 index) const
+{
+    return UIControlHelpers::GetComponentByName(this, typeName, index);
+}
+
 int32 UIControl::GetComponentIndex(const UIComponent* component) const
 {
     uint32 count = family->GetComponentsCount(component->GetRuntimeType());
@@ -2233,6 +2242,11 @@ uint32 UIControl::GetComponentCount() const
 uint32 UIControl::GetComponentCount(int32 runtimeType) const
 {
     return family->GetComponentsCount(runtimeType);
+}
+
+UIComponent* UIControl::GetOrCreateComponentByName(const String& typeName, uint32 index)
+{
+    return UIControlHelpers::GetOrCreateComponentByName(this, typeName, index);
 }
 
 uint32 UIControl::GetComponentCount(const Type* type) const

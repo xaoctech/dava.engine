@@ -7,6 +7,7 @@
 
 namespace DAVA
 {
+class UIComponent;
 class UIControl;
 class UIList;
 class UIScrollView;
@@ -14,6 +15,8 @@ class UIScrollView;
 class UIControlHelpers
 {
 public:
+    static UIComponent* GetComponentByName(const UIControl* control, const String& componentName, uint32 index = 0);
+    static UIComponent* GetOrCreateComponentByName(UIControl* control, const String& componentName, uint32 index = 0);
     static String GetControlPath(const UIControl* control, const UIControl* rootControl = NULL);
     static String GetPathToOtherControl(const UIControl* src, const UIControl* dst);
     static UIControl* FindChildControlByName(const String& controlName, const UIControl* rootControl, bool recursive);

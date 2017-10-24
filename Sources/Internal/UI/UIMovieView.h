@@ -22,6 +22,7 @@ protected:
 
 public:
     // Open the Movie.
+    void OpenMovie(const FilePath& moviePath);
     void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
 
     // Overloaded virtual methods.

@@ -1,14 +1,15 @@
 #include "UI/Package/UIViewerDialog.h"
 #include "Modules/ProjectModule/ProjectData.h"
 
+#include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/ComboBox.h>
-#include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/Label.h>
+#include <TArc/Controls/QtBoxLayouts.h>
 
 #include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Qt/QtString.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -32,14 +33,16 @@ struct UIViewerDialog::RunData : public DAVA::ReflectionBase
     DAVA::int32 selectedBlankIndex = 0;
     DAVA::Vector<DAVA::String> allBlanks;
 
+    bool flowFlag = false;
+
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(RunData, DAVA::ReflectionBase)
     {
         DAVA::ReflectionRegistrator<RunData>::Begin()
-
         .Field("selectedDeviceIndex", &RunData::selectedDeviceIndex)
         .Field("devicesEnumerator", &RunData::allDevices)
         .Field("selectedBlankIndex", &RunData::selectedBlankIndex)
         .Field("blanksEnumerator", &RunData::allBlanks)
+        .Field("flowFlag", &RunData::flowFlag)
         .End();
     }
 };
@@ -96,6 +99,16 @@ UIViewerDialog::UIViewerDialog(DAVA::TArc::ContextAccessor* accessor_, DAVA::TAr
     }
 
     {
+        QtHBoxLayout* lineLayout = new QtHBoxLayout();
+        lineLayout->addWidget(new QLabel("Load as UI flow: ", this));
+
+        CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        params.fields[CheckBox::Fields::Checked] = "flowFlag";
+        lineLayout->AddControl(new CheckBox(params, accessor, reflectedModel));
+        boxLayout->addLayout(lineLayout);
+    }
+
+    {
         QPushButton* btnOk = new QPushButton(QStringLiteral("Run UIPreview"), this);
         btnOk->setObjectName(QStringLiteral("btnOk"));
         boxLayout->addWidget(btnOk);
@@ -144,4 +157,14 @@ void UIViewerDialog::SetBlankIndex(DAVA::int32 index)
 DAVA::int32 UIViewerDialog::GetBlankIndex() const
 {
     return runData->selectedBlankIndex;
+}
+
+void UIViewerDialog::SetFlowFlag(bool value)
+{
+    runData->flowFlag = value;
+}
+
+bool UIViewerDialog::GetFlowFlag() const
+{
+    return runData->flowFlag;
 }

@@ -104,6 +104,12 @@ void PropertiesWidget::SetUI(DAVA::TArc::UI* ui_)
     ui = ui_;
 }
 
+void PropertiesWidget::SetInvoker(DAVA::TArc::OperationInvoker* invoker_)
+{
+    invoker = invoker_;
+    propertiesItemsDelegate->SetInvoker(invoker_);
+}
+
 void PropertiesWidget::SetProject(const Project* project)
 {
     propertiesItemsDelegate->SetProject(project);
