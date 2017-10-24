@@ -69,7 +69,7 @@ void ShadersModule::ReloadShaders()
 
         const DAVA::Set<DAVA::NMaterial*>& topParents = sceneEditor->materialSystem->GetTopParents();
 
-        for (auto material : topParents)
+        for (DAVA::NMaterial* material : topParents)
         {
             material->InvalidateRenderVariants();
         }
@@ -83,7 +83,7 @@ void ShadersModule::ReloadShaders()
         if (particleEffectDebugDrawSystem != nullptr)
         {
             const DAVA::Vector<DAVA::NMaterial*>* const particleDebug = particleEffectDebugDrawSystem->GetMaterials();
-            for (auto material : *particleDebug)
+            for (DAVA::NMaterial* material : *particleDebug)
             {
                 material->InvalidateRenderVariants();
             }
@@ -91,10 +91,10 @@ void ShadersModule::ReloadShaders()
 
         DAVA::Set<DAVA::NMaterial*> materialList;
         sceneEditor->foliageSystem->CollectFoliageMaterials(materialList);
-        for (auto material : materialList)
+        for (DAVA::NMaterial* material : materialList)
         {
-            if (material)
-                material->InvalidateRenderVariants();
+            DVASSERT(material != nullptr);
+            material->InvalidateRenderVariants();
         }
 
         sceneEditor->renderSystem->GetDebugDrawer()->InvalidateMaterials();
