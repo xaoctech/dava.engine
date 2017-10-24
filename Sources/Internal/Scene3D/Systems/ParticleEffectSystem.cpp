@@ -21,6 +21,8 @@
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
+#include "Particles/ParticlesRandom.h"
+
 namespace DAVA
 {
 NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialData)
@@ -872,6 +874,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
             RunEmitter(effect, innerEmitter, Vector3(0, 0, 0), particle->positionTarget);
     }
 
+    ++group.layer->particlesGenerated;
     return particle;
 }
 
@@ -930,12 +933,17 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
 void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform)
 {
     //calculate position new particle position in emitter space (for point leave it V3(0,0,0))
+    uint16 ind = group.layer->particlesGenerated;
+    uintptr_t uptr = reinterpret_cast<uintptr_t>(group.layer);
+    uint32 offset = *reinterpret_cast<uint32*>(uptr);
+    ind += offset;
+
     if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
     {
         if (group.emitter->size)
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
-            particle->position = Vector3(currSize.x * (static_cast<float32>(Random::Instance()->RandFloat()) - 0.5f), currSize.y * (static_cast<float32>(Random::Instance()->RandFloat()) - 0.5f), currSize.z * (static_cast<float32>(Random::Instance()->RandFloat()) - 0.5f));
+            particle->position = Vector3(currSize.x * (VanDerCorput(ind) - 0.5f), currSize.y * (VanDerCorput(ind + 512) - 0.5f), currSize.z * (VanDerCorput(ind - 42) - 0.5f));
         }
     }
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
@@ -951,9 +959,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->emissionAngleVariation)
             angleVariation = DegToRad(group.emitter->emissionAngleVariation->GetValue(group.time));
 
-        float32 curAngle = angleBase + angleVariation * static_cast<float32>(Random::Instance()->RandFloat());
+        float32 curAngle = angleBase + angleVariation * VanDerCorput(ind + 80085);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= static_cast<float32>(Random::Instance()->RandFloat());
+            curRadius *= VanDerCorput(ind + 4452);
         float sinAngle = 0.0f;
         float cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);
@@ -988,9 +996,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     {
         if (group.emitter->emissionRange)
         {
-            float32 theta = static_cast<float32>(Random::Instance()->RandFloat()) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
-            float32 phi = static_cast<float32>(Random::Instance()->RandFloat()) * PI_2;
-            particle->speed = Vector3(currVelPower * cos(phi) * sin(theta), currVelPower * sin(phi) * sin(theta), currVelPower * cos(theta));
+            float32 theta = VanDerCorput(ind + 82) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
+            float32 phi = VanDerCorput(ind + 5585) * PI_2;
+            particle->speed = Vector3(currEmissionPower * cos(phi) * sin(theta), currEmissionPower * sin(phi) * sin(theta), currEmissionPower * cos(theta));
         }
         else
         {
