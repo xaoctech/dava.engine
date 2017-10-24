@@ -33,6 +33,7 @@ Scene* FBXImporter::ConstructSceneFromFBX(const FilePath& fbxPath)
     FBXImporterDetails::ClearMaterialCache();
     FBXImporterDetails::ClearMeshCache();
     FBXImporterDetails::ClearSkeletonCache();
+    FBXImporterDetails::ClearNodeUIDCache();
 
     return scene;
 }
