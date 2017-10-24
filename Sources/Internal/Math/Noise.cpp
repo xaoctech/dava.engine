@@ -97,7 +97,7 @@ void GetPoint(int32 blockX, int32 blockY, int32 blockZ, int32 numBlocks, int32 b
 float32 PerlinNoise2d(const Vector2& p, float32 wrap)
 {
     Vector4 pi = Floor(Vector4(p.x, p.y, p.x, p.y)) + Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-    Vector4 pf = Frac(Vector4(p.x, p.y, p.x, p.y)) - Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    Vector4 pf = Abs(Frac(Vector4(p.x, p.y, p.x, p.y))) - Vector4(0.0f, 0.0f, 1.0f, 1.0f);
     pi = Fmod(pi, Vector4(wrap, wrap, wrap, wrap));
     pi = Fmod(pi, Vector4(289.0f, 289.0f, 289.0f, 289.0f));
 
@@ -108,7 +108,7 @@ float32 PerlinNoise2d(const Vector2& p, float32 wrap)
 
     Vector4 i = NoiseDetails::Permute(NoiseDetails::Permute((ix) + iy));
 
-    Vector4 gx = 2.0f * Frac(i / 41.0f) - 1.0f;
+    Vector4 gx = 2.0f * Abs(Frac(i / 41.0f)) - 1.0f;
     Vector4 gy = Abs(gx) - 0.5f;
     Vector4 tx = Floor(gx + 0.5f);
     gx = gx - tx;
@@ -155,8 +155,8 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
     Vector4 ixy1 = NoiseDetails::Permute(ixy + iz1);
 
     Vector4 gx0 = ixy0 / 7.0f;
-    Vector4 gy0 = Frac(Floor(gx0) / 7.0f) - 0.5f;
-    gx0 = Frac(gx0);
+    Vector4 gy0 = Abs(Frac(Floor(gx0) / 7.0f)) - 0.5f;
+    gx0 = Abs(Frac(gx0));
     Vector4 gz0 = Vector4(0.5f, 0.5f, 0.5f, 0.5f) - Abs(gx0) - Abs(gy0);
     Vector4 sz0 = NoiseDetails::Step(gz0, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
@@ -164,8 +164,8 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
     gy0 -= sz0 * (NoiseDetails::Step(Vector4::Zero, gy0) - 0.5f);
 
     Vector4 gx1 = ixy1 / 7.0f;
-    Vector4 gy1 = Frac(Floor(gx1) / 7.0f) - 0.5f;
-    gx1 = Frac(gx1);
+    Vector4 gy1 = Abs(Frac(Floor(gx1) / 7.0f)) - 0.5f;
+    gx1 = Abs(Frac(gx1));
     Vector4 gz1 = Vector4(0.5f, 0.5f, 0.5f, 0.5f) - Abs(gx1) - Abs(gy1);
     Vector4 sz1 = NoiseDetails::Step(gz1, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     gx1 -= sz1 * (NoiseDetails::Step(Vector4::Zero, gx1) - 0.5f);

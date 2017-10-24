@@ -206,7 +206,7 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     if (!IsPositionInForceShape(force, position, forcePosition))
         return;
 
-    intptr_t partInd = reinterpret_cast<intptr_t>(particle);
+    uintptr_t partInd = reinterpret_cast<uintptr_t>(particle);
     uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
     Vector3 turbulence;
 
