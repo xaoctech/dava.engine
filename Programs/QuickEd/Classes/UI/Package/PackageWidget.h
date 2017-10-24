@@ -58,6 +58,7 @@ public:
 
     void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
     void SetUI(DAVA::TArc::UI* ui);
+    void BindActionsToTArc();
 
     PackageModel* GetPackageModel() const;
     using ExpandedIndexes = QModelIndexList;
