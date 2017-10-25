@@ -114,13 +114,13 @@ Motions:
             nodes:
              -
               param-value: 0.0
-              clip: "~res:/3d/character/animations/Jog_Aim/MIL2_M3_W2_Jog_Aim_F_Loop.anim"
+              clip: "~res:/3d/character/animations/Jog_Aim/MIL2_M3_W2_Stand_Aim_Idle_Short_21.anim"
              -
               param-value: 1.0
-              clip: "~res:/3d/character/animations/Crouch_Aim/MIL2_M3_W2_CrouchWalk_Aim_F_Loop.anim"
+              clip: "~res:/3d/character/animations/Crouch_Aim/MIL2_M3_W2_CrouchWalk_Aim_F_Loop_IP.anim"
            -
             param-value: 1.0
-            clip: "~res:/3d/character/animations/Run/MIL2_M3_W2_Run_F_Loop.anim"
+            clip: "~res:/3d/character/animations/Run/MIL2_M3_W2_Stand_Relaxed_Idle_Short_18.anim"
          -
           param-value: 1.0
           operation:
