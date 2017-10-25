@@ -145,6 +145,12 @@ fragment_out
     [material][a] property float  normalScale                 = 1.0;
 #endif
 
+#if PARTICLES_THREE_POINT_GRADIENT
+    [material][a] property float4 gradientColorForWhite = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    [material][a] property float4 gradientColorForBlack = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    [material][a] property float4 gradientColorForMiddle = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    [material][a] property float gradientMiddlePoint = 0.0f;
+#endif
 
 #if TILED_DECAL_MASK
     uniform sampler2D decalmask;

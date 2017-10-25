@@ -294,6 +294,10 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
     uint32 verteciesAppended = 0;
     uint32 particleStride = vertexStride * 4;
+
+    if (begin->material && begin->layer->useThreePointGradient)
+        SetupThreePontGradient(begin->layer, begin->material);
+
     for (auto it = begin; it != end; ++it)
     {
         const ParticleGroup& group = *it;
@@ -693,6 +697,21 @@ Vector3 ParticleRenderObject::GetStripeNormalizedSpeed(const StripeData& data)
 void ParticleRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &Matrix4::IDENTITY, reinterpret_cast<pointer_size>(&Matrix4::IDENTITY));
+}
+
+void ParticleRenderObject::SetupThreePontGradient(ParticleLayer* layer, NMaterial* material)
+{
+    Color currColor = Color::Black;
+    if (layer->gradientColorForWhite != nullptr)
+        currColor = layer->gradientColorForWhite->GetValue(0.0f);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_WHITE, currColor.color);
+    if (layer->gradientColorForBlack != nullptr)
+        currColor = layer->gradientColorForBlack->GetValue(0.0f);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK, currColor.color);
+    if (layer->gradientColorForMiddle != nullptr)
+        currColor = layer->gradientColorForMiddle->GetValue(0.0f);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE, currColor.color);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, &layer->gradientMiddlePoint);
 }
 
 } //namespace

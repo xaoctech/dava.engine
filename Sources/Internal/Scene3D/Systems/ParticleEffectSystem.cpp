@@ -33,7 +33,6 @@ NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialDat
         if (particlesMaterial.first == materialData)
             return particlesMaterial.second;
     }
-
     NMaterial* material = new NMaterial();
     material->SetParent(particleBaseMaterial);
 
@@ -79,6 +78,16 @@ NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialDat
     if (materialData.usePerspectiveMapping)
     {
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_PERSPECTIVE_MAPPING, 1);
+    }
+
+    if (materialData.useThreePointGradient)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_THREE_POINT_GRADIENT, 1);
+        float32 tmp[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_WHITE, tmp, rhi::ShaderProp::TYPE_FLOAT4);
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK, tmp, rhi::ShaderProp::TYPE_FLOAT4);
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE, tmp, rhi::ShaderProp::TYPE_FLOAT4);
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, tmp, rhi::ShaderProp::TYPE_FLOAT1);
     }
 
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
@@ -165,6 +174,9 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.enableAlphaRemap = layer->enableAlphaRemap;
                 matData.alphaRemapTexture = alphaRemap;
                 matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+                matData.useThreePointGradient = layer->useThreePointGradient;
+                uintptr_t layerIdPtr = reinterpret_cast<uintptr_t>(layer);
+                matData.layerId = *reinterpret_cast<uint32*>(layer);
 
                 AcquireMaterial(matData);
             }
@@ -208,6 +220,9 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.enableAlphaRemap = layer->enableAlphaRemap;
             matData.alphaRemapTexture = alphaRemap;
             matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+            matData.useThreePointGradient = layer->useThreePointGradient;
+            uintptr_t layerIdPtr = reinterpret_cast<uintptr_t>(layer);
+            matData.layerId = *reinterpret_cast<uint32*>(layer);
 
             group.material = AcquireMaterial(matData);
         }

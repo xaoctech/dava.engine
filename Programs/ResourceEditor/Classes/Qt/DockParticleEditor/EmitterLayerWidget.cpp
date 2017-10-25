@@ -354,6 +354,18 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     InitWidget(gradientColorForBlack);
     gradientColorForMiddle = new GradientPickerWidget(this);
     InitWidget(gradientColorForMiddle);
+    QHBoxLayout* gradHLayout = new QHBoxLayout();
+    gradientMiddlePointLabel = new QLabel("Gradient middle point:");
+    gradientMiddlePointSpin = new EventFilterDoubleSpinBox(this);
+    gradientMiddlePointSpin->setMinimum(0.0f);
+    gradientMiddlePointSpin->setMaximum(1.0f);
+    gradientMiddlePointSpin->setSingleStep(0.01);
+    gradientMiddlePointSpin->setDecimals(3);
+    gradientMiddlePointSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    connect(gradientMiddlePointSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    gradHLayout->addWidget(gradientMiddlePointLabel);
+    gradHLayout->addWidget(gradientMiddlePointSpin);
+    mainBox->addLayout(gradHLayout);
 
     QHBoxLayout* frameOverlifeLayout = new QHBoxLayout();
     frameOverlifeCheckBox = new QCheckBox("frame over life", this);
@@ -673,6 +685,7 @@ void EmitterLayerWidget::OnValueChanged()
                          randomFrameOnStartCheckBox->isChecked(),
                          loopSpriteAnimationCheckBox->isChecked(),
                          useThreePointGradientBox->isChecked(),
+                         static_cast<DAVA::float32>(gradientMiddlePointSpin->value()),
                          propAnimSpeedOverLife.GetPropLine(),
                          static_cast<DAVA::float32>(pivotPointXSpinBox->value()),
                          static_cast<DAVA::float32>(pivotPointYSpinBox->value()));
@@ -1225,6 +1238,8 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     gradientColorForMiddle->Init(0, 1, "Gradient color for middle");
     gradientColorForMiddle->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForMiddle)).GetProps());
+
+    gradientMiddlePointSpin->setValue(static_cast<double>(layer->gradientMiddlePoint));
 
     frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
     frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
@@ -1998,6 +2013,8 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
     gradientColorForWhite->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
     gradientColorForBlack->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
     gradientColorForMiddle->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientMiddlePointLabel->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientMiddlePointSpin->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
 
     frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
     frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);

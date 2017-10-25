@@ -20,6 +20,7 @@ public:
         Texture* noise = nullptr;
         Texture* alphaRemapTexture = nullptr;
         eBlending blending = BLENDING_ALPHABLEND;
+        uint32 layerId = 1;
         bool enableFog = false;
         bool enableFrameBlend = false;
         bool enableFlow = false;
@@ -29,23 +30,29 @@ public:
         bool useFresnelToAlpha = false;
         bool enableAlphaRemap = false;
         bool usePerspectiveMapping = false;
+        bool useThreePointGradient = false;
 
         bool operator==(const MaterialData& rhs)
         {
+            bool isEqualByGradient = useThreePointGradient == rhs.useThreePointGradient;
+            if (isEqualByGradient && useThreePointGradient)
+                isEqualByGradient = layerId == rhs.layerId;
+
             return texture == rhs.texture
-            && enableFog == rhs.enableFog
-            && enableFrameBlend == rhs.enableFrameBlend
-            && flowmap == rhs.flowmap
-            && enableFlow == rhs.enableFlow
-            && enableFlowAnimation == rhs.enableFlowAnimation
-            && enableNoise == rhs.enableNoise
-            && isNoiseAffectFlow == rhs.isNoiseAffectFlow
-            && noise == rhs.noise
-            && useFresnelToAlpha == rhs.useFresnelToAlpha
-            && blending == rhs.blending
-            && enableAlphaRemap == rhs.enableAlphaRemap
-            && alphaRemapTexture == rhs.alphaRemapTexture
-            && usePerspectiveMapping == rhs.usePerspectiveMapping;
+                && enableFog == rhs.enableFog
+                && enableFrameBlend == rhs.enableFrameBlend
+                && flowmap == rhs.flowmap
+                && enableFlow == rhs.enableFlow
+                && enableFlowAnimation == rhs.enableFlowAnimation
+                && enableNoise == rhs.enableNoise
+                && isNoiseAffectFlow == rhs.isNoiseAffectFlow
+                && noise == rhs.noise
+                && useFresnelToAlpha == rhs.useFresnelToAlpha
+                && blending == rhs.blending
+                && enableAlphaRemap == rhs.enableAlphaRemap
+                && alphaRemapTexture == rhs.alphaRemapTexture
+                && usePerspectiveMapping == rhs.usePerspectiveMapping
+                && isEqualByGradient;
         }
     };
 

@@ -270,6 +270,7 @@ public:
               bool randomFrameOnStart,
               bool loopSpriteAnimation,
               bool useThreePointGradient,
+              DAVA::float32 gradientMiddlePoint,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> animSpeedOverLife,
 
               DAVA::float32 pivotPointX,
@@ -330,6 +331,8 @@ protected:
 
     DAVA::float32 pivotPointX;
     DAVA::float32 pivotPointY;
+
+    DAVA::float32 gradientMiddlePoint;
 };
 
 class CommandUpdateParticleLayerTime : public CommandUpdateParticleLayerBase

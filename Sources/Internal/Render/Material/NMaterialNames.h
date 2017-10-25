@@ -152,6 +152,10 @@ public:
     static const FastName PARAM_TREE_LEAF_COLOR_MUL;
     static const FastName FORCED_SHADOW_DIRECTION_PARAM;
     static const FastName PARAM_SPECULAR_SCALE;
+    static const FastName PARAM_PARTICLES_GRADIENT_COLOR_FOR_WHITE;
+    static const FastName PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK;
+    static const FastName PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE;
+    static const FastName PARAM_PARTICLES_GRADIENT_MIDDLE_POINT;
 };
 
 class NMaterialFlagName
@@ -194,6 +198,7 @@ public:
     static const FastName FLAG_PARTICLES_FLOWMAP;
     static const FastName FLAG_PARTICLES_FLOWMAP_ANIMATION;
     static const FastName FLAG_PARTICLES_PERSPECTIVE_MAPPING;
+    static const FastName FLAG_PARTICLES_THREE_POINT_GRADIENT;
     static const FastName FLAG_PARTICLES_NOISE;
     static const FastName FLAG_PARTICLES_FRESNEL_TO_ALPHA;
     static const FastName FLAG_PARTICLES_ALPHA_REMAP;

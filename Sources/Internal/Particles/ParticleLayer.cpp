@@ -280,6 +280,7 @@ ParticleLayer* ParticleLayer::Clone()
         dstLayer->alphaRemapOverLife.Set(alphaRemapOverLife->Clone());
     dstLayer->enableAlphaRemap = enableAlphaRemap;
     dstLayer->alphaRemapLoopCount = alphaRemapLoopCount;
+    dstLayer->gradientMiddlePoint = gradientMiddlePoint;
 
     return dstLayer;
 }
@@ -621,6 +622,13 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (alphaRemapLoopCountNode)
     {
         alphaRemapLoopCount = alphaRemapLoopCountNode->AsFloat();
+    }
+
+    gradientMiddlePoint = 0.5f;
+    const YamlNode* gradientMiddlePointNode = node->Get("gradientMiddlePoint");
+    if (gradientMiddlePointNode)
+    {
+        gradientMiddlePoint = gradientMiddlePointNode->AsFloat();
     }
 
     alphaRemapOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaRemapOverLife"));
@@ -980,6 +988,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaPower", fresnelToAlphaPower);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "alphaRemapLoopCount", alphaRemapLoopCount);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "gradientMiddlePoint", gradientMiddlePoint);
 
     SaveSpritePath(spritePath, configPath, layerNode, "sprite");
     SaveSpritePath(flowmapPath, configPath, layerNode, "flowmap");
