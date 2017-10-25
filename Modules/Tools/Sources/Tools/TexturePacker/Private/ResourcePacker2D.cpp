@@ -183,7 +183,10 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
         return;
     }
 
-    ignoredFiles = ResourcePacker2DDetails::ReadIgnoresList(ignoresListPath, inputGfxDirectory);
+    if (ignoresListPath.IsEmpty() == false)
+    {
+        ignoredFiles = ResourcePacker2DDetails::ReadIgnoresList(ignoresListPath, inputGfxDirectory);
+    }
 
     requestedGPUs = forGPUs;
     outputDirModified = false;
