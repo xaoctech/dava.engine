@@ -478,7 +478,6 @@ BackgroundController* EditorControlsView::CreateControlBackground(PackageBaseNod
     BackgroundController* backgroundController(new BackgroundController(node->GetControl(), accessor));
     backgroundController->contentSizeChanged.Connect(this, &EditorControlsView::Layout);
     backgroundController->rootControlPosChanged.Connect(this, &EditorControlsView::OnRootControlPosChanged);
-    gridControls.emplace_back(backgroundController);
     return backgroundController;
 }
 
@@ -488,12 +487,17 @@ void EditorControlsView::AddBackgroundControllerToCanvas(BackgroundController* b
     if (pos >= controlsCanvas->GetChildren().size())
     {
         controlsCanvas->AddControl(grid);
+        gridControls.emplace_back(backgroundController);
     }
     else
     {
-        auto iterToInsert = controlsCanvas->GetChildren().begin();
-        std::advance(iterToInsert, pos);
-        controlsCanvas->InsertChildBelow(grid, *iterToInsert);
+        auto iterToInsertControl = controlsCanvas->GetChildren().begin();
+        std::advance(iterToInsertControl, pos);
+        controlsCanvas->InsertChildBelow(grid, *iterToInsertControl);
+
+        auto iterToInsertController = gridControls.begin();
+        std::advance(iterToInsertController, pos);
+        gridControls.emplace(iterToInsertController, backgroundController);
     }
     backgroundController->UpdateCounterpoise();
     backgroundController->AdjustToNestedControl();
