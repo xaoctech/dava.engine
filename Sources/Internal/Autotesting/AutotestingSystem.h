@@ -4,17 +4,17 @@
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "DAVAEngine.h"
-#include "Base/Singleton.h"
-#include "Time/DateTime.h"
-
 #include "Autotesting/AutotestingSystemLua.h"
+#include "Base/Singleton.h"
+#include "Render/RHI/rhi_Public.h"
+#include "Time/DateTime.h"
 
 namespace DAVA
 {
 class Image;
 class AutotestingSystemLuaDelegate;
 class AutotestingSystemLua;
+class Texture;
 class AutotestingSystem : public Singleton<AutotestingSystem>
 {
 public:
@@ -69,7 +69,7 @@ public:
     void MakeScreenShot();
     bool GetIsScreenShotSaving() const;
     void ClickSystemBack();
-    void PressEscape();
+    void EmulatePressKey(DAVA::uint32 key);
 
     // DB Master-Helper relations
 

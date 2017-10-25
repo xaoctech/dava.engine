@@ -1,6 +1,7 @@
 import os
 import shutil
 import build_utils
+import build_config
 
 
 def get_supported_targets(platform):
@@ -34,7 +35,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'ftp://xmlsoft.org/libxml2/libxml2-2.9.4.tar.gz'
+    return 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'
 
 
 def _download_and_extract(working_directory_path):
@@ -50,7 +51,7 @@ def _download_and_extract(working_directory_path):
     return source_folder_path
 
 
-def _patch_sources_android(source_folder_path):
+def _patch_sources_android(source_folder_path, working_directory_path):
     try:
         if source_folder_path in _patch_sources_android.cache:
             return
@@ -58,9 +59,9 @@ def _patch_sources_android(source_folder_path):
         _patch_sources_android.cache = []
         pass
 
-    # Glob.h is required for android since Android NDK doesn't include one
-    # Glob.o will be compiled and added to linker input
-    shutil.copyfile('glob.h', os.path.join(source_folder_path, 'glob.h'))
+    build_utils.apply_patch(
+        os.path.abspath('patch_android.diff'),
+        working_directory_path)
 
     _patch_sources_android.cache.append(source_folder_path)
 
@@ -73,12 +74,19 @@ def _patch_sources_windows(source_folder_path, working_directory_path):
         _patch_sources_windows.cache = []
         pass
 
+    """ Patch for libxml2 v2.7.8 """
+    build_utils.apply_patch(
+        os.path.abspath('patch_win_v2.7.8.diff'),
+        working_directory_path)
+
+    """ Patch for libxml2 v2.9.0 and later
     shutil.copytree(
         os.path.join(source_folder_path, 'win32/VC10'),
         os.path.join(source_folder_path, 'win32/Win10'))
     build_utils.apply_patch(
         os.path.abspath('patch_win.diff'),
         working_directory_path)
+    """
 
     _patch_sources_windows.cache.append(source_folder_path)
 
@@ -87,35 +95,99 @@ def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources_windows(source_folder_path, working_directory_path)
 
+    """ Build instructions for libxml2 v2.7.8 """
+    libraries_win_root=os.path.join(root_project_path, 'Libs/lib_CMake/win')
+    makefile_path=os.path.join(source_folder_path, 'win32')
+
+    cscript_debug=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MDd', 'debug=yes']
+    cscript_release=['cscript', 'configure.js', 'compiler=msvc', 'static=yes', 'iconv=no', 'ftp=no', 'http=no', 'cruntime=/MD', 'debug=no']
+    nmake_clean=['nmake', 'clean']
+
+    # Generate makefile for debug build
+    build_utils.run_process(
+        cscript_debug,
+        process_cwd=makefile_path,
+        shell=True,
+        environment=None)
+
+    # Build and copy x86 debug static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x86_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x86/Debug/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x86_env())
+
+    # Build and copy x64 debug static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x64_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x64/Debug/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x64_env())
+
+    # Generate makefile for release build
+    build_utils.run_process(
+        cscript_release,
+        process_cwd=makefile_path,
+        shell=True,
+        environment=None)
+
+    # Build and copy x86 release static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x86_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x86/Release/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x86_env())
+
+    # Build and copy x64 release static lib
+    build_utils.run_process(
+        ['nmake', '/f', 'Makefile', 'libxmla'],
+        process_cwd=makefile_path,
+        shell=True,
+        environment=build_utils.get_win32_vs_x64_env())
+    shutil.copyfile(os.path.join(makefile_path, 'bin.msvc/libxml2_a.lib'),
+                    os.path.join(libraries_win_root, 'x64/Release/libxml2.lib'))
+    build_utils.run_process(nmake_clean, process_cwd=makefile_path, shell=True, environment=build_utils.get_win32_vs_x64_env())
+
+    """ Build instructions for libxml2 v2.9.0 and later
     sln_path = os.path.join(source_folder_path, 'win32/VC10/libxml2.sln')
-    build_utils.build_vs(sln_path, 'Debug', 'Win32', target='libxml2')
-    build_utils.build_vs(sln_path, 'Release', 'Win32', target='libxml2')
-    build_utils.build_vs(sln_path, 'Debug', 'x64', target='libxml2')
-    build_utils.build_vs(sln_path, 'Release', 'x64', target='libxml2')
-
+    build_utils.build_vs(sln_path, 'Debug', 'Win32', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    build_utils.build_vs(sln_path, 'Release', 'Win32', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    build_utils.build_vs(sln_path, 'Debug', 'x64', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    build_utils.build_vs(sln_path, 'Release', 'x64', target='libxml2', toolset=build_config.get_msvc_toolset_ver_win32())
+    
     libraries_win_root = os.path.join(root_project_path, 'Libs/lib_CMake/win')
-
+    
     lib_path_x86_debug = os.path.join(
         source_folder_path, 'win32/VC10/Debug/libxml2.lib')
     lib_path_x86_release = os.path.join(
         source_folder_path, 'win32/VC10/Release/libxml2.lib')
     shutil.copyfile(
         lib_path_x86_debug,
-        os.path.join(libraries_win_root, 'x86/Debug/libxml_wind.lib'))
+        os.path.join(libraries_win_root, 'x86/Debug/libxml2.lib'))
     shutil.copyfile(
         lib_path_x86_release,
-        os.path.join(libraries_win_root, 'x86/Release/libxml_win.lib'))
-
+        os.path.join(libraries_win_root, 'x86/Release/libxml2.lib'))
+    
     lib_path_x64_debug = os.path.join(
         source_folder_path, 'win32/VC10/x64/Debug/libxml2.lib')
     lib_path_x64_release = os.path.join(
         source_folder_path, 'win32/VC10/x64/Release/libxml2.lib')
     shutil.copyfile(
         lib_path_x64_debug,
-        os.path.join(libraries_win_root, 'x64/Debug/libxml_wind.lib'))
+        os.path.join(libraries_win_root, 'x64/Debug/libxml2.lib'))
     shutil.copyfile(
         lib_path_x64_release,
-        os.path.join(libraries_win_root, 'x64/Release/libxml_win.lib'))
+        os.path.join(libraries_win_root, 'x64/Release/libxml2.lib'))
+    """
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -178,7 +250,7 @@ def _build_macos(working_directory_path, root_project_path):
         working_directory_path, 'gen/install_macos')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=x86_64-apple-darwin', '--disable-shared', '--enable-static'],
+        ['--host=x86_64-apple-darwin', '--disable-shared', '--enable-static', '--without-lzma', '--without-python'],
         install_dir_macos,
         env=build_utils.get_autotools_macos_env())
 
@@ -196,7 +268,7 @@ def _build_ios(working_directory_path, root_project_path):
     install_dir_ios = os.path.join(working_directory_path, 'gen/install_ios')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=armv7-apple-darwin', '--disable-shared', '--enable-static'],
+        ['--host=armv7-apple-darwin', '--disable-shared', '--enable-static', '--without-lzma', '--without-python'],
         install_dir_ios,
         env=build_utils.get_autotools_ios_env())
 
@@ -210,42 +282,39 @@ def _build_ios(working_directory_path, root_project_path):
 
 def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources_android(source_folder_path)
-
-    # Libxml tests requires glob header to be available,
-    # but android ndk doesn't include one
-    # To work around this, glob.c & glob.h are included
-    # glob.c should be compiled with according ndk compiler,
-    # and added to linker input
-    # Files are taken from this discussion:
-    # https://groups.google.com/forum/#!topic/android-ndk/vSH6MWPD0Vk
+    _patch_sources_android(source_folder_path, working_directory_path)
 
     gen_folder_path = os.path.join(working_directory_path, 'gen')
-    glob_obj_file_path = os.path.join(gen_folder_path, 'glob.o')
     if not os.path.exists(gen_folder_path):
         os.makedirs(gen_folder_path)
 
-    arm_env = build_utils.get_autotools_android_arm_env(root_project_path)
-    install_dir_android_arm = os.path.join(
-        working_directory_path, 'gen/install_android_arm')
-    _compile_glob(arm_env, glob_obj_file_path)
-    arm_env['LIBS'] = glob_obj_file_path
+    # ARM
+    toolchain_path_arm = build_utils.android_ndk_get_toolchain_arm()
+
+    arm_env = build_utils.get_autotools_android_arm_env(toolchain_path_arm)
+    install_dir_android_arm = os.path.join(working_directory_path, 'gen/install_android_arm')
     build_utils.build_with_autotools(
         source_folder_path,
         ['--host=arm-linux-androideabi',
          '--disable-shared',
-         '--enable-static'],
+         '--enable-static',
+         '--without-lzma',
+         '--without-python'],
         install_dir_android_arm,
         env=arm_env)
 
-    x86_env = build_utils.get_autotools_android_x86_env(root_project_path)
-    install_dir_android_x86 = os.path.join(
-        working_directory_path, 'gen/install_android_x86')
-    _compile_glob(x86_env, glob_obj_file_path)
-    x86_env['LIBS'] = glob_obj_file_path
+    # x86
+    toolchain_path_x86 = build_utils.android_ndk_get_toolchain_x86()
+
+    x86_env = build_utils.get_autotools_android_x86_env(toolchain_path_x86)
+    install_dir_android_x86 = os.path.join(working_directory_path, 'gen/install_android_x86')
     build_utils.build_with_autotools(
         source_folder_path,
-        ['--host=i686-linux-android', '--disable-shared', '--enable-static'],
+        ['--host=i686-linux-android',
+         '--disable-shared',
+         '--enable-static',
+         '--without-lzma',
+         '--without-python'],
         install_dir_android_x86,
         env=x86_env)
 
@@ -284,12 +353,6 @@ def _build_linux(working_directory_path, root_project_path):
         os.path.join(root_project_path, 'Libs/lib_CMake/linux/libxml.a'))
 
     _copy_headers_from_install(install_dir, root_project_path)
-
-
-def _compile_glob(env, output_file_path):
-    cmd = [env['CC'], '-c', '-I.', 'glob.c', '-o', output_file_path]
-    cmd.extend(env['CFLAGS'].split())
-    build_utils.run_process(cmd, environment=env)
 
 
 def _copy_headers_from_install(install_folder_path, root_project_path):

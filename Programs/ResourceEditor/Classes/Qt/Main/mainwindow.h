@@ -6,15 +6,14 @@
 #include "Classes/Qt/Tools/QtWaitDialog/QtWaitDialog.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/GlobalOperations.h"
-#include "Classes/Beast/BeastProxy.h"
 
 #include <TArc/Models/RecentMenuItems.h>
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/WindowSubSystem/UI.h>
 
-#include <QtTools/Utils/ShortcutChecker.h>
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/ShortcutChecker.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <QMainWindow>
 #include <QDockWidget>
@@ -33,6 +32,11 @@ class ErrorDialogOutput;
 namespace DAVA
 {
 class RenderWidget;
+
+namespace TArc
+{
+class FieldBinder;
+}
 }
 
 class QtMainWindow : public QMainWindow, public GlobalOperations, private DAVA::TArc::DataListener
@@ -54,7 +58,6 @@ public:
     void WaitStart(const QString& title, const QString& message, int min, int max);
     void WaitSetMessage(const QString& messsage);
     void WaitSetValue(int value);
-    bool IsWaitDialogOnScreen() const;
     void WaitStop();
 
     void EnableGlobalTimeout(bool enable);
@@ -64,13 +67,11 @@ public:
     void CallAction(ID id, DAVA::Any&& args) override;
     QWidget* GetGlobalParentWidget() const override;
     void ShowWaitDialog(const DAVA::String& tittle, const DAVA::String& message, DAVA::uint32 min, DAVA::uint32 max) override;
-    bool IsWaitDialogVisible() const override;
     void HideWaitDialog() override;
     void ForEachScene(const DAVA::Function<void(SceneEditor2*)>& functor) override;
 
     // qt actions slots
 public slots:
-    void OnImportSpeedTreeXML();
     void RemoveSelection();
 
     void OnUndo();
@@ -95,8 +96,6 @@ public slots:
     void OnPivotCenterMode();
     void OnPivotCommonMode();
     void OnManualModifMode();
-    void OnPlaceOnLandscape();
-    void OnSnapToLandscape();
     void OnResetTransform();
     void OnLockTransform();
     void OnUnlockTransform();
@@ -118,6 +117,7 @@ public slots:
     void OnEmptyEntity();
     void OnAddWindEntity();
     void OnAddPathEntity();
+    void OnAddTextEntity();
 
     void OnUserNodeDialog();
     void OnSwitchEntityDialog();
@@ -134,8 +134,6 @@ public slots:
 
     void OnConvertModifiedTextures();
 
-    void OnBeastAndSave();
-
     void OnBuildStaticOcclusion();
     void OnInavalidateStaticOcclusion();
 
@@ -148,16 +146,8 @@ public slots:
     void OnNotPassableTerrain();
     void OnWayEditor();
 
-    void OnObjectsTypeChanged(QAction* action);
-    void OnObjectsTypeChanged(int type);
-
-    void OnHangingObjects();
-    void OnHangingObjectsHeight(double value);
-
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
-
-    void OnSwitchWithDifferentLODs(bool checked);
 
     void OnGenerateHeightDelta();
 
@@ -176,15 +166,12 @@ protected:
     bool eventFilter(QObject* object, QEvent* event) override;
     void SetupWidget();
     void SetupMainMenu();
-    void SetupThemeActions();
     void SetupToolBars();
     void SetupStatusBar();
     void SetupDocks();
     void SetupActions();
 
     void StartGlobalInvalidateTimer();
-
-    void RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode);
 
     void SynchronizeStateWithUI();
 
@@ -197,18 +184,13 @@ private slots:
 
     void OnGlobalInvalidateTimeout();
     void EditorLightEnabled(bool enabled);
-    void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
     void UnmodalDialogFinished(int);
 
     void DebugVersionInfo();
     void OnConsoleItemClicked(const QString& data);
 
-    void UpdateUndoActionText(const DAVA::String& text);
-    void UpdateRedoActionText(const DAVA::String& text);
-
 private:
     std::unique_ptr<Ui::MainWindow> ui;
-    QtWaitDialog* beastWaitDialog;
     QPointer<QDockWidget> dockActionEvent;
     QPointer<QDockWidget> dockConsole;
 
@@ -230,13 +212,12 @@ private:
     void LoadModificationState(SceneEditor2* scene);
     void LoadEditorLightState(SceneEditor2* scene);
     void LoadLandscapeEditorState(SceneEditor2* scene);
-    void LoadObjectTypes(SceneEditor2* scene);
-    void LoadHangingObjects(SceneEditor2* scene);
     void LoadMaterialLightViewMode();
 
     // Landscape editor specific
     // TODO: remove later -->
-    bool LoadAppropriateTextureFormat();
+    bool CanEnableLandscapeEditor() const;
+    bool LoadAppropriateTextureFormat() const;
     // <--
 
     void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
@@ -249,12 +230,16 @@ private:
     ErrorDialogOutput* errorLoggerOutput = nullptr;
 
 #if defined(__DAVAENGINE_MACOS__)
-    ShortcutChecker shortcutChecker;
+    DAVA::TArc::ShortcutChecker shortcutChecker;
 #endif
 
     DAVA::TArc::UI* tarcUI = nullptr;
     std::unique_ptr<DAVA::TArc::WaitHandle> waitDialog;
     DAVA::TArc::DataWrapper projectDataWrapper;
     DAVA::TArc::DataWrapper selectionWrapper;
-    QtDelayedExecutor delayedExecutor;
+
+    void UpdateTagDependentActionsState(const DAVA::Any& value);
+    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinderTagged;
+
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 };

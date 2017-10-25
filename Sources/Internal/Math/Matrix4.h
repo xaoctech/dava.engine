@@ -226,33 +226,28 @@ inline void Matrix4::Zero()
 
 inline void Matrix4::BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 n, float32 f, bool zeroBaseClipRange)
 {
+    Zero();
+
     float32 r_l = right - left;
     float32 t_b = top - bottom;
     float32 f_n = f - n;
-    float32 tx = -(right + left) / (right - left);
-    float32 ty = -(top + bottom) / (top - bottom);
-    float32 tz = -(f + n) / (f - n);
 
     data[0] = 2.0f / r_l;
-    data[1] = 0.0f;
-    data[2] = 0.0f;
-    data[3] = 0.0f;
-
-    data[4] = 0.0f;
     data[5] = 2.0f / t_b;
-    data[6] = 0.0f;
-    data[7] = 0.0f;
+    data[12] = -(right + left) / r_l;
+    data[13] = -(top + bottom) / t_b;
 
-    data[8] = 0.0f;
-    data[9] = 0.0f;
-    data[10] = -2.0f / f_n;
-    data[11] = 0.0f;
+    if (zeroBaseClipRange)
+    {
+        data[10] = -1.0f / f_n;
+        data[14] = -n / f_n;
+    }
+    else
+    {
+        data[10] = -2.0f / f_n;
+        data[14] = -(f + n) / f_n;
+    }
 
-    //RHI_COMPLETE - update it to zero based clip range
-
-    data[12] = tx;
-    data[13] = ty;
-    data[14] = tz;
     data[15] = 1.0f;
 }
 

@@ -1,5 +1,6 @@
 #include "SceneImageGraber.h"
 
+#include "Engine/Engine.h"
 #include "Functional/Function.h"
 #include "Job/JobManager.h"
 #include "Math/MathHelpers.h"
@@ -84,7 +85,7 @@ void GrabImage(Params params)
 {
     if (params.processInDAVAFrame)
     {
-        DAVA::JobManager::Instance()->CreateMainJob(DAVA::Bind(&SceneImageGrabberDetail::GrabImage, params), DAVA::JobManager::eMainJobType::JOB_MAINLAZY);
+        DAVA::GetEngineContext()->jobManager->CreateMainJob(DAVA::Bind(&SceneImageGrabberDetail::GrabImage, params), DAVA::JobManager::eMainJobType::JOB_MAINLAZY);
     }
     else
     {

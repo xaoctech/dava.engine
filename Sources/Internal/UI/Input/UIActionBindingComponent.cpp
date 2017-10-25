@@ -15,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIActionBindingComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIActionBindingComponent);
+
 UIActionBindingComponent::UIActionBindingComponent()
 {
 }
@@ -77,7 +79,7 @@ String UIActionBindingComponent::GetActionsAsString() const
             stream << "; ";
         }
 
-        if (action.shortcut1.GetKey() != Key::UNKNOWN)
+        if (action.shortcut1.GetKey() != eInputElements::NONE)
         {
             stream << action.action.c_str() << ", " << action.shortcut1.ToString();
         }
@@ -110,7 +112,7 @@ void UIActionBindingComponent::SetActionsFromString(const String& value)
             }
 
             actions.push_back(Action(actionName, shortcut));
-            if (shortcut.GetKey() != Key::UNKNOWN)
+            if (shortcut.GetKey() != eInputElements::NONE)
                 inputMap.BindAction(shortcut, actionName);
         }
     }

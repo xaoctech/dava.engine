@@ -5,8 +5,6 @@
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 #include "Classes/Qt/Scene/System/EditorMaterialSystem.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Settings/SettingsManager.h"
-#include "Classes/Settings/Settings.h"
 #include "Classes/Application/REGlobal.h"
 
 #include "TArc/WindowSubSystem/ActionUtils.h"
@@ -76,8 +74,8 @@ void ShadersModule::ReloadShaders()
                                       {
                                           material->InvalidateRenderVariants();
                                       }
-                                      const DAVA::Map<DAVA::uint64, DAVA::NMaterial*>& particleInstances = sceneEditor->particleEffectSystem->GetMaterialInstances();
-                                      for (auto material : particleInstances)
+                                      const auto particleInstances = sceneEditor->particleEffectSystem->GetMaterialInstances();
+                                      for (auto& material : particleInstances)
                                       {
                                           material.second->InvalidateRenderVariants();
                                       }

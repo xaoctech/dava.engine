@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <QSignalBlocker>
 
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
 #include "Deprecated/SceneValidator.h"
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
@@ -31,23 +31,26 @@
 #include "Commands2/Base/RECommandNotificationObject.h"
 
 #include "Classes/Qt/Actions/SaveEntityAsAction.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
 
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/Updaters/LazyUpdater.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <QtTools/Updaters/LazyUpdater.h>
 
-#include "TArc/DataProcessing/DataContext.h"
-#include "TArc/Utils/ScopedValueGuard.h"
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/Utils/Utils.h>
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/ScopedValueGuard.h>
+#include <TArc/Core/FieldBinder.h>
 
-#include "FileSystem/VariantType.h"
+#include <FileSystem/VariantType.h>
 
 #include <QShortcut>
+#include "SlotSupportModule/Private/EditorSlotSystem.h"
+#include "SlotSupportModule/SlotSystemSettings.h"
 
 namespace SceneTreeDetails
 {
@@ -77,7 +80,8 @@ void SaveEmitter(SceneEditor2* scene, DAVA::ParticleEffectComponent* component, 
     DAVA::FilePath yamlPath = emitter->configPath;
     if (askFileName)
     {
-        DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastSaveEmitterDir).AsFilePath();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        DAVA::FilePath defaultPath = settings->emitterSaveDir;
         QString particlesPath = defaultPath.IsEmpty() ? GetParticlesConfigPath() : QString::fromStdString(defaultPath.GetAbsolutePathname());
 
         DAVA::FileSystem::Instance()->CreateDirectory(DAVA::FilePath(particlesPath.toStdString()), true); //to ensure that folder is created
@@ -92,8 +96,7 @@ void SaveEmitter(SceneEditor2* scene, DAVA::ParticleEffectComponent* component, 
         }
 
         yamlPath = DAVA::FilePath(filePath.toStdString());
-
-        SettingsManager::SetValue(Settings::Internal_ParticleLastSaveEmitterDir, DAVA::VariantType(yamlPath.GetDirectory()));
+        settings->emitterSaveDir = yamlPath.GetDirectory();
     }
 
     scene->Exec(commandCreator(yamlPath));
@@ -172,7 +175,7 @@ protected:
 
     struct RemoveInfo
     {
-        RemoveInfo(std::unique_ptr<DAVA::Command>&& command_, Selectable::Object* selectedObject_)
+        RemoveInfo(std::unique_ptr<DAVA::Command>&& command_, const DAVA::Any& selectedObject_)
             : command(std::move(command_))
             , selectedObject(selectedObject_)
         {
@@ -185,27 +188,53 @@ protected:
         }
 
         std::unique_ptr<DAVA::Command> command;
-        Selectable::Object* selectedObject;
+        DAVA::Any selectedObject;
     };
 
     void RemoveCommandsHelper(const DAVA::String& text, SceneTreeItem::eItemType type, const DAVA::Function<RemoveInfo(SceneTreeItem*)>& callback)
     {
-        SelectableGroup currentGroup = Selection::GetSelection();
         DAVA::Vector<std::unique_ptr<DAVA::Command>> commands;
         commands.reserve(GetSelectedItemsCount());
-        ForEachSelectedByType(type, [&commands, &currentGroup, callback](SceneTreeItem* item)
-                              {
-                                  RemoveInfo info = callback(item);
-                                  currentGroup.Remove(info.selectedObject);
-                                  commands.push_back(std::move(info.command));
-                              });
+
+        QSet<QModelIndex> selectedIndecies;
+        foreach (QModelIndex index, treeWidget->selectionModel()->selectedRows())
+        {
+            selectedIndecies.insert(treeWidget->filteringProxyModel->mapToSource(index));
+        }
+
+        foreach (QModelIndex srcIndex, selectedIndecies)
+        {
+            SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
+            DVASSERT(item != nullptr);
+
+            bool parentSelected = false;
+
+            QModelIndex srcIndexParent = srcIndex.parent();
+
+            while (srcIndexParent.isValid() && !parentSelected)
+            {
+                SceneTreeItem* itemParent = treeWidget->treeModel->GetItem(srcIndexParent);
+
+                if (selectedIndecies.contains(srcIndexParent) && itemParent->ItemType() == type)
+                {
+                    parentSelected = true;
+                    break;
+                }
+
+                srcIndexParent = srcIndexParent.parent();
+            }
+
+            if (!parentSelected && static_cast<SceneTreeItem::eItemType>(item->ItemType()) == type)
+            {
+                RemoveInfo info = callback(item);
+                commands.push_back(std::move(info.command));
+            }
+        }
 
         if (!commands.empty())
         {
             SceneEditor2* sceneEditor = GetScene();
             sceneEditor->BeginBatch(text, static_cast<DAVA::uint32>(commands.size()));
-
-            Selection::SetSelection(currentGroup);
 
             static_cast<SceneTree*>(GetParentWidget())->SyncSelectionToTree();
             for (std::unique_ptr<DAVA::Command>& command : commands)
@@ -215,6 +244,8 @@ protected:
             MarkStructureChanged();
             sceneEditor->EndBatch();
         }
+
+        treeWidget->SyncSelectionFromTree();
     }
 
     void ForEachSelectedByType(SceneTreeItem::eItemType type, const DAVA::Function<void(SceneTreeItem*)>& callback)
@@ -266,6 +297,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         SceneEditor2* scene = GetScene();
 
         const SelectableGroup& selection = Selection::GetSelection();
@@ -357,10 +389,63 @@ protected:
                 Connect(particleEffectMenu->addAction(SharedIcon(":/QtIcons/restart.png"), QStringLiteral("Restart")), this, &EntityContextMenu::RestartEffect);
             }
 
+            if (selectionSize)
+            {
+                DAVA::TexturesMap textures;
+
+                for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
+                {
+                    SceneHelper::TextureCollector collector;
+                    SceneHelper::EnumerateEntityTextures(scene, selectEntity, collector);
+                    DAVA::TexturesMap& collectorTextures = collector.GetTextures();
+
+                    textures.insert(collectorTextures.begin(), collectorTextures.end());
+                }
+
+                if (textures.empty() == false)
+                {
+                    Connect(menu.addAction(QStringLiteral("Reload Textures...")), [textures]
+                            {
+                                DAVA::Vector<DAVA::Texture*> reloadTextures;
+
+                                for (auto& tex : textures)
+                                {
+                                    reloadTextures.push_back(tex.second);
+                                }
+
+                                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+
+                            });
+                }
+            }
+
             if (selectionSize == 1)
             {
                 menu.addSeparator();
                 Connect(menu.addAction(SharedIcon(":/QtIconsTextureDialog/filter.png"), QStringLiteral("Set name as filter")), this, &EntityContextMenu::SetEntityNameAsFilter);
+            }
+
+            menu.addSeparator();
+            {
+                Connect(menu.addAction(SharedIcon(":/QtIcons/openscene.png"), QStringLiteral("Load slots preset")), this, &EntityContextMenu::LoadSlotsPreset);
+            }
+            {
+                std::function<bool(DAVA::Entity*)> checkSlotComponent = [&checkSlotComponent](DAVA::Entity* entity) {
+                    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0)
+                        return true;
+
+                    for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)
+                    {
+                        if (checkSlotComponent(entity->GetChild(i)) == true)
+                            return true;
+                    }
+
+                    return false;
+                };
+                bool hasSlotComponent = checkSlotComponent(entity);
+                QAction* action = menu.addAction(SharedIcon(":/QtIcons/save_as.png"), QStringLiteral("Save slots preset"));
+                action->setEnabled(hasSlotComponent);
+                Connect(action, this, &EntityContextMenu::SaveSlotsPreset);
             }
         }
     }
@@ -368,6 +453,7 @@ protected:
 private:
     void FillCameraActions(QMenu& menu)
     {
+        using namespace DAVA::TArc;
         Connect(menu.addAction(SharedIcon(":/QtIcons/eye.png"), QStringLiteral("Look from")), this, &EntityContextMenu::SetCurrentCamera);
         Connect(menu.addAction(SharedIcon(":/QtIcons/camera.png"), QStringLiteral("Set custom draw camera")), this, &EntityContextMenu::SetCustomDrawCamera);
         Connect(menu.addAction(SharedIcon(":/QtIcons/grab-image.png"), QStringLiteral("Grab image")), this, &EntityContextMenu::GrabImage);
@@ -532,8 +618,8 @@ private:
         params.scene = scene;
         params.cameraToGrab = GetCamera(entityItem->GetEntity());
         DVASSERT(params.cameraToGrab.Get() != nullptr);
-        params.imageSize = DAVA::Size2i(SettingsManager::GetValue(Settings::Scene_Grab_Size_Width).AsInt32(),
-                                        SettingsManager::GetValue(Settings::Scene_Grab_Size_Height).AsInt32());
+        GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+        params.imageSize = DAVA::Size2i(settings->grabSizeWidth, settings->grabSizeHeight);
         params.outputFile = filePath.toStdString();
 
         SceneImageGrabber::GrabImage(params);
@@ -611,6 +697,53 @@ private:
         GetScene()->SetCustomDrawCamera(camera);
     }
 
+    void SaveSlotsPreset()
+    {
+        SceneEditor2* scene = GetScene();
+        SlotSystemSettings* settings = REGlobal::GetGlobalContext()->GetData<SlotSystemSettings>();
+
+        if (scene->IsLoaded() == false)
+        {
+            DAVA::Logger::Error("[SaveSlotsPreset] Sorry, you should save scene first");
+            return;
+        }
+
+        QString selectedPath = FileDialog::getSaveFileName(nullptr, QStringLiteral("Save slot preset"), settings->lastPresetSaveLoadPath, QStringLiteral("Slots preset file (*.spreset)"));
+        if (selectedPath.isEmpty())
+        {
+            return;
+        }
+
+        settings->lastPresetSaveLoadPath = selectedPath;
+        EditorSlotSystem* system = scene->LookupEditorSystem<EditorSlotSystem>();
+        DAVA::RefPtr<DAVA::KeyedArchive> archive = system->SaveSlotsPreset(entityItem->GetEntity());
+        if (archive->Save(selectedPath.toStdString()) == false)
+        {
+            DAVA::Logger::Error("Slots Preset was not saved");
+        }
+    }
+
+    void LoadSlotsPreset()
+    {
+        SlotSystemSettings* settings = REGlobal::GetGlobalContext()->GetData<SlotSystemSettings>();
+        QString selectedPath = FileDialog::getOpenFileName(nullptr, QStringLiteral("Save slot preset"), settings->lastPresetSaveLoadPath, QStringLiteral("Slots preset file (*.spreset)"));
+        if (selectedPath.isEmpty())
+        {
+            return;
+        }
+
+        settings->lastPresetSaveLoadPath = selectedPath;
+        DAVA::RefPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        if (archive->Load(selectedPath.toStdString()) == false)
+        {
+            DAVA::Logger::Error("Can't read selected slots preset");
+            return;
+        }
+
+        EditorSlotSystem* system = GetScene()->LookupEditorSystem<EditorSlotSystem>();
+        system->LoadSlotsPreset(entityItem->GetEntity(), archive);
+    }
+
 private:
     SceneTreeItemEntity* entityItem;
 };
@@ -634,6 +767,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         Connect(menu.addAction(SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Layer")), this, &ParticleLayerContextMenu::CloneLayer);
         QString removeLayerText = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Layer") : QStringLiteral("Remove Layers");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_layer.png"), removeLayerText), this, &ParticleLayerContextMenu::RemoveLayer);
@@ -681,6 +815,7 @@ public:
 protected:
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Forces") : QStringLiteral("Remove Force");
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleForceContextMenu::RemoveForce);
     }
@@ -721,6 +856,7 @@ protected:
 
     void FillActions(QMenu& menu) override
     {
+        using namespace DAVA::TArc;
         if (IsRemovable())
         {
             QString removeEmitterText = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove emitter") : QStringLiteral("Remove emitters");
@@ -752,7 +888,8 @@ protected:
 
     void LoadEmitterFromYaml()
     {
-        DAVA::FilePath defaultPath = SettingsManager::GetValue(Settings::Internal_ParticleLastLoadEmitterDir).AsFilePath();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        DAVA::FilePath defaultPath = settings->emitterLoadDir;
         QString particlesPath = defaultPath.IsEmpty() ? SceneTreeDetails::GetParticlesConfigPath() : QString::fromStdString(defaultPath.GetAbsolutePathname());
 
         QString selectedPath = FileDialog::getOpenFileName(nullptr, QStringLiteral("Open Particle Emitter Yaml file"), particlesPath, QStringLiteral("YAML File (*.yaml)"));
@@ -760,7 +897,7 @@ protected:
         if (selectedPath.isEmpty() == false)
         {
             DAVA::FilePath yamlPath = selectedPath.toStdString();
-            SettingsManager::SetValue(Settings::Internal_ParticleLastLoadEmitterDir, DAVA::VariantType(yamlPath.GetDirectory()));
+            settings->emitterLoadDir = yamlPath.GetDirectory();
 
             GetScene()->Exec(CreateLoadCommand(yamlPath));
             MarkStructureChanged();
@@ -969,7 +1106,8 @@ void SceneTree::dragMoveEvent(QDragMoveEvent* event)
 {
     QTreeView::dragMoveEvent(event);
 
-    if (SettingsManager::GetValue(Settings::Scene_DragAndDropWithShift).AsBool() && ((event->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    if (settings->dragAndDropWithShift == true && ((event->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
     {
         event->setDropAction(Qt::IgnoreAction);
         event->accept();
@@ -1195,6 +1333,32 @@ void SceneTree::CollapseSwitch()
     }
 }
 
+void SceneTree::ReloadSelectedEntitiesTextures()
+{
+    using namespace DAVA::TArc;
+    const SelectableGroup& selection = Selection::GetSelection();
+    DAVA::Vector<DAVA::Texture*> reloadTextures;
+
+    for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
+    {
+        SceneHelper::TextureCollector collector;
+        SceneHelper::EnumerateEntityTextures(selectEntity->GetScene(), selectEntity, collector);
+        DAVA::TexturesMap& textures = collector.GetTextures();
+
+        for (auto& tex : textures)
+        {
+            auto found = std::find(reloadTextures.begin(), reloadTextures.end(), tex.second);
+
+            if (found == reloadTextures.end())
+            {
+                reloadTextures.push_back(tex.second);
+            }
+        }
+    }
+
+    REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+}
+
 void SceneTree::CollapseAll()
 {
     QTreeView::collapseAll();
@@ -1351,8 +1515,9 @@ void SceneTree::SyncSelectionFromTree()
         QModelIndexList indexList = selectionModel()->selection().indexes();
         for (int i = 0; i < indexList.size(); ++i)
         {
-            auto item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i]));
-            group.Add(item->GetItemObject(), curScene->collisionSystem->GetUntransformedBoundingBox(item->GetItemObject()));
+            SceneTreeItem* item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i]));
+            DAVA::Any object(item->GetItemObject());
+            group.Add(object, curScene->collisionSystem->GetUntransformedBoundingBox(object));
         }
         Selection::SetSelection(group);
     }

@@ -2,24 +2,27 @@
 
 #include <algorithm>
 
-#include "UI/UIButton.h"
-#include "UI/UIList.h"
-#include "UI/UITextField.h"
-#include "UI/UIStaticText.h"
+#include "Engine/Engine.h"
 #include "FileSystem/FileList.h"
-#include "Utils/UTF8Utils.h"
-#include "Time/SystemTimer.h"
-#include "UI/UIControlSystem.h"
-#include "Render/2D/FTFont.h"
 #include "Logger/Logger.h"
+#include "Render/2D/FTFont.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Time/SystemTimer.h"
+#include "UI/UIButton.h"
+#include "UI/UIControlBackground.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIList.h"
+#include "UI/UIStaticText.h"
+#include "UI/UITextField.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
 UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
-    : UIControl(Rect(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx / 2.f,
-                     UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy / 2.f,
-                     UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx * 2.f / 3.f,
-                     UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy * 4.f / 5.f
+    : UIControl(Rect(GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx / 2.f,
+                     GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy / 2.f,
+                     GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx * 2.f / 3.f,
+                     GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy * 4.f / 5.f
                      )
                 )
 {
@@ -33,9 +36,9 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     delegate = NULL;
     extensionFilter.push_back(".*");
 
-    cellH = UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy / 20.0f;
+    cellH = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy / 20.0f;
     cellH = Max(cellH, 32.0f);
-    float32 border = UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy / 64.0f;
+    float32 border = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy / 64.0f;
     float32 halfBorder = float32(int32(border / 2.0f));
     fileListView = new UIList(Rect(border, border + cellH, size.x - border * 2.0f, size.y - cellH * 3.0f - border * 3.0f), UIList::ORIENTATION_VERTICAL);
     fileListView->SetDelegate(this);

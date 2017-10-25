@@ -19,8 +19,15 @@ exec_clang_format()
 
 files=""
 
+# list of directories to exclude from clang-format
+# usually directories where third-party headers are stored
+exclude_list=(
+    "/Libs"
+)
+exclude_pattern=$(echo ${exclude_list[@]}|tr " " "|")
+
 # collect files that should be formated during this commit
-for file in `git diff-index --cached --name-only HEAD | grep -E "Modules|Programs|Sources/Internal"` ; do
+for file in `git diff-index --cached --name-only HEAD | grep -E "Modules|Programs|Sources/Internal" | grep -Ev "${exclude_pattern}"` ; do
 
 	# collect only existed files
 	if [ -f ${file} ]; then
@@ -28,7 +35,7 @@ for file in `git diff-index --cached --name-only HEAD | grep -E "Modules|Program
 		# collect only file, that are
 		# matched specified extensions 
 		case "$file" in
-			*.cpp | *.h | *.mm)
+			*.cpp | *.h | *.mm | *.unittest)
 				files="$files $file"
 			;;
 			*)

@@ -176,6 +176,11 @@ Qt::ItemFlags ReflectedPropertyModel::flags(const QModelIndex& index) const
     return flags;
 }
 
+QModelIndex ReflectedPropertyModel::buddy(const QModelIndex& indexForEdit) const
+{
+    return index(indexForEdit.row(), 1, indexForEdit.parent());
+}
+
 QModelIndex ReflectedPropertyModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -213,8 +218,13 @@ QModelIndex ReflectedPropertyModel::parent(const QModelIndex& index) const
 
 void ReflectedPropertyModel::Update()
 {
+#if defined(REPORT_UPDATE_TIME)
     int64 start = SystemTimer::GetMs();
-    Update(rootItem.get());
+#endif
+    for (int32 index = 0; index < rootItem->GetChildCount(); ++index)
+    {
+        Update(rootItem->GetChild(index));
+    }
     fastWrappersProcessor.Sync();
     wrappersProcessor.Sync();
 #if defined(REPORT_UPDATE_TIME)
@@ -277,8 +287,13 @@ DataWrappersProcessor* ReflectedPropertyModel::GetWrappersProcessor(const std::s
 
 void ReflectedPropertyModel::UpdateFast()
 {
+#if defined(REPORT_UPDATE_TIME)
     int64 start = SystemTimer::GetMs();
-    UpdateFastImpl(rootItem.get());
+#endif
+    for (int32 index = 0; index < rootItem->GetChildCount(); ++index)
+    {
+        UpdateFastImpl(rootItem->GetChild(index));
+    }
     fastWrappersProcessor.Sync();
 #if defined(REPORT_UPDATE_TIME)
     Logger::Debug(" === ReflectedPropertyModel::UpdateFast : %d ===", static_cast<int32>(SystemTimer::GetMs() - start));
@@ -306,21 +321,34 @@ void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
         childCreator.Clear();
     }
     rootItem->RemovePropertyNodes();
-
-    bool rootSet = false;
-    for (Reflection& obj : objects)
+    if (objects.empty() == false)
     {
-        Reflection::Field field(String("SelfRoot"), std::move(obj), nullptr);
-        std::shared_ptr<PropertyNode> rootNode = childCreator.CreateRoot(std::move(field));
-        nodeToItem.emplace(rootNode, rootItem.get());
+        std::shared_ptr<PropertyNode> rootNode(new PropertyNode());
+
+        Reflection::Field field(String("SelfRoot"), Reflection::Create(&dummyRootValue), nullptr);
+        rootNode->field = field;
         rootItem->AddPropertyNode(rootNode);
-        if (rootSet == false)
+        nodeToItem.emplace(rootNode, rootItem.get());
+
+        favoritesController.SetModelRoot(rootNode);
+
+        ReflectedPropertyItem* regularTreeItem = nullptr;
+        for (Reflection& obj : objects)
         {
-            favoritesController.SetModelRoot(rootNode);
-            rootSet = true;
+            Reflection::Field field(String("Regular Tree"), std::move(obj), nullptr);
+            std::shared_ptr<PropertyNode> regularTreeRootNode = childCreator.CreateRoot(std::move(field));
+            if (regularTreeItem == nullptr)
+            {
+                std::unique_ptr<BaseComponentValue> componentValue = GetExtensionChain<EditorComponentExtension>()->GetEditor(regularTreeRootNode);
+                componentValue->Init(this);
+                int32 position = rootItem->LookupChildPosition(0);
+                regularTreeItem = rootItem->CreateChild(std::move(componentValue), position, 0);
+            }
+            nodeToItem.emplace(regularTreeRootNode, regularTreeItem);
+            regularTreeItem->AddPropertyNode(regularTreeRootNode);
         }
+        objects.clear();
     }
-    objects.clear();
 
     Update();
     EmitDataChangedSignals();
@@ -651,6 +679,10 @@ bool ReflectedPropertyModel::IsFavorite(const QModelIndex& index) const
 bool ReflectedPropertyModel::IsInFavoriteHierarchy(const QModelIndex& index) const
 {
     ReflectedPropertyItem* item = MapItem(index);
+    if (item->GetPropertyNode(0)->propertyType == PropertyNode::SelfRoot)
+    {
+        return true;
+    }
     bool isFavorite = false;
     while (isFavorite == false && item != nullptr)
     {
@@ -707,9 +739,28 @@ bool ReflectedPropertyModel::IsEditorSpanned(const QModelIndex& index) const
     return MapItem(index)->value->IsSpannedControl();
 }
 
-QModelIndex ReflectedPropertyModel::GetRegularRootIndex() const
+QModelIndex ReflectedPropertyModel::GetRootIndex() const
 {
     return MapItem(rootItem.get());
+}
+
+QModelIndex ReflectedPropertyModel::GetRegularRootIndex() const
+{
+    if (rootItem->GetChildCount() < 1)
+    {
+        return QModelIndex();
+    }
+
+    for (int32 index = 0; index < rootItem->GetChildCount(); ++index)
+    {
+        ReflectedPropertyItem* item = rootItem->GetChild(index);
+        if (item->GetPropertyNode(0)->propertyType == PropertyNode::SelfRoot)
+        {
+            return MapItem(item);
+        }
+    }
+
+    return QModelIndex();
 }
 
 QModelIndex ReflectedPropertyModel::GetFavoriteRootIndex() const

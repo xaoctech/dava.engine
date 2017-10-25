@@ -1,10 +1,12 @@
 #pragma once
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
-#include "FileSystem/FilePath.h"
+#include <TArc/Core/ContextAccessor.h>
+
+#include <Render/RenderBase.h>
+#include <FileSystem/FilePath.h>
+#include <Base/BaseTypes.h>
 
 #include <QObject>
 
@@ -14,7 +16,9 @@ class AssetCacheClient;
 namespace TArc
 {
 class UI;
+class ContextAccessor;
 class WaitHandle;
+class ContextAccessor;
 }
 }
 
@@ -28,7 +32,7 @@ class SpritesPackerModule final : public QObject
     Q_OBJECT
 
 public:
-    SpritesPackerModule(DAVA::TArc::UI* ui);
+    SpritesPackerModule(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
     ~SpritesPackerModule() override;
 
     void RepackImmediately(const DAVA::FilePath& projectPath, DAVA::eGPUFamily gpu);
@@ -61,5 +65,6 @@ private:
     std::unique_ptr<SpritesPacker> spritesPacker;
     QAction* reloadSpritesAction = nullptr;
     DAVA::TArc::UI* ui = nullptr;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
     std::unique_ptr<DAVA::TArc::WaitHandle> waitDialogHandle;
 };

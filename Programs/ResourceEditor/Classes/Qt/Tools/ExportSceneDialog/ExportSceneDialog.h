@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 #include <Render/RenderBase.h>
 
 #include <QDialog>
@@ -22,6 +22,7 @@ public:
     DAVA::TextureConverter::eConvertQuality GetQuality() const;
     bool GetOptimizeOnExport() const;
     bool GetUseHDTextures() const;
+    DAVA::String GetFilenamesTag() const;
 
 private slots:
     void SetExportEnabled();
@@ -34,6 +35,7 @@ private:
 
     DAVA::Array<QCheckBox*, DAVA::eGPUFamily::GPU_FAMILY_COUNT> gpuSelector;
     QComboBox* qualitySelector = nullptr;
+    QComboBox* tagSelector = nullptr;
 
     QCheckBox* optimizeOnExport = nullptr;
     QCheckBox* useHDtextures = nullptr;

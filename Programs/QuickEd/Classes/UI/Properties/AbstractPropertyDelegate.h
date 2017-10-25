@@ -1,5 +1,4 @@
-#ifndef __ABSTRACTPROPERTYDELEGATE_H__
-#define __ABSTRACTPROPERTYDELEGATE_H__
+#pragma once
 
 #include <QList>
 #include <QPointer>
@@ -26,5 +25,3 @@ public:
 protected:
     QPointer<PropertiesTreeItemDelegate> itemDelegate;
 };
-
-#endif // __ABSTRACTPROPERTYDELEGATE_H__

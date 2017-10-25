@@ -19,12 +19,9 @@ PackMetaData::PackMetaData(const void* ptr, std::size_t size)
 
 void PackMetaData::CollectDependencies(uint32 packIndex, Children& out) const
 {
-    const String& packName = GetPackInfo(packIndex).packName;
-    for (uint32 childPack : GetPackDependencyIndexes(packName))
-    {
-        out.push_back(childPack);
-        CollectDependencies(childPack, out);
-    }
+    // all dependent packs with all sub-dependencies
+    DVASSERT(packIndex < children.size());
+    out = children[packIndex];
 }
 
 PackMetaData::PackMetaData(const FilePath& metaDb)
@@ -166,12 +163,12 @@ Vector<uint32> PackMetaData::GetFileIndexes(const String& requestedPackName) con
 
 uint32 PackMetaData::GetPackIndexForFile(const uint32 fileIndex) const
 {
-    return packIndexes.at(fileIndex);
+    return packIndexes[fileIndex];
 }
 
 const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const uint32 packIndex) const
 {
-    return packDependencies.at(packIndex);
+    return packDependencies[packIndex];
 }
 
 const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) const

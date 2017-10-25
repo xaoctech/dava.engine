@@ -14,8 +14,13 @@
 #include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/UILayoutSystemListener.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
+#include "UI/Text/UITextComponent.h"
+#include "UI/Text/UITextSystem.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
@@ -172,6 +177,15 @@ void UILayoutSystem::ProcessControl(UIControl* control)
 void UILayoutSystem::ManualApplyLayout(UIControl* control)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUT_SYSTEM);
+    UIControlSystem* scene = control->GetScene();
+    if (scene)
+    {
+        scene->GetTextSystem()->ForceProcessControl(0.0f, control);
+    }
+    else
+    {
+        GetEngineContext()->uiControlSystem->GetTextSystem()->ForceProcessControl(0.0f, control);
+    }
 
     Layouter localLayouter;
     localLayouter.SetRtl(isRtl);

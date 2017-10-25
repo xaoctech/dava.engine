@@ -33,8 +33,11 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
+    return 'Libs\icucommon'
+    """ Use icucommon from dava repository
     return {'windows': 'http://download.icu-project.org/files/icu4c/57.1/icu4c-57_1-src.zip',
             'others': 'http://download.icu-project.org/files/icu4c/57.1/icu4c-57_1-src.tgz'}
+    """
 
 
 def _download_and_extract(
@@ -69,6 +72,20 @@ def _patch_sources(source_folder_path, working_directory_path, patch_postifx):
 
 
 def _build_win32(working_directory_path, root_project_path):
+    source_folder_path=os.path.join(root_project_path, get_download_info())
+
+    build_x86_folder, build_x64_folder = (
+        build_utils.build_and_copy_libraries_win32_cmake(
+            os.path.join(working_directory_path, 'gen'),
+            source_folder_path,
+            root_project_path,
+            'icucommon.sln', 'icucommon',
+            'icucommon.lib', 'icucommon.lib',
+            'icucommon.lib', 'icucommon.lib',
+            'icucommon.lib', 'icucommon.lib',
+            static_runtime=False))
+
+    """
     prefix = '_win32'
     source_folder_path = _download_and_extract(
         working_directory_path, 'windows', prefix)
@@ -81,6 +98,7 @@ def _build_win32(working_directory_path, root_project_path):
     build_utils.build_vs(vc_solution_file_path, 'Release', 'Win32', 'common')
     build_utils.build_vs(vc_solution_file_path, 'Debug', 'x64', 'common')
     build_utils.build_vs(vc_solution_file_path, 'Release', 'x64', 'common')
+    """
 
 
 def _build_win10(working_directory_path, root_project_path):
@@ -140,6 +158,10 @@ def _build_android(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(
         working_directory_path, 'others')
 
+    # ARM
+
+    toolchain_path_arm = build_utils.android_ndk_get_toolchain_arm()
+
     install_dir_android_arm = os.path.join(
         working_directory_path, 'gen/install_android_arm')
     build_utils.build_with_autotools(
@@ -151,7 +173,11 @@ def _build_android(working_directory_path, root_project_path):
          '--enable-static'],
         install_dir_android_arm,
         env=build_utils.get_autotools_android_arm_env(
-            root_project_path, enable_stl=True))
+            toolchain_path_arm, enable_stl=True))
+
+    # x86
+
+    toolchain_path_x86 = build_utils.android_ndk_get_toolchain_x86()
 
     install_dir_android_x86 = os.path.join(
         working_directory_path, 'gen/install_android_x86')
@@ -164,7 +190,7 @@ def _build_android(working_directory_path, root_project_path):
          '--enable-static'],
         install_dir_android_x86,
         env=build_utils.get_autotools_android_x86_env(
-            root_project_path, enable_stl=True))
+            toolchain_path_x86, enable_stl=True))
 
 # TODO: Add copying headers & libraries when switching to new directories structure
 

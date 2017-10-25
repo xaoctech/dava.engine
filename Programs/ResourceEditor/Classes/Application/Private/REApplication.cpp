@@ -5,14 +5,15 @@
 #include "Classes/Project/ProjectManagerModule.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Application/LaunchModule.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 
-#include <Tools/TextureCompression/PVRConverter.h>
-#include "Settings/SettingsManager.h"
+#include <DavaTools/TextureCompression/PVRConverter.h>
+
 #include "Deprecated/SceneValidator.h"
-#include "Preferences/PreferencesStorage.h"
 #include "Deprecated/EditorConfig.h"
 
-#include "CommandLine/BeastCommandLineTool.h"
+#include "Classes/Beast/BeastCommandLineTool.h"
 #include "CommandLine/ConsoleHelpTool.h"
 #include "CommandLine/DumpTool.h"
 #include "CommandLine/SceneImageDump.h"
@@ -25,27 +26,28 @@
 #include "CommandLine/SceneExporterTool.h"
 #include "CommandLine/SceneValidationTool.h"
 
-#ifdef __DAVAENGINE_BEAST__
-#include "BeastProxyImpl.h"
-#else
-#include "Beast/BeastProxy.h"
-#endif //__DAVAENGINE_BEAST__
-
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
-#include "TArc/Core/Core.h"
-#include "TArc/Testing/TArcTestClass.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <QtTools/InitQtTools.h>
 
-#include "Scene3D/Systems/QualitySettingsSystem.h"
-#include "Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
-#include "Particles/ParticleEmitter.h"
-#include "Engine/Engine.h"
-#include "Engine/EngineContext.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Render/RHI/rhi_Type.h"
-#include "Core/PerformanceSettings.h"
-#include "Base/BaseTypes.h"
+#include <TArc/Core/Core.h>
+#include <TArc/Testing/TArcTestClass.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/SharedModules/SettingsModule/SettingsModule.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
+
+#include <DocDirSetup/DocDirSetup.h>
+
+#include <Particles/ParticleEmitter.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Render/RHI/rhi_Type.h>
+#include <Core/PerformanceSettings.h>
+#include <Base/BaseTypes.h>
 
 #include <QDir>
 #include <QFileInfo>
@@ -102,6 +104,27 @@ DAVA::TArc::BaseApplication::EngineInitInfo REApplication::GetInitInfo() const
 
 void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 {
+    DAVA::TArc::ContextAccessor* accessor = tarcCore->GetCoreInterface();
+    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+    RenderingBackend renderBackend = item.Get("renderBackend", RenderingBackend::OpenGL);
+
+    appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
+
+    renderBackEndListener.reset(new DAVA::TArc::FieldBinder(accessor));
+    DAVA::TArc::FieldDescriptor descr;
+    descr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
+    descr.fieldName = DAVA::FastName("renderBackend");
+
+    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v) {
+        if (v.IsEmpty() == true)
+        {
+            return;
+        }
+
+        DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+        item.Set("renderBackend", v);
+    });
+
     REGlobal::InitTArcCore(tarcCore);
     if (isConsoleMode)
     {
@@ -115,6 +138,9 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 
 void REApplication::Init(const DAVA::EngineContext* engineContext)
 {
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
+
 #if defined(__DAVAENGINE_MACOS__)
     const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI";
 #elif defined(__DAVAENGINE_WIN32__)
@@ -127,23 +153,25 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
-    DAVA::FilePath documentsFolder = engineContext->fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
-    engineContext->fileSystem->CreateDirectory(documentsFolder, true);
-    engineContext->fileSystem->SetCurrentDocumentsDirectory(documentsFolder);
-    engineContext->logger->SetLogFilename("ResourceEditor.txt");
-
-    settingsManager = new SettingsManager();
-#if !defined(DEPLOY_BUILD)
-    RenderingBackend renderBackend = static_cast<RenderingBackend>(settingsManager->GetValue(Settings::General_RenderBackend).AsInt32());
-    appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
+    DAVA::FileSystem* fileSystem = engineContext->fileSystem;
+    
+#ifdef __DAVAENGINE_MACOS__
+    auto copyDocumentsFromOldFolder = [&]
+    {
+        DAVA::FileSystem::eCreateDirectoryResult createResult = DAVA::DocumentsDirectorySetup::CreateApplicationDocDirectory(fileSystem, "ResourceEditor");
+        if (createResult != DAVA::FileSystem::DIRECTORY_EXISTS)
+        {
+            DAVA::FilePath documentsOldFolder = fileSystem->GetCurrentDocumentsDirectory() + "ResourceEditor/";
+            DAVA::FilePath documentsNewFolder = DAVA::DocumentsDirectorySetup::GetApplicationDocDirectory(fileSystem, "ResourceEditor");
+            fileSystem->RecursiveCopy(documentsOldFolder, documentsNewFolder);
+        }
+    };
+    copyDocumentsFromOldFolder(); // todo: remove function some versions after
 #endif
 
-    beastProxy = new BEAST_PROXY_TYPE();
-    const char* settingsPath = "ResourceEditorSettings.archive";
-    DAVA::FilePath localPrefrencesPath(engineContext->fileSystem->GetCurrentDocumentsDirectory() + settingsPath);
-    PreferencesStorage::Instance()->SetupStoragePath(localPrefrencesPath);
-    SettingsManager::UpdateGPUSettings();
+    DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "ResourceEditor");
 
+    engineContext->logger->SetLogFilename("ResourceEditor.txt");
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
@@ -153,6 +181,8 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     {
         DAVA::TArc::TestClass::coreChanged.Connect(&REGlobal::InitTArcCore);
     }
+
+    BaseApplication::Init(engineContext);
 }
 
 void REApplication::Init(DAVA::TArc::Core* tarcCore)
@@ -164,9 +194,6 @@ void REApplication::Init(DAVA::TArc::Core* tarcCore)
 void REApplication::Cleanup()
 {
     REGlobal::InitTArcCore(nullptr);
-    DAVA::SafeRelease(beastProxy);
-    DAVA::SafeRelease(settingsManager);
-
     VisibilityCheckSystem::ReleaseCubemapRenderTargets();
 
     cmdLine.clear();
@@ -189,7 +216,13 @@ QString REApplication::GetInstanceKey() const
 
 void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
 {
-    Q_INIT_RESOURCE(QtToolsResources);
+    using namespace DAVA::TArc;
+    InitColorPickerOptions(false);
+    InitQtTools();
+
+    tarcCore->CreateModule<DAVA::TArc::SettingsModule>();
+    tarcCore->CreateModule<DAVA::TArc::ThemesModule>();
+    tarcCore->CreateModule<DAVA::TArc::ActionManagementModule>();
     tarcCore->CreateModule<ReflectionExtensionsModule>();
     tarcCore->CreateModule<REModule>();
     tarcCore->CreateModule<ProjectManagerModule>();

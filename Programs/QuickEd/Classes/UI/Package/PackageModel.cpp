@@ -4,7 +4,9 @@
 
 #include "UI/CommandExecutor.h"
 #include "UI/IconHelper.h"
+#include "Utils/DragNDropHelper.h"
 #include "Utils/QtDavaConvertion.h"
+#include "Utils/ControlPlacementUtils.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -27,55 +29,16 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/WindowSubSystem/UI.h>
-
-#include <QtTools/Utils/Themes/Themes.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Qt/QtIcon.h>
 
 #include <Base/ObjectFactory.h>
 #include <UI/UIControl.h>
 
-#include <QIcon>
 #include <QAction>
 #include <QUrl>
 
 using namespace DAVA;
-
-namespace PackageModel_local
-{
-void SetAbsoulutePosToControlNode(PackageNode* package, ControlNode* node, ControlNode* dstNode, const DAVA::Vector2& pos)
-{
-    DVASSERT(nullptr != node);
-    DVASSERT(nullptr != node->GetControl());
-    DVASSERT(nullptr != dstNode);
-    DVASSERT(nullptr != dstNode->GetControl());
-    UIControl* parent = dstNode->GetControl();
-    Vector2 sizeOffset = parent->GetSize() * parent->GetPivot();
-    float32 angle = parent->GetAngle();
-    UIGeometricData gd = parent->GetGeometricData();
-    const Vector2& nodeSize = node->GetControl()->GetSize();
-    sizeOffset -= nodeSize / 2;
-    sizeOffset *= gd.scale;
-    Vector2 controlPos = gd.position - ::Rotate(sizeOffset, angle); //top left corner of dest control
-    Vector2 relativePos = pos - controlPos; //new abs pos
-
-    //now calculate new relative pos
-
-    Vector2 scale = gd.scale;
-    if (scale.x == 0.0f || scale.y == 0.0f)
-    {
-        relativePos.SetZero();
-    }
-    else
-    {
-        relativePos /= scale;
-    }
-    relativePos = ::Rotate(relativePos, -angle);
-    RootProperty* rootProperty = node->GetRootProperty();
-    AbstractProperty* positionProperty = rootProperty->FindPropertyByName("position");
-    DVASSERT(nullptr != positionProperty);
-    Vector2 clampedRelativePos(std::floor(relativePos.x), std::floor(relativePos.y));
-    package->SetControlProperty(node, positionProperty, clampedRelativePos);
-}
-} //PackageModel_local
 
 PackageModel::PackageModel(QObject* parent)
     : QAbstractItemModel(parent)
@@ -210,7 +173,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
                 return QIcon(IconHelper::GetIconPathForClassName(QString::fromStdString(className)));
             }
 
-        case Qt::CheckStateRole:
+        case PackageCheckStateRole:
         {
             auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
             return prop->GetVisibleInEditor() ? Qt::Checked : Qt::Unchecked;
@@ -245,15 +208,18 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
         }
 
         case Qt::TextColorRole:
+        {
+            DAVA::TArc::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
             if (controlNode->HasErrors())
             {
-                return Themes::GetErrorColor();
+                return settings->GetErrorColor();
             }
             else if (controlNode->GetPrototype() != nullptr)
             {
-                return Themes::GetPrototypeColor();
+                return settings->GetPrototypeColor();
             }
             return QVariant();
+        }
 
         case Qt::FontRole:
         {
@@ -280,7 +246,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
 
             case Qt::TextColorRole:
             {
-                return Themes::GetStyleSheetNodeColor();
+                return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetStyleSheetNodeColor();
             }
 
             case Qt::FontRole:
@@ -301,12 +267,12 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
                 return StringToQString(node->GetName());
 
             case Qt::BackgroundRole:
-                return Themes::GetViewLineAlternateColor();
+                return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetViewLineAlternateColor();
 
             case Qt::TextColorRole:
                 if (node->HasErrors())
                 {
-                    return Themes::GetErrorColor();
+                    return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetErrorColor();
                 }
                 return QVariant();
 
@@ -351,10 +317,11 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
     ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
     DVASSERT(controlNode);
 
-    if (role == Qt::CheckStateRole)
+    if (role == PackageCheckStateRole)
     {
         auto prop = controlNode->GetRootProperty()->GetVisibleProperty();
         prop->SetVisibleInEditor(value.toBool());
+        package->RefreshProperty(controlNode, prop);
         return true;
     }
     if (role == Qt::EditRole)
@@ -525,7 +492,7 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
                 {
                     for (const auto& node : nodes)
                     {
-                        PackageModel_local::SetAbsoulutePosToControlNode(package.Get(), node, destControl, *pos);
+                        ControlPlacementUtils::SetAbsoulutePosToControlNode(package.Get(), node, destControl, *pos);
                     }
                 }
             }
@@ -557,14 +524,47 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
     {
         QStringList list = data->text().split("\n");
         Vector<FilePath> packages;
+        ResultList wrongExtensionResults;
+        ResultList wrongSourceResults;
+
         for (const QString& str : list)
         {
             QUrl url(str);
             if (url.isLocalFile())
             {
-                packages.push_back(FilePath(url.toLocalFile().toStdString()));
+                QString path = url.toLocalFile();
+
+                if (DragNDropHelper::IsExtensionSupported(path) == false)
+                {
+                    wrongExtensionResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+                }
+                else if (DragNDropHelper::IsFileFromProject(accessor, path) == false)
+                {
+                    wrongSourceResults.AddResult(Result::RESULT_WARNING, Format("%s", path.toStdString().c_str()));
+                }
+                else
+                {
+                    packages.push_back(FilePath(path.toStdString()));
+                }
             }
         }
+
+        if (wrongExtensionResults.HasWarnings())
+        {
+            DAVA::TArc::NotificationParams notificationParams;
+            notificationParams.title = "can not drop";
+            notificationParams.message = Result(Result::RESULT_WARNING, Format("next files have unsupported extension:\n%s", wrongExtensionResults.GetResultMessages().c_str()));
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
+
+        if (wrongSourceResults.HasWarnings())
+        {
+            DAVA::TArc::NotificationParams notificationParams;
+            notificationParams.title = "can not drop";
+            notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
+
         if (!packages.empty())
         {
             executor.AddImportedPackagesIntoPackage(packages, package.Get());
@@ -584,7 +584,7 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
                     auto control = dynamic_cast<ControlNode*>(node);
                     if (control != nullptr)
                     {
-                        PackageModel_local::SetAbsoulutePosToControlNode(package.Get(), control, destControl, *pos);
+                        ControlPlacementUtils::SetAbsoulutePosToControlNode(package.Get(), control, destControl, *pos);
                     }
                 }
             }

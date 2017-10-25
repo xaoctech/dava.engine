@@ -1,18 +1,19 @@
 #include "UI/UIScreenTransition.h"
-#include "Render/RenderHelper.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Image/Image.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "UI/UIControlSystem.h"
-#include "Time/SystemTimer.h"
-
-#include "UI/UI3DView.h"
-#include "Scene3D/Scene.h"
-#include "UI/UIScreenshoter.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/Update/UIUpdateComponent.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/RenderHelper.h"
+#include "Render/Texture.h"
+#include "Scene3D/Scene.h"
+#include "Time/SystemTimer.h"
 #include "UI/Render/UIRenderSystem.h"
+#include "UI/UI3DView.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScreenshoter.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
@@ -43,7 +44,7 @@ void UIScreenTransition::CreateRenderTargets()
         return;
     }
 
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Size2i physicalTargetSize = vcs->GetPhysicalScreenSize();
 
@@ -88,7 +89,7 @@ void UIScreenTransition::SetSourceControl(UIControl* prevControl, bool updateCon
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
-    UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
+    UIScreenshoter* screenshoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
     screenshoter->MakeScreenshot(prevControl, renderTargetPrevScreen->GetTexture(), true, updateControl);
 }
 
@@ -96,7 +97,7 @@ void UIScreenTransition::SetDestinationControl(UIControl* nextControl, bool upda
 {
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
-    UIScreenshoter* screenshoter = UIControlSystem::Instance()->GetRenderSystem()->GetScreenshoter();
+    UIScreenshoter* screenshoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
     screenshoter->MakeScreenshot(nextControl, renderTargetNextScreen->GetTexture(), true, updateControl);
 }
 
@@ -122,7 +123,7 @@ void UIScreenTransition::Draw(const UIGeometricData& geometricData)
 {
     if (renderTargetPrevScreen && renderTargetNextScreen)
     {
-        Sprite::DrawState drawState;
+        SpriteDrawState drawState;
         drawState.SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 
         drawState.SetScale(0.5f, 1.0f);
@@ -131,7 +132,7 @@ void UIScreenTransition::Draw(const UIGeometricData& geometricData)
         RenderSystem2D::Instance()->Draw(renderTargetPrevScreen, &drawState, Color::White);
 
         drawState.SetScale(0.5f, 1.0f);
-        drawState.SetPosition((UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dx) / 2.0f, 0);
+        drawState.SetPosition((GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dx) / 2.0f, 0);
 
         RenderSystem2D::Instance()->Draw(renderTargetNextScreen, &drawState, Color::White);
     }

@@ -1,13 +1,13 @@
 #include "UI/UIControlBackground.h"
 #include "Debug/DVAssert.h"
-#include "UI/UIControl.h"
-#include "Render/RenderHelper.h"
-#include "UI/UIControlSystem.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/Material/NMaterial.h"
 #include "Render/RenderHelper.h"
 #include "Render/Renderer.h"
+#include "UI/UIControl.h"
 #include "Utils/StringFormat.h"
-#include "Reflection/ReflectionRegistrator.h"
 
 #include <limits>
 
@@ -35,12 +35,16 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControlBackground)
     .Field("topBottomStretchCap", &UIControlBackground::GetTopBottomStretchCap, &UIControlBackground::SetTopBottomStretchCap)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIControlBackground);
 
 UIControlBackground::UIControlBackground()
     : color(Color::White)
     , lastDrawPos(0, 0)
     , drawColor(Color::White)
     , material(SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL))
+#if defined(LOCALIZATION_DEBUG)
+    , lastDrawState(std::make_unique<SpriteDrawState>())
+#endif
 {
 }
 
@@ -64,6 +68,9 @@ UIControlBackground::UIControlBackground(const UIControlBackground& src)
     , color(src.color)
     , drawColor(src.drawColor)
     , material(SafeRetain(src.material))
+#if defined(LOCALIZATION_DEBUG)
+    , lastDrawState(std::make_unique<SpriteDrawState>(*src.lastDrawState))
+#endif
 {
 }
 
@@ -164,13 +171,13 @@ void UIControlBackground::SetDrawType(UIControlBackground::eDrawType drawType)
     if (type != drawType)
     {
         ReleaseDrawData();
-    }
 
-    type = drawType;
+        type = drawType;
 
-    if (GetControl()) //workaround for standalone backgrounds
-    {
-        GetControl()->SetLayoutDirty();
+        if (GetControl()) //workaround for standalone backgrounds
+        {
+            GetControl()->SetLayoutDirty();
+        }
     }
 }
 
@@ -261,7 +268,7 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
     geometricData.AddGeometricData(parentGeometricData);
     Rect drawRect = geometricData.GetUnrotatedRect();
 
-    Sprite::DrawState drawState;
+    SpriteDrawState drawState;
 
     drawState.SetMaterial(material);
     if (spr != nullptr)
@@ -529,14 +536,14 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
         break;
     }
 #if defined(LOCALIZATION_DEBUG)
-    lastDrawState = drawState;
+    (*lastDrawState) = drawState;
 #endif
 }
 
 #if defined(LOCALIZATION_DEBUG)
-const Sprite::DrawState& UIControlBackground::GetLastDrawState() const
+const SpriteDrawState& UIControlBackground::GetLastDrawState() const
 {
-    return lastDrawState;
+    return *lastDrawState;
 }
 #endif
 
@@ -601,5 +608,115 @@ void UIControlBackground::ClearBatches()
 const Vector<BatchDescriptor2D>& UIControlBackground::GetRenderBatches() const
 {
     return batchDescriptors;
+}
+
+void UIControlBackground::SetColor(const Color& _color)
+{
+    color = _color;
+}
+
+const Color& UIControlBackground::GetColor() const
+{
+    return color;
+}
+
+FilePath UIControlBackground::GetBgSpritePath() const
+{
+    if (GetSprite() == NULL)
+        return "";
+    else if (GetSprite()->GetRelativePathname().GetType() == FilePath::PATH_IN_MEMORY)
+        return "";
+    else
+        return Sprite::GetPathString(GetSprite());
+}
+
+FilePath UIControlBackground::GetMaskSpritePath() const
+{
+    if ((mask != nullptr) && (mask->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
+        return Sprite::GetPathString(mask.Get());
+    return "";
+}
+
+void UIControlBackground::SetMaskSpriteFromPath(const FilePath& path)
+{
+    if (path != "")
+        mask.Set(Sprite::Create(path));
+    else
+        mask.Set(nullptr);
+}
+
+void UIControlBackground::SetMaskSprite(Sprite* sprite)
+{
+    mask = sprite;
+}
+
+FilePath UIControlBackground::GetDetailSpritePath() const
+{
+    if ((detail != nullptr) && (detail->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
+        return Sprite::GetPathString(detail.Get());
+    return "";
+}
+
+void UIControlBackground::SetDetailSpriteFromPath(const FilePath& path)
+{
+    if (path != "")
+        detail.Set(Sprite::Create(path));
+    else
+        detail.Set(nullptr);
+}
+
+void UIControlBackground::SetDetailSprite(Sprite* sprite)
+{
+    detail = sprite;
+}
+
+FilePath UIControlBackground::GetGradientSpritePath() const
+{
+    if ((gradient != nullptr) && (gradient->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
+        return Sprite::GetPathString(gradient.Get());
+    return "";
+}
+
+void UIControlBackground::SetGradientSpriteFromPath(const FilePath& path)
+{
+    if (path != "")
+        gradient.Set(Sprite::Create(path));
+    else
+        gradient.Set(nullptr);
+}
+
+void UIControlBackground::SetGradientSprite(Sprite* sprite)
+{
+    gradient = sprite;
+}
+
+FilePath UIControlBackground::GetContourSpritePath() const
+{
+    if ((contour != nullptr) && (contour->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
+        return Sprite::GetPathString(contour.Get());
+    return "";
+}
+
+void UIControlBackground::SetContourSpriteFromPath(const FilePath& path)
+{
+    if (path != "")
+        contour.Set(Sprite::Create(path));
+    else
+        contour.Set(nullptr);
+}
+
+void UIControlBackground::SetContourSprite(Sprite* sprite)
+{
+    contour = sprite;
+}
+
+eGradientBlendMode UIControlBackground::GetGradientBlendMode() const
+{
+    return gradientMode;
+}
+
+void UIControlBackground::SetGradientBlendMode(eGradientBlendMode mode)
+{
+    gradientMode = mode;
 }
 };

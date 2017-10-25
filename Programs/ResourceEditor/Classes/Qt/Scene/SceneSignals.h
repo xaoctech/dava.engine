@@ -7,6 +7,12 @@
 #include "Base/StaticSingleton.h"
 #include "Scene3D/Entity.h"
 
+namespace DAVA
+{
+class ParticleEmitterInstance;
+struct ParticleLayer;
+}
+
 class SceneEditor2;
 class RECommandNotificationObject;
 class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>
@@ -14,7 +20,6 @@ class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>
     Q_OBJECT
 
 signals:
-    void ThemeChanged();
 
     // scene
     void Opened(SceneEditor2* scene);
@@ -25,15 +30,8 @@ signals:
 
     void Activated(SceneEditor2* scene);
     void Deactivated(SceneEditor2* scene);
-
-    void CanUndoStateChanged(bool canUndo);
-    void CanRedoStateChanged(bool canRedo);
-    void UndoTextChanged(const DAVA::String& text);
-    void RedoTextChanged(const DAVA::String& text);
-    void UndoRedoStateChanged(SceneEditor2* scene);
     void CommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
     void StructureChanged(SceneEditor2* scene, DAVA::Entity* parent);
-    void ModifyStatusChanged(SceneEditor2* scene, bool modified);
 
     // Quality
     void QualityChanged();
@@ -60,7 +58,6 @@ signals:
 
     void DropperHeightChanged(SceneEditor2* scene, double height);
     void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
-    void SnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
     void LandscapeEditorToggled(SceneEditor2* scene);
 
@@ -106,11 +103,6 @@ public:
     void EmitStructureChanged(SceneEditor2* scene, DAVA::Entity* parent)
     {
         emit StructureChanged(scene, parent);
-    }
-
-    void EmitModifyStatusChanged(SceneEditor2* scene, bool modified)
-    {
-        emit ModifyStatusChanged(scene, modified);
     }
 
     void EmitQualityChanged()
@@ -181,10 +173,5 @@ public:
     void EmitParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter)
     {
         emit ParticleLayerRemoved(scene, emitter);
-    }
-
-    void EmitSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
-    {
-        emit SnapToLandscapeChanged(scene, isSpanToLandscape);
     }
 };

@@ -43,19 +43,18 @@ extern "C" {
 
 struct spAtlasAttachmentLoader;
 
-typedef struct spSkeletonJson
-{
-    float scale;
-    spAttachmentLoader* attachmentLoader;
-    const char* const error;
+typedef struct spSkeletonJson {
+	float scale;
+	spAttachmentLoader* attachmentLoader;
+	const char* const error;
 } spSkeletonJson;
 
-spSkeletonJson* spSkeletonJson_createWithLoader(spAttachmentLoader* attachmentLoader);
-spSkeletonJson* spSkeletonJson_create(spAtlas* atlas);
-void spSkeletonJson_dispose(spSkeletonJson* self);
+spSkeletonJson* spSkeletonJson_createWithLoader (spAttachmentLoader* attachmentLoader);
+spSkeletonJson* spSkeletonJson_create (spAtlas* atlas);
+void spSkeletonJson_dispose (spSkeletonJson* self);
 
-spSkeletonData* spSkeletonJson_readSkeletonData(spSkeletonJson* self, const char* json);
-spSkeletonData* spSkeletonJson_readSkeletonDataFile(spSkeletonJson* self, const char* path);
+spSkeletonData* spSkeletonJson_readSkeletonData (spSkeletonJson* self, const char* json);
+spSkeletonData* spSkeletonJson_readSkeletonDataFile (spSkeletonJson* self, const char* path);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spSkeletonJson SkeletonJson;

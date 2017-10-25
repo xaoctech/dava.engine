@@ -50,6 +50,9 @@ public:
     bool IsVisible() const;
 
     void Process(DAVA::float32 timeElapsed) override;
+    void PrepareForRemove() override
+    {
+    }
     bool Input(DAVA::UIEvent* event) override;
 
 protected:

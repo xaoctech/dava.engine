@@ -40,6 +40,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <FileSystem/YamlParser.h>
 #include <UI/UIControl.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>
@@ -70,12 +71,86 @@ String FormatNodeNames(const DAVA::Vector<T*>& nodes)
 
     return list;
 }
+
+bool IsNameExists(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
+{
+    auto isEqual = [&name](ControlNode* siblingControl)
+    {
+        return (siblingControl->GetName() == name);
+    };
+
+    return std::any_of(dest->begin(), dest->end(), isEqual) || (siblingContainer != nullptr && std::any_of(siblingContainer->begin(), siblingContainer->end(), isEqual));
+}
+
+void SplitName(const String& name, String& nameMainPart, uint32& namePostfix)
+{
+    size_t underlinePos = name.rfind('_');
+    if (underlinePos != String::npos && (underlinePos + 1) < name.size())
+    {
+        char anySymbol; // dummy symbol indicating that there are some symbols after %u in name string
+        int res = sscanf(name.data() + underlinePos + 1, "%u%c", &namePostfix, &anySymbol);
+        if (res == 1)
+        {
+            nameMainPart = name.substr(0, underlinePos);
+            return;
+        }
+    }
+
+    nameMainPart = name;
+    namePostfix = 0;
+}
+
+String ProduceUniqueName(const String& name, const ControlsContainerNode* dest, const ControlsContainerNode* siblingContainer)
+{
+    String nameMainPart;
+    uint32 namePostfixCounter = 0;
+    SplitName(name, nameMainPart, namePostfixCounter);
+
+    for (++namePostfixCounter; namePostfixCounter <= UINT32_MAX; ++namePostfixCounter)
+    {
+        String newName = Format("%s_%u", nameMainPart.c_str(), namePostfixCounter);
+        if (!IsNameExists(newName, dest, siblingContainer))
+        {
+            return newName;
+        }
+    }
+
+    DAVA::Logger::Warning("Can't produce unique name: reaching uint32 max");
+    return name;
+}
+
+void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package, const ControlsContainerNode* dest)
+{
+    ControlsContainerNode* siblingTopContainer = nullptr;
+
+    if (dest->GetParent() == package)
+    {
+        ControlsContainerNode* topPrototypes = static_cast<ControlsContainerNode*>(package->GetPrototypes());
+        if (dest == topPrototypes) // If we are inserting into top controls container, then prototypes scope will also be taking into account.
+        {
+            siblingTopContainer = static_cast<ControlsContainerNode*>(package->GetPackageControlsNode());
+        }
+        else // Vice versa, if we are inserting into top prototypes container, then top controls scope will also be taking into account
+        {
+            siblingTopContainer = topPrototypes;
+        }
+    }
+
+    String origName = control->GetName();
+    if (IsNameExists(origName, dest, siblingTopContainer))
+    {
+        String newName = ProduceUniqueName(origName, dest, siblingTopContainer);
+        control->GetControl()->SetName(newName);
+    }
+}
 }
 
 CommandExecutor::CommandExecutor(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_)
     : accessor(accessor_)
     , ui(ui_)
 {
+    DVASSERT(accessor != nullptr);
+    DVASSERT(ui != nullptr);
 }
 
 void CommandExecutor::AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::FilePath> packagePaths, const PackageNode* package)
@@ -282,12 +357,13 @@ void CommandExecutor::RemoveStyleSelector(StyleSheetNode* node, DAVA::int32 sele
     }
 }
 
-ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex)
+void CommandExecutor::InsertControl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
-    ResultList resultList;
     if (dest->CanInsertControl(control, destIndex))
     {
         DocumentData* data = GetDocumentData();
+        CommandExecutorDetails::EnsureControlNameIsUnique(control, data->GetPackageNode(), dest);
+
         data->BeginBatch(Format("Insert Control %s(%s)", control->GetName().c_str(), control->GetClassName().c_str()));
         InsertControlImpl(control, dest, destIndex);
         data->EndBatch();
@@ -296,7 +372,6 @@ ResultList CommandExecutor::InsertControl(ControlNode* control, ControlsContaine
     {
         Logger::Warning("%s", String("Can not insert control!" + PointerSerializer::FromPointer(control)).c_str());
     }
-    return resultList;
 }
 
 Vector<ControlNode*> CommandExecutor::InsertInstances(const DAVA::Vector<ControlNode*>& controls, ControlsContainerNode* dest, DAVA::int32 destIndex)
@@ -351,7 +426,7 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
         for (const RefPtr<ControlNode>& copy : nodesToCopy)
         {
             copiedNodes.push_back(copy.Get());
-            InsertControlImpl(copy.Get(), dest, index);
+            InsertControl(copy.Get(), dest, index);
             index++;
         }
         nodesToCopy.clear();
@@ -361,8 +436,11 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
     return copiedNodes;
 }
 
-Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex)
+DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
     for (ControlNode* node : nodes)
@@ -377,6 +455,8 @@ Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNod
         DocumentData* data = GetDocumentData();
         data->BeginBatch(Format("Move Controls %s", CommandExecutorDetails::FormatNodeNames(nodes).c_str()), static_cast<uint32>(nodesToMove.size()));
         int index = destIndex;
+
+        Vector<ControlNode*> notMovedNodes;
         for (ControlNode* node : nodesToMove)
         {
             ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
@@ -396,12 +476,23 @@ Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNod
             }
             else
             {
-                DVASSERT(false);
+                notMovedNodes.push_back(node);
             }
         }
 
         data->EndBatch();
+
+        if (notMovedNodes.empty() == false)
+        {
+            NotificationParams notificationParams;
+            notificationParams.title = "Can not move controls";
+            String message = "Can not move controls: " + CommandExecutorDetails::FormatNodeNames(notMovedNodes);
+
+            notificationParams.message = Result(Result::RESULT_WARNING, message);
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        }
     }
+
     return movedNodes;
 }
 
@@ -492,7 +583,7 @@ void CommandExecutor::MoveStyles(const DAVA::Vector<StyleSheetNode*>& nodes, Sty
     }
 }
 
-void CommandExecutor::Remove(const Vector<ControlNode*>& controls, const Vector<StyleSheetNode*>& styles)
+void CommandExecutor::Remove(const Vector<ControlNode*>& controls, const Vector<StyleSheetNode*>& styles) const
 {
     Vector<PackageBaseNode*> nodesToRemove;
 
@@ -555,20 +646,34 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
 {
     using namespace DAVA::TArc;
 
-    SelectedNodes createdNodes;
+    auto ShowWarnNotification = [this](String msg)
+    {
+        NotificationParams notificationParams;
+        notificationParams.title = "Can't paste";
+        notificationParams.message = Result(Result::RESULT_WARNING, msg);
+        ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+    };
+
     if (dest->IsReadOnly())
-        return createdNodes;
+    {
+        ShowWarnNotification("paste destination is read-only");
+        return SelectedNodes();
+    }
 
     ControlsContainerNode* controlsDest = dynamic_cast<ControlsContainerNode*>(dest);
     StyleSheetsNode* stylesDest = dynamic_cast<StyleSheetsNode*>(dest);
 
     if (controlsDest == nullptr && stylesDest == nullptr)
-        return createdNodes;
+    {
+        ShowWarnNotification("destination is not a controls/styles container");
+        return SelectedNodes();
+    }
 
     RefPtr<YamlParser> parser(YamlParser::CreateAndParseString(data));
     if (!parser.Valid() || !parser->GetRootNode())
     {
-        return createdNodes;
+        DAVA::Logger::Error("pasted data is not a valid yaml");
+        return SelectedNodes();
     }
 
     QuickEdPackageBuilder builder(GetEngineContext());
@@ -584,6 +689,8 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
     {
         if (!builder.GetResults().HasErrors())
         {
+            SelectedNodes createdNodes;
+
             const Vector<PackageNode*>& importedPackages = builder.GetImportedPackages();
             const Vector<ControlNode*>& controls = builder.GetRootControls();
             const Vector<StyleSheetNode*>& styles = builder.GetStyles();
@@ -660,9 +767,20 @@ SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, i
 
                 documentData->EndBatch();
             }
+
+            return createdNodes;
+        }
+        else
+        {
+            ShowWarnNotification(builder.GetResults().GetResultMessages());
+            return SelectedNodes();
         }
     }
-    return createdNodes;
+    else
+    {
+        ShowWarnNotification(Format("Can't load package '%s'", root->GetPath().GetAbsolutePathname().c_str()));
+        return SelectedNodes();
+    }
 }
 
 void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPackage, const PackageNode* package)
@@ -671,7 +789,7 @@ void CommandExecutor::AddImportedPackageIntoPackageImpl(PackageNode* importedPac
     data->ExecCommand<InsertImportedPackageCommand>(importedPackage, package->GetImportedPackagesNode()->GetCount());
 }
 
-void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex)
+void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     DocumentData* data = GetDocumentData();
     data->ExecCommand<InsertControlCommand>(control, dest, destIndex);
@@ -689,7 +807,7 @@ void CommandExecutor::InsertControlImpl(ControlNode* control, ControlsContainerN
     }
 }
 
-void CommandExecutor::RemoveControlImpl(ControlNode* node)
+void CommandExecutor::RemoveControlImpl(ControlNode* node) const
 {
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
     if (src)
@@ -711,7 +829,7 @@ void CommandExecutor::RemoveControlImpl(ControlNode* node)
     }
 }
 
-bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex)
+bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     node->Retain();
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());

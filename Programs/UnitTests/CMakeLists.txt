@@ -18,6 +18,9 @@ if (LINUX)
     set ( DAVA_MEMORY_PROFILER 0 )
 endif()
 
+# Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
+dava_add_definitions(-DLOCALIZATION_DEBUG)
+
 if (LINUX)
     dava_add_definitions(-DDISABLE_NATIVE_MOVIEVIEW)
     dava_add_definitions(-DDISABLE_NATIVE_TEXTFIELD)
@@ -25,60 +28,48 @@ if (LINUX)
 endif()
 
 if ( WIN32 OR MACOS )
-    find_package(DavaTools REQUIRED )
+    find_dava_module( DavaTools )
 endif()
 
-# Enable LOCALIZATION_DEBUG in UnitTests to verify successful compilation
-dava_add_definitions(-DLOCALIZATION_DEBUG)
 
 if (NOT LINUX)
     # Enable sound after fmod libraries
-    set ( DAVA_COMPONENTS "Sound" "SpineModule" "NetworkCore" DAVA_DISABLE_AUTOTESTS )
-else()
-    set ( DAVA_COMPONENTS "NetworkCore" DAVA_DISABLE_AUTOTESTS )
+    set ( DAVA_COMPONENTS Sound )
+    find_dava_module( Spine )
+    find_dava_module( NetworkCore )
 endif()
 
-if ( WIN32 AND NOT WINDOWS_UAP )
-    list ( APPEND DAVA_COMPONENTS "CEFWebview" )
-endif ()
-
-if (NOT ANDROID)
-    list ( APPEND DAVA_COMPONENTS "SampleModule" )
-endif()
-
-# add physics
-if(ANDROID AND ANDROID_ABI STREQUAL "x86" )
-    # we don't have physx for android x86, so skip this
-elseif (WINDOWS_UAP AND WINDOWS_UAP_PLATFORMS MATCHES "ARM")
-    # we don't have physx for win uap arm, so skip this
-elseif (LINUX)
-    # for now physx is not supported for linux
-else()
-    list ( APPEND DAVA_COMPONENTS "PhysicsModule" )
-endif()
+find_dava_module( Physics )
+find_dava_module( CEFWebview )
+find_dava_module( Sample )
+find_dava_module( LoggerService  )
+find_dava_module( EmbeddedWebServer  )
+find_dava_module( DocDirSetup  )
 
 find_package( Steam REQUIRED )
-find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )
-find_package( EmbeddedWebServer REQUIRED )
 
-include_directories   ( "Classes" )
+
+find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" DAVA_DISABLE_AUTOTESTS )
+
+
+include_directories   ( "Sources" )
 
 if( MACOS )
-    set( PLATFORM_SPECIFIC_FOLDER "MacOSSpecific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
 
 elseif( IOS )
-    set( PLATFORM_SPECIFIC_FOLDER "iOSSpecific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
     set( IOS_ADD_SRC ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/UnitTests.entitlements )
 
 elseif( WIN32 )
-    set( PLATFORM_SPECIFIC_FOLDER "Win32Specific" )
+    set( PLATFORM_SPECIFIC_FOLDER "Platforms/Win32" )
     set( EXECUTABLE_FLAG WIN32 )
 
 endif()
 
-define_source                  ( SOURCE "Classes" )
+define_source                  ( SOURCE "Sources" )
 
-set( STEAM_APPID                Win32Specific/steam_appid.txt )
+set( STEAM_APPID                Platforms/Win32/steam_appid.txt )
 
 set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                                   "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
@@ -87,11 +78,6 @@ set( IOS_PLISTT                 ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FO
 
 set( MACOS_XIB                  ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/MainMenu.xib)
 set( MACOS_PLIST                ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/Info.plist )
-
-set( ANDROID_PACKAGE            "com.dava.unittests" )
-set( ANDROID_APP_NAME           "UnitTestApp" )
-
-set( ANDROID_ICO                ${CMAKE_CURRENT_LIST_DIR}/android/ic_launcher-web.png )
 
 set( ADDED_SRC                  ${IOS_ADD_SRC} )
 
@@ -105,7 +91,7 @@ endif ()
 
 if (ANDROID)
     # Libraries and classes to load at startup
-    set (ANDROID_BOOT_MODULES "crystax;c++_shared;fmodex;fmodevent;UnitTests")
+    set (ANDROID_BOOT_MODULES "c++_shared;fmodex;fmodevent;UnitTests")
     set (ANDROID_BOOT_CLASSES "com.dava.unittests.UnitTests")
 endif()
 

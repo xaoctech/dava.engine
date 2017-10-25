@@ -32,6 +32,7 @@ public:
     void RemoveEntity(DAVA::Entity* entity) override;
     void AddComponent(DAVA::Entity* entity, DAVA::Component* component) override;
     void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void PrepareForRemove() override;
 
     void Process(DAVA::float32 timeElapsed) override;
 
@@ -42,6 +43,8 @@ public:
 
 private:
     void CalculateTriangles();
+    void ClipSelection(DAVA::Camera* camera, DAVA::Vector<DAVA::RenderObject*>& selection,
+                       DAVA::Vector<DAVA::RenderObject*>& visibilityArray, DAVA::uint32 visibilityCriteria);
 
     //signals
     void EmitInvalidateUI(DAVA::uint32 flags);

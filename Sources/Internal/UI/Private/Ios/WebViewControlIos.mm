@@ -6,7 +6,11 @@
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiIos.h"
+#include "Render/2D/Sprite.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
+#include "Render/Texture.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
 
@@ -345,7 +349,7 @@ void WebViewControl::ExecuteJScript(const String& scriptString)
 
 void WebViewControl::SetRect(const Rect& rect)
 {
-    Rect r = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(rect);
+    Rect r = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(rect);
     [bridge->nativeWebView setFrame:CGRectMake(r.x, r.y, r.dx, r.dy)];
 }
 

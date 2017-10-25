@@ -26,6 +26,14 @@ enum eLineBreakType
 };
 
 /**
+ * \brief Gets information about UTF8 line breaks using libunibreak library.
+ * \param string The input string.
+ * \param [out] breaks The output vector of breaks.
+ * \param locale (Optional) The locale code.
+ */
+void GetLineBreaks(const String& string, Vector<uint8>& breaks, const char8* locale = 0);
+
+/**
 * \brief Gets information about line breaks using libunibreak library.
 * \param string The input string.
 * \param [out] breaks The output vector of breaks.
@@ -118,9 +126,9 @@ inline bool IsPrintable(char16 t)
     case 0x200B: // Zero-width space
     case 0x200C: // Zero-width non-joiner
     case 0x200D: // Zero-width joiner
-    case 0x200E: // Zero-width Left-to-right zero-width character
-    case 0x200F: // Zero-width Right-to-left zero-width non-Arabic character
-    case 0x061C: // Arabic letter mark
+    case 0x200E: // Left-to-right zero-width character
+    case 0x200F: // Right-to-left zero-width non-Arabic character
+    case 0x061C: // Right-to-left zero-width Arabic character
         return false;
     default:
         return true;
@@ -165,9 +173,6 @@ inline bool IsWhitespace(char16 t)
     case 0x2029: // Paragraph separator
     // Additional characters are treated as spaces
     case 0x200B: // Zero-width space
-    case 0x200E: // Left-to-right zero-width character
-    case 0x200F: // Right-to-left zero-width non-Arabic character
-    case 0x061C: // Right-to-left zero-width Arabic character
         return true;
     default:
         return false;
@@ -176,7 +181,7 @@ inline bool IsWhitespace(char16 t)
 
 inline bool IsWhitespace(char8 t)
 {
-    return (std::isspace(t) != 0);
+    return (std::isspace(static_cast<unsigned char>(t)) != 0);
 }
 
 /**

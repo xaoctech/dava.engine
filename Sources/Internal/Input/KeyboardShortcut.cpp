@@ -1,7 +1,7 @@
 #include "KeyboardShortcut.h"
 
-#include "KeyboardDevice.h"
 #include "InputSystem.h"
+#include "Base/GlobalEnum.h"
 #include "Utils/StringUtils.h"
 #include "Utils/Utils.h"
 
@@ -17,7 +17,7 @@ KeyboardShortcut::KeyboardShortcut(const KeyboardShortcut& shortcut)
 {
 }
 
-KeyboardShortcut::KeyboardShortcut(Key key_, eModifierKeys modifiers_)
+KeyboardShortcut::KeyboardShortcut(eInputElements key_, eModifierKeys modifiers_)
     : key(key_)
     , modifiers(modifiers_)
 {
@@ -39,13 +39,21 @@ KeyboardShortcut::KeyboardShortcut(const String& str)
         }
         else
         {
-            DVASSERT(key == Key::UNKNOWN);
-            key = InputSystem::Instance()->GetKeyboard().GetKeyByName(t);
+            DVASSERT(key == eInputElements::NONE);
+            for (int i = eInputElements::KB_FIRST; i <= eInputElements::KB_LAST; ++i)
+            {
+                eInputElements currentKey = static_cast<eInputElements>(i);
+                InputElementInfo keyInfo = GetInputElementInfo(static_cast<eInputElements>(i));
+                if (keyInfo.name == t)
+                {
+                    key = currentKey;
+                }
+            }
         }
     }
     modifiers = static_cast<eModifierKeys>(modifiersPack) & eModifierKeys::MASK;
 
-    DVASSERT(key != Key::UNKNOWN);
+    DVASSERT(key != eInputElements::NONE);
 }
 
 KeyboardShortcut::~KeyboardShortcut() = default;
@@ -67,7 +75,7 @@ bool KeyboardShortcut::operator!=(const KeyboardShortcut& other) const
     return !(operator==(other));
 }
 
-Key KeyboardShortcut::GetKey() const
+eInputElements KeyboardShortcut::GetKey() const
 {
     return key;
 }
@@ -92,7 +100,7 @@ String KeyboardShortcut::ToString() const
         }
         test <<= 1;
     }
-    stream << InputSystem::Instance()->GetKeyboard().GetKeyName(key);
+    stream << GetInputElementInfo(key).name;
 
     return stream.str();
 }

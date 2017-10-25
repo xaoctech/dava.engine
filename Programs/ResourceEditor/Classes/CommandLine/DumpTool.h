@@ -24,10 +24,11 @@ private:
     eAction commandAction = ACTION_NONE;
     DAVA::String filename;
     DAVA::FilePath inFolder;
-    DAVA::FilePath dataSourceFolder;
+    DAVA::FilePath resourceFolder;
     DAVA::FilePath outFile;
 
     DAVA::Vector<DAVA::eGPUFamily> compressedGPUs;
+    DAVA::Vector<DAVA::String> tags;
     SceneDumper::eMode mode = SceneDumper::eMode::REQUIRED;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(DumpTool, CommandLineModule)

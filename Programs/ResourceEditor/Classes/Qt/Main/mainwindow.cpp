@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include <Tools/Version.h>
-#include "Classes/Qt/BeastDialog/BeastDialog.h"
+
+#include <DavaTools/Version.h>
 #include "Classes/Qt/CubemapEditor/CubeMapTextureBrowser.h"
 #include "Classes/Qt/CubemapEditor/CubemapUtils.h"
 #include "Classes/Qt/DebugTools/VersionInfoWidget/VersionInfoWidget.h"
@@ -9,14 +9,12 @@
 #include "Classes/Qt/MaterialEditor/MaterialEditor.h"
 #include "Classes/Qt/QualitySwitcher/QualitySwitcher.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
-#include "Classes/Qt/Scene/LandscapeThumbnails.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 #include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/Scene/Validation/SceneValidationDialog.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
 #include "Classes/Qt/TextureBrowser/TextureBrowser.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
@@ -34,13 +32,11 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/REGlobalOperationsData.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/FileSystemData.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/Selection.h"
 #include "Classes/Selection/SelectionData.h"
-
-#ifdef __DAVAENGINE_SPEEDTREE__
-#include "SpeedTreeImport/SpeedTreeImportDialog.h"
-#endif
 
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
@@ -58,40 +54,38 @@
 #include "Commands2/LandscapeToolsToggleCommand.h"
 #include "Commands2/WayEditCommands.h"
 
-#include "Beast/BeastRunner.h"
-
 #include "SceneProcessing/SceneProcessor.h"
 
 #include "Constants.h"
 #include "StringConstants.h"
 
-#include "Render/2D/Sprite.h"
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <QtTools/ConsoleWidget/LogWidget.h>
+#include <QtTools/ConsoleWidget/LogModel.h>
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
+#include <QtTools/ConsoleWidget/LoggerOutputObject.h>
+#include <QtTools/FileDialogs/FileDialog.h>
+#include <QtTools/FileDialogs/FindFileDialog.h>
 
 #include <TArc/WindowSubSystem/Private/WaitDialog.h>
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/Utils/Utils.h>
 
-#include "QtTools/ConsoleWidget/LogWidget.h"
-#include "QtTools/ConsoleWidget/LogModel.h"
-#include "QtTools/ConsoleWidget/PointerSerializer.h"
-#include "QtTools/ConsoleWidget/LoggerOutputObject.h"
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/FileDialogs/FindFileDialog.h"
-#include "QtTools/Utils/Themes/Themes.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
-
-#include "Engine/Engine.h"
-#include "Engine/PlatformApiQt.h"
-#include "Engine/Qt/RenderWidget.h"
-#include "Reflection/ReflectedType.h"
-
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/Waypoint/PathComponent.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene/System/EditorVegetationSystem.h"
-#include "Utils/StringFormat.h"
+#include <Engine/Engine.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Qt/RenderWidget.h>
+#include <Reflection/ReflectedType.h>
+#include <Render/2D/Sprite.h>
+#include <Render/Highlevel/LandscapeThumbnails.h>
+#include <Scene3D/Components/ActionComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene/System/EditorVegetationSystem.h>
+#include <Utils/StringFormat.h>
 
 #include <QActionGroup>
 #include <QColorDialog>
@@ -100,7 +94,6 @@
 #include <QMessageBox>
 #include <QMetaObject>
 #include <QMetaType>
-#include <QShortcut>
 #include <QList>
 
 #define CHECK_GLOBAL_OPERATIONS(retValue) \
@@ -118,7 +111,6 @@ public:
     GlobalOperationsProxy(GlobalOperations* globalOperations_)
         : globalOperations(globalOperations_)
     {
-        globalOperations->waitDialogClosed.Connect(&waitDialogClosed, &DAVA::Signal<>::Emit);
     }
 
     void Reset()
@@ -142,12 +134,6 @@ public:
     {
         CHECK_GLOBAL_OPERATIONS(void());
         globalOperations->ShowWaitDialog(tittle, message, min, max);
-    }
-
-    bool IsWaitDialogVisible() const override
-    {
-        CHECK_GLOBAL_OPERATIONS(false);
-        return globalOperations->IsWaitDialogVisible();
     }
 
     void HideWaitDialog() override
@@ -201,7 +187,6 @@ DAVA::RefPtr<SceneEditor2> GetCurrentScene()
 QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , beastWaitDialog(nullptr)
     , globalInvalidate(false)
     , modificationWidget(nullptr)
     , addSwitchEntityDialog(nullptr)
@@ -215,7 +200,20 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     projectDataWrapper = REGlobal::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<ProjectManagerData>());
     projectDataWrapper.SetListener(this);
 
-    ActiveSceneHolder::Init();
+    fieldBinderTagged.reset(REGlobal::CreateFieldBinder());
+    { // bind to changed data
+        DAVA::TArc::FieldDescriptor sceneFieldDescr;
+        sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+
+        DAVA::TArc::FieldDescriptor fsFieldDescr;
+        fsFieldDescr.type = DAVA::ReflectedTypeDB::Get<FileSystemData>();
+        fsFieldDescr.fieldName = DAVA::FastName("tag");
+
+        fieldBinderTagged->BindField(sceneFieldDescr, DAVA::MakeFunction(this, &QtMainWindow::UpdateTagDependentActionsState));
+        fieldBinderTagged->BindField(fsFieldDescr, DAVA::MakeFunction(this, &QtMainWindow::UpdateTagDependentActionsState));
+    }
+
     globalOperations.reset(new MainWindowDetails::GlobalOperationsProxy(this));
 
     DAVA::TArc::DataContext* globalContext = REGlobal::GetGlobalContext();
@@ -223,10 +221,8 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     globalData->SetGlobalOperations(globalOperations);
     globalContext->CreateData(std::move(globalData));
 
-    errorLoggerOutput = new ErrorDialogOutput(globalOperations);
+    errorLoggerOutput = new ErrorDialogOutput(tarcUI);
     DAVA::Logger::AddCustomOutput(errorLoggerOutput);
-
-    tarcUI->lastWaitDialogWasClosed.Connect(&waitDialogClosed, &DAVA::Signal<>::Emit);
 
     new LandscapeEditorShortcutManager(this);
     PathDescriptor::InitializePathDescriptors();
@@ -241,15 +237,12 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
 
     SetupDocks();
     SetupMainMenu();
-    SetupThemeActions();
     SetupToolBars();
     SetupActions();
 
     // create tool windows
     new TextureBrowser(this);
     new MaterialEditor(this);
-
-    beastWaitDialog = new QtWaitDialog(this);
 
     connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &QtMainWindow::SceneCommandExecuted);
     connect(SceneSignals::Instance(), &SceneSignals::Activated, this, &QtMainWindow::SceneActivated);
@@ -277,8 +270,7 @@ QtMainWindow::~QtMainWindow()
     LogWidget* logWidget = qobject_cast<LogWidget*>(dockConsole->widget());
     QByteArray dataToSave = logWidget->Serialize();
 
-    DAVA::VariantType var(reinterpret_cast<const DAVA::uint8*>(dataToSave.data()), dataToSave.size());
-    SettingsManager::Instance()->SetValue(Settings::Internal_LogWidget, var);
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->logWidgetState = dataToSave;
 
     DAVA::SafeDelete(addSwitchEntityDialog);
 
@@ -289,7 +281,6 @@ QtMainWindow::~QtMainWindow()
 
     std::static_pointer_cast<MainWindowDetails::GlobalOperationsProxy>(globalOperations)->Reset();
     globalOperations.reset();
-    ActiveSceneHolder::Deinit();
 }
 
 void QtMainWindow::OnRenderingInitialized()
@@ -334,11 +325,6 @@ void QtMainWindow::WaitSetValue(int value)
     waitDialog->SetProgressValue(value);
 }
 
-bool QtMainWindow::IsWaitDialogOnScreen() const
-{
-    return tarcUI->HasActiveWaitDalogues() || (beastWaitDialog != nullptr && beastWaitDialog->isVisible());
-}
-
 void QtMainWindow::WaitStop()
 {
     waitDialog.reset();
@@ -374,7 +360,6 @@ void QtMainWindow::SetupTitle(const DAVA::String& projectPath)
 void QtMainWindow::SetupMainMenu()
 {
     ui->Dock->addAction(ui->dockSceneInfo->toggleViewAction());
-    ui->Dock->addAction(ui->dockProperties->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditor->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
     ui->Dock->addAction(ui->dockSceneTree->toggleViewAction());
@@ -385,37 +370,8 @@ void QtMainWindow::SetupMainMenu()
     ui->Dock->addAction(dockConsole->toggleViewAction());
 }
 
-void QtMainWindow::SetupThemeActions()
-{
-    QMenu* themesMenu = ui->menuTheme;
-    QActionGroup* actionGroup = new QActionGroup(this);
-    for (const QString& theme : Themes::ThemesNames())
-    {
-        QAction* action = new QAction(theme, themesMenu);
-        actionGroup->addAction(action);
-        action->setCheckable(true);
-        if (theme == Themes::GetCurrentThemeStr())
-        {
-            action->setChecked(true);
-        }
-        themesMenu->addAction(action);
-    }
-    connect(actionGroup, &QActionGroup::triggered, [](QAction* action)
-            {
-                if (action->isChecked())
-                {
-                    Themes::SetCurrentTheme(action->text());
-                    SceneSignals::Instance()->ThemeChanged();
-                }
-            });
-}
-
 void QtMainWindow::SetupToolBars()
 {
-    QObject::connect(SceneSignals::Instance(), &SceneSignals::CanUndoStateChanged, ui->actionUndo, &QAction::setEnabled);
-    connect(SceneSignals::Instance(), &SceneSignals::CanRedoStateChanged, ui->actionRedo, &QAction::setEnabled);
-    connect(SceneSignals::Instance(), &SceneSignals::UndoTextChanged, this, &QtMainWindow::UpdateUndoActionText);
-    connect(SceneSignals::Instance(), &SceneSignals::RedoTextChanged, this, &QtMainWindow::UpdateRedoActionText);
     QAction* actionMainToolBar = ui->mainToolBar->toggleViewAction();
     QAction* actionModifToolBar = ui->modificationToolBar->toggleViewAction();
     QAction* actionLandscapeToolbar = ui->landscapeToolBar->toggleViewAction();
@@ -424,13 +380,11 @@ void QtMainWindow::SetupToolBars()
     ui->Toolbars->addAction(actionModifToolBar);
     ui->Toolbars->addAction(actionLandscapeToolbar);
     ui->Toolbars->addAction(ui->sceneToolBar->toggleViewAction());
-    ui->Toolbars->addAction(ui->testingToolBar->toggleViewAction());
     ui->Toolbars->addAction(ui->cameraToolBar->toggleViewAction());
 
     // modification widget
     modificationWidget = new ModificationWidget(nullptr);
     ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
-    connect(ui->actionModifySnapToLandscape, &QAction::triggered, modificationWidget, &ModificationWidget::OnSnapToLandscapeChanged);
 
     // adding menu for material light view mode
     {
@@ -441,46 +395,6 @@ void QtMainWindow::SetupToolBars()
         ui->mainToolBar->addWidget(setLightViewMode);
         setLightViewMode->setToolButtonStyle(Qt::ToolButtonIconOnly);
         setLightViewMode->setAutoRaise(false);
-    }
-
-    //hanging objects
-    {
-        HangingObjectsHeight* hangingObjectsWidget = new HangingObjectsHeight(this);
-        QObject::connect(hangingObjectsWidget, SIGNAL(HeightChanged(double)), this, SLOT(OnHangingObjectsHeight(double)));
-
-        ToolButtonWithWidget* hangingBtn = new ToolButtonWithWidget();
-        hangingBtn->setDefaultAction(ui->actionHangingObjects);
-        hangingBtn->SetWidget(hangingObjectsWidget);
-        hangingBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-        hangingBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-        ui->testingToolBar->addWidget(hangingBtn);
-        hangingBtn->setAutoRaise(false);
-    }
-
-    // outline by object type
-    {
-        objectTypesWidget = new QComboBox();
-        //objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-        //objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-
-        const QList<QAction*> actions = ui->menuObjectTypes->actions();
-        QActionGroup* group = new QActionGroup(ui->menuObjectTypes);
-
-        auto endIt = actions.end();
-        for (auto it = actions.begin(); it != endIt; ++it)
-        {
-            if ((*it)->isSeparator())
-                continue;
-
-            objectTypesWidget->addItem((*it)->icon(), (*it)->text());
-            group->addAction(*it);
-        }
-
-        objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE + 1);
-        QObject::connect(objectTypesWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(OnObjectsTypeChanged(int)));
-
-        ui->sceneToolBar->addSeparator();
-        ui->sceneToolBar->addWidget(objectTypesWidget);
     }
 }
 
@@ -526,33 +440,22 @@ void QtMainWindow::SetupDocks()
         connect(loggerOutput, &LoggerOutputObject::OutputReady, logWidget, &LogWidget::AddMessage, Qt::DirectConnection);
 
         connect(logWidget, &LogWidget::ItemClicked, this, &QtMainWindow::OnConsoleItemClicked);
-        const auto var = SettingsManager::Instance()->GetValue(Settings::Internal_LogWidget);
-
-        const QByteArray arr(reinterpret_cast<const char*>(var.AsByteArray()), var.AsByteArraySize());
-        logWidget->Deserialize(arr);
+        logWidget->Deserialize(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->logWidgetState);
         dockConsole = new QDockWidget(logWidget->windowTitle(), this);
         dockConsole->setWidget(logWidget);
         dockConsole->setObjectName(QString("dock_%1").arg(dockConsole->widget()->objectName()));
         addDockWidget(Qt::RightDockWidgetArea, dockConsole);
     }
-
-    ui->dockProperties->Init(ui.get(), globalOperations);
 }
 
 void QtMainWindow::SetupActions()
 {
-// import
-#ifdef __DAVAENGINE_SPEEDTREE__
-    QObject::connect(ui->actionImportSpeedTreeXML, &QAction::triggered, this, &QtMainWindow::OnImportSpeedTreeXML);
-#endif //__DAVAENGINE_SPEEDTREE__
-
     QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
     QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
 
-    bool gizmoEnabled = SettingsManager::GetValue(Settings::Internal_GizmoEnabled).AsBool();
-    OnEditorGizmoToggle(gizmoEnabled);
+    OnEditorGizmoToggle(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->gizmoEnabled);
     QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
 
     QObject::connect(ui->actionLightmapCanvas, SIGNAL(toggled(bool)), this, SLOT(OnViewLightmapCanvas(bool)));
@@ -565,13 +468,8 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionEnableDisableShadows, &QAction::toggled, this, &QtMainWindow::OnEnableDisableShadows);
 
-    bool toEnableSounds = SettingsManager::GetValue(Settings::Internal_EnableSounds).AsBool();
-    EnableSounds(toEnableSounds);
+    EnableSounds(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->enableSound);
     QObject::connect(ui->actionEnableSounds, &QAction::toggled, this, &QtMainWindow::EnableSounds);
-
-    // scene undo/redo
-    QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
-    QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
 
     // quality
     QObject::connect(ui->actionCustomQuality, SIGNAL(triggered()), this, SLOT(OnCustomQuality()));
@@ -584,8 +482,6 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionPivotCenter, SIGNAL(triggered()), this, SLOT(OnPivotCenterMode()));
     QObject::connect(ui->actionPivotCommon, SIGNAL(triggered()), this, SLOT(OnPivotCommonMode()));
     QObject::connect(ui->actionManualModifMode, SIGNAL(triggered()), this, SLOT(OnManualModifMode()));
-    QObject::connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), this, SLOT(OnPlaceOnLandscape()));
-    QObject::connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), this, SLOT(OnSnapToLandscape()));
     QObject::connect(ui->actionModifyReset, SIGNAL(triggered()), this, SLOT(OnResetTransform()));
     QObject::connect(ui->actionLockTransform, SIGNAL(triggered()), this, SLOT(OnLockTransform()));
     QObject::connect(ui->actionUnlockTransform, SIGNAL(triggered()), this, SLOT(OnUnlockTransform()));
@@ -616,25 +512,20 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(On2DCameraDialog()));
     QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(On2DSpriteDialog()));
     QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
+
     QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), this, SLOT(RemoveSelection()));
     QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
     QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
+    QObject::connect(ui->actionReloadSelectedEntitiesTextures, SIGNAL(triggered()), ui->sceneTree, SLOT(ReloadSelectedEntitiesTextures()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
     QObject::connect(ui->actionAddPath, SIGNAL(triggered()), this, SLOT(OnAddPathEntity()));
+    QObject::connect(ui->actionTextEntity, SIGNAL(triggered()), this, SLOT(OnAddTextEntity()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
-
     QObject::connect(ui->actionConvertModifiedTextures, SIGNAL(triggered()), this, SLOT(OnConvertModifiedTextures()));
-    
-#if defined(__DAVAENGINE_BEAST__)
-    QObject::connect(ui->actionBeastAndSave, SIGNAL(triggered()), this, SLOT(OnBeastAndSave()));
-#else
-//ui->menuScene->removeAction(ui->menuBeast->menuAction());
-#endif //#if defined(__DAVAENGINE_BEAST__)
-
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
 
@@ -646,9 +537,6 @@ void QtMainWindow::SetupActions()
     //Landscape editors toggled
     QObject::connect(SceneSignals::Instance(), SIGNAL(LandscapeEditorToggled(SceneEditor2*)),
                      this, SLOT(OnLandscapeEditorToggled(SceneEditor2*)));
-
-    QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
-                     this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
     // Debug functions
     QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
@@ -670,22 +558,8 @@ void QtMainWindow::SetupActions()
         DAVA::Sprite::DumpSprites();
     });
 
-    connect(ui->actionCreateTestSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestSkinnedObject()));
-
-    ui->actionObjectTypesOff->setData(ResourceEditor::ESOT_NONE);
-    ui->actionNoObject->setData(ResourceEditor::ESOT_NO_COLISION);
-    ui->actionTree->setData(ResourceEditor::ESOT_TREE);
-    ui->actionBush->setData(ResourceEditor::ESOT_BUSH);
-    ui->actionFragileProj->setData(ResourceEditor::ESOT_FRAGILE_PROJ);
-    ui->actionFragileProjInv->setData(ResourceEditor::ESOT_FRAGILE_PROJ_INV);
-    ui->actionFalling->setData(ResourceEditor::ESOT_FALLING);
-    ui->actionBuilding->setData(ResourceEditor::ESOT_BUILDING);
-    ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
-    ui->actionSpeedTree->setData(ResourceEditor::ESOT_SPEED_TREE);
-
-    QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction*)), this, SLOT(OnObjectsTypeChanged(QAction*)));
-    QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
-    QObject::connect(ui->actionSwitchesWithDifferentLODs, SIGNAL(triggered(bool)), this, SLOT(OnSwitchWithDifferentLODs(bool)));
+    connect(ui->actionCreateTestHardSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestHardSkinnedObject()));
+    connect(ui->actionCreateTestSoftSkinnedObject, SIGNAL(triggered()), developerTools, SLOT(OnDebugCreateTestSoftSkinnedObject()));
 
     QObject::connect(ui->actionBatchProcess, SIGNAL(triggered(bool)), this, SLOT(OnBatchProcessScene()));
 
@@ -700,37 +574,26 @@ void QtMainWindow::SetupActions()
 
 void QtMainWindow::SceneActivated(SceneEditor2* scene)
 {
-    scene->ActivateCommandStack();
     EnableSceneActions(true);
 
     LoadViewState(scene);
     LoadModificationState(scene);
     LoadEditorLightState(scene);
     LoadLandscapeEditorState(scene);
-    LoadObjectTypes(scene);
-    LoadHangingObjects(scene);
 
     OnMaterialLightViewChanged(true);
     OnViewLightmapCanvas(true);
 
     UpdateModificationActionsState();
 
-    ui->actionSwitchesWithDifferentLODs->setChecked(false);
     ui->actionSnapCameraToLandscape->setChecked(false);
     if (nullptr != scene)
     {
         scene->SetHUDVisible(ui->actionShowEditorGizmo->isChecked());
-        if (scene->debugDrawSystem)
-            ui->actionSwitchesWithDifferentLODs->setChecked(scene->debugDrawSystem->SwithcesWithDifferentLODsModeEnabled());
 
         if (scene->cameraSystem)
             ui->actionSnapCameraToLandscape->setChecked(scene->cameraSystem->IsEditorCameraSnappedToLandscape());
     }
-    ui->actionUndo->setEnabled(scene->CanUndo());
-    ui->actionRedo->setEnabled(scene->CanRedo());
-
-    UpdateUndoActionText(scene->GetUndoText());
-    UpdateRedoActionText(scene->GetRedoText());
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2* scene)
@@ -747,11 +610,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 
 void QtMainWindow::EnableSceneActions(bool enable)
 {
-    ui->actionUndo->setEnabled(enable);
-    ui->actionRedo->setEnabled(enable);
-
     ui->dockLODEditor->setEnabled(enable);
-    ui->dockProperties->setEnabled(enable);
     ui->dockSceneTree->setEnabled(enable);
     ui->dockSceneInfo->setEnabled(enable);
 
@@ -760,9 +619,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionModifyReset->setEnabled(enable);
     ui->actionModifyRotate->setEnabled(enable);
     ui->actionModifyScale->setEnabled(enable);
-    ui->actionModifyPlaceOnLandscape->setEnabled(enable);
-    ui->actionModifySnapToLandscape->setEnabled(enable);
-    ui->actionConvertToShadow->setEnabled(enable);
     ui->actionPivotCenter->setEnabled(enable);
     ui->actionPivotCommon->setEnabled(enable);
     ui->actionCenterPivotPoint->setEnabled(enable);
@@ -772,14 +628,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     if (modificationWidget)
         modificationWidget->setEnabled(enable);
 
-    ui->actionTextureConverter->setEnabled(enable);
-    ui->actionMaterialEditor->setEnabled(enable);
-    ui->actionHeightMapEditor->setEnabled(enable);
-    ui->actionTileMapEditor->setEnabled(enable);
-    ui->actionShowNotPassableLandscape->setEnabled(enable);
-    ui->actionRulerTool->setEnabled(enable);
-    ui->actionVisibilityCheckTool->setEnabled(enable);
-    ui->actionCustomColorsEditor->setEnabled(enable);
     ui->actionWayEditor->setEnabled(enable);
     ui->actionForceFirstLODonLandscape->setEnabled(enable);
     ui->actionEnableVisibilitySystem->setEnabled(enable);
@@ -791,10 +639,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionSaveHeightmapToPNG->setEnabled(enable);
     ui->actionSaveTiledTexture->setEnabled(enable);
 
-    ui->actionBeastAndSave->setEnabled(enable);
-
-    ui->actionHangingObjects->setEnabled(enable);
-
     ui->Edit->setEnabled(enable);
     ui->menuCreateNode->setEnabled(enable);
     ui->Scene->setEnabled(enable);
@@ -802,8 +646,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 
     ui->sceneToolBar->setEnabled(enable);
     ui->actionConvertModifiedTextures->setEnabled(enable);
-
-    ui->actionSwitchesWithDifferentLODs->setEnabled(enable);
 
     ui->actionSnapCameraToLandscape->setEnabled(enable);
     ui->actionHeightmap_Delta_Tool->setEnabled(enable);
@@ -814,6 +656,21 @@ void QtMainWindow::EnableSceneActions(bool enable)
     const auto isMenuBarEnabled = ui->menuBar->isEnabled();
     ui->menuBar->setEnabled(false);
     ui->menuBar->setEnabled(isMenuBarEnabled);
+}
+
+void QtMainWindow::UpdateTagDependentActionsState(const DAVA::Any& value)
+{
+    const DAVA::String& tag = DAVA::GetEngineContext()->fileSystem->GetFilenamesTag();
+    bool enable = (tag.empty() == true) && (REGlobal::GetActiveDataNode<SceneData>() != nullptr);
+
+    ui->actionTextureConverter->setEnabled(enable);
+    ui->actionMaterialEditor->setEnabled(enable);
+    ui->actionHeightMapEditor->setEnabled(enable);
+    ui->actionTileMapEditor->setEnabled(enable);
+    ui->actionShowNotPassableLandscape->setEnabled(enable);
+    ui->actionRulerTool->setEnabled(enable);
+    ui->actionVisibilityCheckTool->setEnabled(enable);
+    ui->actionCustomColorsEditor->setEnabled(enable);
 }
 
 void QtMainWindow::UpdateModificationActionsState()
@@ -892,13 +749,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2* scene, const RECommandNoti
 // ###################################################################################################
 // Mainwindow Qt actions
 // ###################################################################################################
-void QtMainWindow::OnImportSpeedTreeXML()
-{
-#ifdef __DAVAENGINE_SPEEDTREE__
-    SpeedTreeImportDialog importDialog(globalOperations, this);
-    importDialog.exec();
-#endif //__DAVAENGINE_SPEEDTREE__
-}
 
 void QtMainWindow::OnUndo()
 {
@@ -921,7 +771,7 @@ void QtMainWindow::OnRedo()
 void QtMainWindow::OnEditorGizmoToggle(bool show)
 {
     ui->actionShowEditorGizmo->setChecked(show);
-    SettingsManager::Instance()->SetValue(Settings::Internal_GizmoEnabled, DAVA::VariantType(show));
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->gizmoEnabled = show;
     DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (scene.Get() != nullptr)
     {
@@ -932,10 +782,7 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 void QtMainWindow::OnViewLightmapCanvas(bool show)
 {
     bool showCanvas = ui->actionLightmapCanvas->isChecked();
-    if (showCanvas != SettingsManager::GetValue(Settings::Internal_MaterialsShowLightmapCanvas).AsBool())
-    {
-        SettingsManager::SetValue(Settings::Internal_MaterialsShowLightmapCanvas, DAVA::VariantType(showCanvas));
-    }
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialShowLightmapCanvas = showCanvas;
 
     DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (scene.Get() != nullptr)
@@ -977,12 +824,7 @@ void QtMainWindow::OnEnableDisableShadows(bool enable)
 void QtMainWindow::EnableSounds(bool toEnable)
 {
     ui->actionEnableSounds->setChecked(toEnable);
-
-    if (toEnable != SettingsManager::GetValue(Settings::Internal_EnableSounds).AsBool())
-    {
-        SettingsManager::SetValue(Settings::Internal_EnableSounds, DAVA::VariantType(toEnable));
-    }
-
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->enableSound = toEnable;
     DAVA::SoundSystem::Instance()->Mute(!toEnable);
 }
 
@@ -1055,41 +897,6 @@ void QtMainWindow::OnManualModifMode()
     else
     {
         modificationWidget->SetPivotMode(ModificationWidget::PivotAbsolute);
-    }
-}
-
-void QtMainWindow::OnPlaceOnLandscape()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() != nullptr)
-    {
-        DAVA::Entity* landscapeEntity = FindLandscapeEntity(scene.Get());
-        if (landscapeEntity == nullptr || GetLandscape(landscapeEntity) == nullptr)
-        {
-            DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
-            return;
-        }
-
-        const SelectableGroup& selection = Selection::GetSelection();
-        scene->modifSystem->PlaceOnLandscape(selection);
-    }
-}
-
-void QtMainWindow::OnSnapToLandscape()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() != nullptr)
-    {
-        DAVA::Entity* landscapeEntity = FindLandscapeEntity(scene.Get());
-        if (landscapeEntity == nullptr || GetLandscape(landscapeEntity) == nullptr)
-        {
-            DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
-            ui->actionModifySnapToLandscape->setChecked(false);
-            return;
-        }
-
-        scene->modifSystem->SetLandscapeSnap(ui->actionModifySnapToLandscape->isChecked());
-        LoadModificationState(scene.Get());
     }
 }
 
@@ -1300,6 +1107,18 @@ void QtMainWindow::OnUserNodeDialog()
     }
 }
 
+void QtMainWindow::OnAddTextEntity()
+{
+    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
+    if (sceneEditor)
+    {
+        DAVA::ScopedPtr<DAVA::Entity> textEntity(new DAVA::Entity());
+        textEntity->AddComponent(new DAVA::TextComponent());
+        textEntity->SetName("TextEntity");
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(textEntity, sceneEditor.Get())));
+    }
+}
+
 void QtMainWindow::OnParticleEffectDialog()
 {
     DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
@@ -1321,8 +1140,8 @@ void QtMainWindow::On2DCameraDialog()
         DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         DAVA::ScopedPtr<DAVA::Camera> camera(new DAVA::Camera());
 
-        DAVA::float32 w = DAVA::UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dx;
-        DAVA::float32 h = DAVA::UIControlSystem::Instance()->vcs->GetFullScreenVirtualRect().dy;
+        DAVA::float32 w = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dx;
+        DAVA::float32 h = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dy;
         DAVA::float32 aspect = w / h;
         camera->SetupOrtho(w, aspect, 1, 1000);
         camera->SetPosition(DAVA::Vector3(0, 0, -10000));
@@ -1392,8 +1211,7 @@ void QtMainWindow::LoadViewState(SceneEditor2* scene)
 {
     if (nullptr != scene)
     {
-        bool viewLMCanvas = SettingsManager::GetValue(Settings::Internal_MaterialsShowLightmapCanvas).AsBool();
-        ui->actionLightmapCanvas->setChecked(viewLMCanvas);
+        ui->actionLightmapCanvas->setChecked(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialShowLightmapCanvas);
 
         auto options = DAVA::Renderer::GetOptions();
         ui->actionEnableDisableShadows->setChecked(options->IsOptionEnabled(DAVA::RenderOptions::SHADOWVOLUME_DRAW));
@@ -1442,9 +1260,6 @@ void QtMainWindow::LoadModificationState(SceneEditor2* scene)
             ui->actionPivotCommon->setChecked(true);
         }
 
-        // landscape snap
-        ui->actionModifySnapToLandscape->setChecked(scene->modifSystem->GetLandscapeSnap());
-
         // way editor
         ui->actionWayEditor->setChecked(scene->wayEditSystem->IsWayEditEnabled());
 
@@ -1462,7 +1277,7 @@ void QtMainWindow::LoadEditorLightState(SceneEditor2* scene)
 
 void QtMainWindow::LoadMaterialLightViewMode()
 {
-    int curViewMode = SettingsManager::GetValue(Settings::Internal_MaterialsLightViewMode).AsInt32();
+    int curViewMode = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialLightViewMode;
 
     ui->actionAlbedo->setChecked((bool)(curViewMode & EditorMaterialSystem::LIGHTVIEW_ALBEDO));
     ui->actionAmbient->setChecked((bool)(curViewMode & EditorMaterialSystem::LIGHTVIEW_AMBIENT));
@@ -1528,7 +1343,7 @@ void QtMainWindow::OnSaveTiledTexture()
     DAVA::Landscape* landscape = FindLandscape(scene.Get());
     if (nullptr != landscape)
     {
-        LandscapeThumbnails::Create(landscape, MakeFunction(this, &QtMainWindow::OnTiledTextureRetreived));
+        DAVA::LandscapeThumbnails::Create(landscape, MakeFunction(this, &QtMainWindow::OnTiledTextureRetreived));
     }
 }
 
@@ -1576,6 +1391,8 @@ void QtMainWindow::OnConvertModifiedTextures()
         return;
     }
 
+    DAVA::TextureConverter::eConvertQuality quality = REGlobal::GetGlobalContext()->GetData<GeneralSettings>()->compressionQuality;
+
     int convretedNumber = 0;
     waitDialog->SetRange(convretedNumber, filesToUpdate);
     WaitSetValue(convretedNumber);
@@ -1588,13 +1405,11 @@ void QtMainWindow::OnConvertModifiedTextures()
             continue;
         }
 
-        DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
-
-        DAVA::Vector<DAVA::eGPUFamily> updatedGPUs = it->second;
+        const DAVA::Vector<DAVA::eGPUFamily>& updatedGPUs = it->second;
         WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
-        foreach (DAVA::eGPUFamily gpu, updatedGPUs)
+        for (DAVA::eGPUFamily gpu : updatedGPUs)
         {
-            DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, static_cast<DAVA::TextureConverter::eConvertQuality>(quality.AsInt32()));
+            DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, quality);
 
             DAVA::TexturesMap texturesMap = DAVA::Texture::GetTextureMap();
             DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
@@ -1641,73 +1456,6 @@ void QtMainWindow::StartGlobalInvalidateTimer()
 void QtMainWindow::EditorLightEnabled(bool enabled)
 {
     ui->actionEnableCameraLight->setChecked(enabled);
-}
-
-void QtMainWindow::OnBeastAndSave()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    if (scene->GetEnabledTools())
-    {
-        if (QMessageBox::Yes == QMessageBox::question(this, "Starting Beast", "Disable landscape editor and start beasting?", (QMessageBox::Yes | QMessageBox::No), QMessageBox::No))
-        {
-            scene->DisableToolsInstantly(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-
-            bool success = !scene->IsToolsEnabled(SceneEditor2::LANDSCAPE_TOOLS_ALL);
-            if (!success)
-            {
-                DAVA::Logger::Error(ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_DISABLE_EDITORS.c_str());
-                return;
-            }
-        }
-        else
-        {
-            return;
-        }
-    }
-
-    REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
-    if (!scene->IsLoaded() || scene->IsChanged())
-    {
-        return;
-    }
-
-    BeastDialog dlg(this);
-    dlg.SetScene(scene.Get());
-    const bool run = dlg.Exec();
-    if (!run)
-        return;
-
-    RunBeast(dlg.GetPath(), dlg.GetMode());
-    scene->SetChanged();
-    REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
-    scene->ClearAllCommands();
-}
-
-void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode)
-{
-#if defined(__DAVAENGINE_BEAST__)
-
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    const DAVA::FilePath path = outputPath.toStdString();
-
-    BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, beastWaitDialog);
-    beast.RunUIMode();
-
-    if (mode == BeastProxy::MODE_LIGHTMAPS)
-    {
-        // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
-        delayedExecutor.DelayedExecute([]() {
-            REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, Settings::GetGPUFormat());
-        });
-    }
-
-#endif //#if defined (__DAVAENGINE_BEAST__)
 }
 
 void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
@@ -1771,28 +1519,15 @@ void QtMainWindow::OnCustomColorsEditor()
         return;
     }
 
-    if (!sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
+    if (sceneEditor->customColorsSystem->IsLandscapeEditingEnabled())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableCustomColorsCommand(sceneEditor.Get(), true)));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
-        return;
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableCustomColorsCommand(sceneEditor.Get(), true)));
     }
-
-    sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableCustomColorsCommand(sceneEditor.Get(), true)));
-    ui->actionCustomColorsEditor->setChecked(false);
+    else if (CanEnableLandscapeEditor())
+    {
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableCustomColorsCommand(sceneEditor.Get(), true)));
+    }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnHeightmapEditor()
@@ -1807,24 +1542,11 @@ void QtMainWindow::OnHeightmapEditor()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableHeightmapEditorCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableHeightmapEditorCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableHeightmapEditorCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnRulerTool()
@@ -1839,24 +1561,11 @@ void QtMainWindow::OnRulerTool()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableRulerToolCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableRulerToolCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableRulerToolCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnTilemaskEditor()
@@ -1871,24 +1580,11 @@ void QtMainWindow::OnTilemaskEditor()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableTilemaskEditorCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableTilemaskEditorCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableTilemaskEditorCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnForceFirstLod(bool enabled)
@@ -1923,24 +1619,11 @@ void QtMainWindow::OnNotPassableTerrain()
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DisableNotPassableCommand(sceneEditor.Get())));
     }
-    else
+    else if (CanEnableLandscapeEditor())
     {
-        if (sceneEditor->pathSystem->IsPathEditEnabled())
-        {
-            DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
-            OnLandscapeEditorToggled(sceneEditor.Get());
-            return;
-        }
-
-        if (LoadAppropriateTextureFormat())
-        {
-            sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableNotPassableCommand(sceneEditor.Get())));
-        }
-        else
-        {
-            OnLandscapeEditorToggled(sceneEditor.Get());
-        }
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EnableNotPassableCommand(sceneEditor.Get())));
     }
+    OnLandscapeEditorToggled(sceneEditor.Get());
 }
 
 void QtMainWindow::OnWayEditor()
@@ -1999,13 +1682,10 @@ void QtMainWindow::OnBuildStaticOcclusion()
     {
         scene->MarkAsChanged();
 
-        bool needSaveScene = SettingsManager::GetValue(Settings::Scene_SaveStaticOcclusion).AsBool();
-        if (needSaveScene)
+        if (REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->saveStaticOcclusion)
         {
             REGlobal::GetInvoker()->Invoke(REGlobal::SaveCurrentScene.ID);
         }
-
-        ui->propertyEditor->ResetProperties();
     }
 
     delete waitOcclusionDlg;
@@ -2051,77 +1731,6 @@ void QtMainWindow::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const D
     }
 }
 
-void QtMainWindow::OnObjectsTypeChanged(QAction* action)
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType)action->data().toInt();
-    if (objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
-    {
-        scene->debugDrawSystem->SetRequestedObjectType(objectType);
-    }
-
-    bool wasBlocked = objectTypesWidget->blockSignals(true);
-    objectTypesWidget->setCurrentIndex(objectType + 1);
-    objectTypesWidget->blockSignals(wasBlocked);
-}
-
-void QtMainWindow::OnObjectsTypeChanged(int type)
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    ResourceEditor::eSceneObjectType objectType = (ResourceEditor::eSceneObjectType)(type - 1);
-    if (objectType < ResourceEditor::ESOT_COUNT && objectType >= ResourceEditor::ESOT_NONE)
-    {
-        scene->debugDrawSystem->SetRequestedObjectType(objectType);
-    }
-}
-
-void QtMainWindow::LoadObjectTypes(SceneEditor2* scene)
-{
-    if (!scene)
-        return;
-    ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
-    objectTypesWidget->setCurrentIndex(objectType + 1);
-}
-
-void QtMainWindow::OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape)
-{
-    if (MainWindowDetails::GetCurrentScene() != scene)
-    {
-        return;
-    }
-
-    ui->actionModifySnapToLandscape->setChecked(isSpanToLandscape);
-}
-
-void QtMainWindow::OnHangingObjects()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    scene->debugDrawSystem->EnableHangingObjectsMode(ui->actionHangingObjects->isChecked());
-}
-
-void QtMainWindow::LoadHangingObjects(SceneEditor2* scene)
-{
-    ui->actionHangingObjects->setChecked(scene->debugDrawSystem->HangingObjectsModeEnabled());
-    if (hangingObjectsWidget)
-    {
-        hangingObjectsWidget->SetHeight(DebugDrawSystem::HANGING_OBJECTS_HEIGHT);
-    }
-}
-
-void QtMainWindow::OnHangingObjectsHeight(double value)
-{
-    DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32)value;
-}
-
 void QtMainWindow::OnMaterialLightViewChanged(bool)
 {
     int newMode = EditorMaterialSystem::LIGHTVIEW_NOTHING;
@@ -2135,11 +1744,7 @@ void QtMainWindow::OnMaterialLightViewChanged(bool)
     if (ui->actionSpecular->isChecked())
         newMode |= EditorMaterialSystem::LIGHTVIEW_SPECULAR;
 
-    if (newMode != SettingsManager::GetValue(Settings::Internal_MaterialsLightViewMode).AsInt32())
-    {
-        SettingsManager::SetValue(Settings::Internal_MaterialsLightViewMode, DAVA::VariantType(newMode));
-    }
-
+    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->materialLightViewMode = static_cast<EditorMaterialSystem::MaterialLightViewMode>(newMode);
     if (MainWindowDetails::GetCurrentScene().Get() != nullptr)
     {
         MainWindowDetails::GetCurrentScene()->materialSystem->SetLightViewMode(newMode);
@@ -2199,9 +1804,32 @@ void QtMainWindow::OnAddPathEntity()
     scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(pathEntity, scene.Get())));
 }
 
-bool QtMainWindow::LoadAppropriateTextureFormat()
+bool QtMainWindow::CanEnableLandscapeEditor() const
 {
-    DAVA::eGPUFamily gpuFormat = Settings::GetGPUFormat();
+    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
+    if (scene.Get() == nullptr)
+        return false;
+
+    if (scene->pathSystem->IsPathEditEnabled())
+    {
+        DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
+        return false;
+    }
+
+    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+    if (fs->GetFilenamesTag().empty() == false)
+    {
+        DAVA::Logger::Error("Could not enable editing of landscape due to enabled tags at file system");
+        return false;
+    }
+
+    return LoadAppropriateTextureFormat();
+}
+
+bool QtMainWindow::LoadAppropriateTextureFormat() const
+{
+    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
     if (gpuFormat != DAVA::GPU_ORIGIN)
     {
         int answer = ShowQuestion("Inappropriate texture format",
@@ -2212,33 +1840,10 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
             return false;
         }
 
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, DAVA::eGPUFamily::GPU_ORIGIN);
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadAllTextures.ID, DAVA::eGPUFamily::GPU_ORIGIN);
     }
 
-    return Settings::GetGPUFormat() == DAVA::GPU_ORIGIN;
-}
-
-void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    scene->debugDrawSystem->EnableSwithcesWithDifferentLODsMode(checked);
-
-    if (checked)
-    {
-        DAVA::Set<DAVA::FastName> entitiNames;
-        SceneValidator::FindSwitchesWithDifferentLODs(scene.Get(), entitiNames);
-
-        DAVA::Set<DAVA::FastName>::iterator it = entitiNames.begin();
-        DAVA::Set<DAVA::FastName>::iterator endIt = entitiNames.end();
-        while (it != endIt)
-        {
-            DAVA::Logger::Info("Entity %s has different lods count.", it->c_str());
-            ++it;
-        }
-    }
+    return settings->textureViewGPU == DAVA::GPU_ORIGIN;
 }
 
 void QtMainWindow::DebugVersionInfo()
@@ -2322,11 +1927,7 @@ void QtMainWindow::OnSnapCameraToLandscape(bool snap)
         toggleProcessed = scene->cameraSystem->SnapEditorCameraToLandscape(snap);
     }
 
-    if (toggleProcessed)
-    {
-        ui->propertyEditor->ResetProperties();
-    }
-    else
+    if (toggleProcessed == false)
     {
         ui->actionSnapCameraToLandscape->setChecked(!snap);
     }
@@ -2428,7 +2029,7 @@ void QtMainWindow::CallAction(ID id, DAVA::Any&& args)
         OnMaterialEditor(args.Cast<DAVA::NMaterial*>());
         break;
     case GlobalOperations::ReloadTexture:
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTexturesOperation.ID, Settings::GetGPUFormat());
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadAllTextures.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
         break;
     default:
         DVASSERT(false, DAVA::Format("Not implemented action : %d", static_cast<DAVA::int32>(id)).c_str());
@@ -2446,11 +2047,6 @@ void QtMainWindow::ShowWaitDialog(const DAVA::String& tittle, const DAVA::String
     WaitStart(QString::fromStdString(tittle), QString::fromStdString(message), min, max);
 }
 
-bool QtMainWindow::IsWaitDialogVisible() const
-{
-    return IsWaitDialogOnScreen();
-}
-
 void QtMainWindow::HideWaitDialog()
 {
     WaitStop();
@@ -2463,20 +2059,6 @@ void QtMainWindow::ForEachScene(const DAVA::Function<void(SceneEditor2*)>& funct
                                                 SceneData* data = ctx.GetData<SceneData>();
                                                 functor(data->GetScene().Get());
                                             });
-}
-
-void QtMainWindow::UpdateUndoActionText(const DAVA::String& text)
-{
-    QString actionText = text.empty() ? "Undo" : "Undo: " + QString::fromStdString(text);
-    ui->actionUndo->setText(actionText);
-    ui->actionUndo->setToolTip(actionText);
-}
-
-void QtMainWindow::UpdateRedoActionText(const DAVA::String& text)
-{
-    QString actionText = text.empty() ? "Redo" : "Redo: " + QString::fromStdString(text);
-    ui->actionRedo->setText(actionText);
-    ui->actionRedo->setToolTip(actionText);
 }
 
 void QtMainWindow::OnValidateScene()

@@ -1,36 +1,35 @@
 #pragma once
 
-
-#include "Classes/Qt/Scene/System/ModifSystem.h"
-#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem.h"
-#include "Classes/Qt/Scene/System/HeightmapEditorSystem.h"
-#include "Classes/Qt/Scene/System/TilemaskEditorSystem.h"
-#include "Classes/Qt/Scene/System/CustomColorsSystem.h"
-#include "Classes/Qt/Scene/System/RulerToolSystem.h"
-#include "Classes/Qt/Scene/System/StructureSystem.h"
-#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
-#include "Classes/Qt/Scene/System/EditorLightSystem.h"
-#include "Classes/Qt/Scene/System/TextDrawSystem.h"
-#include "Classes/Qt/Scene/System/DebugDrawSystem.h"
-#include "Classes/Qt/Scene/System/BeastSystem.h"
-#include "Classes/Qt/Scene/System/EditorMaterialSystem.h"
-#include "Classes/Qt/Scene/System/WayEditSystem.h"
-#include "Classes/Qt/Scene/System/PathSystem.h"
-
-#include "Classes/Utils/SceneExporter/SceneExporter.h"
-
-#include "Classes/Settings/SettingsManager.h"
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
-#include "Classes/Commands2/Base/CommandNotify.h"
-#include "Classes/Commands2/RECommandIDs.h"
-
-#include <Scene3D/Systems/StaticOcclusionBuildSystem.h>
-#include <Scene3D/Systems/Controller/RotationControllerSystem.h>
-#include <Scene3D/Systems/Controller/WASDControllerSystem.h>
-#include <Scene3D/Scene.h>
-
-#include <Command/Command.h>
 #include <QObject>
+#include <Classes/Commands2/Base/RECommandNotificationObject.h>
+#include "UI/UIEvent.h"
+#include "Scene3D/Scene.h"
+#include "Base/StaticSingleton.h"
+
+#include "Command/Command.h"
+
+#include "Scene/System/ModifSystem.h"
+#include "Scene/System/LandscapeEditorDrawSystem.h"
+#include "Scene/System/HeightmapEditorSystem.h"
+#include "Scene/System/TilemaskEditorSystem.h"
+#include "Scene/System/CustomColorsSystem.h"
+#include "Scene/System/RulerToolSystem.h"
+#include "Scene/System/StructureSystem.h"
+#include "Scene/System/EditorLightSystem.h"
+#include "Scene/System/TextDrawSystem.h"
+#include "Scene/System/BeastSystem.h"
+#include "Scene/System/EditorMaterialSystem.h"
+#include "Scene/System/WayEditSystem.h"
+#include "Scene/System/PathSystem.h"
+
+#include "Scene3D/Systems/StaticOcclusionBuildSystem.h"
+#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
+#include "Scene3D/Systems/Controller/WASDControllerSystem.h"
+
+#include "Utils/SceneExporter/SceneExporter.h"
+
+#include "Commands2/Base/CommandNotify.h"
+#include "Commands2/RECommandIDs.h"
 
 class RECommandNotificationObject;
 class SceneCameraSystem;
@@ -39,6 +38,7 @@ class HoodSystem;
 class EditorLODSystem;
 class EditorStatisticsSystem;
 class EditorVegetationSystem;
+class EditorParticlesSystem;
 class FogSettingsChangedReceiver;
 class VisibilityCheckSystem;
 class RECommandStack;
@@ -78,7 +78,6 @@ public:
     EditorParticlesSystem* particlesSystem = nullptr;
     EditorLightSystem* editorLightSystem = nullptr;
     TextDrawSystem* textDrawSystem = nullptr;
-    DebugDrawSystem* debugDrawSystem = nullptr;
     BeastSystem* beastSystem = nullptr;
     DAVA::StaticOcclusionBuildSystem* staticOcclusionBuildSystem = nullptr;
     EditorMaterialSystem* materialSystem = nullptr;
@@ -122,7 +121,6 @@ public:
     void BeginBatch(const DAVA::String& text, DAVA::uint32 commandsCount = 1);
     void EndBatch();
 
-    void ActivateCommandStack();
     void Exec(std::unique_ptr<DAVA::Command>&& command);
     void RemoveCommands(DAVA::uint32 commandId);
 
@@ -189,8 +187,6 @@ protected:
 
     void RemoveSystems();
 
-    bool wasChanged; //deprecated
-
     void Setup3DDrawing();
 
     DAVA::uint32 framesCount = 0;
@@ -205,11 +201,6 @@ private:
 
         void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
         void Notify(const RECommandNotificationObject& commandNotification) override;
-        void CleanChanged(bool clean) override;
-        void CanUndoChanged(bool canUndo) override;
-        void CanRedoChanged(bool canRedo) override;
-        void UndoTextChanged(const DAVA::String& undoText) override;
-        void RedoTextChanged(const DAVA::String& redoText) override;
 
     private:
         SceneEditor2* editor = nullptr;

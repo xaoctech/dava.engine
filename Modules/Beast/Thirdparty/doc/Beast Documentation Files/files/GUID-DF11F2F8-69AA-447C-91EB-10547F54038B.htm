@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A" />
+      <title>Monitoring Jobs and Retrieving Updates</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBStartJob()", "../api/beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8", "API"]); 
+reflinkdata.push(["ILBGetJobProgress()", "../api/beastjob_8h.html#aea220bd754153ffafc87ba440793e892", "API"]); 
+reflinkdata.push(["ILBJobHasNewProgress()", "../api/beastjob_8h.html#a09ba4786a9be629ae8f83f418fe38d43", "API"]); 
+reflinkdata.push(["ILBIsJobRunning()", "../api/beastjob_8h.html#aab1c21d554bd70197ef70d76be8c46ac", "API"]); 
+reflinkdata.push(["ILBIsJobCompleted()", "../api/beastjob_8h.html#a3bcfbda1f0ac506afef3fa777ab54bc4", "API"]); 
+reflinkdata.push(["ILBWaitJobDone()", "../api/beastjob_8h.html#a5098930e9e25f74f9a36b7c57e8fdc55", "API"]); 
+reflinkdata.push(["ILBBool", "../api/beastapitypes_8h.html#ac4f28becc15566cc389396f596943813", "API"]); 
+reflinkdata.push(["ILBJobUpdateHandle", "../api/struct_i_l_b_job_update_handle.html", "API"]); 
+reflinkdata.push(["ILBGetJobUpdate()", "../api/beastjob_8h.html#a0d5762fda4d20fac1ec419ab9c3ff73a", "API"]); 
+reflinkdata.push(["ILBUpdateType", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9fa", "API"]); 
+reflinkdata.push(["ILBGetJobUpdateType()", "../api/beastjob_8h.html#aad63bf4ebd2d2adbd09da011901748c2", "API"]); 
+reflinkdata.push(["ILB_UT_NEW_LIGHTSOURCE", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faa1b7d77f0228db051df9c7fd74d90fd2d", "API"]); 
+reflinkdata.push(["ILB_UT_UPDATE_LIGHTSOURCE", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faa3290544032ac029010c0e15ce40e0593", "API"]); 
+reflinkdata.push(["ILB_UT_DELETE_LIGHTSOURCE", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faa514de36903b209a88317f84257aa0b87", "API"]); 
+reflinkdata.push(["ILBGetUpdateLightSource()", "../api/beastjob_8h.html#ac51d44a7d1df2338b499358d64656467", "API"]); 
+reflinkdata.push(["beastlightsource.h", "../api/beastlightsource_8h.html", "API"]); 
+reflinkdata.push(["ILB_UT_SCENE_INFO", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faa5c5f673d1a576a099f8922befa3b3a14", "API"]); 
+reflinkdata.push(["beastscene.h", "../api/beastscene_8h.html", "API"]); 
+reflinkdata.push(["ILB_UT_UPDATE_CAMERA", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faac33d6dad892ee574e80dcf631a11cd67", "API"]); 
+reflinkdata.push(["ILBGetUpdateCamera()", "../api/beastjob_8h.html#aca5a46a3ad2d517bb741da7119004a0e", "API"]); 
+reflinkdata.push(["beastcamera.h", "../api/beastcamera_8h.html", "API"]); 
+reflinkdata.push(["ILB_UT_UPDATE_TARGET", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faab10275b9dbe14370f809a3dad9dcb427", "API"]); 
+reflinkdata.push(["ILBGetUpdateTargetEntity()", "../api/beastjob_8h.html#a782c049e8ef10a55ac2aeb515c04522a", "API"]); 
+reflinkdata.push(["beasttargetentity.h", "../api/beasttargetentity_8h.html", "API"]); 
+reflinkdata.push(["ILB_UT_UPDATE_CAMERA_FRAME_BUFFER", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2d20e2df2a9b2701b0fc9534ff2e8713", "API"]); 
+reflinkdata.push(["ILB_UT_UPDATE_TEXTURE", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2f4cd4cc3b342e4a0017db82df9222e8", "API"]); 
+reflinkdata.push(["ILB_UT_UPDATE_VERTEX", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faaadc02c641f72baf35d6551724a8e61e7", "API"]); 
+reflinkdata.push(["ILBGetUpdateFramebuffer()", "../api/beastjob_8h.html#af28fc0ad160035db7462377d25e94010", "API"]); 
+reflinkdata.push(["ILBGetFramebufferTarget()", "../api/beastframebuffer_8h.html#a9510c19775babb49105819c102cacd5d", "API"]); 
+reflinkdata.push(["ILBGetFramebufferTargetEntity()", "../api/beastframebuffer_8h.html#a5bae7bdb01c691f58b3c3750adff8b94", "API"]); 
+reflinkdata.push(["ILB_UT_INVALIDATE_FRAMEBUFFER", "../api/beastjob_8h.html#a7492146836ef3c15423878f34771d9faaad25d0c49f6f05a4842d8934c41a285a", "API"]); 
+reflinkdata.push(["ILBGetUpdateInvalidateFramebuffer()", "../api/beastjob_8h.html#af9c4e0052c58829e4a3b64c39973b7d2", "API"]); 
+reflinkdata.push(["ILBDestroyUpdate()", "../api/beastjob_8h.html#aca61aa7f5a3bced77f1a43dd273901a9", "API"]); 
+reflinkdata.push(["ILBGetJobResult()", "../api/beastjob_8h.html#af2b42bfe51b1ae4b46f6ccd1e292dba7", "API"]); 
+reflinkdata.push(["ILBJobStatus", "../api/beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258", "API"]); 
+reflinkdata.push(["ILBJobHasNewProgress", "../api/beastjob_8h.html#a09ba4786a9be629ae8f83f418fe38d43", "API"]); 
+reflinkdata.push(["ILBStringHandle", "../api/struct_i_l_b_string_handle.html", "API"]); 
+reflinkdata.push(["ILBGetJobProgress", "../api/beastjob_8h.html#aea220bd754153ffafc87ba440793e892", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm',                           'd30e9697','index.html',location.hash);                           javascript:initPage('Monitoring Jobs and Retrieving Updates','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Monitoring Jobs and Retrieving Updates&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Launching Jobs</div><a href="GUID-C2AC7E8E-8DD1-4199-9B17-953320BF3186.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Rendering the Scene</div><a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Retrieving the Rendered Output</div><a href="GUID-66113B54-02C9-4F7F-8F0E-FFEB466DC342.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm">Rendering the Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-A9954F1A-72E7-4EF2-B467-08A6AA037334"></a></span><h1>Monitoring Jobs and Retrieving Updates</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-CD17749B-363E-41FC-B3B3-720BA4A33D78"></a></span> When you launch a job by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStartJob()'); return false;">ILBStartJob()</a></span>, you can interact with the job at any time to track its current progress and status, and to process any updates sent by eRnsT.
+            
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-1969D923-3912-416E-B18C-7C897EC42148"></a></span>The type of activities you will need to carry out typically depend on the type of rendering job you are running: 
+         </p><span class="anchor_wrapper"><a name="UL_BF046A6A155E493186CCE0BE22A13D0D"></a></span><ul>
+            <li>For standard rendering jobs, you need to wait until the job is done before you retrieve the output data it generates. You
+               can simply wait until the job is finished (see <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_187B29E49CED45BABB8CB9B457DFBA7F">Waiting for updates</a></span>), or you can poll the job periodically to determine its current progress (see <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_9F8AD776D6D74375AC26271A89B96097">Retrieving job progress</a></span>). When the job indicates that it has completed (see <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_21975CAEFCD54CA5B8059ED3EC1BEEEC">Querying current status</a></span>), and the result of the job indicates that the rendering was successful (see <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_A5A61D960CFB4AC88D61BB28024AF0D5">Evaluating the final job results</a></span>), the output data is ready for retrieval. 
+            </li>
+            <li>For eRnsT and live eRnsT sessions, the rendering job will also deliver periodic updates while it runs, which you should respond
+               to in your code. Typically your code either waits passively until a new update is available (see <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_187B29E49CED45BABB8CB9B457DFBA7F">Waiting for updates</a></span>), or it polls the job regularly to retrieve the most recent update (see <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_B616BDB2B1404CCEB92CA0135B9B3DEF">Processing eRnsT updates</a></span>). When an update is available, your code needs to retrieve it and handle it appropriately. See <span class="char_link"><a href="GUID-DF11F2F8-69AA-447C-91EB-10547F54038B.htm#SECTION_B616BDB2B1404CCEB92CA0135B9B3DEF">Processing eRnsT updates</a></span>. 
+            </li>
+         </ul>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_9F8AD776D6D74375AC26271A89B96097"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9736"></a><span class="anchor_wrapper"><a name="GUID-AB010769-73F1-4445-8B6B-F623F417E711"></a></span>Retrieving job progress
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-0E5E6FA5-4023-45AB-A04A-6E63021D7E84"></a></span>You can query a standard baking job at any time to determine what phase of the rendering job is currently being executed,
+               and the approximate percentage of that phase that has been completed. To query for progress, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobProgress()'); return false;">ILBGetJobProgress()</a></span> function. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-084BCE5E-DDF9-490E-B88F-C053DB17C9EE"></a></span>This is typically done in a loop as follows: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_305318E2894A4C80A886EF0341C5299C"></a></span><ol start="1">
+               <li>Periodically, call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobHasNewProgress()'); return false;">ILBJobHasNewProgress()</a></span> to determine whether or not a new rendering phase has been started, and whether or not the completion percentage has been
+                  updated, since the last call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobProgress()'); return false;">ILBGetJobProgress()</a></span>. 
+               </li>
+               <li>If <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobHasNewProgress()'); return false;">ILBJobHasNewProgress()</a></span> indicates that the current activity or completion percentage has been updated since the last call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobProgress()'); return false;">ILBGetJobProgress()</a></span>, call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobProgress()'); return false;">ILBGetJobProgress()</a></span> again to retrieve the new values. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-709E8739-A168-46CB-ADE5-FF5A9C525176"></a></span>For example: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBool'); return false;">ILBBool</a> newProgress;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBool'); return false;">ILBBool</a> newActivity;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobHasNewProgress'); return false;">ILBJobHasNewProgress</a>(job, &amp;newActivity, &amp;newProgress);
+if (newProgress) {
+    <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBStringHandle'); return false;">ILBStringHandle</a> taskName;
+    int32 progress;
+    <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobProgress'); return false;">ILBGetJobProgress</a>(job, &amp;taskName, &amp;progress);
+    // Handle the progress update here
+}
+</pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-494991B4-6D11-4F95-A694-FEDCFE40663A"></a></span>Note that you cannot query the progress of a standalone eRnsT job or a live eRnsT job. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_21975CAEFCD54CA5B8059ED3EC1BEEEC"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9781"></a><span class="anchor_wrapper"><a name="GUID-1B5088E3-EDDF-4450-8DA7-A9240C3A310F"></a></span>Querying current status
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-267D9DAB-C677-474C-9FCB-ACB7731AC7C6"></a></span>You can determine whether or not a rendering job is currently in progress by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBIsJobRunning()'); return false;">ILBIsJobRunning()</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-EDBC65A8-E34D-47A9-85D8-F2CC5C136572"></a></span>You can determine whether or not a rendering job is done by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBIsJobCompleted()'); return false;">ILBIsJobCompleted()</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_187B29E49CED45BABB8CB9B457DFBA7F"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9798"></a><span class="anchor_wrapper"><a name="GUID-D8E53790-F820-456B-8098-3FEEBB01F7EF"></a></span>Waiting for updates
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-A553C400-78BB-4292-9343-08E3C0F4B6FA"></a></span>You can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBWaitJobDone()'); return false;">ILBWaitJobDone()</a></span> at any time to pause the execution flow of a thread until a rendering job has an update. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-F9D87FE6-6FA4-4F37-B9D2-217157DB98B4"></a></span>For simple rendering jobs, the only update is at the end of the job, so this function effectively waits until the job is completed.
+               
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-7676B175-A667-4924-A1D1-BEE466DEE853"></a></span>For eRnsT and live eRnsT jobs, this function pauses until a new update is available. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_B616BDB2B1404CCEB92CA0135B9B3DEF"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9815"></a><span class="anchor_wrapper"><a name="GUID-BB14BC65-5ABB-45A4-905C-D3D2C8180DB4"></a></span>Processing eRnsT updates
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-1AD68698-203D-4957-A44A-39BA1610398F"></a></span>When you run an eRnsT job in the standalone eRnsT viewer, or a live eRnsT job in your level editor, the rendering job will
+               periodically provide you with updates. Depending on the type of rendering job, these updates will contain different kinds
+               of information and need to be processed in different ways: 
+            </p> <span class="anchor_wrapper"><a name="UL_9DD226233816465F9C028B3D852FA4FB"></a></span><ul>
+               <li>For standalone eRnsT jobs, each update will indicate a change that the user makes in the eRnsT viewer. This may be a change
+                  to the objects contained in the scene (adding, modifying or deleting a light source), the camera position, or the <span class="charspan-msgph" translate="no">Beast</span> configuration parameters for the scene or for target entities. Depending on the change, you may need to reflect the change
+                  in your own game level, such as by modifying the lights in the level. 
+               </li>
+               <li>For live eRnsT jobs, each update will indicate that a target has newly rendered output data available in a new framebuffer
+                  or vertexbuffer, or that the previously rendered information for a target is now invalidated. You are responsible for updating
+                  your level editor to reflect the new lighting data. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-478673E4-FFE3-4DE8-8BD6-A20AB6A105C5"></a></span>For both types of jobs, the general procedure to retrieve the update is the same: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_2E32D2C2870A4CC5B18E6F6B2FB84113"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBool'); return false;">ILBBool</a></span> and a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobUpdateHandle'); return false;">ILBJobUpdateHandle</a></span>, and pass them in a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobUpdate()'); return false;">ILBGetJobUpdate()</a></span>. Your <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBool'); return false;">ILBBool</a></span> is updated to indicate whether or not an update has occurred in the eRnsT interface. If it evaluates to true, the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobUpdateHandle'); return false;">ILBJobUpdateHandle</a></span> is updated with details about the change. 
+               </li>
+               <li>To find out what kind of change was made, create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBUpdateType'); return false;">ILBUpdateType</a></span> and pass it with your <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobUpdateHandle'); return false;">ILBJobUpdateHandle</a></span> in a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobUpdateType()'); return false;">ILBGetJobUpdateType()</a></span>. 
+               </li>
+               <li>The <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobUpdateType()'); return false;">ILBGetJobUpdateType()</a></span> function updates your <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBUpdateType'); return false;">ILBUpdateType</a></span> to an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBUpdateType'); return false;">ILBUpdateType</a></span> enumeration that indicates the kind of change made. Depending on the value assigned to your <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBUpdateType'); return false;">ILBUpdateType</a></span>, you will need to make different kinds of changes: 
+                  <p><span class="anchor_wrapper"><a name="GUID-7F1835D0-647A-4973-AF67-BB1A665D8C50"></a></span>Standalone eRnsT jobs can produce the following types of updates: 
+                  </p> <span class="anchor_wrapper"><a name="UL_6E233B6B559B49D38BB888F37DAD160E"></a></span><ul>
+                     <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_NEW_LIGHTSOURCE'); return false;">ILB_UT_NEW_LIGHTSOURCE</a></span>, <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_UPDATE_LIGHTSOURCE'); return false;">ILB_UT_UPDATE_LIGHTSOURCE</a></span> or <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_DELETE_LIGHTSOURCE'); return false;">ILB_UT_DELETE_LIGHTSOURCE</a></span>: The user has added, modified or removed a light source. You can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUpdateLightSource()'); return false;">ILBGetUpdateLightSource()</a></span> to retrieve a handle on the new, modified or deleted light source. The <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastlightsource.h'); return false;">beastlightsource.h</a></span> file offers several additional <span class="code" translate="no">ILBGet...()</span> functions for accessing the properties in this handle so that you can update your level accordingly. 
+                     </li>
+                     <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_SCENE_INFO'); return false;">ILB_UT_SCENE_INFO</a></span>: The user has modified a global property of the scene. In this case, you can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUpdateLightSource()'); return false;">ILBGetUpdateLightSource()</a></span> to retrieve a handle that contains the new settings. The <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastscene.h'); return false;">beastscene.h</a></span> file offers additional <span class="code" translate="no">ILBGet...()</span> functions for accessing the properties in this handle, so that you can update your level accordingly if necessary. 
+                     </li>
+                     <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_UPDATE_CAMERA'); return false;">ILB_UT_UPDATE_CAMERA</a></span>: The user has moved the camera to a different position or rotated it to a different orientation. In this case, you can call
+                        <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUpdateCamera()'); return false;">ILBGetUpdateCamera()</a></span> to retrieve a handle that contains the new settings. The <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastcamera.h'); return false;">beastcamera.h</a></span> file offers additional <span class="code" translate="no">ILBGet...()</span> functions for accessing the properties in this handle, so that you can update your level accordingly if necessary. 
+                     </li>
+                     <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_UPDATE_TARGET'); return false;">ILB_UT_UPDATE_TARGET</a></span>: The user has changed the way the lighting information for a shape instance is baked to a texture or vertices. In this case,
+                        you can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUpdateTargetEntity()'); return false;">ILBGetUpdateTargetEntity()</a></span> to retrieve a handle on the target that contains the new settings. The <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beasttargetentity.h'); return false;">beasttargetentity.h</a></span> file offers additional <span class="code" translate="no">ILBGet...()</span> functions for accessing the properties in this handle, so that you can update the instance properties in your level accordingly.
+                        
+                     </li>
+                  </ul> 
+                  <p><span class="anchor_wrapper"><a name="GUID-F1925995-F680-4016-ADA9-CCCAB7EE3693"></a></span>Live eRnst jobs can produce the following types of updates: 
+                  </p> <span class="anchor_wrapper"><a name="UL_C962E78BECC44023B1CC0A26D64C766E"></a></span><ul>
+                     <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_UPDATE_CAMERA_FRAME_BUFFER'); return false;">ILB_UT_UPDATE_CAMERA_FRAME_BUFFER</a></span>, <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_UPDATE_TEXTURE'); return false;">ILB_UT_UPDATE_TEXTURE</a></span>, and <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_UPDATE_VERTEX'); return false;">ILB_UT_UPDATE_VERTEX</a></span>: Indicates that a newly rendered framebuffer is available for one of the targets being treated by the rendering job. You
+                        can retrieve the updated framebuffer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUpdateFramebuffer()'); return false;">ILBGetUpdateFramebuffer()</a></span>. If the framebuffer comes from a texture target or vertex target, you can retrieve the target and target entity that it corresponds
+                        to by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetFramebufferTarget()'); return false;">ILBGetFramebufferTarget()</a></span> and <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetFramebufferTargetEntity()'); return false;">ILBGetFramebufferTargetEntity()</a></span>. For information on reading the output data from the framebuffer, see <span class="char_link"><a href="GUID-66113B54-02C9-4F7F-8F0E-FFEB466DC342.htm">Retrieving the Rendered Output</a></span>. 
+                     </li>
+                     <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_UT_INVALIDATE_FRAMEBUFFER'); return false;">ILB_UT_INVALIDATE_FRAMEBUFFER</a></span>: Indicates that the baked data for a target is no longer up-to-date, due to changes in the lighting setup for your scene.
+                        You can retrieve the target entity whose data in invalid by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUpdateInvalidateFramebuffer()'); return false;">ILBGetUpdateInvalidateFramebuffer()</a></span>. 
+                     </li>
+                  </ul> 
+               </li>
+               <li>When you are done handling the update, destroy the update by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBDestroyUpdate()'); return false;">ILBDestroyUpdate()</a></span>. <em class="strong">NOTE:</em> do not destroy the frame buffer handle; destroying the update will release the frame buffer. 
+               </li>
+               <li>As long as the eRnsT job is still running, repeat these steps in a loop. When a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBIsJobRunning()'); return false;">ILBIsJobRunning()</a></span> indicates that the eRnsT job has been finished, you can exit the loop. 
+               </li>
+            </ol> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_A5A61D960CFB4AC88D61BB28024AF0D5"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9991"></a><span class="anchor_wrapper"><a name="GUID-A8824A20-7375-42F8-9F5C-387F66C8FF84"></a></span>Evaluating the final job results
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-FB98220F-7F01-4E7A-A697-5860E617AD3F"></a></span>After a render job has been completed, you can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetJobResult()'); return false;">ILBGetJobResult()</a></span> to retrieve an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBJobStatus'); return false;">ILBJobStatus</a></span> enumeration that indicates whether the job was completed successfully, or what type of error occurred during the processing.
+               
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

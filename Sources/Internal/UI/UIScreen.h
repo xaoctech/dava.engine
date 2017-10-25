@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Engine/Engine.h"
 #include "Reflection/Reflection.h"
 #include "UI/UIControl.h"
-#include "UI/UIControlSystem.h"
-#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -26,11 +25,8 @@ protected:
     virtual ~UIScreen();
 
 public:
-    UIScreen(const Rect& rect = Rect(0.0f,
-                                     0.0f,
-                                     static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx),
-                                     static_cast<float32>(UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy)
-                                     ));
+    UIScreen();
+    UIScreen(const Rect& rect);
 
     /* 
 		This is block of functions used by transition

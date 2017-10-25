@@ -1,3 +1,4 @@
+#include "Engine/Engine.h"
 #include "Render/Renderer.h"
 #include "Render/2D/FTFont.h"
 #include "Render/2D/FontManager.h"
@@ -10,7 +11,7 @@
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/FilePath.h"
 #include "UI/UIControlSystem.h"
-
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/Private/FTManager.h"
 
 namespace DAVA
@@ -348,13 +349,13 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
 
     bool drawNondefGlyph = Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DRAW_NONDEF_GLYPH);
 
-    size = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
+    size = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
     if (!contentScaleIncluded)
     {
-        bufWidth = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(bufWidth)));
-        bufHeight = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(bufHeight)));
-        offsetY = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(offsetY)));
-        offsetX = int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(offsetX)));
+        bufWidth = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(bufWidth)));
+        bufHeight = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(bufHeight)));
+        offsetY = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(offsetY)));
+        offsetX = int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(offsetX)));
     }
 
     FT_Size ft_size = nullptr;
@@ -450,7 +451,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
             if (charSizes)
             {
                 float32 charSize = float32(advances[i].x) * ftToPixelScale; // Convert to pixels
-                charSize = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(charSize); // Convert to virtual space
+                charSize = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(charSize); // Convert to virtual space
                 charSizes->push_back(charSize);
             }
 
@@ -470,60 +471,56 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
                 int32 width = bitmap->width;
                 int32 height = bitmap->rows;
 
-                if (top < 0)
+                if (top >= 0)
                 {
-                    pen.x += advances[i].x;
-                    pen.y += advances[i].y;
-                    continue;
-                }
-
-                if (glyph.index == 0) // guess bitmap dimensions for empty bitmap
-                {
-                    width = int32(advances[i].x) >> ftToPixelShift;
-                    height = int32(std::ceil(2 * metrics.baseline - metrics.height));
-                    left = int32(pen.x) >> ftToPixelShift;
-                    top = multilineOffsetY - (int32(pen.y) >> ftToPixelShift) - height;
-                }
-
-                uint8* resultBuf = static_cast<uint8*>(buffer);
-                int32 realH = Min(height, bufHeight - top);
-                int32 realW = Min(width, bufWidth - left);
-                int32 ind = top * bufWidth + left;
-                DVASSERT(((ind >= 0) && (ind < bufWidth * bufHeight)) || (realW * realH == 0));
-                uint8* writeBuf = resultBuf + ind;
-
-                if (glyph.index == 0)
-                {
-                    for (int32 h = 0; h < realH; h++)
+                    if (glyph.index == 0) // guess bitmap dimensions for empty bitmap
                     {
-                        for (int32 w = 0; w < realW; w++)
-                        {
-                            if (w == 0 || w == realW - 1 || h == 0 || h == realH - 1)
-                                *writeBuf++ = 255;
-                            else
-                                *writeBuf++ = 0;
-                        }
-                        writeBuf += bufWidth - realW;
+                        width = int32(advances[i].x) >> ftToPixelShift;
+                        height = int32(std::ceil(2 * metrics.baseline - metrics.height));
+                        left = int32(pen.x) >> ftToPixelShift;
+                        top = multilineOffsetY - (int32(pen.y) >> ftToPixelShift) - height;
                     }
-                }
-                else
-                {
-                    uint8* readBuf = bitmap->buffer;
-                    for (int32 h = 0; h < realH; h++)
-                    {
-                        for (int32 w = 0; w < realW; w++)
-                        {
-                            *writeBuf++ |= *readBuf++;
-                        }
-                        writeBuf += bufWidth - realW;
-                        // DF-1827 - Increment read buffer with proper value
-                        readBuf += width - realW;
-                    }
-                }
 
-                if (writeBuf > resultBuf + ind)
-                {
-                    DVASSERT((writeBuf - resultBuf - (bufWidth - realW)) <= (bufWidth * bufHeight));
+                    uint8* resultBuf = static_cast<uint8*>(buffer);
+                    int32 realH = Min(height, bufHeight - top);
+                    int32 realW = Min(width, bufWidth - left);
+                    int32 ind = top * bufWidth + left;
+                    DVASSERT(((ind >= 0) && (ind < bufWidth * bufHeight)) || (realW * realH == 0));
+                    uint8* writeBuf = resultBuf + ind;
+
+                    if (glyph.index == 0)
+                    {
+                        for (int32 h = 0; h < realH; h++)
+                        {
+                            for (int32 w = 0; w < realW; w++)
+                            {
+                                if (w == 0 || w == realW - 1 || h == 0 || h == realH - 1)
+                                    *writeBuf++ = 255;
+                                else
+                                    *writeBuf++ = 0;
+                            }
+                            writeBuf += bufWidth - realW;
+                        }
+                    }
+                    else
+                    {
+                        uint8* readBuf = bitmap->buffer;
+                        for (int32 h = 0; h < realH; h++)
+                        {
+                            for (int32 w = 0; w < realW; w++)
+                            {
+                                *writeBuf++ |= *readBuf++;
+                            }
+                            writeBuf += bufWidth - realW;
+                            // DF-1827 - Increment read buffer with proper value
+                            readBuf += width - realW;
+                        }
+                    }
+
+                    if (writeBuf > resultBuf + ind)
+                    {
+                        DVASSERT((writeBuf - resultBuf - (bufWidth - realW)) <= (bufWidth * bufHeight));
+                    }
                 }
             }
 
@@ -555,13 +552,13 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
 
     if (!contentScaleIncluded)
     {
-        metrics.drawRect.x = int32(std::floor(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.x))));
-        metrics.drawRect.y = int32(std::floor(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.y))));
-        metrics.drawRect.dx = int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.dx))));
-        metrics.drawRect.dy = int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.dy))));
-        metrics.baseline = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(metrics.baseline);
-        metrics.height = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(metrics.height);
-        metrics.width = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(totalWidth);
+        metrics.drawRect.x = int32(std::floor(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.x))));
+        metrics.drawRect.y = int32(std::floor(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.y))));
+        metrics.drawRect.dx = int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(float32(metrics.drawRect.dx))));
+        metrics.drawRect.dy = int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(float32(metrics.drawRect.dy))));
+        metrics.baseline = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(metrics.baseline);
+        metrics.height = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(metrics.height);
+        metrics.width = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(totalWidth);
     }
     else
     {
@@ -588,14 +585,14 @@ uint32 FTInternalFont::GetFontHeight(float32 size, float32 ascendScale, float32 
         return 0;
     }
 
-    size = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
+    size = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(size); // increase size for high dpi screens
     FT_Size ft_size = nullptr;
     if (ftm->LookupSize(this, size, &ft_size) == FT_Err_Ok)
     {
         int32 faceBboxYMin = int32(FT_MulFix_Wrapper(ft_size->face->bbox.yMin, ft_size->metrics.y_scale) * descendScale); // draw offset
         int32 faceBboxYMax = int32(FT_MulFix_Wrapper(ft_size->face->bbox.yMax, ft_size->metrics.y_scale) * ascendScale); // baseline
         float32 height = std::ceil((faceBboxYMax - faceBboxYMin) * ftToPixelScale);
-        return uint32(std::ceil(UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(height))); // cover height to virtual coordinates back
+        return uint32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(height))); // cover height to virtual coordinates back
     }
     return 0;
 }

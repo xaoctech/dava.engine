@@ -1,19 +1,21 @@
-#include "PathSystem.h"
+#include "Classes/Qt/Scene/System/PathSystem.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Application/REGlobal.h"
 
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Commands2/InspMemberModifyCommand.h"
-#include "Commands2/WayEditCommands.h"
-#include "Scene/SceneEditor2.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Commands2/InspMemberModifyCommand.h"
+#include "Classes/Commands2/WayEditCommands.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 
 #include "Classes/Selection/Selection.h"
 
-#include "Scene3D/Components/Waypoint/PathComponent.h"
-#include "Scene3D/Components/Waypoint/WaypointComponent.h"
-#include "Scene3D/Components/Waypoint/EdgeComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Entity.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Utils/Utils.h"
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Components/Waypoint/WaypointComponent.h>
+#include <Scene3D/Components/Waypoint/EdgeComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Entity.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Utils/Utils.h>
 
 namespace PathSystemDetail
 {
@@ -168,6 +170,13 @@ void PathSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void PathSystem::PrepareForRemove()
+{
+    pathes.clear();
+    currentPath = nullptr;
+    entitiesForCollapse.clear();
+}
+
 void PathSystem::WillClone(DAVA::Entity* originalEntity)
 {
     DAVA::PathComponent* pc = DAVA::GetPathComponent(originalEntity);
@@ -283,7 +292,8 @@ void PathSystem::DrawInEditableMode()
 
 void PathSystem::DrawInViewOnlyMode()
 {
-    const DAVA::float32 boxScale = SettingsManager::GetValue(Settings::Scene_DebugBoxWaypointScale).AsFloat();
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    const DAVA::float32 boxScale = settings->debugBoxWaypointScale;
 
     const SelectableGroup& selection = Selection::GetSelection();
     for (auto entity : selection.ObjectsOfType<DAVA::Entity>())

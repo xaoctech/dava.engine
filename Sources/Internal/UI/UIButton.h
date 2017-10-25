@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlBackground.h"
 #include "Render/2D/TextBlock.h"
 
 namespace DAVA
@@ -239,7 +240,7 @@ public:
 
     void Input(UIEvent* currentInput) override;
 
-    void Draw(const UIGeometricData& geometricData) override;
+    void Update(float32 timeElapsed) override;
 
     void SetParentColor(const Color& parentColor) override;
     UIButton* Clone() override;
@@ -299,10 +300,7 @@ private:
     }
     UIControlBackground* GetOrCreateBackground(eButtonDrawState drawState);
     void SetBackground(eButtonDrawState drawState, UIControlBackground* newBackground);
-    UIControlBackground* CreateDefaultBackground() const
-    {
-        return new UIControlBackground();
-    }
+    UIControlBackground* CreateDefaultBackground() const;
 
     eButtonDrawState GetActualTextBlockState(eButtonDrawState drawState) const;
     UIStaticText* GetActualTextBlockForState(int32 state) const;
@@ -319,6 +317,8 @@ private:
     UIStaticText* CreateDefaultTextBlock() const;
 
     void UpdateStateTextControlSize();
+
+    void UpdateSelectedTextBlock();
 
 public:
 };

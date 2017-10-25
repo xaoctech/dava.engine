@@ -26,7 +26,13 @@ bool RemoteServerParams::operator==(const RemoteServerParams& right) const
     return (ip == right.ip);
 }
 
-const DAVA::String ApplicationSettings::DEFAULT_FOLDER = "~doc:/AssetServer/AssetCacheStorage";
+namespace ApplicationSettingsDetails
+{
+const DAVA::String SETTINGS_PATH_OLD = "~doc:/AssetServer/ACS_settings.dat";
+const DAVA::String SETTINGS_PATH = "~doc:/ACS_settings.dat";
+}
+
+const DAVA::String ApplicationSettings::DEFAULT_FOLDER = "~doc:/DefaultStorage";
 const DAVA::float64 ApplicationSettings::DEFAULT_CACHE_SIZE_GB = 5.0;
 const DAVA::uint32 ApplicationSettings::DEFAULT_FILES_COUNT = 5;
 const DAVA::uint32 ApplicationSettings::DEFAULT_AUTO_SAVE_TIMEOUT_MIN = 1;
@@ -39,14 +45,10 @@ const bool ApplicationSettings::DEFAULT_SHARED_FOR_OTHERS = false;
 
 void ApplicationSettings::Save() const
 {
-    static DAVA::FilePath path("~doc:/AssetServer/ACS_settings.dat");
-
-    DAVA::FileSystem::Instance()->CreateDirectory(path.GetDirectory(), true);
-
-    DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(path, DAVA::File::CREATE | DAVA::File::WRITE));
+    DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(ApplicationSettingsDetails::SETTINGS_PATH, DAVA::File::CREATE | DAVA::File::WRITE));
     if (!file)
     {
-        DAVA::Logger::Error("[ApplicationSettings::%s] Cannot create file %s", __FUNCTION__, path.GetStringValue().c_str());
+        DAVA::Logger::Error("[ApplicationSettings::%s] Cannot create file %s", __FUNCTION__, ApplicationSettingsDetails::SETTINGS_PATH.c_str());
         return;
     }
 
@@ -59,11 +61,10 @@ void ApplicationSettings::Save() const
 
 void ApplicationSettings::Load()
 {
-    static DAVA::FilePath path("~doc:/AssetServer/ACS_settings.dat");
-
-    DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(path, DAVA::File::OPEN | DAVA::File::READ));
+    DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(ApplicationSettingsDetails::SETTINGS_PATH, DAVA::File::OPEN | DAVA::File::READ));
     if (file)
     {
+        DAVA::Logger::Debug("Loading settings");
         isFirstLaunch = false;
         DAVA::ScopedPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
         archive->Load(file);
@@ -71,6 +72,27 @@ void ApplicationSettings::Load()
     }
     else
     {
+        DAVA::Logger::Debug("Settings are not found. First launch");
+        isFirstLaunch = true;
+    }
+
+    emit SettingsUpdated(this);
+}
+
+void ApplicationSettings::LoadFromOldPath()
+{
+    DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(ApplicationSettingsDetails::SETTINGS_PATH_OLD, DAVA::File::OPEN | DAVA::File::READ));
+    if (file)
+    {
+        DAVA::Logger::Debug("Loading settings from old path");
+        isFirstLaunch = false;
+        DAVA::ScopedPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        archive->Load(file);
+        Deserialize(archive);
+    }
+    else
+    {
+        DAVA::Logger::Debug("Settings from old path are not found");
         isFirstLaunch = true;
     }
 
@@ -188,6 +210,11 @@ void ApplicationSettings::Deserialize(DAVA::KeyedArchive* archive)
     ownPoolID = archive->GetUInt64("OwnPoolID", NullPoolID);
     ownID = archive->GetUInt64("OwnID", NullServerID);
     ownName = archive->GetString("OwnName");
+}
+
+DAVA::FilePath ApplicationSettings::GetDefaultFolder()
+{
+    return DEFAULT_FOLDER;
 }
 
 const DAVA::FilePath& ApplicationSettings::GetFolder() const
@@ -448,7 +475,7 @@ DAVA::List<RemoteServerParams> ApplicationSettings::GetEnabledRemoteServers()
     {
     case EnabledRemote::POOL:
     {
-        for (auto serverIter : enabledRemote.pool->servers)
+        for (auto& serverIter : enabledRemote.pool->servers)
         {
             SharedServer& server = serverIter.second;
             enabledRemotesParams.push_back(server.remoteParams);
@@ -490,6 +517,16 @@ void ApplicationSettings::DisableRemote()
     default:
         break;
     }
+}
+
+void ApplicationSettings::DumpStorageSettings()
+{
+    DAVA::Logger::Info("Storage folder: %s", GetFolder().GetAbsolutePathname().c_str());
+}
+
+void ApplicationSettings::DumpSharingSettings()
+{
+    DAVA::Logger::Info("Shared for others: %s, ownID: %u, poolID: %u, name: %s", IsSharedForOthers() ? "YES" : "NO", GetOwnID(), GetOwnPoolID(), GetOwnName().c_str());
 }
 
 void ApplicationSettings::EnableSharedPool(PoolID poolID)

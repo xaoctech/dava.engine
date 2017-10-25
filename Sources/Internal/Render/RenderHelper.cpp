@@ -4,6 +4,8 @@
 #include "Render/DynamicBufferAllocator.h"
 #include "Material/NMaterial.h"
 
+#include "Debug/ProfilerGPU.h"
+
 const DAVA::float32 ISO_X = 0.525731f;
 const DAVA::float32 ISO_Z = 0.850650f;
 
@@ -199,6 +201,9 @@ void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatri
 
         if (currentRenderStruct.vBufferOffset + indexCount >= std::numeric_limits<uint16>::max())
         {
+            vBuffersElemCount[command.drawType] += currentRenderStruct.vBufferSize;
+            iBuffersElemCount[command.drawType] += currentRenderStruct.iBufferSize;
+
             CommitRenderStruct(packetList, currentRenderStruct);
             currentRenderStruct = AllocateRenderStruct(command.drawType);
         }
@@ -313,7 +318,7 @@ void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatri
     for (uint32 i = 0; i < uint32(DRAW_TYPE_COUNT); ++i)
     {
         CommitRenderStruct(packetList, renderStructs[i]);
-        DVASSERT(vBuffersElemCount[i] == 0 && iBuffersElemCount[i] == 0);
+        DVASSERT(!renderStructs[i].valid || (vBuffersElemCount[i] == 0 && iBuffersElemCount[i] == 0));
     }
 }
 

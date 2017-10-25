@@ -1,27 +1,26 @@
-#include "Qt/TextureBrowser/TextureBrowser.h"
-#include "Qt/TextureBrowser/TextureListModel.h"
-#include "Qt/TextureBrowser/TextureListDelegate.h"
-#include "Qt/TextureBrowser/TextureConvertor.h"
-#include "Qt/TextureBrowser/TextureCache.h"
-#include "Qt/Main/QtUtils.h"
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Qt/TextureBrowser/TextureBrowser.h"
+#include "Classes/Qt/TextureBrowser/TextureListModel.h"
+#include "Classes/Qt/TextureBrowser/TextureListDelegate.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+#include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/SceneManager/SceneData.h"
 
-#include "Scene/SceneHelper.h"
-#include "CubemapEditor/CubemapUtils.h"
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Constants.h"
-
-#include "TArc/Core/FieldBinder.h"
-
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Qt/CubemapEditor/CubemapUtils.h"
+#include "Classes/Commands2/Base/RECommandNotificationObject.h"
+#include "Classes/Constants.h"
 #include "ui_texturebrowser.h"
 
-#include "Render/PixelFormatDescriptor.h"
-#include "Render/Image/LibPVRHelper.h"
-#include "Render/Image/LibDdsHelper.h"
+#include <TArc/Core/FieldBinder.h>
+
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/Image/LibPVRHelper.h>
+#include <Render/Image/LibDdsHelper.h>
 
 #include <QComboBox>
 #include <QAbstractItemModel>
@@ -54,6 +53,7 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     textureListModel = new TextureListModel();
     textureListImagesDelegate = new TextureListDelegate();
     QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorChanged, this, &TextureBrowser::textureDescriptorChanged);
+    QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorReload, this, &TextureBrowser::textureDescriptorReload);
 
     textureListSortModes["File size"] = TextureListModel::SortByFileSize;
     textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
@@ -138,6 +138,15 @@ void TextureBrowser::closeEvent(QCloseEvent* e)
 {
     QDialog::closeEvent(e);
     Close();
+}
+
+void TextureBrowser::UpdateTexture(DAVA::Texture* texture)
+{
+    if (curTexture == texture)
+    {
+        DAVA::TextureDescriptor* descriptor = texture->GetDescriptor();
+        setTexture(texture, descriptor);
+    }
 }
 
 void TextureBrowser::setTexture(DAVA::Texture* texture, DAVA::TextureDescriptor* descriptor)
@@ -272,7 +281,7 @@ void TextureBrowser::setTextureView(DAVA::eGPUFamily view, eTextureConvertMode c
 
 eTextureConvertMode TextureBrowser::getConvertMode(eTextureConvertMode convertMode /*= CONVERT_NOT_EXISTENT*/) const
 {
-    bool autoConvertationEnabled = SettingsManager::GetValue(Settings::General_AutoConvertation).AsBool();
+    bool autoConvertationEnabled = REGlobal::GetGlobalContext()->GetData<GeneralSettings>()->autoConversion;
     return (autoConvertationEnabled) ? convertMode : CONVERT_NOT_REQUESTED;
 }
 
@@ -495,6 +504,7 @@ void TextureBrowser::setupTextureToolbar()
     QObject::connect(ui->actionConvert, SIGNAL(triggered(bool)), this, SLOT(textureConver(bool)));
     QObject::connect(ui->actionConvertAll, SIGNAL(triggered(bool)), this, SLOT(textureConverAll(bool)));
     QObject::connect(ui->actionConvertModified, SIGNAL(triggered(bool)), this, SLOT(ConvertModifiedTextures(bool)));
+    QObject::connect(ui->actionConvertTagged, &QAction::triggered, this, &TextureBrowser::ConvertTaggedTextures);
 }
 
 void TextureBrowser::setupTextureListToolbar()
@@ -624,7 +634,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
 {
     if (NULL != descriptor && NULL != texture)
     {
-        DAVA::eGPUFamily curEditorImageGPUForTextures = Settings::GetGPUFormat();
+        DAVA::eGPUFamily curEditorImageGPUForTextures = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU;
 
         // reload only when editor view format is the same as given texture format
         // or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
@@ -938,6 +948,11 @@ void TextureBrowser::ConvertModifiedTextures(bool)
     ConvertMultipleTextures(CONVERT_MODIFIED);
 }
 
+void TextureBrowser::ConvertTaggedTextures()
+{
+    REGlobal::GetInvoker()->Invoke(REGlobal::ConvertTaggedTextures.ID);
+}
+
 void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
 {
     if (convertMode != CONVERT_FORCE && convertMode != CONVERT_MODIFIED)
@@ -945,8 +960,7 @@ void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
         return;
     }
 
-    DAVA::Scene* activeScene = curScene;
-    if (NULL != activeScene)
+    if (nullptr != curScene)
     {
         QMessageBox msgBox(this);
 
@@ -976,7 +990,7 @@ void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
 
         if (ret == QMessageBox::Ok)
         {
-            TextureConvertor::Instance()->Reconvert(activeScene, convertMode);
+            TextureConvertor::Instance()->Reconvert(curScene, convertMode);
             TextureConvertor::Instance()->WaitConvertedAll(this);
         }
     }
@@ -1107,6 +1121,19 @@ void TextureBrowser::textureViewChanged(int index)
 void TextureBrowser::clearFilter()
 {
     ui->textureFilterEdit->setText("");
+}
+
+void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor)
+{
+    DAVA::Texture* texture = textureListModel->getTexture(descriptor);
+    if (nullptr != texture)
+    {
+        DAVA::Vector<DAVA::Texture*> reloadTextures;
+        reloadTextures.push_back(texture);
+
+        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+        setTexture(texture, descriptor);
+    }
 }
 
 void TextureBrowser::textureDescriptorChanged(DAVA::TextureDescriptor* descriptor)

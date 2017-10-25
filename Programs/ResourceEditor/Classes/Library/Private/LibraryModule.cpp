@@ -3,10 +3,7 @@
 #include "Classes/Library/Private/LibraryData.h"
 #include "Classes/Library/Private/LibraryWidget.h"
 #include "Classes/Application/REGlobal.h"
-#include "Classes/Qt/Actions/DAEConverter.h"
-
-#include "Classes/Settings/SettingsManager.h"
-#include "Classes/Settings/Settings.h"
+#include "Classes/Library/Private/DAEConverter.h"
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/FieldBinder.h>
@@ -17,6 +14,7 @@
 #include <FileSystem/FilePath.h>
 #include <Functional/Function.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include "Application/RESettings.h"
 
 LibraryModule::~LibraryModule()
 {
@@ -32,6 +30,7 @@ void LibraryModule::PostInit()
     connections.AddConnection(libraryWidget, &LibraryWidget::AddSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnAddSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::EditSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnEditSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DAEConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEConvertionRequested));
+    connections.AddConnection(libraryWidget, &LibraryWidget::DAEAnimationConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEAnimationConvertionRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DoubleClicked, DAVA::MakeFunction(this, &LibraryModule::OnDoubleClicked));
     connections.AddConnection(libraryWidget, &LibraryWidget::DragStarted, DAVA::MakeFunction(this, &LibraryModule::OnDragStarted));
 
@@ -47,7 +46,8 @@ void LibraryModule::PostInit()
 
 void LibraryModule::OnSelectedPathChanged(const DAVA::Any& selectedPathValue)
 {
-    if (SettingsManager::GetValue(Settings::General_PreviewEnabled).AsBool() == true)
+    GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<GeneralSettings>();
+    if (settings->previewEnabled == true)
     {
         DAVA::FilePath selectedPath;
         if (selectedPathValue.CanGet<DAVA::FilePath>())
@@ -113,11 +113,27 @@ void LibraryModule::OnDAEConvertionRequested(const DAVA::FilePath& daePathname)
     });
 }
 
+void LibraryModule::OnDAEAnimationConvertionRequested(const DAVA::FilePath& daePathname)
+{
+    HidePreview();
+
+    executor.DelayedExecute([this, daePathname]() {
+        DAVA::TArc::UI* ui = GetUI();
+        DAVA::TArc::WaitDialogParams waitDlgParams;
+        waitDlgParams.message = QString("DAE animations conversion\n%1").arg(daePathname.GetAbsolutePathname().c_str());
+        waitDlgParams.needProgressBar = false;
+        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+
+        DAEConverter::ConvertAnimations(daePathname);
+    });
+}
+
 void LibraryModule::OnDoubleClicked(const DAVA::FilePath& scenePathname)
 {
     HidePreview();
 
-    if (SettingsManager::GetValue(Settings::General_OpenByDBClick).AsBool() && scenePathname.IsEqualToExtension(".sc2"))
+    GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<GeneralSettings>();
+    if (scenePathname.IsEqualToExtension(".sc2"))
     {
         OnEditSceneRequested(scenePathname);
     }

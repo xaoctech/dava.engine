@@ -93,7 +93,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
-    propertyNameTypeItemDelegates[PropertyPath("*", "text-font")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "text-fontName")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "particleEffect-effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this, false);
 
     propertyNameTypeItemDelegates[PropertyPath("Sound", "*")] = new FMODEventPropertyDelegate(this);
@@ -112,6 +112,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"), false);
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
+
+    propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
@@ -265,6 +267,11 @@ AbstractPropertyDelegate* PropertiesTreeItemDelegate::GetCustomItemDelegateForIn
 void PropertiesTreeItemDelegate::SetProject(const Project* project)
 {
     context.project = project;
+}
+
+void PropertiesTreeItemDelegate::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+{
+    context.accessor = accessor_;
 }
 
 void PropertiesTreeItemDelegate::emitCommitData(QWidget* editor)

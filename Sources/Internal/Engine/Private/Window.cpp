@@ -9,12 +9,15 @@
 #include "Animation/AnimationManager.h"
 #include "Autotesting/AutotestingSystem.h"
 #include "Input/InputSystem.h"
+#include "Input/InputEvent.h"
+#include "Input/Keyboard.h"
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
 #include "Render/2D/TextBlock.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
+#include "DeviceManager/DeviceManager.h"
 
 namespace DAVA
 {
@@ -131,6 +134,7 @@ void Window::SetCursorCapture(eCursorCapture mode)
         if (cursorCapture != mode)
         {
             cursorCapture = mode;
+            cursorCaptureChanged.Emit(this, cursorCapture);
             if (cursorCapture == eCursorCapture::PINNING)
             {
                 waitInputActivation |= !hasFocus;
@@ -174,6 +178,11 @@ bool Window::GetCursorVisibility() const
     return cursorVisible && cursorCapture != eCursorCapture::PINNING;
 }
 
+void Window::SetInputHandlingMode(eInputHandlingModes mode)
+{
+    inputHandlingMode = mode;
+}
+
 void Window::Update(float32 frameDelta)
 {
     update.Emit(this, frameDelta);
@@ -205,45 +214,26 @@ void Window::Draw()
     context->renderSystem2D->EndFrame();
 }
 
-void Window::EventHandler(const Private::MainDispatcherEvent& e)
+bool Window::EventHandler(const Private::MainDispatcherEvent& e)
 {
     using Private::MainDispatcherEvent;
+    if (e.window != this)
+        return false;
+
     if (MainDispatcherEvent::IsInputEvent(e.type))
     {
         // Skip input events if window does not have focus or pinning switching logic tells to ignore input event
-        if (!hasFocus || HandleInputActivation(e))
+        if ((inputHandlingMode == eInputHandlingModes::HANDLE_ONLY_WHEN_FOCUSED && !hasFocus) || HandleInputActivation(e))
         {
-            return;
+            return true;
         }
     }
+
+    bool isHandled = true;
     switch (e.type)
     {
-    case MainDispatcherEvent::MOUSE_MOVE:
-        HandleMouseMove(e);
-        break;
-    case MainDispatcherEvent::MOUSE_BUTTON_DOWN:
-    case MainDispatcherEvent::MOUSE_BUTTON_UP:
-        HandleMouseClick(e);
-        break;
-    case MainDispatcherEvent::MOUSE_WHEEL:
-        HandleMouseWheel(e);
-        break;
-    case MainDispatcherEvent::TOUCH_DOWN:
-    case MainDispatcherEvent::TOUCH_UP:
-        HandleTouchClick(e);
-        break;
-    case MainDispatcherEvent::TOUCH_MOVE:
-        HandleTouchMove(e);
-        break;
     case MainDispatcherEvent::TRACKPAD_GESTURE:
         HandleTrackpadGesture(e);
-        break;
-    case MainDispatcherEvent::KEY_DOWN:
-    case MainDispatcherEvent::KEY_UP:
-        HandleKeyPress(e);
-        break;
-    case MainDispatcherEvent::KEY_CHAR:
-        HandleKeyChar(e);
         break;
     case MainDispatcherEvent::WINDOW_SIZE_CHANGED:
         HandleSizeChanged(e);
@@ -268,13 +258,16 @@ void Window::EventHandler(const Private::MainDispatcherEvent& e)
         break;
     case MainDispatcherEvent::WINDOW_CANCEL_INPUT:
         HandleCancelInput(e);
+        isHandled = false; // To send it further to other input-dependent subscribers
         break;
     case MainDispatcherEvent::WINDOW_VISIBLE_FRAME_CHANGED:
         HandleVisibleFrameChanged(e);
         break;
     default:
+        isHandled = false;
         break;
     }
+    return isHandled;
 }
 
 void Window::FinishEventHandlingOnCurrentFrame()
@@ -459,7 +452,6 @@ bool Window::HandleInputActivation(const Private::MainDispatcherEvent& e)
 void Window::HandleCancelInput(const Private::MainDispatcherEvent& e)
 {
     uiControlSystem->CancelAllInputs();
-    inputSystem->GetKeyboard().ClearAllKeys();
 }
 
 void Window::HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e)
@@ -476,7 +468,6 @@ void Window::HandleFocusChanged(const Private::MainDispatcherEvent& e)
         Logger::FrameworkDebug("=========== WINDOW_FOCUS_CHANGED: state=%s", e.stateEvent.state ? "got_focus" : "lost_focus");
 
         uiControlSystem->CancelAllInputs();
-        inputSystem->GetKeyboard().ClearAllKeys();
         hasFocus = gainsFocus;
         /*if (windowImpl->IsPlatformSupported(SET_CURSOR_CAPTURE))*/ // TODO: Add platfom's caps check
         {
@@ -507,108 +498,10 @@ void Window::HandleVisibilityChanged(const Private::MainDispatcherEvent& e)
     }
 }
 
-void Window::HandleMouseClick(const Private::MainDispatcherEvent& e)
-{
-    bool pressed = e.type == Private::MainDispatcherEvent::MOUSE_BUTTON_DOWN;
-    eMouseButtons button = e.mouseEvent.button;
-
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = pressed ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
-    uie.isRelative = e.mouseEvent.isRelative;
-    uie.physPoint = e.mouseEvent.isRelative ? Vector2(0.f, 0.f) : Vector2(e.mouseEvent.x, e.mouseEvent.y);
-    uie.device = eInputDevices::MOUSE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.mouseButton = button;
-    uie.modifiers = e.mouseEvent.modifierKeys;
-
-    uint32 buttonIndex = static_cast<uint32>(button) - 1;
-    mouseButtonState[buttonIndex] = pressed;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleMouseWheel(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = UIEvent::Phase::WHEEL;
-    uie.physPoint = Vector2(e.mouseEvent.x, e.mouseEvent.y);
-    uie.isRelative = e.mouseEvent.isRelative;
-    uie.device = eInputDevices::MOUSE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.wheelDelta = { e.mouseEvent.scrollDeltaX, e.mouseEvent.scrollDeltaY };
-    uie.modifiers = e.mouseEvent.modifierKeys;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleMouseMove(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = UIEvent::Phase::MOVE;
-    uie.physPoint = Vector2(e.mouseEvent.x, e.mouseEvent.y);
-    uie.isRelative = e.mouseEvent.isRelative;
-    uie.device = eInputDevices::MOUSE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.mouseButton = eMouseButtons::NONE;
-    uie.modifiers = e.mouseEvent.modifierKeys;
-
-    if (mouseButtonState.any())
-    {
-        // Send DRAG phase instead of MOVE for each pressed mouse button
-        uie.phase = UIEvent::Phase::DRAG;
-
-        uint32 firstButton = static_cast<uint32>(eMouseButtons::FIRST);
-        uint32 lastButton = static_cast<uint32>(eMouseButtons::LAST);
-        for (uint32 buttonIndex = firstButton; buttonIndex <= lastButton; ++buttonIndex)
-        {
-            if (mouseButtonState[buttonIndex - 1])
-            {
-                uie.mouseButton = static_cast<eMouseButtons>(buttonIndex);
-                inputSystem->HandleInputEvent(&uie);
-            }
-        }
-    }
-    else
-    {
-        inputSystem->HandleInputEvent(&uie);
-    }
-}
-
-void Window::HandleTouchClick(const Private::MainDispatcherEvent& e)
-{
-    bool pressed = e.type == Private::MainDispatcherEvent::TOUCH_DOWN;
-
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = pressed ? UIEvent::Phase::BEGAN : UIEvent::Phase::ENDED;
-    uie.physPoint = Vector2(e.touchEvent.x, e.touchEvent.y);
-    uie.device = eInputDevices::TOUCH_SURFACE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.touchId = e.touchEvent.touchId;
-    uie.modifiers = e.touchEvent.modifierKeys;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleTouchMove(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.phase = UIEvent::Phase::DRAG;
-    uie.physPoint = Vector2(e.touchEvent.x, e.touchEvent.y);
-    uie.device = eInputDevices::TOUCH_SURFACE;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.touchId = e.touchEvent.touchId;
-    uie.modifiers = e.touchEvent.modifierKeys;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
 void Window::HandleTrackpadGesture(const Private::MainDispatcherEvent& e)
 {
+    // TODO: move gestures to the new input system
+
     UIEvent uie;
     uie.window = e.window;
     uie.timestamp = e.timestamp / 1000.0;
@@ -620,52 +513,6 @@ void Window::HandleTrackpadGesture(const Private::MainDispatcherEvent& e)
     uie.gesture.rotation = e.trackpadGestureEvent.rotation;
     uie.gesture.dx = e.trackpadGestureEvent.deltaX;
     uie.gesture.dy = e.trackpadGestureEvent.deltaY;
-
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleKeyPress(const Private::MainDispatcherEvent& e)
-{
-    bool pressed = e.type == Private::MainDispatcherEvent::KEY_DOWN;
-
-    KeyboardDevice& keyboard = inputSystem->GetKeyboard();
-
-    UIEvent uie;
-    uie.window = e.window;
-    uie.key = keyboard.GetDavaKeyForSystemKey(e.keyEvent.key);
-    uie.device = eInputDevices::KEYBOARD;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.modifiers = e.keyEvent.modifierKeys;
-
-    if (pressed)
-    {
-        uie.phase = e.keyEvent.isRepeated ? UIEvent::Phase::KEY_DOWN_REPEAT : UIEvent::Phase::KEY_DOWN;
-    }
-    else
-    {
-        uie.phase = UIEvent::Phase::KEY_UP;
-    }
-
-    if (pressed)
-    {
-        keyboard.OnKeyPressed(uie.key);
-    }
-    else
-    {
-        keyboard.OnKeyUnpressed(uie.key);
-    }
-    inputSystem->HandleInputEvent(&uie);
-}
-
-void Window::HandleKeyChar(const Private::MainDispatcherEvent& e)
-{
-    UIEvent uie;
-    uie.window = e.window;
-    uie.keyChar = static_cast<char32_t>(e.keyEvent.key);
-    uie.phase = e.keyEvent.isRepeated ? UIEvent::Phase::CHAR_REPEAT : UIEvent::Phase::CHAR;
-    uie.device = eInputDevices::KEYBOARD;
-    uie.timestamp = e.timestamp / 1000.0;
-    uie.modifiers = e.keyEvent.modifierKeys;
 
     inputSystem->HandleInputEvent(&uie);
 }

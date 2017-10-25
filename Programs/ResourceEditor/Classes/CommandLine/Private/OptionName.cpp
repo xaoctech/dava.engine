@@ -5,6 +5,8 @@ const DAVA::String OptionName::Output("-output");
 const DAVA::String OptionName::OutFile("-outfile");
 const DAVA::String OptionName::OutDir("-outdir");
 
+const DAVA::String OptionName::ResourceDir("-resdir");
+
 const DAVA::String OptionName::File("-file");
 const DAVA::String OptionName::ProcessFile("-processfile");
 
@@ -55,6 +57,9 @@ const DAVA::String OptionName::Camera("-camera");
 
 const DAVA::String OptionName::Validate("-validate");
 const DAVA::String OptionName::Count("-count");
+
+const DAVA::String OptionName::Tag("-tag");
+const DAVA::String OptionName::TagList("-taglist");
 
 const DAVA::String OptionName::MakeNameForGPU(DAVA::eGPUFamily gpuFamily)
 {

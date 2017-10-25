@@ -1,10 +1,13 @@
 #include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
 #include "Classes/PropertyPanel/PropertyPanelCommon.h"
 #include "Classes/Commands2/SlotCommands.h"
+#include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/SetFieldValueCommand.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SceneManager/SceneData.h"
 #include "Classes/SlotSupportModule/Private/EditorSlotSystem.h"
 #include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
+#include "Classes/SlotSupportModule/SlotSystemSettings.h"
 
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Controls/ComboBox.h>
@@ -15,14 +18,22 @@
 #include <TArc/Controls/ListView.h>
 #include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Utils/ReflectionHelpers.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
+#include <TArc/Controls/PropertyPanel/Private/TextComponentValue.h>
 
 #include <Scene3D/Systems/SlotSystem.h>
+#include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/SceneFile/VersionInfo.h>
+#include <Engine/PlatformApiQt.h>
 #include <FileSystem/FilePath.h>
 #include <Base/BaseTypes.h>
+#include <Base/Any.h>
 
 #include <QHBoxLayout>
+#include <QMimeData>
+#include <QApplication>
+#include <QClipboard>
 
 namespace PropertyPanel
 {
@@ -219,11 +230,11 @@ private:
         .Field("filtersList", &SlotTypeFiltersComponentValue::GetTypeFilters, nullptr)
         .Field("currentFilter", &SlotTypeFiltersComponentValue::GetCurrentFilter, &SlotTypeFiltersComponentValue::SetCurrentFilter)
         .Field("autoRise", [](SlotTypeFiltersComponentValue*) { return false; }, nullptr)
-        .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
+        .Field("addButtonIcon", [](SlotTypeFiltersComponentValue*) { return DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"); }, nullptr)
         .Field("addButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Add type filter"; }, nullptr)
         .Field("addButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->filters.size() < DAVA::SlotComponent::MAX_FILTERS_COUNT; }, nullptr)
         .Method("addTypeFilter", &SlotTypeFiltersComponentValue::AddTypeFilter)
-        .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
+        .Field("removeButtonIcon", [](SlotTypeFiltersComponentValue*) { return DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"); }, nullptr)
         .Field("removeButtonTooltip", [](SlotTypeFiltersComponentValue*) { return "Remove selected type filter"; }, nullptr)
         .Field("removeButtonEnabled", [](SlotTypeFiltersComponentValue* v) { return v->currentFilter.empty() == false; }, nullptr)
         .Method("removeTypeFilter", &SlotTypeFiltersComponentValue::RemoveTypeFilter)
@@ -261,7 +272,7 @@ public:
 
 private:
     static const DAVA::String DetachItemName;
-    const DAVA::Set<DAVA::String>& GetJoints() const
+    const DAVA::Map<DAVA::String, DAVA::String>& GetJoints() const
     {
         joints.clear();
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool isFirst)
@@ -271,21 +282,23 @@ private:
                                      DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
                                      if (skeleton != nullptr)
                                      {
-                                         for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         for (DAVA::uint32 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             joints.insert(skeleton->GetJointName(i).c_str());
+                                             const DAVA::SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
+                                             joints.emplace(joint.uid.c_str(), joint.name.c_str());
                                          }
                                      }
                                  }
                                  else
                                  {
-                                     DAVA::Set<DAVA::String> jointIntersection;
+                                     DAVA::Map<DAVA::String, DAVA::String> jointIntersection;
                                      DAVA::SkeletonComponent* skeleton = GetSkeletonComponent(component->GetEntity());
                                      if (skeleton != nullptr)
                                      {
-                                         for (DAVA::uint16 i = 0; i < skeleton->GetJointsCount(); ++i)
+                                         for (DAVA::uint32 i = 0; i < skeleton->GetJointsCount(); ++i)
                                          {
-                                             jointIntersection.insert(skeleton->GetJointName(i).c_str());
+                                             const DAVA::SkeletonComponent::Joint& joint = skeleton->GetJoint(i);
+                                             joints.emplace(joint.uid.c_str(), joint.name.c_str());
                                          }
                                      }
 
@@ -294,7 +307,7 @@ private:
                                  return true;
                              });
 
-        joints.emplace(DetachItemName);
+        joints.emplace(DetachItemName, DetachItemName);
         return joints;
     }
 
@@ -306,11 +319,11 @@ private:
                              {
                                  if (isFirst == true)
                                  {
-                                     result = component->GetJointName();
+                                     result = component->GetJointUID();
                                  }
                                  else
                                  {
-                                     DAVA::FastName jointName = component->GetJointName();
+                                     DAVA::FastName jointName = component->GetJointUID();
                                      if (jointName != result)
                                      {
                                          result = DAVA::FastName(DAVA::TArc::MultipleValuesString);
@@ -383,7 +396,7 @@ private:
         return result;
     }
 
-    mutable DAVA::Set<DAVA::String> joints;
+    mutable DAVA::Map<DAVA::String, DAVA::String> joints;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotJointComponentValue, BaseSlotComponentValue)
     {
@@ -462,6 +475,14 @@ private:
             configPath = currentConfig;
             filters = currentFilters;
             RebuildItemsList();
+        }
+        else
+        {
+            DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
+            if (configPath.CanGet<DAVA::FilePath>() && scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
+            {
+                RebuildItemsList();
+            }
         }
     }
 
@@ -602,16 +623,11 @@ public:
             enumerator.emplace(t.name.c_str());
         }
 
-        if (enumerator.empty() == true)
-        {
-            enumerator.emplace("");
-            isEnumeratorEmpty = true;
-        }
-
         DAVA::TArc::ComboBox::Params params(accessor, GetUI(), GetWindowKey());
         params.fields[DAVA::TArc::ComboBox::Fields::Enumerator] = "enumerator";
         params.fields[DAVA::TArc::ComboBox::Fields::Value] = "value";
         params.fields[DAVA::TArc::ComboBox::Fields::IsReadOnly] = "isEmpty";
+        params.fields[DAVA::TArc::ComboBox::Fields::MultipleValueText] = "emptyEnumText";
         return new DAVA::TArc::ComboBox(params, wrappersProcessor, model, parent);
     }
 
@@ -633,19 +649,138 @@ private:
     }
 
     DAVA::Set<DAVA::String> enumerator;
-    bool isEnumeratorEmpty = false;
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotTemplateComponentValue, DAVA::TArc::BaseComponentValue)
     {
         DAVA::ReflectionRegistrator<SlotTemplateComponentValue>::Begin()
         .Field("enumerator", &SlotTemplateComponentValue::enumerator)
         .Field("value", &SlotTemplateComponentValue::GetTemplateName, &SlotTemplateComponentValue::SetTemplateName)
-        .Field("isEmpty", &SlotTemplateComponentValue::isEnumeratorEmpty)
+        .Field("isEmpty", [](SlotTemplateComponentValue* obj) { return obj->enumerator.empty(); }, nullptr)
+        .Field("emptyEnumText", [](SlotTemplateComponentValue*) { return "Empty"; }, nullptr)
+        .End();
+    }
+};
+
+class SlotNameComponentValue : public DAVA::TArc::TextComponentValue
+{
+public:
+    bool IsReadOnly() const override
+    {
+        return DAVA::TArc::TextComponentValue::IsReadOnly() || GetAccessor()->GetGlobalContext()->GetData<SlotSystemSettings>()->autoGenerateSlotNames;
+    }
+};
+
+class PasteSlotComponentValue : public DAVA::TArc::BaseComponentValue
+{
+public:
+    DAVA::Any GetMultipleValue() const override
+    {
+        return DAVA::Any();
+    }
+
+    bool IsSpannedControl() const override
+    {
+        return true;
+    }
+
+    bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override
+    {
+        return false;
+    }
+
+    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    {
+        using namespace DAVA::TArc;
+        ReflectedPushButton::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        params.fields[ReflectedPushButton::Fields::Clicked] = "paste";
+        params.fields[ReflectedPushButton::Fields::Enabled] = "isEnabled";
+        params.fields[ReflectedPushButton::Fields::Text] = "text";
+
+        return new ReflectedPushButton(params, wrappersProcessor, model, parent);
+    }
+
+    static bool IsPasteAvailable()
+    {
+        QClipboard* clipboard = DAVA::PlatformApi::Qt::GetApplication()->clipboard();
+        const QMimeData* mimeData = clipboard->mimeData();
+        return mimeData->hasFormat("mime:/propertyPanel/slotComponent");
+    }
+
+private:
+    bool IsEnabled() const
+    {
+        return nodes.size() == 1;
+    }
+
+    void Paste()
+    {
+        auto showNotification = [&]()
+        {
+            DAVA::TArc::NotificationParams p;
+            p.message.message = "Clipboard doesn't contain slot component. Please copy slot to clipboard first";
+            p.message.type = DAVA::Result::RESULT_ERROR;
+            p.title = "Slot can't be pasted";
+            GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, p);
+        };
+
+        QClipboard* clipboard = DAVA::PlatformApi::Qt::GetApplication()->clipboard();
+        const QMimeData* mimeData = clipboard->mimeData();
+        QByteArray slotArray = mimeData->data("mime:/propertyPanel/slotComponent");
+        if (slotArray.isEmpty() == true)
+        {
+            showNotification();
+            return;
+        }
+
+        DAVA::RefPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        if (archive->Load(reinterpret_cast<const DAVA::uint8*>(slotArray.data()), slotArray.size()) == false)
+        {
+            showNotification();
+            return;
+        }
+
+        DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        SceneData* sceneData = activeContext->GetData<SceneData>();
+        SceneData::TSceneType scene = sceneData->GetScene();
+        DAVA::FilePath scenePath = sceneData->GetScenePath();
+        DAVA::SerializationContext ctx;
+        ctx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
+        ctx.SetScene(scene.Get());
+        ctx.SetScenePath(DAVA::FilePath());
+        ctx.SetRootNodePath(scenePath);
+
+        DAVA::SlotComponent* newComponent = new DAVA::SlotComponent();
+        newComponent->Deserialize(archive.Get(), &ctx);
+
+        DAVA::TArc::ModifyExtension::MultiCommandInterface cmd = GetModifyInterface()->GetMultiCommandInterface("Paste slot component", 1);
+        DAVA::Entity* entity = nodes.front()->field.ref.GetValueObject().GetPtr<DAVA::Entity>();
+        cmd.Exec(std::make_unique<AddComponentCommand>(entity, newComponent));
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(PasteSlotComponentValue, DAVA::TArc::BaseComponentValue)
+    {
+        DAVA::ReflectionRegistrator<PasteSlotComponentValue>::Begin()
+        .Field("isEnabled", &PasteSlotComponentValue::IsEnabled, nullptr)
+        .Field("text", []() { return "Paste slot component"; }, nullptr)
+        .Method("paste", &PasteSlotComponentValue::Paste)
         .End();
     }
 };
 
 void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
 {
+    if (parent->propertyType == SlotPasteProperty)
+    {
+        return;
+    }
+
+    if (parent->propertyType == DAVA::TArc::PropertyNode::SelfRoot && PasteSlotComponentValue::IsPasteAvailable() == true)
+    {
+        DAVA::Reflection::Field f = parent->field;
+        std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), DAVA::TArc::PropertyNode::InvalidSortKey - 2, SlotPasteProperty);
+        children.push_back(previewNode);
+    }
+
     if (parent->propertyType == SlotPreviewProperty ||
         parent->propertyType == SlotTypeFilters ||
         parent->propertyType == SlotJointAttachment)
@@ -688,11 +823,14 @@ void SlotComponentChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc:
         }
 
         {
-            DAVA::Reflection::Field f;
-            f.key = DAVA::FastName("Type Filters");
-            f.ref = parent->field.ref;
-            std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotTypeFilters);
-            children.push_back(previewNode);
+            if (IsDeveloperMode() == true)
+            {
+                DAVA::Reflection::Field f;
+                f.key = DAVA::FastName("Type Filters");
+                f.ref = parent->field.ref;
+                std::shared_ptr<DAVA::TArc::PropertyNode> previewNode = allocator->CreatePropertyNode(parent, std::move(f), static_cast<DAVA::int32>(children.size()), SlotTypeFilters);
+                children.push_back(previewNode);
+            }
         }
 
         {
@@ -727,6 +865,168 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> SlotComponentEditorCreator::GetE
         return std::make_unique<SlotTemplateComponentValue>();
     }
 
+    if (node->field.key == DAVA::SlotComponent::SlotNameFieldName)
+    {
+        DAVA::ReflectedObject obj = node->field.ref.GetDirectObject();
+        if (obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::SlotComponent>())
+        {
+            return std::make_unique<SlotNameComponentValue>();
+        }
+    }
+
+    if (node->propertyType == SlotPasteProperty)
+    {
+        return std::make_unique<PasteSlotComponentValue>();
+    }
+
     return EditorComponentExtension::GetEditor(node);
+}
+
+class GenerateUniqueName : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Unique slot name generated";
+        info.tooltip = "Generate unique slot name";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/rebuild_name.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::ReflectedObject slotObject = node->field.ref.GetDirectObject();
+        DAVA::SlotComponent* component = slotObject.GetPtr<DAVA::SlotComponent>();
+
+        DAVA::FastName name = EditorSlotSystem::GenerateUniqueSlotName(component);
+
+        return std::make_unique<SetFieldValueCommand>(node->field, name);
+    }
+};
+
+class InvalidateSlotConfigCache : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Slot config reloading";
+        info.tooltip = "Reload config from disk";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::TArc::DataContext* ctx = params.accessor->GetActiveContext();
+        DVASSERT(ctx != nullptr);
+
+        DAVA::Any value = node->field.ref.GetValue();
+        if (value.CanCast<DAVA::FilePath>())
+        {
+            DAVA::FilePath path = value.Cast<DAVA::FilePath>();
+            SceneData* data = ctx->GetData<SceneData>();
+            DVASSERT(data != nullptr);
+            data->GetScene()->slotSystem->InvalidateConfig(path);
+        }
+        return nullptr;
+    }
+};
+
+class CopySlotProducer : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    bool OnlyForSingleSelection() const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Copy slot to clipboard";
+        info.tooltip = "Copy slot to clipboard";
+        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone_inplace.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    {
+        DVASSERT(params.accessor->GetActiveContext() != nullptr);
+        SceneData* data = params.accessor->GetActiveContext()->GetData<SceneData>();
+        SceneData::TSceneType scene = data->GetScene();
+        if (scene->IsLoaded() == false)
+        {
+            DAVA::TArc::NotificationParams p;
+            p.message.message = "You should save scene at least once first";
+            p.message.type = DAVA::Result::RESULT_ERROR;
+            p.title = "Slot can't be copied";
+            params.ui->ShowNotification(DAVA::TArc::mainWindowKey, p);
+            return nullptr;
+        }
+
+        DAVA::FilePath scenePath = data->GetScenePath();
+        DAVA::SerializationContext ctx;
+        ctx.SetVersion(DAVA::VersionInfo::Instance()->GetCurrentVersion().version);
+        ctx.SetScene(scene.Get());
+        ctx.SetScenePath(DAVA::FilePath());
+        ctx.SetRootNodePath(scenePath);
+
+        DAVA::SlotComponent* slotComponent = node->field.ref.GetValueObject().GetPtr<DAVA::SlotComponent>();
+        DAVA::RefPtr<DAVA::KeyedArchive> archive(new DAVA::KeyedArchive());
+        slotComponent->Serialize(archive.Get(), &ctx);
+
+        DAVA::uint32 archiveSize = archive->Save(nullptr, 0);
+        QByteArray byteArray;
+        byteArray.resize(archiveSize);
+        archive->Save(reinterpret_cast<DAVA::uint8*>(byteArray.data()), archiveSize);
+
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setData("mime:/propertyPanel/slotComponent", byteArray);
+        QClipboard* clipboard = DAVA::PlatformApi::Qt::GetApplication()->clipboard();
+        clipboard->setMimeData(mimeData);
+
+        return nullptr;
+    }
+};
+
+std::shared_ptr<DAVA::M::CommandProducer> CreateCopySlotProducer()
+{
+    return std::make_shared<CopySlotProducer>();
+}
+
+DAVA::M::CommandProducerHolder CreateSlotNameCommandProvider()
+{
+    DAVA::M::CommandProducerHolder holder;
+    holder.AddCommandProducer(std::make_shared<GenerateUniqueName>());
+
+    return holder;
+}
+
+DAVA::M::CommandProducerHolder CreateSlotConfigCommandProvider()
+{
+    DAVA::M::CommandProducerHolder holder;
+    holder.AddCommandProducer(std::make_shared<InvalidateSlotConfigCache>());
+
+    return holder;
 }
 }

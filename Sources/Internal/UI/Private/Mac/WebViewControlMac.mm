@@ -4,8 +4,11 @@
 
 #include "Engine/Engine.h"
 #include "Platform/Steam.h"
+#include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
+#include "Render/Texture.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
 
@@ -403,8 +406,8 @@ void WebViewControl::OpenFromBuffer(const String& string, const FilePath& basePa
 
 void WebViewControl::SetRect(const Rect& srcRect)
 {
-    Rect r = UIControlSystem::Instance()->vcs->ConvertVirtualToInput(srcRect);
-    float32 dy = static_cast<float32>(UIControlSystem::Instance()->vcs->GetInputScreenSize().dy);
+    Rect r = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInput(srcRect);
+    float32 dy = static_cast<float32>(GetEngineContext()->uiControlSystem->vcs->GetInputScreenSize().dy);
     [bridge->webView setFrame:NSMakeRect(r.x, dy - r.y - r.dy, r.dx, r.dy)];
 
     if (isRenderToTexture)

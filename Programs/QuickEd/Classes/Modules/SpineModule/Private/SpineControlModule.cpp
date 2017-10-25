@@ -5,14 +5,14 @@
 
 #include <UI/Spine/UISpineSystem.h>
 
+#include <TArc/Qt/QtIcon.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
-
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include <TArc/Utils/Utils.h>
 
 #include <QAction>
 #include <QWidget>
@@ -69,7 +69,7 @@ void SpineControlModule::PostInit()
 
 const QIcon& SpineControlModule::GetRebuildButtonIcon()
 {
-    return SharedIcon(":/Icons/reload.png");
+    return DAVA::TArc::SharedIcon(":/Icons/reload.png");
 }
 
 const QIcon& SpineControlModule::GetPauseButtonIcon()
@@ -77,11 +77,11 @@ const QIcon& SpineControlModule::GetPauseButtonIcon()
     DAVA::UISpineSystem* spineSystem = GetSpineSystem();
     if (spineSystem != nullptr && !spineSystem->IsPause())
     {
-        return SharedIcon(":/Icons/pause.png");
+        return DAVA::TArc::SharedIcon(":/Icons/pause.png");
     }
     else
     {
-        return SharedIcon(":/Icons/play.png");
+        return DAVA::TArc::SharedIcon(":/Icons/play.png");
     }
 }
 

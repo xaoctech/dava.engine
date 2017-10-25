@@ -1,13 +1,13 @@
 #pragma once
 
+#include "Classes/Qt/MaterialEditor/MaterialTemplateModel.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Tools/QtPosSaver/QtPosSaver.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/PropertyEditorStateHelper.h"
+
 #include <QDialog>
 #include <QPointer>
 #include <QStandardItemModel>
-
-#include "MaterialTemplateModel.h"
-#include "Scene/SceneSignals.h"
-#include "Tools/QtPosSaver/QtPosSaver.h"
-#include "DockProperties/PropertyEditorStateHelper.h"
 
 namespace Ui
 {
@@ -55,6 +55,7 @@ protected slots:
     void OnTemplateButton();
     void OnPropertyEdited(const QModelIndex&);
     void OnAddRemoveButton();
+    void OnReloadTexture();
 
     void OnMaterialAddGlobal(bool checked);
     void OnMaterialRemoveGlobal(bool checked);

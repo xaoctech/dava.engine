@@ -9,6 +9,7 @@ namespace DAVA
 class ParticleEmitter;
 class ParticleEffectComponent;
 class SkeletonComponent;
+class MotionComponent;
 class Entity;
 class RenderObject;
 class Light;
@@ -36,6 +37,7 @@ class EdgeComponent;
 class SnapToLandscapeControllerComponent;
 class StaticOcclusionComponent;
 class StaticOcclusionDebugDrawComponent;
+class GeoDecalComponent;
 
 bool HasComponent(const Entity* fromEntity, const Component::eType componentType);
 
@@ -44,12 +46,14 @@ AnimationComponent* GetAnimationComponent(const Entity* fromEntity);
 TransformComponent* GetTransformComponent(const Entity* fromEntity);
 RenderComponent* GetRenderComponent(const Entity* fromEntity);
 SkeletonComponent* GetSkeletonComponent(const Entity* fromEntity);
+MotionComponent* GetMotionComponent(const Entity* fromEntity);
 RenderObject* GetRenderObject(const Entity* fromEntity);
 VegetationRenderObject* GetVegetation(const Entity* fromEntity);
 SpeedTreeObject* GetSpeedTreeObject(const Entity* fromEntity);
 SnapToLandscapeControllerComponent* GetSnapToLandscapeControllerComponent(const Entity* fromEntity);
 StaticOcclusionComponent* GetStaticOcclusionComponent(const Entity* fromEntity);
 StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const Entity* fromEntity);
+GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity);
 
 Light* GetLight(const Entity* fromEntity);
 LightComponent* GetLightComponent(const Entity* fromEntity);

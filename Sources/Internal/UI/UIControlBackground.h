@@ -1,22 +1,22 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "Base/GlobalEnum.h"
 #include "Components/UIComponent.h"
-#include "Render/2D/Sprite.h"
 #include "FileSystem/FilePath.h"
+#include "Math/Color.h"
+#include "Render/RenderBase.h"
 
 namespace DAVA
 {
+class SpriteDrawState;
+class NMaterial;
+class Sprite;
 class UIControl;
 class UIGeometricData;
-struct TiledDrawData;
-struct StretchDrawData;
-struct TiledMultilayerData;
 struct BatchDescriptor2D;
-class NMaterial;
+struct StretchDrawData;
+struct TiledDrawData;
+struct TiledMultilayerData;
 
 /**
      \ingroup controlsystem
@@ -29,7 +29,7 @@ class NMaterial;
 class UIControlBackground : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIControlBackground, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIControlBackground);
+    DECLARE_UI_COMPONENT(UIControlBackground);
 
 public:
     /**
@@ -109,7 +109,7 @@ public:
      \brief Returns Sprite color used for draw.
      \returns Sprite color used for draw.
      */
-    inline const Color& GetColor() const;
+    const Color& GetColor() const;
 
     /**
      \brief Sets control Sprite.
@@ -243,7 +243,7 @@ public:
         Default color is Color(1,1,1,1).
      \param[in] color control draw color.
      */
-    inline void SetColor(const Color& color);
+    void SetColor(const Color& color);
 
     // WTF? Probably we should move it to protected to avoid problems in future?
     Color color; //!<Control color. By default is Color(1,1,1,1).
@@ -285,18 +285,18 @@ private:
 public:
     void ReleaseDrawData(); // Delete all spec draw data
 #if defined(LOCALIZATION_DEBUG)
-    const Sprite::DrawState& GetLastDrawState() const;
+    const SpriteDrawState& GetLastDrawState() const;
 #endif
+
 protected:
-    ~UIControlBackground();
+    ~UIControlBackground() override;
     Color drawColor;
 
     NMaterial* material = nullptr;
     Vector<BatchDescriptor2D> batchDescriptors;
 #if defined(LOCALIZATION_DEBUG)
-    Sprite::DrawState lastDrawState;
+    std::unique_ptr<SpriteDrawState> lastDrawState;
 #endif
-
 public:
     // for introspection
 
@@ -318,115 +318,4 @@ public:
     eGradientBlendMode GetGradientBlendMode() const;
     void SetGradientBlendMode(eGradientBlendMode mode);
 };
-
-// Implementation
-inline void UIControlBackground::SetColor(const Color& _color)
-{
-    color = _color;
-}
-
-inline const Color& UIControlBackground::GetColor() const
-{
-    return color;
-}
-
-inline FilePath UIControlBackground::GetBgSpritePath() const
-{
-    if (GetSprite() == NULL)
-        return "";
-    else if (GetSprite()->GetRelativePathname().GetType() == FilePath::PATH_IN_MEMORY)
-        return "";
-    else
-        return Sprite::GetPathString(GetSprite());
-}
-
-inline FilePath UIControlBackground::GetMaskSpritePath() const
-{
-    if ((mask != nullptr) && (mask->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
-        return Sprite::GetPathString(mask.Get());
-    return "";
-}
-
-inline void UIControlBackground::SetMaskSpriteFromPath(const FilePath& path)
-{
-    if (path != "")
-        mask.Set(Sprite::Create(path));
-    else
-        mask.Set(nullptr);
-}
-
-inline void UIControlBackground::SetMaskSprite(Sprite* sprite)
-{
-    mask = sprite;
-}
-
-inline FilePath UIControlBackground::GetDetailSpritePath() const
-{
-    if ((detail != nullptr) && (detail->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
-        return Sprite::GetPathString(detail.Get());
-    return "";
-}
-
-inline void UIControlBackground::SetDetailSpriteFromPath(const FilePath& path)
-{
-    if (path != "")
-        detail.Set(Sprite::Create(path));
-    else
-        detail.Set(nullptr);
-}
-
-inline void UIControlBackground::SetDetailSprite(Sprite* sprite)
-{
-    detail = sprite;
-}
-
-inline FilePath UIControlBackground::GetGradientSpritePath() const
-{
-    if ((gradient != nullptr) && (gradient->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
-        return Sprite::GetPathString(gradient.Get());
-    return "";
-}
-
-inline void UIControlBackground::SetGradientSpriteFromPath(const FilePath& path)
-{
-    if (path != "")
-        gradient.Set(Sprite::Create(path));
-    else
-        gradient.Set(nullptr);
-}
-
-inline void UIControlBackground::SetGradientSprite(Sprite* sprite)
-{
-    gradient = sprite;
-}
-
-inline FilePath UIControlBackground::GetContourSpritePath() const
-{
-    if ((contour != nullptr) && (contour->GetRelativePathname().GetType() != FilePath::PATH_IN_MEMORY))
-        return Sprite::GetPathString(contour.Get());
-    return "";
-}
-
-inline void UIControlBackground::SetContourSpriteFromPath(const FilePath& path)
-{
-    if (path != "")
-        contour.Set(Sprite::Create(path));
-    else
-        contour.Set(nullptr);
-}
-
-inline void UIControlBackground::SetContourSprite(Sprite* sprite)
-{
-    contour = sprite;
-}
-
-inline eGradientBlendMode UIControlBackground::GetGradientBlendMode() const
-{
-    return gradientMode;
-}
-
-inline void UIControlBackground::SetGradientBlendMode(eGradientBlendMode mode)
-{
-    gradientMode = mode;
-}
 };

@@ -4,6 +4,10 @@
 #include "UI/UIScreenManager.h"
 #include "UI/UIScreenManageriPhoneImpl.h"
 #include "Base/BaseObject.h"
+#include "Engine/Engine.h"
+#include "Logger/Logger.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScreen.h"
 
 @class RenderViewController;
 @class RenderView;
@@ -65,7 +69,7 @@ void UIScreenManager::SetFirst(int screenId)
             Logger::Error("ScreenManager::SetFirst no gl controller registered (use SetGLControllerId)");
         }
         activeScreenId = screenId;
-        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value);
+        GetEngineContext()->uiControlSystem->SetScreen((UIScreen*)screen.value);
     }
     else
     {
@@ -84,7 +88,7 @@ void UIScreenManager::SetScreen(int screenId)
             [[ScreenManagerImpl instance] setViewController:controller];
         }
         activeControllerId = screenId;
-        UIControlSystem::Instance()->SetScreen(nullptr);
+        GetEngineContext()->uiControlSystem->SetScreen(nullptr);
 
         activeScreenId = -1;
     }
@@ -103,14 +107,14 @@ void UIScreenManager::SetScreen(int screenId)
         }
         activeScreenId = screenId;
 
-        UIControlSystem::Instance()->SetScreen((UIScreen*)screen.value);
+        GetEngineContext()->uiControlSystem->SetScreen((UIScreen*)screen.value);
     }
 }
 
 void UIScreenManager::ResetScreen()
 {
     activeScreenId = -1;
-    UIControlSystem::Instance()->Reset();
+    GetEngineContext()->uiControlSystem->Reset();
 }
 
 void UIScreenManager::RegisterController(int controllerId, void* controller)

@@ -36,9 +36,6 @@ public:
 
     void ReloadValues();
 
-public slots:
-    void OnSnapToLandscapeChanged();
-
 private slots:
     void OnSceneActivated(SceneEditor2* scene);
     void OnSceneDeactivated(SceneEditor2* scene);

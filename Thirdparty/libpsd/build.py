@@ -50,7 +50,7 @@ def _download_and_extract(working_directory_path):
 @build_utils.run_once
 def _patch_sources(source_folder_path, working_directory_path):
     build_utils.apply_patch(
-        os.path.abspath('patch.diff'), working_directory_path)
+        os.path.abspath('patch_v0.9.diff'), working_directory_path)
     shutil.copyfile(
         'CMakeLists.txt', os.path.join(source_folder_path, 'CMakeLists.txt'))
 
@@ -59,6 +59,8 @@ def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
     _patch_sources(source_folder_path, working_directory_path)
 
+    cmake_flags = ['-DZLIB_INCLUDE_DIR=' + os.path.join(working_directory_path, '../zlib/zlib_source/')]
+
     build_utils.build_and_copy_libraries_win32_cmake(
         os.path.join(working_directory_path, 'gen'),
         source_folder_path,
@@ -66,7 +68,9 @@ def _build_win32(working_directory_path, root_project_path):
         'psd.sln', 'psd',
         'psd.lib', 'psd.lib',
         'libpsd.lib', 'libpsd.lib',
-        'libpsd.lib', 'libpsd.lib')
+        'libpsd.lib', 'libpsd.lib',
+        cmake_flags,
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -100,7 +104,7 @@ def _build_linux(working_directory_path, root_project_path):
 
 def _copy_headers(source_folder_path, root_project_path):
     include_path = os.path.join(root_project_path, 'Libs/include/libpsd')
-    build_utils.copy_files(
+    build_utils.copy_files_by_name(
         os.path.join(source_folder_path, 'include'),
         include_path,
-        '*.h')
+        ['libpsd.h', 'psd_color.h', 'psd_types.h'])

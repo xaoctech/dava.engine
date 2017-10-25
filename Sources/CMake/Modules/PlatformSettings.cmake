@@ -1,12 +1,12 @@
 
 #compiller flags
 
-append_property( DEFINITIONS_IOS  "-D__DAVAENGINE_APPLE__;-D__DAVAENGINE_IPHONE__;-D__DAVAENGINE_POSIX__" )
-append_property( DEFINITIONS_MACOS  "-D__DAVAENGINE_APPLE__;-D__DAVAENGINE_MACOS__;-D__DAVAENGINE_POSIX__" )
-append_property( DEFINITIONS_ANDROID  "-D__DAVAENGINE_ANDROID__;-D__DAVAENGINE_POSIX__" )
-append_property( DEFINITIONS_WIN "-D__DAVAENGINE_WINDOWS__;-D__DAVAENGINE_WIN32__;-DNOMINMAX;-D_UNICODE;-DUNICODE;-D_SCL_SECURE_NO_WARNINGS" )
-append_property( DEFINITIONS_WINUAP "-D__DAVAENGINE_WINDOWS__;-D__DAVAENGINE_WIN_UAP__;-DNOMINMAX;-D_UNICODE;-DUNICODE;-D_SCL_SECURE_NO_WARNINGS" )
-append_property( DEFINITIONS_LINUX "-D__DAVAENGINE_LINUX__;-D__DAVAENGINE_POSIX__" )
+append_property( PLATFORM_DEFINITIONS_IOS  "-D__DAVAENGINE_APPLE__;-D__DAVAENGINE_IPHONE__;-D__DAVAENGINE_POSIX__" )
+append_property( PLATFORM_DEFINITIONS_MACOS  "-D__DAVAENGINE_APPLE__;-D__DAVAENGINE_MACOS__;-D__DAVAENGINE_POSIX__" )
+append_property( PLATFORM_DEFINITIONS_ANDROID  "-D__DAVAENGINE_ANDROID__;-D__DAVAENGINE_POSIX__" )
+append_property( PLATFORM_DEFINITIONS_WIN "-D__DAVAENGINE_WINDOWS__;-D__DAVAENGINE_WIN32__;-DNOMINMAX;-D_UNICODE;-DUNICODE;-D_SCL_SECURE_NO_WARNINGS" )
+append_property( PLATFORM_DEFINITIONS_WINUAP "-D__DAVAENGINE_WINDOWS__;-D__DAVAENGINE_WIN_UAP__;-DNOMINMAX;-D_UNICODE;-DUNICODE;-D_SCL_SECURE_NO_WARNINGS" )
+append_property( PLATFORM_DEFINITIONS_LINUX "-D__DAVAENGINE_LINUX__;-D__DAVAENGINE_POSIX__" )
 
 
 if( APPLE )
@@ -32,20 +32,14 @@ else()
 
 endif()
 
-if     ( ANDROID )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-standalone-debug -DNDEBUG" )
-    set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -mfloat-abi=softfp -mfpu=neon -frtti" )
-    set( CMAKE_ECLIPSE_MAKE_ARGUMENTS -j8 )
-    
-    if ( ANDROID_STRIP_EXPORTS )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden" )
-    endif ()
+if ( ANDROID )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -frtti -fexceptions" )
 
 elseif ( LINUX )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14 --stdlib=libc++ -pthread -frtti" )
 
-    set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0" )
-    set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS} -O3" )
+    set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0 -D_DEBUG" )
+    set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG" )
 
 elseif ( IOS     )
     set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS} -O0" )
@@ -92,20 +86,12 @@ elseif ( MACOS )
     set( CMAKE_EXE_LINKER_FLAGS "-ObjC" )
 
 elseif ( WIN32 )
-    #dynamic runtime on windows store
+    # dynamic runtime on windows
+    set ( CRT_TYPE_DEBUG "/MDd" )
+    set ( CRT_TYPE_RELEASE "/MD" )
     if ( WINDOWS_UAP )
-        set ( CRT_TYPE_DEBUG "/MDd" )
-        set ( CRT_TYPE_RELEASE "/MD" )
         #consume windows runtime extension (C++/CX)
         set ( ADDITIONAL_CXX_FLAGS "/ZW")
-    else ()
-        if (USE_DYNAMIC_CRT)
-            set ( CRT_TYPE_DEBUG "/MDd" )
-            set ( CRT_TYPE_RELEASE "/MD" )
-        else()
-            set ( CRT_TYPE_DEBUG "/MTd" )
-            set ( CRT_TYPE_RELEASE "/MT" )
-        endif()
     endif ()
 
     # ignorance of linker warnings
@@ -250,6 +236,13 @@ elseif( WARNINGS_AS_ERRORS )
         set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS} \
             -Wno-reserved-id-macro \
             -Wno-unused-local-typedef \
+            -Wno-inconsistent-missing-destructor-override \
+            -Wno-shadow-field \
+            -Wno-undefined-func-template \
+            -Wno-double-promotion \
+            -Wno-comma \
+            -Wno-unused-lambda-capture \
+            -Wno-signed-enum-bitfield \
             -Wno-unknown-pragmas")
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
     elseif( APPLE )
@@ -277,7 +270,9 @@ elseif( WARNINGS_AS_ERRORS )
 
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
     elseif( WIN32 )
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
+        # Temporarily disable treating warnings as errors to speed up porting to Visual Studio 2017
+        # TODO: do not forget to enable warnings as errors
+        # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
     endif()
 
 endif()
@@ -308,7 +303,9 @@ elseif ( WIN32 )
         set ( DAVA_THIRD_PARTY_LIBRARIES_PATH  "${DAVA_THIRD_PARTY_ROOT_PATH}/lib_CMake/win/x86" ) 
     endif ()
 
-    list( APPEND DAVA_BINARY_WIN32_DIR ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug )
+    list( APPEND DAVA_BINARY_WIN_DIR_RELEASE ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release )
+    list( APPEND DAVA_BINARY_WIN_DIR_DEBUG   ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug   )
+
 
 endif  ()
 

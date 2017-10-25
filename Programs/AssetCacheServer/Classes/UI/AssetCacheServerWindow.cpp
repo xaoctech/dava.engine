@@ -6,8 +6,8 @@
 #include "ApplicationSettings.h"
 #include "CustomServerWidget.h"
 
-#include <Tools/AssetCache/AssetCacheConstants.h>
-#include <Tools/Version.h>
+#include <DavaTools/AssetCache/AssetCacheConstants.h>
+#include <DavaTools/Version.h>
 
 
 #include "FileSystem/KeyedArchive.h"
@@ -68,6 +68,9 @@ AssetCacheServerWindow::AssetCacheServerWindow(ServerCore& core, QWidget* parent
     connect(ui->addNewServerButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnCustomServerToAdd);
     connect(ui->shareButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnShareButtonClicked);
     connect(ui->unshareButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnUnshareButtonClicked);
+
+    connect(ui->assertButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnGenerateAssertButtonClicked);
+    connect(ui->crashButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnGenerateCrashButtonClicked);
 
     connect(ui->applyButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnApplyButtonClicked);
     connect(ui->closeButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnCloseButtonClicked);
@@ -792,6 +795,19 @@ void AssetCacheServerWindow::OnUnshareButtonClicked()
     serverCore.InitiateUnshareRequest();
 }
 
+void AssetCacheServerWindow::OnGenerateAssertButtonClicked()
+{
+    DAVA::Logger::Info("Manual assert generation");
+    DVASSERT(false, "Manual assert generation");
+}
+
+void AssetCacheServerWindow::OnGenerateCrashButtonClicked()
+{
+    DAVA::Logger::Info("Manual crash generation");
+    int* a = nullptr;
+    *a = 1;
+}
+
 void AssetCacheServerWindow::OnApplyButtonClicked()
 {
     bool toLaunchOnStartup = ui->systemStartupCheckBox->isChecked();
@@ -924,9 +940,15 @@ void AssetCacheServerWindow::OnServerStateChanged(const ServerCore* server)
 void AssetCacheServerWindow::UpdateUsageProgressbar(DAVA::uint64 occupied, DAVA::uint64 overall)
 {
     DAVA::float64 p = overall ? (100. / static_cast<DAVA::float64>(overall)) : 0;
-    int val = static_cast<int>(p * static_cast<DAVA::float64>(occupied));
+    int occupiedInPercents = static_cast<int>(p * static_cast<DAVA::float64>(occupied));
+    if (occupiedInPercents == 0 && occupied > 0)
+    {
+        // If storage size vanishes, then 0 percent of usage is shown, yet some data is actually present.
+        // There we are forcing to display 1 percent to indicate that storage is not empty.
+        occupiedInPercents = 1;
+    }
     ui->occupiedSizeBar->setRange(0, 100);
-    ui->occupiedSizeBar->setValue(val);
+    ui->occupiedSizeBar->setValue(occupiedInPercents);
 }
 
 void AssetCacheServerWindow::SetVisibilityForShareControls()

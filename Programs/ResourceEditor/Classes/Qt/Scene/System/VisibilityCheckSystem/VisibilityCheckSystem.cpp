@@ -144,6 +144,15 @@ void VisibilityCheckSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void VisibilityCheckSystem::PrepareForRemove()
+{
+    entitiesWithVisibilityComponent.clear();
+    renderObjectToEntity.clear();
+    landscape = nullptr;
+    shouldPrerender = true;
+    forceRebuildPoints = true;
+}
+
 void VisibilityCheckSystem::Process(DAVA::float32 timeElapsed)
 {
     if (!DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_ENABLE_VISIBILITY_SYSTEM))
@@ -267,6 +276,8 @@ void VisibilityCheckSystem::Draw()
         if (renderer.reprojectionTexture)
             DAVA::RenderSystem2D::Instance()->DrawTexture(renderer.reprojectionTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, DAVA::Color::White, DAVA::Rect(520.f, 516.f, 256.f, 256.f));
     }
+
+    GetFinalGatherCamera()->SetupDynamicParameters(false, nullptr);
 }
 
 void VisibilityCheckSystem::InvalidateMaterials()

@@ -1,13 +1,13 @@
 #include "Scene3D/Systems/SwitchSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SwitchComponent.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Scene3D/Components/ActionComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 #include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
@@ -62,6 +62,11 @@ void SwitchSystem::AddEntity(Entity* entity)
 void SwitchSystem::RemoveEntity(Entity* entity)
 {
     updatableEntities.erase(entity);
+}
+
+void SwitchSystem::PrepareForRemove()
+{
+    updatableEntities.clear();
 }
 
 void SwitchSystem::SetSwitchHierarchy(Entity* entity, int32 switchIndex)

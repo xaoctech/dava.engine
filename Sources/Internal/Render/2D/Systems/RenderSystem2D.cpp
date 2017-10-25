@@ -4,8 +4,10 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 
-#include "Render/Renderer.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/DynamicBufferAllocator.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Renderer.h"
 #include "Render/ShaderCache.h"
 #include "Render/VisibilityQueryResults.h"
 
@@ -327,6 +329,11 @@ void RenderSystem2D::Setup2DMatrices()
     projMatrixSemantic += 8; //cause eight is beautiful
     //actually, is not +=1 cause DynamicParams for UPADATE_ALWAYS_SEMANTIC increment by one last binded value.
     //TODO: need to rethink semantic for projection matrix in RenderSystem2D, or maybe need to rethink semantics for DynamicParams
+
+    //initially setup dynamic params for 2d rendering
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJ, &projMatrix, static_cast<pointer_size>(projMatrixSemantic));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEW, &viewMatrix, static_cast<pointer_size>(viewMatrixSemantic));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_GLOBAL_TIME, &globalTime, reinterpret_cast<pointer_size>(&globalTime));
 }
 
 void RenderSystem2D::AddPacket(rhi::Packet& packet)
@@ -353,15 +360,15 @@ void RenderSystem2D::ScreenSizeChanged()
 {
     Matrix4 translateMx, scaleMx;
 
-    Vector2 scale = UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
-    Vector2 realDrawOffset = UIControlSystem::Instance()->vcs->GetPhysicalDrawOffset();
+    Vector2 scale = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(Vector2(1.f, 1.f));
+    Vector2 realDrawOffset = GetEngineContext()->uiControlSystem->vcs->GetPhysicalDrawOffset();
 
     translateMx.BuildTranslation(Vector3(realDrawOffset.x, realDrawOffset.y, 0.0f));
     scaleMx.BuildScale(Vector3(scale.x, scale.y, 1.0f));
 
     actualVirtualToPhysicalMatrix = scaleMx * translateMx;
-    actualPhysicalToVirtualScale.x = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualX(1.0f);
-    actualPhysicalToVirtualScale.y = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtualY(1.0f);
+    actualPhysicalToVirtualScale.x = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualX(1.0f);
+    actualPhysicalToVirtualScale.y = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtualY(1.0f);
     if (GetActiveTargetDescriptor().transformVirtualToPhysical)
     {
         currentVirtualToPhysicalMatrix = actualVirtualToPhysicalMatrix;
@@ -393,7 +400,7 @@ void RenderSystem2D::IntersectClipRect(const Rect& rect)
 {
     if (currentClip.dx < 0 || currentClip.dy < 0)
     {
-        VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+        VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
         const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
         Rect screen(0.0f, 0.0f,
                     (descr.width == 0 ? vcs->GetVirtualScreenSize().dx : vcs->ConvertPhysicalToVirtualX(float32(descr.width))),
@@ -455,18 +462,18 @@ bool RenderSystem2D::GetSpriteClipping() const
     return spriteClipping;
 }
 
-bool RenderSystem2D::IsPreparedSpriteOnScreen(Sprite::DrawState* drawState)
+bool RenderSystem2D::IsPreparedSpriteOnScreen(SpriteDrawState* drawState)
 {
     Rect clipRect = currentClip;
 
     const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
     if (int32(clipRect.dx) == -1)
     {
-        clipRect.dx = static_cast<float32>(descr.width == 0 ? UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dx : descr.width);
+        clipRect.dx = static_cast<float32>(descr.width == 0 ? GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dx : descr.width);
     }
     if (int32(clipRect.dy) == -1)
     {
-        clipRect.dy = static_cast<float32>(descr.height == 0 ? UIControlSystem::Instance()->vcs->GetVirtualScreenSize().dy : descr.height);
+        clipRect.dy = static_cast<float32>(descr.height == 0 ? GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize().dy : descr.height);
     }
 
     float32 left = Min(Min(spriteTempVertices[0], spriteTempVertices[2]), Min(spriteTempVertices[4], spriteTempVertices[6]));
@@ -748,7 +755,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor2D& batchDesc)
     vertexIndex += batchDesc.vertexCount;
 }
 
-void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Color& color)
+void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Color& color)
 {
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
     {
@@ -758,7 +765,7 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
     static uint16 spriteIndeces[] = { 0, 1, 2, 1, 3, 2 };
     Vector<uint16> spriteClippedIndecex;
 
-    Sprite::DrawState* state = drawState;
+    SpriteDrawState* state = drawState;
     if (!state)
     {
         state = &defaultSpriteDrawState;
@@ -1006,11 +1013,11 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
         {
             if (sprite->type == Sprite::SPRITE_FROM_FILE)
             {
-                virtualTexSize = UIControlSystem::Instance()->vcs->ConvertResourceToVirtual(virtualTexSize, sprite->GetResourceSizeIndex());
+                virtualTexSize = GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtual(virtualTexSize, sprite->GetResourceSizeIndex());
             }
             else if (!sprite->textureInVirtualSpace)
             {
-                virtualTexSize = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtual(virtualTexSize);
+                virtualTexSize = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtual(virtualTexSize);
             }
         }
         float32 adjWidth = 1.f / virtualTexSize.x;
@@ -1093,7 +1100,7 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
     PushBatch(batch);
 }
 
-void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vector2 stretchCapVector, UIControlBackground::eDrawType type, const UIGeometricData& gd, StretchDrawData** pStreachData, const Color& color)
+void RenderSystem2D::DrawStretched(Sprite* sprite, SpriteDrawState* state, Vector2 stretchCapVector, int32 type, const UIGeometricData& gd, StretchDrawData** pStreachData, const Color& color)
 {
     if (!sprite)
         return;
@@ -1204,7 +1211,7 @@ void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vec
     }
 }
 
-void RenderSystem2D::DrawTiled(Sprite* sprite, Sprite::DrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledDrawData** pTiledData, const Color& color)
+void RenderSystem2D::DrawTiled(Sprite* sprite, SpriteDrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledDrawData** pTiledData, const Color& color)
 {
     if (!sprite)
         return;
@@ -1301,7 +1308,7 @@ void RenderSystem2D::DrawTiled(Sprite* sprite, Sprite::DrawState* state, const V
 }
 
 void RenderSystem2D::DrawTiledMultylayer(Sprite* mask, Sprite* detail, Sprite* gradient, Sprite* contour,
-                                         Sprite::DrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledMultilayerData** pTileData, const Color& color)
+                                         SpriteDrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledMultilayerData** pTileData, const Color& color)
 {
     if (!contour || !mask || !detail || !gradient)
         return;
@@ -1774,7 +1781,7 @@ void RenderSystem2D::DrawTexture(Texture* texture, NMaterial* material, const Co
         destRect.dy = static_cast<float32>(descr.height == 0 ? Renderer::GetFramebufferHeight() : descr.height);
         if (descr.transformVirtualToPhysical)
         {
-            destRect = UIControlSystem::Instance()->vcs->ConvertPhysicalToVirtual(destRect);
+            destRect = GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtual(destRect);
         }
     }
 
@@ -1795,11 +1802,11 @@ void TiledDrawData::GenerateTileData()
 
     Vector<Vector3> cellsWidth;
     GenerateAxisData(size.x, sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH),
-                     UIControlSystem::Instance()->vcs->ConvertResourceToVirtualX(float32(texture->GetWidth()), sprite->GetResourceSizeIndex()), stretchCap.x, cellsWidth);
+                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualX(float32(texture->GetWidth()), sprite->GetResourceSizeIndex()), stretchCap.x, cellsWidth);
 
     Vector<Vector3> cellsHeight;
     GenerateAxisData(size.y, sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT),
-                     UIControlSystem::Instance()->vcs->ConvertResourceToVirtualY(float32(texture->GetHeight()), sprite->GetResourceSizeIndex()), stretchCap.y, cellsHeight);
+                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualY(float32(texture->GetHeight()), sprite->GetResourceSizeIndex()), stretchCap.y, cellsHeight);
 
     uint32 vertexLimitPerUnit = MAX_VERTICES - (MAX_VERTICES % 4); // Round for 4 vertexes
     uint32 indexLimitPerUnit = vertexLimitPerUnit / 4 * 6;
@@ -2050,7 +2057,7 @@ void StretchDrawData::GenerateStretchData()
     const Vector2 uvPos(sprite->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE) / textureSize.x,
                         sprite->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE) / textureSize.y);
 
-    VirtualCoordinatesSystem* vcs = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Vector2 value(sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH),
                   sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT));

@@ -6,6 +6,8 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 
+DAVA::float32 BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE = 1000.0f;
+
 BeastSystem::BeastSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
@@ -14,6 +16,10 @@ BeastSystem::BeastSystem(DAVA::Scene* scene)
 void BeastSystem::AddEntity(DAVA::Entity* entity)
 {
     SetDefaultPropertyValues(entity);
+}
+
+void BeastSystem::PrepareForRemove()
+{
 }
 
 void BeastSystem::SetDefaultPropertyValues(DAVA::Entity* entity)
@@ -29,7 +35,7 @@ void BeastSystem::SetDefaultPropertyValues(DAVA::Entity* entity)
         SetFloat(propertyList, "editor.staticlight.shadowangle", 0.f);
         SetFloat(propertyList, "editor.staticlight.shadowradius", 0.f);
         SetInt32(propertyList, "editor.staticlight.shadowsamples", 1);
-        SetFloat(propertyList, "editor.staticlight.falloffcutoff", 1000.f);
+        SetFloat(propertyList, "editor.staticlight.falloffcutoff", DEFAULT_FALLOFFCUTOFF_VALUE);
         SetFloat(propertyList, "editor.staticlight.falloffexponent", 1.f);
     }
 }

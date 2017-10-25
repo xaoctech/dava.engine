@@ -4,6 +4,7 @@
 #include "UI/Spine/UISpineSystem.h"
 
 #include <Reflection/ReflectionRegistrator.h>
+#include <UI/UIControl.h>
 #include <UI/UIControlSystem.h>
 
 ENUM_DECLARE(DAVA::UISpineComponent::AnimationState)
@@ -30,6 +31,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
     .Field("loopedPlayback", &UISpineComponent::IsLoopedPlayback, &UISpineComponent::SetLoopedPlayback)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UISpineComponent);
 
 UISpineComponent::UISpineComponent(const UISpineComponent& copy)
     : UIComponent(copy)

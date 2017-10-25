@@ -3,10 +3,15 @@
 #include "RemoteTool/Private/DeviceLogController/DeviceLogController.h"
 #include "RemoteTool/Private/MemoryTool/MemProfController.h"
 
+#include <LoggerService/ServiceInfo.h>
+#include <MemoryProfilerService/ServiceInfo.h>
+
 #include <Logger/Logger.h>
 #include <Base/TemplateHelpers.h>
 #include <Network/NetworkCommon.h>
 #include <Network/PeerDesription.h>
+#include <Network/ServicesProvider.h>
+#include <Utils/StringFormat.h>
 
 #include <QDebug>
 #include <QStandardItemModel>
@@ -14,35 +19,36 @@
 #include <QTreeView>
 #include <QUuid>
 #include <QMessageBox>
+#include <QTimer>
 
-using namespace DAVA;
-using namespace DAVA::Net;
-
-DeviceListController::DeviceListController(QObject* parent)
+DeviceListController::DeviceListController(DAVA::TArc::UI* ui, QObject* parent)
     : QObject(parent)
+    , ui(ui)
     , model(NULL)
-    , loggerServiceCreatorAsync(MakeFunction(this, &DeviceListController::CreateLogger), NetCore::Instance()->GetNetEventsDispatcher())
-    , profilerServiceCreatorAsync(MakeFunction(this, &DeviceListController::CreateMemProfiler), NetCore::Instance()->GetNetEventsDispatcher())
-    , loggerServiceDeleterAsync(MakeFunction(this, &DeviceListController::DeleteLogger), NetCore::Instance()->GetNetEventsDispatcher())
-    , profilerServiceDeleterAsync(MakeFunction(this, &DeviceListController::DeleteMemProfiler), NetCore::Instance()->GetNetEventsDispatcher())
+    , loggerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , loggerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , profilerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
 {
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
     model = new QStandardItemModel(this);
 
-    // Register network service for recieving logs from device
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_LOG, MakeFunction(&loggerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&loggerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Logger");
-    NetCore::Instance()->RegisterService(NetCore::SERVICE_MEMPROF, MakeFunction(&profilerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&profilerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Memory profiler");
+    // Register network service for receiving logs from device
+    NetCore::Instance()->RegisterService(LOG_SERVICE_ID, MakeFunction(&loggerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&loggerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Logger");
+    NetCore::Instance()->RegisterService(MEMORY_PROFILER_SERVICE_ID, MakeFunction(&profilerServiceCreatorAsync, &ServiceCreatorDispatched::ServiceCreatorCall), MakeFunction(&profilerServiceDeleterAsync, &ServiceDeleterDispatched::ServiceDeleterCall), "Memory profiler");
 
     // Create controller for discovering remote devices
-    DAVA::Net::Endpoint endpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
-    DAVA::Net::NetCore::Instance()->CreateDiscoverer(endpoint, DAVA::MakeFunction(this, &DeviceListController::DiscoverCallback));
+    CreateDiscovererController();
 }
 
 DeviceListController::~DeviceListController()
 {
     // Block until all controllers are destroyed
-    NetCore::Instance()->DestroyAllControllersBlocked();
+    DAVA::Net::NetCore::Instance()->DestroyAllControllersBlocked();
     // We need to unregister services as we register them on window creation and duplicate services are not allowed
-    NetCore::Instance()->UnregisterAllServices();
+    DAVA::Net::NetCore::Instance()->UnregisterAllServices();
 }
 
 void DeviceListController::SetView(DeviceListWidget* _view)
@@ -69,6 +75,9 @@ void DeviceListController::ShowView()
 
 void DeviceListController::OnDeviceDiscover(const QString& addr)
 {
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
     if (!NetCore::IsNetworkEnabled())
     {
         Logger::Warning("[DeviceListController] Network is disabled in this build");
@@ -77,26 +86,29 @@ void DeviceListController::OnDeviceDiscover(const QString& addr)
 
     // addr should be in form ipaddress:port, port is optional and by default is 9999
 
-    uint16 port = NetCore::DEFAULT_TCP_ANNOUNCE_PORT;
+    std::pair<uint16, uint16> portsRange;
+
     bool valid = true;
     int delimeter = addr.indexOf(QChar(':'));
     if (delimeter > 0)
     {
-        port = addr.mid(delimeter + 1).toUShort(&valid);
+        portsRange.first = addr.mid(delimeter + 1).toUShort(&valid);
+        portsRange.second = portsRange.first;
     }
+    else
+    {
+        portsRange = ServicesProvider::GetTcpPortsRange();
+    }
+
     if (valid)
     {
         String ipaddrPart = addr.mid(0, delimeter).toStdString().c_str();
-
         IPAddress ipaddr = IPAddress::FromString(ipaddrPart);
         valid = !ipaddr.IsUnspecified();
         if (valid)
         {
-            Endpoint endp(ipaddr, port);
-            if (!NetCore::Instance()->TryDiscoverDevice(endp))
-            {
-                Logger::Warning("Device discoverer is busy now, try later");
-            }
+            DiscoverOnRange(ipaddr, portsRange);
+            return;
         }
     }
 
@@ -108,7 +120,23 @@ void DeviceListController::OnDeviceDiscover(const QString& addr)
     }
 }
 
-IChannelListener* DeviceListController::CreateLogger(uint32 serviceId, void* context)
+void DeviceListController::CreateDiscovererController()
+{
+    using namespace DAVA::Net;
+    Endpoint endpoint(NetCore::defaultAnnounceMulticastGroup, NetCore::DEFAULT_UDP_ANNOUNCE_PORT);
+    discovererControllerId = NetCore::Instance()->CreateDiscoverer(endpoint, DAVA::MakeFunction(this, &DeviceListController::DiscoverCallback));
+}
+
+void DeviceListController::DestroyDiscovererController()
+{
+    if (discovererControllerId != DAVA::Net::NetCore::INVALID_TRACK_ID)
+    {
+        DAVA::Net::NetCore::Instance()->DestroyControllerBlocked(discovererControllerId);
+        discovererControllerId = DAVA::Net::NetCore::INVALID_TRACK_ID;
+    }
+}
+
+DAVA::Net::IChannelListener* DeviceListController::CreateLogger(DAVA::Net::ServiceID serviceId, void* context)
 {
     // Service creator method is called each time when connection has been established
     // As network service was created when 'Connect' button has been pressed so here simply return
@@ -125,7 +153,7 @@ IChannelListener* DeviceListController::CreateLogger(uint32 serviceId, void* con
     return NULL;
 }
 
-void DeviceListController::DeleteLogger(IChannelListener*, void* context)
+void DeviceListController::DeleteLogger(DAVA::Net::IChannelListener*, void* context)
 {
     // Service deleter method is called before connector is destroyed
 
@@ -148,7 +176,7 @@ void DeviceListController::DeleteLogger(IChannelListener*, void* context)
     }
 }
 
-IChannelListener* DeviceListController::CreateMemProfiler(uint32 serviceId, void* context)
+DAVA::Net::IChannelListener* DeviceListController::CreateMemProfiler(DAVA::Net::ServiceID serviceId, void* context)
 {
     int row = static_cast<int>(reinterpret_cast<intptr_t>(context));
     if (model != NULL && 0 <= row && row < model->rowCount())
@@ -160,7 +188,7 @@ IChannelListener* DeviceListController::CreateMemProfiler(uint32 serviceId, void
     return NULL;
 }
 
-void DeviceListController::DeleteMemProfiler(IChannelListener* obj, void* context)
+void DeviceListController::DeleteMemProfiler(DAVA::Net::IChannelListener* obj, void* context)
 {
     int row = static_cast<int>(reinterpret_cast<intptr_t>(context));
     if (model != NULL && 0 <= row && row < model->rowCount())
@@ -182,6 +210,9 @@ void DeviceListController::DeleteMemProfiler(IChannelListener* obj, void* contex
 
 void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIndex)
 {
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
     // Check whether we have connection with device
     NetCore::TrackId trackId = static_cast<NetCore::TrackId>(index.data(ROLE_CONNECTION_ID).toULongLong());
     if (trackId != NetCore::INVALID_TRACK_ID)
@@ -200,7 +231,7 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
 
         // Check whether remote device is under memory profiler and increase read timeout
         // Else leave it zero to allow underlying network system to choose timeout itself
-        bool deviceUnderMemoryProfiler = std::find(servIds.begin(), servIds.end(), NetCore::SERVICE_MEMPROF) != servIds.end();
+        bool deviceUnderMemoryProfiler = std::find(servIds.begin(), servIds.end(), MEMORY_PROFILER_SERVICE_ID) != servIds.end();
         uint32 readTimeout = deviceUnderMemoryProfiler ? 120 * 1000 : Net::DEFAULT_READ_TIMEOUT;
 
         QStandardItem* item = model->itemFromIndex(index);
@@ -214,13 +245,13 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
         {
             DeviceServices services = index.data(ROLE_PEER_SERVICES).value<DeviceServices>();
             // Check whether remote device has corresponding services
-            auto iterService = std::find(servIds.begin(), servIds.end(), NetCore::SERVICE_LOG);
+            auto iterService = std::find(servIds.begin(), servIds.end(), LOG_SERVICE_ID);
             if (iterService != servIds.end())
             {
-                services.log.reset(new DeviceLogController(peer, view, this));
+                services.log.reset(new DeviceLogController(ui, peer, view, this));
                 services.log->Init();
             }
-            iterService = std::find(servIds.begin(), servIds.end(), NetCore::SERVICE_MEMPROF);
+            iterService = std::find(servIds.begin(), servIds.end(), MEMORY_PROFILER_SERVICE_ID);
             if (iterService != servIds.end())
             {
                 services.memprof.reset(new MemProfController(peer, view, this));
@@ -242,6 +273,8 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
 
 void DeviceListController::DisonnectDeviceInternal(QModelIndex& index)
 {
+    using namespace DAVA::Net;
+
     // Check whether we have connection with device
     NetCore::TrackId trackId = static_cast<NetCore::TrackId>(index.data(ROLE_CONNECTION_ID).toULongLong());
     if (NetCore::INVALID_TRACK_ID == trackId)
@@ -254,7 +287,7 @@ void DeviceListController::DisonnectDeviceInternal(QModelIndex& index)
 
     item->setData(QVariant(static_cast<qulonglong>(NetCore::INVALID_TRACK_ID)), ROLE_CONNECTION_ID);
     // And destroy controller related to remote device
-    DAVA::Net::NetCore::Instance()->DestroyControllerBlocked(trackId);
+    NetCore::Instance()->DestroyControllerBlocked(trackId);
 
     QString s = item->text();
     int pos = s.indexOf('!');
@@ -266,9 +299,9 @@ void DeviceListController::DisonnectDeviceInternal(QModelIndex& index)
 
 void DeviceListController::OnConnectButtonPressed()
 {
-    if (!NetCore::IsNetworkEnabled())
+    if (!DAVA::Net::NetCore::IsNetworkEnabled())
     {
-        Logger::Warning("[DeviceListController] Network is disabled in this build");
+        DAVA::Logger::Warning("[DeviceListController] Network is disabled in this build");
         return;
     }
 
@@ -287,9 +320,9 @@ void DeviceListController::OnConnectButtonPressed()
 
 void DeviceListController::OnDisconnectButtonPressed()
 {
-    if (!NetCore::IsNetworkEnabled())
+    if (!DAVA::Net::NetCore::IsNetworkEnabled())
     {
-        Logger::Warning("[DeviceListController] Network is disabled in this build");
+        DAVA::Logger::Warning("[DeviceListController] Network is disabled in this build");
         return;
     }
 
@@ -306,6 +339,9 @@ void DeviceListController::OnDisconnectButtonPressed()
 
 void DeviceListController::OnShowLogButtonPressed()
 {
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
     if (!NetCore::IsNetworkEnabled())
     {
         Logger::Warning("[DeviceListController] Network is disabled in this build");
@@ -325,10 +361,6 @@ void DeviceListController::OnShowLogButtonPressed()
         if (trackId != NetCore::INVALID_TRACK_ID)
         {
             DeviceServices services = index.data(ROLE_PEER_SERVICES).value<DeviceServices>();
-            if (services.log)
-            {
-                services.log->ShowView();
-            }
             if (services.memprof)
             {
                 services.memprof->ShowView();
@@ -337,12 +369,16 @@ void DeviceListController::OnShowLogButtonPressed()
     }
 }
 
-QStandardItem* DeviceListController::CreateDeviceItem(const Endpoint& endp, const PeerDescription& peerDescr)
+QStandardItem* DeviceListController::CreateDeviceItem(const DAVA::Net::Endpoint& endp, const DAVA::Net::PeerDescription& peerDescr)
 {
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
     // Item text in the form of <name> - <platform> - <ip address>
     // E.g., 9f5656fd - Android - 192.168.0.24
-    const QString caption = QString("%1 - %2 - %3")
-                            .arg(peerDescr.GetName().c_str())
+    const QString caption = QString("%1 - %2 - %3 - %4")
+                            .arg(peerDescr.GetAppName().c_str())
+                            .arg(peerDescr.GetDeviceName().c_str())
                             .arg(peerDescr.GetPlatformString().c_str())
                             .arg(endp.Address().ToString().c_str());
     QStandardItem* item = new QStandardItem();
@@ -461,12 +497,16 @@ void DeviceListController::DiscoverCallback(size_t buflen, const void* buffer, c
 {
     // This method is called when announce packet has arrived
 
-    // Check whether device has been already announced, check by address from which packet recieved
-    if (!AlreadyInModel(endpoint))
+    DAVA::String appName;
+    bool extracted = DAVA::Net::PeerDescription::ExtractAppName(buffer, buflen, appName);
+
+    // Check whether device+app has been already announced
+    if (extracted && !AlreadyInModel(endpoint, appName))
     {
-        PeerDescription peer;
+        DAVA::Net::PeerDescription peer;
         if (peer.Deserialize(buffer, buflen) > 0)
         {
+            DAVA::Logger::FrameworkDebug("Endpoint %s will be added to device list", endpoint.ToString().c_str());
             QStandardItem* item = CreateDeviceItem(endpoint, peer);
             model->appendRow(item);
             if (view)
@@ -478,15 +518,113 @@ void DeviceListController::DiscoverCallback(size_t buflen, const void* buffer, c
     }
 }
 
-bool DeviceListController::AlreadyInModel(const Endpoint& endp) const
+bool DeviceListController::AlreadyInModel(const DAVA::Net::Endpoint& endp, const DAVA::String& appName) const
 {
     for (int i = 0, n = model->rowCount(); i < n; ++i)
     {
         QVariant v = model->item(i)->data(ROLE_SOURCE_ADDRESS);
-        if (endp == v.value<Endpoint>())
+        QVariant p = model->item(i)->data(ROLE_PEER_DESCRIPTION);
+        if (endp == v.value<DAVA::Net::Endpoint>() && appName == p.value<DAVA::Net::PeerDescription>().GetAppName())
         {
             return true;
         }
     }
     return false;
+}
+
+void DeviceListController::DiscoverOnRange(const DAVA::Net::IPAddress& addr, const std::pair<DAVA::uint16, DAVA::uint16>& range)
+{
+    ipAddr = addr;
+    portsRange = range;
+    currentPort = portsRange.first;
+    waitingForStartIterations = 0;
+    closingPreviousDiscoverIterations = 0;
+    DiscoverOnCurrentPort();
+}
+
+void DeviceListController::DiscoverOnCurrentPort()
+{
+    using namespace DAVA;
+    using namespace DAVA::Net;
+
+    Endpoint endp(ipAddr, currentPort);
+
+    NetCore::DiscoverStartResult startResult = NetCore::Instance()->TryDiscoverDevice(endp);
+    switch (startResult)
+    {
+    case NetCore::CONTROLLER_NOT_CREATED:
+    {
+        Logger::Error("Discoverer was not created");
+        return;
+    }
+    case NetCore::CONTROLLER_NOT_STARTED_YET:
+    {
+        static uint32 MAX_WAITING_FOR_START_ITERATIONS = 2;
+        ++waitingForStartIterations;
+
+        if (waitingForStartIterations >= MAX_WAITING_FOR_START_ITERATIONS)
+        {
+            Logger::Error("Controller is not started");
+            return;
+        }
+        else
+        {
+            DiscoverOnCurrentPortLater();
+            return;
+        }
+    }
+    case NetCore::DISCOVER_STARTED:
+    {
+        DiscoverNext(START_LATER);
+        return;
+    }
+    case NetCore::CLOSING_PREVIOUS_DISCOVER:
+    {
+        static uint32 MAX_CLOSING_PREVIOUS_DISCOVER_ITERATIONS = 2;
+        ++closingPreviousDiscoverIterations;
+        if (closingPreviousDiscoverIterations >= MAX_CLOSING_PREVIOUS_DISCOVER_ITERATIONS)
+        {
+            DAVA::Logger::FrameworkDebug("Restarting discoverer");
+            DestroyDiscovererController();
+            CreateDiscovererController();
+            closingPreviousDiscoverIterations = 0;
+            DiscoverOnCurrentPortLater();
+            return;
+        }
+        else
+        {
+            DiscoverOnCurrentPortLater();
+            return;
+        }
+    }
+    default:
+    {
+        DVASSERT(false, Format("Unknown type: %u", startResult).c_str());
+        return;
+    }
+    }
+}
+
+void DeviceListController::DiscoverOnCurrentPortLater()
+{
+    const int REATTEMPT_PERIOD_MSEC = 1500;
+    QTimer::singleShot(REATTEMPT_PERIOD_MSEC, this, &DeviceListController::DiscoverOnCurrentPort);
+}
+
+void DeviceListController::DiscoverNext(DeviceListController::DiscoverStartParam param)
+{
+    ++currentPort;
+    waitingForStartIterations = 0;
+    closingPreviousDiscoverIterations = 0;
+    if (currentPort <= portsRange.second)
+    {
+        if (param == START_IMMEDIATELY)
+        {
+            DiscoverOnCurrentPort();
+        }
+        else
+        {
+            DiscoverOnCurrentPortLater();
+        }
+    }
 }

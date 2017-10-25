@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/AssetCache/CachedItemValue.h>
+#include <DavaTools/AssetCache/CachedItemValue.h>
 #include <Base/BaseTypes.h>
 #include <chrono>
 
@@ -31,7 +31,7 @@ public:
     void UpdateAccessTimestamp();
     DAVA::uint64 GetTimestamp() const;
 
-    const DAVA::AssetCache::CachedItemValue& GetValue() const;
+    DAVA::AssetCache::CachedItemValue& GetValue();
 
     bool Fetch(const DAVA::FilePath& folder);
     void Free();
@@ -53,7 +53,7 @@ inline DAVA::uint64 ServerCacheEntry::GetTimestamp() const
     return accessTimestamp;
 }
 
-inline const DAVA::AssetCache::CachedItemValue& ServerCacheEntry::GetValue() const
+inline DAVA::AssetCache::CachedItemValue& ServerCacheEntry::GetValue()
 {
     return value;
 }

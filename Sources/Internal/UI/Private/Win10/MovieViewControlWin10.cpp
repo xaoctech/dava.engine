@@ -8,6 +8,7 @@
 #include "Engine/PlatformApiWin10.h"
 #include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/RHI/rhi_Public.h"
 #include "UI/UIControlSystem.h"
 #include "Utils/Utils.h"
@@ -355,7 +356,7 @@ void MovieViewControl::SetNativePositionAndSize(const Rect& rect)
 
 Rect MovieViewControl::VirtualToWindow(const Rect& srcRect) const
 {
-    VirtualCoordinatesSystem* coordSystem = UIControlSystem::Instance()->vcs;
+    VirtualCoordinatesSystem* coordSystem = GetEngineContext()->uiControlSystem->vcs;
     return coordSystem->ConvertVirtualToInput(srcRect);
 }
 

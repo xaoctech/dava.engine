@@ -5,12 +5,13 @@
 #include <TArc/Models/RecentMenuItems.h>
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class ProjectManagerData;
 class ProjectManagerModule : public DAVA::TArc::ClientModule
 {
 public:
+    ProjectManagerModule();
     ~ProjectManagerModule();
 
 protected:
@@ -18,6 +19,8 @@ protected:
 
 private:
     void CreateActions();
+    void CreateTagsActions();
+    void RemoveTagsActions();
     void RegisterOperations();
 
     void OpenProject();
@@ -27,19 +30,23 @@ private:
     bool CloseProject();
     void ReloadSprites();
 
+    bool GetTagsEnabled();
+    void SetFilenamesTag(const DAVA::String& tag);
+
 private:
     ProjectManagerData* GetData();
 
 private:
     std::unique_ptr<RecentMenuItems> recentProjects;
     DAVA::TArc::QtConnections connections;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
     std::unique_ptr<ProjectResources> projectResources;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerModule, DAVA::TArc::ClientModule)
     {
         DAVA::ReflectionRegistrator<ProjectManagerModule>::Begin()
         .ConstructorByPointer()
+        .Field("tagsEnabled", &ProjectManagerModule::GetTagsEnabled, nullptr)
         .End();
     }
 };

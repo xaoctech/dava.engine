@@ -7,7 +7,7 @@
 namespace DAVA
 {
 class UITextField;
-class UIStaticText;
+class UITextComponent;
 class UIGeometricData;
 class Font;
 class Color;
@@ -27,6 +27,7 @@ public:
 
     TextFieldStbImpl(Window* w, UITextField* control);
     ~TextFieldStbImpl();
+    void PrepareTextComponent();
     void Initialize();
     void OwnerIsDying();
     void SetDelegate(UITextFieldDelegate*);
@@ -94,7 +95,9 @@ private:
     void OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f surfaceSize);
     void OnWindowDestroyed(Window* w);
 
-    UIStaticText* staticText = nullptr; // Control for displaying text
+    TextBlock* GetTextBlock() const;
+
+    RefPtr<UITextComponent> staticText; // Component for displaying text
     UITextField* control = nullptr; // Weak link to parent text field
     StbTextEditBridge* stb = nullptr;
     WideString text;

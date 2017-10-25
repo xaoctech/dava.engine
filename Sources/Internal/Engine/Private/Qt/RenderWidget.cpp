@@ -10,7 +10,6 @@
 #include "Debug/DVAssert.h"
 
 #include "Input/InputSystem.h"
-#include "Input/KeyboardDevice.h"
 
 #include "FileSystem/KeyedArchive.h"
 #include "Logger/Logger.h"
@@ -49,6 +48,7 @@ RenderWidget::RenderWidget(IWindowDelegate* widgetDelegate, uint32 width, uint32
 #endif
     }
 
+    setFocusProxy(renderWidgetImpl);
     QVBoxLayout* boxLayout = new QVBoxLayout(this);
     boxLayout->setSpacing(0);
     boxLayout->setMargin(0);

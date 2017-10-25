@@ -8,7 +8,6 @@
 #include <TArc/Core/OperationInvoker.h>
 
 #include <Base/Result.h>
-#include <Preferences/PreferencesRegistrator.h>
 
 #include <QObject>
 #include <QVector>
@@ -61,7 +60,6 @@ public:
     void SetBiDiSupport(bool support);
     void SetGlobalStyleClasses(const QString& classesStr);
 
-    DAVA::Vector<ProjectData::ResDir> GetLibraryPackages() const;
     const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& GetPrototypes() const;
 
 private:

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "TArc/DataProcessing/DataWrapper.h"
+#include "TArc/DataProcessing/Common.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Functional/Function.h>
 #include <Base/Result.h>
@@ -9,7 +11,6 @@
 
 #include <Qt>
 #include <QUrl>
-#include <QString>
 #include <QFlags>
 #include <QFileDialog>
 #include <QPointer>
@@ -56,6 +57,7 @@ extern const QString menuFile;
 extern const QString menuEdit;
 extern const QString menuView;
 extern const QString menuHelp;
+extern const QString menuFind;
 }
 
 class ActionPlacementInfo
@@ -78,12 +80,36 @@ struct DockPanelInfo
     //path where action for change dock visibility will be placed
     ActionPlacementInfo actionPlacementInfo;
     bool tabbed = true;
+    bool ensureVisible = false; // force make panel visible in its dock area on create
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
+
+    enum class Fields
+    {
+        Title, // QString
+        IsActive // bool
+    };
+    Map<Fields, FieldDescriptor> descriptors;
 };
 
 struct CentralPanelInfo
 {
 };
+
+class IGeometryProcessor
+{
+public:
+    // Result is a rectangle, where "rectangle.topLeft" point is a pivot for widget and
+    // "rectangle.size" is a new size for widget
+    virtual QRect GetWidgetGeometry(QWidget* parent, QWidget* content) const = 0;
+};
+
+struct OverCentralPanelInfo
+{
+    std::shared_ptr<IGeometryProcessor> geometryProcessor;
+};
+
+void ShowOverCentralPanel(QWidget* view);
+void HideOverCentralPanel(QWidget* view);
 
 class PanelKey
 {
@@ -92,11 +118,13 @@ public:
     {
         DockPanel,
         CentralPanel,
+        OverCentralPanel,
         TypesCount
     };
 
     PanelKey(const QString& viewName, const DockPanelInfo& info);
     PanelKey(const QString& viewName, const CentralPanelInfo& info);
+    PanelKey(const QString& viewName, const OverCentralPanelInfo& info);
 
     const QString& GetViewName() const;
     Type GetType() const;
@@ -116,6 +144,7 @@ struct WaitDialogParams
     uint32 min = 0; // if min and max value equal 0, than progress bar will be infinite
     uint32 max = 0;
     bool needProgressBar = true;
+    bool cancelable = false;
 };
 
 class WaitHandle
@@ -128,6 +157,8 @@ public:
     virtual void SetMessage(const QString& msg) = 0;
     virtual void SetRange(uint32 min, uint32 max) = 0;
     virtual void SetProgressValue(uint32 progress) = 0;
+    virtual bool WasCanceled() const = 0;
+
     virtual void Update() = 0;
 };
 
@@ -209,12 +240,13 @@ public:
 
     virtual void AddView(const WindowKey& windowKey, const PanelKey& panelKey, QWidget* widget) = 0;
     virtual void AddAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, QAction* action) = 0;
-    virtual void RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement) = 0;
+    virtual void RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName) = 0;
 
     virtual void ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration = 0) = 0;
     virtual void ClearMessage(const WindowKey& windowKey) = 0;
+    virtual int ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog) = 0;
     virtual ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) = 0;
-    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) = 0;
+    virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const = 0;
 
     virtual QString GetOpenFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;
     virtual QString GetSaveFileName(const WindowKey& windowKey, const FileDialogParams& params = FileDialogParams()) = 0;

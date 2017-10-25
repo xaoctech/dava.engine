@@ -6,22 +6,27 @@
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/StaticBodyComponent.h>
 #include <Physics/DynamicBodyComponent.h>
-#include <Physics/CollisionComponent.h>
+#include <Physics/BoxShapeComponent.h>
+#include <Physics/CapsuleShapeComponent.h>
+#include <Physics/SphereShapeComponent.h>
+#include <Physics/PlaneShapeComponent.h>
+#include "Physics/ConvexHullShapeComponent.h"
+#include <Physics/MeshShapeComponent.h>
+#include <Physics/HeightFieldShapeComponent.h>
+#include <Physics/BoxCharacterControllerComponent.h>
+#include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/WASDPhysicsControllerComponent.h>
 #endif
 
 using namespace DAVA;
 
 void DAVA::RegisterDAVAClasses()
 {
-    //this code do nothing. Needed to compiler generate code from this cpp file
+    // this code do nothing. Needed to compiler generate code from this cpp file
     Logger* log = GetEngineContext()->logger;
     if (log)
         log->Log(Logger::LEVEL__DISABLE, "");
 }
-
-#if !defined(__DAVAENGINE_ANDROID__)
-REGISTER_CLASS(TheoraPlayer);
-#endif
 
 REGISTER_CLASS(BaseObject);
 REGISTER_CLASS(PolygonGroup);
@@ -85,10 +90,21 @@ REGISTER_CLASS(PathComponent);
 REGISTER_CLASS(WASDControllerComponent);
 REGISTER_CLASS(RotationControllerComponent);
 REGISTER_CLASS(SnapToLandscapeControllerComponent);
+REGISTER_CLASS(GeoDecalComponent);
 REGISTER_CLASS(SlotComponent);
+REGISTER_CLASS(TextComponent);
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 REGISTER_CLASS(StaticBodyComponent);
 REGISTER_CLASS(DynamicBodyComponent);
-REGISTER_CLASS(CollisionComponent);
+REGISTER_CLASS(BoxShapeComponent);
+REGISTER_CLASS(CapsuleShapeComponent);
+REGISTER_CLASS(SphereShapeComponent);
+REGISTER_CLASS(PlaneShapeComponent);
+REGISTER_CLASS(ConvexHullShapeComponent);
+REGISTER_CLASS(MeshShapeComponent);
+REGISTER_CLASS(HeightFieldShapeComponent);
+REGISTER_CLASS(BoxCharacterControllerComponent);
+REGISTER_CLASS(CapsuleCharacterControllerComponent);
+REGISTER_CLASS(WASDPhysicsControllerComponent);
 #endif

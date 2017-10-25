@@ -2,7 +2,7 @@
     "platforms": [
         {
             "name": "Windows",
-            "value": "$CMAKE_PATH -G \"Visual Studio 12%1\" $SOURCE_PATH %2",
+            "value": "$CMAKE_PATH -G \"Visual Studio 15%1\" $SOURCE_PATH %2",
             "defaults": [
                 "",
                 ""
@@ -53,7 +53,7 @@
         },
         {
             "name": "Windows 10",
-            "value": "$DAVA_FRAMEWORK_PATH/Programs/WinStoreCMake/mk_project2.bat -G \"Visual Studio 14 2015\" -DCMAKE_TOOLCHAIN_FILE=$DAVA_FRAMEWORK_PATH/Sources/CMake/Toolchains/win_uap.toolchain.cmake %1 $SOURCE_PATH %2",
+            "value": "$DAVA_FRAMEWORK_PATH/Bin/CMakeWin10/bin/cmake.exe -G \"Visual Studio 14 2015\" -DCMAKE_TOOLCHAIN_FILE=$DAVA_FRAMEWORK_PATH/Sources/CMake/Toolchains/win_uap.toolchain.cmake %1 $SOURCE_PATH %2",
             "defaults": [
                 "",
                 ""

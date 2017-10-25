@@ -7,6 +7,7 @@ class FileManager;
 class UrlsHolder;
 class BAManagerClient;
 class ConfigRefresher;
+struct ApplicationContext;
 
 class PreferencesDialog : public QDialog, private Ui::PreferencesDialog
 {
@@ -14,6 +15,10 @@ class PreferencesDialog : public QDialog, private Ui::PreferencesDialog
 
 public:
     static void ShowPreferencesDialog(FileManager* fileManager, UrlsHolder* configDownloader, ConfigRefresher* configRefresher, QWidget* parent = nullptr);
+
+    static void SavePreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
+    static void LoadPreferences(ApplicationContext* context);
+    static void LoadPreferences(ApplicationContext* context, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
 
 private slots:
     void OnButtonCopyURLClicked();
@@ -33,6 +38,3 @@ private:
     QMap<UrlsHolder::eURLType, QLabel*> urlWidgets;
     QMap<UrlsHolder::eURLType, QPushButton*> copyURLWidgets;
 };
-
-void SavePreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
-void LoadPreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* configRefresher);

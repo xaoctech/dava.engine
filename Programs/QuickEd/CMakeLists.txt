@@ -23,20 +23,22 @@ if (DEPLOY)
 endif()
 
 find_package( QT5 REQUIRED )
-find_package( DavaTools REQUIRED )
-find_package( QtHelpers REQUIRED )
 
-find_package( DavaFramework REQUIRED COMPONENTS "Sound"
-                                                "SpineModule"
-                                                DAVA_PLATFORM_QT 
-                                                DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME 
-                                                DAVA_DISABLE_AUTOTESTS 
-                                                DAVA_USE_RENDERSTATS )
+find_dava_module( DavaTools )
+find_dava_module( QtHelpers )
+find_dava_module( QtTools )
+find_dava_module( DocDirSetup )
+find_dava_module( Spine )
+find_dava_module( TArc )
+find_dava_module( RemoteTool )
 
-find_package( QtTools REQUIRED )
-find_package( TArc REQUIRED )
-find_package( RemoteTool REQUIRED )
+list( APPEND DAVA_COMPONENTS Sound )
+list( APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT )
+list( APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
+list( APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
+list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
+find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)

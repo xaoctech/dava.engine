@@ -38,6 +38,7 @@ public:
 
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
+    void PrepareForRemove() override;
 
     bool HasCustomClonedAddading(DAVA::Entity* entityToClone) const override;
     void PerformAdding(DAVA::Entity* sourceEntity, DAVA::Entity* clonedEntity) override;

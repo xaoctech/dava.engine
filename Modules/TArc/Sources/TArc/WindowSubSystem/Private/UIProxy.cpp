@@ -47,10 +47,10 @@ void UIProxy::AddAction(const WindowKey& windowKey, const ActionPlacementInfo& p
     globalUI->AddAction(windowKey, placement, action);
 }
 
-void UIProxy::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement)
+void UIProxy::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName)
 {
     Guard g(this);
-    globalUI->RemoveAction(windowKey, placement);
+    globalUI->RemoveAction(windowKey, placement, actionName);
 }
 
 void UIProxy::ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration /*= 0*/)
@@ -58,7 +58,7 @@ void UIProxy::ShowMessage(const WindowKey& windowKey, const QString& message, ui
     globalUI->ShowMessage(windowKey, message, duration);
 }
 
-void UIProxy::ShowNotification(const WindowKey& windowKey, const NotificationParams& params)
+void UIProxy::ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const
 {
     globalUI->ShowNotification(windowKey, params);
 }
@@ -66,6 +66,11 @@ void UIProxy::ShowNotification(const WindowKey& windowKey, const NotificationPar
 void UIProxy::ClearMessage(const WindowKey& windowKey)
 {
     globalUI->ClearMessage(windowKey);
+}
+
+int UIProxy::ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog)
+{
+    return globalUI->ShowModalDialog(parentWindow, dialog);
 }
 
 ModalMessageParams::Button UIProxy::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)
@@ -122,6 +127,11 @@ void UIProxy::UnlockModule()
 void UIProxy::SetCurrentModule(ClientModule* /*module*/)
 {
     DVASSERT(false);
+}
+
+UI* UIProxy::GetGlobalUI()
+{
+    return globalUI;
 }
 
 } // namespace TArc

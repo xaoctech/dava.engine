@@ -38,7 +38,7 @@ struct AnimatedPropertySetter
     void Animate(UIControl* control, const Reflection& ref, const T& startValue, const T& endValue) const
     {
         const int32 track = PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex;
-        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(AnimationManager::Instance()->FindPlayingAnimation(control, track));
+        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(GetEngineContext()->animationManager->FindPlayingAnimation(control, track));
 
         if (!currentAnimation || currentAnimation->GetEndValue() != endValue)
         {
@@ -384,15 +384,19 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
     if (descr.group->componentType == nullptr)
     {
-        Reflection ref = Reflection::Create(ReflectedObject(control));
-        ref = ref.GetField(descr.field->name);
-        if (ref.IsValid())
+        ReflectedObject refObject(control);
+        if (TypeInheritance::CanDownCast(refObject.GetReflectedType()->GetType(), descr.group->refType->GetType()))
         {
-            action(control, ref);
-
-            if (listener != nullptr)
+            Reflection ref = Reflection::Create(refObject);
+            ref = ref.GetField(descr.field->name);
+            if (ref.IsValid())
             {
-                listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+                action(control, ref);
+
+                if (listener != nullptr)
+                {
+                    listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+                }
             }
         }
     }

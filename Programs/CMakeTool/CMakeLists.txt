@@ -7,18 +7,14 @@ project               ( CMakeTool )
 set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
 
 include               ( CMake-common )
+include               ( ToolsHelpers )
 
 find_package          ( QT5 REQUIRED )
-find_package          ( QtHelpers  REQUIRED )
+find_dava_module      ( QtHelpers )
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories   (.)
 include_directories   ( "Classes" )
-
-if ( WIN32 )
-    set( LIBRARIES_RELEASE  "msvcrt.lib" )
-    set( LIBRARIES_DEBUG    "msvcrtd.lib" )
-endif()
 
 file                          ( GLOB RCC_LIST "DataQt/*.qrc" )
 qt5_add_resources             ( RCC_APP_SRCS  ${RCC_LIST} )
@@ -37,3 +33,7 @@ ASSERT(QT_ACTUAL_PATH "Qt path was not resolved")
 set( ADDED_BINARY_DIR     ${QT_ACTUAL_PATH}/bin )
 
 setup_main_executable()
+
+if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
+        copy_libraries_subset_for_qt_tools()
+endif()

@@ -6868,21 +6868,23 @@ fail:
     return SWIG_arg;
 }
 
-
-static int _wrap_AutotestingSystemLua_PressEscape(lua_State* L)
+static int _wrap_AutotestingSystemLua_EmulatePressKey(lua_State* L)
 {
     int SWIG_arg = 0;
     DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
+    DAVA::uint32 arg2;
 
-    SWIG_check_num_args("DAVA::AutotestingSystemLua::PressEscape", 1, 1)
-    if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::PressEscape", 1, "DAVA::AutotestingSystemLua *");
+    SWIG_check_num_args("DAVA::AutotestingSystemLua::EmulatePressKey", 2, 2)
+        if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey", 1, "DAVA::AutotestingSystemLua *");
+    if (!lua_isnumber(L, 2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::EmulatePressKey", 2, "DAVA::uint32");
 
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&arg1, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)))
     {
-        SWIG_fail_ptr("AutotestingSystemLua_PressEscape", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
+        SWIG_fail_ptr("AutotestingSystemLua_EmulatePressKey", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
     }
 
-    (arg1)->PressEscape();
+    arg2 = (DAVA::uint32)lua_tonumber(L, 2);
+    (arg1)->EmulatePressKey(arg2);
 
     return SWIG_arg;
 
@@ -7079,6 +7081,41 @@ static int _wrap_AutotestingSystemLua_GetText(lua_State* L)
     }
 
     result = (arg1)->GetText(arg2);
+    lua_pushlstring(L, (&result)->data(), (&result)->size());
+    SWIG_arg++;
+    return SWIG_arg;
+
+    if (0)
+        SWIG_fail;
+
+fail:
+    lua_error(L);
+    return SWIG_arg;
+}
+
+static int _wrap_AutotestingSystemLua_GetRichText(lua_State* L)
+{
+    int SWIG_arg = 0;
+    DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
+    DAVA::UIControl* arg2 = (DAVA::UIControl*)0;
+    DAVA::String result;
+
+    SWIG_check_num_args("DAVA::AutotestingSystemLua::GetRichText", 2, 2)
+        if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetRichText", 1, "DAVA::AutotestingSystemLua *");
+    if (!SWIG_isptrtype(L, 2))
+        SWIG_fail_arg("DAVA::AutotestingSystemLua::GetRichText", 2, "DAVA::UIControl *");
+
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&arg1, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)))
+    {
+        SWIG_fail_ptr("AutotestingSystemLua_GetRichText", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
+    }
+
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 2, (void**)&arg2, SWIGTYPE_p_DAVA__UIControl, 0)))
+    {
+        SWIG_fail_ptr("AutotestingSystemLua_GetRichText", 2, SWIGTYPE_p_DAVA__UIControl);
+    }
+
+    result = (arg1)->GetRichText(arg2);
     lua_pushlstring(L, (&result)->data(), (&result)->size());
     SWIG_arg++;
     return SWIG_arg;
@@ -7559,12 +7596,13 @@ static swig_lua_method swig_AutotestingSystemLua_methods[] = {
     { "KeyPress", _wrap_AutotestingSystemLua_KeyPress },
     { "ProcessInput", _wrap_AutotestingSystemLua_ProcessInput },
     { "ClickSystemBack", _wrap_AutotestingSystemLua_ClickSystemBack },
-    { "PressEscape", _wrap_AutotestingSystemLua_PressEscape },
+    { "EmulatePressKey", _wrap_AutotestingSystemLua_EmulatePressKey },
     { "SetText", _wrap_AutotestingSystemLua_SetText },
     { "CheckText", _wrap_AutotestingSystemLua_CheckText },
     { "GetTaggedClass", _wrap_AutotestingSystemLua_GetTaggedClass },
     { "CheckMsgText", _wrap_AutotestingSystemLua_CheckMsgText },
     { "GetText", _wrap_AutotestingSystemLua_GetText },
+    { "GetRichText", _wrap_AutotestingSystemLua_GetRichText },
     { "GetTextColor", _wrap_AutotestingSystemLua_GetTextColor },
     { "GetServerQueueState", _wrap_AutotestingSystemLua_GetServerQueueState },
     { "SetServerQueueState", _wrap_AutotestingSystemLua_SetServerQueueState },

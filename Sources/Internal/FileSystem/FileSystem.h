@@ -134,7 +134,7 @@ public:
      */
     virtual const FilePath GetPublicDocumentsPath();
 
-#if defined(__DAVAENGINE_APPLE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
     /**
         \brief Function to retrieve user’s home path
         \returns user’s home path
@@ -291,6 +291,9 @@ public:
 
     FilePath GetTempDirectoryPath() const;
 
+    void SetFilenamesTag(const String& newTag);
+    const String& GetFilenamesTag() const;
+
 private:
     bool HasLineEnding(File* f);
 
@@ -318,6 +321,8 @@ private:
     mutable Mutex accessArchiveMap;
     UnorderedMap<String, ResourceArchiveItem> resArchiveMap;
     Map<String, void*> lockedFileHandles;
+
+    String filenamesTag;
 
     friend class File;
 };

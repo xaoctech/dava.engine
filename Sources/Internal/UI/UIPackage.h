@@ -1,7 +1,8 @@
-#ifndef __DAVAENGINE_UI_PACKAGE_H__
-#define __DAVAENGINE_UI_PACKAGE_H__
+#pragma once
 
 #include "Base/BaseObject.h"
+#include "Base/RefPtr.h"
+#include "Base/RefPtrUtils.h"
 
 namespace DAVA
 {
@@ -12,23 +13,25 @@ class UIControlPackageContext;
 class UIPackage : public BaseObject
 {
 public:
-    static const int32 CURRENT_VERSION = 17;
+    static const int32 CURRENT_VERSION = 19;
 
     UIPackage();
 
-protected:
-    ~UIPackage();
-
-public:
     const Vector<UIControl*>& GetPrototypes() const;
     UIControl* GetPrototype(const String& name) const;
     UIControl* GetPrototype(const FastName& name) const;
+    RefPtr<UIControl> ExtractPrototype(const String& name);
+    RefPtr<UIControl> ExtractPrototype(const FastName& name);
+
     void AddPrototype(UIControl* prototype);
     void RemovePrototype(UIControl* control);
 
     const Vector<UIControl*>& GetControls() const;
     UIControl* GetControl(const String& name) const;
     UIControl* GetControl(const FastName& name) const;
+    RefPtr<UIControl> ExtractControl(const String& name);
+    RefPtr<UIControl> ExtractControl(const FastName& name);
+
     void AddControl(UIControl* control);
     void RemoveControl(UIControl* control);
 
@@ -58,6 +61,33 @@ public:
         return DynamicTypeCheck<C>(GetPrototype(name));
     }
 
+    template <class C>
+    RefPtr<C> ExtractControl(const String& name)
+    {
+        return ExtractControl<C>(FastName(name));
+    }
+
+    template <class C>
+    RefPtr<C> ExtractControl(const FastName& name)
+    {
+        return DynamicTypeCheckRef<C>(ExtractControl(name));
+    }
+
+    template <class C>
+    RefPtr<C> ExtractPrototype(const String& name)
+    {
+        return ExtractPrototype<C>(FastName(name));
+    }
+
+    template <class C>
+    RefPtr<C> ExtractPrototype(const FastName& name)
+    {
+        return DynamicTypeCheckRef<C>(ExtractPrototype(name));
+    }
+
+protected:
+    ~UIPackage();
+
 private:
     Vector<UIControl*> prototypes;
     Vector<UIControl*> controls;
@@ -65,4 +95,3 @@ private:
     UIControlPackageContext* controlPackageContext;
 };
 }
-#endif // __DAVAENGINE_UI_PACKAGE_H__

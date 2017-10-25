@@ -9,13 +9,15 @@
 #include "TArc/WindowSubSystem/Private/UIProxy.h"
 #include "TArc/Utils/AssertGuard.h"
 #include "TArc/Utils/RhiEmptyFrame.h"
-#include "TArc/Utils/Private/CrashDumpHandler.h"
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/PluginsManager/TArcPluginsManager.h"
 #include "TArc/PluginsManager/TArcPlugin.h"
+#include "TArc/Utils/QtDelayedExecutor.h"
+#include "TArc/Qt/QtIcon.h"
 
-#include "QtTools/Utils/QtDelayedExecutor.h"
+
+#include <QtHelpers/CrashDumpHandler.h>
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"
@@ -37,7 +39,6 @@
 #include <QApplication>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
-#include <QIcon>
 #include <QCloseEvent>
 
 namespace DAVA
@@ -81,11 +82,15 @@ public:
         return engine.IsConsoleMode();
     }
 
-    virtual void OnLoopStarted()
+    void PostInit()
     {
         FileSystem* fileSystem = GetEngineContext()->fileSystem;
         DVASSERT(fileSystem != nullptr);
         propertiesHolder.reset(new PropertiesHolder("TArcProperties", fileSystem->GetCurrentDocumentsDirectory()));
+    }
+
+    virtual void OnLoopStarted()
+    {
     }
 
     virtual void OnLoopStopped()
@@ -188,6 +193,11 @@ public:
     {
         DVASSERT(propertiesHolder != nullptr);
         return propertiesHolder->CreateSubHolder(nodeName);
+    }
+
+    const PropertiesHolder& GetPropertiesHolder() override
+    {
+        return *propertiesHolder.get();
     }
 
     const EngineContext* GetEngineContext() override
@@ -518,7 +528,7 @@ public:
         Impl::OnLoopStarted();
 
         PlatformApi::Qt::GetApplication()->setWindowIcon(QIcon(":/icons/appIcon.ico"));
-        uiManager.reset(new UIManager(this, propertiesHolder->CreateSubHolder("UIManager")));
+        uiManager.reset(new UIManager(this, this, propertiesHolder->CreateSubHolder("UIManager")));
         DVASSERT(controllerModule != nullptr, "Controller Module hasn't been registered");
 
         LoadPluginModules<ClientModule>();
@@ -778,11 +788,12 @@ public:
             ModalMessageParams::Button resultButton = uiManager->ShowModalMessage(key, params);
             if (resultButton == ModalMessageParams::SaveAll)
             {
-                controllerModule->SaveOnWindowClose(key);
+                result = controllerModule->SaveOnWindowClose(key);
             }
             else if (resultButton == ModalMessageParams::NoToAll)
             {
                 controllerModule->RestoreOnWindowClose(key);
+                result = true;
             }
             else
             {
@@ -795,10 +806,14 @@ public:
 
     void OnWindowClosed(const WindowKey& key) override
     {
-        std::for_each(modules.begin(), modules.end(), [&key](std::unique_ptr<ClientModule>& module)
-                      {
-                          module->OnWindowClosed(key);
-                      });
+        controllerModule->OnWindowClosed(key);
+
+        std::for_each(modules.begin(), modules.end(), [&key, this](std::unique_ptr<ClientModule>& module) {
+            if (module.get() != controllerModule)
+            {
+                module->OnWindowClosed(key);
+            }
+        });
     }
 
     bool HasControllerModule() const
@@ -958,6 +973,11 @@ void Core::SetInvokeListener(OperationInvoker* proxyInvoker)
     GuiImpl* guiImpl = dynamic_cast<GuiImpl*>(impl.get());
     DVASSERT(guiImpl != nullptr);
     guiImpl->SetInvokeListener(proxyInvoker);
+}
+
+void Core::PostInit()
+{
+    impl->PostInit();
 }
 
 void Core::InitPluginsManager(const String& applicationName, const String& pluginsFolder)

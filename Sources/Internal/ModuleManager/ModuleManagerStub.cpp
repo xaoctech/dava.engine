@@ -4,7 +4,7 @@
 #if defined(__DAVAENGINE_ANDROID__)
 // use it hack for now because  NDK build not support generating
 // ModuleManager like CMake
-#include "../../Modules/Spine/Sources/SpineModule.h"
+#include "Spine/SpineModule.h"
 #endif
 
 namespace DAVA

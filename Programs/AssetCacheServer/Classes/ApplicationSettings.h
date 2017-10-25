@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/AssetCache/AssetCacheConstants.h>
+#include <DavaTools/AssetCache/AssetCacheConstants.h>
 
 #include "FileSystem/FilePath.h"
 #include "Network/Base/Endpoint.h"
@@ -121,7 +121,11 @@ public:
     void Save() const;
     void Load();
 
+    void LoadFromOldPath(); // todo: remove some versions later
+
     bool IsFirstLaunch() const;
+
+    static DAVA::FilePath GetDefaultFolder();
 
     const DAVA::FilePath& GetFolder() const;
     void SetFolder(const DAVA::FilePath& folder);
@@ -176,6 +180,9 @@ public:
     DAVA::List<RemoteServerParams> GetEnabledRemoteServers();
     EnabledRemote GetEnabledRemote();
     void DisableRemote();
+
+    void DumpStorageSettings();
+    void DumpSharingSettings();
 
 signals:
     void SettingsUpdated(const ApplicationSettings* settings) const;

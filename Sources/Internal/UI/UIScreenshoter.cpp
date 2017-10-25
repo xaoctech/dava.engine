@@ -1,6 +1,8 @@
 #include "UIScreenshoter.h"
-#include "Render/RenderHelper.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/RenderHelper.h"
+#include "Render/Texture.h"
 #include "Scene3D/Scene.h"
 #include "UI/UI3DView.h"
 #include "UI/UIControlSystem.h"
@@ -46,7 +48,7 @@ void UIScreenshoter::OnFrame()
 
 RefPtr<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFormat format, bool clearAlpha, bool prepareControl)
 {
-    const Vector2 size(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(control->GetSize()));
+    const Vector2 size(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(control->GetSize()));
     RefPtr<Texture> screenshot(Texture::CreateFBO(static_cast<int32>(size.dx), static_cast<int32>(size.dy), format, true));
 
     MakeScreenshotInternal(control, screenshot.Get(), nullptr, clearAlpha, prepareControl);
@@ -56,7 +58,7 @@ RefPtr<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFo
 
 RefPtr<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFormat format, Function<void(Texture*)> callback, bool clearAlpha, bool prepareControl)
 {
-    const Vector2 size(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysical(control->GetSize()));
+    const Vector2 size(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(control->GetSize()));
     RefPtr<Texture> screenshot(Texture::CreateFBO(static_cast<int32>(size.dx), static_cast<int32>(size.dy), format, true));
 
     MakeScreenshotInternal(control, screenshot.Get(), callback, clearAlpha, prepareControl);
@@ -110,7 +112,7 @@ void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Texture* screens
     desc.transformVirtualToPhysical = true;
 
     RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
-    UIControlSystem* controlSystem = UIControlSystem::Instance();
+    UIControlSystem* controlSystem = GetEngineContext()->uiControlSystem;
     if (prepareControl)
     {
         controlSystem->ForceUpdateControl(0.0f, control);
