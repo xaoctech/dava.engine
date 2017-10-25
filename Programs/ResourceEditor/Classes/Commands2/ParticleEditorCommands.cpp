@@ -129,6 +129,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
                                       float32 frameOverLifeFPS,
                                       bool randomFrameOnStart,
                                       bool loopSpriteAnimation,
+                                      bool useThreePointGradient,
                                       RefPtr<PropertyLine<float32>> animSpeedOverLife,
 
                                       float32 pivotPointX,
@@ -168,6 +169,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
     this->gradientColorForWhite = gradientColorForWhite;
     this->gradientColorForBlack = gradientColorForBlack;
     this->gradientColorForMiddle = gradientColorForMiddle;
+    this->useThreePointGradient = useThreePointGradient;
 
     this->startTime = startTime;
     this->endTime = endTime;
@@ -218,6 +220,7 @@ void CommandUpdateParticleLayer::Redo()
     PropertyLineHelper::SetValueLine(layer->gradientColorForWhite, gradientColorForWhite);
     PropertyLineHelper::SetValueLine(layer->gradientColorForBlack, gradientColorForBlack);
     PropertyLineHelper::SetValueLine(layer->gradientColorForMiddle, gradientColorForMiddle);
+    layer->useThreePointGradient = useThreePointGradient;
 
     layer->frameOverLifeEnabled = frameOverLifeEnabled;
     layer->frameOverLifeFPS = frameOverLifeFPS;

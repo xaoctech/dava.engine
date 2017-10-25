@@ -234,6 +234,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->inheritPosition = inheritPosition;
     dstLayer->stripeInheritPositionOnlyForBaseVertex = stripeInheritPositionOnlyForBaseVertex;
     dstLayer->usePerspectiveMapping = usePerspectiveMapping;
+    dstLayer->useThreePointGradient = useThreePointGradient;
     dstLayer->startTime = startTime;
     dstLayer->endTime = endTime;
 
@@ -882,6 +883,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (usePerspectiveMappingNode)
         usePerspectiveMapping = usePerspectiveMappingNode->AsBool();
 
+    const YamlNode* useThreePointGradientNode = node->Get("useThreePointGradient");
+    if (useThreePointGradientNode)
+        useThreePointGradient = useThreePointGradientNode->AsBool();
+
     // Load the Inner Emitter parameters.
     const YamlNode* innerEmitterPathNode = node->Get("innerEmitterPath");
     if ((type == TYPE_SUPEREMITTER_PARTICLES) && innerEmitterPathNode)
@@ -1061,6 +1066,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Set("inheritPosition", inheritPosition);
     layerNode->Set("stripeInheritPositionForBase", stripeInheritPositionOnlyForBaseVertex);
     layerNode->Set("usePerspectiveMapping", usePerspectiveMapping);
+
+    layerNode->Set("useThreePointGradient", useThreePointGradient);
 
     layerNode->Set("particleOrientation", particleOrientation);
 

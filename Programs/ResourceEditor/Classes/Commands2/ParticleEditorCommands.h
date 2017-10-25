@@ -269,6 +269,7 @@ public:
               DAVA::float32 frameOverLifeFPS,
               bool randomFrameOnStart,
               bool loopSpriteAnimation,
+              bool useThreePointGradient,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> animSpeedOverLife,
 
               DAVA::float32 pivotPointX,
@@ -324,6 +325,7 @@ protected:
     DAVA::float32 frameOverLifeFPS;
     bool randomFrameOnStart;
     bool loopSpriteAnimation;
+    bool useThreePointGradient;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> animSpeedOverLife;
 
     DAVA::float32 pivotPointX;

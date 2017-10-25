@@ -342,6 +342,12 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     alphaOverLifeTimeLine = new TimeLineWidget(this);
     InitWidget(alphaOverLifeTimeLine);
 
+    useThreePointGradientBox = new QCheckBox("Use three point gradient");
+    mainBox->addWidget(useThreePointGradientBox);
+    connect(useThreePointGradientBox,
+        SIGNAL(stateChanged(int)),
+        this,
+        SLOT(OnNoisePropertiesChanged()));
     gradientColorForWhite = new GradientPickerWidget(this);
     InitWidget(gradientColorForWhite);
     gradientColorForBlack = new GradientPickerWidget(this);
@@ -666,6 +672,7 @@ void EmitterLayerWidget::OnValueChanged()
                          static_cast<DAVA::float32>(frameOverlifeFPSSpin->value()),
                          randomFrameOnStartCheckBox->isChecked(),
                          loopSpriteAnimationCheckBox->isChecked(),
+                         useThreePointGradientBox->isChecked(),
                          propAnimSpeedOverLife.GetPropLine(),
                          static_cast<DAVA::float32>(pivotPointXSpinBox->value()),
                          static_cast<DAVA::float32>(pivotPointYSpinBox->value()));
@@ -1988,9 +1995,9 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
     colorOverLifeGradient->setVisible(!isSuperemitter);
     alphaOverLifeTimeLine->setVisible(!isSuperemitter);
 
-    gradientColorForWhite->setVisible(!isSuperemitter);
-    gradientColorForBlack->setVisible(!isSuperemitter);
-    gradientColorForMiddle->setVisible(!isSuperemitter);
+    gradientColorForWhite->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientColorForBlack->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientColorForMiddle->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
 
     frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
     frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);
