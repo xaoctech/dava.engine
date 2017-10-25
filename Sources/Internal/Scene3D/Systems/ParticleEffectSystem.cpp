@@ -526,14 +526,14 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         static Matrix4 invWorld;
         if (group.head)
         {
-            simplifiedForcesCount = static_cast<int32>(group.layer->forcesSimplified.size());
+            simplifiedForcesCount = static_cast<int32>(group.layer->GetSimplifiedParticleForces().size());
             if (simplifiedForcesCount)
             {
                 currSimplifiedForceValues.resize(simplifiedForcesCount);
                 for (int32 i = 0; i < simplifiedForcesCount; ++i)
                 {
-                    if (group.layer->forcesSimplified[i]->force)
-                        currSimplifiedForceValues[i] = group.layer->forcesSimplified[i]->force->GetValue(currLoopTime);
+                    if (group.layer->GetSimplifiedParticleForces()[i]->force)
+                        currSimplifiedForceValues[i] = group.layer->GetSimplifiedParticleForces()[i]->force->GetValue(currLoopTime);
                     else
                         currSimplifiedForceValues[i] = Vector3(0, 0, 0);
                 }
@@ -749,7 +749,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             Vector3 acceleration;
             for (int32 i = 0; i < forcesCount; ++i)
             {
-                acceleration += (layer->forcesSimplified[i]->forceOverLife) ? (currForceValues[i] * layer->forcesSimplified[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+                acceleration += (layer->GetSimplifiedParticleForces()[i]->forceOverLife) ? (currForceValues[i] * layer->GetSimplifiedParticleForces()[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
             }
             nodeIter->speed += acceleration * dt;
         }
@@ -941,7 +941,7 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     Vector3 acceleration(0.0f, 0.0f, 0.0f);
     for (int32 i = 0; i < simplifiedForcesCount; ++i)
     {
-        acceleration += (group.layer->forcesSimplified[i]->forceOverLife) ? (currSimplifiedForceValues[i] * group.layer->forcesSimplified[i]->forceOverLife->GetValue(overLife)) : currSimplifiedForceValues[i];
+        acceleration += (group.layer->GetSimplifiedParticleForces()[i]->forceOverLife) ? (currSimplifiedForceValues[i] * group.layer->GetSimplifiedParticleForces()[i]->forceOverLife->GetValue(overLife)) : currSimplifiedForceValues[i];
     }
 
     for (uint32 i = 0; i < worldAlignForcesCount; ++i)

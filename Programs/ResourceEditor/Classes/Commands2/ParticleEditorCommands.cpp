@@ -343,8 +343,8 @@ void CommandUpdateParticleSimplifiedForce::Init(RefPtr<PropertyLine<Vector3>> fo
 
 void CommandUpdateParticleSimplifiedForce::Redo()
 {
-    layer->forcesSimplified[forceId]->force = force;
-    layer->forcesSimplified[forceId]->forceOverLife = forcesOverLife;
+    layer->GetSimplifiedParticleForces()[forceId]->force = force;
+    layer->GetSimplifiedParticleForces()[forceId]->forceOverLife = forcesOverLife;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,7 @@ inline const DAVA::Vector<DAVA::ParticleForce*>& GetForceVector(DAVA::ParticleFo
 template <>
 inline const DAVA::Vector<DAVA::ParticleForceSimplified*>& GetForceVector(DAVA::ParticleForceSimplified* force, DAVA::ParticleLayer* layer)
 {
-    return layer->forcesSimplified;
+    return layer->GetSimplifiedParticleForces();
 }
 }
 

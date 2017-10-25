@@ -850,7 +850,7 @@ void ParticleEffectPropertiesWidget::BuildEffectTree()
             data.externalParamId = 0;
 
             // forces
-            for (auto force : layer->forcesSimplified)
+            for (auto force : layer->GetSimplifiedParticleForces())
             {
                 data.force = force;
                 QTreeWidgetItem* forceItem = new QTreeWidgetItem(layerItem, TreeItemTypeForce);

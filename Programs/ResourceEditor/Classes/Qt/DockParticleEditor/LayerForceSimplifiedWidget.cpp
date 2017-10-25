@@ -35,7 +35,7 @@ void LayerForceSimplifiedWidget::InitWidget(QWidget* widget)
 
 void LayerForceSimplifiedWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::uint32 forceIndex, bool updateMinimized)
 {
-    if (!layer || layer->forcesSimplified.size() <= forceIndex)
+    if (!layer || layer->GetSimplifiedParticleForces().size() <= forceIndex)
     {
         return;
     }
@@ -46,7 +46,7 @@ void LayerForceSimplifiedWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* 
     blockSignals = true;
 
     DAVA::float32 lifeTime = layer->endTime;
-    DAVA::ParticleForceSimplified* curForce = layer->forcesSimplified[forceIndex];
+    DAVA::ParticleForceSimplified* curForce = layer->GetSimplifiedParticleForces()[forceIndex];
 
     DAVA::Vector<QColor> colors;
     colors.push_back(Qt::red);

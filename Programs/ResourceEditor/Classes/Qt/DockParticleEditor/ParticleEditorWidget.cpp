@@ -262,11 +262,11 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
         DAVA::ParticleLayer* layer = scene->particlesSystem->GetForceOwner(force);
         if (layer != nullptr)
         {
-            auto i = std::find(layer->forcesSimplified.begin(), layer->forcesSimplified.end(), force);
-            if (i != layer->forcesSimplified.end())
+            auto i = std::find(layer->GetSimplifiedParticleForces().begin(), layer->GetSimplifiedParticleForces().end(), force);
+            if (i != layer->GetSimplifiedParticleForces().end())
             {
                 shouldReset = false;
-                SwitchEditorToForceSimplifiedMode(scene, layer, std::distance(layer->forcesSimplified.begin(), i));
+                SwitchEditorToForceSimplifiedMode(scene, layer, std::distance(layer->GetSimplifiedParticleForces().begin(), i));
             }
         }
     }

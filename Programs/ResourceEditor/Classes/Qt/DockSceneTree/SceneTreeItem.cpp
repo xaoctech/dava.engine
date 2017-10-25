@@ -569,12 +569,12 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
             }
         }
 
-        size_t itemsCount = layer->forcesSimplified.size();
+        size_t itemsCount = layer->GetSimplifiedParticleForces().size();
         QList<QStandardItem*> items;
 
         for (size_t i = 0; i < itemsCount; ++i)
         {
-            items.push_back(new SceneTreeItemParticleForceSimplified(layer, layer->forcesSimplified[i]));
+            items.push_back(new SceneTreeItemParticleForceSimplified(layer, layer->GetSimplifiedParticleForces()[i]));
         }
 
         if (items.size() > 0)
