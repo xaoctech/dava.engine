@@ -4,6 +4,7 @@
 #include "UIScreens/BaseScreen.h"
 #include "UIControls/Menu.h"
 #include "Quality/QualitySettingsDialog.h"
+#include "Character/Systems/CharacterControllerSystem.h"
 
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
 #include <GridTest.h>
@@ -92,14 +93,14 @@ private:
     MenuItem* reloadShadersMenuItem = nullptr;
     MenuItem* performanceTestMenuItem = nullptr;
 
-    //     DAVA::uint64 drawTime = 0;
-    //     DAVA::uint64 updateTime = 0;
-
     DAVA::RotationControllerSystem* rotationControllerSystem = nullptr;
     DAVA::WASDControllerSystem* wasdSystem = nullptr;
 
-    //     Vector2 cursorPosition;
-    //     float32 cursorSize = 0.1f;
+    CharacterControllerSystem* characterControllerSystem = nullptr;
+    CharacterMoveSystem* characterMoveSystem = nullptr;
+    CharacterCameraSystem* characterCameraSystem = nullptr;
+
+    DAVA::Entity* characterEntity = nullptr;
 
     DAVA::FpsMeter fpsMeter;
 

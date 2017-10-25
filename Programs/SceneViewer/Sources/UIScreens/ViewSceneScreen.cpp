@@ -10,6 +10,15 @@
 #include <DeviceManager/DeviceManager.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Update/UIUpdateComponent.h>
+#include <Physics/StaticBodyComponent.h>
+#include <Physics/HeightFieldShapeComponent.h>
+#include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/BoxCharacterControllerComponent.h>
+#include <Physics/WASDPhysicsControllerComponent.h>
+#include <Physics/PhysicsSystem.h>
+#include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Systems/MotionSystem.h>
+#include <Scene3D/Systems/RenderUpdateSystem.h>
 
 namespace ViewSceneScreenDetails
 {
@@ -70,6 +79,15 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         scene->AddSystem(wasdSystem, MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::WASD_CONTROLLER_COMPONENT),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
+        characterControllerSystem = new CharacterControllerSystem(scene);
+        scene->AddSystem(characterControllerSystem, MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT, scene->motionSystem);
+
+        characterMoveSystem = new CharacterMoveSystem(scene);
+        scene->AddSystem(characterMoveSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->physicsSystem);
+
+        characterCameraSystem = new CharacterCameraSystem(scene);
+        scene->AddSystem(characterCameraSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->renderUpdateSystem);
+
         sceneView = new DAVA::UI3DView(GetRect());
         //sceneView->SetFrameBufferScaleFactor(0.5f);
         //sceneView->SetDrawToFrameBuffer(true);
@@ -103,6 +121,15 @@ void ViewSceneScreen::RemoveSceneFromScreen()
         scene->RemoveSystem(wasdSystem);
         SafeDelete(wasdSystem);
 
+        scene->RemoveSystem(characterControllerSystem);
+        SafeDelete(characterControllerSystem);
+
+        scene->RemoveSystem(characterMoveSystem);
+        SafeDelete(characterMoveSystem);
+
+        scene->RemoveSystem(characterCameraSystem);
+        SafeDelete(characterCameraSystem);
+
         RemoveControl(sceneView);
         sceneView.reset();
 
@@ -112,6 +139,8 @@ void ViewSceneScreen::RemoveSceneFromScreen()
             reloadShadersMenuItem->SetEnabled(false);
             performanceTestMenuItem->SetEnabled(false);
         }
+
+        DAVA::SafeRelease(characterEntity);
     }
 }
 
@@ -124,61 +153,32 @@ void ViewSceneScreen::LoadScene()
     SceneFileV2::eError result = scene->LoadScene(scenePath);
     if (result == SceneFileV2::ERROR_NO_ERROR)
     {
-        /*
-        {
-        Entity* hullNode = entity->FindByName("hull")->Clone();
-
-
-        //create hull hierarchy to collapse in skinned mesh
-        Entity * hullSkeletonRoot = new Entity();
-        hullSkeletonRoot->SetName("hull");
-        hullSkeletonRoot->AddNode(hullNode);
-
-        Vector<SkeletonComponent::JointConfig> hullJointsConfig;
-        RenderObject * skinnedHullObject = MeshUtils::CreateSkinnedMesh(hullSkeletonRoot, hullJointsConfig);
-        ((RenderComponent *)hullNode->GetOrCreateComponent(Component::RENDER_COMPONENT))->SetRenderObject(skinnedHullObject);
-        skinnedHullObject->Release();
-        hullSkeletonRoot->Release();
-
-        Matrix4 x;
-        x.CreateTranslation(Vector3(-20,0,0));
-
-        //    hullNode->SetLocalTransform( x );
-        hullNode->RemoveAllChildren();
-        scene->AddNode( hullNode );
-
-        SkeletonComponent * hullSkeleton = new SkeletonComponent();
-        hullSkeleton->SetConfigJoints(hullJointsConfig);
-        hullNode->AddComponent(hullSkeleton);
-
-
-        Light*          light   = new Light();
-        LightComponent* light_c = new LightComponent( light );
-        Entity*         light_e = new Entity();
-        Matrix4         light_x; light_x.Identity();
-
-        light_c->SetLightType( Light::TYPE_DIRECTIONAL );
-        light_c->SetDirection( Vector3(0,-1,0) );
-
-        light_e->SetLocalTransform( light_x );
-
-        light_e->SetName( "test-light" );
-        light_e->AddComponent( light_c );
-        scene->AddNode( light_e );
-        }
-        */
+        Entity* landscapeEntity = scene->FindByName("Landscape");
+        landscapeEntity->AddComponent(new StaticBodyComponent());
+        landscapeEntity->AddComponent(new HeightFieldShapeComponent());
 
         ScopedPtr<Camera> camera(new Camera);
         scene->AddCamera(camera);
         scene->SetCurrentCamera(camera);
 
-        ScopedPtr<Entity> cameraEntity(new Entity());
-        cameraEntity->AddComponent(new CameraComponent(camera));
-        cameraEntity->AddComponent(new WASDControllerComponent());
-        cameraEntity->AddComponent(new RotationControllerComponent());
-        scene->AddNode(cameraEntity);
+        ScopedPtr<Scene> characterScene(new Scene());
+        characterScene->LoadScene("~res:/3d/character/MotusMan_v2.sc2");
 
-        AddTanksAtScene();
+        if (characterScene->FindByName("Motus_Man_01") != nullptr)
+        {
+            ScopedPtr<Entity> characterEntity(new Entity());
+            characterEntity->AddComponent(new CapsuleCharacterControllerComponent());
+            characterEntity->AddComponent(new CameraComponent(camera));
+            characterEntity->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 100.f, 40.f)));
+
+            ScopedPtr<Entity> characterMeshEntity(characterScene->FindByName("Motus_Man_01")->Clone());
+            characterMeshEntity->AddComponent(new MotionComponent());
+            GetMotionComponent(characterMeshEntity)->SetConfigPath("~res:/3d/character/MotusMan_Motion.yaml");
+            characterEntity->AddNode(characterMeshEntity);
+            scene->AddNode(characterEntity);
+        }
+
+        scene->physicsSystem->SetSimulationEnabled(true);
     }
     else
     {
