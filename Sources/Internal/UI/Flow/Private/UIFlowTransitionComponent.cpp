@@ -27,6 +27,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowTransitionComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIFlowTransitionComponent);
+
 UIFlowTransitionComponent::UIFlowTransitionComponent() = default;
 
 UIFlowTransitionComponent::UIFlowTransitionComponent(const UIFlowTransitionComponent& dst) = default;

@@ -4,14 +4,13 @@
 #include "Base/FastName.h"
 #include "Base/RefPtr.h"
 #include "Base/UnordererMap.h"
-#include "Base/Vector.h"
+#include "FileSystem/KeyedArchive.h"
 #include "Reflection/Reflection.h"
 
 namespace DAVA
 {
 class EngineContext;
 class UIFlowService;
-class KeyedArchive;
 
 /** Contains information about current available UI services and shared data. */
 class UIContext final : public ReflectionBase

@@ -3,6 +3,7 @@
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Sprite.h"
+#include "Render/Texture.h"
 #include "UI/Flow/UIFlowStateComponent.h"
 #include "UI/Flow/UIFlowStateSystem.h"
 #include "UI/Render/UIRenderSystem.h"

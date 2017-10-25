@@ -20,7 +20,7 @@ namespace DAVA
 class UIFlowViewComponent final : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIFlowViewComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIFlowViewComponent);
+    DECLARE_UI_COMPONENT(UIFlowViewComponent);
 
 public:
     /** Default constructor. */

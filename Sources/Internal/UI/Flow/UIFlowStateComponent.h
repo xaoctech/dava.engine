@@ -22,7 +22,7 @@ namespace DAVA
 class UIFlowStateComponent final : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIFlowStateComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIFlowStateComponent);
+    DECLARE_UI_COMPONENT(UIFlowStateComponent);
 
 public:
     /** Types of Flow states. */

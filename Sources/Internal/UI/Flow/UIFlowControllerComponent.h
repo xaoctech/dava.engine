@@ -21,7 +21,7 @@ namespace DAVA
 class UIFlowControllerComponent final : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIFlowControllerComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIFlowControllerComponent);
+    DECLARE_UI_COMPONENT(UIFlowControllerComponent);
 
 public:
     /** Default constructor. */

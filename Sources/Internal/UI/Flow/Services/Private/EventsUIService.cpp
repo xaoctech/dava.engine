@@ -4,6 +4,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 // TODO: uncomment after merging Events
 //#include "UI/Events/UIEventsSingleComponent.h"
+#include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 
 namespace DAVA

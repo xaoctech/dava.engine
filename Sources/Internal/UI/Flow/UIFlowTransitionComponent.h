@@ -27,7 +27,7 @@ namespace DAVA
 class UIFlowTransitionComponent final : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIFlowTransitionComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIFlowTransitionComponent);
+    DECLARE_UI_COMPONENT(UIFlowTransitionComponent);
 
 public:
     /** Describes availabe commands in transitions rules. */

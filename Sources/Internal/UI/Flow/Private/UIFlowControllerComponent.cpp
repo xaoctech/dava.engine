@@ -13,6 +13,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowControllerComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIFlowControllerComponent);
+
 UIFlowControllerComponent::UIFlowControllerComponent() = default;
 
 UIFlowControllerComponent::UIFlowControllerComponent(const UIFlowControllerComponent& dst) = default;

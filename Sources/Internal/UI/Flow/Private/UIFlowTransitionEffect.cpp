@@ -57,7 +57,7 @@ void UIFlowTransitionEffect::Render(UIRenderSystem* renderSystem)
 {
     float32 progress = std::min(std::max(position / config.duration, 0.f), 1.f);
 
-    Sprite::DrawState drawState;
+    SpriteDrawState drawState;
     drawState.SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
     Color drawColor;
     Vector2 size;

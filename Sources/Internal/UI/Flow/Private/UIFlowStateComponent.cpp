@@ -37,6 +37,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowStateComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIFlowStateComponent);
+
 UIFlowStateComponent::UIFlowStateComponent() = default;
 
 UIFlowStateComponent::UIFlowStateComponent(const UIFlowStateComponent& dst) = default;
