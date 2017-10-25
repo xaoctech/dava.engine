@@ -12,6 +12,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFocusComponent)
     .Field("requestFocus", &UIFocusComponent::IsRequestFocus, &UIFocusComponent::SetRequestFocus)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIFocusComponent);
 
 UIFocusComponent::UIFocusComponent()
 {

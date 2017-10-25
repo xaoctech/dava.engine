@@ -31,6 +31,7 @@
 #include "Commands2/Base/RECommandNotificationObject.h"
 
 #include "Classes/Qt/Actions/SaveEntityAsAction.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/SceneManager/SceneData.h"

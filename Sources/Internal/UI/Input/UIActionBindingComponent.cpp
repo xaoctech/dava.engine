@@ -15,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIActionBindingComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIActionBindingComponent);
+
 UIActionBindingComponent::UIActionBindingComponent()
 {
 }

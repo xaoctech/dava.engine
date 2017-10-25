@@ -13,7 +13,7 @@ class UIControl;
 class UIActionComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIActionComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIActionComponent);
+    DECLARE_UI_COMPONENT(UIActionComponent);
 
 public:
     UIActionComponent();

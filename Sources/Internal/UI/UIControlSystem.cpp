@@ -1,32 +1,9 @@
 #include "UI/UIControlSystem.h"
-#include "UI/UIScreen.h"
-#include "UI/Styles/UIStyleSheetSystem.h"
-#include "Logger/Logger.h"
 #include "Debug/DVAssert.h"
-#include "Time/SystemTimer.h"
-#include "Debug/Replay.h"
-#include "UI/UIControlSystem.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "UI/UISystem.h"
-#include "UI/Layouts/UILayoutSystem.h"
-#include "UI/Focus/UIFocusSystem.h"
-#include "UI/Input/UIInputSystem.h"
-#include "UI/Scroll/UIScrollBarLinkSystem.h"
-#include "UI/Scroll/UIScrollSystem.h"
-#include "UI/Sound/UISoundSystem.h"
-#include "UI/Render/UIRenderSystem.h"
-#include "Render/Renderer.h"
-#include "Render/RenderHelper.h"
-#include "UI/UIScreenTransition.h"
-#include "UI/UIEvent.h"
-#include "UI/UIPopup.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Render/2D/TextBlock.h"
-#include "Platform/DeviceInfo.h"
-#include "Input/InputSystem.h"
-#include "UI/Update/UIUpdateSystem.h"
 #include "Debug/ProfilerOverlay.h"
+#include "Debug/Replay.h"
 #include "DeviceManager/DeviceManager.h"
 #include "Engine/Engine.h"
 #include "Input/InputEvent.h"
@@ -34,13 +11,35 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 #include "Input/TouchScreen.h"
-#include "Input/Mouse.h"
-#include "UI/RichContent/UIRichContentSystem.h"
-#include "UI/Text/UITextSystem.h"
+#include "Logger/Logger.h"
+#include "Platform/DeviceInfo.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/2D/TextBlock.h"
+#include "Render/RenderHelper.h"
+#include "Render/Renderer.h"
+#include "Time/SystemTimer.h"
+#include "UI/Flow/Private/UIFlowTransitionAnimationSystem.h"
+#include "UI/Flow/UIFlowControllerSystem.h"
 #include "UI/Flow/UIFlowStateSystem.h"
 #include "UI/Flow/UIFlowViewSystem.h"
-#include "UI/Flow/UIFlowControllerSystem.h"
-#include "UI/Flow/Private/UIFlowTransitionAnimationSystem.h"
+#include "UI/Focus/UIFocusSystem.h"
+#include "UI/Input/UIInputSystem.h"
+#include "UI/Layouts/UILayoutSystem.h"
+#include "UI/Render/UIRenderSystem.h"
+#include "UI/RichContent/UIRichContentSystem.h"
+#include "UI/Scroll/UIScrollBarLinkSystem.h"
+#include "UI/Scroll/UIScrollSystem.h"
+#include "UI/Sound/UISoundSystem.h"
+#include "UI/Styles/UIStyleSheetSystem.h"
+#include "UI/Text/UITextSystem.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIEvent.h"
+#include "UI/UIPopup.h"
+#include "UI/UIScreen.h"
+#include "UI/UIScreenTransition.h"
+#include "UI/UISystem.h"
+#include "UI/Update/UIUpdateSystem.h"
 
 namespace DAVA
 {
@@ -722,8 +721,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
-                                     [insertBeforeSystem](const std::unique_ptr<UISystem>& systemPtr)
-                                     {
+                                     [insertBeforeSystem](const std::unique_ptr<UISystem>& systemPtr) {
                                          return systemPtr.get() == insertBeforeSystem;
                                      });
         DVASSERT(insertIt != systems.end());
@@ -739,8 +737,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
 std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
 {
     auto it = std::find_if(systems.begin(), systems.end(),
-                           [system](const std::unique_ptr<UISystem>& systemPtr)
-                           {
+                           [system](const std::unique_ptr<UISystem>& systemPtr) {
                                return systemPtr.get() == system;
                            });
 

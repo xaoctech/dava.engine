@@ -13,6 +13,7 @@
 
 #include <QtTools/Updaters/LazyUpdater.h>
 
+#include <Engine/Engine.h>
 #include <UI/UIControlSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Logger/Logger.h>

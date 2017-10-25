@@ -3,11 +3,16 @@
 
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
+#include <DAVAVersion.h>
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <FileSystem/KeyedArchive.h>
 #include <Network/ServicesProvider.h>
+#include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Render/RHI/rhi_Public.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Utils/StringFormat.h>
+#include <UI/UIControlSystem.h>
 #include <UI/UIScreenManager.h>
 
 #include <DocDirSetup/DocDirSetup.h>

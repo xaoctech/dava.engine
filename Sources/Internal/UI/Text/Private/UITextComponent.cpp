@@ -41,6 +41,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UITextComponent);
+
 UITextComponent::UITextComponent(const UITextComponent& src)
     : UIComponent(src)
     , align(src.align)
