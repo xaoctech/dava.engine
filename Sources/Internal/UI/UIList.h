@@ -24,7 +24,7 @@ namespace DAVA
     Aggregator Path is used for Save/Load procedure. Using this path, system can locate proper aggregator and get
     its ID.
 */
-
+class YamlNode;
 class UIList;
 /**
     \ingroup controlsystem

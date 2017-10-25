@@ -14,6 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UINavigationComponent)
     .Field("down", &UINavigationComponent::GetNextFocusDown, &UINavigationComponent::SetNextFocusDown)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UINavigationComponent);
 
 UINavigationComponent::UINavigationComponent()
 {

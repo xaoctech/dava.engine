@@ -953,12 +953,14 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxWaypointScale), userData);
             }
+            else
+            {
+                result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), userData);
+            }
         }
 
-        if (result.isValid == true)
-        {
-            callback(entity, result.collisionObject, result.shouldRecreate);
-        }
+        DVASSERT(result.isValid == true);
+        callback(entity, result.collisionObject);
     }
     else
     {
