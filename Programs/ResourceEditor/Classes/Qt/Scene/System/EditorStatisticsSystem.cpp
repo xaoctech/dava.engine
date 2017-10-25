@@ -163,7 +163,7 @@ EditorStatisticsSystem::EditorStatisticsSystem(DAVA::Scene* scene)
         descr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
         descr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
         binder->BindField(descr, [this](const DAVA::Any& v) {
-            EmitInvalidateUI(true);
+            EmitInvalidateUI(FLAG_TRIANGLES);
         });
     }
 }
@@ -172,7 +172,7 @@ void EditorStatisticsSystem::RegisterEntity(DAVA::Entity* entity)
 {
     if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT) || HasComponent(entity, DAVA::Component::LOD_COMPONENT))
     {
-        EmitInvalidateUI(true);
+        EmitInvalidateUI(FLAG_TRIANGLES);
     }
 }
 
@@ -180,7 +180,7 @@ void EditorStatisticsSystem::UnregisterEntity(DAVA::Entity* entity)
 {
     if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT) || HasComponent(entity, DAVA::Component::LOD_COMPONENT))
     {
-        EmitInvalidateUI(true);
+        EmitInvalidateUI(FLAG_TRIANGLES);
     }
 }
 
@@ -189,7 +189,7 @@ void EditorStatisticsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Compo
     DAVA::uint32 type = component->GetType();
     if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
     {
-        EmitInvalidateUI(true);
+        EmitInvalidateUI(FLAG_TRIANGLES);
     }
 }
 
@@ -198,7 +198,7 @@ void EditorStatisticsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Com
     DAVA::uint32 type = component->GetType();
     if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
     {
-        EmitInvalidateUI(true);
+        EmitInvalidateUI(FLAG_TRIANGLES);
     }
 }
 
@@ -322,7 +322,7 @@ void EditorStatisticsSystem::ProcessCommand(const RECommandNotificationObject& c
 
     if (commandNotification.MatchCommandIDs(commandIDs))
     {
-        EmitInvalidateUI(true);
+        EmitInvalidateUI(FLAG_TRIANGLES);
     }
 }
 
