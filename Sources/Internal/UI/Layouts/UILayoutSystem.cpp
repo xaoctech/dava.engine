@@ -14,6 +14,7 @@
 #include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/UILayoutSystemListener.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
 #include "UI/Text/UITextComponent.h"

@@ -8,6 +8,7 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Base/Result.h"
+#include "Render/2D/Sprite.h"
 
 #include <TArc/DataProcessing/DataContext.h>
 #include <QtTools/FileDialogs/FileDialog.h>
@@ -1293,7 +1294,7 @@ void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePat
         desc.clearColor = DAVA::Color::Clear;
         DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
         {
-            DAVA::Sprite::DrawState drawState = {};
+            DAVA::SpriteDrawState drawState = {};
             drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE, sprite->GetWidth(), sprite->GetHeight());
             DAVA::RenderSystem2D::Instance()->Draw(sprite, &drawState, DAVA::Color::White);
         }

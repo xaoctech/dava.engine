@@ -1,21 +1,23 @@
 #include "Render/2D/Sprite.h"
 #include "Debug/DVAssert.h"
-#include "Utils/Utils.h"
-#include "Utils/StringFormat.h"
-#include "Time/SystemTimer.h"
+#include "Engine/Engine.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
-#include "Render/Shader.h"
-#include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageSystem.h"
 #include "FileSystem/UnmanagedMemoryFile.h"
-#include "Render/TextureDescriptor.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/RenderHelper.h"
+#include "Render/Shader.h"
+#include "Render/TextureDescriptor.h"
+#include "Time/SystemTimer.h"
 #include "UI/UIControlSystem.h"
+#include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 
 #define NEW_PPA
 
@@ -32,7 +34,7 @@ static int32 fboCounter = 0;
 
 Mutex Sprite::spriteMapMutex;
 
-Sprite::DrawState::DrawState()
+SpriteDrawState::SpriteDrawState()
 {
     Reset();
 
@@ -819,7 +821,7 @@ const FilePath& Sprite::GetRelativePathname() const
     return relativePathname;
 }
 
-void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState& parentState, const Sprite::DrawState& localState)
+void SpriteDrawState::BuildStateFromParentAndLocal(const SpriteDrawState& parentState, const SpriteDrawState& localState)
 {
     position.x = parentState.position.x + localState.position.x * parentState.scale.x;
     position.y = parentState.position.y + localState.position.y * parentState.scale.y;
@@ -852,12 +854,22 @@ void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState& pa
     frame = localState.frame;
 }
 
+void Sprite::ReloadSprites()
+{
+    ReloadSprites(Texture::GetPrimaryGPUForLoading());
+}
+
 void Sprite::ReloadSprites(eGPUFamily gpu)
 {
     for (SpriteMap::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
     {
         (it->second)->Reload(gpu);
     }
+}
+
+void Sprite::Reload()
+{
+    Reload(Texture::GetPrimaryGPUForLoading());
 }
 
 void Sprite::Reload(eGPUFamily gpu)
