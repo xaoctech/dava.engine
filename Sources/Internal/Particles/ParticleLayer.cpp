@@ -197,6 +197,15 @@ ParticleLayer* ParticleLayer::Clone()
     if (colorRandom)
         dstLayer->colorRandom.Set(colorRandom->Clone());
 
+    if (gradientColorForWhite)
+        dstLayer->gradientColorForWhite.Set(gradientColorForWhite->Clone());
+
+    if (gradientColorForBlack)
+        dstLayer->gradientColorForWhite.Set(gradientColorForBlack->Clone());
+
+    if (gradientColorForMiddle)
+        dstLayer->gradientColorForMiddle.Set(gradientColorForMiddle->Clone());
+
     if (alphaOverLife)
         dstLayer->alphaOverLife.Set(alphaOverLife->Clone());
 
@@ -560,6 +569,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     colorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("colorOverLife"));
     colorRandom = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("colorRandom"));
     alphaOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaOverLife"));
+
+    gradientColorForWhite = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("gradientColorForWhite"));
+    gradientColorForBlack = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("gradientColorForBlack"));
+    gradientColorForMiddle = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("gradientColorForMiddle"));
 
     const YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
     if (frameOverLifeEnabledNode)
@@ -1026,6 +1039,10 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "colorRandom", this->colorRandom);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaOverLife", this->alphaOverLife);
 
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "gradientColorForWhite", this->gradientColorForWhite);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "gradientColorForBlack", this->gradientColorForBlack);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "gradientColorForMiddle", this->gradientColorForMiddle);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "colorOverLife", this->colorOverLife);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
@@ -1133,6 +1150,9 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(spinVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(spinOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(colorRandom.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientColorForWhite.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientColorForBlack.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientColorForMiddle.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(alphaOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(colorOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(angle.Get(), modifiables);

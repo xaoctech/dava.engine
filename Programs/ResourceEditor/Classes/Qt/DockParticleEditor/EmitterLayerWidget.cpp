@@ -342,6 +342,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     alphaOverLifeTimeLine = new TimeLineWidget(this);
     InitWidget(alphaOverLifeTimeLine);
 
+    gradientColorForWhite = new GradientPickerWidget(this);
+    InitWidget(gradientColorForWhite);
+    gradientColorForBlack = new GradientPickerWidget(this);
+    InitWidget(gradientColorForBlack);
+    gradientColorForMiddle = new GradientPickerWidget(this);
+    InitWidget(gradientColorForMiddle);
+
     QHBoxLayout* frameOverlifeLayout = new QHBoxLayout();
     frameOverlifeCheckBox = new QCheckBox("frame over life", this);
     connect(frameOverlifeCheckBox, SIGNAL(stateChanged(int)),
@@ -581,6 +588,13 @@ void EmitterLayerWidget::OnValueChanged()
     DAVA::PropLineWrapper<DAVA::float32> propAlphaOverLife;
     alphaOverLifeTimeLine->GetValue(0, propAlphaOverLife.GetPropsPtr());
 
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForWhite;
+    gradientColorForWhite->GetValues(propGradientColorForWhite.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForBlack;
+    gradientColorForBlack->GetValues(propGradientColorForBlack.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForMiddle;
+    gradientColorForMiddle->GetValues(propGradientColorForMiddle.GetPropsPtr());
+
     DAVA::PropLineWrapper<DAVA::float32> propAngle;
     DAVA::PropLineWrapper<DAVA::float32> propAngleVariation;
     angleTimeLine->GetValue(0, propAngle.GetPropsPtr());
@@ -637,6 +651,10 @@ void EmitterLayerWidget::OnValueChanged()
                          propColorOverLife.GetPropLine(),
                          propAngle.GetPropLine(),
                          propAngleVariation.GetPropLine(),
+
+                         propGradientColorForWhite.GetPropLine(),
+                         propGradientColorForBlack.GetPropLine(),
+                         propGradientColorForMiddle.GetPropLine(),
 
                          static_cast<DAVA::float32>(startTimeSpin->value()),
                          static_cast<DAVA::float32>(endTimeSpin->value()),
@@ -1187,11 +1205,19 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     colorOverLifeGradient->Init(0, 1, "color over life");
     colorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->colorOverLife)).GetProps());
-
     alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
     alphaOverLifeTimeLine->SetMinLimits(0);
     alphaOverLifeTimeLine->SetMaxLimits(1.f);
     alphaOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->alphaOverLife)).GetProps(), Qt::blue, "alpha over life");
+
+    gradientColorForWhite->Init(0, 1, "Gradient color for white");
+    gradientColorForWhite->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForWhite)).GetProps());
+
+    gradientColorForBlack->Init(0, 1, "Gradient color for black");
+    gradientColorForBlack->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForBlack)).GetProps());
+
+    gradientColorForMiddle->Init(0, 1, "Gradient color for middle");
+    gradientColorForMiddle->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForMiddle)).GetProps());
 
     frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
     frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
@@ -1961,6 +1987,10 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
     colorRandomGradient->setVisible(!isSuperemitter);
     colorOverLifeGradient->setVisible(!isSuperemitter);
     alphaOverLifeTimeLine->setVisible(!isSuperemitter);
+
+    gradientColorForWhite->setVisible(!isSuperemitter);
+    gradientColorForBlack->setVisible(!isSuperemitter);
+    gradientColorForMiddle->setVisible(!isSuperemitter);
 
     frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
     frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);

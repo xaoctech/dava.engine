@@ -255,6 +255,10 @@ public:
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> angle,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> angleVariation,
 
+              DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForWihte,
+              DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForBlack,
+              DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForMiddle,
+
               DAVA::float32 startTime,
               DAVA::float32 endTime,
               DAVA::float32 deltaTime,
@@ -305,6 +309,10 @@ protected:
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> colorOverLife;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> angle;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> angleVariation;
+
+    DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForWhite;
+    DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForBlack;
+    DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForMiddle;
 
     DAVA::float32 startTime;
     DAVA::float32 endTime;

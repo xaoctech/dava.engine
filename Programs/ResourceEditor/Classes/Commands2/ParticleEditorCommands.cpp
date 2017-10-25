@@ -115,6 +115,10 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
                                       RefPtr<PropertyLine<float32>> angle,
                                       RefPtr<PropertyLine<float32>> angleVariation,
 
+                                      RefPtr<PropertyLine<Color>> gradientColorForWhite,
+                                      RefPtr<PropertyLine<Color>> gradientColorForBlack,
+                                      RefPtr<PropertyLine<Color>> gradientColorForMiddle,
+
                                       float32 startTime,
                                       float32 endTime,
                                       float32 deltaTime,
@@ -161,6 +165,10 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
     this->angle = angle;
     this->angleVariation = angleVariation;
 
+    this->gradientColorForWhite = gradientColorForWhite;
+    this->gradientColorForBlack = gradientColorForBlack;
+    this->gradientColorForMiddle = gradientColorForMiddle;
+
     this->startTime = startTime;
     this->endTime = endTime;
     this->deltaTime = deltaTime;
@@ -206,6 +214,10 @@ void CommandUpdateParticleLayer::Redo()
     PropertyLineHelper::SetValueLine(layer->colorRandom, colorRandom);
     PropertyLineHelper::SetValueLine(layer->alphaOverLife, alphaOverLife);
     PropertyLineHelper::SetValueLine(layer->colorOverLife, colorOverLife);
+
+    PropertyLineHelper::SetValueLine(layer->gradientColorForWhite, gradientColorForWhite);
+    PropertyLineHelper::SetValueLine(layer->gradientColorForBlack, gradientColorForBlack);
+    PropertyLineHelper::SetValueLine(layer->gradientColorForMiddle, gradientColorForMiddle);
 
     layer->frameOverLifeEnabled = frameOverLifeEnabled;
     layer->frameOverLifeFPS = frameOverLifeFPS;
