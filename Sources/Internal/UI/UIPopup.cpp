@@ -1,5 +1,6 @@
 #include "UI/UIPopup.h"
 #include "UI/UIControlSystem.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {

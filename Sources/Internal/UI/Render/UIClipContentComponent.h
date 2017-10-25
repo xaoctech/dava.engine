@@ -9,7 +9,7 @@ namespace DAVA
 class UIClipContentComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIClipContentComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIClipContentComponent);
+    DECLARE_UI_COMPONENT(UIClipContentComponent);
 
 public:
     UIClipContentComponent();

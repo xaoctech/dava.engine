@@ -15,6 +15,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIShortcutEventComponent)
     .Field("shortcuts", &UIShortcutEventComponent::GetShortcutsAsString, &UIShortcutEventComponent::SetShortcutsFromString)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIShortcutEventComponent);
 
 UIShortcutEventComponent::UIShortcutEventComponent()
 {

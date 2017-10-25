@@ -12,7 +12,7 @@ class UIControl;
 class UIInputEventComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIInputEventComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIInputEventComponent);
+    DECLARE_UI_COMPONENT(UIInputEventComponent);
 
 public:
     UIInputEventComponent();

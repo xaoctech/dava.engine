@@ -7,6 +7,7 @@
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiIos.h"
 #include "Logger/Logger.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"

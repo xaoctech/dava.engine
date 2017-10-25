@@ -32,7 +32,6 @@ struct PackageContext;
 class ControlNode;
 class StyleSheetNode;
 class PackageBaseNode;
-class FilteredPackageModel;
 class PackageModel;
 class PackageNode;
 class QItemSelection;
@@ -59,6 +58,7 @@ public:
 
     void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
     void SetUI(DAVA::TArc::UI* ui);
+    void BindActionsToTArc();
 
     PackageModel* GetPackageModel() const;
     using ExpandedIndexes = QModelIndexList;
@@ -78,7 +78,6 @@ public slots:
     void OnImport();
 
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
-    void OnFilterTextChanged(const QString&);
     void OnSelectAndRename(ControlNode*);
     void OnRename();
     void OnAddStyle();
@@ -92,6 +91,9 @@ public slots:
 
     void OnRunUIViewer();
     void OnRunUIViewerFast();
+
+private slots:
+    void ExpandToFirstChild();
 
 private:
     void PushErrorMessage(const DAVA::String& errorMessage);
@@ -118,6 +120,7 @@ private:
     ExpandedIndexes GetExpandedIndexes() const;
     void RestoreExpandedIndexes(const ExpandedIndexes& indexes);
 
+    QAction* collapseAllAction = nullptr;
     QAction* importPackageAction = nullptr;
     QAction* copyAction = nullptr;
     QAction* pasteAction = nullptr;
@@ -137,13 +140,11 @@ private:
     QAction* runUIViewerFast = nullptr;
     QAction* runUIViewer = nullptr;
 
-    FilteredPackageModel* filteredPackageModel = nullptr;
     PackageModel* packageModel = nullptr;
 
     SelectionContainer selectionContainer;
     SelectedNodes expandedNodes;
     //source indexes
-    bool lastFilterTextEmpty = true;
     PackageContext* currentContext = nullptr;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
@@ -154,5 +155,4 @@ private:
 struct PackageContext
 {
     PackageWidget::ExpandedIndexes expandedIndexes;
-    QString filterString;
 };

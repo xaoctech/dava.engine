@@ -17,7 +17,7 @@ class UIControl;
 class UIEventBindingComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIEventBindingComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIEventBindingComponent);
+    DECLARE_UI_COMPONENT(UIEventBindingComponent);
 
 public:
     UIEventBindingComponent();

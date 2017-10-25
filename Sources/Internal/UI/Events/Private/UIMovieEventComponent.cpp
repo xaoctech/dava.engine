@@ -14,6 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieEventComponent)
     .Field("stopEvent", &UIMovieEventComponent::GetStopEventAsString, &UIMovieEventComponent::SetStopEventFromString)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIMovieEventComponent);
 
 UIMovieEventComponent::UIMovieEventComponent()
 {

@@ -4,6 +4,7 @@
 #include <Base/BaseTypes.h>
 #include <Math/Color.h>
 #include <Render/2D/GraphicFont.h>
+#include <Render/Material/NMaterial.h>
 #include <UI/UIGeometricData.h>
 
 namespace DAVA

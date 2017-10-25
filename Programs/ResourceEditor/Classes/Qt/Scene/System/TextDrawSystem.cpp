@@ -5,6 +5,7 @@
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/TextBlockGraphicRender.h"
+#include "Render/Material/NMaterial.h"
 #include "Utils/Utils.h"
 
 using namespace DAVA;

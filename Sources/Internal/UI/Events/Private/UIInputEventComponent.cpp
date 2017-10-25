@@ -17,6 +17,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIInputEventComponent)
     .Field("onHoverRemoved", &UIInputEventComponent::GetOnHoverRemovedEvent, &UIInputEventComponent::SetOnHoverRemovedEvent)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIInputEventComponent);
 
 UIInputEventComponent::UIInputEventComponent()
 {

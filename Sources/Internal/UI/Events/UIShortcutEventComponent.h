@@ -14,7 +14,7 @@ class UIControl;
 class UIShortcutEventComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIShortcutEventComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIShortcutEventComponent);
+    DECLARE_UI_COMPONENT(UIShortcutEventComponent);
 
 public:
     UIShortcutEventComponent();

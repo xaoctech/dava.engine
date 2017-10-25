@@ -8,6 +8,7 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 
+#include <UI/UIControlBackground.h>
 #include <UI/UIControlSystem.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <Render/2D/Sprite.h>

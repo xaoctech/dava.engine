@@ -1,16 +1,13 @@
 #pragma once
 
-#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Base/RefPtr.h"
 #include "Engine/Private/EnginePrivateFwd.h"
 #include "Input/InputElements.h"
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
-
-#include "UI/UIControl.h"
-#include "UI/UIEvent.h"
 #include "UI/Components/UISingleComponent.h"
+#include "UI/UIEvent.h"
 
 #define FRAME_SKIP 5
 
@@ -19,22 +16,25 @@
 */
 namespace DAVA
 {
-struct InputEvent;
 class Mouse;
-class UIScreen;
-class UISystem;
-class UILayoutSystem;
-class UIStyleSheetSystem;
-class UITextSystem;
+class UIComponent;
+class UIControl;
 class UIFocusSystem;
 class UIInputSystem;
+class UILayoutSystem;
+class UIPopup;
+class UIRenderSystem;
+class UIScreen;
+class UIScreenTransition;
 class UIScreenshoter;
 class UISoundSystem;
+class UIStyleSheetSystem;
+class UISystem;
+class UITextSystem;
 class UIUpdateSystem;
-class UIRenderSystem;
 class UIEventsSystem;
-class UIScreenTransition;
-class UIPopup;
+class VirtualCoordinatesSystem;
+struct InputEvent;
 
 class ScreenSwitchListener
 {
