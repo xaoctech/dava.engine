@@ -73,7 +73,7 @@ bool FBXImporter::ConvertAnimations(const FilePath& fbxPath)
     }
     fbxManager->Destroy();
 
-	FBXImporterDetails::ClearNodeUIDCache();
+    FBXImporterDetails::ClearNodeUIDCache();
 
     return (fbxScene != nullptr);
 }
