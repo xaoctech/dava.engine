@@ -38,7 +38,7 @@ UIFlowService* UIContext::GetService(const FastName& name) const
 
 void UIContext::InitServiceByType(const FastName& name, const String& typeName)
 {
-    DVASSERT(GetService(name) == nullptr);
+    DVASSERT(GetService(name) == nullptr, "Service already initialized!");
 
     const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(typeName);
     if (rType)
