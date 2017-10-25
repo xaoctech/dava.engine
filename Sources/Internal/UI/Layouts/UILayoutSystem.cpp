@@ -51,24 +51,31 @@ UILayoutSystem::~UILayoutSystem()
 
 void UILayoutSystem::RegisterSystem()
 {
-    visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect rect) {
-        Rect vr = GetScene()->vcs->ConvertInputToVirtual(rect);
-        UpdateVisibilityRect(vr);
-    });
-    virtualSizeChangedToken = GetScene()->vcs->virtualSizeChanged.Connect([&](const Size2i& size) {
-        UpdateVisibilityRect(Rect(0.f, 0.f, static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
-    });
-    inputSizeChangedToken = GetScene()->vcs->inputAreaSizeChanged.Connect([&](const Size2i& size) {
-        Vector2 s = GetScene()->vcs->ConvertInputToVirtual(Vector2(static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
-        UpdateVisibilityRect(Rect(0.f, 0.f, s.x, s.y));
-    });
+    // Subscribe on visible frame changing only for primary window if it exists
+    if (GetPrimaryWindow())
+    {
+        visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect rect) {
+            Rect vr = GetScene()->vcs->ConvertInputToVirtual(rect);
+            UpdateVisibilityRect(vr);
+        });
+        virtualSizeChangedToken = GetScene()->vcs->virtualSizeChanged.Connect([&](const Size2i& size) {
+            UpdateVisibilityRect(Rect(0.f, 0.f, static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+        });
+        inputSizeChangedToken = GetScene()->vcs->inputAreaSizeChanged.Connect([&](const Size2i& size) {
+            Vector2 s = GetScene()->vcs->ConvertInputToVirtual(Vector2(static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+            UpdateVisibilityRect(Rect(0.f, 0.f, s.x, s.y));
+        });
+    }
 }
 
 void UILayoutSystem::UnregisterSystem()
 {
-    GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
-    GetScene()->vcs->virtualSizeChanged.Disconnect(virtualSizeChangedToken);
-    GetScene()->vcs->inputAreaSizeChanged.Disconnect(inputSizeChangedToken);
+    if (GetPrimaryWindow())
+    {
+        GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+        GetScene()->vcs->virtualSizeChanged.Disconnect(virtualSizeChangedToken);
+        GetScene()->vcs->inputAreaSizeChanged.Disconnect(inputSizeChangedToken);
+    }
 }
 
 void UILayoutSystem::Process(float32 elapsedTime)
