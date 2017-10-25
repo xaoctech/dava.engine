@@ -261,7 +261,7 @@ void CharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
     Vector3 wpLeft = skeleton->GetJointObjectSpaceTransform(controllerSystem->wpLeftJointIndex).GetPosition();
     Vector3 wpRight = skeleton->GetJointObjectSpaceTransform(controllerSystem->wpRightJointIndex).GetPosition();
 
-    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(-20.f)) * Matrix4::MakeRotation(Vector3::UnitZ, DegToRad(-6.f));
+    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(-20.f)) * Matrix4::MakeRotation(Vector3::UnitZ, DegToRad(-8.f));
     weaponTransform *= Quaternion::MakeRotation(-Vector3::UnitY, wpLeft - wpRight).GetMatrix() * Matrix4::MakeTranslation(wpRight);
 
     controllerSystem->weaponEntity->SetLocalTransform(weaponTransform);
