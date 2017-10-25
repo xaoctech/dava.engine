@@ -1,18 +1,19 @@
 #include "UI/UIScreenTransition.h"
-#include "Render/RenderHelper.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Image/Image.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "UI/UIControlSystem.h"
-#include "Time/SystemTimer.h"
-
-#include "UI/UI3DView.h"
-#include "Scene3D/Scene.h"
-#include "UI/UIScreenshoter.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/Update/UIUpdateComponent.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/RenderHelper.h"
+#include "Render/Texture.h"
+#include "Scene3D/Scene.h"
+#include "Time/SystemTimer.h"
 #include "UI/Render/UIRenderSystem.h"
+#include "UI/UI3DView.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScreenshoter.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
@@ -122,7 +123,7 @@ void UIScreenTransition::Draw(const UIGeometricData& geometricData)
 {
     if (renderTargetPrevScreen && renderTargetNextScreen)
     {
-        Sprite::DrawState drawState;
+        SpriteDrawState drawState;
         drawState.SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 
         drawState.SetScale(0.5f, 1.0f);

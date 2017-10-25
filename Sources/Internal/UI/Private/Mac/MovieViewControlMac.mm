@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "Logger/Logger.h"
 #include "Platform/Steam.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
 
 #import <AVFoundation/AVFoundation.h>

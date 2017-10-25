@@ -1,3 +1,4 @@
+#include "Engine/Engine.h"
 #include "Render/Renderer.h"
 #include "Render/2D/FTFont.h"
 #include "Render/2D/FontManager.h"
@@ -10,7 +11,7 @@
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/FilePath.h"
 #include "UI/UIControlSystem.h"
-
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/Private/FTManager.h"
 
 namespace DAVA
