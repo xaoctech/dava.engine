@@ -27,6 +27,9 @@
 #include "Scene3D/SkeletonAnimation/Motion.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/RenderHelper.h"
+
 #include "Logger/Logger.h"
 
 using namespace DAVA;
@@ -53,7 +56,12 @@ void CharacterControllerSystem::AddEntity(Entity* entity)
     DVASSERT(PhysicsUtils::GetCharacterControllerComponent(entity) != nullptr);
 
     characterEntity = SafeRetain(entity);
-    characterMeshEntity = entity->GetChild(0);
+    characterMeshEntity = entity->FindByName("Character");
+    DVASSERT(characterMeshEntity != nullptr);
+
+    weaponEntity = entity->FindByName("Weapon");
+    DVASSERT(weaponEntity != nullptr);
+
     camera = SafeRetain(GetCamera(entity));
     controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
 
@@ -67,6 +75,7 @@ void CharacterControllerSystem::RemoveEntity(Entity* entity)
 
     SafeRelease(characterEntity);
     characterMeshEntity = nullptr;
+    weaponEntity = nullptr;
 
     SafeRelease(camera);
     controllerComponent = nullptr;
@@ -99,7 +108,16 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
         aimMotion->BindParameter(FastName("running"), &runningParam);
         aimMotion->BindParameter(FastName("aim-angle"), &aimAngleParam);
 
-        headJointIndex = GetSkeletonComponent(characterMeshEntity)->GetJointIndex(FastName("node-Head"));
+        SkeletonComponent* skeleton = GetSkeletonComponent(characterMeshEntity);
+        DVASSERT(skeleton != nullptr);
+
+        headJointIndex = skeleton->GetJointIndex(FastName("node-Head"));
+        wpLeftJointIndex = skeleton->GetJointIndex(FastName("node-LH_WP"));
+        wpRightJointIndex = skeleton->GetJointIndex(FastName("node-RH_WP"));
+
+        DVASSERT(headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+        DVASSERT(wpLeftJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+        DVASSERT(wpRightJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
 
         characterInited = true;
     }
@@ -219,6 +237,34 @@ void CharacterMoveSystem::Process(DAVA::float32 timeElapsed)
     + controllerSystem->characterLeft * controllerSystem->characterMotionComponent->rootOffsetDelta.x;
 
     controllerSystem->controllerComponent->Move(moveDisplacement);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+CharacterWeaponSystem::CharacterWeaponSystem(DAVA::Scene* scene)
+    : SceneSystem(scene)
+{
+    controllerSystem = scene->GetSystem<CharacterControllerSystem>();
+}
+
+void CharacterWeaponSystem::PrepareForRemove()
+{
+    controllerSystem = nullptr;
+}
+
+void CharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
+{
+    if (!controllerSystem->characterInited)
+        return;
+
+    SkeletonComponent* skeleton = GetSkeletonComponent(controllerSystem->characterMeshEntity);
+    Vector3 wpLeft = skeleton->GetJointObjectSpaceTransform(controllerSystem->wpLeftJointIndex).GetPosition();
+    Vector3 wpRight = skeleton->GetJointObjectSpaceTransform(controllerSystem->wpRightJointIndex).GetPosition();
+
+    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(-20.f)) * Matrix4::MakeRotation(Vector3::UnitZ, DegToRad(-6.f));
+    weaponTransform *= Quaternion::MakeRotation(-Vector3::UnitY, wpLeft - wpRight).GetMatrix() * Matrix4::MakeTranslation(wpRight);
+
+    controllerSystem->weaponEntity->SetLocalTransform(weaponTransform);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -19,6 +19,7 @@
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Systems/MotionSystem.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
+#include <Scene3D/Systems/TransformSystem.h>
 
 namespace ViewSceneScreenDetails
 {
@@ -85,6 +86,9 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         characterMoveSystem = new CharacterMoveSystem(scene);
         scene->AddSystem(characterMoveSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->physicsSystem);
 
+        characterWeaponSystem = new CharacterWeaponSystem(scene);
+        scene->AddSystem(characterWeaponSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->transformSystem);
+
         characterCameraSystem = new CharacterCameraSystem(scene);
         scene->AddSystem(characterCameraSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->renderUpdateSystem);
 
@@ -127,6 +131,9 @@ void ViewSceneScreen::RemoveSceneFromScreen()
         scene->RemoveSystem(characterMoveSystem);
         SafeDelete(characterMoveSystem);
 
+        scene->RemoveSystem(characterWeaponSystem);
+        SafeDelete(characterWeaponSystem);
+
         scene->RemoveSystem(characterCameraSystem);
         SafeDelete(characterCameraSystem);
 
@@ -164,18 +171,30 @@ void ViewSceneScreen::LoadScene()
         ScopedPtr<Scene> characterScene(new Scene());
         characterScene->LoadScene("~res:/3d/character/MotusMan_v2.sc2");
 
-        if (characterScene->FindByName("Motus_Man_01") != nullptr)
+        Entity* motusManEntity = characterScene->FindByName("Motus_Man_01");
+        if (motusManEntity != nullptr)
         {
             ScopedPtr<Entity> characterEntity(new Entity());
             characterEntity->AddComponent(new CapsuleCharacterControllerComponent());
             characterEntity->AddComponent(new CameraComponent(camera));
             characterEntity->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 100.f, 40.f)));
 
-            ScopedPtr<Entity> characterMeshEntity(characterScene->FindByName("Motus_Man_01")->Clone());
+            ScopedPtr<Entity> characterMeshEntity(motusManEntity->Clone());
+            characterMeshEntity->SetName("Character");
             characterMeshEntity->AddComponent(new MotionComponent());
             GetMotionComponent(characterMeshEntity)->SetConfigPath("~res:/3d/character/MotusMan_Motion.yaml");
             characterEntity->AddNode(characterMeshEntity);
             scene->AddNode(characterEntity);
+
+            ScopedPtr<Scene> weaponScene(new Scene());
+            weaponScene->LoadScene("~res:/3d/character/M4_Rifle_01.sc2");
+            Entity* m4Entity = weaponScene->FindByName("M4");
+            if (m4Entity != nullptr)
+            {
+                ScopedPtr<Entity> weaponEntity(m4Entity->Clone());
+                weaponEntity->SetName("Weapon");
+                characterMeshEntity->AddNode(weaponEntity);
+            }
         }
 
         scene->physicsSystem->SetSimulationEnabled(true);

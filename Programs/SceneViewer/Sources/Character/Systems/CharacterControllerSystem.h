@@ -3,6 +3,8 @@
 #include "Base/BaseMath.h"
 #include "Entity/SceneSystem.h"
 
+#include "Scene3D/Components/SkeletonComponent.h"
+
 namespace DAVA
 {
 class Camera;
@@ -15,6 +17,7 @@ class CharacterControllerComponent;
 };
 
 class CharacterMoveSystem;
+class CharacterWeaponSystem;
 class CharacterCameraSystem;
 class CharacterControllerSystem : public DAVA::SceneSystem
 {
@@ -35,6 +38,7 @@ private:
     DAVA::CharacterControllerComponent* controllerComponent = nullptr;
 
     DAVA::Entity* characterMeshEntity = nullptr;
+    DAVA::Entity* weaponEntity = nullptr;
     DAVA::MotionComponent* characterMotionComponent = nullptr;
     DAVA::Motion* moveMotion = nullptr;
     DAVA::Motion* aimMotion = nullptr;
@@ -48,7 +52,9 @@ private:
     DAVA::float32 aimAngleParam = 0.f;
     DAVA::float32 zoomFactor = 0.f;
 
-    DAVA::uint32 headJointIndex = 0;
+    DAVA::uint32 headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
+    DAVA::uint32 wpLeftJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
+    DAVA::uint32 wpRightJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
 
     bool isMoving = false;
     bool isRun = false;
@@ -58,6 +64,7 @@ private:
     bool characterInited = false;
 
     friend class CharacterMoveSystem;
+    friend class CharacterWeaponSystem;
     friend class CharacterCameraSystem;
 };
 
@@ -65,6 +72,18 @@ class CharacterMoveSystem : public DAVA::SceneSystem
 {
 public:
     CharacterMoveSystem(DAVA::Scene* scene);
+
+    void PrepareForRemove() override;
+    void Process(DAVA::float32 timeElapsed) override;
+
+protected:
+    CharacterControllerSystem* controllerSystem = nullptr;
+};
+
+class CharacterWeaponSystem : public DAVA::SceneSystem
+{
+public:
+    CharacterWeaponSystem(DAVA::Scene* scene);
 
     void PrepareForRemove() override;
     void Process(DAVA::float32 timeElapsed) override;

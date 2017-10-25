@@ -98,6 +98,7 @@ private:
 
     CharacterControllerSystem* characterControllerSystem = nullptr;
     CharacterMoveSystem* characterMoveSystem = nullptr;
+    CharacterWeaponSystem* characterWeaponSystem = nullptr;
     CharacterCameraSystem* characterCameraSystem = nullptr;
 
     DAVA::Entity* characterEntity = nullptr;
