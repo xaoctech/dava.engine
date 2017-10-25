@@ -33,12 +33,11 @@ void MotionState::Update(float32 dTime)
     animationPhase += dTime / duration;
     if (animationPhase >= 1.f)
     {
-        //animationPhase -= 1.f; //TODO: *Skinning* fix phase calculation on change phaseIndex
+        animationPhase -= 1.f; //TODO: *Skinning* fix phase calculation on change phaseIndex
 
         if (animationCurrPhaseIndex < uint32(markers.size()) && !markers[animationCurrPhaseIndex].empty())
             reachedMarkers.insert(markers[animationCurrPhaseIndex]);
 
-        animationPhase = 0.f;
         ++animationCurrPhaseIndex;
         if (animationCurrPhaseIndex == uint32(blendTree->GetPhasesCount()))
         {
