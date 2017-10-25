@@ -369,6 +369,11 @@ void PathSystem::InitPathComponent(DAVA::PathComponent* component)
 
 void PathSystem::Process(DAVA::float32 timeElapsed)
 {
+    if (isEditingEnabled == false)
+    {
+        return;
+    }
+
     for (const auto& node : entitiesForCollapse)
     {
         CollapsePathEntity(node.first, node.second);
