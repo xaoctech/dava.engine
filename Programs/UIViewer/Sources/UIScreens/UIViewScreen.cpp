@@ -14,6 +14,7 @@
 #include <UI/Flow/UIFlowStateSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
+#include <UI/UIControlBackground.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>
