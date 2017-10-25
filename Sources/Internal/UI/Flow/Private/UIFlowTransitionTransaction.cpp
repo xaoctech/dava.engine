@@ -363,7 +363,7 @@ void UIFlowTransitionTransaction::ApplyStepBackground(UIFlowStateSystem* system,
             }
             else
             {
-                state = state = State::Deactivate;
+                state = State::Deactivate;
             }
             break;
         case State::PrevScreenshot:
