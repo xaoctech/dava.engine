@@ -42,6 +42,7 @@ private:
     DAVA::MotionComponent* characterMotionComponent = nullptr;
     DAVA::Motion* moveMotion = nullptr;
     DAVA::Motion* aimMotion = nullptr;
+    DAVA::Motion* weaponMotion = nullptr;
 
     DAVA::Vector3 characterForward;
     DAVA::Vector3 characterLeft;
@@ -53,8 +54,7 @@ private:
     DAVA::float32 zoomFactor = 0.f;
 
     DAVA::uint32 headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
-    DAVA::uint32 wpLeftJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
-    DAVA::uint32 wpRightJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
+    DAVA::uint32 weaponPointJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
 
     bool isMoving = false;
     bool isRun = false;

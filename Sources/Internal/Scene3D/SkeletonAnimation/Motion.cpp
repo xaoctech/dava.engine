@@ -31,11 +31,7 @@ Motion::~Motion()
 
 void Motion::TriggerEvent(const FastName& trigger)
 {
-    MotionState* state = (nextState != nullptr) ? nextState->GetTransitionState(trigger) : currentState->GetTransitionState(trigger);
-    if (state != nullptr)
-    {
-        pendingState = state;
-    }
+    pendingState = (nextState != nullptr) ? nextState->GetTransitionState(trigger) : currentState->GetTransitionState(trigger);
 }
 
 void Motion::Update(float32 dTime)

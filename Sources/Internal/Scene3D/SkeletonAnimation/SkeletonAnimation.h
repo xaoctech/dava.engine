@@ -10,7 +10,7 @@ class AnimationClip;
 class SkeletonAnimation
 {
 public:
-    SkeletonAnimation(AnimationClip* animationClip);
+    SkeletonAnimation(AnimationClip* animationClip, const UnorderedSet<uint32>& ignoreMask = UnorderedSet<uint32>());
     ~SkeletonAnimation();
 
     void BindSkeleton(const SkeletonComponent* skeleton);
@@ -33,6 +33,7 @@ protected:
     AnimationClip* animationClip = nullptr;
 
     Vector<float32> syncPoints;
+    UnorderedSet<uint32> jointsIgnoreMask;
     uint32 maxJointIndex = 0;
 };
 

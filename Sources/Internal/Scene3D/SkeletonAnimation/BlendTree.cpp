@@ -44,7 +44,7 @@ void BlendTree::EvaluatePose(uint32 phaseIndex, float32 phase, const Vector<cons
 
 float32 BlendTree::EvaluatePhaseDuration(uint32 phaseIndex, const Vector<const float32*>& parameters) const
 {
-    float32 duration = 1.f;
+    float32 duration = 0.f;
     EvaluateRecursive(phaseIndex, 0.f, 0, 0.f, nodes.front(), parameters, nullptr, &duration, nullptr);
     return duration;
 }
@@ -56,6 +56,9 @@ void BlendTree::EvaluateRootOffset(uint32 phaseIndex0, float32 phase0, uint32 ph
 
 float32 BlendTree::GetAnimationPhaseTime(const Animation& animation, uint32 phaseIndex) const
 {
+    if (animation.treatAsPose)
+        return 0.f;
+
     float32 phaseStart = (phaseIndex > 0) ? animation.phaseEnds[phaseIndex - 1] : 0.f;
     float32 phaseEnd = animation.phaseEnds[phaseIndex];
 
@@ -64,6 +67,9 @@ float32 BlendTree::GetAnimationPhaseTime(const Animation& animation, uint32 phas
 
 float32 BlendTree::GetAnimationLocalTime(const Animation& animation, uint32 phaseIndex, float32 phase) const
 {
+    if (animation.treatAsPose)
+        return 0.f;
+
     float32 phaseStart = (phaseIndex > 0) ? animation.phaseEnds[phaseIndex - 1] : 0.f;
     float32 phaseEnd = animation.phaseEnds[phaseIndex];
 
@@ -204,6 +210,15 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phase
             EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr, nullptr);
             outPose->Add(pose1);
         }
+
+        if (outPhaseDuration != nullptr)
+        {
+            float32 dur0, dur1;
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, nullptr, &dur0, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, nullptr, &dur1, nullptr);
+
+            *outPhaseDuration = Max(dur0, dur1);
+        }
     }
     break;
     case TYPE_DIFF:
@@ -216,6 +231,15 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phase
             EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, nullptr, nullptr);
             EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr, nullptr);
             outPose->Diff(pose1);
+        }
+
+        if (outPhaseDuration != nullptr)
+        {
+            float32 dur0, dur1;
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, nullptr, &dur0, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, nullptr, &dur1, nullptr);
+
+            *outPhaseDuration = Max(dur0, dur1);
         }
     }
     break;
@@ -259,12 +283,33 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
         ScopedPtr<AnimationClip> animationClip(AnimationClip::Load(animationClipPath));
         if (animationClip)
         {
+            UnorderedSet<uint32> ignoreMask;
+            const YamlNode* ignoreMaskNode = yamlNode->Get("ignore-mask");
+            if (ignoreMaskNode != nullptr && ignoreMaskNode->GetType() == YamlNode::TYPE_ARRAY)
+            {
+                uint32 ignoreJointsCount = ignoreMaskNode->GetCount();
+                for (uint32 ij = 0; ij < ignoreJointsCount; ++ij)
+                {
+                    const YamlNode* ignoreJointNode = ignoreMaskNode->Get(ij);
+                    if (ignoreJointNode->GetType() == YamlNode::TYPE_STRING)
+                    {
+                        ignoreMask.insert(ignoreJointNode->AsUInt32());
+                    }
+                }
+            }
+
             node.animData.animationIndex = int32(animations.size());
 
             animations.emplace_back();
             BlendTree::Animation& animation = animations.back();
 
-            animation.skeletonAnimation = new SkeletonAnimation(animationClip);
+            animation.skeletonAnimation = new SkeletonAnimation(animationClip, ignoreMask);
+
+            const YamlNode* treatAsPoseNode = yamlNode->Get("treat-as-pose");
+            if (treatAsPoseNode != nullptr && treatAsPoseNode->GetType() == YamlNode::TYPE_STRING)
+            {
+                //animation.treatAsPose = treatAsPoseNode->AsBool();
+            }
 
             uint32 markerCount = animationClip->GetMarkerCount();
             if (markerCount != 0)

@@ -21,6 +21,9 @@ void MotionState::Reset()
 
 void MotionState::Update(float32 dTime)
 {
+    if (blendTree == nullptr)
+        return;
+
     reachedMarkers.clear();
     animationEndReached = false;
 
@@ -30,7 +33,7 @@ void MotionState::Update(float32 dTime)
     uint32 animationCurrPhaseIndex0 = animationCurrPhaseIndex;
 
     float32 duration = blendTree->EvaluatePhaseDuration(animationCurrPhaseIndex, boundParams);
-    animationPhase += dTime / duration;
+    animationPhase += (duration != 0.f) ? (dTime / duration) : 0.f;
     if (animationPhase >= 1.f)
     {
         animationPhase -= 1.f; //TODO: *Skinning* fix phase calculation on change phaseIndex
@@ -51,7 +54,8 @@ void MotionState::Update(float32 dTime)
 
 void MotionState::EvaluatePose(SkeletonPose* outPose) const
 {
-    blendTree->EvaluatePose(animationCurrPhaseIndex, animationPhase, boundParams, outPose);
+    if (blendTree != nullptr)
+        blendTree->EvaluatePose(animationCurrPhaseIndex, animationPhase, boundParams, outPose);
 }
 
 void MotionState::GetRootOffsetDelta(Vector3* offset) const

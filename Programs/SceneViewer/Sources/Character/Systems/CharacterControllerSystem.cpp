@@ -82,6 +82,7 @@ void CharacterControllerSystem::RemoveEntity(Entity* entity)
     characterMotionComponent = nullptr;
     moveMotion = nullptr;
     aimMotion = nullptr;
+    weaponMotion = nullptr;
     characterInited = false;
 }
 
@@ -98,26 +99,39 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
     if (!characterInited)
     {
-        moveMotion = characterMotionComponent->GetMotion(0);
-        moveMotion->BindParameter(FastName("running"), &runningParam);
-        moveMotion->BindParameter(FastName("crouching"), &crouchingParam);
-        moveMotion->BindParameter(FastName("direction-x"), &directionParam.x);
-        moveMotion->BindParameter(FastName("direction-y"), &directionParam.y);
-
-        aimMotion = characterMotionComponent->GetMotion(1);
-        aimMotion->BindParameter(FastName("running"), &runningParam);
-        aimMotion->BindParameter(FastName("aim-angle"), &aimAngleParam);
+        uint32 motionCount = characterMotionComponent->GetMotionsCount();
+        for (uint32 m = 0; m < motionCount; ++m)
+        {
+            Motion* motion = characterMotionComponent->GetMotion(m);
+            const FastName& motionName = motion->GetName();
+            if (motionName == FastName("MoveMotion"))
+            {
+                moveMotion = motion;
+                moveMotion->BindParameter(FastName("running"), &runningParam);
+                moveMotion->BindParameter(FastName("crouching"), &crouchingParam);
+                moveMotion->BindParameter(FastName("direction-x"), &directionParam.x);
+                moveMotion->BindParameter(FastName("direction-y"), &directionParam.y);
+            }
+            else if (motionName == FastName("AimMotion"))
+            {
+                aimMotion = motion;
+                aimMotion->BindParameter(FastName("running"), &runningParam);
+                aimMotion->BindParameter(FastName("aim-angle"), &aimAngleParam);
+            }
+            else if (motionName == FastName("WeaponMotion"))
+            {
+                weaponMotion = motion;
+            }
+        }
 
         SkeletonComponent* skeleton = GetSkeletonComponent(characterMeshEntity);
         DVASSERT(skeleton != nullptr);
 
         headJointIndex = skeleton->GetJointIndex(FastName("node-Head"));
-        wpLeftJointIndex = skeleton->GetJointIndex(FastName("node-LH_WP"));
-        wpRightJointIndex = skeleton->GetJointIndex(FastName("node-RH_WP"));
+        weaponPointJointIndex = skeleton->GetJointIndex(FastName("node-RH_WP"));
 
         DVASSERT(headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
-        DVASSERT(wpLeftJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
-        DVASSERT(wpRightJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+        DVASSERT(weaponPointJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
 
         characterInited = true;
     }
@@ -158,9 +172,9 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
     if (directionParam.y < moveDirectionTarget.y)
         directionParam.y += directionDt;
 
-    if (Abs(directionParam.x) * 1.4f < directionDt)
+    if (Abs(directionParam.x) < directionDt)
         directionParam.x = 0.f;
-    if (Abs(directionParam.y) * 1.4f < directionDt)
+    if (Abs(directionParam.y) < directionDt)
         directionParam.y = 0.f;
 
     directionParam.x = Clamp(directionParam.x, -1.f, 1.f);
@@ -188,6 +202,29 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
     const static FastName TRIGGER_MOVE("move");
     const static FastName TRIGGER_STOP("stop");
+
+    const static FastName TRIGGER_WEAPON_SHOOT("shoot");
+    const static FastName TRIGGER_WEAPON_RELOAD("reload");
+    const static FastName TRIGGER_WEAPON_IDLE("idle");
+
+    if (!isRun)
+    {
+        if (keyboard->GetKeyState(eInputElements::KB_R).IsJustPressed())
+        {
+            weaponMotion->TriggerEvent(TRIGGER_WEAPON_RELOAD);
+        }
+        else
+        {
+            if (mouse->GetLeftButtonState().IsPressed())
+            {
+                weaponMotion->TriggerEvent(TRIGGER_WEAPON_SHOOT);
+            }
+            else
+            {
+                weaponMotion->TriggerEvent(TRIGGER_WEAPON_IDLE);
+            }
+        }
+    }
 
     if (isMoving)
     {
@@ -258,11 +295,11 @@ void CharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
         return;
 
     SkeletonComponent* skeleton = GetSkeletonComponent(controllerSystem->characterMeshEntity);
-    Vector3 wpLeft = skeleton->GetJointObjectSpaceTransform(controllerSystem->wpLeftJointIndex).GetPosition();
-    Vector3 wpRight = skeleton->GetJointObjectSpaceTransform(controllerSystem->wpRightJointIndex).GetPosition();
+    Vector3 weaponPointPosition = skeleton->GetJointObjectSpaceTransform(controllerSystem->weaponPointJointIndex).GetPosition();
+    Quaternion weaponPointOrientation = skeleton->GetJointObjectSpaceTransform(controllerSystem->weaponPointJointIndex).GetOrientation();
 
-    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(-20.f)) * Matrix4::MakeRotation(Vector3::UnitZ, DegToRad(-8.f));
-    weaponTransform *= Quaternion::MakeRotation(-Vector3::UnitY, wpLeft - wpRight).GetMatrix() * Matrix4::MakeTranslation(wpRight);
+    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(90.f));
+    weaponTransform *= weaponPointOrientation.GetMatrix() * Matrix4::MakeTranslation(weaponPointPosition);
 
     controllerSystem->weaponEntity->SetLocalTransform(weaponTransform);
 }

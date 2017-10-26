@@ -5,8 +5,9 @@
 
 namespace DAVA
 {
-SkeletonAnimation::SkeletonAnimation(AnimationClip* clip)
+SkeletonAnimation::SkeletonAnimation(AnimationClip* clip, const UnorderedSet<uint32>& ignoreMask)
     : animationClip(SafeRetain(clip))
+    , jointsIgnoreMask(ignoreMask)
 {
     DVASSERT(animationClip);
 }
@@ -29,6 +30,9 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton)
     uint32 jointCount = skeleton->GetJointsCount();
     for (uint32 j = 0; j < jointCount; ++j)
     {
+        if (jointsIgnoreMask.count(j) != 0)
+            continue;
+
         const SkeletonComponent::Joint& joint = skeleton->GetJoint(j);
 
         for (uint32 t = 0; t < trackCount; ++t)

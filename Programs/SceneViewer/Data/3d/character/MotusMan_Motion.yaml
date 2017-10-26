@@ -232,6 +232,8 @@ Motions:
   blend-mode: Add #Can be Override, Add, Diff, LERP
   states:
    -
+    state-id: "none"
+   -
     state-id: "aim-state"
     blend-tree:
       operation: 
@@ -295,3 +297,65 @@ Motions:
            -
             param-value: 1.0
             clip: "~res:/3d/character/animations/Stand_Aim_Point/MIL2_M3_W2_Stand_Aim_Point_Center.anim"
+ -
+  name: "WeaponMotion"
+  blend-mode: Add #Can be Override, Add, Diff, LERP
+  states:
+   -
+    state-id: "idle"
+   -
+    state-id: "shoot"
+    blend-tree:
+      operation:
+        type: Diff
+      nodes:
+       -
+        clip: "~res:/3d/character/animations/Stand_Aim_Point/MIL2_M3_W2_Stand_Aim_Point_Center.anim"
+        treat-as-pose: true
+       -
+        clip: "~res:/3d/character/animations/MIL2_M3_W2_Stand_Fire_Continuous.anim"
+   -
+    state-id: "reload"
+    blend-tree:
+      operation:
+        type: Diff
+      nodes:
+       -
+        clip: "~res:/3d/character/animations/MIL2_M3_W2_Stand_Aim_Idle_Pose.anim"
+        ignore-mask: [0, 1, 3, 4, 5, 7, 8, 9, 10, 12, 13, 14, 19, 20, 24]
+        treat-as-pose: true
+       -
+        clip: "~res:/3d/character/animations/MIL2_M3_W2_Stand_Aim_Reload.anim"
+        ignore-mask: [0, 1, 3, 4, 5, 7, 8, 9, 10, 12, 13, 14, 19, 20, 24]
+
+  transitions:
+   -
+    src-state: "idle"
+    dst-state: "shoot"
+    type: replace
+    sync: immidiate
+    trigger: "shoot"
+   -
+    src-state: "idle"
+    dst-state: "reload"
+    type: replace
+    sync: immidiate
+    trigger: "reload"
+   -
+    src-state: "shoot"
+    dst-state: "idle"
+    type: replace
+    sync: immidiate
+    trigger: "idle"
+   -
+    src-state: "shoot"
+    dst-state: "reload"
+    type: replace
+    sync: immidiate
+    trigger: "reload"
+   -
+    src-state: "reload"
+    dst-state: "idle"
+    type: replace
+    sync: wait-end
+    trigger: "idle"
