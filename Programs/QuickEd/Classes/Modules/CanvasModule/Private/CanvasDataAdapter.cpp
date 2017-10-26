@@ -157,9 +157,7 @@ DAVA::Vector2 CanvasDataAdapter::GetStartValue() const
         return Vector2(0.0f, 0.0f);
     }
 
-    float32 scale = GetScale();
-    Vector2 startValue = (GetPosition() + canvasData->GetRootPosition() * scale) * -1;
-    return Vector2(startValue.x, startValue.y);
+    return -1.0f * GetPosition();
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetLastValue() const
