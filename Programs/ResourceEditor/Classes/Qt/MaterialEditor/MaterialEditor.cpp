@@ -1134,15 +1134,9 @@ void MaterialEditor::OnReloadTexture()
             DAVA::Texture* texture = DAVA::Texture::Get(path);
             if (texture != nullptr)
             {
-                texture->ReloadAs(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
-
-                DAVA::Set<DAVA::NMaterial*> materials;
-                SceneHelper::EnumerateMaterials(activeScene, materials);
-                for (auto mat : materials)
-                {
-                    if (mat->ContainsTexture(texture))
-                        mat->InvalidateTextureBindings();
-                }
+                DAVA::Vector<DAVA::Texture*> reloadTextures;
+                reloadTextures.push_back(texture);
+                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
             }
         }
     }

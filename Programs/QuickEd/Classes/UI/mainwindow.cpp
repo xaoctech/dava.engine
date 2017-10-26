@@ -35,7 +35,6 @@ MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* t
     ui->setupUi(this);
     setObjectName("QuickEd"); //we need to support old names to save window settings
 
-    ui->libraryWidget->Setup(tarcUi, accessor);
     ui->propertiesWidget->SetAccessor(accessor);
     ui->propertiesWidget->SetUI(tarcUi);
 
@@ -88,8 +87,13 @@ void MainWindow::SetupViewMenu()
     // Setup the common menu actions.
     QList<QAction*> dockWidgetToggleActions;
     dockWidgetToggleActions << ui->propertiesWidget->toggleViewAction()
+<<<<<<< HEAD
                             << ui->libraryWidget->toggleViewAction()
-                            << ui->toolBarGlobal->toggleViewAction();
+    == == ==
+    =
+    << ui->packageWidget->toggleViewAction()
+>>>>>>> team-kl/development
+    << ui->toolBarGlobal->toggleViewAction();
 
     ui->Dock->insertActions(nullptr, dockWidgetToggleActions);
 }

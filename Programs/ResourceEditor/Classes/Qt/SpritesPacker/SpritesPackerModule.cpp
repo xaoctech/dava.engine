@@ -10,7 +10,7 @@
 #include <QtTools/ReloadSprites/DialogReloadSprites.h>
 #include <QtTools/ReloadSprites/SpritesPacker.h>
 
-#include <Tools/AssetCache/AssetCacheClient.h>
+#include <DavaTools/AssetCache/AssetCacheClient.h>
 
 #include <Engine/Engine.h>
 #include <Job/JobManager.h>

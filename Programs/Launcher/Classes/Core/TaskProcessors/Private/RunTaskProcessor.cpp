@@ -1,5 +1,5 @@
 #include "Core/TaskProcessors/RunTaskProcessor.h"
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 #include "Core/Receiver.h"
 
 void RunTaskProcessor::AddTask(std::unique_ptr<BaseTask>&& task, Notifier notifier)

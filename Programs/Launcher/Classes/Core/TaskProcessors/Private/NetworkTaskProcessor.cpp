@@ -1,5 +1,5 @@
 #include "Core/TaskProcessors/NetworkTaskProcessor.h"
-#include "Core/Tasks/DownloadTask.h"
+#include "Core/CommonTasks/DownloadTask.h"
 #include "Core/Receiver.h"
 
 #include <QNetworkReply>

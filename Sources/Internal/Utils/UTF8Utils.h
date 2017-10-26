@@ -11,12 +11,31 @@ namespace DAVA
 namespace UTF8Utils
 {
 /**
+    List of errors for SafeEncodeToWideString function
+*/
+enum eSafeEncodeError
+{
+    NONE = 0, //!< no errors
+    NON_UTF8_SYMBOLS_REPLACED, //!< original string contains non-utf8 symbols which was replaced by '?'
+    STRING_NOT_ENCODED //!< original string wasn't encoded
+};
+
+/**
         \brief convert UTF8 string to WideString
         \param[in] string string in UTF8 format
         \param[in] size size of buffer allocated for this string
         \param[out] resultString result unicode string
      */
 void EncodeToWideString(const uint8* string, size_type size, WideString& resultString);
+
+/**
+        \brief convert UTF8 string to WideString without throwing utf8::exception
+        \param[in] string string in UTF8 format
+        \param[in] size size of buffer allocated for this string
+        \param[out] resultString result unicode string
+        \param[out] encodeError encoding error
+*/
+void SafeEncodeToWideString(const uint8* string, size_t size, WideString& result, eSafeEncodeError& encodeError);
 
 /**
         \brief convert UTF8 string to WideString
@@ -30,6 +49,18 @@ inline WideString EncodeToWideString(const String& utf8String)
     return str;
 }
 
+/**
+        \brief convert UTF8 string to WideString without throwing utf8::exception
+        \param[in] utf8String string in UTF8 format
+        \param[out] encodeError encoding error
+        \return string in unicode
+*/
+inline WideString SafeEncodeToWideString(const String& utf8String, eSafeEncodeError& encodeError)
+{
+    WideString str;
+    SafeEncodeToWideString(reinterpret_cast<const uint8*>(utf8String.c_str()), utf8String.length(), str, encodeError);
+    return str;
+}
 /**
      \brief convert WideString string to UTF8
      \param[in] wstring string in WideString format

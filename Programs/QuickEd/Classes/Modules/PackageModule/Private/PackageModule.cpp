@@ -6,6 +6,7 @@
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/Utils/CommonFieldNames.h>
 
 #include <Reflection/ReflectedTypeDB.h>
 
@@ -662,6 +663,28 @@ void PackageModule::CreateActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint("Find", { InsertionParams::eInsertionMethod::AfterItem, jumpToPrototypeActionName }));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    }
+
+    AddSeparatorIntoTreeView();
+
+    // Collapse all
+    {
+        const QString actionName = "Collapse all";
+        QtAction* action = new QtAction(accessor, actionName);
+        action->setShortcutContext(Qt::WidgetShortcut);
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<ContextAccessor>();
+        fieldDescr.fieldName = FastName(ActiveContextFieldName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+                                         {
+                                             return fieldValue.Cast<DataContext*>(nullptr) != nullptr;
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCollapseAll, this));
+
+        MakeBindable(action);
+        AddActionIntoTreeViewOnly(action);
     }
 }
 

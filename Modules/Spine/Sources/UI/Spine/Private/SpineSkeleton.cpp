@@ -10,6 +10,7 @@
 #include <Logger/Logger.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
+#include <Render/Texture.h>
 #include <UI/UIControl.h>
 #include <UI/UIControlSystem.h>
 

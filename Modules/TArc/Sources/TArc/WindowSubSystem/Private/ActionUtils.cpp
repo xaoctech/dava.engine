@@ -20,6 +20,23 @@ DAVA::Vector<std::pair<QString, InsertionParams::eInsertionMethod>> convertionMa
     { QString("before"), InsertionParams::eInsertionMethod::BeforeItem }
 };
 
+QString ConvertToUrlPath(QList<QString> menusPath)
+{
+    QString path;
+    if (!menusPath.isEmpty())
+    {
+        path = menusPath.front();
+        menusPath.pop_front();
+        while (!menusPath.isEmpty())
+        {
+            path += "$/" + menusPath.front();
+            menusPath.pop_front();
+        }
+    }
+
+    return path;
+}
+
 QUrl CreateUrl(const QString scemeName, const QString& path, const InsertionParams& params)
 {
     QUrl url;
@@ -51,24 +68,20 @@ QUrl CreateMenuPoint(const QString& menuName, const InsertionParams& params)
 
 QUrl CreateMenuPoint(QList<QString> menusPath, const InsertionParams& params /*= InsertionParams()*/)
 {
-    QString path;
-    if (!menusPath.isEmpty())
-    {
-        path = menusPath.front();
-        menusPath.pop_front();
-        while (!menusPath.isEmpty())
-        {
-            path += "$/" + menusPath.front();
-            menusPath.pop_front();
-        }
-    }
-
+    QString path = ActionUtilsDetail::ConvertToUrlPath(menusPath);
     return CreateMenuPoint(path, params);
 }
 
 QUrl CreateToolbarPoint(const QString& toolbarName, const InsertionParams& params)
 {
     return ActionUtilsDetail::CreateUrl(toolbarScheme, toolbarName, params);
+}
+
+QUrl CreateToolbarMenuPoint(const QString& toolbarName, QList<QString> menusPath, const InsertionParams& params /*= InsertionParams()*/)
+{
+    menusPath.prepend(toolbarName);
+    QString path = ActionUtilsDetail::ConvertToUrlPath(menusPath);
+    return ActionUtilsDetail::CreateUrl(toolbarScheme, path, params);
 }
 
 QUrl CreateStatusbarPoint(bool isPermanent, uint32 stretchFactor, const InsertionParams& params)

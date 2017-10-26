@@ -11,10 +11,12 @@
 #include "Time/SystemTimer.h"
 #include "Engine/Engine.h"
 #include "Debug/Backtrace.h"
+#include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
+#include "Debug/Private/ImGui.h"
 
 #include <iomanip>
 
@@ -109,8 +111,8 @@ bool DLCManagerImpl::IsProfilingEnabled() const
 }
 
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : engine(*engine_)
-    , profiler(1024 * 16)
+    : profiler(1024 * 16)
+    , engine(*engine_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -130,21 +132,83 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
                                                           {
                                                               OnSettingsChanged(value);
                                                           });
+
+    gestureChecker.debugGestureMatch.DisconnectAll();
+
+    gestureChecker.debugGestureMatch.Connect(this, [this]() {
+        Logger::Debug("enable mini imgui for dlc profiling");
+        GetPrimaryWindow()->draw.Disconnect(this);
+        GetPrimaryWindow()->draw.Connect(this, [this](Window*) {
+            // TODO move it later to common ImGui setting system
+            if (ImGui::IsInitialized())
+            {
+                {
+                    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
+                    ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
+
+                    bool isImWindowOpened = true;
+                    ImGui::Begin("DLC Profiling Window", &isImWindowOpened);
+
+                    if (isImWindowOpened)
+                    {
+                        if (ImGui::Button("start dlc profiler"))
+                        {
+                            profiler.Start();
+                            profilerState = "started";
+                        }
+
+                        if (ImGui::Button("stop dlc profiler"))
+                        {
+                            profiler.Stop();
+                            profilerState = "stopped";
+                        }
+
+                        if (ImGui::Button("dump to"))
+                        {
+                            profilerState = "dumpped: (" + DumpToJsonProfilerTrace() + ")";
+                        }
+
+                        ImGui::Text("profiler state: %s", profilerState.c_str());
+                    }
+                    else
+                    {
+                        profiler.Stop();
+                        GetPrimaryWindow()->draw.Disconnect(this);
+                    }
+                    ImGui::End();
+                }
+            }
+        });
+    });
 }
 
-void DLCManagerImpl::DumpToJsonProfilerTrace()
+String DLCManagerImpl::DumpToJsonProfilerTrace()
 {
-    FileSystem* fs = GetEngineContext()->fileSystem;
-    FilePath docPath = fs->GetPublicDocumentsPath();
-    String name = docPath.GetAbsolutePathname() + "/dlc_manager_profiler.json";
-    std::ofstream file(name);
-    char buf[16 * 1024];
-    file.rdbuf()->pubsetbuf(buf, sizeof(buf));
-    if (file)
+    String outputPath;
+    if (profiler.IsStarted() == false)
     {
-        Vector<TraceEvent> events = profiler.GetTrace();
-        TraceEvent::DumpJSON(events, file);
+        FileSystem* fs = GetEngineContext()->fileSystem;
+        FilePath docPath = fs->GetPublicDocumentsPath();
+        String name = docPath.GetAbsolutePathname() + "dlc_prof.json";
+        std::ofstream file(name);
+        char buf[16 * 1024];
+        file.rdbuf()->pubsetbuf(buf, sizeof(buf));
+        if (file)
+        {
+            Vector<TraceEvent> events = profiler.GetTrace();
+            TraceEvent::DumpJSON(events, file);
+            outputPath = name;
+        }
+        else
+        {
+            outputPath = "cant' open file: " + name;
+        }
     }
+    else
+    {
+        outputPath = "error: profiler is started";
+    }
+    return outputPath;
 }
 
 void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
@@ -1250,7 +1314,7 @@ uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
 
     for (uint32 fileIndex : fileIndexes)
     {
-        const auto& fileInfo = allFiles.at(fileIndex);
+        const auto& fileInfo = allFiles[fileIndex];
         result += fileInfo.compressedSize;
     }
 
@@ -1436,6 +1500,8 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     using namespace DAVA;
     using namespace PackFormat;
 
+    DVASSERT(Thread::IsMainThread());
+
     if (!IsInitialized())
     {
         lastProgress.isRequestingEnabled = false;
@@ -1482,6 +1548,64 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
     lastProgress.isRequestingEnabled = true;
 
     return lastProgress;
+}
+
+DLCManager::Progress DLCManager::GetPacksProgress(const Vector<String>& packNames) const
+{
+    return Progress();
+}
+
+DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& packNames) const
+{
+    using namespace DAVA;
+    DVASSERT(Thread::IsMainThread());
+
+    if (!IsInitialized())
+    {
+        return Progress();
+    }
+
+    // 1. make flat set with all pack with it's dependencies
+    // 2. go throw all files and check if it's pack in set
+
+    allPacks.clear();
+    childrenPacks.clear();
+
+    size_t packsCount = meta->GetPacksCount();
+
+    allPacks.reserve(packsCount);
+    childrenPacks.reserve(packsCount);
+
+    for (const String& packName : packNames)
+    {
+        uint32 packIndex = meta->GetPackIndex(packName);
+        meta->CollectDependencies(packIndex, childrenPacks);
+        for (const uint32 childPackIndex : childrenPacks)
+        {
+            allPacks.insert(childPackIndex);
+        }
+        allPacks.insert(packIndex);
+    }
+
+    Progress result;
+    result.isRequestingEnabled = IsRequestingEnabled();
+    // go throw all files
+    const auto& allFiles = usedPackFile.filesTable.data.files;
+    size_t numFiles = allFiles.size();
+    for (size_t fileIndex = 0; fileIndex < numFiles; ++fileIndex)
+    {
+        const auto& fileInfo = allFiles[fileIndex];
+        if (allPacks.find(fileInfo.metaIndex) != end(allPacks))
+        {
+            result.total += fileInfo.compressedSize;
+            if (IsFileReady(fileIndex))
+            {
+                result.alreadyDownloaded += fileInfo.compressedSize;
+            }
+        }
+    }
+
+    return result;
 }
 
 DLCManager::Info DLCManager::GetInfo() const

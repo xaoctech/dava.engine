@@ -32,7 +32,6 @@ struct PackageContext;
 class ControlNode;
 class StyleSheetNode;
 class PackageBaseNode;
-class FilteredPackageModel;
 class PackageModel;
 class PackageNode;
 class QItemSelection;
@@ -59,6 +58,7 @@ public:
 
     void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
     void SetUI(DAVA::TArc::UI* ui);
+    void BindActionsToTArc();
 
     PackageModel* GetPackageModel() const;
     using ExpandedIndexes = QModelIndexList;
@@ -71,10 +71,12 @@ signals:
 
 public slots:
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
-    void OnFilterTextChanged(const QString&);
     void OnRename();
     void OnBeforeProcessNodes(const SelectedNodes& nodes);
     void OnAfterProcessNodes(const SelectedNodes& nodes);
+
+private slots:
+    void ExpandToFirstChild();
 
 private:
     void SetSelectedNodes(const SelectedNodes& selection);
@@ -88,13 +90,11 @@ private:
     ExpandedIndexes GetExpandedIndexes() const;
     void RestoreExpandedIndexes(const ExpandedIndexes& indexes);
 
-    FilteredPackageModel* filteredPackageModel = nullptr;
     PackageModel* packageModel = nullptr;
 
     SelectionContainer selectionContainer;
     SelectedNodes expandedNodes;
     //source indexes
-    bool lastFilterTextEmpty = true;
     PackageContext* currentContext = nullptr;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
@@ -105,5 +105,4 @@ private:
 struct PackageContext
 {
     PackageWidget::ExpandedIndexes expandedIndexes;
-    QString filterString;
 };

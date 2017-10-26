@@ -46,12 +46,11 @@ private:
     void OnUndo();
     void OnRedo();
 
-    void DoGroupSelection();
-
     //View
     void CreateViewActions();
     void CreateFindActions();
 
+    void OpenPackageFiles(const QStringList& links);
     DAVA::TArc::DataContext::ContextID OpenDocument(const QString& path);
     DAVA::RefPtr<PackageNode> CreatePackage(const QString& path);
 

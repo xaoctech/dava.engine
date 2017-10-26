@@ -14,7 +14,7 @@ UIControl and set in it `DRAW_BATCH` draw type.
 class UISpineComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UISpineComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UISpineComponent);
+    DECLARE_UI_COMPONENT(UISpineComponent);
 
 public:
     /** Available animation states. */

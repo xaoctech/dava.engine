@@ -2,14 +2,17 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/TextBlock.h"
 #include "Render/2D/TextBlockSoftwareRender.h"
-#include "UI/Text/Private/UITextSystemLink.h"
-#include "UI/Text/UITextComponent.h"
+#include "Render/Renderer.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/Render/UISceneComponent.h"
+#include "UI/Text/Private/UITextSystemLink.h"
+#include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
 #include "UI/UIScreenshoter.h"
@@ -439,7 +442,7 @@ static void DrawLocalizationErrors(const UITextSystemLink* link, const UIGeometr
     TextBlock* textBlock = link->GetTextBlock();
 
     UIGeometricData elementGeomData;
-    const Sprite::DrawState& lastDrawStae = textBg->GetLastDrawState();
+    const SpriteDrawState& lastDrawStae = textBg->GetLastDrawState();
     elementGeomData.position = lastDrawStae.position;
     elementGeomData.angle = lastDrawStae.angle;
     elementGeomData.scale = lastDrawStae.scale;

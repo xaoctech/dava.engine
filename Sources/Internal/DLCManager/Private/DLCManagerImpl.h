@@ -6,6 +6,7 @@
 #include "DLCManager/DLCDownloader.h"
 #include "DLCManager/Private/RequestManager.h"
 #include "DLCManager/Private/PackRequest.h"
+#include "DLCManager/Private/DebugGestureListener.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
@@ -150,6 +151,8 @@ public:
 
     Progress GetProgress() const override;
 
+    Progress GetPacksProgress(const Vector<String>& packNames) const override;
+
     Info GetInfo() const override;
 
     const FilePath& GetLocalPacksDirectory() const;
@@ -216,7 +219,7 @@ private:
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
-    void DumpToJsonProfilerTrace();
+    String DumpToJsonProfilerTrace();
 
     enum class ScanState : uint32
     {
@@ -306,10 +309,16 @@ private:
 
     Hints hints;
 
+    String profilerState;
+    DebugGestureListener gestureChecker;
+
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session
 
     std::unique_ptr<DLCDownloader> downloader;
+
+    mutable UnorderedSet<uint32> allPacks; // reuse memory
+    mutable PackMetaData::Children childrenPacks; // reuse memory
 
     // collect errno codes and count it, also remember last error code
     size_t errorCounter = 0;
