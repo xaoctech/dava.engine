@@ -93,6 +93,7 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         scene->AddSystem(characterCameraSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->renderUpdateSystem);
 
         sceneView = new DAVA::UI3DView(GetRect());
+        sceneView->SetMultiInput(true);
         //sceneView->SetFrameBufferScaleFactor(0.5f);
         //sceneView->SetDrawToFrameBuffer(true);
         AddControl(sceneView);
