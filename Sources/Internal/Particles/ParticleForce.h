@@ -33,7 +33,7 @@ public:
     {
         DRAG_FORCE = 0, // Also force priority.
         WIND,
-        LORENTZ_FORCE,
+        VORTEX,
         GRAVITY,
         POINT_GRAVITY,
         PLANE_COLLISION

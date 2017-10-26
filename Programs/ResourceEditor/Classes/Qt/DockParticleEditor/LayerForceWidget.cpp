@@ -46,7 +46,7 @@ const DAVA::Array<TimingMap, 4> timingMap =
 DAVA::Map<DAVA::ParticleForce::eType, QString> forceTypes =
 {
   { DAVA::ParticleForce::eType::DRAG_FORCE, "Drag Force" },
-  { DAVA::ParticleForce::eType::LORENTZ_FORCE, "Lorentz Force" },
+  { DAVA::ParticleForce::eType::VORTEX, "Vortex" },
   { DAVA::ParticleForce::eType::GRAVITY, "Gravity" },
   { DAVA::ParticleForce::eType::WIND, "Wind" },
   { DAVA::ParticleForce::eType::POINT_GRAVITY, "Point Gravity" },
@@ -245,7 +245,7 @@ void LayerForceWidget::UpdateVisibility(DAVA::ParticleForce::eShape shape, DAVA:
     using ForceType = DAVA::ParticleForce::eType;
     bool isGravity = forceType == ForceType::GRAVITY;
     bool isWind = forceType == ForceType::WIND;
-    bool isDirectionalForce = forceType == ForceType::LORENTZ_FORCE || forceType == ForceType::WIND || forceType == ForceType::PLANE_COLLISION;
+    bool isDirectionalForce = forceType == ForceType::VORTEX || forceType == ForceType::WIND || forceType == ForceType::PLANE_COLLISION;
     bool isPointGravity = forceType == ForceType::POINT_GRAVITY;
 
     isGlobalWarning->setVisible(isGlobalForce);

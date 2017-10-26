@@ -20,7 +20,7 @@ DAVA::Map<ForceType, String> forceNames =
 {
   { ForceType::DRAG_FORCE, "Drag" },
   { ForceType::WIND, "Wind" },
-  { ForceType::LORENTZ_FORCE, "Vortex" },
+  { ForceType::VORTEX, "Vortex" },
   { ForceType::GRAVITY, "Gravity" },
   { ForceType::POINT_GRAVITY, "Magnet" },
   { ForceType::PLANE_COLLISION, "Plane Collision" }
@@ -637,15 +637,15 @@ void CommandAddParticleDrag::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::DRAG_FORCE);
 }
 
-CommandAddParticleLorentzForce::CommandAddParticleLorentzForce(DAVA::ParticleLayer* layer)
-    : CommandAction(CMDID_PARTICLE_EMITTER_LORENTZ_FORCE_ADD)
+CommandAddParticleVortex::CommandAddParticleVortex(DAVA::ParticleLayer* layer)
+    : CommandAction(CMDID_PARTICLE_EMITTER_VORTEX_ADD)
     , selectedLayer(layer)
 {
 }
 
-void CommandAddParticleLorentzForce::Redo()
+void CommandAddParticleVortex::Redo()
 {
-    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::LORENTZ_FORCE);
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::VORTEX);
 }
 
 CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)

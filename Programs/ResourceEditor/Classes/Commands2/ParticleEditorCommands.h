@@ -162,10 +162,10 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
-class CommandAddParticleLorentzForce : public CommandAction
+class CommandAddParticleVortex : public CommandAction
 {
 public:
-    CommandAddParticleLorentzForce(DAVA::ParticleLayer* layer);
+    CommandAddParticleVortex(DAVA::ParticleLayer* layer);
     void Redo() override;
 
 protected:

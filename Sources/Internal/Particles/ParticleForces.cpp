@@ -109,7 +109,7 @@ T GetValue(const ParticleForce* force, float32 particleOverLife, float32 layerOv
 }
 
 void ApplyDragForce(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
-void ApplyLorentzForce(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
+void ApplyVortex(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
 void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& forcePosition);
 void ApplyGravity(const ParticleForce* force, Vector3& velocity, const Vector3& down, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
 void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
@@ -127,8 +127,8 @@ void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position
     case ForceType::DRAG_FORCE:
         ApplyDragForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
         break;
-    case ForceType::LORENTZ_FORCE:
-        ApplyLorentzForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
+    case ForceType::VORTEX:
+        ApplyVortex(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
         break;
     case ForceType::GRAVITY:
         ApplyGravity(force, velocity, down, dt, particleOverLife, layerOverLife, particle);
@@ -143,6 +143,7 @@ void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position
         ApplyPlaneCollision(force, velocity, position, particle, prevPosition, forcePosition);
         break;
     default:
+        DVASSERT(false);
         break;
     }
 }
@@ -173,7 +174,7 @@ void ApplyDragForce(const ParticleForce* force, Vector3& velocity, const Vector3
     velocity *= v;
 }
 
-void ApplyLorentzForce(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
+void ApplyVortex(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition)
 {
     Vector3 forceDir = (position - forcePosition).CrossProduct(force->direction);
     float32 len = forceDir.SquareLength();

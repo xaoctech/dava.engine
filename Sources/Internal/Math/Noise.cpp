@@ -15,10 +15,10 @@ Vector4 Permute(const Vector4& v)
     Vector4 vs = v * 34.0f;
     return Vector4
     (
-      std::fmod((vs.x + 1.0f) * v.x, 289.0f),
-      std::fmod((vs.y + 1.0f) * v.y, 289.0f),
-      std::fmod((vs.z + 1.0f) * v.z, 289.0f),
-      std::fmod((vs.w + 1.0f) * v.w, 289.0f)
+    std::fmod((vs.x + 1.0f) * v.x, 289.0f),
+    std::fmod((vs.y + 1.0f) * v.y, 289.0f),
+    std::fmod((vs.z + 1.0f) * v.z, 289.0f),
+    std::fmod((vs.w + 1.0f) * v.w, 289.0f)
     );
 }
 
@@ -28,10 +28,10 @@ Vector4 TaylorInvSqrt(const Vector4& r)
     static const float32 num = 1.79284291400159f;
     return Vector4
     (
-      num - rs.x,
-      num - rs.y,
-      num - rs.z,
-      num - rs.w
+    num - rs.x,
+    num - rs.y,
+    num - rs.z,
+    num - rs.w
     );
 }
 
@@ -39,9 +39,9 @@ Vector3 Fade(const Vector3& t)
 {
     return Vector3
     (
-      t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
-      t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f),
-      t.z * t.z * t.z * (t.z * (t.z * 6.0f - 15.0f) + 10.0f)
+    t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
+    t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f),
+    t.z * t.z * t.z * (t.z * (t.z * 6.0f - 15.0f) + 10.0f)
     );
 }
 
@@ -49,8 +49,8 @@ Vector2 Fade(const Vector2& t)
 {
     return Vector2
     (
-      t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
-      t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
+    t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
+    t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
     );
 }
 

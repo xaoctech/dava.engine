@@ -692,7 +692,7 @@ const QIcon& SceneTreeItemParticleForce::ItemIcon() const
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
     }
-    else if (force->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
+    else if (force->type == DAVA::ParticleForce::eType::VORTEX)
     {
         return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico.png") : DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_red.png");
     }

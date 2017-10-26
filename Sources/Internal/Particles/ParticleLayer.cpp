@@ -54,7 +54,7 @@ struct ForceTypeMap
 const Array<ForceTypeMap, 6> forceTypesMap =
 { {
 { ForceType::DRAG_FORCE, "drag" },
-{ ForceType::LORENTZ_FORCE, "lorentz" },
+{ ForceType::VORTEX, "vortex" },
 { ForceType::POINT_GRAVITY, "pointgr" },
 { ForceType::PLANE_COLLISION, "plncoll" },
 { ForceType::GRAVITY, "grav" },

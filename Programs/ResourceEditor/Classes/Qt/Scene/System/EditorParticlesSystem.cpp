@@ -238,7 +238,7 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
     DAVA::ParticleEmitterInstance* emitterInstance = GetLayerOwner(layer);
     DAVA::ParticleEffectComponent* effectComponent = emitterInstance->GetOwner();
     DAVA::Entity* entity = effectComponent->GetEntity();
-    if (force->type == ForceType::LORENTZ_FORCE || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
+    if (force->type == ForceType::VORTEX || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
     {
         float32 scale = 1.0f;
         HoodSystem* hoodSystem = static_cast<SceneEditor2*>(GetScene())->hoodSystem;

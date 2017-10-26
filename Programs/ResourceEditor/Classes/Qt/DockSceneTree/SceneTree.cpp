@@ -774,7 +774,7 @@ protected:
         menu.addSeparator();
         Connect(menu.addAction(SharedIcon(":/QtIcons/force.png"), QStringLiteral("Add Force")), this, &ParticleLayerContextMenu::AddForce);
         Connect(menu.addAction(SharedIcon(":/QtIcons/turtle.png"), QStringLiteral("Add Drag")), this, &ParticleLayerContextMenu::AddDrag);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/vortex_ico.png"), QStringLiteral("Add Lorentz Force")), this, &ParticleLayerContextMenu::AddLorentzForce);
+        Connect(menu.addAction(SharedIcon(":/QtIcons/vortex_ico.png"), QStringLiteral("Add Vortex")), this, &ParticleLayerContextMenu::AddVortex);
         Connect(menu.addAction(SharedIcon(":/QtIcons/gravity.png"), QStringLiteral("Add Gravity")), this, &ParticleLayerContextMenu::AddGravity);
         Connect(menu.addAction(SharedIcon(":/QtIcons/wind_p.png"), QStringLiteral("Add Wind")), this, &ParticleLayerContextMenu::AddWind);
         Connect(menu.addAction(SharedIcon(":/QtIcons/pointGravity.png"), QStringLiteral("Add Point Gravity")), this, &ParticleLayerContextMenu::AddPointGravity);
@@ -810,9 +810,9 @@ private:
         MarkStructureChanged();
     }
 
-    void AddLorentzForce()
+    void AddVortex()
     {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleLorentzForce(layerItem->GetLayer())));
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleVortex(layerItem->GetLayer())));
         MarkStructureChanged();
     }
 
@@ -837,6 +837,7 @@ private:
     void AddPlaneCollision()
     {
         GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticlePlaneCollision(layerItem->GetLayer())));
+        MarkStructureChanged();
     }
 
 private:
@@ -896,9 +897,9 @@ protected:
             removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/remove_turtle.png");
         }
-        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
+        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::VORTEX)
         {
-            removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Lorentz Force") : QStringLiteral("Remove Lorentz Forces");
+            removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Vortex") : QStringLiteral("Remove Vortices");
             icon = &DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_remove.png");
         }
         else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::GRAVITY)
@@ -938,8 +939,8 @@ private:
         DAVA::String commandName;
         if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
             commandName = "Remove Drag force";
-        else if (force->type == DAVA::ParticleForce::eType::LORENTZ_FORCE)
-            commandName = "Remove Lorentz force";
+        else if (force->type == DAVA::ParticleForce::eType::VORTEX)
+            commandName = "Remove Vortex";
         else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
             commandName = "Remove Gravity";
         else if (force->type == DAVA::ParticleForce::eType::WIND)
@@ -1332,7 +1333,7 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE,
     CMDID_PARTICLE_EMITTER_DRAG_ADD,
-    CMDID_PARTICLE_EMITTER_LORENTZ_FORCE_ADD,
+    CMDID_PARTICLE_EMITTER_VORTEX_ADD,
     CMDID_PARTICLE_EMITTER_GRAVITY_ADD,
     CMDID_PARTICLE_EMITTER_WIND_ADD,
     CMDID_PARTICLE_EMITTER_POINT_GRAVITY_ADD,
