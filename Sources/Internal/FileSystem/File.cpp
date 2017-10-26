@@ -5,6 +5,7 @@
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/FileAPIHelper.h"
 #include "FileSystem/FileSystem.h"
+#include "FileSystem/FileSystemDelegate.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/CheckIOError.h"
 #include "FileSystem/ResourceArchive.h"
@@ -89,6 +90,16 @@ File* File::Create(const FilePath& filename, uint32 attributes)
 
     //Tags
     FileSystem* fs = FileSystem::Instance();
+    FileSystemDelegate* fsDelegate = fs->GetDelegate();
+    if (fsDelegate != nullptr)
+    { // hooked check: can we continue work with file?
+        String path = filename.GetAbsolutePathname();
+        if (fsDelegate->CanCreateFile(path, attributes) == false)
+        {
+            return nullptr;
+        }
+    }
+
     if (!(attributes & (WRITE | CREATE | APPEND)) && fs->filenamesTag.empty() == false)
     {
         FilePath taggedFilename = filename;
