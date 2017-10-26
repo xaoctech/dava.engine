@@ -22,7 +22,7 @@
 
 #include "QECommands/ChangePropertyValueCommand.h"
 
-#include "PackageMimeData.h"
+#include "Classes/Modules/PackageModule/PackageMimeData.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -38,7 +38,7 @@
 
 using namespace DAVA;
 
-namespace PackageModel_local
+namespace PackageModelDetails
 {
 void SetAbsoulutePosToControlNode(PackageNode* package, ControlNode* node, ControlNode* dstNode, const DAVA::Vector2& pos)
 {
@@ -528,7 +528,7 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
                 {
                     for (const auto& node : nodes)
                     {
-                        PackageModel_local::SetAbsoulutePosToControlNode(package.Get(), node, destControl, *pos);
+                        PackageModelDetails::SetAbsoulutePosToControlNode(package.Get(), node, destControl, *pos);
                     }
                 }
             }
@@ -587,7 +587,7 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
                     auto control = dynamic_cast<ControlNode*>(node);
                     if (control != nullptr)
                     {
-                        PackageModel_local::SetAbsoulutePosToControlNode(package.Get(), control, destControl, *pos);
+                        PackageModelDetails::SetAbsoulutePosToControlNode(package.Get(), control, destControl, *pos);
                     }
                 }
             }

@@ -48,19 +48,6 @@ QString FindFileDialog::GetFilePath(DAVA::TArc::ContextAccessor* accessor, const
     return QString();
 }
 
-QAction* FindFileDialog::CreateFindInFilesAction(QWidget* parent)
-{
-    QAction* findInFilesAction = new QAction(tr("Find file in project"), parent);
-    findInFilesAction->setShortcutContext(Qt::ApplicationShortcut);
-
-    QList<QKeySequence> keySequences;
-    keySequences << Qt::CTRL + Qt::SHIFT + Qt::Key_O;
-    keySequences << Qt::ALT + Qt::SHIFT + Qt::Key_O;
-
-    findInFilesAction->setShortcuts(keySequences);
-    return findInFilesAction;
-}
-
 FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, const DAVA::String& lastUsedPath_, QWidget* parent)
     : QDialog(parent, Qt::Popup)
     , ui(new Ui::FindFileDialog())

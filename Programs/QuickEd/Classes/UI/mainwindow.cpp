@@ -38,8 +38,6 @@ MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* t
     ui->libraryWidget->Setup(tarcUi, accessor);
     ui->propertiesWidget->SetAccessor(accessor);
     ui->propertiesWidget->SetUI(tarcUi);
-    ui->packageWidget->SetAccessor(accessor);
-    ui->packageWidget->SetUI(tarcUi);
 
     setWindowIcon(QIcon(":/icon.ico"));
     DebugTools::ConnectToUI(ui.get());
@@ -90,7 +88,6 @@ void MainWindow::SetupViewMenu()
     // Setup the common menu actions.
     QList<QAction*> dockWidgetToggleActions;
     dockWidgetToggleActions << ui->propertiesWidget->toggleViewAction()
-                            << ui->packageWidget->toggleViewAction()
                             << ui->libraryWidget->toggleViewAction()
                             << ui->toolBarGlobal->toggleViewAction();
 
@@ -100,11 +97,6 @@ void MainWindow::SetupViewMenu()
 MainWindow::ProjectView* MainWindow::GetProjectView() const
 {
     return projectView;
-}
-
-PackageWidget* MainWindow::GetPackageWidget() const
-{
-    return ui->packageWidget;
 }
 
 void MainWindow::UpdateWindowTitle()

@@ -1,14 +1,14 @@
-#include "UI/Package/UIViewerDialog.h"
+#include "Modules/PackageModule/Private/UIViewerDialog.h"
+
 #include "Modules/ProjectModule/ProjectData.h"
 
 #include <TArc/Controls/ComboBox.h>
-#include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/Label.h>
-
+#include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Qt/QtString.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>

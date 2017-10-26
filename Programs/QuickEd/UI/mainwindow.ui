@@ -116,8 +116,6 @@
     <property name="title">
      <string>Find</string>
     </property>
-    <addaction name="actionJumpToPrototype"/>
-    <addaction name="actionFindPrototypeInstances"/>
    </widget>
    <addaction name="File"/>
    <addaction name="Edit"/>
@@ -133,17 +131,6 @@
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
-   </attribute>
-  </widget>
-  <widget class="PackageWidget" name="packageWidget">
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Package</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
    </attribute>
   </widget>
   <widget class="LibraryWidget" name="libraryWidget">
@@ -200,22 +187,6 @@
     <string>Dump Textures</string>
    </property>
   </action>
-  <action name="actionJumpToPrototype">
-   <property name="text">
-    <string>Jump to Prototype</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+J</string>
-   </property>
-  </action>
-  <action name="actionFindPrototypeInstances">
-   <property name="text">
-    <string>Find Prototype Instances</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+J</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -223,12 +194,6 @@
    <class>LibraryWidget</class>
    <extends>QDockWidget</extends>
    <header>UI/Library/LibraryWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PackageWidget</class>
-   <extends>QDockWidget</extends>
-   <header>UI/Package/PackageWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

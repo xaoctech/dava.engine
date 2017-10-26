@@ -70,72 +70,23 @@ signals:
     void SelectedNodesChanged(const SelectedNodes& selection);
 
 public slots:
-    void OnCopy();
-    void OnPaste();
-    void OnCut();
-    void OnDelete();
-    void OnDuplicate();
-    void OnImport();
-
     void OnSelectionChangedFromView(const QItemSelection& proxySelected, const QItemSelection& proxyDeselected);
     void OnFilterTextChanged(const QString&);
-    void OnSelectAndRename(ControlNode*);
     void OnRename();
-    void OnAddStyle();
-    void OnCopyControlPath();
-    void OnMoveUp();
-    void OnMoveDown();
-    void OnMoveLeft();
-    void OnMoveRight();
     void OnBeforeProcessNodes(const SelectedNodes& nodes);
     void OnAfterProcessNodes(const SelectedNodes& nodes);
 
-    void OnRunUIViewer();
-    void OnRunUIViewerFast();
-
 private:
-    void PushErrorMessage(const DAVA::String& errorMessage);
-
     void SetSelectedNodes(const SelectedNodes& selection);
     void CollectExpandedIndexes(PackageBaseNode* node);
-    void MoveNodeUpDown(bool up);
-    void MoveNodeImpl(PackageBaseNode* node, PackageBaseNode* dest, DAVA::uint32 destIndex);
-    QAction* CreateAction(const QString& name, void (PackageWidget::*callback)(void), const QKeySequence& sequence = QKeySequence());
-    void CreateActions();
-    void PlaceActions();
-    void RefreshActions();
     void LoadContext();
     void SaveContext();
-    void Paste(PackageBaseNode* target, int index);
 
     void DeselectNodeImpl(PackageBaseNode* node);
     void SelectNodeImpl(PackageBaseNode* node);
-    void CollectSelectedControls(DAVA::Vector<ControlNode*>& nodes, bool forCopy, bool forRemove);
-    void CollectSelectedStyles(DAVA::Vector<StyleSheetNode*>& nodes, bool forCopy, bool forRemove);
-    void CollectSelectedImportedPackages(DAVA::Vector<PackageNode*>& nodes, bool forCopy, bool forRemove);
-    void CopyNodesToClipboard(const DAVA::Vector<ControlNode*>& controls, const DAVA::Vector<StyleSheetNode*>& styles);
 
     ExpandedIndexes GetExpandedIndexes() const;
     void RestoreExpandedIndexes(const ExpandedIndexes& indexes);
-
-    QAction* importPackageAction = nullptr;
-    QAction* copyAction = nullptr;
-    QAction* pasteAction = nullptr;
-    QAction* cutAction = nullptr;
-    QAction* delAction = nullptr;
-    QAction* duplicateControlsAction = nullptr;
-
-    QAction* renameAction = nullptr;
-    QAction* addStyleAction = nullptr;
-    QAction* copyControlPathAction = nullptr;
-
-    QAction* moveUpAction = nullptr;
-    QAction* moveDownAction = nullptr;
-    QAction* moveLeftAction = nullptr;
-    QAction* moveRightAction = nullptr;
-
-    QAction* runUIViewerFast = nullptr;
-    QAction* runUIViewer = nullptr;
 
     FilteredPackageModel* filteredPackageModel = nullptr;
     PackageModel* packageModel = nullptr;

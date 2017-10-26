@@ -1,0 +1,76 @@
+#pragma once
+
+#include "Interfaces/PackageActionsInterface.h"
+
+#include <TArc/Core/ClientModule.h>
+#include <TArc/Utils/QtConnections.h>
+
+#include <Reflection/Reflection.h>
+
+class PackageModule
+: public DAVA::TArc::ClientModule
+  ,
+  public Interfaces::PackageActionsInterface
+  ,
+  private DAVA::TArc::DataListener
+{
+    // ClientModule
+    void PostInit() override;
+    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+
+    // PackageActionsInterface
+    DAVA::TArc::QtAction* GetCutAction() override;
+    DAVA::TArc::QtAction* GetCopyAction() override;
+    DAVA::TArc::QtAction* GetPasteAction() override;
+    DAVA::TArc::QtAction* GetDuplicateAction() override;
+    DAVA::TArc::QtAction* GetDeleteAction() override;
+    DAVA::TArc::QtAction* GetJumpToPrototypeAction() override;
+    DAVA::TArc::QtAction* GetFindPrototypeInstancesAction() override;
+
+    // DataListener
+    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+
+    void InitData();
+    void CreateActions();
+    void CreatePackageWidget();
+    void RegisterGlobalOperation();
+
+    void OnImport();
+    void OnAddStyle();
+    void OnCut();
+    void OnCopy();
+    void OnPaste();
+    void OnDuplicate();
+    void OnCopyControlPath();
+    void OnRename();
+    void OnDelete();
+    void OnMoveUp();
+    void OnMoveDown();
+    void OnMoveLeft();
+    void OnMoveRight();
+    void OnRunUIViewer();
+    void OnRunUIViewerFast();
+    void OnJumpToPrototype();
+    void OnFindPrototypeInstances();
+
+    enum DIRECTION : bool
+    {
+        UP = true,
+        DOWN = false
+    };
+    bool CanMove(const PackageBaseNode* dest, PackageBaseNode* node, DIRECTION direction) const;
+    bool CanMoveLeft(PackageBaseNode* node) const;
+    bool CanMoveRight(PackageBaseNode* node) const;
+    void MoveNode(PackageBaseNode* node, DIRECTION direction);
+    void MoveNode(PackageBaseNode* node, PackageBaseNode* dest, uint32 destIndex);
+
+    void PushErrorMessage(const String& errorMessage);
+
+    void JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName);
+    void JumpToPackage(const DAVA::FilePath& packagePath);
+
+    DAVA::TArc::QtConnections connections;
+    DAVA::TArc::DataWrapper documentDataWrapper;
+
+    DAVA_VIRTUAL_REFLECTION(PackageModule, DAVA::TArc::ClientModule);
+};

@@ -7,7 +7,7 @@
 #include "UI/Preview/Ruler/RulerController.h"
 #include "UI/Preview/Guides/GuidesController.h"
 
-#include "UI/Package/PackageMimeData.h"
+#include "Modules/PackageModule/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -495,7 +495,6 @@ void PreviewWidget::OnDrop(QDropEvent* event)
     {
         Vector2 pos(event->pos().x(), event->pos().y());
         PackageBaseNode* node = systemsManager->GetControlNodeAtPoint(pos);
-        String string = mimeData->text().toStdString();
         auto action = event->dropAction();
         uint32 index = 0;
         if (node == nullptr)
@@ -512,6 +511,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
         {
             index = node->GetCount();
         }
+
         emit DropRequested(mimeData, action, node, index, &pos);
     }
     else if (mimeData->hasFormat("text/uri-list"))
