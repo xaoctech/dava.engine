@@ -15,8 +15,8 @@ namespace ParticleForces
 {
 namespace ParticleForcesDetail
 {
-const int32 noiseWidth = 256;
-const int32 noiseHeight = 256;
+const int32 noiseWidth = 64;
+const int32 noiseHeight = 64;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
 
 void GenerateNoise()
