@@ -43,7 +43,28 @@ UIInputMap& UIShortcutEventComponent::GetInputMap()
 
 void UIShortcutEventComponent::BindShortcut(const KeyboardShortcut& shortcut, const FastName& eventName)
 {
+    eventShortcuts.push_back(KeyBinding(eventName, shortcut));
     inputMap.BindEvent(shortcut, eventName);
+}
+
+void UIShortcutEventComponent::UnbindShortcut(const KeyboardShortcut& shortcut)
+{
+    auto it = find_if(eventShortcuts.begin(), eventShortcuts.end(), [shortcut](const KeyBinding& a) { return a.shortcut1 == shortcut; });
+    if (it != eventShortcuts.end())
+    {
+        eventShortcuts.erase(it);
+    }
+    inputMap.RemoveShortcut(shortcut);
+}
+
+void UIShortcutEventComponent::UnbindEvent(const FastName& eventName)
+{
+    auto it = find_if(eventShortcuts.begin(), eventShortcuts.end(), [eventName](const KeyBinding& a) { return a.eventName == eventName; });
+    if (it != eventShortcuts.end())
+    {
+        eventShortcuts.erase(it);
+    }
+    inputMap.RemoveEvent(eventName);
 }
 
 String UIShortcutEventComponent::GetShortcutsAsString() const

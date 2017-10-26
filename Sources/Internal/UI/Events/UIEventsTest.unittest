@@ -16,6 +16,7 @@
 #include <UI/Events/UIInputEventComponent.h>
 #include <UI/Events/UIShortcutEventComponent.h>
 #include <UI/Events/UIEventsSingleComponent.h>
+#include <UI/Events/UIMovieEventComponent.h>
 
 #include "UnitTests/UnitTests.h"
 
@@ -35,9 +36,12 @@ DAVA_TESTCLASS (UIEventsTest)
     DECLARE_COVERED_FILES("UIEventsSystem.cpp")
     DECLARE_COVERED_FILES("UIEventsSingleComponent.cpp")
     DECLARE_COVERED_FILES("UIEventBindingComponent.cpp")
-    // DECLARE_COVERED_FILES("UIInputEventComponent.cpp")
-    // DECLARE_COVERED_FILES("UIMovieEventComponent.cpp")
-    // DECLARE_COVERED_FILES("UIShortcutEventComponent.cpp")
+    DECLARE_COVERED_FILES("UIInputEventComponent.cpp")
+    DECLARE_COVERED_FILES("UIMovieEventComponent.cpp")
+    DECLARE_COVERED_FILES("UIShortcutEventComponent.cpp")
+    DECLARE_COVERED_FILES("UIActionMap.cpp")
+    DECLARE_COVERED_FILES("UICommandMap.cpp")
+    DECLARE_COVERED_FILES("UIInputMap.cpp")
     END_FILES_COVERED_BY_TESTS();
 
     RefPtr<UIScreen> screen;
@@ -97,51 +101,251 @@ DAVA_TESTCLASS (UIEventsTest)
         childText = nullptr;
     }
 
-    DAVA_TEST (CornerCasesTest)
+    DAVA_TEST (HelpersTest)
+    {
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+        TEST_VERIFY(sys->GetTargetEntity(FastName("childText"), text.Get()) == childText.Get());
+        TEST_VERIFY(sys->GetTargetEntity(UIEventsSystem::ACTION_COMPONENT_SELF_ENTITY_NAME, text.Get()) == text.Get());
+        TEST_VERIFY(sys->GetTargetEntity(FastName("BAD_NAME"), nullptr) == nullptr);
+        TEST_VERIFY(sys->GetTargetEntity(FastName("BAD_NAME"), text.Get()) == nullptr);
+    }
+
+    DAVA_TEST (EventBindingTest)
     {
         using namespace UIEventsTestDetails;
 
         UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
         UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
 
+        RefPtr<UIStaticText> childStubText = MakeRef<UIStaticText>();
+        childStubText->SetName("childText");
+        text->AddControl(childStubText.Get());
+
+        auto BROADCAST_TEST_EVENT = FastName("BROADCAST_TEST");
+        auto DISPATCH_TEST_EVENT = FastName("DISPATCH_TEST");
+
         bool dispatchTest = false;
         bool broadcastTest = false;
 
+        // Bind action
         auto actions = text->GetOrCreateComponent<UIEventBindingComponent>();
-
-        actions->BindAction(FastName("DISPATCH_TEST"), [&]() {
+        actions->BindAction(DISPATCH_TEST_EVENT, [&]() {
             dispatchTest = true;
         });
 
-        UIEventBindingComponent::CommandWithParams cmd;
-        cmd.commandName = COMMAND_SET_TEXT_NAME;
-        cmd.params.targetPath = FastName("childText");
-        cmd.params.argument = "OK";
-        actions->BindCommand(FastName("COMMAND_TEST"), cmd);
-
-        auto actionsChild = text->GetOrCreateComponent<UIEventBindingComponent>();
-        actionsChild->BindAction(FastName("BROADCAST_TEST"), [&]() {
+        auto actionsChild = childText->GetOrCreateComponent<UIEventBindingComponent>();
+        actionsChild->BindAction(BROADCAST_TEST_EVENT, [&]() {
             broadcastTest = true;
         });
 
         TEST_VERIFY(!dispatchTest);
         TEST_VERIFY(!broadcastTest);
 
-        eventsSingle->DispatchEvent(childText.Get(), FastName("DISPATCH_TEST"));
+        TEST_VERIFY(eventsSingle->DispatchEvent(childText.Get(), DISPATCH_TEST_EVENT));
         sys->Process(0.f);
 
         TEST_VERIFY(dispatchTest);
         TEST_VERIFY(!broadcastTest);
 
-        eventsSingle->DispatchEvent(text.Get(), FastName("BROADCAST_TEST"));
+        TEST_VERIFY(eventsSingle->BroadcastEvent(text.Get(), BROADCAST_TEST_EVENT));
         sys->Process(0.f);
 
         TEST_VERIFY(dispatchTest);
         TEST_VERIFY(broadcastTest);
 
-        TEST_VERIFY(childText->GetUtf8Text() == "");
-        eventsSingle->DispatchEvent(childText.Get(), FastName("COMMAND_TEST"));
+        // Unbind action
+        dispatchTest = false;
+
+        actions->UnbindAction(DISPATCH_TEST_EVENT);
+        TEST_VERIFY(!dispatchTest);
+
+        eventsSingle->DispatchEvent(childText.Get(), DISPATCH_TEST_EVENT);
         sys->Process(0.f);
-        TEST_VERIFY(childText->GetUtf8Text() == "OK");
+
+        TEST_VERIFY(!dispatchTest);
+
+        FastName empty;
+        TEST_VERIFY(!eventsSingle->DispatchEvent(childText.Get(), empty));
+        TEST_VERIFY(!eventsSingle->BroadcastEvent(text.Get(), empty));
+    }
+
+    DAVA_TEST (CommandsTest)
+    {
+        using namespace UIEventsTestDetails;
+
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+        UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
+
+        auto COMMAND_TEST_EVENT = FastName("COMMAND_TEST");
+        auto actions = text->GetOrCreateComponent<UIEventBindingComponent>();
+
+        UIEventBindingComponent::CommandWithParams cmd;
+        cmd.commandName = COMMAND_SET_TEXT_NAME;
+        cmd.params.targetPath = FastName("childText");
+        cmd.params.argument = "CHILD_OK";
+        actions->BindCommand(COMMAND_TEST_EVENT, cmd);
+
+        UIEventBindingComponent::CommandWithParams cmd2;
+        cmd2.commandName = COMMAND_SET_TEXT_NAME;
+        cmd2.params.targetPath = UIEventsSystem::ACTION_COMPONENT_SELF_ENTITY_NAME;
+        cmd2.params.argument = "PARENT_OK";
+        actions->BindCommand(COMMAND_TEST_EVENT, cmd2);
+
+        TEST_VERIFY(text->GetUtf8Text() == "");
+        TEST_VERIFY(childText->GetUtf8Text() == "");
+        eventsSingle->DispatchEvent(childText.Get(), COMMAND_TEST_EVENT);
+        sys->Process(0.f);
+        TEST_VERIFY(text->GetUtf8Text() == "PARENT_OK");
+        TEST_VERIFY(childText->GetUtf8Text() == "CHILD_OK");
+
+        auto clone = actions->Clone();
+
+        TEST_VERIFY(actions->GetCommands().size() == 1);
+        TEST_VERIFY(actions->GetCommands()[COMMAND_TEST_EVENT].size() == 2);
+        actions->UnbindAllCommands(COMMAND_TEST_EVENT);
+        TEST_VERIFY(actions->GetCommands().size() == 0);
+
+        clone->Release();
+    }
+
+    DAVA_TEST (GlobalCommandTest)
+    {
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+        auto TEST_CMD = FastName("TEST");
+
+        int count = 0;
+        sys->RegisterCommand(TEST_CMD, [&count](UIControl* source, const UICommandMap::CommandParams& params) {
+            count++;
+        });
+
+        UICommandMap::CommandParams params;
+
+        TEST_VERIFY(count == 0);
+        TEST_VERIFY(sys->PerformCommandOnControl(TEST_CMD, nullptr, params));
+        TEST_VERIFY(count == 1);
+
+        sys->UnregisterCommand(TEST_CMD);
+        TEST_VERIFY(!sys->PerformCommandOnControl(TEST_CMD, nullptr, params));
+        TEST_VERIFY(count == 1);
+    }
+
+    DAVA_TEST (ShortcutsTest)
+    {
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+
+        // Component action bind
+        KeyboardShortcut shortcutF1(String("F1"));
+        KeyboardShortcut shortcutF2(String("F2"));
+        KeyboardShortcut shortcutF3(String("F3"));
+        auto TEST_EVENT = FastName("TEST");
+
+        auto shortcuts = childText->GetOrCreateComponent<UIShortcutEventComponent>();
+        shortcuts->BindShortcut(shortcutF1, TEST_EVENT);
+        shortcuts->BindShortcut(shortcutF3, TEST_EVENT);
+
+        TEST_VERIFY(shortcuts->GetInputMap().FindEvent(shortcutF1) == TEST_EVENT);
+        TEST_VERIFY(shortcuts->GetInputMap().FindEvent(shortcutF3) == TEST_EVENT);
+
+        auto copy = shortcuts->Clone();
+        TEST_VERIFY(copy->GetInputMap().FindEvent(shortcutF1) == TEST_EVENT);
+        TEST_VERIFY(copy->GetInputMap().FindEvent(shortcutF3) == TEST_EVENT);
+
+        copy->BindShortcut(shortcutF2, TEST_EVENT);
+        TEST_VERIFY(copy->GetInputMap().FindEvent(shortcutF2) == TEST_EVENT);
+
+        copy->UnbindShortcut(shortcutF1);
+        TEST_VERIFY(!copy->GetInputMap().FindEvent(shortcutF1).IsValid());
+        TEST_VERIFY(copy->GetInputMap().FindEvent(shortcutF2) == TEST_EVENT);
+        TEST_VERIFY(copy->GetInputMap().FindEvent(shortcutF3) == TEST_EVENT);
+
+        copy->BindShortcut(shortcutF1, TEST_EVENT);
+        TEST_VERIFY(copy->GetInputMap().FindEvent(shortcutF1) == TEST_EVENT);
+
+        copy->UnbindEvent(FastName("UNKNOWN_EVENT"));
+        copy->UnbindEvent(TEST_EVENT);
+        TEST_VERIFY(!copy->GetInputMap().FindEvent(shortcutF1).IsValid());
+        TEST_VERIFY(!copy->GetInputMap().FindEvent(shortcutF2).IsValid());
+        TEST_VERIFY(!copy->GetInputMap().FindEvent(shortcutF3).IsValid());
+        copy->Release();
+
+        // Global action bind
+        auto TEST_GLOBAL_F2_EVENT = FastName("TEST_GLOBAL_F2");
+
+        int32 count = 0;
+        sys->BindGlobalAction(TEST_GLOBAL_F2_EVENT, [&]() {
+            count++;
+        });
+
+        sys->BindGlobalShortcut(shortcutF2, TEST_GLOBAL_F2_EVENT);
+
+        TEST_VERIFY(count == 0);
+        sys->PerformGlobalShortcut(shortcutF2);
+        TEST_VERIFY(count == 1);
+    }
+
+    DAVA_TEST (InputEventsTest)
+    {
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+        auto actions = text->GetOrCreateComponent<UIEventBindingComponent>();
+
+        Vector<int32> eventTypes = {
+            UIControl::eEventType::EVENT_TOUCH_DOWN,
+            UIControl::eEventType::EVENT_TOUCH_UP_INSIDE,
+            UIControl::eEventType::EVENT_TOUCH_UP_OUTSIDE,
+            UIControl::eEventType::EVENT_VALUE_CHANGED,
+            UIControl::eEventType::EVENT_HOVERED_SET,
+            UIControl::eEventType::EVENT_HOVERED_REMOVED,
+        };
+        Vector<bool> results;
+        Vector<FastName> eventNames;
+
+        for (int32 idx = 0; idx < eventTypes.size(); idx++)
+        {
+            FastName name(Format("TEST_EVENT_%d", idx));
+            eventNames.push_back(name);
+            results.push_back(false);
+
+            actions->BindAction(name, [&results, idx]() {
+                results[idx] = true;
+            });
+        }
+
+        auto input = childText->GetOrCreateComponent<UIInputEventComponent>();
+        input->SetOnTouchDownEvent(eventNames[0]);
+        input->SetOnTouchUpInsideEvent(eventNames[1]);
+        input->SetOnTouchUpOutsideEvent(eventNames[2]);
+        input->SetOnValueChangedEvent(eventNames[3]);
+        input->SetOnHoverSetEvent(eventNames[4]);
+        input->SetOnHoverRemovedEvent(eventNames[5]);
+
+        for (int32 idx = 0; idx < eventTypes.size(); idx++)
+        {
+            TEST_VERIFY(!results[idx]);
+            sys->ProcessControlEvent(eventTypes[idx], nullptr, childText.Get());
+            sys->Process(0.f);
+            TEST_VERIFY(results[idx]);
+        }
+
+        auto clone = input->Clone();
+        TEST_VERIFY(input->GetOnTouchDownEvent() == clone->GetOnTouchDownEvent());
+        TEST_VERIFY(input->GetOnTouchUpInsideEvent() == clone->GetOnTouchUpInsideEvent());
+        TEST_VERIFY(input->GetOnTouchUpOutsideEvent() == clone->GetOnTouchUpOutsideEvent());
+        TEST_VERIFY(input->GetOnValueChangedEvent() == clone->GetOnValueChangedEvent());
+        TEST_VERIFY(input->GetOnHoverSetEvent() == clone->GetOnHoverSetEvent());
+        TEST_VERIFY(input->GetOnHoverRemovedEvent() == clone->GetOnHoverRemovedEvent());
+        clone->Release();
+    }
+
+    DAVA_TEST (MovieEventsTest)
+    {
+        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
+        auto movieEvents = childText->GetOrCreateComponent<UIMovieEventComponent>();
+        movieEvents->SetStartEvent(FastName("START"));
+        movieEvents->SetStopEvent(FastName("STOP"));
+
+        auto clone = movieEvents->Clone();
+        TEST_VERIFY(movieEvents->GetStartEvent() == clone->GetStartEvent());
+        TEST_VERIFY(movieEvents->GetStopEvent() == clone->GetStopEvent());
+        clone->Release();
     }
 };

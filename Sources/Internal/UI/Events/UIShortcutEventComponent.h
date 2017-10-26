@@ -30,6 +30,8 @@ public:
     UIShortcutEventComponent* Clone() const override;
 
     void BindShortcut(const KeyboardShortcut& shortcut, const FastName& eventName);
+    void UnbindShortcut(const KeyboardShortcut& shortcut);
+    void UnbindEvent(const FastName& eventName);
 
     UIInputMap& GetInputMap();
 

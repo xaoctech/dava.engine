@@ -13,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIInputEventComponent)
     .Field("onTouchDown", &UIInputEventComponent::GetOnTouchDownEvent, &UIInputEventComponent::SetOnTouchDownEvent)
     .Field("onTouchUpInside", &UIInputEventComponent::GetOnTouchUpInsideEvent, &UIInputEventComponent::SetOnTouchUpInsideEvent)
     .Field("onTouchUpOutside", &UIInputEventComponent::GetOnTouchUpOutsideEvent, &UIInputEventComponent::SetOnTouchUpOutsideEvent)
+    .Field("onValueChanged", &UIInputEventComponent::GetOnValueChangedEvent, &UIInputEventComponent::SetOnValueChangedEvent)
     .Field("onHoverSet", &UIInputEventComponent::GetOnHoverSetEvent, &UIInputEventComponent::SetOnHoverSetEvent)
     .Field("onHoverRemoved", &UIInputEventComponent::GetOnHoverRemovedEvent, &UIInputEventComponent::SetOnHoverRemovedEvent)
     .End();
@@ -28,6 +29,8 @@ UIInputEventComponent::UIInputEventComponent(const UIInputEventComponent& src)
     , onTouchUpInside(src.onTouchUpInside)
     , onTouchUpOutside(src.onTouchUpOutside)
     , onValueChanged(src.onValueChanged)
+    , onHoverSet(src.onHoverSet)
+    , onHoverRemoved(src.onHoverRemoved)
 {
 }
 
