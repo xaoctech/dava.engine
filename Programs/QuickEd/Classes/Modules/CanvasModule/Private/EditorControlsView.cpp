@@ -1,14 +1,15 @@
-#include "Modules/CanvasModule/EditorControlsView.h"
+#include "Classes/Modules/CanvasModule/EditorControlsView.h"
 
-#include "EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/MovableInEditorComponent.h"
 
-#include "Model/PackageHierarchy/PackageBaseNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
 
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/UI/Preview/PreviewWidgetSettings.h"
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataListener.h>
@@ -204,6 +205,7 @@ BackgroundController::BackgroundController(DAVA::UIControl* nestedControl_, DAVA
     String name = nestedControl->GetName().c_str();
     name = name.empty() ? "unnamed" : name;
     gridControl->SetName(Format("Grid_control_of_%s", name.c_str()));
+    gridControl->GetOrCreateComponent<MovableInEditorComponent>();
     counterpoiseControl->SetName(Format("counterpoise_of_%s", name.c_str()));
     positionHolderControl->SetName(Format("Position_holder_of_%s", name.c_str()));
     gridControl->AddControl(positionHolderControl.Get());

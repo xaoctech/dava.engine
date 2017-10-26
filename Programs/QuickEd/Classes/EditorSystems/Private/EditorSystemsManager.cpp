@@ -1,17 +1,19 @@
-#include "EditorSystems/EditorSystemsManager.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/CanvasModule/CanvasModuleData.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/MovableInEditorComponent.h"
 
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/CanvasModule/CanvasModuleData.h"
+#include "Classes/Modules/CanvasModule/EditorControlsView.h"
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
+#include "Classes/Modules/UpdateViewsSystemModule/UpdateViewsSystem.h"
 
-#include "EditorSystems/SelectionSystem.h"
-#include "EditorSystems/EditorTransformSystem.h"
-#include "EditorSystems/CursorSystem.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+
+#include "Classes/EditorSystems/SelectionSystem.h"
+#include "Classes/EditorSystems/EditorTransformSystem.h"
+#include "Classes/EditorSystems/CursorSystem.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
@@ -49,6 +51,9 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
 
     UpdateViewsSystem* updateSystem = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UpdateViewsSystem>();
     updateSystem->beforeRender.Connect(this, &EditorSystemsManager::OnUpdate);
+
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(MovableInEditorComponent, "Movable in editor component");
+    GetEngineContext()->componentManager->RegisterComponent<MovableInEditorComponent>();
 }
 
 EditorSystemsManager::~EditorSystemsManager()

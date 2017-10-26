@@ -5,6 +5,7 @@
 #include "Classes/EditorSystems/EditorTransformSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
+#include "Classes/EditorSystems/MovableInEditorComponent.h"
 
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
@@ -622,7 +623,16 @@ void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, con
         PackageBaseNode* root = *rootControls.begin();
         PackageNode::AxisGuides values = package->GetAxisGuides(root->GetName(), axis);
 
-        Vector<float32> bordersToMagnet = { 0.0f, 0.5f, 1.0f };
+        Vector<float32> bordersToMagnet;
+        bool isRootControl = activeControlNode->GetParent()->GetControl() == nullptr;
+        if (isRootControl)
+        {
+            bordersToMagnet = { 0.5f, 1.0f };
+        }
+        else
+        {
+            bordersToMagnet = { 0.0f, 0.5f, 1.0f };
+        }
 
         lines.reserve(lines.size() + values.size() * bordersToMagnet.size());
 
@@ -854,16 +864,25 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
 
     Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
     Vector2 finalPosition = originalPosition;
-    if (activeControlNode->GetParent() != nullptr && activeControlNode->GetParent()->GetControl() != nullptr)
+
+    bool isRootControl = activeControlNode->GetParent()->GetControl() == nullptr;
+    if (isRootControl == false)
     {
         finalPosition += deltaPosition;
     }
     else
-    { //manually write position to a root control parent
-        //because it is the only way to change visual root control positiono utside of editorControlsView
-        UIControl* rootParent = control->GetParent();
-        Vector2 parentPosition = rootParent->GetPosition();
-        rootParent->SetPosition(parentPosition + deltaPosition);
+    {
+        UIControl* movableInEditorParent = control;
+        while (movableInEditorParent != nullptr && movableInEditorParent->GetComponent<MovableInEditorComponent>() == nullptr)
+        {
+            movableInEditorParent = movableInEditorParent->GetParent();
+        }
+
+        DVASSERT(movableInEditorParent != nullptr);
+        Vector2 movableInEditorParentPosition = movableInEditorParent->GetPosition();
+        deltaPosition = Rotate(deltaPosition, -control->GetAngle());
+        deltaPosition /= control->GetScale();
+        movableInEditorParent->SetPosition(movableInEditorParentPosition + deltaPosition);
     }
 
     Any positionValue(finalPosition);
