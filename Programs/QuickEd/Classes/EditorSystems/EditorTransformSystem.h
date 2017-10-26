@@ -1,8 +1,10 @@
 #pragma once
 
-#include "EditorSystems/BaseEditorSystem.h"
-#include "EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/SelectionContainer.h"
+#include "Classes/EditorSystems/BaseEditorSystem.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/SelectionContainer.h"
+
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
 
 #include <TArc/DataProcessing/SettingsNode.h>
 
@@ -99,9 +101,11 @@ private:
     DAVA::Map<const ControlNode*, DAVA::Vector2> extraDeltaToMoveControls;
     //this variable is used for rotation only
     DAVA::Vector2 previousMousePos;
+    DAVA::Vector2 initRootPosition;
     SelectedControls selectedControlNodes;
     DAVA::List<std::unique_ptr<MoveInfo>> nodesToMoveInfos;
     DAVA::Vector<DAVA::UIControl*> neighbours;
+    CanvasDataAdapter canvasDataAdapter;
 
     DAVA::UIGeometricData parentGeometricData;
     DAVA::UIGeometricData controlGeometricData;

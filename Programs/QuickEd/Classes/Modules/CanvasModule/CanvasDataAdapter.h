@@ -33,7 +33,8 @@ public:
     static DAVA::FastName lastValuePropertyName;
 
     DAVA::Vector2 GetDisplacementPosition() const;
-    void SetDisplacementPosition(const DAVA::Vector2& displacement);
+    void SetDisplacementPosition(const DAVA::Vector2& position);
+    void SetDisplacementPositionSafe(const DAVA::Vector2& position);
 
     DAVA::Vector2 GetPosition() const;
 

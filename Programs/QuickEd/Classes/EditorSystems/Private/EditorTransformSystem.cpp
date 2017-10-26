@@ -1,26 +1,24 @@
-#include "Input/InputSystem.h"
-
-#include "Modules/CanvasModule/CanvasData.h"
-
 #include "Classes/EditorSystems/EditorTransformSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
 #include "Classes/EditorSystems/MovableInEditorComponent.h"
 
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
 
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/PreferencesModule/PreferencesData.h"
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/PreferencesModule/PreferencesData.h"
 
-#include "QECommands/ChangePropertyValueCommand.h"
-#include "QECommands/ResizeCommand.h"
-#include "QECommands/ChangePivotCommand.h"
+#include "Classes/QECommands/ChangePropertyValueCommand.h"
+#include "Classes/QECommands/ResizeCommand.h"
+#include "Classes/QECommands/ChangePivotCommand.h"
 
 #include <TArc/Utils/Utils.h>
 #include <TArc/Core/ContextAccessor.h>
 
+#include <Input/InputSystem.h>
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -202,6 +200,7 @@ void CreateMagnetLinesForPivot(DAVA::Vector<MagnetLineInfo>& magnetLines, DAVA::
 
 EditorTransformSystem::EditorTransformSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
+    , canvasDataAdapter(accessor)
 {
     GetSystemsManager()->activeAreaChanged.Connect(this, &EditorTransformSystem::OnActiveAreaChanged);
 }
@@ -316,11 +315,35 @@ void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput)
 
 void EditorTransformSystem::OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState)
 {
+    bool isRootControl = activeControlNode != nullptr && activeControlNode->GetParent()->GetControl() == nullptr;
+
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    DVASSERT(nullptr != documentData);
+
     if (dragState == EditorSystemsManager::Transform)
     {
         extraDelta.SetZero();
         extraDeltaToMoveControls.clear();
         PrepareDrag();
+
+        if (isRootControl)
+        {
+            initRootPosition = canvasDataAdapter.GetDisplacementPosition();
+        }
+
+        documentData->BeginBatch("transformations");
+    }
+
+    else if (previousState == EditorSystemsManager::Transform)
+    {
+        if (isRootControl)
+        {
+            canvasDataAdapter.SetDisplacementPosition(initRootPosition);
+        }
+
+        documentData->EndBatch();
     }
 }
 
@@ -872,19 +895,17 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
     }
     else
     {
+        CanvasDataAdapter canvasDataAdapter(accessor);
+        deltaPosition = Rotate(deltaPosition, -control->GetAngle());
+        deltaPosition /= control->GetScale();
+        canvasDataAdapter.SetDisplacementPosition(canvasDataAdapter.GetDisplacementPosition() - deltaPosition);
+
         UIControl* movableInEditorParent = control;
         while (movableInEditorParent != nullptr && movableInEditorParent->GetComponent<MovableInEditorComponent>() == nullptr)
         {
             movableInEditorParent = movableInEditorParent->GetParent();
         }
-
         DVASSERT(movableInEditorParent != nullptr);
-        Vector2 movableInEditorParentPosition = movableInEditorParent->GetPosition();
-        deltaPosition = Rotate(deltaPosition, -control->GetAngle());
-        deltaPosition /= control->GetScale();
-        movableInEditorParent->SetPosition(movableInEditorParentPosition + deltaPosition);
-
-        //required to correct drawing
         movableInEditorParent->SetSize(finalSize);
     }
 
@@ -1290,8 +1311,5 @@ bool EditorTransformSystem::CanMagnet() const
 {
     using namespace DAVA;
     float32 scaleToMagnet = 8.0f;
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
-    DVASSERT(activeContext != nullptr);
-    CanvasData* data = activeContext->GetData<CanvasData>();
-    return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->canMagnet && data->GetScale() <= scaleToMagnet;
+    return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->canMagnet && canvasDataAdapter.GetScale() <= scaleToMagnet;
 }

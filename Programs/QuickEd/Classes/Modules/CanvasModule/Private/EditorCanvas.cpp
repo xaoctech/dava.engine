@@ -76,7 +76,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 {
                     Vector2 position = canvasDataAdapter.GetDisplacementPosition();
                     Vector2 newPosition = position - gestureDelta;
-                    canvasDataAdapter.SetDisplacementPosition(newPosition);
+                    canvasDataAdapter.SetDisplacementPositionSafe(newPosition);
                 }
             }
             else if (gesture.magnification != 0.0f)
@@ -110,14 +110,14 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 //custom delimiter to scroll widget by little chunks of visible area
                 static const float wheelDelta = 0.05f;
                 Vector2 newPosition = position - additionalPos * wheelDelta;
-                canvasDataAdapter.SetDisplacementPosition(newPosition);
+                canvasDataAdapter.SetDisplacementPositionSafe(newPosition);
             }
         }
         else
         {
             Vector2 position = canvasDataAdapter.GetDisplacementPosition();
             Vector2 delta = GetSystemsManager()->GetMouseDelta();
-            canvasDataAdapter.SetDisplacementPosition(position - delta);
+            canvasDataAdapter.SetDisplacementPositionSafe(position - delta);
         }
     }
 }

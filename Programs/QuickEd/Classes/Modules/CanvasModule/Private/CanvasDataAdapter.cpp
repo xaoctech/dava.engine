@@ -48,18 +48,25 @@ DAVA::Vector2 CanvasDataAdapter::GetDisplacementPosition() const
     return displacement + topLeftOpverflow;
 }
 
-void CanvasDataAdapter::SetDisplacementPosition(const DAVA::Vector2& displacement)
+void CanvasDataAdapter::SetDisplacementPosition(const DAVA::Vector2& position)
+{
+    using namespace DAVA;
+
+    Vector2 topLeftOpverflow = GetTopLeftOverflow();
+    canvasDataWrapper.SetFieldValue(CanvasData::displacementPropertyName, position - topLeftOpverflow);
+}
+
+void CanvasDataAdapter::SetDisplacementPositionSafe(const DAVA::Vector2& position)
 {
     using namespace DAVA;
 
     Vector2 minPos = GetMinimumPosition();
     Vector2 maxPos = GetMaximumPosition();
 
-    DAVA::Vector2 clamped = DAVA::Vector2(Clamp(displacement.x, minPos.x, maxPos.x),
-                                          Clamp(displacement.y, minPos.y, maxPos.y));
+    DAVA::Vector2 clamped = DAVA::Vector2(Clamp(position.x, minPos.x, maxPos.x),
+                                          Clamp(position.y, minPos.y, maxPos.y));
 
-    Vector2 topLeftOpverflow = GetTopLeftOverflow();
-    canvasDataWrapper.SetFieldValue(CanvasData::displacementPropertyName, clamped - topLeftOpverflow);
+    SetDisplacementPosition(clamped);
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetPosition() const
@@ -79,16 +86,7 @@ DAVA::Vector2 CanvasDataAdapter::GetPosition() const
     Vector2 displacement = canvasData->GetDisplacement();
 
     Vector2 position = (viewSize - rootSize) / 2.0f;
-    for (int i = Vector2::AXIS_X; i < Vector2::AXIS_COUNT; ++i)
-    {
-        Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
-        if (maximumPosition[axis] > 0.0f)
-        {
-            position[axis] -= displacement[axis];
-        }
-    }
-
-    return position;
+    return position - displacement;
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetMinimumPosition() const

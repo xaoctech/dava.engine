@@ -239,7 +239,6 @@ void DocumentsModule::InitGlobalData()
     globalContext->CreateData(std::move(editorData));
 
     EditorSystemsManager* systemsManager = globalContext->GetData<EditorSystemsData>()->systemsManager.get();
-    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
     systemsManager->InitSystems();
 }
 
@@ -1174,28 +1173,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::GetContextByPath(const QStri
     });
     DVASSERT(ret != DataContext::Empty);
     return ret;
-}
-
-void DocumentsModule::OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState)
-{
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return;
-    }
-    DocumentData* documentData = activeContext->GetData<DocumentData>();
-    DVASSERT(nullptr != documentData);
-    //TODO: move this code to the TransformSystem when systems will be moved to the TArc
-    if (dragState == EditorSystemsManager::Transform)
-    {
-        documentData->BeginBatch("transformations");
-    }
-    else if (previousState == EditorSystemsManager::Transform)
-    {
-        documentData->EndBatch();
-    }
 }
 
 void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsContainerNode* /*from*/)

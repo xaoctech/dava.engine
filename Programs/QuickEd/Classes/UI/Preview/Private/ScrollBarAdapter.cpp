@@ -41,7 +41,7 @@ void ScrollBarAdapter::SetPosition(int value)
 {
     DAVA::Vector2 displacement = canvasDataAdapter.GetDisplacementPosition();
     displacement[orientation] = value;
-    canvasDataAdapter.SetDisplacementPosition(displacement);
+    canvasDataAdapter.SetDisplacementPositionSafe(displacement);
 }
 
 int ScrollBarAdapter::GetMinPos() const
