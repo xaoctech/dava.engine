@@ -39,7 +39,7 @@ Vector4 TaylorInvSqrt(const Vector4& r)
 float32 Fade(float32 val)
 {
 #if NOISE_FAST_FADE
-    return val * val * (3 - 2 * val);
+    return val * val * (3.0f - 2.0f * val);
 #else
     return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
 #endif
