@@ -2,7 +2,6 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Math/Vector.h"
 #include "Functional/Function.h"
 
 namespace DAVA

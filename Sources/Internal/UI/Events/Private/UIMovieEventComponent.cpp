@@ -1,7 +1,5 @@
 #include "UI/Events/UIMovieEventComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/UIControl.h"
-#include "UI/UIControlHelpers.h"
 
 namespace DAVA
 {

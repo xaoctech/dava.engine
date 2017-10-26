@@ -1,5 +1,4 @@
 #include "UI/Events/UICommandMap.h"
-#include "UI/UIControl.h"
 
 namespace DAVA
 {

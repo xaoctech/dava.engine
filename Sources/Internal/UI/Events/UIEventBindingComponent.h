@@ -1,12 +1,8 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-
 #include "UI/Components/UIComponent.h"
-#include "Input/KeyboardShortcut.h"
-#include "Functional/Signal.h"
 #include "UIActionMap.h"
-#include "UIInputMap.h"
 #include "UICommandMap.h"
 #include "Reflection/Reflection.h"
 
