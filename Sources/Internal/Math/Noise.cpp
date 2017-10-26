@@ -4,68 +4,54 @@
 
 #include "Math/MathHelpers.h"
 
+// Noise implementation based on https://github.com/g-truc/glm/blob/master/glm/gtc/noise.inl
+
 namespace DAVA
 {
 namespace NoiseDetails
 {
-float Step(float32 y, float32 x)
-{
-    return (x >= y) ? 1.0f : 0.0f;
-}
-
-Vector4 Step(const Vector4& y, const Vector4& x)
-{
-    return
-    {
-      Step(y.x, x.x),
-      Step(y.y, x.y),
-      Step(y.z, x.z),
-      Step(y.w, x.w)
-    };
-}
-
 Vector4 Permute(const Vector4& v)
 {
     Vector4 vs = v * 34.0f;
-    return
-    {
+    return Vector4
+    (
       std::fmod((vs.x + 1.0f) * v.x, 289.0f),
       std::fmod((vs.y + 1.0f) * v.y, 289.0f),
       std::fmod((vs.z + 1.0f) * v.z, 289.0f),
       std::fmod((vs.w + 1.0f) * v.w, 289.0f)
-    };
+    );
 }
 
 Vector4 TaylorInvSqrt(const Vector4& r)
 {
     Vector4 rs = 0.85373472095314f * r;
     static const float32 num = 1.79284291400159f;
-    return
-    {
+    return Vector4
+    (
       num - rs.x,
       num - rs.y,
       num - rs.z,
       num - rs.w
-    };
+    );
 }
 
 Vector3 Fade(const Vector3& t)
 {
-    return
-    {
+    return Vector3
+    (
       t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
       t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f),
       t.z * t.z * t.z * (t.z * (t.z * 6.0f - 15.0f) + 10.0f)
-    };
+    );
 }
 
 Vector2 Fade(const Vector2& t)
 {
-    return
-    {
+    return Vector2
+    (
       t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
       t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
-    };
+    );
 }
 
 int32 WrapBlock(const int32 block, const int32 numBlocks, const float32 scale)
@@ -158,18 +144,18 @@ float32 PerlinNoise3d(const Vector3& p, float32 wrap)
     Vector4 gy0 = Abs(Frac(Floor(gx0) / 7.0f)) - 0.5f;
     gx0 = Abs(Frac(gx0));
     Vector4 gz0 = Vector4(0.5f, 0.5f, 0.5f, 0.5f) - Abs(gx0) - Abs(gy0);
-    Vector4 sz0 = NoiseDetails::Step(gz0, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+    Vector4 sz0 = Step(gz0, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
-    gx0 -= sz0 * (NoiseDetails::Step(Vector4::Zero, gx0) - 0.5f);
-    gy0 -= sz0 * (NoiseDetails::Step(Vector4::Zero, gy0) - 0.5f);
+    gx0 -= sz0 * (Step(Vector4::Zero, gx0) - 0.5f);
+    gy0 -= sz0 * (Step(Vector4::Zero, gy0) - 0.5f);
 
     Vector4 gx1 = ixy1 / 7.0f;
     Vector4 gy1 = Abs(Frac(Floor(gx1) / 7.0f)) - 0.5f;
     gx1 = Abs(Frac(gx1));
     Vector4 gz1 = Vector4(0.5f, 0.5f, 0.5f, 0.5f) - Abs(gx1) - Abs(gy1);
-    Vector4 sz1 = NoiseDetails::Step(gz1, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-    gx1 -= sz1 * (NoiseDetails::Step(Vector4::Zero, gx1) - 0.5f);
-    gy1 -= sz1 * (NoiseDetails::Step(Vector4::Zero, gy1) - 0.5f);
+    Vector4 sz1 = Step(gz1, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+    gx1 -= sz1 * (Step(Vector4::Zero, gx1) - 0.5f);
+    gy1 -= sz1 * (Step(Vector4::Zero, gy1) - 0.5f);
 
     Vector3 g000 = Vector3(gx0.x, gy0.x, gz0.x);
     Vector3 g100 = Vector3(gx0.y, gy0.y, gz0.y);

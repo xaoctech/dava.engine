@@ -30,12 +30,11 @@ void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType)
 {
     if (layer == nullptr)
         return;
-    ParticleForce* newForce = new ParticleForce(layer);
+    ScopedPtr<ParticleForce> newForce(new ParticleForce(layer));
     newForce->type = forceType;
     newForce->forceName = ParticleEditorCommandsDetail::forceNames[forceType];
 
     layer->AddForce(newForce);
-    SafeRelease(newForce);
 }
 }
 
