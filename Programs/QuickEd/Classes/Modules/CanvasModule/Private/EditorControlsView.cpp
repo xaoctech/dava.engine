@@ -549,6 +549,12 @@ void EditorControlsView::Layout()
     {
         Vector2 size = controller->GetWorkAreaSize();
         Vector2 pos((maxWidth - size.dx) / 2.0f, curY);
+
+        //TODO: remove this trick when package will contain only one root control
+        if (childrenCount > 1)
+        {
+            pos += controller->GetRootControlPos();
+        }
         curY += size.dy + spacing;
 
         controller->GetControl()->SetPosition(pos);
@@ -635,14 +641,11 @@ void EditorControlsView::OnRootControlPosChanged()
     {
         const std::unique_ptr<BackgroundController>& grid = gridControls.front();
         rootControlPositionChanged.Emit(grid->GetRootControlPos());
-
-        rootControlSizeChanged.Emit(grid->GetControl()->GetSize());
     }
     else
     {
         //force show 0, 0 at top left corner if many root controls displayed
         rootControlPositionChanged.Emit(DAVA::Vector2(0.0f, 0.0f));
-        rootControlSizeChanged.Emit(DAVA::Vector2(0.0f, 0.0f));
     }
 }
 
