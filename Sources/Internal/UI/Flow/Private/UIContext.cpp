@@ -31,14 +31,19 @@ UIFlowService* UIContext::GetService(const FastName& name) const
     auto it = services.find(name);
     if (it != services.end())
     {
-        return it->second.get();
+        return it->second.service.get();
     }
     return nullptr;
 }
 
 void UIContext::InitServiceByType(const FastName& name, const String& typeName)
 {
-    DVASSERT(GetService(name) == nullptr, "Service already initialized!");
+    auto it = services.find(name);
+    if (it != services.end())
+    {
+        it->second.initCount++;
+        return;
+    }
 
     const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(typeName);
     if (rType)
@@ -48,7 +53,10 @@ void UIContext::InitServiceByType(const FastName& name, const String& typeName)
         {
             UIFlowService* service = obj.Cast<UIFlowService*>();
             service->Activate(this);
-            services[name] = std::unique_ptr<UIFlowService>(service);
+            ServiceLink link;
+            link.service = std::unique_ptr<UIFlowService>(service);
+            link.initCount = 1;
+            services[name] = link;
         }
         else
         {
@@ -66,8 +74,12 @@ void UIContext::ReleaseService(const FastName& name)
     auto it = services.find(name);
     if (it != services.end())
     {
-        it->second->Deactivate(this);
-        services.erase(it);
+        it->second.initCount--;
+        if (it->second.initCount <= 0)
+        {
+            it->second.service->Deactivate(this);
+            services.erase(it);
+        }
     }
 }
 }

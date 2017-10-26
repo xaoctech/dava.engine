@@ -443,6 +443,30 @@ DAVA_TESTCLASS (UIFlowTest)
         //        TEST_VERIFY(data->GetInt32("testStep") == CONTROLLER_STEPS_COUNT);
     }
 
+    DAVA_TEST (MultipleStates)
+    {
+        UIFlowStateComponent* state = stateSys->FindStateByPath(".");
+        TEST_VERIFY(state != nullptr);
+        stateSys->ActivateState(state, false);
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("./DefaultState"));
+
+        state = stateSys->FindStateByPath("^/SubState");
+        TEST_VERIFY(state != nullptr);
+
+        stateSys->PreloadState(state, false);
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->IsStateLoaded(state));
+
+        stateSys->ActivateState(state, false);
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->IsStateActive(state));
+
+        stateSys->DeactivateState(state, false);
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->IsStateActive(state) == false);
+    }
+
     DAVA_TEST (TransitionsByEvents)
     {
         UIFlowStateComponent* state = stateSys->FindStateByPath(".");

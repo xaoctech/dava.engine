@@ -38,7 +38,13 @@ public:
     void ReleaseService(const FastName& name);
 
 private:
-    UnorderedMap<FastName, std::shared_ptr<UIFlowService>> services;
+    struct ServiceLink
+    {
+        std::shared_ptr<UIFlowService> service;
+        int32 initCount = 0;
+    };
+
+    UnorderedMap<FastName, ServiceLink> services;
     RefPtr<KeyedArchive> data;
 };
 }
