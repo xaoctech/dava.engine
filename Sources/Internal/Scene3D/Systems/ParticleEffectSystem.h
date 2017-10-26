@@ -103,7 +103,6 @@ private:
     {
         Vector<ParticleForce*> worldAlignForces;
         Vector<ParticleForce*> effectAlignForces;
-        Vector<ParticleForce*> allForces;
     };
     void RemoveForcesFromGlobal(ParticleEffectComponent* effect);
     void ExtractGlobalForces(ParticleEffectComponent* effect);

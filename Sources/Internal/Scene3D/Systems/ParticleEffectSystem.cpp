@@ -1011,33 +1011,34 @@ void ParticleEffectSystem::ApplyGlobalForces(Particle* particle, float32 dt, flo
         TransformComponent* tr = GetTransformComponent(effect->GetEntity());
         Matrix4* worldTransformPtr = tr->GetWorldTransformPtr();
 
-        bool inForceBoundingSphere = false;
-        for (ParticleForce* force : forcePair.second.allForces)
-        {
-            if (force->isInfinityRange)
-            {
-                inForceBoundingSphere = true;
-                break;
-            }
-            Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position; // Do not rotate global forces if force position is not zero.
-            float32 sqrDist = (forceWorldPosition - particle->position).SquareLength();
-            if (sqrDist < force->GetSquaredRadius())
-            {
-                inForceBoundingSphere = true;
-                break;
-            }
-        }
-        if (!inForceBoundingSphere)
-            continue;
-
         for (ParticleForce* force : forcePair.second.worldAlignForces)
         {
             Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position;
-            ParticleForces::ApplyForce(force, particle->speed, particle->position, dt, overLife, layerOverLife, Vector3(0.0f, 0.0f, -1.0f), particle, prevParticlePosition, forceWorldPosition);
+            if (force->isInfinityRange || (forceWorldPosition - particle->position).SquareLength() < force->GetSquaredRadius())
+                ParticleForces::ApplyForce(force, particle->speed, particle->position, dt, overLife, layerOverLife, Vector3(0.0f, 0.0f, -1.0f), particle, prevParticlePosition, forceWorldPosition);
         }
 
         if (!forcePair.second.effectAlignForces.empty())
         {
+            bool inForceBoundingSphere = false;
+            for (ParticleForce* force : forcePair.second.effectAlignForces) // Check if particle position in at least one global effect aligned force's bounding sphere.
+            {
+                if (force->isInfinityRange)
+                {
+                    inForceBoundingSphere = true;
+                    break;
+                }
+                Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position; // Do not rotate global forces if force position is not zero.
+                float32 sqrDist = (forceWorldPosition - particle->position).SquareLength();
+                if (sqrDist < force->GetSquaredRadius())
+                {
+                    inForceBoundingSphere = true;
+                    break;
+                }
+            }
+            if (!inForceBoundingSphere)
+                continue;
+
             Matrix4 invWorld = GetInverseWithRemovedScale(*worldTransformPtr);
 
             Vector3 effectSpacePosition = particle->position * invWorld;
@@ -1197,7 +1198,6 @@ void ParticleEffectSystem::ExtractGlobalForces(ParticleEffectComponent* effect)
                         globalForces[effect].worldAlignForces.push_back(force);
                     else
                         globalForces[effect].effectAlignForces.push_back(force);
-                    globalForces[effect].allForces.push_back(force);
                 }
             }
         }
