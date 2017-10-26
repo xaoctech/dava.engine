@@ -24,7 +24,7 @@ layer0:
     layerType: "particles"
     degradeStrategy: 2
     particleOrientation: 1
-    inheritPosition: false
+    inheritPosition: true
     isLong: false
     randomSpinDirection: true
     pivotPoint: [0.000000, 0.000000]
