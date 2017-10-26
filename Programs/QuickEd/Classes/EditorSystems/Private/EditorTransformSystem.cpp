@@ -883,6 +883,9 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
         deltaPosition = Rotate(deltaPosition, -control->GetAngle());
         deltaPosition /= control->GetScale();
         movableInEditorParent->SetPosition(movableInEditorParentPosition + deltaPosition);
+
+        //required to correct drawing
+        movableInEditorParent->SetSize(finalSize);
     }
 
     Any positionValue(finalPosition);
