@@ -1400,7 +1400,7 @@ void ParticleLayer::CleanupSimplifiedForces()
 
 void ParticleLayer::AddForce(ParticleForce* force)
 {
-    if (force->IsForceCanAlterPosition())
+    if (force->CanAlterPosition())
         ++alterPositionForcesCount;
     if (force->type == ParticleForce::eType::PLANE_COLLISION)
         ++planeCollisionForcesCount;
@@ -1415,7 +1415,7 @@ void ParticleLayer::AddForce(ParticleForce* force)
 
 void ParticleLayer::RemoveForce(ParticleForce* force)
 {
-    if (force->IsForceCanAlterPosition())
+    if (force->CanAlterPosition())
         --alterPositionForcesCount;
     if (force->type == ParticleForce::eType::PLANE_COLLISION)
         --planeCollisionForcesCount;

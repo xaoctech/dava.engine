@@ -1047,7 +1047,7 @@ void ParticleEffectSystem::ApplyGlobalForces(Particle* particle, float32 dt, flo
             bool transformPosition = false;
             for (ParticleForce* force : forcePair.second.effectAlignForces)
             {
-                if (force->IsForceCanAlterPosition())
+                if (force->CanAlterPosition())
                     transformPosition = true;
                 ParticleForces::ApplyForce(force, effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition, force->position);
             }

@@ -87,7 +87,7 @@ public:
     float32 GetSquaredRadius() const;
     void SetShape(eShape shape);
     eShape GetShape() const;
-    bool IsForceCanAlterPosition() const;
+    bool CanAlterPosition() const;
 
     DAVA_VIRTUAL_REFLECTION(ParticleForce, BaseObject);
 
@@ -152,7 +152,7 @@ inline ParticleForce::eShape ParticleForce::GetShape() const
     return shape;
 }
 
-inline bool ParticleForce::IsForceCanAlterPosition() const
+inline bool ParticleForce::CanAlterPosition() const
 {
     return type == ParticleForce::eType::POINT_GRAVITY || type == ParticleForce::eType::PLANE_COLLISION || type == ParticleForce::eType::WIND;
 }
