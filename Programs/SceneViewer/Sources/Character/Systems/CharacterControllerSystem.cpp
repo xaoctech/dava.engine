@@ -26,6 +26,7 @@
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/SkeletonAnimation/Motion.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/RenderHelper.h"
@@ -62,6 +63,9 @@ void CharacterControllerSystem::AddEntity(Entity* entity)
     weaponEntity = entity->FindByName("Weapon");
     DVASSERT(weaponEntity != nullptr);
 
+    shootEffect = weaponEntity->FindByName("shot_auto");
+    DVASSERT(shootEffect != nullptr);
+
     camera = SafeRetain(GetCamera(entity));
     controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
 
@@ -76,6 +80,7 @@ void CharacterControllerSystem::RemoveEntity(Entity* entity)
     SafeRelease(characterEntity);
     characterMeshEntity = nullptr;
     weaponEntity = nullptr;
+    shootEffect = nullptr;
 
     SafeRelease(camera);
     controllerComponent = nullptr;
@@ -96,6 +101,8 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 {
     if (!GetScene()->motionSingleComponent->reloadConfig.empty() || characterMotionComponent == nullptr)
         return;
+
+    timeElapsed *= characterMotionComponent->GetPlaybackRate();
 
     if (!characterInited)
     {
@@ -160,7 +167,7 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
     if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
         moveDirectionTarget.x += 1.f;
 
-    float32 directionDt = timeElapsed * characterMotionComponent->GetPlaybackRate() * 5.f;
+    float32 directionDt = timeElapsed * 5.f;
 
     if (directionParam.x > moveDirectionTarget.x)
         directionParam.x -= directionDt;
@@ -189,13 +196,13 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
     //////////////////////////////////////////////////////////////////////////
     //Animation
 
-    runningParam += (isRun ? timeElapsed : -timeElapsed) * 3.f * characterMotionComponent->GetPlaybackRate();
+    runningParam += (isRun ? timeElapsed : -timeElapsed) * 3.f;
     runningParam = Clamp(runningParam, 0.f, 1.f);
 
-    crouchingParam += (isCrouching ? timeElapsed : -timeElapsed) * 3.f * characterMotionComponent->GetPlaybackRate();
+    crouchingParam += (isCrouching ? timeElapsed : -timeElapsed) * 3.f;
     crouchingParam = Clamp(crouchingParam, 0.f, 1.f);
 
-    zoomFactor += (isZooming ? timeElapsed : -timeElapsed) * 3.f * characterMotionComponent->GetPlaybackRate();
+    zoomFactor += (isZooming ? timeElapsed : -timeElapsed) * 3.f;
     zoomFactor = Clamp(zoomFactor, 0.f, 1.f);
 
     MotionSingleComponent* msc = GetScene()->motionSingleComponent;
@@ -218,9 +225,17 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
             if (mouse->GetLeftButtonState().IsPressed())
             {
                 weaponMotion->TriggerEvent(TRIGGER_WEAPON_SHOOT);
+
+                shootingDelay -= timeElapsed;
+                if (shootingDelay <= 0.0f)
+                {
+                    shootingDelay = 0.1f;
+                    GetParticleEffectComponent(shootEffect)->Start();
+                }
             }
             else
             {
+                shootingDelay = 0.f;
                 weaponMotion->TriggerEvent(TRIGGER_WEAPON_IDLE);
             }
         }

@@ -39,6 +39,7 @@ private:
 
     DAVA::Entity* characterMeshEntity = nullptr;
     DAVA::Entity* weaponEntity = nullptr;
+    DAVA::Entity* shootEffect = nullptr;
     DAVA::MotionComponent* characterMotionComponent = nullptr;
     DAVA::Motion* moveMotion = nullptr;
     DAVA::Motion* aimMotion = nullptr;
@@ -52,6 +53,7 @@ private:
     DAVA::float32 crouchingParam = 0.f;
     DAVA::float32 aimAngleParam = 0.f;
     DAVA::float32 zoomFactor = 0.f;
+    DAVA::float32 shootingDelay = 0.f;
 
     DAVA::uint32 headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
     DAVA::uint32 weaponPointJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
