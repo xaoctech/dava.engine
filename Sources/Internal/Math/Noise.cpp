@@ -35,23 +35,24 @@ Vector4 TaylorInvSqrt(const Vector4& r)
     );
 }
 
+#define NOISE_FAST_FADE 1
+float32 Fade(float32 val)
+{
+#if NOISE_FAST_FADE
+    return val * val * (3 - 2 * val);
+#else
+    return val * val * val * (val * (val * 6.0f - 15.0f) + 10.0f);
+#endif
+}
+
 Vector3 Fade(const Vector3& t)
 {
-    return Vector3
-    (
-    t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
-    t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f),
-    t.z * t.z * t.z * (t.z * (t.z * 6.0f - 15.0f) + 10.0f)
-    );
+    return Vector3(Fade(t.x), Fade(t.y), Fade(t.z));
 }
 
 Vector2 Fade(const Vector2& t)
 {
-    return Vector2
-    (
-    t.x * t.x * t.x * (t.x * (t.x * 6.0f - 15.0f) + 10.0f),
-    t.y * t.y * t.y * (t.y * (t.y * 6.0f - 15.0f) + 10.0f)
-    );
+    return Vector2(Fade(t.x), Fade(t.y));
 }
 
 int32 WrapBlock(const int32 block, const int32 numBlocks, const float32 scale)
