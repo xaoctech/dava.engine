@@ -60,7 +60,7 @@ DigitalElementState Keyboard::GetKeyState(eInputElements key) const
 
 String Keyboard::TranslateElementToUTF8String(eInputElements elementId) const
 {
-    DVASSERT(IsElementSupported(elementId));
+    DVASSERT(IsKeyboardInputElement(elementId));
     return impl->TranslateElementToUTF8String(elementId);
 }
 
