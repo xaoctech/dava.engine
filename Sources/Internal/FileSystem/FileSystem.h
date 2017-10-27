@@ -25,6 +25,7 @@ namespace DAVA
 	\todo refactoring of utils and ~res:/ ~doc:/ access for the project files
 	\todo add support for pack files
 */
+class FileSystemDelegate;
 class FileSystem : public Singleton<FileSystem>
 {
 public:
@@ -294,6 +295,9 @@ public:
     void SetFilenamesTag(const String& newTag);
     const String& GetFilenamesTag() const;
 
+    void SetDelegate(FileSystemDelegate* delegate);
+    FileSystemDelegate* GetDelegate() const;
+
 private:
     bool HasLineEnding(File* f);
 
@@ -323,6 +327,8 @@ private:
     Map<String, void*> lockedFileHandles;
 
     String filenamesTag;
+
+    FileSystemDelegate* fsDelegate = nullptr;
 
     friend class File;
 };

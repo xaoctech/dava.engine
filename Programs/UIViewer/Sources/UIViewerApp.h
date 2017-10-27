@@ -3,6 +3,7 @@
 #include <Base/ScopedPtr.h>
 #include <CommandLine/ProgramOptions.h>
 #include <FileSystem/FilePath.h>
+#include <Input/ActionSystem.h>
 #include <Math/Math2D.h>
 
 namespace DAVA
@@ -36,6 +37,7 @@ public:
 
 private:
     void OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, DAVA::Size2f surfaceSize);
+    void OnActionTriggered(DAVA::Action action);
 
     void CreateDocumentsFolder();
 

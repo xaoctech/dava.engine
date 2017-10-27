@@ -45,6 +45,11 @@ namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
+    vcs = new VirtualCoordinatesSystem();
+    vcs->EnableReloadResourceOnResize(true);
+    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+
     AddSystem(std::make_unique<UIFlowStateSystem>());
     AddSystem(std::make_unique<UIFlowViewSystem>());
     AddSystem(std::make_unique<UIFlowControllerSystem>());
@@ -69,11 +74,6 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
-
-    vcs = new VirtualCoordinatesSystem();
-    vcs->EnableReloadResourceOnResize(true);
-    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
-    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     SetDoubleTapSettings(0.5f, 0.25f);
 }
