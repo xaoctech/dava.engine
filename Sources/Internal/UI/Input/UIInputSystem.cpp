@@ -252,6 +252,16 @@ UIControl* UIInputSystem::GetModalControl() const
     return modalControl.Get();
 }
 
+void UIInputSystem::BindGlobalShortcut(const KeyboardShortcut& shortcut, const FastName& actionName)
+{
+    GetScene()->GetSystem<UIEventsSystem>()->BindGlobalShortcut(shortcut, actionName);
+}
+
+void UIInputSystem::BindGlobalAction(const FastName& eventName, const UIActionMap::SimpleAction& action)
+{
+    GetScene()->GetSystem<UIEventsSystem>()->BindGlobalAction(eventName, action);
+}
+
 UIFocusSystem* UIInputSystem::GetFocusSystem() const
 {
     return focusSystem;
