@@ -16,14 +16,18 @@
 
 #include "UI/Package/PackageMimeData.h"
 #include "UI/CommandExecutor.h"
+#include "UI/Preview/Data/CentralWidgetData.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 #include "Model/PackageHierarchy/PackageBaseNode.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/VisibleValueProperty.h"
 
+#include "Modules/CanvasModule/CanvasData.h"
 #include "Controls/ScaleComboBox.h"
+#include "UI/Preview/PreviewWidgetSettings.h"
 
+#include "Controls/ScaleComboBox.h"
 #include "Utils/DragNDropHelper.h"
 
 #include <TArc/Controls/SceneTabbar.h>
@@ -297,20 +301,17 @@ void PreviewWidget::InitUI()
 void PreviewWidget::ShowMenu(const QMouseEvent* mouseEvent)
 {
     QMenu menu;
+
     //separator must be added by the client code, which call AddSelectionMenuSection function
     QPoint localPos = mouseEvent->pos();
     if (AddSelectionMenuSection(&menu, localPos))
     {
         menu.addSeparator();
     }
-    Vector2 davaPoint(localPos.x(), localPos.y());
-    ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPoint);
-    if (CanChangeTextInControl(node))
-    {
-        QString name = QString::fromStdString(node->GetName());
-        QAction* action = menu.addAction(tr("Change text in %1").arg(name));
-        connect(action, &QAction::triggered, [this, node]() { requestChangeTextInNode.Emit(node); });
-    }
+
+    AddChangeTextMenuSection(&menu, localPos);
+    AddBgrColorMenuSection(&menu);
+
     if (!menu.actions().isEmpty())
     {
         menu.exec(mouseEvent->globalPos());
@@ -359,6 +360,58 @@ bool PreviewWidget::AddSelectionMenuSection(QMenu* menu, const QPoint& pos)
         });
     }
     return !nodesUnderPoint.empty();
+}
+
+void PreviewWidget::AddChangeTextMenuSection(QMenu* menu, const QPoint& localPos)
+{
+    Vector2 davaPoint(localPos.x(), localPos.y());
+    ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPoint);
+    if (CanChangeTextInControl(node))
+    {
+        QString name = QString::fromStdString(node->GetName());
+        QAction* action = menu->addAction(tr("Change text in %1").arg(name));
+        connect(action, &QAction::triggered, [this, node]() { requestChangeTextInNode.Emit(node); });
+    }
+}
+
+void PreviewWidget::AddBgrColorMenuSection(QMenu* menu)
+{
+    using namespace DAVA::TArc;
+
+    QMenu* bgrColorsMenu = new QMenu("Background Color");
+    menu->addMenu(bgrColorsMenu);
+
+    FieldDescriptor indexFieldDescr;
+    indexFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
+    indexFieldDescr.fieldName = FastName("backgroundColorIndex");
+
+    FieldDescriptor colorsFieldDescr;
+    colorsFieldDescr.type = ReflectedTypeDB::Get<PreviewWidgetSettings>();
+    colorsFieldDescr.fieldName = DAVA::FastName("backgroundColors");
+
+    PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+    const Vector<Color>& colors = settings->backgroundColors;
+    for (DAVA::uint32 currentIndex = 0; currentIndex < colors.size(); ++currentIndex)
+    {
+        QtAction* action = new QtAction(accessor, QString("Background color %1").arg(currentIndex));
+        action->SetStateUpdationFunction(QtAction::Icon, colorsFieldDescr, [currentIndex](const Any& v)
+                                         {
+                                             const Vector<Color>& colors = v.Cast<Vector<Color>>();
+                                             Any color = colors[currentIndex];
+                                             return color.Cast<QIcon>(QIcon());
+                                         });
+
+        action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
+                                         {
+                                             return v.Cast<DAVA::uint32>(-1) == currentIndex;
+                                         });
+        connections.AddConnection(action, &QAction::triggered, [this, currentIndex]()
+                                  {
+                                      PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
+                                      settings->backgroundColorIndex = currentIndex;
+                                  });
+        bgrColorsMenu->addAction(action);
+    }
 }
 
 bool PreviewWidget::CanChangeTextInControl(const ControlNode* node) const

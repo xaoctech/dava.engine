@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Classes/Modules/LibraryModule/LibraryData.h"
+#include "Classes/Model/PackageHierarchy/PackageListener.h"
+
 #include <TArc/Core/ClientModule.h>
-#include "Modules/LibraryModule/LibraryData.h"
+#include <TArc/Utils/QtConnections.h>
 
 class ProjectData;
 
@@ -9,6 +12,7 @@ namespace DAVA
 {
 namespace TArc
 {
+class FieldBinder;
 class QtAction;
 }
 }
@@ -20,12 +24,13 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
     void InitData();
     void InitUI();
     void BindFields();
+    void CreateActions();
 
-    void AddProjectControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
+    void AddProjectControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
     void RemoveProjectControls();
 
-    void AddProjectPinnedControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
-    void AddProjectLibraryControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages);
+    void AddProjectPinnedControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
+    void AddProjectLibraryControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
     void AddDefaultControls();
 
     void AddPrototypes(const PackageNode* packageNode, const QUrl& menuPoint, const QUrl& toolbarMenuPoint);

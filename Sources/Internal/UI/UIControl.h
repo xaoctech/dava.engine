@@ -3,22 +3,23 @@
 #include "Animation/AnimatedObject.h"
 #include "Animation/Interpolation.h"
 #include "Base/BaseTypes.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "UI/Styles/UIStyleSheetPropertyDataBase.h"
-#include "UI/UIControlBackground.h"
 #include "UI/UIGeometricData.h"
 
 namespace DAVA
 {
-class UIYamlLoader;
 class Animation;
 class EventDispatcher;
-class UIEvent;
-class UIControlBackground;
 class Message;
+class Sprite;
 class UIComponent;
+class UIControlBackground;
 class UIControlFamily;
 class UIControlPackageContext;
 class UIControlSystem;
+class UIEvent;
 
 #define CONTROL_TOUCH_AREA 15
 
@@ -131,12 +132,6 @@ public:
      */
     DAVA_DEPRECATED(int32 GetFrame() const);
     /**
-     \brief Returns draw type used for draw in the current UIControlBackground object.
-        You can call this function directly for the controlBackgound.
-     \returns Draw type used for draw.
-     */
-    DAVA_DEPRECATED(virtual UIControlBackground::eDrawType GetSpriteDrawType() const);
-    /**
      \brief Returns Sprite align used for draw in the current UIControlBackground object.
         You can call this function directly for the controlBackgound.
      \returns Sprite eAlign bit mask used for draw.
@@ -164,11 +159,6 @@ public:
      \param[in] frame Sprite frame name.
      */
     DAVA_DEPRECATED(virtual void SetSpriteFrame(const FastName& frameName));
-    /**
-     \brief Sets draw type you want to use the control UIControlBackground object.
-     \param[in] drawType Draw type to use for drawing.
-     */
-    DAVA_DEPRECATED(virtual void SetSpriteDrawType(UIControlBackground::eDrawType drawType));
     /**
      \brief Sets Sprite align you want to use for draw for the control UIControlBackground object.
      \param[in] drawAlign Sprite eAlign bit mask.
@@ -318,7 +308,7 @@ public:
      \returns control angle in radians.
      */
     inline float32 GetAngle() const;
-    inline float32 GetAngleInDegrees() const;
+    float32 GetAngleInDegrees() const;
 
     /**
      \brief Sets control rotation angle in radians.
@@ -1195,11 +1185,6 @@ inline const Vector2& UIControl::GetPosition() const
 inline float32 UIControl::GetAngle() const
 {
     return angle;
-}
-
-inline float32 UIControl::GetAngleInDegrees() const
-{
-    return RadToDeg(angle);
 }
 
 inline const FastName& UIControl::GetName() const

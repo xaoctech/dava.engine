@@ -10,6 +10,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFocusGroupComponent)
     .DestructorByPointer([](UIFocusGroupComponent* o) { o->Release(); })
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIFocusGroupComponent);
 
 UIFocusGroupComponent::UIFocusGroupComponent()
 {

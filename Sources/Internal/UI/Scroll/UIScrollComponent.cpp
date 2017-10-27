@@ -11,6 +11,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIScrollComponent);
+
 UIScrollComponent::UIScrollComponent()
 {
 }

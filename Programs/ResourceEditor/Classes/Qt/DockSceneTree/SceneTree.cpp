@@ -12,6 +12,7 @@
 #include <QSignalBlocker>
 
 #include "Classes/Application/RESettings.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Deprecated/SceneValidator.h"
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
@@ -31,6 +32,7 @@
 #include "Commands2/Base/RECommandNotificationObject.h"
 
 #include "Classes/Qt/Actions/SaveEntityAsAction.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/SceneManager/SceneData.h"

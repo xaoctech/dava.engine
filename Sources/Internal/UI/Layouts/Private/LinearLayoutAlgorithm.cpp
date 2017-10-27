@@ -1,24 +1,18 @@
-#include "LinearLayoutAlgorithm.h"
-
-#include "UI/Layouts/UISizePolicyComponent.h"
-
+#include "UI/Layouts/Private/LinearLayoutAlgorithm.h"
 #include "UI/Layouts/Private/AnchorLayoutAlgorithm.h"
-#include "UI/Layouts/Private/SizeMeasuringAlgorithm.h"
 #include "UI/Layouts/Private/LayoutHelpers.h"
-
+#include "UI/Layouts/Private/SizeMeasuringAlgorithm.h"
+#include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/UIControl.h"
 
 namespace DAVA
 {
-LinearLayoutAlgorithm::LinearLayoutAlgorithm(Vector<ControlLayoutData>& layoutData_, bool isRtl_)
-    : layoutData(layoutData_)
-    , isRtl(isRtl_)
+LinearLayoutAlgorithm::LinearLayoutAlgorithm(Layouter& layouter_)
+    : layouter(layouter_)
 {
 }
 
-LinearLayoutAlgorithm::~LinearLayoutAlgorithm()
-{
-}
+LinearLayoutAlgorithm::~LinearLayoutAlgorithm() = default;
 
 void LinearLayoutAlgorithm::SetInverse(bool inverse_)
 {
@@ -71,7 +65,7 @@ void LinearLayoutAlgorithm::Apply(ControlLayoutData& data, Vector2::eAxis axis, 
         PlaceChildren(data, axis, firstIndex, lastIndex);
     }
 
-    AnchorLayoutAlgorithm anchorAlg(layoutData, isRtl);
+    AnchorLayoutAlgorithm anchorAlg(layouter);
     anchorAlg.Apply(data, axis, true, firstIndex, lastIndex);
 }
 
@@ -82,8 +76,9 @@ void LinearLayoutAlgorithm::InitializeParams(ControlLayoutData& data, Vector2::e
 
     fixedSize = 0.0f;
     totalPercent = 0.0f;
-
     childrenCount = 0;
+    const Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
+
     for (int32 i = firstIndex; i <= lastIndex; i++)
     {
         const ControlLayoutData& childData = layoutData[i];
@@ -114,6 +109,7 @@ void LinearLayoutAlgorithm::InitializeParams(ControlLayoutData& data, Vector2::e
 void LinearLayoutAlgorithm::CalculateDependentOnParentSizes(ControlLayoutData& data, Vector2::eAxis axis, int32 firstIndex, int32 lastIndex)
 {
     int32 index = firstIndex;
+    Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
     while (index <= lastIndex)
     {
         ControlLayoutData& childData = layoutData[index];
@@ -173,7 +169,7 @@ bool LinearLayoutAlgorithm::CalculateChildDependentOnParentSize(ControlLayoutDat
     }
     else if (sizeHint != nullptr && sizeHint->GetPolicyByAxis(axis) == UISizePolicyComponent::FORMULA)
     {
-        SizeMeasuringAlgorithm alg(layoutData, childData, axis, sizeHint);
+        SizeMeasuringAlgorithm alg(layouter, childData, axis, sizeHint);
         alg.SetParentSize(currentSize);
         alg.SetParentRestSize(restSize);
 
@@ -224,7 +220,7 @@ void LinearLayoutAlgorithm::PlaceChildren(ControlLayoutData& data, Vector2::eAxi
     {
         position = data.GetSize(axis) - padding;
     }
-
+    Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
     for (int32 i = firstIndex; i <= lastIndex; i++)
     {
         ControlLayoutData& childData = layoutData[i];

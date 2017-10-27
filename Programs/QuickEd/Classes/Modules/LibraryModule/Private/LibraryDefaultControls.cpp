@@ -1,8 +1,11 @@
-#include "Modules/LibraryModule/Private/LibraryDefaultControls.h"
-#include "Model/ControlProperties/AbstractProperty.h"
-#include "Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryDefaultControls.h"
+#include "Classes/Model/ControlProperties/AbstractProperty.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
 
 #include <Base/ObjectFactory.h>
+#include <Math/Vector.h>
+#include <UI/UIControl.h>
 
 namespace LibraryDefaultControls
 {

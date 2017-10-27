@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+
 #include <Base/BaseTypes.h>
-#include <Model/PackageHierarchy/PackageNode.h>
+
+#include <QWidget>
 
 class LibraryModel;
 class QTreeView;
@@ -10,7 +13,6 @@ namespace DAVA
 {
 namespace TArc
 {
-class FieldBinder;
 class ContextAccessor;
 class UI;
 }
@@ -27,12 +29,13 @@ public:
     void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& projectLibrary);
     void SetCurrentPackage(PackageNode* package);
 
+    QTreeView* GetTreeView();
+
 private:
     void InitUI();
 
 private:
     QTreeView* treeView;
     LibraryModel* libraryModel = nullptr;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::ContextAccessor* accessor = nullptr;
 };

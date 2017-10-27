@@ -1,6 +1,7 @@
 #include "UIScreens/BaseScreen.h"
 
 #include <Input/InputElements.h>
+#include <Render/2D/FTFont.h>
 #include <UI/UIButton.h>
 #include <UI/UIScreenManager.h>
 
@@ -11,7 +12,6 @@ BaseScreen::BaseScreen()
     , screenID(screensCount++)
 {
     DAVA::UIScreenManager::Instance()->RegisterScreen(screenID, this);
-    GetOrCreateComponent<DAVA::UIControlBackground>();
 }
 
 bool BaseScreen::SystemInput(DAVA::UIEvent* currentInput)
@@ -27,7 +27,6 @@ bool BaseScreen::SystemInput(DAVA::UIEvent* currentInput)
 
 void BaseScreen::LoadResources()
 {
-    GetBackground()->SetColor(DAVA::Color(0.f, 0.f, 0.f, 1.f));
     DVASSERT(!font);
     DVASSERT(!fontSmall);
     font = DAVA::FTFont::Create("~res:/UIViewer/Fonts/korinna.ttf");

@@ -19,7 +19,7 @@
 #include <DocDirSetup/DocDirSetup.h>
 
 #include <Render/Renderer.h>
-#include <Tools/TextureCompression/PVRConverter.h>
+#include <DavaTools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
 
 #include <UI/UIControlSystem.h>

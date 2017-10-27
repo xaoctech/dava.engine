@@ -12,7 +12,7 @@ class LayoutFormula;
 class UISizePolicyComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UISizePolicyComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UISizePolicyComponent);
+    DECLARE_UI_COMPONENT(UISizePolicyComponent);
 
 public:
     enum eSizePolicy

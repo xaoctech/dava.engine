@@ -15,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIRichContentComponent);
+
 UIRichContentComponent::UIRichContentComponent(const UIRichContentComponent& src)
     : UIComponent(src)
     , text(src.text)

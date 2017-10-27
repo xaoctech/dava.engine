@@ -4,6 +4,10 @@
 #include "UI/UIScreenManager.h"
 #include "UI/UIScreenManageriPhoneImpl.h"
 #include "Base/BaseObject.h"
+#include "Engine/Engine.h"
+#include "Logger/Logger.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScreen.h"
 
 @class RenderViewController;
 @class RenderView;

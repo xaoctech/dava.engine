@@ -1,16 +1,32 @@
-#include "Modules/LibraryModule/LibraryModule.h"
-#include "Modules/LibraryModule/Private/LibraryWidget.h"
-#include "Modules/LibraryModule/Private/LibraryDefaultControls.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/ProjectModule/ProjectData.h"
-#include "Application/QEGlobal.h"
+#include "Classes/Modules/LibraryModule/LibraryModule.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryWidget.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryDefaultControls.h"
+#include "Classes/Modules/LibraryModule/Private/LibraryHelpers.h"
 
-#include <QToolButton>
-#include <QMenu>
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/ProjectModule/ProjectData.h"
+
+#include "Classes/Application/QEGlobal.h"
+
+#include "Classes/Model/QuickEdPackageBuilder.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/ImportedPackagesNode.h"
+
+#include "Classes/UI/IconHelper.h"
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/WindowSubSystem/UI.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/Utils/ModuleCollection.h>
+
+#include <Engine/Engine.h>
+#include <UI/UIPackageLoader.h>
+#include <UI/UIControl.h>
+
+#include <QToolButton>
+#include <QTreeView>
+#include <QMenu>
 
 namespace LibraryModuleDetails
 {
@@ -42,6 +58,7 @@ void LibraryModule::PostInit()
     InitData();
     InitUI();
     BindFields();
+    CreateActions();
 }
 
 void LibraryModule::InitData()
@@ -92,6 +109,36 @@ void LibraryModule::BindFields()
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &LibraryModule::OnPackageChanged));
+    }
+}
+
+void LibraryModule::CreateActions()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    LibraryData* data = GetLibraryData();
+    LibraryWidget* libraryWidget = data->libraryWidget;
+
+    {
+        QtAction* action = new QtAction(GetAccessor(), QObject::tr("Collapse all"), libraryWidget);
+
+        KeyBindableActionInfo info;
+        info.blockName = "Library";
+        info.context = Qt::WidgetWithChildrenShortcut;
+        MakeActionKeyBindable(action, info);
+
+        QTreeView* libraryWidgetTreeView = libraryWidget->GetTreeView();
+        QObject::connect(action, &QAction::triggered, libraryWidgetTreeView, &QTreeView::collapseAll);
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<ProjectData>();
+        fieldDescr.fieldName = FastName(ProjectData::projectPathPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
+        });
+        libraryWidgetTreeView->addAction(action);
+        GetUI()->AddAction(DAVA::TArc::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);
     }
 }
 
@@ -149,7 +196,7 @@ void LibraryModule::OnControlCreateTriggered(ControlNode* node, bool makePrototy
     PackageNode* currentPackage = documentData->GetPackageNode();
     DVASSERT(currentPackage != nullptr);
 
-    String yamlString = LibraryHelpers::SerializeToYamlString(currentPackage, node, makePrototype);
+    DAVA::String yamlString = LibraryHelpers::SerializeToYamlString(currentPackage, node, makePrototype);
 
     InvokeOperation(QEGlobal::CreateByClick.ID, yamlString);
 }
@@ -193,7 +240,7 @@ LibraryData* LibraryModule::GetLibraryData()
     return GetAccessor()->GetGlobalContext()->GetData<LibraryData>();
 }
 
-void LibraryModule::AddProjectControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages)
+void LibraryModule::AddProjectControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages)
 {
     using namespace DAVA::TArc;
     using namespace LibraryModuleDetails;
@@ -216,7 +263,7 @@ void LibraryModule::AddProjectControls(const ProjectData* projectData, const Vec
     AddDefaultControls();
 }
 
-void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages)
+void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -283,7 +330,7 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
     }
 }
 
-void LibraryModule::AddProjectLibraryControls(const ProjectData* projectData, const Vector<RefPtr<PackageNode>>& libraryPackages)
+void LibraryModule::AddProjectLibraryControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -499,7 +546,7 @@ void LibraryModule::ControlPropertyWasChanged(ControlNode* node, AbstractPropert
         auto nodeFound = data->prototypesActions.find(node);
         if (nodeFound != data->prototypesActions.end())
         {
-            QString newName = QString::fromStdString(property->GetValue().Get<String>());
+            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::String>());
             nodeFound->second.action->setText(newName);
             nodeFound->second.action->setObjectName(newName);
         }
