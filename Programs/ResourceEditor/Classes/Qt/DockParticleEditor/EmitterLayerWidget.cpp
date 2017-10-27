@@ -347,7 +347,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(useThreePointGradientBox,
         SIGNAL(stateChanged(int)),
         this,
-        SLOT(OnNoisePropertiesChanged()));
+        SLOT(OnValueChanged()));
     gradientColorForWhite = new GradientPickerWidget(this);
     InitWidget(gradientColorForWhite);
     gradientColorForBlack = new GradientPickerWidget(this);
