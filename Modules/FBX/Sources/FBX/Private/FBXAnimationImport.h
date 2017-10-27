@@ -34,7 +34,8 @@ struct FBXNodeAnimationData
 struct FBXAnimationStackData
 {
     String name;
-    float32 duration = 0.f;
+	float32 minTimeStamp = std::numeric_limits<float32>::infinity();
+	float32 maxTimeStamp = -std::numeric_limits<float32>::infinity();
     Vector<FBXNodeAnimationData> nodesAnimations;
 };
 

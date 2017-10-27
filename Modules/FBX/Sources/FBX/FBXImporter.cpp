@@ -65,7 +65,7 @@ bool FBXImporter::ConvertAnimations(const FilePath& fbxPath)
 
         for (FBXImporterDetails::FBXAnimationStackData& animation : animations)
         {
-            FilePath animationPath = (animations.size() == 1) ? FilePath::CreateWithNewExtension(fbxPath, ".anim") : FilePath::CreateWithNewExtension(fbxPath, animation.name + ".anim");
+            FilePath animationPath = (animations.size() == 1) ? FilePath::CreateWithNewExtension(fbxPath, ".anim") : FilePath::CreateWithNewExtension(fbxPath, "_" + animation.name + ".anim");
             FBXImporterDetails::SaveAnimation(animation, animationPath);
         }
 
