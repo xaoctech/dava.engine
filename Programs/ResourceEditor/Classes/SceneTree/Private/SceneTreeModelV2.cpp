@@ -35,7 +35,7 @@ bool SceneTreeModelV2::canDropMimeData(const QMimeData* data, Qt::DropAction act
         return false;
     }
 
-    return traits.CanBeDroped(mimeData, action, MapItem(parent)->object, row);
+    return traits.CanBeDropped(mimeData, action, MapItem(parent)->object, row);
 }
 
 bool SceneTreeModelV2::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
@@ -128,28 +128,24 @@ QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
         DVASSERT(item != nullptr);
         return traits.GetName(item->object);
     }
-    break;
     case Qt::DecorationRole:
     {
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
         return traits.GetIcon(item->object);
     }
-    break;
     case Qt::ToolTipRole:
     {
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
         return traits.GetTooltip(item->object);
     }
-    break;
     case ToItemRoleCast(eSceneTreeRoles::InternalObjectRole):
     {
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
         return QVariant::fromValue(item->object.GetContainedObject());
     }
-    break;
     default:
         break;
     }

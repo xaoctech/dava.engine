@@ -9,7 +9,7 @@
 #include <QWidget>
 #include <QMimeData>
 #include <QLineEdit>
-#include <QToolBUtton>
+#include <QToolButton>
 
 class SceneEditor2;
 

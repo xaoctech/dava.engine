@@ -960,7 +960,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         }
 
         DVASSERT(result.isValid == true);
-        callback(entity, result.collisionObject);
+        callback(entity, result.collisionObject, result.shouldRecreate);
     }
     else
     {

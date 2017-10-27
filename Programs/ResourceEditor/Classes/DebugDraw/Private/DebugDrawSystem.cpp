@@ -150,7 +150,7 @@ void DebugDrawSystem::Draw()
 
     for (DAVA::Entity* entity : entities)
     { //drawing methods do not use data from components
-        //DrawObjectBoxesByType(entity);
+        DrawObjectBoxesByType(entity);
         DrawHangingObjects(entity);
         DrawSwitchesWithDifferentLods(entity);
         DrawDebugOctTree(entity);

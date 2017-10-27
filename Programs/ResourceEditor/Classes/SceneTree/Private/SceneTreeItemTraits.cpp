@@ -264,8 +264,8 @@ QVariant EntityTraits::GetValue(const Selectable& object, int itemRole) const
     return QVariant();
 }
 
-bool EntityTraits::CanBeDroped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                               const Selectable& parent, DAVA::int32 positionInParent) const
+bool EntityTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
+                                const Selectable& parent, DAVA::int32 positionInParent) const
 {
     if (action != Qt::MoveAction)
     {
@@ -530,8 +530,8 @@ QVariant ParticleEmitterInstanceTraits::GetValue(const Selectable& object, int i
     return QVariant();
 }
 
-bool ParticleEmitterInstanceTraits::CanBeDroped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                                const Selectable& parent, DAVA::int32 positionInParent) const
+bool ParticleEmitterInstanceTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
+                                                 const Selectable& parent, DAVA::int32 positionInParent) const
 {
     return mimeData->HasObjects<DAVA::ParticleLayer>();
 }
@@ -686,8 +686,8 @@ bool ParticleLayerTraits::SetValue(const Selectable& object, const QVariant& val
     return false;
 }
 
-bool ParticleLayerTraits::CanBeDroped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                      const Selectable& parent, DAVA::int32 positionInParent) const
+bool ParticleLayerTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
+                                       const Selectable& parent, DAVA::int32 positionInParent) const
 {
     return mimeData->HasObjects<DAVA::ParticleForce>();
 }
@@ -751,7 +751,7 @@ void ParticleForceTraits::FetchMore(const Selectable&, const DAVA::Vector<DAVA::
 {
 }
 
-bool ParticleForceTraits::CanBeDroped(const ReflectedMimeData*, Qt::DropAction, const Selectable&, DAVA::int32) const
+bool ParticleForceTraits::CanBeDropped(const ReflectedMimeData*, Qt::DropAction, const Selectable&, DAVA::int32) const
 {
     return false;
 }
@@ -907,8 +907,8 @@ const BaseSceneTreeTraits* SceneTreeTraitsManager::GetTraits(const Selectable& o
     return reinterpret_cast<const BaseSceneTreeTraits*>(iter->traits.GetData());
 }
 
-bool SceneTreeTraitsManager::CanBeDroped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                         const Selectable& parent, DAVA::int32 positionInParent) const
+bool SceneTreeTraitsManager::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
+                                          const Selectable& parent, DAVA::int32 positionInParent) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(parent);
     if (traits == nullptr)
@@ -916,7 +916,7 @@ bool SceneTreeTraitsManager::CanBeDroped(const ReflectedMimeData* mimeData, Qt::
         return false;
     }
 
-    return traits->CanBeDroped(mimeData, action, parent, positionInParent);
+    return traits->CanBeDropped(mimeData, action, parent, positionInParent);
 }
 
 bool SceneTreeTraitsManager::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,

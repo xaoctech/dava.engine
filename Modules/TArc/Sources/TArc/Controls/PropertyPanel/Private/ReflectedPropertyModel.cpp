@@ -304,7 +304,6 @@ void ReflectedPropertyModel::UpdateFast()
 
 void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
 {
-    DAVA::Logger::Info("Selection size %lld", objects.size());
     wrappersProcessor.Shoutdown();
     fastWrappersProcessor.Shoutdown();
 
