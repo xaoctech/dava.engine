@@ -44,9 +44,13 @@ namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
-    AddSystem(std::make_unique<UIEventsSystem>());
+    vcs = new VirtualCoordinatesSystem();
+    vcs->EnableReloadResourceOnResize(true);
+    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     AddSystem(std::make_unique<UIInputSystem>());
+    AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
@@ -67,11 +71,6 @@ UIControlSystem::UIControlSystem()
     eventsSystem = GetSystem<UIEventsSystem>();
 
     eventsSystem->RegisterCommands();
-
-    vcs = new VirtualCoordinatesSystem();
-    vcs->EnableReloadResourceOnResize(true);
-    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
-    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     SetDoubleTapSettings(0.5f, 0.25f);
 }
