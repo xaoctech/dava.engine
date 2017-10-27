@@ -1,5 +1,6 @@
 #include "TArc/Controls/ColorPicker/ColorPickerButton.h"
 #include "TArc/Controls/ColorPicker/ColorPickerDialog.h"
+#include "TArc/Qt/QtIcon.h"
 
 #include <Base/FastName.h>
 #include <Reflection/ReflectedMeta.h>

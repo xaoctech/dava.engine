@@ -26,39 +26,54 @@ include ( Toolset-сommon )
 
 ############ SINGLE TOOLS
 
-add_tool_single     ( UnitTests      NO_UNITY_BUILD )
-add_tool_single     ( TestBed         )
-add_tool_single     ( PerfomanceTests )
-add_tool_single     ( Launcher        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+add_tool_single     ( UnitTests         NO_UNITY_BUILD )
 
-if ( WIN32 )
-    add_tool_single ( UWPRunner )
-endif ()
+add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  )
 
+add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX )
+
+add_tool_single     ( Launcher          PLATFORMS MACOS WIN        
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+
+add_tool_single     ( UWPRunner         PLATFORMS WIN )
+ 
 
 ############ PACKAGE TOOLS
 
-add_tool_package     ( SceneViewer     DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+add_tool_package     ( SceneViewer      PLATFORMS IGNORE_LINUX 
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
-add_tool_package     ( UIViewer        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+add_tool_package     ( UIViewer         PLATFORMS MACOS WIN
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
-add_tool_package     ( ResourceEditor  DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
-add_tool_package     ( QuickEd         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+add_tool_package     ( ResourceEditor   PLATFORMS MACOS WIN
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
-add_tool_package     ( ResourceArchiver DEPENDS ResourceEditor )
-add_tool_package     ( ResourcePacker   DEPENDS ResourceEditor )
-add_tool_package     ( ResourcePatcher  DEPENDS ResourceEditor )
+add_tool_package     ( QuickEd          PLATFORMS MACOS WIN
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
-add_tool_package     ( AssetCacheServer )
-add_tool_package     ( Dep )
+add_tool_package     ( ResourceArchiver PLATFORMS MACOS WIN
+                                        DEPENDS ResourceEditor )
 
-add_tool_package     ( ImageUnpacker    )
+add_tool_package     ( ResourcePacker   PLATFORMS MACOS WIN
+                                        DEPENDS ResourceEditor )
+
+add_tool_package     ( ResourcePatcher  PLATFORMS MACOS WIN
+                                        DEPENDS ResourceEditor )
+
+add_tool_package     ( AssetCacheServer PLATFORMS MACOS WIN )
+
+
+add_tool_package     ( ImageUnpacker    PLATFORMS MACOS WIN )
 
 if (NOT DEPLOY OR CACHE_CLIENT)    
-    add_tool_package     ( AssetCacheClient )
+    add_tool_package ( AssetCacheClient PLATFORMS MACOS WIN )
 endif ()
 
 ###
+#deprecated
+#add_tool_package    ( Dep              PLATFORMS MACOS WIN )
+
 
 prepare_tools()
 

@@ -14,6 +14,7 @@
 #include <UI/Styles/UIStyleSheetSystem.h>
 #include <UI/Update/UIUpdateComponent.h>
 #include <UI/DefaultUIPackageBuilder.h>
+#include <UI/UIControlBackground.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>

@@ -398,6 +398,9 @@ bool TextureListDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, 
         QAction* openTextureFolder = menu.addAction("Open texture folder");
         QObject::connect(openTextureFolder, &QAction::triggered, this, &TextureListDelegate::onOpenTexturePath);
 
+        QAction* reloadTexture = menu.addAction("Reload texture");
+        QObject::connect(reloadTexture, &QAction::triggered, this, &TextureListDelegate::onReloadTexture);
+
         QAction* savePresetAction = menu.addAction(ActionIcon::savePresetIcon, "Save Preset");
         QObject::connect(savePresetAction, &QAction::triggered, this, &TextureListDelegate::onSavePreset);
 
@@ -413,6 +416,16 @@ bool TextureListDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, 
     }
 
     return QAbstractItemDelegate::editorEvent(event, model, option, index);
+}
+
+void TextureListDelegate::onReloadTexture()
+{
+    if (nullptr == lastSelectedTextureDescriptor)
+    {
+        return;
+    }
+
+    emit textureDescriptorReload(lastSelectedTextureDescriptor);
 }
 
 void TextureListDelegate::onOpenTexturePath()

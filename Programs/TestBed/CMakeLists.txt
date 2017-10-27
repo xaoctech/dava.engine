@@ -24,7 +24,7 @@ set ( DAVA_COMPONENTS  "DAVA_DISABLE_AUTOTESTS" )
 find_dava_module( SampleModule )
 
 if (NOT LINUX)
-    find_dava_module( Sound )
+    list(APPEND DAVA_COMPONENTS Sound )
     find_dava_module( Spine )
 endif()
 

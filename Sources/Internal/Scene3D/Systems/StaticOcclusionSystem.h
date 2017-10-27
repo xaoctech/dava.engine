@@ -85,8 +85,11 @@ private:
     void CreateStaticOcclusionDebugDrawGridIndice(StaticOcclusionDebugDrawComponent* target, StaticOcclusionComponent* source);
     void CreateStaticOcclusionDebugDrawCoverIndice(StaticOcclusionDebugDrawComponent* target, StaticOcclusionComponent* source);
 
+    void RemoveComponentFromEntity(Entity* entity);
+
     NMaterial *gridMaterial, *coverMaterial;
     uint32 vertexLayoutId;
+    Vector<Entity*> entities;
 };
 
 inline void StaticOcclusionSystem::SetCamera(Camera* _camera)
