@@ -29,6 +29,8 @@ public:
     void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& projectLibrary);
     void SetCurrentPackage(PackageNode* package);
 
+    QTreeView* GetTreeView();
+
 private:
     void InitUI();
 

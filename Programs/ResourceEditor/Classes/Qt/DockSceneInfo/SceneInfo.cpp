@@ -739,7 +739,6 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
 
     SpeedTreeInfo info;
 
-    Vector3 bboxSize = renderObject->GetBoundingBox().GetSize();
     int32 rbCount = renderObject->GetRenderBatchCount();
     int32 lodIndex, switchIndex;
     for (int32 i = 0; i < rbCount; ++i)
@@ -812,8 +811,15 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
         }
     }
 
-    info.leafsSquareRelative.x = info.leafsSquareAbsolute.x / (bboxSize.x * bboxSize.z);
-    info.leafsSquareRelative.y = info.leafsSquareAbsolute.y / (bboxSize.y * bboxSize.z);
+    Matrix4* worldTransformPtr = renderObject->GetWorldTransformPtr();
+    Vector3 objectScale = (worldTransformPtr != nullptr) ? worldTransformPtr->GetScaleVector() : Vector3(1.f, 1.f, 1.f);
+    info.leafsSquareAbsolute.x *= objectScale.y * objectScale.z;
+    info.leafsSquareAbsolute.y *= objectScale.x * objectScale.z;
+    info.leafsSquareAbsolute.z *= objectScale.x * objectScale.y;
+
+    Vector3 bboxSize = renderObject->GetWorldBoundingBox().GetSize();
+    info.leafsSquareRelative.x = info.leafsSquareAbsolute.x / (bboxSize.y * bboxSize.z);
+    info.leafsSquareRelative.y = info.leafsSquareAbsolute.y / (bboxSize.x * bboxSize.z);
     info.leafsSquareRelative.z = info.leafsSquareAbsolute.z / (bboxSize.x * bboxSize.y);
 
     return info;
