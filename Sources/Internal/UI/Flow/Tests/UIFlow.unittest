@@ -672,5 +672,11 @@ DAVA_TESTCLASS (UIFlowTest)
             controlSys->Draw();
             TEST_VERIFY(stateSys->GetCurrentState() == state);
         }
+
+        // Deactivate all states with transitions and make sure that transitions complete
+        stateSys->DeactivateAllStates();
+        SystemsUpdate();
+        controlSys->Draw();
+        TEST_VERIFY(stateSys->GetCurrentState() == nullptr);
     }
 };
