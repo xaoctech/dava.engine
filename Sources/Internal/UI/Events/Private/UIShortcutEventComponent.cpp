@@ -1,6 +1,7 @@
 #include "UI/Events/UIShortcutEventComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Utils/StringUtils.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {

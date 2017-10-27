@@ -1,11 +1,12 @@
 #include "UI/Events/UIEventsSingleComponent.h"
 
+#include <UI/UIControl.h>
+
 namespace DAVA
 {
 DefferedEvent::DefferedEvent(UIControl* control_, const FastName& event_, bool broadcast_)
     : event(event_)
-    ,
-    broadcast(broadcast_)
+    , broadcast(broadcast_)
 {
     control = control_;
 }
