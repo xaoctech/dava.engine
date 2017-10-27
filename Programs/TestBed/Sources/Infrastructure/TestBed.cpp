@@ -1,3 +1,5 @@
+#pragma strict_gs_check(on)
+
 #include "Infrastructure/TestBed.h"
 
 #include <DocDirSetup/DocDirSetup.h>

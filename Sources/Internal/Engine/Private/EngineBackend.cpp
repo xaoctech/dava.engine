@@ -61,6 +61,7 @@
 #include "Entity/ComponentManager.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Utils/Random.h"
+#include "Debug/DebugOverlay.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Private/Android/AssetsManagerAndroid.h"
@@ -920,10 +921,14 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
 #endif
+
+    context->debugOverlay = new DebugOverlay();
 }
 
 void EngineBackend::DestroySubsystems()
 {
+    SafeDelete(context->debugOverlay);
+
 #ifdef __DAVAENGINE_AUTOTESTING__
     if (context->autotestingSystem != nullptr)
     {
