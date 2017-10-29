@@ -11,8 +11,9 @@ namespace FBXImporterDetails
 using VertexInfluence = std::pair<uint32, float32>; //[jointIndex, jointWeight]
 using FbxControlPointInfluences = Vector<VertexInfluence>;
 
-void ProcessSceneSkeletonsRecursive(FbxNode* fbxNode);
-SkeletonComponent* ImportSkeleton(FbxSkin* fbxSkin, const FbxAMatrix& meshTransform, Vector<FbxControlPointInfluences>* controlPointsInfluences, uint32* outMaxInfluenceCount);
+void ProcessSceneSkeletons(FbxScene* scene);
+void GetControlPointInfluences(FbxSkin* fbxSkin, Vector<FbxControlPointInfluences>* outControlPointsInfluences, uint32* outMaxInfluenceCount);
+SkeletonComponent* GetBuiltSkeletonComponent(FbxSkin* fbxSkin);
 
 void ClearSkeletonCache();
 };

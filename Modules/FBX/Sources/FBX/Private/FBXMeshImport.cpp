@@ -21,13 +21,6 @@ namespace FBXMeshImportDetails
 
 using GeometrySet = Vector<std::pair<PolygonGroup*, NMaterial*>>;
 
-struct ProcessedMesh
-{
-    GeometrySet geometry;
-    SkeletonComponent* skeleton = nullptr;
-    uint32 maxVertexInfluenceCount = 0;
-};
-
 struct FBXVertex
 {
     struct JointWeightComparator
@@ -62,7 +55,7 @@ struct FBXVertex
 //namespace members
 
 static uint32 materialInstanceIndex = 0;
-Map<const FbxNode*, ProcessedMesh> meshCache; //in ProcessedMesh::GeometrySet materials isn't retained. It's owned by materialCache
+Map<const FbxMesh*, GeometrySet> meshCache; //in ProcessedMesh::GeometrySet materials isn't retained. It's owned by materialCache
 
 }; //ns FBXMeshImportDetails
 
@@ -72,14 +65,12 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 {
     using namespace FBXMeshImportDetails;
 
-    auto found = meshCache.find(fbxNode);
+	DVASSERT(fbxNode);
+	FbxMesh* fbxMesh = fbxNode->GetMesh();
+
+    auto found = meshCache.find(fbxMesh);
     if (found == meshCache.end())
     {
-        const FbxMesh* fbxMesh = fbxNode->GetMesh();
-        DVASSERT(fbxNode);
-
-        FbxAMatrix meshTransform = fbxNode->EvaluateGlobalTransform();
-
         bool hasNormal = fbxMesh->GetElementNormalCount() > 0;
         bool hasTangent = fbxMesh->GetElementTangentCount() > 0;
         bool hasBinormal = fbxMesh->GetElementBinormalCount() > 0;
@@ -87,11 +78,10 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 
         uint32 maxControlPointInfluence = 0;
         Vector<FbxControlPointInfluences> controlPointsInfluences;
-        SkeletonComponent* skeleton = nullptr;
         if (hasSkinning)
         {
-            FbxSkin* skin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
-            skeleton = ImportSkeleton(skin, meshTransform, &controlPointsInfluences, &maxControlPointInfluence);
+            FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
+			GetControlPointInfluences(fbxSkin, &controlPointsInfluences, &maxControlPointInfluence);
         }
         maxControlPointInfluence = Min(maxControlPointInfluence, PolygonGroup::MAX_VERTEX_JOINTS_COUNT);
 
@@ -176,6 +166,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         }
 
         GeometrySet geometrySet;
+		Matrix4 meshTransform = ToMatrix4(fbxNode->EvaluateGlobalTransform());
         for (auto& it : materialGeometry)
         {
             FbxSurfaceMaterial* fbxMaterial = it.first;
@@ -239,24 +230,26 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
                 ++vertexIndex;
             }
 
-            polygonGroup->ApplyMatrix(ToMatrix4(meshTransform));
+            polygonGroup->ApplyMatrix(meshTransform);
 
             geometrySet.emplace_back(polygonGroup, ImportMaterial(fbxMaterial, maxControlPointInfluence));
         }
 
-        found = meshCache.emplace(fbxNode, ProcessedMesh()).first;
-        found->second.geometry = std::move(geometrySet);
-        found->second.skeleton = skeleton;
-        found->second.maxVertexInfluenceCount = maxControlPointInfluence;
+        found = meshCache.emplace(fbxMesh, std::move(geometrySet)).first;
     }
 
-    bool isSkinned = (found->second.skeleton != nullptr);
+
+    bool isSkinned = (found->first->GetDeformerCount(FbxDeformer::eSkin) > 0);
     if (isSkinned)
-    {
+	{
+		FbxSkin* fbxSkin = static_cast<FbxSkin*>(found->first->GetDeformer(0, FbxDeformer::eSkin));
+
         ScopedPtr<SkinnedMesh> mesh(new SkinnedMesh());
 
-        uint32 maxVertexInfluenceCount = found->second.maxVertexInfluenceCount;
-        const GeometrySet& geometrySet = found->second.geometry;
+		uint32 maxVertexInfluenceCount = 0;
+		GetControlPointInfluences(fbxSkin, nullptr, &maxVertexInfluenceCount);
+
+        const GeometrySet& geometrySet = found->second;
         for (auto& geometry : geometrySet)
         {
             PolygonGroup* polygonGroup = geometry.first;
@@ -283,14 +276,14 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             }
         }
 
-        entity->AddComponent(new RenderComponent(mesh));
-        entity->AddComponent(found->second.skeleton->Clone(entity));
+		entity->AddComponent(new RenderComponent(mesh));
+        entity->AddComponent(GetBuiltSkeletonComponent(fbxSkin)->Clone(entity));
     }
     else
     {
         ScopedPtr<Mesh> mesh(new Mesh());
 
-        const GeometrySet& geometrySet = found->second.geometry;
+        const GeometrySet& geometrySet = found->second;
         for (auto& geometry : geometrySet)
         {
             PolygonGroup* polygonGroup = geometry.first;
@@ -310,10 +303,8 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 void ClearMeshCache()
 {
     for (auto& it : FBXMeshImportDetails::meshCache)
-    {
-        SafeDelete(it.second.skeleton);
-
-        for (auto& p : it.second.geometry)
+	{
+        for (auto& p : it.second)
             SafeRelease(p.first);
         //in geometry cache material isn't retained
     }
