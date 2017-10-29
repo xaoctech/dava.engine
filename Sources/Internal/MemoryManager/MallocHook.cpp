@@ -73,20 +73,21 @@ void HookedFree(void* ptr)
 
 namespace DAVA
 {
-void* (*MallocHook::RealMalloc)(size_t) = &malloc;
-void* (*MallocHook::RealRealloc)(void*, size_t) = &realloc;
-void (*MallocHook::RealFree)(void*) = &free;
+void* (*MallocHook::RealMalloc)(size_t) = nullptr;
+void* (*MallocHook::RealRealloc)(void*, size_t) = nullptr;
+void (*MallocHook::RealFree)(void*) = nullptr;
 #if defined(__DAVAENGINE_ANDROID__)
 size_t (*MallocHook::RealMallocSize)(void*) = nullptr;
 #endif
 
-MallocHook::MallocHook()
-{
-    Install();
-}
-
 void* MallocHook::Malloc(size_t size)
 {
+    static bool isHooked = false;
+    if (!isHooked)
+    {
+        isHooked = true;
+        Install();
+    }
     return RealMalloc(size);
 }
 
@@ -123,25 +124,23 @@ void MallocHook::Install()
      Explanation of allocation flow:
         app calls malloc --> HookedMalloc --> MemoryManager::Allocate --> MallocHook::Malloc --> original malloc
      Same flow with little differences is applied to other functions
-     Such a long chain is neccessary for keeping as mush common code among different platforms as possible.
+     Such a long chain is necessary for keeping as mush common code among different platforms as possible.
      To be able to call HookedMalloc instead of malloc I use some technique to intercept/replace functions.
 
      On Win32 I use Microsoft Detours library which modifies function prologue code with call to so called
      trampoline function. This trampoline function makes call to address which was specified by me (HookedMalloc).
 
      On *nix platforms (Android, iOS, Mac OS X, etc) I simply define my own implementation of malloc. In glibc
-     malloc is a weak symbol which means that it can be overriden by an application. Additionally I get original
+     malloc is a weak symbol which means that it can be overridden by an application. Additionally I get original
      address of malloc using dlsym function.
     */
 #if defined(__DAVAENGINE_WIN32__)
+    RealMalloc = &::malloc;
+    RealRealloc = &::realloc;
+    RealFree = &::free;
     void* (*realCalloc)(size_t, size_t) = &calloc;
     char* (*realStrdup)(const char*) = &_strdup;
 
-#if defined(_WIN64)
-    RealMalloc = &malloc;
-    RealRealloc = &realloc;
-    RealFree = &free;
-#else
     auto detours = [](PVOID* what, PVOID hook) -> void {
         LONG result = 0;
         result = DetourTransactionBegin();
@@ -160,7 +159,6 @@ void MallocHook::Install()
     detours(reinterpret_cast<PVOID*>(&realCalloc), reinterpret_cast<PVOID>(&HookedCalloc));
     detours(reinterpret_cast<PVOID*>(&realStrdup), reinterpret_cast<PVOID>(&HookedStrdup));
     detours(reinterpret_cast<PVOID*>(&RealFree), reinterpret_cast<PVOID>(&HookedFree));
-#endif
 
 #elif defined(__DAVAENGINE_WIN_UAP__)
     RealMalloc = &malloc;
