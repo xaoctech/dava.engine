@@ -32,15 +32,10 @@ FbxScene* ImportFbxScene(FbxManager* fbxManager, const FilePath& fbxPath)
 
     FbxAxisSystem::MayaZUp.ConvertScene(fbxScene); // UpVector = ZAxis, CoordSystem = RightHanded
 
-    FbxSystemUnit::ConversionOptions fbxConversionOptions = {
-        false, /* mConvertRrsNodes */
-        true, /* mConvertLimits */
-        true, /* mConvertClusters */
-        true, /* mConvertLightIntensity */
-        true, /* mConvertPhotometricLProperties */
-        true /* mConvertCameraClipPlanes */
-    };
-    FbxSystemUnit::m.ConvertScene(fbxScene, fbxConversionOptions); //Unit = meter
+	//FbxSystemUnit::ConvertScene() doesn't work properly in some cases, so we scale scene manually
+	double conversionFactor = fbxScene->GetGlobalSettings().GetSystemUnit().GetConversionFactorTo(FbxSystemUnit::m);
+	FbxVector4 rootNodeScaling = FbxVector4(fbxScene->GetRootNode()->LclScaling.Get()) * conversionFactor;
+	fbxScene->GetRootNode()->LclScaling.Set(rootNodeScaling);
 
     return fbxScene;
 }

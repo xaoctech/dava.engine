@@ -78,7 +78,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         const FbxMesh* fbxMesh = fbxNode->GetMesh();
         DVASSERT(fbxNode);
 
-        FbxAMatrix meshTransform = fbxNode->EvaluateLocalTransform();
+        FbxAMatrix meshTransform = fbxNode->EvaluateGlobalTransform();
 
         bool hasNormal = fbxMesh->GetElementNormalCount() > 0;
         bool hasTangent = fbxMesh->GetElementTangentCount() > 0;
