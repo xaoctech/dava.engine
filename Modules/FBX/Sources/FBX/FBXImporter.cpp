@@ -23,8 +23,8 @@ Scene* FBXImporter::ConstructSceneFromFBX(const FilePath& fbxPath)
         FbxGeometryConverter fbxGeometryConverter(fbxManager);
         fbxGeometryConverter.Triangulate(fbxScene, true); //Triangulate whole scene
 
-		scene = new Scene();
-		FBXImporterDetails::ProcessSceneSkeletons(fbxScene);
+        scene = new Scene();
+        FBXImporterDetails::ProcessSceneSkeletons(fbxScene);
         FBXImporterDetails::ProcessSceneHierarchyRecursive(fbxScene->GetRootNode(), scene);
         fbxScene->Destroy();
     }

@@ -65,8 +65,8 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 {
     using namespace FBXMeshImportDetails;
 
-	DVASSERT(fbxNode);
-	FbxMesh* fbxMesh = fbxNode->GetMesh();
+    DVASSERT(fbxNode);
+    FbxMesh* fbxMesh = fbxNode->GetMesh();
 
     auto found = meshCache.find(fbxMesh);
     if (found == meshCache.end())
@@ -81,7 +81,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         if (hasSkinning)
         {
             FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
-			GetControlPointInfluences(fbxSkin, &controlPointsInfluences, &maxControlPointInfluence);
+            GetControlPointInfluences(fbxSkin, &controlPointsInfluences, &maxControlPointInfluence);
         }
         maxControlPointInfluence = Min(maxControlPointInfluence, PolygonGroup::MAX_VERTEX_JOINTS_COUNT);
 
@@ -166,7 +166,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         }
 
         GeometrySet geometrySet;
-		Matrix4 meshTransform = ToMatrix4(fbxNode->EvaluateGlobalTransform());
+        Matrix4 meshTransform = ToMatrix4(fbxNode->EvaluateGlobalTransform());
         for (auto& it : materialGeometry)
         {
             FbxSurfaceMaterial* fbxMaterial = it.first;
@@ -238,16 +238,15 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         found = meshCache.emplace(fbxMesh, std::move(geometrySet)).first;
     }
 
-
     bool isSkinned = (found->first->GetDeformerCount(FbxDeformer::eSkin) > 0);
     if (isSkinned)
-	{
-		FbxSkin* fbxSkin = static_cast<FbxSkin*>(found->first->GetDeformer(0, FbxDeformer::eSkin));
+    {
+        FbxSkin* fbxSkin = static_cast<FbxSkin*>(found->first->GetDeformer(0, FbxDeformer::eSkin));
 
         ScopedPtr<SkinnedMesh> mesh(new SkinnedMesh());
 
-		uint32 maxVertexInfluenceCount = 0;
-		GetControlPointInfluences(fbxSkin, nullptr, &maxVertexInfluenceCount);
+        uint32 maxVertexInfluenceCount = 0;
+        GetControlPointInfluences(fbxSkin, nullptr, &maxVertexInfluenceCount);
 
         const GeometrySet& geometrySet = found->second;
         for (auto& geometry : geometrySet)
@@ -276,7 +275,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             }
         }
 
-		entity->AddComponent(new RenderComponent(mesh));
+        entity->AddComponent(new RenderComponent(mesh));
         entity->AddComponent(GetBuiltSkeletonComponent(fbxSkin)->Clone(entity));
     }
     else
@@ -303,7 +302,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 void ClearMeshCache()
 {
     for (auto& it : FBXMeshImportDetails::meshCache)
-	{
+    {
         for (auto& p : it.second)
             SafeRelease(p.first);
         //in geometry cache material isn't retained
