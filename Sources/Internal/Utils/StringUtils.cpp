@@ -59,58 +59,6 @@ WideString RemoveNonPrintable(const WideString& string, const int8 tabRule /*= -
     return out;
 }
 
-bool IsEmoji(int32 sym)
-{
-    // ranges of symbol codes with unicode emojies.
-    static Vector<std::pair<int32, int32>> ranges = { { 0x2190, 0x21FF }, { 0x2300, 0x243F }, { 0x2600, 0x26FF }, { 0x2700, 0x27BF }, { 0x3000, 0x303F }, /*{ 0x1F1E6, 0x1F1FF },*/ { 0x1F300, 0x1F6FF }, { 0x1F900, 0x1F9FF } };
-    for (auto range : ranges)
-    {
-        if (sym >= range.first && sym <= range.second)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool RemoveEmoji(WideString& string)
-{
-    WideString ret;
-    bool isChanged = false;
-
-    auto data = string.data();
-    size_t length = string.length();
-    for (size_t i = 0; i < length; ++i)
-    {
-        int32 sym;
-        Memcpy(&sym, data + i, sizeof(int32));
-
-        if (!IsEmoji(sym))
-        {
-            ret += sym;
-        }
-        else
-        {
-            while (i + 1 < length)
-            {
-                i++;
-                Memcpy(&sym, data + i, sizeof(int32));
-                if (sym != 0x200D && sym != 0xFE0F)
-                {
-                    i--;
-                    break;
-                }
-            }
-            isChanged = true;
-        }
-    }
-
-    string = ret;
-
-    // true means "we removed some emojies".
-    return isChanged;
-}
-
 void ReplaceAll(WideString& string, const WideString& search, const WideString& replacement)
 {
     size_t pos = 0;

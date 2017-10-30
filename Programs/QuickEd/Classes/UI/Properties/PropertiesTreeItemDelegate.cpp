@@ -76,7 +76,11 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "parentRest"
                        << "parentLine"
                        << "min(parentRest, content)"
-                       << "max(parent, childrenSum)";
+                       << "max(parent, childrenSum)"
+                       << "visibilityMargins.left"
+                       << "visibilityMargins.right"
+                       << "visibilityMargins.top"
+                       << "visibilityMargins.bottom";
 
     propertyNameTypeItemDelegates[PropertyPath("*", "actions")] = new TablePropertyDelegate(QList<QString>({ "Action", "Shortcut" }), this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
