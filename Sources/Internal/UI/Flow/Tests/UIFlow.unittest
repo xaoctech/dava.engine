@@ -12,6 +12,7 @@
 // TODO: uncomment after merging Events
 // #include "UI/Events/UIEventsSingleComponent.h"
 // #include "UI/Events/UIEventsSystem.h"
+#include "UI/Flow/Private/UIFlowTransitionTransaction.h"
 #include "UI/Flow/Services/FlowUIService.h"
 #include "UI/Flow/UIContext.h"
 #include "UI/Flow/UIFlowController.h"
@@ -20,6 +21,7 @@
 #include "UI/Flow/UIFlowStateComponent.h"
 #include "UI/Flow/UIFlowStateSystem.h"
 #include "UI/Flow/UIFlowTransitionComponent.h"
+#include "UI/Flow/UIFlowTransitionEffectConfig.h"
 #include "UI/Flow/UIFlowViewComponent.h"
 #include "UI/Flow/UIFlowViewSystem.h"
 #include "UI/UIControl.h"
@@ -230,6 +232,11 @@ DAVA_TESTCLASS (UIFlowTest)
         UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, true);
+
+        UIFlowTransitionTransaction* transaction = stateSys->GetTopTransitionTransaction();
+        TEST_VERIFY(transaction != nullptr);
+        TEST_VERIFY(transaction->IsBackgroundLoading());
+
         SystemsUpdate();
         WaitBackgroundTransactions();
         TEST_VERIFY(stateSys->GetCurrentState() == state);
@@ -456,6 +463,11 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state != nullptr);
 
         stateSys->PreloadState(state, false);
+
+        UIFlowTransitionTransaction* transaction = stateSys->GetTopTransitionTransaction();
+        TEST_VERIFY(transaction != nullptr);
+        TEST_VERIFY(transaction->IsOnlyLoad());
+
         SystemsUpdate();
         TEST_VERIFY(stateSys->IsStateLoaded(state));
 
@@ -647,38 +659,52 @@ DAVA_TESTCLASS (UIFlowTest)
         //        TEST_VERIFY(scopeCom->GetExpression() == "{b = 2}");
     }
 
-    // TODO: Make test for rendering in separate application (TestBed)
-    // DAVA_TEST (TransitionEffects)
-    // {
-    //     const float32 HALF_TIME = 0.051f;
-    //     const Array<String, 8> STATES = {
-    //         "./Effects/Static",
-    //         "^/Effects/FadeAlpha",
-    //         "^/Effects/Fade",
-    //         "^/Effects/Scale",
-    //         "^/Effects/Flip",
-    //         "^/Effects/MoveLeft",
-    //         "^/Effects/MoveRight",
-    //         "^/Effects/Static"
-    //     };
-    //     UIFlowStateComponent* state = nullptr;
-    //
-    //     for (const String& statePath : STATES)
-    //     {
-    //         state = stateSys->FindStateByPath(statePath);
-    //         TEST_VERIFY(state != nullptr);
-    //         stateSys->ActivateState(state, false);
-    //         SystemsUpdate(HALF_TIME);
-    //         controlSys->Draw();
-    //         SystemsUpdate(HALF_TIME);
-    //         controlSys->Draw();
-    //         TEST_VERIFY(stateSys->GetCurrentState() == state);
-    //     }
-    //
-    //     // Deactivate all states with transitions and make sure that transitions complete
-    //     stateSys->DeactivateAllStates();
-    //     SystemsUpdate(HALF_TIME);
-    //     controlSys->Draw();
-    //     TEST_VERIFY(stateSys->GetCurrentState() == nullptr);
-    // }
+    DAVA_TEST (TransitionEffects)
+    {
+        UIFlowStateComponent* state = stateSys->FindStateByPath("./DefaultState");
+        TEST_VERIFY(state != nullptr);
+        stateSys->ActivateState(state, false);
+
+        UIFlowTransitionTransaction* transaction = stateSys->GetTopTransitionTransaction();
+        TEST_VERIFY(transaction != nullptr);
+
+        UIFlowTransitionEffectConfig effectCfg;
+        transaction->SetEffectConfig(effectCfg);
+
+        SystemsUpdate(); // Apply transaction
+        SystemsUpdate(); // Apply transition effect
+        TEST_VERIFY(stateSys->GetCurrentState() == state);
+
+        // TODO: Make test for rendering in separate application (TestBed)
+        //         const float32 HALF_TIME = 0.051f;
+        //         const Array<String, 8> STATES = {
+        //             "./Effects/Static",
+        //             "^/Effects/FadeAlpha",
+        //             "^/Effects/Fade",
+        //             "^/Effects/Scale",
+        //             "^/Effects/Flip",
+        //             "^/Effects/MoveLeft",
+        //             "^/Effects/MoveRight",
+        //             "^/Effects/Static"
+        //         };
+        //         UIFlowStateComponent* state = nullptr;
+        //
+        //         for (const String& statePath : STATES)
+        //         {
+        //             state = stateSys->FindStateByPath(statePath);
+        //             TEST_VERIFY(state != nullptr);
+        //             stateSys->ActivateState(state, false);
+        //             SystemsUpdate(HALF_TIME);
+        //             controlSys->Draw();
+        //             SystemsUpdate(HALF_TIME);
+        //             controlSys->Draw();
+        //             TEST_VERIFY(stateSys->GetCurrentState() == state);
+        //         }
+        //
+        //         // Deactivate all states with transitions and make sure that transitions complete
+        //         stateSys->DeactivateAllStates();
+        //         SystemsUpdate(HALF_TIME);
+        //         controlSys->Draw();
+        //         TEST_VERIFY(stateSys->GetCurrentState() == nullptr);
+    }
 };
