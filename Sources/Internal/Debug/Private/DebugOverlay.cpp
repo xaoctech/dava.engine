@@ -98,7 +98,6 @@ namespace DAVA
                     ImGui::EndPopup();
                 }
                 ImGui::PopStyleVar(1);
-
                 
                 ImGui::End();
             }

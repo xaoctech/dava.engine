@@ -24,18 +24,6 @@ namespace DAVA
                 stream << "[" << LogLevelToString(ll) << "] " << text;
                 String result = stream.str();
                 logsArray.next() = std::move(result);
-
-                stream.str("");
-                for (auto iter = logsArray.rbegin(); iter != logsArray.rend(); ++iter)
-                {
-                    stream << *iter;
-                }
-                str = stream.str();
-            }
-
-            String GetStr()
-            {
-                return str;
             }
 
             String LogLevelToString(Logger::eLogLevel level)
@@ -65,7 +53,6 @@ namespace DAVA
                 return "Unknown";
             }
 
-            String str;
             RingArray<String> logsArray = RingArray<String>(256);
         };
     }
@@ -93,21 +80,21 @@ namespace DAVA
 
         bool shown = true;
         ImGui::SetNextWindowSize(ImVec2(800, 500), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Logger", &shown);
+        ImGui::Begin("Logger", &shown, ImGuiWindowFlags_NoFocusOnAppearing);
 
-        /*if (ImGui::Button("Clear"))
+        if (ImGui::Button("Clear"))
         {
-
+            // TODO
         }
         ImGui::SameLine();
-        bool copy = ImGui::Button("Copy");
+        bool copy = ImGui::Button("Copy"); // TODO
         ImGui::SameLine();
         filter.Draw("Filter", -100.0f);
-        ImGui::Separator();*/
+        ImGui::Separator();
 
         ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        /*if (filter.IsActive())
+        if (filter.IsActive())
         {
             for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
             {
@@ -118,9 +105,13 @@ namespace DAVA
                 }
             }
         }
-        else*/
+        else
         {
-                ImGui::TextUnformatted(loggerOutput.str.c_str());
+            for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
+            {
+                const String& s = *iter;
+                ImGui::TextUnformatted(s.c_str());
+            }
         }
 
         ImGui::EndChild();
