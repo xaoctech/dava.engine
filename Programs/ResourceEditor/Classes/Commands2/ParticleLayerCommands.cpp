@@ -294,3 +294,47 @@ void CommandChangeAlphaRemapProperties::ApplyParams(AlphaRemapParams& params)
         layer->alphaRemapLoopCount = params.alphaRemapLoopCount;
     }
 }
+
+CommandChangeThreePointGradientProperties::CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer_, ThreePointGradientParams&& params)
+    : RECommand(CMDID_PARTICLE_LAYER_CHANGED_THREE_POINT_GRADIENT, "Change Three Point Gradient Properties")
+    , layer(layer_)
+    , newParams(params)
+{
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.gradientColorForBlack = layer->gradientColorForBlack;
+        oldParams.gradientColorForMiddle = layer->gradientColorForMiddle;
+        oldParams.gradientColorForWhite = layer->gradientColorForWhite;
+        oldParams.useThreePointGradient = layer->useThreePointGradient;
+        oldParams.gradientMiddlePoint = layer->gradientMiddlePoint;
+    }
+}
+
+void CommandChangeThreePointGradientProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeThreePointGradientProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeThreePointGradientProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeThreePointGradientProperties::ApplyParams(ThreePointGradientParams& params)
+{
+    if (layer != nullptr)
+    {
+        PropertyLineHelper::SetValueLine(layer->gradientColorForBlack, params.gradientColorForBlack);
+        PropertyLineHelper::SetValueLine(layer->gradientColorForMiddle, params.gradientColorForMiddle);
+        PropertyLineHelper::SetValueLine(layer->gradientColorForWhite, params.gradientColorForWhite);
+
+        layer->useThreePointGradient = params.useThreePointGradient;
+        layer->gradientMiddlePoint = params.gradientMiddlePoint;
+    }
+}

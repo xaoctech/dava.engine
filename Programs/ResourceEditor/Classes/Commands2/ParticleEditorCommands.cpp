@@ -115,10 +115,6 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
                                       RefPtr<PropertyLine<float32>> angle,
                                       RefPtr<PropertyLine<float32>> angleVariation,
 
-                                      RefPtr<PropertyLine<Color>> gradientColorForWhite,
-                                      RefPtr<PropertyLine<Color>> gradientColorForBlack,
-                                      RefPtr<PropertyLine<Color>> gradientColorForMiddle,
-
                                       float32 startTime,
                                       float32 endTime,
                                       float32 deltaTime,
@@ -129,8 +125,6 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
                                       float32 frameOverLifeFPS,
                                       bool randomFrameOnStart,
                                       bool loopSpriteAnimation,
-                                      bool useThreePointGradient,
-                                      float32 gradientMiddlePoint,
                                       RefPtr<PropertyLine<float32>> animSpeedOverLife,
 
                                       float32 pivotPointX,
@@ -166,12 +160,6 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
     this->colorOverLife = colorOverLife;
     this->angle = angle;
     this->angleVariation = angleVariation;
-
-    this->gradientColorForWhite = gradientColorForWhite;
-    this->gradientColorForBlack = gradientColorForBlack;
-    this->gradientColorForMiddle = gradientColorForMiddle;
-    this->useThreePointGradient = useThreePointGradient;
-    this->gradientMiddlePoint = gradientMiddlePoint;
 
     this->startTime = startTime;
     this->endTime = endTime;
@@ -218,12 +206,6 @@ void CommandUpdateParticleLayer::Redo()
     PropertyLineHelper::SetValueLine(layer->colorRandom, colorRandom);
     PropertyLineHelper::SetValueLine(layer->alphaOverLife, alphaOverLife);
     PropertyLineHelper::SetValueLine(layer->colorOverLife, colorOverLife);
-
-    PropertyLineHelper::SetValueLine(layer->gradientColorForWhite, gradientColorForWhite);
-    PropertyLineHelper::SetValueLine(layer->gradientColorForBlack, gradientColorForBlack);
-    PropertyLineHelper::SetValueLine(layer->gradientColorForMiddle, gradientColorForMiddle);
-    layer->useThreePointGradient = useThreePointGradient;
-    layer->gradientMiddlePoint = gradientMiddlePoint;
 
     layer->frameOverLifeEnabled = frameOverLifeEnabled;
     layer->frameOverLifeFPS = frameOverLifeFPS;

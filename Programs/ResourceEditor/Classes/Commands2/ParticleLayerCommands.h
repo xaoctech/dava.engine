@@ -187,3 +187,29 @@ private:
     AlphaRemapParams oldParams;
     DAVA::ParticleLayer* layer = nullptr;
 };
+
+class CommandChangeThreePointGradientProperties : public RECommand
+{
+public:
+    struct ThreePointGradientParams
+    {
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForWhite;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForBlack;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForMiddle;
+        DAVA::float32 gradientMiddlePoint;
+        bool useThreePointGradient;
+    };
+
+    CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer, ThreePointGradientParams&& params);
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleLayer* GetLayer() const;
+
+private:
+    void ApplyParams(ThreePointGradientParams& params);
+
+    ThreePointGradientParams newParams;
+    ThreePointGradientParams oldParams;
+    DAVA::ParticleLayer* layer = nullptr;
+};

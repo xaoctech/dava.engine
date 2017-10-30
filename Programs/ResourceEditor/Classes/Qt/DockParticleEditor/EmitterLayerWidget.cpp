@@ -347,13 +347,25 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     connect(useThreePointGradientBox,
         SIGNAL(stateChanged(int)),
         this,
-        SLOT(OnValueChanged()));
+        SLOT(OnThreePointGradientPropertiesChanged()));
     gradientColorForBlack = new GradientPickerWidget(this);
-    InitWidget(gradientColorForBlack);
+    mainBox->addWidget(gradientColorForBlack);
+    connect(gradientColorForBlack,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnThreePointGradientPropertiesChanged()));
     gradientColorForMiddle = new GradientPickerWidget(this);
-    InitWidget(gradientColorForMiddle);
+    mainBox->addWidget(gradientColorForMiddle);
+    connect(gradientColorForMiddle,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnThreePointGradientPropertiesChanged()));
     gradientColorForWhite = new GradientPickerWidget(this);
-    InitWidget(gradientColorForWhite);
+    mainBox->addWidget(gradientColorForWhite);
+    connect(gradientColorForWhite,
+        SIGNAL(ValueChanged()),
+        this,
+        SLOT(OnThreePointGradientPropertiesChanged()));
     QHBoxLayout* gradHLayout = new QHBoxLayout();
     gradientMiddlePointLabel = new QLabel("Gradient middle point:");
     gradientMiddlePointSpin = new EventFilterDoubleSpinBox(this);
@@ -362,7 +374,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     gradientMiddlePointSpin->setSingleStep(0.01);
     gradientMiddlePointSpin->setDecimals(3);
     gradientMiddlePointSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    connect(gradientMiddlePointSpin, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+    connect(gradientMiddlePointSpin, SIGNAL(valueChanged(double)), this, SLOT(OnThreePointGradientPropertiesChanged()));
     gradHLayout->addWidget(gradientMiddlePointLabel);
     gradHLayout->addWidget(gradientMiddlePointSpin);
     mainBox->addLayout(gradHLayout);
@@ -606,13 +618,6 @@ void EmitterLayerWidget::OnValueChanged()
     DAVA::PropLineWrapper<DAVA::float32> propAlphaOverLife;
     alphaOverLifeTimeLine->GetValue(0, propAlphaOverLife.GetPropsPtr());
 
-    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForBlack;
-    gradientColorForBlack->GetValues(propGradientColorForBlack.GetPropsPtr());
-    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForMiddle;
-    gradientColorForMiddle->GetValues(propGradientColorForMiddle.GetPropsPtr());
-    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForWhite;
-    gradientColorForWhite->GetValues(propGradientColorForWhite.GetPropsPtr());
-
     DAVA::PropLineWrapper<DAVA::float32> propAngle;
     DAVA::PropLineWrapper<DAVA::float32> propAngleVariation;
     angleTimeLine->GetValue(0, propAngle.GetPropsPtr());
@@ -670,10 +675,6 @@ void EmitterLayerWidget::OnValueChanged()
                          propAngle.GetPropLine(),
                          propAngleVariation.GetPropLine(),
 
-                         propGradientColorForWhite.GetPropLine(),
-                         propGradientColorForBlack.GetPropLine(),
-                         propGradientColorForMiddle.GetPropLine(),
-
                          static_cast<DAVA::float32>(startTimeSpin->value()),
                          static_cast<DAVA::float32>(endTimeSpin->value()),
                          static_cast<DAVA::float32>(deltaSpin->value()),
@@ -684,8 +685,6 @@ void EmitterLayerWidget::OnValueChanged()
                          static_cast<DAVA::float32>(frameOverlifeFPSSpin->value()),
                          randomFrameOnStartCheckBox->isChecked(),
                          loopSpriteAnimationCheckBox->isChecked(),
-                         useThreePointGradientBox->isChecked(),
-                         static_cast<DAVA::float32>(gradientMiddlePointSpin->value()),
                          propAnimSpeedOverLife.GetPropLine(),
                          static_cast<DAVA::float32>(pivotPointXSpinBox->value()),
                          static_cast<DAVA::float32>(pivotPointYSpinBox->value()));
@@ -918,6 +917,31 @@ void EmitterLayerWidget::OnAlphaRemapPropertiesChanged()
     GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeAlphaRemapProperties(layer, std::move(params))));
 
     UpdateAlphaRemapSprite();
+
+    emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnThreePointGradientPropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForBlack;
+    gradientColorForBlack->GetValues(propGradientColorForBlack.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForMiddle;
+    gradientColorForMiddle->GetValues(propGradientColorForMiddle.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForWhite;
+    gradientColorForWhite->GetValues(propGradientColorForWhite.GetPropsPtr());
+
+    CommandChangeThreePointGradientProperties::ThreePointGradientParams params;
+    params.useThreePointGradient = useThreePointGradientBox->isChecked();
+    params.gradientMiddlePoint = static_cast<DAVA::float32>(gradientMiddlePointSpin->value());
+    params.gradientColorForBlack = propGradientColorForBlack.GetPropLine();
+    params.gradientColorForMiddle = propGradientColorForMiddle.GetPropLine();
+    params.gradientColorForWhite = propGradientColorForWhite.GetPropLine();
+
+    DVASSERT(GetActiveScene() != nullptr);
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeThreePointGradientProperties(layer, std::move(params))));
 
     emit ValueChanged();
 }
