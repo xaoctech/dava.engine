@@ -21,6 +21,8 @@
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
 
+#define SCENE_VIEWER_TEST_CHARACTER 0
+
 namespace ViewSceneScreenDetails
 {
 const DAVA::float32 ABOVE_LANDSCAPE_ELEVATION = 10.f;
@@ -80,6 +82,7 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         scene->AddSystem(wasdSystem, MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::WASD_CONTROLLER_COMPONENT),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
+#if SCENE_VIEWER_TEST_CHARACTER
         characterControllerSystem = new CharacterControllerSystem(scene);
         scene->AddSystem(characterControllerSystem, MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT, scene->motionSystem);
 
@@ -91,6 +94,9 @@ void ViewSceneScreen::PlaceSceneAtScreen()
 
         characterCameraSystem = new CharacterCameraSystem(scene);
         scene->AddSystem(characterCameraSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->renderUpdateSystem);
+
+		DAVA::Engine::Instance()->PrimaryWindow()->SetCursorCapture(DAVA::eCursorCapture::PINNING);
+#endif
 
         sceneView = new DAVA::UI3DView(GetRect());
         sceneView->SetMultiInput(true);
@@ -126,6 +132,7 @@ void ViewSceneScreen::RemoveSceneFromScreen()
         scene->RemoveSystem(wasdSystem);
         SafeDelete(wasdSystem);
 
+#if SCENE_VIEWER_TEST_CHARACTER
         scene->RemoveSystem(characterControllerSystem);
         SafeDelete(characterControllerSystem);
 
@@ -137,6 +144,9 @@ void ViewSceneScreen::RemoveSceneFromScreen()
 
         scene->RemoveSystem(characterCameraSystem);
         SafeDelete(characterCameraSystem);
+
+		DAVA::Engine::Instance()->PrimaryWindow()->SetCursorCapture(DAVA::eCursorCapture::OFF);
+#endif
 
         RemoveControl(sceneView);
         sceneView.reset();
@@ -169,27 +179,28 @@ void ViewSceneScreen::LoadScene()
         scene->AddCamera(camera);
         scene->SetCurrentCamera(camera);
 
+#if SCENE_VIEWER_TEST_CHARACTER
         ScopedPtr<Scene> characterScene(new Scene());
-        characterScene->LoadScene("~res:/3d/character/MotusMan_v2.sc2");
+        characterScene->LoadScene("~res:/3d/character/character_mesh.sc2");
 
-        Entity* motusManEntity = characterScene->FindByName("Motus_Man_01");
+        Entity* motusManEntity = characterScene->FindByName("character");
         if (motusManEntity != nullptr)
         {
             ScopedPtr<Entity> characterEntity(new Entity());
             characterEntity->AddComponent(new CapsuleCharacterControllerComponent());
             characterEntity->AddComponent(new CameraComponent(camera));
-            characterEntity->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 100.f, 40.f)));
+            characterEntity->SetLocalTransform(Matrix4::MakeTranslation(Vector3(-40.f, 150.f, 40.f)));
 
             ScopedPtr<Entity> characterMeshEntity(motusManEntity->Clone());
             characterMeshEntity->SetName("Character");
             characterMeshEntity->AddComponent(new MotionComponent());
-            GetMotionComponent(characterMeshEntity)->SetConfigPath("~res:/3d/character/MotusMan_Motion.yaml");
+            GetMotionComponent(characterMeshEntity)->SetConfigPath("~res:/3d/character/character_motion.yaml");
             characterEntity->AddNode(characterMeshEntity);
             scene->AddNode(characterEntity);
 
             ScopedPtr<Scene> weaponScene(new Scene());
-            weaponScene->LoadScene("~res:/3d/character/M4_Rifle_01.sc2");
-            Entity* m4Entity = weaponScene->FindByName("M4");
+            weaponScene->LoadScene("~res:/3d/character/weapon_mesh.sc2");
+            Entity* m4Entity = weaponScene->FindByName("weapon");
             if (m4Entity != nullptr)
             {
                 ScopedPtr<Entity> weaponEntity(m4Entity->Clone());
@@ -197,6 +208,13 @@ void ViewSceneScreen::LoadScene()
                 characterMeshEntity->AddNode(weaponEntity);
             }
         }
+#else
+		ScopedPtr<Entity> cameraEntity(new Entity());
+		cameraEntity->AddComponent(new CameraComponent(camera));
+		cameraEntity->AddComponent(new WASDControllerComponent());
+		cameraEntity->AddComponent(new RotationControllerComponent());
+		scene->AddNode(cameraEntity);
+#endif
 
         scene->physicsSystem->SetSimulationEnabled(true);
     }

@@ -61,10 +61,8 @@ void CharacterControllerSystem::AddEntity(Entity* entity)
     DVASSERT(characterMeshEntity != nullptr);
 
     weaponEntity = entity->FindByName("Weapon");
-    DVASSERT(weaponEntity != nullptr);
 
     shootEffect = weaponEntity->FindByName("shot_auto");
-    DVASSERT(shootEffect != nullptr);
 
     camera = SafeRetain(GetCamera(entity));
     controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
@@ -135,7 +133,10 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
         DVASSERT(skeleton != nullptr);
 
         headJointIndex = skeleton->GetJointIndex(FastName("node-Head"));
+
         weaponPointJointIndex = skeleton->GetJointIndex(FastName("node-RH_WP"));
+		if(weaponPointJointIndex == SkeletonComponent::INVALID_JOINT_INDEX)
+			weaponPointJointIndex = skeleton->GetJointIndex(FastName("node-Weapon_Primary"));
 
         DVASSERT(headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
         DVASSERT(weaponPointJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
@@ -214,7 +215,7 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
     const static FastName TRIGGER_WEAPON_RELOAD("reload");
     const static FastName TRIGGER_WEAPON_IDLE("idle");
 
-    if (!isRun)
+    if (!isRun && weaponMotion != nullptr)
     {
         if (keyboard->GetKeyState(eInputElements::KB_R).IsJustPressed())
         {
@@ -230,7 +231,10 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
                 if (shootingDelay <= 0.0f)
                 {
                     shootingDelay = 0.1f;
-                    GetParticleEffectComponent(shootEffect)->Start();
+					if (shootEffect != nullptr)
+					{
+						GetParticleEffectComponent(shootEffect)->Start();
+					}
                 }
             }
             else
@@ -241,14 +245,17 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
         }
     }
 
-    if (isMoving)
-    {
-        moveMotion->TriggerEvent(TRIGGER_MOVE);
-    }
-    else
-    {
-        moveMotion->TriggerEvent(TRIGGER_STOP);
-    }
+	if (moveMotion != nullptr)
+	{
+		if (isMoving)
+		{
+			moveMotion->TriggerEvent(TRIGGER_MOVE);
+		}
+		else
+		{
+			moveMotion->TriggerEvent(TRIGGER_STOP);
+		}
+	}
 }
 
 bool CharacterControllerSystem::Input(UIEvent* uiEvent)
@@ -306,7 +313,7 @@ void CharacterWeaponSystem::PrepareForRemove()
 
 void CharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
 {
-    if (!controllerSystem->characterInited)
+    if (!controllerSystem->characterInited || controllerSystem->weaponEntity == nullptr)
         return;
 
     SkeletonComponent* skeleton = GetSkeletonComponent(controllerSystem->characterMeshEntity);
