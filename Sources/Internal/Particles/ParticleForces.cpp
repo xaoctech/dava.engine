@@ -143,7 +143,7 @@ void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position
         ApplyPlaneCollision(force, velocity, position, particle, prevPosition, forcePosition);
         break;
     default:
-        DVASSERT(false);
+        DVASSERT(false, "Unsupported force.");
         break;
     }
 }
