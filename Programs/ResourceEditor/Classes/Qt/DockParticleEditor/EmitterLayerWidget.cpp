@@ -348,17 +348,17 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
         SIGNAL(stateChanged(int)),
         this,
         SLOT(OnValueChanged()));
-    gradientColorForWhite = new GradientPickerWidget(this);
-    InitWidget(gradientColorForWhite);
     gradientColorForBlack = new GradientPickerWidget(this);
     InitWidget(gradientColorForBlack);
     gradientColorForMiddle = new GradientPickerWidget(this);
     InitWidget(gradientColorForMiddle);
+    gradientColorForWhite = new GradientPickerWidget(this);
+    InitWidget(gradientColorForWhite);
     QHBoxLayout* gradHLayout = new QHBoxLayout();
     gradientMiddlePointLabel = new QLabel("Gradient middle point:");
     gradientMiddlePointSpin = new EventFilterDoubleSpinBox(this);
-    gradientMiddlePointSpin->setMinimum(0.0f);
-    gradientMiddlePointSpin->setMaximum(1.0f);
+    gradientMiddlePointSpin->setMinimum(0.001f);
+    gradientMiddlePointSpin->setMaximum(0.999f);
     gradientMiddlePointSpin->setSingleStep(0.01);
     gradientMiddlePointSpin->setDecimals(3);
     gradientMiddlePointSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -606,12 +606,12 @@ void EmitterLayerWidget::OnValueChanged()
     DAVA::PropLineWrapper<DAVA::float32> propAlphaOverLife;
     alphaOverLifeTimeLine->GetValue(0, propAlphaOverLife.GetPropsPtr());
 
-    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForWhite;
-    gradientColorForWhite->GetValues(propGradientColorForWhite.GetPropsPtr());
     DAVA::PropLineWrapper<DAVA::Color> propGradientColorForBlack;
     gradientColorForBlack->GetValues(propGradientColorForBlack.GetPropsPtr());
     DAVA::PropLineWrapper<DAVA::Color> propGradientColorForMiddle;
     gradientColorForMiddle->GetValues(propGradientColorForMiddle.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForWhite;
+    gradientColorForWhite->GetValues(propGradientColorForWhite.GetPropsPtr());
 
     DAVA::PropLineWrapper<DAVA::float32> propAngle;
     DAVA::PropLineWrapper<DAVA::float32> propAngleVariation;
@@ -1232,14 +1232,14 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     alphaOverLifeTimeLine->SetMaxLimits(1.f);
     alphaOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->alphaOverLife)).GetProps(), Qt::blue, "alpha over life");
 
-    gradientColorForWhite->Init(0, 1, "Gradient color for white");
-    gradientColorForWhite->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForWhite)).GetProps());
-
     gradientColorForBlack->Init(0, 1, "Gradient color for black");
     gradientColorForBlack->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForBlack)).GetProps());
 
     gradientColorForMiddle->Init(0, 1, "Gradient color for middle");
     gradientColorForMiddle->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForMiddle)).GetProps());
+
+    gradientColorForWhite->Init(0, 1, "Gradient color for white");
+    gradientColorForWhite->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForWhite)).GetProps());
 
     gradientMiddlePointSpin->setValue(static_cast<double>(layer->gradientMiddlePoint));
 
