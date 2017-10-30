@@ -32,6 +32,8 @@ public:
     void Process(DAVA::float32 timeElapsed) override;
     bool Input(DAVA::UIEvent* uiEvent) override;
 
+    void SetJoypadDirection(const DAVA::Vector2& direction);
+    
 private:
     DAVA::Entity* characterEntity = nullptr;
     DAVA::Camera* camera = nullptr;
@@ -45,6 +47,10 @@ private:
     DAVA::Motion* aimMotion = nullptr;
     DAVA::Motion* weaponMotion = nullptr;
 
+    DAVA::Vector2 joypadDirection;
+    DAVA::Vector2 inputBeginPosition;
+    DAVA::Vector2 inputEndPosition;
+    
     DAVA::Vector3 characterForward;
     DAVA::Vector3 characterLeft;
 
@@ -63,6 +69,8 @@ private:
     bool isCrouching = false;
     bool isZooming = false;
 
+    bool doubleTapped = false;
+    
     bool characterInited = false;
 
     friend class CharacterMoveSystem;

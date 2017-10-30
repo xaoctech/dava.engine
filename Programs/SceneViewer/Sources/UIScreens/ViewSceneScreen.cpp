@@ -10,6 +10,7 @@
 #include <DeviceManager/DeviceManager.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Update/UIUpdateComponent.h>
+#include <Platform/DeviceInfo.h>
 #include <Physics/StaticBodyComponent.h>
 #include <Physics/HeightFieldShapeComponent.h>
 #include <Physics/CapsuleCharacterControllerComponent.h>
@@ -21,7 +22,7 @@
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
 
-#define SCENE_VIEWER_TEST_CHARACTER 0
+#define SCENE_VIEWER_TEST_CHARACTER 1
 
 namespace ViewSceneScreenDetails
 {
@@ -68,6 +69,11 @@ void ViewSceneScreen::PlaceSceneAtScreen()
 
     if (scene)
     {
+        sceneView = new DAVA::UI3DView(GetRect());
+        //sceneView->SetFrameBufferScaleFactor(0.5f);
+        //sceneView->SetDrawToFrameBuffer(true);
+        AddControl(sceneView);
+        
         Camera* camera = scene->GetCurrentCamera();
         camera->SetupPerspective(70.f, data.screenAspect, 0.5f, 2500.f);
         camera->SetUp(DAVA::Vector3(0.f, 0.f, 1.f));
@@ -95,14 +101,16 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         characterCameraSystem = new CharacterCameraSystem(scene);
         scene->AddSystem(characterCameraSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->renderUpdateSystem);
 
-		DAVA::Engine::Instance()->PrimaryWindow()->SetCursorCapture(DAVA::eCursorCapture::PINNING);
+        if(DeviceInfo::GetPlatform() == DeviceInfo::PLATFORM_MACOS
+           || DeviceInfo::GetPlatform() == DeviceInfo::PLATFORM_WIN32
+           || DeviceInfo::GetPlatform() == DeviceInfo::PLATFORM_DESKTOP_WIN_UAP)
+        {
+            DAVA::Engine::Instance()->PrimaryWindow()->SetCursorCapture(DAVA::eCursorCapture::PINNING);
+            sceneView->SetMultiInput(true);
+        }
+        
 #endif
-
-        sceneView = new DAVA::UI3DView(GetRect());
-        sceneView->SetMultiInput(true);
-        //sceneView->SetFrameBufferScaleFactor(0.5f);
-        //sceneView->SetDrawToFrameBuffer(true);
-        AddControl(sceneView);
+        
         sceneView->SetScene(scene);
 
         if (menu)
@@ -310,6 +318,7 @@ void ViewSceneScreen::AddJoypadControl()
 {
     DVASSERT(!moveJoyPAD);
     moveJoyPAD = new DAVA::UIJoypad(DAVA::Rect(10, GetRect().dy - 210.f, 200.f, 200.f));
+    moveJoyPAD->SetDeadAreaSize(30.f);
     DAVA::ScopedPtr<DAVA::Sprite> stickSprite(DAVA::Sprite::CreateFromSourceFile("~res:/SceneViewer/UI/Joypad.png", true));
     moveJoyPAD->SetStickSprite(stickSprite, 0);
     AddControl(moveJoyPAD);
@@ -515,26 +524,26 @@ void ViewSceneScreen::ProcessUserInput(DAVA::float32 timeElapsed)
         Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
         if (keyboard != nullptr)
         {
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD6))
-            //         cursorPosition.x += timeElapsed / 16.f;
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD4))
-            //         cursorPosition.x -= timeElapsed / 16.f;
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD8))
-            //         cursorPosition.y += timeElapsed / 16.f;
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD2))
-            //         cursorPosition.y -= timeElapsed / 16.f;
             if (keyboard->GetKeyState(eInputElements::KB_SPACE).IsPressed())
                 wasdSystem->SetMoveSpeed(30.f);
             else
                 wasdSystem->SetMoveSpeed(10.f);
         }
 
-        Camera* camera = scene->GetDrawCamera();
+#if !SCENE_VIEWER_TEST_CHARACTER
         Vector2 joypadPos = moveJoyPAD->GetDigitalPosition();
+        
+        Camera* camera = scene->GetDrawCamera();
         Vector3 cameraMoveOffset = (-joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
-
+        
         camera->SetPosition(camera->GetPosition() + cameraMoveOffset);
         camera->SetTarget(camera->GetTarget() + cameraMoveOffset);
+#else
+        
+        if(characterControllerSystem != nullptr)
+            characterControllerSystem->SetJoypadDirection(moveJoyPAD->GetAnalogPosition());
+#endif
+        
     }
 }
 

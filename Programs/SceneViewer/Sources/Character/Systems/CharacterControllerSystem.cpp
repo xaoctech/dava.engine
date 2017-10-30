@@ -156,44 +156,53 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
     Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
 
     Vector3 moveDirectionTarget;
-    if (keyboard->GetKeyState(eInputElements::KB_W).IsPressed() || keyboard->GetKeyState(eInputElements::KB_UP).IsPressed())
-        moveDirectionTarget.y += 1.f;
+    if(keyboard != nullptr)
+    {
+        if (keyboard->GetKeyState(eInputElements::KB_W).IsPressed() || keyboard->GetKeyState(eInputElements::KB_UP).IsPressed())
+            moveDirectionTarget.y += 1.f;
 
-    if (keyboard->GetKeyState(eInputElements::KB_S).IsPressed() || keyboard->GetKeyState(eInputElements::KB_DOWN).IsPressed())
-        moveDirectionTarget.y -= 1.f;
+        if (keyboard->GetKeyState(eInputElements::KB_S).IsPressed() || keyboard->GetKeyState(eInputElements::KB_DOWN).IsPressed())
+            moveDirectionTarget.y -= 1.f;
 
-    if (keyboard->GetKeyState(eInputElements::KB_A).IsPressed() || keyboard->GetKeyState(eInputElements::KB_LEFT).IsPressed())
-        moveDirectionTarget.x -= 1.f;
+        if (keyboard->GetKeyState(eInputElements::KB_A).IsPressed() || keyboard->GetKeyState(eInputElements::KB_LEFT).IsPressed())
+            moveDirectionTarget.x -= 1.f;
 
-    if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
-        moveDirectionTarget.x += 1.f;
+        if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
+            moveDirectionTarget.x += 1.f;
+        
+        float32 directionDt = timeElapsed * 5.f;
+        
+        if (directionParam.x > moveDirectionTarget.x)
+            directionParam.x -= directionDt;
+        if (directionParam.x < moveDirectionTarget.x)
+            directionParam.x += directionDt;
+        
+        if (directionParam.y > moveDirectionTarget.y)
+            directionParam.y -= directionDt;
+        if (directionParam.y < moveDirectionTarget.y)
+            directionParam.y += directionDt;
+        
+        if (Abs(directionParam.x) < directionDt)
+            directionParam.x = 0.f;
+        if (Abs(directionParam.y) < directionDt)
+            directionParam.y = 0.f;
+        
+        directionParam.x = Clamp(directionParam.x, -1.f, 1.f);
+        directionParam.y = Clamp(directionParam.y, -1.f, 1.f);
+    }
+    else
+    {
+        directionParam.x = Clamp(joypadDirection.x, -1.f, 1.f);
+        directionParam.y = Clamp(-joypadDirection.y, -1.f, 1.f);
+    }
 
-    float32 directionDt = timeElapsed * 5.f;
-
-    if (directionParam.x > moveDirectionTarget.x)
-        directionParam.x -= directionDt;
-    if (directionParam.x < moveDirectionTarget.x)
-        directionParam.x += directionDt;
-
-    if (directionParam.y > moveDirectionTarget.y)
-        directionParam.y -= directionDt;
-    if (directionParam.y < moveDirectionTarget.y)
-        directionParam.y += directionDt;
-
-    if (Abs(directionParam.x) < directionDt)
-        directionParam.x = 0.f;
-    if (Abs(directionParam.y) < directionDt)
-        directionParam.y = 0.f;
-
-    directionParam.x = Clamp(directionParam.x, -1.f, 1.f);
-    directionParam.y = Clamp(directionParam.y, -1.f, 1.f);
     aimAngleParam = Clamp(aimAngleParam, -75.f, 75.f);
 
     isMoving = (directionParam.SquareLength() > EPSILON || !moveDirectionTarget.IsZero());
-    isCrouching = keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
-    isRun = isMoving && !isCrouching && keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed();
-    isZooming = !isRun && mouse->GetRightButtonState().IsPressed();
-
+    isCrouching = (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
+    isRun = isMoving && !isCrouching && (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed();
+    isZooming = !isRun && ((mouse != nullptr && mouse->GetRightButtonState().IsPressed()) || doubleTapped);
+    
     //////////////////////////////////////////////////////////////////////////
     //Animation
 
@@ -217,13 +226,13 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
     if (!isRun && weaponMotion != nullptr)
     {
-        if (keyboard->GetKeyState(eInputElements::KB_R).IsJustPressed())
+        if (keyboard != nullptr && keyboard->GetKeyState(eInputElements::KB_R).IsJustPressed())
         {
             weaponMotion->TriggerEvent(TRIGGER_WEAPON_RELOAD);
         }
         else
         {
-            if (mouse->GetLeftButtonState().IsPressed())
+            if (mouse != nullptr && mouse->GetLeftButtonState().IsPressed())
             {
                 weaponMotion->TriggerEvent(TRIGGER_WEAPON_SHOOT);
 
@@ -261,17 +270,49 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 bool CharacterControllerSystem::Input(UIEvent* uiEvent)
 {
     const static float32 MOUSE_SENSITIVITY = 2.f;
-    if (uiEvent->device == eInputDevices::MOUSE && (uiEvent->phase == UIEvent::Phase::MOVE || uiEvent->phase == UIEvent::Phase::DRAG))
+    const static float32 TOUCH_SENSITIVITY = 4.f;
+    
+    float32 relativeX = 0.f;
+    float32 relativeY = 0.f;
+    
+    Size2f wndSize = uiEvent->window->GetSize();
+    
+    if (uiEvent->device == eInputDevices::MOUSE && (uiEvent->phase == UIEvent::Phase::MOVE || uiEvent->phase == UIEvent::Phase::DRAG) && uiEvent->isRelative)
     {
-        Size2f wndSize = uiEvent->window->GetSize();
-        float32 relativeX = uiEvent->point.x / wndSize.dx;
-        float32 relativeY = uiEvent->point.y / wndSize.dy;
-
-        characterForward = Quaternion::MakeRotationFastZ(-relativeX * MOUSE_SENSITIVITY).ApplyToVectorFast(characterForward);
-        characterForward.Normalize();
+        relativeX = uiEvent->point.x / wndSize.dx * MOUSE_SENSITIVITY;
+        relativeY = uiEvent->point.y / wndSize.dy * MOUSE_SENSITIVITY;
     }
+    
+    if(uiEvent->device == eInputDevices::TOUCH_SURFACE)
+    {
+        if (uiEvent->phase == UIEvent::Phase::BEGAN)
+        {
+            inputBeginPosition = uiEvent->point;
+            inputEndPosition = uiEvent->point;
+            
+            if(uiEvent->tapCount > 1)
+                doubleTapped = !doubleTapped;
+        }
+        else if (uiEvent->phase == UIEvent::Phase::DRAG || uiEvent->phase == UIEvent::Phase::ENDED)
+        {
+            inputBeginPosition = inputEndPosition;
+            inputEndPosition = uiEvent->point;
+        }
+        
+        relativeX = (inputEndPosition.x - inputBeginPosition.x) / wndSize.dx * TOUCH_SENSITIVITY;
+        relativeY = (inputEndPosition.y - inputBeginPosition.y) / wndSize.dy * TOUCH_SENSITIVITY;
+    }
+    
+    characterForward = Quaternion::MakeRotationFastZ(-relativeX * MOUSE_SENSITIVITY).ApplyToVectorFast(characterForward);
+    characterForward.Normalize();
 
     return false;
+}
+
+
+void CharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& direction)
+{
+    joypadDirection = direction;
 }
 
 //////////////////////////////////////////////////////////////////////////
