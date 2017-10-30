@@ -149,7 +149,7 @@ fragment_out
     [material][a] property float4 gradientColorForWhite = float4(0.0f, 0.0f, 0.0f, 0.0f);
     [material][a] property float4 gradientColorForBlack = float4(0.0f, 0.0f, 0.0f, 0.0f);
     [material][a] property float4 gradientColorForMiddle = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    [material][a] property float gradientMiddlePoint = 0.0f;
+    [material][a] property float gradientMiddlePoint = 0.5f;
 #endif
 
 #if TILED_DECAL_MASK
@@ -295,6 +295,14 @@ fragment_out fp_main( fragment_in input )
                 half varTime = input.varTexcoord3;
             #endif
             textureColor0 = lerp( textureColor0, blendFrameColor, varTime );
+        #endif
+
+        #if PARTICLES_THREE_POINT_GRADIENT
+            half uperGradientLerpValue = textureColor0.r - gradientMiddlePoint;
+            half4 lowerGradColor = lerp(gradientColorForBlack, gradientColorForMiddle, textureColor0.r / gradientMiddlePoint);
+            half4 upperGradColor = lerp(gradientColorForMiddle, gradientColorForWhite, uperGradientLerpValue / (1.0f - gradientMiddlePoint));
+            half4 finalGradientColor = lerp(lowerGradColor, upperGradColor, step(0.0f, uperGradientLerpValue));
+            textureColor0 = half4(finalGradientColor.rgb, textureColor0.a * finalGradientColor.a);
         #endif
     
     #elif MATERIAL_SKYBOX

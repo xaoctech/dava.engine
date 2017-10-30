@@ -1006,6 +1006,8 @@ void EmitterLayerWidget::Update(bool updateMinimized)
     enableCheckBox->setChecked(!layer->isDisabled);
     inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
 
+    useThreePointGradientBox->setChecked(layer->useThreePointGradient);
+
     isLongCheckBox->setChecked(layer->isLong);
     scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
     scaleVelocityFactorSpinBox->setValue((double)layer->scaleVelocityFactor);
