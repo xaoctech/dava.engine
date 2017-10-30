@@ -43,6 +43,11 @@ namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
+    vcs = new VirtualCoordinatesSystem();
+    vcs->EnableReloadResourceOnResize(true);
+    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
@@ -61,11 +66,6 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
-
-    vcs = new VirtualCoordinatesSystem();
-    vcs->EnableReloadResourceOnResize(true);
-    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
-    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     SetDoubleTapSettings(0.5f, 0.25f);
 }
@@ -704,6 +704,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
     system->SetScene(this);
+    UISystem* weak = system.get();
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -718,6 +719,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
     {
         systems.push_back(std::move(system));
     }
+    weak->RegisterSystem();
 }
 
 std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
@@ -730,6 +732,7 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
 
     if (it != systems.end())
     {
+        (*it)->UnregisterSystem();
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
         systemPtr->SetScene(nullptr);
