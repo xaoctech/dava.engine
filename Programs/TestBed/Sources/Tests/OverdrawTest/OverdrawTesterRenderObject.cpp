@@ -1,7 +1,9 @@
 #include "OverdrawTesterRenderObject.h"
 
 #include "Base/BaseTypes.h"
+#include "Engine/Engine.h"
 #include "Functional/Function.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Renderer.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Highlevel/RenderBatch.h"

@@ -4,6 +4,7 @@
 #include <Base/BaseTypes.h>
 #include <Math/Color.h>
 #include <Render/2D/GraphicFont.h>
+#include <Render/Material/NMaterial.h>
 #include <UI/UIGeometricData.h>
 
 namespace DAVA
@@ -58,14 +59,14 @@ class Painter final
 public:
     Painter();
 
-    void Add(uint32 order, DrawTextParams params);
-    void Add(uint32 order, const DrawLineParams& params);
+    void Draw(uint32 order, DrawTextParams params);
+    void Draw(uint32 order, const DrawLineParams& params);
 
-    void Draw(Window* window);
+    void OnFrame(Window* window);
 
 private:
-    void Draw(const DrawTextParams& params);
-    void Draw(const DrawLineParams& params);
+    void OnFrame(const DrawTextParams& params);
+    void OnFrame(const DrawLineParams& params);
 
     void ApplyParamPos(DrawTextParams& params) const;
 

@@ -4,8 +4,10 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 
-#include "Render/Renderer.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/DynamicBufferAllocator.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Renderer.h"
 #include "Render/ShaderCache.h"
 #include "Render/VisibilityQueryResults.h"
 
@@ -460,7 +462,7 @@ bool RenderSystem2D::GetSpriteClipping() const
     return spriteClipping;
 }
 
-bool RenderSystem2D::IsPreparedSpriteOnScreen(Sprite::DrawState* drawState)
+bool RenderSystem2D::IsPreparedSpriteOnScreen(SpriteDrawState* drawState)
 {
     Rect clipRect = currentClip;
 
@@ -753,7 +755,7 @@ void RenderSystem2D::PushBatch(const BatchDescriptor2D& batchDesc)
     vertexIndex += batchDesc.vertexCount;
 }
 
-void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Color& color)
+void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Color& color)
 {
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
     {
@@ -763,7 +765,7 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
     static uint16 spriteIndeces[] = { 0, 1, 2, 1, 3, 2 };
     Vector<uint16> spriteClippedIndecex;
 
-    Sprite::DrawState* state = drawState;
+    SpriteDrawState* state = drawState;
     if (!state)
     {
         state = &defaultSpriteDrawState;
@@ -1098,7 +1100,7 @@ void RenderSystem2D::Draw(Sprite* sprite, Sprite::DrawState* drawState, const Co
     PushBatch(batch);
 }
 
-void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vector2 stretchCapVector, UIControlBackground::eDrawType type, const UIGeometricData& gd, StretchDrawData** pStreachData, const Color& color)
+void RenderSystem2D::DrawStretched(Sprite* sprite, SpriteDrawState* state, Vector2 stretchCapVector, int32 type, const UIGeometricData& gd, StretchDrawData** pStreachData, const Color& color)
 {
     if (!sprite)
         return;
@@ -1209,7 +1211,7 @@ void RenderSystem2D::DrawStretched(Sprite* sprite, Sprite::DrawState* state, Vec
     }
 }
 
-void RenderSystem2D::DrawTiled(Sprite* sprite, Sprite::DrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledDrawData** pTiledData, const Color& color)
+void RenderSystem2D::DrawTiled(Sprite* sprite, SpriteDrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledDrawData** pTiledData, const Color& color)
 {
     if (!sprite)
         return;
@@ -1306,7 +1308,7 @@ void RenderSystem2D::DrawTiled(Sprite* sprite, Sprite::DrawState* state, const V
 }
 
 void RenderSystem2D::DrawTiledMultylayer(Sprite* mask, Sprite* detail, Sprite* gradient, Sprite* contour,
-                                         Sprite::DrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledMultilayerData** pTileData, const Color& color)
+                                         SpriteDrawState* state, const Vector2& stretchCapVector, const UIGeometricData& gd, TiledMultilayerData** pTileData, const Color& color)
 {
     if (!contour || !mask || !detail || !gradient)
         return;

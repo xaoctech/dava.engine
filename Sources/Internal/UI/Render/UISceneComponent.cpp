@@ -13,6 +13,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISceneComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UISceneComponent);
+
 UISceneComponent::UISceneComponent() = default;
 
 UISceneComponent::~UISceneComponent() = default;

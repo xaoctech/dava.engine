@@ -15,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISoundValueFilterComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UISoundValueFilterComponent);
+
 UISoundValueFilterComponent::UISoundValueFilterComponent()
 {
 }

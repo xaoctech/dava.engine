@@ -1,5 +1,6 @@
 #include "SceneImageGraber.h"
 
+#include "Engine/Engine.h"
 #include "Functional/Function.h"
 #include "Job/JobManager.h"
 #include "Math/MathHelpers.h"

@@ -16,6 +16,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SampleModuleUIComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(SampleModuleUIComponent);
+
 SampleModule::SampleModule(Engine* engine)
     : IModule(engine)
 {

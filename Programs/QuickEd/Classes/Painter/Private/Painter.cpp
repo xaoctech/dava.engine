@@ -36,36 +36,36 @@ Painter::Painter()
     textureMaterial = SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 }
 
-void Painter::Add(uint32 order, DrawTextParams params)
+void Painter::Draw(uint32 order, DrawTextParams params)
 {
     ApplyParamPos(params);
     Vector<DrawTextParams>& items = drawItems[order].drawTextItems;
     items.push_back(params);
 }
 
-void Painter::Add(uint32 order, const DrawLineParams& params)
+void Painter::Draw(uint32 order, const DrawLineParams& params)
 {
     Vector<DrawLineParams>& items = drawItems[order].drawLineItems;
     items.push_back(params);
 }
 
-void Painter::Draw(Window* window)
+void Painter::OnFrame(Window* window)
 {
     for (auto& pair : drawItems)
     {
         for (const DrawLineParams& params : pair.second.drawLineItems)
         {
-            Draw(params);
+            OnFrame(params);
         }
         for (const DrawTextParams& params : pair.second.drawTextItems)
         {
-            Draw(params);
+            OnFrame(params);
         }
     }
     drawItems.clear();
 }
 
-void Painter::Draw(const DrawLineParams& params)
+void Painter::OnFrame(const DrawLineParams& params)
 {
     if (params.type == DrawLineParams::SOLID)
     {
@@ -89,7 +89,7 @@ void Painter::Draw(const DrawLineParams& params)
     }
 }
 
-void Painter::Draw(const DrawTextParams& params)
+void Painter::OnFrame(const DrawTextParams& params)
 {
     font->SetSize(params.textSize);
     vertices.resize(4 * params.text.length());

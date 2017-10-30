@@ -283,43 +283,64 @@ struct InputElementInfo final
     eInputElementTypes type;
 };
 
-/** Return true if specified `element` is a mouse element. */
+/**
+    Return true if specified `element` is a mouse element.
+    This function is thread-safe.
+ */
 inline bool IsMouseInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST <= element && element <= eInputElements::MOUSE_LAST;
 }
 
-/** Return true if specified `element` is a mouse button element. */
+/**
+    Return true if specified `element` is a mouse button element.
+    This function is thread-safe.
+ */
 inline bool IsMouseButtonInputElement(eInputElements element)
 {
     return eInputElements::MOUSE_FIRST_BUTTON <= element && element <= eInputElements::MOUSE_LAST_BUTTON;
 }
 
-/** Return true if specified `element` is a gamepad element */
+/**
+    Return true if specified `element` is a gamepad element.
+    This function is thread-safe.
+ */
 inline bool IsGamepadInputElement(eInputElements element)
 {
     return eInputElements::GAMEPAD_FIRST <= element && element <= eInputElements::GAMEPAD_LAST;
 }
 
-/** Return true if specified `element` is a gamepad button element */
+/**
+    Return true if specified `element` is a gamepad button element.
+    This function is thread-safe.
+ */
 inline bool IsGamepadButtonInputElement(eInputElements element)
 {
     return eInputElements::GAMEPAD_FIRST_BUTTON <= element && element <= eInputElements::GAMEPAD_LAST_BUTTON;
 }
 
-/** Return true if specified `element` is a gamepad axis element */
+/**
+    Return true if specified `element` is a gamepad axis element.
+    This function is thread-safe.
+ */
 inline bool IsGamepadAxisInputElement(eInputElements element)
 {
     return eInputElements::GAMEPAD_FIRST_AXIS <= element && element <= eInputElements::GAMEPAD_LAST_AXIS;
 }
 
-/** Return true if specified `element` is a keyboard element. */
+/**
+    Return true if specified `element` is a keyboard element.
+    This function is thread-safe.
+ */
 inline bool IsKeyboardInputElement(eInputElements element)
 {
     return eInputElements::KB_FIRST <= element && element <= eInputElements::KB_LAST;
 }
 
-/** Return true if specified keyboard `element` is a keyboard modifier element. */
+/**
+    Return true if specified keyboard `element` is a keyboard modifier element.
+    This function is thread-safe.
+ */
 inline bool IsKeyboardModifierInputElement(eInputElements element)
 {
     return (element == eInputElements::KB_LSHIFT ||
@@ -332,7 +353,10 @@ inline bool IsKeyboardModifierInputElement(eInputElements element)
             element == eInputElements::KB_RCMD);
 }
 
-/** Return true if specified keyboard `element` is a keyboard 'system' element. */
+/**
+    Return true if specified keyboard `element` is a keyboard 'system' element.
+    This function is thread-safe.
+ */
 inline bool IsKeyboardSystemInputElement(eInputElements element)
 {
     return (element == eInputElements::KB_ESCAPE ||
@@ -359,25 +383,37 @@ inline bool IsKeyboardSystemInputElement(eInputElements element)
             element == eInputElements::KB_VOLUME_MUTE);
 }
 
-/** Return true if specified `element` is a touch element. */
+/**
+    Return true if specified `element` is a touch element.
+    This function is thread-safe.
+ */
 inline bool IsTouchInputElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST <= element && element <= eInputElements::TOUCH_LAST;
 }
 
-/** Return true if specified `element` is a touch click element. */
+/**
+    Return true if specified `element` is a touch click element.
+    This function is thread-safe.
+ */
 inline bool IsTouchClickInputElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST_CLICK <= element && element <= eInputElements::TOUCH_LAST_CLICK;
 }
 
-/** Return true if specified `element` is a touch position element. */
+/**
+    Return true if specified `element` is a touch position element.
+    This function is thread-safe.
+ */
 inline bool IsTouchPositionInputElement(eInputElements element)
 {
     return eInputElements::TOUCH_FIRST_POSITION <= element && element <= eInputElements::TOUCH_LAST_POSITION;
 }
 
-/** Return TOUCH_POSITION element for specified click `element. I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc. */
+/**
+    Return TOUCH_POSITION element for specified click `element. I.e. TOUCH_POSITION3 for TOUCH_CLICK3 etc.
+    This function is thread-safe.
+*/
 inline eInputElements GetTouchPositionElementFromClickElement(eInputElements element)
 {
     DVASSERT(IsTouchClickInputElement(element));
@@ -385,7 +421,10 @@ inline eInputElements GetTouchPositionElementFromClickElement(eInputElements ele
     return static_cast<eInputElements>(eInputElements::TOUCH_FIRST_POSITION + (element - eInputElements::TOUCH_FIRST_CLICK));
 }
 
-/** Get additional information about an element. */
+/**
+    Get additional information about an element.
+    This function is thread-safe.
+*/
 const InputElementInfo& GetInputElementInfo(eInputElements element);
 
 // TODO: add glyphs api (i.e. getting element's `image` representation)

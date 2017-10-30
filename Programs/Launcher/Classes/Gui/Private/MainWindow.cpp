@@ -137,9 +137,9 @@ void MainWindow::OnRun(int rowNumber)
     QString appID, insVersionID, avVersionID;
     GetTableApplicationIDs(rowNumber, appID, insVersionID, avVersionID);
 
-    if (insVersionID == avVersionID)
+    if (insVersionID.isEmpty() == false && (avVersionID.isEmpty() || insVersionID == avVersionID))
     {
-        appManager->RunApplication(selectedBranchID, appID, avVersionID);
+        appManager->RunApplication(selectedBranchID, appID, insVersionID);
     }
     else
     {

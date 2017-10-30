@@ -433,9 +433,11 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
         else if (command->MatchCommandID(CMDID_REFLECTED_FIELD_MODIFY))
         {
             const DAVA::FastName HEIGHTMAP_PATH("heightmapPath");
+            const DAVA::FastName HEIGHTMAP_SIZE("size");
             const SetFieldValueCommand* cmd = static_cast<const SetFieldValueCommand*>(command);
             const DAVA::Reflection::Field& field = cmd->GetField();
-            if (field.key.Cast<DAVA::FastName>(DAVA::FastName("")) == HEIGHTMAP_PATH)
+            DAVA::FastName fieldKey = field.key.Cast<DAVA::FastName>(DAVA::FastName(""));
+            if (fieldKey == HEIGHTMAP_PATH || fieldKey == HEIGHTMAP_SIZE)
             {
                 UpdateCollisionObject(Selectable(curLandscapeEntity));
             }
@@ -675,12 +677,14 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxWaypointScale);
             }
+            else
+            {
+                result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxScale);
+            }
         }
 
-        if (result.isValid == true)
-        {
-            callback(entity, result.collisionObject);
-        }
+        DVASSERT(result.isValid == true);
+        callback(entity, result.collisionObject);
     }
     else
     {
