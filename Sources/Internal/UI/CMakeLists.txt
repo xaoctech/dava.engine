@@ -17,6 +17,7 @@ set( HPP_FILES *.h
     Text/*.h
     Text/Private/*.h
     Render/*.h
+    Joypad/*.h
     )
 
 set( CPP_FILES *.cpp
@@ -38,6 +39,7 @@ set( CPP_FILES *.cpp
     Text/*.cpp
     Text/Private/*.cpp
     Render/*.cpp
+    Joypad/*.cpp
     )
 
 set( CPP_FILES_APPLE *.mm )
