@@ -814,7 +814,7 @@ DAVA::int32 SceneTreeTraitsManager::GetChildrenCount(const Selectable& object) c
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
     {
-        return false;
+        return 0;
     }
 
     return traits->GetChildrenCount(object);

@@ -18,12 +18,15 @@ public:
         : objects(objects_)
     {
 #if defined(__DAVAENGINE_DEBUG__)
-        for (const Selectable& obj : objects)
-        {
-            const DAVA::ReflectedType* type = obj.GetObjectType();
-            DVASSERT(type != nullptr);
-            DVASSERT(type->GetPermanentName().empty() == false);
-        }
+        PermanentNamesCheck();
+#endif
+    }
+
+    ReflectedMimeData(DAVA::Vector<Selectable>&& objects_)
+        : objects(std::move(objects_))
+    {
+#if defined(__DAVAENGINE_DEBUG__)
+        PermanentNamesCheck();
 #endif
     }
 
@@ -56,6 +59,19 @@ public:
 
         return false;
     }
+
+private:
+#if defined(__DAVAENGINE_DEBUG__)
+    void PermanentNamesCheck() const
+    {
+        for (const Selectable& obj : objects)
+        {
+            const DAVA::ReflectedType* type = obj.GetObjectType();
+            DVASSERT(type != nullptr);
+            DVASSERT(type->GetPermanentName().empty() == false);
+        }
+    }
+#endif
 
 private:
     DAVA::Vector<Selectable> objects;

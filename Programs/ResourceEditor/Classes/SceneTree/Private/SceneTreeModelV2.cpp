@@ -74,7 +74,7 @@ QMimeData* SceneTreeModelV2::mimeData(const QModelIndexList& indexes) const
         }
     }
 
-    return new ReflectedMimeData(objects);
+    return new ReflectedMimeData(std::move(objects));
 }
 
 int SceneTreeModelV2::rowCount(const QModelIndex& parent) const
