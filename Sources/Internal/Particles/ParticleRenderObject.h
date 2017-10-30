@@ -26,7 +26,7 @@ class ParticleRenderObject : public RenderObject
     void AppendRenderBatch(NMaterial* material, uint32 particlesCount, uint32 vertexLayout, const DynamicBufferAllocator::AllocResultVB& vBuffer, const rhi::HIndexBuffer iBuffer, uint32 startIndex);
     void PrepareRenderData(Camera* camera);
     bool CheckIfSimpleParticle(ParticleLayer* layer) const;
-    void SetupThreePontGradient(ParticleLayer* layer, NMaterial* material);
+    void SetupThreePontGradient(const ParticleGroup& group, NMaterial* material);
 
     Vector<uint16> indices;
     uint32 sortingOffset;

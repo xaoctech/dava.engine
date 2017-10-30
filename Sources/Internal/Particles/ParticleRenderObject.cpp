@@ -296,7 +296,7 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
     uint32 particleStride = vertexStride * 4;
 
     if (begin->material && begin->layer->useThreePointGradient)
-        SetupThreePontGradient(begin->layer, begin->material);
+        SetupThreePontGradient(*begin, begin->material);
 
     for (auto it = begin; it != end; ++it)
     {
@@ -699,19 +699,22 @@ void ParticleRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* ba
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &Matrix4::IDENTITY, reinterpret_cast<pointer_size>(&Matrix4::IDENTITY));
 }
 
-void ParticleRenderObject::SetupThreePontGradient(ParticleLayer* layer, NMaterial* material)
+void ParticleRenderObject::SetupThreePontGradient(const ParticleGroup& group, NMaterial* material)
 {
     Color currColor = Color::Black;
-    if (layer->gradientColorForWhite != nullptr)
-        currColor = layer->gradientColorForWhite->GetValue(0.0f);
+    float32 groupEndTime = group.layer->isLooped ? group.layer->loopEndTime : group.layer->endTime;
+    float32 currLoopTime = group.time - group.loopStartTime;
+    float32 currLoopTimeNormalized = currLoopTime / (group.layer->endTime - group.layer->startTime);
+    if (group.layer->gradientColorForWhite != nullptr)
+        currColor = group.layer->gradientColorForWhite->GetValue(currLoopTimeNormalized);
     material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_WHITE, currColor.color);
-    if (layer->gradientColorForBlack != nullptr)
-        currColor = layer->gradientColorForBlack->GetValue(0.0f);
+    if (group.layer->gradientColorForBlack != nullptr)
+        currColor = group.layer->gradientColorForBlack->GetValue(currLoopTimeNormalized);
     material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK, currColor.color);
-    if (layer->gradientColorForMiddle != nullptr)
-        currColor = layer->gradientColorForMiddle->GetValue(0.0f);
+    if (group.layer->gradientColorForMiddle != nullptr)
+        currColor = group.layer->gradientColorForMiddle->GetValue(currLoopTimeNormalized);
     material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE, currColor.color);
-    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, &layer->gradientMiddlePoint);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, &group.layer->gradientMiddlePoint);
 }
 
 } //namespace
