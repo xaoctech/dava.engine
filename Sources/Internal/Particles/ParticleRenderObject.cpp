@@ -702,9 +702,8 @@ void ParticleRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* ba
 void ParticleRenderObject::SetupThreePontGradient(const ParticleGroup& group, NMaterial* material)
 {
     Color currColor = Color::Black;
-    float32 groupEndTime = group.layer->isLooped ? group.layer->loopEndTime : group.layer->endTime;
     float32 currLoopTime = group.time - group.loopStartTime;
-    float32 currLoopTimeNormalized = currLoopTime / (group.layer->endTime - group.layer->startTime);
+    float32 currLoopTimeNormalized = currLoopTime / group.loopDuration;
 
     if (group.layer->gradientColorForWhite != nullptr)
         currColor = group.layer->gradientColorForWhite->GetValue(currLoopTimeNormalized);
