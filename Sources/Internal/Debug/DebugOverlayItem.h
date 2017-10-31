@@ -10,6 +10,8 @@ namespace DAVA
 class DebugOverlayItem
 {
 public:
+    virtual ~DebugOverlayItem(){};
+
     /** Get string to be used when drawing menu item. */
     virtual String GetName() const = 0;
 
