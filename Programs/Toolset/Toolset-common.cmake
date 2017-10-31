@@ -125,9 +125,9 @@ macro ( prepare_tools )
 
     dump_module_log()
 
-    if( NO_GENERATED_TOOLS )
+    if( NO_GENERATED_TOOLS_DEPENDENT_FOLDERS )
          message( STATUS "These applications are not generated because there were no changes in the dependent folders:" )
-         foreach( TARGET_NAME ${NO_GENERATED_TOOLS} )
+         foreach( TARGET_NAME ${NO_GENERATED_TOOLS_DEPENDENT_FOLDERS} )
               message( STATUS "  ${TARGET_NAME}" )
          endforeach()
          message("")
@@ -237,6 +237,11 @@ macro ( __add_tools TOOLS_LIST_NAME )
                     endif()
                 endforeach()
             endif()
+
+            if( NOT GENERATE )
+                list( APPEND NO_GENERATED_TOOLS_DEPENDENT_FOLDERS ${TARGET_NAME} )
+            endif()
+
         endif()
 
         if( GENERATE )
@@ -270,9 +275,7 @@ macro ( __add_tools TOOLS_LIST_NAME )
                 set_property( GLOBAL PROPERTY DEFINITIONS "${DEFINITIONS_OLD}" )
             endif()
 
-            set( DEPLOY_DIR ${OLD_DEPLOY_DIR} )
-        else()
-            list( APPEND NO_GENERATED_TOOLS ${TARGET_NAME} )
+            set( DEPLOY_DIR ${OLD_DEPLOY_DIR} )            
 
         endif()
 

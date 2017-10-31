@@ -1,17 +1,18 @@
 ## Command line parameters
 #
 # -DCHECK_DEPENDS_FOLDERS = generate only tools in which there were changes [true/false]
-# -DTEAMCITY_URL   = teamcity url   
-# -DSTASH_URL      = stash url
-# -DTEAMCITY_LOGIN = teamcity user login
-# -DTEAMCITY_PASS  = teamcity user password
-# -DSTASH_LOGIN    = stash user login
-# -DSTASH_PASS     = stash user password
+# -DTEAMCITY_URL     = teamcity url   
+# -DSTASH_URL        = stash url
+# -DTEAMCITY_LOGIN   = teamcity user login
+# -DTEAMCITY_PASS    = teamcity user password
+# -DSTASH_LOGIN      = stash user login
+# -DSTASH_PASS       = stash user password
+# -DFRAMEWORK_BRANCH = framework branch 
 #
-# -DCACHE_CLIENT   = add to toolset AssetCacheClient
+# -DCACHE_CLIENT     = add to toolset AssetCacheClient
 #
-# -DDEPLOY         = deploy build [true/false]
-# -DUNITY_BUILD    = unity build  [true/false]
+# -DDEPLOY           = deploy build [true/false]
+# -DUNITY_BUILD      = unity build  [true/false]
 #
 ##
 
@@ -57,13 +58,16 @@ add_tool_package     ( QuickEd          PLATFORMS MACOS WIN
                                         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
 add_tool_package     ( ResourceArchiver PLATFORMS MACOS WIN
-                                        #DEPENDS ResourceEditor )
+                                        #DEPENDS ResourceEditor 
+                                        )
 
 add_tool_package     ( ResourcePacker   PLATFORMS MACOS WIN
-                                        #DEPENDS ResourceEditor )
+                                        #DEPENDS ResourceEditor 
+                                        )
 
 add_tool_package     ( ResourcePatcher  PLATFORMS MACOS WIN
-                                        #DEPENDS ResourceEditor )
+                                        #DEPENDS ResourceEditor 
+                                        )
 
 add_tool_package     ( AssetCacheServer PLATFORMS MACOS WIN )
 
