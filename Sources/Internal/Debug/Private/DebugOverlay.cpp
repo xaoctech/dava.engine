@@ -17,8 +17,6 @@ DebugOverlay::DebugOverlay()
     , defaultItemLogger{ new DebugOverlayItemLogger }
 {
     RegisterDefaultItems();
-
-    Show();
 }
 
 DebugOverlay::~DebugOverlay()
@@ -57,6 +55,13 @@ void DebugOverlay::Hide()
     }
 }
 
+bool DebugOverlay::IsShown() const
+{
+    DVASSERT(Thread::IsMainThread());
+
+    return shown;
+}
+
 void DebugOverlay::RegisterItem(DebugOverlayItem* overlayItem)
 {
     DVASSERT(Thread::IsMainThread());
@@ -66,7 +71,7 @@ void DebugOverlay::RegisterItem(DebugOverlayItem* overlayItem)
     ItemData itemData;
     itemData.item = overlayItem;
     itemData.name = overlayItem->GetName();
-    itemData.enabled = false;
+    itemData.shown = false;
 
     items.push_back(itemData);
 }
@@ -79,6 +84,11 @@ void DebugOverlay::UnregisterItem(DebugOverlayItem* overlayItem)
     auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });
     DVASSERT(iter != items.end());
 
+    if (iter->shown)
+    {
+        iter->item->OnHidden();
+    }
+
     items.erase(iter);
 }
 
@@ -89,9 +99,9 @@ void DebugOverlay::ShowItem(DebugOverlayItem* overlayItem)
     auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });
     DVASSERT(iter != items.end());
 
-    if (iter->enabled == false)
+    if (iter->shown == false)
     {
-        iter->enabled = true;
+        iter->shown = true;
         iter->item->OnShown();
     }
 }
@@ -104,9 +114,9 @@ void DebugOverlay::HideItem(DebugOverlayItem* overlayItem)
     auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });
     DVASSERT(iter != items.end());
 
-    if (iter->enabled == true)
+    if (iter->shown == true)
     {
-        iter->enabled = false;
+        iter->shown = false;
         iter->item->OnHidden();
     }
 }
@@ -146,11 +156,11 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             {
                 for (ItemData& itemData : items)
                 {
-                    const bool wasEnabled = itemData.enabled;
-                    ImGui::Checkbox(itemData.name.c_str(), &itemData.enabled);
-                    if (itemData.enabled != wasEnabled)
+                    const bool wasShown = itemData.shown;
+                    ImGui::Checkbox(itemData.name.c_str(), &itemData.shown);
+                    if (itemData.shown != wasShown)
                     {
-                        itemData.enabled ? itemData.item->OnShown() : itemData.item->OnHidden();
+                        itemData.shown ? itemData.item->OnShown() : itemData.item->OnHidden();
                     }
                 }
 
@@ -164,7 +174,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
 
         for (ItemData& itemData : items)
         {
-            if (itemData.enabled)
+            if (itemData.shown)
             {
                 itemData.item->Draw();
             }

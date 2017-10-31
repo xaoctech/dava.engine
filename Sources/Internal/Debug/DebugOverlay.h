@@ -30,6 +30,9 @@ public:
     /** Hide overlay. */
     void Hide();
 
+    /** Return `true` if overlay is active, `false` otherwise. */
+    bool IsShown() const;
+
     /** Adds `overlayItem` to the menu. */
     void RegisterItem(DebugOverlayItem* overlayItem);
 
@@ -66,7 +69,7 @@ private:
     {
         DebugOverlayItem* item;
         String name;
-        bool enabled;
+        bool shown;
     };
 
     bool shown = false;
