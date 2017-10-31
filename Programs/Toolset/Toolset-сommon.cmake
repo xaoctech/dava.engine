@@ -134,10 +134,9 @@ macro ( prepare_tools )
 
     endif()
 
-
     if( DEPLOY )
-        configure_file( ${CMAKE_CURRENT_LIST_DIR}/Scripts/start_unit_tests.in
-                        ${CMAKE_BINARY_DIR}/app_other/start_unit_tests.py  )
+        configure_file( ${CMAKE_CURRENT_LIST_DIR}/Scripts/start_tests.py
+                        ${CMAKE_BINARY_DIR}/app_other/start_tests.py  )
     endif()
 
 endmacro()

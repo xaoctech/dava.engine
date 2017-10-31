@@ -567,7 +567,7 @@ def main():
     parser.add_argument( '--pathBuild', required = True )
     parser.add_argument( '--pathExecut', required = True )
     parser.add_argument( '--pathReportOut', required = True )
-    parser.add_argument( '--buildConfig', choices=['Debug', 'Release'] )
+    parser.add_argument( '--buildConfig', choices=['Debug', 'Release','RelWithDebinfo'] )
     parser.add_argument( '--notExecute', default = 'false', choices=['true', 'false'] ) 
     parser.add_argument( '--teamcityMode', default = 'false', choices=['true', 'false'] )    
     parser.add_argument( '--buildMode', default = 'false', choices=['true', 'false'] )
