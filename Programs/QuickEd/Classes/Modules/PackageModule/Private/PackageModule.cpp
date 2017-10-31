@@ -1205,6 +1205,12 @@ void PackageModule::OnRunUIViewerFast()
             virtualSize = device.params.at(FastName("virtualScreenSize")).Get<Size2i>();
         }
 
+        int32 virtualKeyboardHeight = 0;
+        if (device.params.count(FastName("virtualKeyboardHeight")) > 0)
+        {
+            virtualKeyboardHeight = device.params.at(FastName("virtualKeyboardHeight")).Get<int32>();
+        }
+
         const EngineContext* engineContext = GetEngineContext();
         String lang = engineContext->localizationSystem->GetCurrentLocale();
         if (device.params.count(FastName("lang")) > 0)
@@ -1272,6 +1278,9 @@ void PackageModule::OnRunUIViewerFast()
             args << Format("%d", virtualSize.dx).c_str();
             args << "-virtualHeight";
             args << Format("%d", virtualSize.dy).c_str();
+
+            args << "-virtualKeyboardHeight";
+            args << Format("%d", virtualKeyboardHeight).c_str();
 
             args << "-fontsDir";
             args << fontsPath.c_str();
