@@ -333,8 +333,8 @@ void CommandChangeThreePointGradientProperties::ApplyParams(ThreePointGradientPa
         PropertyLineHelper::SetValueLine(layer->gradientColorForBlack, params.gradientColorForBlack);
         PropertyLineHelper::SetValueLine(layer->gradientColorForMiddle, params.gradientColorForMiddle);
         PropertyLineHelper::SetValueLine(layer->gradientColorForWhite, params.gradientColorForWhite);
+        PropertyLineHelper::SetValueLine(layer->gradientMiddlePoint, params.gradientMiddlePoint);
 
         layer->useThreePointGradient = params.useThreePointGradient;
-        layer->gradientMiddlePoint = params.gradientMiddlePoint;
     }
 }

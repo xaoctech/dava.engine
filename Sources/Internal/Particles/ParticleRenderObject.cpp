@@ -713,8 +713,11 @@ void ParticleRenderObject::SetupThreePontGradient(const ParticleGroup& group, NM
     material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK, currColor.color);
     if (group.layer->gradientColorForMiddle != nullptr)
         currColor = group.layer->gradientColorForMiddle->GetValue(currLoopTimeNormalized);
+    float32 middlePoint = 0.5f;
+    if (group.layer->gradientMiddlePoint != nullptr)
+        middlePoint = group.layer->gradientMiddlePoint->GetValue(currLoopTimeNormalized);
     material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE, currColor.color);
-    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, &group.layer->gradientMiddlePoint);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, &middlePoint);
 }
 
 } //namespace
