@@ -1,10 +1,18 @@
 #pragma once
 
-#include "Modules/PackageModule/Private/PackageWidget.h"
+#include "Classes/Modules/PackageModule/Private/PackageWidget.h"
 
 #include <TArc/DataProcessing/DataNode.h>
 
 class PackageNode;
+
+namespace DAVA
+{
+namespace TArc
+{
+class QtAction;
+}
+}
 
 class PackageData : public DAVA::TArc::DataNode
 {
@@ -12,23 +20,15 @@ public:
 private:
     friend class PackageModule;
 
-    QAction* importPackageAction = nullptr;
-    QAction* copyAction = nullptr;
-    QAction* pasteAction = nullptr;
-    QAction* cutAction = nullptr;
-    QAction* delAction = nullptr;
-    QAction* duplicateControlsAction = nullptr;
+    DAVA::TArc::QtAction* copyAction = nullptr;
+    DAVA::TArc::QtAction* pasteAction = nullptr;
+    DAVA::TArc::QtAction* cutAction = nullptr;
 
-    QAction* renameAction = nullptr;
-    QAction* copyControlPathAction = nullptr;
+    DAVA::TArc::QtAction* deleteAction = nullptr;
+    DAVA::TArc::QtAction* duplicateAction = nullptr;
 
-    QAction* moveUpAction = nullptr;
-    QAction* moveDownAction = nullptr;
-    QAction* moveLeftAction = nullptr;
-    QAction* moveRightAction = nullptr;
-
-    QAction* runUIViewerFast = nullptr;
-    QAction* runUIViewer = nullptr;
+    DAVA::TArc::QtAction* jumpToPrototypeAction = nullptr;
+    DAVA::TArc::QtAction* findPrototypeInstancesAction = nullptr;
 
     PackageWidget* packageWidget = nullptr;
     DAVA::Map<PackageNode*, PackageContext> packageWidgetContexts;

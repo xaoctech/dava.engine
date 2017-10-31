@@ -11,4 +11,5 @@ IMPL_OPERATION_ID(FindInProject);
 IMPL_OPERATION_ID(FindInDocument);
 IMPL_OPERATION_ID(ReloadSprites);
 IMPL_OPERATION_ID(CreateByClick);
+IMPL_OPERATION_ID(DropIntoPackageNode);
 }

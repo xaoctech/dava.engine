@@ -91,12 +91,8 @@ void LegacySupportModule::InitMainWindow()
 
     GetUI()->InjectWindow(DAVA::TArc::mainWindowKey, mainWindow);
 
-    mainWindow->GetPackageWidget()->BindActionsToTArc();
-    ContextAccessor* accessor = GetAccessor();
-    UI* ui = GetUI();
-
     QString toolbarName = "Main Toolbar";
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
 }

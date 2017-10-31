@@ -30,6 +30,8 @@ protected:
 
     void PostInit() override;
     void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
+    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
@@ -90,7 +92,7 @@ private:
     void OnSelectInFileSystem();
     void OnDroppingFile(bool droppingFile);
 
-    PreviewWidget* previewWidget = nullptr;
+    QPointer<PreviewWidget> previewWidget = nullptr;
     DAVA::TArc::QtConnections connections;
 
     DAVA::TArc::QtDelayedExecutor delayedExecutor;

@@ -1,36 +1,34 @@
-#include "PackageModel.h"
+#include "Classes/Modules/PackageModule/Private/PackageModel.h"
 
-#include "Modules/DocumentsModule/DocumentData.h"
-
-#include "UI/CommandExecutor.h"
-#include "UI/IconHelper.h"
-#include "Utils/DragNDropHelper.h"
-#include "Utils/QtDavaConvertion.h"
-#include "Utils/ControlPlacementUtils.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
-#include "Model/PackageHierarchy/ImportedPackagesNode.h"
-#include "Model/PackageHierarchy/ControlsContainerNode.h"
-#include "Model/PackageHierarchy/StyleSheetNode.h"
-#include "Model/PackageHierarchy/StyleSheetsNode.h"
-#include "Model/ControlProperties/RootProperty.h"
-#include "Model/ControlProperties/NameProperty.h"
-#include "Model/ControlProperties/ClassProperty.h"
-#include "Model/ControlProperties/CustomClassProperty.h"
-#include "Model/ControlProperties/PrototypeNameProperty.h"
-#include "Model/ControlProperties/VisibleValueProperty.h"
-#include "Model/YamlPackageSerializer.h"
-
-#include "QECommands/ChangePropertyValueCommand.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
 
 #include "Classes/Modules/PackageModule/PackageMimeData.h"
+#include "Classes/Model/ControlProperties/ClassProperty.h"
+#include "Classes/Model/ControlProperties/CustomClassProperty.h"
+#include "Classes/Model/ControlProperties/NameProperty.h"
+#include "Classes/Model/ControlProperties/PrototypeNameProperty.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/ControlProperties/VisibleValueProperty.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/ControlsContainerNode.h"
+#include "Classes/Model/PackageHierarchy/ImportedPackagesNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetsNode.h"
+#include "Classes/Model/YamlPackageSerializer.h"
+#include "Classes/QECommands/ChangePropertyValueCommand.h"
+#include "Classes/UI/CommandExecutor.h"
+#include "Classes/UI/IconHelper.h"
+#include "Classes/Utils/ControlPlacementUtils.h"
+#include "Classes/Utils/DragNDropHelper.h"
+#include "Classes/Utils/QtDavaConvertion.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/WindowSubSystem/UI.h>
-#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/Qt/QtIcon.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <Base/ObjectFactory.h>
 #include <UI/UIControl.h>

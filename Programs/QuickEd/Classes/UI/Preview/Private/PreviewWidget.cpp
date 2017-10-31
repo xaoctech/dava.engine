@@ -1,34 +1,27 @@
-#include "UI/Preview/PreviewWidget.h"
-#include "Application/QEGlobal.h"
-#include "EditorSystems/EditorSystemsManager.h"
-
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/CanvasModule/CanvasData.h"
-#include "Modules/HUDModule/HUDModuleData.h"
-#include "Modules/ProjectModule/ProjectData.h"
-
-#include "UI/Preview/Ruler/RulerWidget.h"
-#include "UI/Preview/Ruler/RulerController.h"
-#include "UI/Preview/Guides/GuidesController.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
-
-#include "Modules/PackageModule/PackageMimeData.h"
-#include "UI/CommandExecutor.h"
-#include "UI/Preview/Data/CentralWidgetData.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
-#include "Model/PackageHierarchy/PackageBaseNode.h"
-#include "Model/ControlProperties/RootProperty.h"
-#include "Model/ControlProperties/VisibleValueProperty.h"
-
-#include "Modules/CanvasModule/CanvasData.h"
-#include "Controls/ScaleComboBox.h"
-#include "UI/Preview/PreviewWidgetSettings.h"
-
-#include "Controls/ScaleComboBox.h"
-#include "Utils/DragNDropHelper.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/Controls/ScaleComboBox.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/Interfaces/PackageActionsInterface.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/ControlProperties/VisibleValueProperty.h"
+#include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
+#include "Classes/Modules/HUDModule/HUDModuleData.h"
+#include "Classes/Modules/PackageModule/PackageMimeData.h"
+#include "Classes/Modules/ProjectModule/ProjectData.h"
+#include "Classes/UI/CommandExecutor.h"
+#include "Classes/UI/Preview/Data/CentralWidgetData.h"
+#include "Classes/UI/Preview/Guides/GuidesController.h"
+#include "Classes/UI/Preview/PreviewWidget.h"
+#include "Classes/UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/UI/Preview/Ruler/RulerController.h"
+#include "Classes/UI/Preview/Ruler/RulerWidget.h"
+#include "Classes/Utils/DragNDropHelper.h"
 
 #include <TArc/Controls/SceneTabbar.h>
 #include <TArc/Controls/ScrollBar.h>
@@ -76,7 +69,6 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , systemsManager(systemsManager_)
 {
     InjectRenderWidget(renderWidget);
-
     InitUI();
 }
 
@@ -85,47 +77,6 @@ PreviewWidget::~PreviewWidget() = default;
 void PreviewWidget::CreateActions()
 {
     using namespace DAVA::TArc;
-
-    QAction* importPackageAction = new QAction(tr("Import package"), this);
-    importPackageAction->setShortcut(QKeySequence::New);
-    importPackageAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(importPackageAction, &QAction::triggered, this, &PreviewWidget::ImportRequested);
-    renderWidget->addAction(importPackageAction);
-
-    QAction* cutAction = new QAction(tr("Cut"), this);
-    cutAction->setShortcut(QKeySequence::Cut);
-    cutAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(cutAction, &QAction::triggered, this, &PreviewWidget::CutRequested);
-    renderWidget->addAction(cutAction);
-
-    QAction* copyAction = new QAction(tr("Copy"), this);
-    copyAction->setShortcut(QKeySequence::Copy);
-    copyAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(copyAction, &QAction::triggered, this, &PreviewWidget::CopyRequested);
-    renderWidget->addAction(copyAction);
-
-    QAction* pasteAction = new QAction(tr("Paste"), this);
-    pasteAction->setShortcut(QKeySequence::Paste);
-    pasteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(pasteAction, &QAction::triggered, this, &PreviewWidget::PasteRequested);
-    renderWidget->addAction(pasteAction);
-
-    QAction* duplicateAction = new QAction(tr("Duplicate"), this);
-    duplicateAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-    duplicateAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(duplicateAction, &QAction::triggered, this, &PreviewWidget::DuplicateRequested);
-    addAction(duplicateAction);
-
-    QAction* deleteAction = new QAction(tr("Delete"), this);
-#if defined Q_OS_WIN
-    deleteAction->setShortcut(QKeySequence(QKeySequence::Delete));
-#elif defined Q_OS_MAC
-    deleteAction->setShortcuts({ QKeySequence::Delete, QKeySequence(Qt::Key_Backspace) });
-#endif // platform
-
-    deleteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(deleteAction, &QAction::triggered, this, &PreviewWidget::DeleteRequested);
-    renderWidget->addAction(deleteAction);
 
     selectAllAction = new QAction(tr("Select all"), this);
     selectAllAction->setShortcut(QKeySequence::SelectAll);
@@ -302,26 +253,23 @@ void PreviewWidget::ShowMenu(const QMouseEvent* mouseEvent)
 {
     QMenu menu;
 
-    //separator must be added by the client code, which call AddSelectionMenuSection function
     QPoint localPos = mouseEvent->pos();
-    if (AddSelectionMenuSection(&menu, localPos))
-    {
-        menu.addSeparator();
-    }
-
+    AddPickLayerMenuSection(&menu, localPos);
     AddChangeTextMenuSection(&menu, localPos);
+    AddPackageMenuSections(&menu);
     AddBgrColorMenuSection(&menu);
 
-    if (!menu.actions().isEmpty())
+    if (menu.actions().isEmpty() == false)
     {
         menu.exec(mouseEvent->globalPos());
     }
 }
 
-bool PreviewWidget::AddSelectionMenuSection(QMenu* menu, const QPoint& pos)
+void PreviewWidget::AddPickLayerMenuSection(QMenu* menu, const QPoint& pos)
 {
     using namespace DAVA;
     using namespace TArc;
+
     Vector<ControlNode*> nodesUnderPoint;
     Vector2 davaPos(pos.x(), pos.y());
     auto predicateForMenu = [davaPos](const ControlNode* node) -> bool
@@ -359,7 +307,11 @@ bool PreviewWidget::AddSelectionMenuSection(QMenu* menu, const QPoint& pos)
             systemsManager->SelectNode(controlNode);
         });
     }
-    return !nodesUnderPoint.empty();
+
+    if (nodesUnderPoint.empty() == false)
+    {
+        menu->addSeparator();
+    }
 }
 
 void PreviewWidget::AddChangeTextMenuSection(QMenu* menu, const QPoint& localPos)
@@ -371,6 +323,23 @@ void PreviewWidget::AddChangeTextMenuSection(QMenu* menu, const QPoint& localPos
         QString name = QString::fromStdString(node->GetName());
         QAction* action = menu->addAction(tr("Change text in %1").arg(name));
         connect(action, &QAction::triggered, [this, node]() { requestChangeTextInNode.Emit(node); });
+    }
+}
+
+void PreviewWidget::AddPackageMenuSections(QMenu* parentMenu)
+{
+    if (packageActions != nullptr)
+    {
+        parentMenu->addAction(packageActions->GetCutAction());
+        parentMenu->addAction(packageActions->GetCopyAction());
+        parentMenu->addAction(packageActions->GetPasteAction());
+        parentMenu->addAction(packageActions->GetDuplicateAction());
+        parentMenu->addSeparator();
+        parentMenu->addAction(packageActions->GetDeleteAction());
+        parentMenu->addSeparator();
+        parentMenu->addAction(packageActions->GetJumpToPrototypeAction());
+        parentMenu->addAction(packageActions->GetFindPrototypeInstancesAction());
+        parentMenu->addSeparator();
     }
 }
 
@@ -584,7 +553,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
             index = node->GetCount();
         }
 
-        emit DropRequested(mimeData, action, node, index, &pos);
+        invoker->Invoke(QEGlobal::DropIntoPackageNode.ID, mimeData, action, node, index, &pos);
     }
     else if (mimeData->hasFormat("text/uri-list"))
     {
@@ -693,4 +662,28 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
     });
 
     menu.exec(tabBar->mapToGlobal(pos));
+}
+
+void PreviewWidget::RegisterPackageActions(Interfaces::PackageActionsInterface* packageActions_)
+{
+    packageActions = packageActions_;
+    renderWidget->addAction(packageActions->GetCopyAction());
+    renderWidget->addAction(packageActions->GetCutAction());
+    renderWidget->addAction(packageActions->GetPasteAction());
+    renderWidget->addAction(packageActions->GetDeleteAction());
+    renderWidget->addAction(packageActions->GetDuplicateAction());
+    renderWidget->addAction(packageActions->GetFindPrototypeInstancesAction());
+    renderWidget->addAction(packageActions->GetJumpToPrototypeAction());
+}
+
+void PreviewWidget::UnregisterPackageActions(Interfaces::PackageActionsInterface* packageActions)
+{
+    renderWidget->removeAction(packageActions->GetCopyAction());
+    renderWidget->removeAction(packageActions->GetCutAction());
+    renderWidget->removeAction(packageActions->GetPasteAction());
+    renderWidget->removeAction(packageActions->GetDeleteAction());
+    renderWidget->removeAction(packageActions->GetDuplicateAction());
+    renderWidget->removeAction(packageActions->GetFindPrototypeInstancesAction());
+    renderWidget->removeAction(packageActions->GetJumpToPrototypeAction());
+    packageActions = nullptr;
 }

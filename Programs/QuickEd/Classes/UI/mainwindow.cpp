@@ -10,7 +10,6 @@
 #include "QtTools/ReloadSprites/DialogReloadSprites.h"
 
 #include "DebugTools/DebugTools.h"
-#include "UI/Package/PackageModel.h"
 #include "UI/ProjectView.h"
 
 #include <TArc/Utils/Utils.h>
@@ -87,13 +86,7 @@ void MainWindow::SetupViewMenu()
     // Setup the common menu actions.
     QList<QAction*> dockWidgetToggleActions;
     dockWidgetToggleActions << ui->propertiesWidget->toggleViewAction()
-<<<<<<< HEAD
-                            << ui->libraryWidget->toggleViewAction()
-    == == ==
-    =
-    << ui->packageWidget->toggleViewAction()
->>>>>>> team-kl/development
-    << ui->toolBarGlobal->toggleViewAction();
+                            << ui->toolBarGlobal->toggleViewAction();
 
     ui->Dock->insertActions(nullptr, dockWidgetToggleActions);
 }

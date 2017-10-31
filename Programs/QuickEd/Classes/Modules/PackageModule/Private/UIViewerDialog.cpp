@@ -1,6 +1,6 @@
-#include "Modules/PackageModule/Private/UIViewerDialog.h"
+#include "Classes/Modules/PackageModule/Private/UIViewerDialog.h"
 
-#include "Modules/ProjectModule/ProjectData.h"
+#include "Classes/Modules/ProjectModule/ProjectData.h"
 
 #include <TArc/Controls/ComboBox.h>
 #include <TArc/Controls/Label.h>

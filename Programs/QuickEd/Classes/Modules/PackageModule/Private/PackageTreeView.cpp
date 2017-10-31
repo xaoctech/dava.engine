@@ -1,5 +1,5 @@
-#include "Classes/UI/Package/PackageTreeView.h"
-#include "Classes/UI/Package/PackageModel.h"
+#include "Classes/Modules/PackageModule/Private/PackageTreeView.h"
+#include "Classes/Modules/PackageModule/Private/PackageModel.h"
 
 #include <QPainter>
 #include <QHeaderView>
@@ -11,10 +11,6 @@ PackageTreeView::PackageTreeView(QWidget* parent /*= NULL*/)
     : QTreeView(parent)
 {
     viewport()->installEventFilter(this);
-}
-
-PackageTreeView::~PackageTreeView()
-{
 }
 
 void PackageTreeView::drawRow(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const

@@ -1,11 +1,15 @@
 #pragma once
 
-#include "Interfaces/PackageActionsInterface.h"
+#include "Classes/Interfaces/PackageActionsInterface.h"
 
+#include <TArc/DataProcessing/DataListener.h>
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
 
 #include <Reflection/Reflection.h>
+
+class QMimeData;
+class PackageBaseNode;
 
 class PackageModule
 : public DAVA::TArc::ClientModule
@@ -52,6 +56,9 @@ class PackageModule
     void OnRunUIViewerFast();
     void OnJumpToPrototype();
     void OnFindPrototypeInstances();
+    void OnCollapseAll();
+
+    void OnDropIntoPackageNode(const QMimeData* data, Qt::DropAction action, PackageBaseNode* destNode, DAVA::uint32 destIndex, const DAVA::Vector2* pos);
 
     enum DIRECTION : bool
     {
@@ -62,9 +69,9 @@ class PackageModule
     bool CanMoveLeft(PackageBaseNode* node) const;
     bool CanMoveRight(PackageBaseNode* node) const;
     void MoveNode(PackageBaseNode* node, DIRECTION direction);
-    void MoveNode(PackageBaseNode* node, PackageBaseNode* dest, uint32 destIndex);
+    void MoveNode(PackageBaseNode* node, PackageBaseNode* dest, DAVA::uint32 destIndex);
 
-    void PushErrorMessage(const String& errorMessage);
+    void PushErrorMessage(const DAVA::String& errorMessage);
 
     void JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName);
     void JumpToPackage(const DAVA::FilePath& packagePath);

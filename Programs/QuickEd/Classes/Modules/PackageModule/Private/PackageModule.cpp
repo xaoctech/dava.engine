@@ -1,6 +1,25 @@
-#include "Modules/PackageModule/PackageModule.h"
+#include "Classes/Modules/PackageModule/PackageModule.h"
 
-#include "EditorSystems/SelectionContainer.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/EditorSystems/SelectionContainer.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageIterator.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetsNode.h"
+#include "Classes/Model/YamlPackageSerializer.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/PackageModule/PackageData.h"
+#include "Classes/Modules/PackageModule/PackageWidgetSettings.h"
+#include "Classes/Modules/PackageModule/Private/PackageModel.h"
+#include "Classes/Modules/PackageModule/Private/PackageTreeView.h"
+#include "Classes/Modules/PackageModule/Private/UIViewerDialog.h"
+#include "Classes/Modules/ProjectModule/ProjectData.h"
+#include "Classes/UI/CommandExecutor.h"
+#include "Classes/UI/Find/Filters/FindFilter.h"
+#include "Classes/UI/Find/Filters/PrototypeUsagesFilter.h"
+
+#include <QtHelpers/ProcessHelper.h>
+#include <QtTools/FileDialogs/FileDialog.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -8,10 +27,16 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/Utils/CommonFieldNames.h>
 
+#include <Engine/EngineContext.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/LocalizationSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
+#include <UI/UIControlSystem.h>
 
-#include <QProcess>
+#include <QApplication>
 #include <QClipboard>
+#include <QMimeData>
+#include <QProcess>
 
 namespace PackageModuleDetails
 {
@@ -69,7 +94,7 @@ void CopyNodesToClipboard(PackageNode* package, const Vector<ControlNode*>& cont
     {
         YamlPackageSerializer serializer;
         serializer.SerializePackageNodes(package, controls, styles);
-        String str = serializer.WriteToString();
+        DAVA::String str = serializer.WriteToString();
         QMimeData* data = new QMimeData();
         data->setText(QString(str.c_str()));
         clipboard->setMimeData(data);
@@ -103,9 +128,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PackageModule)
 void PackageModule::PostInit()
 {
     InitData();
-    CreateActions();
     CreatePackageWidget();
+    CreateActions();
     RegisterGlobalOperation();
+    RegisterInterface(static_cast<Interfaces::PackageActionsInterface*>(this));
 }
 
 void PackageModule::InitData()
@@ -121,22 +147,24 @@ void PackageModule::InitData()
 
 void PackageModule::CreateActions()
 {
+    using namespace DAVA;
     using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
 
-    PackageWidget* packageWidget = accessor->GetGlobalContext()->GetData<PackageData>()->packageWidget;
+    PackageData* packageData = accessor->GetGlobalContext()->GetData<PackageData>();
+    PackageWidget* packageWidget = packageData->packageWidget;
 
     enum Readonly : bool
     {
         READONLY = true,
         MODIFIABLE = false
     };
-    auto MakeBindable = [](QtAction* action, Readonly readonly = MODIFIABLE)
+    auto MakeBindable = [](QString blockName, QtAction* action, Readonly readonly = MODIFIABLE)
     {
         KeyBindableActionInfo info;
-        info.blockName = "Package";
+        info.blockName = blockName;
         info.context = action->shortcutContext();
         info.defaultShortcuts << action->shortcuts();
         info.readOnly = readonly;
@@ -164,7 +192,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Import package";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::New);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -177,7 +205,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnImport, this));
 
-        MakeBindable(action);
+        MakeBindable("Package", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -186,7 +214,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Add Style";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence("Ctrl+S"));
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -199,7 +227,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnAddStyle, this));
 
-        MakeBindable(action);
+        MakeBindable("Package", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -210,7 +238,9 @@ void PackageModule::CreateActions()
         const QString actionName = "Cut";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Cut);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        packageData->cutAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -226,7 +256,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCut, this));
 
-        MakeBindable(action, READONLY);
+        MakeBindable("Package/CopyPaste", action, READONLY);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -235,7 +265,9 @@ void PackageModule::CreateActions()
         const QString actionName = "Copy";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Copy);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        packageData->copyAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -251,7 +283,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCopy, this));
 
-        MakeBindable(action, READONLY);
+        MakeBindable("Package/CopyPaste", action, READONLY);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -260,7 +292,9 @@ void PackageModule::CreateActions()
         const QString actionName = "Paste";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Paste);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        packageData->pasteAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -278,7 +312,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnPaste, this));
 
-        MakeBindable(action, READONLY);
+        MakeBindable("Package/CopyPaste", action, READONLY);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -287,7 +321,9 @@ void PackageModule::CreateActions()
         const QString actionName = "Duplicate";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        packageData->duplicateAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -316,30 +352,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnDuplicate, this));
 
-        MakeBindable(action);
-        AddActionIntoTreeViewOnly(action);
-    }
-
-    AddSeparatorIntoTreeView();
-
-    // Rename
-    {
-        const QString actionName = "Rename";
-        QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetShortcut);
-
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
-                                         {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             return (selectedNodes.size() == 1 && (*selectedNodes.begin())->IsEditingSupported());
-                                         });
-
-        connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRename, this));
-
-        MakeBindable(action);
+        MakeBindable("Package/CopyPaste", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -349,7 +362,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Copy Control Path";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -365,7 +378,30 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCopyControlPath, this));
 
-        MakeBindable(action);
+        MakeBindable("Package", action);
+        AddActionIntoTreeViewOnly(action);
+    }
+
+    AddSeparatorIntoTreeView();
+
+    // Rename
+    {
+        const QString actionName = "Rename";
+        QtAction* action = new QtAction(accessor, actionName);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+                                         {
+                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             return (selectedNodes.size() == 1 && (*selectedNodes.begin())->IsEditingSupported());
+                                         });
+
+        connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRename, this));
+
+        MakeBindable("Package", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -375,11 +411,13 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Delete";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setShortcut(QKeySequence::Delete);
 #if defined Q_OS_MAC
         delAction->setShortcuts({ QKeySequence::Delete, QKeySequence(Qt::Key_Backspace) });
 #endif // platform
+
+        packageData->deleteAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -395,7 +433,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnDelete, this));
 
-        MakeBindable(action);
+        MakeBindable("Package/CopyPaste", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -406,7 +444,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move up";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Up);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -437,7 +475,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveUp, this));
 
-        MakeBindable(action);
+        MakeBindable("Package/Move", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -446,7 +484,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move down";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Down);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -477,7 +515,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveDown, this));
 
-        MakeBindable(action);
+        MakeBindable("Package/Move", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -486,7 +524,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move left";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Left);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -504,7 +542,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveLeft, this));
 
-        MakeBindable(action);
+        MakeBindable("Package/Move", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -513,7 +551,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move right";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Right);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -531,7 +569,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveRight, this));
 
-        MakeBindable(action);
+        MakeBindable("Package/Move", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -541,7 +579,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Run UIViewer Fast";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -569,7 +607,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRunUIViewerFast, this));
 
-        MakeBindable(action);
+        MakeBindable("UIViewer", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -577,7 +615,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Run UIViewer";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -605,7 +643,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRunUIViewer, this));
 
-        MakeBindable(action);
+        MakeBindable("UIViewer", action);
         AddActionIntoTreeViewOnly(action);
     }
 
@@ -616,7 +654,9 @@ void PackageModule::CreateActions()
     {
         QtAction* action = new QtAction(accessor, jumpToPrototypeActionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_J);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        packageData->jumpToPrototypeAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -629,7 +669,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnJumpToPrototype, this));
 
-        MakeBindable(action);
+        MakeBindable("Package", action);
 
         packageWidget->treeView->addAction(action);
 
@@ -643,7 +683,9 @@ void PackageModule::CreateActions()
         const QString actionName = "Find Prototype Instances";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_J);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+
+        packageData->findPrototypeInstancesAction = action;
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -656,7 +698,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnFindPrototypeInstances, this));
 
-        MakeBindable(action);
+        MakeBindable("Package", action);
 
         packageWidget->treeView->addAction(action);
 
@@ -671,7 +713,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Collapse all";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<ContextAccessor>();
@@ -683,7 +725,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCollapseAll, this));
 
-        MakeBindable(action);
+        MakeBindable("Package", action);
         AddActionIntoTreeViewOnly(action);
     }
 }
@@ -692,14 +734,11 @@ void PackageModule::CreatePackageWidget()
 {
     using namespace DAVA::TArc;
 
-    PackageWidget* packageWidget = GetAccessor()->GetGlobalContext()->GetData<PackageData>()->packageWidget;
-    packageWidget = new PackageWidget();
-    packageWidget->setObjectName(QStringLiteral("packageWidget"));
-    packageWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    packageWidget->SetAccessor(GetAccessor());
-    packageWidget->SetUI(GetUI());
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
 
-    connections.AddConnection(packageWidget, &PackageWidget::SelectedNodesChanged, [this](const SelectedNodes& selection)
+    packageData->packageWidget = new PackageWidget(GetAccessor(), GetUI());
+
+    connections.AddConnection(packageData->packageWidget, &PackageWidget::SelectedNodesChanged, [this](const SelectedNodes& selection)
                               {
                                   documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, selection);
                               });
@@ -707,14 +746,14 @@ void PackageModule::CreatePackageWidget()
     DockPanelInfo panelInfo;
     panelInfo.title = "Package";
     panelInfo.area = Qt::LeftDockWidgetArea;
-    PanelKey panelKey(panelInfo.title, panelInfo);
+    PanelKey panelKey("Package", panelInfo);
 
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, packageWidget);
+    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, packageData->packageWidget);
 }
 
 void PackageModule::RegisterGlobalOperation()
 {
-    RegisterOperation(QEGlobal::DropIntoPackageNode.ID, this, &PackageModule::OnDrop);
+    RegisterOperation(QEGlobal::DropIntoPackageNode.ID, this, &PackageModule::OnDropIntoPackageNode);
 }
 
 void PackageModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
@@ -797,11 +836,69 @@ void PackageModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     packageData->packageWidgetContexts.erase(documentData->GetPackageNode());
 }
 
+DAVA::TArc::QtAction* PackageModule::GetCutAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->cutAction != nullptr);
+    return packageData->cutAction;
+}
+
+DAVA::TArc::QtAction* PackageModule::GetCopyAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->copyAction != nullptr);
+    return packageData->copyAction;
+}
+
+DAVA::TArc::QtAction* PackageModule::GetPasteAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->pasteAction != nullptr);
+    return packageData->pasteAction;
+}
+
+DAVA::TArc::QtAction* PackageModule::GetDuplicateAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->duplicateAction != nullptr);
+    return packageData->duplicateAction;
+}
+
+DAVA::TArc::QtAction* PackageModule::GetDeleteAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->deleteAction != nullptr);
+    return packageData->deleteAction;
+}
+
+DAVA::TArc::QtAction* PackageModule::GetJumpToPrototypeAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->jumpToPrototypeAction != nullptr);
+    return packageData->jumpToPrototypeAction;
+}
+
+DAVA::TArc::QtAction* PackageModule::GetFindPrototypeInstancesAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->findPrototypeInstancesAction != nullptr);
+    return packageData->findPrototypeInstancesAction;
+}
+
 void PackageModule::OnImport()
 {
+    using namespace DAVA;
+
     DocumentData* documentData = GetAccessor()->GetActiveContext()->GetData<DocumentData>();
     QStringList fileNames = FileDialog::getOpenFileNames(qApp->activeWindow(),
-                                                         tr("Select one or move files to import"),
+                                                         QObject::tr("Select one or move files to import"),
                                                          QString::fromStdString(documentData->GetPackagePath().GetDirectory().GetStringValue()),
                                                          "Packages (*.yaml)");
     if (fileNames.isEmpty() == false)
@@ -820,6 +917,8 @@ void PackageModule::OnImport()
 
 void PackageModule::OnAddStyle()
 {
+    using namespace DAVA;
+
     Vector<UIStyleSheetSelectorChain> selectorChains;
     selectorChains.push_back(UIStyleSheetSelectorChain("?"));
     const Vector<UIStyleSheetProperty> properties;
@@ -893,7 +992,7 @@ void PackageModule::OnPaste()
         }
         else
         {
-            DAVA::int32 index = static_cast<int32>(parent->GetIndex(baseNode));
+            DAVA::int32 index = static_cast<DAVA::int32>(parent->GetIndex(baseNode));
             selection = executor.Paste(package, parent, index + 1, string);
         }
         if (selection.empty() == false)
@@ -1202,8 +1301,8 @@ void PackageModule::OnRunUIViewer()
 {
     UIViewerDialog dlg(GetAccessor(), GetUI(), GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
     PackageWidgetSettings* settings = GetAccessor()->GetGlobalContext()->GetData<PackageWidgetSettings>();
-    dlg.SetDeviceIndex(static_cast<int32>(settings->selectedDevice));
-    dlg.SetBlankIndex(static_cast<int32>(settings->selectedBlank));
+    dlg.SetDeviceIndex(static_cast<DAVA::int32>(settings->selectedDevice));
+    dlg.SetBlankIndex(static_cast<DAVA::int32>(settings->selectedBlank));
     if (dlg.exec() == QDialog::Accepted)
     {
         settings->selectedDevice = dlg.GetDeviceIndex();
@@ -1250,13 +1349,23 @@ void PackageModule::OnFindPrototypeInstances()
         FilePath path = controlNode->GetPackage()->GetPath();
         String name = controlNode->GetName();
 
-        QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
-        MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
-        MainWindow::ProjectView* view = mainWindow->GetProjectView();
-
         std::shared_ptr<FindFilter> filter = std::make_shared<PrototypeUsagesFilter>(path.GetFrameworkPath(), FastName(name));
         InvokeOperation(QEGlobal::FindInProject.ID, filter);
     }
+}
+
+void PackageModule::OnDropIntoPackageNode(const QMimeData* data, Qt::DropAction action, PackageBaseNode* destNode, DAVA::uint32 destIndex, const DAVA::Vector2* pos)
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    PackageWidget* packageWidget = packageData->packageWidget;
+    packageWidget->GetPackageModel()->OnDropMimeData(data, action, destNode, destIndex, pos);
+}
+
+void PackageModule::OnCollapseAll()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    PackageWidget* packageWidget = packageData->packageWidget;
+    packageWidget->ExpandToFirstChild();
 }
 
 bool PackageModule::CanMove(const PackageBaseNode* dest, PackageBaseNode* node, DIRECTION direction) const
@@ -1332,8 +1441,10 @@ void PackageModule::MoveNode(PackageBaseNode* node, DIRECTION direction)
     MoveNode(node, nextNodeParent, destIndex);
 }
 
-void PackageModule::MoveNode(PackageBaseNode* node, PackageBaseNode* dest, uint32 destIndex)
+void PackageModule::MoveNode(PackageBaseNode* node, PackageBaseNode* dest, DAVA::uint32 destIndex)
 {
+    using namespace DAVA;
+
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     PackageWidget* packageWidget = packageData->packageWidget;
 
@@ -1363,9 +1474,9 @@ void PackageModule::MoveNode(PackageBaseNode* node, PackageBaseNode* dest, uint3
     }
 }
 
-void PackageModule::PushErrorMessage(const String& errorMessage)
+void PackageModule::PushErrorMessage(const DAVA::String& errorMessage)
 {
-    Logger::Error(errorMessage.c_str());
+    DAVA::Logger::Error(errorMessage.c_str());
 
     DAVA::TArc::NotificationParams notifParams;
     notifParams.title = "Error";
