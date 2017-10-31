@@ -38,7 +38,8 @@ using namespace DAVA;
 CharacterControllerSystem::CharacterControllerSystem(Scene* scene)
     : SceneSystem(scene)
 {
-    characterForward = Vector3::UnitX;
+	characterForward = Vector3::UnitX;
+	cameraDirection = characterForward;
 
     characterLeft = Vector3::UnitZ.CrossProduct(characterForward);
 }
@@ -121,7 +122,9 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
             {
                 aimMotion = motion;
                 aimMotion->BindParameter(FastName("running"), &runningParam);
-                aimMotion->BindParameter(FastName("aim-angle"), &aimAngleParam);
+				aimMotion->BindParameter(FastName("aim-angle"), &aimAngleParam);
+				aimMotion->BindParameter(FastName("direction-x"), &directionParam.x);
+				aimMotion->BindParameter(FastName("direction-y"), &directionParam.y);
             }
             else if (motionName == FastName("WeaponMotion"))
             {
@@ -143,8 +146,6 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
         characterInited = true;
     }
-
-    characterLeft = Vector3::UnitZ.CrossProduct(characterForward);
 
     Quaternion characterOrientation;
     characterOrientation.Construct(-Vector3::UnitY, characterForward);
@@ -196,8 +197,6 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
         directionParam.y = Clamp(-joypadDirection.y, -1.f, 1.f);
     }
 
-    aimAngleParam = Clamp(aimAngleParam, -75.f, 75.f);
-
     isMoving = (directionParam.SquareLength() > EPSILON || !moveDirectionTarget.IsZero());
     isCrouching = (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
     isRun = isMoving && !isCrouching && (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed();
@@ -214,6 +213,8 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
     zoomFactor += (isZooming ? timeElapsed : -timeElapsed) * 3.f;
     zoomFactor = Clamp(zoomFactor, 0.f, 1.f);
+
+	aimAngleParam = RadToDeg(-cameraAngle);
 
     MotionSingleComponent* msc = GetScene()->motionSingleComponent;
 
@@ -269,8 +270,10 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
 bool CharacterControllerSystem::Input(UIEvent* uiEvent)
 {
-    const static float32 MOUSE_SENSITIVITY = 2.f;
-    const static float32 TOUCH_SENSITIVITY = 4.f;
+    const static float32 MOUSE_SENSITIVITY_X = 2.f;
+	const static float32 MOUSE_SENSITIVITY_Y = 1.4f;
+	const static float32 TOUCH_SENSITIVITY_X = 4.f;
+	const static float32 TOUCH_SENSITIVITY_Y = 2.8f;
     
     float32 relativeX = 0.f;
     float32 relativeY = 0.f;
@@ -279,8 +282,8 @@ bool CharacterControllerSystem::Input(UIEvent* uiEvent)
     
     if (uiEvent->device == eInputDevices::MOUSE && (uiEvent->phase == UIEvent::Phase::MOVE || uiEvent->phase == UIEvent::Phase::DRAG) && uiEvent->isRelative)
     {
-        relativeX = uiEvent->point.x / wndSize.dx * MOUSE_SENSITIVITY;
-        relativeY = uiEvent->point.y / wndSize.dy * MOUSE_SENSITIVITY;
+        relativeX = uiEvent->point.x / wndSize.dx * MOUSE_SENSITIVITY_X;
+        relativeY = uiEvent->point.y / wndSize.dy * MOUSE_SENSITIVITY_Y;
     }
     
     if(uiEvent->device == eInputDevices::TOUCH_SURFACE)
@@ -299,12 +302,18 @@ bool CharacterControllerSystem::Input(UIEvent* uiEvent)
             inputEndPosition = uiEvent->point;
         }
         
-        relativeX = (inputEndPosition.x - inputBeginPosition.x) / wndSize.dx * TOUCH_SENSITIVITY;
-        relativeY = (inputEndPosition.y - inputBeginPosition.y) / wndSize.dy * TOUCH_SENSITIVITY;
+        relativeX = (inputEndPosition.x - inputBeginPosition.x) / wndSize.dx * TOUCH_SENSITIVITY_X;
+        relativeY = (inputEndPosition.y - inputBeginPosition.y) / wndSize.dy * TOUCH_SENSITIVITY_Y;
     }
-    
-    characterForward = Quaternion::MakeRotationFastZ(-relativeX * MOUSE_SENSITIVITY).ApplyToVectorFast(characterForward);
+
+	cameraAngle += relativeY;
+	cameraAngle = Clamp(cameraAngle, DegToRad(-45.f), DegToRad(45.f));
+
+    characterForward = Quaternion::MakeRotationFastZ(-relativeX).ApplyToVectorFast(characterForward);
     characterForward.Normalize();
+
+	characterLeft = Vector3::UnitZ.CrossProduct(characterForward);
+	cameraDirection = Quaternion::MakeRotation(characterLeft, cameraAngle).ApplyToVectorFast(characterForward);
 
     return false;
 }
@@ -385,20 +394,30 @@ void CharacterCameraSystem::Process(DAVA::float32 timeElapsed)
     if (!controllerSystem->characterInited)
         return;
 
-    Vector3 characterPosition = controllerSystem->characterEntity->GetLocalTransform().GetTranslationVector();
+	const Vector3& cameraDirection = controllerSystem->cameraDirection;
+	const Vector3& characterLeft = controllerSystem->characterLeft;
+	const float32 zoomFactor = controllerSystem->zoomFactor;
+	const float32 crouchingParam = controllerSystem->crouchingParam;
+	const uint32 headJointIndex = controllerSystem->headJointIndex;
 
-    Vector3 normalCameraOffset = -3.f * controllerSystem->characterForward + Vector3(0.f, 0.f, 1.9f);
-    Vector3 normalTargetOffset = Vector3(0.f, 0.f, 1.4f);
+	Camera* camera = controllerSystem->camera;
+	Entity* characterMeshEntity = controllerSystem->characterMeshEntity;
 
-    float32 headHeight = GetSkeletonComponent(controllerSystem->characterMeshEntity)->GetJointObjectSpaceTransform(controllerSystem->headJointIndex).GetPosition().z;
-    Vector3 zoomCameraOffset = -1.4f * controllerSystem->characterForward - 0.4f * controllerSystem->characterLeft + Vector3(0.f, 0.f, headHeight + 0.15f);
-    Vector3 zoomTargetOffset = -0.3f * controllerSystem->characterLeft + Vector3(0.f, 0.f, headHeight);
+	//////////////////////////////////////////////////////////////////////////
 
-    Vector3 cameraOffset = Lerp(normalCameraOffset, zoomCameraOffset, controllerSystem->zoomFactor);
-    Vector3 targetOffset = Lerp(normalTargetOffset, zoomTargetOffset, controllerSystem->zoomFactor);
-    float32 fov = Lerp(70.f, 55.f, controllerSystem->zoomFactor);
+	Vector3 headJointPosition = GetSkeletonComponent(characterMeshEntity)->GetJointObjectSpaceTransform(headJointIndex).GetPosition();
+	headJointPosition.x = 0.f;
+	headJointPosition.z = Lerp(Lerp(1.75f, 1.65f, crouchingParam), headJointPosition.z + 0.1f, zoomFactor);
+	Vector3 headPosition = headJointPosition * characterMeshEntity->GetWorldTransform();
 
-    controllerSystem->camera->SetPosition(characterPosition + cameraOffset);
-    controllerSystem->camera->SetTarget(characterPosition + targetOffset);
-    controllerSystem->camera->SetFOV(fov);
+    Vector3 normalCameraOffset = -2.4f * cameraDirection - 0.1f * characterLeft;
+    Vector3 zoomCameraOffset = -1.4f * cameraDirection - 0.35f * characterLeft;
+
+    Vector3 cameraOffset = Lerp(normalCameraOffset, zoomCameraOffset, zoomFactor);
+    float32 fov = Lerp(70.f, 55.f, zoomFactor);
+
+    camera->SetPosition(headPosition + cameraOffset);
+    camera->SetDirection(cameraDirection);
+	camera->SetUp(cameraDirection.CrossProduct(characterLeft));
+    camera->SetFOV(fov);
 }

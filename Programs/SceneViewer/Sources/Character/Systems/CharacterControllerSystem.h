@@ -53,6 +53,8 @@ private:
     
     DAVA::Vector3 characterForward;
     DAVA::Vector3 characterLeft;
+	DAVA::Vector3 cameraDirection;
+	DAVA::float32 cameraAngle = 0.f;
 
     DAVA::Vector2 directionParam;
     DAVA::float32 runningParam = 0.f;
