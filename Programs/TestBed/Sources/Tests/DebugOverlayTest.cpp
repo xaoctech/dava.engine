@@ -22,9 +22,8 @@ void TestOverlayItem::Draw()
     if (ImGui::Begin("Test window", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         ImGui::Text("Test info");
-
-        ImGui::End();
     }
+    ImGui::End();
 
     if (!shown)
     {

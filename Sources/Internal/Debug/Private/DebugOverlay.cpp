@@ -172,9 +172,8 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
                 ImGui::EndPopup();
             }
             ImGui::PopStyleVar(1);
-
-            ImGui::End();
         }
+        ImGui::End();
         ImGui::PopStyleVar(2);
 
         for (ItemData& itemData : items)

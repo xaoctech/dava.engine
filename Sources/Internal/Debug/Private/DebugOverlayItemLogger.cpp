@@ -75,22 +75,18 @@ void DebugOverlayItemLogger::Draw()
 
         ImGui::Separator();
 
-        if (ImGui::BeginChild("Scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
+        ImGui::BeginChild("Scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+        for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
         {
-            for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
+            const String& s = *iter;
+            if (!filter.IsActive() || filter.PassFilter(s.c_str()))
             {
-                const String& s = *iter;
-                if (!filter.IsActive() || filter.PassFilter(s.c_str()))
-                {
-                    ImGui::TextUnformatted(s.c_str());
-                }
+                ImGui::TextUnformatted(s.c_str());
             }
-
-            ImGui::EndChild();
         }
-
-        ImGui::End();
+        ImGui::EndChild();
     }
+    ImGui::End();
 
     if (!shown)
     {
