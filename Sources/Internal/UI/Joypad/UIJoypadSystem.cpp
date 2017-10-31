@@ -7,7 +7,9 @@ namespace DAVA
 {
 void UIJoypadSystem::RegisterControl(UIControl* control)
 {
-    if (control != nullptr && control->GetComponent(Type::Instance<UIJoypadComponent>()) != nullptr)
+    DVASSERT(control != nullptr);
+
+    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) != nullptr)
     {
         AddComponent(control->GetComponent<UIJoypadComponent>());
     }
@@ -15,7 +17,9 @@ void UIJoypadSystem::RegisterControl(UIControl* control)
 
 void UIJoypadSystem::UnregisterControl(UIControl* control)
 {
-    if (control != nullptr && control->GetComponent(Type::Instance<UIJoypadComponent>()) != nullptr)
+    DVASSERT(control != nullptr);
+
+    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) != nullptr)
     {
         RemoveComponent(control->GetComponent<UIJoypadComponent>());
     }
@@ -23,7 +27,9 @@ void UIJoypadSystem::UnregisterControl(UIControl* control)
 
 void UIJoypadSystem::RegisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component != nullptr && component->GetType() == Type::Instance<UIJoypadComponent>())
+    DVASSERT(component != nullptr);
+
+    if (component->GetType() == Type::Instance<UIJoypadComponent>())
     {
         AddComponent(static_cast<UIJoypadComponent*>(component));
     }
@@ -31,7 +37,9 @@ void UIJoypadSystem::RegisterComponent(UIControl* control, UIComponent* componen
 
 void UIJoypadSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
-    if (component != nullptr && component->GetType() == Type::Instance<UIJoypadComponent>())
+    DVASSERT(component != nullptr);
+
+    if (component->GetType() == Type::Instance<UIJoypadComponent>())
     {
         RemoveComponent(static_cast<UIJoypadComponent*>(component));
     }
@@ -39,7 +47,9 @@ void UIJoypadSystem::UnregisterComponent(UIControl* control, UIComponent* compon
 
 void UIJoypadSystem::OnControlVisible(UIControl* control)
 {
-    if (control == nullptr || control->GetComponent(Type::Instance<UIJoypadComponent>()) == nullptr)
+    DVASSERT(control != nullptr);
+
+    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) == nullptr)
     {
         return;
     }
@@ -64,7 +74,9 @@ void UIJoypadSystem::OnControlVisible(UIControl* control)
 
 void UIJoypadSystem::OnControlInvisible(UIControl* control)
 {
-    if (control == nullptr || control->GetComponent(Type::Instance<UIJoypadComponent>()) == nullptr)
+    DVASSERT(control != nullptr);
+
+    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) == nullptr)
     {
         return;
     }
@@ -182,10 +194,7 @@ void UIJoypadSystem::Process(float32 elapsedTime)
 
 void UIJoypadSystem::AddComponent(UIJoypadComponent* ptr)
 {
-    if (ptr != nullptr)
-    {
-        componentsStates[ptr] = {};
-    }
+    componentsStates[ptr] = {};
 }
 
 void UIJoypadSystem::RemoveComponent(UIJoypadComponent* ptr)
@@ -218,10 +227,7 @@ void UIJoypadSystem::UpdateComponents()
 
     for (UIJoypadComponent* component : needUpdate)
     {
-        if (component == nullptr)
-        {
-            continue;
-        }
+        DVASSERT(component != nullptr);
 
         UIControl* control = component->GetControl();
 
@@ -284,6 +290,15 @@ void UIJoypadSystem::UpdateComponents()
 
         // [-1:1] coords
         Vector2 coords = { pos.x / radius, -pos.y / radius };
+        // Correct precision
+        if (fabs(coords.x) > 1.f)
+        {
+            coords.x = (coords.x > 0 ? 1.f : -1.f);
+        }
+        if (fabs(coords.y) > 1.f)
+        {
+            coords.y = (coords.y > 0 ? 1.f : -1.f);
+        }
 
         // Compute angle. 0:-PI for the left half, 0:PI for the right
         float32 sm = coords.y;

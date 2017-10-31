@@ -189,7 +189,9 @@ Vector2 UIJoypadComponent::GetTransformedCoords() const
 {
     if (coordsTransformFn)
     {
-        return coordsTransformFn(coords);
+        Vector2 tCoords = coordsTransformFn(coords);
+        DVASSERT(fabs(tCoords.x) <= 1.f && fabs(tCoords.y) <= 1.f);
+        return tCoords;
     }
 
     return coords;
