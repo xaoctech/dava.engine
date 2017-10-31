@@ -16,11 +16,11 @@ class DebugOverlayItemEngineSettings;
 class DebugOverlayItemLogger;
 
 /**
-        Class representing visual overlay ment for debugging.
+    Class representing visual overlay ment for debugging.
 
-        It provides features for extending and showing custom information or UI via `DebugOverlayItem`.
-        Each `DebugOverlayItem` is shown as a menu item which can be enabled or disabled. Multiple items can be enabled simultaneously.
-    */
+    It provides features for extending and showing custom information or UI via `DebugOverlayItem`.
+    Each `DebugOverlayItem` is shown as a menu item which can be enabled or disabled. Multiple items can be enabled simultaneously.
+*/
 class DebugOverlay final
 {
 public:
@@ -33,24 +33,24 @@ public:
     /** Return `true` if overlay is active, `false` otherwise. */
     bool IsShown() const;
 
-    /** Adds `overlayItem` to the menu. */
+    /** Add `overlayItem` to the menu. */
     void RegisterItem(DebugOverlayItem* overlayItem);
 
-    /** Removes `overlayItem` from the menu. The item must be registered. */
+    /** Remove `overlayItem` from the menu. The item must be registered. */
     void UnregisterItem(DebugOverlayItem* overlayItem);
 
     /**
-            Enables drawing `overlayItem`.
-            Calling this method has the same effect as marking the checkbox as enabled in the menu.
-            `overlayItem` must be registered.    
-        */
+        Enable drawing `overlayItem`.
+        Calling this method has the same effect as marking the checkbox as enabled in the menu.
+        `overlayItem` must be registered.    
+    */
     void ShowItem(DebugOverlayItem* overlayItem);
 
     /**
-            Disables drawing of `overlayItem`.
-            Calling this method has the same effect as marking the checkbox as disabled in the menu.
-            `overlayItem` must be registered.
-        */
+        Disable drawing of `overlayItem`.
+        Calling this method has the same effect as marking the checkbox as disabled in the menu.
+        `overlayItem` must be registered.
+    */
     void HideItem(DebugOverlayItem* overlayItem);
 
 private:

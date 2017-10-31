@@ -5,8 +5,8 @@
 namespace DAVA
 {
 /**
-        Represents an item in `DebugOverlay`.
-    */
+    Represents an item in `DebugOverlay`.
+*/
 class DebugOverlayItem
 {
 public:

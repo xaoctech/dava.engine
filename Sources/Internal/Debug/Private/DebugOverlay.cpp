@@ -24,7 +24,11 @@ DebugOverlay::~DebugOverlay()
     UnregisterDefaultItems();
 
     DVASSERT(items.size() == 0);
-    Engine::Instance()->update.Disconnect(this);
+
+    if (shown)
+    {
+        Engine::Instance()->update.Disconnect(this);
+    }
 }
 
 void DebugOverlay::Show()
@@ -94,6 +98,7 @@ void DebugOverlay::UnregisterItem(DebugOverlayItem* overlayItem)
 
 void DebugOverlay::ShowItem(DebugOverlayItem* overlayItem)
 {
+    DVASSERT(Thread::IsMainThread());
     DVASSERT(overlayItem != nullptr);
 
     auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });

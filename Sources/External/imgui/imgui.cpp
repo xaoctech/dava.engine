@@ -2001,8 +2001,7 @@ float ImGui::CalcWrapWidthForPos(const ImVec2& pos, float wrap_pos_x)
 void* ImGui::MemAlloc(size_t sz)
 {
     GImGui->IO.MetricsAllocs++;
-    auto result = GImGui->IO.MemAllocFn(sz);
-    return result;
+    return GImGui->IO.MemAllocFn(sz);
 }
 
 void ImGui::MemFree(void* ptr)

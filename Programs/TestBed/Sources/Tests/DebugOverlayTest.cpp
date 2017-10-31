@@ -82,6 +82,11 @@ void DebugOverlayTest::UnloadResources()
     BaseScreen::UnloadResources();
 
     GetPrimaryWindow()->update.Disconnect(this);
+
+    if (itemRegistered)
+    {
+        GetEngineContext()->debugOverlay->UnregisterItem(&testItem);
+    }
 }
 
 void DebugOverlayTest::OnWindowUpdate(DAVA::Window* window, DAVA::float32 dt)
