@@ -5,38 +5,78 @@
 
 namespace DAVA
 {
-    class Window;
+namespace Private
+{
+class EngineBackend;
+}
 
-    class DebugOverlayItem;
+class Window;
+class DebugOverlayItem;
+class DebugOverlayItemEngineSettings;
+class DebugOverlayItemLogger;
 
-    class DebugOverlay final
+/**
+        Class representing visual overlay ment for debugging.
+
+        It provides features for extending and showing custom information or UI via `DebugOverlayItem`.
+        Each `DebugOverlayItem` is shown as a menu item which can be enabled or disabled. Multiple items can be enabled simultaneously.
+    */
+class DebugOverlay final
+{
+public:
+    /** Show overlay. */
+    void Show();
+
+    /** Hide overlay. */
+    void Hide();
+
+    /** Adds `overlayItem` to the menu. */
+    void RegisterItem(DebugOverlayItem* overlayItem);
+
+    /** Removes `overlayItem` from the menu. The item must be registered. */
+    void UnregisterItem(DebugOverlayItem* overlayItem);
+
+    /**
+            Enables drawing `overlayItem`.
+            Calling this method has the same effect as marking the checkbox as enabled in the menu.
+            `overlayItem` must be registered.    
+        */
+    void ShowItem(DebugOverlayItem* overlayItem);
+
+    /**
+            Disables drawing of `overlayItem`.
+            Calling this method has the same effect as marking the checkbox as disabled in the menu.
+            `overlayItem` must be registered.
+        */
+    void HideItem(DebugOverlayItem* overlayItem);
+
+private:
+    DebugOverlay();
+    ~DebugOverlay();
+    DebugOverlay(const DebugOverlay&) = delete;
+    DebugOverlay& operator=(const DebugOverlay&) = delete;
+
+    void OnUpdate(Window* window, float32 timeDelta);
+
+    void RegisterDefaultItems();
+    void UnregisterDefaultItems();
+
+private:
+    struct ItemData
     {
-    public:
-        DebugOverlay();
-        ~DebugOverlay();
-        DebugOverlay(const DebugOverlay&) = delete;
-        DebugOverlay& operator=(const DebugOverlay&) = delete;
-
-        void Enable();
-        void Disable();
-
-        void RegisterItem(DebugOverlayItem* overlayItem);
-        void UnregisterItem(DebugOverlayItem* overlayItem);
-
-        void EnableItem(DebugOverlayItem* overlayItem);
-        void DisableItem(DebugOverlayItem* overlayItem);
-
-    private:
-        void OnUpdate(Window* window, float32 timeDelta);
-
-    private:
-        struct ItemData
-        {
-            DebugOverlayItem* item;
-            String name;
-            bool enabled;
-        };
-
-        Vector<ItemData> items;
+        DebugOverlayItem* item;
+        String name;
+        bool enabled;
     };
+
+    bool shown = false;
+    Vector<ItemData> items;
+
+    // Items added by default
+    std::unique_ptr<DebugOverlayItemEngineSettings> defaultItemEngineSettings;
+    std::unique_ptr<DebugOverlayItemLogger> defaultItemLogger;
+
+    // For creation
+    friend class Private::EngineBackend;
+};
 }

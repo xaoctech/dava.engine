@@ -13,113 +13,88 @@
 
 namespace DAVA
 {
-    namespace DebugOverlayItemLoggerDetail
+namespace DebugOverlayItemLoggerDetail
+{
+class LoggerOutputContainer : public LoggerOutput
+{
+public:
+    void Output(Logger::eLogLevel level, const char8* text) override
     {
-        class LoggerOutputContainer : public LoggerOutput
+        static UnorderedMap<Logger::eLogLevel, String> levelToString
         {
-        public:
-            void Output(Logger::eLogLevel ll, const char8* text)
-            {
-                std::stringstream stream;
-                stream << "[" << LogLevelToString(ll) << "] " << text;
-                String result = stream.str();
-                logsArray.next() = std::move(result);
-            }
-
-            String LogLevelToString(Logger::eLogLevel level)
-            {
-                if (level == Logger::eLogLevel::LEVEL_DEBUG)
-                {
-                    return "Debug";
-                }
-                else if (level == Logger::eLogLevel::LEVEL_ERROR)
-                {
-                    return "Error";
-                }
-                else if (level == Logger::eLogLevel::LEVEL_FRAMEWORK)
-                {
-                    return "Framework";
-                }
-                else if (level == Logger::eLogLevel::LEVEL_INFO)
-                {
-                    return "Info";
-                }
-                else if (level == Logger::eLogLevel::LEVEL_WARNING)
-                {
-                    return "Warning";
-                }
-
-                DVASSERT(false);
-                return "Unknown";
-            }
-
-            RingArray<String> logsArray = RingArray<String>(256);
+          { Logger::eLogLevel::LEVEL_DEBUG, "Debug" },
+          { Logger::eLogLevel::LEVEL_ERROR, "Error" },
+          { Logger::eLogLevel::LEVEL_FRAMEWORK, "Framework" },
+          { Logger::eLogLevel::LEVEL_INFO, "Info" },
+          { Logger::eLogLevel::LEVEL_WARNING, "Warning" },
+          { Logger::eLogLevel::LEVEL__DISABLE, "Disabled" }
         };
+
+        DVASSERT(levelToString.find(level) != levelToString.end());
+
+        static std::stringstream stream;
+
+        stream << "[" << levelToString[level] << "] " << text;
+        String result = stream.str();
+        logsArray.next() = std::move(result);
+
+        stream.str("");
     }
 
-    static DebugOverlayItemLoggerDetail::LoggerOutputContainer loggerOutput;
+    RingArray<String> logsArray = RingArray<String>(256);
+};
 
-    DebugOverlayItemLogger::DebugOverlayItemLogger()
-    {
-        Logger::AddCustomOutput(&loggerOutput);
-    }
+static LoggerOutputContainer loggerOutput;
+}
 
-    DebugOverlayItemLogger::~DebugOverlayItemLogger()
-    {
-        Logger::RemoveCustomOutput(&loggerOutput);
-    }
+DebugOverlayItemLogger::DebugOverlayItemLogger()
+{
+    Logger::AddCustomOutput(&DebugOverlayItemLoggerDetail::loggerOutput);
+}
 
-    String DebugOverlayItemLogger::GetName()
-    {
-        return "Logger";
-    }
+DebugOverlayItemLogger::~DebugOverlayItemLogger()
+{
+    Logger::RemoveCustomOutput(&DebugOverlayItemLoggerDetail::loggerOutput);
+}
 
-    void DebugOverlayItemLogger::Draw()
+String DebugOverlayItemLogger::GetName() const
+{
+    return "Logger";
+}
+
+void DebugOverlayItemLogger::Draw()
+{
+    using namespace DebugOverlayItemLoggerDetail;
+
+    bool shown = true;
+    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiSetCond_FirstUseEver);
+    if (ImGui::Begin("Logger", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         static ImGuiTextFilter filter;
+        filter.Draw();
 
-        bool shown = true;
-        ImGui::SetNextWindowSize(ImVec2(800, 500), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Logger", &shown, ImGuiWindowFlags_NoFocusOnAppearing);
-
-        if (ImGui::Button("Clear"))
-        {
-            // TODO
-        }
-        ImGui::SameLine();
-        bool copy = ImGui::Button("Copy"); // TODO
-        ImGui::SameLine();
-        filter.Draw("Filter", -100.0f);
         ImGui::Separator();
 
-        ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-        if (filter.IsActive())
+        if (ImGui::BeginChild("Scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar))
         {
             for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
             {
                 const String& s = *iter;
-                if (filter.PassFilter(s.c_str()))
+                if (!filter.IsActive() || filter.PassFilter(s.c_str()))
                 {
                     ImGui::TextUnformatted(s.c_str());
                 }
             }
-        }
-        else
-        {
-            for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
-            {
-                const String& s = *iter;
-                ImGui::TextUnformatted(s.c_str());
-            }
-        }
 
-        ImGui::EndChild();
+            ImGui::EndChild();
+        }
 
         ImGui::End();
-        if (!shown)
-        {
-            GetEngineContext()->debugOverlay->DisableItem(this);
-        }
     }
+
+    if (!shown)
+    {
+        GetEngineContext()->debugOverlay->HideItem(this);
+    }
+}
 }

@@ -927,7 +927,11 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 
 void EngineBackend::DestroySubsystems()
 {
-    SafeDelete(context->debugOverlay);
+    if (context->debugOverlay != nullptr)
+    {
+        delete context->debugOverlay;
+        context->debugOverlay = nullptr;
+    }
 
 #ifdef __DAVAENGINE_AUTOTESTING__
     if (context->autotestingSystem != nullptr)

@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
+#include "Concurrency/Thread.h"
 #include "Debug/Private/ImGui.h"
 #include "Debug/DebugOverlayItem.h"
 
@@ -11,105 +12,163 @@
 
 namespace DAVA
 {
-    DebugOverlay::DebugOverlay()
-    {
-        GetPrimaryWindow()->update.Connect(this, &DebugOverlay::OnUpdate);
+DebugOverlay::DebugOverlay()
+    : defaultItemEngineSettings{ new DebugOverlayItemEngineSettings }
+    , defaultItemLogger{ new DebugOverlayItemLogger }
+{
+    RegisterDefaultItems();
 
-        static DebugOverlayItemEngineSettings es;
-        static DebugOverlayItemLogger l;
-        RegisterItem(&es);
-        RegisterItem(&l);
+    Show();
+}
+
+DebugOverlay::~DebugOverlay()
+{
+    UnregisterDefaultItems();
+
+    DVASSERT(items.size() == 0);
+    Engine::Instance()->update.Disconnect(this);
+}
+
+void DebugOverlay::Show()
+{
+    DVASSERT(Thread::IsMainThread());
+
+    if (!shown)
+    {
+        Window* primaryWindow = GetPrimaryWindow();
+        DVASSERT(primaryWindow != nullptr);
+        primaryWindow->update.Connect(this, &DebugOverlay::OnUpdate);
+
+        shown = true;
     }
+}
 
-    DebugOverlay::~DebugOverlay()
+void DebugOverlay::Hide()
+{
+    DVASSERT(Thread::IsMainThread());
+
+    if (shown)
     {
-        Engine::Instance()->update.Disconnect(this);
+        Window* primaryWindow = GetPrimaryWindow();
+        DVASSERT(primaryWindow != nullptr);
+        primaryWindow->update.Disconnect(this);
+
+        shown = false;
     }
+}
 
-    void DebugOverlay::RegisterItem(DebugOverlayItem* overlayItem)
+void DebugOverlay::RegisterItem(DebugOverlayItem* overlayItem)
+{
+    DVASSERT(Thread::IsMainThread());
+    DVASSERT(overlayItem != nullptr);
+    DVASSERT(std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; }) == items.end());
+
+    ItemData itemData;
+    itemData.item = overlayItem;
+    itemData.name = overlayItem->GetName();
+    itemData.enabled = false;
+
+    items.push_back(itemData);
+}
+
+void DebugOverlay::UnregisterItem(DebugOverlayItem* overlayItem)
+{
+    DVASSERT(Thread::IsMainThread());
+    DVASSERT(overlayItem != nullptr);
+
+    auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });
+    DVASSERT(iter != items.end());
+
+    items.erase(iter);
+}
+
+void DebugOverlay::ShowItem(DebugOverlayItem* overlayItem)
+{
+    DVASSERT(overlayItem != nullptr);
+
+    auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });
+    DVASSERT(iter != items.end());
+
+    if (iter->enabled == false)
     {
-        DVASSERT(overlayItem != nullptr);
-        DVASSERT(std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) {return itemData.item == overlayItem; }) == items.end());
-
-        ItemData itemData;
-        itemData.item = overlayItem;
-        itemData.name = overlayItem->GetName();
-        itemData.enabled = false;
-
-        items.push_back(itemData);
-    }
-    
-    void DebugOverlay::UnregisterItem(DebugOverlayItem* overlayItem)
-    {
-        DVASSERT(overlayItem != nullptr);
-
-        auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) {return itemData.item == overlayItem; });
-        DVASSERT(iter != items.end());
-
-        items.erase(iter);
-    }
-
-    void DebugOverlay::EnableItem(DebugOverlayItem* overlayItem)
-    {
-        DVASSERT(overlayItem != nullptr);
-
-        auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) {return itemData.item == overlayItem; });
-        DVASSERT(iter != items.end());
-
         iter->enabled = true;
+        iter->item->OnShown();
     }
+}
 
-    void DebugOverlay::DisableItem(DebugOverlayItem* overlayItem)
+void DebugOverlay::HideItem(DebugOverlayItem* overlayItem)
+{
+    DVASSERT(Thread::IsMainThread());
+    DVASSERT(overlayItem != nullptr);
+
+    auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) { return itemData.item == overlayItem; });
+    DVASSERT(iter != items.end());
+
+    if (iter->enabled == true)
     {
-        DVASSERT(overlayItem != nullptr);
-
-        auto iter = std::find_if(items.begin(), items.end(), [overlayItem](ItemData const& itemData) {return itemData.item == overlayItem; });
-        DVASSERT(iter != items.end());
-
         iter->enabled = false;
+        iter->item->OnHidden();
     }
+}
 
-    void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
+void DebugOverlay::RegisterDefaultItems()
+{
+    RegisterItem(defaultItemEngineSettings.get());
+    RegisterItem(defaultItemLogger.get());
+}
+
+void DebugOverlay::UnregisterDefaultItems()
+{
+    UnregisterItem(defaultItemEngineSettings.get());
+    UnregisterItem(defaultItemLogger.get());
+}
+
+void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
+{
+    DVASSERT(ImGui::IsInitialized());
+
+    if (ImGui::IsInitialized())
     {
-        DVASSERT(ImGui::IsInitialized());
-        
-        if (ImGui::IsInitialized())
+        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
+        uint32 windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize;
+        if (ImGui::Begin("DebugOverlayWindow", nullptr, windowFlags))
         {
-            ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
-            if (ImGui::Begin("Debug views", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::Button("Debug views"))
             {
-                if (ImGui::Button("Overlay views"))
-                {
-                    ImGui::OpenPopup("Debug views");
-                }
-                
-                ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetWindowSize().y));
-                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
-                if (ImGui::BeginPopup("Debug views"))
-                {
-                    
-                    for (ItemData& itemData : items)
-                    {
-                        ImGui::Checkbox(itemData.name.c_str(), &itemData.enabled);
-                    }
-                    
-                    ImGui::EndPopup();
-                }
-                ImGui::PopStyleVar(1);
-                
-                ImGui::End();
+                ImGui::OpenPopup("DebugViewsPopup");
             }
-            ImGui::PopStyleVar(2);
 
-            for (ItemData& itemData : items)
+            ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetWindowSize().y));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
+            if (ImGui::BeginPopup("DebugViewsPopup"))
             {
-                if (itemData.enabled)
+                for (ItemData& itemData : items)
                 {
-                    itemData.item->Draw();
+                    const bool wasEnabled = itemData.enabled;
+                    ImGui::Checkbox(itemData.name.c_str(), &itemData.enabled);
+                    if (itemData.enabled != wasEnabled)
+                    {
+                        itemData.enabled ? itemData.item->OnShown() : itemData.item->OnHidden();
+                    }
                 }
+
+                ImGui::EndPopup();
+            }
+            ImGui::PopStyleVar(1);
+
+            ImGui::End();
+        }
+        ImGui::PopStyleVar(2);
+
+        for (ItemData& itemData : items)
+        {
+            if (itemData.enabled)
+            {
+                itemData.item->Draw();
             }
         }
     }
+}
 }

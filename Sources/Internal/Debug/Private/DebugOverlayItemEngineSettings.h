@@ -4,10 +4,10 @@
 
 namespace DAVA
 {
-    class DebugOverlayItemEngineSettings : public DebugOverlayItem
-    {
-    public:
-        virtual String GetName() override;
-        virtual void Draw() override;
-    };
+class DebugOverlayItemEngineSettings final : public DebugOverlayItem
+{
+public:
+    virtual String GetName() const override;
+    virtual void Draw() override;
+};
 }

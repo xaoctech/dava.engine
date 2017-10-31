@@ -4,13 +4,13 @@
 
 namespace DAVA
 {
-    class DebugOverlayItemLogger : public DebugOverlayItem
-    {
-    public:
-        DebugOverlayItemLogger();
-        ~DebugOverlayItemLogger();
-        
-       virtual String GetName() override;
-        virtual void Draw() override;
-    };
+class DebugOverlayItemLogger final : public DebugOverlayItem
+{
+public:
+    DebugOverlayItemLogger();
+    ~DebugOverlayItemLogger();
+
+    virtual String GetName() const override;
+    virtual void Draw() override;
+};
 }
