@@ -32,22 +32,22 @@ def find_files(pattern, dirs):
                     result.append(os.path.join(root, name))
     return result
 
-def get_exe( pathExecut ):
+def get_exe( pathExecute ):
 
-    pathExecut = os.path.realpath( pathExecut )
+    pathExecute = os.path.realpath( pathExecute )
 
     if os.name == 'nt':
-        return pathExecut
+        return pathExecute
     else:
         # mac os
-        dirName  = os.path.dirname ( pathExecut )
-        baseName = os.path.basename( pathExecut )
+        dirName  = os.path.dirname ( pathExecute )
+        baseName = os.path.basename( pathExecute )
         baseName, extApp = os.path.splitext(baseName)
 
         if extApp == '.app' :
             return '{0}/{1}.app/Contents/MacOS/{1}'.format( dirName, baseName )
         else:
-            return pathExecut
+            return pathExecute
 
 def check_sting_in_file( str, fname ):
     with open(fname) as dataf:
@@ -75,9 +75,9 @@ def configure_file( file_path_template, file_path_out, values_string_list, value
             file_generated.write( template.safe_substitute( dicts ) )
 
 class CheckTimeDependence():
-    def __init__(self, pathExecut, timeFile ):
+    def __init__(self, pathExecute, timeFile ):
 
-        self.pathExecut = pathExecut
+        self.pathExecute = pathExecute
         self.timeFile   = timeFile
 
     def create_time_file( self ):
@@ -86,11 +86,11 @@ class CheckTimeDependence():
         if not os.path.isdir( dirTimeFile ):
             os.makedirs( dirTimeFile ) 
         with open(self.timeFile, "w") as  file:
-            file.write( time.ctime(os.path.getmtime(self.pathExecut)) )
+            file.write( time.ctime(os.path.getmtime(self.pathExecute)) )
 
     def is_updated( self ):
 
-        timeExecute     = time.ctime(os.path.getmtime(self.pathExecut))
+        timeExecute     = time.ctime(os.path.getmtime(self.pathExecute))
         timeExecuteOld  = ''
 
         if os.path.isfile( self.timeFile ) :
@@ -106,7 +106,7 @@ class CoverageReport():
 
         self.arg                    = arg
         self.pathBuild              = arg.pathBuild
-        self.pathExecut             = arg.pathExecut
+        self.pathExecute            = arg.pathExecute
         self.targetArgs             = arg.targetArgs
         self.pathReportOut          = arg.pathReportOut
         self.pathReportOutFull      = os.path.join( arg.pathReportOut, 'CoverageFull' ) 
@@ -118,18 +118,18 @@ class CoverageReport():
 
         self.coverageTmpPath        = os.path.join( arg.pathBuild, 'CoverageTmpData' )
     
-        self.pathExecutDir          = os.path.dirname ( self.pathExecut )
-        self.executName             = os.path.basename( self.pathExecut )
-        self.executName, ExecutExt  = os.path.splitext( self.executName )
+        self.pathExecuteDir         = os.path.dirname ( self.pathExecute )
+        self.executeName            = os.path.basename( self.pathExecute )
+        self.executeName, ExecuteExt  = os.path.splitext( self.executeName )
         
         self.pathCoverageDir        = os.path.dirname (os.path.realpath(__file__))
-        self.pathExecutTime         = os.path.join( self.pathBuild, 'CMakeFiles/{0}.time'.format( self.executName ) )
+        self.pathExecuteTime        = os.path.join( self.pathBuild, 'CMakeFiles/{0}.time'.format( self.executeName ) )
 
 
-        self.tfExec                 = CheckTimeDependence( self.pathExecut, self.pathExecutTime )
+        self.tfExec                 = CheckTimeDependence( self.pathExecute, self.pathExecuteTime )
 
 
-        self.coverFilePath          = os.path.join    ( self.pathExecutDir,   'Tests.cover')
+        self.coverFilePath          = os.path.join    ( self.pathExecuteDir,  'Tests.cover')
         self.pathLlvmCov            = os.path.join    ( self.pathCoverageDir, 'llvm-cov')
         self.pathLlvmProfdata       = os.path.join    ( self.pathCoverageDir, 'llvm-profdata')
         self.pathCallLlvmGcov       = os.path.join    ( self.pathCoverageDir, 'llvm-gcov.sh')
@@ -161,9 +161,9 @@ class CoverageReport():
         if self.notExecute == 'false' and self.tfExec.is_updated() == True:
             self.__clear_old_gcda()
             self.tfExec.create_time_file()
-            pathExecutExt = get_exe( self.pathExecut )
-            os.chdir( self.pathExecutDir )
-            self.__execute( [ pathExecutExt, self.targetArgs ] )
+            pathExecuteExt = get_exe( self.pathExecute )
+            os.chdir( self.pathExecuteDir )
+            self.__execute( [ pathExecuteExt, self.targetArgs ] )
     
         self.__processing_gcda_gcno_files()
         self.__load_json_cover_data()
@@ -260,13 +260,13 @@ class CoverageReport():
 
     def __error_log_coverage_file( self, test, file ):
 
-        os.chdir( self.pathExecutDir );
+        os.chdir( self.pathExecuteDir );
 
-        pathExecutExt = get_exe( self.pathExecut )
+        pathExecuteExt = get_exe( self.pathExecute )
         param = [ self.pathLlvmCov, 
                   'show', 
-                  pathExecutExt, 
-                  '-instr-profile={0}.profdata'.format(self.executName), 
+                  pathExecuteExt, 
+                  '-instr-profile={0}.profdata'.format(self.executeName), 
                   file  
                 ] 
         print param
@@ -428,7 +428,7 @@ class CoverageReport():
         ###
         params = [ self.pathLcov,
                     '--directory',      self.coverageTmpPath,  
-                    '--base-directory', self.pathExecutDir,
+                    '--base-directory', self.pathExecuteDir,
                     '--gcov-tool',      self.pathCallLlvmGcov,
                     '--capture',   
                     '-o', self.pathCovInfoFull
@@ -476,7 +476,7 @@ class CoverageReport():
                        FIND_Lines =2, 
                        FIND_Taken =3 )
 
-        self.__execute( [ self.pathLlvmProfdata, 'merge', '-o', '{0}.profdata'.format(self.executName), 'default.profraw' ] )
+        self.__execute( [ self.pathLlvmProfdata, 'merge', '-o', '{0}.profdata'.format(self.executeName), 'default.profraw' ] )
         
         os.chdir( self.coverageTmpPath )
         for test in self.testsCoverage:
@@ -565,7 +565,7 @@ class CoverageReport():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument( '--pathBuild', required = True )
-    parser.add_argument( '--pathExecut', required = True )
+    parser.add_argument( '--pathExecute', required = True )
     parser.add_argument( '--pathReportOut', required = True )
     parser.add_argument( '--buildConfig', choices=['Debug', 'Release','RelWithDebinfo'] )
     parser.add_argument( '--notExecute', default = 'false', choices=['true', 'false'] ) 

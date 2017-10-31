@@ -8,7 +8,6 @@
 # -DSTASH_LOGIN    = stash user login
 # -DSTASH_PASS     = stash user password
 #
-# -DIMAGE_UNPACKER = add to toolset ImageUnpacker [true/false]
 # -DCACHE_CLIENT   = add to toolset AssetCacheClient
 #
 # -DDEPLOY         = deploy build [true/false]
@@ -28,9 +27,9 @@ include ( Toolset-сommon )
 
 add_tool_single     ( UnitTests         NO_UNITY_BUILD )
 
-add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  IGNORE_WINUAP )
+add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  )
 
-add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX IGNORE_WINUAP )
+add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX )
 
 add_tool_single     ( Launcher          PLATFORMS MACOS WIN        
                                         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
@@ -40,7 +39,7 @@ add_tool_single     ( UWPRunner         PLATFORMS WIN )
 
 ############ PACKAGE TOOLS
 
-add_tool_package     ( SceneViewer      PLATFORMS IGNORE_LINUX  IGNORE_WINUAP 
+add_tool_package     ( SceneViewer      PLATFORMS IGNORE_LINUX  
                                         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
 add_tool_package     ( UIViewer         PLATFORMS MACOS WIN

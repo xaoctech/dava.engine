@@ -46,12 +46,18 @@ if( MACOS )
     set( PLATFORM_SPECIFIC_FOLDER "Platforms/Mac" )
 elseif( IOS )
     set( PLATFORM_SPECIFIC_FOLDER "Platforms/Ios" )
-elseif( WIN32 )
+elseif( WIN32 AND NOT WINDOWS_UAP )
     set( PLATFORM_SPECIFIC_FOLDER "Platforms/Win32" )
     set( EXECUTABLE_FLAG WIN32 )
 endif()
 
 define_source ( SOURCE "Sources" ${PLATFORM_SPECIFIC_FOLDER} ${TeamcityOutput} )
+
+
+if ( WINDOWS_UAP )
+    set ( WIN_STORE_MANIFEST_PACKAGE_GUID "31a2f61a-4083-4250-9c0a-2d68740285b3" )
+endif ()
+
 
 set( APP_DATA             ${CMAKE_CURRENT_LIST_DIR}/Data )
 

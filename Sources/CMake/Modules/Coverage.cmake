@@ -20,15 +20,15 @@ if( MACOS AND COVERAGE )
     endif()
 
     if( DEPLOY )
-        set( EXECUT_FILE ${DEPLOY_DIR}/${PROJECT_NAME}${APP_ATRIBUTE})
+        set( EXECUTE_FILE ${DEPLOY_DIR}/${PROJECT_NAME}${APP_ATRIBUTE})
     else()
-        set( EXECUT_FILE ${CMAKE_BINARY_DIR}/$(CONFIGURATION)/${PROJECT_NAME}${APP_ATRIBUTE} )
+        set( EXECUTE_FILE ${CMAKE_BINARY_DIR}/$(CONFIGURATION)/${PROJECT_NAME}${APP_ATRIBUTE} )
     endif()
 
     set( COVERAGE_SCRIPT ${DAVA_ROOT_DIR}/RepoTools/coverage/coverage_report.py )
 
     set( COVERAGE_INDEX_HTML ${CMAKE_BINARY_DIR}/Coverage/index.html )
-    set( COVERAGE_COMMAND_GENERATE_HTML "python ${COVERAGE_SCRIPT} --pathExecut ${EXECUT_FILE} --pathBuild ${CMAKE_BINARY_DIR} --pathReportOut ${CMAKE_BINARY_DIR}/Coverage --buildConfig $(CONFIGURATION) --runMode true --notExecute true --targetArgs ${COVERAGE_ARGS}" )
+    set( COVERAGE_COMMAND_GENERATE_HTML "python ${COVERAGE_SCRIPT} --pathExecute ${EXECUTE_FILE} --pathBuild ${CMAKE_BINARY_DIR} --pathReportOut ${CMAKE_BINARY_DIR}/Coverage --buildConfig $(CONFIGURATION) --runMode true --notExecute true --targetArgs ${COVERAGE_ARGS}" )
 
     configure_file( ${DAVA_CONFIGURE_FILES_PATH}/CoverageExecuteGenHtml.in
                     ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/CoverageExecuteGenHtml.cpp  )
@@ -44,7 +44,7 @@ if( MACOS AND COVERAGE )
 
     add_custom_command( TARGET COVERAGE_${PROJECT_NAME} 
             COMMAND ${PYTHON_EXECUTABLE} ${COVERAGE_SCRIPT}
-                    --pathExecut    ${EXECUT_FILE}
+                    --pathExecute   ${EXECUTE_FILE}
                     --pathBuild     ${CMAKE_BINARY_DIR}
                     --pathReportOut ${CMAKE_CURRENT_BINARY_DIR}/Coverage
                     --buildConfig   $(CONFIGURATION)

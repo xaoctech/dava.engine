@@ -246,6 +246,8 @@ macro ( __add_tools TOOLS_LIST_NAME )
             set( OLD_DEPLOY_DIR ${DEPLOY_DIR} )
             if( ARG_CUSTOM_DEPLOY_DIR AND WIN32 )
                 set( DEPLOY_DIR ${ARG_CUSTOM_DEPLOY_DIR}/${TARGET_NAME} )
+            elseif( WINDOWS_UAP )
+                set( DEPLOY_DIR ${DEPLOY_DIR}/${TARGET_NAME} )
             endif()  
 
             if( ARG_NO_UNITY_BUILD )
