@@ -97,6 +97,6 @@ CEF_EXPORT const char* cef_api_hash(int entry);
 }
 #endif
 
-#endif // APSTUDIO_HIDDEN_SYMBOLS
+#endif  // APSTUDIO_HIDDEN_SYMBOLS
 
-#endif // CEF_INCLUDE_CEF_VERSION_H_
+#endif  // CEF_INCLUDE_CEF_VERSION_H_

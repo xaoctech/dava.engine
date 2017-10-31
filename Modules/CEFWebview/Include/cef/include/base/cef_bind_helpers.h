@@ -178,7 +178,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/bind_helpers.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -188,10 +188,9 @@
 #include "include/base/cef_template_util.h"
 #include "include/base/cef_weak_ptr.h"
 
-namespace base
-{
-namespace cef_internal
-{
+namespace base {
+namespace cef_internal {
+
 // Use the Substitution Failure Is Not An Error (SFINAE) trick to inspect T
 // for the existence of AddRef() and Release() functions of the correct
 // signature.
@@ -262,139 +261,104 @@ namespace cef_internal
 // TODO(ajwong): Make this check for Release() as well.
 // See http://crbug.com/82038.
 template <typename T>
-class SupportsAddRefAndRelease
-{
-    typedef char Yes[1];
-    typedef char No[2];
+class SupportsAddRefAndRelease {
+  typedef char Yes[1];
+  typedef char No[2];
 
-    struct BaseMixin
-    {
-        void AddRef();
-    };
+  struct BaseMixin {
+    void AddRef();
+  };
 
 // MSVC warns when you try to use Base if T has a private destructor, the
 // common pattern for refcounted types. It does this even though no attempt to
 // instantiate Base is made.  We disable the warning for this definition.
 #if defined(OS_WIN)
 #pragma warning(push)
-#pragma warning(disable : 4624)
+#pragma warning(disable:4624)
 #endif
-    struct Base : public T, public BaseMixin
-    {
-    };
+  struct Base : public T, public BaseMixin {
+  };
 #if defined(OS_WIN)
 #pragma warning(pop)
 #endif
 
-    template <void (BaseMixin::*)(void)>
-    struct Helper
-    {
-    };
+  template <void(BaseMixin::*)(void)> struct Helper {};
 
-    template <typename C>
-    static No& Check(Helper<&C::AddRef>*);
+  template <typename C>
+  static No& Check(Helper<&C::AddRef>*);
 
-    template <typename>
-    static Yes& Check(...);
+  template <typename >
+  static Yes& Check(...);
 
-public:
-    static const bool value = sizeof(Check<Base>(0)) == sizeof(Yes);
+ public:
+  static const bool value = sizeof(Check<Base>(0)) == sizeof(Yes);
 };
 
 // Helpers to assert that arguments of a recounted type are bound with a
 // scoped_refptr.
 template <bool IsClasstype, typename T>
-struct UnsafeBindtoRefCountedArgHelper : false_type
-{
+struct UnsafeBindtoRefCountedArgHelper : false_type {
 };
 
 template <typename T>
 struct UnsafeBindtoRefCountedArgHelper<true, T>
-: integral_constant<bool, SupportsAddRefAndRelease<T>::value>
-{
+    : integral_constant<bool, SupportsAddRefAndRelease<T>::value> {
 };
 
 template <typename T>
-struct UnsafeBindtoRefCountedArg : false_type
-{
+struct UnsafeBindtoRefCountedArg : false_type {
 };
 
 template <typename T>
 struct UnsafeBindtoRefCountedArg<T*>
-: UnsafeBindtoRefCountedArgHelper<is_class<T>::value, T>
-{
+    : UnsafeBindtoRefCountedArgHelper<is_class<T>::value, T> {
 };
 
 template <typename T>
-class HasIsMethodTag
-{
-    typedef char Yes[1];
-    typedef char No[2];
+class HasIsMethodTag {
+  typedef char Yes[1];
+  typedef char No[2];
 
-    template <typename U>
-    static Yes& Check(typename U::IsMethod*);
+  template <typename U>
+  static Yes& Check(typename U::IsMethod*);
 
-    template <typename U>
-    static No& Check(...);
+  template <typename U>
+  static No& Check(...);
 
-public:
-    static const bool value = sizeof(Check<T>(0)) == sizeof(Yes);
+ public:
+  static const bool value = sizeof(Check<T>(0)) == sizeof(Yes);
 };
 
 template <typename T>
-class UnretainedWrapper
-{
-public:
-    explicit UnretainedWrapper(T* o)
-        : ptr_(o)
-    {
-    }
-    T* get() const
-    {
-        return ptr_;
-    }
-
-private:
-    T* ptr_;
+class UnretainedWrapper {
+ public:
+  explicit UnretainedWrapper(T* o) : ptr_(o) {}
+  T* get() const { return ptr_; }
+ private:
+  T* ptr_;
 };
 
 template <typename T>
-class ConstRefWrapper
-{
-public:
-    explicit ConstRefWrapper(const T& o)
-        : ptr_(&o)
-    {
-    }
-    const T& get() const
-    {
-        return *ptr_;
-    }
-
-private:
-    const T* ptr_;
+class ConstRefWrapper {
+ public:
+  explicit ConstRefWrapper(const T& o) : ptr_(&o) {}
+  const T& get() const { return *ptr_; }
+ private:
+  const T* ptr_;
 };
 
 template <typename T>
-struct IgnoreResultHelper
-{
-    explicit IgnoreResultHelper(T functor)
-        : functor_(functor)
-    {
-    }
+struct IgnoreResultHelper {
+  explicit IgnoreResultHelper(T functor) : functor_(functor) {}
 
-    T functor_;
+  T functor_;
 };
 
 template <typename T>
-struct IgnoreResultHelper<Callback<T>>
-{
-    explicit IgnoreResultHelper(const Callback<T>& functor)
-        : functor_(functor)
-    {
-    }
+struct IgnoreResultHelper<Callback<T> > {
+  explicit IgnoreResultHelper(const Callback<T>& functor) : functor_(functor) {}
 
-    const Callback<T>& functor_;
+  const Callback<T>& functor_;
 };
 
 // An alternate implementation is to avoid the destructive copy, and instead
@@ -405,29 +369,18 @@ struct IgnoreResultHelper<Callback<T>>
 // fully in callback_internal.h as well as avoiding type conversions during
 // storage.
 template <typename T>
-class OwnedWrapper
-{
-public:
-    explicit OwnedWrapper(T* o)
-        : ptr_(o)
-    {
-    }
-    ~OwnedWrapper()
-    {
-        delete ptr_;
-    }
-    T* get() const
-    {
-        return ptr_;
-    }
-    OwnedWrapper(const OwnedWrapper& other)
-    {
-        ptr_ = other.ptr_;
-        other.ptr_ = NULL;
-    }
+class OwnedWrapper {
+ public:
+  explicit OwnedWrapper(T* o) : ptr_(o) {}
+  ~OwnedWrapper() { delete ptr_; }
+  T* get() const { return ptr_; }
+  OwnedWrapper(const OwnedWrapper& other) {
+    ptr_ = other.ptr_;
+    other.ptr_ = NULL;
+  }
 
-private:
-    mutable T* ptr_;
+ private:
+  mutable T* ptr_;
 };
 
 // PassedWrapper is a copyable adapter for a scoper that ignores const.
@@ -452,100 +405,72 @@ private:
 //  2) is_valid_ is distinct from NULL because it is valid to bind a "NULL"
 //     scoper to a Callback and allow the Callback to execute once.
 template <typename T>
-class PassedWrapper
-{
-public:
-    explicit PassedWrapper(T scoper)
-        : is_valid_(true)
-        , scoper_(scoper.Pass())
-    {
-    }
-    PassedWrapper(const PassedWrapper& other)
-        : is_valid_(other.is_valid_)
-        , scoper_(other.scoper_.Pass())
-    {
-    }
-    T Pass() const
-    {
-        CHECK(is_valid_);
-        is_valid_ = false;
-        return scoper_.Pass();
-    }
+class PassedWrapper {
+ public:
+  explicit PassedWrapper(T scoper) : is_valid_(true), scoper_(scoper.Pass()) {}
+  PassedWrapper(const PassedWrapper& other)
+      : is_valid_(other.is_valid_), scoper_(other.scoper_.Pass()) {
+  }
+  T Pass() const {
+    CHECK(is_valid_);
+    is_valid_ = false;
+    return scoper_.Pass();
+  }
 
-private:
-    mutable bool is_valid_;
-    mutable T scoper_;
+ private:
+  mutable bool is_valid_;
+  mutable T scoper_;
 };
 
 // Unwrap the stored parameters for the wrappers above.
 template <typename T>
-struct UnwrapTraits
-{
-    typedef const T& ForwardType;
-    static ForwardType Unwrap(const T& o)
-    {
-        return o;
-    }
+struct UnwrapTraits {
+  typedef const T& ForwardType;
+  static ForwardType Unwrap(const T& o) { return o; }
 };
 
 template <typename T>
-struct UnwrapTraits<UnretainedWrapper<T>>
-{
-    typedef T* ForwardType;
-    static ForwardType Unwrap(UnretainedWrapper<T> unretained)
-    {
-        return unretained.get();
-    }
+struct UnwrapTraits<UnretainedWrapper<T> > {
+  typedef T* ForwardType;
+  static ForwardType Unwrap(UnretainedWrapper<T> unretained) {
+    return unretained.get();
+  }
 };
 
 template <typename T>
-struct UnwrapTraits<ConstRefWrapper<T>>
-{
-    typedef const T& ForwardType;
-    static ForwardType Unwrap(ConstRefWrapper<T> const_ref)
-    {
-        return const_ref.get();
-    }
+struct UnwrapTraits<ConstRefWrapper<T> > {
+  typedef const T& ForwardType;
+  static ForwardType Unwrap(ConstRefWrapper<T> const_ref) {
+    return const_ref.get();
+  }
 };
 
 template <typename T>
-struct UnwrapTraits<scoped_refptr<T>>
-{
-    typedef T* ForwardType;
-    static ForwardType Unwrap(const scoped_refptr<T>& o)
-    {
-        return o.get();
-    }
+struct UnwrapTraits<scoped_refptr<T> > {
+  typedef T* ForwardType;
+  static ForwardType Unwrap(const scoped_refptr<T>& o) { return o.get(); }
 };
 
 template <typename T>
-struct UnwrapTraits<WeakPtr<T>>
-{
-    typedef const WeakPtr<T>& ForwardType;
-    static ForwardType Unwrap(const WeakPtr<T>& o)
-    {
-        return o;
-    }
+struct UnwrapTraits<WeakPtr<T> > {
+  typedef const WeakPtr<T>& ForwardType;
+  static ForwardType Unwrap(const WeakPtr<T>& o) { return o; }
 };
 
 template <typename T>
-struct UnwrapTraits<OwnedWrapper<T>>
-{
-    typedef T* ForwardType;
-    static ForwardType Unwrap(const OwnedWrapper<T>& o)
-    {
-        return o.get();
-    }
+struct UnwrapTraits<OwnedWrapper<T> > {
+  typedef T* ForwardType;
+  static ForwardType Unwrap(const OwnedWrapper<T>& o) {
+    return o.get();
+  }
 };
 
 template <typename T>
-struct UnwrapTraits<PassedWrapper<T>>
-{
-    typedef T ForwardType;
-    static T Unwrap(PassedWrapper<T>& o)
-    {
-        return o.Pass();
-    }
+struct UnwrapTraits<PassedWrapper<T> > {
+  typedef T ForwardType;
+  static T Unwrap(PassedWrapper<T>& o) {
+    return o.Pass();
+  }
 };
 
 // Utility for handling different refcounting semantics in the Bind()
@@ -554,75 +479,41 @@ template <bool is_method, typename T>
 struct MaybeRefcount;
 
 template <typename T>
-struct MaybeRefcount<false, T>
-{
-    static void AddRef(const T&)
-    {
-    }
-    static void Release(const T&)
-    {
-    }
+struct MaybeRefcount<false, T> {
+  static void AddRef(const T&) {}
+  static void Release(const T&) {}
 };
 
 template <typename T, size_t n>
-struct MaybeRefcount<false, T[n]>
-{
-    static void AddRef(const T*)
-    {
-    }
-    static void Release(const T*)
-    {
-    }
+struct MaybeRefcount<false, T[n]> {
+  static void AddRef(const T*) {}
+  static void Release(const T*) {}
 };
 
 template <typename T>
-struct MaybeRefcount<true, T>
-{
-    static void AddRef(const T&)
-    {
-    }
-    static void Release(const T&)
-    {
-    }
+struct MaybeRefcount<true, T> {
+  static void AddRef(const T&) {}
+  static void Release(const T&) {}
 };
 
 template <typename T>
-struct MaybeRefcount<true, T*>
-{
-    static void AddRef(T* o)
-    {
-        o->AddRef();
-    }
-    static void Release(T* o)
-    {
-        o->Release();
-    }
+struct MaybeRefcount<true, T*> {
+  static void AddRef(T* o) { o->AddRef(); }
+  static void Release(T* o) { o->Release(); }
 };
 
 // No need to additionally AddRef() and Release() since we are storing a
 // scoped_refptr<> inside the storage object already.
 template <typename T>
-struct MaybeRefcount<true, scoped_refptr<T>>
-{
-    static void AddRef(const scoped_refptr<T>& o)
-    {
-    }
-    static void Release(const scoped_refptr<T>& o)
-    {
-    }
+struct MaybeRefcount<true, scoped_refptr<T> > {
+  static void AddRef(const scoped_refptr<T>& o) {}
+  static void Release(const scoped_refptr<T>& o) {}
 };
 
 template <typename T>
-struct MaybeRefcount<true, const T*>
-{
-    static void AddRef(const T* o)
-    {
-        o->AddRef();
-    }
-    static void Release(const T* o)
-    {
-        o->Release();
-    }
+struct MaybeRefcount<true, const T*> {
+  static void AddRef(const T* o) { o->AddRef(); }
+  static void Release(const T* o) { o->Release(); }
 };
 
 // IsWeakMethod is a helper that determine if we are binding a WeakPtr<> to a
@@ -632,38 +523,29 @@ struct MaybeRefcount<true, const T*>
 //
 // P1 should be the type of the object that will be received of the method.
 template <bool IsMethod, typename P1>
-struct IsWeakMethod : public false_type
-{
-};
+struct IsWeakMethod : public false_type {};
 
 template <typename T>
-struct IsWeakMethod<true, WeakPtr<T>> : public true_type
-{
-};
+struct IsWeakMethod<true, WeakPtr<T> > : public true_type {};
 
 template <typename T>
-struct IsWeakMethod<true, ConstRefWrapper<WeakPtr<T>>> : public true_type
-{
-};
+struct IsWeakMethod<true, ConstRefWrapper<WeakPtr<T> > > : public true_type {};
 
-} // namespace cef_internal
+}  // namespace cef_internal
 
 template <typename T>
-static inline cef_internal::UnretainedWrapper<T> Unretained(T* o)
-{
-    return cef_internal::UnretainedWrapper<T>(o);
+static inline cef_internal::UnretainedWrapper<T> Unretained(T* o) {
+  return cef_internal::UnretainedWrapper<T>(o);
 }
 
 template <typename T>
-static inline cef_internal::ConstRefWrapper<T> ConstRef(const T& o)
-{
-    return cef_internal::ConstRefWrapper<T>(o);
+static inline cef_internal::ConstRefWrapper<T> ConstRef(const T& o) {
+  return cef_internal::ConstRefWrapper<T>(o);
 }
 
 template <typename T>
-static inline cef_internal::OwnedWrapper<T> Owned(T* o)
-{
-    return cef_internal::OwnedWrapper<T>(o);
+static inline cef_internal::OwnedWrapper<T> Owned(T* o) {
+  return cef_internal::OwnedWrapper<T>(o);
 }
 
 // We offer 2 syntaxes for calling Passed().  The first takes a temporary and
@@ -671,39 +553,34 @@ static inline cef_internal::OwnedWrapper<T> Owned(T* o)
 // takes a pointer to the scoper and is just syntactic sugar to avoid having
 // to write Passed(scoper.Pass()).
 template <typename T>
-static inline cef_internal::PassedWrapper<T> Passed(T scoper)
-{
-    return cef_internal::PassedWrapper<T>(scoper.Pass());
+static inline cef_internal::PassedWrapper<T> Passed(T scoper) {
+  return cef_internal::PassedWrapper<T>(scoper.Pass());
 }
 template <typename T>
-static inline cef_internal::PassedWrapper<T> Passed(T* scoper)
-{
-    return cef_internal::PassedWrapper<T>(scoper->Pass());
+static inline cef_internal::PassedWrapper<T> Passed(T* scoper) {
+  return cef_internal::PassedWrapper<T>(scoper->Pass());
 }
 
 template <typename T>
-static inline cef_internal::IgnoreResultHelper<T> IgnoreResult(T data)
-{
-    return cef_internal::IgnoreResultHelper<T>(data);
+static inline cef_internal::IgnoreResultHelper<T> IgnoreResult(T data) {
+  return cef_internal::IgnoreResultHelper<T>(data);
 }
 
 template <typename T>
-static inline cef_internal::IgnoreResultHelper<Callback<T>>
-IgnoreResult(const Callback<T>& data)
-{
-    return cef_internal::IgnoreResultHelper<Callback<T>>(data);
+static inline cef_internal::IgnoreResultHelper<Callback<T> >
+IgnoreResult(const Callback<T>& data) {
+  return cef_internal::IgnoreResultHelper<Callback<T> >(data);
 }
 
 void DoNothing();
 
-template <typename T>
-void DeletePointer(T* obj)
-{
-    delete obj;
+template<typename T>
+void DeletePointer(T* obj) {
+  delete obj;
 }
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_BIND_HELPERS_H_
+#endif  // CEF_INCLUDE_BASE_CEF_BIND_HELPERS_H_

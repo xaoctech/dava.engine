@@ -44,25 +44,26 @@
 extern "C" {
 #endif
 
+
 ///
 // Implement this structure to receive geolocation updates. The functions of
 // this structure will be called on the browser process UI thread.
 ///
-typedef struct _cef_get_geolocation_callback_t
-{
-    ///
-    // Base structure.
-    ///
-    cef_base_t base;
+typedef struct _cef_get_geolocation_callback_t {
+  ///
+  // Base structure.
+  ///
+  cef_base_t base;
 
-    ///
-    // Called with the 'best available' location information or, if the location
-    // update failed, with error information.
-    ///
-    void(CEF_CALLBACK* on_location_update)(
-    struct _cef_get_geolocation_callback_t* self,
-    const struct _cef_geoposition_t* position);
+  ///
+  // Called with the 'best available' location information or, if the location
+  // update failed, with error information.
+  ///
+  void (CEF_CALLBACK *on_location_update)(
+      struct _cef_get_geolocation_callback_t* self,
+      const struct _cef_geoposition_t* position);
 } cef_get_geolocation_callback_t;
+
 
 ///
 // Request a one-time geolocation update. This function bypasses any user
@@ -75,4 +76,4 @@ CEF_EXPORT int cef_get_geolocation(cef_get_geolocation_callback_t* callback);
 }
 #endif
 
-#endif // CEF_INCLUDE_CAPI_CEF_GEOLOCATION_CAPI_H_
+#endif  // CEF_INCLUDE_CAPI_CEF_GEOLOCATION_CAPI_H_

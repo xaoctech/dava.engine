@@ -41,7 +41,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/memory/ref_counted.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -55,101 +55,93 @@
 #endif
 #include "include/base/cef_thread_collision_warner.h"
 
-namespace base
-{
-namespace cef_subtle
-{
-class RefCountedBase
-{
-public:
-    bool HasOneRef() const
-    {
-        return ref_count_ == 1;
-    }
+namespace base {
 
-protected:
-    RefCountedBase()
-        : ref_count_(0)
-  #ifndef NDEBUG
-        , in_dtor_(false)
-  #endif
-    {
-    }
+namespace cef_subtle {
 
-    ~RefCountedBase()
-    {
-  #ifndef NDEBUG
-        DCHECK(in_dtor_) << "RefCounted object deleted without calling Release()";
-  #endif
-    }
+class RefCountedBase {
+ public:
+  bool HasOneRef() const { return ref_count_ == 1; }
 
-    void AddRef() const
-    {
-// TODO(maruel): Add back once it doesn't assert 500 times/sec.
-// Current thread books the critical section "AddRelease"
-// without release it.
-// DFAKE_SCOPED_LOCK_THREAD_LOCKED(add_release_);
+ protected:
+  RefCountedBase()
+      : ref_count_(0)
   #ifndef NDEBUG
-        DCHECK(!in_dtor_);
+      , in_dtor_(false)
   #endif
-        ++ref_count_;
-    }
+      {
+  }
 
-    // Returns true if the object should self-delete.
-    bool Release() const
-    {
-// TODO(maruel): Add back once it doesn't assert 500 times/sec.
-// Current thread books the critical section "AddRelease"
-// without release it.
-// DFAKE_SCOPED_LOCK_THREAD_LOCKED(add_release_);
+  ~RefCountedBase() {
   #ifndef NDEBUG
-        DCHECK(!in_dtor_);
+    DCHECK(in_dtor_) << "RefCounted object deleted without calling Release()";
   #endif
-        if (--ref_count_ == 0)
-        {
+  }
+
+
+  void AddRef() const {
+    // TODO(maruel): Add back once it doesn't assert 500 times/sec.
+    // Current thread books the critical section "AddRelease"
+    // without release it.
+    // DFAKE_SCOPED_LOCK_THREAD_LOCKED(add_release_);
   #ifndef NDEBUG
-            in_dtor_ = true;
+    DCHECK(!in_dtor_);
   #endif
-            return true;
+    ++ref_count_;
+  }
+
+  // Returns true if the object should self-delete.
+  bool Release() const {
+    // TODO(maruel): Add back once it doesn't assert 500 times/sec.
+    // Current thread books the critical section "AddRelease"
+    // without release it.
+    // DFAKE_SCOPED_LOCK_THREAD_LOCKED(add_release_);
+  #ifndef NDEBUG
+    DCHECK(!in_dtor_);
+  #endif
+    if (--ref_count_ == 0) {
+  #ifndef NDEBUG
+      in_dtor_ = true;
+  #endif
+      return true;
     }
     return false;
-    }
+  }
 
-private:
-    mutable int ref_count_;
+ private:
+  mutable int ref_count_;
 #ifndef NDEBUG
-    mutable bool in_dtor_;
+  mutable bool in_dtor_;
 #endif
 
-    DFAKE_MUTEX(add_release_);
+  DFAKE_MUTEX(add_release_);
 
-    DISALLOW_COPY_AND_ASSIGN(RefCountedBase);
+  DISALLOW_COPY_AND_ASSIGN(RefCountedBase);
 };
 
-class RefCountedThreadSafeBase
-{
-public:
-    bool HasOneRef() const;
+class RefCountedThreadSafeBase {
+ public:
+  bool HasOneRef() const;
 
-protected:
-    RefCountedThreadSafeBase();
-    ~RefCountedThreadSafeBase();
+ protected:
+  RefCountedThreadSafeBase();
+  ~RefCountedThreadSafeBase();
 
-    void AddRef() const;
+  void AddRef() const;
 
-    // Returns true if the object should self-delete.
-    bool Release() const;
+  // Returns true if the object should self-delete.
+  bool Release() const;
 
-private:
-    mutable AtomicRefCount ref_count_;
+ private:
+  mutable AtomicRefCount ref_count_;
 #ifndef NDEBUG
-    mutable bool in_dtor_;
+  mutable bool in_dtor_;
 #endif
 
-    DISALLOW_COPY_AND_ASSIGN(RefCountedThreadSafeBase);
+  DISALLOW_COPY_AND_ASSIGN(RefCountedThreadSafeBase);
 };
 
-} // namespace cef_subtle
+}  // namespace cef_subtle
 
 //
 // A base class for reference counted classes.  Otherwise, known as a cheap
@@ -166,52 +158,41 @@ private:
 // You should always make your destructor private, to avoid any code deleting
 // the object accidently while there are references to it.
 template <class T>
-class RefCounted : public cef_subtle::RefCountedBase
-{
-public:
-    RefCounted()
-    {
-    }
+class RefCounted : public cef_subtle::RefCountedBase {
+ public:
+  RefCounted() {}
 
-    void AddRef() const
-    {
-        cef_subtle::RefCountedBase::AddRef();
-    }
+  void AddRef() const {
+    cef_subtle::RefCountedBase::AddRef();
+  }
 
-    void Release() const
-    {
-        if (cef_subtle::RefCountedBase::Release())
-        {
-            delete static_cast<const T*>(this);
+  void Release() const {
+    if (cef_subtle::RefCountedBase::Release()) {
+      delete static_cast<const T*>(this);
     }
-    }
+  }
 
-protected:
-    ~RefCounted()
-    {
-    }
+ protected:
+  ~RefCounted() {}
 
-private:
-    DISALLOW_COPY_AND_ASSIGN(RefCounted<T>);
+ private:
+  DISALLOW_COPY_AND_ASSIGN(RefCounted<T>);
 };
 
 // Forward declaration.
-template <class T, typename Traits>
-class RefCountedThreadSafe;
+template <class T, typename Traits> class RefCountedThreadSafe;
 
 // Default traits for RefCountedThreadSafe<T>.  Deletes the object when its ref
 // count reaches 0.  Overload to delete it on a different thread etc.
-template <typename T>
-struct DefaultRefCountedThreadSafeTraits
-{
-    static void Destruct(const T* x)
-    {
-        // Delete through RefCountedThreadSafe to make child classes only need to be
-        // friend with RefCountedThreadSafe instead of this struct, which is an
-        // implementation detail.
-        RefCountedThreadSafe<T,
-                             DefaultRefCountedThreadSafeTraits>::DeleteInternal(x);
-    }
+template<typename T>
+struct DefaultRefCountedThreadSafeTraits {
+  static void Destruct(const T* x) {
+    // Delete through RefCountedThreadSafe to make child classes only need to be
+    // friend with RefCountedThreadSafe instead of this struct, which is an
+    // implementation detail.
+    RefCountedThreadSafe<T,
+                         DefaultRefCountedThreadSafeTraits>::DeleteInternal(x);
+  }
 };
 
 //
@@ -226,70 +207,50 @@ struct DefaultRefCountedThreadSafeTraits
 //    private:
 //     friend class base::RefCountedThreadSafe<MyFoo>;
 //     ~MyFoo();
-template <class T, typename Traits = DefaultRefCountedThreadSafeTraits<T>>
-class RefCountedThreadSafe : public cef_subtle::RefCountedThreadSafeBase
-{
-public:
-    RefCountedThreadSafe()
-    {
-    }
+template <class T, typename Traits = DefaultRefCountedThreadSafeTraits<T> >
+class RefCountedThreadSafe : public cef_subtle::RefCountedThreadSafeBase {
+ public:
+  RefCountedThreadSafe() {}
 
-    void AddRef() const
-    {
-        cef_subtle::RefCountedThreadSafeBase::AddRef();
-    }
+  void AddRef() const {
+    cef_subtle::RefCountedThreadSafeBase::AddRef();
+  }
 
-    void Release() const
-    {
-        if (cef_subtle::RefCountedThreadSafeBase::Release())
-        {
-            Traits::Destruct(static_cast<const T*>(this));
+  void Release() const {
+    if (cef_subtle::RefCountedThreadSafeBase::Release()) {
+      Traits::Destruct(static_cast<const T*>(this));
     }
-    }
+  }
 
-protected:
-    ~RefCountedThreadSafe()
-    {
-    }
+ protected:
+  ~RefCountedThreadSafe() {}
 
-private:
-    friend struct DefaultRefCountedThreadSafeTraits<T>;
-    static void DeleteInternal(const T* x)
-    {
-        delete x;
-    }
+ private:
+  friend struct DefaultRefCountedThreadSafeTraits<T>;
+  static void DeleteInternal(const T* x) { delete x; }
 
-    DISALLOW_COPY_AND_ASSIGN(RefCountedThreadSafe);
+  DISALLOW_COPY_AND_ASSIGN(RefCountedThreadSafe);
 };
 
 //
 // A thread-safe wrapper for some piece of data so we can place other
 // things in scoped_refptrs<>.
 //
-template <typename T>
+template<typename T>
 class RefCountedData
-: public base::RefCountedThreadSafe<base::RefCountedData<T>>
-{
-public:
-    RefCountedData()
-        : data()
-    {
-    }
-    RefCountedData(const T& in_value)
-        : data(in_value)
-    {
-    }
+    : public base::RefCountedThreadSafe< base::RefCountedData<T> > {
+ public:
+  RefCountedData() : data() {}
+  RefCountedData(const T& in_value) : data(in_value) {}
 
-    T data;
+  T data;
 
-private:
-    friend class base::RefCountedThreadSafe<base::RefCountedData<T>>;
-    ~RefCountedData()
-    {
-    }
+ private:
+  friend class base::RefCountedThreadSafe<base::RefCountedData<T> >;
+  ~RefCountedData() {}
 };
 
-} // namespace base
+}  // namespace base
 
 //
 // A smart pointer class for reference counted objects.  Use this class instead
@@ -340,109 +301,86 @@ private:
 //   }
 //
 template <class T>
-class scoped_refptr
-{
-public:
-    typedef T element_type;
+class scoped_refptr {
+ public:
+  typedef T element_type;
 
-    scoped_refptr()
-        : ptr_(NULL)
-    {
-    }
+  scoped_refptr() : ptr_(NULL) {
+  }
 
-    scoped_refptr(T* p)
-        : ptr_(p)
-    {
-        if (ptr_)
-            ptr_->AddRef();
-    }
+  scoped_refptr(T* p) : ptr_(p) {
+    if (ptr_)
+      ptr_->AddRef();
+  }
 
-    scoped_refptr(const scoped_refptr<T>& r)
-        : ptr_(r.ptr_)
-    {
-        if (ptr_)
-            ptr_->AddRef();
-    }
+  scoped_refptr(const scoped_refptr<T>& r) : ptr_(r.ptr_) {
+    if (ptr_)
+      ptr_->AddRef();
+  }
 
-    template <typename U>
-    scoped_refptr(const scoped_refptr<U>& r)
-        : ptr_(r.get())
-    {
-        if (ptr_)
-            ptr_->AddRef();
-    }
+  template <typename U>
+  scoped_refptr(const scoped_refptr<U>& r) : ptr_(r.get()) {
+    if (ptr_)
+      ptr_->AddRef();
+  }
 
-    ~scoped_refptr()
-    {
-        if (ptr_)
-            ptr_->Release();
-    }
+  ~scoped_refptr() {
+    if (ptr_)
+      ptr_->Release();
+  }
 
-    T* get() const
-    {
-        return ptr_;
-    }
+  T* get() const { return ptr_; }
 
-    // Allow scoped_refptr<C> to be used in boolean expression
-    // and comparison operations.
-    operator T*() const
-    {
-        return ptr_;
-    }
+  // Allow scoped_refptr<C> to be used in boolean expression
+  // and comparison operations.
+  operator T*() const { return ptr_; }
 
-    T* operator->() const
-    {
-        assert(ptr_ != NULL);
-        return ptr_;
-    }
+  T* operator->() const {
+    assert(ptr_ != NULL);
+    return ptr_;
+  }
 
-    scoped_refptr<T>& operator=(T* p)
-    {
-        // AddRef first so that self assignment should work
-        if (p)
-            p->AddRef();
-        T* old_ptr = ptr_;
-        ptr_ = p;
-        if (old_ptr)
-            old_ptr->Release();
-        return *this;
-    }
+  scoped_refptr<T>& operator=(T* p) {
+    // AddRef first so that self assignment should work
+    if (p)
+      p->AddRef();
+    T* old_ptr = ptr_;
+    ptr_ = p;
+    if (old_ptr)
+      old_ptr->Release();
+    return *this;
+  }
 
-    scoped_refptr<T>& operator=(const scoped_refptr<T>& r)
-    {
-        return * this = r.ptr_;
-    }
+  scoped_refptr<T>& operator=(const scoped_refptr<T>& r) {
+    return *this = r.ptr_;
+  }
 
-    template <typename U>
-    scoped_refptr<T>& operator=(const scoped_refptr<U>& r)
-    {
-        return * this = r.get();
-    }
+  template <typename U>
+  scoped_refptr<T>& operator=(const scoped_refptr<U>& r) {
+    return *this = r.get();
+  }
 
-    void swap(T** pp)
-    {
-        T* p = ptr_;
-        ptr_ = *pp;
-        *pp = p;
-    }
+  void swap(T** pp) {
+    T* p = ptr_;
+    ptr_ = *pp;
+    *pp = p;
+  }
 
-    void swap(scoped_refptr<T>& r)
-    {
-        swap(&r.ptr_);
-    }
+  void swap(scoped_refptr<T>& r) {
+    swap(&r.ptr_);
+  }
 
-protected:
-    T* ptr_;
+ protected:
+  T* ptr_;
 };
 
 // Handy utility for creating a scoped_refptr<T> out of a T* explicitly without
 // having to retype all the template arguments
 template <typename T>
-scoped_refptr<T> make_scoped_refptr(T* t)
-{
-    return scoped_refptr<T>(t);
+scoped_refptr<T> make_scoped_refptr(T* t) {
+  return scoped_refptr<T>(t);
 }
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_REF_COUNTED_H_
+#endif  // CEF_INCLUDE_BASE_CEF_REF_COUNTED_H_

@@ -49,17 +49,17 @@
 // The methods of this class will be called on the browser process UI thread.
 ///
 /*--cef(source=client)--*/
-class CefEndTracingCallback : public virtual CefBase
-{
-public:
-    ///
-    // Called after all processes have sent their trace data. |tracing_file| is
-    // the path at which tracing data was written. The client is responsible for
-    // deleting |tracing_file|.
-    ///
-    /*--cef()--*/
-    virtual void OnEndTracingComplete(const CefString& tracing_file) = 0;
+class CefEndTracingCallback : public virtual CefBase {
+ public:
+  ///
+  // Called after all processes have sent their trace data. |tracing_file| is
+  // the path at which tracing data was written. The client is responsible for
+  // deleting |tracing_file|.
+  ///
+  /*--cef()--*/
+  virtual void OnEndTracingComplete(const CefString& tracing_file) =0;
 };
+
 
 ///
 // Start tracing events on all processes. Tracing is initialized asynchronously
@@ -108,4 +108,4 @@ bool CefEndTracing(const CefString& tracing_file,
 /*--cef()--*/
 int64 CefNowFromSystemTraceTime();
 
-#endif // CEF_INCLUDE_CEF_TRACE_H_
+#endif  // CEF_INCLUDE_CEF_TRACE_H_

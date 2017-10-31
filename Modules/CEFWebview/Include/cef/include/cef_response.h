@@ -46,76 +46,75 @@
 // called on any thread.
 ///
 /*--cef(source=library,no_debugct_check)--*/
-class CefResponse : public virtual CefBase
-{
-public:
-    typedef std::multimap<CefString, CefString> HeaderMap;
+class CefResponse : public virtual CefBase {
+ public:
+  typedef std::multimap<CefString, CefString> HeaderMap;
 
-    ///
-    // Create a new CefResponse object.
-    ///
-    /*--cef()--*/
-    static CefRefPtr<CefResponse> Create();
+  ///
+  // Create a new CefResponse object.
+  ///
+  /*--cef()--*/
+  static CefRefPtr<CefResponse> Create();
 
-    ///
-    // Returns true if this object is read-only.
-    ///
-    /*--cef()--*/
-    virtual bool IsReadOnly() = 0;
+  ///
+  // Returns true if this object is read-only.
+  ///
+  /*--cef()--*/
+  virtual bool IsReadOnly() =0;
 
-    ///
-    // Get the response status code.
-    ///
-    /*--cef()--*/
-    virtual int GetStatus() = 0;
+  ///
+  // Get the response status code.
+  ///
+  /*--cef()--*/
+  virtual int GetStatus() =0;
 
-    ///
-    // Set the response status code.
-    ///
-    /*--cef()--*/
-    virtual void SetStatus(int status) = 0;
+  ///
+  // Set the response status code.
+  ///
+  /*--cef()--*/
+  virtual void SetStatus(int status) = 0;
 
-    ///
-    // Get the response status text.
-    ///
-    /*--cef()--*/
-    virtual CefString GetStatusText() = 0;
+  ///
+  // Get the response status text.
+  ///
+  /*--cef()--*/
+  virtual CefString GetStatusText() =0;
 
-    ///
-    // Set the response status text.
-    ///
-    /*--cef()--*/
-    virtual void SetStatusText(const CefString& statusText) = 0;
+  ///
+  // Set the response status text.
+  ///
+  /*--cef()--*/
+  virtual void SetStatusText(const CefString& statusText) = 0;
 
-    ///
-    // Get the response mime type.
-    ///
-    /*--cef()--*/
-    virtual CefString GetMimeType() = 0;
+  ///
+  // Get the response mime type.
+  ///
+  /*--cef()--*/
+  virtual CefString GetMimeType() = 0;
 
-    ///
-    // Set the response mime type.
-    ///
-    /*--cef()--*/
-    virtual void SetMimeType(const CefString& mimeType) = 0;
+  ///
+  // Set the response mime type.
+  ///
+  /*--cef()--*/
+  virtual void SetMimeType(const CefString& mimeType) = 0;
 
-    ///
-    // Get the value for the specified response header field.
-    ///
-    /*--cef()--*/
-    virtual CefString GetHeader(const CefString& name) = 0;
+  ///
+  // Get the value for the specified response header field.
+  ///
+  /*--cef()--*/
+  virtual CefString GetHeader(const CefString& name) =0;
 
-    ///
-    // Get all response header fields.
-    ///
-    /*--cef()--*/
-    virtual void GetHeaderMap(HeaderMap& headerMap) = 0;
+  ///
+  // Get all response header fields.
+  ///
+  /*--cef()--*/
+  virtual void GetHeaderMap(HeaderMap& headerMap) =0;
 
-    ///
-    // Set all response header fields.
-    ///
-    /*--cef()--*/
-    virtual void SetHeaderMap(const HeaderMap& headerMap) = 0;
+  ///
+  // Set all response header fields.
+  ///
+  /*--cef()--*/
+  virtual void SetHeaderMap(const HeaderMap& headerMap) =0;
 };
 
-#endif // CEF_INCLUDE_CEF_RESPONSE_H_
+#endif  // CEF_INCLUDE_CEF_RESPONSE_H_
