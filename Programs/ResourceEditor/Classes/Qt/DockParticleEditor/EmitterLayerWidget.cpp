@@ -2039,6 +2039,7 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
     gradientColorForBlackPicker->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
     gradientColorForMiddlePicker->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
     gradientMiddlePointTimeLine->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    useThreePointGradientBox->setVisible(!isSuperemitter);
 
     frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
     frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);

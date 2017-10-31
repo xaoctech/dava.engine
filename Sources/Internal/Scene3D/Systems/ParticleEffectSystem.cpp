@@ -33,6 +33,7 @@ NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialDat
         if (particlesMaterial.first == materialData)
             return particlesMaterial.second;
     }
+
     NMaterial* material = new NMaterial();
     material->SetParent(particleBaseMaterial);
 
