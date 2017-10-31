@@ -39,6 +39,7 @@
 #include <Base/Any.h>
 #include <Base/String.h>
 #include <Base/GlobalEnum.h>
+#include <Utils/MD5.h>
 
 #include <QList>
 #include <QString>
@@ -687,7 +688,7 @@ void SceneManagerModule::CreateFirstScene()
         {
             FilePath lastOpenedScene = recentScenes[0];
 
-            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
             DVASSERT(data != nullptr);
             FilePath projectPath = data->GetProjectPath();
 
@@ -719,6 +720,8 @@ void SceneManagerModule::CreateNewScene()
 
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
     sceneData->scene = scene;
+
+    CreateSceneProperties(sceneData.get(), true);
     DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
     DataContext::ContextID newContext = contextManager->CreateContext(std::move(initialData));
@@ -729,7 +732,7 @@ void SceneManagerModule::OpenScene()
 {
     using namespace DAVA::TArc;
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(data != nullptr);
 
     FileDialogParams params;
@@ -766,7 +769,7 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
         return;
     }
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(data != nullptr);
     DAVA::FilePath projectPath(data->GetProjectPath());
 
@@ -840,6 +843,9 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
     sceneData->scene = scene;
 
+    CreateSceneProperties(sceneData.get());
+    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot());
+
     DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
     DataContext::ContextID newContext = contextManager->CreateContext(std::move(initialData));
@@ -879,18 +885,79 @@ void SceneManagerModule::SaveScene(bool saveAs)
         return;
     }
 
+    data->scene->SaveSystemsLocalProperties(data->GetPropertiesRoot());
+
     DAVA::FilePath saveAsPath;
     if (saveAs == true)
     {
         saveAsPath = GetSceneSavePath(data->scene);
     }
 
+    // if it wasn't, we should create properties holder for it
+    bool sceneWasLoaded = data->scene->IsLoaded();
+
     SaveSceneImpl(data->scene, saveAsPath);
+
+    if (sceneWasLoaded == false || saveAs == true)
+    {
+        CreateSceneProperties(data);
+    }
 }
 
 void SceneManagerModule::SaveScene()
 {
     SaveScene(false);
+}
+
+void SceneManagerModule::CreateSceneProperties(SceneData* const data, bool sceneIsTemp)
+{
+    DAVA::FilePath dirPath, fileName;
+    GetPropertiesFilePath(data->scene->GetScenePath(), dirPath, fileName, sceneIsTemp);
+    data->CreatePropertiesRoot(GetAccessor()->GetEngineContext()->fileSystem, dirPath, fileName);
+}
+
+void SceneManagerModule::GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
+                                               DAVA::FilePath& fileName, bool sceneIsTemp)
+{
+    using namespace DAVA;
+
+    // documents directory
+    FileSystem* fs = GetAccessor()->GetEngineContext()->fileSystem;
+    FilePath documentRoot = fs->GetCurrentDocumentsDirectory();
+
+    // scene properties subdirectory
+    static const String propertiesSubDir = "SceneProperties";
+
+    String projectHash, relativeSceneDirPath;
+    if (sceneIsTemp == true)
+    {
+        // default scene properties location
+        projectHash = "Default";
+        relativeSceneDirPath = scenePath.GetFilename() + "/";
+        fileName = scenePath.GetFilename();
+    }
+    else
+    {
+        // scene name and relative path
+        ProjectManagerData* projectData = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
+        FilePath projectPath(projectData->GetProjectPath());
+        fileName = FilePath(scenePath.GetFilename());
+        relativeSceneDirPath = FilePath(scenePath.GetDirectory()).GetRelativePathname(projectPath);
+
+        // project path hash
+        MD5::MD5Digest projectMD5;
+        String absPath = projectPath.GetAbsolutePathname();
+        MD5::ForData(reinterpret_cast<const uint8*>(absPath.c_str()),
+                     static_cast<uint32>(absPath.size()),
+                     projectMD5);
+        projectHash = MD5::HashToString(projectMD5);
+    }
+
+    // final path
+    path = FilePath(documentRoot.GetAbsolutePathname()
+                    + "/" + propertiesSubDir
+                    + "/" + projectHash
+                    + "/" + relativeSceneDirPath);
 }
 
 void SceneManagerModule::SaveSceneToFolder(bool compressedTextures)
@@ -978,7 +1045,7 @@ void SceneManagerModule::ExportScene()
     dlg.exec();
     if (dlg.result() == QDialog::Accepted && SaveTileMaskInScene(scene))
     {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
         DVASSERT(data != nullptr);
         const DAVA::FilePath& projectPath = data->GetProjectPath();
         DAVA::FilePath dataSourceFolder = projectPath + "DataSource/3d/";
@@ -1415,7 +1482,7 @@ DAVA::FilePath SceneManagerModule::SaveEmitterFallback(const DAVA::String& entit
     DAVA::FilePath defaultPath = settings->emitterSaveDir;
     if (defaultPath.IsEmpty())
     {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        ProjectManagerData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectManagerData>();
         DVASSERT(data != nullptr);
         defaultPath = data->GetParticlesConfigPath().GetAbsolutePathname();
     }
@@ -1600,6 +1667,8 @@ bool SceneManagerModule::CloseSceneImpl(DAVA::uint64 id, bool needSavingRequest)
     SceneData* data = context->GetData<SceneData>();
     DVASSERT(data != nullptr);
     DVASSERT(data->scene.Get() != nullptr);
+
+    data->scene->SaveSystemsLocalProperties(data->GetPropertiesRoot());
 
     if (needSavingRequest == false || CanCloseScene(data))
     {
