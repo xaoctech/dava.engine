@@ -367,7 +367,10 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
         this,
         SLOT(OnThreePointGradientPropertiesChanged()));
     gradientMiddlePointTimeLine = new TimeLineWidget(this);
-    connect(gradientMiddlePointTimeLine, SIGNAL(valueChanged(double)), this, SLOT(OnThreePointGradientPropertiesChanged()));
+    connect(gradientMiddlePointTimeLine,
+        SIGNAL(ValueChanged()),
+        this, 
+        SLOT(OnThreePointGradientPropertiesChanged()));
     mainBox->addWidget(gradientMiddlePointTimeLine);
 
     QHBoxLayout* frameOverlifeLayout = new QHBoxLayout();

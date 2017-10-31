@@ -20,7 +20,7 @@ public:
         Texture* noise = nullptr;
         Texture* alphaRemapTexture = nullptr;
         eBlending blending = BLENDING_ALPHABLEND;
-        uint32 layerId = 1;
+        uint64 layerId = 1;
         bool enableFog = false;
         bool enableFrameBlend = false;
         bool enableFlow = false;

@@ -186,7 +186,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
 
 void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleEmitter* emitter, const Vector3& spawnPosition, int32 positionSource)
 {
-    for (auto layer : emitter->layers)
+    for (ParticleLayer* layer : emitter->layers)
     {
         bool isLodActive = layer->IsLodActive(effect->activeLodLevel);
         if (!isLodActive && emitter->shortEffect) //layer could never become active
@@ -222,7 +222,7 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
             matData.useThreePointGradient = layer->useThreePointGradient;
             uintptr_t layerIdPtr = reinterpret_cast<uintptr_t>(layer);
-            matData.layerId = *reinterpret_cast<uint32*>(layer);
+            matData.layerId = static_cast<uint64>(layerIdPtr);
 
             group.material = AcquireMaterial(matData);
         }
