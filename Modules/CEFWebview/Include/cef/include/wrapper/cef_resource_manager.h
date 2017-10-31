@@ -101,97 +101,97 @@ public:
     class Request : public base::RefCountedThreadSafe<Request>
     {
     public:
-        ///
-        // Returns the URL associated with this request. The returned value will be
-        // fully qualified but will not contain query or fragment components. It
-        // will already have been passed through the URL filter.
-        ///
-        std::string url() const
-        {
-            return params_.url_;
-        }
+    ///
+    // Returns the URL associated with this request. The returned value will be
+    // fully qualified but will not contain query or fragment components. It
+    // will already have been passed through the URL filter.
+    ///
+    std::string url() const
+    {
+        return params_.url_;
+    }
 
-        ///
-        // Returns the CefBrowser associated with this request.
-        ///
-        CefRefPtr<CefBrowser> browser() const
-        {
-            return params_.browser_;
-        }
+    ///
+    // Returns the CefBrowser associated with this request.
+    ///
+    CefRefPtr<CefBrowser> browser() const
+    {
+        return params_.browser_;
+    }
 
-        ///
-        // Returns the CefFrame associated with this request.
-        ///
-        CefRefPtr<CefFrame> frame() const
-        {
-            return params_.frame_;
-        }
+    ///
+    // Returns the CefFrame associated with this request.
+    ///
+    CefRefPtr<CefFrame> frame() const
+    {
+        return params_.frame_;
+    }
 
-        ///
-        // Returns the CefRequest associated with this request.
-        ///
-        CefRefPtr<CefRequest> request() const
-        {
-            return params_.request_;
-        }
+    ///
+    // Returns the CefRequest associated with this request.
+    ///
+    CefRefPtr<CefRequest> request() const
+    {
+        return params_.request_;
+    }
 
-        ///
-        // Returns the current URL filter.
-        ///
-        const CefResourceManager::UrlFilter& url_filter() const
-        {
-            return params_.url_filter_;
-        }
+    ///
+    // Returns the current URL filter.
+    ///
+    const CefResourceManager::UrlFilter& url_filter() const
+    {
+        return params_.url_filter_;
+    }
 
-        ///
-        // Returns the current mime type resolver.
-        ///
-        const CefResourceManager::MimeTypeResolver& mime_type_resolver() const
-        {
-            return params_.mime_type_resolver_;
-        }
+    ///
+    // Returns the current mime type resolver.
+    ///
+    const CefResourceManager::MimeTypeResolver& mime_type_resolver() const
+    {
+        return params_.mime_type_resolver_;
+    }
 
-        ///
-        // Continue handling the request. If |handler| is non-NULL then no
-        // additional providers will be called and the |handler| value will be
-        // returned via CefResourceManager::GetResourceHandler. If |handler| is NULL
-        // then the next provider in order, if any, will be called. If there are no
-        // additional providers then NULL will be returned via CefResourceManager::
-        // GetResourceHandler.
-        ///
-        void Continue(CefRefPtr<CefResourceHandler> handler);
+    ///
+    // Continue handling the request. If |handler| is non-NULL then no
+    // additional providers will be called and the |handler| value will be
+    // returned via CefResourceManager::GetResourceHandler. If |handler| is NULL
+    // then the next provider in order, if any, will be called. If there are no
+    // additional providers then NULL will be returned via CefResourceManager::
+    // GetResourceHandler.
+    ///
+    void Continue(CefRefPtr<CefResourceHandler> handler);
 
-        ///
-        // Stop handling the request. No additional providers will be called and
-        // NULL will be returned via CefResourceManager::GetResourceHandler.
-        ///
-        void Stop();
+    ///
+    // Stop handling the request. No additional providers will be called and
+    // NULL will be returned via CefResourceManager::GetResourceHandler.
+    ///
+    void Stop();
 
-    private:
-        // Only allow deletion via scoped_refptr.
-        friend class base::RefCountedThreadSafe<Request>;
+private:
+    // Only allow deletion via scoped_refptr.
+    friend class base::RefCountedThreadSafe<Request>;
 
-        friend class CefResourceManager;
+    friend class CefResourceManager;
 
-        // The below methods are called on the browser process IO thread.
+    // The below methods are called on the browser process IO thread.
 
-        explicit Request(scoped_ptr<RequestState> state);
+    explicit Request(scoped_ptr<RequestState> state);
 
-        scoped_ptr<RequestState> SendRequest();
-        bool HasState();
+    scoped_ptr<RequestState> SendRequest();
+    bool HasState();
 
-        static void ContinueOnIOThread(scoped_ptr<RequestState> state,
-                                       CefRefPtr<CefResourceHandler> handler);
-        static void StopOnIOThread(scoped_ptr<RequestState> state);
+    static void ContinueOnIOThread(scoped_ptr<RequestState> state,
+                                   CefRefPtr<CefResourceHandler> handler);
+    static void StopOnIOThread(scoped_ptr<RequestState> state);
 
-        // Will be non-NULL while the request is pending. Only accessed on the
-        // browser process IO thread.
-        scoped_ptr<RequestState> state_;
+    // Will be non-NULL while the request is pending. Only accessed on the
+    // browser process IO thread.
+    scoped_ptr<RequestState> state_;
 
-        // Params that stay with this request object. Safe to access on any thread.
-        RequestParams params_;
+    // Params that stay with this request object. Safe to access on any thread.
+    RequestParams params_;
 
-        DISALLOW_COPY_AND_ASSIGN(Request);
+    DISALLOW_COPY_AND_ASSIGN(Request);
     };
 
     typedef std::list<scoped_refptr<Request>> RequestList;

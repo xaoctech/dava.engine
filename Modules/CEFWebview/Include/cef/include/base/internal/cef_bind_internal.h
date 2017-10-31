@@ -1025,8 +1025,8 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get());
+    }
+    runnable.Run(weak_ptr.get());
     }
 };
 
@@ -1059,8 +1059,8 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2));
     }
 };
 
@@ -1095,8 +1095,8 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3));
     }
 };
 
@@ -1134,9 +1134,9 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4));
     }
 };
 
@@ -1176,9 +1176,9 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4), CallbackForward(a5));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4), CallbackForward(a5));
     }
 };
 
@@ -1220,9 +1220,9 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4), CallbackForward(a5), CallbackForward(a6));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4), CallbackForward(a5), CallbackForward(a6));
     }
 };
 
@@ -1265,10 +1265,10 @@ struct InvokeHelper<true, void, Runnable,
         if (!weak_ptr.get())
         {
             return;
-        }
-        runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
-                     CallbackForward(a4), CallbackForward(a5), CallbackForward(a6),
-                     CallbackForward(a7));
+    }
+    runnable.Run(weak_ptr.get(), CallbackForward(a2), CallbackForward(a3),
+                 CallbackForward(a4), CallbackForward(a5), CallbackForward(a6),
+                 CallbackForward(a7));
     }
 };
 

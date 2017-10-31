@@ -111,8 +111,8 @@ public:
         if (rv)
         {
             CheckUnheldAndMark();
-        }
-        return rv;
+    }
+    return rv;
     }
 
     void AssertAcquired() const;

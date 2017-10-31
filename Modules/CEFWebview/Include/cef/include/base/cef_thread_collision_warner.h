@@ -261,17 +261,17 @@ public:
             : warner_(warner)
         {
             warner_->EnterSelf();
-        }
+    }
 
-        ~ScopedRecursiveCheck()
-        {
-            warner_->Leave();
-        }
+    ~ScopedRecursiveCheck()
+    {
+        warner_->Leave();
+    }
 
-    private:
-        ThreadCollisionWarner* warner_;
+private:
+    ThreadCollisionWarner* warner_;
 
-        DISALLOW_COPY_AND_ASSIGN(ScopedRecursiveCheck);
+    DISALLOW_COPY_AND_ASSIGN(ScopedRecursiveCheck);
     };
 
 private:

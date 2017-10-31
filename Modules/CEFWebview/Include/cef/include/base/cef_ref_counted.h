@@ -111,8 +111,8 @@ protected:
             in_dtor_ = true;
   #endif
             return true;
-        }
-        return false;
+    }
+    return false;
     }
 
 private:
@@ -183,7 +183,7 @@ public:
         if (cef_subtle::RefCountedBase::Release())
         {
             delete static_cast<const T*>(this);
-        }
+    }
     }
 
 protected:
@@ -244,7 +244,7 @@ public:
         if (cef_subtle::RefCountedThreadSafeBase::Release())
         {
             Traits::Destruct(static_cast<const T*>(this));
-        }
+    }
     }
 
 protected:
