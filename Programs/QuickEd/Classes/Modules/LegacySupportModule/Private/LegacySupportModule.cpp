@@ -169,6 +169,8 @@ void LegacySupportModule::InitMainWindow()
     mainWindow->SetEditorTitle(title);
 
     GetUI()->InjectWindow(DAVA::TArc::mainWindowKey, mainWindow);
+
+    mainWindow->GetPackageWidget()->BindActionsToTArc();
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
 
