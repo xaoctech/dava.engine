@@ -414,7 +414,7 @@ void PackageModule::CreateActions()
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setShortcut(QKeySequence::Delete);
 #if defined Q_OS_MAC
-        delAction->setShortcuts({ QKeySequence::Delete, QKeySequence(Qt::Key_Backspace) });
+        action->setShortcuts({ QKeySequence::Delete, QKeySequence(Qt::Key_Backspace) });
 #endif // platform
 
         packageData->deleteAction = action;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Application/QEGlobal.h"
-#include "EditorSystems/EditorSystemsManager.h"
-
-#include "Utils/PackageListenerProxy.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/UI/Preview/PreviewWidget.h"
+#include "Classes/Utils/PackageListenerProxy.h"
 
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -11,7 +11,6 @@
 #include <TArc/Utils/QtDelayedExecutor.h>
 
 class FindInDocumentController;
-class PreviewWidget;
 class EditorSystemsManager;
 class PackageNode;
 class ControlNode;
@@ -92,7 +91,7 @@ private:
     void OnSelectInFileSystem();
     void OnDroppingFile(bool droppingFile);
 
-    QPointer<PreviewWidget> previewWidget = nullptr;
+    QPointer<PreviewWidget> previewWidget;
     DAVA::TArc::QtConnections connections;
 
     DAVA::TArc::QtDelayedExecutor delayedExecutor;
