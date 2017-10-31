@@ -25,16 +25,21 @@ include ( Toolset-сommon )
 
 ############ SINGLE TOOLS
 
-add_tool_single     ( UnitTests         NO_UNITY_BUILD )
+add_tool_single     ( UnitTests         NO_UNITY_BUILD 
+                                        CHECK_DEPENDS_FOLDERS )
 
-add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  )
+add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  
+                                        CHECK_DEPENDS_FOLDERS )
 
-add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX )
+add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX 
+                                        CHECK_DEPENDS_FOLDERS )
 
 add_tool_single     ( Launcher          PLATFORMS MACOS WIN        
-                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" 
+                                        CHECK_DEPENDS_FOLDERS )
 
-add_tool_single     ( UWPRunner         PLATFORMS WIN )
+add_tool_single     ( UWPRunner         PLATFORMS WIN 
+                                        CHECK_DEPENDS_FOLDERS )
  
 
 ############ PACKAGE TOOLS
@@ -52,13 +57,13 @@ add_tool_package     ( QuickEd          PLATFORMS MACOS WIN
                                         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
 add_tool_package     ( ResourceArchiver PLATFORMS MACOS WIN
-                                        DEPENDS ResourceEditor )
+                                        #DEPENDS ResourceEditor )
 
 add_tool_package     ( ResourcePacker   PLATFORMS MACOS WIN
-                                        DEPENDS ResourceEditor )
+                                        #DEPENDS ResourceEditor )
 
 add_tool_package     ( ResourcePatcher  PLATFORMS MACOS WIN
-                                        DEPENDS ResourceEditor )
+                                        #DEPENDS ResourceEditor )
 
 add_tool_package     ( AssetCacheServer PLATFORMS MACOS WIN )
 
