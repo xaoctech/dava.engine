@@ -7,10 +7,10 @@ namespace DAVA
 class UIJoypadComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIJoypadComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIJoypadComponent);
+    DECLARE_UI_COMPONENT(UIJoypadComponent);
 
 public:
-    using CoordsTransformFn = std::function<Vector2(Vector2)>;
+    using CoordsTransformFn = Function<Vector2(Vector2)>;
 
     UIJoypadComponent() = default;
     UIJoypadComponent(const UIJoypadComponent& other);

@@ -4,25 +4,27 @@
 
 namespace DAVA
 {
+IMPLEMENT_UI_COMPONENT(UIJoypadComponent);
+
 DAVA_VIRTUAL_REFLECTION_IMPL(UIJoypadComponent)
 {
     ReflectionRegistrator<UIJoypadComponent>::Begin()
-        .ConstructorByValue()
-        .ConstructorByPointer()
-        .DestructorByPointer([](UIJoypadComponent* c) { SafeRelease(c); })
-        .Field("stickArea", &UIJoypadComponent::GetStickArea, &UIJoypadComponent::SetStickArea)
-        .Field("stickArm", &UIJoypadComponent::GetStickArm, &UIJoypadComponent::SetStickArm)
-        .Field("stickArrow", &UIJoypadComponent::GetStickArrow, &UIJoypadComponent::SetStickArrow)
-        .Field("stickAreaRadius", &UIJoypadComponent::GetStickAreaRadius, &UIJoypadComponent::SetStickAreaRadius)
-        .Field("isActive", &UIJoypadComponent::IsActive, &UIJoypadComponent::SetActiveFlag)
-        .Field("isDynamic", &UIJoypadComponent::IsDynamic, &UIJoypadComponent::SetDynamicFlag)
-        .Field("coords", &UIJoypadComponent::GetOriginalCoords, &UIJoypadComponent::SetOriginalCoords)
-        .Field("activationThreshold", &UIJoypadComponent::GetActivationThreshold, &UIJoypadComponent::SetActivationThreshold)
-        .Field("initialPosition", &UIJoypadComponent::GetInitialPosition, &UIJoypadComponent::SetInitialPosition)
-        .Field("cancelZone", &UIJoypadComponent::GetCancelZone, &UIJoypadComponent::SetCancelZone)
-        .Field("cancelRadius", &UIJoypadComponent::GetCancelRadius, &UIJoypadComponent::SetCancelRadius)
-        .Method("GetTransformedCoords", &UIJoypadComponent::GetTransformedCoords)
-        .End();
+    .ConstructorByValue()
+    .ConstructorByPointer()
+    .DestructorByPointer([](UIJoypadComponent* c) { SafeRelease(c); })
+    .Field("stickArea", &UIJoypadComponent::GetStickArea, &UIJoypadComponent::SetStickArea)
+    .Field("stickArm", &UIJoypadComponent::GetStickArm, &UIJoypadComponent::SetStickArm)
+    .Field("stickArrow", &UIJoypadComponent::GetStickArrow, &UIJoypadComponent::SetStickArrow)
+    .Field("stickAreaRadius", &UIJoypadComponent::GetStickAreaRadius, &UIJoypadComponent::SetStickAreaRadius)
+    .Field("isActive", &UIJoypadComponent::IsActive, &UIJoypadComponent::SetActiveFlag)
+    .Field("isDynamic", &UIJoypadComponent::IsDynamic, &UIJoypadComponent::SetDynamicFlag)
+    .Field("coords", &UIJoypadComponent::GetOriginalCoords, &UIJoypadComponent::SetOriginalCoords)
+    .Field("activationThreshold", &UIJoypadComponent::GetActivationThreshold, &UIJoypadComponent::SetActivationThreshold)
+    .Field("initialPosition", &UIJoypadComponent::GetInitialPosition, &UIJoypadComponent::SetInitialPosition)
+    .Field("cancelZone", &UIJoypadComponent::GetCancelZone, &UIJoypadComponent::SetCancelZone)
+    .Field("cancelRadius", &UIJoypadComponent::GetCancelRadius, &UIJoypadComponent::SetCancelRadius)
+    .Method("GetTransformedCoords", &UIJoypadComponent::GetTransformedCoords)
+    .End();
 }
 
 UIJoypadComponent::UIJoypadComponent(const UIJoypadComponent& other)

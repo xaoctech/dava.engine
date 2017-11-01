@@ -9,9 +9,11 @@ void UIJoypadSystem::RegisterControl(UIControl* control)
 {
     DVASSERT(control != nullptr);
 
-    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) != nullptr)
+    UIJoypadComponent* component = static_cast<UIJoypadComponent*>(control->GetComponent(Type::Instance<UIJoypadComponent>()));
+
+    if (component != nullptr)
     {
-        AddComponent(control->GetComponent<UIJoypadComponent>());
+        AddComponent(component);
     }
 }
 
@@ -19,9 +21,11 @@ void UIJoypadSystem::UnregisterControl(UIControl* control)
 {
     DVASSERT(control != nullptr);
 
-    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) != nullptr)
+    UIJoypadComponent* component = static_cast<UIJoypadComponent*>(control->GetComponent(Type::Instance<UIJoypadComponent>()));
+
+    if (component != nullptr)
     {
-        RemoveComponent(control->GetComponent<UIJoypadComponent>());
+        RemoveComponent(component);
     }
 }
 
@@ -49,12 +53,12 @@ void UIJoypadSystem::OnControlVisible(UIControl* control)
 {
     DVASSERT(control != nullptr);
 
-    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) == nullptr)
+    UIJoypadComponent* component = static_cast<UIJoypadComponent*>(control->GetComponent(Type::Instance<UIJoypadComponent>()));
+
+    if (component == nullptr)
     {
         return;
     }
-
-    UIJoypadComponent* component = control->GetComponent<UIJoypadComponent>();
 
     UIControl* area = component->GetStickArea();
     UIControl* arm = component->GetStickArm();
@@ -76,12 +80,12 @@ void UIJoypadSystem::OnControlInvisible(UIControl* control)
 {
     DVASSERT(control != nullptr);
 
-    if (control->GetComponent(Type::Instance<UIJoypadComponent>()) == nullptr)
+    UIJoypadComponent* component = static_cast<UIJoypadComponent*>(control->GetComponent(Type::Instance<UIJoypadComponent>()));
+
+    if (component == nullptr)
     {
         return;
     }
-
-    UIJoypadComponent* component = control->GetComponent<UIJoypadComponent>();
 
     for (UIControl* c : { component->GetStickArea(), component->GetStickArm(), component->GetStickArrow() })
     {
@@ -106,7 +110,7 @@ void UIJoypadSystem::Process(float32 elapsedTime)
     auto ResetState = [this](UIJoypadComponent* component) {
         DVASSERT(component->GetControl()->GetAbsoluteRect().PointInside(component->GetInitialPosition()));
 
-        ComponentState &state = componentsStates[component];
+        ComponentState& state = componentsStates[component];
         state.initialTouch = state.currentTouch = component->GetInitialPosition();
         state.isCanceled = false;
 
@@ -118,7 +122,7 @@ void UIJoypadSystem::Process(float32 elapsedTime)
     for (auto& p : componentsStates)
     {
         UIJoypadComponent* component = p.first;
-        ComponentState &state = p.second;
+        ComponentState& state = p.second;
 
         DVASSERT(component != nullptr);
 
@@ -133,7 +137,7 @@ void UIJoypadSystem::Process(float32 elapsedTime)
 
         if (!isActive)
         {
-            if (component->IsActive() || state.initialTouch != component->GetInitialPosition())
+            if (component->IsActive() || state.initialTouch != component->GetInitialPosition() || state.isCanceled)
             {
                 ResetState(component);
             }

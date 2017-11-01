@@ -39,7 +39,7 @@ set( CPP_FILES *.cpp
     Text/*.cpp
     Text/Private/*.cpp
     Render/*.cpp
-    Joypad/*.cpp
+    Joypad/Private/*.cpp
     )
 
 set( CPP_FILES_APPLE *.mm )

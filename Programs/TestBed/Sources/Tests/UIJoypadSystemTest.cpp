@@ -2,6 +2,7 @@
 #include "UI/Joypad/UIJoypadComponent.h"
 #include "UI/UIControlBackground.h"
 #include "UI/UIControl.h"
+#include "UI/Focus/UIFocusComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 #include "Engine/Engine.h"
 #include "Input/InputSystem.h"
@@ -10,36 +11,21 @@
 
 struct Joypad
 {
-    DAVA::UIControl *base = nullptr;
+    RefPtr<UIControl> base;
 
-    DAVA::UIControl *stickArea = nullptr;
-    DAVA::UIControl *stickArm = nullptr;
-    DAVA::UIControl *stickArrow = nullptr;
+    RefPtr<UIControl> stickArea;
+    RefPtr<UIControl> stickArm;
+    RefPtr<UIControl> stickArrow;
 
-    DAVA::UIJoypadComponent *component = nullptr;
+    UIJoypadComponent* component = nullptr;
 
-    DAVA::Sprite *activeArea = nullptr;
-    DAVA::Sprite *activeArm = nullptr;
+    RefPtr<Sprite> activeArea;
+    RefPtr<Sprite> activeArm;
 
-    DAVA::Sprite *inactiveArea = nullptr;
-    DAVA::Sprite *inactiveArm = nullptr;
+    RefPtr<Sprite> inactiveArea;
+    RefPtr<Sprite> inactiveArm;
 
-    DAVA::Sprite *arrow = nullptr;
-
-    ~Joypad()
-    {
-        for (DAVA::UIControl *c : { stickArea, stickArm, stickArrow })
-        {
-            SafeRelease(c);
-        }
-
-        SafeRelease(base);
-
-        for (DAVA::Sprite *s : { activeArea, activeArm, inactiveArea, inactiveArm, arrow })
-        {
-            SafeRelease(s);
-        }
-    }
+    RefPtr<Sprite> arrow;
 };
 
 UIJoypadSystemTest::UIJoypadSystemTest(TestBed & app)
@@ -51,7 +37,7 @@ void UIJoypadSystemTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    LoadControls();
+    InitControls();
 
     InitJoypad();
 
@@ -64,15 +50,12 @@ void UIJoypadSystemTest::LoadResources()
 
 void UIJoypadSystemTest::UnloadResources()
 {
-    BaseScreen::UnloadResources();
-
     Engine::Instance()->update.Disconnect(this);
 
     GetEngineContext()->inputSystem->RemoveHandler(inputHandler);
 
-    UnloadControls();
+    BaseScreen::UnloadResources();
 
-    RemoveControl(joypad->base);
     delete joypad;
 }
 
@@ -96,12 +79,14 @@ void UIJoypadSystemTest::OnUpdate(float32 timeElapsed)
 
                 if (c->GetStickArea() != nullptr)
                 {
-                    c->GetStickArea()->GetOrCreateComponent<UIControlBackground>()->SetSprite((isActive ? joypad->activeArea : joypad->inactiveArea));
+                    UIControlBackground* bg = c->GetStickArea()->GetOrCreateComponent<UIControlBackground>();
+                    bg->SetSprite((isActive ? joypad->activeArea.Get() : joypad->inactiveArea.Get()));
                 }
 
                 if (c->GetStickArm() != nullptr)
                 {
-                    c->GetStickArm()->GetOrCreateComponent<UIControlBackground>()->SetSprite((isActive ? joypad->activeArm : joypad->inactiveArm));
+                    UIControlBackground* bg = c->GetStickArm()->GetOrCreateComponent<UIControlBackground>();
+                    bg->SetSprite((isActive ? joypad->activeArm.Get() : joypad->inactiveArm.Get()));
                 }
             }
 
@@ -112,7 +97,7 @@ void UIJoypadSystemTest::OnUpdate(float32 timeElapsed)
     }
 }
 
-void UIJoypadSystemTest::LoadControls()
+void UIJoypadSystemTest::InitControls()
 {
     Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font != nullptr);
@@ -121,62 +106,62 @@ void UIJoypadSystemTest::LoadControls()
     coordsText = new UIStaticText({ 30.f, 20.f, 100.f, 30.f });
     coordsText->SetFont(font);
     coordsText->SetText(L"Coords: ");
-    AddControl(coordsText);
+    AddControl(coordsText.Get());
 
     coords = new UIButton({30.f, 50.f, 100.f, 30.f});
     coords->SetStateFont(0xFF, font);
     coords->SetStateText(0xFF, L"0.00, 0.00");
     coords->GetOrCreateComponent<UIDebugRenderComponent>();
-    AddControl(coords);
+    AddControl(coords.Get());
 
     toggleVisible = new UIButton({190.f, 10.f, 200.f, 30.f});
     toggleVisible->SetStateFont(0xFF, font);
     toggleVisible->SetStateText(0xFF, L"Toggle visibility (on) [KB_V]");
     toggleVisible->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
     toggleVisible->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIJoypadSystemTest::ToggleVisible));
-    AddControl(toggleVisible);
+    AddControl(toggleVisible.Get());
 
     toggleDynamic = new UIButton({ 190.f, 50.f, 200.f, 30.f });
     toggleDynamic->SetStateFont(0xFF, font);
     toggleDynamic->SetStateText(0xFF, L"Toggle dynamic (on) [KB_D]");
     toggleDynamic->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
     toggleDynamic->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIJoypadSystemTest::ToggleDynamic));
-    AddControl(toggleDynamic);
+    AddControl(toggleDynamic.Get());
 
     removeArea = new UIButton({ 190.f, 90.f, 200.f, 30.f });
     removeArea->SetStateFont(0xFF, font);
     removeArea->SetStateText(0xFF, L"Remove area [KB_A]");
     removeArea->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
     removeArea->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIJoypadSystemTest::RemoveArea));
-    AddControl(removeArea);
+    AddControl(removeArea.Get());
 
     removeArm = new UIButton({ 190.f, 130.f, 200.f, 30.f });
     removeArm->SetStateFont(0xFF, font);
     removeArm->SetStateText(0xFF, L"Remove arm [KB_M]");
     removeArm->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
     removeArm->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIJoypadSystemTest::RemoveArm));
-    AddControl(removeArm);
+    AddControl(removeArm.Get());
 
     removeArrow = new UIButton({ 190.f, 170.f, 200.f, 30.f });
     removeArrow->SetStateFont(0xFF, font);
     removeArrow->SetStateText(0xFF, L"Remove arrow [KB_W]");
     removeArrow->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
     removeArrow->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIJoypadSystemTest::RemoveArrow));
-    AddControl(removeArrow);
+    AddControl(removeArrow.Get());
 
     cancelZoneText = new UIStaticText({ 400.f, 370.f, 100.f, 30.f });
     cancelZoneText->SetFont(font);
     cancelZoneText->SetText(L"Cancel zone:");
-    AddControl(cancelZoneText);
+    AddControl(cancelZoneText.Get());
 
     cancelZone = new UIControl({400.f, 400.f, 100.f, 100.f});
     cancelZone->GetOrCreateComponent<UIDebugRenderComponent>();
-    AddControl(cancelZone);
+    AddControl(cancelZone.Get());
 
     cancelRadiusText = new UIStaticText({ 30.f, 200.f, 110.f, 30.f });
     cancelRadiusText->SetFont(font);
     cancelRadiusText->SetText(L"Cancel radius:");
-    AddControl(cancelRadiusText);
+    AddControl(cancelRadiusText.Get());
 
     radiusField = new UITextField({30.f, 230.f, 110.f, 30.f});
     radiusField->SetFont(font);
@@ -184,37 +169,16 @@ void UIJoypadSystemTest::LoadControls()
     radiusField->SetInputEnabled(true);
     radiusField->GetOrCreateComponent<UIFocusComponent>();
     radiusField->GetOrCreateComponent<UIDebugRenderComponent>();
-    AddControl(radiusField);
+    AddControl(radiusField.Get());
 
     setRadius = new UIButton({ 190.f, 230.f, 200.f, 30.f });
     setRadius->SetStateFont(0xFF, font);
     setRadius->SetStateText(0xFF, L"Set cancel radius [KB_R]");
     setRadius->GetOrCreateComponent<UIDebugRenderComponent>();
     setRadius->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIJoypadSystemTest::SetRadius));
-    AddControl(setRadius);
+    AddControl(setRadius.Get());
 
     SafeRelease(font);
-}
-
-void UIJoypadSystemTest::UnloadControls()
-{
-    for (UIButton *b : { coords , toggleVisible, removeArea, removeArm, removeArrow, setRadius, toggleDynamic })
-    {
-        RemoveControl(b);
-        SafeRelease(b);
-    }
-
-    for (UIStaticText *t : { coordsText, cancelRadiusText, cancelZoneText })
-    {
-        RemoveControl(t);
-        SafeRelease(t);
-    }
-
-    RemoveControl(cancelZone);
-    SafeRelease(cancelZone);
-
-    RemoveControl(radiusField);
-    SafeRelease(radiusField);
 }
 
 void UIJoypadSystemTest::InitJoypad()
@@ -226,53 +190,55 @@ void UIJoypadSystemTest::InitJoypad()
 
     joypad = new Joypad();
 
-    joypad->base = new DAVA::UIControl({ 10.f, GetRect().dy - 250.f - 10.f, 300.f, 250.f });
+    joypad->base = new UIControl({ 10.f, GetRect().dy - 250.f - 10.f, 300.f, 250.f });
     joypad->base->GetOrCreateComponent<UIDebugRenderComponent>();
-    joypad->activeArea = DAVA::Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_active.png");
-    joypad->inactiveArea = DAVA::Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_inactive.png");
-    joypad->activeArm = DAVA::Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_active.png");
-    joypad->inactiveArm = DAVA::Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_inactive.png");
-    joypad->arrow = DAVA::Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arrow.png");
+    joypad->activeArea = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_active.png");
+    joypad->inactiveArea = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_inactive.png");
+    joypad->activeArm = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_active.png");
+    joypad->inactiveArm = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_inactive.png");
+    joypad->arrow = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arrow.png");
 
     scale = areaSize / joypad->activeArea->GetSize().dx;
 
-    joypad->stickArea = new DAVA::UIControl({ { 0.f, 0.f }, joypad->activeArea->GetSize() * scale });
-    joypad->stickArm = new DAVA::UIControl({ { 0.f, 0.f }, joypad->activeArm->GetSize() * scale });
-    joypad->stickArrow = new DAVA::UIControl({ { 0.f, 0.f }, joypad->arrow->GetSize() * scale });
+    joypad->stickArea = new UIControl({ { 0.f, 0.f }, joypad->activeArea->GetSize() * scale });
+    joypad->stickArm = new UIControl({ { 0.f, 0.f }, joypad->activeArm->GetSize() * scale });
+    joypad->stickArrow = new UIControl({ { 0.f, 0.f }, joypad->arrow->GetSize() * scale });
     joypad->stickArrow->SetVisibilityFlag(false);
 
-    joypad->base->AddControl(joypad->stickArea);
-    joypad->base->AddControl(joypad->stickArm);
-    joypad->base->AddControl(joypad->stickArrow);
+    joypad->base->AddControl(joypad->stickArea.Get());
+    joypad->base->AddControl(joypad->stickArm.Get());
+    joypad->base->AddControl(joypad->stickArrow.Get());
 
-    for (DAVA::UIControl* c : { joypad->stickArea, joypad->stickArm, joypad->stickArrow })
+    for (UIControl* c : { joypad->stickArea.Get(), joypad->stickArm.Get(), joypad->stickArrow.Get() })
     {
         if (c != nullptr)
         {
-            c->GetOrCreateComponent<DAVA::UIControlBackground>()->SetDrawType(DAVA::UIControlBackground::eDrawType::DRAW_STRETCH_BOTH);
-            c->GetOrCreateComponent<DAVA::UIControlBackground>()->SetPerPixelAccuracyType(DAVA::UIControlBackground::ePerPixelAccuracyType::PER_PIXEL_ACCURACY_FORCED);
+            c->GetOrCreateComponent<UIControlBackground>()->SetDrawType(UIControlBackground::eDrawType::DRAW_STRETCH_BOTH);
+            c->GetOrCreateComponent<UIControlBackground>()->SetPerPixelAccuracyType(UIControlBackground::ePerPixelAccuracyType::PER_PIXEL_ACCURACY_FORCED);
         }
     }
 
-    joypad->stickArrow->GetComponent<DAVA::UIControlBackground>()->SetSprite(joypad->arrow, 0);
+    joypad->stickArrow->GetComponent<DAVA::UIControlBackground>()->SetSprite(joypad->arrow.Get(), 0);
 
     joypad->component = joypad->base->GetOrCreateComponent<DAVA::UIJoypadComponent>();
     joypad->component->SetDynamicFlag(true);
-    joypad->component->SetStickArea(joypad->stickArea);
-    joypad->component->SetStickArm(joypad->stickArm);
-    joypad->component->SetStickArrow(joypad->stickArrow);
+    joypad->component->SetStickArea(joypad->stickArea.Get());
+    joypad->component->SetStickArm(joypad->stickArm.Get());
+    joypad->component->SetStickArrow(joypad->stickArrow.Get());
     joypad->component->SetStickAreaRadius(155.f * scale);
     joypad->component->SetInitialPosition({ 10.f, GetRect().dy - 100.f });
     joypad->component->SetCancelZone(cancelZone->GetAbsoluteRect());
-    joypad->component->SetCoordsTransformFunction([](DAVA::Vector2 v) {
+    joypad->component->SetCoordsTransformFunction(UIJoypadComponent::CoordsTransformFn(
+    [](Vector2 v) {
         if (v.Length() < 0.2f)
         {
-            return DAVA::Vector2::Zero;
+            return Vector2::Zero;
         }
         return v;
-    });
+    }
+    ));
 
-    AddControl(joypad->base);
+    AddControl(joypad->base.Get());
 }
 
 void UIJoypadSystemTest::ToggleVisible(BaseObject *, void *, void *)
@@ -324,7 +290,7 @@ void UIJoypadSystemTest::RemoveArea(BaseObject *, void *, void *)
         if (area != nullptr)
         {
             joypad->component->SetStickArea(nullptr);
-            joypad->base->RemoveControl(joypad->stickArea);
+            joypad->base->RemoveControl(area);
             removeArea->SetStateText(0xFF, L"Area removed");
             removeArea->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Red);
         }
@@ -340,7 +306,7 @@ void UIJoypadSystemTest::RemoveArm(BaseObject *, void *, void *)
         if (arm != nullptr)
         {
             joypad->component->SetStickArm(nullptr);
-            joypad->base->RemoveControl(joypad->stickArm);
+            joypad->base->RemoveControl(arm);
             removeArm->SetStateText(0xFF, L"Arm removed");
             removeArm->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Red);
         }
@@ -356,7 +322,7 @@ void UIJoypadSystemTest::RemoveArrow(BaseObject *, void *, void *)
         if (arrow != nullptr)
         {
             joypad->component->SetStickArrow(nullptr);
-            joypad->base->RemoveControl(joypad->stickArrow);
+            joypad->base->RemoveControl(arrow);
             removeArrow->SetStateText(0xFF, L"Arrow removed");
             removeArrow->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Red);
         }

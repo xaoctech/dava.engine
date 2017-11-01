@@ -13,6 +13,7 @@ public:
     UIJoypadSystem() = default;
     ~UIJoypadSystem() override = default;
 
+protected:
     void RegisterControl(UIControl* control) override;
     void UnregisterControl(UIControl* control) override;
     void RegisterComponent(UIControl* control, UIComponent* component) override;
