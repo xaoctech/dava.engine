@@ -160,5 +160,4 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         exists("env.macos")
     }
     
-    disableSettings("RUNNER_131")
 })
