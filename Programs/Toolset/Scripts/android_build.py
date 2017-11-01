@@ -13,7 +13,9 @@ DavaProgramsDir = os.path.join( DavaRootDir, 'Programs' )
 
 ProgramsList = [ 'UnitTests', 
                  'TestBed',
-                 'SceneViewer'  
+                 'SceneViewer',
+                 'UIViewer',
+                 'PerfomanceTests'
                ]
 
 
@@ -52,7 +54,7 @@ def main():
         local_properties_file.close()
 
 
-    pool = multiprocessing.Pool()
+    pool = multiprocessing.Pool(processes=2)
     pool.map(build, ProgramsList )
 
 
