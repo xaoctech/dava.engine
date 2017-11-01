@@ -65,25 +65,25 @@ object dava_framework_NewBuilds_PullRequestTest : BuildType({
                 onDependencyCancel = FailureAction.ADD_PROBLEM
             }
         }
-        dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_UnitTestsAndroid) {
+        dependency(dava_framework_NewBuilds_ToolSet.buildTypes.dava_framework_ToolSet_ToolSetAndroid) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
                 onDependencyCancel = FailureAction.ADD_PROBLEM
             }
         }
-        dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2) {
+        dependency(dava_framework_NewBuilds_ToolSet.buildTypes.dava_framework_ToolSet_ToolSetIos) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
                 onDependencyCancel = FailureAction.ADD_PROBLEM
             }
         }
-        dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_UnitTestsLinux) {
+        dependency(dava_framework_NewBuilds_ToolSet.buildTypes.dava_framework_ToolSet_ToolSetLinux) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
                 onDependencyCancel = FailureAction.ADD_PROBLEM
             }
         }
-        dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin102) {
+        dependency(dava_framework_NewBuilds_ToolSet.buildTypes.dava_framework_ToolSet_ToolSetWin10) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
                 onDependencyCancel = FailureAction.ADD_PROBLEM

@@ -13,47 +13,28 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger.*
 import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 
-object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDAVATools_mac)
-    uuid = "a3f20776-ef99-4e39-bd04-4e5fac191e7e"
-    extId = "dava_framework_NewBuilds_ToolSet_ToolSetMac"
-    name = "ToolSet_mac"
+object dava_framework_ToolSet_ToolSetAndroid : BuildType({
+    uuid = "a4724ae3-4c02-42e5-95af-5cc3c178218b"
+    extId = "dava_framework_ToolSet_ToolSetAndroid"
+    name = "ToolSet_Android"
 
     artifactRules = """
-        %pathToOutPackDir%/*.zip
-        %pathToProjectBuild%/Coverage
-        %pathToProjectBuild%/MODULES_LOG.txt
-        %pathToProjectBuild%/Info.json
+        dava.framework/Programs/UnitTests/Platforms/Android/UnitTests/build/outputs/apk/UnitTests-fat-release.apk
+        dava.framework/Programs/SceneViewer/Platforms/Android/SceneViewer/build/outputs/apk/SceneViewer-fat-release.apk
+        dava.framework/Programs/TestBed/Platforms/Android/TestBed/build/outputs/apk/TestBed-fat-release.apk
     """.trimIndent()
 
     params {
-        param("add_definitions", "-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=1,-DCUSTOM_DAVA_CONFIG_PATH_MAC=%DavaConfigMac%,-DIGNORE_FILE_TREE_CHECK=1,-DCHECK_DEPENDENT_FOLDERS=1,-DTEAMCITY_URL=https://teamcity2.wargaming.net,-DSTASH_URL=https://stash.wargaming.net,-DTEAMCITY_LOGIN=%teamcity_restapi_login%,-DTEAMCITY_PASS=%teamcity_restapi_password%,-DSTASH_LOGIN=%stash_restapi_login%,-DSTASH_PASS=%stash_restapi_password%,-DFRAMEWORK_BRANCH=%teamcity.build.branch%")
-        param("appID", "%ProjectName%")
-        param("baseArchiveNameMac", "%ProjectName%_mac_")
-        param("baseURLMac", "http://by1-davatool-01.corp.wargaming.local/dava.framework/mac/Tools/%branchID%/")
-        param("branchID", "%teamcity.build.branch%")
-        param("buildsPathMac", "~/mac/Tools/%branchID%")
-        param("configPathMac", "~/mac/launcher/launcher_config.yaml")
         param("env.build_failed", "true")
+        param("env.build_required", "true")
         param("env.from_commit", "0")
-        param("env.LANG", "en_US.UTF-8")
-        text("LAUNCHER_ENABLE", "0", allowEmpty = true)
-        param("limit", "15")
-        param("pathToOutPackDir", "%system.teamcity.build.checkoutDir%/b_%ProjectName%_pack")
-        param("pathToProject", "%system.teamcity.build.checkoutDir%/dava.framework/Programs/Toolset")
-        param("pathToProjectApp", "%pathToProjectBuild%/app")
-        param("pathToProjectApp_other", "%pathToProjectBuild%/app_other")
-        param("pathToProjectBuild", "%system.teamcity.build.checkoutDir%/b_%ProjectName%")
-        param("platform", "macos")
-        param("ProjectName", "ToolSet")
-        param("runPathMac", "%ProjectName%.app")
-        param("runPathWin", "%ProjectName%.exe")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
-        param("UNITY_BUILD", "true")
+        param("env.PATH", "/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/Admin/.rvm/gems/ruby-2.0.0-p0/bin:/Users/Admin/.rvm/gems/ruby-2.0.0-p0@global/bin:/Users/Admin/.rvm/rubies/ruby-2.0.0-p0/bin:/Users/Admin/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:/Users/Admin/QtSDK/Desktop/Qt/474/gcc/bin:/Users/Admin/Downloads/Development/android-ndk-r10:/Users/Admin/AIRSDK_Compiler/bin:/Users/Admin/Downloads/gradle-1.7/bin:/Users/Admin/Downloads/Development/sdk/platform-tools/")
+        select("NDK_TYPE", "GOOGLE", display = ParameterDisplay.PROMPT,
+                options = listOf("CRYSTAX", "GOOGLE"))
     }
 
     vcs {
-        root("dava_DavaFrameworkStash", "+:. => dava.framework")
+        root("dava_DavaFrameworkStash", "+:=>/dava.framework")
         root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
@@ -71,40 +52,27 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
         }
         script {
-            name = "clear"
-            workingDir = "dava.framework/RepoTools/Scripts"
+            name = "Install pip modules"
+            workingDir = "Teamcity"
             scriptContent = """
-                git clean -d -x -f
-                
-                python delete_folder.py %pathToOutPackDir%
-                python delete_folder.py %pathToProjectApp%
-                python delete_folder.py %pathToProjectBuild%
+                pip install --upgrade pip
+                pip install -r requirements.txt
             """.trimIndent()
         }
         script {
-            name = "create version.h"
-            workingDir = "%dava_scripts_dir%"
-            scriptContent = "python create_version_h.py --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number% --branch_info %teamcity.build.branch%"
+            name = "clear"
+            workingDir = "dava.framework"
+            scriptContent = "git clean -d -x -f"
         }
         script {
-            name = "generate project"
-            workingDir = "%pathToProjectBuild%"
-            scriptContent = "python %dava_gen% %platform% %pathToProject% --add_definitions=%add_definitions%"
-        }
-        script {
-            name = "build"
-            workingDir = "%pathToProjectBuild%"
-            scriptContent = "python %dava_dir%/Bin/RepoTools/Scripts/dava_build_wrapper.py --config=RelWithDebinfo --teamcityLog=true --pathToDava=%dava_dir% --pathToBuild=%pathToProjectBuild%"
-        }
-        script {
-            name = "PackApp"
-            workingDir = "%dava_scripts_dir%"
-            scriptContent = "python pack_app.py --app_name %ProjectName% --out_path %pathToOutPackDir% --app_path %pathToProjectApp% --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number%"
+            name = "Gradle build"
+            workingDir = "dava.framework/Programs/Toolset/Scripts"
+            scriptContent = "python android_build.py --sdk_dir %env.ANDROID_STUDIO_SDK% --ndk_dir %env.ANDROID_STUDIO_NDK%"
         }
         script {
             name = "UnitTest"
-            workingDir = "%pathToProjectBuild%/app_other"
-            scriptContent = "python start_tests.py"
+            workingDir = "dava.framework/Programs/Toolset/Scripts"
+            scriptContent = "python start_tests.py --platform ANDROID --sdk_dir %env.ANDROID_STUDIO_SDK% --davaRoot %system.teamcity.build.checkoutDir%/dava.framework"
         }
         script {
             name = "report commit status SUCCESSFUL"
@@ -125,12 +93,13 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
 
     triggers {
         vcs {
+            enabled = false
             branchFilter = "+:<default>"
         }
     }
 
     failureConditions {
-        executionTimeoutMin = 160
+        executionTimeoutMin = 120
         errorMessage = true
     }
 
@@ -141,7 +110,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             param("stash_host", "https://stash.wargaming.net")
             param("stash_only_latest", "true")
             param("stash_username", "dava_teamcity")
-            param("stash_vcsignorecsv", "dava.framework_wgtf_stash")
             param("stash_failCancelledBuilds", "true")
             param("secure:stash_username", "zxx38986f37ccea38c0775d03cbe80d301b")
         }
@@ -157,8 +125,10 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
     }
 
     requirements {
-        exists("env.macos")
+        exists("env.UNIT_TEST")
+        doesNotEqual("system.agent.name", "by2-badava-mac-08")
+        doesNotEqual("system.agent.name", "by2-badava-mac-11", "RQ_87")
     }
     
-    disableSettings("RUNNER_131")
+    disableSettings("RQ_87")
 })
