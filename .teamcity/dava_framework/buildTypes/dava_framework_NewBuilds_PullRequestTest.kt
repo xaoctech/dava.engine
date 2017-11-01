@@ -89,7 +89,7 @@ object dava_framework_NewBuilds_PullRequestTest : BuildType({
                 onDependencyCancel = FailureAction.ADD_PROBLEM
             }
         }
-        dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin32) {
+        dependency(dava_framework_NewBuilds_ToolSet.buildTypes.dava_framework_NewBuilds_ToolSet_ToolSetWin32) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
                 onDependencyCancel = FailureAction.ADD_PROBLEM

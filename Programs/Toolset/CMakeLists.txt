@@ -8,6 +8,7 @@
 # -DSTASH_LOGIN      = stash user login
 # -DSTASH_PASS       = stash user password
 # -DFRAMEWORK_BRANCH = framework branch 
+# -DWIN32_MODE       = generate only programs supported win32
 #
 # -DCACHE_CLIENT     = add to toolset AssetCacheClient
 #
@@ -27,6 +28,7 @@ include ( Toolset-common )
 ############ SINGLE TOOLS
 
 add_tool_single     ( UnitTests         NO_UNITY_BUILD 
+                                        WIN32_SUPPORTED
                                         CHECK_DEPENDS_FOLDERS )
 
 add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  

@@ -142,7 +142,7 @@ macro ( prepare_tools )
 endmacro()
 
 macro ( add_tool_single TARGET_NAME )
-    cmake_parse_arguments ( ARG "NO_UNITY_BUILD;CHECK_DEPENDS_FOLDERS"  "" "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS;PLATFORMS"  ${ARGN} )
+    cmake_parse_arguments ( ARG "NO_UNITY_BUILD;CHECK_DEPENDS_FOLDERS;WIN32_SUPPORTED"  "" "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS;PLATFORMS"  ${ARGN} )
 
     list( APPEND SINGLE_TOOLS_LIST ${TARGET_NAME} )
 
@@ -153,6 +153,7 @@ macro ( add_tool_single TARGET_NAME )
     set( DEPENDS_${TARGET_NAME}                 ${ARG_DEPENDS} )
     set( PLATFORMS_${TARGET_NAME}               ${ARG_PLATFORMS} )
     set( CHECK_DEPENDS_FOLDERS_${TARGET_NAME}   ${ARG_CHECK_DEPENDS_FOLDERS} )
+    set( WIN32_SUPPORTED_${TARGET_NAME}         ${ARG_WIN32_SUPPORTED} )
 
     if( ARG_ROOT_DIR )
         set( DEPEND_DIRS_${TARGET_NAME}  ${DEFAULT_DEPEND_DIRS} ${ARG_ROOT_DIR} )
@@ -163,7 +164,7 @@ macro ( add_tool_single TARGET_NAME )
 endmacro ()
 
 macro ( add_tool_package TARGET_NAME )
-    cmake_parse_arguments ( ARG "NO_UNITY_BUILD;CHECK_DEPENDS_FOLDERS" ""  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS;PLATFORMS"  ${ARGN} )
+    cmake_parse_arguments ( ARG "NO_UNITY_BUILD;CHECK_DEPENDS_FOLDERS;WIN32_SUPPORTED" ""  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS;PLATFORMS"  ${ARGN} )
 
     list( APPEND PACKAGE_TOOLS_LIST ${TARGET_NAME} )
 
@@ -174,6 +175,7 @@ macro ( add_tool_package TARGET_NAME )
     set( DEPENDS_${TARGET_NAME}                 ${ARG_DEPENDS} )
     set( PLATFORMS_${TARGET_NAME}               ${ARG_PLATFORMS} )
     set( CHECK_DEPENDS_FOLDERS_${TARGET_NAME}   ${ARG_CHECK_DEPENDS_FOLDERS} )
+    set( WIN32_SUPPORTED_${TARGET_NAME}         ${ARG_WIN32_SUPPORTED} )
 
     if( ARG_ROOT_DIR )
         set( DEPEND_DIRS_${TARGET_NAME}  ${DEFAULT_DEPEND_DIRS} ${ARG_ROOT_DIR} )
@@ -199,7 +201,7 @@ macro ( __add_tools TOOLS_LIST_NAME )
         set( ARG_NO_UNITY_BUILD         ${NO_UNITY_BUILD_${TARGET_NAME}} )
         set( ARG_PLATFORMS              ${PLATFORMS_${TARGET_NAME}} )
         set( ARG_CHECK_DEPENDS_FOLDERS  ${CHECK_DEPENDS_FOLDERS_${TARGET_NAME}} )
-
+        set( ARG_WIN32_SUPPORTED        ${WIN32_SUPPORTED_${TARGET_NAME}} )
 
         if( ARG_PLATFORMS )
             set(  GENERATE false )
@@ -223,6 +225,11 @@ macro ( __add_tools TOOLS_LIST_NAME )
                 endif()
             endif()
         endforeach()
+
+###
+        if( WIN32_MODE AND NOT ARG_WIN32_SUPPORTED )
+            set(  GENERATE false )  
+        endif()      
 ###
 
         if( GENERATE AND CHECK_DEPENDS_FOLDERS AND ARG_CHECK_DEPENDS_FOLDERS AND ( NOT "ALL_BUILD" STREQUAL "${BUILD_TARGETS}" ) ) 
