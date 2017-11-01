@@ -7,6 +7,7 @@
 #include "Debug/Private/ImGui.h"
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerMarkerNames.h"
 
 #include "Debug/DebugOverlayItem.h"
 #include "Debug/Private/DebugOverlayItemEngineSettings.h"
