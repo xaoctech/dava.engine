@@ -83,7 +83,6 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
                 cmake -G"Xcode" \
                 -DCMAKE_TOOLCHAIN_FILE=../../../Sources/CMake/Toolchains/ios.toolchain.cmake \
                 -DTEAMCITY_DEPLOY=true \
-                -DDISABLE_MEMORY_PROFILER=true \
                 ..
                 fi
             """.trimIndent()
