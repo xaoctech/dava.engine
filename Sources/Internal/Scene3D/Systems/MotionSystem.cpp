@@ -113,12 +113,8 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
 
             for (auto& phaseEnd : motion->GetEndedPhases())
             {
-                motionSingleComponent->animationPhaseEnd.emplace_back(motionComponent, MotionSingleComponent::AnimationPhaseInfo());
-
-                MotionSingleComponent::AnimationPhaseInfo& phaseInfo = motionSingleComponent->animationPhaseEnd.back().second;
-                phaseInfo.motionName = motion->GetName();
-                phaseInfo.stateID = phaseEnd.first;
-                phaseInfo.phaseID = phaseEnd.second;
+				if(phaseEnd.second == Motion::STATE_ANIMATION_END_MARKER)
+					motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), phaseEnd.first));
             }
 
             const SkeletonPose& pose = motion->GetCurrentSkeletonPose();

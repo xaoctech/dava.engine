@@ -70,6 +70,7 @@ private:
     bool isZooming = false;
 
     bool doubleTapped = false;
+	bool waitReloadEnd = false;
 
     friend class CharacterMoveSystem;
     friend class CharacterWeaponSystem;

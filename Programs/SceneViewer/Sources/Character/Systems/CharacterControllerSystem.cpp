@@ -183,6 +183,17 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 
 	aimAngleParam = RadToDeg(-cameraAngle);
 
+	if (waitReloadEnd)
+	{
+		const static FastName WEAPON_MOTION_NAME("WeaponMotion");
+		const static FastName WEAPON_MOTION_RELOAD_STATE_ID("reload");
+
+		MotionSingleComponent::AnimationInfo reloadAnimationInfo(characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_RELOAD_STATE_ID);
+		MotionSingleComponent* msc = GetScene()->motionSingleComponent;
+
+		waitReloadEnd = (msc->animationEnd.count(reloadAnimationInfo) == 0);
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	//Setup motion animation
 
@@ -209,8 +220,9 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
         if (keyboard != nullptr && keyboard->GetKeyState(eInputElements::KB_R).IsJustPressed())
         {
 			characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_RELOAD);
+			waitReloadEnd = true;
         }
-        else
+        else if(!waitReloadEnd)
         {
             if (mouse != nullptr && mouse->GetLeftButtonState().IsPressed())
             {

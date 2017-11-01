@@ -2,6 +2,7 @@
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
+#include "Base/FastName.h"
 #include "Base/UnordererMap.h"
 #include "Reflection/Reflection.h"
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
@@ -23,6 +24,8 @@ class Motion
     Motion() = default;
 
 public:
+	const static FastName STATE_ANIMATION_END_MARKER;
+
     enum eMotionBlend
     {
         BLEND_OVERRIDE,

@@ -16,6 +16,9 @@ ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 
 namespace DAVA
 {
+
+const FastName Motion::STATE_ANIMATION_END_MARKER("##state-animation-end");
+
 DAVA_REFLECTION_IMPL(Motion)
 {
     ReflectionRegistrator<Motion>::Begin()
@@ -97,6 +100,9 @@ void Motion::Update(float32 dTime)
         if (!m.empty())
             endedPhases.emplace_back(currentState->GetID(), m);
     }
+
+	if (currentState->IsEndReached())
+		endedPhases.emplace_back(currentState->GetID(), Motion::STATE_ANIMATION_END_MARKER);
 
     //////////////////////////////////////////////////////////////////////////
 
