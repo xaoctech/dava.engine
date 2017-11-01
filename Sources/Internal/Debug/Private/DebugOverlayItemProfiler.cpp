@@ -58,7 +58,7 @@ String DebugOverlayItemProfiler::GetName() const
 void DebugOverlayItemProfiler::Draw()
 {
     bool shown = true;
-    ImGui::SetNextWindowSizeConstraints(ImVec2(420.0f, 300.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(420.0f, 400.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
 
     if (ImGui::Begin("ProfilerWindow", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
@@ -340,7 +340,7 @@ void DebugOverlayItemProfiler::DrawTraceRects(TraceData& trace, FastName* select
             {
                 if (mouse.x > pt0.x && mouse.y > pt0.y && mouse.x < pt1.x && mouse.y < pt1.y)
                 {
-                    ImGui::SetTooltip("\"%s\": %llu mcs", r.name.c_str(), r.duration);
+                    ImGui::SetTooltip("\"%s\": %llu mcs", r.name.c_str(), static_cast<unsigned long long>(r.duration));
                     if (ImGui::IsMouseClicked(0))
                     {
                         *selectedMarker = r.name;
