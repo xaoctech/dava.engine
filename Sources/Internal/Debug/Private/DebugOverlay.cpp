@@ -5,16 +5,24 @@
 #include "Engine/Window.h"
 #include "Concurrency/Thread.h"
 #include "Debug/Private/ImGui.h"
-#include "Debug/DebugOverlayItem.h"
+#include "Debug/ProfilerGPU.h"
+#include "Debug/ProfilerCPU.h"
 
+#include "Debug/DebugOverlayItem.h"
 #include "Debug/Private/DebugOverlayItemEngineSettings.h"
 #include "Debug/Private/DebugOverlayItemLogger.h"
+#include "Debug/Private/DebugOverlayItemRenderOptions.h"
+#include "Debug/Private/DebugOverlayItemRenderStats.h"
+#include "Debug/Private/DebugOverlayItemProfiler.h"
 
 namespace DAVA
 {
 DebugOverlay::DebugOverlay()
     : defaultItemEngineSettings{ new DebugOverlayItemEngineSettings }
     , defaultItemLogger{ new DebugOverlayItemLogger }
+    , defaultItemRenderOptions{ new DebugOverlayItemRenderOptions }
+    , defaultItemRenderStats{ new DebugOverlayItemRenderStats }
+    , defaultItemProfiler{ new DebugOverlayItemProfiler(ProfilerGPU::globalProfiler, ProfilerCPU::globalProfiler, ProfilerCPUMarkerName::ENGINE_ON_FRAME) }
 {
     RegisterDefaultItems();
 }
@@ -130,17 +138,33 @@ void DebugOverlay::RegisterDefaultItems()
 {
     RegisterItem(defaultItemEngineSettings.get());
     RegisterItem(defaultItemLogger.get());
+    RegisterItem(defaultItemRenderOptions.get());
+    RegisterItem(defaultItemRenderStats.get());
+    RegisterItem(defaultItemProfiler.get());
 }
 
 void DebugOverlay::UnregisterDefaultItems()
 {
     UnregisterItem(defaultItemEngineSettings.get());
     UnregisterItem(defaultItemLogger.get());
+    UnregisterItem(defaultItemRenderOptions.get());
+    UnregisterItem(defaultItemRenderStats.get());
+    UnregisterItem(defaultItemProfiler.get());
 }
 
 void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
 {
     DVASSERT(ImGui::IsInitialized());
+
+    auto PushColor = [](float32 mainH) {
+        ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(mainH, 1.f, 0.6f)));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, static_cast<ImVec4>(ImColor::HSV(mainH, 1.f, 0.7f)));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, static_cast<ImVec4>(ImColor::HSV(mainH, 1.f, 0.8f)));
+    };
+
+    auto PopColor = []() {
+        ImGui::PopStyleColor(3);
+    };
 
     if (ImGui::IsInitialized())
     {
@@ -173,8 +197,43 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             }
             ImGui::PopStyleVar(1);
         }
+
         ImGui::End();
         ImGui::PopStyleVar(2);
+
+        Size2f surfaceSize = GetPrimaryWindow()->GetSurfaceSize();
+        float32 scale = GetPrimaryWindow()->GetDPI() / 200.f;
+        float32 buttonSide = 50.f * scale;
+
+        ImGui::SetNextWindowPos(ImVec2(surfaceSize.dx - buttonSide, 0.0f));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImColor(0, 0, 0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+        if (ImGui::Begin("DebugOverlayScaleButtons", nullptr, windowFlags))
+        {
+            PushColor(0.3f);
+            if (ImGui::Button("+", { buttonSide, buttonSide }) && ImGui::GetIO().FontGlobalScale <= 5.0f)
+            {
+                ImGui::GetIO().FontGlobalScale += 0.1f;
+            }
+            PopColor();
+
+            PushColor(0.6f);
+            if (ImGui::Button("=", { buttonSide, buttonSide }))
+            {
+                ImGui::GetIO().FontGlobalScale = 1.f;
+            }
+            PopColor();
+
+            PushColor(1.f);
+            if (ImGui::Button("-", { buttonSide, buttonSide }) && ImGui::GetIO().FontGlobalScale >= 0.5f)
+            {
+                ImGui::GetIO().FontGlobalScale -= 0.1f;
+            }
+            PopColor();
+        }
+        ImGui::End();
+        ImGui::PopStyleVar(1);
+        ImGui::PopStyleColor(1);
 
         for (ItemData& itemData : items)
         {
