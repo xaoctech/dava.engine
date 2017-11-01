@@ -46,7 +46,7 @@ public:
 
     void AddView(const WindowKey& windowKey, const PanelKey& panelKey, QWidget* widget) override;
     void AddAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, QAction* action) override;
-    void RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement) override;
+    void RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName) override;
 
     void ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration = 0) override;
     void ClearMessage(const WindowKey& windowKey) override;

@@ -89,9 +89,10 @@ public:
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "ColorControl" });
             if (archive != nullptr)
             {
-                previewWidgetSettings->backgroundColor0 = archive->GetColor("backgroundColor0");
-                previewWidgetSettings->backgroundColor1 = archive->GetColor("backgroundColor1");
-                previewWidgetSettings->backgroundColor2 = archive->GetColor("backgroundColor2");
+                previewWidgetSettings->backgroundColors.resize(3);
+                previewWidgetSettings->backgroundColors[0] = archive->GetColor("backgroundColor0");
+                previewWidgetSettings->backgroundColors[1] = archive->GetColor("backgroundColor1");
+                previewWidgetSettings->backgroundColors[2] = archive->GetColor("backgroundColor2");
                 previewWidgetSettings->backgroundColorIndex = archive->GetUInt32("backgroundColorIndex");
             }
         }

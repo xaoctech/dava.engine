@@ -29,6 +29,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIFlowLayoutComponent);
+
 UIFlowLayoutComponent::UIFlowLayoutComponent()
 {
     SetEnabled(true);

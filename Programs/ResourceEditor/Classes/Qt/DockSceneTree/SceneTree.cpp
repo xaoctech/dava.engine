@@ -12,6 +12,7 @@
 #include <QSignalBlocker>
 
 #include "Classes/Application/RESettings.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Deprecated/SceneValidator.h"
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
@@ -31,6 +32,7 @@
 #include "Commands2/Base/RECommandNotificationObject.h"
 
 #include "Classes/Qt/Actions/SaveEntityAsAction.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/SceneManager/SceneData.h"
@@ -386,6 +388,36 @@ protected:
                 Connect(particleEffectMenu->addAction(SharedIcon(":/QtIcons/play.png"), QStringLiteral("Start")), this, &EntityContextMenu::StartEffect);
                 Connect(particleEffectMenu->addAction(SharedIcon(":/QtIcons/stop.png"), QStringLiteral("Stop")), this, &EntityContextMenu::StopEffect);
                 Connect(particleEffectMenu->addAction(SharedIcon(":/QtIcons/restart.png"), QStringLiteral("Restart")), this, &EntityContextMenu::RestartEffect);
+            }
+
+            if (selectionSize)
+            {
+                DAVA::TexturesMap textures;
+
+                for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
+                {
+                    SceneHelper::TextureCollector collector;
+                    SceneHelper::EnumerateEntityTextures(scene, selectEntity, collector);
+                    DAVA::TexturesMap& collectorTextures = collector.GetTextures();
+
+                    textures.insert(collectorTextures.begin(), collectorTextures.end());
+                }
+
+                if (textures.empty() == false)
+                {
+                    Connect(menu.addAction(QStringLiteral("Reload Textures...")), [textures]
+                            {
+                                DAVA::Vector<DAVA::Texture*> reloadTextures;
+
+                                for (auto& tex : textures)
+                                {
+                                    reloadTextures.push_back(tex.second);
+                                }
+
+                                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+
+                            });
+                }
             }
 
             if (selectionSize == 1)
@@ -1300,6 +1332,32 @@ void SceneTree::CollapseSwitch()
             expand(index);
         }
     }
+}
+
+void SceneTree::ReloadSelectedEntitiesTextures()
+{
+    using namespace DAVA::TArc;
+    const SelectableGroup& selection = Selection::GetSelection();
+    DAVA::Vector<DAVA::Texture*> reloadTextures;
+
+    for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
+    {
+        SceneHelper::TextureCollector collector;
+        SceneHelper::EnumerateEntityTextures(selectEntity->GetScene(), selectEntity, collector);
+        DAVA::TexturesMap& textures = collector.GetTextures();
+
+        for (auto& tex : textures)
+        {
+            auto found = std::find(reloadTextures.begin(), reloadTextures.end(), tex.second);
+
+            if (found == reloadTextures.end())
+            {
+                reloadTextures.push_back(tex.second);
+            }
+        }
+    }
+
+    REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
 }
 
 void SceneTree::CollapseAll()

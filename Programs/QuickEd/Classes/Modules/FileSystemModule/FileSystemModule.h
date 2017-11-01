@@ -9,6 +9,7 @@ class FileSystemModule : public DAVA::TArc::ClientModule
     void PostInit() override;
     void InitUI();
     void RegisterOperations();
+    void CreateActions();
 
     void OnOpenFile(const QString& filePath);
 

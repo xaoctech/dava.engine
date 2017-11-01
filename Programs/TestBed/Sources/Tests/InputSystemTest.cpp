@@ -815,8 +815,9 @@ void InputSystemTest::OnInputListeningEnded(bool cancelled, DAVA::Vector<DAVA::I
         {
             if (input[i].deviceType == eInputDeviceTypes::KEYBOARD)
             {
-                String repr = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToUTF8String(input[i].elementId);
-                stringStream << repr;
+                String reprTranslated = GetEngineContext()->deviceManager->GetKeyboard()->TranslateElementToUTF8String(input[i].elementId);
+                String reprDefault = GetInputElementInfo(input[i].elementId).name;
+                stringStream << reprTranslated << "(" << reprDefault << ")";
             }
             else
             {

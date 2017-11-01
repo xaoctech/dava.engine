@@ -54,7 +54,8 @@ private:
     void SaveSceneToFolder(bool compressedTextures);
     void ExportScene();
     void CloseAllScenes(bool needSavingReqiest);
-    void ReloadTextures(DAVA::eGPUFamily gpu);
+    void ReloadAllTextures(DAVA::eGPUFamily gpu);
+    void ReloadTextures(DAVA::Vector<DAVA::Texture*> textures);
 
     /// Fields value handlers
     void OnProjectPathChanged(const DAVA::Any& projectPath);
@@ -77,6 +78,10 @@ private:
     ///     "scenePath" - should be a file
     bool SaveSceneImpl(DAVA::RefPtr<SceneEditor2> scene, const DAVA::FilePath& scenePath = DAVA::FilePath());
     DAVA::FilePath GetSceneSavePath(const DAVA::RefPtr<SceneEditor2>& scene);
+
+    void GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
+                               DAVA::FilePath& fileName, bool sceneIsTemp = false);
+    void CreateSceneProperties(SceneData* const data, bool sceneIsTemp = false);
 
     /// scene->SaveEmitters() would call this function if emitter to save didn't have path
     DAVA::FilePath SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName);

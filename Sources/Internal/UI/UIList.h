@@ -24,7 +24,7 @@ namespace DAVA
     Aggregator Path is used for Save/Load procedure. Using this path, system can locate proper aggregator and get
     its ID.
 */
-
+class YamlNode;
 class UIList;
 /**
     \ingroup controlsystem
@@ -165,13 +165,16 @@ public:
     void ResetScrollPosition();
     void Refresh();
 
-    void SetSlowDownTime(float newValue); //sets how fast reduce speed (for example 0.25 reduces speed to zero for the 0.25 second ). To remove inertion effect set tihs value to 0
-    void SetBorderMoveModifer(float newValue); //sets how scrolling element moves after reachig a border (0.5 as a default). To remove movement effect after borders set thus value to 0
+    void SetSlowDownTime(float32 newValue); //sets how fast reduce speed (for example 0.25 reduces speed to zero for the 0.25 second ). To remove inertion effect set tihs value to 0
+    float32 GetSlowDownTime() const;
+
+    void SetBorderMoveModifer(float32 newValue); //sets how scrolling element moves after reachig a border (0.5 as a default). To remove movement effect after borders set thus value to 0
+    float32 GetBorderMoveModifer() const;
 
     void SetTouchHoldDelta(int32 holdDelta); //the amount of pixels user must move the finger on the button to switch from button to scrolling (default 30)
-    int32 GetTouchHoldDelta();
+    int32 GetTouchHoldDelta() const;
 
-    void ScrollTo(float delta);
+    void ScrollTo(float32 delta);
 
     void ScrollToPosition(float32 position, float32 timeSec = 0.3f);
 

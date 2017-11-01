@@ -29,11 +29,13 @@ protected:
     //A client module can declare one or more own types and use them later, but can not use any other values
     enum eSystems
     {
-        //this system place root controls on the screen. Must be updated first
+        //this system creates new controls above
+        CREATING_CONTROLS,
+        //this system place root controls on the screen
         CONTROLS_VIEW,
-        //this system move root control to it position. Controls positions used by other systems, so this system must be updated second
+        //this system move root control to it position. Controls positions are used by other systems, so this system must be updated before them
         CANVAS,
-        //this system must be drawed in background of all other systems
+        //this system must be drawn in background of all other systems
         PIXEL_GRID,
         //this system creates HUD around controls and must be updated before HUD users
         HUD,
