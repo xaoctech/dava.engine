@@ -13,13 +13,6 @@ endfunction()
 
 include ( GlobalVariables      )
 
-if ( DAVA_MEMORY_PROFILER )
-    add_definitions( -DDAVA_MEMORY_PROFILING_ENABLE )
-    if ( NOT DAVA_MEMORY_PROFILER )
-        set ( DAVA_MEMORY_PROFILER 1 )
-    endif()
-endif()
-
 include ( PlatformSettings     )
 include ( MergeStaticLibrarees )
 include ( FileTreeCheck        )

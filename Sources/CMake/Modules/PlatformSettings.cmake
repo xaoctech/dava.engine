@@ -9,6 +9,12 @@ append_property( PLATFORM_DEFINITIONS_WINUAP "-D__DAVAENGINE_WINDOWS__;-D__DAVAE
 append_property( PLATFORM_DEFINITIONS_LINUX "-D__DAVAENGINE_LINUX__;-D__DAVAENGINE_POSIX__" )
 
 
+if ( DAVA_MEMORY_PROFILER )
+    # add definition to compile with memoryprofiler enabled
+    append_property( PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURRENT} -DDAVA_MEMORY_PROFILING_ENABLE )  
+endif()
+
+
 if( APPLE )
     set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebinfo;AdHoc"  CACHE STRING
         "Semicolon separated list of supported configuration types [Debug|Release|AdHoc]"
