@@ -62,9 +62,9 @@ private:
     Vector<VehicleWheelComponent*> GetWheels(VehicleComponent* vehicle) const;
     Vector3 CalculateMomentOfInertiaForShape(CollisionShapeComponent* shape);
 
-    void CreateVehicleCommonParts(VehicleComponent* vehicleComponent, float32 wheelMaxCompression, float32 wheelMaxDroop, float32 wheelSpringStrength, float32 wheelSpringDamperRate, uint32* outWheelsCount, physx::PxVehicleWheelsSimData** outWheelsSimulationData);
-    void CreateCarVehicle(VehicleCarComponent* vehicleComponent);
-    void CreateTankVehicle(VehicleTankComponent* vehicleComponent);
+    bool TryCreateVehicleCommonParts(VehicleComponent* vehicleComponent, float32 wheelMaxCompression, float32 wheelMaxDroop, float32 wheelSpringStrength, float32 wheelSpringDamperRate, uint32* outWheelsCount, physx::PxVehicleWheelsSimData** outWheelsSimulationData);
+    void TryRecreateCarVehicle(VehicleCarComponent* vehicleComponent);
+    void TryRecreateTankVehicle(VehicleTankComponent* vehicleComponent);
 
 private:
     Scene* scene = nullptr;

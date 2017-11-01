@@ -316,7 +316,7 @@ void PhysicsVehiclesSubsystem::RegisterComponent(Entity* entity, Component* comp
     DVASSERT(component != nullptr);
 
     const uint32 type = component->GetType();
-    if (component->GetType() == Component::VEHICLE_CAR_COMPONENT || component->GetType() == Component::VEHICLE_TANK_COMPONENT)
+    if (type == Component::VEHICLE_CAR_COMPONENT || type == Component::VEHICLE_TANK_COMPONENT)
     {
         DVASSERT(std::find(vehicleComponents.begin(), vehicleComponents.end(), component) == vehicleComponents.end());
         vehicleComponents.push_back(static_cast<VehicleComponent*>(component));
@@ -329,10 +329,21 @@ void PhysicsVehiclesSubsystem::UnregisterComponent(Entity* entity, Component* co
     DVASSERT(component != nullptr);
 
     const uint32 type = component->GetType();
-    if (component->GetType() == Component::VEHICLE_CAR_COMPONENT || component->GetType() == Component::VEHICLE_TANK_COMPONENT)
+    if (type == Component::VEHICLE_CAR_COMPONENT || type == Component::VEHICLE_TANK_COMPONENT)
     {
         DVASSERT(std::find(vehicleComponents.begin(), vehicleComponents.end(), component) != vehicleComponents.end());
         vehicleComponents.erase(std::remove(vehicleComponents.begin(), vehicleComponents.end(), component), vehicleComponents.end());
+    }
+    else if (type == Component::DYNAMIC_BODY_COMPONENT)
+    {
+        // If dynamic body is being removed and it was a vehicle, we need to delete physx vehicle object
+
+        VehicleComponent* vehicleComponent = PhysicsVehicleSubsystemDetail::GetVehicleComponentFromEntity(entity);
+        if (vehicleComponent != nullptr && vehicleComponent->vehicle != nullptr)
+        {
+            vehicleComponent->vehicle->release();
+            vehicleComponent->vehicle = nullptr;
+        }
     }
 }
 
@@ -346,47 +357,55 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
     static PxWheelQueryResult wheelQueryResults[MAX_VEHICLES_COUNT][PX_MAX_NB_WHEELS];
 
     // Create vehicles objects for vehicle components (if they haven't been yet)
+    //
+    uint32 vehicleCount = 0;
     for (VehicleComponent* vehicleComponent : vehicleComponents)
     {
+        DVASSERT(vehicleComponent != nullptr);
+
         if (vehicleComponent->vehicle == nullptr)
         {
             if (vehicleComponent->GetType() == Component::VEHICLE_CAR_COMPONENT)
             {
-                CreateCarVehicle(static_cast<VehicleCarComponent*>(vehicleComponent));
+                TryRecreateCarVehicle(static_cast<VehicleCarComponent*>(vehicleComponent));
             }
             else
             {
                 DVASSERT(vehicleComponent->GetType() == Component::VEHICLE_TANK_COMPONENT);
-                CreateTankVehicle(static_cast<VehicleTankComponent*>(vehicleComponent));
+                TryRecreateTankVehicle(static_cast<VehicleTankComponent*>(vehicleComponent));
             }
         }
-    }
 
-    for (size_t i = 0; i < vehicleComponents.size(); ++i)
-    {
-        VehicleComponent* vehicleComponent = vehicleComponents[i];
-        DVASSERT(vehicleComponent != nullptr);
+        if (vehicleComponent->vehicle != nullptr)
+        {
+            physxVehicles[vehicleCount] = vehicleComponent->vehicle;
+            vehicleQueryResults[vehicleCount].nbWheelQueryResults = physxVehicles[vehicleCount]->mWheelsSimData.getNbWheels();
+            vehicleQueryResults[vehicleCount].wheelQueryResults = wheelQueryResults[vehicleCount];
 
-        physxVehicles[i] = vehicleComponent->vehicle;
+            ++vehicleCount;
 
-        vehicleQueryResults[i].nbWheelQueryResults = physxVehicles[i]->mWheelsSimData.getNbWheels();
-        vehicleQueryResults[i].wheelQueryResults = wheelQueryResults[i];
+            DVASSERT(vehicleCount <= MAX_VEHICLES_COUNT);
+        }
     }
 
     // Raycasts
     PxRaycastQueryResult* raycastResults = vehicleSceneQueryData->GetRaycastQueryResultBuffer(0);
     const PxU32 raycastResultsSize = vehicleSceneQueryData->GetQueryResultBufferSize();
-    PxVehicleSuspensionRaycasts(batchQuery, static_cast<physx::PxU32>(vehicleComponents.size()), physxVehicles, raycastResultsSize, raycastResults);
+    PxVehicleSuspensionRaycasts(batchQuery, vehicleCount, physxVehicles, raycastResultsSize, raycastResults);
 
     // Vehicle update
     const PxVec3 grav = pxScene->getGravity();
-    PxVehicleUpdates(SystemTimer::GetRealFrameDelta(), grav, *frictionPairs, static_cast<physx::PxU32>(vehicleComponents.size()), physxVehicles, vehicleQueryResults);
+    PxVehicleUpdates(SystemTimer::GetRealFrameDelta(), grav, *frictionPairs, vehicleCount, physxVehicles, vehicleQueryResults);
 
     // Process input
     // TODO: move reading keyboard input out of here
     for (size_t i = 0; i < vehicleComponents.size(); ++i)
     {
         VehicleComponent* vehicleComponent = vehicleComponents[i];
+        if (vehicleComponent->vehicle == nullptr)
+        {
+            continue;
+        }
 
         if (vehicleComponent->GetType() == Component::VEHICLE_CAR_COMPONENT)
         {
@@ -574,12 +593,12 @@ void PhysicsVehiclesSubsystem::OnSimulationEnabled(bool enabled)
         {
             if (vehicleComponent->GetType() == Component::VEHICLE_CAR_COMPONENT)
             {
-                CreateCarVehicle(static_cast<VehicleCarComponent*>(vehicleComponent));
+                TryRecreateCarVehicle(static_cast<VehicleCarComponent*>(vehicleComponent));
             }
             else
             {
                 DVASSERT(vehicleComponent->GetType() == Component::VEHICLE_TANK_COMPONENT);
-                CreateTankVehicle(static_cast<VehicleTankComponent*>(vehicleComponent));
+                TryRecreateTankVehicle(static_cast<VehicleTankComponent*>(vehicleComponent));
             }
         }
     }
@@ -683,7 +702,7 @@ Vector3 PhysicsVehiclesSubsystem::CalculateMomentOfInertiaForShape(CollisionShap
     return momentOfInertia;
 }
 
-void PhysicsVehiclesSubsystem::CreateVehicleCommonParts(
+bool PhysicsVehiclesSubsystem::TryCreateVehicleCommonParts(
 VehicleComponent* vehicleComponent,
 float32 wheelMaxCompression,
 float32 wheelMaxDroop,
@@ -699,13 +718,35 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     Entity* vehicleEntity = vehicleComponent->GetEntity();
     DVASSERT(vehicleEntity != nullptr);
 
-    // Chassis setup
+    // Check if entity has all components we need
 
     VehicleChassisComponent* chassis = GetChassis(vehicleComponent);
-    DVASSERT(chassis != nullptr);
+    if (chassis == nullptr)
+    {
+        return false;
+    }
+
+    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent(Component::DYNAMIC_BODY_COMPONENT));
+    if (vehiclePhysicsComponent == nullptr)
+    {
+        return vehiclePhysicsComponent;
+    }
+
+    Vector<VehicleWheelComponent*> wheels = GetWheels(vehicleComponent);
+    const uint32 wheelsCount = static_cast<uint32>(wheels.size());
+    if (wheelsCount == 0)
+    {
+        return false;
+    }
+
+    // Chassis setup
 
     Vector<CollisionShapeComponent*> chassisShapes = PhysicsUtils::GetShapeComponents(chassis->GetEntity());
-    DVASSERT(chassisShapes.size() == 1);
+    if (chassisShapes.size() != 1)
+    {
+        return false;
+    }
+
     CollisionShapeComponent* chassisShape = chassisShapes[0];
     DVASSERT(chassisShape != nullptr);
 
@@ -723,9 +764,6 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
 
     // Wheels setup
 
-    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent(Component::DYNAMIC_BODY_COMPONENT));
-    DVASSERT(vehiclePhysicsComponent != nullptr);
-
     PxActor* vehicleActor = vehiclePhysicsComponent->GetPxActor();
     DVASSERT(vehicleActor != nullptr);
     PxRigidDynamic* vehicleRigidActor = vehicleActor->is<PxRigidDynamic>();
@@ -734,13 +772,18 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     vehicleRigidActor->setMassSpaceInertiaTensor(chassisData.mMOI);
     vehicleRigidActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
 
-    Vector<VehicleWheelComponent*> wheels = GetWheels(vehicleComponent);
-
-    const uint32 wheelsCount = static_cast<uint32>(wheels.size());
-    DVASSERT(wheelsCount > 0);
-
     PxVec3 suspensionDirection = pxScene->getGravity();
     suspensionDirection.normalize();
+
+    for (uint32 i = 0; i < wheelsCount; ++i)
+    {
+        VehicleWheelComponent* wheel = wheels[i];
+        Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
+        if (wheelShapes.size() != 1)
+        {
+            return false;
+        }
+    }
 
     PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(wheelsCount);
     PxVec3 wheelCenterActorOffsets[PX_MAX_NB_WHEELS];
@@ -752,7 +795,6 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         VehicleWheelComponent* wheel = wheels[i];
 
         Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
-        DVASSERT(wheelShapes.size() == 1);
 
         CollisionShapeComponent* wheelShape = wheelShapes[0];
         DVASSERT(wheelShape != nullptr);
@@ -844,9 +886,11 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
 
     *outWheelsCount = wheelsCount;
     *outWheelsSimulationData = wheelsSimData;
+
+    return true;
 }
 
-void PhysicsVehiclesSubsystem::CreateCarVehicle(VehicleCarComponent* vehicleComponent)
+void PhysicsVehiclesSubsystem::TryRecreateCarVehicle(VehicleCarComponent* vehicleComponent)
 {
     using namespace physx;
 
@@ -858,6 +902,7 @@ void PhysicsVehiclesSubsystem::CreateCarVehicle(VehicleCarComponent* vehicleComp
     if (vehicleComponent->vehicle != nullptr)
     {
         static_cast<physx::PxVehicleDriveNW*>(vehicleComponent->vehicle)->free();
+        vehicleComponent->vehicle = nullptr;
     }
 
     const float32 wheelMaxCompression = 0.3f;
@@ -867,7 +912,10 @@ void PhysicsVehiclesSubsystem::CreateCarVehicle(VehicleCarComponent* vehicleComp
 
     uint32 wheelsCount;
     PxVehicleWheelsSimData* wheelsSimData;
-    CreateVehicleCommonParts(vehicleComponent, wheelMaxCompression, wheelMaxDroop, wheelSpringStrength, wheelSpringDamperRate, &wheelsCount, &wheelsSimData);
+    if (!TryCreateVehicleCommonParts(vehicleComponent, wheelMaxCompression, wheelMaxDroop, wheelSpringStrength, wheelSpringDamperRate, &wheelsCount, &wheelsSimData))
+    {
+        return;
+    }
 
     PxVehicleDriveSimDataNW driveSimData;
 
@@ -910,7 +958,7 @@ void PhysicsVehiclesSubsystem::CreateCarVehicle(VehicleCarComponent* vehicleComp
     wheelsSimData->free();
 }
 
-void PhysicsVehiclesSubsystem::CreateTankVehicle(VehicleTankComponent* vehicleComponent)
+void PhysicsVehiclesSubsystem::TryRecreateTankVehicle(VehicleTankComponent* vehicleComponent)
 {
     using namespace physx;
 
@@ -922,6 +970,7 @@ void PhysicsVehiclesSubsystem::CreateTankVehicle(VehicleTankComponent* vehicleCo
     if (vehicleComponent->vehicle != nullptr)
     {
         static_cast<physx::PxVehicleDriveNW*>(vehicleComponent->vehicle)->free();
+        vehicleComponent->vehicle = nullptr;
     }
 
     const float32 wheelMaxCompression = 0.3f;
@@ -931,7 +980,10 @@ void PhysicsVehiclesSubsystem::CreateTankVehicle(VehicleTankComponent* vehicleCo
 
     uint32 wheelsCount;
     PxVehicleWheelsSimData* wheelsSimData;
-    CreateVehicleCommonParts(vehicleComponent, wheelMaxCompression, wheelMaxDroop, wheelSpringStrength, wheelSpringDamperRate, &wheelsCount, &wheelsSimData);
+    if (!TryCreateVehicleCommonParts(vehicleComponent, wheelMaxCompression, wheelMaxDroop, wheelSpringStrength, wheelSpringDamperRate, &wheelsCount, &wheelsSimData))
+    {
+        return;
+    }
 
     PxVehicleDriveSimData driveSimData;
 
