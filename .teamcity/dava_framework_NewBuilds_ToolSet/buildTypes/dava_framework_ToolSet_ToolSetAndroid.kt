@@ -22,6 +22,8 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
         dava.framework/Programs/UnitTests/Platforms/Android/UnitTests/build/outputs/apk/UnitTests-fat-release.apk
         dava.framework/Programs/SceneViewer/Platforms/Android/SceneViewer/build/outputs/apk/SceneViewer-fat-release.apk
         dava.framework/Programs/TestBed/Platforms/Android/TestBed/build/outputs/apk/TestBed-fat-release.apk
+        dava.framework/Programs/UIViewer/Platforms/Android/UIViewer/build/outputs/apk/UIViewer-fat-release.apk
+        dava.framework/Programs/PerfomanceTests/Platforms/Android/PerfomanceTests/build/outputs/apk/PerfomanceTests-fat-release.apk
     """.trimIndent()
 
     params {

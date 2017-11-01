@@ -182,6 +182,4 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
         exists("MSBuildTools4.0_x86_Path")
     }
-    
-    disableSettings("RQ_52", "RUNNER_9")
 })
