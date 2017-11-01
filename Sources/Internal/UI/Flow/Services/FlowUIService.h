@@ -19,7 +19,7 @@ public:
     bool IsStateLoaded(const String& path);
     bool IsStateActive(const String& path);
     bool HasTransitions();
-    UIFlowStateComponent* GetCurrentState();
-    Sprite* GetScreenshot();
+    UIFlowStateComponent* GetCurrentSingleState();
+    const Vector<UIFlowStateComponent*>& GetCurrentMultipleStates();
 };
 }

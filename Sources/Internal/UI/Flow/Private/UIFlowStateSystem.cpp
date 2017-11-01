@@ -12,7 +12,7 @@
 //#include "UI/Events/UIEventsSingleComponent.h"
 #include "UI/Flow/Private/UIFlowTransitionTransaction.h"
 #include "UI/Flow/Private/UIFlowUtils.h"
-#include "UI/Flow/UIContext.h"
+#include "UI/Flow/UIFlowContext.h"
 #include "UI/Flow/UIFlowController.h"
 #include "UI/Flow/UIFlowControllerComponent.h"
 #include "UI/Flow/UIFlowControllerSystem.h"
@@ -33,7 +33,7 @@ static void StateLog(const String& msg, UIFlowStateComponent* state)
 }
 
 UIFlowStateSystem::UIFlowStateSystem()
-    : context(std::make_unique<UIContext>())
+    : context(std::make_unique<UIFlowContext>())
 {
 }
 
@@ -81,7 +81,7 @@ void UIFlowStateSystem::SetFlowRoot(UIControl* flowRoot)
     }
 }
 
-UIContext* UIFlowStateSystem::GetContext() const
+UIFlowContext* UIFlowStateSystem::GetContext() const
 {
     return context.get();
 }
@@ -166,7 +166,7 @@ void UIFlowStateSystem::HardReset()
     DeactivateAllStates();
     ApplyTransition();
     DVASSERT(currentState == nullptr);
-    DVASSERT(currentSubStates.empty());
+    DVASSERT(currentMultipleStates.empty());
     DVASSERT(transitionTransactions.empty());
     historyTransactions.clear();
 }
@@ -204,7 +204,7 @@ bool UIFlowStateSystem::IsStateActive(UIFlowStateComponent* state) const
     auto findIt = links.find(state);
     if (findIt != links.end())
     {
-        return findIt->second.status == StateLink::Activated;
+        return findIt->second.status >= StateLink::Activated;
     }
     return false;
 }
@@ -439,7 +439,7 @@ void UIFlowStateSystem::FinishActivation(UIFlowStateComponent* state)
         currentState = state;
         break;
     case UIFlowStateComponent::STATE_MULTIPLE:
-        currentSubStates.push_back(state);
+        currentMultipleStates.push_back(state);
         break;
     default:
         break;
@@ -558,7 +558,7 @@ void UIFlowStateSystem::FinishDeactivation(UIFlowStateComponent* state)
         }
         break;
     case UIFlowStateComponent::STATE_MULTIPLE:
-        currentSubStates.remove(state);
+        currentMultipleStates.erase(std::remove(currentMultipleStates.begin(), currentMultipleStates.end(), state), currentMultipleStates.end());
         break;
     default:
         break;

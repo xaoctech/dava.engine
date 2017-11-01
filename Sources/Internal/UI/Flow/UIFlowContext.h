@@ -13,13 +13,13 @@ class EngineContext;
 class UIFlowService;
 
 /** Contains information about current available UI services and shared data. */
-class UIContext final : public ReflectionBase
+class UIFlowContext final : public ReflectionBase
 {
-    DAVA_VIRTUAL_REFLECTION(UIContext, ReflectionBase);
+    DAVA_VIRTUAL_REFLECTION(UIFlowContext, ReflectionBase);
 
 public:
     /** Default constructor. */
-    UIContext();
+    UIFlowContext();
 
     /** Return pointer to KeyedArchive with shared UI data. */
     KeyedArchive* GetData() const;

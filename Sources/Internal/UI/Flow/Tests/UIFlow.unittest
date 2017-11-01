@@ -14,7 +14,7 @@
 // #include "UI/Events/UIEventsSystem.h"
 #include "UI/Flow/Private/UIFlowTransitionTransaction.h"
 #include "UI/Flow/Services/FlowUIService.h"
-#include "UI/Flow/UIContext.h"
+#include "UI/Flow/UIFlowContext.h"
 #include "UI/Flow/UIFlowController.h"
 #include "UI/Flow/UIFlowControllerComponent.h"
 #include "UI/Flow/UIFlowControllerSystem.h"
@@ -47,20 +47,20 @@ public:
     uint32 testStep = 0;
     bool first = true;
 
-    void Init(UIContext* context) override
+    void Init(UIFlowContext* context) override
     {
         UIFlowController::Init(context);
         testStep = context->GetData()->GetInt32("testStep");
         testStep++;
     }
 
-    void LoadResources(UIContext* context, UIControl* view) override
+    void LoadResources(UIFlowContext* context, UIControl* view) override
     {
         UIFlowController::LoadResources(context, view);
         testStep++;
     }
 
-    void Activate(UIContext* context, UIControl* view) override
+    void Activate(UIFlowContext* context, UIControl* view) override
     {
         UIFlowController::Activate(context, view);
         testStep++;
@@ -87,19 +87,19 @@ public:
         return UIFlowController::ProcessEvent(eventName, params);
     }
 
-    void Deactivate(UIContext* context, UIControl* view) override
+    void Deactivate(UIFlowContext* context, UIControl* view) override
     {
         testStep++;
         UIFlowController::Deactivate(context, view);
     }
 
-    void UnloadResources(UIContext* context, UIControl* view) override
+    void UnloadResources(UIFlowContext* context, UIControl* view) override
     {
         testStep++;
         UIFlowController::UnloadResources(context, view);
     }
 
-    void Release(UIContext* context) override
+    void Release(UIFlowContext* context) override
     {
         testStep++;
         context->GetData()->SetInt32("testStep", testStep);
@@ -111,7 +111,7 @@ DAVA_TESTCLASS (UIFlowTest)
 {
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(DavaFramework)
-    DECLARE_COVERED_FILES("UIContext.cpp")
+    DECLARE_COVERED_FILES("UIFlowContext.cpp")
     DECLARE_COVERED_FILES("UIFlowController.cpp")
     DECLARE_COVERED_FILES("UIFlowControllerComponent.cpp")
     DECLARE_COVERED_FILES("UIFlowControllerSystem.cpp")
@@ -220,7 +220,7 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state);
         TEST_VERIFY(HasControl("**/View1"));
         TEST_VERIFY(stateSys->IsStateActive(stateSys->FindStateByPath("^")));
         TEST_VERIFY(stateSys->IsStateActive(stateSys->FindStateByPath("^/BasicGroup")));
@@ -239,7 +239,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
         SystemsUpdate();
         WaitBackgroundTransactions();
-        TEST_VERIFY(stateSys->GetCurrentState() == state);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state);
         TEST_VERIFY(HasControl("**/View1"));
     }
 
@@ -249,14 +249,14 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
         TEST_VERIFY(HasControl("**/View1"));
 
         UIFlowStateComponent* state2 = stateSys->FindStateByPath("^/**/State2");
         TEST_VERIFY(state2 != nullptr);
         stateSys->ActivateState(state2, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state2);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state2);
         TEST_VERIFY(HasControl("**/View2"));
 
         TEST_VERIFY(!HasControl("**/View1"));
@@ -271,7 +271,7 @@ DAVA_TESTCLASS (UIFlowTest)
         stateSys->ActivateState(state1, true);
         SystemsUpdate();
         WaitBackgroundTransactions();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
         TEST_VERIFY(HasControl("**/View1"));
 
         UIFlowStateComponent* state2 = stateSys->FindStateByPath("^/**/State2");
@@ -279,7 +279,7 @@ DAVA_TESTCLASS (UIFlowTest)
         stateSys->ActivateState(state2, true);
         SystemsUpdate();
         WaitBackgroundTransactions();
-        TEST_VERIFY(stateSys->GetCurrentState() == state2);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state2);
         TEST_VERIFY(HasControl("**/View2"));
 
         TEST_VERIFY(!HasControl("**/View1"));
@@ -293,27 +293,27 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
 
         UIFlowStateComponent* state2 = stateSys->FindStateByPath("^/**/State2");
         TEST_VERIFY(state2 != nullptr);
         stateSys->ActivateState(state2, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state2);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state2);
 
         // By system method
         stateSys->HistoryBack();
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
 
         stateSys->ActivateState(state2, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state2);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state2);
 
         // By event
         //        DispatchEvent("BACK");
         //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
     }
 
     DAVA_TEST (HistorySiblings)
@@ -322,24 +322,24 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
 
         UIFlowStateComponent* sibling1 = stateSys->FindStateByPath("^/**/Sibling1");
         TEST_VERIFY(sibling1 != nullptr);
         stateSys->ActivateState(sibling1, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == sibling1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == sibling1);
 
         UIFlowStateComponent* sibling2 = stateSys->FindStateByPath("^/**/Sibling2");
         TEST_VERIFY(sibling2 != nullptr);
         stateSys->ActivateState(sibling2, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == sibling2);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == sibling2);
 
         stateSys->HistoryBack();
         SystemsUpdate();
 
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
     }
 
     DAVA_TEST (HistoryTop)
@@ -348,40 +348,40 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state1 != nullptr);
         stateSys->ActivateState(state1, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
 
         // Back from OnlyTop state
         UIFlowStateComponent* stateTop = stateSys->FindStateByPath("^/**/StateTop");
         TEST_VERIFY(stateTop != nullptr);
         stateSys->ActivateState(stateTop, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == stateTop);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateTop);
 
         stateSys->HistoryBack();
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
 
         // Switch OnlyTop state and go back
         stateSys->ActivateState(stateTop, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == stateTop);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateTop);
 
         UIFlowStateComponent* state2 = stateSys->FindStateByPath("^/**/State2");
         TEST_VERIFY(state2 != nullptr);
         stateSys->ActivateState(state2, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state2);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state2);
 
         stateSys->HistoryBack();
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == state1);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
     }
 
     DAVA_TEST (FlowService)
     {
         static const FastName serviceName("flow");
 
-        UIContext* context = stateSys->GetContext();
+        UIFlowContext* context = stateSys->GetContext();
         TEST_VERIFY(context != nullptr);
 
         UIFlowStateComponent* state = stateSys->FindStateByPath(".");
@@ -399,7 +399,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (LuaController)
     {
-        UIContext* context = stateSys->GetContext();
+        UIFlowContext* context = stateSys->GetContext();
         TEST_VERIFY(context != nullptr);
         KeyedArchive* data = context->GetData();
         TEST_VERIFY(data != nullptr);
@@ -430,7 +430,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (NativeController)
     {
-        UIContext* context = stateSys->GetContext();
+        UIFlowContext* context = stateSys->GetContext();
         TEST_VERIFY(context != nullptr);
         KeyedArchive* data = context->GetData();
         TEST_VERIFY(data != nullptr);
@@ -457,7 +457,7 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("./DefaultState"));
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("./DefaultState"));
 
         state = stateSys->FindStateByPath("^/SubState");
         TEST_VERIFY(state != nullptr);
@@ -486,29 +486,29 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(state != nullptr);
         stateSys->ActivateState(state, false);
         SystemsUpdate();
-        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("./DefaultState"));
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("./DefaultState"));
 
         //        DispatchEvent("STATE1");
         //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("^/**/State1"));
+        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
         //
         //        DispatchEvent("STATE2");
         //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("^/**/State2"));
+        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State2"));
         //
         //        DispatchEvent("BASIC_GROUP");
         //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("^/**/State1"));
+        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
         //
         //        DispatchEvent("STATE2_BG");
         //        SystemsUpdate();
         //        WaitBackgroundTransactions();
-        //        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("^/**/State2"));
+        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State2"));
         //
         //        DispatchEvent("FWD_STATE1");
         //        SystemsUpdate();
         //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentState() == stateSys->FindStateByPath("^/**/State1"));
+        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
         //
         //        DispatchEvent("SUBSTATE");
         //        SystemsUpdate();
@@ -626,7 +626,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     DAVA_TEST (DataBinding)
     {
-        UIContext* context = stateSys->GetContext();
+        UIFlowContext* context = stateSys->GetContext();
         TEST_VERIFY(context != nullptr);
         KeyedArchive* data = context->GetData();
         TEST_VERIFY(data != nullptr);
@@ -673,7 +673,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
         SystemsUpdate(); // Apply transaction
         SystemsUpdate(); // Apply transition effect
-        TEST_VERIFY(stateSys->GetCurrentState() == state);
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state);
 
         // TODO: Make test for rendering in separate application (TestBed)
         //         const float32 HALF_TIME = 0.051f;
@@ -698,13 +698,13 @@ DAVA_TESTCLASS (UIFlowTest)
         //             controlSys->Draw();
         //             SystemsUpdate(HALF_TIME);
         //             controlSys->Draw();
-        //             TEST_VERIFY(stateSys->GetCurrentState() == state);
+        //             TEST_VERIFY(stateSys->GetCurrentSingleState() == state);
         //         }
         //
         //         // Deactivate all states with transitions and make sure that transitions complete
         //         stateSys->DeactivateAllStates();
         //         SystemsUpdate(HALF_TIME);
         //         controlSys->Draw();
-        //         TEST_VERIFY(stateSys->GetCurrentState() == nullptr);
+        //         TEST_VERIFY(stateSys->GetCurrentSingleState() == nullptr);
     }
 };

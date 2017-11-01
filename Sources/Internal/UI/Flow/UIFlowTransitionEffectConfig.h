@@ -4,6 +4,7 @@
 
 namespace DAVA
 {
+/** Describe configuration of transition effect between two states. */
 struct UIFlowTransitionEffectConfig final
 {
     enum Effect : int32
@@ -18,8 +19,11 @@ struct UIFlowTransitionEffectConfig final
         MoveRight
     };
 
+    /** Effect then the state out of screen. */
     Effect effectOut = Effect::None;
+    /** Effect then the state enter on screen. */
     Effect effectIn = Effect::None;
+    /** Effect duration. */
     float32 duration = 0.f;
 };
 }

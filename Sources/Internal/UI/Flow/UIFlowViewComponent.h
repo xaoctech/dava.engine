@@ -44,9 +44,9 @@ public:
     const String& GetContainerPath() const;
     /** Setup container path where should appended loaded control. */
     void SetContainerPath(const String& path);
-    /** Return model name from UIContext.data which should binded to loaded view. */
+    /** Return model name from UIFlowContext.data which should binded to loaded view. */
     const String& GetModelName() const;
-    /** Setup model name from UIContext.data which should binded to loaded view. */
+    /** Setup model name from UIFlowContext.data which should binded to loaded view. */
     void SetModelName(const String& name);
     /** Return data expression which should added to loaded view. */
     const String& GetModelScope() const;

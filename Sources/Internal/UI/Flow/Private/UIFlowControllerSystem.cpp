@@ -4,7 +4,7 @@
 #include "Scripting/LuaScript.h"
 #include "UI/Flow/Private/UIFlowLuaController.h"
 #include "UI/Flow/UIFlowControllerComponent.h"
-#include "UI/Flow/UIContext.h"
+#include "UI/Flow/UIFlowContext.h"
 #include "UI/Flow/UIFlowController.h"
 #include "UI/UIControl.h"
 
@@ -84,7 +84,7 @@ void UIFlowControllerSystem::RemoveControllerLink(UIFlowControllerComponent* com
     links.erase(it, links.end());
 }
 
-UIFlowController* UIFlowControllerSystem::InitController(UIFlowControllerComponent* component, UIContext* context)
+UIFlowController* UIFlowControllerSystem::InitController(UIFlowControllerComponent* component, UIFlowContext* context)
 {
     auto it = std::find_if(links.begin(), links.end(), [&](const ControllerLink& l) {
         return l.component == component;
@@ -126,7 +126,7 @@ UIFlowController* UIFlowControllerSystem::InitController(UIFlowControllerCompone
     return nullptr;
 }
 
-void UIFlowControllerSystem::ReleaseController(UIFlowControllerComponent* component, UIContext* context)
+void UIFlowControllerSystem::ReleaseController(UIFlowControllerComponent* component, UIFlowContext* context)
 {
     auto it = std::find_if(links.begin(), links.end(), [&](const ControllerLink& l) {
         return l.component == component;
@@ -141,7 +141,7 @@ void UIFlowControllerSystem::ReleaseController(UIFlowControllerComponent* compon
     }
 }
 
-void UIFlowControllerSystem::LoadController(UIFlowControllerComponent* component, UIContext* context, UIControl* view)
+void UIFlowControllerSystem::LoadController(UIFlowControllerComponent* component, UIFlowContext* context, UIControl* view)
 {
     auto it = std::find_if(links.begin(), links.end(), [&](const ControllerLink& l) {
         return l.component == component;
@@ -155,7 +155,7 @@ void UIFlowControllerSystem::LoadController(UIFlowControllerComponent* component
     }
 }
 
-void UIFlowControllerSystem::UnloadController(UIFlowControllerComponent* component, UIContext* context, UIControl* view)
+void UIFlowControllerSystem::UnloadController(UIFlowControllerComponent* component, UIFlowContext* context, UIControl* view)
 {
     auto it = std::find_if(links.begin(), links.end(), [&](const ControllerLink& l) {
         return l.component == component;
@@ -169,7 +169,7 @@ void UIFlowControllerSystem::UnloadController(UIFlowControllerComponent* compone
     }
 }
 
-UIFlowController* UIFlowControllerSystem::ActivateController(UIFlowControllerComponent* component, UIContext* context, UIControl* view)
+UIFlowController* UIFlowControllerSystem::ActivateController(UIFlowControllerComponent* component, UIFlowContext* context, UIControl* view)
 {
     auto it = std::find_if(links.begin(), links.end(), [&](const ControllerLink& l) {
         return l.component == component;
@@ -185,7 +185,7 @@ UIFlowController* UIFlowControllerSystem::ActivateController(UIFlowControllerCom
     return nullptr;
 }
 
-void UIFlowControllerSystem::DeactivateController(UIFlowControllerComponent* component, UIContext* context, UIControl* view)
+void UIFlowControllerSystem::DeactivateController(UIFlowControllerComponent* component, UIFlowContext* context, UIControl* view)
 {
     auto it = std::find_if(links.begin(), links.end(), [&](const ControllerLink& l) {
         return l.component == component;

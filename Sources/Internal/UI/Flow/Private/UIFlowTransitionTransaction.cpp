@@ -137,9 +137,9 @@ void UIFlowTransitionTransaction::BuildTransaction(UIFlowStateSystem* system)
         case UIFlowStateComponent::STATE_SINGLE:
         {
             // Deactivation (not for only-load)
-            if (!onlyLoad && system->GetCurrentState())
+            if (!onlyLoad && system->GetCurrentSingleState())
             {
-                deactivateState = system->GetCurrentState(); // Store deactivate state for reverse transaction
+                deactivateState = system->GetCurrentSingleState(); // Store deactivate state for reverse transaction
                 deactivateQueue.push_back(deactivateState);
                 UIFlowUtils::BuildParentsQueue(deactivateQueue); // Collect parents
                 UIFlowUtils::BuildActivatedQueue(system, deactivateQueue); // Collect children

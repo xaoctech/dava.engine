@@ -7,7 +7,7 @@
 
 namespace DAVA
 {
-class UIContext;
+class UIFlowContext;
 class UIFlowStateComponent;
 class UIFlowTransitionTransaction;
 class UIFlowViewSystem;
@@ -32,8 +32,8 @@ public:
     UIControl* GetFlowRoot() const;
     /** Setup UIControl with root state. */
     void SetFlowRoot(UIControl* flowRoot);
-    /** Return pointer to UIContext instance. */
-    UIContext* GetContext() const;
+    /** Return pointer to UIFlowContext instance. */
+    UIFlowContext* GetContext() const;
     /** Return pointer to top transition transaction. */
     UIFlowTransitionTransaction* GetTopTransitionTransaction() const;
 
@@ -56,9 +56,9 @@ public:
     void HistoryBack();
 
     /** Return current active Single state. */
-    UIFlowStateComponent* GetCurrentState() const;
+    UIFlowStateComponent* GetCurrentSingleState() const;
     /** Return list of current active Multiple states. */
-    const List<UIFlowStateComponent*>& GetCurrentSubStates() const;
+    const Vector<UIFlowStateComponent*>& GetCurrentMultipleStates() const;
     /** Check that specified state is initted. */
     bool IsStateInitted(UIFlowStateComponent* state) const;
     /** Check that specified state is loaded. */
@@ -104,10 +104,10 @@ private:
         Status status = Status::Off;
     };
 
-    std::unique_ptr<UIContext> context;
+    std::unique_ptr<UIFlowContext> context;
     UnorderedMap<UIFlowStateComponent*, StateLink> links;
     UIFlowStateComponent* currentState = nullptr;
-    List<UIFlowStateComponent*> currentSubStates;
+    Vector<UIFlowStateComponent*> currentMultipleStates;
     List<std::unique_ptr<UIFlowTransitionTransaction>> transitionTransactions;
     List<std::unique_ptr<UIFlowTransitionTransaction>> historyTransactions;
 
@@ -154,13 +154,13 @@ private:
     friend class UIFlowTransitionTransaction;
 };
 
-inline UIFlowStateComponent* UIFlowStateSystem::GetCurrentState() const
+inline UIFlowStateComponent* UIFlowStateSystem::GetCurrentSingleState() const
 {
     return currentState;
 }
 
-inline const List<UIFlowStateComponent*>& UIFlowStateSystem::GetCurrentSubStates() const
+inline const Vector<UIFlowStateComponent*>& UIFlowStateSystem::GetCurrentMultipleStates() const
 {
-    return currentSubStates;
+    return currentMultipleStates;
 }
 }

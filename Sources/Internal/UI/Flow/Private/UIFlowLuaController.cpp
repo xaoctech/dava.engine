@@ -1,7 +1,7 @@
 #include "UI/Flow/Private/UIFlowLuaController.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Scripting/LuaScript.h"
-#include "UI/Flow/UIContext.h"
+#include "UI/Flow/UIFlowContext.h"
 #include "UI/UIControl.h"
 
 namespace DAVA
@@ -43,7 +43,7 @@ UIFlowLuaController::UIFlowLuaController(const FilePath& scriptPath)
 
 UIFlowLuaController::~UIFlowLuaController() = default;
 
-void UIFlowLuaController::Init(UIContext* context)
+void UIFlowLuaController::Init(UIFlowContext* context)
 {
     if (loaded && script->HasGlobalFunction(INIT_FNAME))
     {
@@ -52,7 +52,7 @@ void UIFlowLuaController::Init(UIContext* context)
     }
 }
 
-void UIFlowLuaController::Release(UIContext* context)
+void UIFlowLuaController::Release(UIFlowContext* context)
 {
     if (loaded && script->HasGlobalFunction(RELEASE_FNAME))
     {
@@ -61,7 +61,7 @@ void UIFlowLuaController::Release(UIContext* context)
     }
 }
 
-void UIFlowLuaController::LoadResources(UIContext* context, UIControl* view)
+void UIFlowLuaController::LoadResources(UIFlowContext* context, UIControl* view)
 {
     if (loaded && script->HasGlobalFunction(LOAD_FNAME))
     {
@@ -71,7 +71,7 @@ void UIFlowLuaController::LoadResources(UIContext* context, UIControl* view)
     }
 }
 
-void UIFlowLuaController::UnloadResources(UIContext* context, UIControl* view)
+void UIFlowLuaController::UnloadResources(UIFlowContext* context, UIControl* view)
 {
     if (loaded && script->HasGlobalFunction(UNLOAD_FNAME))
     {
@@ -81,7 +81,7 @@ void UIFlowLuaController::UnloadResources(UIContext* context, UIControl* view)
     }
 }
 
-void UIFlowLuaController::Activate(UIContext* context, UIControl* view)
+void UIFlowLuaController::Activate(UIFlowContext* context, UIControl* view)
 {
     if (loaded && script->HasGlobalFunction(ACTIVATE_FNAME))
     {
@@ -91,7 +91,7 @@ void UIFlowLuaController::Activate(UIContext* context, UIControl* view)
     }
 }
 
-void UIFlowLuaController::Deactivate(UIContext* context, UIControl* view)
+void UIFlowLuaController::Deactivate(UIFlowContext* context, UIControl* view)
 {
     if (loaded && script->HasGlobalFunction(DEACTIVATE_FNAME))
     {

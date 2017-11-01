@@ -4,7 +4,7 @@
 
 namespace DAVA
 {
-class UIContext;
+class UIFlowContext;
 
 /**
     Interface which describes UIFlowService.
@@ -24,12 +24,12 @@ public:
     virtual ~UIFlowService() = default;
 
     /** Calls then instance of UIFlowService has been activated. */
-    virtual void Activate(UIContext* context)
+    virtual void Activate(UIFlowContext* context)
     {
     }
 
     /** Calls then instance of UIFlowService will be deactivated. */
-    virtual void Deactivate(UIContext* context)
+    virtual void Deactivate(UIFlowContext* context)
     {
     }
 };

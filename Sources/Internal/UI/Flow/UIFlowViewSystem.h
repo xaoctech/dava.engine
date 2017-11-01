@@ -6,7 +6,7 @@
 
 namespace DAVA
 {
-class UIContext;
+class UIFlowContext;
 class UIControl;
 class UIFlowViewComponent;
 
@@ -18,9 +18,9 @@ class UIFlowViewSystem final : public UISystem
 public:
     ~UIFlowViewSystem() override;
 
-    /** Returns pointer to UIFlowViewComponent by specified UIControl view. */
+    /** Return pointer to UIFlowViewComponent by specified UIControl view. */
     UIFlowViewComponent* GetLinkedComponent(UIControl* view) const;
-    /** Returns pointer to UIControl view by specified UIFlowViewComponent. */
+    /** Return pointer to UIControl view by specified UIFlowViewComponent. */
     UIControl* GetLinkedView(UIFlowViewComponent* component) const;
 
 protected:
@@ -32,7 +32,7 @@ protected:
     void Process(float32 elapsedTime) override;
 
 private:
-    /** Describes link between UIFlowViewComponent and UIControl. */
+    /** Describe link between UIFlowViewComponent and UIControl. */
     struct ViewLink
     {
         UIFlowViewComponent* component;
@@ -46,11 +46,11 @@ private:
     void RemoveViewLink(UIFlowViewComponent* component);
 
     /** Load new UIControl using information from UIFlowViewComponent. */
-    UIControl* InitView(UIFlowViewComponent* component, UIContext* context);
+    UIControl* InitView(UIFlowViewComponent* component, UIFlowContext* context);
     /** Release UIControl linked with specified UIFlowViewComponent. */
     void ReleaseView(UIFlowViewComponent* component);
     /** Append UIControl linked with specified UIFlowViewComponent to UI hierarchy. */
-    UIControl* ActivateView(UIFlowViewComponent* component, UIContext* context);
+    UIControl* ActivateView(UIFlowViewComponent* component, UIFlowContext* context);
     /** Remove UIControl linked with specified UIFlowViewComponent from UI hierarchy. */
     void DeactivateView(UIFlowViewComponent* component);
 

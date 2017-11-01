@@ -1040,7 +1040,8 @@ public:
         return DynamicTypeCheck<T*>(GetComponent(runtimeType, index));
     }
 
-    /** Return UIComponent with specified 'typeName' at specified 'index'. Return nullptr if such component is not found. */
+    /** Return UIComponent with specified 'typeName' (reflection permament name) at specified 'index'.
+        Return nullptr if such component is not found. */
     UIComponent* GetComponentByName(const String& typeName, uint32 index = 0) const;
 
     /**

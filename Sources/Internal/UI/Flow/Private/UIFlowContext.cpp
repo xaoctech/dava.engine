@@ -1,4 +1,4 @@
-#include "UI/Flow/UIContext.h"
+#include "UI/Flow/UIFlowContext.h"
 #include "Engine/EngineContext.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectedTypeDB.h"
@@ -7,26 +7,26 @@
 
 namespace DAVA
 {
-DAVA_VIRTUAL_REFLECTION_IMPL(UIContext)
+DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowContext)
 {
-    ReflectionRegistrator<UIContext>::Begin()
-    .DestructorByPointer([](UIContext* c) { delete c; })
-    .Field("data", &UIContext::GetData, nullptr)
-    .Method<UIFlowService* (UIContext::*)(const FastName&) const>("getService", &UIContext::GetService)
+    ReflectionRegistrator<UIFlowContext>::Begin()
+    .DestructorByPointer([](UIFlowContext* c) { delete c; })
+    .Field("data", &UIFlowContext::GetData, nullptr)
+    .Method<UIFlowService* (UIFlowContext::*)(const FastName&) const>("GetService", &UIFlowContext::GetService)
     .End();
 }
 
-UIContext::UIContext()
+UIFlowContext::UIFlowContext()
     : data(new KeyedArchive())
 {
 }
 
-KeyedArchive* UIContext::GetData() const
+KeyedArchive* UIFlowContext::GetData() const
 {
     return data.Get();
 }
 
-UIFlowService* UIContext::GetService(const FastName& name) const
+UIFlowService* UIFlowContext::GetService(const FastName& name) const
 {
     auto it = services.find(name);
     if (it != services.end())
@@ -36,7 +36,7 @@ UIFlowService* UIContext::GetService(const FastName& name) const
     return nullptr;
 }
 
-void UIContext::InitServiceByType(const FastName& name, const String& typeName)
+void UIFlowContext::InitServiceByType(const FastName& name, const String& typeName)
 {
     auto it = services.find(name);
     if (it != services.end())
@@ -69,7 +69,7 @@ void UIContext::InitServiceByType(const FastName& name, const String& typeName)
     }
 }
 
-void UIContext::ReleaseService(const FastName& name)
+void UIFlowContext::ReleaseService(const FastName& name)
 {
     auto it = services.find(name);
     if (it != services.end())

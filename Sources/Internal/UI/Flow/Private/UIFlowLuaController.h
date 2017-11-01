@@ -6,7 +6,7 @@
 
 namespace DAVA
 {
-class UIContext;
+class UIFlowContext;
 class UIControl;
 class LuaScript;
 
@@ -32,12 +32,12 @@ public:
     UIFlowLuaController(const FilePath& scriptPath);
     ~UIFlowLuaController() override;
 
-    void Init(UIContext* context) override;
-    void Release(UIContext* context) override;
-    void LoadResources(UIContext* context, UIControl* view) override;
-    void UnloadResources(UIContext* context, UIControl* view) override;
-    void Activate(UIContext* context, UIControl* view) override;
-    void Deactivate(UIContext* context, UIControl* view) override;
+    void Init(UIFlowContext* context) override;
+    void Release(UIFlowContext* context) override;
+    void LoadResources(UIFlowContext* context, UIControl* view) override;
+    void UnloadResources(UIFlowContext* context, UIControl* view) override;
+    void Activate(UIFlowContext* context, UIControl* view) override;
+    void Deactivate(UIFlowContext* context, UIControl* view) override;
     void Process(float32 elapsedTime) override;
     bool ProcessEvent(const FastName& eventName, const Vector<Any>& params = Vector<Any>()) override;
 

@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EventsUIService)
     ReflectionRegistrator<EventsUIService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](EventsUIService* s) { delete s; })
-    .Method("send", &EventsUIService::Send)
+    .Method("Send", &EventsUIService::Send)
     .End();
 }
 

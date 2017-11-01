@@ -3,7 +3,7 @@
 #include "Engine/EngineContext.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/Flow/UIContext.h"
+#include "UI/Flow/UIFlowContext.h"
 #include "UI/UIControlSystem.h"
 
 namespace DAVA
@@ -13,7 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DataUIService)
     ReflectionRegistrator<DataUIService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](DataUIService* s) { delete s; })
-    .Method("setDataDirty", &DataUIService::SetDataDirty)
+    .Method("SetDataDirty", &DataUIService::SetDataDirty)
     .End();
 }
 

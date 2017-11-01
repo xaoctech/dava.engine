@@ -5,7 +5,7 @@
 
 namespace DAVA
 {
-class UIContext;
+class UIFlowContext;
 
 class DataUIService : public UIFlowService
 {

@@ -18,14 +18,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(FlowUIService)
     ReflectionRegistrator<FlowUIService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](FlowUIService* s) { delete s; })
-    .Method("activateState", &FlowUIService::ActivateState)
-    .Method("deactivateState", &FlowUIService::DeactivateState)
-    .Method("preloadState", &FlowUIService::PreloadState)
-    .Method("isStateLoaded", &FlowUIService::IsStateLoaded)
-    .Method("isStateActive", &FlowUIService::IsStateActive)
-    .Method("hasTransitions", &FlowUIService::HasTransitions)
-    .Method("getCurrentState", &FlowUIService::GetCurrentState)
-    .Method("getScreenshot", &FlowUIService::GetScreenshot)
+    .Method("ActivateState", &FlowUIService::ActivateState)
+    .Method("DeactivateState", &FlowUIService::DeactivateState)
+    .Method("PreloadState", &FlowUIService::PreloadState)
+    .Method("IsStateLoaded", &FlowUIService::IsStateLoaded)
+    .Method("IsStateActive", &FlowUIService::IsStateActive)
+    .Method("HasTransitions", &FlowUIService::HasTransitions)
+    .Method("GetCurrentSingleState", &FlowUIService::GetCurrentSingleState)
+    .Method("GetCurrentMultipleStates", &FlowUIService::GetCurrentMultipleStates)
     .End();
 }
 
@@ -65,18 +65,15 @@ bool FlowUIService::HasTransitions()
     return sys->HasTransitions();
 }
 
-UIFlowStateComponent* FlowUIService::GetCurrentState()
+UIFlowStateComponent* FlowUIService::GetCurrentSingleState()
 {
     UIFlowStateSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIFlowStateSystem>();
-    return sys->GetCurrentState();
+    return sys->GetCurrentSingleState();
 }
 
-Sprite* FlowUIService::GetScreenshot()
+const Vector<UIFlowStateComponent*>& FlowUIService::GetCurrentMultipleStates()
 {
-    UIControl* screen = GetEngineContext()->uiControlSystem->GetScreen();
-    UIScreenshoter* shoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
-    RefPtr<Texture> texture = shoter->MakeScreenshot(screen, FORMAT_RGBA8888, true, true);
-    Sprite* sprite = Sprite::CreateFromTexture(texture.Get(), 0, 0, screen->GetSize().dx, screen->GetSize().dy, false);
-    return sprite;
+    UIFlowStateSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIFlowStateSystem>();
+    return sys->GetCurrentMultipleStates();
 }
 }
