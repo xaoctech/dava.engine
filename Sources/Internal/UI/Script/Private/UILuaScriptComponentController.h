@@ -13,6 +13,13 @@ class LuaScript;
 /**
     Lua Script component controller implementation.
     Implementation of UIScriptComponentController interface that based on Lua-code.
+
+    Lua script can contains next functions:
+        - `init(controlRef, componentRef)`,
+        - `release(controlRef, componentRef)`.
+        - `parametersChanged(controlRef, componentRef)`.
+        - `process(controlRef, componentRef, frameDelta)`,
+        - `processEvent(controlRef, componentRef, eventName,  ...)` (must return true for avoid sending current event next),
 */
 class UILuaScriptComponentController : public UIScriptComponentController
 {

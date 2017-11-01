@@ -88,7 +88,6 @@ bool UILuaScriptComponentController::ProcessEvent(UIScriptComponent* component, 
     {
         Reflection controlRef = Reflection::Create(ReflectedObject(component->GetControl()));
         Reflection componentRef = Reflection::Create(ReflectedObject(component));
-        // TODO: make fast without copy params
         Vector<Any> args;
         args.push_back(controlRef);
         args.push_back(componentRef);

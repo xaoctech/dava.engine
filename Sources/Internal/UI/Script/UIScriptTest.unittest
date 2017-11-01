@@ -219,4 +219,16 @@ DAVA_TESTCLASS (UIScriptTest)
         text->RemoveComponent<UIScriptComponent>(0);
         sys->Process(0.0f);
     }
+
+    DAVA_TEST (RemoveComponentTest)
+    {
+        text->GetOrCreateComponent<UIScriptComponent>();
+
+        RefPtr<UIStaticText> text2 = MakeRef<UIStaticText>();
+        screen->AddControl(text2.Get());
+        text2->GetOrCreateComponent<UIScriptComponent>();
+
+        text->RemoveComponent<UIScriptComponent>();
+        text2->RemoveComponent<UIScriptComponent>();
+    }
 };

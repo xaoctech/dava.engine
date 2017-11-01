@@ -147,7 +147,7 @@ void UIScriptSystem::UpdateController(DAVA::UIScriptSystem::ScriptLink& l)
 
 void UIScriptSystem::RemoveScriptLink(UIScriptComponent* component)
 {
-    auto it = std::remove_if(links.begin(), links.end(), [&](const ScriptLink& l) { return l.component == component; });
+    auto it = std::find_if(links.begin(), links.end(), [&](const ScriptLink& l) { return l.component == component; });
     if (it != links.end())
     {
         if (it->controller)
@@ -155,7 +155,7 @@ void UIScriptSystem::RemoveScriptLink(UIScriptComponent* component)
             it->controller->Release(component);
             it->controller.reset();
         }
-        links.erase(it, links.end());
+        links.erase(it);
     }
 }
 

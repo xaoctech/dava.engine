@@ -6,26 +6,26 @@ local step = 0
 -- Called after create controller
 function init(controlRef, componentRef)
     DV.Debug("init")    
-    controlRef.getComponentByName("UITextComponent", 0).text = "TextFromLua:init"
+    controlRef.GetComponentByName("UITextComponent", 0).text = "TextFromLua:init"
 end
 
 -- Called before destroy controller
 function release(controlRef, componentRef)
     DV.Debug("release")    
-    controlRef.getComponentByName("UITextComponent", 0).text = "TextFromLua:release"
+    controlRef.GetComponentByName("UITextComponent", 0).text = "TextFromLua:release"
 end
 
 -- Called when parameters changed controller
 function parametersChanged(controlRef, componentRef)
     DV.Debug("parametersChanged")    
-    controlRef.getComponentByName("UITextComponent", 0).text = "TextFromLua:parametersChanged:" .. componentRef.parameters
+    controlRef.GetComponentByName("UITextComponent", 0).text = "TextFromLua:parametersChanged:" .. componentRef.parameters
 end
 
 -- Called each frame
 function process(controlRef, componentRef, frameDelta)
     DV.Debug("process")    
     if step == 1 then
-        controlRef.getComponentByName("UITextComponent", 0).text = "TextFromLua:process:" .. step
+        controlRef.GetComponentByName("UITextComponent", 0).text = "TextFromLua:process:" .. step
     end
     step = step + 1
 end
@@ -34,6 +34,6 @@ end
 -- Should return true if event should been dispatched otherwise false
 function processEvent(controlRef, componentRef, event, ...)
     DV.Debug("processEvent")    
-    controlRef.getComponentByName("UITextComponent", 0).text = "TextFromLua:processEvent:" .. event
+    controlRef.GetComponentByName("UITextComponent", 0).text = "TextFromLua:processEvent:" .. event
     return true
 end
