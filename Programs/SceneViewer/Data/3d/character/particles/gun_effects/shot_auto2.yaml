@@ -34,7 +34,7 @@ layer0:
     fresToAlphaPower: 0.000000
     alphaRemapLoopCount: 1.000000
     size: [0.020000, 0.020000]
-    sprite: "../../../../../Data/3d/Particles/explosion_smoke_white"
+    sprite: "../explosion_smoke_white"
     alphaOverLife: [0.000000, 1.000000, 0.990000, 0.000000]
     enableAlphaRemap: false
     blending: 1
