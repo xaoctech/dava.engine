@@ -31,22 +31,6 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QLineEdit" name="filterLine">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="placeholderText">
-       <string>Filter</string>
-      </property>
-      <property name="clearButtonEnabled">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="PackageTreeView" name="treeView">
       <property name="contextMenuPolicy">
        <enum>Qt::ActionsContextMenu</enum>

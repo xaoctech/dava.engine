@@ -14,6 +14,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentObjectComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIRichContentObjectComponent);
+
 UIRichContentObjectComponent::UIRichContentObjectComponent() = default;
 UIRichContentObjectComponent::~UIRichContentObjectComponent() = default;
 

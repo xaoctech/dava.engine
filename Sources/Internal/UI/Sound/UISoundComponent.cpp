@@ -15,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISoundComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UISoundComponent);
+
 UISoundComponent::UISoundComponent()
 {
 }

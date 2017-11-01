@@ -93,7 +93,7 @@ void SettingsManager::ResetToDefault()
         {
             DVASSERT(f.ref.GetValueType()->IsPointer() == false && f.ref.GetValueType()->IsReference() == false);
 
-            if (f.ref.GetMeta<M::HiddenField>() != nullptr)
+            if (f.ref.GetMeta<M::HiddenField>() != nullptr && f.ref.GetMeta<M::ForceResetToDefault>() == nullptr)
             {
                 continue;
             }

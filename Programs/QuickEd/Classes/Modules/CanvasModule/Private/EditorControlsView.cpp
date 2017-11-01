@@ -17,6 +17,7 @@
 #include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/UIControl.h>
+#include <UI/UIControlBackground.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/UIControlSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
@@ -102,22 +103,7 @@ void GridControl::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Ve
 void GridControl::UpdateColorControlBackground()
 {
     PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
-    DAVA::Color color = DAVA::Color::Transparent;
-    switch (settings->backgroundColorIndex)
-    {
-    case 0:
-        color = settings->backgroundColor0;
-        break;
-    case 1:
-        color = settings->backgroundColor1;
-        break;
-    case 2:
-        color = settings->backgroundColor2;
-        break;
-    default:
-        DVASSERT(false);
-        break;
-    };
+    DAVA::Color color = settings->backgroundColors[settings->backgroundColorIndex];
     colorControl->GetBackground()->SetColor(color);
 }
 } //EditorControlsViewDetails

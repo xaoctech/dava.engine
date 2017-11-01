@@ -79,21 +79,22 @@ FileSystemWidget::FileSystemWidget(DAVA::TArc::ContextAccessor* accessor_, QWidg
 
 FileSystemWidget::~FileSystemWidget() = default;
 
+QTreeView* FileSystemWidget::GetTreeView()
+{
+    return treeView;
+}
+
 void FileSystemWidget::InitUI()
 {
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
     verticalLayout->setSpacing(5);
     verticalLayout->setContentsMargins(0, 0, 0, 0);
 
-    filterLine = new QLineEdit(this);
-    verticalLayout->addWidget(filterLine);
-
     treeView = new QTreeView(this);
     verticalLayout->addWidget(treeView);
 
-    filterLine->setClearButtonEnabled(true);
-
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    treeView->setHeaderHidden(true);
     connect(treeView, &QWidget::customContextMenuRequested, this, &FileSystemWidget::OnCustomContextMenuRequested);
     treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -101,7 +102,6 @@ void FileSystemWidget::InitUI()
     treeView->setDragDropMode(QAbstractItemView::DragOnly);
 
     connect(treeView, &QTreeView::doubleClicked, this, &FileSystemWidget::onDoubleClicked);
-    connect(filterLine, &QLineEdit::textChanged, this, &FileSystemWidget::setFilterFixedString);
 }
 
 void FileSystemWidget::BindFields()
@@ -134,7 +134,6 @@ void FileSystemWidget::SetResourceDirectory(const QString& path)
         connect(model, &QFileSystemModel::directoryLoaded, this, &FileSystemWidget::OnDirectoryLoaded);
 
         model->setFilter(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot);
-        setFilterFixedString("");
         model->setNameFilterDisables(false);
         model->setReadOnly(false);
         treeView->setModel(model);
@@ -239,13 +238,6 @@ void FileSystemWidget::onDoubleClicked(const QModelIndex& index)
     {
         openFile.Emit(model->filePath(index));
     }
-}
-
-void FileSystemWidget::setFilterFixedString(const QString& filterStr)
-{
-    QStringList filters;
-    filters << QString("*%1*" + Project::GetUiFileExtension()).arg(filterStr);
-    model->setNameFilters(filters);
 }
 
 void FileSystemWidget::onNewFolder()
