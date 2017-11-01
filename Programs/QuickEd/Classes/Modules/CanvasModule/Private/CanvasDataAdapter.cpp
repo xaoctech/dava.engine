@@ -199,7 +199,7 @@ void CanvasDataAdapter::SetScale(DAVA::float32 scale, const DAVA::Vector2& refer
 
     //recalculate new position to keep referncePoint on the same visible pos
     Vector2 newPosition = (referencePoint + position - margin) * scaleDiff - referencePoint + margin;
-    SetDisplacementPosition(newPosition);
+    SetDisplacementPositionSafe(newPosition);
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetViewSize() const

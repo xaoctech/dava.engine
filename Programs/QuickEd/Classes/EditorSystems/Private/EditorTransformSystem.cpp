@@ -804,7 +804,7 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
         const int direction = directions[axis];
 
         deltaSize[axis] *= direction;
-        deltaPosition[axis] *= direction == NEGATIVE_DIRECTION ? 1.0f - pivot[axis] : pivot[axis];
+        deltaPosition[axis] *= (direction == NEGATIVE_DIRECTION) ? 1.0f - pivot[axis] : pivot[axis];
 
         if (direction == NO_DIRECTION)
         {

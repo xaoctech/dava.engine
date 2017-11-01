@@ -1128,6 +1128,7 @@ void DocumentsModule::ApplyFileChanges()
     ContextAccessor* accessor = GetAccessor();
 
     DocumentsWatcherData* watcherData = accessor->GetGlobalContext()->GetData<DocumentsWatcherData>();
+    DVASSERT(watcherData != nullptr);
 
     DAVA::Set<DAVA::TArc::DataContext::ContextID> changed;
     DAVA::Set<DAVA::TArc::DataContext::ContextID> removed;
