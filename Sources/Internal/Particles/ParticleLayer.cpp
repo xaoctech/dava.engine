@@ -215,8 +215,8 @@ ParticleLayer* ParticleLayer::Clone()
     if (angleVariation)
         dstLayer->angleVariation.Set(angleVariation->Clone());
 
-    if (gradientMiddlePoint)
-        dstLayer->gradientMiddlePoint.Set(gradientMiddlePoint->Clone());
+    if (gradientMiddlePointLine)
+        dstLayer->gradientMiddlePointLine.Set(gradientMiddlePointLine->Clone());
 
     SafeRelease(dstLayer->innerEmitter);
     if (innerEmitter)
@@ -277,6 +277,8 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->noisePath = noisePath;
     dstLayer->enableNoise = enableNoise;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
+
+    dstLayer->gradientMiddlePoint = gradientMiddlePoint;
 
     dstLayer->alphaRemapPath = alphaRemapPath;
     if (alphaRemapOverLife)
@@ -626,7 +628,14 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         alphaRemapLoopCount = alphaRemapLoopCountNode->AsFloat();
     }
 
-    gradientMiddlePoint = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("gradientMiddlePoint"));
+    gradientMiddlePoint = 0.5f;
+    const YamlNode* gradientMiddlePointNode = node->Get("gradientMiddlePoint");
+    if (gradientMiddlePointNode)
+    {
+        gradientMiddlePoint = gradientMiddlePointNode->AsFloat();
+    }
+
+    gradientMiddlePointLine = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("gradientMiddlePointLine"));
 
     alphaRemapOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaRemapOverLife"));
 
@@ -1007,7 +1016,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Add("scaleVelocityBase", scaleVelocityBase);
     layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
 
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "gradientMiddlePoint", gradientMiddlePoint);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "gradientMiddlePointLine", gradientMiddlePointLine);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "gradientMiddlePoint", gradientMiddlePoint);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaRemapOverLife", this->alphaRemapOverLife);
 
@@ -1136,7 +1146,7 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(stripeColorOverLife.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(alphaRemapOverLife.Get(), modifiables);
-    PropertyLineHelper::AddIfModifiable(gradientMiddlePoint.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientMiddlePointLine.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowSpeedVariation.Get(), modifiables);

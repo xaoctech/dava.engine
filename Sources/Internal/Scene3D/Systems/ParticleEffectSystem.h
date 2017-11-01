@@ -39,20 +39,20 @@ public:
                 isEqualByGradient = layerId == rhs.layerId;
 
             return texture == rhs.texture
-                && enableFog == rhs.enableFog
-                && enableFrameBlend == rhs.enableFrameBlend
-                && flowmap == rhs.flowmap
-                && enableFlow == rhs.enableFlow
-                && enableFlowAnimation == rhs.enableFlowAnimation
-                && enableNoise == rhs.enableNoise
-                && isNoiseAffectFlow == rhs.isNoiseAffectFlow
-                && noise == rhs.noise
-                && useFresnelToAlpha == rhs.useFresnelToAlpha
-                && blending == rhs.blending
-                && enableAlphaRemap == rhs.enableAlphaRemap
-                && alphaRemapTexture == rhs.alphaRemapTexture
-                && usePerspectiveMapping == rhs.usePerspectiveMapping
-                && isEqualByGradient;
+            && enableFog == rhs.enableFog
+            && enableFrameBlend == rhs.enableFrameBlend
+            && flowmap == rhs.flowmap
+            && enableFlow == rhs.enableFlow
+            && enableFlowAnimation == rhs.enableFlowAnimation
+            && enableNoise == rhs.enableNoise
+            && isNoiseAffectFlow == rhs.isNoiseAffectFlow
+            && noise == rhs.noise
+            && useFresnelToAlpha == rhs.useFresnelToAlpha
+            && blending == rhs.blending
+            && enableAlphaRemap == rhs.enableAlphaRemap
+            && alphaRemapTexture == rhs.alphaRemapTexture
+            && usePerspectiveMapping == rhs.usePerspectiveMapping
+            && isEqualByGradient;
         }
     };
 

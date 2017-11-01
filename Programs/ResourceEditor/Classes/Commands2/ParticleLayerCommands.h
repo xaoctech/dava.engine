@@ -196,8 +196,9 @@ public:
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForWhite;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForBlack;
         DAVA::RefPtr<DAVA::PropertyLine<DAVA::Color>> gradientColorForMiddle;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> gradientMiddlePoint;
-        bool useThreePointGradient;
+        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> gradientMiddlePointLine;
+        DAVA::float32 gradientMiddlePoint = 0.5f;
+        bool useThreePointGradient = false;
     };
 
     CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer, ThreePointGradientParams&& params);
