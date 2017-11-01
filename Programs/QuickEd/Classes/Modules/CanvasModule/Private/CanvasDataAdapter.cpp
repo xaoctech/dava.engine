@@ -53,7 +53,8 @@ void CanvasDataAdapter::SetDisplacementPosition(const DAVA::Vector2& position)
     using namespace DAVA;
 
     Vector2 topLeftOpverflow = GetTopLeftOverflow();
-    canvasDataWrapper.SetFieldValue(CanvasData::displacementPropertyName, position - topLeftOpverflow);
+    Vector2 displacement = position - topLeftOpverflow;
+    canvasDataWrapper.SetFieldValue(CanvasData::displacementPropertyName, displacement);
 }
 
 void CanvasDataAdapter::SetDisplacementPositionSafe(const DAVA::Vector2& position)

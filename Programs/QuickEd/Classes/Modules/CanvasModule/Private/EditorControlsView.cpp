@@ -2,6 +2,7 @@
 
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/MovableInEditorComponent.h"
+#include "Classes/EditorSystems/CounterpoiseComponent.h"
 
 #include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
 #include "Classes/Model/PackageHierarchy/ControlNode.h"
@@ -207,6 +208,7 @@ BackgroundController::BackgroundController(DAVA::UIControl* nestedControl_, DAVA
     gridControl->SetName(Format("Grid_control_of_%s", name.c_str()));
     gridControl->GetOrCreateComponent<MovableInEditorComponent>();
     counterpoiseControl->SetName(Format("counterpoise_of_%s", name.c_str()));
+    counterpoiseControl->GetOrCreateComponent<CounterpoiseComponent>();
     positionHolderControl->SetName(Format("Position_holder_of_%s", name.c_str()));
     gridControl->AddControl(positionHolderControl.Get());
     positionHolderControl->AddControl(counterpoiseControl.Get());
@@ -362,13 +364,8 @@ void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*c
 {
     if (previousState == EditorSystemsManager::Transform)
     {
-        for (auto& control : gridControls)
-        {
-            control->UpdateCounterpoise();
-            control->AdjustToNestedControl();
-        }
+        OnUpdate();
     }
-    needRecalculateBgrBeforeRender = true;
 }
 
 void EditorControlsView::ControlWasRemoved(ControlNode* node, ControlsContainerNode* from)

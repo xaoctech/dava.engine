@@ -2,12 +2,14 @@
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
 #include "Classes/EditorSystems/MovableInEditorComponent.h"
+#include "Classes/EditorSystems/CounterpoiseComponent.h"
 
 #include "Classes/Model/PackageHierarchy/PackageNode.h"
 #include "Classes/Model/PackageHierarchy/ControlNode.h"
 #include "Classes/Model/ControlProperties/RootProperty.h"
 
 #include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
 #include "Classes/Modules/PreferencesModule/PreferencesData.h"
 
@@ -195,6 +197,17 @@ void CreateMagnetLinesForPivot(DAVA::Vector<MagnetLineInfo>& magnetLines, DAVA::
     Rect targetBox(Vector2(0.0f, 0.0f), targetSize);
     magnetLines.emplace_back(targetBox, horizontalRect, &controlGeometricData, Vector2::AXIS_X);
     magnetLines.emplace_back(targetBox, verticalRect, &controlGeometricData, Vector2::AXIS_Y);
+}
+
+template <typename Component>
+UIControl* GetParentWithComponent(UIControl* control)
+{
+    while (control != nullptr && control->GetComponent<Component>() == nullptr)
+    {
+        control = control->GetParent();
+    }
+    DVASSERT(control != nullptr);
+    return control;
 }
 }
 
@@ -898,15 +911,15 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
         CanvasDataAdapter canvasDataAdapter(accessor);
         deltaPosition = Rotate(deltaPosition, -control->GetAngle());
         deltaPosition /= control->GetScale();
+        deltaPosition -= adjustedSize * control->GetPivot();
+        deltaPosition *= parentGeometricData.scale * control->GetScale();
         canvasDataAdapter.SetDisplacementPosition(canvasDataAdapter.GetDisplacementPosition() - deltaPosition);
 
-        UIControl* movableInEditorParent = control;
-        while (movableInEditorParent != nullptr && movableInEditorParent->GetComponent<MovableInEditorComponent>() == nullptr)
-        {
-            movableInEditorParent = movableInEditorParent->GetParent();
-        }
-        DVASSERT(movableInEditorParent != nullptr);
+        UIControl* movableInEditorParent = EditorTransformSystemDetail::GetParentWithComponent<MovableInEditorComponent>(control);
         movableInEditorParent->SetSize(finalSize);
+
+        UIControl* counterPoiseParent = EditorTransformSystemDetail::GetParentWithComponent<CounterpoiseComponent>(control);
+        counterPoiseParent->SetPosition(counterPoiseParent->GetPosition() + adjustedSize * control->GetPivot());
     }
 
     Any positionValue(finalPosition);

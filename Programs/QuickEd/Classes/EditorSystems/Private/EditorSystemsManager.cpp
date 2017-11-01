@@ -1,5 +1,6 @@
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/MovableInEditorComponent.h"
+#include "Classes/EditorSystems/CounterpoiseComponent.h"
 
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
 #include "Classes/Modules/CanvasModule/CanvasModuleData.h"
@@ -42,7 +43,6 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
 
     rootControl->SetName(FastName("root_control"));
 
-    dragStateChanged.Connect(this, &EditorSystemsManager::OnDragStateChanged);
     activeAreaChanged.Connect(this, &EditorSystemsManager::OnActiveHUDAreaChanged);
 
     InitDAVAScreen();
@@ -54,6 +54,9 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
 
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(MovableInEditorComponent, "Movable in editor component");
     GetEngineContext()->componentManager->RegisterComponent<MovableInEditorComponent>();
+
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(CounterpoiseComponent, "Counterpoise component");
+    GetEngineContext()->componentManager->RegisterComponent<CounterpoiseComponent>();
 }
 
 EditorSystemsManager::~EditorSystemsManager()
@@ -233,7 +236,10 @@ void EditorSystemsManager::SetDisplayState(eDisplayState newDisplayState)
 
     previousDisplayState = displayState;
     displayState = newDisplayState;
-    displayStateChanged.Emit(displayState, previousDisplayState);
+    for (const auto& orderAndSystem : systems)
+    {
+        orderAndSystem.second->OnDisplayStateChanged(displayState, previousDisplayState);
+    }
 }
 
 void EditorSystemsManager::OnRootContolsChanged(const DAVA::Any& rootControlsValue)
@@ -355,7 +361,11 @@ void EditorSystemsManager::SetDragState(eDragState newDragState)
     }
     previousDragState = dragState;
     dragState = newDragState;
-    dragStateChanged.Emit(dragState, previousDragState);
+    OnDragStateChanged(dragState, previousDragState);
+    for (const auto& orderAndSystem : systems)
+    {
+        orderAndSystem.second->OnDragStateChanged(dragState, previousDragState);
+    }
 }
 
 const SortedControlNodeSet& EditorSystemsManager::GetDisplayedRootControls() const
@@ -374,9 +384,6 @@ const SortedControlNodeSet& EditorSystemsManager::GetDisplayedRootControls() con
 
 void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
 {
-    dragStateChanged.Connect(editorSystem, &BaseEditorSystem::OnDragStateChanged);
-    displayStateChanged.Connect(editorSystem, &BaseEditorSystem::OnDisplayStateChanged);
-
     BaseEditorSystem::eSystems order = editorSystem->GetOrder();
 
     CanvasControls newControls = editorSystem->CreateCanvasControls();
@@ -414,9 +421,6 @@ void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
 
 void EditorSystemsManager::UnregisterEditorSystem(BaseEditorSystem* editorSystem)
 {
-    dragStateChanged.Disconnect(editorSystem);
-    displayStateChanged.Disconnect(editorSystem);
-
     auto iter = systemsControls.find(editorSystem);
     if (iter != systemsControls.end())
     {

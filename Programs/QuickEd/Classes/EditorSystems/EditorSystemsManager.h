@@ -144,8 +144,6 @@ public:
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
     DAVA::Signal<ControlNode*, AbstractProperty*, const DAVA::Any&> propertyChanged;
     DAVA::Signal<bool> emulationModeChanged;
-    DAVA::Signal<eDragState /*currentState*/, eDragState /*previousState*/> dragStateChanged;
-    DAVA::Signal<eDisplayState /*currentState*/, eDisplayState /*previousState*/> displayStateChanged;
 
     //helpers
     DAVA::Vector2 GetMouseDelta() const;
