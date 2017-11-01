@@ -32,29 +32,22 @@ public:
 
         DVASSERT(levelToString.find(level) != levelToString.end());
 
-        static std::stringstream stream;
-
-        stream << "[" << levelToString[level] << "] " << text;
-        String result = stream.str();
-        logsArray.next() = std::move(result);
-
-        stream.str("");
+        logsArray.next() = Format("[%s] %s", levelToString[level].c_str(), text);
     }
 
     RingArray<String> logsArray = RingArray<String>(256);
 };
-
-static LoggerOutputContainer loggerOutput;
 }
 
 DebugOverlayItemLogger::DebugOverlayItemLogger()
+    : loggerOutput{ new DebugOverlayItemLoggerDetail::LoggerOutputContainer }
 {
-    Logger::AddCustomOutput(&DebugOverlayItemLoggerDetail::loggerOutput);
+    Logger::AddCustomOutput(loggerOutput.get());
 }
 
 DebugOverlayItemLogger::~DebugOverlayItemLogger()
 {
-    Logger::RemoveCustomOutput(&DebugOverlayItemLoggerDetail::loggerOutput);
+    Logger::RemoveCustomOutput(loggerOutput.get());
 }
 
 String DebugOverlayItemLogger::GetName() const
@@ -76,7 +69,7 @@ void DebugOverlayItemLogger::Draw()
         ImGui::Separator();
 
         ImGui::BeginChild("Scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-        for (auto iter = loggerOutput.logsArray.rbegin(); iter != loggerOutput.logsArray.rend(); ++iter)
+        for (auto iter = loggerOutput->logsArray.rbegin(); iter != loggerOutput->logsArray.rend(); ++iter)
         {
             const String& s = *iter;
             if (!filter.IsActive() || filter.PassFilter(s.c_str()))

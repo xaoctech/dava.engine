@@ -4,6 +4,11 @@
 
 namespace DAVA
 {
+namespace DebugOverlayItemLoggerDetail
+{
+class LoggerOutputContainer;
+}
+
 class DebugOverlayItemLogger final : public DebugOverlayItem
 {
 public:
@@ -12,5 +17,8 @@ public:
 
     virtual String GetName() const override;
     virtual void Draw() override;
+
+private:
+    std::unique_ptr<DebugOverlayItemLoggerDetail::LoggerOutputContainer> loggerOutput;
 };
 }
