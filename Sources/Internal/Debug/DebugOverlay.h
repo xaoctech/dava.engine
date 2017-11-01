@@ -14,6 +14,9 @@ class Window;
 class DebugOverlayItem;
 class DebugOverlayItemEngineSettings;
 class DebugOverlayItemLogger;
+class DebugOverlayItemRenderStats;
+class DebugOverlayItemRenderOptions;
+class DebugOverlayItemProfiler;
 
 /**
     Class representing visual overlay ment for debugging.
@@ -78,6 +81,9 @@ private:
     // Items added by default
     std::unique_ptr<DebugOverlayItemEngineSettings> defaultItemEngineSettings;
     std::unique_ptr<DebugOverlayItemLogger> defaultItemLogger;
+    std::unique_ptr<DebugOverlayItemRenderOptions> defaultItemRenderOptions;
+    std::unique_ptr<DebugOverlayItemRenderStats> defaultItemRenderStats;
+    std::unique_ptr<DebugOverlayItemProfiler> defaultItemProfiler;
 
     // For creation
     friend class Private::EngineBackend;
