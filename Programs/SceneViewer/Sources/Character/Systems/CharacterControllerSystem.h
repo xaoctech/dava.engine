@@ -43,11 +43,9 @@ private:
     DAVA::Entity* weaponEntity = nullptr;
     DAVA::Entity* shootEffect = nullptr;
     DAVA::MotionComponent* characterMotionComponent = nullptr;
-    DAVA::Motion* moveMotion = nullptr;
-    DAVA::Motion* aimMotion = nullptr;
-    DAVA::Motion* weaponMotion = nullptr;
+	DAVA::SkeletonComponent* characterSkeleton = nullptr;
 
-    DAVA::Vector2 joypadDirection;
+    DAVA::Vector2 inputJoypadDirection;
     DAVA::Vector2 inputBeginPosition;
     DAVA::Vector2 inputEndPosition;
     
@@ -72,8 +70,6 @@ private:
     bool isZooming = false;
 
     bool doubleTapped = false;
-    
-    bool characterInited = false;
 
     friend class CharacterMoveSystem;
     friend class CharacterWeaponSystem;

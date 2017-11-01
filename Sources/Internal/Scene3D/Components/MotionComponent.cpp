@@ -22,7 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
     .Field("configPath", &MotionComponent::GetConfigPath, &MotionComponent::SetConfigPath)[M::DisplayName("Motion Config")]
-    .Field("playbackRate", &MotionComponent::playbackRate)[M::DisplayName("Playback Rate"), M::Range(0.f, 1.f, 0.1f)]
+    .Field("playbackRate", &MotionComponent::GetPlaybackRate, &MotionComponent::SetPlaybackRate)[M::DisplayName("Playback Rate"), M::Range(0.f, 1.f, 0.1f)]
     .Field("parameters", &MotionComponent::parameters)[M::DisplayName("parameters")]
     .Field("motions", &MotionComponent::motions)[M::DisplayName("Motions")]
     .End();
@@ -37,6 +37,19 @@ MotionComponent::~MotionComponent()
 {
     for (Motion*& m : motions)
         SafeDelete(m);
+}
+
+void MotionComponent::TriggerEvent(const FastName& trigger)
+{
+	for (Motion* motion : motions)
+		motion->TriggerEvent(trigger);
+}
+
+void MotionComponent::SetParameter(const FastName& parameterID, float32 value)
+{
+	auto found = parameters.find(parameterID);
+	if (found != parameters.end())
+		found->second = value;
 }
 
 Component* MotionComponent::Clone(Entity* toEntity)
@@ -80,16 +93,6 @@ Motion* MotionComponent::GetMotion(uint32 index) const
     return motions[index];
 }
 
-float32 MotionComponent::GetPlaybackRate() const
-{
-    return playbackRate;
-}
-
-void MotionComponent::SetPlaybackRate(float32 rate)
-{
-    playbackRate = rate;
-}
-
 const FilePath& MotionComponent::GetConfigPath() const
 {
     return configPath;
@@ -110,6 +113,7 @@ void MotionComponent::ReloadFromConfig()
 {
     for (Motion*& m : motions)
         SafeDelete(m);
+
     motions.clear();
     parameters.clear();
 
@@ -134,13 +138,11 @@ void MotionComponent::ReloadFromConfig()
                     {
                         motions.push_back(motion);
 
-                        //temporary for debug
                         for (const FastName& p : motion->GetParameterIDs())
                             parameters[p] = 0.f;
                     }
                 }
 
-                //temporary for debug
                 for (Motion* motion : motions)
                 {
                     for (const FastName& p : motion->GetParameterIDs())

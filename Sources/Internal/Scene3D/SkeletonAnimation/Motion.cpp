@@ -207,6 +207,13 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
             motion->blendMode = eMotionBlend(enumValue);
     }
 
+	FastName defaultStateID;
+	const YamlNode* defaultStateNode = motionNode->Get("default-state");
+	if (defaultStateNode != nullptr && defaultStateNode->GetType() == YamlNode::TYPE_STRING)
+	{
+		defaultStateID = defaultStateNode->AsFastName();
+	}
+
     const YamlNode* statesNode = motionNode->Get("states");
     if (statesNode != nullptr && statesNode->GetType() == YamlNode::TYPE_ARRAY)
     {
@@ -222,12 +229,13 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 
             const Vector<FastName>& blendTreeParams = state.GetBlendTreeParameters();
             statesParameters.insert(blendTreeParams.begin(), blendTreeParams.end());
+
+			if (defaultStateID == state.GetID())
+				motion->currentState = motion->states.data() + s;
         }
 
-        if (statesCount > 0)
-        {
+        if (motion->currentState == nullptr && statesCount > 0)
             motion->currentState = motion->states.data();
-        }
 
         motion->transitions.resize(statesCount * statesCount, nullptr);
     }

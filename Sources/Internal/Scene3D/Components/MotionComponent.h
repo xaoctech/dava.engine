@@ -23,6 +23,9 @@ public:
     MotionComponent() = default;
     ~MotionComponent();
 
+	void TriggerEvent(const FastName& trigger); //TODO: *Skinning* make adequate naming
+	void SetParameter(const FastName& parameterID, float32 value);
+
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -36,23 +39,37 @@ public:
     float32 GetPlaybackRate() const;
     void SetPlaybackRate(float32 rate);
 
-    void ReloadFromConfig();
-
-    Vector3 rootOffsetDelta;
+	const Vector3& GetRootOffsetDelta() const;
 
 protected:
+	void ReloadFromConfig();
+
     FilePath configPath;
-    Vector<Motion*> motions;
+	Vector<Motion*> motions;
 
-    DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
-
-    //temporary for debug
-    //////////////////////////////////////////////////////////////////////////
     float32 playbackRate = 1.f;
-    Map<FastName, float32> parameters;
-    //////////////////////////////////////////////////////////////////////////
+	UnorderedMap<FastName, float32> parameters;
+
+	Vector3 rootOffsetDelta;
+
+	DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
     friend class MotionSystem;
 };
+
+inline float32 MotionComponent::GetPlaybackRate() const
+{
+	return playbackRate;
+}
+
+inline void MotionComponent::SetPlaybackRate(float32 rate)
+{
+	playbackRate = rate;
+}
+
+inline const Vector3& MotionComponent::GetRootOffsetDelta() const
+{
+	return rootOffsetDelta;
+}
 
 } //ns
