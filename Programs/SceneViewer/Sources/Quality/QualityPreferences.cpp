@@ -11,7 +11,6 @@ DAVA::String SETTING_QUALITY_MSAA = "Quality/MSAA";
 DAVA::String SETTING_QUALITY_MATERIALS = "Quality/Material/";
 DAVA::String SETTING_QUALITY_PARTICLE = "Quality/Particle";
 DAVA::String SETTING_QUALITY_OPTIONS = "Quality/Options/";
-DAVA::String SETTING_QUALITY_METAL = "Quality/Metal";
 
 void LoadFromSettings(Settings& appSettings)
 {
@@ -108,12 +107,6 @@ void LoadFromSettings(Settings& appSettings)
                 }
             }
         }
-
-        value = settings->GetVariant(SETTING_QUALITY_METAL);
-        if (value != nullptr && value->GetType() == VariantType::TYPE_BOOLEAN)
-        {
-            QualitySettingsSystem::Instance()->SetMetalPreview(value->AsBool());
-        }
     }
 }
 
@@ -150,8 +143,6 @@ void SaveToSettings(Settings& appSettings)
         bool optionValue = QualitySettingsSystem::Instance()->IsOptionEnabled(optionName);
         optionsArchive->SetBool(optionName.c_str(), optionValue);
     }
-
-    archive->SetBool(SETTING_QUALITY_METAL, QualitySettingsSystem::Instance()->GetMetalPreview());
 
     appSettings.SetQualitySettings(archive);
 }

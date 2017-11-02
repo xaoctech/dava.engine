@@ -395,17 +395,6 @@ void QualitySettingsDialog::BuildQualityControls()
             cell->SetRightColumnControl(binaryBox);
             binaryBox->SetOn(DAVA::QualitySettingsSystem::Instance()->IsOptionEnabled(optionName));
         }
-
-        {
-            QualitySettingsCell* cell = new QualitySettingsCell(font);
-            cells.emplace_back(cell);
-
-            cell->SetLeftColumnText(L"Metal Enabled:");
-
-            metalOptionBox = new BinaryTriggerBox(*this, font, L"Yes", L"No");
-            cell->SetRightColumnControl(metalOptionBox);
-            metalOptionBox->SetOn(DAVA::QualitySettingsSystem::Instance()->GetMetalPreview());
-        }
     }
 
     AddCaptionCell(L"");
@@ -523,16 +512,6 @@ void QualitySettingsDialog::ApplyQualitySettings()
         }
     }
 
-    if (metalOptionBox)
-    {
-        bool checked = metalOptionBox->IsOn();
-        if (DAVA::QualitySettingsSystem::Instance()->GetMetalPreview() != checked)
-        {
-            DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(checked);
-            optionSettingsChanged = true;
-        }
-    }
-
     if (materialSettingsChanged)
     {
         ApplyMaterialQuality();
@@ -638,11 +617,6 @@ void QualitySettingsDialog::ResetQualitySettings()
         DVASSERT(static_cast<size_t>(i) < qualityOptionBoxes.size());
         BinaryTriggerBox* binaryBox = qualityOptionBoxes[i];
         binaryBox->SetOn(DAVA::QualitySettingsSystem::Instance()->IsOptionEnabled(optionName));
-    }
-
-    if (metalOptionBox)
-    {
-        metalOptionBox->SetOn(DAVA::QualitySettingsSystem::Instance()->GetMetalPreview());
     }
 }
 
