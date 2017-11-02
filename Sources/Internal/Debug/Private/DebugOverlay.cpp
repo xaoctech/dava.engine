@@ -169,7 +169,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
 
     if (ImGui::IsInitialized())
     {
-        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+        ImGui::SetNextWindowPos(ImVec2(20.0f, 20.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
         uint32 windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize;
@@ -180,7 +180,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
                 ImGui::OpenPopup("DebugViewsPopup");
             }
 
-            ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetWindowSize().y));
+            ImGui::SetNextWindowPos(ImVec2(20.0f, ImGui::GetWindowSize().y + 20.0f));
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
             if (ImGui::BeginPopup("DebugViewsPopup"))
             {
@@ -202,33 +202,43 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
         ImGui::End();
         ImGui::PopStyleVar(2);
 
-        Size2f surfaceSize = GetPrimaryWindow()->GetSurfaceSize();
+        Size2f surfaceSize = GetPrimaryWindow()->GetSize();
+
         float32 scale = GetPrimaryWindow()->GetDPI() / 200.f;
         float32 buttonSide = 50.f * scale;
 
-        ImGui::SetNextWindowPos(ImVec2(surfaceSize.dx - buttonSide, 0.0f));
+        ImGui::SetNextWindowPos(ImVec2(surfaceSize.dx - buttonSide - 20.f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImColor(0, 0, 0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
         if (ImGui::Begin("DebugOverlayScaleButtons", nullptr, windowFlags))
         {
+            ImGui::SetCursorPosY(20.f);
+
             PushColor(0.3f);
             if (ImGui::Button("+", { buttonSide, buttonSide }) && ImGui::GetIO().FontGlobalScale <= 5.0f)
             {
                 ImGui::GetIO().FontGlobalScale += 0.1f;
+                ImGui::GetStyle().ScrollbarSize += 2.f;
             }
             PopColor();
+
+            ImGui::SetCursorPosY(buttonSide + 40.f);
 
             PushColor(0.6f);
             if (ImGui::Button("=", { buttonSide, buttonSide }))
             {
                 ImGui::GetIO().FontGlobalScale = 1.f;
+                ImGui::GetStyle().ScrollbarSize = 15.f; // TODO: think about mult. style imgui
             }
             PopColor();
+
+            ImGui::SetCursorPosY(2.f * buttonSide + 60.f);
 
             PushColor(1.f);
             if (ImGui::Button("-", { buttonSide, buttonSide }) && ImGui::GetIO().FontGlobalScale >= 0.5f)
             {
                 ImGui::GetIO().FontGlobalScale -= 0.1f;
+                ImGui::GetStyle().ScrollbarSize -= 2.f;
             }
             PopColor();
         }

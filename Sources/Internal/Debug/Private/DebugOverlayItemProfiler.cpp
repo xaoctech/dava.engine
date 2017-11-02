@@ -361,19 +361,14 @@ void DebugOverlayItemProfiler::DrawTraceRects(TraceData& trace, FastName* select
                 TraceData::ListElement& e = trace.list[i];
 
                 String valuestr = Format("%llu mcs", e.duration);
-                if (ImGui::Selectable(e.name.c_str(), e.name == *selectedMarker))
+                if (ImGui::Selectable(e.name.c_str(), e.name == *selectedMarker, ImGuiSelectableFlags_AllowDoubleClick))
                 {
                     *selectedMarker = e.name;
-                }
 
-                if (ImGui::BeginPopupContextItem(e.name.c_str()))
-                {
-                    if (ImGui::Selectable("Show History"))
+                    if (ImGui::IsMouseDoubleClicked(0))
                     {
                         interestMarkers.push_back(e.name);
                     }
-
-                    ImGui::EndPopup();
                 }
 
                 if (e.name == *selectedMarker && rectSelected)
