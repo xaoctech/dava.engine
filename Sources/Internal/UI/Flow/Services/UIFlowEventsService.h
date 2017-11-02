@@ -8,9 +8,9 @@ namespace DAVA
 {
 class UIControl;
 
-class EventsUIService : public UIFlowService
+class UIFlowEventsService : public UIFlowService
 {
-    DAVA_VIRTUAL_REFLECTION(EventsUIService, UIFlowService);
+    DAVA_VIRTUAL_REFLECTION(UIFlowEventsService, UIFlowService);
 
 public:
     void Send(UIControl* control, const FastName& event);

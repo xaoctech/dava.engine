@@ -1,4 +1,4 @@
-#include "UI/Flow/Services/EventsUIService.h"
+#include "UI/Flow/Services/UIFlowEventsService.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Reflection/ReflectionRegistrator.h"
@@ -9,16 +9,16 @@
 
 namespace DAVA
 {
-DAVA_VIRTUAL_REFLECTION_IMPL(EventsUIService)
+DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowEventsService)
 {
-    ReflectionRegistrator<EventsUIService>::Begin()
+    ReflectionRegistrator<UIFlowEventsService>::Begin()
     .ConstructorByPointer()
-    .DestructorByPointer([](EventsUIService* s) { delete s; })
-    .Method("Send", &EventsUIService::Send)
+    .DestructorByPointer([](UIFlowEventsService* s) { delete s; })
+    .Method("Send", &UIFlowEventsService::Send)
     .End();
 }
 
-void EventsUIService::Send(UIControl* control, const FastName& event)
+void UIFlowEventsService::Send(UIControl* control, const FastName& event)
 {
     // TODO: Uncomment after merging Events
     //    UIEventsSingleComponent* events = Engine::Instance()->GetContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();

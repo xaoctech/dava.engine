@@ -1,4 +1,4 @@
-#include "UI/Flow/Services/DataUIService.h"
+#include "UI/Flow/Services/UIFlowDataService.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Logger/Logger.h"
@@ -8,16 +8,16 @@
 
 namespace DAVA
 {
-DAVA_VIRTUAL_REFLECTION_IMPL(DataUIService)
+DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowDataService)
 {
-    ReflectionRegistrator<DataUIService>::Begin()
+    ReflectionRegistrator<UIFlowDataService>::Begin()
     .ConstructorByPointer()
-    .DestructorByPointer([](DataUIService* s) { delete s; })
-    .Method("SetDataDirty", &DataUIService::SetDataDirty)
+    .DestructorByPointer([](UIFlowDataService* s) { delete s; })
+    .Method("SetDataDirty", &UIFlowDataService::SetDataDirty)
     .End();
 }
 
-void DataUIService::SetDataDirty(const Reflection& ref)
+void UIFlowDataService::SetDataDirty(const Reflection& ref)
 {
     // TODO: Uncomment after merging Bindings
     //    UIDataBindingSystem* dbs = Engine::Instance()->GetContext()->uiControlSystem->GetSystem<UIDataBindingSystem>();

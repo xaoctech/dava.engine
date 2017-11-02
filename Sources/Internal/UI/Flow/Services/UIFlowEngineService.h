@@ -8,9 +8,9 @@ namespace DAVA
 class Engine;
 class EngineContext;
 
-class EngineUIService : public UIFlowService
+class UIFlowEngineService : public UIFlowService
 {
-    DAVA_VIRTUAL_REFLECTION(EngineUIService, UIFlowService);
+    DAVA_VIRTUAL_REFLECTION(UIFlowEngineService, UIFlowService);
 
 public:
     const Engine* GetEngine() const;

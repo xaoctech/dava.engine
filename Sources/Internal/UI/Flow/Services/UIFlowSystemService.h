@@ -8,9 +8,9 @@ namespace DAVA
 class Sprite;
 class UIFlowStateComponent;
 
-class FlowUIService : public UIFlowService
+class UIFlowSystemService : public UIFlowService
 {
-    DAVA_VIRTUAL_REFLECTION(FlowUIService, UIFlowService);
+    DAVA_VIRTUAL_REFLECTION(UIFlowSystemService, UIFlowService);
 
 public:
     void ActivateState(const String& path, bool background);

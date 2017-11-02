@@ -13,7 +13,7 @@
 // #include "UI/Events/UIEventsSingleComponent.h"
 // #include "UI/Events/UIEventsSystem.h"
 #include "UI/Flow/Private/UIFlowTransitionTransaction.h"
-#include "UI/Flow/Services/FlowUIService.h"
+#include "UI/Flow/Services/UIFlowSystemService.h"
 #include "UI/Flow/UIFlowContext.h"
 #include "UI/Flow/UIFlowController.h"
 #include "UI/Flow/UIFlowControllerComponent.h"
@@ -389,12 +389,12 @@ DAVA_TESTCLASS (UIFlowTest)
         stateSys->ActivateState(state, false);
         SystemsUpdate();
 
-        TEST_VERIFY(context->GetService<FlowUIService>(serviceName) != nullptr);
+        TEST_VERIFY(context->GetService<UIFlowSystemService>(serviceName) != nullptr);
 
         stateSys->DeactivateAllStates();
         SystemsUpdate();
 
-        TEST_VERIFY(context->GetService<FlowUIService>(serviceName) == nullptr);
+        TEST_VERIFY(context->GetService<UIFlowSystemService>(serviceName) == nullptr);
     }
 
     DAVA_TEST (LuaController)
@@ -588,7 +588,7 @@ DAVA_TESTCLASS (UIFlowTest)
     DAVA_TEST (StateComponent)
     {
         static const String EVENTS_STR("EVENT1;EVENT2;");
-        static const String SERVICES_STR("flow,FlowUIService;wrong,WRONG_SERVICE;");
+        static const String SERVICES_STR("flow,UIFlowSystemService;wrong,WRONG_SERVICE;");
 
         UIFlowStateComponent* state = stateSys->FindStateByPath("./**/State1");
         TEST_VERIFY(state != nullptr);
@@ -617,7 +617,7 @@ DAVA_TESTCLASS (UIFlowTest)
         const Vector<UIFlowStateComponent::ServiceDescriptor>& services = state->GetServices();
         TEST_VERIFY(services.size() == 2);
         TEST_VERIFY(services[0].name == "flow");
-        TEST_VERIFY(services[0].nativeType == "FlowUIService");
+        TEST_VERIFY(services[0].nativeType == "UIFlowSystemService");
         TEST_VERIFY(services[1].name == "wrong");
         TEST_VERIFY(services[1].nativeType == "WRONG_SERVICE");
         state->SetServices(services);
