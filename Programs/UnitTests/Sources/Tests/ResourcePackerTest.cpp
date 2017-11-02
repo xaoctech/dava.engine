@@ -28,16 +28,16 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     void ClearWorkingFolders()
     {
-        FileSystem::Instance()->DeleteDirectory(rootDir, true);
-        FileSystem::Instance()->CreateDirectory(inputDir, true);
+        DAVA::FileSystem::Instance()->DeleteDirectory(rootDir, true);
+        DAVA::FileSystem::Instance()->CreateDirectory(inputDir, true);
     }
 
     void CopyPsdSources()
     {
         for (const DAVA::String& basename : srcBaseNames)
         {
-            String fullName = basename + ".psd";
-            FileSystem::Instance()->CopyFile(resourcesDir + fullName, inputDir + fullName);
+            DAVA::String fullName = basename + ".psd";
+            DAVA::FileSystem::Instance()->CopyFile(resourcesDir + fullName, inputDir + fullName);
         }
     }
 
@@ -103,6 +103,8 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     DAVA_TEST (WrongGpuParamsTest)
     {
+        using namespace DAVA;
+
         ClearWorkingFolders();
         CopyPsdSources();
 
@@ -124,15 +126,17 @@ DAVA_TESTCLASS (ResourcePackerTest)
         ClearWorkingFolders();
         CopyPsdSources();
 
-        ResourcePacker2D packer;
+        DAVA::ResourcePacker2D packer;
         packer.InitFolders(inputDir, outputDir);
-        packer.PackResources({ eGPUFamily::GPU_DX11 });
+        packer.PackResources({ DAVA::eGPUFamily::GPU_DX11 });
 
         TEST_VERIFY(packer.GetErrors().empty() == false); // should contain error about absence of gpu key in flags.txt
     };
 
     DAVA_TEST (SourcePngTest)
     {
+        using namespace DAVA;
+
         ClearWorkingFolders();
         FileSystem::Instance()->CopyFile(resourcesDir + "air.png", inputDir + "air.png");
 
@@ -150,6 +154,7 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     DAVA_TEST (TagsTest)
     {
+        using namespace DAVA;
         ClearWorkingFolders();
 
         {
@@ -191,6 +196,8 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     DAVA_TEST (MissingTagTest)
     {
+        using namespace DAVA;
+
         ClearWorkingFolders();
         CopyPsdSources();
 
