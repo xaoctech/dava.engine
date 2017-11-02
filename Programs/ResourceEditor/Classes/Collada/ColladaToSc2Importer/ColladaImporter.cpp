@@ -373,7 +373,7 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
     if (eColladaErrorCodes::COLLADA_OK == convertRes)
     {
         // Apply transforms to render batches and use identity local transforms
-        //SceneUtils::BakeTransformsUpToFarParent(scene, scene);
+        SceneUtils::BakeTransformsUpToFarParent(scene, scene);
 
         // post process Entities and create Lod nodes.
         bool combinedSuccessfull = SceneUtils::CombineLods(scene);
