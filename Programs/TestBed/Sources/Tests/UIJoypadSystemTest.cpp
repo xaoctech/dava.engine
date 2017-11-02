@@ -56,7 +56,7 @@ void UIJoypadSystemTest::UnloadResources()
 
     BaseScreen::UnloadResources();
 
-    delete joypad;
+    SafeDelete(joypad);
 }
 
 void UIJoypadSystemTest::OnUpdate(float32 timeElapsed)
@@ -187,8 +187,6 @@ void UIJoypadSystemTest::InitJoypad()
 
     float32 areaSize = 150.f;
     float32 scale = 1.f;
-
-    joypad = new Joypad();
 
     joypad->base = new UIControl({ 10.f, GetRect().dy - 250.f - 10.f, 300.f, 250.f });
     joypad->base->GetOrCreateComponent<UIDebugRenderComponent>();
