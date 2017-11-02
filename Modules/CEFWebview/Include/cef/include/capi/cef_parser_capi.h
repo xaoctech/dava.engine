@@ -44,12 +44,13 @@
 extern "C" {
 #endif
 
+
 ///
 // Parse the specified |url| into its component parts. Returns false (0) if the
 // URL is NULL or invalid.
 ///
 CEF_EXPORT int cef_parse_url(const cef_string_t* url,
-                             struct _cef_urlparts_t* parts);
+    struct _cef_urlparts_t* parts);
 
 ///
 // Creates a URL from the specified |parts|, which must contain a non-NULL spec
@@ -57,7 +58,7 @@ CEF_EXPORT int cef_parse_url(const cef_string_t* url,
 // if |parts| isn't initialized as described.
 ///
 CEF_EXPORT int cef_create_url(const struct _cef_urlparts_t* parts,
-                              cef_string_t* url);
+    cef_string_t* url);
 
 ///
 // This is a convenience function for formatting a URL in a concise and human-
@@ -71,7 +72,7 @@ CEF_EXPORT int cef_create_url(const struct _cef_urlparts_t* parts,
 ///
 // The resulting string must be freed by calling cef_string_userfree_free().
 CEF_EXPORT cef_string_userfree_t cef_format_url_for_security_display(
-const cef_string_t* origin_url, const cef_string_t* languages);
+    const cef_string_t* origin_url, const cef_string_t* languages);
 
 ///
 // Returns the mime type for the specified file extension or an NULL string if
@@ -79,28 +80,28 @@ const cef_string_t* origin_url, const cef_string_t* languages);
 ///
 // The resulting string must be freed by calling cef_string_userfree_free().
 CEF_EXPORT cef_string_userfree_t cef_get_mime_type(
-const cef_string_t* extension);
+    const cef_string_t* extension);
 
 // Get the extensions associated with the given mime type. This should be passed
 // in lower case. There could be multiple extensions for a given mime type, like
 // "html,htm" for "text/html", or "txt,text,html,..." for "text/*". Any existing
 // elements in the provided vector will not be erased.
 CEF_EXPORT void cef_get_extensions_for_mime_type(const cef_string_t* mime_type,
-                                                 cef_string_list_t extensions);
+    cef_string_list_t extensions);
 
 ///
 // Encodes |data| as a base64 string.
 ///
 // The resulting string must be freed by calling cef_string_userfree_free().
 CEF_EXPORT cef_string_userfree_t cef_base64encode(const void* data,
-                                                  size_t data_size);
+    size_t data_size);
 
 ///
 // Decodes the base64 encoded string |data|. The returned value will be NULL if
 // the decoding fails.
 ///
 CEF_EXPORT struct _cef_binary_value_t* cef_base64decode(
-const cef_string_t* data);
+    const cef_string_t* data);
 
 ///
 // Escapes characters in |text| which are unsuitable for use as a query
@@ -110,7 +111,7 @@ const cef_string_t* data);
 ///
 // The resulting string must be freed by calling cef_string_userfree_free().
 CEF_EXPORT cef_string_userfree_t cef_uriencode(const cef_string_t* text,
-                                               int use_plus);
+    int use_plus);
 
 ///
 // Unescapes |text| and returns the result. Unescaping consists of looking for
@@ -124,7 +125,7 @@ CEF_EXPORT cef_string_userfree_t cef_uriencode(const cef_string_t* text,
 ///
 // The resulting string must be freed by calling cef_string_userfree_free().
 CEF_EXPORT cef_string_userfree_t cef_uridecode(const cef_string_t* text,
-                                               int convert_to_utf8, cef_uri_unescape_rule_t unescape_rule);
+    int convert_to_utf8, cef_uri_unescape_rule_t unescape_rule);
 
 ///
 // Parses |string| which represents a CSS color value. If |strict| is true (1)
@@ -133,30 +134,30 @@ CEF_EXPORT cef_string_userfree_t cef_uridecode(const cef_string_t* text,
 // otherwise |color| will remain unchanged.
 ///
 CEF_EXPORT int cef_parse_csscolor(const cef_string_t* string, int strict,
-                                  cef_color_t* color);
+    cef_color_t* color);
 
 // Parses the specified |json_string| and returns a dictionary or list
 // representation. If JSON parsing fails this function returns NULL.
 CEF_EXPORT struct _cef_value_t* cef_parse_json(const cef_string_t* json_string,
-                                               cef_json_parser_options_t options);
+    cef_json_parser_options_t options);
 
 // Parses the specified |json_string| and returns a dictionary or list
 // representation. If JSON parsing fails this function returns NULL and
 // populates |error_code_out| and |error_msg_out| with an error code and a
 // formatted error message respectively.
 CEF_EXPORT struct _cef_value_t* cef_parse_jsonand_return_error(
-const cef_string_t* json_string, cef_json_parser_options_t options,
-cef_json_parser_error_t* error_code_out, cef_string_t* error_msg_out);
+    const cef_string_t* json_string, cef_json_parser_options_t options,
+    cef_json_parser_error_t* error_code_out, cef_string_t* error_msg_out);
 
 // Generates a JSON string from the specified root |node| which should be a
 // dictionary or list value. Returns an NULL string on failure. This function
 // requires exclusive access to |node| including any underlying data.
 // The resulting string must be freed by calling cef_string_userfree_free().
 CEF_EXPORT cef_string_userfree_t cef_write_json(struct _cef_value_t* node,
-                                                cef_json_writer_options_t options);
+    cef_json_writer_options_t options);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // CEF_INCLUDE_CAPI_CEF_PARSER_CAPI_H_
+#endif  // CEF_INCLUDE_CAPI_CEF_PARSER_CAPI_H_

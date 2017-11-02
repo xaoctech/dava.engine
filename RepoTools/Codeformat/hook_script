@@ -22,7 +22,8 @@ files=""
 # list of directories to exclude from clang-format
 # usually directories where third-party headers are stored
 exclude_list=(
-    "/Libs"
+    "Libs"
+    "Modules/CEFWebview"
 )
 exclude_pattern=$(echo ${exclude_list[@]}|tr " " "|")
 

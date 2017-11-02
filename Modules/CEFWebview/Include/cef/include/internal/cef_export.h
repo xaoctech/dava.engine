@@ -47,9 +47,9 @@
 
 #elif defined(COMPILER_GCC)
 
-#define CEF_EXPORT __attribute__((visibility("default")))
+#define CEF_EXPORT __attribute__ ((visibility("default")))
 #define CEF_CALLBACK
 
-#endif // COMPILER_GCC
+#endif  // COMPILER_GCC
 
-#endif // CEF_INCLUDE_INTERNAL_CEF_EXPORT_H_
+#endif  // CEF_INCLUDE_INTERNAL_CEF_EXPORT_H_
