@@ -274,15 +274,8 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
             else
             {
                 for (uint32 i = 0, sz = component->GetJointsCount(); i < sz; ++i)
-                {
-                    float32 fi = t;
-
-                    Quaternion orientation;
-                    orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
-
-                    JointTransform transform = component->GetJointTransform(i);
-                    transform.SetOrientation(orientation);
-                    component->SetJointTransform(i, transform);
+				{
+                    component->SetJointOrientation(i, Quaternion::MakeRotationFastY(t));
                 }
             }
         }

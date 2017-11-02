@@ -2,6 +2,7 @@
 
 #include "Animation/AnimationTrack.h"
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 #include "Debug/DVAssert.h"
 #include "Entity/Component.h"
 #include "Math/AABBox3.h"
@@ -55,6 +56,10 @@ public:
     SkeletonPose GetDefaultPose() const;
     void ApplyPose(const SkeletonPose& pose);
     void SetJointTransform(uint32 jointIndex, const JointTransform& transform);
+	
+	void SetJointPosition(uint32 jointIndex, const Vector3& position);
+	void SetJointOrientation(uint32 jointIndex, const Quaternion& orientation);
+	void SetJointScale(uint32 jointIndex, float32 scale);
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -62,6 +67,7 @@ public:
 
 private:
 	void UpdateJointsMap();
+	void SetJointUpdated(uint32 jointIndex);
 
     /*config time*/
     Vector<Joint> jointsArray;
@@ -127,11 +133,34 @@ inline const JointTransform& SkeletonComponent::GetJointObjectSpaceTransform(uin
 
 inline void SkeletonComponent::SetJointTransform(uint32 jointIndex, const JointTransform& transform)
 {
-    DVASSERT(jointIndex < GetJointsCount());
-
-    jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
+	SetJointUpdated(jointIndex);
     localSpaceTransforms[jointIndex] = transform;
-    startJoint = Min(startJoint, jointIndex);
+}
+
+inline void SkeletonComponent::SetJointPosition(uint32 jointIndex, const Vector3& position)
+{
+	SetJointUpdated(jointIndex);
+	localSpaceTransforms[jointIndex].SetPosition(position);
+}
+
+inline void SkeletonComponent::SetJointOrientation(uint32 jointIndex, const Quaternion& orientation)
+{
+	SetJointUpdated(jointIndex);
+	localSpaceTransforms[jointIndex].SetOrientation(orientation);
+}
+
+inline void SkeletonComponent::SetJointScale(uint32 jointIndex, float32 scale)
+{
+	SetJointUpdated(jointIndex);
+	localSpaceTransforms[jointIndex].SetScale(scale);
+}
+
+inline void SkeletonComponent::SetJointUpdated(uint32 jointIndex)
+{
+	DVASSERT(jointIndex < GetJointsCount());
+
+	jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
+	startJoint = Min(startJoint, jointIndex);
 }
 
 template <>
