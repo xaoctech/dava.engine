@@ -1,6 +1,8 @@
 #include "REPlatform/DataNodes/SceneData.h"
 #include "REPlatform/Scene/Systems/WayEditSystem.h"
 
+#include <FileSystem/FileSystem.h>
+
 namespace DAVA
 {
 RefPtr<SceneEditor2> SceneData::GetScene()
