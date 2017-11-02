@@ -167,6 +167,6 @@ private:
     float32 activationThreshold = 1e-5f;
 
     Rect cancelZone = { 0.f, 0.f, 0.f, 0.f };
-    float32 cancelRadius = 1e9; 
+    float32 cancelRadius = 1e9;
 };
 }

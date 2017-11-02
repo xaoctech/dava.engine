@@ -28,7 +28,7 @@ struct Joypad
     RefPtr<Sprite> arrow;
 };
 
-UIJoypadSystemTest::UIJoypadSystemTest(TestBed & app)
+UIJoypadSystemTest::UIJoypadSystemTest(TestBed& app)
     : BaseScreen(app, "UIJoypadSystemTest")
 {
 }
@@ -75,7 +75,7 @@ void UIJoypadSystemTest::OnUpdate(float32 timeElapsed)
 
             if (wasActive)
             {
-                UIJoypadComponent *c = joypad->component;
+                UIJoypadComponent* c = joypad->component;
 
                 if (c->GetStickArea() != nullptr)
                 {
@@ -108,13 +108,13 @@ void UIJoypadSystemTest::InitControls()
     coordsText->SetText(L"Coords: ");
     AddControl(coordsText.Get());
 
-    coords = new UIButton({30.f, 50.f, 100.f, 30.f});
+    coords = new UIButton({ 30.f, 50.f, 100.f, 30.f });
     coords->SetStateFont(0xFF, font);
     coords->SetStateText(0xFF, L"0.00, 0.00");
     coords->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(coords.Get());
 
-    toggleVisible = new UIButton({190.f, 10.f, 200.f, 30.f});
+    toggleVisible = new UIButton({ 190.f, 10.f, 200.f, 30.f });
     toggleVisible->SetStateFont(0xFF, font);
     toggleVisible->SetStateText(0xFF, L"Toggle visibility (on) [KB_V]");
     toggleVisible->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
@@ -154,7 +154,7 @@ void UIJoypadSystemTest::InitControls()
     cancelZoneText->SetText(L"Cancel zone:");
     AddControl(cancelZoneText.Get());
 
-    cancelZone = new UIControl({400.f, 400.f, 100.f, 100.f});
+    cancelZone = new UIControl({ 400.f, 400.f, 100.f, 100.f });
     cancelZone->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(cancelZone.Get());
 
@@ -163,7 +163,7 @@ void UIJoypadSystemTest::InitControls()
     cancelRadiusText->SetText(L"Cancel radius:");
     AddControl(cancelRadiusText.Get());
 
-    radiusField = new UITextField({30.f, 230.f, 110.f, 30.f});
+    radiusField = new UITextField({ 30.f, 230.f, 110.f, 30.f });
     radiusField->SetFont(font);
     radiusField->SetText(L"Enter radius...");
     radiusField->SetInputEnabled(true);
@@ -241,7 +241,7 @@ void UIJoypadSystemTest::InitJoypad()
     AddControl(joypad->base.Get());
 }
 
-void UIJoypadSystemTest::ToggleVisible(BaseObject *, void *, void *)
+void UIJoypadSystemTest::ToggleVisible(BaseObject*, void*, void*)
 {
     if (joypad != nullptr && joypad->base != nullptr)
     {
@@ -260,7 +260,7 @@ void UIJoypadSystemTest::ToggleVisible(BaseObject *, void *, void *)
     }
 }
 
-void UIJoypadSystemTest::ToggleDynamic(BaseObject *, void *, void *)
+void UIJoypadSystemTest::ToggleDynamic(BaseObject*, void*, void*)
 {
     if (joypad != nullptr && joypad->component != nullptr)
     {
@@ -281,11 +281,11 @@ void UIJoypadSystemTest::ToggleDynamic(BaseObject *, void *, void *)
     }
 }
 
-void UIJoypadSystemTest::RemoveArea(BaseObject *, void *, void *)
+void UIJoypadSystemTest::RemoveArea(BaseObject*, void*, void*)
 {
     if (joypad != nullptr && joypad->component != nullptr)
     {
-        UIControl *area = joypad->component->GetStickArea();
+        UIControl* area = joypad->component->GetStickArea();
 
         if (area != nullptr)
         {
@@ -297,11 +297,11 @@ void UIJoypadSystemTest::RemoveArea(BaseObject *, void *, void *)
     }
 }
 
-void UIJoypadSystemTest::RemoveArm(BaseObject *, void *, void *)
+void UIJoypadSystemTest::RemoveArm(BaseObject*, void*, void*)
 {
     if (joypad != nullptr && joypad->component != nullptr)
     {
-        UIControl *arm = joypad->component->GetStickArm();
+        UIControl* arm = joypad->component->GetStickArm();
 
         if (arm != nullptr)
         {
@@ -313,11 +313,11 @@ void UIJoypadSystemTest::RemoveArm(BaseObject *, void *, void *)
     }
 }
 
-void UIJoypadSystemTest::RemoveArrow(BaseObject *, void *, void *)
+void UIJoypadSystemTest::RemoveArrow(BaseObject*, void*, void*)
 {
     if (joypad != nullptr && joypad->component != nullptr)
     {
-        UIControl *arrow = joypad->component->GetStickArrow();
+        UIControl* arrow = joypad->component->GetStickArrow();
 
         if (arrow != nullptr)
         {
@@ -329,7 +329,7 @@ void UIJoypadSystemTest::RemoveArrow(BaseObject *, void *, void *)
     }
 }
 
-void UIJoypadSystemTest::SetRadius(BaseObject *, void *, void *)
+void UIJoypadSystemTest::SetRadius(BaseObject*, void*, void*)
 {
     float32 radius;
 
@@ -356,7 +356,7 @@ void UIJoypadSystemTest::SetRadius(BaseObject *, void *, void *)
     }
 }
 
-bool UIJoypadSystemTest::OnInputEvent(const InputEvent & event)
+bool UIJoypadSystemTest::OnInputEvent(const InputEvent& event)
 {
     // Handle release only
     if (!event.digitalState.IsJustReleased())
