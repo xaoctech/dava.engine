@@ -20,7 +20,7 @@ namespace DAVA
 class Scene;
 class SceneNodeAnimationKey;
 class SceneFileV2;
-class TArcDataNode;
+class DataNode;
 class RenderComponent;
 class TransformComponent;
 
