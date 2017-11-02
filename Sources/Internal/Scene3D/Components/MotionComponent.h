@@ -9,15 +9,14 @@ namespace DAVA
 {
 class AnimationClip;
 class MotionSystem;
+class SimpleMotion;
 class SkeletonAnimation;
 class SkeletonComponent;
 class Motion;
+class YamlNode;
 class MotionComponent : public Component
 {
 public:
-    static const FastName EVENT_SINGLE_ANIMATION_STARTED;
-    static const FastName EVENT_SINGLE_ANIMATION_ENDED;
-
     IMPLEMENT_COMPONENT_TYPE(MOTION_COMPONENT);
 
     MotionComponent() = default;
@@ -33,18 +32,21 @@ public:
     uint32 GetMotionsCount() const;
     Motion* GetMotion(uint32 index) const;
 
-    const FilePath& GetConfigPath() const;
-    void SetConfigPath(const FilePath& path);
+    const FilePath& GetMotionPath() const;
+    void SetMotionPath(const FilePath& path);
 
     float32 GetPlaybackRate() const;
     void SetPlaybackRate(float32 rate);
 
 	const Vector3& GetRootOffsetDelta() const;
 
-protected:
-	void ReloadFromConfig();
+	Vector<FilePath> GetDependencies() const;
 
-    FilePath configPath;
+protected:
+	void ReloadFromFile();
+	void GetDependenciesRecursive(const YamlNode* node, Set<FilePath>* dependencies) const;
+
+    FilePath motionPath;
 	Vector<Motion*> motions;
 
     float32 playbackRate = 1.f;
@@ -52,9 +54,12 @@ protected:
 
 	Vector3 rootOffsetDelta;
 
+	SimpleMotion* simpleMotion = nullptr;
+	uint32 simpleMotionRepeatsCount = 0;
+
 	DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
-    friend class MotionSystem;
+	friend class MotionSystem;
 };
 
 inline float32 MotionComponent::GetPlaybackRate() const

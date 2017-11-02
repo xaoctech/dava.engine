@@ -372,9 +372,8 @@ void SceneDumper::DumpAnimations(DAVA::MotionComponent* motionComponent, DAVA::S
 {
     if (motionComponent != nullptr)
     {
-        //TODO: *Skinning* parse animation-clip dependencies
-        const DAVA::FilePath& configPath = motionComponent->GetConfigPath();
-        if (!configPath.IsEmpty())
-            links.insert(configPath.GetAbsolutePathname());
+		Vector<FilePath> dependencies = motionComponent->GetDependencies();
+		for (const FilePath& fp : dependencies)
+			links.insert(fp.GetAbsolutePathname());
     }
 }

@@ -10,6 +10,7 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SkeletonAnimation/Motion.h"
+#include "Scene3D/SkeletonAnimation/SimpleMotion.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
@@ -21,15 +22,13 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
 {
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
-    .Field("configPath", &MotionComponent::GetConfigPath, &MotionComponent::SetConfigPath)[M::DisplayName("Motion Config")]
+    .Field("motionPath", &MotionComponent::GetMotionPath, &MotionComponent::SetMotionPath)[M::DisplayName("Motion File")]
     .Field("playbackRate", &MotionComponent::GetPlaybackRate, &MotionComponent::SetPlaybackRate)[M::DisplayName("Playback Rate"), M::Range(0.f, 1.f, 0.1f)]
-    .Field("parameters", &MotionComponent::parameters)[M::DisplayName("parameters")]
+    .Field("parameters", &MotionComponent::parameters)[M::DisplayName("Parameters")]
     .Field("motions", &MotionComponent::motions)[M::DisplayName("Motions")]
+	.Field("simpleMotionRepeatsCount", &MotionComponent::simpleMotionRepeatsCount)[M::DisplayName("Single animation Repeats")]
     .End();
 }
-
-const FastName MotionComponent::EVENT_SINGLE_ANIMATION_STARTED = FastName("SingleAnimationStarted");
-const FastName MotionComponent::EVENT_SINGLE_ANIMATION_ENDED = FastName("SingleAnimationEnded");
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +55,7 @@ Component* MotionComponent::Clone(Entity* toEntity)
 {
     MotionComponent* newComponent = new MotionComponent();
     newComponent->SetEntity(toEntity);
-    newComponent->SetConfigPath(GetConfigPath());
+    newComponent->SetMotionPath(GetMotionPath());
     return newComponent;
 }
 
@@ -64,22 +63,37 @@ void MotionComponent::Serialize(KeyedArchive* archive, SerializationContext* ser
 {
     Component::Serialize(archive, serializationContext);
 
-    if (!configPath.IsEmpty())
+    if (!motionPath.IsEmpty())
     {
-        String configRelativePath = configPath.GetRelativePathname(serializationContext->GetScenePath());
-        archive->SetString("motion.configPath", configRelativePath);
+        String configRelativePath = motionPath.GetRelativePathname(serializationContext->GetScenePath());
+        archive->SetString("motion.filepath", configRelativePath);
     }
+
+	archive->SetUInt32("simpleMotion.repeatsCount", simpleMotionRepeatsCount);
+	archive->SetFloat("motion.playbackRate", playbackRate);
 }
 
 void MotionComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
 
-    String configRelativePath = archive->GetString("motion.configPath");
-    if (!configRelativePath.empty())
-    {
-        SetConfigPath(serializationContext->GetScenePath() + configRelativePath);
-    }
+	String relativePath = archive->GetString("motion.filepath");
+
+	//////////////////////////////////////////////////////////////////////////
+	//back compatibility
+	if (relativePath.empty())
+		relativePath = archive->GetString("motion.configPath");
+
+	if (relativePath.empty())
+		relativePath = archive->GetString("simpleMotion.animationPath");
+
+	//////////////////////////////////////////////////////////////////////////
+
+	if (!relativePath.empty())
+		SetMotionPath(serializationContext->GetScenePath() + relativePath);
+
+	simpleMotionRepeatsCount = archive->GetUInt32("simpleMotion.repeatsCount");
+	playbackRate = archive->GetFloat("motion.playbackRate", 1.f);
 }
 
 uint32 MotionComponent::GetMotionsCount() const
@@ -93,66 +107,121 @@ Motion* MotionComponent::GetMotion(uint32 index) const
     return motions[index];
 }
 
-const FilePath& MotionComponent::GetConfigPath() const
+const FilePath& MotionComponent::GetMotionPath() const
 {
-    return configPath;
+return motionPath;
 }
 
-void MotionComponent::SetConfigPath(const FilePath& path)
+void MotionComponent::SetMotionPath(const FilePath& path)
 {
-    configPath = path;
+	motionPath = path;
 
-    Entity* entity = GetEntity();
-    if (entity && entity->GetScene())
-    {
-        entity->GetScene()->motionSingleComponent->reloadConfig.emplace_back(this);
-    }
+	Entity* entity = GetEntity();
+	if (entity && entity->GetScene())
+	{
+		entity->GetScene()->motionSingleComponent->reloadMotion.emplace_back(this);
+	}
 }
 
-void MotionComponent::ReloadFromConfig()
+void MotionComponent::ReloadFromFile()
 {
-    for (Motion*& m : motions)
-        SafeDelete(m);
+	for (Motion*& m : motions)
+		SafeDelete(m);
 
-    motions.clear();
-    parameters.clear();
+	motions.clear();
+	parameters.clear();
+	SafeDelete(simpleMotion);
 
-    if (configPath.IsEmpty())
-        return;
+	if (motionPath.IsEmpty())
+		return;
 
-    YamlParser* parser = YamlParser::Create(configPath);
-    if (parser)
-    {
-        YamlNode* rootNode = parser->GetRootNode();
-        if (rootNode)
-        {
-            const YamlNode* motionsNode = rootNode->Get("Motions");
-            if (motionsNode != nullptr && motionsNode->GetType() == YamlNode::TYPE_ARRAY)
-            {
-                uint32 motionsCount = motionsNode->GetCount();
-                for (uint32 m = 0; m < motionsCount; ++m)
-                {
-                    const YamlNode* motionNode = motionsNode->Get(m);
-                    Motion* motion = Motion::LoadFromYaml(motionNode);
-                    if (motion != nullptr)
-                    {
-                        motions.push_back(motion);
+	if (motionPath.IsEqualToExtension(".anim"))
+	{
+		simpleMotion = new SimpleMotion();
+		simpleMotion->SetRepeatsCount(simpleMotionRepeatsCount);
 
-                        for (const FastName& p : motion->GetParameterIDs())
-                            parameters[p] = 0.f;
-                    }
-                }
+		ScopedPtr<AnimationClip> clip(AnimationClip::Load(motionPath));
+		simpleMotion->SetAnimation(clip);
+	}
+	else if (motionPath.IsEqualToExtension(".yaml"))
+	{
+		YamlParser* parser = YamlParser::Create(motionPath);
+		if (parser != nullptr)
+		{
+			YamlNode* rootNode = parser->GetRootNode();
+			if (rootNode)
+			{
+				const YamlNode* motionsNode = rootNode->Get("Motions");
+				if (motionsNode != nullptr && motionsNode->GetType() == YamlNode::TYPE_ARRAY)
+				{
+					uint32 motionsCount = motionsNode->GetCount();
+					for (uint32 m = 0; m < motionsCount; ++m)
+					{
+						const YamlNode* motionNode = motionsNode->Get(m);
+						Motion* motion = Motion::LoadFromYaml(motionNode);
+						if (motion != nullptr)
+						{
+							motions.push_back(motion);
 
-                for (Motion* motion : motions)
-                {
-                    for (const FastName& p : motion->GetParameterIDs())
-                        motion->BindParameter(p, &parameters[p]);
-                }
-            }
-        }
-    }
+							for (const FastName& p : motion->GetParameterIDs())
+								parameters[p] = 0.f;
+						}
+					}
 
-    SafeRelease(parser);
+					for (Motion* motion : motions)
+					{
+						for (const FastName& p : motion->GetParameterIDs())
+							motion->BindParameter(p, &parameters[p]);
+					}
+				}
+			}
+		}
+
+		SafeRelease(parser);
+	}
+}
+
+Vector<FilePath> MotionComponent::GetDependencies() const
+{
+	Vector<FilePath> result;
+
+	if (!motionPath.IsEmpty())
+	{
+		result.push_back(motionPath);
+
+		if (motionPath.IsEqualToExtension(".yaml"))
+		{
+			YamlParser* parser = YamlParser::Create(motionPath);
+			if (parser != nullptr)
+			{
+				Set<FilePath> dependencies;
+				GetDependenciesRecursive(parser->GetRootNode(), &dependencies);
+				SafeRelease(parser);
+
+				for (const FilePath& fp : dependencies)
+					result.push_back(fp);
+			}
+		}
+	}
+
+	return result;
+}
+
+void MotionComponent::GetDependenciesRecursive(const YamlNode* node, Set<FilePath>* dependencies) const
+{
+	if (node != nullptr)
+	{
+		if (node->GetType() == YamlNode::TYPE_MAP)
+		{
+			const YamlNode* clipNode = node->Get("clip");
+			if (clipNode != nullptr)
+				dependencies->insert(FilePath(clipNode->AsString()));
+		}
+
+		uint32 childrenCount = node->GetCount();
+		for (uint32 c = 0; c < childrenCount; ++c)
+			GetDependenciesRecursive(node->Get(c), dependencies);
+	}
 }
 
 }

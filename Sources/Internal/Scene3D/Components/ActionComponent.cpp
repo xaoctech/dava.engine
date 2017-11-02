@@ -541,12 +541,11 @@ void ActionComponent::OnActionAnimationStart(const Action& action)
             component->Start();
         }
 
-        //TODO: *Skinning* simple-motion
-        //MotionComponent* motionComponent = GetMotionComponent(target);
-        //if (motionComponent)
-        //{
-        //    target->GetScene()->motionSingleComponent->startAnimation.push_back(motionComponent);
-        //}
+        MotionComponent* motionComponent = GetMotionComponent(target);
+        if (motionComponent)
+        {
+            target->GetScene()->motionSingleComponent->startSimpleMotion.push_back(motionComponent);
+        }
     }
 }
 
@@ -562,12 +561,11 @@ void ActionComponent::OnActionAnimationStop(const Action& action)
             component->Stop();
         }
 
-        //TODO: *Skinning* simple-motion
-        //MotionComponent* motionComponent = GetMotionComponent(target);
-        //if (motionComponent)
-        //{
-        //    target->GetScene()->motionSingleComponent->stopAnimation.push_back(motionComponent);
-        //}
+        MotionComponent* motionComponent = GetMotionComponent(target);
+        if (motionComponent)
+        {
+            target->GetScene()->motionSingleComponent->stopSimpleMotion.push_back(motionComponent);
+        }
     }
 }
 

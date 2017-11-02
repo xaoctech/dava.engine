@@ -34,7 +34,7 @@ void MotionSystem::AddEntity(Entity* entity)
     DVASSERT(motionSingleComponent != nullptr);
 
     MotionComponent* motionComponent = GetMotionComponent(entity);
-    motionSingleComponent->reloadConfig.push_back(motionComponent);
+    motionSingleComponent->reloadMotion.push_back(motionComponent);
 }
 
 void MotionSystem::RemoveEntity(Entity* entity)
@@ -54,7 +54,7 @@ void MotionSystem::ImmediateEvent(Component* component, uint32 event)
     if (event == EventSystem::SKELETON_CONFIG_CHANGED)
     {
         MotionComponent* motionComponent = GetMotionComponent(component->GetEntity());
-        motionSingleComponent->rebindAnimation.push_back(motionComponent);
+        motionSingleComponent->rebindSkeleton.push_back(motionComponent);
     }
 }
 
@@ -63,14 +63,14 @@ void MotionSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_MOTION_SYSTEM);
     DVASSERT(motionSingleComponent != nullptr);
 
-    for (MotionComponent* motionComponent : motionSingleComponent->reloadConfig)
+    for (MotionComponent* motionComponent : motionSingleComponent->reloadMotion)
     {
-        motionComponent->ReloadFromConfig();
-        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
-        motionSingleComponent->rebindAnimation.emplace_back(motionComponent);
+        motionComponent->ReloadFromFile();
+		FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
+        motionSingleComponent->rebindSkeleton.emplace_back(motionComponent);
     }
 
-    for (MotionComponent* motionComponent : motionSingleComponent->rebindAnimation)
+    for (MotionComponent* motionComponent : motionSingleComponent->rebindSkeleton)
     {
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
         DVASSERT(skeleton);
@@ -81,18 +81,44 @@ void MotionSystem::Process(float32 timeElapsed)
             Motion* motion = motionComponent->GetMotion(m);
             motion->BindSkeleton(skeleton);
         }
-        skeleton->ApplyPose(skeleton->GetDefaultPose());
 
-        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
-        activeComponents.emplace_back(motionComponent);
+		FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
+		activeComponents.emplace_back(motionComponent);
+
+		SkeletonPose defaultPose = skeleton->GetDefaultPose();
+		SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+		if (simpleMotion != nullptr)
+		{
+			simpleMotion->BindSkeleton(skeleton);
+			simpleMotion->EvaluatePose(&defaultPose);
+		}
+		skeleton->ApplyPose(defaultPose);
     }
+
+	for (MotionComponent* motionComponent : motionSingleComponent->stopSimpleMotion)
+	{
+		if (motionComponent->simpleMotion != nullptr)
+			motionComponent->simpleMotion->Stop();
+	}
+
+	for (MotionComponent* motionComponent : motionSingleComponent->startSimpleMotion)
+	{
+		SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+		if (simpleMotion != nullptr)
+		{
+			if (simpleMotion->IsPlaying())
+				continue;
+
+			simpleMotion->SetRepeatsCount(motionComponent->simpleMotionRepeatsCount);
+			simpleMotion->Start();
+		}
+	}
 
     motionSingleComponent->Clear();
 
-    for (int32 i = int32(activeComponents.size()) - 1; i >= 0; --i)
+    for (MotionComponent* component : activeComponents)
     {
-        MotionComponent* motionComponent = activeComponents[i];
-        UpdateMotions(motionComponent, timeElapsed);
+        UpdateMotions(component, timeElapsed);
     }
 }
 
@@ -101,15 +127,17 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
     DVASSERT(motionComponent);
 
     SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-    if (skeleton != nullptr)
+    if (skeleton != nullptr && (motionComponent->GetMotionsCount() != 0 || (motionComponent->simpleMotion != nullptr && motionComponent->simpleMotion->IsPlaying())))
     {
+		dTime *= motionComponent->playbackRate;
         SkeletonPose resultPose = skeleton->GetDefaultPose();
+
         uint32 motionCount = motionComponent->GetMotionsCount();
         for (uint32 m = 0; m < motionCount; ++m)
         {
             Motion* motion = motionComponent->GetMotion(m);
 
-            motion->Update(dTime * motionComponent->playbackRate);
+            motion->Update(dTime);
 
             for (auto& phaseEnd : motion->GetEndedPhases())
             {
@@ -139,7 +167,17 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
             }
         }
 
-        skeleton->ApplyPose(resultPose);
+		SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+		if (simpleMotion != nullptr && simpleMotion->IsPlaying())
+		{
+			simpleMotion->Update(dTime);
+			if (simpleMotion->IsFinished())
+				motionSingleComponent->simpleMotionFinished.emplace_back(motionComponent);
+
+			simpleMotion->EvaluatePose(&resultPose);
+		}
+
+		skeleton->ApplyPose(resultPose);
     }
 }
 }

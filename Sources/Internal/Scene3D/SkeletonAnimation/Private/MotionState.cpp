@@ -134,7 +134,7 @@ void MotionState::LoadFromYaml(const YamlNode* stateNode)
     const YamlNode* stateIDNode = stateNode->Get("state-id");
     if (stateIDNode != nullptr && stateIDNode->GetType() == YamlNode::TYPE_STRING)
     {
-        id = stateIDNode->AsFastName(); //temporary for debug
+        id = stateIDNode->AsFastName();
     }
 
     const YamlNode* blendTreeNode = stateNode->Get("blend-tree");
@@ -143,12 +143,8 @@ void MotionState::LoadFromYaml(const YamlNode* stateNode)
         blendTree = BlendTree::LoadFromYaml(blendTreeNode);
         DVASSERT(blendTree != nullptr);
 
-        size_t paramCount = blendTree->GetParameterIDs().size();
-        uint32 phasesCount = blendTree->GetPhasesCount();
-        DVASSERT(phasesCount != 0);
-
-        boundParams.resize(paramCount);
-        markers.resize(phasesCount);
+        boundParams.resize(blendTree->GetParameterIDs().size());
+        markers.resize(blendTree->GetPhasesCount());
     }
 
     const YamlNode* markersNode = stateNode->Get("markers");
