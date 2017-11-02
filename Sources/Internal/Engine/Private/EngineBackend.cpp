@@ -900,7 +900,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->actionSystem = new ActionSystem();
         context->uiScreenManager = new UIScreenManager();
         context->localNotificationController = new LocalNotificationController();
-
+        context->debugOverlay = new DebugOverlay();
+        
 #if defined(__DAVAENGINE_STEAM__)
         Steam::Init();
 #endif
@@ -921,8 +922,6 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
 #endif
-
-    context->debugOverlay = new DebugOverlay();
 }
 
 void EngineBackend::DestroySubsystems()
