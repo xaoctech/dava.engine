@@ -933,9 +933,9 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
 void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform)
 {
     //calculate position new particle position in emitter space (for point leave it V3(0,0,0))
-    uint16 ind = group.layer->particlesGenerated;
+    uint32 ind = group.layer->particlesGenerated;
     uintptr_t uptr = reinterpret_cast<uintptr_t>(group.layer);
-    uint32 offset = *reinterpret_cast<uint32*>(uptr);
+    uint32 offset = static_cast<uint32>(uptr);
     ind += offset;
 
     if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
@@ -943,7 +943,8 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->size)
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
-            particle->position = Vector3(currSize.x * (VanDerCorput(ind) - 0.5f), currSize.y * (VanDerCorput(ind + 512) - 0.5f), currSize.z * (VanDerCorput(ind - 42) - 0.5f));
+
+            particle->position = Vector3(currSize.x * (VanDerCorput(ind) - 0.5f), currSize.y * (VanDerCorput(ind + 17, 2) - 0.5f), currSize.z * (VanDerCorput(ind + 13, 5) - 0.5f));
         }
     }
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
@@ -959,9 +960,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->emissionAngleVariation)
             angleVariation = DegToRad(group.emitter->emissionAngleVariation->GetValue(group.time));
 
-        float32 curAngle = angleBase + angleVariation * VanDerCorput(ind + 80085);
+        float32 curAngle = angleBase + angleVariation * VanDerCorput(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= VanDerCorput(ind + 4452);
+            curRadius *= VanDerCorput(ind + 11, 4);
         float sinAngle = 0.0f;
         float cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);

@@ -18,9 +18,8 @@ float32 HammersleyRnd(uint32 n)
     return res;
 }
 
-float32 VanDerCorput(uint32 n)
+float32 VanDerCorput(uint32 n, uint32 base = 3)
 {
-    uint32 base = 3;
     float32 res = 0.0f;
     float32 denom = static_cast<float32>(base);
     while (n > 0)
