@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ClientModule;
 class UIProxy : public UI
 {
@@ -45,5 +43,4 @@ private:
     ClientModule* module = nullptr;
     UI* globalUI = nullptr;
 };
-} // namespace TArc
 } // namespace DAVA

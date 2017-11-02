@@ -10,7 +10,7 @@ class QComboBox;
 class QPushButton;
 class SliderWidget;
 
-class CustomColorsPanel : public LandscapeEditorBasePanel, private DAVA::TArc::DataListener
+class CustomColorsPanel : public LandscapeEditorBasePanel, private DAVA::DataListener
 {
     Q_OBJECT
 
@@ -55,12 +55,12 @@ private:
     DAVA::int32 BrushSizeUIToSystem(DAVA::int32 uiValue);
     DAVA::int32 BrushSizeSystemToUI(DAVA::int32 systemValue);
 
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
 private:
     QComboBox* comboColor = nullptr;
     SliderWidget* sliderWidgetBrushSize = nullptr;
     QPushButton* buttonSaveTexture = nullptr;
     QPushButton* buttonLoadTexture = nullptr;
-    DAVA::TArc::DataWrapper projectDataWrapper;
+    DAVA::DataWrapper projectDataWrapper;
 };

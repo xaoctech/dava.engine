@@ -5,9 +5,6 @@
 namespace DAVA
 {
 class StructureWrapperClass;
-
-namespace TArc
-{
 class ComponentStructureWrapper : public StructureWrapper
 {
 public:
@@ -38,6 +35,4 @@ std::unique_ptr<StructureWrapper> CreateComponentStructureWrapper()
 {
     return std::make_unique<ComponentStructureWrapper>(Type::Instance<T>());
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <Reflection/ReflectionRegistrator.h>
 
 #include <memory>
 
 class ObjectPlacementSystem;
 
-class ObjectPlacementData : public DAVA::TArc::DataNode
+class ObjectPlacementData : public DAVA::TArcDataNode
 {
 public:
     friend class ObjectPlacementModule;
@@ -19,5 +19,5 @@ public:
 private:
     std::unique_ptr<ObjectPlacementSystem> objectPlacementSystem;
 
-    DAVA_VIRTUAL_REFLECTION(ObjectPlacementData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(ObjectPlacementData, DAVA::TArcDataNode);
 };

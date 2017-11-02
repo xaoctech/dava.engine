@@ -3,7 +3,7 @@
 #include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include "Render/TextureDescriptor.h"
-#include "CommandLine/CommandLineModule.h"
+#include "Classes/CommandLine/CommandLineModule.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 class TextureDescriptorTool : public CommandLineModule

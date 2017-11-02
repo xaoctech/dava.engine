@@ -8,8 +8,6 @@ class QLayout;
 
 namespace DAVA
 {
-namespace TArc
-{
 class Widget : private QWidget, public ControlProxy
 {
 public:
@@ -26,5 +24,4 @@ public:
 private:
     Vector<ControlProxy*> controls;
 };
-} // namespace TArc
 } // namespace DAVA

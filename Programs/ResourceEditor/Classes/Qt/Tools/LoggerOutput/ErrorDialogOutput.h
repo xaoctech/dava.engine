@@ -13,16 +13,13 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class UI;
 }
-}
 
-class ErrorDialogOutput final : public DAVA::TArc::QtDelayedExecutor, public DAVA::LoggerOutput
+class ErrorDialogOutput final : public DAVA::QtDelayedExecutor, public DAVA::LoggerOutput
 {
 public:
-    ErrorDialogOutput(DAVA::TArc::UI* ui);
+    ErrorDialogOutput(DAVA::UI* ui);
 
     void Output(DAVA::Logger::eLogLevel ll, const DAVA::char8* text) override;
     void Disable();
@@ -41,5 +38,5 @@ private:
     std::atomic<bool> enabled;
 
     DAVA::Token waitDialogConnectionToken;
-    DAVA::TArc::UI* tarcUI = nullptr;
+    DAVA::UI* tarcUI = nullptr;
 };

@@ -12,20 +12,15 @@
 namespace DAVA
 {
 class RenderObject;
-
-namespace TArc
-{
 class FieldBinder;
-}
-}
-
 class SelectableGroup;
+}
 
-class ParticleDebugDrawModule : public DAVA::TArc::ClientModule
+class ParticleDebugDrawModule : public DAVA::ClientModule
 {
 protected:
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
     void PostInit() override;
 
     void OnSelectionChanged(const DAVA::Any selection);
@@ -43,8 +38,8 @@ private:
     void SetDrawMode(DAVA::eParticleDebugDrawMode drawMode);
 
     void UpdateSceneSystem();
-    DAVA::UnorderedSet<DAVA::RenderObject*> ProcessSelection(const SelectableGroup& group);
-    std::shared_ptr<DAVA::TArc::FieldBinder> filedBinder;
+    DAVA::UnorderedSet<DAVA::RenderObject*> ProcessSelection(const DAVA::SelectableGroup& group);
+    std::shared_ptr<DAVA::FieldBinder> filedBinder;
 
-    DAVA_VIRTUAL_REFLECTION(DAVA::ParticleDebugDrawModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(DAVA::ParticleDebugDrawModule, DAVA::ClientModule);
 };

@@ -3,9 +3,8 @@
 #include "ui_mainwindow.h"
 
 #include "Classes/Qt/Main/ModificationWidget.h"
-#include "Classes/Qt/Tools/QtWaitDialog/QtWaitDialog.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/GlobalOperations.h"
+
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/Models/RecentMenuItems.h>
 #include <TArc/DataProcessing/DataListener.h>
@@ -32,14 +31,10 @@ class ErrorDialogOutput;
 namespace DAVA
 {
 class RenderWidget;
-
-namespace TArc
-{
 class FieldBinder;
 }
-}
 
-class QtMainWindow : public QMainWindow, public GlobalOperations, private DAVA::TArc::DataListener
+class QtMainWindow : public QMainWindow, private DAVA::DataListener
 {
     Q_OBJECT
 
@@ -49,7 +44,7 @@ signals:
     void GlobalInvalidateTimeout();
 
 public:
-    explicit QtMainWindow(DAVA::TArc::UI* tarcUI, QWidget* parent = 0);
+    explicit QtMainWindow(DAVA::UI* tarcUI, QWidget* parent = 0);
     ~QtMainWindow();
 
     void OnRenderingInitialized();
@@ -63,12 +58,6 @@ public:
     void EnableGlobalTimeout(bool enable);
 
     bool ParticlesArePacking() const;
-
-    void CallAction(ID id, DAVA::Any&& args) override;
-    QWidget* GetGlobalParentWidget() const override;
-    void ShowWaitDialog(const DAVA::String& tittle, const DAVA::String& message, DAVA::uint32 min, DAVA::uint32 max) override;
-    void HideWaitDialog() override;
-    void ForEachScene(const DAVA::Function<void(SceneEditor2*)>& functor) override;
 
     // qt actions slots
 public slots:
@@ -137,7 +126,7 @@ public slots:
     void OnBuildStaticOcclusion();
     void OnInavalidateStaticOcclusion();
 
-    void OnLandscapeEditorToggled(SceneEditor2* scene);
+    void OnLandscapeEditorToggled(DAVA::SceneEditor2* scene);
     void OnForceFirstLod(bool);
     void OnCustomColorsEditor();
     void OnHeightmapEditor();
@@ -151,8 +140,6 @@ public slots:
 
     void OnGenerateHeightDelta();
 
-    void OnBatchProcessScene();
-
     void OnSnapCameraToLandscape(bool);
 
     void SetupTitle(const DAVA::String& projectPath);
@@ -164,7 +151,6 @@ public slots:
 
 protected:
     bool eventFilter(QObject* object, QEvent* event) override;
-    void SetupWidget();
     void SetupMainMenu();
     void SetupToolBars();
     void SetupStatusBar();
@@ -178,12 +164,11 @@ protected:
     static void SetActionCheckedSilently(QAction* action, bool checked);
 
 private slots:
-    void SceneCommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
-    void SceneActivated(SceneEditor2* scene);
-    void SceneDeactivated(SceneEditor2* scene);
+    void SceneCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
+    void SceneActivated(DAVA::SceneEditor2* scene);
+    void SceneDeactivated(DAVA::SceneEditor2* scene);
 
     void OnGlobalInvalidateTimeout();
-    void EditorLightEnabled(bool enabled);
     void UnmodalDialogFinished(int);
 
     void DebugVersionInfo();
@@ -206,12 +191,12 @@ private:
     void EnableSceneActions(bool enable);
     void EnableProjectActions(bool enable);
     void UpdateModificationActionsState();
-    void UpdateWayEditor(const RECommandNotificationObject& commandNotification);
+    void UpdateWayEditor(const DAVA::RECommandNotificationObject& commandNotification);
 
-    void LoadViewState(SceneEditor2* scene);
-    void LoadModificationState(SceneEditor2* scene);
-    void LoadEditorLightState(SceneEditor2* scene);
-    void LoadLandscapeEditorState(SceneEditor2* scene);
+    void LoadViewState(DAVA::SceneEditor2* scene);
+    void LoadModificationState(DAVA::SceneEditor2* scene);
+    void LoadEditorLightState(DAVA::SceneEditor2* scene);
+    void LoadLandscapeEditorState(DAVA::SceneEditor2* scene);
     void LoadMaterialLightViewMode();
 
     // Landscape editor specific
@@ -220,26 +205,25 @@ private:
     bool LoadAppropriateTextureFormat() const;
     // <--
 
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
     //Need for any debug functionality
     QPointer<DeveloperTools> developerTools;
     QPointer<VersionInfoWidget> versionInfoWidget;
 
-    std::shared_ptr<GlobalOperations> globalOperations;
     ErrorDialogOutput* errorLoggerOutput = nullptr;
 
 #if defined(__DAVAENGINE_MACOS__)
-    DAVA::TArc::ShortcutChecker shortcutChecker;
+    DAVA::ShortcutChecker shortcutChecker;
 #endif
 
-    DAVA::TArc::UI* tarcUI = nullptr;
-    std::unique_ptr<DAVA::TArc::WaitHandle> waitDialog;
-    DAVA::TArc::DataWrapper projectDataWrapper;
-    DAVA::TArc::DataWrapper selectionWrapper;
+    DAVA::UI* tarcUI = nullptr;
+    std::unique_ptr<DAVA::WaitHandle> waitDialog;
+    DAVA::DataWrapper projectDataWrapper;
+    DAVA::DataWrapper selectionWrapper;
 
     void UpdateTagDependentActionsState(const DAVA::Any& value);
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinderTagged;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinderTagged;
 
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtDelayedExecutor delayedExecutor;
 };

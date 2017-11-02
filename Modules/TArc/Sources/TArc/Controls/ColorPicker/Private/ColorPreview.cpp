@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorPreview::ColorPreview(QWidget* parent)
     : QWidget(parent)
     , bgBrush(PaintingHelper::DrawGridBrush(QSize(7, 7)))
@@ -128,6 +126,5 @@ QRect ColorPreview::NewColorSRect() const
 QRect ColorPreview::NewColorRect() const
 {
     return QRect(width() / 2, height() / 2, width() / 2, height() / 2);
-}
 }
 }

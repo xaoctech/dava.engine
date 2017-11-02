@@ -1,7 +1,8 @@
 #pragma once
 
-#include "CommandLine/CommandLineModule.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "Classes/CommandLine/CommandLineModule.h"
+
+#include <Reflection/ReflectionRegistrator.h>
 
 class ConsoleHelpTool : public CommandLineModule
 {

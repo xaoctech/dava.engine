@@ -44,7 +44,7 @@ bool MultilineTextInputDialog::eventFilter(QObject* obj, QEvent* event)
     return false;
 }
 
-QString MultilineTextInputDialog::GetMultiLineText(DAVA::TArc::UI* ui, const QString& title, const QString& label, const QString& text /*= QString()*/, bool* ok /*= Q_NULLPTR*/, Qt::WindowFlags flags /*= Qt::WindowFlags()*/, Qt::InputMethodHints inputMethodHints /*= Qt::ImhNone*/)
+QString MultilineTextInputDialog::GetMultiLineText(DAVA::UI* ui, const QString& title, const QString& label, const QString& text /*= QString()*/, bool* ok /*= Q_NULLPTR*/, Qt::WindowFlags flags /*= Qt::WindowFlags()*/, Qt::InputMethodHints inputMethodHints /*= Qt::ImhNone*/)
 {
     MultilineTextInputDialog dialog(nullptr, flags);
 
@@ -59,7 +59,7 @@ QString MultilineTextInputDialog::GetMultiLineText(DAVA::TArc::UI* ui, const QSt
         child->installEventFilter(&dialog);
     }
 
-    int ret = ui->ShowModalDialog(DAVA::TArc::mainWindowKey, &dialog);
+    int ret = ui->ShowModalDialog(DAVA::mainWindowKey, &dialog);
 
     bool isAccepted = (ret == QDialog::Accepted);
     if (ok)

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+#include <REPlatform/Scene/Systems/EditorSceneSystem.h>
 
 #include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
 
-class EntityModificationSystem;
 
 namespace DAVA
 {
@@ -15,9 +14,10 @@ class RayTraceCollision;
 class RenderSystem;
 struct Matrix4;
 class Vector3;
+class EntityModificationSystem;
 }
 
-class ObjectPlacementSystem : public DAVA::SceneSystem, public EditorSceneSystem
+class ObjectPlacementSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
 public:
     ObjectPlacementSystem(DAVA::Scene* scene);
@@ -40,7 +40,7 @@ private:
     // have its own TArc module or DataNode. So, to be able
     // to set Modification System's fields via Object Placement module's
     // reflective controls, we need to store it here.
-    EntityModificationSystem* modificationSystem = nullptr;
+    DAVA::EntityModificationSystem* modificationSystem = nullptr;
     DAVA::RenderSystem* renderSystem = nullptr;
     DAVA::LandscapeSystem* landscapeSystem = nullptr;
 

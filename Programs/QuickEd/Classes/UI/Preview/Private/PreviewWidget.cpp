@@ -63,7 +63,7 @@
 
 using namespace DAVA;
 
-PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
+PreviewWidget::PreviewWidget(DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, DAVA::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
     : QFrame(nullptr)
     , accessor(accessor_)
     , invoker(invoker_)
@@ -84,8 +84,6 @@ PreviewWidget::~PreviewWidget() = default;
 
 void PreviewWidget::CreateActions()
 {
-    using namespace DAVA::TArc;
-
     QAction* importPackageAction = new QAction(tr("Import package"), this);
     importPackageAction->setShortcut(QKeySequence::New);
     importPackageAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -160,7 +158,6 @@ void PreviewWidget::CreateActions()
 void PreviewWidget::OnIncrementScale()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -173,7 +170,6 @@ void PreviewWidget::OnIncrementScale()
 void PreviewWidget::OnDecrementScale()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -186,7 +182,6 @@ void PreviewWidget::OnDecrementScale()
 void PreviewWidget::SetActualScale()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     canvasDataAdapter.SetScale(1.0f);
 }
@@ -202,15 +197,13 @@ void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
 
 void PreviewWidget::InitUI()
 {
-    using namespace DAVA::TArc;
-
     GuidesController* hGuidesController = new GuidesController(Vector2::AXIS_X, accessor, this);
     GuidesController* vGuidesController = new GuidesController(Vector2::AXIS_Y, accessor, this);
 
     QVBoxLayout* vLayout = new QVBoxLayout(this);
 
-    DAVA::TArc::DataContext* ctx = accessor->GetGlobalContext();
-    DAVA::TArc::SceneTabbar* tabBar = new DAVA::TArc::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
+    DAVA::DataContext* ctx = accessor->GetGlobalContext();
+    DAVA::SceneTabbar* tabBar = new DAVA::SceneTabbar(accessor, DAVA::Reflection::Create(&accessor), this);
     addActions(tabBar->actions());
     tabBar->closeTab.Connect(&requestCloseTab, &DAVA::Signal<DAVA::uint64>::Emit);
     tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -237,14 +230,14 @@ void PreviewWidget::InitUI()
     connect(rulerController, &RulerController::VerticalRulerMarkPositionChanged, verticalRuler, &RulerWidget::OnMarkerPositionChanged);
     gridLayout->addWidget(verticalRuler, 1, 0);
 
-    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    DAVA::DataContext* globalContext = accessor->GetGlobalContext();
     globalContext->CreateData(std::make_unique<CentralWidgetData>(renderWidget, horizontalRuler, verticalRuler));
 
     QSizePolicy expandingPolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     renderWidget->setSizePolicy(expandingPolicy);
     gridLayout->addWidget(renderWidget, 1, 1);
     {
-        ScrollBar::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ScrollBar::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ScrollBar::Fields::Value] = ScrollBarAdapter::positionPropertyName;
         params.fields[ScrollBar::Fields::Minimum] = ScrollBarAdapter::minPosPropertyName;
         params.fields[ScrollBar::Fields::Maximum] = ScrollBarAdapter::maxPosPropertyName;
@@ -272,7 +265,7 @@ void PreviewWidget::InitUI()
     vLayout->setSpacing(1.0f);
 
     {
-        ScaleComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ScaleComboBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ScaleComboBox::Fields::Enumerator] = ScaleComboBoxAdapter::enumeratorPropertyName;
         params.fields[ScaleComboBox::Fields::Value] = ScaleComboBoxAdapter::scalePropertyName;
         params.fields[ScaleComboBox::Fields::Enabled] = ScaleComboBoxAdapter::enabledPropertyName;
@@ -281,7 +274,7 @@ void PreviewWidget::InitUI()
         QString toolbarName = "Document toolBar";
         ActionPlacementInfo toolBarScalePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                    << "Toolbars"));
-        ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolBarScalePlacement, toolbarName);
+        ui->DeclareToolbar(DAVA::mainWindowKey, toolBarScalePlacement, toolbarName);
 
         QAction* action = new QAction(nullptr);
         QWidget* container = new QWidget();
@@ -294,7 +287,7 @@ void PreviewWidget::InitUI()
         AttachWidgetToAction(action, container);
 
         ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 }
 
@@ -321,7 +314,7 @@ void PreviewWidget::ShowMenu(const QMouseEvent* mouseEvent)
 bool PreviewWidget::AddSelectionMenuSection(QMenu* menu, const QPoint& pos)
 {
     using namespace DAVA;
-    using namespace TArc;
+
     Vector<ControlNode*> nodesUnderPoint;
     Vector2 davaPos(pos.x(), pos.y());
     auto predicateForMenu = [davaPos](const ControlNode* node) -> bool
@@ -376,8 +369,6 @@ void PreviewWidget::AddChangeTextMenuSection(QMenu* menu, const QPoint& localPos
 
 void PreviewWidget::AddBgrColorMenuSection(QMenu* menu)
 {
-    using namespace DAVA::TArc;
-
     QMenu* bgrColorsMenu = new QMenu("Background Color");
     menu->addMenu(bgrColorsMenu);
 
@@ -558,7 +549,6 @@ void PreviewWidget::OnDragLeaved(QDragLeaveEvent*)
 void PreviewWidget::OnDrop(QDropEvent* event)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     droppingFile.Emit(false);
     DVASSERT(nullptr != event);
@@ -597,7 +587,7 @@ void PreviewWidget::OnDrop(QDropEvent* event)
 void PreviewWidget::OnKeyPressed(QKeyEvent* event)
 {
     using namespace DAVA;
-    using namespace TArc;
+
     if (event->isAutoRepeat())
     {
         return;
@@ -626,7 +616,6 @@ void PreviewWidget::OnKeyPressed(QKeyEvent* event)
 void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Vector<uint64> allIDs;
     accessor->ForEachContext([&allIDs](const DataContext& context) {

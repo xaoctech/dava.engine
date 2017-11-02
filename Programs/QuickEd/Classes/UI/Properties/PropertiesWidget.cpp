@@ -88,7 +88,7 @@ PropertiesWidget::~PropertiesWidget()
     nodeUpdater.Abort();
 }
 
-void PropertiesWidget::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+void PropertiesWidget::SetAccessor(DAVA::ContextAccessor* accessor_)
 {
     accessor = accessor_;
 
@@ -99,7 +99,7 @@ void PropertiesWidget::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
     propertiesItemsDelegate->SetAccessor(accessor);
 }
 
-void PropertiesWidget::SetUI(DAVA::TArc::UI* ui_)
+void PropertiesWidget::SetUI(DAVA::UI* ui_)
 {
     ui = ui_;
 }
@@ -369,10 +369,9 @@ void PropertiesWidget::ApplyExpanding()
     }
 }
 
-void PropertiesWidget::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void PropertiesWidget::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     bool hasData = wrapper.HasData();
     treeView->setEnabled(hasData);

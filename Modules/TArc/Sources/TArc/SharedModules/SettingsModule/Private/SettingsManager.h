@@ -9,8 +9,6 @@
 namespace DAVA
 {
 class TypeInheritance;
-namespace TArc
-{
 class PropertiesItem;
 class ContextAccessor;
 class SettingsNode;
@@ -51,5 +49,4 @@ private:
     std::unique_ptr<SettingsContainer> settings;
     Vector<std::pair<DataWrapper, SettingsNode*>> wrappers;
 };
-} // namespace TArc
 } // namespace DAVA

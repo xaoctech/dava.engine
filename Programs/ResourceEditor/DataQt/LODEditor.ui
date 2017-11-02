@@ -247,7 +247,7 @@
   <customwidget>
    <class>DistanceSlider</class>
    <extends>QFrame</extends>
-   <header>DockLODEditor/DistanceSlider.h</header>
+   <header>Classes/Qt/DockLODEditor/DistanceSlider.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

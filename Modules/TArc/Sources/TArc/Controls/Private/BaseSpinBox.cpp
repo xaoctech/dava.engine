@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace BaseSpinBoxDetail
 {
 template <typename T>
@@ -134,13 +132,13 @@ void BaseSpinBox<TBase, TEditableType>::UpdateControl(const ControlDescriptor& c
     bool readOnlychanged = changedFields.IsChanged(BaseFields::IsReadOnly);
     if (valueChanged == true || readOnlychanged == true)
     {
-        DAVA::Reflection fieldValue = this->model.GetField(changedFields.GetName(BaseFields::Value));
+        Reflection fieldValue = this->model.GetField(changedFields.GetName(BaseFields::Value));
         DVASSERT(fieldValue.IsValid());
 
         this->setReadOnly(this->IsValueReadOnly(changedFields, BaseFields::Value, BaseFields::IsReadOnly));
         if (valueChanged == true)
         {
-            DAVA::Any value = fieldValue.GetValue();
+            Any value = fieldValue.GetValue();
             if (value.CanCast<TEditableType>())
             {
                 if (stateHistory.top() == ControlState::InvalidValue)
@@ -171,7 +169,7 @@ template <typename TBase, typename TEditableType>
 void BaseSpinBox<TBase, TEditableType>::SetupSpinBoxBase()
 {
     this->setKeyboardTracking(false);
-    connections.AddConnection(this, static_cast<void (TBase::*)(TEditableType)>(&TBase::valueChanged), DAVA::MakeFunction(this, &BaseSpinBox<TBase, TEditableType>::ValueChanged));
+    connections.AddConnection(this, static_cast<void (TBase::*)(TEditableType)>(&TBase::valueChanged), MakeFunction(this, &BaseSpinBox<TBase, TEditableType>::ValueChanged));
     ToValidState();
 
     this->setFocusPolicy(Qt::StrongFocus);
@@ -261,7 +259,7 @@ void BaseSpinBox<TBase, TEditableType>::fixup(QString& str) const
             NotificationParams notifParams;
             notifParams.title = "Invalid value";
             notifParams.message.message = message.toStdString();
-            notifParams.message.type = ::DAVA::Result::RESULT_ERROR;
+            notifParams.message.type = Result::RESULT_ERROR;
             this->controlParams.ui->ShowNotification(this->controlParams.wndKey, notifParams);
         }
     }
@@ -312,7 +310,7 @@ QValidator::State BaseSpinBox<TBase, TEditableType>::validate(QString& input, in
                     NotificationParams notifParams;
                     notifParams.title = "Invalid value";
                     notifParams.message.message = r.message;
-                    notifParams.message.type = ::DAVA::Result::RESULT_ERROR;
+                    notifParams.message.type = Result::RESULT_ERROR;
                     this->controlParams.ui->ShowNotification(this->controlParams.wndKey, notifParams);
                 }
 
@@ -426,5 +424,4 @@ template class BaseSpinBox<QDoubleSpinBox, double>;
 _Pragma("clang diagnostic pop")
 #endif
 
-} // namespace TArc
 } // namespace DAVA

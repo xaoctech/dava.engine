@@ -7,10 +7,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DropperShade;
-
 class EyeDropper : public QObject
 {
     Q_OBJECT
@@ -38,5 +35,4 @@ private:
     QPointer<QWidget> parentWidget;
     Shades shades;
 };
-}
 }

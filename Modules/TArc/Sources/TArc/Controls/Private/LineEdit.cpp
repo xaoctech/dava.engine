@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 LineEdit::LineEdit(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QLineEdit>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -48,7 +46,7 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
     bool textChanged = descriptor.IsChanged(Fields::Text);
     if (readOnlyChanged || textChanged)
     {
-        DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Text));
+        Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Text));
         DVASSERT(fieldValue.IsValid());
 
         setReadOnly(IsValueReadOnly(descriptor, Fields::Text, Fields::IsReadOnly));
@@ -108,9 +106,7 @@ void LineEdit::ShowHint(const QString& message)
     NotificationParams notifParams;
     notifParams.title = "Invalid value";
     notifParams.message.message = message.toStdString();
-    notifParams.message.type = ::DAVA::Result::RESULT_ERROR;
+    notifParams.message.type = Result::RESULT_ERROR;
     controlParams.ui->ShowNotification(controlParams.wndKey, notifParams);
 }
-
-} // namespace TArc
 } // namespace DAVA

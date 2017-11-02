@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void ModuleCollection::AddGuiModule(const TypeCreateFn& type)
 {
     guiModules.push_back(type);
@@ -25,7 +23,7 @@ Vector<const ReflectedType*> ModuleCollection::GetGuiModules() const
     return types;
 }
 
-DAVA::Vector<std::pair<const ReflectedType*, DAVA::String>> ModuleCollection::GetConsoleModules() const
+Vector<std::pair<const ReflectedType*, String>> ModuleCollection::GetConsoleModules() const
 {
     Vector<std::pair<const ReflectedType*, String>> types;
     for (const auto& modulePair : consoleModules)
@@ -35,6 +33,4 @@ DAVA::Vector<std::pair<const ReflectedType*, DAVA::String>> ModuleCollection::Ge
 
     return types;
 }
-
-} // namespace TArc
 } // namespace DAVA

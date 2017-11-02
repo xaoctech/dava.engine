@@ -19,10 +19,10 @@
 #include <Logger/Logger.h>
 #include "EditorSystems/UserAssetsSettings.h"
 
-GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_, QWidget* container_)
+GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::ContextAccessor* accessor_, QWidget* container_)
     : orientation(orientation_)
     , accessor(accessor_)
-    , fieldBinder(new DAVA::TArc::FieldBinder(accessor))
+    , fieldBinder(new DAVA::FieldBinder(accessor))
     , container(container_)
     , canvasDataAdapter(accessor)
 {
@@ -31,7 +31,7 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
 
     documentDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
     preferencesDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<PreferencesData>());
-    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
     canvasDataAdapterWrapper.SetListener(this);
 
     BindFields();
@@ -41,7 +41,7 @@ GuidesController::GuidesController(DAVA::Vector2::eAxis orientation_, DAVA::TArc
 void GuidesController::BindFields()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -95,7 +95,7 @@ void GuidesController::OnCanvasParametersChanged(const DAVA::Any&)
     DisableDrag();
 }
 
-void GuidesController::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void GuidesController::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     bool startValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
     bool lastValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::lastValuePropertyName) != fields.end();
@@ -281,7 +281,7 @@ void GuidesController::EnableDrag(DAVA::float32 position)
     {
         dragState = DRAG;
 
-        DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+        DAVA::DataContext* active = accessor->GetActiveContext();
         DocumentData* data = active->GetData<DocumentData>();
         data->BeginBatch("Dragging guide");
 
@@ -297,7 +297,7 @@ void GuidesController::DisableDrag()
         return;
     }
 
-    DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+    DAVA::DataContext* active = accessor->GetActiveContext();
     DocumentData* data = active->GetData<DocumentData>();
     data->EndBatch();
 
@@ -426,7 +426,6 @@ PackageNode::AxisGuides GuidesController::GetValues() const
 void GuidesController::SetValues(const PackageNode::AxisGuides& values)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DocumentData* data = activeContext->GetData<DocumentData>();
@@ -549,7 +548,6 @@ void GuidesController::RemoveLastGuideWidget()
 CentralWidgetData* GuidesController::GetCentralWidgetData() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* globalContext = accessor->GetGlobalContext();
     return globalContext->GetData<CentralWidgetData>();
@@ -558,7 +556,6 @@ CentralWidgetData* GuidesController::GetCentralWidgetData() const
 DocumentData* GuidesController::GetDocumentData() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);

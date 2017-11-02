@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <>
 bool PropertiesItem::Impl::FromValue(const QJsonValue& value, const bool& defaultValue)
 {
@@ -355,6 +353,4 @@ QJsonValue PropertiesItem::Impl::ToValue(const Vector<Color>& value)
                    });
     return jsonResult;
 }
-
-} // namespace TArc
 } // namespace DAVA

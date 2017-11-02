@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QStandardItem>
+#include <REPlatform/DataNodes/Selectable.h>
 
 // framework
-#include "Scene3D/Entity.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleLayer.h"
-#include "Particles/ParticleForce.h"
+#include <Scene3D/Entity.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Particles/ParticleEmitter.h>
+#include <Particles/ParticleLayer.h>
+#include <Particles/ParticleForce.h>
 
-#include "Classes/Selection/Selectable.h"
+#include <QStandardItem>
 
 Q_DECLARE_METATYPE(DAVA::Entity*);
 Q_DECLARE_METATYPE(DAVA::ParticleLayer*);
@@ -56,7 +56,7 @@ public:
     DAVA::BaseObject* GetItemObject() const;
 
 protected:
-    Selectable object;
+    DAVA::Selectable object;
     eItemType type = EIT_Entity;
     bool isAcceptedByFilter = false;
     bool isHighlighted = false;

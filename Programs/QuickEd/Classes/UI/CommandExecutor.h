@@ -13,11 +13,8 @@
 namespace DAVA
 {
 class CommandStack;
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 class DocumentData;
@@ -36,7 +33,7 @@ class ComponentPropertiesSection;
 class CommandExecutor
 {
 public:
-    CommandExecutor(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
+    CommandExecutor(DAVA::ContextAccessor* accessor, DAVA::UI* ui);
 
     void AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::FilePath> packagePaths, const PackageNode* package);
     void RemoveImportedPackagesFromPackage(const DAVA::Vector<PackageNode*>& importedPackage, const PackageNode* package);
@@ -80,6 +77,6 @@ private:
     DocumentData* GetDocumentData() const;
     ProjectData* GetProjectData() const;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TArc/DataProcessing/DataNode.h"
+#include "TArc/DataProcessing/TArcDataNode.h"
 
 #include <Functional/Function.h>
 #include <Reflection/Reflection.h>
@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DataContext
 {
 public:
@@ -18,7 +16,7 @@ public:
     DataContext(DataContext* parentContext);
     ~DataContext();
 
-    void CreateData(std::unique_ptr<DataNode>&& node);
+    void CreateData(std::unique_ptr<TArcDataNode>&& node);
 
     template <typename T>
     T* GetData() const; // returns nullptr if T not exists
@@ -26,7 +24,7 @@ public:
     template <typename T>
     void DeleteData();
 
-    DataNode* GetData(const ReflectedType* type) const; // returns nullptr if T not exists
+    TArcDataNode* GetData(const ReflectedType* type) const; // returns nullptr if T not exists
     void DeleteData(const ReflectedType* type);
 
     using ContextID = uint64;
@@ -36,11 +34,10 @@ public:
 
 private:
     DataContext* parentContext = nullptr;
-    UnorderedMap<const ReflectedType*, DataNode*> dataMap;
+    UnorderedMap<const ReflectedType*, TArcDataNode*> dataMap;
 
     DAVA_REFLECTION(DataContext);
 };
-} // namespace TArc
 } // namespace DAVA
 
 #define DAVAENGINE_DATACONTEXT__H

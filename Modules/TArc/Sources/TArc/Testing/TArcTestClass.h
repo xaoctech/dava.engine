@@ -13,14 +13,12 @@
 
 namespace DAVA
 {
-namespace TArc
-{
-class TestClass : public UnitTests::TestClass
+class TArcTestClass : public UnitTests::TestClass
 {
     static const double testTimeLimit;
 
 public:
-    ~TestClass();
+    ~TArcTestClass();
 
     void Init();
     void DirectUpdate(float32 timeElapsed, const String& testName);
@@ -37,7 +35,7 @@ public:
     const DataContext* GetActiveContext() const;
     DataContext* GetGlobalContext();
     const DataContext* GetGlobalContext() const;
-    DataWrapper CreateWrapper(const DAVA::ReflectedType* type);
+    DataWrapper CreateWrapper(const ReflectedType* type);
     ContextAccessor* GetAccessor();
     const ContextAccessor* GetAccessor() const;
     ContextManager* GetContextManager();
@@ -61,8 +59,6 @@ public:
         return result;
     }
 
-    static Signal<Core*> coreChanged;
-
 protected:
     virtual void AfterWrappersSync()
     {
@@ -72,19 +68,19 @@ protected:
     std::unique_ptr<MockInvoker> mockInvoker;
     QtConnections connections;
     bool updateForCurrentTestCalled = false;
-    DAVA::FilePath documentsPath;
+    FilePath documentsPath;
 };
 
 template <typename... Args>
-inline void TestClass::InvokeOperation(int operationId, const Args&... args)
+inline void TArcTestClass::InvokeOperation(int operationId, const Args&... args)
 {
     core->GetCoreInterface()->Invoke(operationId, args...);
 }
 
-class TestClassHolder final : public UnitTests::TestClass
+class TArcTestClassHolder final : public UnitTests::TestClass
 {
 public:
-    TestClassHolder(std::unique_ptr<DAVA::TArc::TestClass>&& testClass);
+    TArcTestClassHolder(std::unique_ptr<TArcTestClass>&& testClass);
 
     void InitTimeStampForTest(const String& testName) override;
     void SetUp(const String& testName) override;
@@ -104,7 +100,7 @@ private:
     void ProcessCallsImpl();
 
 private:
-    std::unique_ptr<DAVA::TArc::TestClass> testClass;
+    std::unique_ptr<TArcTestClass> testClass;
     bool pendingEventProcess = false;
     Vector<Function<void()>> callsQueue;
     QtDelayedExecutor executor;
@@ -112,14 +108,12 @@ private:
 };
 
 template <typename T>
-class TestClassHolderFactory : public DAVA::UnitTests::TestClassFactoryBase
+class TArcTestClassHolderFactory : public UnitTests::TestClassFactoryBase
 {
 public:
-    DAVA::UnitTests::TestClass* CreateTestClass()
+    UnitTests::TestClass* CreateTestClass()
     {
-        return new DAVA::TArc::TestClassHolder(std::make_unique<T>());
+        return new TArcTestClassHolder(std::make_unique<T>());
     }
 };
-
-} // namespace TArc
 } // namespace DAVA

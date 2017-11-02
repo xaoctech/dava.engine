@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace DataWrapperDetail
 {
 Reflection GetDataDefault(const DataContext* context, const ReflectedType* type)
@@ -18,7 +16,7 @@ Reflection GetDataDefault(const DataContext* context, const ReflectedType* type)
         return ret;
     }
 
-    DataNode* node = context->GetData(type);
+    TArcDataNode* node = context->GetData(type);
     if (node != nullptr)
     {
         ret = Reflection::Create(node);
@@ -227,9 +225,9 @@ void DataWrapper::Sync(bool notifyListener)
                 {
                     valuesEqual = impl->cachedValues[i] == newValue;
                 }
-                catch (const DAVA::Exception& e)
+                catch (const Exception& e)
                 {
-                    DAVA::Logger::Debug("DataWrapper::Sync: %s", e.what());
+                    Logger::Debug("DataWrapper::Sync: %s", e.what());
                 }
                 if (!valuesEqual)
                 {
@@ -324,5 +322,4 @@ Reflection DataWrapper::GetData() const
     DVASSERT(HasData());
     return impl->dataAccessor(impl->activeContext);
 }
-} // namespace TArc
 } // namespace DAVA

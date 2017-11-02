@@ -25,7 +25,7 @@ DAVA_REFLECTION_IMPL(ScrollBarAdapter)
     .End();
 }
 
-ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::TArc::ContextAccessor* accessor_)
+ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::ContextAccessor* accessor_)
     : orientation(orientation_)
     , accessor(accessor_)
     , canvasDataAdapter(accessor)

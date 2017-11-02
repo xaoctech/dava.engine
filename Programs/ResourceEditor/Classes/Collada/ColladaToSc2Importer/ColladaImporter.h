@@ -1,13 +1,17 @@
 #pragma once
 
-#include "Collada/ColladaToSc2Importer/ImportLibrary.h"
-#include "Collada/ColladaErrorCodes.h"
+#include "Classes/Collada/ColladaToSc2Importer/ImportLibrary.h"
+#include "Classes/Collada/ColladaErrorCodes.h"
+#include "Classes/Collada/ColladaMeshInstance.h"
+
+#include <Base/FastName.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Scene3D/Entity.h>
 
 namespace DAVA
 {
 class Entity;
 class ColladaSceneNode;
-class ImportLibrary;
 
 class ColladaImporter
 {

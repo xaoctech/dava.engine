@@ -31,7 +31,7 @@ deadCodeTrickFile.write("#include \"DeadCodeTrick.h\"\n")
 for testFile in selftests:
     deadCodeTrickFile.write("#include \"" + includeBaseDir + "/" + testFile + "\"\n")
 
-deadCodeTrickFile.write("\nnamespace DAVA\n{\nnamespace TArc\n{\n")
+deadCodeTrickFile.write("\nnamespace DAVA\n{\n")
 deadCodeTrickFile.write("bool AvoidTestsStriping()\n{\n    return true;\n}\n")
-deadCodeTrickFile.write("} // namespace TArc\n} // namespace DAVA")
+deadCodeTrickFile.write("} // namespace DAVA")
 deadCodeTrickFile.close()

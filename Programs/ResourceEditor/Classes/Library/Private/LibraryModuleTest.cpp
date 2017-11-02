@@ -1,9 +1,8 @@
 #include "Classes/Library/LibraryModule.h"
-#include "Classes/Project/ProjectResources.h"
-
 #include "Classes/Library/Private/DAEConverter.h"
-
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+
+#include <REPlatform/DataNodes/ProjectResources.h>
 
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockDefine.h>
@@ -13,25 +12,25 @@
 #include <TArc/Core/ContextAccessor.h>
 
 #include <Base/Any.h>
+#include <Entity/Component.h>
 #include <FileSystem/FilePath.h>
 #include <FileSystem/FileSystem.h>
-#include <Entity/Component.h>
-#include <Render/Highlevel/RenderObject.h>
 #include <Render/Highlevel/RenderBatch.h>
+#include <Render/Highlevel/RenderObject.h>
 #include <Render/Material/NMaterial.h>
-#include <Scene3D/Lod/LodComponent.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Lod/LodComponent.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFileV2.h>
-#include <Scene3D/Entity.h>
 
-#include <QMainWindow>
-#include <QWidget>
-#include <QMenuBar>
-#include <QMenu>
 #include <QAction>
+#include <QMainWindow>
+#include <QMenu>
+#include <QMenuBar>
 #include <QTest>
+#include <QWidget>
 
 #include <gmock/gmock.h>
 
@@ -44,13 +43,13 @@ const DAVA::String testProjectPath = testFolder + DAVA::String("LibraryTest/");
 const DAVA::String testDataSource3dPath = testProjectPath + DAVA::String("DataSource/3d/");
 const DAVA::String testDAEPathname = testDataSource3dPath + "test.dae";
 
-class ProjectManagerDummyModule : public DAVA::TArc::ClientModule
+class ProjectManagerDummyModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         // prepare test environment
         {
@@ -70,14 +69,14 @@ protected:
         CommandLineModuleTestUtils::ClearTestFolder(testFolder);
     }
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerDummyModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerDummyModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<ProjectManagerDummyModule>::Begin()
         .ConstructorByPointer()
         .End();
     }
 
-    std::unique_ptr<ProjectResources> projectResources;
+    std::unique_ptr<DAVA::ProjectResources> projectResources;
 };
 }
 

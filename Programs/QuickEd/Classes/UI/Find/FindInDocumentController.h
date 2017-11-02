@@ -12,18 +12,15 @@ class FindFilter;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-} // namespace TArc
 } // namespace DAVA
 
 class FindInDocumentController : public QObject, PackageListener
 {
     Q_OBJECT
 public:
-    FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
+    FindInDocumentController(DAVA::UI* ui, DAVA::ContextAccessor* accessor);
 
     Q_SIGNAL void FindInDocumentRequest(std::shared_ptr<FindFilter> filter);
     Q_SIGNAL void SelectControlRequest(const QString& path, const QString& name);
@@ -63,11 +60,11 @@ private:
     void ImportedPackageWasAdded(PackageNode* node, ImportedPackagesNode* to, int index) override;
     void ImportedPackageWasRemoved(PackageNode* node, ImportedPackagesNode* from) override;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
     FindContext context;
     FindInDocumentWidget* findInDocumentWidget = nullptr;
     PackageListenerProxy packageListenerProxy;
     ContinuousUpdater findResultsUpdater;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 };

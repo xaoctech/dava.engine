@@ -20,15 +20,12 @@
 namespace DAVA
 {
 class RenderWidget;
-namespace TArc
-{
 class ContextAccessor;
-}
-}
-
 class SceneEditor2;
 class SelectableGroup;
-class SceneRenderWidget : public QFrame, private DAVA::TArc::DataListener,
+}
+
+class SceneRenderWidget : public QFrame, private DAVA::DataListener,
                           private DAVA::IClientDelegate,
                           public DAVA::TrackedObject
 {
@@ -44,17 +41,17 @@ public:
         virtual void OnDrop(QObject* target, QDropEvent* event) = 0;
     };
 
-    SceneRenderWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::RenderWidget* renderWidget, IWidgetDelegate* widgetDelegate);
+    SceneRenderWidget(DAVA::ContextAccessor* accessor, DAVA::RenderWidget* renderWidget, IWidgetDelegate* widgetDelegate);
     ~SceneRenderWidget();
 
 private:
     void InitDavaUI();
 
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
     void OnRenderWidgetResized(DAVA::uint32 w, DAVA::uint32 h);
     void OnCloseTab(DAVA::uint64 id);
     void OnDeleteSelection();
-    void OnMouseOverSelection(SceneEditor2* scene, const SelectableGroup* objects);
+    void OnMouseOverSelection(DAVA::SceneEditor2* scene, const DAVA::SelectableGroup* objects);
 
     bool eventFilter(QObject* object, QEvent* event) override;
     void OnDragEntered(QDragEnterEvent* e) override;
@@ -62,15 +59,15 @@ private:
     void OnDrop(QDropEvent* e) override;
 
 private:
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::DataWrapper activeSceneWrapper;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::DataWrapper activeSceneWrapper;
 
     DAVA::RefPtr<DAVA::UIScreen> davaUIScreen;
     DAVA::RefPtr<DAVA::UI3DView> dava3DView;
     const int davaUIScreenID = 0;
     const int dava3DViewMargin = 3;
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
     DAVA::RenderWidget* renderWidget = nullptr;
 
     IWidgetDelegate* widgetDelegate = nullptr;

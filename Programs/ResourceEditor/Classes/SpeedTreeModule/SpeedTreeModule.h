@@ -12,7 +12,7 @@
 
 #include <memory>
 
-class SpeedTreeModule : public DAVA::TArc::ClientModule
+class SpeedTreeModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override;
@@ -20,8 +20,8 @@ protected:
 private:
     void OnImportSpeedTree();
 
-    DAVA::TArc::QtConnections connections;
-    DAVA_VIRTUAL_REFLECTION(SpeedTreeModule, DAVA::TArc::ClientModule);
+    DAVA::QtConnections connections;
+    DAVA_VIRTUAL_REFLECTION(SpeedTreeModule, DAVA::ClientModule);
 };
 
 #endif //#if defined (__DAVAENGINE_SPEEDTREE__)

@@ -12,7 +12,7 @@
 
 #include <memory>
 
-class BeastModule : public DAVA::TArc::ClientModule
+class BeastModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override;
@@ -23,10 +23,10 @@ private:
     void OnBeastAndSave();
     void RunBeast(const QString& outputPath, Beast::eBeastMode mode);
 
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtConnections connections;
+    DAVA::QtDelayedExecutor delayedExecutor;
 
-    DAVA_VIRTUAL_REFLECTION(BeastModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(BeastModule, DAVA::ClientModule);
 };
 
 #endif //#if defined (__DAVAENGINE_BEAST__)

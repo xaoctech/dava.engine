@@ -1,45 +1,45 @@
 #include "Classes/Application/LaunchModule.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Qt/Scene/BaseTransformProxies.h"
-#include "Classes/Qt/Scene/BaseTransformProxies.h"
-#include "Classes/Selection/Selectable.h"
 
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/StringConstants.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/Selectable.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/BaseTransformProxies.h>
 
 #include <DavaTools/Version.h>
 
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Core/Deprecated.h>
 
 #include <Particles/ParticleEmitterInstance.h>
 #include <FileSystem/ResourceArchive.h>
 #include <FileSystem/FileSystem.h>
 
-class LaunchModule::FirstSceneCreator : public QObject, private DAVA::TArc::DataListener
+class LaunchModule::FirstSceneCreator : public QObject, private DAVA::DataListener
 {
 public:
     FirstSceneCreator(LaunchModule* module_)
         : module(module_)
     {
-        DAVA::TArc::ContextAccessor* accessor = module->GetAccessor();
-        wrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<ProjectManagerData>());
+        DAVA::ContextAccessor* accessor = module->GetAccessor();
+        wrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<DAVA::ProjectManagerData>());
         wrapper.SetListener(this);
     }
 
-    void OnDataChanged(const DAVA::TArc::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
+    void OnDataChanged(const DAVA::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
     {
         if (!wrapper.HasData())
         {
             return;
         }
 
-        DAVA::TArc::ContextAccessor* accessor = module->GetAccessor();
-        ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
+        DAVA::ContextAccessor* accessor = module->GetAccessor();
+        DAVA::ProjectManagerData* data = accessor->GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
         if (data->IsOpened())
         {
-            module->InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+            module->InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
             wrapper.SetListener(nullptr);
             deleteLater();
         }
@@ -47,21 +47,21 @@ public:
 
 private:
     LaunchModule* module = nullptr;
-    DAVA::TArc::DataWrapper wrapper;
+    DAVA::DataWrapper wrapper;
 };
 
 LaunchModule::~LaunchModule()
 {
-    Selectable::RemoveAllTransformProxies();
+    DAVA::Selectable::RemoveAllTransformProxies();
 }
 
 void LaunchModule::PostInit()
 {
-    Selectable::AddTransformProxyForClass<DAVA::Entity, EntityTransformProxy>();
-    Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, EmitterTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::Entity, DAVA::EntityTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, DAVA::EmitterTransformProxy>();
 
     delayedExecutor.DelayedExecute([this]() {
-        InvokeOperation(REGlobal::OpenLastProjectOperation.ID);
+        InvokeOperation(DAVA::OpenLastProjectOperation.ID);
     });
 
     UnpackHelpDoc();
@@ -70,10 +70,10 @@ void LaunchModule::PostInit()
 
 void LaunchModule::UnpackHelpDoc()
 {
-    DAVA::TArc::PropertiesItem versionsInfo = GetAccessor()->CreatePropertiesNode("VersionsInfo");
+    DAVA::PropertiesItem versionsInfo = GetAccessor()->CreatePropertiesNode("VersionsInfo");
     const DAVA::EngineContext* engineContext = GetAccessor()->GetEngineContext();
     DAVA::String editorVer = versionsInfo.Get("EditorVersion", DAVA::String(""));
-    DAVA::FilePath docsPath = DAVA::FilePath(ResourceEditor::DOCUMENTATION_PATH);
+    DAVA::FilePath docsPath = DAVA::FilePath(DAVA::ResourceEditor::DOCUMENTATION_PATH);
     if (editorVer != APPLICATION_BUILD_VERSION || !engineContext->fileSystem->Exists(docsPath))
     {
         DAVA::Logger::FrameworkDebug("Unpacking Help...");

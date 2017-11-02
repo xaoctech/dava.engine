@@ -1,24 +1,29 @@
 #include "Classes/Application/REModule.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
 #include "Classes/Application/FileSystemData.h"
 #include "Classes/Application/Private/SettingsConverter.h"
 
-#include "Main/mainwindow.h"
-#include "TextureCache.h"
+#include "Classes/Qt/Main/mainwindow.h"
+#include "Classes/Qt/TextureBrowser/TextureCache.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
 
 #include <TArc/WindowSubSystem/Private/UIManager.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
+
+#include <Engine/EngineContext.h>
+#include <FileSystem/LocalizationSystem.h>
+#include <UI/UIControlSystem.h>
 #include <UI/Render/UIRenderSystem.h>
 
 #include <QPointer>
 
 namespace REModuleDetail
 {
-class REGlobalData : public DAVA::TArc::DataNode
+class REGlobalData : public DAVA::TArcDataNode
 {
 public:
-    REGlobalData(DAVA::TArc::UI* ui)
+    REGlobalData(DAVA::UI* ui)
     {
         textureCache = new TextureCache();
         mainWindow = new QtMainWindow(ui);
@@ -56,7 +61,7 @@ REModule::~REModule()
 
 void REModule::PostInit()
 {
-    DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+    DAVA::ContextAccessor* accessor = GetAccessor();
     ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
 
     const DAVA::EngineContext* engineContext = accessor->GetEngineContext();
@@ -65,16 +70,16 @@ void REModule::PostInit()
     engineContext->uiControlSystem->GetRenderSystem()->SetClearColor(DAVA::Color(.3f, .3f, .3f, 1.f));
 
     using TData = REModuleDetail::REGlobalData;
-    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    DAVA::DataContext* globalContext = accessor->GetGlobalContext();
     globalContext->CreateData(std::make_unique<TData>(GetUI()));
     TData* globalData = globalContext->GetData<TData>();
 
-    DAVA::TArc::UI* ui = GetUI();
-    ui->InjectWindow(DAVA::TArc::mainWindowKey, globalData->mainWindow);
+    DAVA::UI* ui = GetUI();
+    ui->InjectWindow(DAVA::mainWindowKey, globalData->mainWindow);
     globalData->mainWindow->AfterInjectInit();
     globalData->mainWindow->EnableGlobalTimeout(true);
 
-    RegisterOperation(REGlobal::ShowMaterial.ID, this, &REModule::ShowMaterial);
+    RegisterOperation(DAVA::ShowMaterial.ID, this, &REModule::ShowMaterial);
 
     globalContext->CreateData(std::make_unique<FileSystemData>());
 }
@@ -82,7 +87,7 @@ void REModule::PostInit()
 void REModule::ShowMaterial(DAVA::NMaterial* material)
 {
     using TData = REModuleDetail::REGlobalData;
-    DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    DAVA::DataContext* globalContext = GetAccessor()->GetGlobalContext();
     TData* globalData = globalContext->GetData<TData>();
     globalData->mainWindow->OnMaterialEditor(material);
 }

@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class EmptyComponentValue : public BaseComponentValue
 {
 protected:
@@ -17,5 +15,4 @@ protected:
 private:
     DAVA_VIRTUAL_REFLECTION(EmptyComponentValue, BaseComponentValue);
 };
-}
 } // namespace DAVA

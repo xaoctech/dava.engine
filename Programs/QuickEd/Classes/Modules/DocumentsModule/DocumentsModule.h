@@ -16,7 +16,7 @@ class EditorSystemsManager;
 class PackageNode;
 class ControlNode;
 
-class DocumentsModule : public DAVA::TArc::ControllerModule, PackageListener
+class DocumentsModule : public DAVA::ControllerModule, PackageListener
 {
 public:
     DocumentsModule();
@@ -24,15 +24,15 @@ public:
 
 protected:
     void OnRenderSystemInitialized(DAVA::Window* window) override;
-    bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
-    void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool CanWindowBeClosedSilently(const DAVA::WindowKey& key, DAVA::String& requestWindowText) override;
+    bool SaveOnWindowClose(const DAVA::WindowKey& key) override;
+    void RestoreOnWindowClose(const DAVA::WindowKey& key) override;
 
     void PostInit() override;
-    void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnWindowClosed(const DAVA::WindowKey& key) override;
 
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
 private:
     void InitCentralWidget();
@@ -51,20 +51,20 @@ private:
     void CreateFindActions();
 
     void OpenPackageFiles(const QStringList& links);
-    DAVA::TArc::DataContext::ContextID OpenDocument(const QString& path);
+    DAVA::DataContext::ContextID OpenDocument(const QString& path);
     DAVA::RefPtr<PackageNode> CreatePackage(const QString& path);
 
     void CloseDocument(DAVA::uint64 id);
     void CloseAllDocuments();
     void DeleteAllDocuments();
-    void CloseDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids);
+    void CloseDocuments(const DAVA::Set<DAVA::DataContext::ContextID>& ids);
 
     void ReloadCurrentDocument();
-    void ReloadDocument(const DAVA::TArc::DataContext::ContextID& contextID);
-    void ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids);
+    void ReloadDocument(const DAVA::DataContext::ContextID& contextID);
+    void ReloadDocuments(const DAVA::Set<DAVA::DataContext::ContextID>& ids);
 
     bool HasUnsavedDocuments() const;
-    bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
+    bool SaveDocument(const DAVA::DataContext::ContextID& contextID);
     bool SaveAllDocuments();
     bool SaveCurrentDocument();
     void DiscardUnsavedChanges();
@@ -81,7 +81,7 @@ private:
     void OnApplicationStateChanged(Qt::ApplicationState state);
 
     void ApplyFileChanges();
-    DAVA::TArc::DataContext::ContextID GetContextByPath(const QString& path) const;
+    DAVA::DataContext::ContextID GetContextByPath(const QString& path) const;
 
     void OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState);
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
@@ -91,11 +91,11 @@ private:
     void OnDroppingFile(bool droppingFile);
 
     PreviewWidget* previewWidget = nullptr;
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
 
-    DAVA_VIRTUAL_REFLECTION(DocumentsModule, DAVA::TArc::ControllerModule);
+    DAVA_VIRTUAL_REFLECTION(DocumentsModule, DAVA::ControllerModule);
 };

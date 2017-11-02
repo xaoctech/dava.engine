@@ -1,5 +1,5 @@
-#include "CommandLine/StaticOcclusionTool.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/CommandLine/StaticOcclusionTool.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 #include "TArc/Testing/ConsoleModuleTestExecution.h"
 #include "TArc/Testing/TArcUnitTests.h"
 
@@ -63,7 +63,7 @@ DAVA_TARC_TESTCLASS(StaticOcclusionToolTest)
         TEST_VERIFY(CountSODataComponents(SOTestDetail::scenePathnameStr) == 0);
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<StaticOcclusionTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         TEST_VERIFY(CountSODataComponents(SOTestDetail::scenePathnameStr) == 1);
 

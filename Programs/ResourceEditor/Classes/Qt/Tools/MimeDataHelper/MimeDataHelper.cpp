@@ -1,5 +1,5 @@
 #include "MimeDataHelper.h"
-#include "Scene/SceneEditor2.h"
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <QList>
 #include <QUrl>

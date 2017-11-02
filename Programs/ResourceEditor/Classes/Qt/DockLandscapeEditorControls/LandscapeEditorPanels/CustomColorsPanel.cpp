@@ -1,21 +1,23 @@
-#include "CustomColorsPanel.h"
-#include "Scene/SceneSignals.h"
-#include "Scene/SceneEditor2.h"
-#include "Tools/SliderWidget/SliderWidget.h"
-#include "Deprecated/EditorConfig.h"
-#include "Constants.h"
-#include "Main/QtUtils.h"
-#include "Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.h"
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "Tools/PathDescriptor/PathDescriptor.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/CustomColorsPanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
+#include "Classes/Qt/Tools/SliderWidget/SliderWidget.h"
 
-#include <QLayout>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
+#include <REPlatform/Global/Constants.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/CustomColorsSystem.h>
+
+#include <TArc/Core/Deprecated.h>
+
 #include <QComboBox>
+#include <QLabel>
+#include <QLayout>
 #include <QPushButton>
 #include <QSpacerItem>
-#include <QLabel>
 
 CustomColorsPanel::CustomColorsPanel(QWidget* parent)
     : LandscapeEditorBasePanel(parent)
@@ -27,7 +29,7 @@ CustomColorsPanel::CustomColorsPanel(QWidget* parent)
 
 bool CustomColorsPanel::GetEditorEnabled()
 {
-    return GetActiveScene()->customColorsSystem->IsLandscapeEditingEnabled();
+    return GetActiveScene()->GetSystem<DAVA::CustomColorsSystem>()->IsLandscapeEditingEnabled();
 }
 
 void CustomColorsPanel::SetWidgetsState(bool enabled)
@@ -49,17 +51,18 @@ void CustomColorsPanel::BlockAllSignals(bool block)
 void CustomColorsPanel::StoreState()
 {
     DAVA::KeyedArchive* customProperties = GetOrCreateCustomProperties(GetActiveScene())->GetArchive();
-    customProperties->SetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN, sliderWidgetBrushSize->GetRangeMin());
-    customProperties->SetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX, sliderWidgetBrushSize->GetRangeMax());
+    customProperties->SetInt32(DAVA::ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN, sliderWidgetBrushSize->GetRangeMin());
+    customProperties->SetInt32(DAVA::ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX, sliderWidgetBrushSize->GetRangeMax());
 }
 
 void CustomColorsPanel::RestoreState()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
 
-    bool enabled = sceneEditor->customColorsSystem->IsLandscapeEditingEnabled();
-    DAVA::int32 brushSize = BrushSizeSystemToUI(sceneEditor->customColorsSystem->GetBrushSize());
-    DAVA::int32 colorIndex = sceneEditor->customColorsSystem->GetColor();
+    DAVA::CustomColorsSystem* customColorSystem = sceneEditor->GetSystem<DAVA::CustomColorsSystem>();
+    bool enabled = customColorSystem->IsLandscapeEditingEnabled();
+    DAVA::int32 brushSize = BrushSizeSystemToUI(customColorSystem->GetBrushSize());
+    DAVA::int32 colorIndex = customColorSystem->GetColor();
 
     DAVA::int32 brushRangeMin = DEF_BRUSH_MIN_SIZE;
     DAVA::int32 brushRangeMax = DEF_BRUSH_MAX_SIZE;
@@ -67,8 +70,8 @@ void CustomColorsPanel::RestoreState()
     DAVA::KeyedArchive* customProperties = GetCustomPropertiesArchieve(sceneEditor);
     if (customProperties)
     {
-        brushRangeMin = customProperties->GetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN, DEF_BRUSH_MIN_SIZE);
-        brushRangeMax = customProperties->GetInt32(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX, DEF_BRUSH_MAX_SIZE);
+        brushRangeMin = customProperties->GetInt32(DAVA::ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MIN, DEF_BRUSH_MIN_SIZE);
+        brushRangeMax = customProperties->GetInt32(DAVA::ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_MAX, DEF_BRUSH_MAX_SIZE);
     }
 
     SetWidgetsState(enabled);
@@ -93,7 +96,7 @@ void CustomColorsPanel::InitUI()
 
     QHBoxLayout* layoutBrushSize = new QHBoxLayout();
     QLabel* labelBrushSize = new QLabel();
-    labelBrushSize->setText(ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str());
+    labelBrushSize->setText(DAVA::ResourceEditor::CUSTOM_COLORS_BRUSH_SIZE_CAPTION.c_str());
     layoutBrushSize->addWidget(labelBrushSize);
     layoutBrushSize->addWidget(sliderWidgetBrushSize);
 
@@ -109,18 +112,17 @@ void CustomColorsPanel::InitUI()
     BlockAllSignals(true);
 
     sliderWidgetBrushSize->Init(false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
-    sliderWidgetBrushSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
-    buttonSaveTexture->setText(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str());
-    buttonLoadTexture->setText(ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION.c_str());
+    sliderWidgetBrushSize->SetRangeBoundaries(DAVA::ResourceEditor::BRUSH_MIN_BOUNDARY, DAVA::ResourceEditor::BRUSH_MAX_BOUNDARY);
+    buttonSaveTexture->setText(DAVA::ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str());
+    buttonLoadTexture->setText(DAVA::ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION.c_str());
 }
 
 void CustomColorsPanel::ConnectToSignals()
 {
-    projectDataWrapper = REGlobal::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<ProjectManagerData>());
+    projectDataWrapper = DAVA::Deprecated::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<DAVA::ProjectManagerData>());
     projectDataWrapper.SetListener(this);
 
-    connect(SceneSignals::Instance(), SIGNAL(LandscapeEditorToggled(SceneEditor2*)),
-            this, SLOT(EditorToggled(SceneEditor2*)));
+    connect(SceneSignals::Instance(), &SceneSignals::LandscapeEditorToggled, this, &CustomColorsPanel::EditorToggled);
 
     connect(sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
     connect(comboColor, SIGNAL(currentIndexChanged(int)), this, SLOT(SetColor(int)));
@@ -136,13 +138,13 @@ void CustomColorsPanel::InitColors()
     iconSize = iconSize.expandedTo(QSize(100, 0));
     comboColor->setIconSize(iconSize);
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data != nullptr);
 
-    const EditorConfig* config = data->GetEditorConfig();
+    const DAVA::EditorConfig* config = data->GetEditorConfig();
 
-    DAVA::Vector<DAVA::Color> customColors = config->GetColorPropertyValues(ResourceEditor::CUSTOM_COLORS_PROPERTY_COLORS);
-    DAVA::Vector<DAVA::String> customColorsDescription = config->GetComboPropertyValues(ResourceEditor::CUSTOM_COLORS_PROPERTY_DESCRIPTION);
+    DAVA::Vector<DAVA::Color> customColors = config->GetColorPropertyValues(DAVA::ResourceEditor::CUSTOM_COLORS_PROPERTY_COLORS);
+    DAVA::Vector<DAVA::String> customColorsDescription = config->GetComboPropertyValues(DAVA::ResourceEditor::CUSTOM_COLORS_PROPERTY_DESCRIPTION);
     for (size_t i = 0; i < customColors.size(); ++i)
     {
         QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
@@ -163,39 +165,39 @@ void CustomColorsPanel::InitColors()
 // to the values suitable for custom colors system
 DAVA::int32 CustomColorsPanel::BrushSizeUIToSystem(DAVA::int32 uiValue)
 {
-    DAVA::int32 systemValue = uiValue * ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
+    DAVA::int32 systemValue = uiValue * DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
     return systemValue;
 }
 
 DAVA::int32 CustomColorsPanel::BrushSizeSystemToUI(DAVA::int32 systemValue)
 {
-    DAVA::int32 uiValue = systemValue / ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
+    DAVA::int32 uiValue = systemValue / DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
     return uiValue;
 }
 // end of convert functions ==========================
 
-void CustomColorsPanel::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void CustomColorsPanel::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data);
     InitColors();
 }
 
 void CustomColorsPanel::SetBrushSize(int brushSize)
 {
-    GetActiveScene()->customColorsSystem->SetBrushSize(BrushSizeUIToSystem(brushSize));
+    GetActiveScene()->GetSystem<DAVA::CustomColorsSystem>()->SetBrushSize(BrushSizeUIToSystem(brushSize));
 }
 
 void CustomColorsPanel::SetColor(int color)
 {
-    GetActiveScene()->customColorsSystem->SetColor(color);
+    GetActiveScene()->GetSystem<DAVA::CustomColorsSystem>()->SetColor(color);
 }
 
 bool CustomColorsPanel::SaveTexture()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
 
-    DAVA::FilePath selectedPathname = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+    DAVA::FilePath selectedPathname = sceneEditor->GetSystem<DAVA::CustomColorsSystem>()->GetCurrentSaveFileName();
     DVASSERT(!selectedPathname.IsEmpty());
     selectedPathname = selectedPathname.GetDirectory();
 
@@ -203,14 +205,22 @@ bool CustomColorsPanel::SaveTexture()
     QString filePath;
     for (;;)
     {
-        filePath = FileDialog::getSaveFileName(nullptr, QString(ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str()),
-                                               QString(selectedPathname.GetAbsolutePathname().c_str()),
-                                               PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter);
+        DAVA::FileDialogParams fileDlgParams;
+        fileDlgParams.dir = QString(selectedPathname.GetAbsolutePathname().c_str());
+        fileDlgParams.title = QString(DAVA::ResourceEditor::CUSTOM_COLORS_SAVE_CAPTION.c_str());
+        fileDlgParams.filters = PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter;
+        filePath = DAVA::Deprecated::GetUI()->GetSaveFileName(DAVA::mainWindowKey, fileDlgParams);
 
         if (filePath.isEmpty())
         {
-            QMessageBox::StandardButton result = QMessageBox::question(NULL, "Save changes", text);
-            if (result == QMessageBox::Yes)
+            DAVA::ModalMessageParams questParams;
+            questParams.title = "Save changes";
+            questParams.icon = DAVA::ModalMessageParams::Question;
+            questParams.message = text;
+            questParams.buttons = DAVA::ModalMessageParams::Yes | DAVA::ModalMessageParams::No;
+            questParams.defaultButton = DAVA::ModalMessageParams::NoButton;
+
+            if (DAVA::Deprecated::GetUI()->ShowModalMessage(DAVA::mainWindowKey, questParams) == DAVA::ModalMessageParams::Yes)
             {
                 continue;
             }
@@ -225,26 +235,31 @@ bool CustomColorsPanel::SaveTexture()
         return false;
     }
 
-    sceneEditor->customColorsSystem->SaveTexture(selectedPathname);
+    sceneEditor->GetSystem<DAVA::CustomColorsSystem>()->SaveTexture(selectedPathname);
     return true;
 }
 
 void CustomColorsPanel::LoadTexture()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
 
-    DAVA::FilePath currentPath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
+    DAVA::FilePath currentPath = sceneEditor->GetSystem<DAVA::CustomColorsSystem>()->GetCurrentSaveFileName();
 
     if (!DAVA::FileSystem::Instance()->Exists(currentPath))
     {
         currentPath = sceneEditor->GetScenePath().GetDirectory();
     }
 
-    DAVA::FilePath selectedPathname = GetOpenFileName(ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION, currentPath,
-                                                      PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter.toStdString());
+    DAVA::FileDialogParams fileDlgParams;
+    fileDlgParams.dir = QString(currentPath.GetAbsolutePathname().c_str());
+    fileDlgParams.title = QString(DAVA::ResourceEditor::CUSTOM_COLORS_LOAD_CAPTION.c_str());
+    fileDlgParams.filters = PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter;
+    QString filePath = DAVA::Deprecated::GetUI()->GetOpenFileName(DAVA::mainWindowKey, fileDlgParams);
+
+    DAVA::FilePath selectedPathname(filePath.toStdString());
     if (!selectedPathname.IsEmpty())
     {
-        sceneEditor->customColorsSystem->LoadTexture(selectedPathname, true);
+        sceneEditor->GetSystem<DAVA::CustomColorsSystem>()->LoadTexture(selectedPathname, true);
     }
 }
 
@@ -252,18 +267,18 @@ void CustomColorsPanel::ConnectToShortcuts()
 {
     LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
             this, SLOT(IncreaseBrushSize()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
             this, SLOT(DecreaseBrushSize()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
             this, SLOT(IncreaseBrushSizeLarge()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
             this, SLOT(DecreaseBrushSizeLarge()));
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
             this, SLOT(NextTexture()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
             this, SLOT(PrevTexture()));
 
     shortcutManager->SetBrushSizeShortcutsEnabled(true);
@@ -274,18 +289,18 @@ void CustomColorsPanel::DisconnectFromShortcuts()
 {
     LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
                this, SLOT(IncreaseBrushSize()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
                this, SLOT(DecreaseBrushSize()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
                this, SLOT(IncreaseBrushSizeLarge()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
                this, SLOT(DecreaseBrushSizeLarge()));
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_TEXTURE_NEXT), SIGNAL(activated()),
                this, SLOT(NextTexture()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_TEXTURE_PREV), SIGNAL(activated()),
                this, SLOT(PrevTexture()));
 
     shortcutManager->SetBrushSizeShortcutsEnabled(false);
@@ -295,25 +310,25 @@ void CustomColorsPanel::DisconnectFromShortcuts()
 void CustomColorsPanel::IncreaseBrushSize()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                    + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void CustomColorsPanel::DecreaseBrushSize()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                    - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void CustomColorsPanel::IncreaseBrushSizeLarge()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                    + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void CustomColorsPanel::DecreaseBrushSizeLarge()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                    - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void CustomColorsPanel::PrevTexture()

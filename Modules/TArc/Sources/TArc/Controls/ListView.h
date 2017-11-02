@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ListView : public ControlProxyImpl<QListView>
 {
     using TBase = ControlProxyImpl<QListView>;
@@ -37,5 +35,4 @@ private:
     QtConnections connections;
     bool updateGuard = false;
 };
-} // namespace TArc
 } // namespace DAVA

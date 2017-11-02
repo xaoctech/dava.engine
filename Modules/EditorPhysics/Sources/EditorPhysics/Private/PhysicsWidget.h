@@ -7,17 +7,14 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-} // namespace TArc
 } // namespace DAVA
 
 class PhysicsWidget : public QWidget
 {
 public:
-    PhysicsWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
+    PhysicsWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui);
 
 private:
     void OnStartPauseClick();
@@ -30,8 +27,8 @@ private:
     bool IsEnabled() const;
 
 private:
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
 
     QIcon startIcon;
     QIcon stopIcon;

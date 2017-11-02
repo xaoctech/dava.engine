@@ -6,7 +6,7 @@
 #include <Math/Color.h>
 #include <Base/String.h>
 
-class UserAssetsSettings : public DAVA::TArc::SettingsNode
+class UserAssetsSettings : public DAVA::SettingsNode
 {
 public:
     DAVA::Color selectionRectColor = DAVA::Color(0.8f, 0.8f, 0.8f, 0.9f);
@@ -21,5 +21,5 @@ public:
     DAVA::Color guidesColor = DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f);
     DAVA::Color previewGuideColor = DAVA::Color(1.0f, 0.0f, 0.0f, 0.5f);
 
-    DAVA_VIRTUAL_REFLECTION(UserAssetsSettings, DAVA::TArc::SettingsNode);
+    DAVA_VIRTUAL_REFLECTION(UserAssetsSettings, DAVA::SettingsNode);
 };

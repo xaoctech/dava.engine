@@ -14,11 +14,8 @@ class LogWidget;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 class DeviceLogController : public QObject,
@@ -28,7 +25,7 @@ class DeviceLogController : public QObject,
     Q_OBJECT
 
 public:
-    explicit DeviceLogController(DAVA::TArc::UI* ui, const DAVA::Net::PeerDescription& peerDescr, QWidget* parentWidget, QObject* parent = NULL);
+    explicit DeviceLogController(DAVA::UI* ui, const DAVA::Net::PeerDescription& peerDescr, QWidget* parentWidget, QObject* parent = NULL);
     ~DeviceLogController();
     void Init();
 
@@ -45,7 +42,7 @@ public:
 
 private:
     void Output(const DAVA::String& msg);
-    static LogWidget* GetOrCreateLogView(const QString& title, QWidget* parentWidget, DAVA::TArc::UI* ui);
+    static LogWidget* GetOrCreateLogView(const QString& title, QWidget* parentWidget, DAVA::UI* ui);
 
 private:
     static QMap<QString, LogWidget*> views;
@@ -53,5 +50,5 @@ private:
     QPointer<QWidget> parentWidget;
     DAVA::Net::PeerDescription peer;
     std::unique_ptr<DAVA::Net::ChannelListenerDispatched> channelListenerDispatched;
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::UI* ui = nullptr;
 };

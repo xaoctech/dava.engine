@@ -1,7 +1,6 @@
-#include "LandscapeEditorBasePanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/LandscapeEditorBasePanel.h"
 
-#include "../../Scene/SceneSignals.h"
-#include "../../Scene/SceneEditor2.h"
+#include <REPlatform/Scene/SceneEditor2.h>
 
 LandscapeEditorBasePanel::LandscapeEditorBasePanel(QWidget* parent)
     : QWidget(parent)
@@ -13,7 +12,7 @@ LandscapeEditorBasePanel::~LandscapeEditorBasePanel()
 {
 }
 
-SceneEditor2* LandscapeEditorBasePanel::GetActiveScene()
+DAVA::SceneEditor2* LandscapeEditorBasePanel::GetActiveScene()
 {
     return activeScene;
 }
@@ -26,7 +25,7 @@ void LandscapeEditorBasePanel::OnEditorDisabled()
 {
 }
 
-void LandscapeEditorBasePanel::InitPanel(SceneEditor2* scene)
+void LandscapeEditorBasePanel::InitPanel(DAVA::SceneEditor2* scene)
 {
     activeScene = scene;
 
@@ -47,7 +46,7 @@ void LandscapeEditorBasePanel::DeinitPanel()
     activeScene = NULL;
 }
 
-void LandscapeEditorBasePanel::EditorToggled(SceneEditor2* scene)
+void LandscapeEditorBasePanel::EditorToggled(DAVA::SceneEditor2* scene)
 {
     if (scene != GetActiveScene())
     {

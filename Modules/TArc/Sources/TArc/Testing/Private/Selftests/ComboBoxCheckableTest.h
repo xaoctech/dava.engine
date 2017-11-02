@@ -27,9 +27,9 @@
 
 namespace ComboBoxChekableTestDetails
 {
-DAVA::TArc::WindowKey wndKey("ComboBoxChekableTestWnd");
+DAVA::WindowKey wndKey("ComboBoxChekableTestWnd");
 
-class ComboBoxCheckableTestModule : public DAVA::TArc::ClientModule
+class ComboBoxCheckableTestModule : public DAVA::ClientModule
 {
 public:
     enum eTestedFlags
@@ -64,7 +64,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         DAVA::Reflection reflectedModel = DAVA::Reflection::Create(&model);
 
@@ -79,13 +79,13 @@ public:
             layout->AddControl(comboBox);
         }
 
-        DAVA::TArc::PanelKey panelKey("ComboBoxCheckableTest", DAVA::TArc::CentralPanelInfo());
+        DAVA::PanelKey panelKey("ComboBoxCheckableTest", DAVA::CentralPanelInfo());
         GetUI()->AddView(wndKey, panelKey, w);
     }
 
     static ComboBoxCheckableTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ComboBoxCheckableTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ComboBoxCheckableTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<ComboBoxCheckableTestModule>::Begin()
         .ConstructorByPointer()

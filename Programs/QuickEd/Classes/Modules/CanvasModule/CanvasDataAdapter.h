@@ -7,10 +7,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-}
 }
 
 class CanvasData;
@@ -19,7 +16,7 @@ class CentralWidgetData;
 class CanvasDataAdapter : public DAVA::ReflectionBase
 {
 public:
-    explicit CanvasDataAdapter(DAVA::TArc::ContextAccessor* accessor);
+    explicit CanvasDataAdapter(DAVA::ContextAccessor* accessor);
     ~CanvasDataAdapter() override;
 
     static DAVA::FastName scalePropertyName;
@@ -59,11 +56,11 @@ public:
     DAVA::float32 MapFromScreenToRoot(DAVA::float32 position, DAVA::Vector2::eAxis axis) const;
 
 private:
-    DAVA::TArc::DataWrapper canvasDataWrapper;
+    DAVA::DataWrapper canvasDataWrapper;
 
     const CanvasData* GetCanvasData() const;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(CanvasDataAdapter, DAVA::ReflectionBase);
 };

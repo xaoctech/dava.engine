@@ -1,15 +1,12 @@
-#include "MaterialFilterModel.h"
-#include "MaterialModel.h"
-#include "MaterialItem.h"
+#include "Classes/Qt/MaterialEditor/MaterialFilterModel.h"
+#include "Classes/Qt/MaterialEditor/MaterialModel.h"
+#include "Classes/Qt/MaterialEditor/MaterialItem.h"
+#include "Classes/Qt/Tools/MimeData/MimeDataHelper2.h"
 
-#include "Scene/SceneEditor2.h"
-#include "Tools/MimeData/MimeDataHelper2.h"
-#include "Commands2/MaterialSwitchParentCommand.h"
+#include <REPlatform/Commands/MaterialSwitchParentCommand.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
-#include "Scene3D/Scene.h"
-
-#include <QTimer>
-#include <QDebug>
+#include <Scene3D/Scene.h>
 
 namespace MFMLocal
 {
@@ -56,17 +53,17 @@ void MaterialFilteringModel::Sync()
     materialModel->Sync();
 }
 
-void MaterialFilteringModel::SetScene(SceneEditor2* scene)
+void MaterialFilteringModel::SetScene(DAVA::SceneEditor2* scene)
 {
     materialModel->SetScene(scene);
 }
 
-SceneEditor2* MaterialFilteringModel::GetScene()
+DAVA::SceneEditor2* MaterialFilteringModel::GetScene()
 {
     return materialModel->GetScene();
 }
 
-void MaterialFilteringModel::SetSelection(const SelectableGroup* group)
+void MaterialFilteringModel::SetSelection(const DAVA::SelectableGroup* group)
 {
     materialModel->SetSelection(group);
 }
@@ -94,7 +91,6 @@ void MaterialFilteringModel::setFilterType(int type)
 
     filterType = static_cast<eFilterType>(type);
     invalidate();
-    //invalidateFilter();
 }
 
 int MaterialFilteringModel::getFilterType() const

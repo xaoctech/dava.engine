@@ -1,34 +1,34 @@
 #include "Classes/ParticleSystem/ParticleDebugDrawModule.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Selection/SelectionData.h"
-#include "Classes/Selection/SelectableGroup.h"
 
-#include <TArc/Utils/ModuleCollection.h>
-#include <TArc/WindowSubSystem/ActionUtils.h>
-#include <TArc/WindowSubSystem/UI.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+
 #include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/ComboBox.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <Base/BaseTypes.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Systems/ParticleEffectDebugDrawSystem.h>
-#include <Render/Highlevel/RenderObject.h>
 
 #include <QWidget>
 #include <QAction>
 
-using DAVA::eParticleDebugDrawMode;
-
-ENUM_DECLARE(eParticleDebugDrawMode)
+ENUM_DECLARE(DAVA::eParticleDebugDrawMode)
 {
-    ENUM_ADD_DESCR(eParticleDebugDrawMode::LOW_ALPHA, "Low alpha");
-    ENUM_ADD_DESCR(eParticleDebugDrawMode::WIREFRAME, "Wireframe");
-    ENUM_ADD_DESCR(eParticleDebugDrawMode::OVERDRAW, "Overdraw");
+    ENUM_ADD_DESCR(DAVA::eParticleDebugDrawMode::LOW_ALPHA, "Low alpha");
+    ENUM_ADD_DESCR(DAVA::eParticleDebugDrawMode::WIREFRAME, "Wireframe");
+    ENUM_ADD_DESCR(DAVA::eParticleDebugDrawMode::OVERDRAW, "Overdraw");
 }
 
 namespace ParticleDebugDrawModuleDetail
@@ -44,31 +44,31 @@ DAVA::String ParticlesDebugStytemDrawSelectedState(const DAVA::Any& drawOnlySele
 }
 }
 
-class ParticleDebugDrawData : public DAVA::TArc::DataNode
+class ParticleDebugDrawData : public DAVA::TArcDataNode
 {
 public:
     bool isSystemOn = false;
     bool drawOnlySelected = false;
-    eParticleDebugDrawMode drawMode = eParticleDebugDrawMode::OVERDRAW;
+    DAVA::eParticleDebugDrawMode drawMode = DAVA::eParticleDebugDrawMode::OVERDRAW;
     DAVA::UnorderedSet<DAVA::RenderObject*> selectedParticles;
     DAVA::float32 alphaThreshold = 0.05f;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticleDebugDrawData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticleDebugDrawData, DAVA::TArcDataNode)
     {
     }
 };
 
-void ParticleDebugDrawModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void ParticleDebugDrawModule::OnContextCreated(DAVA::DataContext* context)
 {
 }
 
-void ParticleDebugDrawModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void ParticleDebugDrawModule::OnContextDeleted(DAVA::DataContext* context)
 {
 }
 
 void ParticleDebugDrawModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     accessor->GetGlobalContext()->CreateData(std::make_unique<ParticleDebugDrawData>());
@@ -81,21 +81,21 @@ void ParticleDebugDrawModule::PostInit()
     UI* ui = GetUI();
 
     {
-        CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[CheckBox::Fields::IsReadOnly] = "readOnly";
         params.fields[CheckBox::Fields::Checked] = "isEnabledProperty";
         layout->AddControl(new CheckBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
     {
-        ComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ComboBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ComboBox::Fields::IsReadOnly] = "readOnly";
         params.fields[ComboBox::Fields::Value] = "drawModeProperty";
         layout->AddControl(new ComboBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
     }
 
     {
-        CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[CheckBox::Fields::IsReadOnly] = "readOnly";
         params.fields[CheckBox::Fields::Checked] = "drawSelectedProperty";
         layout->AddControl(new CheckBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)), w));
@@ -104,16 +104,16 @@ void ParticleDebugDrawModule::PostInit()
     QString toolbarName = "ParticleSystemToolbar";
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    ui->DeclareToolbar(DAVA::mainWindowKey, toolbarTogglePlacement, toolbarName);
 
     QAction* action = new QAction(nullptr);
     AttachWidgetToAction(action, w);
 
     ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
 
     filedBinder.reset(new FieldBinder(accessor));
-    DAVA::TArc::FieldDescriptor descr;
+    DAVA::FieldDescriptor descr;
     descr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
     descr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
     filedBinder->BindField(descr, DAVA::MakeFunction(this, &ParticleDebugDrawModule::OnSelectionChanged));
@@ -121,7 +121,7 @@ void ParticleDebugDrawModule::PostInit()
 
 void ParticleDebugDrawModule::OnSelectionChanged(const DAVA::Any selection)
 {
-    SelectableGroup group = selection.Cast<SelectableGroup>(SelectableGroup());
+    DAVA::SelectableGroup group = selection.Cast<DAVA::SelectableGroup>(DAVA::SelectableGroup());
     GetAccessor()->GetGlobalContext()->GetData<ParticleDebugDrawData>()->selectedParticles = ProcessSelection(group);
     UpdateSceneSystem();
 }
@@ -154,12 +154,12 @@ bool ParticleDebugDrawModule::IsDisabled() const
     return GetAccessor()->GetContextCount() == 0;
 }
 
-eParticleDebugDrawMode ParticleDebugDrawModule::GetDrawMode() const
+DAVA::eParticleDebugDrawMode ParticleDebugDrawModule::GetDrawMode() const
 {
     return GetAccessor()->GetGlobalContext()->GetData<ParticleDebugDrawData>()->drawMode;
 }
 
-void ParticleDebugDrawModule::SetDrawMode(eParticleDebugDrawMode mode)
+void ParticleDebugDrawModule::SetDrawMode(DAVA::eParticleDebugDrawMode mode)
 {
     GetAccessor()->GetGlobalContext()->GetData<ParticleDebugDrawData>()->drawMode = mode;
     UpdateSceneSystem();
@@ -167,7 +167,7 @@ void ParticleDebugDrawModule::SetDrawMode(eParticleDebugDrawMode mode)
 
 void ParticleDebugDrawModule::UpdateSceneSystem()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     ParticleDebugDrawData* data = GetAccessor()->GetGlobalContext()->GetData<ParticleDebugDrawData>();
 
@@ -187,7 +187,7 @@ void ParticleDebugDrawModule::UpdateSceneSystem()
                              });
 }
 
-DAVA::UnorderedSet<DAVA::RenderObject*> ParticleDebugDrawModule::ProcessSelection(const SelectableGroup& group)
+DAVA::UnorderedSet<DAVA::RenderObject*> ParticleDebugDrawModule::ProcessSelection(const DAVA::SelectableGroup& group)
 {
     DAVA::uint32 count = static_cast<DAVA::uint32>(group.GetSize());
     DAVA::UnorderedSet<DAVA::RenderObject*> particleObjects;
@@ -206,7 +206,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ParticleDebugDrawModule)
     .ConstructorByPointer()
     .Field("isEnabledProperty", &ParticleDebugDrawModule::GetSystemEnabledState, &ParticleDebugDrawModule::SetSystemEnabledState)
     [DAVA::M::ValueDescription(&ParticleDebugDrawModuleDetail::ParticlesDebugStytemState)]
-    .Field("drawModeProperty", &ParticleDebugDrawModule::GetDrawMode, &ParticleDebugDrawModule::SetDrawMode)[DAVA::M::EnumT<eParticleDebugDrawMode>()]
+    .Field("drawModeProperty", &ParticleDebugDrawModule::GetDrawMode, &ParticleDebugDrawModule::SetDrawMode)[DAVA::M::EnumT<DAVA::eParticleDebugDrawMode>()]
     .Field("drawSelectedProperty", &ParticleDebugDrawModule::GetDrawOnlySelected, &ParticleDebugDrawModule::SetDrawOnlySelected)
     [DAVA::M::ValueDescription(&ParticleDebugDrawModuleDetail::ParticlesDebugStytemDrawSelectedState)]
     .Field("readOnly", &ParticleDebugDrawModule::IsDisabled, nullptr)

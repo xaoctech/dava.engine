@@ -2,15 +2,11 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 OperationID::OperationID()
     : ID(nextOperationID)
 {
     nextOperationID++;
 }
 
-DAVA::uint32 OperationID::nextOperationID = 0;
-
-} // namespace TArc
+uint32 OperationID::nextOperationID = 0;
 } // namespace DAVA

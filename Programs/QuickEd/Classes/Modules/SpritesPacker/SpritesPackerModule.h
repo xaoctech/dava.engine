@@ -6,7 +6,7 @@
 #include <DavaTools/AssetCache/AssetCacheClient.h>
 
 class ProjectData;
-class SpritesPackerModule : public DAVA::TArc::ClientModule
+class SpritesPackerModule : public DAVA::ClientModule
 {
 public:
     SpritesPackerModule();
@@ -17,7 +17,7 @@ private:
     void OnReloadSprites();
 
     void PostInit() override;
-    void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnWindowClosed(const DAVA::WindowKey& key) override;
 
     void CreateActions();
     bool IsUsingAssetCache() const;
@@ -25,10 +25,10 @@ private:
     void EnableCacheClient();
     void DisableCacheClient();
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
     std::unique_ptr<DAVA::AssetCacheClient> cacheClient;
     DAVA::AssetCacheClient::ConnectionParams connectionParams;
 
-    DAVA_VIRTUAL_REFLECTION(SpritesPackerModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(SpritesPackerModule, DAVA::ClientModule);
 };

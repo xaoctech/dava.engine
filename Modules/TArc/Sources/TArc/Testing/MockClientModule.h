@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MockClientModule : public ClientModule
 {
 public:
@@ -70,6 +68,4 @@ public:
         .End();
     }
 };
-
-} // namespace TArc
 } // namespace DAVA

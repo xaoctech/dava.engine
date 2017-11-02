@@ -1,47 +1,49 @@
 #include "Classes/Selection/SelectionModule.h"
-#include "Classes/Selection/SelectionData.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/HeightmapEditorSystem.h>
+#include <REPlatform/Scene/Systems/HoodSystem.h>
+#include <REPlatform/Scene/Systems/ModifSystem.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
+#include <REPlatform/Scene/Systems/WayEditSystem.h>
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/System/ModifSystem.h"
-#include "Classes/Qt/Scene/System/HoodSystem.h"
-#include "Classes/Qt/Scene/System/WayEditSystem.h"
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/Utils/ModuleCollection.h>
 
-#include "TArc/WindowSubSystem/QtAction.h"
-#include "TArc/WindowSubSystem/UI.h"
-#include "TArc/WindowSubSystem/ActionUtils.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <Logger/Logger.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/RenderUpdateSystem.h>
 
-#include "Reflection/ReflectionRegistrator.h"
-#include "Logger/Logger.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-
-void SelectionModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void SelectionModule::OnContextCreated(DAVA::DataContext* context)
 {
+    using namespace DAVA;
+
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
 
     std::unique_ptr<SelectionData> selectionData = std::make_unique<SelectionData>();
     selectionData->selectionSystem.reset(new SelectionSystem(scene));
-    scene->AddSystem(selectionData->selectionSystem.get(), 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT, scene->renderUpdateSystem, scene->heightmapEditorSystem);
+    scene->AddSystem(selectionData->selectionSystem.get(), 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT, scene->renderUpdateSystem, scene->GetSystem<DAVA::HeightmapEditorSystem>());
 
     //TODO: Workaround to save old process
-    selectionData->selectionSystem->AddDelegate(scene->modifSystem);
-    selectionData->selectionSystem->AddDelegate(scene->hoodSystem);
-    selectionData->selectionSystem->AddDelegate(scene->wayEditSystem);
+    selectionData->selectionSystem->AddDelegate(scene->GetSystem<DAVA::EntityModificationSystem>());
+    selectionData->selectionSystem->AddDelegate(scene->GetSystem<DAVA::HoodSystem>());
+    selectionData->selectionSystem->AddDelegate(scene->GetSystem<DAVA::WayEditSystem>());
     selectionData->selectionSystem->EnableSystem();
     //END of TODO
 
     context->CreateData(std::move(selectionData));
 }
 
-void SelectionModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void SelectionModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
@@ -52,13 +54,13 @@ void SelectionModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
 void SelectionModule::PostInit()
 {
-    DAVA::TArc::UI* ui = GetUI();
+    DAVA::UI* ui = GetUI();
     CreateModuleActions(ui);
 }
 
-void SelectionModule::CreateModuleActions(DAVA::TArc::UI* ui)
+void SelectionModule::CreateModuleActions(DAVA::UI* ui)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
 
@@ -93,13 +95,14 @@ void SelectionModule::CreateModuleActions(DAVA::TArc::UI* ui)
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, "actionModifySnapToLandscape" }));
         placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 }
 
 void SelectionModule::SelectionByMouseChanged()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    using namespace DAVA;
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     SelectionData* selectionData = context->GetData<SelectionData>();
     bool allowed = selectionData->IsSelectionAllowed();
     selectionData->SetSelectionAllowed(!allowed);

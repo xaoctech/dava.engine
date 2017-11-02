@@ -2,8 +2,9 @@
 #include "Classes/CommandLine/Private/OptionName.h"
 #include "Classes/Qt/Scene/Validation/SceneValidation.h"
 #include "Classes/Qt/Scene/Validation/ValidationProgressConsumer.h"
-#include "Classes/Project/ProjectResources.h"
-#include "Classes/Project/ProjectManagerData.h"
+
+#include <REPlatform/DataNodes/ProjectResources.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/ModuleCollection.h>
@@ -130,7 +131,7 @@ void SceneValidationTool::UpdateResult(DAVA::Result newResult)
     }
 }
 
-DAVA::TArc::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
+DAVA::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
 {
     using namespace DAVA;
 
@@ -150,14 +151,14 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
 
     for (const FilePath& scenePath : scenePathes)
     {
-        project.LoadProject(ProjectManagerData::CreateProjectPathFromPath(scenePath));
+        project.LoadProject(DAVA::ProjectManagerData::CreateProjectPathFromPath(scenePath));
 
         ScopedPtr<Scene> scene(new Scene);
         if (DAVA::SceneFileV2::ERROR_NO_ERROR == scene->LoadScene(scenePath))
         {
             Logger::Info("Validating scene '%s'", scenePath.GetAbsolutePathname().c_str());
 
-            ProjectManagerData* data = GetAccessor().GetGlobalContext()->GetData<ProjectManagerData>();
+            DAVA::ProjectManagerData* data = GetAccessor().GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
             DVASSERT(data != nullptr);
 
             SceneValidation validation(data);

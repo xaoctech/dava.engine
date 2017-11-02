@@ -10,8 +10,6 @@ class QApplication;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ThemesSettings : public SettingsNode
 {
 public:
@@ -64,6 +62,4 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(ThemesModule, ClientModule);
 };
-
-} // namespace TArc
 } // namespace DAVA

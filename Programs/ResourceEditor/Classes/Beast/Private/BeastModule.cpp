@@ -5,18 +5,20 @@
 #include "Classes/Beast/Private/BeastDialog.h"
 #include "Classes/Beast/Private/BeastRunner.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
-#include <TArc/WindowSubSystem/ActionUtils.h>
-#include <TArc/Core/ContextAccessor.h>
 
+#include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -26,7 +28,7 @@
 void BeastModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QtAction* action = new QtAction(GetAccessor(), QString("Run Beast"));
     { // enabled/disabled state
@@ -40,7 +42,7 @@ void BeastModule::PostInit()
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateMenuPoint("Scene", { InsertionParams::eInsertionMethod::AfterItem, "actionInvalidateStaticOcclusion" }));
 
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 }
 
 void BeastModule::OnBeastAndSave()
@@ -54,7 +56,7 @@ void BeastModule::OnBeastAndSave()
 
     if (scene->GetEnabledTools())
     {
-        if (QMessageBox::Yes == QMessageBox::question(GetUI()->GetWindow(DAVA::TArc::mainWindowKey), "Starting Beast", "Disable landscape editor and start beasting?", (QMessageBox::Yes | QMessageBox::No), QMessageBox::No))
+        if (QMessageBox::Yes == QMessageBox::question(GetUI()->GetWindow(DAVA::mainWindowKey), "Starting Beast", "Disable landscape editor and start beasting?", (QMessageBox::Yes | QMessageBox::No), QMessageBox::No))
         {
             scene->DisableToolsInstantly(SceneEditor2::LANDSCAPE_TOOLS_ALL);
 
@@ -71,13 +73,13 @@ void BeastModule::OnBeastAndSave()
         }
     }
 
-    InvokeOperation(REGlobal::SaveCurrentScene.ID);
+    InvokeOperation(DAVA::SaveCurrentScene.ID);
     if (!scene->IsLoaded() || scene->IsChanged())
     {
         return;
     }
 
-    BeastDialog dlg(GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    BeastDialog dlg(GetUI()->GetWindow(DAVA::mainWindowKey));
     dlg.SetScene(scene.Get());
     const bool run = dlg.Exec();
     if (!run)
@@ -86,14 +88,14 @@ void BeastModule::OnBeastAndSave()
     RunBeast(dlg.GetPath(), dlg.GetMode());
 
     scene->SetChanged();
-    InvokeOperation(REGlobal::SaveCurrentScene.ID);
+    InvokeOperation(DAVA::SaveCurrentScene.ID);
     scene->ClearAllCommands();
 }
 
 void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     SceneData* sceneData = GetAccessor()->GetActiveContext()->GetData<SceneData>();
     DVASSERT(sceneData != nullptr);
@@ -107,7 +109,7 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     waitDlgParams.needProgressBar = true;
     waitDlgParams.cancelable = true;
     waitDlgParams.max = 100;
-    std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+    std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
     BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, std::move(waitHandle));
     beast.RunUIMode();
 
@@ -115,7 +117,7 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     {
         // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
         delayedExecutor.DelayedExecute([this]() {
-            InvokeOperation(REGlobal::ReloadAllTextures.ID, REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU);
+            InvokeOperation(DAVA::ReloadAllTextures.ID, DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->textureViewGPU);
         });
     }
 }

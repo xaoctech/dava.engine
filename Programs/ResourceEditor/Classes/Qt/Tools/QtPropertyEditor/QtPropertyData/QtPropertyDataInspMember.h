@@ -1,10 +1,11 @@
 #ifndef __QT_PROPERTY_DATA_INSP_MEMBER_H__
 #define __QT_PROPERTY_DATA_INSP_MEMBER_H__
 
-#include "Base/Introspection.h"
-#include "../QtPropertyData.h"
-#include "QtPropertyDataDavaVariant.h"
-#include "Commands2/InspMemberModifyCommand.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include <REPlatform/Commands/InspMemberModifyCommand.h>
+
+#include <Base/Introspection.h>
 
 class QtPropertyDataInspMember : public QtPropertyDataDavaVariant
 {
@@ -19,7 +20,7 @@ public:
     const DAVA::InspMember* member;
 
 protected:
-    InspMemberModifyCommand* lastCommand;
+    DAVA::InspMemberModifyCommand* lastCommand;
 
     void SetValueInternal(const QVariant& value) override;
     void SetTempValueInternal(const QVariant& value) override;

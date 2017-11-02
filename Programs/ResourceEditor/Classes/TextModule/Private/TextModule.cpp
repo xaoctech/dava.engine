@@ -2,8 +2,8 @@
 #include "Classes/TextModule/Private/EditorTextSystem.h"
 #include "Classes/TextModule/Private/TextModuleData.h"
 
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/DataProcessing/Common.h>
 
@@ -18,7 +18,7 @@
 void TextModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/text_component.png"), QString("Text Drawing Enabled"));
     { // checked-unchecked and text
@@ -57,11 +57,12 @@ void TextModule::PostInit()
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
 
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 }
 
-void TextModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void TextModule::OnContextCreated(DAVA::DataContext* context)
 {
+    using namespace DAVA;
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
@@ -74,10 +75,10 @@ void TextModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(moduleData));
 }
 
-void TextModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void TextModule::OnContextDeleted(DAVA::DataContext* context)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
@@ -88,7 +89,7 @@ void TextModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
 void TextModule::ChangeDrawingState()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     TextModuleData* moduleData = context->GetData<TextModuleData>();
 
     bool enabled = moduleData->IsDrawingEnabled();

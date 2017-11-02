@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "Base/Result.h"
-#include "FileSystem/FilePath.h"
+#include <TArc/Core/ConsoleModule.h>
 
-#include "CommandLine/ProgramOptions.h"
+#include <Base/BaseTypes.h>
+#include <Base/Result.h>
+#include <CommandLine/ProgramOptions.h>
+#include <FileSystem/FilePath.h>
 
-#include "TArc/Core/ConsoleModule.h"
-
-class CommandLineModule : public DAVA::TArc::ConsoleModule
+class CommandLineModule : public DAVA::ConsoleModule
 {
 public:
     CommandLineModule(const DAVA::Vector<DAVA::String>& commandLine, const DAVA::String& moduleName);
@@ -32,7 +31,7 @@ protected:
     bool isInitialized = false;
     DAVA::Result result = DAVA::Result::RESULT_SUCCESS;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(CommandLineModule, DAVA::TArc::ConsoleModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(CommandLineModule, DAVA::ConsoleModule)
     {
     }
 };

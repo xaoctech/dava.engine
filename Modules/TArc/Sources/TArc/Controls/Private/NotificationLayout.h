@@ -11,10 +11,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class NotificationWidget;
-
 class NotificationLayout : public QObject
 {
     Q_OBJECT
@@ -51,5 +48,4 @@ private:
     QElapsedTimer elapsedTimer;
     QBasicTimer basicTimer;
 };
-} //namespace TArc
 } //namespace DAVA

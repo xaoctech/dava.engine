@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ComponentStructureWrapper::ComponentStructureWrapper(const Type* type)
     : classWrapper(new StructureWrapperClass(type))
 {
@@ -121,6 +119,4 @@ void ComponentStructureWrapper::Update()
 {
     classWrapper->Update();
 }
-
-} // namespace TArc
 } // namespace DAVA

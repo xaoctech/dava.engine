@@ -1,16 +1,17 @@
-#include "CommandLine/SceneImageDump.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
-#include "TArc/Testing/TArcUnitTests.h"
+#include "Classes/CommandLine/SceneImageDump.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include "Base/ScopedPtr.h"
-#include "FileSystem/FileSystem.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
-#include "Render/Image/ImageSystem.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/Scene.h"
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
+
+#include <Base/ScopedPtr.h>
+#include <FileSystem/FileSystem.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
+#include <Render/Image/ImageSystem.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
 
 #include <memory>
 
@@ -55,7 +56,7 @@ DAVA_TARC_TESTCLASS(SceneImageDumpTest)
         };
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneImageDump>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         ImageInfo info = ImageSystem::GetImageInfo(SIDTestDetail::outPathnameStr);
         TEST_VERIFY(info.IsEmpty() == false);

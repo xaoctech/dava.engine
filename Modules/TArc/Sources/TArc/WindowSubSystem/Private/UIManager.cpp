@@ -33,8 +33,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace UIManagerDetail
 {
 String WINDOW_GEOMETRY_KEY("geometry");
@@ -1268,7 +1266,7 @@ String UIManager::ImportKeyBindingsScheme(const FilePath& path)
         p.title = "Import scheme";
         p.message.type = Result::RESULT_ERROR;
         p.message.message = "Key Binding scheme file is invalid";
-        ShowNotification(DAVA::TArc::mainWindowKey, p);
+        ShowNotification(DAVA::mainWindowKey, p);
         return schemeName;
     }
 
@@ -1299,7 +1297,7 @@ String UIManager::ImportKeyBindingsScheme(const FilePath& path)
         p.title = "Import scheme";
         p.message.type = Result::RESULT_ERROR;
         p.message.message = "File can't be copied";
-        ShowNotification(DAVA::TArc::mainWindowKey, p);
+        ShowNotification(DAVA::mainWindowKey, p);
     }
 
     return schemeName;
@@ -1317,7 +1315,7 @@ void UIManager::ExportKeyBindingsScheme(const FilePath& path, const String& sche
         p.title = "Export scheme";
         p.message.type = Result::RESULT_ERROR;
         p.message.message = "File can't be copied";
-        ShowNotification(DAVA::TArc::mainWindowKey, p);
+        ShowNotification(DAVA::mainWindowKey, p);
     }
 }
 
@@ -1500,6 +1498,4 @@ void UIManager::SaveSchemeNames(const Vector<String>& schemes) const
         schemesHolder.Set(Format("scheme_%d", i), schemes[i]);
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

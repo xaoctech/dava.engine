@@ -7,8 +7,6 @@ class QLineEdit;
 
 namespace DAVA
 {
-namespace TArc
-{
 class MouseHelper;
 class ValueSlider : public QWidget
 {
@@ -64,5 +62,4 @@ private:
 
     QPointer<QLineEdit> editor;
 };
-}
 }

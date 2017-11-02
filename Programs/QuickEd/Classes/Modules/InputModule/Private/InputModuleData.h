@@ -1,10 +1,10 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 class EditorInput;
 
-class InputModuleData : public DAVA::TArc::DataNode
+class InputModuleData : public DAVA::TArcDataNode
 {
 public:
     InputModuleData();
@@ -14,5 +14,5 @@ private:
     friend class InputModule;
     std::unique_ptr<EditorInput> system;
 
-    DAVA_VIRTUAL_REFLECTION(InputModuleData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(InputModuleData, DAVA::TArcDataNode);
 };

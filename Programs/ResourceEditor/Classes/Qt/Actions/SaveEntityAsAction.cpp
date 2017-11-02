@@ -1,24 +1,23 @@
 #include "SaveEntityAsAction.h"
 
-#include "Classes/Selection/SelectableGroup.h"
-#include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Material/NMaterial.h"
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/Global/StringConstants.h>
 
-#include "Scene3D/SceneFileV2.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "StringConstants.h"
-
-using namespace DAVA;
+#include <Render/Highlevel/RenderBatch.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Material/NMaterial.h>
+#include <Scene3D/SceneFileV2.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
+#include <Scene3D/Components/ComponentHelpers.h>
 
 class ElegantSceneGuard final
 {
 public:
-    ElegantSceneGuard(Scene* scene_)
+    ElegantSceneGuard(DAVA::Scene* scene_)
         : scene(scene_)
     {
+        using namespace DAVA;
         if (scene)
         {
             Set<DataNode*> nodes;
@@ -35,6 +34,7 @@ public:
 
     ~ElegantSceneGuard()
     {
+        using namespace DAVA;
         for (auto& id : dataNodeIDs)
         {
             id.first->SetNodeID(id.second);
@@ -50,12 +50,12 @@ public:
     }
 
 private:
-    Scene* scene = nullptr;
-    NMaterial* globalMaterial = nullptr;
-    Map<DataNode*, uint64> dataNodeIDs;
+    DAVA::Scene* scene = nullptr;
+    DAVA::NMaterial* globalMaterial = nullptr;
+    DAVA::Map<DAVA::DataNode*, DAVA::uint64> dataNodeIDs;
 };
 
-SaveEntityAsAction::SaveEntityAsAction(const SelectableGroup* entities_, const FilePath& path_)
+SaveEntityAsAction::SaveEntityAsAction(const DAVA::SelectableGroup* entities_, const DAVA::FilePath& path_)
     : entities(entities_)
     , sc2Path(path_)
 {
@@ -63,6 +63,7 @@ SaveEntityAsAction::SaveEntityAsAction(const SelectableGroup* entities_, const F
 
 void SaveEntityAsAction::Run()
 {
+    using namespace DAVA;
     uint32 count = static_cast<uint32>(entities->GetSize());
     if (!sc2Path.IsEmpty() && sc2Path.IsEqualToExtension(".sc2") && (nullptr != entities) && (count > 0))
     {
@@ -117,8 +118,9 @@ void SaveEntityAsAction::Run()
     }
 }
 
-void SaveEntityAsAction::RemoveLightmapsRecursive(Entity* entity) const
+void SaveEntityAsAction::RemoveLightmapsRecursive(DAVA::Entity* entity) const
 {
+    using namespace DAVA;
     RenderObject* renderObject = GetRenderObject(entity);
     if (nullptr != renderObject)
     {

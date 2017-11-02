@@ -1,10 +1,12 @@
-#include <QSet>
-#include "DockSceneTree/SceneTreeItem.h"
-#include "Commands2/ConvertToShadowCommand.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeItem.h"
 
-// framework
-#include "Scene3D/Components/ComponentHelpers.h"
+#include <REPlatform/Commands/ConvertToShadowCommand.h>
+
 #include <TArc/Utils/Utils.h>
+
+#include <Scene3D/Components/ComponentHelpers.h>
+
+#include <QSet>
 
 SceneTreeItem::SceneTreeItem(eItemType _type, const DAVA::Any& object_)
     : object(object_)
@@ -57,7 +59,7 @@ DAVA::uint32 SceneTreeItem::ItemType() const
 
 const QIcon& SceneTreeItem::ItemIcon() const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/node.png");
+    return DAVA::SharedIcon(":/QtIcons/node.png");
 }
 
 bool SceneTreeItem::IsAcceptedByFilter() const
@@ -125,7 +127,7 @@ QVariant SceneTreeItemEntity::ItemData() const
 
 const QIcon& SceneTreeItemEntity::ItemIcon() const
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DAVA::Entity* entity = GetEntity();
 
     if (nullptr != entity)
@@ -475,7 +477,7 @@ QVariant SceneTreeItemParticleEmitter::ItemData() const
 
 const QIcon& SceneTreeItemParticleEmitter::ItemIcon() const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/emitter_particle.png");
+    return DAVA::SharedIcon(":/QtIcons/emitter_particle.png");
 }
 
 // =========================================================================================
@@ -591,7 +593,7 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
 
 const QIcon& SceneTreeItemParticleLayer::ItemIcon() const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/layer_particle.png");
+    return DAVA::SharedIcon(":/QtIcons/layer_particle.png");
 }
 
 // =========================================================================================
@@ -632,7 +634,7 @@ QVariant SceneTreeItemParticleForce::ItemData() const
 
 const QIcon& SceneTreeItemParticleForce::ItemIcon() const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
+    return DAVA::SharedIcon(":/QtIcons/force.png");
 }
 
 SceneTreeItemParticleInnerEmitter::SceneTreeItemParticleInnerEmitter(DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitter* emitter_,

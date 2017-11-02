@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 Any FilePathComponentValue::GetMultipleValue() const
 {
     return Any(MultipleValuesString);
@@ -53,6 +51,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(FilePathComponentValue)
     .Field("value", &FilePathComponentValue::GetFilePath, &FilePathComponentValue::SetFilePath)[M::ProxyMetaRequire()]
     .End();
 }
-
-} // namespace TArc
 } // namespace DAVA

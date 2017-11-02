@@ -1,12 +1,14 @@
 #ifndef __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
 #define __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
 
-#include "Base/Introspection.h"
-#include "FileSystem/KeyedArchive.h"
-#include "../QtPropertyData.h"
-#include "Commands2/KeyedArchiveCommand.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include <REPlatform/Commands/KeyedArchiveCommand.h>
+#include <REPlatform/Commands/RECommand.h>
 
-#include "TArc/Utils/QtConnections.h"
+#include <TArc/Utils/QtConnections.h>
+
+#include <Base/Introspection.h>
+#include <FileSystem/KeyedArchive.h>
 
 #include <QLineEdit>
 #include <QComboBox>
@@ -26,10 +28,10 @@ public:
     DAVA::KeyedArchive* archive;
 
 protected:
-    mutable RECommand* lastCommand;
+    mutable DAVA::RECommand* lastCommand;
     int lastAddedType;
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
     QVariant GetValueInternal() const override;
     bool UpdateValueInternal() override;

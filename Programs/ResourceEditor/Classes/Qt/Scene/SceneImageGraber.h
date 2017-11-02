@@ -5,14 +5,13 @@
 #include "Math/Math2D.h"
 #include "FileSystem/FilePath.h"
 
-class SceneEditor2;
-class GlobalOperations;
 
 namespace DAVA
 {
 class Camera;
 class Texture;
 class Scene;
+class SceneEditor2;
 }
 
 namespace SceneImageGrabber

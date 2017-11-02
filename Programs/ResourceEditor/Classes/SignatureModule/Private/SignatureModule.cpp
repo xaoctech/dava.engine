@@ -1,8 +1,8 @@
 #include "Classes/SignatureModule/SignatureModule.h"
 #include "Classes/SignatureModule/Private/OwnersSignatureSystem.h"
 
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 
@@ -25,8 +25,9 @@ void SignatureModule::PostInit()
     currentUserName = SignatureModuleDetail::GetUserName();
 }
 
-void SignatureModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void SignatureModule::OnContextCreated(DAVA::DataContext* context)
 {
+    using namespace DAVA;
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);

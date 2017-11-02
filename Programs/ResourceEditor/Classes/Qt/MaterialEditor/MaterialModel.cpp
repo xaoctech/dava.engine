@@ -1,25 +1,20 @@
-#include "MaterialModel.h"
-#include "MaterialItem.h"
+#include "Classes/Qt/MaterialEditor/MaterialModel.h"
+#include "Classes/Qt/MaterialEditor/MaterialItem.h"
+#include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+#include "Classes/Qt/TextureBrowser/TextureInfo.h"
+#include "Classes/Qt/Tools/MimeData/MimeDataHelper2.h"
 
-#include "Scene/SceneEditor2.h"
-#include "Classes/Selection/SelectableGroup.h"
-#include "Classes/Selection/Selection.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Application/REGlobal.h"
+#include <REPlatform/Commands/MaterialSwitchParentCommand.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
+#include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
 
-#include "Main/QtUtils.h"
-#include "Tools/MimeData/MimeDataHelper2.h"
-#include "Commands2/MaterialSwitchParentCommand.h"
-
-#include "Scene3D/Scene.h"
-
-#include "TextureBrowser/TextureCache.h"
-#include "TextureBrowser/TextureConvertor.h"
-#include "TextureBrowser/TextureInfo.h"
-
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/Utils.h>
-
-#include <QPainter>
+#include <Scene3D/Scene.h>
 
 MaterialModel::MaterialModel(QObject* parent)
     : QStandardItemModel(parent)
@@ -131,7 +126,7 @@ MaterialItem* MaterialModel::itemFromIndex(const QModelIndex& index) const
     return ret;
 }
 
-void MaterialModel::SetScene(SceneEditor2* scene)
+void MaterialModel::SetScene(DAVA::SceneEditor2* scene)
 {
     removeRows(0, rowCount());
     curScene = scene;
@@ -144,7 +139,7 @@ void MaterialModel::SetScene(SceneEditor2* scene)
     }
 }
 
-SceneEditor2* MaterialModel::GetScene()
+DAVA::SceneEditor2* MaterialModel::GetScene()
 {
     return curScene;
 }
@@ -160,7 +155,7 @@ DAVA::NMaterial* MaterialModel::GetGlobalMaterial() const
     return ret;
 }
 
-void MaterialModel::SetSelection(const SelectableGroup* group)
+void MaterialModel::SetSelection(const DAVA::SelectableGroup* group)
 {
     QStandardItem* root = invisibleRootItem();
     for (int i = 0; i < root->rowCount(); ++i)
@@ -187,7 +182,7 @@ void MaterialModel::SetSelection(const SelectableGroup* group)
     }
 }
 
-bool MaterialModel::SetItemSelection(MaterialItem* item, const SelectableGroup* group)
+bool MaterialModel::SetItemSelection(MaterialItem* item, const DAVA::SelectableGroup* group)
 {
     if (group == nullptr)
     {
@@ -196,9 +191,8 @@ bool MaterialModel::SetItemSelection(MaterialItem* item, const SelectableGroup* 
     }
 
     DAVA::NMaterial* material = item->GetMaterial();
-    DAVA::Entity* entity = curScene->materialSystem->GetEntity(material);
-
-    entity = Selection::GetSelectableEntity(entity);
+    DAVA::Entity* entity = curScene->GetSystem<DAVA::EditorMaterialSystem>()->GetEntity(material);
+    entity = DAVA::GetSelectableEntity(entity);
     bool shouldSelect = group->ContainsObject(entity);
     item->SetFlag(MaterialItem::IS_PART_OF_SELECTION, shouldSelect);
 
@@ -210,7 +204,7 @@ void MaterialModel::Sync()
     if (NULL != curScene)
     {
         DAVA::NMaterial* globalMaterial = GetGlobalMaterial();
-        const DAVA::Set<DAVA::NMaterial*>& sceneMaterials = curScene->materialSystem->GetTopParents();
+        const DAVA::Set<DAVA::NMaterial*>& sceneMaterials = curScene->GetSystem<DAVA::EditorMaterialSystem>()->GetTopParents();
         DAVA::Map<DAVA::NMaterial*, bool> processedList;
 
         // init processed list
@@ -269,7 +263,7 @@ void MaterialModel::Sync()
             }
         }
 
-        const SelectableGroup& selection = Selection::GetSelection();
+        const DAVA::SelectableGroup& selection = curScene->GetSystem<DAVA::SelectionSystem>()->GetSelection();
         SetSelection(&selection);
     }
 }
@@ -288,13 +282,14 @@ void MaterialModel::Sync(MaterialItem* item)
     }
 
     // remove all items that are not in hierarchy
+    DAVA::EditorMaterialSystem* system = curScene->GetSystem<DAVA::EditorMaterialSystem>();
     for (int i = 0; i < item->rowCount(); ++i)
     {
         MaterialItem* childItem = (MaterialItem*)item->child(i);
         DAVA::NMaterial* childMaterial = childItem->GetMaterial();
 
         bool shouldSyncMaterial = (processedList.count(childMaterial) > 0) &&
-        curScene->materialSystem->HasMaterial(childMaterial);
+        system->HasMaterial(childMaterial);
 
         if (shouldSyncMaterial)
         {
@@ -310,7 +305,7 @@ void MaterialModel::Sync(MaterialItem* item)
     // add materials that are in hierarchy but not in model yet
     for (auto it : processedList)
     {
-        bool shouldAddMaterial = !it.second && curScene->materialSystem->HasMaterial(it.first);
+        bool shouldAddMaterial = !it.second && system->HasMaterial(it.first);
         if (shouldAddMaterial)
         {
             DVASSERT(it.first->GetParent() != nullptr && it.first->GetParent() != GetGlobalMaterial());
@@ -323,7 +318,7 @@ void MaterialModel::Sync(MaterialItem* item)
     bool can_be_deleted = (0 == item->rowCount());
 
     // set item lod/switch flags
-    const DAVA::RenderBatch* rb = curScene->materialSystem->GetRenderBatch(material);
+    const DAVA::RenderBatch* rb = system->GetRenderBatch(material);
     if (nullptr != rb)
     {
         const DAVA::RenderObject* ro = rb->GetRenderObject();
@@ -438,7 +433,7 @@ bool MaterialModel::dropMimeData(const QMimeData* data, Qt::DropAction action, i
             MaterialItem* sourceMaterialItem = itemFromIndex(GetIndex(materials[i]));
             if (NULL != sourceMaterialItem)
             {
-                curScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialSwitchParentCommand(materials[i], targetMaterial)));
+                curScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialSwitchParentCommand(materials[i], targetMaterial)));
             }
         }
 
@@ -487,11 +482,11 @@ bool MaterialModel::dropCanBeAccepted(const QMimeData* data, Qt::DropAction acti
 void MaterialModel::ReloadLodSwColors()
 {
     QString key;
-    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
-    lodColors[0] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor0);
-    lodColors[1] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor1);
-    lodColors[2] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor2);
-    lodColors[3] = DAVA::TArc::ColorToQColor(settings->materialEditorLodColor3);
-    switchColors[0] = DAVA::TArc::ColorToQColor(settings->materialEditorSwitchColor0);
-    switchColors[1] = DAVA::TArc::ColorToQColor(settings->materialEditorSwitchColor1);
+    DAVA::GeneralSettings* settings = DAVA::Deprecated::GetDataNode<DAVA::GeneralSettings>();
+    lodColors[0] = DAVA::ColorToQColor(settings->materialEditorLodColor0);
+    lodColors[1] = DAVA::ColorToQColor(settings->materialEditorLodColor1);
+    lodColors[2] = DAVA::ColorToQColor(settings->materialEditorLodColor2);
+    lodColors[3] = DAVA::ColorToQColor(settings->materialEditorLodColor3);
+    switchColors[0] = DAVA::ColorToQColor(settings->materialEditorSwitchColor0);
+    switchColors[1] = DAVA::ColorToQColor(settings->materialEditorSwitchColor1);
 }

@@ -1,22 +1,23 @@
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Deprecated/EditorConfig.h"
-#include <Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h>
+#include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Tools/Widgets/FilePathBrowser.h"
 
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
+
+#include <TArc/Core/Deprecated.h>
 #include <TArc/DataProcessing/DataContext.h>
 
-#include <Base/GlobalEnum.h>
 #include <Base/BaseTypes.h>
+#include <Base/GlobalEnum.h>
 #include <Debug/DVAssert.h>
 
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGridLayout>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 ExportSceneDialog::ExportSceneDialog(QWidget* parent)
     : QDialog(parent)
@@ -105,9 +106,9 @@ void ExportSceneDialog::SetupUI()
 
         tagSelector->addItem("No tags", "");
 
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
         DVASSERT(data != nullptr);
-        const EditorConfig* editorConfig = data->GetEditorConfig();
+        const DAVA::EditorConfig* editorConfig = data->GetEditorConfig();
         if (editorConfig->HasProperty("Tags"))
         {
             const DAVA::Vector<DAVA::String>& projectTags = editorConfig->GetComboPropertyValues("Tags");
@@ -152,7 +153,7 @@ void ExportSceneDialog::SetupUI()
 
 void ExportSceneDialog::InitializeValues()
 {
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data != nullptr);
     DAVA::String path = data->GetProjectPath().GetAbsolutePathname();
     projectPathBrowser->SetPath(QString::fromStdString(path + "Data/3d/"));
@@ -162,7 +163,7 @@ void ExportSceneDialog::InitializeValues()
         gpuSelector[gpu]->setCheckState(Qt::Unchecked);
     }
 
-    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    DAVA::GeneralSettings* settings = DAVA::Deprecated::GetGlobalContext()->GetData<DAVA::GeneralSettings>();
     qualitySelector->setCurrentIndex(static_cast<int>(settings->compressionQuality));
     optimizeOnExport->setCheckState(Qt::Checked);
     useHDtextures->setCheckState(Qt::Unchecked);

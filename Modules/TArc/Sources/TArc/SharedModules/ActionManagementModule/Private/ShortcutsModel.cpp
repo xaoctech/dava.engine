@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
 {
     beginResetModel();
@@ -264,6 +262,4 @@ QVariant ShortcutsModel::headerData(int section, Qt::Orientation orientation, in
 
     return QVariant();
 }
-
-} // namespace TArc
 } // namespace DAVA

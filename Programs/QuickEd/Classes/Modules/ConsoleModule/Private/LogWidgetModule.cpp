@@ -30,22 +30,22 @@ void LogWidgetModule::PostInit()
 
     logWidget = new LogWidget();
 
-    DAVA::TArc::PropertiesItem item = GetAccessor()->CreatePropertiesNode(LogWidgetModuleDetails::logWidgetModulePropertiesName);
+    DAVA::PropertiesItem item = GetAccessor()->CreatePropertiesNode(LogWidgetModuleDetails::logWidgetModulePropertiesName);
     logWidget->Deserialize(item.Get<QByteArray>(LogWidgetModuleDetails::logWidgetPropertiesName));
 
     const char* title = "Console";
-    DAVA::TArc::DockPanelInfo panelInfo;
+    DAVA::DockPanelInfo panelInfo;
     panelInfo.title = title;
     panelInfo.area = Qt::BottomDockWidgetArea;
-    DAVA::TArc::PanelKey panelKey(title, panelInfo);
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, logWidget);
+    DAVA::PanelKey panelKey(title, panelInfo);
+    GetUI()->AddView(DAVA::mainWindowKey, panelKey, logWidget);
 }
 
-void LogWidgetModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void LogWidgetModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
     connections.RemoveConnection(loggerOutput, &LoggerOutputObject::OutputReady);
 
-    DAVA::TArc::PropertiesItem item = GetAccessor()->CreatePropertiesNode(LogWidgetModuleDetails::logWidgetModulePropertiesName);
+    DAVA::PropertiesItem item = GetAccessor()->CreatePropertiesNode(LogWidgetModuleDetails::logWidgetModulePropertiesName);
     item.Set(LogWidgetModuleDetails::logWidgetPropertiesName, logWidget->Serialize());
 }
 

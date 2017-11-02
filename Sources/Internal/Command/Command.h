@@ -2,6 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Command/ICommand.h"
+#include "Reflection/ReflectedType.h"
+#include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA
 {
@@ -27,12 +29,20 @@ public:
     */
     virtual bool IsClean() const;
 
+    template <typename T>
+    T* Cast();
+
+    template <typename T>
+    const T* Cast() const;
+
 private:
     //this function is not a part of public API and can be called only by CommandBatch
     virtual bool MergeWith(const Command* command);
     friend class CommandBatch;
 
     const String description;
+
+    DAVA_VIRTUAL_REFLECTION(Command, ICommand);
 };
 
 inline const String& Command::GetDescription() const
@@ -48,5 +58,39 @@ inline bool Command::IsClean() const
 inline bool Command::MergeWith(const Command* command)
 {
     return false;
+}
+
+template <typename T>
+T* Command::Cast()
+{
+    T* result = nullptr;
+    void** outPrt = reinterpret_cast<void**>(&result);
+    const ReflectedType* commandType = ReflectedTypeDB::GetByPointer(this);
+    const ReflectedType* requireType = ReflectedTypeDB::Get<T>();
+    DVASSERT(commandType != nullptr);
+    DVASSERT(requireType != nullptr);
+    if (TypeInheritance::Cast(commandType->GetType()->Pointer(), requireType->GetType()->Pointer(), this, outPrt) == false)
+    {
+        return nullptr;
+    }
+
+    return result;
+}
+
+template <typename T>
+const T* Command::Cast() const
+{
+    T* result = nullptr;
+    void** outPrt = reinterpret_cast<void**>(&result);
+    const ReflectedType* commandType = ReflectedTypeDB::GetByPointer(this);
+    const ReflectedType* requireType = ReflectedTypeDB::Get<T>();
+    DVASSERT(commandType != nullptr);
+    DVASSERT(requireType != nullptr);
+    if (TypeInheritance::Cast(commandType->GetType()->Pointer(), requireType->GetType()->Pointer(), const_cast<Command*>(this), outPrt) == false)
+    {
+        return nullptr;
+    }
+
+    return const_cast<const T*>(result);
 }
 } //namespace DAVA

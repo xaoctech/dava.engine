@@ -6,7 +6,7 @@
 #include <gmock/gmock.h>
 
 #define DAVA_TARC_TESTCLASS(classname) \
-    DAVA_TESTCLASS_CUSTOM_BASE_AND_FACTORY(classname, DAVA::TArc::TestClass, DAVA::TArc::TestClassHolderFactory)
+    DAVA_TESTCLASS_CUSTOM_BASE_AND_FACTORY(classname, DAVA::TArcTestClass, DAVA::TArcTestClassHolderFactory)
 
 #define BEGIN_TESTED_MODULES() \
     void CreateTestedModules() override {

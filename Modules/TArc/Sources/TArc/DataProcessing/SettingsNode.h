@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TArc/DataProcessing/DataNode.h"
+#include "TArc/DataProcessing/TArcDataNode.h"
 
 #include <Reflection/Reflection.h>
 
@@ -30,12 +30,10 @@ using SettingsSortKey = Meta<Metas::SettingsSortKey>;
 using ForceResetToDefault = Meta<Metas::ForceResetToDefault>;
 } // namespace M
 
-namespace TArc
-{
 class SettingsManager;
 class PropertiesItem;
 
-class SettingsNode : public DataNode
+class SettingsNode : public TArcDataNode
 {
 public:
     virtual ~SettingsNode() = default;
@@ -47,7 +45,6 @@ protected:
     void ReflectedSave(PropertiesItem& settingsNode) const;
 
 private:
-    DAVA_VIRTUAL_REFLECTION(SettingsNode, DataNode);
+    DAVA_VIRTUAL_REFLECTION(SettingsNode, TArcDataNode);
 };
-} // namespace TArc
 } // namespace DAVA

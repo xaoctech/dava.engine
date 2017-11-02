@@ -1,20 +1,33 @@
-#include "Main/mainwindow.h"
 #include "QualitySwitcher.h"
-#include "Scene3D/Systems/QualitySettingsSystem.h"
-#include "MaterialEditor/MaterialEditor.h"
+#include "Classes/Qt/MaterialEditor/MaterialEditor.h"
 
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
+
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/Deprecated.h>
+#include <TArc/WindowSubSystem/UI.h>
+
+#include <Base/Set.h>
+#include <Render/Highlevel/RenderSystem.h>
+#include <Render/Material/NMaterial.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
+
+#include <QCheckBox>
 #include <QComboBox>
-#include <QPushButton>
 #include <QGridLayout>
-#include <QVBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 QualitySwitcher* QualitySwitcher::switcherDialog = nullptr;
 
-QualitySwitcher::QualitySwitcher(const std::shared_ptr<GlobalOperations>& globalOperations_)
-    : QDialog(globalOperations_->GetGlobalParentWidget(), Qt::Dialog | Qt::WindowStaysOnTopHint) //https://bugreports.qt.io/browse/QTBUG-34767
-    , globalOperations(globalOperations_)
+QualitySwitcher::QualitySwitcher()
+    : QDialog(DAVA::Deprecated::GetUI()->GetWindow(DAVA::mainWindowKey), Qt::Dialog | Qt::WindowStaysOnTopHint) //https://bugreports.qt.io/browse/QTBUG-34767
 {
     const int spacing = 5;
     const int minColumnW = 150;
@@ -276,22 +289,22 @@ QualitySwitcher::~QualitySwitcher()
 
 void QualitySwitcher::ApplyTx()
 {
-    globalOperations->CallAction(GlobalOperations::ReloadTexture, DAVA::Any());
+    DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadAllTextures.ID, DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->textureViewGPU);
 }
 
 void QualitySwitcher::ApplyMa()
 {
-    globalOperations->ForEachScene([](SceneEditor2* scene)
-                                   {
-                                       const DAVA::Set<DAVA::NMaterial*>& topParents = scene->materialSystem->GetTopParents();
+    DAVA::Deprecated::GetAccessor()->ForEachContext([](const DAVA::DataContext& ctx) {
+        DAVA::SceneData* data = ctx.GetData<DAVA::SceneData>();
+        const DAVA::Set<DAVA::NMaterial*>& topParents = data->GetScene()->GetSystem<DAVA::EditorMaterialSystem>()->GetTopParents();
 
-                                       for (auto material : topParents)
-                                       {
-                                           material->InvalidateRenderVariants();
-                                       }
+        for (auto material : topParents)
+        {
+            material->InvalidateRenderVariants();
+        }
 
-                                       scene->renderSystem->SetForceUpdateLights();
-                                   });
+        data->GetScene()->renderSystem->SetForceUpdateLights();
+    });
 }
 
 void QualitySwitcher::UpdateEntitiesToQuality(DAVA::Entity* e)
@@ -306,11 +319,11 @@ void QualitySwitcher::UpdateEntitiesToQuality(DAVA::Entity* e)
 void QualitySwitcher::UpdateParticlesToQuality()
 {
     SceneSignals* sceneSignals = SceneSignals::Instance();
-    globalOperations->ForEachScene([sceneSignals, this](SceneEditor2* scene)
-                                   {
-                                       ReloadEntityEmitters(scene);
-                                       sceneSignals->EmitStructureChanged(scene, nullptr);
-                                   });
+    DAVA::Deprecated::GetAccessor()->ForEachContext([sceneSignals, this](const DAVA::DataContext& ctx) {
+        DAVA::SceneEditor2* scene = ctx.GetData<DAVA::SceneData>()->GetScene().Get();
+        ReloadEntityEmitters(scene);
+        sceneSignals->EmitStructureChanged(scene, nullptr);
+    });
 }
 
 void QualitySwitcher::ReloadEntityEmitters(DAVA::Entity* e)
@@ -478,11 +491,11 @@ void QualitySwitcher::ApplySettings()
 
     if (materialSettingsChanged || optionSettingsChanged)
     {
-        globalOperations->ForEachScene([this](SceneEditor2* scene)
-                                       {
-                                           UpdateEntitiesToQuality(scene);
-                                           scene->foliageSystem->SyncFoliageWithLandscape();
-                                       });
+        DAVA::Deprecated::GetAccessor()->ForEachContext([&](const DAVA::DataContext& ctx) {
+            DAVA::SceneEditor2* scene = ctx.GetData<DAVA::SceneData>()->GetScene().Get();
+            UpdateEntitiesToQuality(scene);
+            scene->foliageSystem->SyncFoliageWithLandscape();
+        });
     }
 
     if (someQualityChanged)
@@ -491,12 +504,12 @@ void QualitySwitcher::ApplySettings()
     }
 }
 
-void QualitySwitcher::ShowDialog(std::shared_ptr<GlobalOperations> globalOperations)
+void QualitySwitcher::ShowDialog()
 {
     if (switcherDialog == nullptr)
     {
         //we don't need synchronization because of working in UI thread
-        switcherDialog = new QualitySwitcher(globalOperations);
+        switcherDialog = new QualitySwitcher();
         switcherDialog->setAttribute(Qt::WA_DeleteOnClose, true);
 
         switcherDialog->show();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes/Constants.h"
+#include <REPlatform/Global/Constants.h>
 
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Core/FieldBinder.h>
@@ -10,27 +10,27 @@
 
 class DebugDrawData;
 
-class DebugDrawModule : public DAVA::TArc::ClientModule
+class DebugDrawModule : public DAVA::ClientModule
 {
 protected:
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
     void PostInit() override;
 
 private:
-    DAVA::TArc::QtConnections connections;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    DAVA::QtConnections connections;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 
     void OnHangingObjects();
     void OnHangingObjectsHeight(double value);
     void OnSwitchWithDifferentLODs();
 
     bool IsDisabled() const;
-    ResourceEditor::eSceneObjectType DebugDrawObject() const;
-    void SetDebugDrawObject(ResourceEditor::eSceneObjectType type);
+    DAVA::ResourceEditor::eSceneObjectType DebugDrawObject() const;
+    void SetDebugDrawObject(DAVA::ResourceEditor::eSceneObjectType type);
 
-    void ChangeObject(ResourceEditor::eSceneObjectType object);
+    void ChangeObject(DAVA::ResourceEditor::eSceneObjectType object);
 
-    DAVA_VIRTUAL_REFLECTION(DebugDrawModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(DebugDrawModule, DAVA::ClientModule);
 };

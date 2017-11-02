@@ -1,25 +1,22 @@
-#include "CubemapEditor/CubemapEditorDialog.h"
-#include "CubemapEditor/ClickableQLabel.h"
-#include "CubemapEditor/CubemapUtils.h"
-#include "Qt/Main/QtUtils.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/CubemapEditor/CubemapEditorDialog.h"
+#include "Classes/Qt/CubemapEditor/ClickableQLabel.h"
+#include "Classes/Qt/CubemapEditor/CubemapUtils.h"
+#include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
 
 #include "ui_CubemapEditorDialog.h"
 
-#include "Tools/PathDescriptor/PathDescriptor.h"
-#include "ImageTools/ImageTools.h"
-#include "QtTools/FileDialogs/FileDialog.h"
-
+#include <TArc/Core/Deprecated.h>
 #include <TArc/DataProcessing/DataContext.h>
 
+#include <FileSystem/FileSystem.h>
+
 #include <QMouseEvent>
-#include <QMessageBox>
 
-using namespace DAVA;
-
-const String CUBEMAP_LAST_FACE_DIR_KEY = "cubemap_last_face_dir";
+const DAVA::String CUBEMAP_LAST_FACE_DIR_KEY = "cubemap_last_face_dir";
 
 CubemapEditorDialog::CubemapEditorDialog(QWidget* parent)
     : QDialog(parent)
@@ -30,9 +27,9 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget* parent)
     ui->lblSaving->setVisible(false);
 
     facesInfo.width = facesInfo.height = 0;
-    facesInfo.format = FORMAT_INVALID;
+    facesInfo.format = DAVA::FORMAT_INVALID;
 
-    facePathes.resize(Texture::CUBE_FACE_COUNT, FilePath());
+    facePathes.resize(DAVA::Texture::CUBE_FACE_COUNT, DAVA::FilePath());
 
     faceChanged = false;
 
@@ -75,20 +72,24 @@ void CubemapEditorDialog::ConnectSignals()
 
 void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 {
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    using namespace DAVA;
+
+    ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
 
-    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    CommonInternalSettings* settings = Deprecated::GetDataNode<CommonInternalSettings>();
     FilePath projectPath = settings->cubemapLastFaceDir;
     if (projectPath.IsEmpty() == true)
     {
         projectPath = data->GetDataSource3DPath();
     }
 
-    QString fileName = FileDialog::getOpenFileName(this,
-                                                   tr("Open Cubemap Face Image"),
-                                                   QString::fromStdString(projectPath.GetAbsolutePathname()),
-                                                   PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter);
+    DAVA::FileDialogParams dlgParams;
+    dlgParams.dir = QString::fromStdString(projectPath.GetAbsolutePathname());
+    dlgParams.title = QStringLiteral("Open Cubemap Face Image");
+    dlgParams.filters = PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter;
+
+    QString fileName = Deprecated::GetUI()->GetOpenFileName(DAVA::mainWindowKey, dlgParams);
 
     if (!fileName.isNull())
     {
@@ -97,7 +98,6 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
         LoadImageTo(path, face, false);
 
         projectPath = stdFilePath;
-        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
         settings->cubemapLastFaceDir = projectPath.GetDirectory();
 
         if (AllFacesLoaded())
@@ -109,13 +109,13 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 
 bool CubemapEditorDialog::LoadImageTo(const DAVA::FilePath& filePath, int face, bool silent)
 {
-    DVASSERT(face >= 0 && face <= Texture::CUBE_FACE_COUNT);
+    DVASSERT(face >= 0 && face <= DAVA::Texture::CUBE_FACE_COUNT);
 
     bool result = true;
 
     QString fileName = filePath.GetAbsolutePathname().c_str();
     QString errorString;
-    ImageInfo loadedImageInfo = ImageSystem::GetImageInfo(filePath);
+    DAVA::ImageInfo loadedImageInfo = DAVA::ImageSystem::GetImageInfo(filePath);
 
     bool verified = false;
     bool isFirstImage = false;
@@ -132,7 +132,7 @@ bool CubemapEditorDialog::LoadImageTo(const DAVA::FilePath& filePath, int face, 
 
     if (verified)
     {
-        QImage faceImage = ImageTools::FromDavaImage(filePath);
+        QImage faceImage = DAVA::ImageTools::FromDavaImage(filePath);
 
         ClickableQLabel* label = GetLabelForFace(face);
         QImage scaledFace = faceImage.scaled(label->width(), label->height());
@@ -181,14 +181,14 @@ ClickableQLabel* CubemapEditorDialog::GetLabelForFace(int face)
     return labels[face];
 }
 
-bool CubemapEditorDialog::VerifyFirstImage(ImageInfo imgInfo, QString& errorString)
+bool CubemapEditorDialog::VerifyFirstImage(DAVA::ImageInfo imgInfo, QString& errorString)
 {
     if (imgInfo.width != imgInfo.height)
     {
         errorString = QString("Width and height are not equal");
         return false;
     }
-    else if (!IsPowerOf2(imgInfo.width))
+    else if (!DAVA::IsPowerOf2(imgInfo.width))
     {
         errorString = QString("Width or height are not power of two");
         return false;
@@ -197,7 +197,7 @@ bool CubemapEditorDialog::VerifyFirstImage(ImageInfo imgInfo, QString& errorStri
     return true;
 }
 
-bool CubemapEditorDialog::VerifyNextImage(ImageInfo imgInfo, QString& errorString)
+bool CubemapEditorDialog::VerifyNextImage(DAVA::ImageInfo imgInfo, QString& errorString)
 {
     if (imgInfo.height != facesInfo.height || imgInfo.width != facesInfo.width)
     {
@@ -211,8 +211,8 @@ bool CubemapEditorDialog::VerifyNextImage(ImageInfo imgInfo, QString& errorStrin
     else if (imgInfo.format != facesInfo.format)
     {
         errorString = QString("Image format is %1, should be %3")
-                      .arg(GlobalEnumMap<PixelFormat>::Instance()->ToString(imgInfo.format))
-                      .arg(GlobalEnumMap<PixelFormat>::Instance()->ToString(facesInfo.format));
+                      .arg(GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(imgInfo.format))
+                      .arg(GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(facesInfo.format));
         return false;
     }
     else
@@ -281,8 +281,10 @@ int CubemapEditorDialog::GetLoadedFaceCount()
 
 void CubemapEditorDialog::LoadCubemap(const QString& path)
 {
+    using namespace DAVA;
+
     FilePath filePath(path.toStdString());
-    std::unique_ptr<TextureDescriptor> texDescriptor(TextureDescriptor::CreateFromFile(filePath));
+    std::unique_ptr<TextureDescriptor> texDescriptor(DAVA::TextureDescriptor::CreateFromFile(filePath));
 
     if (texDescriptor && texDescriptor->IsCubeMap())
     {
@@ -313,8 +315,9 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 
 void CubemapEditorDialog::SaveCubemap(const QString& path)
 {
+    using namespace DAVA;
     FilePath filePath(path.toStdString());
-    DAVA::uint8 faceMask = GetFaceMask();
+    uint8 faceMask = GetFaceMask();
 
     std::unique_ptr<TextureDescriptor> descriptor(new TextureDescriptor());
     bool descriptorReady = false;
@@ -357,11 +360,15 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
             {
                 if (QFile::exists(targetFacePathString.c_str()))
                 {
-                    int answer = ShowQuestion("File overwrite",
-                                              "File " + targetFacePathString + " already exist. Do you want to overwrite it with " + facePathString,
-                                              MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+                    DAVA::ModalMessageParams msgParams;
+                    msgParams.buttons = DAVA::ModalMessageParams::Yes | DAVA::ModalMessageParams::No;
+                    msgParams.defaultButton = DAVA::ModalMessageParams::No;
+                    msgParams.title = QStringLiteral("File overwrite");
+                    msgParams.icon = ModalMessageParams::Question;
+                    msgParams.message = QString::fromStdString("File " + targetFacePathString + " already exist. Do you want to overwrite it with " + facePathString);
+                    DAVA::ModalMessageParams::Button answer = DAVA::Deprecated::GetUI()->ShowModalMessage(DAVA::mainWindowKey, msgParams);
 
-                    if (MB_FLAG_YES == answer)
+                    if (DAVA::ModalMessageParams::Yes == answer)
                     {
                         bool removeResult = QFile::remove(targetFacePathString.c_str());
 
@@ -399,13 +406,19 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 
     descriptor->Save(filePath);
 
-    QMessageBox::information(this, "Cubemap texture save result", "Cubemap texture was saved successfully!");
+    DAVA::ModalMessageParams infoParams;
+    infoParams.title = "Cubemap texture save result";
+    infoParams.message = "Cubemap texture was saved successfully!";
+    infoParams.buttons = DAVA::ModalMessageParams::Ok;
+    infoParams.defaultButton = DAVA::ModalMessageParams::Ok;
+    infoParams.icon = ModalMessageParams::Information;
+    DAVA::Deprecated::GetUI()->ShowModalMessage(DAVA::mainWindowKey, infoParams);
 }
 
 DAVA::uint8 CubemapEditorDialog::GetFaceMask()
 {
     DAVA::uint8 mask = 0;
-    for (int i = 0; i < Texture::CUBE_FACE_COUNT; ++i)
+    for (int i = 0; i < DAVA::Texture::CUBE_FACE_COUNT; ++i)
     {
         if (!facePathes[i].IsEmpty())
         {
@@ -474,21 +487,26 @@ void CubemapEditorDialog::OnNZClicked()
 
 void CubemapEditorDialog::OnLoadTexture()
 {
-    int answer = MB_FLAG_YES;
+    DAVA::ModalMessageParams::Button answer = DAVA::ModalMessageParams::Yes;
+
     if (AnyFaceLoaded())
     {
-        answer = ShowQuestion("Warning",
-                              "Do you really want to load new cubemap texture over currently loaded one?",
-                              MB_FLAG_YES | MB_FLAG_NO,
-                              MB_FLAG_NO);
+        DAVA::ModalMessageParams msgParams;
+        msgParams.buttons = DAVA::ModalMessageParams::Yes | DAVA::ModalMessageParams::No;
+        msgParams.defaultButton = DAVA::ModalMessageParams::No;
+        msgParams.title = QStringLiteral("Warning");
+        msgParams.icon = DAVA::ModalMessageParams::Warning;
+        msgParams.message = QString("Do you really want to load new cubemap texture over currently loaded one?");
+        answer = DAVA::Deprecated::GetUI()->ShowModalMessage(DAVA::mainWindowKey, msgParams);
     }
 
-    if (MB_FLAG_YES == answer)
+    if (DAVA::ModalMessageParams::Yes == answer)
     {
-        QString fileName = FileDialog::getOpenFileName(this,
-                                                       tr("Open Cubemap Texture"),
-                                                       rootPath,
-                                                       tr("Tex File (*.tex)"));
+        DAVA::FileDialogParams fileDlgParams;
+        fileDlgParams.dir = rootPath;
+        fileDlgParams.title = "Open Cubemap Texture";
+        fileDlgParams.filters = "Tex File (*.tex)";
+        QString fileName = DAVA::Deprecated::GetUI()->GetOpenFileName(DAVA::mainWindowKey, fileDlgParams);
 
         if (!fileName.isNull())
         {
@@ -529,12 +547,15 @@ void CubemapEditorDialog::done(int result)
 {
     if (IsCubemapEdited())
     {
-        int answer = ShowQuestion("Warning",
-                                  "Cubemap texture was edited. Do you want to close it without saving?",
-                                  MB_FLAG_YES | MB_FLAG_NO,
-                                  MB_FLAG_NO);
+        DAVA::ModalMessageParams msgParams;
+        msgParams.buttons = DAVA::ModalMessageParams::Yes | DAVA::ModalMessageParams::No;
+        msgParams.defaultButton = DAVA::ModalMessageParams::No;
+        msgParams.title = QStringLiteral("Warning");
+        msgParams.icon = DAVA::ModalMessageParams::Warning;
+        msgParams.message = QString("Cubemap texture was edited. Do you want to close it without saving?");
+        DAVA::ModalMessageParams::Button answer = DAVA::Deprecated::GetUI()->ShowModalMessage(DAVA::mainWindowKey, msgParams);
 
-        if (answer != MB_FLAG_YES)
+        if (answer != DAVA::ModalMessageParams::Yes)
         {
             return;
         }
@@ -558,7 +579,7 @@ bool CubemapEditorDialog::IsCubemapEdited()
           ui->labelNZ
         };
 
-        for (int i = 0; i < Texture::CUBE_FACE_COUNT; ++i)
+        for (int i = 0; i < DAVA::Texture::CUBE_FACE_COUNT; ++i)
         {
             if (labels[i]->GetRotation() != 0)
             {
@@ -587,7 +608,7 @@ void CubemapEditorDialog::mouseMoveEvent(QMouseEvent* ev)
       ui->labelNZ
     };
 
-    for (int i = 0; i < Texture::CUBE_FACE_COUNT; ++i)
+    for (int i = 0; i < DAVA::Texture::CUBE_FACE_COUNT; ++i)
     {
         labels[i]->OnParentMouseMove(ev);
     }

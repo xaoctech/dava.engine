@@ -7,7 +7,10 @@
 #include <qtoolbutton.h>
 
 #include "DAVAEngine.h"
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 
 class SelectPathWidgetBase : public QLineEdit
 {

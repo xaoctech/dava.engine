@@ -14,11 +14,8 @@ class ImportedPackagesNode;
 
 namespace DAVA
 {
-namespace TArc
-{
 class UI;
 class ContextAccessor;
-}
 }
 
 class LibraryModel : public QStandardItemModel, PackageListener
@@ -31,7 +28,7 @@ class LibraryModel : public QStandardItemModel, PackageListener
     };
 
 public:
-    LibraryModel(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor, QObject* parent = nullptr);
+    LibraryModel(DAVA::UI* ui, DAVA::ContextAccessor* accessor, QObject* parent = nullptr);
     ~LibraryModel() override;
 
     void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
@@ -68,6 +65,6 @@ private:
 
     DAVA::Vector<DAVA::RefPtr<ControlNode>> defaultControls;
 
-    DAVA::TArc::UI* ui = nullptr;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

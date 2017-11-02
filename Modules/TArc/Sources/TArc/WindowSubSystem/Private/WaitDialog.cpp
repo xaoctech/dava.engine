@@ -15,8 +15,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace WaitDialogDetail
 {
 Qt::ConnectionType GetConnectionType()
@@ -192,6 +190,4 @@ bool WaitDialog::WasCanceled() const
 {
     return wasCanceled;
 }
-
-} // namespace TArc
 } // namespace DAVA

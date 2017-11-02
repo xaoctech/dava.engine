@@ -9,10 +9,10 @@
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>
 
-void QualitySettingsChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
+void QualitySettingsChildCreator::ExposeChildren(const std::shared_ptr<DAVA::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::PropertyNode>>& children) const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     static const ReflectedType* qualityComponentType = ReflectedTypeDB::Get<QualitySettingsComponent>();
     if (GetValueReflectedType(parent->cachedValue) == qualityComponentType)
@@ -31,7 +31,7 @@ void QualitySettingsChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TAr
     }
 }
 
-std::unique_ptr<DAVA::TArc::BaseComponentValue> QualitySettingsEditorCreator::GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const
+std::unique_ptr<DAVA::BaseComponentValue> QualitySettingsEditorCreator::GetEditor(const std::shared_ptr<const DAVA::PropertyNode>& node) const
 {
     if (node->propertyType == PropertyPanel::GroupQualityProperty)
     {

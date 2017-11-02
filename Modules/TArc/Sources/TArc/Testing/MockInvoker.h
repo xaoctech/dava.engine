@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MockInvoker : public OperationInvoker
 {
 public:
@@ -19,5 +17,4 @@ public:
     MOCK_METHOD6(Invoke, void(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5));
     MOCK_METHOD7(Invoke, void(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5, const Any& a6));
 };
-} // namespace TArc
 } // namespace DAVA

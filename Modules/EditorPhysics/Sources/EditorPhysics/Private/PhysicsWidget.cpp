@@ -14,11 +14,11 @@
 #include <QSpacerItem>
 #include <QLabel>
 
-PhysicsWidget::PhysicsWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_)
+PhysicsWidget::PhysicsWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_)
     : accessor(accessor_)
     , ui(ui_)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(4);
@@ -67,7 +67,7 @@ PhysicsWidget::PhysicsWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
 
 void PhysicsWidget::OnStartPauseClick()
 {
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     if (ctx == nullptr)
     {
         return;
@@ -89,7 +89,7 @@ void PhysicsWidget::OnStartPauseClick()
 
 void PhysicsWidget::OnStopClick()
 {
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     if (ctx == nullptr)
     {
         return;
@@ -105,7 +105,7 @@ void PhysicsWidget::OnStopClick()
 
 QIcon PhysicsWidget::GetStartPauseIcon() const
 {
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     if (ctx == nullptr)
     {
         return startIcon;
@@ -130,7 +130,7 @@ QIcon PhysicsWidget::GetStopIcon() const
 QString PhysicsWidget::GetLabelText() const
 {
     EditorPhysicsSystem::eSimulationState state = EditorPhysicsSystem::eSimulationState::STOPPED;
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     if (ctx != nullptr)
     {
         EditorPhysicsData* data = ctx->GetData<EditorPhysicsData>();

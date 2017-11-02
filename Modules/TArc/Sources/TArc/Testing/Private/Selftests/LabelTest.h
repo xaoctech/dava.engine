@@ -23,7 +23,7 @@ namespace LabelTestDetails
 {
 using namespace DAVA;
 
-DAVA::TArc::WindowKey wndKey("LabelTestWnd");
+DAVA::WindowKey wndKey("LabelTestWnd");
 
 String M2ToString(const Matrix2& matrix)
 {
@@ -81,7 +81,7 @@ struct LabelDataSource
     }
 };
 
-class LabelTestModule : public DAVA::TArc::ClientModule
+class LabelTestModule : public DAVA::ClientModule
 {
 public:
     LabelTestModule()
@@ -91,7 +91,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         QWidget* w = new QWidget();
         QtVBoxLayout* layout = new QtVBoxLayout(w);
@@ -123,7 +123,7 @@ public:
 
     static LabelTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(LabelTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(LabelTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<LabelTestModule>::Begin()
         .ConstructorByPointer()
@@ -164,7 +164,7 @@ DAVA_TARC_TESTCLASS(LabelTest)
         TEST_VERIFY(label->text() == "test String");
 
         label = GetLabel("multi");
-        TEST_VERIFY(label->text() == QString(DAVA::TArc::MultipleValuesString));
+        TEST_VERIFY(label->text() == QString(DAVA::MultipleValuesString));
 
         LabelTestModule* inst = LabelTestModule::instance;
 

@@ -27,7 +27,7 @@ bool IsLMBPressed(UIEvent* input)
 }
 }
 
-CreatingControlsSystem::CreatingControlsSystem(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui)
+CreatingControlsSystem::CreatingControlsSystem(DAVA::ContextAccessor* accessor, DAVA::UI* ui)
     : BaseEditorSystem(accessor)
     , ui(ui)
 {
@@ -38,7 +38,6 @@ CreatingControlsSystem::CreatingControlsSystem(DAVA::TArc::ContextAccessor* acce
 void CreatingControlsSystem::BindFields()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     fieldBinder.reset(new FieldBinder(accessor));
     {
@@ -127,7 +126,6 @@ void CreatingControlsSystem::SetCreateByClick(const DAVA::String& _controlYamlSt
 void CreatingControlsSystem::AddControlAtPoint(const DAVA::Vector2& point)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* active = accessor->GetActiveContext();
     DVASSERT(active != nullptr);

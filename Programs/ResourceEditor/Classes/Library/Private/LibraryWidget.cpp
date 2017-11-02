@@ -2,11 +2,8 @@
 #include "Classes/Library/Private/LibraryFileSystemModel.h"
 #include "Classes/Library/Private/LibraryData.h"
 
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Application/REGlobal.h"
-
-#include "Classes/Qt/Main/QtUtils.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SceneData.h>
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Core/ContextAccessor.h>
@@ -20,6 +17,7 @@
 #include <Reflection/ReflectedType.h>
 #include <Render/Image/ImageFormatInterface.h>
 #include <Render/RenderBase.h>
+#include <Render/TextureDescriptor.h>
 
 #include <QToolBar>
 #include <QLineEdit>
@@ -78,7 +76,7 @@ struct FileType
 QVector<FileType> fileTypeValues;
 }
 
-LibraryWidget::LibraryWidget(DAVA::TArc::ContextAccessor* contextAccessor_, QWidget* parent)
+LibraryWidget::LibraryWidget(DAVA::ContextAccessor* contextAccessor_, QWidget* parent)
     : QWidget(parent)
     , contextAccessor(contextAccessor_)
 {
@@ -96,8 +94,8 @@ LibraryWidget::LibraryWidget(DAVA::TArc::ContextAccessor* contextAccessor_, QWid
     QObject::connect(filesView, &QTreeView::customContextMenuRequested, this, &LibraryWidget::ShowContextMenu);
     QObject::connect(filesView, &QTreeView::doubleClicked, this, &LibraryWidget::fileDoubleClicked);
 
-    fieldBinder.reset(new DAVA::TArc::FieldBinder(contextAccessor));
-    DAVA::TArc::FieldDescriptor projectFieldDescriptor(DAVA::ReflectedTypeDB::Get<ProjectManagerData>(), DAVA::FastName(ProjectManagerData::ProjectPathProperty));
+    fieldBinder.reset(new DAVA::FieldBinder(contextAccessor));
+    DAVA::FieldDescriptor projectFieldDescriptor(DAVA::ReflectedTypeDB::Get<DAVA::ProjectManagerData>(), DAVA::FastName(DAVA::ProjectManagerData::ProjectPathProperty));
     fieldBinder->BindField(projectFieldDescriptor, DAVA::MakeFunction(this, &LibraryWidget::OnProjectChanged));
 }
 
@@ -308,11 +306,11 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
     DAVA::FilePath pathname = fileInfo.absoluteFilePath().toStdString();
     if (pathname.IsEqualToExtension(".sc2"))
     {
-        DAVA::TArc::QtAction* actionAdd = new DAVA::TArc::QtAction(contextAccessor, "Add Model", &contextMenu);
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-        actionAdd->SetStateUpdationFunction(DAVA::TArc::QtAction::Enabled, fieldDescr, [](const DAVA::Any& v) {
+        DAVA::QtAction* actionAdd = new DAVA::QtAction(contextAccessor, "Add Model", &contextMenu);
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::SceneData>();
+        fieldDescr.fieldName = DAVA::FastName(DAVA::SceneData::scenePropertyName);
+        actionAdd->SetStateUpdationFunction(DAVA::QtAction::Enabled, fieldDescr, [](const DAVA::Any& v) {
             return v.IsEmpty() == false;
         });
         QObject::connect(actionAdd, &QAction::triggered, this, &LibraryWidget::OnAddModel);
@@ -398,7 +396,7 @@ void LibraryWidget::OnRevealAtFolder()
 
 void LibraryWidget::OnProjectChanged(const DAVA::Any& projectFieldValue)
 {
-    ProjectManagerData* projectData = contextAccessor->GetGlobalContext()->GetData<ProjectManagerData>();
+    DAVA::ProjectManagerData* projectData = contextAccessor->GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
     if (projectData->GetProjectPath().IsEmpty())
     {
         setEnabled(false);

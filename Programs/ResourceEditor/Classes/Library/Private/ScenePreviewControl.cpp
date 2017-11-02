@@ -1,13 +1,16 @@
 #include "ScenePreviewControl.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Library/Private/ControlsFactory.h"
-#include "Deprecated/SceneValidator.h"
-#include "Scene3D/Components/CameraComponent.h"
 
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Systems/Controller/WASDControllerSystem.h"
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
+#include "Classes/Library/Private/ControlsFactory.h"
+
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/SceneValidator.h>
+
+#include <TArc/Core/Deprecated.h>
+
+#include <Scene3D/Components/CameraComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Systems/Controller/WASDControllerSystem.h>
+#include <Scene3D/Systems/Controller/RotationControllerSystem.h>
 #include <UI/Update/UIUpdateComponent.h>
 
 ScenePreviewControl::ScenePreviewControl(const DAVA::Rect& rect)
@@ -67,9 +70,9 @@ DAVA::int32 ScenePreviewControl::OpenScene(const DAVA::FilePath& pathToFile)
 
     CreateCamera();
 
-    SceneValidator::ExtractEmptyRenderObjects(editorScene);
-    SceneValidator validator;
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::SceneValidator::ExtractEmptyRenderObjects(editorScene);
+    DAVA::SceneValidator validator;
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     if (data)
     {
         validator.SetPathForChecking(data->GetProjectPath());

@@ -258,6 +258,7 @@ macro( setup_main_module )
     endif()
 
 ###
+
     if( PLATFORMS_IGNORE AND INIT )
         foreach( PLATFORM ${PLATFORMS_IGNORE} )
             if(${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURRENT} )

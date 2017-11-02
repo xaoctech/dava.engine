@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorPickerHSV::ColorPickerHSV(QWidget* parent)
     : AbstractColorPicker(parent)
 {
@@ -158,6 +156,5 @@ void ColorPickerHSV::UpdateColor()
     QColor c;
     c.setHsvF(h, s, v, a);
     color = c;
-}
 }
 }

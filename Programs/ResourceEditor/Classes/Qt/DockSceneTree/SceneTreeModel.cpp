@@ -1,30 +1,24 @@
-#include <QMimeData>
-#include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleLayer.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeModel.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Tools/MimeData/MimeDataHelper2.h"
 
-#include "DockSceneTree/SceneTreeModel.h"
-#include "Scene/SceneSignals.h"
+#include <REPlatform/Commands/ParticleEditorCommands.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Global/REMeta.h>
+#include <REPlatform/Scene/Systems/StructureSystem.h>
 
-#include "MaterialEditor/MaterialAssignSystem.h"
-
-#include "Classes/Application/REMeta.h"
-#include "Classes/Selection/Selection.h"
-
-// framework
-#include "Scene3D/Components/ComponentHelpers.h"
-
-// commands
-#include "Commands2/ParticleEditorCommands.h"
-
-//mime data
-#include "Tools/MimeData/MimeDataHelper2.h"
-
-#include <TArc/Utils/Utils.h>
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/Utils/Utils.h>
 
-#include <Scene3D/Entity.h>
-#include <Reflection/Reflection.h>
 #include <Base/Any.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Particles/ParticleEmitter.h>
+#include <Particles/ParticleLayer.h>
+#include <Reflection/Reflection.h>
+#include <Scene3D/Entity.h>
+
+#include <QMimeData>
 
 namespace SceneTreeModelDetail
 {
@@ -38,7 +32,7 @@ bool IsDragNDropAllow(DAVA::Entity* entity, bool isRoot = true)
     for (const DAVA::Reflection::Field& f : component)
     {
         DAVA::Any value = f.ref.GetValue();
-        if (DAVA::TArc::GetTypeMeta<REMeta::DisableEntityReparent>(value) != nullptr)
+        if (DAVA::GetTypeMeta<DAVA::M::DisableEntityReparent>(value) != nullptr)
         {
             return false;
         }
@@ -77,7 +71,7 @@ Qt::DropActions SceneTreeModel::supportedDragActions() const
     return Qt::MoveAction | Qt::LinkAction;
 }
 
-void SceneTreeModel::SetScene(SceneEditor2* scene)
+void SceneTreeModel::SetScene(DAVA::SceneEditor2* scene)
 {
     clear();
     setColumnCount(1);
@@ -99,7 +93,7 @@ void SceneTreeModel::SetScene(SceneEditor2* scene)
     SetFilter(filterText); // Apply filter to new model
 }
 
-SceneEditor2* SceneTreeModel::GetScene() const
+DAVA::SceneEditor2* SceneTreeModel::GetScene() const
 {
     return curScene;
 }
@@ -160,14 +154,14 @@ QVector<QIcon> SceneTreeModel::GetCustomIcons(const QModelIndex& index) const
     {
         if (entity->GetLocked())
         {
-            ret.push_back(DAVA::TArc::SharedIcon(":/QtIcons/locked.png"));
+            ret.push_back(DAVA::SharedIcon(":/QtIcons/locked.png"));
         }
 
         if (NULL != GetCamera(entity))
         {
             if (curScene->GetCurrentCamera() == GetCamera(entity))
             {
-                ret.push_back(DAVA::TArc::SharedIcon(":/QtIcons/eye.png"));
+                ret.push_back(DAVA::SharedIcon(":/QtIcons/eye.png"));
             }
         }
     }
@@ -342,13 +336,13 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
         QVector<DAVA::Entity*> entitiesV = MimeDataHelper2<DAVA::Entity>::DecodeMimeData(data);
         if (entitiesV.size() > 0)
         {
-            SelectableGroup objects;
+            DAVA::SelectableGroup objects;
             for (int i = 0; i < entitiesV.size(); ++i)
             {
                 objects.Add(entitiesV[i], DAVA::AABBox3());
             }
 
-            curScene->structureSystem->Move(objects, parentEntity, beforeEntity);
+            curScene->GetSystem<DAVA::StructureSystem>()->Move(objects, parentEntity, beforeEntity);
             ret = true;
         }
     }
@@ -372,7 +366,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
                 effectsGroup.push_back(oldEffect);
             }
 
-            curScene->structureSystem->MoveEmitter(emittersGroup, effectsGroup, effect, row);
+            curScene->GetSystem<DAVA::StructureSystem>()->MoveEmitter(emittersGroup, effectsGroup, effect, row);
             ret = true;
         }
     }
@@ -409,7 +403,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
                 emittersGroup.push_back(oldEmitter);
             }
 
-            curScene->structureSystem->MoveLayer(layersGroup, emittersGroup, emitter, beforeLayer);
+            curScene->GetSystem<DAVA::StructureSystem>()->MoveLayer(layersGroup, emittersGroup, emitter, beforeLayer);
             ret = true;
         }
     }
@@ -436,7 +430,7 @@ bool SceneTreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
                 layersGroup.push_back(oldLayer);
             }
 
-            curScene->structureSystem->MoveForce(forcesGroup, layersGroup, newLayer);
+            curScene->GetSystem<DAVA::StructureSystem>()->MoveForce(forcesGroup, layersGroup, newLayer);
             ret = true;
         }
     }
@@ -599,7 +593,7 @@ void SceneTreeModel::ItemChanged(QStandardItem* item)
             bool isLayerEnabled = (item->checkState() == Qt::Checked);
             SceneTreeItemParticleLayer* itemLayer = (SceneTreeItemParticleLayer*)treeItem;
 
-            curScene->Exec(std::unique_ptr<DAVA::Command>(new CommandUpdateParticleLayerEnabled(itemLayer->GetLayer(), isLayerEnabled)));
+            curScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandUpdateParticleLayerEnabled(itemLayer->GetLayer(), isLayerEnabled)));
             curScene->MarkAsChanged();
         }
     }
@@ -768,7 +762,8 @@ Qt::ItemFlags SceneTreeModel::flags(const QModelIndex& index) const
     DAVA::Entity* entity = SceneTreeItemEntity::GetEntity(GetItem(index));
     if (nullptr != entity)
     {
-        if (Selection::IsEntitySelectable(entity) == false)
+        DAVA::SelectionData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SelectionData>();
+        if (data->IsEntitySelectable(entity) == false)
         {
             return (f & ~Qt::ItemIsSelectable);
         }

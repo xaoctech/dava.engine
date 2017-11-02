@@ -1,43 +1,48 @@
 #include "Classes/PropertyPanel/FilePathExtensions.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
+
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
 
 #include <TArc/Core/FieldBinder.h>
+#include <TArc/Core/Deprecated.h>
+#include <TArc/Core/OperationInvoker.h>
 
+#include <Base/Any.h>
+#include <Base/FastName.h>
+#include <Base/StaticSingleton.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
-#include <Base/Any.h>
-#include <Base/FastName.h>
-#include <Base/StaticSingleton.h>
-#include <DAVAConfig.h>
+#include <Render/Highlevel/Heightmap.h>
+#include <Render/Image/ImageFormatInterface.h>
+#include <Render/Image/ImageSystem.h>
 
 namespace PathValidatorsDetail
 {
 class PathValidatorInfo : public DAVA::StaticSingleton<PathValidatorInfo>
 {
 public:
-    void EnsureInited(DAVA::TArc::ContextAccessor* accessor)
+    void EnsureInited(DAVA::ContextAccessor* accessor)
     {
         if (binder == nullptr)
         {
-            binder.reset(new DAVA::TArc::FieldBinder(accessor));
+            binder.reset(new DAVA::FieldBinder(accessor));
 
             {
-                DAVA::TArc::FieldDescriptor descr;
-                descr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
-                descr.type = DAVA::ReflectedTypeDB::Get<ProjectManagerData>();
+                DAVA::FieldDescriptor descr;
+                descr.fieldName = DAVA::FastName(DAVA::ProjectManagerData::ProjectPathProperty);
+                descr.type = DAVA::ReflectedTypeDB::Get<DAVA::ProjectManagerData>();
                 binder->BindField(descr, DAVA::MakeFunction(this, &PathValidatorInfo::OnProjectPathChanged));
             }
 
             {
-                DAVA::TArc::FieldDescriptor descr;
-                descr.fieldName = DAVA::FastName(SceneData::scenePathPropertyName);
-                descr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+                DAVA::FieldDescriptor descr;
+                descr.fieldName = DAVA::FastName(DAVA::SceneData::scenePathPropertyName);
+                descr.type = DAVA::ReflectedTypeDB::Get<DAVA::SceneData>();
                 binder->BindField(descr, DAVA::MakeFunction(this, &PathValidatorInfo::OnScenePathChanged));
             }
             InitImageFilesExtensions();
@@ -51,7 +56,7 @@ public:
 
     DAVA::FilePath GetDataSource3DPath() const
     {
-        return ProjectManagerData::GetDataSource3DPath(projectPath);
+        return DAVA::ProjectManagerData::GetDataSource3DPath(projectPath);
     }
 
     const DAVA::FilePath& GetScenePath() const
@@ -136,7 +141,7 @@ private:
     }
 
 private:
-    std::unique_ptr<DAVA::TArc::FieldBinder> binder;
+    std::unique_ptr<DAVA::FieldBinder> binder;
     DAVA::FilePath projectPath;
     DAVA::FilePath scenePath;
 
@@ -266,7 +271,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
                     DAVA::Vector<DAVA::Texture*> reloadTextures;
                     reloadTextures.push_back(found->second);
 
-                    REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+                    DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
                 }
 
                 result.fixedValue = FilePath(descriptorPath);
@@ -380,7 +385,7 @@ DAVA::M::ValidationResult ValidateExistsFileInProject(const DAVA::Any& value, co
 
 } // namespace PathValidatorsDetail
 
-void InitFilePathExtensions(DAVA::TArc::ContextAccessor* accessor)
+void InitFilePathExtensions(DAVA::ContextAccessor* accessor)
 {
     PathValidatorsDetail::PathValidatorInfo::Instance()->EnsureInited(accessor);
 }

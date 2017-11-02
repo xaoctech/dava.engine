@@ -1,19 +1,20 @@
-#include "CommandLine/DumpTool.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
+#include "Classes/CommandLine/DumpTool.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include "Base/ScopedPtr.h"
-#include "FileSystem/FileSystem.h"
+#include <REPlatform/Scene/Utils/SceneDumper.h>
 
-#include "Render/TextureDescriptor.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/ComponentHelpers.h"
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
 
-#include "TArc/Testing/TArcUnitTests.h"
+#include <Base/ScopedPtr.h>
+#include <FileSystem/FileSystem.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
+#include <Render/TextureDescriptor.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
 
 #include <memory>
 
@@ -47,7 +48,7 @@ DAVA::Set<DAVA::String> ReadLinks()
 
 DAVA_TARC_TESTCLASS(DumpToolTest)
 {
-    void TestLinks(SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
+    void TestLinks(DAVA::SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
     {
         using namespace DAVA;
 
@@ -163,7 +164,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         };
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         TestLinks(SceneDumper::eMode::EXTENDED, { GPU_POWERVR_IOS, GPU_POWERVR_ANDROID, GPU_TEGRA, GPU_MALI, GPU_ADRENO, GPU_DX11 });
 
@@ -196,7 +197,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         };
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         TestLinks(SceneDumper::eMode::REQUIRED, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_TEGRA });
 

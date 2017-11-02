@@ -1,10 +1,11 @@
-#include "CommandLine/SceneExporterTool.h"
-#include "CommandLine/Private/OptionName.h"
-#include "CommandLine/Private/SceneConsoleHelper.h"
-#include "Project/ProjectManagerData.h"
+#include "Classes/CommandLine/SceneExporterTool.h"
+#include "Classes/CommandLine/Private/OptionName.h"
+#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
-#include "Utils/SceneExporter/SceneExporter.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/Utils/SceneExporter.h>
+
+#include <TArc/Utils/ModuleCollection.h>
 
 #include <DavaTools/AssetCache/AssetCache.h>
 #include <DavaTools/TextureCompression/TextureConverter.h>
@@ -24,7 +25,9 @@
 
 namespace SceneExporterToolDetail
 {
-void CollectObjectsFromFolder(const DAVA::FilePath& folderPathname, const DAVA::FilePath& inFolder, const SceneExporter::eExportedObjectType objectType, SceneExporter::ExportedObjectCollection& exportedObjects)
+void CollectObjectsFromFolder(const DAVA::FilePath& folderPathname, const DAVA::FilePath& inFolder,
+                              const DAVA::SceneExporter::eExportedObjectType objectType,
+                              DAVA::SceneExporter::ExportedObjectCollection& exportedObjects)
 {
     using namespace DAVA;
 
@@ -59,11 +62,11 @@ void CollectObjectsFromFolder(const DAVA::FilePath& folderPathname, const DAVA::
     }
 }
 
-SceneExporter::eExportedObjectType GetObjectType(const DAVA::FilePath& pathname)
+DAVA::SceneExporter::eExportedObjectType GetObjectType(const DAVA::FilePath& pathname)
 {
-    const DAVA::Array<SceneExporter::ExportedObjectDesc, SceneExporter::OBJECT_COUNT>& desc = SceneExporter::GetExportedObjectsDescriptions();
+    const DAVA::Array<DAVA::SceneExporter::ExportedObjectDesc, DAVA::SceneExporter::OBJECT_COUNT>& desc = DAVA::SceneExporter::GetExportedObjectsDescriptions();
 
-    for (const SceneExporter::ExportedObjectDesc& def : desc)
+    for (const DAVA::SceneExporter::ExportedObjectDesc& def : desc)
     {
         for (const DAVA::String& ext : def.extensions)
         {
@@ -74,10 +77,10 @@ SceneExporter::eExportedObjectType GetObjectType(const DAVA::FilePath& pathname)
         }
     }
 
-    return SceneExporter::OBJECT_NONE;
+    return DAVA::SceneExporter::OBJECT_NONE;
 }
 
-bool CollectObjectFromFileList(const DAVA::FilePath& fileListPath, const DAVA::FilePath& inFolder, SceneExporter::ExportedObjectCollection& exportedObjects)
+bool CollectObjectFromFileList(const DAVA::FilePath& fileListPath, const DAVA::FilePath& inFolder, DAVA::SceneExporter::ExportedObjectCollection& exportedObjects)
 {
     using namespace DAVA;
 
@@ -116,7 +119,7 @@ bool CollectObjectFromFileList(const DAVA::FilePath& fileListPath, const DAVA::F
     return true;
 }
 
-bool ReadOutputsFromFile(const DAVA::FilePath& yamlConfig, DAVA::Vector<SceneExporter::Params::Output>& outputs)
+bool ReadOutputsFromFile(const DAVA::FilePath& yamlConfig, DAVA::Vector<DAVA::SceneExporter::Params::Output>& outputs)
 {
     using namespace DAVA;
 
@@ -246,7 +249,7 @@ bool SceneExporterTool::PostInitInternal()
     }
     exportingParams.dataSourceFolder.MakeDirectoryPathname();
 
-    dataSourceFolder = ProjectManagerData::GetDataSourcePath(exportingParams.dataSourceFolder);
+    dataSourceFolder = DAVA::ProjectManagerData::GetDataSourcePath(exportingParams.dataSourceFolder);
     if (dataSourceFolder.IsEmpty())
     {
         DAVA::Logger::Error("DataSource folder was not found");
@@ -350,12 +353,12 @@ bool SceneExporterTool::PostInitInternal()
     return true;
 }
 
-DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
+DAVA::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
 {
     DAVA::FilePath::AddResourcesFolder(dataSourceFolder);
     DAVA::AssetCacheClient cacheClient;
 
-    SceneExporter exporter;
+    DAVA::SceneExporter exporter;
     exporter.SetExportingParams(exportingParams);
 
     if (useAssetCache)
@@ -379,10 +382,10 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
     if (commandAction == ACTION_EXPORT_FILE)
     {
         commandObject = SceneExporterToolDetail::GetObjectType(exportingParams.dataSourceFolder + filename);
-        if (commandObject == SceneExporter::OBJECT_NONE)
+        if (commandObject == DAVA::SceneExporter::OBJECT_NONE)
         {
             DAVA::Logger::Error("[SceneExporterTool] found wrong filename %s", filename.c_str());
-            return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
+            return DAVA::ConsoleModule::eFrameResult::FINISHED;
         }
         exportedObjects.emplace_back(commandObject, std::move(filename));
     }
@@ -399,7 +402,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
         if (!collected)
         {
             DAVA::Logger::Error("[SceneExporterTool] Can't collect links from file %s", fileListPath.GetStringValue().c_str());
-            return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
+            return DAVA::ConsoleModule::eFrameResult::FINISHED;
         }
     }
 
@@ -415,7 +418,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
 
     DAVA::FilePath::RemoveResourcesFolder(dataSourceFolder);
 
-    return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
+    return DAVA::ConsoleModule::eFrameResult::FINISHED;
 }
 
 void SceneExporterTool::BeforeDestroyedInternal()

@@ -6,33 +6,37 @@
 
 #include <Base/BaseTypes.h>
 
+namespace DAVA
+{
 class SceneEditor2;
-class REModifyPropertyExtension : public DAVA::TArc::ModifyExtension
+} // namespace DAVA
+
+class REModifyPropertyExtension : public DAVA::ModifyExtension
 {
 public:
-    REModifyPropertyExtension(DAVA::TArc::ContextAccessor* accessor);
+    REModifyPropertyExtension(DAVA::ContextAccessor* accessor);
 
 protected:
     void BeginBatch(const DAVA::String& text, DAVA::uint32 commandCount) override;
-    void ProduceCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const DAVA::Any& newValue) override;
+    void ProduceCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const DAVA::Any& newValue) override;
     void ProduceCommand(const DAVA::Reflection::Field& object, const DAVA::Any& newValue) override;
     void Exec(std::unique_ptr<DAVA::Command>&& command) override;
     void EndBatch() override;
 
-    SceneEditor2* GetScene() const;
+    DAVA::SceneEditor2* GetScene() const;
 
 private:
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };
 
-class EntityChildCreator : public DAVA::TArc::ChildCreatorExtension
+class EntityChildCreator : public DAVA::ChildCreatorExtension
 {
 public:
-    void ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const override;
+    void ExposeChildren(const std::shared_ptr<DAVA::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::PropertyNode>>& children) const override;
 };
 
-class EntityEditorCreator : public DAVA::TArc::EditorComponentExtension
+class EntityEditorCreator : public DAVA::EditorComponentExtension
 {
 public:
-    std::unique_ptr<DAVA::TArc::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const override;
+    std::unique_ptr<DAVA::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::PropertyNode>& node) const override;
 };

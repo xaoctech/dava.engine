@@ -1,21 +1,20 @@
-#include "Base/BaseTypes.h"
-#include "TextureListDelegate.h"
-#include "TextureListModel.h"
-#include "TextureCache.h"
-#include "TextureConvertor.h"
-#include "TextureBrowser.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/TextureBrowser/TextureListDelegate.h"
+#include "Classes/Qt/TextureBrowser/TextureListModel.h"
+#include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+#include "Classes/Qt/TextureBrowser/TextureBrowser.h"
 
-#include "Main/QtUtils.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/Utils/Preset.h>
 
-#include "Preset.h"
-
-#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Core/Deprecated.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/Utils/Utils.h>
 
-#include "QtHelpers/HelperFunctions.h"
+#include <QtHelpers/HelperFunctions.h>
+
+#include <Base/BaseTypes.h>
 
 #include <QPainter>
 #include <QFileInfo>
@@ -24,6 +23,8 @@
 #include <QMenu>
 #include <QToolTip>
 #include <QAbstractItemView>
+#include <QDesktopServices>
+#include "REPlatform/Scene/Utils/Utils.h"
 
 #define TEXTURE_PREVIEW_SIZE 80
 #define TEXTURE_PREVIEW_SIZE_SMALL 24
@@ -34,7 +35,6 @@
 #define INFO_TEXT_COLOR QColor(0, 0, 0, 100)
 #define FORMAT_INFO_WIDTH 3
 #define FORMAT_INFO_SPACING 1
-#include <QDesktopServices>
 
 namespace ActionIcon
 {
@@ -159,7 +159,7 @@ void TextureListDelegate::drawPreviewBig(QPainter* painter, const QStyleOptionVi
         if (curModel->isHighlited(index) && !option.state.testFlag(QStyle::State_Selected))
         {
             // draw highlight
-            QColor color = REGlobal::GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetHighligtedItemTextColor();
+            QColor color = DAVA::Deprecated::GetDataNode<DAVA::ThemesSettings>()->GetHighligtedItemTextColor();
             painter->setPen(color);
         }
         else
@@ -246,9 +246,9 @@ QString TextureListDelegate::CreateInfoString(const QModelIndex& index) const
             sprintf(dimen, "Size: %dx%d", textureDimension.width(), textureDimension.height());
             infoText += dimen;
             infoText += "\nData size: ";
-            infoText += QString::fromStdString(SizeInBytesToString(TextureCache::Instance()->getThumbnailSize(curTextureDescriptor)));
+            infoText += QString::fromStdString(DAVA::SizeInBytesToString(TextureCache::Instance()->getThumbnailSize(curTextureDescriptor)));
 
-            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
             if (data)
             {
                 DAVA::FilePath dataSourcePath = data->GetDataSource3DPath();
@@ -306,7 +306,7 @@ void TextureListDelegate::drawPreviewSmall(QPainter* painter, const QStyleOption
         if (curModel->isHighlited(index) && !option.state.testFlag(QStyle::State_Selected))
         {
             // draw highlight
-            QColor color = REGlobal::GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetHighligtedItemTextColor();
+            QColor color = DAVA::Deprecated::GetDataNode<DAVA::ThemesSettings>()->GetHighligtedItemTextColor();
             painter->setPen(color);
         }
         else
@@ -360,7 +360,7 @@ int TextureListDelegate::drawFormatInfo(QPainter* painter, QRect rect, const DAV
         if (texture->width != texture->height)
         {
             r.moveLeft(r.x() - 16);
-            DAVA::TArc::SharedIcon(":/QtIcons/error.png").paint(painter, r.x(), r.y(), 16, 16);
+            DAVA::SharedIcon(":/QtIcons/error.png").paint(painter, r.x(), r.y(), 16, 16);
         }
 
         ret = rect.width() - (r.x() - rect.x());
@@ -449,7 +449,7 @@ void TextureListDelegate::onLoadPreset()
         return;
     }
 
-    bool loaded = Preset::DialogLoadPresetForTexture(lastSelectedTextureDescriptor);
+    bool loaded = DAVA::Preset::DialogLoadPresetForTexture(lastSelectedTextureDescriptor);
     if (loaded)
     {
         emit textureDescriptorChanged(lastSelectedTextureDescriptor);
@@ -465,7 +465,7 @@ void TextureListDelegate::onSavePreset()
         return;
     }
 
-    Preset::DialogSavePresetForTexture(lastSelectedTextureDescriptor);
+    DAVA::Preset::DialogSavePresetForTexture(lastSelectedTextureDescriptor);
 
     lastSelectedTextureDescriptor = nullptr;
 }

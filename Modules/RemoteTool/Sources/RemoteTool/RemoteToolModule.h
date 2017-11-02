@@ -9,10 +9,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
 }
 
 class DeviceListController;
@@ -33,21 +30,21 @@ class DeviceListWidget;
         find_package( RemoteTool REQUIRED )
     \endcode
 */
-class RemoteToolModule : public DAVA::TArc::ClientModule
+class RemoteToolModule : public DAVA::ClientModule
 {
 public:
     ~RemoteToolModule();
 
 private:
     void PostInit() override;
-    void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnWindowClosed(const DAVA::WindowKey& key) override;
 
     void Show();
 
 private:
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
     QPointer<DeviceListController> deviceListController;
     QPointer<DeviceListWidget> deviceListWidget;
 
-    DAVA_VIRTUAL_REFLECTION(RemoteToolModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(RemoteToolModule, DAVA::ClientModule);
 };

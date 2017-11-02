@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Tools/QtPosSaver/QtPosSaver.h"
-#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/PropertyEditorStateHelper.h"
+#include "Classes/Qt/Tools/QtPosSaver/QtPosSaver.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyEditor.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/PropertyEditorStateHelper.h"
 
 #include <QtTools/Updaters/LazyUpdater.h>
 
@@ -13,17 +13,12 @@
 namespace DAVA
 {
 class Sprite;
-
-namespace TArc
-{
 class FieldBinder;
-}
-}
-
 class RECommandNotificationObject;
 class SceneEditor2;
 class SelectableGroup;
 class EditorStatisticsSystem;
+}
 
 class SceneInfo : public QtPropertyEditor
 {
@@ -47,10 +42,10 @@ public slots:
     void OnQualityChanged();
 
 protected slots:
-    void SceneActivated(SceneEditor2* scene);
-    void SceneDeactivated(SceneEditor2* scene);
-    void SceneStructureChanged(SceneEditor2* scene, DAVA::Entity* parent);
-    void OnCommmandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
+    void SceneActivated(DAVA::SceneEditor2* scene);
+    void SceneDeactivated(DAVA::SceneEditor2* scene);
+    void SceneStructureChanged(DAVA::SceneEditor2* scene, DAVA::Entity* parent);
+    void OnCommmandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
     void OnThemeChanged();
 
 private:
@@ -58,7 +53,7 @@ private:
 
     void showEvent(QShowEvent* event) override;
 
-    EditorStatisticsSystem* GetCurrentEditorStatisticsSystem() const;
+    DAVA::EditorStatisticsSystem* GetCurrentEditorStatisticsSystem() const;
 
     void InitializeInfo();
     void InitializeGeneralSection();
@@ -101,8 +96,8 @@ private:
     void CollectSceneData();
     void CollectParticlesData();
     void ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Sprite*>& sprites);
-    void CollectSpeedInfo(const SelectableGroup* forGroup);
-    void CollectSelectedRenderObjects(const SelectableGroup* selected);
+    void CollectSpeedInfo(const DAVA::SelectableGroup* forGroup);
+    void CollectSelectedRenderObjects(const DAVA::SelectableGroup* selected);
     void CollectSelectedRenderObjectsRecursivly(DAVA::Entity* entity);
 
     void CollectTexture(DAVA::TexturesMap& textures, const DAVA::FilePath& pathname, DAVA::Texture* tex);
@@ -117,13 +112,13 @@ protected:
     QtPosSaver posSaver;
     PropertyEditorStateHelper treeStateHelper;
 
-    SceneEditor2* activeScene = nullptr;
+    DAVA::SceneEditor2* activeScene = nullptr;
     DAVA::Vector<DAVA::Entity*> nodesAtScene;
     DAVA::Landscape* landscape = nullptr;
 
     DAVA::TexturesMap particleTextures;
 
-    DAVA::Vector<DAVA::DataNode*> dataNodesAtScene;
+    DAVA::Vector<DAVA::TArcDataNode*> dataNodesAtScene;
 
     DAVA::Vector<SpeedTreeInfo> speedTreesInfo;
 
@@ -140,5 +135,5 @@ protected:
 
     bool isUpToDate = false;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 };

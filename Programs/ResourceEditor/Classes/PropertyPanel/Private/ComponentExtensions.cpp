@@ -1,22 +1,24 @@
 #include "Classes/PropertyPanel/ComponentExtensions.h"
-#include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/PropertyPanel/Private/ActionComponentEditor.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Qt/SoundComponentEditor/SoundComponentEditor.h"
 
+#include <REPlatform/Commands/RemoveComponentCommand.h>
+#include <REPlatform/DataNodes/SceneData.h>
+
+#include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/WindowSubSystem/UI.h>
 
 #include <Entity/Component.h>
 #include <Base/TemplateHelpers.h>
-#include "SoundComponentEditor/SoundComponentEditor.h"
 
 namespace ComponentExtensionsDetail
 {
 class RemoveComponentProducer : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
     {
         return true;
     }
@@ -24,25 +26,25 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/remove.png");
+        info.icon = DAVA::SharedIcon(":/QtIcons/remove.png");
         info.tooltip = "Remove Component";
         info.description = "Remove Component";
 
         return info;
     }
 
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
     {
         DAVA::Component* component = node->field.ref.GetValueObject().GetPtr<DAVA::Component>();
         DAVA::Entity* entity = component->GetEntity();
-        return std::unique_ptr<DAVA::Command>(new RemoveComponentCommand(entity, component));
+        return std::unique_ptr<DAVA::Command>(new DAVA::RemoveComponentCommand(entity, component));
     }
 };
 
 class ActionsEditProducer : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
     {
         return true;
     }
@@ -55,23 +57,22 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/settings.png");
+        info.icon = DAVA::SharedIcon(":/QtIcons/settings.png");
         info.tooltip = "Edit action component";
         info.description = "Edit action component";
 
         return info;
     }
 
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
     {
         using namespace DAVA;
-        using namespace TArc;
 
         Component* component = node->field.ref.GetValueObject().GetPtr<Component>();
         ActionComponent* actionComponent = DynamicTypeCheck<ActionComponent*>(component);
         Entity* entity = component->GetEntity();
 
-        ActionComponentEditor editor(params.ui->GetWindow(DAVA::TArc::mainWindowKey));
+        ActionComponentEditor editor(params.ui->GetWindow(DAVA::mainWindowKey));
         editor.SetComponent(actionComponent);
         editor.exec();
 
@@ -90,7 +91,7 @@ public:
 class SoundsEditProducer : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
     {
         return true;
     }
@@ -103,17 +104,16 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/settings.png");
+        info.icon = DAVA::SharedIcon(":/QtIcons/settings.png");
         info.tooltip = "Edit sound component";
         info.description = "Edit sound component";
 
         return info;
     }
 
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
     {
         using namespace DAVA;
-        using namespace TArc;
 
         Component* component = node->field.ref.GetValueObject().GetPtr<Component>();
         SoundComponent* soundComponent = DynamicTypeCheck<SoundComponent*>(component);
@@ -122,7 +122,7 @@ public:
         DataContext* ctx = params.accessor->GetActiveContext();
         DVASSERT(ctx != nullptr);
 
-        SoundComponentEditor editor(ctx->GetData<SceneData>()->GetScene().Get(), params.ui->GetWindow(DAVA::TArc::mainWindowKey));
+        SoundComponentEditor editor(ctx->GetData<SceneData>()->GetScene().Get(), params.ui->GetWindow(DAVA::mainWindowKey));
         editor.SetEditableEntity(entity);
         editor.exec();
 
@@ -133,7 +133,7 @@ public:
 class TriggerWaveProducer : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
     {
         return true;
     }
@@ -146,17 +146,16 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone.png");
+        info.icon = DAVA::SharedIcon(":/QtIcons/clone.png");
         info.tooltip = "Trigger Wave";
         info.description = "";
 
         return info;
     }
 
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
     {
         using namespace DAVA;
-        using namespace TArc;
 
         Component* component = node->field.ref.GetValueObject().GetPtr<Component>();
         WaveComponent* waveComponent = DynamicTypeCheck<WaveComponent*>(component);

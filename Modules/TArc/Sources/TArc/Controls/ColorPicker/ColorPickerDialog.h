@@ -16,13 +16,9 @@ class ColorPickerDialog;
 namespace DAVA
 {
 class Color;
-
-namespace TArc
-{
 class ContextAccessor;
 class EyeDropper;
 class ColorPickerRGBAM;
-
 class ColorPickerDialog : public AbstractColorPicker
 {
     Q_OBJECT
@@ -80,5 +76,4 @@ private:
 
     ContextAccessor* contextAccessor = nullptr;
 };
-}
 }

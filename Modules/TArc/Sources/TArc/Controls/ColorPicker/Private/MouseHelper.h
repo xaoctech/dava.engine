@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MouseHelper : public QObject
 {
     Q_OBJECT
@@ -45,5 +43,4 @@ private:
     int clickDist;
     int dblClickDist;
 };
-}
 }

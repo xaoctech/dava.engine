@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ReflectionPathTreeDetail
 {
 uint32 INITIAL_VERSION = 0;
@@ -199,6 +197,4 @@ void ReflectionPathTree::Save(PropertiesItem& settingsNode, std::shared_ptr<Refl
         Save(childSettingsNode, node->children[i]);
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

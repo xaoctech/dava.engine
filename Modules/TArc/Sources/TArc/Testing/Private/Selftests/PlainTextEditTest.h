@@ -20,7 +20,7 @@ namespace PlainTextEditTestDetails
 {
 using namespace DAVA;
 
-DAVA::TArc::WindowKey wndKey("PlainTextEditTestWnd");
+DAVA::WindowKey wndKey("PlainTextEditTestWnd");
 
 struct PlainTextEditDataSource
 {
@@ -49,7 +49,7 @@ struct PlainTextEditDataSource
     }
 };
 
-class PlainTextEditTestModule : public DAVA::TArc::ClientModule
+class PlainTextEditTestModule : public DAVA::ClientModule
 {
 public:
     PlainTextEditTestModule()
@@ -59,7 +59,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         model.emplace("text", DAVA::String("Plain text edit text"));
 
         QWidget* w = new QWidget();
@@ -118,7 +118,7 @@ public:
 
     static PlainTextEditTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(PlainTextEditTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(PlainTextEditTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<PlainTextEditTestModule>::Begin()
         .ConstructorByPointer()
@@ -262,5 +262,5 @@ DAVA_TARC_TESTCLASS(PlainTextEditTest)
     DECLARE_TESTED_MODULE(PlainTextEditTestDetails::PlainTextEditTestModule);
     END_TESTED_MODULES()
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 };

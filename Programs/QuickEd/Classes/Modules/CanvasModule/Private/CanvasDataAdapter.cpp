@@ -27,7 +27,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CanvasDataAdapter)
     .End();
 }
 
-CanvasDataAdapter::CanvasDataAdapter(DAVA::TArc::ContextAccessor* accessor_)
+CanvasDataAdapter::CanvasDataAdapter(DAVA::ContextAccessor* accessor_)
     : accessor(accessor_)
 {
     DVASSERT(accessor != nullptr);
@@ -177,7 +177,7 @@ DAVA::Vector2 CanvasDataAdapter::GetMovableControlPosition() const
 
 DAVA::Vector2 CanvasDataAdapter::GetViewSize() const
 {
-    DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    DAVA::DataContext* globalContext = accessor->GetGlobalContext();
     CentralWidgetData* centralWidgetData = globalContext->GetData<CentralWidgetData>();
     return centralWidgetData->GetViewSize();
 }
@@ -185,7 +185,6 @@ DAVA::Vector2 CanvasDataAdapter::GetViewSize() const
 const CanvasData* CanvasDataAdapter::GetCanvasData() const
 {
     using namespace DAVA;
-    using namespace TArc;
 
     DataContext* active = accessor->GetActiveContext();
     if (active == nullptr)

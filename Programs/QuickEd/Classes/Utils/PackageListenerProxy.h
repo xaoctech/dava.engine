@@ -10,21 +10,18 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder;
-}
 }
 
 class PackageListenerProxy : public PackageListener
 {
 public:
     PackageListenerProxy();
-    PackageListenerProxy(PackageListener* listener, DAVA::TArc::ContextAccessor* accessor);
+    PackageListenerProxy(PackageListener* listener, DAVA::ContextAccessor* accessor);
     ~PackageListenerProxy();
 
-    void Init(PackageListener* listener, DAVA::TArc::ContextAccessor* accessor);
+    void Init(PackageListener* listener, DAVA::ContextAccessor* accessor);
 
 private:
     void OnPackageChanged(const DAVA::Any& package);
@@ -56,5 +53,5 @@ private:
 
     DAVA::RefPtr<PackageNode> package;
     PackageListener* listener;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 };

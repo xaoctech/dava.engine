@@ -59,7 +59,6 @@ GroupingControlsModule::GroupingControlsModule()
 void GroupingControlsModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     documentDataWrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<DocumentData>());
 
@@ -82,7 +81,7 @@ void GroupingControlsModule::PostInit()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem }));
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // Ungroup
@@ -100,7 +99,7 @@ void GroupingControlsModule::PostInit()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, groupActionName }));
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // Separator
@@ -110,7 +109,7 @@ void GroupingControlsModule::PostInit()
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, ungroupActionName }));
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+        GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, separator);
     }
 }
 
@@ -147,10 +146,10 @@ void GroupingControlsModule::DoGroup()
 
     if (result.type == Result::RESULT_ERROR)
     {
-        DAVA::TArc::NotificationParams params;
+        DAVA::NotificationParams params;
         params.title = "Can't group selected nodes";
         params.message = result;
-        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, params);
+        GetUI()->ShowNotification(DAVA::mainWindowKey, params);
         return;
     }
 
@@ -195,10 +194,10 @@ void GroupingControlsModule::DoUngroup()
 
     if (result.type == Result::RESULT_ERROR)
     {
-        DAVA::TArc::NotificationParams params;
+        DAVA::NotificationParams params;
         params.title = "Can't ungroup selected node";
         params.message = result;
-        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, params);
+        GetUI()->ShowNotification(DAVA::mainWindowKey, params);
         return;
     }
 

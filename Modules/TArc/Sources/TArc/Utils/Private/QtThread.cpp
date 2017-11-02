@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 QtThread::QtThread(QObject* parent /*= nullptr*/)
     : QThread(parent)
 {
@@ -15,5 +13,4 @@ void QtThread::run()
     QThread::exec();
 }
 #endif
-} // namespace TArc
 } // namespace DAVA

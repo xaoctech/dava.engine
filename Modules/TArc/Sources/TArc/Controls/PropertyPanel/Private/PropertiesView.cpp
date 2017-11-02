@@ -24,8 +24,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace PropertiesViewDetail
 {
 const char* SeparatorPositionKey = "SeparatorPosition";
@@ -398,10 +396,10 @@ void PropertiesView::Update(UpdatePolicy policy)
 
     switch (policy)
     {
-    case DAVA::TArc::PropertiesView::FullUpdate:
+    case PropertiesView::FullUpdate:
         model->Update();
         break;
-    case DAVA::TArc::PropertiesView::FastUpdate:
+    case PropertiesView::FastUpdate:
         model->UpdateFast();
         break;
     default:
@@ -506,7 +504,7 @@ void PropertiesView::SetDeveloperMode(bool isDevMode)
         p.icon = ModalMessageParams::Warning;
         p.title = "Switch to developer mode";
         p.message = "You are trying to switch into developer mode. It can be unsafe.\nAre you sure?";
-        if (params.ui->ShowModalMessage(DAVA::TArc::mainWindowKey, p) == ModalMessageParams::Cancel)
+        if (params.ui->ShowModalMessage(DAVA::mainWindowKey, p) == ModalMessageParams::Cancel)
         {
             return;
         }
@@ -543,6 +541,4 @@ void PropertiesView::OnCurrentChanged(const QModelIndex& index, const QModelInde
         currentIndexPath = model->GetIndexPath(index);
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

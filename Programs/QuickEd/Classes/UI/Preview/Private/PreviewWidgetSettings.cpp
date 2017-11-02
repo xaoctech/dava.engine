@@ -15,7 +15,6 @@ const DAVA::Color PreviewWidgetSettings::defaultBackgroundColor2 = DAVA::Color(0
 namespace PreviewWidgetSettingsDetail
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
 void LoadIntoReflection(Reflection::Field& field, const PropertiesItem& node)
 {
@@ -61,7 +60,7 @@ struct PreviewWidgetSettingsV0
 class AddBgrColorCommand : public DAVA::Command
 {
 public:
-    AddBgrColorCommand(DAVA::TArc::ContextAccessor* accessor)
+    AddBgrColorCommand(DAVA::ContextAccessor* accessor)
         : accessor(accessor)
     {
     }
@@ -79,14 +78,14 @@ private:
     }
 
 private:
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };
 
 class AddBgrColorProducer : public DAVA::M::CommandProducer
 {
 public:
     AddBgrColorProducer() = default;
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
     {
         return true;
     }
@@ -94,13 +93,13 @@ public:
     Info GetInfo() const override
     {
         Info info;
-        info.icon = DAVA::TArc::SharedIcon(":/Icons/add.png");
+        info.icon = DAVA::SharedIcon(":/Icons/add.png");
         info.tooltip = "add background color";
         info.description = "add background color";
         return info;
     }
 
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
     {
         return std::make_unique<AddBgrColorCommand>(params.accessor);
     }
@@ -125,10 +124,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PreviewWidgetSettings)
     .End();
 }
 
-void PreviewWidgetSettings::Load(const DAVA::TArc::PropertiesItem& settingsItem)
+void PreviewWidgetSettings::Load(const DAVA::PropertiesItem& settingsItem)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace PreviewWidgetSettingsDetail;
 
     Reflection settingsReflection = Reflection::Create(ReflectedObject(this));
@@ -162,10 +161,9 @@ void PreviewWidgetSettings::Load(const DAVA::TArc::PropertiesItem& settingsItem)
     version = 1;
 }
 
-void PreviewWidgetSettings::Save(DAVA::TArc::PropertiesItem& settingsItem) const
+void PreviewWidgetSettings::Save(DAVA::PropertiesItem& settingsItem) const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Reflection::Field rootField;
     rootField.ref = Reflection::Create(ReflectedObject(this));
@@ -186,7 +184,7 @@ void PreviewWidgetSettings::Save(DAVA::TArc::PropertiesItem& settingsItem) const
     SaveField("version");
 }
 
-void PreviewWidgetSettings::LoadVersion0(const DAVA::TArc::PropertiesItem& settingsNode)
+void PreviewWidgetSettings::LoadVersion0(const DAVA::PropertiesItem& settingsNode)
 {
     using namespace DAVA;
 
@@ -204,10 +202,9 @@ void PreviewWidgetSettings::LoadVersion0(const DAVA::TArc::PropertiesItem& setti
     backgroundColorIndex = settingsV0.backgroundColorIndex;
 }
 
-void PreviewWidgetSettings::LoadVersion1(const DAVA::TArc::PropertiesItem& settingsItem, DAVA::Reflection& settingsReflection)
+void PreviewWidgetSettings::LoadVersion1(const DAVA::PropertiesItem& settingsItem, DAVA::Reflection& settingsReflection)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     {
         String colorsFieldName = "backgroundColors";

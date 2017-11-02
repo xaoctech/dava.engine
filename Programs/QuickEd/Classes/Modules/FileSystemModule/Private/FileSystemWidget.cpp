@@ -27,7 +27,7 @@
 #include <QDirIterator>
 #include <QApplication>
 
-FileSystemWidget::FileSystemWidget(DAVA::TArc::ContextAccessor* accessor_, QWidget* parent)
+FileSystemWidget::FileSystemWidget(DAVA::ContextAccessor* accessor_, QWidget* parent)
     : QWidget(parent)
     , accessor(accessor_)
 {
@@ -107,7 +107,6 @@ void FileSystemWidget::InitUI()
 void FileSystemWidget::BindFields()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     fieldBinder.reset(new FieldBinder(accessor));
 
@@ -414,7 +413,6 @@ void FileSystemWidget::UpdateActionsWithShortcutsState(const QModelIndexList& in
 void FileSystemWidget::OnProjectPathChanged(const DAVA::Any& projectPath)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* globalContext = accessor->GetGlobalContext();
     ProjectData* projectData = globalContext->GetData<ProjectData>();

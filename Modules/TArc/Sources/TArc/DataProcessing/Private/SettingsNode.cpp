@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace SettingsNodeDetail
 {
 void ReflectedLoadImpl(Reflection::Field& field, const PropertiesItem& node)
@@ -79,8 +77,7 @@ void SettingsNode::ReflectedSave(PropertiesItem& settingsNode) const
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SettingsNode)
 {
-    DAVA::ReflectionRegistrator<SettingsNode>::Begin()
+    ReflectionRegistrator<SettingsNode>::Begin()
     .End();
 }
-} // namespace TArc
 } // namespace DAVA

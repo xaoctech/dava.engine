@@ -55,7 +55,7 @@ void HUDModule::OnHighlightChanged(ControlNode* node)
 
 void HUDModule::OnSelectionByRectStarted()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     selectionByRectCache.clear();
     if (IsKeyPressed(DAVA::eModifierKeys::SHIFT))
@@ -76,7 +76,6 @@ void HUDModule::OnSelectionByRectFinished()
 void HUDModule::OnSelectedRectChanged(const DAVA::Rect& rect)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Set<PackageBaseNode*> newSelection = selectionByRectCache;
 

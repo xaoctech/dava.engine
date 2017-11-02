@@ -1,49 +1,44 @@
 #include "TArc/Core/Core.h"
-#include "TArc/Core/ControllerModule.h"
 #include "TArc/Core/ClientModule.h"
 #include "TArc/Core/ConsoleModule.h"
+#include "TArc/Core/ControllerModule.h"
+#include "TArc/Core/Deprecated.h"
 #include "TArc/Core/Private/MacOSUtils.h"
 
+#include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
+#include "TArc/PluginsManager/TArcPlugin.h"
+#include "TArc/PluginsManager/TArcPluginsManager.h"
+#include "TArc/Qt/QtIcon.h"
+#include "TArc/Utils/AssertGuard.h"
+#include "TArc/Utils/QtDelayedExecutor.h"
+#include "TArc/Utils/QtMessageHandler.h"
+#include "TArc/Utils/RhiEmptyFrame.h"
 #include "TArc/WindowSubSystem/Private/UIManager.h"
 #include "TArc/WindowSubSystem/Private/UIProxy.h"
-#include "TArc/Utils/AssertGuard.h"
-#include "TArc/Utils/RhiEmptyFrame.h"
-#include "TArc/Utils/QtMessageHandler.h"
-#include "TArc/DataProcessing/DataWrappersProcessor.h"
-#include "TArc/PluginsManager/TArcPluginsManager.h"
-#include "TArc/PluginsManager/TArcPlugin.h"
-#include "TArc/Utils/QtDelayedExecutor.h"
-#include "TArc/Qt/QtIcon.h"
-
 
 #include <QtHelpers/CrashDumpHandler.h>
 
-#include "Engine/Engine.h"
-#include "Engine/PlatformApiQt.h"
-#include "Engine/Window.h"
-#include "Engine/EngineContext.h"
-
-#include "Functional/Function.h"
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/KeyedArchive.h"
-
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
-#include "Render/RenderHelper.h"
-#include "UI/UIControlSystem.h"
-
-#include "Render/Renderer.h"
-#include "Debug/DVAssert.h"
-#include "Utils/Utils.h"
+#include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Window.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Functional/Function.h>
+#include <Render/2D/Systems/VirtualCoordinatesSystem.h>
+#include <Render/Renderer.h>
+#include <Render/RenderHelper.h>
+#include <UI/UIControlSystem.h>
+#include <Utils/Utils.h>
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
-#include <QCloseEvent>
 
 namespace DAVA
-{
-namespace TArc
 {
 class Core::Impl : public CoreInterface
 {
@@ -106,7 +101,7 @@ public:
         SafeDelete(globalContext);
     }
 
-    virtual void OnFrame(DAVA::float32 delta)
+    virtual void OnFrame(float32 delta)
     {
         if (isInFrame)
         {
@@ -129,7 +124,7 @@ public:
         }
     }
 
-    virtual void OnWindowCreated(DAVA::Window* w)
+    virtual void OnWindowCreated(Window* w)
     {
     }
 
@@ -333,7 +328,7 @@ public:
         rendererParams.acquireContextFunc = []() {};
         rendererParams.releaseContextFunc = []() {};
 
-        const DAVA::KeyedArchive* options = engine.GetOptions();
+        const KeyedArchive* options = engine.GetOptions();
 
         rendererParams.maxIndexBufferCount = options->GetInt32("max_index_buffer_count");
         rendererParams.maxVertexBufferCount = options->GetInt32("max_vertex_buffer_count");
@@ -382,7 +377,7 @@ public:
         }
     }
 
-    void OnFrame(DAVA::float32 delta) override
+    void OnFrame(float32 delta) override
     {
         context->makeCurrent(surface);
         Impl::OnFrame(delta);
@@ -435,7 +430,7 @@ private:
     void RegisterOperation(int operationID, AnyFn&& fn) override
     {
     }
-    DataContext::ContextID CreateContext(Vector<std::unique_ptr<DataNode>>&& initialData) override
+    DataContext::ContextID CreateContext(Vector<std::unique_ptr<TArcDataNode>>&& initialData) override
     {
         DVASSERT(false);
         return DataContext::ContextID();
@@ -483,7 +478,7 @@ private:
     }
 
 private:
-    DAVA::Deque<std::unique_ptr<ConsoleModule>> modules;
+    Deque<std::unique_ptr<ConsoleModule>> modules;
     QGuiApplication* application = nullptr;
     QOffscreenSurface* surface = nullptr;
     QOpenGLContext* context = nullptr;
@@ -556,7 +551,7 @@ public:
 #endif
     }
 
-    void OnFrame(DAVA::float32 delta) override
+    void OnFrame(float32 delta) override
     {
         Impl::OnFrame(delta);
     }
@@ -609,12 +604,12 @@ public:
         globalOperations.emplace(operationID, fn);
     }
 
-    DataContext::ContextID CreateContext(Vector<std::unique_ptr<DataNode>>&& initialData) override
+    DataContext::ContextID CreateContext(Vector<std::unique_ptr<TArcDataNode>>&& initialData) override
     {
         contexts.push_back(new DataContext(globalContext));
         DataContext* context = contexts.back();
 
-        for (std::unique_ptr<DataNode>& data : initialData)
+        for (std::unique_ptr<TArcDataNode>& data : initialData)
         {
             context->CreateData(std::move(data));
         }
@@ -742,7 +737,7 @@ public:
         {
             fn.Invoke(args...);
         }
-        catch (const DAVA::Exception& e)
+        catch (const Exception& e)
         {
             Logger::Error("Operation (%d) call failed: %s", operationId, e.what());
         }
@@ -874,10 +869,12 @@ private:
 Core::Core(Engine& engine)
     : Core(engine, true)
 {
+    Deprecated::InitTArcCore(this);
 }
 
 Core::Core(Engine& engine, bool connectSignals)
 {
+    Deprecated::InitTArcCore(this);
     if (engine.IsConsoleMode())
     {
         impl.reset(new ConsoleImpl(engine, this));
@@ -896,7 +893,10 @@ Core::Core(Engine& engine, bool connectSignals)
     }
 }
 
-Core::~Core() = default;
+Core::~Core()
+{
+    Deprecated::InitTArcCore(nullptr);
+}
 
 const EngineContext* Core::GetEngineContext()
 {
@@ -956,7 +956,7 @@ void Core::OnFrame(float32 delta)
     impl->OnFrame(delta);
 }
 
-void Core::OnWindowCreated(DAVA::Window* w)
+void Core::OnWindowCreated(Window* w)
 {
     DVASSERT(impl);
     impl->OnWindowCreated(w);
@@ -984,6 +984,4 @@ void Core::InitPluginsManager(const String& applicationName, const String& plugi
 {
     impl->InitPluginsManager(applicationName, pluginsFolder);
 }
-
-} // namespace TArc
 } // namespace DAVA

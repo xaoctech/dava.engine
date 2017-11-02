@@ -7,12 +7,10 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ModuleCollection : public StaticSingleton<ModuleCollection>
 {
 public:
-    using TypeCreateFn = DAVA::Function<const ReflectedType*()>;
+    using TypeCreateFn = Function<const ReflectedType*()>;
     void AddGuiModule(const TypeCreateFn& type);
     void AddConsoleModule(const TypeCreateFn& type, const String& command);
 
@@ -42,8 +40,7 @@ struct ModuleInitializer
         return ReflectedTypeDB::Get<T>();
     }
 };
-} // namespace TArc
 } // namespace DAVA
 
-#define DECL_GUI_MODULE(className) ::DAVA::TArc::ModuleInitializer<className> initializer_##className
-#define DECL_CONSOLE_MODULE(className, command) ::DAVA::TArc::ModuleInitializer<className> initializer_##className(command)
+#define DECL_GUI_MODULE(className) ::DAVA::ModuleInitializer<className> initializer_##className
+#define DECL_CONSOLE_MODULE(className, command) ::DAVA::ModuleInitializer<className> initializer_##className(command)

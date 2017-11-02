@@ -4,13 +4,15 @@
 #include <QEvent>
 #include <QApplication>
 
+namespace DAVA
+{
 namespace QtDelayedExecutorDetail
 {
 class QtDelayedExecuteEvent : public QEvent
 {
 public:
-    QtDelayedExecuteEvent(const DAVA::Function<void()>& functor_)
-        : QEvent(QT_EVENT_TYPE(DAVA::TArc::EventsTable::DelayedExecute))
+    QtDelayedExecuteEvent(const Function<void()>& functor_)
+        : QEvent(QT_EVENT_TYPE(EventsTable::DelayedExecute))
         , functor(functor_)
     {
     }
@@ -21,20 +23,16 @@ public:
     }
 
 private:
-    DAVA::Function<void()> functor;
+    Function<void()> functor;
 };
 }
 
-namespace DAVA
-{
-namespace TArc
-{
 QtDelayedExecutor::QtDelayedExecutor(QObject* parent /*= nullptr*/)
     : QObject(parent)
 {
 }
 
-void QtDelayedExecutor::DelayedExecute(const DAVA::Function<void()>& functor)
+void QtDelayedExecutor::DelayedExecute(const Function<void()>& functor)
 {
     qApp->postEvent(this, new QtDelayedExecutorDetail::QtDelayedExecuteEvent(functor));
 }
@@ -50,5 +48,4 @@ bool QtDelayedExecutor::event(QEvent* e)
 
     return QObject::event(e);
 }
-} // namespace TArc
 } // namespace DAVA

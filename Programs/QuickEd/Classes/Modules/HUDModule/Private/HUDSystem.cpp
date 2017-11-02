@@ -29,7 +29,7 @@ namespace
 const Array<HUDAreaInfo::eArea, 2> AreasToHide = { { HUDAreaInfo::PIVOT_POINT_AREA, HUDAreaInfo::ROTATE_AREA } };
 }
 
-std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area, DAVA::TArc::ContextAccessor* accessor)
+std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area, DAVA::ContextAccessor* accessor)
 {
     switch (area)
     {
@@ -125,7 +125,7 @@ class HUDControl : public UIControl
     }
 };
 
-HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
+HUDSystem::HUDSystem(DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
 {
     systemsDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorSystemsData>());
@@ -142,7 +142,6 @@ BaseEditorSystem::eSystems HUDSystem::GetOrder() const
 void HUDSystem::OnUpdate()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext == nullptr)
@@ -266,8 +265,6 @@ void HUDSystem::SetHighlight(ControlNode* node)
 
 void HUDSystem::HighlightNode(ControlNode* node)
 {
-    using namespace DAVA::TArc;
-
     if (hoveredNodeControl != nullptr && node != nullptr && hoveredNodeControl->IsDrawableControl(node->GetControl()))
     {
         return;
@@ -492,8 +489,6 @@ void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 
 bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
 {
-    using namespace DAVA::TArc;
-
     DataContext* activeContext = accessor->GetActiveContext();
     if (hudControl->IsVisible() == false || activeContext == nullptr)
     {
@@ -574,7 +569,7 @@ ControlTransformationSettings* HUDSystem::GetSettings()
     return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>();
 }
 
-DAVA::TArc::ContextAccessor* HUDSystem::GetAccessor()
+DAVA::ContextAccessor* HUDSystem::GetAccessor()
 {
     return accessor;
 }
@@ -582,7 +577,6 @@ DAVA::TArc::ContextAccessor* HUDSystem::GetAccessor()
 SortedControlNodeSet HUDSystem::GetSortedControlList() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     SortedControlNodeSet sortedControls(CompareByLCA);
 

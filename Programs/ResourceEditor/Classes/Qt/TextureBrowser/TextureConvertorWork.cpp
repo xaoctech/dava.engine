@@ -1,6 +1,6 @@
-#include "TextureBrowser/TextureConvertorWork.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertorWork.h"
 
-#include "Concurrency/LockGuard.h"
+#include <Concurrency/LockGuard.h>
 
 JobStack::JobStack()
     : head(NULL)

@@ -11,12 +11,12 @@ using namespace ::testing;
 
 namespace FieldBinderTestDetail
 {
-class DataNode1 : public DAVA::TArc::DataNode
+class DataNode1 : public DAVA::TArcDataNode
 {
 public:
     int v1 = 1;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DataNode1, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DataNode1, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<DataNode1>::Begin()
         .Field("v1", &DataNode1::v1)
@@ -24,12 +24,12 @@ public:
     }
 };
 
-class DataNode2 : public DAVA::TArc::DataNode
+class DataNode2 : public DAVA::TArcDataNode
 {
 public:
     DAVA::String fv1 = "string";
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DataNode2, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DataNode2, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<DataNode2>::Begin()
         .Field("fv1", &DataNode2::fv1)
@@ -40,7 +40,7 @@ public:
 class MockObject
 {
 public:
-    MockObject(DAVA::TArc::TestClass* tstClass)
+    MockObject(DAVA::TArcTestClass* tstClass)
         : testClass(tstClass)
     {
         ON_CALL(*this, ValueChanged(_))
@@ -62,13 +62,13 @@ public:
     }
     virtual void Update() = 0;
 
-    DAVA::TArc::TestClass* testClass;
+    DAVA::TArcTestClass* testClass;
 };
 
 class SingleBindMockObject : public MockObject
 {
 public:
-    SingleBindMockObject(DAVA::TArc::TestClass* testClass)
+    SingleBindMockObject(DAVA::TArcTestClass* testClass)
         : MockObject(testClass)
     {
     }
@@ -140,7 +140,7 @@ private:
 class DualBindMockObject : public MockObject
 {
 public:
-    DualBindMockObject(DAVA::TArc::TestClass* testClass)
+    DualBindMockObject(DAVA::TArcTestClass* testClass)
         : MockObject(testClass)
     {
     }
@@ -280,7 +280,7 @@ DAVA_TARC_TESTCLASS(FieldBinderTest)
     DAVA_TEST (SingleBindTest)
     {
         mockObject = new FieldBinderTestDetail::SingleBindMockObject(this);
-        DAVA::TArc::FieldDescriptor descr;
+        DAVA::FieldDescriptor descr;
         descr.fieldName = DAVA::FastName("v1");
         descr.type = DAVA::ReflectedTypeDB::Get<FieldBinderTestDetail::DataNode1>();
         fieldBinder->BindField(descr, DAVA::MakeFunction(mockObject, &FieldBinderTestDetail::MockObject::ValueChanged));
@@ -291,14 +291,14 @@ DAVA_TARC_TESTCLASS(FieldBinderTest)
     DAVA_TEST (DualBindTest)
     {
         mockObject = new FieldBinderTestDetail::DualBindMockObject(this);
-        DAVA::TArc::FieldDescriptor fieldDescr1;
+        DAVA::FieldDescriptor fieldDescr1;
         fieldDescr1.fieldName = DAVA::FastName("v1");
         fieldDescr1.type = DAVA::ReflectedTypeDB::Get<FieldBinderTestDetail::DataNode1>();
         fieldBinder->BindField(fieldDescr1, DAVA::MakeFunction(mockObject, &FieldBinderTestDetail::MockObject::ValueChanged));
         EXPECT_CALL(*mockObject, ValueChanged(_))
         .Times(5);
 
-        DAVA::TArc::FieldDescriptor fieldDescr2;
+        DAVA::FieldDescriptor fieldDescr2;
         fieldDescr2.fieldName = DAVA::FastName("fv1");
         fieldDescr2.type = DAVA::ReflectedTypeDB::Get<FieldBinderTestDetail::DataNode2>();
         fieldBinder->BindField(fieldDescr2, DAVA::MakeFunction(mockObject, &FieldBinderTestDetail::MockObject::ValueChanged2));
@@ -308,7 +308,6 @@ DAVA_TARC_TESTCLASS(FieldBinderTest)
 
     void SetUp(const DAVA::String& testName) override
     {
-        DAVA::TArc::TestClass::SetUp(testName);
         if (fieldBinder != nullptr)
         {
             delete fieldBinder;
@@ -321,19 +320,18 @@ DAVA_TARC_TESTCLASS(FieldBinderTest)
             mockObject = nullptr;
         }
 
-        fieldBinder = new DAVA::TArc::FieldBinder(GetAccessor());
+        fieldBinder = new DAVA::FieldBinder(GetAccessor());
     }
 
     void Update(DAVA::float32 timeElapsed, const DAVA::String& testName) override
     {
-        DAVA::TArc::TestClass::Update(timeElapsed, testName);
         if (mockObject != nullptr)
         {
             mockObject->Update();
         }
     }
 
-    DAVA::TArc::FieldBinder* fieldBinder = nullptr;
+    DAVA::FieldBinder* fieldBinder = nullptr;
     FieldBinderTestDetail::MockObject* mockObject = nullptr;
 
     BEGIN_FILES_COVERED_BY_TESTS()

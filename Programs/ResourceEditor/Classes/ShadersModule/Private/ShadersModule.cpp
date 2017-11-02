@@ -1,27 +1,27 @@
 #include "Classes/ShadersModule/ShadersModule.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/SceneManager/SceneData.h"
 #include "Classes/Qt/MaterialEditor/MaterialEditor.h"
-#include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
-#include "Classes/Qt/Scene/System/EditorMaterialSystem.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Application/REGlobal.h"
 
-#include "TArc/WindowSubSystem/ActionUtils.h"
-#include "TArc/WindowSubSystem/UI.h"
-#include "TArc/WindowSubSystem/QtAction.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
+#include <REPlatform/Scene/Systems/VisibilityCheckSystem.h>
 
-#include "Functional/Function.h"
-#include "FileSystem/FilePath.h"
-#include "Logger/Logger.h"
-#include "Reflection/ReflectionRegistrator.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Material/NMaterial.h"
-#include "Render/ShaderCache.h"
-#include "Scene3D/Systems/FoliageSystem.h"
-#include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/Utils/ModuleCollection.h>
+
+#include <FileSystem/FilePath.h>
+#include <Functional/Function.h>
+#include <Logger/Logger.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Render/2D/Systems/RenderSystem2D.h>
+#include <Render/Highlevel/RenderSystem.h>
+#include <Render/Material/NMaterial.h>
+#include <Render/ShaderCache.h>
+#include <Scene3D/Systems/FoliageSystem.h>
+#include <Scene3D/Systems/ParticleEffectDebugDrawSystem.h>
 
 namespace ShadersModuleDetail
 {
@@ -37,7 +37,7 @@ DAVA::FilePath GetDevMaterialsPath()
 
 void ShadersModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QtAction* reloadShadersAction = new QtAction(GetAccessor(), QIcon(":/QtIcons/reload_shaders.png"), QString("Reload Shaders"));
 
@@ -48,27 +48,28 @@ void ShadersModule::PostInit()
                                                   });
 
     ActionPlacementInfo menuPlacement(CreateMenuPoint("Scene", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "actionEnableCameraLight")));
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, menuPlacement, reloadShadersAction);
+    GetUI()->AddAction(DAVA::mainWindowKey, menuPlacement, reloadShadersAction);
 
     ActionPlacementInfo toolbarPlacement(CreateToolbarPoint("sceneToolBar", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "Reload Sprites")));
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, toolbarPlacement, reloadShadersAction);
+    GetUI()->AddAction(DAVA::mainWindowKey, toolbarPlacement, reloadShadersAction);
 
     connections.AddConnection(reloadShadersAction, &QAction::triggered, DAVA::MakeFunction(this, &ShadersModule::ReloadShaders));
 
-    fieldBinder.reset(new DAVA::TArc::FieldBinder(GetAccessor()));
+    fieldBinder.reset(new DAVA::FieldBinder(GetAccessor()));
     fieldBinder->BindField(fieldDescriptor, DAVA::MakeFunction(this, &ShadersModule::OnProjectChanged));
 }
 
 void ShadersModule::ReloadShaders()
 {
-    DAVA::ShaderDescriptorCache::ReloadShaders();
+    using namespace DAVA;
+    ShaderDescriptorCache::ReloadShaders();
 
-    GetAccessor()->ForEachContext([](DAVA::TArc::DataContext& ctx)
+    GetAccessor()->ForEachContext([](DAVA::DataContext& ctx)
                                   {
                                       SceneData* sceneData = ctx.GetData<SceneData>();
                                       DAVA::RefPtr<SceneEditor2> sceneEditor = sceneData->GetScene();
 
-                                      const DAVA::Set<DAVA::NMaterial*>& topParents = sceneEditor->materialSystem->GetTopParents();
+                                      const DAVA::Set<DAVA::NMaterial*>& topParents = sceneEditor->GetSystem<EditorMaterialSystem>()->GetTopParents();
 
                                       for (auto material : topParents)
                                       {
@@ -101,7 +102,7 @@ void ShadersModule::ReloadShaders()
                                       sceneEditor->renderSystem->GetDebugDrawer()->InvalidateMaterials();
                                       sceneEditor->renderSystem->SetForceUpdateLights();
 
-                                      sceneEditor->visibilityCheckSystem->InvalidateMaterials();
+                                      sceneEditor->GetSystem<VisibilityCheckSystem>()->InvalidateMaterials();
                                   });
     
 #define INVALIDATE_2D_MATERIAL(material) \

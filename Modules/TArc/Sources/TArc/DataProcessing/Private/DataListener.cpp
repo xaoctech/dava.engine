@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DataListener::~DataListener()
 {
     Vector<DataWrapper> wrappersCopy;
@@ -52,6 +50,4 @@ void DataListener::RemoveEmptyWrappers()
         }
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

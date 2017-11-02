@@ -28,26 +28,26 @@ using namespace DAVA;
 
 namespace EditorControlsViewDetails
 {
-class GridControl : public UIControl, DAVA::TArc::DataListener
+class GridControl : public UIControl, DAVA::DataListener
 {
 public:
-    GridControl(DAVA::TArc::ContextAccessor* accessor);
+    GridControl(DAVA::ContextAccessor* accessor);
     ~GridControl() override;
     void SetSize(const Vector2& size) override;
 
 protected:
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Vector<Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const Vector<Any>& fields) override;
 
 private:
     void Draw(const UIGeometricData& geometricData) override;
     void UpdateColorControlBackground();
     ScopedPtr<UIControl> colorControl;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::DataWrapper wrapper;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::DataWrapper wrapper;
 };
 
-GridControl::GridControl(DAVA::TArc::ContextAccessor* accessor_)
+GridControl::GridControl(DAVA::ContextAccessor* accessor_)
     : colorControl(new UIControl)
     , accessor(accessor_)
 {
@@ -94,7 +94,7 @@ void GridControl::Draw(const UIGeometricData& geometricData)
     }
 }
 
-void GridControl::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const Vector<Any>& fields)
+void GridControl::OnDataChanged(const DAVA::DataWrapper& wrapper, const Vector<Any>& fields)
 {
     DVASSERT(wrapper == this->wrapper);
     UpdateColorControlBackground();
@@ -111,7 +111,7 @@ void GridControl::UpdateColorControlBackground()
 class BackgroundController final
 {
 public:
-    BackgroundController(UIControl* nestedControl, DAVA::TArc::ContextAccessor* accessor);
+    BackgroundController(UIControl* nestedControl, DAVA::ContextAccessor* accessor);
     ~BackgroundController();
     UIControl* GetGridControl() const;
     bool IsNestedControl(const UIControl* control) const;
@@ -138,7 +138,7 @@ private:
     UIControl* nestedControl = nullptr;
 };
 
-BackgroundController::BackgroundController(UIControl* nestedControl_, DAVA::TArc::ContextAccessor* accessor)
+BackgroundController::BackgroundController(UIControl* nestedControl_, DAVA::ContextAccessor* accessor)
     : gridControl(new EditorControlsViewDetails::GridControl(accessor))
     , counterpoiseControl(new UIControl())
     , positionHolderControl(new UIControl())
@@ -317,7 +317,7 @@ bool BackgroundController::IsPropertyAffectBackground(AbstractProperty* property
     return std::find(std::begin(matchedNames), std::end(matchedNames), name) != std::end(matchedNames);
 }
 
-EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::TArc::ContextAccessor* accessor)
+EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , controlsCanvas(new UIControl())
     , packageListenerProxy(this, accessor)
@@ -620,7 +620,6 @@ void EditorControlsView::OnRootControlPosChanged()
 SortedControlNodeSet EditorControlsView::GetDisplayedControls() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     if (nullptr == activeContext)

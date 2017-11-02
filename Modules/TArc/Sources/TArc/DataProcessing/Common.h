@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 struct FieldDescriptor
 {
     const ReflectedType* type = nullptr;
@@ -46,6 +44,4 @@ FieldDescriptor MakeFieldDescriptor(const char* fieldName)
     descr.fieldName = FastName(fieldName);
     return descr;
 }
-
-} // namespace TArc
 } // namespace DAVA

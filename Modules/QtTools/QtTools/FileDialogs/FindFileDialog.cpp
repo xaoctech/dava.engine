@@ -14,7 +14,7 @@
 #include <QAbstractItemView>
 #include <QKeyEvent>
 
-QString FindFileDialog::GetFilePath(DAVA::TArc::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
+QString FindFileDialog::GetFilePath(DAVA::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
 {
     //Qt::Popup do not prevent us to show another dialog
     static bool shown = false;

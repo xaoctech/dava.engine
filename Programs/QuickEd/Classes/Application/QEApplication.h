@@ -4,13 +4,10 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class Core;
 }
-}
 
-class QEApplication : public DAVA::TArc::BaseApplication
+class QEApplication : public DAVA::BaseApplication
 {
 public:
     QEApplication(DAVA::Vector<DAVA::String>&& cmdLine);
@@ -20,7 +17,7 @@ public:
 
 protected:
     EngineInitInfo GetInitInfo() const override;
-    void CreateModules(DAVA::TArc::Core* tarcCore) const override;
+    void CreateModules(DAVA::Core* tarcCore) const override;
 
     void RegisterReflectionExtensions() override;
 

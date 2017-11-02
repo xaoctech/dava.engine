@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class FilePathComponentValue : public BaseComponentValue
 {
 public:
@@ -25,5 +23,4 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(FilePathComponentValue, BaseComponentValue);
 };
-} // namespace TArc
 } // namespace DAVA

@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 id prevActiveApp = nil;
 
 void MakeAppForeground()
@@ -44,7 +42,5 @@ void FixOSXFonts()
         QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
     }
 }
-
-} // namespace TArc
 } // namespace DAVA
 #endif

@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 TArcPluginManager::TArcPluginManager(const String& applicationName_, const String& pluginsFolder_)
     : applicationName(applicationName_)
     , pluginsFolder(pluginsFolder_)
@@ -126,7 +124,7 @@ TArcPlugin* TArcPluginManager::GetPlugin(const String& pluginName) const
     return nullptr;
 }
 
-DAVA::Vector<TArcPlugin*> TArcPluginManager::GetPluginsWithBaseType(const Type* t) const
+Vector<TArcPlugin*> TArcPluginManager::GetPluginsWithBaseType(const Type* t) const
 {
     Vector<TArcPlugin*> result;
     result.reserve(pluginsCollection.size());
@@ -145,6 +143,4 @@ DAVA::Vector<TArcPlugin*> TArcPluginManager::GetPluginsWithBaseType(const Type* 
 
     return result;
 }
-
-} // namespace TArc
 } // namespace DAVA

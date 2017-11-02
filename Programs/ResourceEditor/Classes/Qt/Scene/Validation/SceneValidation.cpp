@@ -1,21 +1,23 @@
-#include "Qt/Scene/Validation/SceneValidation.h"
+#include "Classes/Qt/Scene/Validation/SceneValidation.h"
 #include "Classes/Qt/Scene/Validation/ValidationProgress.h"
-#include "Qt/Scene/SceneHelper.h"
-#include "Project/ProjectManagerData.h"
 
-#include "Scene3D/Components/SoundComponent.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Systems/QualitySettingsSystem.h"
-#include <Render/RenderBase.h>
-#include "Render/Material/NMaterialNames.h"
-#include "Render/Material/NMaterial.h"
-#include "Render/TextureDescriptor.h"
-#include <Render/Texture.h>
-#include "Render/GPUFamilyDescriptor.h"
-#include "Render/Texture.h"
-#include "FileSystem/FileSystem.h"
+#include <REPlatform/Scene/SceneHelper.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+
 #include <FileSystem/FilePath.h>
+#include <FileSystem/FileSystem.h>
+#include <Logger/Logger.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Render/Material/NMaterial.h>
+#include <Render/Material/NMaterialNames.h>
+#include <Render/RenderBase.h>
+#include <Render/Texture.h>
+#include <Render/Texture.h>
+#include <Render/TextureDescriptor.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Utils/StringFormat.h>
 
 namespace SceneValidationDetails
@@ -301,7 +303,7 @@ String MaterialPrettyName(NMaterial* material)
 
 } // namespace SceneValidationDetails
 
-SceneValidation::SceneValidation(ProjectManagerData* data)
+SceneValidation::SceneValidation(DAVA::ProjectManagerData* data)
     : projectManagerData(data)
 {
 }

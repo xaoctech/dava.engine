@@ -5,11 +5,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-}
-
 class UIControl;
 class LayoutFormula;
 }
@@ -19,7 +15,7 @@ class IssueNavigatorWidget;
 class LayoutIssuesHandler : public DAVA::UILayoutSystemListener
 {
 public:
-    LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    LayoutIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
     ~LayoutIssuesHandler() override;
 
     void OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula) override;
@@ -36,5 +32,5 @@ private:
 
     DAVA::Array<DAVA::UnorderedMap<DAVA::UIControl*, DAVA::int32>, DAVA::Vector2::AXIS_COUNT> createdIssues;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

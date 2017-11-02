@@ -1,14 +1,14 @@
 #include "EditorPhysics/Private/EditorIntegrationHelper.h"
 
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 #include <Scene3D/Scene.h>
 #include <Reflection/ReflectedTypeDB.h>
 
 namespace EditorPhysicsDetail
 {
-DAVA::Scene* ExtractScene(DAVA::TArc::DataContext* context)
+DAVA::Scene* ExtractScene(DAVA::DataContext* context)
 {
     const DAVA::ReflectedType* sceneDataType = DAVA::ReflectedTypeDB::GetByPermanentName("SceneData");
     if (sceneDataType == nullptr)
@@ -16,7 +16,7 @@ DAVA::Scene* ExtractScene(DAVA::TArc::DataContext* context)
         return nullptr;
     }
 
-    DAVA::TArc::DataNode* data = context->GetData(sceneDataType);
+    DAVA::TArcDataNode* data = context->GetData(sceneDataType);
     DAVA::Reflection ref = DAVA::Reflection::Create(DAVA::ReflectedObject(data));
     if (ref.IsValid() == false)
     {

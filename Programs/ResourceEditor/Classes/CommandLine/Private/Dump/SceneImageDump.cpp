@@ -1,23 +1,22 @@
-#include "CommandLine/SceneImageDump.h"
+#include "Classes/CommandLine/SceneImageDump.h"
+#include "Classes/CommandLine/Private/OptionName.h"
+#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
+#include "Classes/Qt/Scene/SceneImageGraber.h"
 
-#include "CommandLine/Private/OptionName.h"
-#include "CommandLine/Private/SceneConsoleHelper.h"
-#include "Scene/SceneImageGraber.h"
+#include <TArc/Utils/ModuleCollection.h>
 
-#include "TArc/Utils/ModuleCollection.h"
-
-#include "Logger/Logger.h"
-#include "Base/ScopedPtr.h"
-#include "Base/BaseTypes.h"
-#include "Render/GPUFamilyDescriptor.h"
-#include "Render/Texture.h"
-#include "Render/RHI/rhi_Public.h"
-#include "Render/Renderer.h"
-#include "Render/RenderHelper.h"
-#include "Render/GPUFamilyDescriptor.h"
-#include "Render/Texture.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Scene.h"
+#include <Logger/Logger.h>
+#include <Base/ScopedPtr.h>
+#include <Base/BaseTypes.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Render/Texture.h>
+#include <Render/RHI/rhi_Public.h>
+#include <Render/Renderer.h>
+#include <Render/RenderHelper.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Render/Texture.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Scene.h>
 
 SceneImageDump::SceneImageDump(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-sceneimagedump")
@@ -75,7 +74,7 @@ bool SceneImageDump::PostInitInternal()
     return true;
 }
 
-DAVA::TArc::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
+DAVA::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
 {
     using namespace DAVA;
     const rhi::HTexture nullTexture;
@@ -91,7 +90,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
         if (camera == nullptr)
         {
             Logger::Error("Camera %s not found in scene %s", cameraName.c_str(), sceneFilePath.GetAbsolutePathname().c_str());
-            return TArc::ConsoleModule::eFrameResult::FINISHED;
+            return ConsoleModule::eFrameResult::FINISHED;
         }
 
         bool grabFinished = false;
@@ -124,7 +123,7 @@ DAVA::TArc::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
 
     Texture::SetGPULoadingOrder(textureLoadingOrder);
 
-    return TArc::ConsoleModule::eFrameResult::FINISHED;
+    return ConsoleModule::eFrameResult::FINISHED;
 }
 
 DAVA::Camera* SceneImageDump::FindCamera(DAVA::Entity* rootNode) const

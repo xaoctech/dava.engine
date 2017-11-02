@@ -8,7 +8,7 @@
 
 class TextureCache;
 class ResourceEditorLauncher;
-class REModule : public DAVA::TArc::ClientModule
+class REModule : public DAVA::ClientModule
 {
 public:
     REModule();
@@ -19,7 +19,7 @@ protected:
 
     void ShowMaterial(DAVA::NMaterial* material);
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(REModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(REModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<REModule>::Begin()
         .ConstructorByPointer()

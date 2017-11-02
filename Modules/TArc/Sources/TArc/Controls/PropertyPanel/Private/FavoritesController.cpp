@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DAVA_REFLECTION_IMPL(FavoriteItemValue)
 {
     ReflectionRegistrator<FavoriteItemValue>::Begin()
@@ -404,9 +402,9 @@ void FavoritesController::BuildPathToNode(std::shared_ptr<PropertyNode> node, Ve
     std::reverse(path.begin(), path.end());
 }
 
-DAVA::String FavoritesController::BuildRootID(const std::shared_ptr<PropertyNode>& node) const
+String FavoritesController::BuildRootID(const std::shared_ptr<PropertyNode>& node) const
 {
-    DAVA::String id = node->BuildID();
+    String id = node->BuildID();
 
     auto iter = childToParent.find(node);
     while (iter != childToParent.end())
@@ -417,6 +415,4 @@ DAVA::String FavoritesController::BuildRootID(const std::shared_ptr<PropertyNode
 
     return id;
 }
-
-} // namespace TArc
 } // namespace DAVA

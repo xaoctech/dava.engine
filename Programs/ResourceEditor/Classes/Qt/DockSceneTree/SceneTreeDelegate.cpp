@@ -1,8 +1,8 @@
 #include <QSortFilterProxyModel>
 
-#include "DockSceneTree/SceneTreeDelegate.h"
-#include "DockSceneTree/SceneTreeModel.h"
-#include "DockSceneTree/SceneTreeItem.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeDelegate.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeModel.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeItem.h"
 
 SceneTreeDelegate::SceneTreeDelegate(QWidget* parent /* = 0 */)
     : QStyledItemDelegate(parent)

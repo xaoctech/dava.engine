@@ -6,7 +6,7 @@
 
 #include <QKeyEvent>
 
-IssueNavigatorWidget::IssueNavigatorWidget(DAVA::TArc::ContextAccessor* accessor, QWidget* parent)
+IssueNavigatorWidget::IssueNavigatorWidget(DAVA::ContextAccessor* accessor, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::IssueNavigatorWidget())
 {

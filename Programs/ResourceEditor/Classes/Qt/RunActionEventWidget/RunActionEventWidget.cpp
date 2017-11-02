@@ -1,22 +1,21 @@
 #include "RunActionEventWidget.h"
+#include "Classes/Qt//Scene/SceneSignals.h"
 #include "ui_RunActionEventWidget.h"
 
-#include "DAVAEngine.h"
-#include "Scene3D/Components/ActionComponent.h"
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
-#include "Classes/Qt/Main/mainwindow.h"
-#include "Scene/SceneEditor2.h"
+#include <TArc/Core/Deprecated.h>
+#include <TArc/Core/FieldBinder.h>
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Selection/Selection.h"
-#include "Classes/Selection/SelectionData.h"
+#include <Scene3D/Components/ActionComponent.h>
+#include <Scene3D/Entity.h>
 
-#include "TArc/Core/FieldBinder.h"
-
-#include <QStringList>
-#include <QSet>
 #include <QCompleter>
-#include "Application/RESettings.h"
+#include <QSet>
+#include <QStringList>
 
 namespace
 {
@@ -49,18 +48,18 @@ RunActionEventWidget::RunActionEventWidget(QWidget* parent)
     connect(ui->eventType, SIGNAL(currentIndexChanged(int)), SLOT(OnTypeChanged()));
     connect(ui->run, SIGNAL(clicked()), SLOT(OnInvoke()));
 
-    selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    selectionFieldBinder.reset(new DAVA::FieldBinder(DAVA::Deprecated::GetAccessor()));
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
-        fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::SelectionData>();
+        fieldDescr.fieldName = DAVA::FastName(DAVA::SelectionData::selectionPropertyName);
         selectionFieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &RunActionEventWidget::OnSelectionChanged));
     }
 
-    connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(sceneActivated(SceneEditor2*)));
-    connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(sceneDeactivated(SceneEditor2*)));
+    connect(SceneSignals::Instance(), &SceneSignals::Activated, this, &RunActionEventWidget::sceneActivated);
+    connect(SceneSignals::Instance(), &SceneSignals::Deactivated, this, &RunActionEventWidget::sceneDeactivated);
 
-    const DAVA::ActionComponent::Action::eEvent eventType = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->runActionEventType;
+    const DAVA::ActionComponent::Action::eEvent eventType = DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->runActionEventType;
     ui->eventType->setCurrentIndex(editorIdMap[eventType]);
 }
 
@@ -73,7 +72,7 @@ void RunActionEventWidget::OnTypeChanged()
     DVASSERT(editorindex < ui->stackedWidget->count());
 
     ui->stackedWidget->setCurrentIndex(editorindex);
-    REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->runActionEventType = static_cast<DAVA::ActionComponent::Action::eEvent>(eventTypeId);
+    DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->runActionEventType = static_cast<DAVA::ActionComponent::Action::eEvent>(eventTypeId);
 }
 
 void RunActionEventWidget::OnInvoke()
@@ -85,7 +84,13 @@ void RunActionEventWidget::OnInvoke()
     const DAVA::uint32 switchIndex = ui->switchIndex->value();
     const DAVA::FastName name(ui->name->currentText().toStdString().c_str());
 
-    const SelectableGroup& selection = Selection::GetSelection();
+    DAVA::SelectionData* selectionData = DAVA::Deprecated::GetActiveContext()->GetData<DAVA::SelectionData>();
+    if (selectionData == nullptr)
+    {
+        return;
+    }
+
+    const DAVA::SelectableGroup& selection = selectionData->GetSelection();
     for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
     {
         DAVA::ActionComponent* component = static_cast<DAVA::ActionComponent*>(entity->GetComponent(DAVA::Component::ACTION_COMPONENT));
@@ -123,25 +128,25 @@ void RunActionEventWidget::OnInvoke()
     }
 }
 
-void RunActionEventWidget::sceneActivated(SceneEditor2* scene_)
+void RunActionEventWidget::sceneActivated(DAVA::SceneEditor2* scene_)
 {
     scene = scene_;
 }
 
-void RunActionEventWidget::sceneDeactivated(SceneEditor2* scene)
+void RunActionEventWidget::sceneDeactivated(DAVA::SceneEditor2* scene)
 {
     scene = nullptr;
 }
 
 void RunActionEventWidget::OnSelectionChanged(const DAVA::Any& selectionAny)
 {
-    if (selectionAny.CanGet<SelectableGroup>() == false)
+    if (selectionAny.CanGet<DAVA::SelectableGroup>() == false)
     {
         autocompleteModel->setStringList(QStringList());
         return;
     }
 
-    const SelectableGroup& selection = selectionAny.Get<SelectableGroup>();
+    const DAVA::SelectableGroup& selection = selectionAny.Get<DAVA::SelectableGroup>();
 
     QSet<QString> nameSet;
     for (auto entity : selection.ObjectsOfType<DAVA::Entity>())

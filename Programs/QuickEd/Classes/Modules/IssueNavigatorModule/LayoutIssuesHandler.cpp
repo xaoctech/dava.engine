@@ -14,7 +14,7 @@
 
 using namespace DAVA;
 
-LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
+LayoutIssuesHandler::LayoutIssuesHandler(DAVA::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
     : sectionId(sectionId_)
     , widget(widget_)
     , accessor(accessor_)

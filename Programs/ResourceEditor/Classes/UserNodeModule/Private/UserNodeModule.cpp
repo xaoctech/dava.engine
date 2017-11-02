@@ -2,8 +2,8 @@
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
 #include "Classes/UserNodeModule/Private/UserNodeData.h"
 
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/QtAction.h>
@@ -22,7 +22,7 @@ DAVA::FilePath UserNodeModule::GetBotSpawnPath()
 void UserNodeModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/user_object.png"), QString("Custom UserNode Drawing Enabled"));
     { // checked-unchecked and text
@@ -53,7 +53,7 @@ void UserNodeModule::PostInit()
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
 
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 
     { //handle visibility of HUD
         FieldDescriptor fieldDescriptor(ReflectedTypeDB::Get<SceneData>(), FastName(SceneData::sceneHUDVisiblePropertyName));
@@ -62,8 +62,9 @@ void UserNodeModule::PostInit()
     }
 }
 
-void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void UserNodeModule::OnContextCreated(DAVA::DataContext* context)
 {
+    using namespace DAVA;
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
@@ -76,9 +77,9 @@ void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(userData));
 }
 
-void UserNodeModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void UserNodeModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
@@ -89,7 +90,7 @@ void UserNodeModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
 void UserNodeModule::ChangeDrawingState()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     UserNodeData* moduleData = context->GetData<UserNodeData>();
 
     bool enabled = moduleData->IsDrawingEnabled();
@@ -98,7 +99,7 @@ void UserNodeModule::ChangeDrawingState()
 
 void UserNodeModule::OnHUDVisibilityChanged(const DAVA::Any& hudVisibilityValue)
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     if (context != nullptr)
     {
         UserNodeData* userData = context->GetData<UserNodeData>();

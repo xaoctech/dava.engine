@@ -12,17 +12,14 @@ class Project;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-}
 }
 
 class PropertiesContext
 {
 public:
     const Project* project = nullptr;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
@@ -40,7 +37,7 @@ public:
     virtual AbstractPropertyDelegate* GetCustomItemDelegateForIndex(const QModelIndex& index) const;
 
     void SetProject(const Project* project);
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
+    void SetAccessor(DAVA::ContextAccessor* accessor);
 
     void emitCommitData(QWidget* editor);
     void emitCloseEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint);

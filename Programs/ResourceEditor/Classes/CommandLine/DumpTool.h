@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "CommandLine/CommandLineModule.h"
-#include "Utils/Dump/SceneDumper.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "Classes/CommandLine/CommandLineModule.h"
+
+#include <REPlatform/Scene/Utils/SceneDumper.h>
+
+#include <Base/BaseTypes.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 class DumpTool : public CommandLineModule
 {
@@ -29,7 +31,7 @@ private:
 
     DAVA::Vector<DAVA::eGPUFamily> compressedGPUs;
     DAVA::Vector<DAVA::String> tags;
-    SceneDumper::eMode mode = SceneDumper::eMode::REQUIRED;
+    DAVA::SceneDumper::eMode mode = DAVA::SceneDumper::eMode::REQUIRED;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(DumpTool, CommandLineModule)
     {

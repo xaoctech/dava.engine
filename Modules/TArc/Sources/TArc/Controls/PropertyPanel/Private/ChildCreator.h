@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ChildCreator
 {
 public:
@@ -34,6 +32,4 @@ private:
     UnorderedMap<std::shared_ptr<PropertyNode>, Vector<std::shared_ptr<PropertyNode>>> propertiesIndex;
     std::shared_ptr<IChildAllocator> allocator;
 };
-
-} // namespace TArc
 } // namespace DAVA

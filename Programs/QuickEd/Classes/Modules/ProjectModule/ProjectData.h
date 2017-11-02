@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/Qt/QtString.h>
 
@@ -16,7 +16,7 @@ class YamlNode;
 class ResultList;
 }
 
-class ProjectData : public DAVA::TArc::DataNode
+class ProjectData : public DAVA::TArcDataNode
 {
 public:
     struct ResDir
@@ -94,7 +94,7 @@ public:
 
     bool Save() const;
 
-    DAVA::TArc::PropertiesItem CreatePropertiesNode(const DAVA::String& nodeName);
+    DAVA::PropertiesItem CreatePropertiesNode(const DAVA::String& nodeName);
 
     static DAVA::FastName projectPathPropertyName;
 
@@ -159,7 +159,7 @@ private:
     DAVA::Vector<Blank> blanksForPreview;
     DAVA::Map<DAVA::String, DAVA::String> soundLocales;
 
-    std::unique_ptr<DAVA::TArc::PropertiesHolder> propertiesHolder;
+    std::unique_ptr<DAVA::PropertiesHolder> propertiesHolder;
 
-    DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArcDataNode);
 };

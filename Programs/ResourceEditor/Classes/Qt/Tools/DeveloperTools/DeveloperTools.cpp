@@ -1,27 +1,30 @@
 #include "DeveloperTools.h"
-#include "Main/mainwindow.h"
-#include "Commands2/EntityAddCommand.h"
+#include "Classes/Qt/ImageSplitterDialog/ImageSplitterDialogNormal.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
+#include <REPlatform/Commands/EntityAddCommand.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
 
-#include "Qt/ImageSplitterDialog/ImageSplitterDialogNormal.h"
+#include <TArc/Core/Deprecated.h>
 
-#include "Scene3D/Components/SkeletonComponent.h"
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Systems/LandscapeSystem.h"
-
-#include "Render/Highlevel/SkinnedMesh.h"
-
-#include "Classes/Selection/Selection.h"
+#include <Render/3D/MeshUtils.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderBatch.h>
+#include <Render/Highlevel/SkinnedMesh.h>
+#include <Render/MipmapReplacer.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
+#include <Scene3D/Systems/LandscapeSystem.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
 
 #include <QInputDialog>
 
 namespace DeveloperToolsDetails
 {
-SceneEditor2* GetActiveScene()
+DAVA::SceneEditor2* GetActiveScene()
 {
-    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    DAVA::SceneData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SceneData>();
     if (data != nullptr)
     {
         return data->GetScene().Get();
@@ -48,7 +51,7 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
     FastName inGlossinessName("inGlossiness");
     FastName inSpecularityName("inSpecularity");
 
-    const SelectableGroup& selection = Selection::GetSelection();
+    const SelectableGroup& selection = currentScene->GetSystem<SelectionSystem>()->GetSelection();
     if (selection.GetSize() == 1)
     {
         Entity* entity = selection.GetContent().front().AsEntity();
@@ -410,7 +413,7 @@ void DeveloperTools::OnReplaceTextureMipmap()
     if (isOk)
     {
         SceneEditor2* currentScene = DeveloperToolsDetails::GetActiveScene();
-        MipMapReplacer::ReplaceMipMaps(currentScene, FastName(item.toStdString().c_str()));
+        DAVA::MipMapReplacer::ReplaceMipMaps(currentScene, FastName(item.toStdString().c_str()));
     }
 }
 

@@ -15,19 +15,16 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 }
-}
 
-class RulerController : public QObject, DAVA::TArc::DataListener
+class RulerController : public QObject, DAVA::DataListener
 {
     Q_OBJECT
 
 public:
     // Construction/destruction.
-    RulerController(DAVA::TArc::ContextAccessor* accessor, QObject* parent = nullptr);
+    RulerController(DAVA::ContextAccessor* accessor, QObject* parent = nullptr);
     ~RulerController() override;
 
 public slots:
@@ -53,7 +50,7 @@ protected:
     void RecalculateRulerSettings();
 
 private:
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
     void OnStartValueChanged(const DAVA::Any& startValue);
     void OnScaleChanged(const DAVA::Any& scaleValue);
@@ -68,6 +65,6 @@ private:
 
     CanvasDataAdapter canvasDataAdapter;
 
-    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::DataWrapper canvasDataAdapterWrapper;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

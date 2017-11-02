@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DescriptorNode
 {
 public:
@@ -130,6 +128,4 @@ bool ControlDescriptor::IsChanged(Enum value) const
 
     return fieldNames[index].isChanged;
 }
-
-} // namespace TArc
 } // namespace DAVA

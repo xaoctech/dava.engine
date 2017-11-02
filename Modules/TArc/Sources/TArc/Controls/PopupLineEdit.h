@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class PopupLineEdit : public QWidget
 {
 public:
@@ -27,6 +25,4 @@ protected:
 private:
     LineEdit* edit = nullptr;
 };
-
-} // namespace TArc
 } // namespace DAVA

@@ -12,8 +12,6 @@
 class QMainWindow;
 namespace DAVA
 {
-namespace TArc
-{
 class PropertiesItem;
 
 struct KeyBindableAction
@@ -92,5 +90,4 @@ private:
     struct Impl;
     std::unique_ptr<Impl> impl;
 };
-} // namespace TArc
 } // namespace DAVA

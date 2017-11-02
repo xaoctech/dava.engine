@@ -1,47 +1,47 @@
 #include "Classes/PropertyPanel/Private/KeyedArchiveEditors.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Deprecated/EditorConfig.h"
-#include "Classes/Commands2/KeyedArchiveCommand.h"
 
-#include <TArc/Core/ContextAccessor.h>
-#include <TArc/Controls/LineEdit.h>
-#include <TArc/Controls/ComboBox.h>
+#include <REPlatform/Commands/KeyedArchiveCommand.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
+
 #include <TArc/Controls/CheckBox.h>
-#include <TArc/Controls/Widget.h>
+#include <TArc/Controls/ComboBox.h>
 #include <TArc/Controls/CommonStrings.h>
-#include <TArc/Controls/ReflectedButton.h>
+#include <TArc/Controls/LineEdit.h>
 #include <TArc/Controls/QtBoxLayouts.h>
+#include <TArc/Controls/ReflectedButton.h>
+#include <TArc/Controls/Widget.h>
+#include <TArc/Core/ContextAccessor.h>
 #include <TArc/Qt/QtSize.h>
 #include <TArc/Utils/Utils.h>
 
-#include <FileSystem/KeyedArchive.h>
-#include <Reflection/ReflectionRegistrator.h>
-#include <Functional/Signal.h>
-#include <Base/RefPtr.h>
 #include <Base/BaseTypes.h>
+#include <Base/RefPtr.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Functional/Signal.h>
+#include <Reflection/ReflectionRegistrator.h>
 
-#include <QHBoxLayout>
 #include <QGridLayout>
-#include <QWidget>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QToolButton>
 #include <QtEvents>
+#include <QToolButton>
+#include <QWidget>
 
 namespace PropertyPanel
 {
 class AddKeyedArchiveItemWidget : public QWidget
 {
 public:
-    AddKeyedArchiveItemWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui, const DAVA::TArc::WindowKey& wndKey,
+    AddKeyedArchiveItemWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui, const DAVA::WindowKey& wndKey,
                               DAVA::Vector<DAVA::RefPtr<DAVA::KeyedArchive>>&& archives_, DAVA::int32 lastAddedType)
         : accessor(accessor_)
         , archives(std::move(archives_))
         , type(lastAddedType)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         PrepareData();
 
@@ -140,10 +140,10 @@ private:
 
         if (presetIndex != 0)
         {
-            ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
+            DAVA::ProjectManagerData* data = accessor->GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
             DVASSERT(data);
 
-            const EditorConfig* editorConfig = data->GetEditorConfig();
+            const DAVA::EditorConfig* editorConfig = data->GetEditorConfig();
             const DAVA::VariantType* v = editorConfig->GetPropertyDefaultValue(key);
             commitAddPropperty.Emit(key, *v);
         }
@@ -157,10 +157,10 @@ private:
 
     void PrepareData()
     {
-        ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
+        DAVA::ProjectManagerData* data = accessor->GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
         DVASSERT(data);
 
-        const EditorConfig* editorConfig = data->GetEditorConfig();
+        const DAVA::EditorConfig* editorConfig = data->GetEditorConfig();
         const DAVA::Vector<DAVA::String>& presetValues = editorConfig->GetProjectPropertyNames();
         presets.push_back("None");
         presets.insert(presets.end(), presetValues.begin(), presetValues.end());
@@ -231,10 +231,10 @@ private:
         {
             SetKey(presets[presetIndex]);
 
-            ProjectManagerData* data = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
+            DAVA::ProjectManagerData* data = accessor->GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
             DVASSERT(data);
 
-            const EditorConfig* editorConfig = data->GetEditorConfig();
+            const DAVA::EditorConfig* editorConfig = data->GetEditorConfig();
             type = editorConfig->GetPropertyValueType(key);
         }
     }
@@ -246,11 +246,11 @@ private:
     DAVA::Map<DAVA::int32, DAVA::String> types;
     DAVA::Vector<DAVA::String> presets;
 
-    DAVA::TArc::ContextAccessor* accessor;
+    DAVA::ContextAccessor* accessor;
     DAVA::Vector<DAVA::RefPtr<DAVA::KeyedArchive>> archives;
     QWidget* lineEdit = nullptr;
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
     DAVA_REFLECTION(AddKeyedArchiveItemWidget);
 };
@@ -299,10 +299,10 @@ bool KeyedArchiveEditor::IsValidValueToSet(const DAVA::Any& newValue, const DAVA
     return false;
 }
 
-DAVA::TArc::ControlProxy* KeyedArchiveEditor::CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor)
+DAVA::ControlProxy* KeyedArchiveEditor::CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     Widget* w = new Widget(parent);
     QtHBoxLayout* layout = new QtHBoxLayout(w->ToWidgetCast());
@@ -343,7 +343,7 @@ DAVA::TArc::ControlProxy* KeyedArchiveEditor::CreateEditorWidget(QWidget* parent
 void KeyedArchiveEditor::OnCreatePropertyClicked()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     Vector<RefPtr<KeyedArchive>> archives;
     archives.reserve(nodes.size());
@@ -380,7 +380,7 @@ void KeyedArchiveEditor::OnCreatePresetPropertyClicked()
 void KeyedArchiveEditor::AddProperty(const DAVA::String& key, const DAVA::VariantType& value)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ModifyExtension::MultiCommandInterface cmdInterface = GetModifyInterface()->GetMultiCommandInterface(Format("Add property %s", key.c_str()), static_cast<uint32>(nodes.size()));
     for (const std::shared_ptr<PropertyNode>& node : nodes)
@@ -419,10 +419,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(KeyedArchiveEditor)
     .Field("choosedPreset", &KeyedArchiveEditor::GetChoosedPreset, &KeyedArchiveEditor::SetChoosedPreset)
     .Field("unchoosedPresetText", [](KeyedArchiveEditor* v) { return "Choose preset for Add"; }, nullptr)
     .Field("isPresetChoosed", &KeyedArchiveEditor::IsPresetChoosed, nullptr)
-    .Field("createPresetButtonIcon", [](KeyedArchiveEditor* v) { return DAVA::TArc::SharedIcon(":/QtIcons/add_green.png"); }, nullptr)
+    .Field("createPresetButtonIcon", [](KeyedArchiveEditor* v) { return DAVA::SharedIcon(":/QtIcons/add_green.png"); }, nullptr)
     .Method("createPresetValue", &KeyedArchiveEditor::OnCreatePresetPropertyClicked)
-    .Field("createPropertyButtonIcon", [](KeyedArchiveEditor* v) { return DAVA::TArc::SharedIcon(":/QtIcons/keyplus.png"); }, nullptr)
-    .Field("buttonIconSize", [](KeyedArchiveEditor* v) { return DAVA::TArc::BaseComponentValue::toolButtonIconSize; }, nullptr)
+    .Field("createPropertyButtonIcon", [](KeyedArchiveEditor* v) { return DAVA::SharedIcon(":/QtIcons/keyplus.png"); }, nullptr)
+    .Field("buttonIconSize", [](KeyedArchiveEditor* v) { return DAVA::BaseComponentValue::toolButtonIconSize; }, nullptr)
     .Field("buttonAutoRise", [](KeyedArchiveEditor* v) { return false; }, nullptr)
     .Method("createPropertyValue", &KeyedArchiveEditor::OnCreatePropertyClicked)
     .End();
@@ -456,14 +456,14 @@ bool KeyedArchiveComboPresetEditor::IsValidValueToSet(const DAVA::Any& newValue,
     return newIntValue != currentIntValue;
 }
 
-DAVA::TArc::ControlProxy* KeyedArchiveComboPresetEditor::CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor)
+DAVA::ControlProxy* KeyedArchiveComboPresetEditor::CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor)
 {
-    DAVA::TArc::ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
-    params.fields[DAVA::TArc::ComboBox::Fields::Value] = "value";
-    params.fields[DAVA::TArc::ComboBox::Fields::Enumerator] = "values";
-    params.fields[DAVA::TArc::ComboBox::Fields::IsReadOnly] = readOnlyFieldName;
+    DAVA::ComboBox::Params params(GetAccessor(), GetUI(), GetWindowKey());
+    params.fields[DAVA::ComboBox::Fields::Value] = "value";
+    params.fields[DAVA::ComboBox::Fields::Enumerator] = "values";
+    params.fields[DAVA::ComboBox::Fields::IsReadOnly] = readOnlyFieldName;
 
-    return new DAVA::TArc::ComboBox(params, wrappersProcessor, model, parent);
+    return new DAVA::ComboBox(params, wrappersProcessor, model, parent);
 }
 
 DAVA::Any KeyedArchiveComboPresetEditor::GetValueAny() const

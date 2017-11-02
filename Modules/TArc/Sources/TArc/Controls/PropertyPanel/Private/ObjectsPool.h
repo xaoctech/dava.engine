@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class SingleThreadStrategy
 {
 public:
@@ -231,5 +229,4 @@ bool ObjectsPool<T, TLockStrategy>::IsOurMemory(T* object)
 
     return false;
 }
-} // namespace TArc
 } // namespace DAVA

@@ -12,5 +12,5 @@ private:
     void CreateSystems(Interfaces::EditorSystemsManagerInterface* systemsManager) override;
     void DestroySystems(Interfaces::EditorSystemsManagerInterface* systemsManager) override;
 
-    DAVA_VIRTUAL_REFLECTION(PixelGridModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(PixelGridModule, DAVA::ClientModule);
 };

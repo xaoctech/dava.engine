@@ -4,11 +4,11 @@
 #include "TArc/Qt/QtByteArray.h"
 #include "TArc/Qt/QtRect.h"
 
+#include <Reflection/Reflection.h>
+
 namespace DAVA
 {
-namespace TArc
-{
-class ColorPickerSettings : public DAVA::TArc::SettingsNode
+class ColorPickerSettings : public SettingsNode
 {
 public:
     ColorPickerSettings();
@@ -17,7 +17,6 @@ public:
     QByteArray customPalette;
     QRect dialogGeometry;
 
-    DAVA_VIRTUAL_REFLECTION(ColorPickerSettings, DAVA::TArc::SettingsNode);
+    DAVA_VIRTUAL_REFLECTION(ColorPickerSettings, SettingsNode);
 };
-} // namespace TArc
 } // namespace DAVA

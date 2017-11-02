@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 OverlayWidget::OverlayWidget(const OverCentralPanelInfo& info, QWidget* content_, QWidget* parent)
     : QFrame(parent)
     , geometryProccessor(info.geometryProcessor)
@@ -96,6 +94,4 @@ void OverlayWidget::SetVisible(bool isVisible)
         activateWindow();
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 Qt::CheckState BoolComponentValue::GetCheckState() const
 {
     return GetValue().Cast<Qt::CheckState>();
@@ -70,6 +68,5 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BoolComponentValue)
     .Field("bool", &BoolComponentValue::GetCheckState, &BoolComponentValue::SetCheckState)
     .Field("textHint", &BoolComponentValue::GetTextHint, nullptr)
     .End();
-}
 }
 }

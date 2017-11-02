@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Reflection/Reflection.h>
+
 namespace DAVA
 {
-class ICommand
+class ICommand : public ReflectionBase
 {
 public:
     virtual ~ICommand() = default;

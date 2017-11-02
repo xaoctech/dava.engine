@@ -5,15 +5,14 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <UI/UIEvent.h>
 
-BaseEditorSystem::BaseEditorSystem(DAVA::TArc::ContextAccessor* accessor_)
+BaseEditorSystem::BaseEditorSystem(DAVA::ContextAccessor* accessor_)
     : accessor(accessor_)
 {
 }
 
 const EditorSystemsManager* BaseEditorSystem::GetSystemsManager() const
 {
-    using namespace DAVA::TArc;
-    DataContext* globalContext = accessor->GetGlobalContext();
+    DAVA::DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     DVASSERT(editorData != nullptr);
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
@@ -23,7 +22,7 @@ const EditorSystemsManager* BaseEditorSystem::GetSystemsManager() const
 
 EditorSystemsManager* BaseEditorSystem::GetSystemsManager()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     DVASSERT(editorData != nullptr);
@@ -34,7 +33,7 @@ EditorSystemsManager* BaseEditorSystem::GetSystemsManager()
 
 Painting::Painter* BaseEditorSystem::GetPainter() const
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     DVASSERT(editorData != nullptr);

@@ -1,6 +1,9 @@
 #include "SelectEntityPathWidget.h"
-#include "Tools/MimeDataHelper/MimeDataHelper.h"
-#include "Scene/SceneEditor2.h"
+#include "Classes/Qt/Tools/MimeDataHelper/MimeDataHelper.h"
+
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/StructureSystem.h>
+
 #include <QFileInfo>
 #include <QKeyEvent>
 #include <QUrl>
@@ -54,7 +57,7 @@ void SelectEntityPathWidget::dragEnterEvent(QDragEnterEvent* event)
     }
 }
 
-DAVA::Entity* SelectEntityPathWidget::GetOutputEntity(SceneEditor2* editor)
+DAVA::Entity* SelectEntityPathWidget::GetOutputEntity(DAVA::SceneEditor2* editor)
 {
     DAVA::List<DAVA::Entity*> retList;
     ConvertFromMimeData(&mimeData, retList, editor);
@@ -62,7 +65,7 @@ DAVA::Entity* SelectEntityPathWidget::GetOutputEntity(SceneEditor2* editor)
     return retEntity;
 }
 
-void SelectEntityPathWidget::ConvertFromMimeData(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>& retList, SceneEditor2* sceneEditor)
+void SelectEntityPathWidget::ConvertFromMimeData(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>& retList, DAVA::SceneEditor2* sceneEditor)
 {
     if (mimeData->hasFormat(MIME_ENTITY_NAME) || mimeData->hasFormat(MIME_EMITER_NAME))
     {
@@ -82,8 +85,7 @@ void SelectEntityPathWidget::ConvertQMimeDataFromSceneTree(const QMimeData* mime
 }
 
 void SelectEntityPathWidget::ConvertQMimeDataFromFilePath(const QMimeData* mimeData,
-                                                          DAVA::List<DAVA::Entity*>& retList,
-                                                          SceneEditor2* sceneEditor)
+                                                          DAVA::List<DAVA::Entity*>& retList, DAVA::SceneEditor2* sceneEditor)
 {
     if (mimeData == NULL || sceneEditor == NULL || !mimeData->hasUrls())
     {
@@ -102,7 +104,7 @@ void SelectEntityPathWidget::ConvertQMimeDataFromFilePath(const QMimeData* mimeD
             continue;
         }
 
-        DAVA::Entity* entity = sceneEditor->structureSystem->Load(filePath);
+        DAVA::Entity* entity = sceneEditor->GetSystem<DAVA::StructureSystem>()->Load(filePath);
 
         if (NULL != entity)
         {

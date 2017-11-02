@@ -9,10 +9,7 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class FieldBinder;
-}
 }
 
 class ControlContainer;
@@ -22,7 +19,7 @@ class ControlTransformationSettings;
 class HUDSystem : public BaseEditorSystem
 {
 public:
-    HUDSystem(DAVA::TArc::ContextAccessor* accessor);
+    HUDSystem(DAVA::ContextAccessor* accessor);
     ~HUDSystem();
 
     DAVA::Signal<ControlNode*> highlightChanged;
@@ -64,7 +61,7 @@ private:
     SortedControlNodeSet GetSortedControlList() const;
 
     ControlTransformationSettings* GetSettings();
-    DAVA::TArc::ContextAccessor* GetAccessor();
+    DAVA::ContextAccessor* GetAccessor();
 
     HUDAreaInfo activeAreaInfo;
 
@@ -77,8 +74,8 @@ private:
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;
     SortedControlNodeSet sortedControlList;
     std::unique_ptr<ControlContainer> hoveredNodeControl;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 
-    DAVA::TArc::DataWrapper systemsDataWrapper;
+    DAVA::DataWrapper systemsDataWrapper;
     DAVA::RefPtr<DAVA::UIControl> hudControl;
 };

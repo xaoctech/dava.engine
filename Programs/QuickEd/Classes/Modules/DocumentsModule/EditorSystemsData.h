@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 class EditorSystemsManager;
 class ControlNode;
@@ -10,7 +10,7 @@ namespace Painting
 class Painter;
 }
 
-class EditorSystemsData : public DAVA::TArc::DataNode
+class EditorSystemsData : public DAVA::TArcDataNode
 {
 public:
     EditorSystemsData();
@@ -32,5 +32,5 @@ private:
     bool emulationMode = false;
     bool highlightDisabled = false;
 
-    DAVA_VIRTUAL_REFLECTION(PixelGridData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(PixelGridData, DAVA::TArcDataNode);
 };

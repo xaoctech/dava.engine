@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MockListener : public DataListener
 {
 public:
@@ -21,6 +19,4 @@ inline bool MockListener::HasWrappers()
     RemoveEmptyWrappers();
     return wrappers.empty() == false;
 }
-
-} // namespace TArc
 } // namespace DAVA

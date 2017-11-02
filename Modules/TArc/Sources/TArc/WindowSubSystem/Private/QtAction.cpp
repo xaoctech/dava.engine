@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 QtAction::QtAction(ContextAccessor* accessor, QObject* parent)
     : QAction(parent)
     , fieldBinder(accessor)
@@ -114,6 +112,4 @@ QtActionSeparator::QtActionSeparator(const QString& name, QObject* parent)
     setObjectName(name);
     setSeparator(true);
 }
-
-} // namespace TArc
 } // namespace DAVA

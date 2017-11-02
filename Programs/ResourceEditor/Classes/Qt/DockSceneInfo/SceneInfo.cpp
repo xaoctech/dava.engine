@@ -1,23 +1,30 @@
-#include "DAVAEngine.h"
 #include "Classes/Qt/DockSceneInfo/SceneInfo.h"
-#include "Classes/Qt/Main/QtUtils.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Qt/Scene/System/EditorStatisticsSystem.h"
-#include "Classes/Qt/Scene/System/EditorVegetationSystem.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Selection/SelectionData.h"
-#include "Classes/Selection/Selection.h"
-#include "Classes/ImageTools/ImageTools.h"
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
 
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/Commands/MaterialConfigCommands.h>
+#include <REPlatform/Commands/MaterialRemoveTexture.h>
+#include <REPlatform/Commands/InspMemberModifyCommand.h>
+#include <REPlatform/Commands/InspDynamicModifyCommand.h>
+#include <REPlatform/Commands/SetFieldValueCommand.h>
+
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/SceneHelper.h>
+#include <REPlatform/Scene/Systems/EditorStatisticsSystem.h>
+#include <REPlatform/Scene/Systems/EditorVegetationSystem.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
+#include <REPlatform/Scene/Utils/Utils.h>
+
+#include <TArc/Core/Deprecated.h>
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
-#include <TArc/Core/FieldBinder.h>
 
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Render/TextureDescriptor.h>
@@ -54,16 +61,16 @@ SceneInfo::SceneInfo(QWidget* parent /* = 0 */)
     connect(signalDispatcher, &SceneSignals::CommandExecuted, this, &SceneInfo::OnCommmandExecuted);
     connect(signalDispatcher, &SceneSignals::QualityChanged, this, &SceneInfo::OnQualityChanged);
 
-    fieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    fieldBinder.reset(new DAVA::FieldBinder(DAVA::Deprecated::GetAccessor()));
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
+        DAVA::FieldDescriptor fieldDescr;
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
         fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
         fieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &SceneInfo::OnSelectionChanged));
     }
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::TArc::ThemesSettings>();
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::ThemesSettings>();
         fieldDescr.fieldName = DAVA::FastName("currentTheme");
         fieldBinder->BindField(fieldDescr, [this](const DAVA::Any&) {
             OnThemeChanged();
@@ -130,9 +137,9 @@ void SceneInfo::RefreshSceneGeneralInfo()
     SetChild("Entities Count", static_cast<DAVA::uint32>(nodesAtScene.size()), header);
     SetChild("Emitters Count", emittersCount, header);
 
-    SetChild("All Textures Size", QString::fromStdString(SizeInBytesToString(static_cast<DAVA::float32>(sceneTexturesSize + particleTexturesSize))), header);
-    SetChild("Material Textures Size", QString::fromStdString(SizeInBytesToString(static_cast<DAVA::float32>(sceneTexturesSize))), header);
-    SetChild("Particles Textures Size", QString::fromStdString(SizeInBytesToString(static_cast<DAVA::float32>(particleTexturesSize))), header);
+    SetChild("All Textures Size", QString::fromStdString(DAVA::SizeInBytesToString(static_cast<DAVA::float32>(sceneTexturesSize + particleTexturesSize))), header);
+    SetChild("Material Textures Size", QString::fromStdString(DAVA::SizeInBytesToString(static_cast<DAVA::float32>(sceneTexturesSize))), header);
+    SetChild("Particles Textures Size", QString::fromStdString(DAVA::SizeInBytesToString(static_cast<DAVA::float32>(particleTexturesSize))), header);
 
     SetChild("Sprites Count", spritesCount, header);
     SetChild("Particle Textures Count", static_cast<DAVA::uint32>(particleTextures.size()), header);
@@ -321,13 +328,13 @@ void SceneInfo::RefreshLODInfoForSelection()
 DAVA::uint32 SceneInfo::CalculateTextureSize(const DAVA::TexturesMap& textures)
 {
     using namespace DAVA;
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
 
     String projectPath = data->GetProjectPath().GetAbsolutePathname();
     uint32 textureSize = 0;
 
-    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    CommonInternalSettings* settings = Deprecated::GetGlobalContext()->GetData<DAVA::CommonInternalSettings>();
     eGPUFamily requestedGPU = settings->textureViewGPU;
 
     TexturesMap::const_iterator endIt = textures.end();
@@ -366,8 +373,8 @@ void SceneInfo::CollectSceneData()
     {
         activeScene->GetChildNodes(nodesAtScene);
 
-        SceneHelper::TextureCollector collector(SceneHelper::TextureCollector::OnlyActiveTextures);
-        SceneHelper::EnumerateSceneTextures(activeScene, collector);
+        DAVA::SceneHelper::TextureCollector collector(DAVA::SceneHelper::TextureCollector::OnlyActiveTextures);
+        DAVA::SceneHelper::EnumerateSceneTextures(activeScene, collector);
         sceneTexturesSize = CalculateTextureSize(collector.GetTextures());
 
         CollectParticlesData();
@@ -574,14 +581,14 @@ void SceneInfo::showEvent(QShowEvent* event)
 
 void SceneInfo::UpdateInfoByTimer()
 {
-    if (!isVisible())
+    if (!isVisible() || activeScene == nullptr)
         return;
 
     Refresh3DDrawInfo();
     RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
 
-    CollectSpeedInfo(&Selection::GetSelection());
+    CollectSpeedInfo(&activeScene->GetSystem<DAVA::SelectionSystem>()->GetSelection());
     RefreshSpeedTreeInfoSelection();
 
     RefreshVegetationInfoSection();
@@ -591,6 +598,10 @@ void SceneInfo::UpdateInfoByTimer()
 
 void SceneInfo::RefreshAllData()
 {
+    if (activeScene == nullptr)
+    {
+        return;
+    }
     CollectSceneData();
 
     SaveTreeState();
@@ -600,7 +611,7 @@ void SceneInfo::RefreshAllData()
     RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
 
-    CollectSpeedInfo(&Selection::GetSelection());
+    CollectSpeedInfo(&activeScene->GetSystem<DAVA::SelectionSystem>()->GetSelection());
     RefreshSpeedTreeInfoSelection();
 
     RefreshVegetationInfoSection();
@@ -610,7 +621,7 @@ void SceneInfo::RefreshAllData()
     RestoreTreeState();
 }
 
-void SceneInfo::SceneActivated(SceneEditor2* scene)
+void SceneInfo::SceneActivated(DAVA::SceneEditor2* scene)
 {
     activeScene = scene;
     landscape = FindLandscape(activeScene);
@@ -622,7 +633,7 @@ void SceneInfo::SceneActivated(SceneEditor2* scene)
     }
 }
 
-void SceneInfo::SceneDeactivated(SceneEditor2* scene)
+void SceneInfo::SceneDeactivated(DAVA::SceneEditor2* scene)
 {
     if (activeScene == scene)
     {
@@ -632,7 +643,7 @@ void SceneInfo::SceneDeactivated(SceneEditor2* scene)
     }
 }
 
-void SceneInfo::SceneStructureChanged(SceneEditor2* scene, DAVA::Entity* parent)
+void SceneInfo::SceneStructureChanged(DAVA::SceneEditor2* scene, DAVA::Entity* parent)
 {
     if (activeScene == scene)
     {
@@ -648,9 +659,9 @@ void SceneInfo::SceneStructureChanged(SceneEditor2* scene, DAVA::Entity* parent)
 
 void SceneInfo::OnSelectionChanged(const DAVA::Any& selectionAny)
 {
-    if (selectionAny.CanGet<SelectableGroup>())
+    if (selectionAny.CanGet<DAVA::SelectableGroup>())
     {
-        const SelectableGroup& selection = selectionAny.Get<SelectableGroup>();
+        const DAVA::SelectableGroup& selection = selectionAny.Get<DAVA::SelectableGroup>();
         ClearSelectionData();
         CollectSelectedRenderObjects(&selection);
         RefreshLODInfoForSelection();
@@ -660,16 +671,11 @@ void SceneInfo::OnSelectionChanged(const DAVA::Any& selectionAny)
     }
 }
 
-void SceneInfo::OnCommmandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
+void SceneInfo::OnCommmandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification)
 {
-    static const DAVA::Vector<DAVA::uint32> commandIDs =
-    {
-      CMDID_MATERIAL_CHANGE_CURRENT_CONFIG, CMDID_MATERIAL_CREATE_CONFIG,
-      CMDID_MATERIAL_REMOVE_TEXTURE, CMDID_INSP_MEMBER_MODIFY, CMDID_INSP_DYNAMIC_MODIFY,
-      CMDID_REFLECTED_FIELD_MODIFY
-    };
-
-    if (commandNotification.MatchCommandIDs(commandIDs))
+    using namespace DAVA;
+    if (commandNotification.MatchCommandTypes<MaterialChangeCurrentConfig, MaterialCreateConfig, MaterialRemoveTexture,
+                                              InspMemberModifyCommand, InspDynamicModifyCommand, SetFieldValueCommand>())
     {
         infoUpdated.Update();
     }
@@ -680,7 +686,7 @@ void SceneInfo::OnThemeChanged()
     InitializeInfo();
 }
 
-void SceneInfo::CollectSelectedRenderObjects(const SelectableGroup* selected)
+void SceneInfo::CollectSelectedRenderObjects(const DAVA::SelectableGroup* selected)
 {
     for (auto entity : selected->ObjectsOfType<DAVA::Entity>())
     {
@@ -705,12 +711,12 @@ void SceneInfo::CollectSelectedRenderObjectsRecursivly(DAVA::Entity* entity)
     }
 }
 
-void SceneInfo::CollectSpeedInfo(const SelectableGroup* forGroup)
+void SceneInfo::CollectSpeedInfo(const DAVA::SelectableGroup* forGroup)
 {
     using namespace DAVA;
     speedTreesInfo.clear();
 
-    for (auto entity : forGroup->ObjectsOfType<DAVA::Entity>())
+    for (auto entity : forGroup->ObjectsOfType<Entity>())
     {
         RenderObject* ro = GetRenderObject(entity);
         if (ro && ro->GetType() == RenderObject::TYPE_SPEED_TREE)
@@ -807,8 +813,8 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
 
 void SceneInfo::TexturesReloaded()
 {
-    SceneHelper::TextureCollector collector(SceneHelper::TextureCollector::OnlyActiveTextures);
-    SceneHelper::EnumerateSceneTextures(activeScene, collector);
+    DAVA::SceneHelper::TextureCollector collector(DAVA::SceneHelper::TextureCollector::OnlyActiveTextures);
+    DAVA::SceneHelper::EnumerateSceneTextures(activeScene, collector);
     sceneTexturesSize = CalculateTextureSize(collector.GetTextures());
 
     RefreshSceneGeneralInfo();
@@ -874,7 +880,7 @@ void SceneInfo::RefreshVegetationInfoSection()
     if (activeScene != NULL)
     {
         DAVA::Vector<DAVA::VegetationRenderObject*> activeVegetationObjects;
-        activeScene->editorVegetationSystem->GetActiveVegetation(activeVegetationObjects);
+        activeScene->GetSystem<DAVA::EditorVegetationSystem>()->GetActiveVegetation(activeVegetationObjects);
 
         DAVA::uint32 activeObjectsSize = static_cast<DAVA::uint32>(activeVegetationObjects.size());
         QtPropertyData* header = GetInfoHeader("Vegetation Info");
@@ -1080,10 +1086,10 @@ void SceneInfo::RefreshLayersSection()
     }
 }
 
-EditorStatisticsSystem* SceneInfo::GetCurrentEditorStatisticsSystem() const
+DAVA::EditorStatisticsSystem* SceneInfo::GetCurrentEditorStatisticsSystem() const
 {
     if (activeScene == nullptr)
         return nullptr;
 
-    return activeScene->editorStatisticsSystem;
+    return activeScene->GetSystem<DAVA::EditorStatisticsSystem>();
 }

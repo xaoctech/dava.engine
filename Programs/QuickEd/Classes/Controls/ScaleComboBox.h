@@ -12,7 +12,7 @@
 
 class QIntValidator;
 
-class ScaleComboBox final : public DAVA::TArc::ControlProxyImpl<QComboBox>
+class ScaleComboBox final : public DAVA::ControlProxyImpl<QComboBox>
 {
 public:
     enum class Fields : DAVA::uint32
@@ -24,7 +24,7 @@ public:
     };
 
     DECLARE_CONTROL_PARAMS(Fields);
-    ScaleComboBox(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
+    ScaleComboBox(const Params& params, DAVA::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
 
 private:
     void CurrentIndexChanged(int newCurrentItem);
@@ -34,7 +34,7 @@ private:
     DAVA::float32 StringToValue(const QString& text) const;
 
     void SetupControl();
-    void UpdateControl(const DAVA::TArc::ControlDescriptor& changedfields) override;
+    void UpdateControl(const DAVA::ControlDescriptor& changedfields) override;
 
     void CreateItems(const DAVA::Reflection& fieldEnumerator);
     void SetCurrentValue(const DAVA::Any& value);
@@ -43,5 +43,5 @@ private:
 
     bool updateControlProceed = false;
     QIntValidator* validator = nullptr;
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 };

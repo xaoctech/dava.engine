@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/WindowSubSystem/UI.h>
 
 #include <Base/RefPtr.h>
@@ -11,13 +11,10 @@ class LibraryWidget;
 
 namespace DAVA
 {
-namespace TArc
-{
 class QtAction;
 }
-}
 
-class LibraryData : public DAVA::TArc::DataNode
+class LibraryData : public DAVA::TArcDataNode
 {
 public:
     LibraryData();
@@ -30,8 +27,8 @@ private:
 
     struct ActionInfo
     {
-        DAVA::TArc::QtAction* action = nullptr;
-        DAVA::TArc::ActionPlacementInfo placement;
+        DAVA::QtAction* action = nullptr;
+        DAVA::ActionPlacementInfo placement;
     };
     using ActionsMap = DAVA::UnorderedMultiMap<ControlNode*, ActionInfo>;
 
@@ -44,5 +41,5 @@ private:
 
     PackageNode* currentPackageNode = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(LibraryData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(LibraryData, DAVA::TArcDataNode);
 };

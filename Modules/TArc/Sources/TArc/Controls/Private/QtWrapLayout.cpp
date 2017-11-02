@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace QtWrapLayoutDetails
 {
 template <size_t count>
@@ -595,6 +593,4 @@ QtWrapLayoutPrivate* QtWrapLayout::GetNonConstPrivate() const
     Q_D(const QtWrapLayout);
     return const_cast<QtWrapLayoutPrivate*>(d);
 }
-
-} // namespace TArc
 } // namespace DAVA

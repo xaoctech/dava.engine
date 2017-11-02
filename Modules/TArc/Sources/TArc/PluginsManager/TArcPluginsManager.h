@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class TArcPlugin;
 class TArcPluginManager
 {
@@ -35,5 +33,4 @@ private:
 
     Vector<PluginNode> pluginsCollection;
 };
-} // namespace TArc
 } // namespace DAVA

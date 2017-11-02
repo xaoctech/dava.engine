@@ -11,13 +11,13 @@ namespace DAVA
 class UISpineSystem;
 }
 
-class SpineControlModule : public DAVA::TArc::ClientModule
+class SpineControlModule : public DAVA::ClientModule
 {
-    DAVA_VIRTUAL_REFLECTION(SpineControlModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(SpineControlModule, DAVA::ClientModule);
 
 protected:
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
     void PostInit() override;
 
 private:

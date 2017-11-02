@@ -31,7 +31,7 @@ DAVA::eAlign GetDirection(DAVA::Vector2::eAxis axis, const DAVA::Vector2& startP
 }
 }
 
-DistanceSystem::DistanceSystem(DAVA::TArc::ContextAccessor* accessor)
+DistanceSystem::DistanceSystem(DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
 {
 }
@@ -48,7 +48,6 @@ BaseEditorSystem::eSystems DistanceSystem::GetOrder() const
 bool DistanceSystem::CanDrawDistances() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     if (canDrawDistancesAfterInput == false)
     {
@@ -100,7 +99,6 @@ bool DistanceSystem::CanDrawDistances() const
 void DistanceSystem::OnUpdate()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     if (CanDrawDistances() == false)
     {

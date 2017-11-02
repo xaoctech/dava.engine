@@ -24,9 +24,9 @@
 
 namespace ComboBoxTestDetails
 {
-DAVA::TArc::WindowKey wndKey("ComboBoxTestWnd");
+DAVA::WindowKey wndKey("ComboBoxTestWnd");
 
-class ComboBoxTestModule : public DAVA::TArc::ClientModule
+class ComboBoxTestModule : public DAVA::ClientModule
 {
 public:
     enum eTestedValue
@@ -120,7 +120,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         DAVA::Reflection reflectedModel = DAVA::Reflection::Create(&model);
 
@@ -171,13 +171,13 @@ public:
             layout->AddControl(comboBox);
         }
 
-        DAVA::TArc::PanelKey panelKey("ComboBoxTest", DAVA::TArc::CentralPanelInfo());
+        DAVA::PanelKey panelKey("ComboBoxTest", DAVA::CentralPanelInfo());
         GetUI()->AddView(wndKey, panelKey, w);
     }
 
     static ComboBoxTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ComboBoxTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ComboBoxTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<ComboBoxTestModule>::Begin()
         .ConstructorByPointer()
@@ -352,5 +352,5 @@ DAVA_TARC_TESTCLASS(ComboBoxTest)
     DECLARE_TESTED_MODULE(ComboBoxTestDetails::ComboBoxTestModule);
     END_TESTED_MODULES()
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 };

@@ -1,18 +1,20 @@
-#include "DockLODEditor/LODDistanceWidget.h"
-#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+#include "Classes/Qt/DockLODEditor/LODDistanceWidget.h"
 
-#include "Utils/StringFormat.h"
+#include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
-#include "Scene/System/EditorLODSystem.h"
+#include <REPlatform/Scene/Systems/EditorLODSystem.h>
+
 #include <TArc/Utils/Utils.h>
 
+#include <Utils/StringFormat.h>
+
+#include <QApplication>
+#include <QBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPalette>
 #include <QPushButton>
 #include <QSignalBlocker>
-#include <QBoxLayout>
-#include <QPalette>
-#include <QApplication>
 
 namespace LODDistanceWidgetDetail
 {
@@ -56,7 +58,7 @@ void LODDistanceWidget::CreateUI()
     deleteButton->setSizePolicy(sizePolicyButton);
     deleteButton->setMinimumSize(QSize(24, 24));
     deleteButton->setMaximumSize(QSize(24, 24));
-    deleteButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/remove.png"));
+    deleteButton->setIcon(DAVA::SharedIcon(":/QtIcons/remove.png"));
     deleteButton->setToolTip("Remove geometry");
     deleteButton->setEnabled(active && canDelete);
     layout->addWidget(deleteButton);
@@ -89,7 +91,7 @@ void LODDistanceWidget::CreateUI()
     resetButton->setMaximumSize(QSize(24, 24));
     resetButton->setToolTip("Reset distance");
 
-    resetButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/reset.png"));
+    resetButton->setIcon(DAVA::SharedIcon(":/QtIcons/reset.png"));
     layout->addWidget(resetButton);
 }
 
@@ -189,7 +191,7 @@ void LODDistanceWidget::DistanceChangedBySpinBox(double value)
 
 void LODDistanceWidget::DistanceChangedByResetButton()
 {
-    distance = ClampDistanceBySpinBox(EditorLODSystem::LOD_DISTANCE_INFINITY);
+    distance = ClampDistanceBySpinBox(DAVA::EditorLODSystem::LOD_DISTANCE_INFINITY);
     isMultiple = false;
 
     UpdateDistanceValues();

@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ComboBox final : public ControlProxyImpl<QComboBox>
 {
 public:
@@ -42,5 +40,4 @@ private:
     QtConnections connections;
     QString multipleValueText = QString(MultipleValuesString);
 };
-} // namespace TArc
 } // namespace DAVA

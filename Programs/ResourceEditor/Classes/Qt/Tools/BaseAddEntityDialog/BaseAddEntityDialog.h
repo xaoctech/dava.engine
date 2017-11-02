@@ -1,13 +1,12 @@
-#ifndef __RESOURCEEDITORQT__BASEADDENTITYDIALOG__
-#define __RESOURCEEDITORQT__BASEADDENTITYDIALOG__
+#pragma once
 
-#include "DAVAEngine.h"
-#include "Scene3D/Entity.h"
-
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+
+#include <Scene3D/Entity.h>
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -41,7 +40,7 @@ public:
 
 protected slots:
     virtual void OnItemEdited(const QModelIndex&);
-    virtual void CommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
+    virtual void CommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
 
 protected:
     virtual void FillPropertyEditorWithContent() = 0;
@@ -65,5 +64,3 @@ protected:
 
     DAVA::Map<QWidget*, QWidget*> additionalWidgetMap;
 };
-
-#endif /* defined(__RESOURCEEDITORQT__BASEADDENTITYDIALOG__) */

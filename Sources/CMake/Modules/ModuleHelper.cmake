@@ -65,7 +65,7 @@ macro ( add_module_subdirectory NAME SOURCE_DIR )
 endmacro()    
 
 macro ( add_plugin NAME SOURCE_DIR )
-    set_property( GLOBAL PROPERTY COMPONENTS_${MODULE_COMPONENTS_VALUE_NAME}  )
+    set( MODULE_COMPONENTS_VALUE_NAME ) 
 
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} )
         set( ${VALUE}_HASH ${${VALUE}} )

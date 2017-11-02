@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 GradientSlider::GradientSlider(QWidget* parent)
     : AbstractSlider(parent)
     , arrowSize(9, 9)
@@ -153,6 +151,5 @@ void GradientSlider::drawArrow(EDGE arrow, QPainter* p) const
 
     QRect rc(pos, arrowSize);
     p->drawPixmap(pos, arrowCache[arrow]);
-}
 }
 }

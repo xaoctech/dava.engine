@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void DataWrappersProcessor::Shoutdown()
 {
     wrappers.clear();
@@ -62,7 +60,7 @@ void DataWrappersProcessor::Sync()
     {
         if (!wrappers[index].IsActive())
         {
-            DAVA::RemoveExchangingWithLast(wrappers, index);
+            RemoveExchangingWithLast(wrappers, index);
         }
         else
         {
@@ -74,6 +72,5 @@ void DataWrappersProcessor::Sync()
         wrapper.Sync(true);
     }
     recursiveSyncGuard = false;
-}
 }
 }

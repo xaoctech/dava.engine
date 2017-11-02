@@ -8,8 +8,6 @@
 namespace DAVA
 {
 class EngineContext;
-namespace TArc
-{
 class TArcPlugin
 {
 public:
@@ -64,39 +62,43 @@ public:
 private:
     PluginDescriptor descr;
 };
-} // namespace TArc
 } // namespace DAVA
 
 #define CREATE_PLUGINS_ARRAY_FUNCTION_NAME CreatePluginsArray
 #define DELETE_PLUGINS_ARRAY DeletePluginArray
 #define DESTROY_PLUGIN_FUNCTION_NAME DestroyPlugin
 
-using TCreatePluginFn = DAVA::TArc::TArcPlugin** (*)(const DAVA::EngineContext* context);
-using TDestroyPluginsArray = void (*)(DAVA::TArc::TArcPlugin** pluginsArray);
-using TDestroyPluginFn = void (*)(DAVA::TArc::TArcPlugin* plugin);
+using TCreatePluginFn = DAVA::TArcPlugin** (*)(const DAVA::EngineContext* context);
+using TDestroyPluginsArray = void (*)(DAVA::TArcPlugin** pluginsArray);
+using TDestroyPluginFn = void (*)(DAVA::TArcPlugin* plugin);
 
 #define START_PLUGINS_DECLARATION()\
 extern "C" { \
-    PLUGIN_FUNCTION_EXPORT void DESTROY_PLUGIN_FUNCTION_NAME(DAVA::TArc::TArcPlugin* plugin) \
+    PLUGIN_FUNCTION_EXPORT void DESTROY_PLUGIN_FUNCTION_NAME(DAVA::TArcPlugin* plugin) \
     { \
         delete plugin; \
     } \
-    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGINS_ARRAY(DAVA::TArc::TArcPlugin** pluginsArray) \
+    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGINS_ARRAY(DAVA::TArcPlugin** pluginsArray) \
     { \
         delete[] pluginsArray; \
     } \
-    PLUGIN_FUNCTION_EXPORT DAVA::TArc::TArcPlugin** CREATE_PLUGINS_ARRAY_FUNCTION_NAME(const DAVA::EngineContext* context) \
+    PLUGIN_FUNCTION_EXPORT DAVA::TArcPlugin** CREATE_PLUGINS_ARRAY_FUNCTION_NAME(const DAVA::EngineContext* context) \
     { \
-        DAVA::TArc::TArcPlugin** plugins = new DAVA::TArc::TArcPlugin*[32]; \
-        memset(plugins, 0, 32 * sizeof(DAVA::TArc::TArcPlugin*)); \
+        DAVA::TArcPlugin** plugins = new DAVA::TArcPlugin*[32]; \
+        memset(plugins, 0, 32 * sizeof(DAVA::TArcPlugin*)); \
         DAVA::int32 counter = 0
 
 #define DECLARE_PLUGIN(moduleType, descr)\
     { \
-        plugins[counter++] = new DAVA::TArc::TypedTArcPlugin<moduleType>(context, descr); \
+        plugins[counter++] = new DAVA::TypedTArcPlugin<moduleType>(context, descr); \
     }
 
 #define END_PLUGINS_DECLARATION()\
         return plugins; \
     } \
+} \
+\
+int DAVAMain(DAVA::Vector<DAVA::String> cmdline)\
+{\
+    return 0;\
 }

@@ -11,12 +11,11 @@
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
 
-EditorCanvas::EditorCanvas(DAVA::TArc::ContextAccessor* accessor)
+EditorCanvas::EditorCanvas(DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DataContext*) { return Reflection::Create(&canvasDataAdapter); });
 }

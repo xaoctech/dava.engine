@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 
-LibraryWidget::LibraryWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent)
+LibraryWidget::LibraryWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, QWidget* parent)
     : QWidget(parent)
     , libraryModel(new LibraryModel(ui, accessor, this))
     , accessor(accessor)

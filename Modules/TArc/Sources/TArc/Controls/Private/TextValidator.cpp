@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 TextValidator::TextValidator(ValidatorDelegate* d_, QObject* parent)
     : QValidator(parent)
     , d(d_)
@@ -47,6 +45,4 @@ QValidator::State TextValidator::validate(QString& input, int& pos) const
         return QValidator::Invalid;
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

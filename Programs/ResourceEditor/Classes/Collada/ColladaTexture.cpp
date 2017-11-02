@@ -1,14 +1,15 @@
-#include "stdafx.h"
-#include <wchar.h>
 #include "ColladaTexture.h"
-#include "Logger/Logger.h"
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageSystem.h"
-#include "FileSystem/FileSystem.h"
-#include "Utils/Utils.h"
-#include "Qt/Main/QtUtils.h"
 
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include <REPlatform/Scene/Utils/Utils.h>
+#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+
+#include <Logger/Logger.h>
+#include <Render/Image/Image.h>
+#include <Render/Image/ImageSystem.h>
+#include <FileSystem/FileSystem.h>
+#include <Utils/Utils.h>
+
+#include <wchar.h>
 
 namespace DAVA
 {

@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class SubPropertiesEditor : public ControlProxyImpl<QWidget>
 {
 public:
@@ -38,6 +36,4 @@ private:
     Reflection copyModel;
     DataWrapper copyModelWrapper;
 };
-
-} // namespace TArc
 } // namespace DAVA

@@ -6,20 +6,16 @@
 #include <QTimer>
 #include <QPointer>
 
-#include "Scene/SceneSignals.h"
-#include "DockSceneTree/SceneTreeModel.h"
-#include "DockSceneTree/SceneTreeDelegate.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeModel.h"
+#include "Classes/Qt/DockSceneTree/SceneTreeDelegate.h"
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
+class SceneEditor2;
+class RECommandNotificationObject;
 }
 
-class RECommandNotificationObject;
-class GlobalOperations;
 class LazyUpdater;
 class SceneTree : public QTreeView
 {
@@ -28,8 +24,6 @@ class SceneTree : public QTreeView
 public:
     explicit SceneTree(QWidget* parent = 0);
     ~SceneTree();
-
-    void Init(const std::shared_ptr<GlobalOperations>& globalOperations);
 
 protected:
     void dropEvent(QDropEvent* event) override;
@@ -45,12 +39,12 @@ private slots:
     void CollapseAll();
     void ReloadSelectedEntitiesTextures();
 
-    void SceneActivated(SceneEditor2* scene);
-    void SceneDeactivated(SceneEditor2* scene);
-    void SceneStructureChanged(SceneEditor2* scene, DAVA::Entity* parent);
-    void CommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
+    void SceneActivated(DAVA::SceneEditor2* scene);
+    void SceneDeactivated(DAVA::SceneEditor2* scene);
+    void SceneStructureChanged(DAVA::SceneEditor2* scene, DAVA::Entity* parent);
+    void CommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
 
-    void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+    void ParticleLayerValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer);
 
     void TreeSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void TreeItemDoubleClicked(const QModelIndex& index);
@@ -84,7 +78,5 @@ private:
     SceneTreeDelegate* treeDelegate = nullptr;
     LazyUpdater* treeUpdater;
     bool isInSelectionSync = false;
-    std::shared_ptr<GlobalOperations> globalOperations;
-
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
 };

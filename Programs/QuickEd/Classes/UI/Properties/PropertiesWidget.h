@@ -13,11 +13,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 class Project;
@@ -26,15 +23,15 @@ class PackageBaseNode;
 class PropertiesModel;
 class PropertiesTreeItemDelegate;
 
-class PropertiesWidget : public QDockWidget, public Ui::PropertiesWidget, private DAVA::TArc::DataListener
+class PropertiesWidget : public QDockWidget, public Ui::PropertiesWidget, private DAVA::DataListener
 {
     Q_OBJECT
 public:
     PropertiesWidget(QWidget* parent = nullptr);
     ~PropertiesWidget();
 
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
-    void SetUI(DAVA::TArc::UI* ui);
+    void SetAccessor(DAVA::ContextAccessor* accessor);
+    void SetUI(DAVA::UI* ui);
 
 public slots:
     void SetProject(const Project* project);
@@ -67,7 +64,7 @@ private:
 
     void ApplyExpanding();
 
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
     QAction* addComponentAction = nullptr;
     QAction* addStylePropertyAction = nullptr;
@@ -84,8 +81,8 @@ private:
     DAVA::String lastTopIndexPath;
     PackageBaseNode* selectedNode = nullptr; //node used to build model
 
-    DAVA::TArc::DataWrapper documentDataWrapper;
+    DAVA::DataWrapper documentDataWrapper;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
 };

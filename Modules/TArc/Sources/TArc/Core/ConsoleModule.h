@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class ConsoleModule : public ReflectionBase
 {
@@ -54,6 +52,4 @@ inline int ConsoleModule::GetExitCode() const
 {
     return 0;
 }
-
-} // namespace TArc
 } // namespace DAVA

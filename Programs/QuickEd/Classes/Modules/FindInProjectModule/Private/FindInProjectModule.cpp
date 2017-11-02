@@ -17,13 +17,13 @@
 
 namespace FindInProjectDetail
 {
-class FindInProjectData : public DAVA::TArc::DataNode
+class FindInProjectData : public DAVA::TArcDataNode
 {
 public:
     std::unique_ptr<FindInDocumentController> widgetController;
 
 private:
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(FindInProjectData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(FindInProjectData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<FindInProjectData>::Begin()
         .End();
@@ -41,7 +41,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(FindInProjectModule)
 void FindInProjectModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
@@ -61,8 +60,8 @@ void FindInProjectModule::PostInit()
 
     connections.AddConnection(findInProjectAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindInProject));
 
-    TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, "Select Current Document in File System")));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findInProjectAction);
+    ActionPlacementInfo placementInfo(CreateMenuPoint("Find", InsertionParams(InsertionParams::eInsertionMethod::BeforeItem, "Select Current Document in File System")));
+    ui->AddAction(DAVA::mainWindowKey, placementInfo, findInProjectAction);
 
     FindInProjectDetail::FindInProjectData* data = new FindInProjectDetail::FindInProjectData();
     data->widgetController.reset(new FindInDocumentController(ui, accessor));
@@ -76,7 +75,7 @@ void FindInProjectModule::PostInit()
                                   InvokeOperation(QEGlobal::SelectControl.ID, path, name);
                               });
 
-    GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(data));
+    GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArcDataNode>(data));
 }
 
 void FindInProjectModule::OnFindInProject()

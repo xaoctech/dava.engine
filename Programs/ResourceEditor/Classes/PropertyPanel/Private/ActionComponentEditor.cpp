@@ -1,6 +1,5 @@
 #include "ActionComponentEditor.h"
 #include "ui_ActionComponentEditor.h"
-#include "../Qt/Main/QtUtils.h"
 
 #include <QTableWidgetItem>
 #include <QComboBox>

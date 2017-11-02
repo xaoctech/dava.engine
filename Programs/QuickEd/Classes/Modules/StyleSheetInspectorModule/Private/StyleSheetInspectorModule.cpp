@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(StyleSheetInspectorModule)
 
 void StyleSheetInspectorModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     const char* title = "Style Sheet Inspector";
     DockPanelInfo panelInfo;
@@ -24,7 +24,7 @@ void StyleSheetInspectorModule::PostInit()
 
     ContextAccessor* accessor = GetAccessor();
     StyleSheetInspectorWidget* widget = new StyleSheetInspectorWidget(accessor);
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, widget);
+    GetUI()->AddView(DAVA::mainWindowKey, panelKey, widget);
 }
 
 DECL_GUI_MODULE(StyleSheetInspectorModule);

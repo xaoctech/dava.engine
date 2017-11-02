@@ -1,11 +1,9 @@
 #include "TArc/Utils/RhiEmptyFrame.h"
 
-#include "Render/Renderer.h"
-#include "Render/RenderHelper.h"
+#include <Render/Renderer.h>
+#include <Render/RenderHelper.h>
 
 namespace DAVA
-{
-namespace TArc
 {
 RhiEmptyFrame::RhiEmptyFrame()
 {
@@ -19,5 +17,4 @@ RhiEmptyFrame::~RhiEmptyFrame()
 {
     Renderer::EndFrame();
 }
-} // namespace TArc
 } // namespace DAVA

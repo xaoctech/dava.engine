@@ -20,5 +20,5 @@ private:
 
     ControlNode* GetHighlightNode() const;
 
-    DAVA_VIRTUAL_REFLECTION(DistanceLinesModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(DistanceLinesModule, DAVA::ClientModule);
 };

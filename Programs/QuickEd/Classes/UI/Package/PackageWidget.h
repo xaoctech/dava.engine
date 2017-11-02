@@ -21,11 +21,8 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 struct PackageContext;
@@ -38,7 +35,7 @@ class PackageNode;
 class QItemSelection;
 class CommandExecutor;
 
-class PackageWidgetSettings : public DAVA::TArc::SettingsNode
+class PackageWidgetSettings : public DAVA::SettingsNode
 {
 public:
     DAVA::uint32 selectedDevice = 0;
@@ -47,7 +44,7 @@ public:
     bool useCustomUIViewerPath = false;
     DAVA::String customUIViewerPath;
 
-    DAVA_VIRTUAL_REFLECTION(PackageWidgetSettings, DAVA::TArc::SettingsNode);
+    DAVA_VIRTUAL_REFLECTION(PackageWidgetSettings, DAVA::SettingsNode);
 };
 
 class PackageWidget : public QDockWidget, public Ui::PackageWidget
@@ -57,8 +54,8 @@ public:
     explicit PackageWidget(QWidget* parent = 0);
     ~PackageWidget();
 
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
-    void SetUI(DAVA::TArc::UI* ui);
+    void SetAccessor(DAVA::ContextAccessor* accessor);
+    void SetUI(DAVA::UI* ui);
 
     PackageModel* GetPackageModel() const;
     using ExpandedIndexes = QModelIndexList;
@@ -146,9 +143,9 @@ private:
     bool lastFilterTextEmpty = true;
     PackageContext* currentContext = nullptr;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
-    DAVA::TArc::DataWrapper dataWrapper;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
+    DAVA::DataWrapper dataWrapper;
 };
 
 struct PackageContext

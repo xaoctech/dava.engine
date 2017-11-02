@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class FlagsComponentValue : public BaseComponentValue
 {
 public:
@@ -25,5 +23,4 @@ private:
 private:
     DAVA_VIRTUAL_REFLECTION(FlagsComponentValue, BaseComponentValue);
 };
-}
 }

@@ -13,7 +13,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ProjectSettingsGuard)
 void ProjectSettingsGuard::PostInit()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     {
@@ -30,7 +29,7 @@ void ProjectSettingsGuard::PostInit()
 
 ProjectSettingsGuard::~ProjectSettingsGuard()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     {
         PropertiesItem item = accessor->CreatePropertiesNode(projectsHistoryKey);

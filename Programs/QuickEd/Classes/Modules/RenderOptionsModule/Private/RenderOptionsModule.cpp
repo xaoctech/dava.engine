@@ -6,7 +6,7 @@
 
 #include <TArc/Controls/CheckBox.h>
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -64,9 +64,9 @@ private:
     DAVA::RenderOptions::RenderOption option;
 };
 
-class RenderOptionsData : public DAVA::TArc::DataNode
+class RenderOptionsData : public DAVA::TArcDataNode
 {
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(RenderOptionsData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(RenderOptionsData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<RenderOptionsData>::Begin()
         .Field("isEnabled", &RenderOptionsData::IsEnabled, nullptr)
@@ -89,7 +89,6 @@ const QString RenderOptionsModule::renderOptionsMenuItemName = QString("Render O
 void RenderOptionsModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     std::unique_ptr<RenderOptionsDetails::RenderOptionsData> data(new RenderOptionsDetails::RenderOptionsData());
     for (uint32 option = 0; option < RenderOptions::OPTIONS_COUNT; ++option)
@@ -117,7 +116,7 @@ void RenderOptionsModule::PostInit()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(QString("Tools"), { InsertionParams::eInsertionMethod::AfterItem }));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // Dialog
@@ -153,7 +152,7 @@ void RenderOptionsModule::PostInit()
         uint32 index = 0;
         for (std::shared_ptr<RenderOptionsDetails::OptionWrapper>& option : data->optionsRefs)
         {
-            CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+            CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
             params.fields[CheckBox::Fields::Checked] = "enabled";
             params.fields[CheckBox::Fields::TextHint] = "title";
             CheckBox* cb = new CheckBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(option.get())), data->optionsDialog.get());
@@ -173,7 +172,6 @@ void RenderOptionsModule::PostInit()
 void RenderOptionsModule::ShowRenderOptionsDialog()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     if (accessor)

@@ -1,6 +1,6 @@
 #include "QtPropertyDataInspDynamic.h"
 
-#include "Commands2/Base/RECommand.h"
+#include <REPlatform/Commands/InspDynamicModifyCommand.h>
 
 #include <QDebug>
 
@@ -65,7 +65,7 @@ void QtPropertyDataInspDynamic::SetValueInternal(const QVariant& value)
     if (NULL != dynamicInfo)
     {
         DAVA::SafeDelete(lastCommand);
-        lastCommand = new InspDynamicModifyCommand(dynamicInfo, ddata, name, newValue);
+        lastCommand = new DAVA::InspDynamicModifyCommand(dynamicInfo, ddata, name, newValue);
 
         dynamicInfo->MemberValueSet(ddata, name, newValue);
     }
@@ -128,7 +128,7 @@ std::unique_ptr<DAVA::Command> QtPropertyDataInspDynamic::CreateLastCommand() co
 {
     if (nullptr != lastCommand)
     {
-        return std::unique_ptr<DAVA::Command>(new InspDynamicModifyCommand(*lastCommand));
+        return std::unique_ptr<DAVA::Command>(new DAVA::InspDynamicModifyCommand(*lastCommand));
     }
 
     return std::unique_ptr<DAVA::Command>();

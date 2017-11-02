@@ -51,24 +51,23 @@ void CanvasModule::CreateData()
 
 void CanvasModule::CreateMenuSeparator()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     QAction* separator = new QAction(nullptr);
     separator->setObjectName("bgrMenuSeparator");
     separator->setSeparator(true);
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, separator);
 }
 
 void CanvasModule::RecreateBgrColorActions()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
     std::for_each(data->bgrColorActions.begin(), data->bgrColorActions.end(), [this](const CanvasModuleData::ActionInfo& actionInfo)
                   {
-                      GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.name);
+                      GetUI()->RemoveAction(DAVA::mainWindowKey, actionInfo.placement, actionInfo.name);
                   });
 
     QString menuBgrColor = "Background Color";
@@ -120,7 +119,7 @@ void CanvasModule::RecreateBgrColorActions()
                                       settings->backgroundColorIndex = currentIndex;
                                   });
 
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placement, action);
+        GetUI()->AddAction(DAVA::mainWindowKey, placement, action);
         CanvasModuleData::ActionInfo& actionInfo = data->bgrColorActions[currentIndex];
         actionInfo.name = action->text();
         actionInfo.placement = placement;
@@ -151,13 +150,13 @@ void CanvasModule::DestroySystems(Interfaces::EditorSystemsManagerInterface* sys
     systemsManager->UnregisterEditorSystem(controlsView);
 }
 
-void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void CanvasModule::OnContextCreated(DAVA::DataContext* context)
 {
     std::unique_ptr<CanvasData> canvasData = std::make_unique<CanvasData>();
     context->CreateData(std::move(canvasData));
 }
 
-void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void CanvasModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     RecreateBgrColorActions();
 }

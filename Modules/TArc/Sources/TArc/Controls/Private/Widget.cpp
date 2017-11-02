@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 Widget::Widget(QWidget* parent /*= nullptr*/)
     : QWidget(parent)
 {
@@ -57,5 +55,4 @@ QWidget* Widget::ToWidgetCast()
 {
     return this;
 }
-} // namespace TArc
 } // namespace DAVA

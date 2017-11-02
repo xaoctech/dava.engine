@@ -1,14 +1,18 @@
 #ifndef __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
 #define __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
 
-#include <QWidget>
-#include <QMimeData>
-#include <qlineedit.h>
-#include <qtoolbutton.h>
 #include "SelectPathWidgetBase.h"
 
+#include <QWidget>
+#include <QMimeData>
+#include <QLineEdit>
+#include <QToolButton>
+
 #include "DAVAEngine.h"
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 
 class SelectEntityPathWidget : public SelectPathWidgetBase
 {
@@ -19,7 +23,7 @@ public:
 
     ~SelectEntityPathWidget();
 
-    DAVA::Entity* GetOutputEntity(SceneEditor2*);
+    DAVA::Entity* GetOutputEntity(DAVA::SceneEditor2*);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event);
@@ -27,9 +31,9 @@ protected:
     void ConvertQMimeDataFromSceneTree(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>&);
 
     void ConvertQMimeDataFromFilePath(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>&,
-                                      SceneEditor2* sceneEditor = NULL);
+                                      DAVA::SceneEditor2* sceneEditor = NULL);
 
-    void ConvertFromMimeData(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>& retList, SceneEditor2* sceneEditor);
+    void ConvertFromMimeData(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>& retList, DAVA::SceneEditor2* sceneEditor);
 
     void SetEntities(const DAVA::List<DAVA::Entity*>& list, bool perfromRertain);
 

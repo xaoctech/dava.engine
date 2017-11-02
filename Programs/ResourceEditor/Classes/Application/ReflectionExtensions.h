@@ -2,7 +2,7 @@
 
 #include <TArc/Core/ClientModule.h>
 
-class ReflectionExtensionsModule : public DAVA::TArc::ClientModule
+class ReflectionExtensionsModule : public DAVA::ClientModule
 {
 public:
     ReflectionExtensionsModule() = default;
@@ -10,5 +10,5 @@ public:
     void PostInit() override;
 
 private:
-    DAVA_VIRTUAL_REFLECTION(ReflectionExtensionsModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ReflectionExtensionsModule, DAVA::ClientModule);
 };

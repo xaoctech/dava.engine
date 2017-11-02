@@ -20,7 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(IssueNavigatorModule)
 
 void IssueNavigatorModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     const char* title = "Issue Navigator";
     DockPanelInfo panelInfo;
     panelInfo.title = title;
@@ -31,7 +31,7 @@ void IssueNavigatorModule::PostInit()
     connections.AddConnection(widget, &IssueNavigatorWidget::JumpToControl, MakeFunction(this, &IssueNavigatorModule::JumpToControl));
     connections.AddConnection(widget, &IssueNavigatorWidget::JumpToPackage, MakeFunction(this, &IssueNavigatorModule::JumpToPackage));
 
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
+    GetUI()->AddView(DAVA::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
     layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));

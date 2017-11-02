@@ -1,18 +1,16 @@
-#include "ImageSplitterDialog/ImageSplitterDialogNormal.h"
-
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
-
-#include "Render/PixelFormatDescriptor.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-
-#include "ImageTools/ImageTools.h"
-#include "Main/mainwindow.h"
-#include "Main/QtUtils.h"
-
-#include <QMessageBox>
 #include "ui_ImageSplitterNormal.h"
+#include "Classes/Qt/ImageSplitterDialog/ImageSplitterDialogNormal.h"
+
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
+#include <REPlatform/Scene/Utils/Utils.h>
+
+#include <TArc/Core/Deprecated.h>
+
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/RenderBase.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <QMessageBox>
 
 ImageSplitterDialogNormal::ImageSplitterDialogNormal(QWidget* parent)
     : QDialog(parent)
@@ -40,13 +38,13 @@ ImageSplitterDialogNormal::~ImageSplitterDialogNormal()
 
 void ImageSplitterDialogNormal::OnSaveClicked()
 {
-    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    DAVA::SceneData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SceneData>();
     if (data == nullptr || data->GetScene().Get() == nullptr)
     {
         return;
     }
 
-    SceneEditor2* scene = data->GetScene().Get();
+    DAVA::SceneEditor2* scene = data->GetScene().Get();
     DAVA::Landscape* landscape = nullptr;
     if (scene != nullptr)
     {
@@ -85,7 +83,7 @@ void ImageSplitterDialogNormal::OnSaveClicked()
 void ImageSplitterDialogNormal::SaveAndReloadNormal(const DAVA::FilePath& pathname, int first, int second)
 {
     DAVA::ScopedPtr<DAVA::Image> mergedImage(CreateMergedImage(imageArreas[first]->GetImage(), imageArreas[second]->GetImage()));
-    SaveImageToFile(mergedImage, pathname);
+    DAVA::SaveImageToFile(mergedImage, pathname);
 
     auto texture = DAVA::Texture::Get(DAVA::TextureDescriptor::GetDescriptorPathname(pathname));
     if (texture)

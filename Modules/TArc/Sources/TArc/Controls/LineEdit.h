@@ -15,8 +15,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class LineEdit final : public ControlProxyImpl<QLineEdit>, private ValidatorDelegate
 {
     using TBase = ControlProxyImpl<QLineEdit>;
@@ -49,5 +47,4 @@ private:
 private:
     QtConnections connections;
 };
-} // namespace TArc
 } // namespace DAVA

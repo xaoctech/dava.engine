@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 Label::Label(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QLabel>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -23,7 +21,7 @@ void Label::UpdateControl(const ControlDescriptor& descriptor)
 {
     if (descriptor.IsChanged(Fields::Text))
     {
-        DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Text));
+        Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Text));
         DVASSERT(fieldValue.IsValid());
 
         QString stringValue;
@@ -50,6 +48,4 @@ void Label::UpdateControl(const ControlDescriptor& descriptor)
         setToolTip(stringValue);
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

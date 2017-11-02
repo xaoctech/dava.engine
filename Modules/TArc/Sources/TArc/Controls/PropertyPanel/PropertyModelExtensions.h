@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ReflectedPropertyItem;
 class BaseComponentValue;
 
@@ -60,7 +58,7 @@ public:
     virtual std::shared_ptr<PropertyNode> CreatePropertyNode(const std::shared_ptr<PropertyNode>& parent, Reflection::Field&& reflection, int32 sortKey, int32_t type, const Any& value) = 0;
 };
 
-std::shared_ptr<PropertyNode> MakeRootNode(IChildAllocator* allocator, DAVA::Reflection::Field&& field);
+std::shared_ptr<PropertyNode> MakeRootNode(IChildAllocator* allocator, Reflection::Field&& field);
 
 class ExtensionChain
 {
@@ -208,5 +206,4 @@ protected:
 
     struct ModifyExtDeleter;
 };
-} // namespace TArc
 } // namespace DAVA

@@ -24,7 +24,7 @@
 #include <QCheckBox>
 #include <QKeyEvent>
 
-MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* tarcUi, QWidget* parent)
+MainWindow::MainWindow(DAVA::ContextAccessor* accessor_, DAVA::UI* tarcUi, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow())
 #if defined(__DAVAENGINE_MACOS__)

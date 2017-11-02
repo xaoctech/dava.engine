@@ -1,16 +1,16 @@
-#ifndef __QT_SCENE_TREE_MODEL_H__
-#define __QT_SCENE_TREE_MODEL_H__
+#pragma once
+
+#include "Classes/Qt/DockSceneTree/SceneTreeItem.h"
+
+#include <REPlatform/Scene/SceneEditor2.h>
+
+#include <Base/Any.h>
+#include <Scene3D/Scene.h>
 
 #include <QPair>
 #include <QMap>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
-
-#include "Scene/SceneEditor2.h"
-#include "Qt/DockSceneTree/SceneTreeItem.h"
-
-// framework
-#include "Scene3D/Scene.h"
 
 class SceneTreeModel
 : public QStandardItemModel
@@ -39,8 +39,8 @@ public:
     SceneTreeModel(QObject* parent = 0);
     ~SceneTreeModel();
 
-    void SetScene(SceneEditor2* scene);
-    SceneEditor2* GetScene() const;
+    void SetScene(DAVA::SceneEditor2* scene);
+    DAVA::SceneEditor2* GetScene() const;
 
     QModelIndex GetIndex(const DAVA::Any& object) const;
 
@@ -86,7 +86,7 @@ private:
     Qt::DropActions supportedDragActions() const override;
 
 private:
-    SceneEditor2* curScene = nullptr;
+    DAVA::SceneEditor2* curScene = nullptr;
 
     DAVA::Map<DAVA::Any, QModelIndex, DAVA::PointerValueAnyLess> indexesCache;
     QString filterText;
@@ -103,5 +103,3 @@ public:
 protected:
     SceneTreeModel* treeModel;
 };
-
-#endif // __QT_SCENE_TREE_MODEL_H__

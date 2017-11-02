@@ -11,7 +11,7 @@
 
 QMap<QString, LogWidget*> DeviceLogController::views;
 
-DeviceLogController::DeviceLogController(DAVA::TArc::UI* ui, const DAVA::Net::PeerDescription& peerDescr, QWidget* _parentWidget, QObject* parent)
+DeviceLogController::DeviceLogController(DAVA::UI* ui, const DAVA::Net::PeerDescription& peerDescr, QWidget* _parentWidget, QObject* parent)
     : QObject(parent)
     , parentWidget(_parentWidget)
     , peer(peerDescr)
@@ -84,7 +84,7 @@ void DeviceLogController::Output(const DAVA::String& msg)
     view->AddMessage(ll, msg.c_str());
 }
 
-LogWidget* DeviceLogController::GetOrCreateLogView(const QString& title, QWidget* parentWidget, DAVA::TArc::UI* ui)
+LogWidget* DeviceLogController::GetOrCreateLogView(const QString& title, QWidget* parentWidget, DAVA::UI* ui)
 {
     auto found = views.find(title);
     if (found != views.end())
@@ -97,12 +97,12 @@ LogWidget* DeviceLogController::GetOrCreateLogView(const QString& title, QWidget
         view->setWindowFlags(Qt::Window);
         view->setWindowTitle(title);
 
-        DAVA::TArc::DockPanelInfo panelInfo;
+        DAVA::DockPanelInfo panelInfo;
         panelInfo.title = title;
         panelInfo.area = Qt::RightDockWidgetArea;
         panelInfo.ensureVisible = true;
-        DAVA::TArc::PanelKey panelKey(title, panelInfo);
-        ui->AddView(DAVA::TArc::mainWindowKey, panelKey, view);
+        DAVA::PanelKey panelKey(title, panelInfo);
+        ui->AddView(DAVA::mainWindowKey, panelKey, view);
 
         views.insert(title, view);
         return view;

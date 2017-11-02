@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class QtVBoxLayout : public QVBoxLayout
 {
 public:
@@ -39,6 +37,4 @@ void QtHBoxLayout::AddControl(ControlProxyImpl<T>* control, int stretch, Qt::Ali
 {
     addWidget(control->ToWidgetCast(), stretch, alignment);
 }
-
-} // namespace TArc
 } // namespace DAVA

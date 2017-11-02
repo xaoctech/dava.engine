@@ -11,11 +11,8 @@ class QTreeView;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 class LibraryWidget : public QWidget
@@ -23,7 +20,7 @@ class LibraryWidget : public QWidget
     Q_OBJECT
 
 public:
-    LibraryWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent = nullptr);
+    LibraryWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, QWidget* parent = nullptr);
     ~LibraryWidget() override;
 
     void SetLibraryPackages(const DAVA::Vector<DAVA::RefPtr<PackageNode>>& projectLibrary);
@@ -35,5 +32,5 @@ private:
 private:
     QTreeView* treeView;
     LibraryModel* libraryModel = nullptr;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

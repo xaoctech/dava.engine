@@ -8,16 +8,12 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
-}
-
 class RECommandNotificationObject;
 class SelectableGroup;
-class MaterialFilteringModel;
+}
 
+class MaterialFilteringModel;
 class MaterialTree : public QTreeView
 {
     Q_OBJECT
@@ -26,7 +22,7 @@ public:
     MaterialTree(QWidget* parent = 0);
     ~MaterialTree();
 
-    void SetScene(SceneEditor2* sceneEditor);
+    void SetScene(DAVA::SceneEditor2* sceneEditor);
     DAVA::NMaterial* GetMaterial(const QModelIndex& index) const;
 
     void SelectMaterial(DAVA::NMaterial* material);
@@ -43,8 +39,8 @@ signals:
 
 public slots:
     void ShowContextMenu(const QPoint& pos);
-    void OnCommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
-    void OnStructureChanged(SceneEditor2* scene, DAVA::Entity* parent);
+    void OnCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
+    void OnStructureChanged(DAVA::SceneEditor2* scene, DAVA::Entity* parent);
     void OnSelectEntities();
 
 protected:
@@ -59,5 +55,5 @@ protected:
 
 private:
     void OnSelectionChanged(const DAVA::Any& selection);
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
 };

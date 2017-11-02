@@ -14,10 +14,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T, typename TEditor, typename TComponent>
-DAVA::TArc::kDComponentValue<T, TEditor, TComponent>::kDComponentValue()
+kDComponentValue<T, TEditor, TComponent>::kDComponentValue()
 {
     using namespace KDComponentValueTraits;
     InitFieldsList<T, TEditor>(fields);
@@ -184,7 +182,7 @@ int32 kDComponentValue<T, TEditor, TComponent>::GetAccuracy() const
 {
     if (!nodes.empty())
     {
-        if (DAVA::Type::Instance<T>() == DAVA::Type::Instance<Color>())
+        if (Type::Instance<T>() == Type::Instance<Color>())
         {
             return 3;
         }
@@ -383,5 +381,4 @@ template class kDComponentValue<AABBox3, MultiDoubleSpinBox, float32>;
 _Pragma("clang diagnostic pop")
 #endif
 
-} // namespace TArc
 } // namespace DAVA

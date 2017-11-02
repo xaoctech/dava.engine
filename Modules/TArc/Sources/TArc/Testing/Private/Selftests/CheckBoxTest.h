@@ -19,7 +19,7 @@
 
 namespace CheckBoxTestDetails
 {
-DAVA::TArc::WindowKey wndKey("CheckBoxTestWnd");
+DAVA::WindowKey wndKey("CheckBoxTestWnd");
 
 struct CheckBoxDataSource
 {
@@ -53,7 +53,7 @@ struct CheckBoxDataSource
     }
 };
 
-class CheckBoxTestModule : public DAVA::TArc::ClientModule
+class CheckBoxTestModule : public DAVA::ClientModule
 {
 public:
     CheckBoxTestModule()
@@ -63,7 +63,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         model.emplace("bool", true);
         model.emplace("checkState", Qt::PartiallyChecked);
 
@@ -116,7 +116,7 @@ public:
             layout->AddControl(checkBox);
         }
 
-        GetUI()->AddView(wndKey, DAVA::TArc::PanelKey("CheckBoxSandbox", DAVA::TArc::CentralPanelInfo()), w);
+        GetUI()->AddView(wndKey, DAVA::PanelKey("CheckBoxSandbox", DAVA::CentralPanelInfo()), w);
     }
 
     DAVA::Map<DAVA::String, DAVA::Any> model;
@@ -124,7 +124,7 @@ public:
 
     static CheckBoxTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(CheckBoxTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(CheckBoxTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<CheckBoxTestModule>::Begin()
         .ConstructorByPointer()
@@ -379,5 +379,5 @@ DAVA_TARC_TESTCLASS(CheckBoxTest)
     DECLARE_TESTED_MODULE(CheckBoxTestDetails::CheckBoxTestModule);
     END_TESTED_MODULES()
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 };

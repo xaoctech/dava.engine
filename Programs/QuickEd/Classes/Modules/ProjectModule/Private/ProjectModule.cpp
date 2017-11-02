@@ -43,7 +43,7 @@ void ProjectModule::PostInit()
     delayedExecutor.DelayedExecute(MakeFunction(this, &ProjectModule::OpenLastProject));
 }
 
-void ProjectModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void ProjectModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
     CloseProject();
 }
@@ -58,7 +58,7 @@ void ProjectModule::CreateActions()
     const QString closeProjectActionName("Close project");
     const QString recentProjectsActionName("Recent");
 
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
     //action new project
@@ -69,7 +69,7 @@ void ProjectModule::CreateActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::BeforeItem }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //action open project
@@ -81,7 +81,7 @@ void ProjectModule::CreateActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, newProjectActionName }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //action close project
@@ -100,12 +100,12 @@ void ProjectModule::CreateActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, openProjectActionName }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //Recent content
     {
-        RecentMenuItems::Params params(DAVA::TArc::mainWindowKey, accessor, ProjectModuleDetails::projectsHistoryKey);
+        RecentMenuItems::Params params(DAVA::mainWindowKey, accessor, ProjectModuleDetails::projectsHistoryKey);
         params.ui = GetUI();
         params.getMaximumCount = []() {
             return ProjectModuleDetails::projectsHistoryMaxSize;
@@ -126,15 +126,15 @@ void ProjectModule::CreateActions()
         QAction* separator = new QAction(nullptr);
         separator->setObjectName("projectActionsSeparator");
         separator->setSeparator(true);
-        DAVA::TArc::ActionPlacementInfo placementInfo(DAVA::TArc::CreateMenuPoint("File", DAVA::TArc::InsertionParams(InsertionParams::eInsertionMethod::AfterItem, recentProjectsActionName)));
+        DAVA::ActionPlacementInfo placementInfo(DAVA::CreateMenuPoint("File", DAVA::InsertionParams(InsertionParams::eInsertionMethod::AfterItem, recentProjectsActionName)));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, separator);
     }
 }
 
 void ProjectModule::OnOpenProject()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
@@ -150,7 +150,7 @@ void ProjectModule::OnOpenProject()
     params.dir = defaultPath;
     params.filters = QObject::tr("Project files(*.quicked *.uieditor)");
     params.title = QObject::tr("Select a project file");
-    QString projectPath = GetUI()->GetOpenFileName(DAVA::TArc::mainWindowKey, params);
+    QString projectPath = GetUI()->GetOpenFileName(DAVA::mainWindowKey, params);
 
     if (projectPath.isEmpty())
     {
@@ -164,11 +164,10 @@ void ProjectModule::OnOpenProject()
 void ProjectModule::OnNewProject()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     DirectoryDialogParams params;
     params.title = QObject::tr("Select directory for new project");
-    QString projectDirPath = GetUI()->GetExistingDirectory(DAVA::TArc::mainWindowKey, params);
+    QString projectDirPath = GetUI()->GetExistingDirectory(DAVA::mainWindowKey, params);
     if (projectDirPath.isEmpty())
     {
         return;
@@ -180,7 +179,6 @@ void ProjectModule::OnNewProject()
 void ProjectModule::CreateProject(const QString& projectDirPath)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ResultList resultList;
 
@@ -208,7 +206,6 @@ void ProjectModule::CreateProject(const QString& projectDirPath)
 void ProjectModule::OpenProject(const DAVA::String& path)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     if (CloseProject() == false)
     {
@@ -240,7 +237,7 @@ void ProjectModule::OpenProject(const DAVA::String& path)
 
 bool ProjectModule::CloseProject()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
     InvokeOperation(QEGlobal::CloseAllDocuments.ID);
@@ -260,7 +257,7 @@ bool ProjectModule::CloseProject()
 void ProjectModule::OpenLastProject()
 {
     using namespace DAVA;
-    using namespace TArc;
+
     ContextAccessor* accessor = GetAccessor();
     String projectPath;
     {
@@ -277,7 +274,6 @@ void ProjectModule::OpenLastProject()
 void ProjectModule::LoadPlugins()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     const DataContext* globalContext = accessor->GetGlobalContext();
@@ -307,7 +303,6 @@ void ProjectModule::LoadPlugins()
 void ProjectModule::RegisterFolders()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     const DataContext* globalContext = accessor->GetGlobalContext();
@@ -328,7 +323,6 @@ void ProjectModule::RegisterFolders()
 void ProjectModule::UnregisterFolders()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     const DataContext* globalContext = accessor->GetGlobalContext();
@@ -349,7 +343,7 @@ void ProjectModule::UnregisterFolders()
 void ProjectModule::ShowResultList(const QString& title, const DAVA::ResultList& resultList)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     ModalMessageParams params;
     params.title = title;
 
@@ -368,7 +362,7 @@ void ProjectModule::ShowResultList(const QString& title, const DAVA::ResultList&
     params.message = errors.join('\n');
     params.buttons = ModalMessageParams::Ok;
     UI* ui = GetUI();
-    ui->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+    ui->ShowModalMessage(DAVA::mainWindowKey, params);
 }
 
 namespace ProjectModuleTesting

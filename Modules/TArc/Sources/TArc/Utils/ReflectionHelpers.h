@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void ForEachField(const Reflection& r, const Function<void(Reflection::Field&& field)>& fn);
 
 const ReflectedType* GetValueReflectedType(const Reflection& r);
@@ -125,5 +123,4 @@ void EmplaceFieldMeta(FastName fieldName, Meta<TMeta, TIndex>&& meta)
         }
     }
 }
-} // namespace TArc
 } // namespace DAVA

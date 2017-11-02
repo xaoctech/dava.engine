@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 QValidator::State ConvertValidationState(M::ValidationResult::eState state)
 {
     switch (state)
@@ -23,5 +21,4 @@ QValidator::State ConvertValidationState(M::ValidationResult::eState state)
     DVASSERT(false);
     return QValidator::Invalid;
 }
-} // namespace TArc
 } // namespace DAVA

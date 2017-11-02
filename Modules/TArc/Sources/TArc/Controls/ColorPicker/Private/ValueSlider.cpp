@@ -12,8 +12,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ValueSliderDetail
 {
 const QString editorQss =
@@ -289,6 +287,5 @@ void ValueSlider::acceptEditing()
         editor->deleteLater();
         update();
     }
-}
 }
 }

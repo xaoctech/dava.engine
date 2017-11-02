@@ -10,7 +10,7 @@ namespace PopupLineEditTestDetail
 {
 using namespace DAVA;
 
-DAVA::TArc::WindowKey wndKey("LineEditTestWnd");
+DAVA::WindowKey wndKey("LineEditTestWnd");
 
 struct PopupLineEditDataSource
 {
@@ -33,7 +33,7 @@ DAVA_TARC_TESTCLASS(PopupLineEditTest)
     DAVA_TEST (ShowHideTest)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         Reflection model = Reflection::Create(&dataSource);
 
         LineEdit::Params p(GetAccessor(), GetUI(), PopupLineEditTestDetail::wndKey);
@@ -62,7 +62,7 @@ DAVA_TARC_TESTCLASS(PopupLineEditTest)
     DAVA_TEST (EditTestTest)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         Reflection model = Reflection::Create(&dataSource);
 
         LineEdit::Params p(GetAccessor(), GetUI(), PopupLineEditTestDetail::wndKey);

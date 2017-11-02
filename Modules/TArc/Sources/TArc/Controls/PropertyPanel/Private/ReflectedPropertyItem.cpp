@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ReflectedPropertyItem::~ReflectedPropertyItem() = default;
 
 ReflectedPropertyItem::ReflectedPropertyItem(ReflectedPropertyModel* model_, std::unique_ptr<BaseComponentValue>&& value_)
@@ -150,6 +148,4 @@ void ReflectedPropertyItem::RemovePropertyNodes()
 {
     value->RemovePropertyNodes();
 }
-
-} // namespace TArc
 } // namespace DAVA

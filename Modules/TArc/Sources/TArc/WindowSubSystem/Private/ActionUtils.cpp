@@ -11,11 +11,9 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ActionUtilsDetail
 {
-DAVA::Vector<std::pair<QString, InsertionParams::eInsertionMethod>> convertionMap = {
+Vector<std::pair<QString, InsertionParams::eInsertionMethod>> convertionMap = {
     { QString("after"), InsertionParams::eInsertionMethod::AfterItem },
     { QString("before"), InsertionParams::eInsertionMethod::BeforeItem }
 };
@@ -156,7 +154,7 @@ QString InsertionParams::Convert(eInsertionMethod v)
     return iter->first;
 }
 
-DAVA::TArc::InsertionParams InsertionParams::Create(const QUrl& url)
+InsertionParams InsertionParams::Create(const QUrl& url)
 {
     QUrlQuery query(url.query());
     InsertionParams params;
@@ -226,6 +224,4 @@ bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info)
 
     return true;
 }
-
-} // namespace TArc
 } // namespace DAVA

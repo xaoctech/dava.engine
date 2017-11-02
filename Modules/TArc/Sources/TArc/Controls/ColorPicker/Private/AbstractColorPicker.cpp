@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 AbstractColorPicker::AbstractColorPicker(QWidget* parent)
     : QWidget(parent)
 {
@@ -18,6 +16,5 @@ void AbstractColorPicker::SetColor(const QColor& c)
 {
     color = c;
     SetColorInternal(c);
-}
 }
 }

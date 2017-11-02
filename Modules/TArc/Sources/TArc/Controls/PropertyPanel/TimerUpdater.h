@@ -6,8 +6,6 @@
 class QTimer;
 namespace DAVA
 {
-namespace TArc
-{
 class TimerUpdater final : public PropertiesView::Updater
 {
 public:
@@ -21,5 +19,4 @@ private:
     int32 counter = 1;
     QtConnections connections;
 };
-} // namespace TArc
 } // namespace DAVA

@@ -32,7 +32,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)
 void LegacySupportModule::PostInit()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
@@ -48,9 +47,9 @@ void LegacySupportModule::PostInit()
     InitMainWindow();
 }
 
-void LegacySupportModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void LegacySupportModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalData = accessor->GetGlobalContext();
     projectDataWrapper.SetListener(nullptr);
@@ -60,13 +59,13 @@ void LegacySupportModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
     project = nullptr;
 }
 
-void LegacySupportModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void LegacySupportModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     using namespace DAVA;
-    using namespace TArc;
+
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
+    QWidget* window = GetUI()->GetWindow(DAVA::mainWindowKey);
     MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
     DVASSERT(mainWindow != nullptr);
     MainWindow::ProjectView* projectView = mainWindow->GetProjectView();
@@ -153,7 +152,6 @@ void LegacySupportModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, 
 void LegacySupportModule::InitMainWindow()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     MainWindow* mainWindow = new MainWindow(GetAccessor(), GetUI());
     MainWindow::ProjectView* projectView = mainWindow->GetProjectView();
@@ -168,20 +166,19 @@ void LegacySupportModule::InitMainWindow()
     QString title = QString(editorTitle).arg(DAVAENGINE_VERSION).arg(APPLICATION_BUILD_VERSION).arg(bit);
     mainWindow->SetEditorTitle(title);
 
-    GetUI()->InjectWindow(DAVA::TArc::mainWindowKey, mainWindow);
+    GetUI()->InjectWindow(DAVA::mainWindowKey, mainWindow);
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
 
     QString toolbarName = "Main Toolbar";
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    ui->DeclareToolbar(DAVA::mainWindowKey, toolbarTogglePlacement, toolbarName);
 }
 
 void LegacySupportModule::OnFindPrototypeInstances()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
@@ -205,7 +202,7 @@ void LegacySupportModule::OnFindPrototypeInstances()
             FilePath path = controlNode->GetPackage()->GetPath();
             String name = controlNode->GetName();
 
-            QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
+            QWidget* window = GetUI()->GetWindow(DAVA::mainWindowKey);
             MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
             MainWindow::ProjectView* view = mainWindow->GetProjectView();
 
@@ -217,7 +214,7 @@ void LegacySupportModule::OnFindPrototypeInstances()
 
 void LegacySupportModule::OnSelectAndRename(ControlNode* control)
 {
-    QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
+    QWidget* window = GetUI()->GetWindow(DAVA::mainWindowKey);
     MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
     DVASSERT(mainWindow != nullptr);
     PackageWidget* packageWidget = mainWindow->GetPackageWidget();
@@ -228,14 +225,13 @@ void LegacySupportModule::OnSelectAndRename(ControlNode* control)
 void LegacySupportModule::OnSelectionInPackageChanged(const SelectedNodes& selection)
 {
     using namespace DAVA;
-    using namespace TArc;
+
     documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, selection);
 }
 
 void LegacySupportModule::OnJumpToPrototype()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
@@ -267,7 +263,6 @@ void LegacySupportModule::OnJumpToPrototype()
 void LegacySupportModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     QString path = QString::fromStdString(packagePath.GetAbsolutePathname());
     QString name = QString::fromStdString(controlName);
@@ -280,7 +275,7 @@ void LegacySupportModule::JumpToPackage(const DAVA::FilePath& packagePath)
     InvokeOperation(QEGlobal::OpenDocumentByPath.ID, path);
 }
 
-void LegacySupportModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void LegacySupportModule::OnContextDeleted(DAVA::DataContext* context)
 {
     DocumentData* data = context->GetData<DocumentData>();
     packageWidgetContexts.erase(data->GetPackageNode());

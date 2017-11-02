@@ -1,7 +1,10 @@
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+
+#include <TArc/Core/Deprecated.h>
 
 #include <FileSystem/FileSystem.h>
 
@@ -25,11 +28,11 @@ bool TexturePathValidator::ValidateInternal(const QVariant& v)
 
 void TexturePathValidator::FixupInternal(QVariant& v) const
 {
-    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    DAVA::CommonInternalSettings* settings = DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>();
     if (v.type() == QVariant::String)
     {
         DAVA::FilePath texturePath = DAVA::FilePath(v.toString().toStdString());
-        if (DAVA::FileSystem::Instance()->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+        if (DAVA::FileSystem::Instance()->Exists(texturePath) && DAVA::TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
         {
             DAVA::FilePath descriptorPath = DAVA::TextureDescriptor::GetDescriptorPathname(texturePath);
 
@@ -40,7 +43,7 @@ void TexturePathValidator::FixupInternal(QVariant& v) const
                 DAVA::Vector<DAVA::Texture*> reloadTextures;
                 reloadTextures.push_back(found->second);
 
-                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+                DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
             }
 
             v = QVariant(QString::fromStdString(descriptorPath.GetAbsolutePathname()));

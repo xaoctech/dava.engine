@@ -37,13 +37,12 @@
 
 using namespace DAVA;
 
-Project::Project(MainWindow::ProjectView* view_, DAVA::TArc::ContextAccessor* accessor_)
+Project::Project(MainWindow::ProjectView* view_, DAVA::ContextAccessor* accessor_)
     : view(view_)
     , editorFontSystem(new EditorFontSystem())
     , editorLocalizationSystem(new EditorLocalizationSystem(accessor_))
     , accessor(accessor_)
 {
-    using namespace TArc;
     DataContext* globalContext = accessor->GetGlobalContext();
     ProjectData* projectData = globalContext->GetData<ProjectData>();
     DVASSERT(projectData != nullptr);
@@ -141,7 +140,7 @@ void Project::SetCurrentLanguage(const QString& newLanguageCode)
     const EngineContext* engineContext = GetEngineContext();
     engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
-    accessor->ForEachContext([](DAVA::TArc::DataContext& context)
+    accessor->ForEachContext([](DAVA::DataContext& context)
                              {
                                  DocumentData* data = context.GetData<DocumentData>();
                                  DVASSERT(data != nullptr);
@@ -166,7 +165,7 @@ void Project::SetRtl(bool isRtl)
     engineContext->uiControlSystem->SetRtl(isRtl);
     engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
-    accessor->ForEachContext([](DAVA::TArc::DataContext& context)
+    accessor->ForEachContext([](DAVA::DataContext& context)
                              {
                                  DocumentData* data = context.GetData<DocumentData>();
                                  DVASSERT(data != nullptr);
@@ -181,7 +180,7 @@ void Project::SetBiDiSupport(bool support)
     engineContext->uiControlSystem->SetBiDiSupportEnabled(support);
     engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
-    accessor->ForEachContext([](DAVA::TArc::DataContext& context)
+    accessor->ForEachContext([](DAVA::DataContext& context)
                              {
                                  DocumentData* data = context.GetData<DocumentData>();
                                  DVASSERT(data != nullptr);
@@ -202,7 +201,7 @@ void Project::SetGlobalStyleClasses(const QString& classesStr)
         uiControlSystem->GetStyleSheetSystem()->AddGlobalClass(FastName(token));
     }
 
-    accessor->ForEachContext([](DAVA::TArc::DataContext& context)
+    accessor->ForEachContext([](DAVA::DataContext& context)
                              {
                                  DocumentData* data = context.GetData<DocumentData>();
                                  DVASSERT(data != nullptr);
@@ -238,7 +237,7 @@ void Project::OnFontPresetChanged()
     const EngineContext* engineContext = GetEngineContext();
     engineContext->uiControlSystem->GetTextSystem()->InvalidateAll();
 
-    accessor->ForEachContext([](DAVA::TArc::DataContext& context)
+    accessor->ForEachContext([](DAVA::DataContext& context)
                              {
                                  DocumentData* data = context.GetData<DocumentData>();
                                  DVASSERT(data != nullptr);

@@ -1,10 +1,11 @@
 #ifndef __QT_PROPERTY_KEYED_ARCHIVE_MEMBER_H__
 #define __QT_PROPERTY_KEYED_ARCHIVE_MEMBER_H__
 
-#include "Base/Introspection.h"
-#include "../QtPropertyData.h"
-#include "QtPropertyDataDavaVariant.h"
-#include "Commands2/KeyedArchiveCommand.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+
+#include <REPlatform/Commands/KeyedArchiveCommand.h>
+#include <Base/Introspection.h>
 
 class QtPropertyKeyedArchiveMember : public QtPropertyDataDavaVariant
 {
@@ -16,7 +17,7 @@ public:
     DAVA::String key;
 
 protected:
-    KeyeadArchiveSetValueCommand* lastCommand;
+    DAVA::KeyeadArchiveSetValueCommand* lastCommand;
 
     void SetValueInternal(const QVariant& value) override;
     bool UpdateValueInternal() override;

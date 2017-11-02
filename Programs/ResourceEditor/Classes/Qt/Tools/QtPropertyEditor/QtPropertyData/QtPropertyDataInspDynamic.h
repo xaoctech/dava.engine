@@ -1,12 +1,13 @@
 #ifndef __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
 #define __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
 
-#include "Base/Introspection.h"
-#include "Base/FastName.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
 
-#include "../QtPropertyData.h"
-#include "QtPropertyDataDavaVariant.h"
-#include "Commands2/InspDynamicModifyCommand.h"
+#include <REPlatform/Commands/InspDynamicModifyCommand.h>
+
+#include <Base/Introspection.h>
+#include <Base/FastName.h>
 
 class QtPropertyDataInspDynamic : public QtPropertyDataDavaVariant
 {
@@ -40,7 +41,7 @@ public:
 
 protected:
     int inspFlags;
-    InspDynamicModifyCommand* lastCommand;
+    DAVA::InspDynamicModifyCommand* lastCommand;
 
     QVariant GetValueAlias() const override;
     void SetValueInternal(const QVariant& value) override;

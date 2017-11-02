@@ -1,24 +1,25 @@
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
-#include "Classes/StringConstants.h"
+
+#include <REPlatform/Global/StringConstants.h>
 
 #include <FileSystem/KeyedArchive.h>
-#include <Render/Highlevel/RenderObject.h>
-#include <Render/Highlevel/RenderBatch.h>
-#include <Render/Highlevel/Mesh.h>
-#include <Render/3D/PolygonGroup.h>
-#include <Scene3D/Entity.h>
-#include <Scene3D/Components/ComponentHelpers.h>
-#include <Scene3D/Components/SwitchComponent.h>
-#include <Scene3D/Components/RenderComponent.h>
-#include <Scene3D/Components/TransformComponent.h>
-#include <Scene3D/Lod/LodComponent.h>
 #include <Math/Matrix4.h>
+#include <Render/3D/PolygonGroup.h>
+#include <Render/Highlevel/Mesh.h>
+#include <Render/Highlevel/RenderBatch.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/SwitchComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Lod/LodComponent.h>
 
 DAVA::Entity* SwitchEntityCreator::CreateSwitchEntity(const DAVA::Vector<DAVA::Entity*>& fromEntities)
 {
     DAVA::Entity* switchEntity = new DAVA::Entity();
     switchEntity->AddComponent(new DAVA::SwitchComponent());
-    switchEntity->SetName(ResourceEditor::SWITCH_NODE_NAME);
+    switchEntity->SetName(DAVA::ResourceEditor::SWITCH_NODE_NAME);
     switchEntity->SetSolid(false);
 
     DAVA::uint32 count = static_cast<DAVA::uint32>(fromEntities.size());

@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DoubleSpinBox::DoubleSpinBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent /*= nullptr*/)
     : TBase(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -23,9 +21,9 @@ void DoubleSpinBox::UpdateControl(const ControlDescriptor& changedFields)
 {
     if (changedFields.IsChanged(Fields::Accuracy))
     {
-        DAVA::Reflection r = model.GetField(changedFields.GetName(Fields::Accuracy));
+        Reflection r = model.GetField(changedFields.GetName(Fields::Accuracy));
         DVASSERT(r.IsValid());
-        DAVA::Any value = r.GetValue();
+        Any value = r.GetValue();
         if (value.CanGet<M::FloatNumberAccuracy*>())
         {
             setDecimals(value.Get<M::FloatNumberAccuracy*>()->accuracy);
@@ -34,7 +32,7 @@ void DoubleSpinBox::UpdateControl(const ControlDescriptor& changedFields)
     }
     else if (changedFields.IsChanged(Fields::Value))
     {
-        DAVA::Reflection r = model.GetField(changedFields.GetName(Fields::Value));
+        Reflection r = model.GetField(changedFields.GetName(Fields::Value));
         DVASSERT(r.IsValid());
         const M::FloatNumberAccuracy* meta = r.GetMeta<M::FloatNumberAccuracy>();
         if (meta != nullptr)
@@ -120,6 +118,4 @@ QSize DoubleSpinBox::minimumSizeHint() const
 
     return s;
 }
-
-} // namespace TArc
 } // namespace DAVA

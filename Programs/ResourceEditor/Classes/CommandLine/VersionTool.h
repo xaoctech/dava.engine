@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommandLine/CommandLineModule.h"
+#include "Classes/CommandLine/CommandLineModule.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 class VersionTool : public CommandLineModule

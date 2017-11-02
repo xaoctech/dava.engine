@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 PopupLineEdit::PopupLineEdit(const LineEdit::Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : QWidget(parent, Qt::Popup)
 {
@@ -78,6 +76,4 @@ void PopupLineEdit::SetupControl()
     edit->ToWidgetCast()->installEventFilter(this);
     installEventFilter(this);
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -30,7 +30,7 @@ SpritesPackerModule::~SpritesPackerModule() = default;
 
 void SpritesPackerModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     std::unique_ptr<SpritesPackerData> spritesPackerData(new SpritesPackerData());
     connections.AddConnection(spritesPackerData->GetSpritesPacker(), &SpritesPacker::Finished, DAVA::MakeFunction(this, &SpritesPackerModule::OnReloadFinished));
@@ -42,14 +42,14 @@ void SpritesPackerModule::PostInit()
     CreateActions();
 }
 
-void SpritesPackerModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void SpritesPackerModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
     GetAccessor()->GetGlobalContext()->DeleteData<SpritesPackerData>();
 }
 
 void SpritesPackerModule::CreateActions()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
 
     QtAction* action = new QtAction(accessor, QIcon(":/Icons/reload.png"), QString("Reload Sprites"));
@@ -65,13 +65,13 @@ void SpritesPackerModule::CreateActions()
     placementInfo.AddPlacementPoint(CreateMenuPoint("Tools", { InsertionParams::eInsertionMethod::AfterItem }));
     placementInfo.AddPlacementPoint(CreateToolbarPoint("toolBarGlobal", { InsertionParams::eInsertionMethod::BeforeItem }));
 
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 }
 
 bool SpritesPackerModule::IsUsingAssetCache() const
 {
-    const DAVA::TArc::ContextAccessor* accessor = GetAccessor();
-    const DAVA::TArc::DataContext* globalContext = accessor->GetGlobalContext();
+    const DAVA::ContextAccessor* accessor = GetAccessor();
+    const DAVA::DataContext* globalContext = accessor->GetGlobalContext();
     const SpritesPackerData* spritesPackerData = globalContext->GetData<SpritesPackerData>();
     return spritesPackerData->GetSpritesPacker()->IsUsingCache();
 }
@@ -127,7 +127,7 @@ void SpritesPackerModule::OnReloadFinished()
 void SpritesPackerModule::OnReloadSprites()
 {
     using namespace DAVA;
-    using namespace TArc;
+
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
     SpritesPackerData* spritesPackerData = GetAccessor()->GetGlobalContext()->GetData<SpritesPackerData>();
@@ -151,7 +151,7 @@ void SpritesPackerModule::OnReloadSprites()
     }
 
     DialogReloadSprites dialogReloadSprites(GetAccessor(), spritesPacker);
-    GetUI()->ShowModalDialog(DAVA::TArc::mainWindowKey, &dialogReloadSprites);
+    GetUI()->ShowModalDialog(DAVA::mainWindowKey, &dialogReloadSprites);
 }
 
 DECL_GUI_MODULE(SpritesPackerModule);

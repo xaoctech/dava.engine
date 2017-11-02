@@ -25,7 +25,7 @@
 
 namespace ColorPickerButtonTestDetails
 {
-DAVA::TArc::WindowKey wndKey("ColorPickerButtonTestWnd");
+DAVA::WindowKey wndKey("ColorPickerButtonTestWnd");
 
 struct ColorPickerButtonDataSource
 {
@@ -67,7 +67,7 @@ struct ColorPickerButtonDataSource
     }
 };
 
-class ColorPickerButtonTestModule : public DAVA::TArc::ClientModule
+class ColorPickerButtonTestModule : public DAVA::ClientModule
 {
 public:
     ColorPickerButtonTestModule()
@@ -77,7 +77,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         QWidget* w = new QWidget();
         QtVBoxLayout* layout = new QtVBoxLayout(w);
@@ -89,7 +89,7 @@ public:
             params.fields[ColorPickerButton::Fields::Color] = "value";
             params.fields[ColorPickerButton::Fields::IsReadOnly] = "isReadOnly";
 
-            ColorPickerButton* button = new DAVA::TArc::ColorPickerButton(params, GetAccessor(), reflectedModel);
+            ColorPickerButton* button = new DAVA::ColorPickerButton(params, GetAccessor(), reflectedModel);
             button->SetObjectName("ColorPickerButton_value_readonly");
             layout->AddControl(button);
         }
@@ -98,7 +98,7 @@ public:
             ColorPickerButton::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ColorPickerButton::Fields::Color] = "readOnlyValue";
 
-            ColorPickerButton* button = new DAVA::TArc::ColorPickerButton(params, GetAccessor(), reflectedModel);
+            ColorPickerButton* button = new DAVA::ColorPickerButton(params, GetAccessor(), reflectedModel);
             button->SetObjectName("ColorPickerButton_readOnlyValue");
             layout->AddControl(button);
         }
@@ -107,7 +107,7 @@ public:
             ColorPickerButton::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ColorPickerButton::Fields::Color] = "writableValue";
 
-            ColorPickerButton* button = new DAVA::TArc::ColorPickerButton(params, GetAccessor(), reflectedModel);
+            ColorPickerButton* button = new DAVA::ColorPickerButton(params, GetAccessor(), reflectedModel);
             button->SetObjectName("ColorPickerButton_writableValue");
             layout->AddControl(button);
         }
@@ -116,7 +116,7 @@ public:
             ColorPickerButton::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ColorPickerButton::Fields::Color] = "valueWithRange";
 
-            ColorPickerButton* button = new DAVA::TArc::ColorPickerButton(params, GetAccessor(), reflectedModel);
+            ColorPickerButton* button = new DAVA::ColorPickerButton(params, GetAccessor(), reflectedModel);
             button->SetObjectName("ColorPickerButton_valueWithRange");
             layout->AddControl(button);
         }
@@ -126,12 +126,12 @@ public:
             params.fields[ColorPickerButton::Fields::Color] = "value";
             params.fields[ColorPickerButton::Fields::Range] = "range";
 
-            ColorPickerButton* button = new DAVA::TArc::ColorPickerButton(params, GetAccessor(), reflectedModel);
+            ColorPickerButton* button = new DAVA::ColorPickerButton(params, GetAccessor(), reflectedModel);
             button->SetObjectName("ColorPickerButton_range");
             layout->AddControl(button);
         }
 
-        GetUI()->AddView(wndKey, DAVA::TArc::PanelKey("ColorPickerButtonSandbox", DAVA::TArc::CentralPanelInfo()), w);
+        GetUI()->AddView(wndKey, DAVA::PanelKey("ColorPickerButtonSandbox", DAVA::CentralPanelInfo()), w);
     }
 
     ColorPickerButtonDataSource dataSource;
@@ -139,7 +139,7 @@ public:
     static ColorPickerButtonTestModule* instance;
     static DAVA::Color initialColor;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ColorPickerButtonTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ColorPickerButtonTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<ColorPickerButtonTestModule>::Begin()
         .ConstructorByPointer()
@@ -174,7 +174,7 @@ DAVA_TARC_TESTCLASS(ColorPickerButtonTest)
 
     void WritableValueTestStart()
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ColorPickerButtonTestDetails;
 
         delayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &ColorPickerButtonTest::WritableValueTestAnimationSkip));
@@ -193,7 +193,7 @@ DAVA_TARC_TESTCLASS(ColorPickerButtonTest)
 
     void WritableValueTestSimulateDialog()
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ColorPickerButtonTestDetails;
         using namespace ::testing;
 
@@ -328,7 +328,7 @@ DAVA_TARC_TESTCLASS(ColorPickerButtonTest)
 
     void ReadOnlyTest()
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ColorPickerButtonTestDetails;
 
         ColorPickerButtonTestModule* inst = ColorPickerButtonTestModule::instance;
@@ -398,6 +398,6 @@ DAVA_TARC_TESTCLASS(ColorPickerButtonTest)
     DECLARE_TESTED_MODULE(ColorPickerButtonTestDetails::ColorPickerButtonTestModule);
     END_TESTED_MODULES()
 
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtConnections connections;
+    DAVA::QtDelayedExecutor delayedExecutor;
 };

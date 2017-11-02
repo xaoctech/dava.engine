@@ -8,7 +8,7 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Reflection/ReflectedTypeDB.h>
 
-void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void EditorPhysicsModule::OnContextCreated(DAVA::DataContext* context)
 {
     using namespace EditorPhysicsDetail;
     DAVA::Scene* scene = ExtractScene(context);
@@ -21,7 +21,7 @@ void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(data));
 }
 
-void EditorPhysicsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void EditorPhysicsModule::OnContextDeleted(DAVA::DataContext* context)
 {
     using namespace EditorPhysicsDetail;
     DAVA::Scene* scene = ExtractScene(context);
@@ -37,7 +37,7 @@ void EditorPhysicsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
 void EditorPhysicsModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QWidget* physicsPanel = new PhysicsWidget(GetAccessor(), GetUI());
 
@@ -48,7 +48,7 @@ void EditorPhysicsModule::PostInit()
     info.area = Qt::LeftDockWidgetArea;
 
     PanelKey key("Physics", info);
-    ui->AddView(DAVA::TArc::mainWindowKey, key, physicsPanel);
+    ui->AddView(DAVA::mainWindowKey, key, physicsPanel);
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(EditorPhysicsModule)

@@ -1,21 +1,19 @@
-#ifndef __PARTICLE_EFFECT_PROPERTIES_WIDGET__H__
-#define __PARTICLE_EFFECT_PROPERTIES_WIDGET__H__
+#pragma once
 
-#include <QWidget>
-#include "BaseParticleEditorContentWidget.h"
+#include "Classes/Qt/DockParticleEditor/BaseParticleEditorContentWidget.h"
+#include "Classes/Qt/DockParticleEditor/GradientPickerWidget.h"
+#include "Classes/Qt/DockParticleEditor/TimeLineWidget.h"
 
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QSlider>
 #include <QCheckBox>
+#include <QLabel>
 #include <QPushButton>
+#include <QSlider>
 #include <QSpinBox>
-#include <QTreeWidget>
-#include <QTableWidget>
 #include <QStyledItemDelegate>
-
-#include "DockParticleEditor/TimeLineWidget.h"
-#include "DockParticleEditor/GradientPickerWidget.h"
+#include <QTableWidget>
+#include <QTreeWidget>
+#include <QVBoxLayout>
+#include <QWidget>
 
 struct EffectTreeData
 {
@@ -149,7 +147,7 @@ public:
 
     explicit ParticleEffectPropertiesWidget(QWidget* parent = nullptr);
 
-    void Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
+    void Init(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
 
     void StoreVisualState(DAVA::KeyedArchive* visualStateProps) override;
     void RestoreVisualState(DAVA::KeyedArchive* visualStateProps) override;
@@ -258,5 +256,3 @@ private:
     QLineEdit* variableName;
     QDoubleSpinBox* variableValue;
 };
-
-#endif /* defined(__PARTICLE_EFFECT_PROPERTIES_WIDGET__H__) */

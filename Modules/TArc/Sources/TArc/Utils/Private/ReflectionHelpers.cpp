@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void ForEachField(const Reflection& r, const Function<void(Reflection::Field&& field)>& fn)
 {
     Vector<Reflection::Field> fields = r.GetFields();
@@ -15,7 +13,7 @@ void ForEachField(const Reflection& r, const Function<void(Reflection::Field&& f
     }
 }
 
-const DAVA::ReflectedType* GetValueReflectedType(const Reflection& r)
+const ReflectedType* GetValueReflectedType(const Reflection& r)
 {
     const ReflectedType* type = GetValueReflectedType(r.GetValue());
     if (type != nullptr)
@@ -26,7 +24,7 @@ const DAVA::ReflectedType* GetValueReflectedType(const Reflection& r)
     return r.GetValueObject().GetReflectedType();
 }
 
-const DAVA::ReflectedType* GetValueReflectedType(const Any& value)
+const ReflectedType* GetValueReflectedType(const Any& value)
 {
     if (value.IsEmpty() == true)
     {
@@ -45,6 +43,4 @@ const DAVA::ReflectedType* GetValueReflectedType(const Any& value)
 
     return ReflectedTypeDB::GetByType(type);
 }
-
-} // namespace TArc
 } // namespace DAVA

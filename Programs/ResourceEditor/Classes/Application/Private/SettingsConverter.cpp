@@ -1,6 +1,7 @@
 #include "Classes/Application/Private/SettingsConverter.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/SceneManager/SceneData.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
 
 #include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -67,10 +68,10 @@ public:
         }
     }
 
-    void Do(const DAVA::TArc::PropertiesHolder& rootSettingsNode, DAVA::TArc::ContextAccessor* accessor) const
+    void Do(const DAVA::PropertiesHolder& rootSettingsNode, DAVA::ContextAccessor* accessor) const
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         DataContext* ctx = accessor->GetGlobalContext();
         GeneralSettings* generalSettings = ctx->GetData<GeneralSettings>();
@@ -82,10 +83,10 @@ public:
         CommonInternalSettings* internalSettings = ctx->GetData<CommonInternalSettings>();
         DVASSERT(internalSettings);
 
-        DAVA::TArc::ColorPickerSettings* colorPickerSettings = ctx->GetData<DAVA::TArc::ColorPickerSettings>();
+        DAVA::ColorPickerSettings* colorPickerSettings = ctx->GetData<DAVA::ColorPickerSettings>();
         DVASSERT(colorPickerSettings);
 
-        DAVA::TArc::ThemesSettings* themeSettings = ctx->GetData<DAVA::TArc::ThemesSettings>();
+        DAVA::ThemesSettings* themeSettings = ctx->GetData<DAVA::ThemesSettings>();
         DVASSERT(themeSettings);
 
 #define LOAD_SETTING(settingsVar, field, key, convertFn)\
@@ -141,7 +142,6 @@ public:
         LOAD_SETTING(globalSceneSettings, selectionSequent, Scene_SelectionSequent, AsBool);
         LOAD_SETTING(globalSceneSettings, selectionOnClick, Scene_SelectionOnClick, AsBool);
         globalSceneSettings->selectionDrawMode = GetEnumValue(Scene_SelectionDrawMode, globalSceneSettings->selectionDrawMode);
-        globalSceneSettings->collisionDrawMode = GetEnumValue(Scene_CollisionDrawMode, globalSceneSettings->collisionDrawMode);
         LOAD_SETTING(globalSceneSettings, modificationByGizmoOnly, Scene_ModificationByGizmoOnly, AsBool);
         LOAD_SETTING(globalSceneSettings, gizmoScale, Scene_GizmoScale, AsFloat);
         LOAD_SETTING(globalSceneSettings, debugBoxScale, Scene_DebugBoxScale, AsFloat);
@@ -348,19 +348,19 @@ private:
     const DAVA::String Internal_CustomPalette = "Internal/CustomPalette";
 };
 
-void ConvertToInitVersion(const DAVA::TArc::PropertiesHolder& rootNode, DAVA::TArc::ContextAccessor* accessor)
+void ConvertToInitVersion(const DAVA::PropertiesHolder& rootNode, DAVA::ContextAccessor* accessor)
 {
     OldSettingsConverter converter;
     converter.Do(rootNode, accessor);
 }
 } // namespace SettingsConverterDetail
 
-void ConvertSettingsIfNeeded(const DAVA::TArc::PropertiesHolder& rootNode, DAVA::TArc::ContextAccessor* accessor)
+void ConvertSettingsIfNeeded(const DAVA::PropertiesHolder& rootNode, DAVA::ContextAccessor* accessor)
 {
     using namespace SettingsConverterDetail;
     DAVA::uint32 settingsVersion = 0;
     {
-        DAVA::TArc::PropertiesItem verionsInfo = rootNode.CreateSubHolder("VersionsInfo");
+        DAVA::PropertiesItem verionsInfo = rootNode.CreateSubHolder("VersionsInfo");
         settingsVersion = verionsInfo.Get<DAVA::uint32>("SettingsVersion", 0);
     }
     if (settingsVersion == 0)

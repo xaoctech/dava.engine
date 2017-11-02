@@ -10,14 +10,11 @@ class ProjectData;
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
 class QtAction;
 }
-}
 
-class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
+class LibraryModule : public DAVA::ClientModule, PackageListener
 {
     void PostInit() override;
 
@@ -60,8 +57,8 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
 
     LibraryData* GetLibraryData();
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::QtConnections connections;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::ClientModule);
 };

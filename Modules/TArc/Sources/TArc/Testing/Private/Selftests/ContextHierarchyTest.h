@@ -1,15 +1,15 @@
 #include "TArc/Testing/TArcUnitTests.h"
 
-#include "TArc/DataProcessing/DataNode.h"
+#include "TArc/DataProcessing/TArcDataNode.h"
 
-using namespace DAVA::TArc;
+using namespace DAVA;
 
-class GlobalContextData : public DAVA::TArc::DataNode
+class GlobalContextData : public DAVA::TArcDataNode
 {
 public:
     DAVA::int32 dummyField;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(GlobalContextData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(GlobalContextData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<GlobalContextData>::Begin()
         .Field("dummyField", &GlobalContextData::dummyField)
@@ -17,12 +17,12 @@ public:
     }
 };
 
-class SharedData : public DAVA::TArc::DataNode
+class SharedData : public DAVA::TArcDataNode
 {
 public:
     DAVA::int32 field;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SharedData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SharedData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<SharedData>::Begin()
         .Field("field", &SharedData::field)
@@ -40,7 +40,7 @@ DAVA_TARC_TESTCLASS(ContextHierarchyTest)
 
     DAVA_TEST (GlobalContexHasDataTest)
     {
-        DAVA::TArc::DataContext* ctx = GetGlobalContext();
+        DAVA::DataContext* ctx = GetGlobalContext();
         TEST_VERIFY(ctx->GetData<GlobalContextData>() == nullptr);
         TEST_VERIFY(ctx->GetData<SharedData>() == nullptr);
 
@@ -99,14 +99,14 @@ DAVA_TARC_TESTCLASS(ContextHierarchyTest)
 
     DAVA_TEST (ConstDataContextTest)
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         DataContext* ctx = GetGlobalContext();
-        const DataContext* constCtx = static_cast<const DAVA::TArc::TestClass*>(this)->GetGlobalContext();
+        const DataContext* constCtx = static_cast<const DAVA::TArcTestClass*>(this)->GetGlobalContext();
         TEST_VERIFY(ctx != nullptr);
         TEST_VERIFY(constCtx == ctx);
 
         DataContext* activeCtx = GetActiveContext();
-        const DataContext* constActiveCtx = static_cast<const DAVA::TArc::TestClass*>(this)->GetActiveContext();
+        const DataContext* constActiveCtx = static_cast<const DAVA::TArcTestClass*>(this)->GetActiveContext();
         TEST_VERIFY(activeCtx != nullptr);
         TEST_VERIFY(constActiveCtx == activeCtx);
     }

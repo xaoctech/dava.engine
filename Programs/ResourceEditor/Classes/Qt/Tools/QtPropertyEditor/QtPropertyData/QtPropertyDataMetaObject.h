@@ -1,10 +1,11 @@
-#ifndef __QT_PROPERTY_DATA_META_OBJECT_H__
-#define __QT_PROPERTY_DATA_META_OBJECT_H__
+#pragma once
 
-#include "Base/Introspection.h"
-#include "../QtPropertyData.h"
-#include "QtPropertyDataDavaVariant.h"
-#include "Commands2/MetaObjModifyCommand.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+
+#include <REPlatform/Commands/MetaObjModifyCommand.h>
+
+#include <Base/Introspection.h>
 
 class QtPropertyDataMetaObject : public QtPropertyDataDavaVariant
 {
@@ -19,11 +20,9 @@ public:
     const DAVA::MetaInfo* meta;
 
 protected:
-    MetaObjModifyCommand* lastCommand;
+    DAVA::MetaObjModifyCommand* lastCommand;
 
     void SetValueInternal(const QVariant& value) override;
     bool UpdateValueInternal() override;
     bool EditorDoneInternal(QWidget* editor) override;
 };
-
-#endif // __QT_PROPERTY_DATA_META_OBJECT_H__

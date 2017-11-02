@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class WidgetRenderHelperPrivate;
 
 class WidgetRenderHelper : public QWidget
@@ -18,5 +16,4 @@ public:
 
     QPixmap davaGrab(qreal dpr, const QRect& rectangle = QRect());
 };
-}
 }

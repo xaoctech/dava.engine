@@ -31,8 +31,6 @@ bool teamcityCaptureStdout = false; // Flag whether to set TeamCity option 'capt
 const String TestCoverageFileName = "Tests.cover";
 }
 
-namespace TArc
-{
 TestCore::TestCore(Engine& e_)
     : e(e_)
 {
@@ -46,7 +44,7 @@ TestCore::TestCore(Engine& e_)
     e.update.Connect(this, &TestCore::Update);
 
     bool result = AvoidTestsStriping();
-    DAVA::Logger::Info("Avoid tests striping result %d", result);
+    Logger::Info("Avoid tests striping result %d", result);
 }
 
 TestCore::~TestCore()
@@ -87,7 +85,7 @@ void TestCore::OnAppStarted()
     else
     {
 #if defined(TEST_COVERAGE)
-        RefPtr<File> covergeFile(DAVA::File::Create(TArcTestCoreDetail::TestCoverageFileName, File::CREATE | File::WRITE));
+        RefPtr<File> covergeFile(File::Create(TArcTestCoreDetail::TestCoverageFileName, File::CREATE | File::WRITE));
         TEST_VERIFY(covergeFile);
         covergeFile->Flush();
 #endif // __DAVAENGINE_MACOS__
@@ -100,7 +98,7 @@ void TestCore::OnAppFinished()
 {
     if (TArcTestCoreDetail::teamcityOutputEnabled)
     {
-        DAVA::Logger::RemoveCustomOutput(&teamCityOutput);
+        Logger::RemoveCustomOutput(&teamCityOutput);
     }
 }
 
@@ -117,7 +115,7 @@ void TestCore::ProcessTestCoverage()
 {
 #if defined(TEST_COVERAGE)
     // Output test coverage for sample
-    Map<String, DAVA::UnitTests::TestCoverageInfo> map = UnitTests::TestCore::Instance()->GetTestCoverage();
+    Map<String, UnitTests::TestCoverageInfo> map = UnitTests::TestCore::Instance()->GetTestCoverage();
     Logger::Info("Test coverage");
 
     for (const auto& x : map)
@@ -133,12 +131,12 @@ void TestCore::ProcessTestCoverage()
     RefPtr<File> coverageFile(File::Create(TArcTestCoreDetail::TestCoverageFileName, File::APPEND | File::WRITE));
     DVASSERT(coverageFile);
 
-    auto toJson = [&coverageFile](DAVA::String item) { coverageFile->Write(item.c_str(), item.size()); };
+    auto toJson = [&coverageFile](String item) { coverageFile->Write(item.c_str(), item.size()); };
 
     toJson("{ \n");
     
 #if defined(DAVA_UNITY_FOLDER)
-    toJson("    \"UnityFolder\": \"" + DAVA::String(DAVA_UNITY_FOLDER) + "\",\n");
+    toJson("    \"UnityFolder\": \"" + String(DAVA_UNITY_FOLDER) + "\",\n");
 #endif
 
     toJson("    \"Coverage\":  {\n");
@@ -216,31 +214,31 @@ void TestCore::OnError()
     DVASSERT_HALT();
 }
 
-void TestCore::OnTestClassStarted(const DAVA::String& testClassName)
+void TestCore::OnTestClassStarted(const String& testClassName)
 {
     currentTestClass = testClassName;
     Logger::Info("%s", TeamcityTestsOutput::FormatTestClassStarted(testClassName).c_str());
 }
 
-void TestCore::OnTestClassFinished(const DAVA::String& testClassName)
+void TestCore::OnTestClassFinished(const String& testClassName)
 {
     currentTestClass.clear();
     Logger::Info("%s", TeamcityTestsOutput::FormatTestClassFinished(testClassName).c_str());
 }
 
-void TestCore::OnTestClassDisabled(const DAVA::String& testClassName)
+void TestCore::OnTestClassDisabled(const String& testClassName)
 {
     Logger::Info("%s", TeamcityTestsOutput::FormatTestClassDisabled(testClassName).c_str());
 }
 
-void TestCore::OnTestStarted(const DAVA::String& testClassName, const DAVA::String& testName)
+void TestCore::OnTestStarted(const String& testClassName, const String& testName)
 {
     DVASSERT(currentTestClass == testClassName);
     currentTestCase = testName;
     Logger::Info("%s", TeamcityTestsOutput::FormatTestStarted(testClassName, testName).c_str());
 }
 
-void TestCore::OnTestFinished(const DAVA::String& testClassName, const DAVA::String& testName)
+void TestCore::OnTestFinished(const String& testClassName, const String& testName)
 {
     DVASSERT(currentTestClass == testClassName);
     currentTestCase.clear();
@@ -282,6 +280,4 @@ void TestCore::CreateRenderWidget()
     RenderWidget* w = PlatformApi::Qt::GetRenderWidget();
     w->show();
 }
-
-} // namespace TArc
 } // namespace DAVA

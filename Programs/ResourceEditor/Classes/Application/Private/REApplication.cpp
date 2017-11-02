@@ -1,32 +1,29 @@
 #include "Classes/Application/REApplication.h"
-#include "Classes/Application/REModule.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/ReflectionExtensions.h"
-#include "Classes/Project/ProjectManagerModule.h"
-#include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Application/LaunchModule.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
-
-#include <DavaTools/TextureCompression/PVRConverter.h>
-
-#include "Deprecated/SceneValidator.h"
-#include "Deprecated/EditorConfig.h"
+#include "Classes/Application/ReflectionExtensions.h"
+#include "Classes/Application/REModule.h"
 
 #include "Classes/Beast/BeastCommandLineTool.h"
-#include "CommandLine/ConsoleHelpTool.h"
-#include "CommandLine/DumpTool.h"
-#include "CommandLine/SceneImageDump.h"
-#include "CommandLine/StaticOcclusionTool.h"
-#include "CommandLine/VersionTool.h"
-
-#include "CommandLine/ImageSplitterTool.h"
-#include "CommandLine/TextureDescriptorTool.h"
-#include "CommandLine/SceneSaverTool.h"
-#include "CommandLine/SceneExporterTool.h"
-#include "CommandLine/SceneValidationTool.h"
-
+#include "Classes/Project/ProjectManagerModule.h"
+#include "Classes/SceneManager/SceneManagerModule.h"
+#include "Classes/CommandLine/ConsoleHelpTool.h"
+#include "Classes/CommandLine/DumpTool.h"
+#include "Classes/CommandLine/SceneImageDump.h"
+#include "Classes/CommandLine/StaticOcclusionTool.h"
+#include "Classes/CommandLine/VersionTool.h"
+#include "Classes/CommandLine/ImageSplitterTool.h"
+#include "Classes/CommandLine/TextureDescriptorTool.h"
+#include "Classes/CommandLine/SceneSaverTool.h"
+#include "Classes/CommandLine/SceneExporterTool.h"
+#include "Classes/CommandLine/SceneValidationTool.h"
 #include "Classes/DevFuncs/TestUIModuleData.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
+#include <REPlatform/Deprecated/SceneValidator.h>
+#include <REPlatform/Scene/Systems/VisibilityCheckSystem.h>
+
+#include <DavaTools/TextureCompression/PVRConverter.h>
 
 #include <QtTools/InitQtTools.h>
 
@@ -40,31 +37,31 @@
 
 #include <DocDirSetup/DocDirSetup.h>
 
-#include <Particles/ParticleEmitter.h>
-#include <Scene3D/Systems/QualitySettingsSystem.h>
+#include <Base/BaseTypes.h>
+#include <Core/PerformanceSettings.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <FileSystem/FileSystem.h>
 #include <FileSystem/KeyedArchive.h>
+#include <Particles/ParticleEmitter.h>
 #include <Render/RHI/rhi_Type.h>
-#include <Core/PerformanceSettings.h>
-#include <Base/BaseTypes.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
 
+#include <QCryptographicHash>
 #include <QDir>
 #include <QFileInfo>
-#include <QCryptographicHash>
-#include "FileSystem/FileSystem.h"
 
 namespace REApplicationDetail
 {
-rhi::Api Convert(RenderingBackend r)
+rhi::Api Convert(DAVA::RenderingBackend r)
 {
     switch (r)
     {
-    case RenderingBackend::DX11:
+    case DAVA::RenderingBackend::DX11:
         return rhi::RHI_DX11;
-    case RenderingBackend::DX9:
+    case DAVA::RenderingBackend::DX9:
         return rhi::RHI_DX9;
-    case RenderingBackend::OpenGL:
+    case DAVA::RenderingBackend::OpenGL:
         return rhi::RHI_GLES2;
     default:
         DVASSERT(false);
@@ -85,7 +82,7 @@ REApplication::REApplication(DAVA::Vector<DAVA::String>&& cmdLine_)
     }
 }
 
-DAVA::TArc::BaseApplication::EngineInitInfo REApplication::GetInitInfo() const
+DAVA::BaseApplication::EngineInitInfo REApplication::GetInitInfo() const
 {
     EngineInitInfo initInfo;
     initInfo.runMode = isConsoleMode ? DAVA::eEngineRunMode::CONSOLE_MODE : DAVA::eEngineRunMode::GUI_EMBEDDED;
@@ -102,17 +99,17 @@ DAVA::TArc::BaseApplication::EngineInitInfo REApplication::GetInitInfo() const
     return initInfo;
 }
 
-void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
+void REApplication::CreateModules(DAVA::Core* tarcCore) const
 {
-    DAVA::TArc::ContextAccessor* accessor = tarcCore->GetCoreInterface();
-    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
-    RenderingBackend renderBackend = item.Get("renderBackend", RenderingBackend::OpenGL);
+    DAVA::ContextAccessor* accessor = tarcCore->GetCoreInterface();
+    DAVA::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+    DAVA::RenderingBackend renderBackend = item.Get("renderBackend", DAVA::RenderingBackend::OpenGL);
 
     appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
 
-    renderBackEndListener.reset(new DAVA::TArc::FieldBinder(accessor));
-    DAVA::TArc::FieldDescriptor descr;
-    descr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
+    renderBackEndListener.reset(new DAVA::FieldBinder(accessor));
+    DAVA::FieldDescriptor descr;
+    descr.type = DAVA::ReflectedTypeDB::Get<DAVA::GeneralSettings>();
     descr.fieldName = DAVA::FastName("renderBackend");
 
     renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v) {
@@ -121,11 +118,10 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
             return;
         }
 
-        DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+        DAVA::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
         item.Set("renderBackend", v);
     });
 
-    REGlobal::InitTArcCore(tarcCore);
     if (isConsoleMode)
     {
         CreateConsoleModules(tarcCore);
@@ -138,8 +134,8 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
 
 void REApplication::Init(const DAVA::EngineContext* engineContext)
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DAVA::GeneralSettings);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DAVA::CommonInternalSettings);
 
 #if defined(__DAVAENGINE_MACOS__)
     const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI";
@@ -177,15 +173,10 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
     engineContext->performanceSettings->SetPsPerformanceMaxFPS(10.0f);
 
-    if (IsTestEnvironment())
-    {
-        DAVA::TArc::TestClass::coreChanged.Connect(&REGlobal::InitTArcCore);
-    }
-
     BaseApplication::Init(engineContext);
 }
 
-void REApplication::Init(DAVA::TArc::Core* tarcCore)
+void REApplication::Init(DAVA::Core* tarcCore)
 {
     tarcCore->InitPluginsManager("ResourceEditor", DAVA::GetEngineContext()->fileSystem->GetPluginDirectory().GetAbsolutePathname());
     BaseApplication::Init(tarcCore);
@@ -193,8 +184,7 @@ void REApplication::Init(DAVA::TArc::Core* tarcCore)
 
 void REApplication::Cleanup()
 {
-    REGlobal::InitTArcCore(nullptr);
-    VisibilityCheckSystem::ReleaseCubemapRenderTargets();
+    DAVA::VisibilityCheckSystem::ReleaseCubemapRenderTargets();
 
     cmdLine.clear();
 }
@@ -214,21 +204,21 @@ QString REApplication::GetInstanceKey() const
     return appUidPath;
 }
 
-void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
+void REApplication::CreateGUIModules(DAVA::Core* tarcCore) const
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     InitColorPickerOptions(false);
     InitQtTools();
 
-    tarcCore->CreateModule<DAVA::TArc::SettingsModule>();
-    tarcCore->CreateModule<DAVA::TArc::ThemesModule>();
-    tarcCore->CreateModule<DAVA::TArc::ActionManagementModule>();
+    tarcCore->CreateModule<DAVA::SettingsModule>();
+    tarcCore->CreateModule<DAVA::ThemesModule>();
+    tarcCore->CreateModule<DAVA::ActionManagementModule>();
     tarcCore->CreateModule<ReflectionExtensionsModule>();
     tarcCore->CreateModule<REModule>();
     tarcCore->CreateModule<ProjectManagerModule>();
     tarcCore->CreateModule<SceneManagerModule>();
 
-    for (const DAVA::ReflectedType* type : DAVA::TArc::ModuleCollection::Instance()->GetGuiModules())
+    for (const DAVA::ReflectedType* type : DAVA::ModuleCollection::Instance()->GetGuiModules())
     {
         tarcCore->CreateModule(type);
     }
@@ -236,11 +226,11 @@ void REApplication::CreateGUIModules(DAVA::TArc::Core* tarcCore) const
     tarcCore->CreateModule<LaunchModule>();
 }
 
-void REApplication::CreateConsoleModules(DAVA::TArc::Core* tarcCore) const
+void REApplication::CreateConsoleModules(DAVA::Core* tarcCore) const
 {
     DVASSERT(cmdLine.size() > 1);
 
-    DAVA::Vector<std::pair<const DAVA::ReflectedType*, DAVA::String>> modules = DAVA::TArc::ModuleCollection::Instance()->GetConsoleModules();
+    DAVA::Vector<std::pair<const DAVA::ReflectedType*, DAVA::String>> modules = DAVA::ModuleCollection::Instance()->GetConsoleModules();
 
     auto createModuleFn = [&](const DAVA::String& command) -> bool
     {
@@ -266,7 +256,7 @@ void REApplication::CreateConsoleModules(DAVA::TArc::Core* tarcCore) const
 
 void REApplication::RegisterEditorAnyCasts()
 {
-    DAVA::TArc::BaseApplication::RegisterEditorAnyCasts();
+    DAVA::BaseApplication::RegisterEditorAnyCasts();
 
     DAVA::AnyCast<ComboBoxTestDataDescr, DAVA::String>::Register(&ComboBoxTestDataDescrToString);
     DAVA::AnyCast<ComboBoxTestDataDescr, QIcon>::Register(&ComboBoxTestDataDescrToQIcon);

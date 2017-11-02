@@ -1,6 +1,6 @@
 #include "HangingObjectsHeight.h"
 
-#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+#include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include "DAVAEngine.h"
 

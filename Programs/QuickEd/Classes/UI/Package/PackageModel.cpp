@@ -47,12 +47,12 @@ PackageModel::PackageModel(QObject* parent)
 
 PackageModel::~PackageModel() = default;
 
-void PackageModel::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+void PackageModel::SetAccessor(DAVA::ContextAccessor* accessor_)
 {
     accessor = accessor_;
 }
 
-void PackageModel::SetUI(DAVA::TArc::UI* ui_)
+void PackageModel::SetUI(DAVA::UI* ui_)
 {
     ui = ui_;
 }
@@ -209,7 +209,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
 
         case Qt::TextColorRole:
         {
-            DAVA::TArc::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
+            DAVA::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>();
             if (controlNode->HasErrors())
             {
                 return settings->GetErrorColor();
@@ -246,7 +246,7 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
 
             case Qt::TextColorRole:
             {
-                return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetStyleSheetNodeColor();
+                return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetStyleSheetNodeColor();
             }
 
             case Qt::FontRole:
@@ -267,12 +267,12 @@ QVariant PackageModel::data(const QModelIndex& index, int role) const
                 return StringToQString(node->GetName());
 
             case Qt::BackgroundRole:
-                return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetViewLineAlternateColor();
+                return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetViewLineAlternateColor();
 
             case Qt::TextColorRole:
                 if (node->HasErrors())
                 {
-                    return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetErrorColor();
+                    return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetErrorColor();
                 }
                 return QVariant();
 
@@ -330,7 +330,7 @@ bool PackageModel::setData(const QModelIndex& index, const QVariant& value, int 
         const auto& newName = value.toString().toStdString();
         if (newName != node->GetName())
         {
-            DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+            DAVA::DataContext* activeContext = accessor->GetActiveContext();
             DVASSERT(activeContext != nullptr);
             DocumentData* documentData = activeContext->GetData<DocumentData>();
             documentData->ExecCommand<ChangePropertyValueCommand>(controlNode, prop, Any(newName));
@@ -551,18 +551,18 @@ void PackageModel::OnDropMimeData(const QMimeData* data, Qt::DropAction action, 
 
         if (wrongExtensionResults.HasWarnings())
         {
-            DAVA::TArc::NotificationParams notificationParams;
+            DAVA::NotificationParams notificationParams;
             notificationParams.title = "can not drop";
             notificationParams.message = Result(Result::RESULT_WARNING, Format("next files have unsupported extension:\n%s", wrongExtensionResults.GetResultMessages().c_str()));
-            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+            ui->ShowNotification(DAVA::mainWindowKey, notificationParams);
         }
 
         if (wrongSourceResults.HasWarnings())
         {
-            DAVA::TArc::NotificationParams notificationParams;
+            DAVA::NotificationParams notificationParams;
             notificationParams.title = "can not drop";
             notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
-            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+            ui->ShowNotification(DAVA::mainWindowKey, notificationParams);
         }
 
         if (!packages.empty())

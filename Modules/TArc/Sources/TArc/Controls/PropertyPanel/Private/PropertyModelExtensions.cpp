@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace PMEDetails
 {
 class DummyChildCreator : public ChildCreatorExtension
@@ -50,7 +48,7 @@ public:
 };
 }
 
-std::shared_ptr<PropertyNode> MakeRootNode(IChildAllocator* allocator, DAVA::Reflection::Field&& field)
+std::shared_ptr<PropertyNode> MakeRootNode(IChildAllocator* allocator, Reflection::Field&& field)
 {
     return allocator->CreatePropertyNode(nullptr, std::move(field), 0, PropertyNode::SelfRoot);
 }
@@ -71,7 +69,7 @@ bool PropertyNode::operator!=(const PropertyNode& other) const
     field.key != field.key;
 }
 
-DAVA::String PropertyNode::BuildID() const
+String PropertyNode::BuildID() const
 {
     String key = field.key.Cast<String>();
     if (idPostfix.IsValid())
@@ -216,7 +214,7 @@ void ModifyExtension::MultiCommandInterface::ModifyPropertyValue(const std::shar
     }
 }
 
-void ModifyExtension::MultiCommandInterface::Exec(std::unique_ptr<DAVA::Command>&& command)
+void ModifyExtension::MultiCommandInterface::Exec(std::unique_ptr<Command>&& command)
 {
     extension->Exec(std::move(command));
 }
@@ -225,6 +223,4 @@ void ModifyExtension::MultiCommandInterface::ProduceCommand(const Reflection::Fi
 {
     extension->ProduceCommand(object, newValue);
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -22,11 +22,8 @@ class UIControl;
 class UIEvent;
 class UIGeometricData;
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder;
-}
 }
 
 struct HUDAreaInfo
@@ -114,7 +111,7 @@ public:
         Edit
     };
 
-    explicit EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor);
+    explicit EditorSystemsManager(DAVA::ContextAccessor* accessor);
     ~EditorSystemsManager();
 
     eDragState GetDragState() const;
@@ -195,8 +192,8 @@ private:
     DAVA::Vector2 lastMousePos;
     DAVA::Vector2 mouseDelta;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    DAVA::ContextAccessor* accessor = nullptr;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 };
 
 template <class OutIt, class Predicate>

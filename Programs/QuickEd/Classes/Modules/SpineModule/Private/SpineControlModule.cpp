@@ -17,17 +17,17 @@
 #include <QAction>
 #include <QWidget>
 
-void SpineControlModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void SpineControlModule::OnContextCreated(DAVA::DataContext* context)
 {
 }
 
-void SpineControlModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void SpineControlModule::OnContextDeleted(DAVA::DataContext* context)
 {
 }
 
 void SpineControlModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
@@ -38,7 +38,7 @@ void SpineControlModule::PostInit()
     layout->setSpacing(4);
 
     {
-        ReflectedButton::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ReflectedButton::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
         params.fields[ReflectedButton::Fields::Clicked] = "playPause";
         params.fields[ReflectedButton::Fields::Tooltip] = "pauseButtonHint";
@@ -47,7 +47,7 @@ void SpineControlModule::PostInit()
     }
 
     {
-        ReflectedButton::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ReflectedButton::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ReflectedButton::Fields::Enabled] = "isEnabled";
         params.fields[ReflectedButton::Fields::Clicked] = "rebuildAllBoneLinks";
         params.fields[ReflectedButton::Fields::Tooltip] = "rebuildButtonHint";
@@ -58,18 +58,18 @@ void SpineControlModule::PostInit()
     QString toolbarName = "Spine Toolbar";
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    ui->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    ui->DeclareToolbar(DAVA::mainWindowKey, toolbarTogglePlacement, toolbarName);
 
     QAction* action = new QAction(nullptr);
     AttachWidgetToAction(action, w);
 
     ActionPlacementInfo placementInfo(CreateToolbarPoint(toolbarName));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
 }
 
 const QIcon& SpineControlModule::GetRebuildButtonIcon()
 {
-    return DAVA::TArc::SharedIcon(":/Icons/reload.png");
+    return DAVA::SharedIcon(":/Icons/reload.png");
 }
 
 const QIcon& SpineControlModule::GetPauseButtonIcon()
@@ -77,11 +77,11 @@ const QIcon& SpineControlModule::GetPauseButtonIcon()
     DAVA::UISpineSystem* spineSystem = GetSpineSystem();
     if (spineSystem != nullptr && !spineSystem->IsPause())
     {
-        return DAVA::TArc::SharedIcon(":/Icons/pause.png");
+        return DAVA::SharedIcon(":/Icons/pause.png");
     }
     else
     {
-        return DAVA::TArc::SharedIcon(":/Icons/play.png");
+        return DAVA::SharedIcon(":/Icons/play.png");
     }
 }
 
@@ -111,7 +111,7 @@ bool SpineControlModule::IsEnabled() const
 DAVA::UISpineSystem* SpineControlModule::GetSpineSystem() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     const ContextAccessor* accessor = GetAccessor();
     return accessor != nullptr ? accessor->GetEngineContext()->uiControlSystem->GetSystem<UISpineSystem>() : nullptr;
 }

@@ -24,7 +24,7 @@
 namespace FilePathEditTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
+using namespace DAVA;
 
 WindowKey wndKey("FilePathEditWnd");
 
@@ -70,7 +70,7 @@ public:
     }
 };
 
-class TestModule : public DAVA::TArc::ClientModule
+class TestModule : public DAVA::ClientModule
 {
 public:
     TestModule()
@@ -124,7 +124,7 @@ public:
 
     TestData data;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestModule, DAVA::ClientModule)
     {
         ReflectionRegistrator<TestModule>::Begin()
         .ConstructorByPointer()

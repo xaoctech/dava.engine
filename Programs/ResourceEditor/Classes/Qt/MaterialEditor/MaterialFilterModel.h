@@ -7,11 +7,15 @@
 #include <QSortFilterProxyModel>
 #include <QString>
 
+namespace DAVA
+{
+class SceneEditor2;
+class SelectableGroup;
+} // namespace DAVA
+
 class QMimeData;
 class QStandardItem;
-class SceneEditor2;
 class MaterialItem;
-class SelectableGroup;
 class MaterialModel;
 
 class MaterialFilteringModel : public QSortFilterProxyModel
@@ -32,9 +36,9 @@ public:
 
     void Sync();
 
-    void SetScene(SceneEditor2* scene);
-    SceneEditor2* GetScene();
-    void SetSelection(const SelectableGroup* group);
+    void SetScene(DAVA::SceneEditor2* scene);
+    DAVA::SceneEditor2* GetScene();
+    void SetSelection(const DAVA::SelectableGroup* group);
     DAVA::NMaterial* GetMaterial(const QModelIndex& index) const;
     QModelIndex GetIndex(DAVA::NMaterial* material, const QModelIndex& parent = QModelIndex()) const;
 

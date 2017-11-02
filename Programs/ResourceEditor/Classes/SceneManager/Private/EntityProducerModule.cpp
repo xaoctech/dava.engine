@@ -1,24 +1,25 @@
 #include "Classes/SceneManager/EntityProducerModule.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Commands2/EntityAddCommand.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
 
-#include "TArc/WindowSubSystem/ActionUtils.h"
-#include "TArc/WindowSubSystem/UI.h"
-#include "TArc/WindowSubSystem/QtAction.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <REPlatform/Commands/EntityAddCommand.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
-#include "Functional/Function.h"
-#include "Render/Highlevel/Camera.h"
-#include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Entity.h"
+#include <TArc/Utils/ModuleCollection.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/WindowSubSystem/UI.h>
+
+#include <Functional/Function.h>
+#include <Render/Highlevel/Camera.h>
+#include <Scene3D/Components/CameraComponent.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Entity.h>
 
 void EntityProducerModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QtAction* instantiateCamera = new QtAction(GetAccessor(), "Clone Current Camera");
     FieldDescriptor fieldDescriptor;
@@ -32,13 +33,13 @@ void EntityProducerModule::PostInit()
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateMenuPoint(QList<QString>() << "menuCreateNode"
                                                                      << "menuAdd"));
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, instantiateCamera);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, instantiateCamera);
     connections.AddConnection(instantiateCamera, &QAction::triggered, DAVA::MakeFunction(this, &EntityProducerModule::InstantiateCurrentCamera));
 }
 
 void EntityProducerModule::InstantiateCurrentCamera()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     SceneData* sceneData = GetAccessor()->GetActiveContext()->GetData<SceneData>();
     DAVA::RefPtr<SceneEditor2> sceneEditor = sceneData->GetScene();
@@ -52,9 +53,9 @@ void EntityProducerModule::InstantiateCurrentCamera()
     sceneNode->AddComponent(new DAVA::CameraComponent(camera));
     sceneNode->AddComponent(new DAVA::WASDControllerComponent());
     sceneNode->AddComponent(new DAVA::RotationControllerComponent());
-    sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
+    sceneNode->SetName(DAVA::ResourceEditor::CAMERA_NODE_NAME);
 
-    sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
+    sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(sceneNode, sceneEditor.Get())));
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(EntityProducerModule)

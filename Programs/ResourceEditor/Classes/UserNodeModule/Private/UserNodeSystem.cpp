@@ -1,7 +1,7 @@
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/CollisionSystem.h>
 
 #include <FileSystem/KeyedArchive.h>
 #include <FileSystem/FilePath.h>
@@ -158,7 +158,7 @@ void UserNodeSystem::Draw()
         bool isBot = IsSpawnNode(entity);
         if ((isBot == false || IsSystemEnabled() == false) && entity->GetVisible())
         {
-            AABBox3 worldBox = editorScene->collisionSystem->GetUntransformedBoundingBox(entity);
+            AABBox3 worldBox = editorScene->GetSystem<DAVA::SceneCollisionSystem>()->GetUntransformedBoundingBox(entity);
             DVASSERT(!worldBox.IsEmpty());
 
             const Matrix4& worldTransform = entity->GetWorldTransform();

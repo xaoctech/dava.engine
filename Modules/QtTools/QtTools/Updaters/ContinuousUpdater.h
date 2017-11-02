@@ -26,6 +26,6 @@ private:
     Updater updater;
     Stopper stopper;
     std::unique_ptr<QTimer> timer;
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtDelayedExecutor delayedExecutor;
     bool needUpdate = false;
 };

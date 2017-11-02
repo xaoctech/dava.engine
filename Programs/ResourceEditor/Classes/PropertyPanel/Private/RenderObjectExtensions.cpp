@@ -1,12 +1,13 @@
 #include "Classes/PropertyPanel/RenderObjectExtensions.h"
-#include "Classes/Commands2/ConvertToBillboardCommand.h"
-#include "Classes/Commands2/CloneLastBatchCommand.h"
-#include "Classes/Commands2/ConvertToShadowCommand.h"
-#include "Classes/Commands2/RebuildTangentSpaceCommand.h"
-#include "Classes/Commands2/DeleteRenderBatchCommand.h"
-#include "Classes/Selection/SelectionData.h"
-#include "Classes/Selection/SelectableGroup.h"
-#include "Classes/Deprecated/SceneValidator.h"
+
+#include <REPlatform/Commands/CloneLastBatchCommand.h>
+#include <REPlatform/Commands/ConvertToBillboardCommand.h>
+#include <REPlatform/Commands/ConvertToShadowCommand.h>
+#include <REPlatform/Commands/DeleteRenderBatchCommand.h>
+#include <REPlatform/Commands/RebuildTangentSpaceCommand.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Deprecated/SceneValidator.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -22,17 +23,17 @@ namespace RenderObjectExtensionsDetail
 class BillboardCommandProducer : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override;
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override;
     Info GetInfo() const override;
-    void CreateCache(DAVA::TArc::ContextAccessor* accessor) override;
+    void CreateCache(DAVA::ContextAccessor* accessor) override;
     void ClearCache() override;
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override;
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override;
 
 private:
     DAVA::UnorderedMap<DAVA::RenderObject*, DAVA::Entity*> cache;
 };
 
-bool BillboardCommandProducer::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const
+bool BillboardCommandProducer::IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const
 {
     using namespace DAVA;
     RenderObject* renderObject = *node->field.ref.GetValueObject().GetPtr<RenderObject*>();
@@ -40,7 +41,7 @@ bool BillboardCommandProducer::IsApplyable(const std::shared_ptr<DAVA::TArc::Pro
     return type == RenderObject::TYPE_MESH || type == RenderObject::TYPE_RENDEROBJECT;
 }
 
-std::unique_ptr<DAVA::Command> BillboardCommandProducer::CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const
+std::unique_ptr<DAVA::Command> BillboardCommandProducer::CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const
 {
     using namespace DAVA;
     RenderObject* renderObject = *node->field.ref.GetValueObject().GetPtr<RenderObject*>();
@@ -53,11 +54,11 @@ std::unique_ptr<DAVA::Command> BillboardCommandProducer::CreateCommand(const std
     return std::make_unique<ConvertToBillboardCommand>(renderObject, iter->second);
 }
 
-void BillboardCommandProducer::CreateCache(DAVA::TArc::ContextAccessor* accessor)
+void BillboardCommandProducer::CreateCache(DAVA::ContextAccessor* accessor)
 {
     using namespace DAVA;
 
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     DVASSERT(ctx != nullptr);
     SelectionData* data = ctx->GetData<SelectionData>();
     SelectableGroup selection = data->GetMutableSelection();
@@ -83,7 +84,7 @@ void BillboardCommandProducer::ClearCache()
 DAVA::M::CommandProducer::Info BillboardCommandProducer::GetInfo() const
 {
     Info info;
-    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/sphere.png");
+    info.icon = DAVA::SharedIcon(":/QtIcons/sphere.png");
     info.tooltip = QStringLiteral("Make billboard");
     info.description = "Convert to billboard";
     return info;
@@ -95,13 +96,13 @@ DAVA::M::CommandProducer::Info BillboardCommandProducer::GetInfo() const
 class FixLodsAndSwitches : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override;
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override;
     Info GetInfo() const override;
     bool OnlyForSingleSelection() const override;
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override;
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override;
 };
 
-bool FixLodsAndSwitches::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const
+bool FixLodsAndSwitches::IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const
 {
     using namespace DAVA;
     RenderObject* renderObject = *node->field.ref.GetValueObject().GetPtr<RenderObject*>();
@@ -111,7 +112,7 @@ bool FixLodsAndSwitches::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyN
 DAVA::M::CommandProducer::Info FixLodsAndSwitches::GetInfo() const
 {
     Info info;
-    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/clone_batches.png");
+    info.icon = DAVA::SharedIcon(":/QtIcons/clone_batches.png");
     info.tooltip = QStringLiteral("Clone batches for LODs correction");
     info.description = "Clone Last Batch";
     return info;
@@ -122,7 +123,7 @@ bool FixLodsAndSwitches::OnlyForSingleSelection() const
     return true;
 }
 
-std::unique_ptr<DAVA::Command> FixLodsAndSwitches::CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const
+std::unique_ptr<DAVA::Command> FixLodsAndSwitches::CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const
 {
     using namespace DAVA;
     RenderObject* renderObject = *node->field.ref.GetValueObject().GetPtr<RenderObject*>();
@@ -134,18 +135,18 @@ std::unique_ptr<DAVA::Command> FixLodsAndSwitches::CreateCommand(const std::shar
 class RemoveRenderBatch : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override;
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override;
     Info GetInfo() const override;
     bool OnlyForSingleSelection() const override;
-    void CreateCache(DAVA::TArc::ContextAccessor* accessor) override;
+    void CreateCache(DAVA::ContextAccessor* accessor) override;
     void ClearCache() override;
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override;
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override;
 
 private:
     DAVA::UnorderedMap<DAVA::RenderBatch*, std::pair<DAVA::Entity*, DAVA::uint32>> cache;
 };
 
-bool RemoveRenderBatch::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const
+bool RemoveRenderBatch::IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const
 {
     return true;
 }
@@ -153,7 +154,7 @@ bool RemoveRenderBatch::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNo
 DAVA::M::CommandProducer::Info RemoveRenderBatch::GetInfo() const
 {
     Info info;
-    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/remove.png");
+    info.icon = DAVA::SharedIcon(":/QtIcons/remove.png");
     info.tooltip = QStringLiteral("Delete render batch");
     info.description = "Render batch deletion";
     return info;
@@ -164,11 +165,11 @@ bool RemoveRenderBatch::OnlyForSingleSelection() const
     return true;
 }
 
-void RemoveRenderBatch::CreateCache(DAVA::TArc::ContextAccessor* accessor)
+void RemoveRenderBatch::CreateCache(DAVA::ContextAccessor* accessor)
 {
     using namespace DAVA;
 
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     DVASSERT(ctx != nullptr);
     SelectionData* data = ctx->GetData<SelectionData>();
     SelectableGroup selection = data->GetMutableSelection();
@@ -194,7 +195,7 @@ void RemoveRenderBatch::ClearCache()
     cache.clear();
 }
 
-std::unique_ptr<DAVA::Command> RemoveRenderBatch::CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const
+std::unique_ptr<DAVA::Command> RemoveRenderBatch::CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const
 {
     DAVA::RenderBatch* batch = *node->field.ref.GetValueObject().GetPtr<DAVA::RenderBatch*>();
     auto iter = cache.find(batch);
@@ -204,7 +205,7 @@ std::unique_ptr<DAVA::Command> RemoveRenderBatch::CreateCommand(const std::share
     {
         return nullptr;
     }
-    return std::make_unique<DeleteRenderBatchCommand>(iter->second.first, renderOject, iter->second.second);
+    return std::make_unique<DAVA::DeleteRenderBatchCommand>(iter->second.first, renderOject, iter->second.second);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,27 +214,27 @@ std::unique_ptr<DAVA::Command> RemoveRenderBatch::CreateCommand(const std::share
 class ConvertToShadow : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override;
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override;
     Info GetInfo() const override;
     bool OnlyForSingleSelection() const override;
-    void CreateCache(DAVA::TArc::ContextAccessor* accessor) override;
+    void CreateCache(DAVA::ContextAccessor* accessor) override;
     void ClearCache() override;
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override;
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override;
 
 private:
     DAVA::UnorderedMap<DAVA::RenderBatch*, DAVA::Entity*> cache;
 };
 
-bool ConvertToShadow::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const
+bool ConvertToShadow::IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const
 {
     DAVA::RenderBatch* batch = *node->field.ref.GetValueObject().GetPtr<DAVA::RenderBatch*>();
-    return ConvertToShadowCommand::CanConvertBatchToShadow(batch);
+    return DAVA::ConvertToShadowCommand::CanConvertBatchToShadow(batch);
 }
 
 DAVA::M::CommandProducer::Info ConvertToShadow::GetInfo() const
 {
     Info info;
-    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/shadow.png");
+    info.icon = DAVA::SharedIcon(":/QtIcons/shadow.png");
     info.tooltip = QStringLiteral("Convert To ShadowVolume");
     info.description = "ConvertToShadow batch";
     return info;
@@ -244,11 +245,11 @@ bool ConvertToShadow::OnlyForSingleSelection() const
     return true;
 }
 
-void ConvertToShadow::CreateCache(DAVA::TArc::ContextAccessor* accessor)
+void ConvertToShadow::CreateCache(DAVA::ContextAccessor* accessor)
 {
     using namespace DAVA;
 
-    DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+    DAVA::DataContext* ctx = accessor->GetActiveContext();
     DVASSERT(ctx != nullptr);
     SelectionData* data = ctx->GetData<SelectionData>();
     SelectableGroup selection = data->GetMutableSelection();
@@ -274,12 +275,12 @@ void ConvertToShadow::ClearCache()
     cache.clear();
 }
 
-std::unique_ptr<DAVA::Command> ConvertToShadow::CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const
+std::unique_ptr<DAVA::Command> ConvertToShadow::CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const
 {
     DAVA::RenderBatch* batch = *node->field.ref.GetValueObject().GetPtr<DAVA::RenderBatch*>();
     auto iter = cache.find(batch);
     DVASSERT(iter != cache.end());
-    return std::make_unique<ConvertToShadowCommand>(iter->second, batch);
+    return std::make_unique<DAVA::ConvertToShadowCommand>(iter->second, batch);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,16 +289,16 @@ std::unique_ptr<DAVA::Command> ConvertToShadow::CreateCommand(const std::shared_
 class RebuildTangentSpace : public DAVA::M::CommandProducer
 {
 public:
-    bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const override;
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override;
     Info GetInfo() const override;
     bool OnlyForSingleSelection() const override;
-    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const override;
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override;
 
 private:
     DAVA::UnorderedMap<DAVA::RenderBatch*, DAVA::Entity*> cache;
 };
 
-bool RebuildTangentSpace::IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& node) const
+bool RebuildTangentSpace::IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const
 {
     DAVA::RenderBatch* batch = *node->field.ref.GetValueObject().GetPtr<DAVA::RenderBatch*>();
     DAVA::PolygonGroup* group = batch->GetPolygonGroup();
@@ -316,7 +317,7 @@ bool RebuildTangentSpace::IsApplyable(const std::shared_ptr<DAVA::TArc::Property
 DAVA::M::CommandProducer::Info RebuildTangentSpace::GetInfo() const
 {
     Info info;
-    info.icon = DAVA::TArc::SharedIcon(":/QtIcons/external.png");
+    info.icon = DAVA::SharedIcon(":/QtIcons/external.png");
     info.tooltip = QStringLiteral("Rebuild tangent space");
     info.description = "ConvertToShadow batch";
     return info;
@@ -327,10 +328,10 @@ bool RebuildTangentSpace::OnlyForSingleSelection() const
     return true;
 }
 
-std::unique_ptr<DAVA::Command> RebuildTangentSpace::CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const Params& params) const
+std::unique_ptr<DAVA::Command> RebuildTangentSpace::CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const
 {
     DAVA::RenderBatch* batch = *node->field.ref.GetValueObject().GetPtr<DAVA::RenderBatch*>();
-    return std::make_unique<RebuildTangentSpaceCommand>(batch, true);
+    return std::make_unique<DAVA::RebuildTangentSpaceCommand>(batch, true);
 }
 }
 

@@ -16,16 +16,13 @@ include ( CMake-common )
 find_package( GMock REQUIRED )
 find_package( QT5 REQUIRED )
 
+find_dava_module( REPlatform )
 find_dava_module( Spine )
-find_dava_module( QtHelpers )
 find_dava_module( DocDirSetup )
-find_dava_module( QtTools )
-find_dava_module( TArc )
 find_dava_module( RemoteTool )
 find_dava_module( EditorPhysics )
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
-find_dava_module( DavaTools )
 
 if (NOT PUBLIC_BUILD)
     find_dava_module( SpeedTree )
@@ -38,24 +35,17 @@ list( APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
 list( APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
 list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
-find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
+find_package(DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories   ( ${CMAKE_CURRENT_BINARY_DIR}/DavaTools/QtTools )
+add_plugin(TerrainConverter "${FRAMEWORK_PATH}/Programs/REPlugins/TerrainConverter")
 
-include_directories   ( ${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/FCollada )
-include_directories   ( ${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/External/Cg/include )
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-include_directories   ( ${DAVA_THIRD_PARTY_ROOT_PATH} )
-include_directories   ( ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet  )
+include_directories (${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/FCollada)
+include_directories (${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/External/Cg/include)
 
-include_directories   (.)
-include_directories   ( "../TextureTools" )
-include_directories   ( "Classes" )
-include_directories   ( "Classes/Qt" )
-include_directories   ( "Classes/Qt/CubemapEditor" )
-include_directories   ( "Classes/Qt/TextureBrowser" )
-include_directories   ( "Classes/Collada" )
+include_directories (${DAVA_THIRD_PARTY_ROOT_PATH})
+include_directories (${DAVA_THIRD_PARTY_ROOT_PATH}/bullet)
 
 dava_add_definitions       (
 -D__DAVAENGINE_RENDERSTATS__
@@ -113,3 +103,4 @@ set( UNIFIED_IGNORE_LIST "Classes/Collada" )
 
 convert_graphics()
 
+setup_main_executable()

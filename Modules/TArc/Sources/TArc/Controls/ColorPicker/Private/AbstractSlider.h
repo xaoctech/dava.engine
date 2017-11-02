@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MouseHelper;
 class AbstractSlider : public QWidget
 {
@@ -46,5 +44,4 @@ private:
     QPoint pressPos;
     QPointer<MouseHelper> mouse;
 };
-}
 }

@@ -9,16 +9,13 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class UI;
-}
 }
 
 class CreatingControlsSystem final : public BaseEditorSystem
 {
 public:
-    CreatingControlsSystem(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui);
+    CreatingControlsSystem(DAVA::ContextAccessor* accessor, DAVA::UI* ui);
 
     // BaseEditorSystem
     eSystems GetOrder() const override;
@@ -40,9 +37,9 @@ private:
     void AddControlAtPoint(const DAVA::Vector2& point);
 
 private:
-    DAVA::TArc::UI* ui = nullptr;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::DataWrapper documentDataWrapper;
+    DAVA::UI* ui = nullptr;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::DataWrapper documentDataWrapper;
     DAVA::String controlYamlString;
     bool isEscPressed = false;
     bool isLMBPressed = false;

@@ -14,9 +14,6 @@ namespace DAVA
 {
 class FilePath;
 class Type;
-
-namespace TArc
-{
 class PropertiesItem;
 
 class PropertiesHolder
@@ -68,6 +65,4 @@ T PropertiesItem::Get(const String& key, const T& defaultValue) const
     Any loadedValue = Get(key, defaultValue, Type::Instance<T>());
     return loadedValue.Cast<T>(defaultValue);
 }
-
-} // namespace TArc
 } // namespace DAVA

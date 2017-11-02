@@ -17,7 +17,7 @@
 #include <Utils/StringFormat.h>
 #include <Base/Any.h>
 
-StyleSheetInspectorWidget::StyleSheetInspectorWidget(DAVA::TArc::ContextAccessor* accessor_)
+StyleSheetInspectorWidget::StyleSheetInspectorWidget(DAVA::ContextAccessor* accessor_)
     : QListWidget(nullptr)
     , accessor(accessor_)
     , updater(300)
@@ -36,7 +36,6 @@ StyleSheetInspectorWidget::~StyleSheetInspectorWidget() = default;
 void StyleSheetInspectorWidget::InitFieldBinder()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     selectionFieldBinder.reset(new FieldBinder(accessor));
     FieldDescriptor fieldDescr;

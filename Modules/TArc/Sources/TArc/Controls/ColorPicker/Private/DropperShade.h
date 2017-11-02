@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MouseHelper;
 class DropperShade : public QWidget
 {
@@ -45,5 +43,4 @@ private:
     QPointer<MouseHelper> mouse;
     bool drawCursor;
 };
-}
 }

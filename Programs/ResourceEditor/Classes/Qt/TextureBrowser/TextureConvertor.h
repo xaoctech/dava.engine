@@ -1,23 +1,19 @@
-#ifndef __TEXTURE_CONVERTOR_H__
-#define __TEXTURE_CONVERTOR_H__
+#pragma once
 
-#include "Base/BaseTypes.h"
+#include "Classes/Qt/TextureBrowser/TextureInfo.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertorWork.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertMode.h"
+
+#include <Base/BaseTypes.h>
+#include <Render/TextureDescriptor.h>
 
 #include <QObject>
 #include <QFutureWatcher>
 #include <QProgressDialog>
 
-#include "DAVAEngine.h"
-#include "Render/TextureDescriptor.h"
-
-#include "TextureInfo.h"
-#include "TextureConvertorWork.h"
-#include "TextureConvertMode.h"
-
-#include "Tools/QtWaitDialog/QtWaitDialog.h"
-
 #define CONVERT_JOB_COUNT 2
 
+class QtWaitDialog;
 class TextureConvertor : public QObject, public DAVA::Singleton<TextureConvertor>
 {
     Q_OBJECT
@@ -81,5 +77,3 @@ private:
 private slots:
     void waitCanceled();
 };
-
-#endif // __TEXTURE_CONVERTOR_H__

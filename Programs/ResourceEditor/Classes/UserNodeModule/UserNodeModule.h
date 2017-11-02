@@ -12,24 +12,24 @@ namespace DAVA
 class FilePath;
 }
 
-class UserNodeModule : public DAVA::TArc::ClientModule
+class UserNodeModule : public DAVA::ClientModule
 {
 public:
     static DAVA::FilePath GetBotSpawnPath();
 
 protected:
     void PostInit() override;
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
 private:
     void ChangeDrawingState();
 
     void OnHUDVisibilityChanged(const DAVA::Any& hudVisibilityValue);
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(UserNodeModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(UserNodeModule, DAVA::ClientModule);
 };

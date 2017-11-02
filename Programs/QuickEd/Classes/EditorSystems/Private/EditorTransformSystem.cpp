@@ -199,7 +199,7 @@ void CreateMagnetLinesForPivot(DAVA::Vector<MagnetLineInfo>& magnetLines, DAVA::
 }
 }
 
-EditorTransformSystem::EditorTransformSystem(DAVA::TArc::ContextAccessor* accessor)
+EditorTransformSystem::EditorTransformSystem(DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
 {
     GetSystemsManager()->activeAreaChanged.Connect(this, &EditorTransformSystem::OnActiveAreaChanged);
@@ -367,7 +367,7 @@ void EditorTransformSystem::ProcessKey(DAVA::eInputElements key)
 
 void EditorTransformSystem::PrepareDrag()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -386,7 +386,7 @@ void EditorTransformSystem::PrepareDrag()
 void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     Vector2 delta = GetSystemsManager()->GetMouseDelta();
     switch (activeArea)
     {
@@ -425,7 +425,7 @@ void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
 void EditorTransformSystem::MoveAllSelectedControlsByKeyboard(DAVA::Vector2 delta)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     if (nodesToMoveInfos.empty())
     {
         return;
@@ -459,7 +459,6 @@ void EditorTransformSystem::MoveAllSelectedControlsByKeyboard(DAVA::Vector2 delt
 void EditorTransformSystem::MoveAllSelectedControlsByMouse(DAVA::Vector2 mouseDelta, bool canAdjust)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Vector<EditorTransformSystemDetail::ChangePropertyAction> propertiesToChange;
 
@@ -544,7 +543,6 @@ DAVA::Vector<EditorTransformSystem::MagnetLine> EditorTransformSystem::CreateMag
                                                                                          DAVA::Vector2::eAxis axis, eTransformType type) const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DVASSERT(nullptr != parentGD);
     Vector<MagnetLine> magnets;
@@ -607,7 +605,6 @@ void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, 
 void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, const DAVA::UIGeometricData* parentGD, DAVA::Vector2::eAxis axis, DAVA::Vector<MagnetLine>& lines) const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* globalContext = accessor->GetGlobalContext();
     PreferencesData* preferencesData = globalContext->GetData<PreferencesData>();
@@ -862,7 +859,7 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
 
     Any positionValue(finalPosition);
 
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
     std::unique_ptr<ResizeCommand> command = data->CreateCommand<ResizeCommand>();
@@ -1016,7 +1013,7 @@ void EditorTransformSystem::MovePivot(DAVA::Vector2 delta)
     Vector2 originalPos(positionProperty->GetValue().Cast<Vector2>());
     Vector2 finalPosition(originalPos + rotatedDeltaPosition);
 
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
     std::unique_ptr<ChangePivotCommand> command = data->CreateCommand<ChangePivotCommand>();
@@ -1119,7 +1116,7 @@ bool EditorTransformSystem::RotateControl(const DAVA::Vector2& pos)
 
     float32 finalAngle = AdjustRotateToFixedAngle(deltaAngle, originalAngle);
 
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
     std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
@@ -1245,7 +1242,7 @@ void EditorTransformSystem::ClampAngle()
         angle = static_cast<int32>(angle) % 360;
     }
 
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* data = activeContext->GetData<DocumentData>();
     std::unique_ptr<ChangePropertyValueCommand> command = data->CreateCommand<ChangePropertyValueCommand>();
@@ -1255,14 +1252,14 @@ void EditorTransformSystem::ClampAngle()
 
 bool EditorTransformSystem::IsShiftPressed() const
 {
-    return DAVA::TArc::IsKeyPressed(DAVA::eModifierKeys::SHIFT) ^ (accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->shiftInverted);
+    return DAVA::IsKeyPressed(DAVA::eModifierKeys::SHIFT) ^ (accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->shiftInverted);
 }
 
 bool EditorTransformSystem::CanMagnet() const
 {
     using namespace DAVA;
     float32 scaleToMagnet = 8.0f;
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     CanvasData* data = activeContext->GetData<CanvasData>();
     return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->canMagnet && data->GetScale() <= scaleToMagnet;

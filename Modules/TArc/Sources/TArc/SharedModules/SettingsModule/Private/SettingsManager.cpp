@@ -12,8 +12,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace SettingsManagerDetails
 {
 const String propertiesNodeName("SettingsManager");
@@ -47,8 +45,8 @@ void SettingsManager::CreateSettings()
                   const ReflectedType* type1 = ReflectedTypeDB::GetByPointer(node1);
                   const ReflectedType* type2 = ReflectedTypeDB::GetByPointer(node2);
 
-                  const DAVA::M::SettingsSortKey* sortKey1 = GetTypeMeta<DAVA::M::SettingsSortKey>(node1);
-                  const DAVA::M::SettingsSortKey* sortKey2 = GetTypeMeta<DAVA::M::SettingsSortKey>(node2);
+                  const M::SettingsSortKey* sortKey1 = GetTypeMeta<M::SettingsSortKey>(node1);
+                  const M::SettingsSortKey* sortKey2 = GetTypeMeta<M::SettingsSortKey>(node2);
 
                   if (sortKey1 != nullptr && sortKey2 != nullptr)
                   {
@@ -153,7 +151,7 @@ void SettingsManager::CreateSettingsImpl(const TypeInheritance* inheritance)
 
         SettingsNode* node = nodeType->CreateObject(ReflectedType::CreatePolicy::ByPointer).Cast<SettingsNode*>();
         settings->nodes.push_back(node);
-        accessor->GetGlobalContext()->CreateData(std::unique_ptr<DataNode>(node));
+        accessor->GetGlobalContext()->CreateData(std::unique_ptr<TArcDataNode>(node));
         DataWrapper wrapper = accessor->CreateWrapper(nodeType);
         wrapper.SetListener(this);
         wrappers.emplace_back(wrapper, node);
@@ -167,6 +165,4 @@ SettingsManager::SettingsManager(ContextAccessor* accessor_)
     , settings(new SettingsContainer())
 {
 }
-
-} // namespace TArc
 } // namespace DAVA

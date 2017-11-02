@@ -1,6 +1,6 @@
 #include "LayerForceWidget.h"
 #include "TimeLineWidget.h"
-#include "Commands2/ParticleEditorCommands.h"
+#include <REPlatform/Commands/ParticleEditorCommands.h>
 
 #include <QVBoxLayout>
 #include <QScrollArea>
@@ -33,7 +33,7 @@ void LayerForceWidget::InitWidget(QWidget* widget)
             SLOT(OnValueChanged()));
 }
 
-void LayerForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::uint32 forceIndex, bool updateMinimized)
+void LayerForceWidget::Init(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::uint32 forceIndex, bool updateMinimized)
 {
     if (!layer || layer->forces.size() <= forceIndex)
     {
@@ -107,10 +107,10 @@ void LayerForceWidget::OnValueChanged()
     DAVA::PropLineWrapper<DAVA::float32> propForceOverLife;
     forceOverLifeTimeLine->GetValue(0, propForceOverLife.GetPropsPtr());
 
-    std::unique_ptr<CommandUpdateParticleForce> updateForceCmd(new CommandUpdateParticleForce(layer, forceIndex));
+    std::unique_ptr<DAVA::CommandUpdateParticleForce> updateForceCmd(new DAVA::CommandUpdateParticleForce(layer, forceIndex));
     updateForceCmd->Init(propForce.GetPropLine(), propForceOverLife.GetPropLine());
 
-    SceneEditor2* activeScene = GetActiveScene();
+    DAVA::SceneEditor2* activeScene = GetActiveScene();
     DVASSERT(activeScene != nullptr);
     activeScene->Exec(std::move(updateForceCmd));
     activeScene->MarkAsChanged();

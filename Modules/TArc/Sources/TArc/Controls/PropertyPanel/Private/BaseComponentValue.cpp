@@ -23,8 +23,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class BaseComponentValue::ButtonModel
 {
 public:
@@ -246,7 +244,7 @@ void BaseComponentValue::SetStyle(const Style& style_)
     style = style_;
 }
 
-DAVA::Any BaseComponentValue::GetValue() const
+Any BaseComponentValue::GetValue() const
 {
     Any value = nodes.front()->cachedValue;
     for (const std::shared_ptr<const PropertyNode>& node : nodes)
@@ -337,7 +335,7 @@ const WindowKey& BaseComponentValue::GetWindowKey() const
     return model->wndKey;
 }
 
-DAVA::TArc::DataWrappersProcessor* BaseComponentValue::GetDataProcessor() const
+DataWrappersProcessor* BaseComponentValue::GetDataProcessor() const
 {
     return model->GetWrappersProcessor(nodes.front());
 }
@@ -455,6 +453,5 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BaseComponentValue)
     ReflectionRegistrator<BaseComponentValue>::Begin()
     .Field(readOnlyFieldName, &BaseComponentValue::IsReadOnly, nullptr)
     .End();
-}
 }
 }

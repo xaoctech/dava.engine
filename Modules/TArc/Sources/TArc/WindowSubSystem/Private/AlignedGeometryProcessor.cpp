@@ -2,9 +2,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
-DAVA::eAlign ExtractAlign(eAlign alignment, int32 alignMask, eAlign defaultAlign)
+eAlign ExtractAlign(eAlign alignment, int32 alignMask, eAlign defaultAlign)
 {
     eAlign result = static_cast<eAlign>(alignment & alignMask);
     if (result == 0)
@@ -16,7 +14,7 @@ DAVA::eAlign ExtractAlign(eAlign alignment, int32 alignMask, eAlign defaultAlign
     return result;
 }
 
-AlignedGeometryProcessor::AlignedGeometryProcessor(DAVA::eAlign alignment_, const QPoint& offset_)
+AlignedGeometryProcessor::AlignedGeometryProcessor(eAlign alignment_, const QPoint& offset_)
     : alignment(alignment_)
     , offset(offset_)
 {
@@ -34,13 +32,13 @@ QRect AlignedGeometryProcessor::GetWidgetGeometry(QWidget* parent, QWidget* cont
 
     switch (hAlign)
     {
-    case DAVA::ALIGN_LEFT:
+    case ALIGN_LEFT:
         topLeftPoint.rx() = offset.x();
         break;
-    case DAVA::ALIGN_HCENTER:
+    case ALIGN_HCENTER:
         topLeftPoint.rx() = parentGeometry.center().x() - (contentSize.width() >> 1);
         break;
-    case DAVA::ALIGN_RIGHT:
+    case ALIGN_RIGHT:
         topLeftPoint.rx() = parentGeometry.size().width() - offset.x() - contentSize.width();
         break;
     default:
@@ -50,13 +48,13 @@ QRect AlignedGeometryProcessor::GetWidgetGeometry(QWidget* parent, QWidget* cont
 
     switch (vAlign)
     {
-    case DAVA::ALIGN_TOP:
+    case ALIGN_TOP:
         topLeftPoint.ry() = offset.y();
         break;
-    case DAVA::ALIGN_VCENTER:
+    case ALIGN_VCENTER:
         topLeftPoint.ry() = parentGeometry.center().y() - (contentSize.height() >> 1);
         break;
-    case DAVA::ALIGN_BOTTOM:
+    case ALIGN_BOTTOM:
         topLeftPoint.ry() = parentGeometry.size().height() - offset.y() - contentSize.height();
         break;
     default:
@@ -68,6 +66,4 @@ QRect AlignedGeometryProcessor::GetWidgetGeometry(QWidget* parent, QWidget* cont
     result.setSize(contentSize);
     return result;
 }
-
-} // namespace TArc
 } // namespace DAVA

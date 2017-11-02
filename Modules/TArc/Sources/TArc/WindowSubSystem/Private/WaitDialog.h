@@ -14,8 +14,6 @@ class QPushButton;
 
 namespace DAVA
 {
-namespace TArc
-{
 class WaitDialog : public WaitHandle
 {
 public:
@@ -30,7 +28,7 @@ public:
 
     void Update() override;
 
-    DAVA::Signal<WaitHandle*> beforeDestroy;
+    Signal<WaitHandle*> beforeDestroy;
 
 private:
     void CanceledByMouse();
@@ -46,5 +44,4 @@ private:
     WaitDialogParams params;
     bool wasCanceled = false;
 };
-} // namespace TArc
 } // namespace DAVA

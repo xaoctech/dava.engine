@@ -1,15 +1,14 @@
 #include "TileTexturePreviewWidget.h"
-#include "TextureBrowser/TextureConvertor.h"
-#include "Classes/Qt/Main/QtUtils.h"
-#include "StringConstants.h"
-#include "ImageTools/ImageTools.h"
-
 #include "TileTexturePreviewWidgetItemDelegate.h"
-#include "Classes/Application/REGlobal.h"
+
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
 
 #include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/Utils.h>
-
 
 #include <QHeaderView>
 #include <QLabel>
@@ -88,7 +87,7 @@ void TileTexturePreviewWidget::AddTexture(DAVA::Image* previewTexture, const DAV
         label->setMinimumHeight(TEXTURE_PREVIEW_HEIGHT);
         labels.push_back(label);
         label->installEventFilter(this);
-        label->setToolTip(ResourceEditor::TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP.c_str());
+        label->setToolTip(DAVA::ResourceEditor::TILE_TEXTURE_PREVIEW_CHANGE_COLOR_TOOLTIP.c_str());
         label->setCursor(Qt::PointingHandCursor);
 
         colors.push_back(color);
@@ -180,7 +179,7 @@ void TileTexturePreviewWidget::UpdateImage(DAVA::uint32 number)
         image = SafeRetain(images[number]);
     }
 
-    QImage qimg = ImageTools::FromDavaImage(image);
+    QImage qimg = DAVA::ImageTools::FromDavaImage(image);
     DAVA::SafeRelease(image);
 
     QSize size = QSize(TEXTURE_PREVIEW_WIDTH, TEXTURE_PREVIEW_HEIGHT);
@@ -200,7 +199,7 @@ void TileTexturePreviewWidget::UpdateColor(DAVA::uint32 number)
     bool blocked = blockSignals(true);
 
     QTreeWidgetItem* item = topLevelItem(number);
-    QColor color = DAVA::TArc::ColorToQColor(colors[number]);
+    QColor color = DAVA::ColorToQColor(colors[number]);
     color.setAlpha(255);
 
     QPalette palette = labels[number]->palette();
@@ -255,7 +254,7 @@ void TileTexturePreviewWidget::OnItemChanged(QTreeWidgetItem* item, int column)
             QColor color = QColor(colorString);
             if (color.isValid())
             {
-                DAVA::Color c = DAVA::TArc::QColorToColor(color);
+                DAVA::Color c = DAVA::QColorToColor(color);
                 if (c != colors[index])
                 {
                     SetColor(index, c);
@@ -283,7 +282,7 @@ bool TileTexturePreviewWidget::eventFilter(QObject* obj, QEvent* ev)
             if (ev->type() == QEvent::MouseButtonRelease)
             {
                 const DAVA::Color oldColor = colors[i];
-                DAVA::TArc::ColorPickerDialog cp(REGlobal::GetAccessor(), this);
+                DAVA::ColorPickerDialog cp(DAVA::Deprecated::GetAccessor(), this);
                 cp.setWindowTitle("Tile color");
                 cp.SetDavaColor(oldColor);
                 const bool result = cp.Exec();

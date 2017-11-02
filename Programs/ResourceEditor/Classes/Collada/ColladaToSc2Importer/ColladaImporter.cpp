@@ -1,26 +1,27 @@
-#include "Animation/AnimationClip.h"
-#include "Animation/AnimationTrack.h"
-#include "Animation/AnimationChannel.h"
-#include "FileSystem/DynamicMemoryFile.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/SceneUtils.h"
-#include "Scene3D/AnimationData.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/AnimationComponent.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Render/Highlevel/Mesh.h"
-#include "Render/3D/MeshUtils.h"
-#include "Render/3D/PolygonGroup.h"
-#include "Collada/ColladaMeshInstance.h"
-#include "Collada/ColladaSceneNode.h"
-#include "Collada/ColladaScene.h"
-#include "Collada/ColladaToSc2Importer/ColladaImporter.h"
-#include "Collada/ColladaToSc2Importer/ImportSettings.h"
-#include "Utils/UTF8Utils.h"
-#include "Utils/CRC32.h"
-#include "Qt/Main/QtUtils.h"
+#include "Classes/Collada/ColladaMeshInstance.h"
+#include "Classes/Collada/ColladaSceneNode.h"
+#include "Classes/Collada/ColladaScene.h"
+#include "Classes/Collada/ColladaToSc2Importer/ColladaImporter.h"
+#include "Classes/Collada/ColladaToSc2Importer/ImportSettings.h"
+
+#include <Animation/AnimationChannel.h>
+#include <Animation/AnimationClip.h>
+#include <Animation/AnimationTrack.h>
+#include <FileSystem/DynamicMemoryFile.h>
+#include <Logger/Logger.h>
+#include <Render/3D/MeshUtils.h>
+#include <Render/3D/PolygonGroup.h>
+#include <Render/Highlevel/Mesh.h>
+#include <Scene3D/AnimationData.h>
+#include <Scene3D/Components/AnimationComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/SceneUtils.h>
+#include <Utils/CRC32.h>
+#include <Utils/UTF8Utils.h>
 
 namespace DAVA
 {
@@ -104,6 +105,7 @@ bool ColladaImporter::VerifyColladaMesh(ColladaMeshInstance* mesh, const FastNam
     {
         if (polygonGroupInstance->material == nullptr)
         {
+        DAVA:
             Logger::Error("[DAE to SC2] Node %s has no material", nodeName.c_str());
             return false;
         }

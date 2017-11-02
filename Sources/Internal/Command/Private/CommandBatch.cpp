@@ -1,6 +1,7 @@
 #include "Command/CommandBatch.h"
 
 #include "Debug/DVAssert.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #include <typeinfo>
 
@@ -62,6 +63,12 @@ void CommandBatch::AddAndRedo(std::unique_ptr<Command>&& command)
     actualCommand->Redo();
 }
 
+const Command* CommandBatch::GetCommand(uint32 index) const
+{
+    DVASSERT(index < commandList.size());
+    return commandList[index].get();
+}
+
 bool CommandBatch::IsClean() const
 {
     return std::find_if(commandList.begin(), commandList.end(), [](const std::unique_ptr<Command>& command) {
@@ -73,4 +80,11 @@ bool IsCommandBatch(const Command* command)
 {
     return dynamic_cast<const CommandBatch*>(command) != nullptr;
 }
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandBatch)
+{
+    ReflectionRegistrator<CommandBatch>::Begin()
+    .End();
+}
+
 } //namespace DAVA

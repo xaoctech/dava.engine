@@ -145,7 +145,7 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
 }
 }
 
-CommandExecutor::CommandExecutor(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_)
+CommandExecutor::CommandExecutor(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_)
     : accessor(accessor_)
     , ui(ui_)
 {
@@ -214,7 +214,6 @@ void CommandExecutor::AddImportedPackagesIntoPackage(const DAVA::Vector<DAVA::Fi
 
     if (result.type == Result::RESULT_ERROR)
     {
-        using namespace DAVA::TArc;
         NotificationParams params;
         params.title = "Can't import package";
         params.message = result;
@@ -439,7 +438,6 @@ Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNod
 DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Vector<ControlNode*> nodesToMove;
     nodesToMove.reserve(nodes.size());
@@ -489,7 +487,7 @@ DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<Cont
             String message = "Can not move controls: " + CommandExecutorDetails::FormatNodeNames(notMovedNodes);
 
             notificationParams.message = Result(Result::RESULT_WARNING, message);
-            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+            ui->ShowNotification(DAVA::mainWindowKey, notificationParams);
         }
     }
 
@@ -644,14 +642,12 @@ void CommandExecutor::Remove(const Vector<ControlNode*>& controls, const Vector<
 
 SelectedNodes CommandExecutor::Paste(PackageNode* root, PackageBaseNode* dest, int32 destIndex, const DAVA::String& data)
 {
-    using namespace DAVA::TArc;
-
     auto ShowWarnNotification = [this](String msg)
     {
         NotificationParams notificationParams;
         notificationParams.title = "Can't paste";
         notificationParams.message = Result(Result::RESULT_WARNING, msg);
-        ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        ui->ShowNotification(DAVA::mainWindowKey, notificationParams);
     };
 
     if (dest->IsReadOnly())
@@ -957,7 +953,6 @@ bool CommandExecutor::IsControlNodesHasSameParentControlNode(const ControlNode* 
 
 DocumentData* CommandExecutor::GetDocumentData() const
 {
-    using namespace DAVA::TArc;
     DataContext* context = accessor->GetActiveContext();
     DVASSERT(context != nullptr);
     DocumentData* data = context->GetData<DocumentData>();
@@ -967,7 +962,6 @@ DocumentData* CommandExecutor::GetDocumentData() const
 
 ProjectData* CommandExecutor::GetProjectData() const
 {
-    using namespace DAVA::TArc;
     DataContext* globalContext = accessor->GetGlobalContext();
     DVASSERT(globalContext != nullptr);
     ProjectData* data = globalContext->GetData<ProjectData>();

@@ -1,17 +1,27 @@
 #include "Classes/Qt/MaterialEditor/MaterialTree.h"
 #include "Classes/Qt/MaterialEditor/MaterialFilterModel.h"
-#include "Classes/Qt/MaterialEditor/MaterialAssignSystem.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Selection/Selection.h"
-#include "Classes/Selection/SelectionData.h"
+#include <REPlatform/Commands/CloneLastBatchCommand.h>
+#include <REPlatform/Commands/ConvertToShadowCommand.h>
+#include <REPlatform/Commands/CopyLastLODCommand.h>
+#include <REPlatform/Commands/CreatePlaneLODCommand.h>
+#include <REPlatform/Commands/DeleteLODCommand.h>
+#include <REPlatform/Commands/DeleteRenderBatchCommand.h>
+#include <REPlatform/Commands/InspMemberModifyCommand.h>
+#include <REPlatform/Commands/MaterialConfigCommands.h>
+#include <REPlatform/Commands/MaterialSwitchParentCommand.h>
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/Commands/RemoveComponentCommand.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Scene/SceneHelper.h>
+#include <REPlatform/Scene/Systems/CollisionSystem.h>
+#include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
 
-#include "Classes/Commands2/RemoveComponentCommand.h"
-#include "Classes/Commands2/Base/RECommandBatch.h"
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
-
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/Utils.h>
 
@@ -35,11 +45,11 @@ MaterialTree::MaterialTree(QWidget* parent /* = 0 */)
     QObject::connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &MaterialTree::OnCommandExecuted);
     QObject::connect(SceneSignals::Instance(), &SceneSignals::StructureChanged, this, &MaterialTree::OnStructureChanged);
 
-    selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    selectionFieldBinder.reset(new DAVA::FieldBinder(DAVA::Deprecated::GetAccessor()));
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
-        fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::SelectionData>();
+        fieldDescr.fieldName = DAVA::FastName(DAVA::SelectionData::selectionPropertyName);
         selectionFieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &MaterialTree::OnSelectionChanged));
     }
 
@@ -56,7 +66,7 @@ MaterialTree::~MaterialTree()
 {
 }
 
-void MaterialTree::SetScene(SceneEditor2* sceneEditor)
+void MaterialTree::SetScene(DAVA::SceneEditor2* sceneEditor)
 {
     setSortingEnabled(false);
     treeModel->SetScene(sceneEditor);
@@ -84,17 +94,20 @@ void MaterialTree::SelectMaterial(DAVA::NMaterial* material)
 
 void MaterialTree::SelectEntities(const QList<DAVA::NMaterial*>& materials)
 {
-    SceneEditor2* curScene = treeModel->GetScene();
+    DAVA::SceneEditor2* curScene = treeModel->GetScene();
 
     if (nullptr != curScene && materials.size() > 0)
     {
-        SelectableGroup newSelection;
-        std::function<void(DAVA::NMaterial*)> fn = [&fn, &curScene, &newSelection](DAVA::NMaterial* material)
+        DAVA::SelectableGroup newSelection;
+        DAVA::EditorMaterialSystem* materialSystem = curScene->GetSystem<DAVA::EditorMaterialSystem>();
+        DAVA::SceneCollisionSystem* collisionSystem = curScene->GetSystem<DAVA::SceneCollisionSystem>();
+        DAVA::SelectionSystem* selectionSystem = curScene->GetSystem<DAVA::SelectionSystem>();
+        std::function<void(DAVA::NMaterial*)> fn = [&](DAVA::NMaterial* material)
         {
-            DAVA::Entity* entity = curScene->materialSystem->GetEntity(material);
-            if ((nullptr != entity) && (newSelection.ContainsObject(entity) == false && Selection::IsEntitySelectable(entity)))
+            DAVA::Entity* entity = materialSystem->GetEntity(material);
+            if ((nullptr != entity) && (newSelection.ContainsObject(entity) == false && selectionSystem->IsEntitySelectable(entity)))
             {
-                newSelection.Add(entity, curScene->collisionSystem->GetUntransformedBoundingBox(entity));
+                newSelection.Add(entity, collisionSystem->GetUntransformedBoundingBox(entity));
             }
 
             const DAVA::Vector<DAVA::NMaterial*>& children = material->GetChildren();
@@ -110,8 +123,8 @@ void MaterialTree::SelectEntities(const QList<DAVA::NMaterial*>& materials)
             fn(material);
         }
 
-        Selection::SetSelection(newSelection);
-        LookAtSelection(curScene);
+        selectionSystem->SetSelection(newSelection);
+        DAVA::LookAtSelection(curScene);
     }
 }
 
@@ -136,7 +149,7 @@ void MaterialTree::ShowContextMenu(const QPoint& pos)
 {
     QMenu contextMenu(this);
 
-    contextMenu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/zoom.png"), "Select entities", this, SLOT(OnSelectEntities()));
+    contextMenu.addAction(DAVA::SharedIcon(":/QtIcons/zoom.png"), "Select entities", this, SLOT(OnSelectEntities()));
 
     emit ContextMenuPrepare(&contextMenu);
     contextMenu.exec(mapToGlobal(pos));
@@ -206,49 +219,44 @@ void MaterialTree::GetDropParams(const QPoint& pos, QModelIndex& index, int& row
     }
 }
 
-void MaterialTree::OnCommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
+void MaterialTree::OnCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification)
 {
+    using namespace DAVA;
     if (treeModel->GetScene() == scene)
     {
-        if (commandNotification.MatchCommandID(CMDID_INSP_MEMBER_MODIFY))
+        if (commandNotification.MatchCommandTypes<InspMemberModifyCommand>())
         {
             treeModel->invalidate();
         }
-        else if (commandNotification.MatchCommandIDs({ CMDID_DELETE_RENDER_BATCH, CMDID_CLONE_LAST_BATCH, CMDID_CONVERT_TO_SHADOW, CMDID_MATERIAL_SWITCH_PARENT,
-                                                       CMDID_MATERIAL_REMOVE_CONFIG, CMDID_MATERIAL_CREATE_CONFIG, CMDID_LOD_DELETE, CMDID_LOD_CREATE_PLANE, CMDID_LOD_COPY_LAST_LOD }))
+
+        if (commandNotification.MatchCommandTypes<DeleteRenderBatchCommand, CloneLastBatchCommand, ConvertToShadowCommand, MaterialSwitchParentCommand,
+                                                  MaterialRemoveConfig, MaterialCreateConfig, DeleteLODCommand, CreatePlaneLODCommand, CopyLastLODToLod0Command>())
         {
             Update();
         }
         else
         {
-            auto processRemoveCommand = [this](const RECommand* command, bool redo)
-            {
-                if (command->MatchCommandID(CMDID_COMPONENT_REMOVE))
+            commandNotification.ForEach<RemoveComponentCommand>([&](const RemoveComponentCommand* cmd) {
+                DVASSERT(cmd->GetComponent() != nullptr);
+                if (cmd->GetComponent()->GetType() == DAVA::Component::RENDER_COMPONENT)
                 {
-                    const RemoveComponentCommand* removeCommand = static_cast<const RemoveComponentCommand*>(command);
-                    DVASSERT(removeCommand->GetComponent() != nullptr);
-                    if (removeCommand->GetComponent()->GetType() == DAVA::Component::RENDER_COMPONENT)
-                    {
-                        Update();
-                    }
+                    Update();
                 }
-            };
-
-            commandNotification.ExecuteForAllCommands(processRemoveCommand);
+            });
         }
     }
 }
 
-void MaterialTree::OnStructureChanged(SceneEditor2* scene, DAVA::Entity* parent)
+void MaterialTree::OnStructureChanged(DAVA::SceneEditor2* scene, DAVA::Entity* parent)
 {
     treeModel->Sync();
 }
 
 void MaterialTree::OnSelectionChanged(const DAVA::Any& selectionAny)
 {
-    if (selectionAny.CanGet<SelectableGroup>())
+    if (selectionAny.CanGet<DAVA::SelectableGroup>())
     {
-        const SelectableGroup& selection = selectionAny.Get<SelectableGroup>();
+        const DAVA::SelectableGroup& selection = selectionAny.Get<DAVA::SelectableGroup>();
         treeModel->SetSelection(&selection);
         treeModel->invalidate();
     }

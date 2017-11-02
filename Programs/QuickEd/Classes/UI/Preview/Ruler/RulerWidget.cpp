@@ -16,7 +16,7 @@
 #include <cmath>
 #include <sstream>
 
-RulerWidget::RulerWidget(DAVA::TArc::ContextAccessor* accessor_, IRulerListener* listener_, QWidget* parent)
+RulerWidget::RulerWidget(DAVA::ContextAccessor* accessor_, IRulerListener* listener_, QWidget* parent)
     : QWidget(parent)
     , accessor(accessor_)
     , listener(listener_)
@@ -177,7 +177,7 @@ void RulerWidget::UpdateDoubleBufferImage()
     doubleBuffer = QPixmap(size());
     doubleBuffer.fill();
 
-    DAVA::TArc::ThemesSettings* themeSettings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
+    DAVA::ThemesSettings* themeSettings = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>();
     QColor rulerBackgroundColor = themeSettings->GetRulerWidgetBackgroungColor();
 
     const QColor rulerTicksColor = themeSettings->GetRulerTextColor();

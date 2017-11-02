@@ -40,7 +40,7 @@ void StringPropertyDelegate::setEditorData(QWidget* rawEditor, const QModelIndex
             stringValue = WideStringToQString(value.Get<DAVA::WideString>());
         }
     }
-    DAVA::TArc::UnescapeString(stringValue);
+    DAVA::UnescapeString(stringValue);
 
     editor->blockSignals(true);
     editor->setText(stringValue);
@@ -56,7 +56,7 @@ bool StringPropertyDelegate::setModelData(QWidget* rawEditor, QAbstractItemModel
 
     DAVA::Any value = index.data(Qt::EditRole).value<DAVA::Any>();
 
-    QString stringValue = DAVA::TArc::EscapeString(editor->text());
+    QString stringValue = DAVA::EscapeString(editor->text());
     if (value.CanGet<DAVA::String>())
     {
         value.Set<DAVA::String>(QStringToString(stringValue));

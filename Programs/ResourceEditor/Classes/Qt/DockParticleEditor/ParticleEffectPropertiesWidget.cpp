@@ -1,5 +1,6 @@
 #include "ParticleEffectPropertiesWidget.h"
-#include "Classes/Commands2/ParticleEditorCommands.h"
+
+#include <REPlatform/Commands/ParticleEditorCommands.h>
 
 #include <TArc/Utils/Utils.h>
 
@@ -19,7 +20,7 @@ static const int TreeItemTypeExternal = QTreeWidgetItem::UserType + 4;
 ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent)
     : BaseParticleEditorContentWidget(parent)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     mainLayout = new QVBoxLayout();
     mainLayout->setAlignment(Qt::AlignTop);
     this->setLayout(mainLayout);
@@ -350,7 +351,7 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
     DVASSERT(effect != nullptr);
     DAVA::float32 playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(effectPlaybackSpeed->value());
 
-    std::unique_ptr<CommandUpdateEffect> commandUpdateEffect(new CommandUpdateEffect(effect));
+    std::unique_ptr<DAVA::CommandUpdateEffect> commandUpdateEffect(new DAVA::CommandUpdateEffect(effect));
     commandUpdateEffect->Init(playbackSpeed);
 
     DVASSERT(GetActiveScene() != nullptr);
@@ -403,7 +404,7 @@ void ParticleEffectPropertiesWidget::OnStepForward()
     effect->Step(step);
 }
 
-void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect)
+void ParticleEffectPropertiesWidget::Init(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect)
 {
     DVASSERT(effect != nullptr);
     SetObjectsForScene(scene, effect, nullptr);

@@ -10,8 +10,6 @@ class QAction;
 class QWidget;
 namespace DAVA
 {
-namespace TArc
-{
 static const QString menuScheme = QStringLiteral("menu");
 static const QString toolbarScheme = QStringLiteral("toolbar");
 static const QString statusbarScheme = QStringLiteral("statusbar");
@@ -62,5 +60,4 @@ struct KeyBindableActionInfo
 
 void MakeActionKeyBindable(QAction* action, const KeyBindableActionInfo& info);
 bool GetActionKeyBindableInfo(QAction* action, KeyBindableActionInfo& info);
-} // namespace TArc
 } // namespace DAVA

@@ -1,9 +1,8 @@
-#ifndef __PROPERTY_EDITOR_STATE_HELPER__H__
-#define __PROPERTY_EDITOR_STATE_HELPER__H__
+#pragma once
 
-#include "Main/QTreeViewStateHelper.h"
-#include "Tools/QtPropertyEditor/QtPropertyModel.h"
-#include "Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyModel.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Main/QTreeViewStateHelper.h"
 
 class PropertyEditorStateHelper : public DAVA::QTreeViewStateHelper<QString>
 {
@@ -17,5 +16,3 @@ protected:
 private:
     QtPropertyModel* model;
 };
-
-#endif /* defined(__PROPERTY_EDITOR_STATE_HELPER__H__) */

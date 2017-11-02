@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 #if defined(__DAVAENGINE_MACOS__)
 #include <TArc/Utils/ShortcutChecker.h>
@@ -21,11 +21,8 @@ class StyleSheetInspectorWidget;
 namespace DAVA
 {
 class ResultList;
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 class QCheckBox;
@@ -39,7 +36,7 @@ class MainWindow : public QMainWindow, public DAVA::TrackedObject
 public:
     class ProjectView;
 
-    explicit MainWindow(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent = nullptr);
+    explicit MainWindow(DAVA::ContextAccessor* accessor, DAVA::UI* ui, QWidget* parent = nullptr);
 
     ~MainWindow() override;
 
@@ -71,12 +68,12 @@ private:
     QActionGroup* backgroundActions = nullptr;
 
 #if defined(__DAVAENGINE_MACOS__)
-    DAVA::TArc::ShortcutChecker shortcutChecker;
+    DAVA::ShortcutChecker shortcutChecker;
 #endif //__DAVAENGINE_MACOS__
 
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtDelayedExecutor delayedExecutor;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::QtConnections connections;
 
     ProjectView* projectView = nullptr;
 };

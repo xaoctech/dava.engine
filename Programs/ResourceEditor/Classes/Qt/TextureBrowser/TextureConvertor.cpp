@@ -1,11 +1,12 @@
-#include "Classes/Application/RESettings.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
-#include "Classes/Qt/Main/QtUtils.h"
-#include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Deprecated/SceneValidator.h"
-#include "Classes/ImageTools/ImageTools.h"
+#include "Classes/Qt/Tools/QtWaitDialog/QtWaitDialog.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Deprecated/SceneValidator.h>
+#include <REPlatform/Scene/SceneHelper.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
+
+#include <TArc/Core/Deprecated.h>
 
 #include <DavaTools/TextureCompression/TextureConverter.h>
 
@@ -119,8 +120,8 @@ int TextureConvertor::Reconvert(DAVA::Scene* scene, eTextureConvertMode convertM
     if (NULL != scene)
     {
         // get list of all scenes textures
-        SceneHelper::TextureCollector collector;
-        SceneHelper::EnumerateSceneTextures(scene, collector);
+        DAVA::SceneHelper::TextureCollector collector;
+        DAVA::SceneHelper::EnumerateSceneTextures(scene, collector);
         DAVA::TexturesMap& allTextures = collector.GetTextures();
 
         // add jobs to convert every texture
@@ -336,19 +337,19 @@ TextureInfo TextureConvertor::GetThumbnailThread(const JobItem* item)
                 if (faceName.IsEmpty())
                     continue;
 
-                QImage img = ImageTools::FromDavaImage(faceName);
+                QImage img = DAVA::ImageTools::FromDavaImage(faceName);
                 result.images.push_back(img);
                 fileSize += QFileInfo(faceName.GetAbsolutePathname().c_str()).size();
             }
         }
         else
         {
-            QImage img = ImageTools::FromDavaImage(descriptor->GetSourceTexturePathname());
+            QImage img = DAVA::ImageTools::FromDavaImage(descriptor->GetSourceTexturePathname());
             result.images.push_back(img);
             fileSize = QFileInfo(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
         }
 
-        result.dataSize = ImageTools::GetTexturePhysicalSize(descriptor, DAVA::GPU_ORIGIN);
+        result.dataSize = DAVA::ImageTools::GetTexturePhysicalSize(descriptor, DAVA::GPU_ORIGIN);
         result.fileSize = fileSize;
     }
 
@@ -374,7 +375,7 @@ TextureInfo TextureConvertor::GetOriginalThread(const JobItem* item)
                 if (faceName.IsEmpty())
                     continue;
 
-                QImage img = ImageTools::FromDavaImage(faceName);
+                QImage img = DAVA::ImageTools::FromDavaImage(faceName);
                 result.images.push_back(img);
 
                 fileSize += QFileInfo(faceName.GetAbsolutePathname().c_str()).size();
@@ -382,12 +383,12 @@ TextureInfo TextureConvertor::GetOriginalThread(const JobItem* item)
         }
         else
         {
-            QImage img = ImageTools::FromDavaImage(descriptor->GetSourceTexturePathname());
+            QImage img = DAVA::ImageTools::FromDavaImage(descriptor->GetSourceTexturePathname());
             result.images.push_back(img);
             fileSize = QFileInfo(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
         }
 
-        result.dataSize = ImageTools::GetTexturePhysicalSize(descriptor, DAVA::GPU_ORIGIN);
+        result.dataSize = DAVA::ImageTools::GetTexturePhysicalSize(descriptor, DAVA::GPU_ORIGIN);
         result.fileSize = fileSize;
 
         if (result.images.size())
@@ -431,7 +432,7 @@ TextureInfo TextureConvertor::GetConvertedThread(const JobItem* item)
                 DVASSERT(false);
             }
 
-            result.dataSize = ImageTools::GetTexturePhysicalSize(descriptor, gpu);
+            result.dataSize = DAVA::ImageTools::GetTexturePhysicalSize(descriptor, gpu);
 
             result.fileSize = QFileInfo(descriptor->CreateMultiMipPathnameForGPU(gpu).GetAbsolutePathname().c_str()).size();
 
@@ -460,7 +461,7 @@ TextureInfo TextureConvertor::GetConvertedThread(const JobItem* item)
         {
             if (convertedImages[i] != NULL)
             {
-                QImage img = ImageTools::FromDavaImage(convertedImages[i]);
+                QImage img = DAVA::ImageTools::FromDavaImage(convertedImages[i]);
                 result.images.push_back(img);
 
                 convertedImages[i]->Release();
@@ -529,7 +530,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 
         if (convert)
         {
-            GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+            DAVA::GeneralSettings* settings = DAVA::Deprecated::GetDataNode<DAVA::GeneralSettings>();
             outputPath = DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, settings->compressionQuality);
         }
 

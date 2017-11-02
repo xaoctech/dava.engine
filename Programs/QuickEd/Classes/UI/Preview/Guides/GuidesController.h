@@ -21,11 +21,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder;
-}
 }
 
 class CanvasData;
@@ -36,15 +33,15 @@ class QWidget;
 class QPropertyAnimation;
 
 //this class realize Behavior pattern to have different behaviors for vertical and for horizontal guides
-class GuidesController : public QObject, public IRulerListener, DAVA::TArc::DataListener
+class GuidesController : public QObject, public IRulerListener, DAVA::DataListener
 {
     Q_OBJECT
 
 public:
-    GuidesController(DAVA::Vector2::eAxis orientation, DAVA::TArc::ContextAccessor* accessor, QWidget* container);
+    GuidesController(DAVA::Vector2::eAxis orientation, DAVA::ContextAccessor* accessor, QWidget* container);
 
 private:
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
     void BindFields();
     void OnCanvasParametersChanged(const DAVA::Any&);
@@ -125,10 +122,10 @@ private:
 
     DAVA::Vector2::eAxis orientation = DAVA::Vector2::AXIS_X;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::DataWrapper documentDataWrapper;
-    DAVA::TArc::DataWrapper preferencesDataWrapper;
+    DAVA::ContextAccessor* accessor = nullptr;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::DataWrapper documentDataWrapper;
+    DAVA::DataWrapper preferencesDataWrapper;
 
     //use it only for drag-n-drop
     PackageNode::AxisGuides cachedValues;
@@ -144,8 +141,8 @@ private:
     QList<Guide> guides;
 
     //we can not use Show inside Update signal
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtDelayedExecutor delayedExecutor;
 
     CanvasDataAdapter canvasDataAdapter;
-    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
+    DAVA::DataWrapper canvasDataAdapterWrapper;
 };

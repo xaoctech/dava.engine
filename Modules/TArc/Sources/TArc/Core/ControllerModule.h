@@ -8,8 +8,6 @@ class QCloseEvent;
 namespace DAVA
 {
 class Window;
-namespace TArc
-{
 class ContextManager;
 class ControllerModule : public ClientModule
 {
@@ -29,5 +27,4 @@ private:
     {
     }
 };
-} // namespace TArc
 } // namespace DAVA

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+#include <REPlatform/Scene/Systems/EditorSceneSystem.h>
 
 #include <Entity/SceneSystem.h>
 #include <Base/BaseTypes.h>
 
-class EditorTextSystem : public DAVA::SceneSystem, public EditorSceneSystem
+class EditorTextSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
 public:
     EditorTextSystem(DAVA::Scene* scene);

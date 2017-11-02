@@ -5,11 +5,11 @@
 
 #include <Reflection/Reflection.h>
 
-class ObjectPlacementModule : public DAVA::TArc::ClientModule
+class ObjectPlacementModule : public DAVA::ClientModule
 {
 protected:
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
     void PostInit() override;
 
@@ -18,7 +18,7 @@ private:
     void OnSnapToLandscape();
     void OnPlaceAndAlign();
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(ObjectPlacementModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ObjectPlacementModule, DAVA::ClientModule);
 };

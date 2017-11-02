@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ColorComponentSlider;
 class ColorPickerRGBAM : public AbstractColorPicker
 {
@@ -38,5 +36,4 @@ private:
     QPointer<ColorComponentSlider> a;
     QPointer<ColorComponentSlider> m;
 };
-}
 }

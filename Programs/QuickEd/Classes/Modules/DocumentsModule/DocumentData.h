@@ -3,7 +3,7 @@
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "EditorSystems/SelectionContainer.h"
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/Qt/QtString.h>
 
 #include <Base/BaseTypes.h>
@@ -16,7 +16,7 @@ class CommandStack;
 }
 class PackageNode;
 
-class DocumentData : public DAVA::TArc::DataNode
+class DocumentData : public DAVA::TArcDataNode
 {
 public:
     DocumentData(const DAVA::RefPtr<PackageNode>& package);
@@ -92,7 +92,7 @@ private:
     bool documentExists = true;
     DAVA::uint32 startedBatches = 0;
 
-    DAVA_VIRTUAL_REFLECTION(DocumentData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(DocumentData, DAVA::TArcDataNode);
 };
 
 template <typename T, typename... Arguments>

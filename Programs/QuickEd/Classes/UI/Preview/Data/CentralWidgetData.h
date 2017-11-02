@@ -1,12 +1,12 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 #include <Math/Vector.h>
 
 class QWidget;
 
-class CentralWidgetData : public DAVA::TArc::DataNode
+class CentralWidgetData : public DAVA::TArcDataNode
 {
 public:
     CentralWidgetData(QWidget* renderWidget, QWidget* hRulerWidget, QWidget* vRulerWidget);
@@ -35,5 +35,5 @@ private:
     QWidget* hRulerWidget = nullptr;
     QWidget* vRulerWidget = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(CentralWidgetData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(CentralWidgetData, DAVA::TArcDataNode);
 };

@@ -3,17 +3,16 @@
 #include "Classes/SpeedTreeModule/SpeedTreeModule.h"
 #include "Classes/SpeedTreeModule/Private/SpeedTreeImportDialog.h"
 
-#include "Classes/Application/REGlobalOperationsData.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
 
-#include "TArc/WindowSubSystem/ActionUtils.h"
-#include "TArc/WindowSubSystem/UI.h"
-#include "TArc/WindowSubSystem/QtAction.h"
-#include "TArc/Utils/ModuleCollection.h"
+#include <TArc/WindowSubSystem/ActionUtils.h>
+#include <TArc/WindowSubSystem/UI.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/Utils/ModuleCollection.h>
 
 void SpeedTreeModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     const QString importSpeedTreeName("SpeedTree from XML...");
 
@@ -27,7 +26,7 @@ void SpeedTreeModule::PostInit()
                                                });
 
         ActionPlacementInfo menuPlacement(CreateMenuPoint("File", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, QStringLiteral("exportSeparator"))));
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, menuPlacement, importAction);
+        GetUI()->AddAction(DAVA::mainWindowKey, menuPlacement, importAction);
         connections.AddConnection(importAction, &QAction::triggered, DAVA::MakeFunction(this, &SpeedTreeModule::OnImportSpeedTree));
     }
 
@@ -44,10 +43,7 @@ void SpeedTreeModule::PostInit()
 
 void SpeedTreeModule::OnImportSpeedTree()
 {
-    REGlobalOperationsData* globalOpData = GetAccessor()->GetGlobalContext()->GetData<REGlobalOperationsData>();
-    DVASSERT(globalOpData != nullptr);
-
-    SpeedTreeImportDialog importDialog(globalOpData->GetGlobalOperations(), GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    SpeedTreeImportDialog importDialog(GetUI()->GetWindow(DAVA::mainWindowKey));
     importDialog.exec();
 }
 

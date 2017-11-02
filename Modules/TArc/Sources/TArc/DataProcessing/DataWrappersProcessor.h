@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DataWrappersProcessor
 {
 public:
@@ -28,5 +26,4 @@ private:
     bool recursiveSyncGuard = false;
     String debugName;
 };
-}
 }

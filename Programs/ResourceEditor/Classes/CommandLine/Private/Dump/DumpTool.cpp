@@ -1,17 +1,17 @@
-#include "CommandLine/DumpTool.h"
-#include "CommandLine/Private/OptionName.h"
-#include "CommandLine/Private/SceneConsoleHelper.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/CommandLine/DumpTool.h"
+#include "Classes/CommandLine/Private/OptionName.h"
+#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
-#include "Logger/Logger.h"
-#include "Utils/Utils.h"
-#include "Utils/Dump/SceneDumper.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/Utils/SceneDumper.h>
 
-#include "TArc/Utils/ModuleCollection.h"
+#include <TArc/Utils/ModuleCollection.h>
 
-#include "Render/GPUFamilyDescriptor.h"
-#include "FileSystem/FilePath.h"
-#include "FileSystem/FileSystem.h"
+#include <FileSystem/FilePath.h>
+#include <FileSystem/FileSystem.h>
+#include <Logger/Logger.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Utils/Utils.h>
 
 DumpTool::DumpTool(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-dump")
@@ -63,24 +63,24 @@ bool DumpTool::PostInitInternal()
 
     if (modeString == "r")
     {
-        mode = SceneDumper::eMode::REQUIRED;
+        mode = DAVA::SceneDumper::eMode::REQUIRED;
     }
     else if (modeString == "c")
     {
-        mode = SceneDumper::eMode::COMPRESSED;
+        mode = DAVA::SceneDumper::eMode::COMPRESSED;
     }
     else
     { // now we use extended mode in case of empty string or in case of error
-        mode = SceneDumper::eMode::EXTENDED;
+        mode = DAVA::SceneDumper::eMode::EXTENDED;
     }
 
     if (resourceFolder.IsEmpty())
     {
-        resourceFolder = ProjectManagerData::GetDataSourcePath(inFolder);
+        resourceFolder = DAVA::ProjectManagerData::GetDataSourcePath(inFolder);
 
         if (resourceFolder.IsEmpty())
         {
-            resourceFolder = ProjectManagerData::GetDataPath(inFolder);
+            resourceFolder = DAVA::ProjectManagerData::GetDataPath(inFolder);
             if (resourceFolder.IsEmpty())
             {
                 DAVA::Logger::Error("DataSource or Data folder was not found");
@@ -159,12 +159,12 @@ bool DumpTool::PostInitInternal()
     return true;
 }
 
-DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
+DAVA::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
 {
     if (commandAction == ACTION_DUMP_LINKS)
     {
         DAVA::FilePath::AddResourcesFolder(resourceFolder);
-        DAVA::Set<DAVA::FilePath> links = SceneDumper::DumpLinks(inFolder + filename, mode, compressedGPUs, tags);
+        DAVA::Set<DAVA::FilePath> links = DAVA::SceneDumper::DumpLinks(inFolder + filename, mode, compressedGPUs, tags);
 
         DAVA::FileSystem::Instance()->CreateDirectory(outFile.GetDirectory(), true);
         DAVA::ScopedPtr<DAVA::File> file(DAVA::File::Create(outFile, DAVA::File::WRITE | DAVA::File::CREATE));
@@ -175,7 +175,7 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
                 if (!link.IsEmpty() && link.GetType() != DAVA::FilePath::PATH_IN_MEMORY)
                 {
                     DAVA::String link_path;
-                    if (mode == SceneDumper::eMode::COMPRESSED)
+                    if (mode == DAVA::SceneDumper::eMode::COMPRESSED)
                     {
                         link_path = link.GetRelativePathname(resourceFolder);
                     }
@@ -191,7 +191,7 @@ DAVA::TArc::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
         DAVA::FilePath::RemoveResourcesFolder(resourceFolder);
     }
 
-    return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
+    return DAVA::ConsoleModule::eFrameResult::FINISHED;
 }
 
 void DumpTool::BeforeDestroyedInternal()

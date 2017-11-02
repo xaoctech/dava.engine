@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 enum class eApplicationMode
 {
     GUI_MODE,
@@ -13,5 +11,4 @@ enum class eApplicationMode
 
 void SetupToolsAssertHandlers(eApplicationMode mode);
 bool IsInsideAssertHandler();
-} // namespace TArc
 } // namespace DAVA

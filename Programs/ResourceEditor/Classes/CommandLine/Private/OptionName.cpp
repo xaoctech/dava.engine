@@ -1,5 +1,5 @@
-#include "CommandLine/Private/OptionName.h"
-#include "Render/GPUFamilyDescriptor.h"
+#include "Classes/CommandLine/Private/OptionName.h"
+#include <Render/GPUFamilyDescriptor.h>
 
 const DAVA::String OptionName::Output("-output");
 const DAVA::String OptionName::OutFile("-outfile");

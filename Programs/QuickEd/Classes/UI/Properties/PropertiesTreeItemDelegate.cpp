@@ -269,7 +269,7 @@ void PropertiesTreeItemDelegate::SetProject(const Project* project)
     context.project = project;
 }
 
-void PropertiesTreeItemDelegate::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+void PropertiesTreeItemDelegate::SetAccessor(DAVA::ContextAccessor* accessor_)
 {
     context.accessor = accessor_;
 }

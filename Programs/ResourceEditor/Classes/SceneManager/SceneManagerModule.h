@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SceneManager/Private/SceneRenderWidget.h"
+#include "Classes/SceneManager/Private/SceneRenderWidget.h"
 
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/Core/FieldBinder.h>
@@ -12,13 +12,12 @@
 namespace DAVA
 {
 class FilePath;
-}
-
 class SceneEditor2;
 class SceneData;
+}
 class FileSystemCache;
 
-class SceneManagerModule : public DAVA::TArc::ControllerModule, private SceneRenderWidget::IWidgetDelegate
+class SceneManagerModule : public DAVA::ControllerModule, private SceneRenderWidget::IWidgetDelegate
 {
 public:
     SceneManagerModule();
@@ -26,20 +25,22 @@ public:
 
 protected:
     void OnRenderSystemInitialized(DAVA::Window* w) override;
-    bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    bool ControlWindowClosing(const DAVA::TArc::WindowKey& key, QCloseEvent* event) override;
-    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
-    void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool CanWindowBeClosedSilently(const DAVA::WindowKey& key, DAVA::String& requestWindowText) override;
+    bool ControlWindowClosing(const DAVA::WindowKey& key, QCloseEvent* event) override;
+    bool SaveOnWindowClose(const DAVA::WindowKey& key) override;
+    void RestoreOnWindowClose(const DAVA::WindowKey& key) override;
 
-    void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
-    void OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne) override;
-    void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
+    void OnContextWillBeChanged(DAVA::DataContext* current, DAVA::DataContext* newOne) override;
+    void OnContextWasChanged(DAVA::DataContext* current, DAVA::DataContext* oldOne) override;
+    void OnWindowClosed(const DAVA::WindowKey& key) override;
 
     void PostInit() override;
 
 private:
-    void CreateModuleControls(DAVA::TArc::UI* ui);
-    void CreateModuleActions(DAVA::TArc::UI* ui);
+    void CreateModuleControls(DAVA::UI* ui);
+    void CreateModuleActions(DAVA::UI* ui);
     void RegisterOperations();
 
     /// Action and operation handlers
@@ -67,8 +68,8 @@ private:
     void OnDrop(QObject* target, QDropEvent* event) override;
 
     /// Helpers
-    bool CanCloseScene(SceneData* data);
-    DAVA::RefPtr<SceneEditor2> OpenSceneImpl(const DAVA::FilePath& scenePath);
+    bool CanCloseScene(DAVA::SceneData* data);
+    DAVA::RefPtr<DAVA::SceneEditor2> OpenSceneImpl(const DAVA::FilePath& scenePath);
 
     /// This method try to scene at "scenePath" place.
     /// If "scenePath" is empty, method try to save scene at current scene file.
@@ -76,19 +77,19 @@ private:
     /// return true if scene was saved
     /// Preconditions:
     ///     "scenePath" - should be a file
-    bool SaveSceneImpl(DAVA::RefPtr<SceneEditor2> scene, const DAVA::FilePath& scenePath = DAVA::FilePath());
-    DAVA::FilePath GetSceneSavePath(const DAVA::RefPtr<SceneEditor2>& scene);
+    bool SaveSceneImpl(DAVA::RefPtr<DAVA::SceneEditor2> scene, const DAVA::FilePath& scenePath = DAVA::FilePath());
+    DAVA::FilePath GetSceneSavePath(const DAVA::RefPtr<DAVA::SceneEditor2>& scene);
 
     /// scene->SaveEmitters() would call this function if emitter to save didn't have path
     DAVA::FilePath SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName);
     bool IsSceneCompatible(const DAVA::FilePath& scenePath);
 
     bool SaveTileMaskInAllScenes();
-    bool SaveTileMaskInScene(DAVA::RefPtr<SceneEditor2> scene);
+    bool SaveTileMaskInScene(DAVA::RefPtr<DAVA::SceneEditor2> scene);
 
     bool CloseSceneImpl(DAVA::uint64 id, bool needSavingRequest);
     void RestartParticles();
-    bool IsSavingAllowed(SceneData* sceneData);
+    bool IsSavingAllowed(DAVA::SceneData* sceneData);
     void DefaultDragHandler(QObject* target, QDropEvent* event);
     bool IsValidMimeData(QDropEvent* event);
     void DeleteSelection();
@@ -97,18 +98,18 @@ private:
     bool SaveToFolderAvailable() const;
 
 private:
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
     DAVA::uint32 newSceneCounter = 0;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    std::unique_ptr<RecentMenuItems> recentItems;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::RecentMenuItems> recentItems;
 
     std::unique_ptr<FileSystemCache> sceneFilesCache;
     DAVA::FilePath cachedPath;
 
     QPointer<SceneRenderWidget> renderWidget;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneManagerModule, DAVA::TArc::ControllerModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneManagerModule, DAVA::ControllerModule)
     {
         DAVA::ReflectionRegistrator<SceneManagerModule>::Begin()
         .ConstructorByPointer()

@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void ActionManagementModule::PostInit()
 {
     executor.DelayedExecute([this]() {
@@ -35,5 +33,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ActionManagementModule)
     .ConstructorByPointer()
     .End();
 }
-} // namespace TArc
 } // namespace DAVA

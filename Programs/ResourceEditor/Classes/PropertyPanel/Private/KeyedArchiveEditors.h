@@ -11,7 +11,7 @@
 namespace PropertyPanel
 {
 class AddKeyedArchiveItemWidget;
-class KeyedArchiveEditor : public DAVA::TArc::BaseComponentValue
+class KeyedArchiveEditor : public DAVA::BaseComponentValue
 {
 public:
     KeyedArchiveEditor(const DAVA::Vector<DAVA::String>& presetNames, const DAVA::Vector<DAVA::VariantType>& defaultValues);
@@ -21,7 +21,7 @@ protected:
     DAVA::Any GetMultipleValue() const override;
     bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override;
 
-    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override;
+    DAVA::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor) override;
 
     void OnCreatePropertyClicked();
     void OnCreatePresetPropertyClicked();
@@ -32,7 +32,7 @@ protected:
     void SetChoosedPreset(DAVA::int32 choosedPreset);
 
 private:
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
     static int lastAddedType;
     QPointer<AddKeyedArchiveItemWidget> widget;
 
@@ -40,10 +40,10 @@ private:
     DAVA::Vector<DAVA::VariantType> defaultValues;
     DAVA::int32 choosedPreset;
 
-    DAVA_VIRTUAL_REFLECTION(KeyedArchiveEditor, DAVA::TArc::BaseComponentValue);
+    DAVA_VIRTUAL_REFLECTION(KeyedArchiveEditor, DAVA::BaseComponentValue);
 };
 
-class KeyedArchiveComboPresetEditor : public DAVA::TArc::BaseComponentValue
+class KeyedArchiveComboPresetEditor : public DAVA::BaseComponentValue
 {
 public:
     KeyedArchiveComboPresetEditor(const DAVA::Vector<DAVA::Any>& values);
@@ -51,7 +51,7 @@ public:
 protected:
     DAVA::Any GetMultipleValue() const override;
     bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override;
-    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override;
+    DAVA::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor) override;
 
 private:
     DAVA::Any GetValueAny() const;
@@ -59,7 +59,7 @@ private:
 
     DAVA::Vector<DAVA::Any> allowedValues;
 
-    DAVA_VIRTUAL_REFLECTION(KeyedArchiveComboPresetEditor, DAVA::TArc::BaseComponentValue);
+    DAVA_VIRTUAL_REFLECTION(KeyedArchiveComboPresetEditor, DAVA::BaseComponentValue);
 };
 
 } // namespace PropertyPanel

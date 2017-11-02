@@ -20,8 +20,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace TArcTestClassDetail
 {
 class TestControllerModule : public ControllerModule
@@ -56,7 +54,7 @@ protected:
     void PostInit() override
     {
         ContextManager* ctxManager = GetContextManager();
-        DataContext::ContextID id = ctxManager->CreateContext(DAVA::Vector<std::unique_ptr<DataNode>>());
+        DataContext::ContextID id = ctxManager->CreateContext(Vector<std::unique_ptr<TArcDataNode>>());
         ctxManager->ActivateContext(id);
     }
 
@@ -69,9 +67,9 @@ protected:
 };
 }
 
-const double TestClass::testTimeLimit = 10.0; // seconds
+const double TArcTestClass::testTimeLimit = 10.0; // seconds
 
-TestClass::~TestClass()
+TArcTestClass::~TArcTestClass()
 {
     DVASSERT(core != nullptr);
 
@@ -82,7 +80,6 @@ TestClass::~TestClass()
     }
 
     FilePath prevDocPath = documentsPath;
-    coreChanged.Emit(nullptr);
     Core* c = core.release();
     c->syncSignal.DisconnectAll();
     c->SetInvokeListener(nullptr);
@@ -107,7 +104,7 @@ TestClass::~TestClass()
                        });
 }
 
-void TestClass::Init()
+void TArcTestClass::Init()
 {
     updateForCurrentTestCalled = false;
     if (core == nullptr)
@@ -152,8 +149,8 @@ void TestClass::Init()
         core->PostInit();
 
         InitColorPickerOptions(false);
-        core->CreateModule<DAVA::TArc::SettingsModule>();
-        core->CreateModule<DAVA::TArc::ThemesModule>();
+        core->CreateModule<SettingsModule>();
+        core->CreateModule<ThemesModule>();
         CreateTestedModules();
         if (!core->HasControllerModule())
         {
@@ -164,12 +161,11 @@ void TestClass::Init()
         Window* w = e->PrimaryWindow();
         DVASSERT(w);
         core->OnWindowCreated(w);
-        core->syncSignal.Connect(this, &TestClass::AfterWrappersSync);
-        coreChanged.Emit(core.get());
+        core->syncSignal.Connect(this, &TArcTestClass::AfterWrappersSync);
     }
 }
 
-void TestClass::DirectUpdate(float32 timeElapsed, const String& testName)
+void TArcTestClass::DirectUpdate(float32 timeElapsed, const String& testName)
 {
     if (core != nullptr)
     {
@@ -178,7 +174,7 @@ void TestClass::DirectUpdate(float32 timeElapsed, const String& testName)
     }
 }
 
-bool TestClass::DirectTestComplete(const String& testName) const
+bool TArcTestClass::DirectTestComplete(const String& testName) const
 {
     if (core == nullptr)
     {
@@ -214,71 +210,71 @@ bool TestClass::DirectTestComplete(const String& testName) const
     return !hasNotSatisfied && updateForCurrentTestCalled;
 }
 
-MockInvoker* TestClass::GetMockInvoker()
+MockInvoker* TArcTestClass::GetMockInvoker()
 {
     return mockInvoker.get();
 }
 
-DataContext* TestClass::GetActiveContext()
+DataContext* TArcTestClass::GetActiveContext()
 {
     return core->GetCoreInterface()->GetActiveContext();
 }
 
-const DataContext* TestClass::GetActiveContext() const
+const DataContext* TArcTestClass::GetActiveContext() const
 {
     const Core* corePtr = core.get();
     return corePtr->GetCoreInterface()->GetActiveContext();
 }
 
-DataContext* TestClass::GetGlobalContext()
+DataContext* TArcTestClass::GetGlobalContext()
 {
     return core->GetCoreInterface()->GetGlobalContext();
 }
 
-const DataContext* TestClass::GetGlobalContext() const
+const DataContext* TArcTestClass::GetGlobalContext() const
 {
     const Core* corePtr = core.get();
     return corePtr->GetCoreInterface()->GetGlobalContext();
 }
 
-DataWrapper TestClass::CreateWrapper(const DAVA::ReflectedType* type)
+DataWrapper TArcTestClass::CreateWrapper(const ReflectedType* type)
 {
     return core->GetCoreInterface()->CreateWrapper(type);
 }
 
-DAVA::TArc::UI* TestClass::GetUI()
+UI* TArcTestClass::GetUI()
 {
     return core->GetUI();
 }
 
-ContextAccessor* TestClass::GetAccessor()
+ContextAccessor* TArcTestClass::GetAccessor()
 {
     return core->GetCoreInterface();
 }
 
-const ContextAccessor* TestClass::GetAccessor() const
+const ContextAccessor* TArcTestClass::GetAccessor() const
 {
     const Core* corePtr = core.get();
     return corePtr->GetCoreInterface();
 }
 
-ContextManager* TestClass::GetContextManager()
+ContextManager* TArcTestClass::GetContextManager()
 {
     return core->GetCoreInterface();
 }
 
-const ContextManager* TestClass::GetContextManager() const
+const ContextManager* TArcTestClass::GetContextManager() const
 {
     const Core* corePtr = core.get();
     return corePtr->GetCoreInterface();
 }
 
-PropertiesItem TestClass::CreatePropertiesItem(const String& name) const
+PropertiesItem TArcTestClass::CreatePropertiesItem(const String& name) const
 {
     return core->GetCoreInterface()->CreatePropertiesNode(name);
 }
 
-QWidget* TestClass::GetWindow(const WindowKey& wndKey) const
+QWidget* TArcTestClass::GetWindow(const WindowKey& wndKey) const
 {
     UI* manager = core->GetUI();
     QWidget* wnd = manager->GetWindow(wndKey);
@@ -286,28 +282,26 @@ QWidget* TestClass::GetWindow(const WindowKey& wndKey) const
     return wnd;
 }
 
-QList<QWidget*> TestClass::LookupWidget(const WindowKey& wndKey, const QString& objectName) const
+QList<QWidget*> TArcTestClass::LookupWidget(const WindowKey& wndKey, const QString& objectName) const
 {
     return GetWindow(wndKey)->findChildren<QWidget*>(objectName);
 }
 
-void TestClass::CreateTestedModules()
+void TArcTestClass::CreateTestedModules()
 {
 }
 
-Signal<Core*> TestClass::coreChanged;
-
-TestClassHolder::TestClassHolder(std::unique_ptr<DAVA::TArc::TestClass>&& testClass_)
+TArcTestClassHolder::TArcTestClassHolder(std::unique_ptr<TArcTestClass>&& testClass_)
     : testClass(std::move(testClass_))
 {
 }
 
-void TestClassHolder::InitTimeStampForTest(const String& testName)
+void TArcTestClassHolder::InitTimeStampForTest(const String& testName)
 {
     testClass->InitTimeStampForTest(testName);
 }
 
-void TestClassHolder::SetUp(const String& testName)
+void TArcTestClassHolder::SetUp(const String& testName)
 {
     currentTestFinished = false;
     AddCall([this, testName]()
@@ -317,13 +311,13 @@ void TestClassHolder::SetUp(const String& testName)
             });
 }
 
-void TestClassHolder::TearDown(const String& testName)
+void TArcTestClassHolder::TearDown(const String& testName)
 {
     DVASSERT(currentTestFinished == true);
     testClass->TearDown(testName);
 }
 
-void TestClassHolder::Update(float32 timeElapsed, const String& testName)
+void TArcTestClassHolder::Update(float32 timeElapsed, const String& testName)
 {
     if (currentTestFinished == true)
     {
@@ -337,14 +331,14 @@ void TestClassHolder::Update(float32 timeElapsed, const String& testName)
             });
 }
 
-bool TestClassHolder::TestComplete(const String& testName) const
+bool TArcTestClassHolder::TestComplete(const String& testName) const
 {
     if (currentTestFinished == true)
     {
         return true;
     }
 
-    TestClassHolder* nonConst = const_cast<TestClassHolder*>(this);
+    TArcTestClassHolder* nonConst = const_cast<TArcTestClassHolder*>(this);
     AddCall([nonConst, testName]()
             {
                 bool testCompleted = nonConst->testClass->TestComplete(testName);
@@ -359,22 +353,22 @@ bool TestClassHolder::TestComplete(const String& testName) const
     return false;
 }
 
-DAVA::UnitTests::TestCoverageInfo TestClassHolder::FilesCoveredByTests() const
+UnitTests::TestCoverageInfo TArcTestClassHolder::FilesCoveredByTests() const
 {
     return testClass->FilesCoveredByTests();
 }
 
-const DAVA::String& TestClassHolder::TestName(size_t index) const
+const String& TArcTestClassHolder::TestName(size_t index) const
 {
     return testClass->TestName(index);
 }
 
-size_t TestClassHolder::TestCount() const
+size_t TArcTestClassHolder::TestCount() const
 {
     return testClass->TestCount();
 }
 
-void TestClassHolder::RunTest(size_t index)
+void TArcTestClassHolder::RunTest(size_t index)
 {
     AddCall([this, index]()
             {
@@ -382,34 +376,34 @@ void TestClassHolder::RunTest(size_t index)
             });
 }
 
-void TestClassHolder::AddCall(const DAVA::Function<void()>& call) const
+void TArcTestClassHolder::AddCall(const Function<void()>& call) const
 {
-    const_cast<TestClassHolder*>(this)->AddCallImpl(call);
+    const_cast<TArcTestClassHolder*>(this)->AddCallImpl(call);
 }
 
-void TestClassHolder::AddCallImpl(const Function<void()>& call)
+void TArcTestClassHolder::AddCallImpl(const Function<void()>& call)
 {
     callsQueue.push_back(call);
     if (pendingEventProcess == false)
     {
         pendingEventProcess = true;
-        executor.DelayedExecute(MakeFunction(this, &TestClassHolder::ProcessCallsImpl));
+        executor.DelayedExecute(MakeFunction(this, &TArcTestClassHolder::ProcessCallsImpl));
     }
 }
 
-void TestClassHolder::ProcessCalls() const
+void TArcTestClassHolder::ProcessCalls() const
 {
-    const_cast<TestClassHolder*>(this)->ProcessCallsImpl();
+    const_cast<TArcTestClassHolder*>(this)->ProcessCallsImpl();
 }
 
-void TestClassHolder::ProcessCallsImpl()
+void TArcTestClassHolder::ProcessCallsImpl()
 {
     DVASSERT(pendingEventProcess == true);
-    Vector<DAVA::Function<void()>> queue = callsQueue;
+    Vector<Function<void()>> queue = callsQueue;
     callsQueue.clear();
     pendingEventProcess = false;
 
-    for (const DAVA::Function<void()>& fn : queue)
+    for (const Function<void()>& fn : queue)
     {
         fn();
         if (currentTestFinished == true)
@@ -419,6 +413,4 @@ void TestClassHolder::ProcessCallsImpl()
         }
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

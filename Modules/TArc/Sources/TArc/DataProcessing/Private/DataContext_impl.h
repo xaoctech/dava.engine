@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T>
 void DataContext::DeleteData()
 {
@@ -18,5 +16,4 @@ T* DataContext::GetData() const
 {
     return static_cast<T*>(GetData(ReflectedTypeDB::Get<T>()));
 }
-} // namespace TArc
 } // namespace DAVA

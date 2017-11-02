@@ -23,7 +23,7 @@
 
 namespace ReflectedButtonTestDetails
 {
-DAVA::TArc::WindowKey wndKey("ReflectedButtonTestWnd");
+DAVA::WindowKey wndKey("ReflectedButtonTestWnd");
 
 struct ReflectedButtonDataSource
 {
@@ -69,7 +69,7 @@ struct ReflectedButtonDataSource
     }
 };
 
-class ReflectedButtonTestModule : public DAVA::TArc::ClientModule
+class ReflectedButtonTestModule : public DAVA::ClientModule
 {
 public:
     ReflectedButtonTestModule()
@@ -79,7 +79,7 @@ public:
 
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         QWidget* w = new QWidget();
         QtVBoxLayout* layout = new QtVBoxLayout(w);
@@ -113,14 +113,14 @@ public:
             layout->AddControl(button);
         }
 
-        GetUI()->AddView(wndKey, DAVA::TArc::PanelKey("ReflectedButtonSandbox", DAVA::TArc::CentralPanelInfo()), w);
+        GetUI()->AddView(wndKey, DAVA::PanelKey("ReflectedButtonSandbox", DAVA::CentralPanelInfo()), w);
     }
 
     ReflectedButtonDataSource dataSource;
 
     static ReflectedButtonTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ReflectedButtonTestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ReflectedButtonTestModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<ReflectedButtonTestModule>::Begin()
         .ConstructorByPointer()

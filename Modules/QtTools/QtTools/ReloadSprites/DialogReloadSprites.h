@@ -15,7 +15,7 @@ class DialogReloadSprites : public QDialog
 {
     Q_OBJECT
 public:
-    explicit DialogReloadSprites(DAVA::TArc::ContextAccessor* accessor, SpritesPacker* packer, QWidget* parent = nullptr);
+    explicit DialogReloadSprites(DAVA::ContextAccessor* accessor, SpritesPacker* packer, QWidget* parent = nullptr);
     ~DialogReloadSprites();
 
 private slots:
@@ -33,8 +33,8 @@ private:
 
     std::unique_ptr<Ui::DialogReloadSprites> ui;
     SpritesPacker* spritesPacker;
-    DAVA::TArc::QtThread workerThread; //we need this thread only for "cancel" button
+    DAVA::QtThread workerThread; //we need this thread only for "cancel" button
 
 public:
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

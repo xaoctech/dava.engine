@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DAVA_REFLECTION_IMPL(DataContext)
 {
     ReflectionRegistrator<DataContext>::Begin()
@@ -31,14 +29,14 @@ DataContext::~DataContext()
     dataMap.clear();
 }
 
-void DataContext::CreateData(std::unique_ptr<DataNode>&& node)
+void DataContext::CreateData(std::unique_ptr<TArcDataNode>&& node)
 {
     const ReflectedType* type = ReflectedTypeDB::GetByPointer(node.get());
     DVASSERT(dataMap.count(type) == 0);
     dataMap.emplace(std::make_pair(type, node.release()));
 }
 
-DataNode* DataContext::GetData(const ReflectedType* type) const
+TArcDataNode* DataContext::GetData(const ReflectedType* type) const
 {
     auto iter = dataMap.find(type);
     if (iter == dataMap.end())
@@ -74,5 +72,4 @@ DataContext::ContextID DataContext::GetID() const
 {
     return reinterpret_cast<ContextID>(this);
 }
-} // namespace TArc
 } // namespace DAVA

@@ -53,7 +53,7 @@ QEApplication::QEApplication(DAVA::Vector<DAVA::String>&& cmdLine_)
 {
 }
 
-DAVA::TArc::BaseApplication::EngineInitInfo QEApplication::GetInitInfo() const
+DAVA::BaseApplication::EngineInitInfo QEApplication::GetInitInfo() const
 {
     EngineInitInfo initInfo;
     initInfo.runMode = DAVA::eEngineRunMode::GUI_EMBEDDED;
@@ -138,21 +138,20 @@ QString QEApplication::GetInstanceKey() const
     return appUidPath;
 }
 
-void QEApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
+void QEApplication::CreateModules(DAVA::Core* tarcCore) const
 {
-    using namespace DAVA::TArc;
-    InitColorPickerOptions(true);
+    DAVA::InitColorPickerOptions(true);
     InitQtTools();
 
-    tarcCore->CreateModule<SettingsModule>();
-    tarcCore->CreateModule<ThemesModule>();
-    tarcCore->CreateModule<ActionManagementModule>();
+    tarcCore->CreateModule<DAVA::SettingsModule>();
+    tarcCore->CreateModule<DAVA::ThemesModule>();
+    tarcCore->CreateModule<DAVA::ActionManagementModule>();
     tarcCore->CreateModule<LegacySupportModule>();
     tarcCore->CreateModule<UpdateViewsSystemModule>();
     tarcCore->CreateModule<ProjectModule>();
     tarcCore->CreateModule<DocumentsModule>();
 
-    for (const DAVA::ReflectedType* type : ModuleCollection::Instance()->GetGuiModules())
+    for (const DAVA::ReflectedType* type : DAVA::ModuleCollection::Instance()->GetGuiModules())
     {
         tarcCore->CreateModule(type);
     }

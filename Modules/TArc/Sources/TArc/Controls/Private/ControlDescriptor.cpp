@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DescriptorNode::DescriptorNode()
     : fieldName("")
 {
@@ -26,6 +24,4 @@ DescriptorNode& DescriptorNode::operator=(const FastName& name)
     fieldName = name;
     return *this;
 }
-
-} // namespace TArc
 } // namespace DAVA

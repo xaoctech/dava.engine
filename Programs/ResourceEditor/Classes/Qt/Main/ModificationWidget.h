@@ -1,21 +1,18 @@
 #pragma once
 
-#include "Scene/SceneEditor2.h"
-#include "Scene/SceneSignals.h"
-
+#include <REPlatform/DataNodes/Selectable.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/SceneTypes.h>
 #include <QWidget>
 #include <QAbstractSpinBox>
 #include <QLabel>
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
+class RECommandNotificationObject;
 }
 
-class RECommandNotificationObject;
 class DAVAFloat32SpinBox;
 class ModificationWidget : public QWidget
 {
@@ -32,23 +29,23 @@ public:
     ~ModificationWidget() override;
 
     void SetPivotMode(PivotMode pivotMode);
-    void SetTransformType(Selectable::TransformType modifMode);
+    void SetTransformType(DAVA::Selectable::TransformType modifMode);
 
     void ReloadValues();
 
 private slots:
-    void OnSceneActivated(SceneEditor2* scene);
-    void OnSceneDeactivated(SceneEditor2* scene);
-    void OnSceneCommand(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
+    void OnSceneActivated(DAVA::SceneEditor2* scene);
+    void OnSceneDeactivated(DAVA::SceneEditor2* scene);
+    void OnSceneCommand(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
 
     void OnXChanged();
     void OnYChanged();
     void OnZChanged();
 
 private:
-    void ApplyValues(ST_Axis axis);
+    void ApplyValues(DAVA::ST_Axis axis);
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
 
     QLabel* xLabel = nullptr;
     QLabel* yLabel = nullptr;
@@ -56,9 +53,9 @@ private:
     DAVAFloat32SpinBox* xAxisModify = nullptr;
     DAVAFloat32SpinBox* yAxisModify = nullptr;
     DAVAFloat32SpinBox* zAxisModify = nullptr;
-    SceneEditor2* curScene = nullptr;
+    DAVA::SceneEditor2* curScene = nullptr;
     PivotMode pivotMode = PivotMode::PivotAbsolute;
-    Selectable::TransformType modifMode = Selectable::TransformType::Disabled;
+    DAVA::Selectable::TransformType modifMode = DAVA::Selectable::TransformType::Disabled;
     bool groupMode = false;
 };
 

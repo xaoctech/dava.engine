@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorComponentSlider::ColorComponentSlider(QWidget* parent)
     : QWidget(parent)
 {
@@ -62,6 +60,5 @@ void ColorComponentSlider::SetValueRange(double min, double max)
 double ColorComponentSlider::GetMaxValue() const
 {
     return value->GetMaxValue();
-}
 }
 }

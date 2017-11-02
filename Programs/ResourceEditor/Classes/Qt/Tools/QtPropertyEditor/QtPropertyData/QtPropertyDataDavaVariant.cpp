@@ -1,16 +1,15 @@
 #include "DAVAEngine.h"
-#include "Debug/DVAssert.h"
-#include "Main/QtUtils.h"
 #include "QtPropertyDataDavaVariant.h"
-#include "Tools/QtPropertyEditor/QtPropertyWidgets/FlagSelectorCombo.h"
-#include "Tools/Widgets/MultilineEditor.h"
-
-#include "Classes/Application/REGlobal.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyWidgets/FlagSelectorCombo.h"
+#include "Classes/Qt/Tools/Widgets/MultilineEditor.h"
 
 #include <QtTools/FileDialogs/FileDialog.h>
 
 #include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/Core/Deprecated.h>
+
+#include <Debug/DVAssert.h>
 
 #include <QListWidget>
 #include <QDoubleSpinBox>
@@ -451,7 +450,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
     case DAVA::VariantType::TYPE_COLOR:
     {
         QToolButton* colorBtn = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
-        colorBtn->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/color.png"));
+        colorBtn->setIcon(DAVA::SharedIcon(":/QtIcons/color.png"));
         colorBtn->setIconSize(QSize(12, 12));
         colorBtn->setAutoRaise(true);
         colorBtn->setObjectName("colorButton");
@@ -481,7 +480,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
     case DAVA::VariantType::TYPE_FILEPATH:
     {
         QToolButton* filePathBtn = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
-        filePathBtn->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/openscene.png"));
+        filePathBtn->setIcon(DAVA::SharedIcon(":/QtIcons/openscene.png"));
         filePathBtn->setIconSize(QSize(14, 14));
         filePathBtn->setAutoRaise(true);
         connections.AddConnection(filePathBtn, &QToolButton::clicked, [this]() {
@@ -492,7 +491,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
     case DAVA::VariantType::TYPE_STRING:
     {
         QToolButton* editMultiline = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
-        editMultiline->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/pencil.png"));
+        editMultiline->setIcon(DAVA::SharedIcon(":/QtIcons/pencil.png"));
         editMultiline->setIconSize(QSize(14, 14));
         editMultiline->setAutoRaise(true);
         editMultiline->setToolTip("Open multiline editor");
@@ -956,7 +955,7 @@ void QtPropertyDataDavaVariant::UpdateColorButtonIcon()
         QPixmap pix(16, 16);
         QPainter p(&pix);
 
-        QColor c = DAVA::TArc::ColorToQColor(curVariantValue.AsColor());
+        QColor c = DAVA::ColorToQColor(curVariantValue.AsColor());
 
         if (c.alpha() < 255)
         {
@@ -1116,17 +1115,17 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 {
     const DAVA::Color oldColor = curVariantValue.AsColor();
 
-    DAVA::TArc::ColorPickerDialog cp(REGlobal::GetAccessor(), GetOWViewport());
+    DAVA::ColorPickerDialog cp(DAVA::Deprecated::GetAccessor(), GetOWViewport());
     cp.SetDavaColor(oldColor);
 
-    QPointer<DAVA::TArc::ColorPickerDialog> colorPickerPointer(&cp);
+    QPointer<DAVA::ColorPickerDialog> colorPickerPointer(&cp);
     auto colorChangingCallFn = [this, colorPickerPointer]() {
-        if (colorPickerPointer != nullptr)
+        if (colorPickerPointer.isNull() == false)
             OnColorChanging(colorPickerPointer.data());
     };
 
-    connections.AddConnection(&cp, &DAVA::TArc::ColorPickerDialog::changing, colorChangingCallFn);
-    connections.AddConnection(&cp, &DAVA::TArc::ColorPickerDialog::changed, colorChangingCallFn);
+    connections.AddConnection(&cp, &DAVA::ColorPickerDialog::changing, colorChangingCallFn);
+    connections.AddConnection(&cp, &DAVA::ColorPickerDialog::changed, colorChangingCallFn);
 
     const bool result = cp.Exec();
     const DAVA::Color newColor = cp.GetDavaColor();
@@ -1145,7 +1144,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
     UpdateColorButtonIcon();
 }
 
-void QtPropertyDataDavaVariant::OnColorChanging(DAVA::TArc::ColorPickerDialog* colorPicker)
+void QtPropertyDataDavaVariant::OnColorChanging(DAVA::ColorPickerDialog* colorPicker)
 {
     DVASSERT(colorPicker != nullptr);
     const DAVA::Color newColor = colorPicker->GetDavaColor();

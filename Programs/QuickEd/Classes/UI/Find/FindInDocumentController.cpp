@@ -11,23 +11,22 @@
 #include <TArc/WindowSubSystem/AlignedGeometryProcessor.h>
 #include <QApplication>
 
-FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor_)
+FindInDocumentController::FindInDocumentController(DAVA::UI* ui, DAVA::ContextAccessor* accessor_)
     : QObject()
     , accessor(accessor_)
     , packageListenerProxy(this, accessor)
     , findResultsUpdater(300)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     findInDocumentWidget = new FindInDocumentWidget();
     findInDocumentWidget->show();
     OverCentralPanelInfo info;
     info.geometryProcessor.reset(new AlignedGeometryProcessor(static_cast<DAVA::eAlign>(DAVA::ALIGN_TOP | DAVA::ALIGN_RIGHT), QPoint(30, 60)));
     PanelKey key("FindInDocuments", info);
-    ui->AddView(DAVA::TArc::mainWindowKey, key, findInDocumentWidget);
+    ui->AddView(DAVA::mainWindowKey, key, findInDocumentWidget);
 
-    TArc::FieldDescriptor packageFieldDescr;
+    FieldDescriptor packageFieldDescr;
     packageFieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
     packageFieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
 
@@ -35,17 +34,17 @@ FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TAr
         return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
     };
 
-    TArc::QtAction* findInDocumentAction = new TArc::QtAction(accessor, QObject::tr("Find in Document"), this);
+    QtAction* findInDocumentAction = new QtAction(accessor, QObject::tr("Find in Document"), this);
     findInDocumentAction->setShortcut(QKeySequence::Find);
-    findInDocumentAction->SetStateUpdationFunction(TArc::QtAction::Enabled, packageFieldDescr, actionUpdater);
+    findInDocumentAction->SetStateUpdationFunction(QtAction::Enabled, packageFieldDescr, actionUpdater);
 
-    TArc::QtAction* findNextAction = new TArc::QtAction(accessor, QObject::tr("Find Next"), this);
+    QtAction* findNextAction = new QtAction(accessor, QObject::tr("Find Next"), this);
     findNextAction->setShortcut(QKeySequence("F3"));
-    findNextAction->SetStateUpdationFunction(TArc::QtAction::Enabled, packageFieldDescr, actionUpdater);
+    findNextAction->SetStateUpdationFunction(QtAction::Enabled, packageFieldDescr, actionUpdater);
 
-    TArc::QtAction* findPreviousAction = new TArc::QtAction(accessor, QObject::tr("Find Previous"), this);
+    QtAction* findPreviousAction = new QtAction(accessor, QObject::tr("Find Previous"), this);
     findPreviousAction->setShortcut(QKeySequence("Shift+F3"));
-    findPreviousAction->SetStateUpdationFunction(TArc::QtAction::Enabled, packageFieldDescr, actionUpdater);
+    findPreviousAction->SetStateUpdationFunction(QtAction::Enabled, packageFieldDescr, actionUpdater);
 
     QObject::connect(findInDocumentWidget, &FindInDocumentWidget::OnFindFilterReady, this, &FindInDocumentController::SetFilter);
     QObject::connect(findInDocumentWidget, &FindInDocumentWidget::OnFindNext, this, &FindInDocumentController::SelectNextFindResult);
@@ -57,13 +56,13 @@ FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TAr
     QObject::connect(findNextAction, &QAction::triggered, this, &FindInDocumentController::SelectNextFindResult);
     QObject::connect(findPreviousAction, &QAction::triggered, this, &FindInDocumentController::SelectPreviousFindResult);
 
-    TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::AfterItem)));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findInDocumentAction);
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findNextAction);
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findPreviousAction);
+    ActionPlacementInfo placementInfo(CreateMenuPoint("Find", InsertionParams(InsertionParams::eInsertionMethod::AfterItem)));
+    ui->AddAction(DAVA::mainWindowKey, placementInfo, findInDocumentAction);
+    ui->AddAction(DAVA::mainWindowKey, placementInfo, findNextAction);
+    ui->AddAction(DAVA::mainWindowKey, placementInfo, findPreviousAction);
 
-    fieldBinder.reset(new TArc::FieldBinder(accessor));
-    TArc::FieldDescriptor displayedRootControlsFieldDescriptor(ReflectedTypeDB::Get<DocumentData>(), FastName(DocumentData::displayedRootControlsPropertyName));
+    fieldBinder.reset(new FieldBinder(accessor));
+    FieldDescriptor displayedRootControlsFieldDescriptor(ReflectedTypeDB::Get<DocumentData>(), FastName(DocumentData::displayedRootControlsPropertyName));
     fieldBinder->BindField(displayedRootControlsFieldDescriptor, MakeFunction(this, &FindInDocumentController::OnDisplayedRootControlsChanged));
 
     findResultsUpdater.SetUpdater(DAVA::MakeFunction(this, &FindInDocumentController::Find));
@@ -74,18 +73,18 @@ FindInDocumentController::FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TAr
 
 void FindInDocumentController::ShowFindInDocumentWidget()
 {
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext != nullptr)
     {
         findInDocumentWidget->Reset();
-        DAVA::TArc::ShowOverCentralPanel(findInDocumentWidget);
+        DAVA::ShowOverCentralPanel(findInDocumentWidget);
         findInDocumentWidget->setFocus();
     }
 }
 
 void FindInDocumentController::HideFindInDocumentWidget()
 {
-    DAVA::TArc::HideOverCentralPanel(findInDocumentWidget);
+    DAVA::HideOverCentralPanel(findInDocumentWidget);
 }
 
 void FindInDocumentController::SelectNextFindResult()
@@ -128,7 +127,7 @@ void FindInDocumentController::Find()
                          }
                      });
 
-    TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext != nullptr)
     {
         DocumentData* data = activeContext->GetData<DocumentData>();
@@ -167,7 +166,7 @@ void FindInDocumentController::MoveSelection(DAVA::int32 step)
             context.currentSelection = 0;
         }
 
-        TArc::DataContext* activeContext = accessor->GetActiveContext();
+        DataContext* activeContext = accessor->GetActiveContext();
         DVASSERT(activeContext != nullptr);
         DocumentData* data = activeContext->GetData<DocumentData>();
 

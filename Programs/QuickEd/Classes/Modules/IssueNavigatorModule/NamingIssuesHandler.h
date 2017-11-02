@@ -6,10 +6,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-}
 class UIControl;
 }
 
@@ -19,7 +16,7 @@ class IssueNavigatorWidget;
 class NamingIssuesHandler : public PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    NamingIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
     ~NamingIssuesHandler() override = default;
 
     // PackageListener
@@ -68,6 +65,6 @@ private:
     DAVA::UnorderedMap<ControlNode*, DAVA::int32> symbolsIssues;
     DuplicationsIssuesMap duplicationIssues;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
     PackageListenerProxy packageListenerProxy;
 };

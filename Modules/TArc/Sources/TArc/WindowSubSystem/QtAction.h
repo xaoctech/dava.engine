@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class QtAction : public QAction
 {
 public:
@@ -26,9 +24,9 @@ public:
     {
         Enabled, // call back should return Any that can be casted to bool
         Checked,
-        Text, // DAVA::String
-        Tooltip, // DAVA::String
-        Icon // DAVA::String
+        Text, // String
+        Tooltip, // String
+        Icon // String
     };
 
     void SetStateUpdationFunction(eActionState state, const FieldDescriptor& fieldDescr, const Function<Any(const Any&)>& fn);
@@ -48,5 +46,4 @@ class QtActionSeparator : public QAction
 public:
     QtActionSeparator(const QString& name, QObject* parent = nullptr);
 };
-} // namespace TArc
 } // namespace DAVA

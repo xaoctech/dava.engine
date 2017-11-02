@@ -10,17 +10,16 @@
 
 PackageListenerProxy::PackageListenerProxy() = default;
 
-PackageListenerProxy::PackageListenerProxy(PackageListener* listener, DAVA::TArc::ContextAccessor* accessor)
+PackageListenerProxy::PackageListenerProxy(PackageListener* listener, DAVA::ContextAccessor* accessor)
 {
     Init(listener, accessor);
 }
 
 PackageListenerProxy::~PackageListenerProxy() = default;
 
-void PackageListenerProxy::Init(PackageListener* listener_, DAVA::TArc::ContextAccessor* accessor)
+void PackageListenerProxy::Init(PackageListener* listener_, DAVA::ContextAccessor* accessor)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     listener = listener_;
 

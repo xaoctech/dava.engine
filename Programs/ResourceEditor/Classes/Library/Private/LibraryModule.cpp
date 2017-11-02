@@ -2,8 +2,9 @@
 #include "Classes/Library/Private/ControlsFactory.h"
 #include "Classes/Library/Private/LibraryData.h"
 #include "Classes/Library/Private/LibraryWidget.h"
-#include "Classes/Application/REGlobal.h"
 #include "Classes/Library/Private/DAEConverter.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/FieldBinder.h>
@@ -14,7 +15,7 @@
 #include <FileSystem/FilePath.h>
 #include <Functional/Function.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include "Application/RESettings.h"
+#include "REPlatform/Global/GlobalOperations.h"
 
 LibraryModule::~LibraryModule()
 {
@@ -34,19 +35,19 @@ void LibraryModule::PostInit()
     connections.AddConnection(libraryWidget, &LibraryWidget::DoubleClicked, DAVA::MakeFunction(this, &LibraryModule::OnDoubleClicked));
     connections.AddConnection(libraryWidget, &LibraryWidget::DragStarted, DAVA::MakeFunction(this, &LibraryModule::OnDragStarted));
 
-    DAVA::TArc::DockPanelInfo dockInfo;
+    DAVA::DockPanelInfo dockInfo;
     dockInfo.title = "Library";
-    DAVA::TArc::PanelKey panelKey(QStringLiteral("LibraryDock"), dockInfo);
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, libraryWidget);
+    DAVA::PanelKey panelKey(QStringLiteral("LibraryDock"), dockInfo);
+    GetUI()->AddView(DAVA::mainWindowKey, panelKey, libraryWidget);
 
-    fieldBinder.reset(new DAVA::TArc::FieldBinder(GetAccessor()));
-    DAVA::TArc::FieldDescriptor libraryFieldDescriptor(DAVA::ReflectedTypeDB::Get<LibraryData>(), DAVA::FastName(LibraryData::selectedPathProperty));
+    fieldBinder.reset(new DAVA::FieldBinder(GetAccessor()));
+    DAVA::FieldDescriptor libraryFieldDescriptor(DAVA::ReflectedTypeDB::Get<LibraryData>(), DAVA::FastName(LibraryData::selectedPathProperty));
     fieldBinder->BindField(libraryFieldDescriptor, DAVA::MakeFunction(this, &LibraryModule::OnSelectedPathChanged));
 }
 
 void LibraryModule::OnSelectedPathChanged(const DAVA::Any& selectedPathValue)
 {
-    GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<GeneralSettings>();
+    DAVA::GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<DAVA::GeneralSettings>();
     if (settings->previewEnabled == true)
     {
         DAVA::FilePath selectedPath;
@@ -88,14 +89,14 @@ void LibraryModule::OnAddSceneRequested(const DAVA::FilePath& scenePathname)
 {
     HidePreview();
 
-    InvokeOperation(REGlobal::AddSceneOperation.ID, scenePathname);
+    InvokeOperation(DAVA::AddSceneOperation.ID, scenePathname);
 }
 
 void LibraryModule::OnEditSceneRequested(const DAVA::FilePath& scenePathname)
 {
     HidePreview();
 
-    InvokeOperation(REGlobal::OpenSceneOperation.ID, scenePathname);
+    InvokeOperation(DAVA::OpenSceneOperation.ID, scenePathname);
 }
 
 void LibraryModule::OnDAEConvertionRequested(const DAVA::FilePath& daePathname)
@@ -103,11 +104,11 @@ void LibraryModule::OnDAEConvertionRequested(const DAVA::FilePath& daePathname)
     HidePreview();
 
     executor.DelayedExecute([this, daePathname]() {
-        DAVA::TArc::UI* ui = GetUI();
-        DAVA::TArc::WaitDialogParams waitDlgParams;
+        DAVA::UI* ui = GetUI();
+        DAVA::WaitDialogParams waitDlgParams;
         waitDlgParams.message = QString("DAE to SC2 conversion\n%1").arg(daePathname.GetAbsolutePathname().c_str());
         waitDlgParams.needProgressBar = false;
-        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
         DAEConverter::Convert(daePathname);
     });
@@ -118,11 +119,11 @@ void LibraryModule::OnDAEAnimationConvertionRequested(const DAVA::FilePath& daeP
     HidePreview();
 
     executor.DelayedExecute([this, daePathname]() {
-        DAVA::TArc::UI* ui = GetUI();
-        DAVA::TArc::WaitDialogParams waitDlgParams;
+        DAVA::UI* ui = GetUI();
+        DAVA::WaitDialogParams waitDlgParams;
         waitDlgParams.message = QString("DAE animations conversion\n%1").arg(daePathname.GetAbsolutePathname().c_str());
         waitDlgParams.needProgressBar = false;
-        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
         DAEConverter::ConvertAnimations(daePathname);
     });
@@ -132,7 +133,7 @@ void LibraryModule::OnDoubleClicked(const DAVA::FilePath& scenePathname)
 {
     HidePreview();
 
-    GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<GeneralSettings>();
+    DAVA::GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<DAVA::GeneralSettings>();
     if (scenePathname.IsEqualToExtension(".sc2"))
     {
         OnEditSceneRequested(scenePathname);

@@ -13,8 +13,6 @@ class QLineEdit;
 class QToolButton;
 namespace DAVA
 {
-namespace TArc
-{
 class FilePathEdit : public ControlProxyImpl<QWidget>, private ValidatorDelegate
 {
 public:
@@ -46,12 +44,11 @@ private:
     FileDialogParams GetFileDialogParams() const;
 
     void ProcessValidationResult(M::ValidationResult& validationResult, FilePath& path);
-    void UpdateControlValue(const DAVA::Any& value);
+    void UpdateControlValue(const Any& value);
 
 private:
     QtConnections connections;
     QLineEdit* edit = nullptr;
     QToolButton* button = nullptr;
 };
-}
 } // namespace DAVA

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Base/RefPtr.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <UI/UIControl.h>
 
@@ -10,7 +10,7 @@
 class EditorCanvas;
 class EditorControlsView;
 
-class CanvasModuleData : public DAVA::TArc::DataNode
+class CanvasModuleData : public DAVA::TArcDataNode
 {
 public:
     CanvasModuleData();
@@ -31,9 +31,9 @@ private:
     struct ActionInfo
     {
         QString name;
-        DAVA::TArc::ActionPlacementInfo placement;
+        DAVA::ActionPlacementInfo placement;
     };
     DAVA::Vector<ActionInfo> bgrColorActions;
 
-    DAVA_VIRTUAL_REFLECTION(CanvasModuleData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(CanvasModuleData, DAVA::TArcDataNode);
 };

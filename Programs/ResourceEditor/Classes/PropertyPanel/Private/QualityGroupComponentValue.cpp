@@ -17,14 +17,14 @@
 
 namespace QualityGroupComponentValueDetail
 {
-class Control : private QWidget, public DAVA::TArc::ControlProxy
+class Control : private QWidget, public DAVA::ControlProxy
 {
 public:
-    Control(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor,
-            DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, const DAVA::TArc::WindowKey& wndKey)
+    Control(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor,
+            DAVA::ContextAccessor* accessor, DAVA::UI* ui, const DAVA::WindowKey& wndKey)
         : QWidget(parent)
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         QtVBoxLayout* layout = new QtVBoxLayout(this);
         layout->setSpacing(0);
         layout->setMargin(0);
@@ -122,7 +122,7 @@ public:
     }
 
 private:
-    DAVA::Vector<DAVA::TArc::ControlProxy*> subControls;
+    DAVA::Vector<DAVA::ControlProxy*> subControls;
 };
 }
 
@@ -137,8 +137,8 @@ QualityGroupComponentValue::QualityGroupComponentValue()
     modelTypes.reserve(filterCount + 1);
     modelTypesWithDifferent.reserve(filterCount + 2);
 
-    DAVA::FastName multiValue(DAVA::TArc::MultipleValuesString);
-    DAVA::FastName undefinedValue(DAVA::TArc::UndefinedString);
+    DAVA::FastName multiValue(DAVA::MultipleValuesString);
+    DAVA::FastName undefinedValue(DAVA::UndefinedString);
 
     modelTypes.push_back(undefinedValue);
     modelTypesWithDifferent.push_back(multiValue);
@@ -203,7 +203,7 @@ bool QualityGroupComponentValue::IsValidValueToSet(const DAVA::Any& newValue, co
     return false;
 }
 
-DAVA::TArc::ControlProxy* QualityGroupComponentValue::CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor)
+DAVA::ControlProxy* QualityGroupComponentValue::CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor)
 {
     return new QualityGroupComponentValueDetail::Control(parent, model, wrappersProcessor, GetAccessor(), GetUI(), GetWindowKey());
 }
@@ -232,7 +232,7 @@ DAVA::Any QualityGroupComponentValue::IsFilterByType() const
 
 void QualityGroupComponentValue::SetFilterByType(const DAVA::Any& filtrate)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     Qt::CheckState state = filtrate.Cast<Qt::CheckState>();
     if (state == Qt::PartiallyChecked)
     {
@@ -284,7 +284,7 @@ size_t QualityGroupComponentValue::GetModelTypeIndex() const
 
 void QualityGroupComponentValue::SetModelTypeIndex(size_t index)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     if (isDifferentModelTypes == true && index == 0)
     {
         return;
@@ -349,7 +349,7 @@ size_t QualityGroupComponentValue::GetGroupIndex() const
 
 void QualityGroupComponentValue::SetGroupIndex(size_t index)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     if (isDifferentGroups == true && index == 0)
     {
         return;
@@ -430,7 +430,7 @@ size_t QualityGroupComponentValue::GetQualityIndex() const
 
 void QualityGroupComponentValue::SetQualityIndex(size_t index)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     if (isDifferentQualities == true && index == 0)
     {
         return;
@@ -505,11 +505,11 @@ const DAVA::Vector<DAVA::FastName>& QualityGroupComponentValue::GetQualities() c
     DAVA::FastName group = qualityComponent->GetRequiredGroup();
     if (isDifferentGroups == true)
     {
-        group = DAVA::FastName(DAVA::TArc::MultipleValuesString);
+        group = DAVA::FastName(DAVA::MultipleValuesString);
     }
     else if (group.IsValid() == false)
     {
-        group = DAVA::FastName(DAVA::TArc::UndefinedString);
+        group = DAVA::FastName(DAVA::UndefinedString);
     }
 
     auto iter = qualities.find(group);

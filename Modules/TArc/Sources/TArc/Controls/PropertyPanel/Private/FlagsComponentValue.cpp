@@ -7,14 +7,12 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void FlagsComponentValue::SetValueAny(const Any& newValue)
 {
     SetValue(newValue);
 }
 
-DAVA::Any FlagsComponentValue::GetMultipleValue() const
+Any FlagsComponentValue::GetMultipleValue() const
 {
     return Any();
 }
@@ -51,5 +49,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(FlagsComponentValue)
     .Field("value", &FlagsComponentValue::GetValueAny, &FlagsComponentValue::SetValueAny)[M::ProxyMetaRequire()]
     .End();
 }
-} //TArc
 } //DAVA

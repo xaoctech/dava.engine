@@ -11,8 +11,6 @@ class QTreeView;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ReflectedPropertyModel;
 class BaseComponentValue;
 class PropertiesViewDelegatePrivate;
@@ -48,5 +46,4 @@ private:
     mutable QHash<QPersistentModelIndex, int> heightForWidthItems;
     QtDelayedExecutor executor;
 };
-}
 }

@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ConsoleModule;
 class ContextAccessor;
 
@@ -15,5 +13,4 @@ public:
     static bool ProcessModule(ConsoleModule* module);
     static void FinalizeModule(ConsoleModule* module);
 };
-}
 }

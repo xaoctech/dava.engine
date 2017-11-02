@@ -532,7 +532,7 @@
   <customwidget>
    <class>FilePathBrowser</class>
    <extends>QLineEdit</extends>
-   <header>Tools/Widgets/FilePathBrowser.h</header>
+   <header>Classes/Qt/Tools/Widgets/FilePathBrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

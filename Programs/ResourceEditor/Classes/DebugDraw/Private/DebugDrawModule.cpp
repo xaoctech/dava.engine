@@ -1,16 +1,16 @@
 #include "Classes/DebugDraw/DebugDrawModule.h"
-#include "Classes/DebugDraw/Private/DebugDrawSystem.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
-
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/System/ModifSystem.h"
-#include "Classes/Qt/Scene/System/HoodSystem.h"
-#include "Classes/Qt/Scene/System/WayEditSystem.h"
 #include "Classes/Qt/Tools/HangingObjectsHeight/HangingObjectsHeight.h"
 #include "Classes/Qt/Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
-#include "Classes/Deprecated/SceneValidator.h"
+
+#include "REPlatform/Scene/Systems/HoodSystem.h"
+#include "REPlatform/Scene/Systems/ModifSystem.h"
+#include "REPlatform/Scene/Systems/WayEditSystem.h"
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/DebugDrawSystem.h>
+
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Deprecated/SceneValidator.h>
 
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -26,45 +26,45 @@
 
 namespace DebugDrawDetail
 {
-bool IsCurrentType(const DAVA::Any& value, ResourceEditor::eSceneObjectType type)
+bool IsCurrentType(const DAVA::Any& value, DAVA::ResourceEditor::eSceneObjectType type)
 {
-    if (value.CanCast<ResourceEditor::eSceneObjectType>() == false)
+    if (value.CanCast<DAVA::ResourceEditor::eSceneObjectType>() == false)
     {
         return false;
     }
 
-    return value.Cast<ResourceEditor::eSceneObjectType>() == type;
+    return value.Cast<DAVA::ResourceEditor::eSceneObjectType>() == type;
 }
 }
 
-ENUM_DECLARE(ResourceEditor::eSceneObjectType)
+ENUM_DECLARE(DAVA::ResourceEditor::eSceneObjectType)
 {
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_NONE, "Off");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_NO_COLISION, "No Collision");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_TREE, "Tree");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_BUSH, "Bush");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_FRAGILE_PROJ, "Fragile Proj");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_FRAGILE_PROJ_INV, "Fragile ^Proj");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_FALLING, "Falling");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_NONE, "Off");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_NO_COLISION, "No Collision");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_TREE, "Tree");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_BUSH, "Bush");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_FRAGILE_PROJ, "Fragile Proj");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_FRAGILE_PROJ_INV, "Fragile ^Proj");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_FALLING, "Falling");
 
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_BUILDING, "Building");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_INVISIBLE_WALL, "Invisible Wall");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_SPEED_TREE, "Speed Tree");
-    ENUM_ADD_DESCR(ResourceEditor::eSceneObjectType::ESOT_UNDEFINED_COLLISION, "Undefined Collision");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_BUILDING, "Building");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_INVISIBLE_WALL, "Invisible Wall");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_SPEED_TREE, "Speed Tree");
+    ENUM_ADD_DESCR(DAVA::ResourceEditor::eSceneObjectType::ESOT_UNDEFINED_COLLISION, "Undefined Collision");
 }
 
-class DebugDrawData : public DAVA::TArc::DataNode
+class DebugDrawData : public DAVA::TArcDataNode
 {
 private:
     friend class DebugDrawModule;
-    std::unique_ptr<DebugDrawSystem> debugDrawSystem;
+    std::unique_ptr<DAVA::DebugDrawSystem> debugDrawSystem;
 
-    ResourceEditor::eSceneObjectType GetDebugDrawObject() const
+    DAVA::ResourceEditor::eSceneObjectType GetDebugDrawObject() const
     {
         return debugDrawSystem->GetRequestedObjectType();
     }
 
-    void SetDebugDrawObject(ResourceEditor::eSceneObjectType type)
+    void SetDebugDrawObject(DAVA::ResourceEditor::eSceneObjectType type)
     {
         debugDrawSystem->SetRequestedObjectType(type);
     }
@@ -74,7 +74,7 @@ private:
         return debugDrawSystem->GetHangingObjectsHeight();
     }
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DebugDrawData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DebugDrawData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<DebugDrawData>::Begin()
         .Field("currentObject", &DebugDrawData::GetDebugDrawObject, &DebugDrawData::SetDebugDrawObject)
@@ -83,23 +83,23 @@ private:
     }
 };
 
-void DebugDrawModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void DebugDrawModule::OnContextCreated(DAVA::DataContext* context)
 {
-    SceneData* sceneData = context->GetData<SceneData>();
-    SceneEditor2* scene = sceneData->GetScene().Get();
+    DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
+    DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
 
     std::unique_ptr<DebugDrawData> debugDrawData = std::make_unique<DebugDrawData>();
-    debugDrawData->debugDrawSystem.reset(new DebugDrawSystem(scene));
+    debugDrawData->debugDrawSystem.reset(new DAVA::DebugDrawSystem(scene));
     scene->AddSystem(debugDrawData->debugDrawSystem.get(), 0);
 
     context->CreateData(std::move(debugDrawData));
 }
 
-void DebugDrawModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void DebugDrawModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    SceneData* sceneData = context->GetData<SceneData>();
-    SceneEditor2* scene = sceneData->GetScene().Get();
+    DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
+    DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
     scene->RemoveSystem(debugDrawData->debugDrawSystem.get());
@@ -108,7 +108,6 @@ void DebugDrawModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 void DebugDrawModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
@@ -265,7 +264,7 @@ void DebugDrawModule::OnHangingObjectsHeight(double value)
         return;
     }
 
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
 
     debugDrawData->debugDrawSystem->SetHangingObjectsHeight(static_cast<DAVA::float32>(value));
@@ -278,7 +277,7 @@ void DebugDrawModule::OnSwitchWithDifferentLODs()
         return;
     }
 
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
 
     bool isEnable = !debugDrawData->debugDrawSystem->SwithcesWithDifferentLODsModeEnabled();
@@ -287,11 +286,11 @@ void DebugDrawModule::OnSwitchWithDifferentLODs()
 
     if (isEnable)
     {
-        SceneData* sceneData = context->GetData<SceneData>();
-        SceneEditor2* scene = sceneData->GetScene().Get();
+        DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
+        DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
         DAVA::Set<DAVA::FastName> entitiNames;
-        SceneValidator::FindSwitchesWithDifferentLODs(scene, entitiNames);
+        DAVA::SceneValidator::FindSwitchesWithDifferentLODs(scene, entitiNames);
 
         DAVA::Set<DAVA::FastName>::iterator it = entitiNames.begin();
         DAVA::Set<DAVA::FastName>::iterator endIt = entitiNames.end();
@@ -310,7 +309,7 @@ void DebugDrawModule::OnHangingObjects()
         return;
     }
 
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
 
     bool isEnable = !debugDrawData->debugDrawSystem->HangingObjectsModeEnabled();
@@ -318,14 +317,14 @@ void DebugDrawModule::OnHangingObjects()
     debugDrawData->debugDrawSystem->EnableHangingObjectsMode(isEnable);
 }
 
-void DebugDrawModule::ChangeObject(ResourceEditor::eSceneObjectType object)
+void DebugDrawModule::ChangeObject(DAVA::ResourceEditor::eSceneObjectType object)
 {
     if (IsDisabled())
     {
         return;
     }
 
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
 
     debugDrawData->SetDebugDrawObject(object);
@@ -336,27 +335,27 @@ bool DebugDrawModule::IsDisabled() const
     return GetAccessor()->GetActiveContext() == nullptr;
 }
 
-ResourceEditor::eSceneObjectType DebugDrawModule::DebugDrawObject() const
+DAVA::ResourceEditor::eSceneObjectType DebugDrawModule::DebugDrawObject() const
 {
     if (IsDisabled())
     {
-        return ResourceEditor::eSceneObjectType::ESOT_NONE;
+        return DAVA::ResourceEditor::eSceneObjectType::ESOT_NONE;
     }
 
-    const DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    const DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     const DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
 
     return debugDrawData->GetDebugDrawObject();
 }
 
-void DebugDrawModule::SetDebugDrawObject(ResourceEditor::eSceneObjectType type)
+void DebugDrawModule::SetDebugDrawObject(DAVA::ResourceEditor::eSceneObjectType type)
 {
     if (IsDisabled())
     {
         return;
     }
 
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
     debugDrawData->SetDebugDrawObject(type);
 }
@@ -366,7 +365,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DebugDrawModule)
     DAVA::ReflectionRegistrator<DebugDrawModule>::Begin()
     .ConstructorByPointer()
     .Field("readOnly", &DebugDrawModule::IsDisabled, nullptr)
-    .Field("currentObject", &DebugDrawModule::DebugDrawObject, &DebugDrawModule::SetDebugDrawObject)[DAVA::M::EnumT<ResourceEditor::eSceneObjectType>()]
+    .Field("currentObject", &DebugDrawModule::DebugDrawObject, &DebugDrawModule::SetDebugDrawObject)[DAVA::M::EnumT<DAVA::ResourceEditor::eSceneObjectType>()]
     .End();
 }
 

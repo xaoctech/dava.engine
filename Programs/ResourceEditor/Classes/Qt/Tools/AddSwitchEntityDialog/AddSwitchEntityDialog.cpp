@@ -2,29 +2,27 @@
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
 #include "Classes/Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Classes/Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
-#include "Classes/Qt/Main/QtUtils.h"
-#include "Classes/Qt/Main/mainwindow.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Commands2/EntityAddCommand.h"
-#include "Classes/Commands2/EntityRemoveCommand.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Commands/EntityAddCommand.h>
+#include <REPlatform/Commands/EntityRemoveCommand.h>
 
 #include "ui_BaseAddEntityDialog.h"
 
 #include <QtTools/ConsoleWidget/PointerSerializer.h>
 
+#include <TArc/Core/Deprecated.h>
 #include <TArc/DataProcessing/DataContext.h>
 
 #include <QLabel>
+#include "REPlatform/Global/StringConstants.h"
 
 namespace AddSwitchEntityDialogDetails
 {
-SceneEditor2* GetActiveScene()
+DAVA::SceneEditor2* GetActiveScene()
 {
-    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    DAVA::SceneData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SceneData>();
     if (data != nullptr)
     {
         return data->GetScene().Get();
@@ -38,11 +36,11 @@ AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
 {
     setAcceptDrops(true);
     setAttribute(Qt::WA_DeleteOnClose, true);
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data != nullptr);
     DAVA::FilePath defaultPath(data->GetDataSource3DPath());
 
-    SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
+    DAVA::SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
     if (scene != nullptr)
     {
         DAVA::FilePath scenePath = scene->GetScenePath();
@@ -86,7 +84,7 @@ void AddSwitchEntityDialog::CleanupPathWidgets()
     }
 }
 
-void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor)
+void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, DAVA::SceneEditor2* editor)
 {
     Q_FOREACH (SelectEntityPathWidget* widget, pathWidgets)
     {
@@ -100,7 +98,7 @@ void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entitie
 
 void AddSwitchEntityDialog::accept()
 {
-    SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
+    DAVA::SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
     if (scene == nullptr)
     {
         CleanupPathWidgets();
@@ -112,7 +110,7 @@ void AddSwitchEntityDialog::accept()
 
     if (vector.empty())
     {
-        DAVA::Logger::Error(ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_CHILDREN.c_str());
+        DAVA::Logger::Error(DAVA::ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_CHILDREN.c_str());
         return;
     }
 
@@ -130,7 +128,7 @@ void AddSwitchEntityDialog::accept()
             canCreateSwitch = false;
             DAVA::Logger::Error("Can't create switch in switch: %s%s", vector[i]->GetName().c_str(),
                                 PointerSerializer::FromPointer(vector[i]).c_str());
-            DAVA::Logger::Error(ResourceEditor::ADD_SWITCH_NODE_DIALOG_DENY_SRC_SWITCH.c_str());
+            DAVA::Logger::Error(DAVA::ResourceEditor::ADD_SWITCH_NODE_DIALOG_DENY_SRC_SWITCH.c_str());
             return;
         }
         if (!creator.HasRenderObjectsRecursive(vector[i]))
@@ -138,7 +136,7 @@ void AddSwitchEntityDialog::accept()
             canCreateSwitch = false;
             DAVA::Logger::Error("Entity '%s' hasn't mesh render objects%s", vector[i]->GetName().c_str(),
                                 PointerSerializer::FromPointer(vector[i]).c_str());
-            DAVA::Logger::Error(ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_RENDER_OBJECTS.c_str());
+            DAVA::Logger::Error(DAVA::ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_RENDER_OBJECTS.c_str());
             return;
         }
     }
@@ -149,11 +147,11 @@ void AddSwitchEntityDialog::accept()
         for (DAVA::uint32 i = 0; i < switchCount; ++i)
         {
             vector[i]->Retain();
-            scene->Exec(std::unique_ptr<DAVA::Command>(new EntityRemoveCommand(vector[i])));
+            scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityRemoveCommand(vector[i])));
         }
 
         DAVA::Entity* switchEntity = creator.CreateSwitchEntity(vector);
-        scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(switchEntity, scene)));
+        scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(switchEntity, scene)));
 
         for (DAVA::uint32 i = 0; i < switchCount; ++i)
         {

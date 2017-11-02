@@ -51,7 +51,7 @@ DAVA_TARC_TESTCLASS(StyleSheetInspectorModuleTest)
     DAVA_TEST (SelectAndCheck)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace ::testing;
         using namespace TestHelpers;
 
@@ -98,7 +98,7 @@ DAVA_TARC_TESTCLASS(StyleSheetInspectorModuleTest)
 
     StyleSheetInspectorWidget* FindSSWidget() const
     {
-        QList<QWidget*> foundWidgets = LookupWidget(DAVA::TArc::mainWindowKey, "Style Sheet Inspector");
+        QList<QWidget*> foundWidgets = LookupWidget(DAVA::mainWindowKey, "Style Sheet Inspector");
         StyleSheetInspectorWidget* ssWidget = nullptr;
         for (QWidget* widget : foundWidgets)
         {
@@ -112,7 +112,7 @@ DAVA_TARC_TESTCLASS(StyleSheetInspectorModuleTest)
         return ssWidget;
     }
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
     MOCK_METHOD0_VIRTUAL(AfterWrappersSync, void());
     MOCK_METHOD0_VIRTUAL(OnRowInserted, void());
@@ -120,21 +120,19 @@ DAVA_TARC_TESTCLASS(StyleSheetInspectorModuleTest)
 
 namespace StyleSheetInspectorModuleTestDetails
 {
-class LocalMockModule : public DAVA::TArc::ClientModule
+class LocalMockModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
 
         RegisterOperation(QEGlobal::SelectControl.ID, this, &LocalMockModule::CreateAndSelectMock);
     }
 
-    void CreateAndSelectMock(const DAVA::FilePath& path, DAVA::TArc::ContextManager* contextManager)
+    void CreateAndSelectMock(const DAVA::FilePath& path, DAVA::ContextManager* contextManager)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
 
         ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetContextCount() == 0);
@@ -150,10 +148,9 @@ protected:
         selectionDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, nodes);
     }
 
-    void CreateDocument(const DAVA::FilePath& path, DAVA::TArc::ContextManager* contextManager)
+    void CreateDocument(const DAVA::FilePath& path, DAVA::ContextManager* contextManager)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
 
         ContextAccessor* accessor = GetAccessor();
         FileSystem* fs = accessor->GetEngineContext()->fileSystem;
@@ -166,7 +163,7 @@ protected:
 
         RefPtr<PackageNode> package = builder.BuildPackage();
         TEST_VERIFY(package != nullptr);
-        DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
+        DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>> initialData;
         initialData.emplace_back(new DocumentData(package));
 
         DataContext::ContextID id = contextManager->CreateContext(std::move(initialData));
@@ -197,7 +194,7 @@ protected:
         TEST_VERIFY(file->WriteString(ss.str(), false));
     }
 
-    DAVA_VIRTUAL_REFLECTION(LocalMockModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(LocalMockModule, DAVA::ClientModule);
 };
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LocalMockModule)

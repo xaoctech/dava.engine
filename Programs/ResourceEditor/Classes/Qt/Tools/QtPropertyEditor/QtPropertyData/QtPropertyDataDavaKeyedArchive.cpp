@@ -1,23 +1,20 @@
-#include "DAVAEngine.h"
-#include "Debug/DVAssert.h"
-#include "Main/QtUtils.h"
-#include "QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyDataKeyedArchiveMember.h"
-#include "Deprecated/EditorConfig.h"
-#include "Commands2/RECommandIDs.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaKeyedArchive.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h"
 
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Application/REGlobal.h"
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
 
 #include <TArc/Utils/Utils.h>
 
+#include <Debug/DVAssert.h>
+
 #include <QSet>
-#include <QMenu>
 #include <QGridLayout>
 #include <QAction>
 #include <QLabel>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include "TArc/Core/Deprecated.h"
 
 QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(const DAVA::FastName& name, DAVA::KeyedArchive* _archive)
     : QtPropertyData(name)
@@ -135,7 +132,7 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const DAVA::FastName& name, DAVA
 
     // add optional widget (button) to remove this key
     QToolButton* remButton = childData->AddButton();
-    remButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/keyminus.png"));
+    remButton->setIcon(DAVA::SharedIcon(":/QtIcons/keyminus.png"));
     remButton->setToolTip("Remove keyed archive member");
     remButton->setIconSize(QSize(12, 12));
 
@@ -215,7 +212,7 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField(const DAVA::FastName& k
 
         if (child)
         {
-            lastCommand = new KeyeadArchiveRemValueCommand(archive, key.c_str());
+            lastCommand = new DAVA::KeyeadArchiveRemValueCommand(archive, key.c_str());
             ChildRemove(child);
             EmitDataChanged(QtPropertyData::VALUE_EDITED);
         }
@@ -235,7 +232,7 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
             delete lastCommand;
         }
 
-        lastCommand = new KeyedArchiveAddValueCommand(archive, key, value);
+        lastCommand = new DAVA::KeyedArchiveAddValueCommand(archive, key, value);
         ChildCreate(DAVA::FastName(key.c_str()), archive->GetVariant(key));
         EmitDataChanged(QtPropertyData::VALUE_EDITED);
     }
@@ -245,13 +242,15 @@ std::unique_ptr<DAVA::Command> QtPropertyDataDavaKeyedArcive::CreateLastCommand(
 {
     if (nullptr != lastCommand)
     {
-        if (CMDID_KEYEDARCHIVE_REM_KEY == lastCommand->GetID())
+        DAVA::KeyeadArchiveRemValueCommand* remCommand = lastCommand->Cast<DAVA::KeyeadArchiveRemValueCommand>();
+        DAVA::KeyedArchiveAddValueCommand* addCommand = lastCommand->Cast<DAVA::KeyedArchiveAddValueCommand>();
+        if (remCommand != nullptr)
         {
-            return std::unique_ptr<DAVA::Command>(new KeyeadArchiveRemValueCommand(*((KeyeadArchiveRemValueCommand*)lastCommand)));
+            return std::make_unique<DAVA::KeyeadArchiveRemValueCommand>(*remCommand);
         }
-        else if (CMDID_KEYEDARCHIVE_ADD_KEY == lastCommand->GetID())
+        else if (addCommand != nullptr)
         {
-            return std::unique_ptr<DAVA::Command>(new KeyedArchiveAddValueCommand(*((KeyedArchiveAddValueCommand*)lastCommand)));
+            return std::make_unique<DAVA::KeyedArchiveAddValueCommand>(*addCommand);
         }
     }
 
@@ -262,7 +261,7 @@ void QtPropertyDataDavaKeyedArcive::FinishTreeCreation()
 {
     // add optional widget (button) to add new key
     QToolButton* addButton = AddButton();
-    addButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/keyplus.png"));
+    addButton->setIcon(DAVA::SharedIcon(":/QtIcons/keyplus.png"));
     addButton->setToolTip("Add keyed archive member");
     addButton->setIconSize(QSize(12, 12));
     connections.AddConnection(addButton, &QToolButton::clicked, [this, addButton]() {
@@ -315,10 +314,10 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive* _arch, int de
     grLayout->addWidget(new QLabel("Value type:", this), ++row, 0, 1, 1);
     grLayout->addWidget(valueWidget, row, 1, 1, 2);
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data);
 
-    const EditorConfig* editorConfig = data->GetEditorConfig();
+    const DAVA::EditorConfig* editorConfig = data->GetEditorConfig();
     const DAVA::Vector<DAVA::String>& presetValues = editorConfig->GetProjectPropertyNames();
     if (presetValues.size() > 0)
     {
@@ -423,7 +422,7 @@ void KeyedArchiveItemWidget::OkKeyPressed()
 
             if (DAVA::VariantType::TYPE_NONE != presetType)
             {
-                ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+                DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
                 DVASSERT(data);
                 DAVA::VariantType presetValue = *(data->GetEditorConfig()->GetPropertyDefaultValue(key));
                 emit ValueReady(key, presetValue);

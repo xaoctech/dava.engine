@@ -4,7 +4,7 @@
 #include "TArc/Utils/QtConnections.h"
 #include "Reflection/Reflection.h"
 
-class EntityProducerModule : public DAVA::TArc::ClientModule
+class EntityProducerModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override;
@@ -13,7 +13,7 @@ protected:
     void InstantiateCurrentCamera();
 
 private:
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(EntityProducerModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(EntityProducerModule, DAVA::ClientModule);
 };

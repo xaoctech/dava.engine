@@ -1,22 +1,24 @@
-#include "HeightmapEditorPanel.h"
-#include "../../Scene/SceneSignals.h"
-#include "../../Scene/SceneEditor2.h"
-#include "../../Tools/SliderWidget/SliderWidget.h"
-#include "Constants.h"
-#include "Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
-#include "../LandscapeEditorShortcutManager.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/HeightmapEditorPanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.h"
+#include "Classes/Qt/Tools/SliderWidget/SliderWidget.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
 
-#include "ImageTools/ImageTools.h"
+#include <REPlatform/Global/Constants.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/Private/Systems/LandscapeEditorDrawSystem/HeightmapProxy.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/HeightmapEditorSystem.h>
+#include <REPlatform/Scene/Systems/LandscapeEditorDrawSystem.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
 
-
-#include <QLayout>
-#include <QLabel>
-#include <QComboBox>
-#include <QRadioButton>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QLabel>
+#include <QLayout>
+#include <QRadioButton>
 
 HeightmapEditorPanel::HeightmapEditorPanel(QWidget* parent)
     : LandscapeEditorBasePanel(parent)
@@ -42,7 +44,7 @@ HeightmapEditorPanel::~HeightmapEditorPanel()
 
 bool HeightmapEditorPanel::GetEditorEnabled()
 {
-    return GetActiveScene()->heightmapEditorSystem->IsLandscapeEditingEnabled();
+    return GetActiveScene()->GetSystem<DAVA::HeightmapEditorSystem>()->IsLandscapeEditingEnabled();
 }
 
 void HeightmapEditorPanel::SetWidgetsState(bool enabled)
@@ -98,19 +100,19 @@ void HeightmapEditorPanel::InitUI()
 
     QHBoxLayout* layoutBrushSize = new QHBoxLayout();
     QLabel* labelBrushSize = new QLabel();
-    labelBrushSize->setText(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION.c_str());
+    labelBrushSize->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_CAPTION.c_str());
     layoutBrushSize->addWidget(labelBrushSize);
     layoutBrushSize->addWidget(sliderWidgetBrushSize);
 
     QHBoxLayout* layoutStrength = new QHBoxLayout();
     QLabel* labelStrength = new QLabel();
-    labelStrength->setText(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_CAPTION.c_str());
+    labelStrength->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_CAPTION.c_str());
     layoutStrength->addWidget(labelStrength);
     layoutStrength->addWidget(sliderWidgetStrength);
 
     QHBoxLayout* layoutAvgStrength = new QHBoxLayout();
     QLabel* labelAvgStrength = new QLabel();
-    labelAvgStrength->setText(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION.c_str());
+    labelAvgStrength->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_CAPTION.c_str());
     layoutAvgStrength->addWidget(labelAvgStrength);
     layoutAvgStrength->addWidget(sliderWidgetAverageStrength);
 
@@ -149,7 +151,7 @@ void HeightmapEditorPanel::InitUI()
     BlockAllSignals(true);
 
     sliderWidgetBrushSize->Init(false, DEF_BRUSH_MAX_SIZE, DEF_BRUSH_MIN_SIZE, DEF_BRUSH_MIN_SIZE);
-    sliderWidgetBrushSize->SetRangeBoundaries(ResourceEditor::BRUSH_MIN_BOUNDARY, ResourceEditor::BRUSH_MAX_BOUNDARY);
+    sliderWidgetBrushSize->SetRangeBoundaries(DAVA::ResourceEditor::BRUSH_MIN_BOUNDARY, DAVA::ResourceEditor::BRUSH_MAX_BOUNDARY);
     sliderWidgetStrength->Init(true, DEF_STRENGTH_MAX_VALUE, 0, 0);
     sliderWidgetStrength->SetRangeBoundaries(STRENGTH_MIN_BOUNDARY, STRENGTH_MAX_BOUNDARY);
     sliderWidgetAverageStrength->Init(false, DEF_AVERAGE_STRENGTH_MAX_VALUE,
@@ -160,27 +162,25 @@ void HeightmapEditorPanel::InitUI()
     layoutDrawTypes->setContentsMargins(0, 0, 0, 0);
     layoutHeight->setContentsMargins(0, 0, 0, 0);
 
-    labelBrushImageDesc->setText(ResourceEditor::HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE.c_str());
+    labelBrushImageDesc->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_LABEL_BRUSH_IMAGE.c_str());
     labelBrushImageDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-    labelHeightDesc->setText(ResourceEditor::HEIGHTMAP_EDITOR_LABEL_DROPPER_HEIGHT.c_str());
+    labelHeightDesc->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_LABEL_DROPPER_HEIGHT.c_str());
     labelHeightDesc->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-    radioCopyPaste->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_COPY_PASTE.c_str());
-    radioAbsDrop->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_ABS_DROP.c_str());
-    radioAbsolute->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_ABSOLUTE.c_str());
-    radioAverage->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_AVERAGE.c_str());
-    radioDropper->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_DROPPER.c_str());
-    radioRelative->setText(ResourceEditor::HEIGHTMAP_EDITOR_RADIO_RELATIVE.c_str());
+    radioCopyPaste->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_RADIO_COPY_PASTE.c_str());
+    radioAbsDrop->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_RADIO_ABS_DROP.c_str());
+    radioAbsolute->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_RADIO_ABSOLUTE.c_str());
+    radioAverage->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_RADIO_AVERAGE.c_str());
+    radioDropper->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_RADIO_DROPPER.c_str());
+    radioRelative->setText(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_RADIO_RELATIVE.c_str());
 
     InitBrushImages();
 }
 
 void HeightmapEditorPanel::ConnectToSignals()
 {
-    connect(SceneSignals::Instance(), SIGNAL(DropperHeightChanged(SceneEditor2*, double)),
-            this, SLOT(SetDropperHeight(SceneEditor2*, double)));
-    connect(SceneSignals::Instance(), SIGNAL(LandscapeEditorToggled(SceneEditor2*)),
-            this, SLOT(EditorToggled(SceneEditor2*)));
+    connect(SceneSignals::Instance(), &SceneSignals::DropperHeightChanged, this, &HeightmapEditorPanel::SetDropperHeight);
+    connect(SceneSignals::Instance(), &SceneSignals::LandscapeEditorToggled, this, &HeightmapEditorPanel::EditorToggled);
 
     connect(sliderWidgetBrushSize, SIGNAL(ValueChanged(int)), this, SLOT(SetBrushSize(int)));
     connect(sliderWidgetStrength, SIGNAL(ValueChanged(int)), this, SLOT(SetStrength(int)));
@@ -199,29 +199,30 @@ void HeightmapEditorPanel::StoreState()
 {
     DAVA::KeyedArchive* customProperties = GetOrCreateCustomProperties(GetActiveScene())->GetArchive();
 
-    customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN,
+    customProperties->SetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN,
                                sliderWidgetBrushSize->GetRangeMin());
-    customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX,
+    customProperties->SetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX,
                                sliderWidgetBrushSize->GetRangeMax());
-    customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX,
+    customProperties->SetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX,
                                sliderWidgetStrength->GetRangeMax());
-    customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN,
+    customProperties->SetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN,
                                sliderWidgetAverageStrength->GetRangeMin());
-    customProperties->SetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX,
+    customProperties->SetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX,
                                sliderWidgetAverageStrength->GetRangeMax());
 }
 
 void HeightmapEditorPanel::RestoreState()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
 
-    bool enabled = sceneEditor->heightmapEditorSystem->IsLandscapeEditingEnabled();
-    DAVA::int32 brushSize = BrushSizeSystemToUI(sceneEditor->heightmapEditorSystem->GetBrushSize());
-    DAVA::int32 strength = StrengthSystemToUI(sceneEditor->heightmapEditorSystem->GetStrength());
-    DAVA::int32 averageStrength = AverageStrengthSystemToUI(sceneEditor->heightmapEditorSystem->GetAverageStrength());
-    DAVA::int32 toolImage = sceneEditor->heightmapEditorSystem->GetToolImageIndex();
-    HeightmapEditorSystem::eHeightmapDrawType drawingType = sceneEditor->heightmapEditorSystem->GetDrawingType();
-    DAVA::float32 height = sceneEditor->heightmapEditorSystem->GetDropperHeight();
+    DAVA::HeightmapEditorSystem* system = sceneEditor->GetSystem<DAVA::HeightmapEditorSystem>();
+    bool enabled = system->IsLandscapeEditingEnabled();
+    DAVA::int32 brushSize = BrushSizeSystemToUI(system->GetBrushSize());
+    DAVA::int32 strength = StrengthSystemToUI(system->GetStrength());
+    DAVA::int32 averageStrength = AverageStrengthSystemToUI(system->GetAverageStrength());
+    DAVA::int32 toolImage = system->GetToolImageIndex();
+    DAVA::HeightmapEditorSystem::eHeightmapDrawType drawingType = system->GetDrawingType();
+    DAVA::float32 height = system->GetDropperHeight();
 
     DAVA::int32 brushRangeMin = DEF_BRUSH_MIN_SIZE;
     DAVA::int32 brushRangeMax = DEF_BRUSH_MAX_SIZE;
@@ -232,15 +233,15 @@ void HeightmapEditorPanel::RestoreState()
     DAVA::KeyedArchive* customProperties = GetCustomPropertiesArchieve(sceneEditor);
     if (customProperties)
     {
-        brushRangeMin = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN,
+        brushRangeMin = customProperties->GetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MIN,
                                                    DEF_BRUSH_MIN_SIZE);
-        brushRangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX,
+        brushRangeMax = customProperties->GetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_BRUSH_SIZE_MAX,
                                                    DEF_BRUSH_MAX_SIZE);
-        strRangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX,
+        strRangeMax = customProperties->GetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_STRENGTH_MAX,
                                                  DEF_STRENGTH_MAX_VALUE);
-        avStrRangeMin = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN,
+        avStrRangeMin = customProperties->GetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MIN,
                                                    DEF_AVERAGE_STRENGTH_MIN_VALUE);
-        avStrRangeMax = customProperties->GetInt32(ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX,
+        avStrRangeMax = customProperties->GetInt32(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_AVERAGE_STRENGTH_MAX,
                                                    DEF_AVERAGE_STRENGTH_MAX_VALUE);
     }
 
@@ -257,9 +258,10 @@ void HeightmapEditorPanel::RestoreState()
     sliderWidgetAverageStrength->SetValue(averageStrength);
     comboBrushImage->setCurrentIndex(toolImage);
     editHeight->setValue(height);
-    if (NULL != sceneEditor && NULL != sceneEditor->landscapeEditorDrawSystem)
+    DAVA::LandscapeEditorDrawSystem* drawSystem = sceneEditor->GetSystem<DAVA::LandscapeEditorDrawSystem>();
+    if (drawSystem != nullptr)
     {
-        editHeight->setMaximum(sceneEditor->landscapeEditorDrawSystem->GetLandscapeMaxHeight());
+        editHeight->setMaximum(drawSystem->GetLandscapeMaxHeight());
     }
     UpdateRadioState(drawingType);
     BlockAllSignals(!enabled);
@@ -273,7 +275,7 @@ void HeightmapEditorPanel::InitBrushImages()
     iconSize = iconSize.expandedTo(QSize(32, 32));
     comboBrushImage->setIconSize(iconSize);
 
-    DAVA::FilePath toolsPath(ResourceEditor::HEIGHTMAP_EDITOR_TOOLS_PATH);
+    DAVA::FilePath toolsPath(DAVA::ResourceEditor::HEIGHTMAP_EDITOR_TOOLS_PATH);
 
     DAVA::ScopedPtr<DAVA::FileList> fileList(new DAVA::FileList(toolsPath));
     for (DAVA::uint32 iFile = 0; iFile < fileList->GetCount(); ++iFile)
@@ -281,7 +283,7 @@ void HeightmapEditorPanel::InitBrushImages()
         auto pathname = fileList->GetPathname(iFile);
         if (DAVA::TextureDescriptor::IsSourceTextureExtension(pathname.GetExtension()))
         {
-            QIcon toolIcon(QPixmap::fromImage(ImageTools::FromDavaImage(pathname)));
+            QIcon toolIcon(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(pathname)));
 
             auto fullname = pathname.GetAbsolutePathname();
             comboBrushImage->addItem(toolIcon, pathname.GetBasename().c_str(), QVariant(QString::fromStdString(fullname)));
@@ -295,7 +297,7 @@ DAVA::int32 HeightmapEditorPanel::BrushSizeUIToSystem(DAVA::int32 uiValue)
 {
     // height map size is differ from the landscape texture size.
     // so to unify brush size necessary to additionally scale brush size by (texture size / height map size) coefficient
-    DAVA::float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / GetBrushScaleCoef();
+    DAVA::float32 coef = DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / GetBrushScaleCoef();
     DAVA::int32 systemValue = static_cast<DAVA::int32>(uiValue * coef);
 
     return systemValue;
@@ -303,7 +305,7 @@ DAVA::int32 HeightmapEditorPanel::BrushSizeUIToSystem(DAVA::int32 uiValue)
 
 DAVA::int32 HeightmapEditorPanel::BrushSizeSystemToUI(DAVA::int32 systemValue)
 {
-    DAVA::float32 coef = ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / GetBrushScaleCoef();
+    DAVA::float32 coef = DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF / GetBrushScaleCoef();
     DAVA::int32 uiValue = static_cast<DAVA::int32>(systemValue / coef);
 
     return uiValue;
@@ -334,21 +336,22 @@ DAVA::int32 HeightmapEditorPanel::AverageStrengthSystemToUI(DAVA::float32 system
 
 DAVA::float32 HeightmapEditorPanel::GetBrushScaleCoef()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
 
-    HeightmapProxy* heightmapProxy = sceneEditor->landscapeEditorDrawSystem->GetHeightmapProxy();
+    DAVA::LandscapeEditorDrawSystem* drawSystem = sceneEditor->GetSystem<DAVA::LandscapeEditorDrawSystem>();
+    DAVA::HeightmapProxy* heightmapProxy = drawSystem->GetHeightmapProxy();
     if (!heightmapProxy)
     {
-        return ResourceEditor::HEIGHTMAP_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
+        return DAVA::ResourceEditor::HEIGHTMAP_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
     }
 
     DAVA::float32 heightmapSize = heightmapProxy->Size();
-    DAVA::float32 textureSize = sceneEditor->landscapeEditorDrawSystem->GetTextureSize(DAVA::Landscape::TEXTURE_COLOR);
+    DAVA::float32 textureSize = drawSystem->GetTextureSize(DAVA::Landscape::TEXTURE_COLOR);
 
     return textureSize / heightmapSize;
 }
 
-void HeightmapEditorPanel::UpdateRadioState(HeightmapEditorSystem::eHeightmapDrawType type)
+void HeightmapEditorPanel::UpdateRadioState(DAVA::HeightmapEditorSystem::eHeightmapDrawType type)
 {
     radioAbsolute->setChecked(false);
     radioRelative->setChecked(false);
@@ -359,27 +362,27 @@ void HeightmapEditorPanel::UpdateRadioState(HeightmapEditorSystem::eHeightmapDra
 
     switch (type)
     {
-    case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE:
+    case DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE:
         radioAbsolute->setChecked(true);
         break;
 
-    case HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE:
+    case DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE:
         radioRelative->setChecked(true);
         break;
 
-    case HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE:
+    case DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE:
         radioAverage->setChecked(true);
         break;
 
-    case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
+    case DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
         radioAbsDrop->setChecked(true);
         break;
 
-    case HeightmapEditorSystem::HEIGHTMAP_DROPPER:
+    case DAVA::HeightmapEditorSystem::HEIGHTMAP_DROPPER:
         radioDropper->setChecked(true);
         break;
 
-    case HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE:
+    case DAVA::HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE:
         radioCopyPaste->setChecked(true);
         break;
 
@@ -390,7 +393,7 @@ void HeightmapEditorPanel::UpdateRadioState(HeightmapEditorSystem::eHeightmapDra
 
 void HeightmapEditorPanel::SetBrushSize(int brushSize)
 {
-    GetActiveScene()->heightmapEditorSystem->SetBrushSize(BrushSizeUIToSystem(brushSize));
+    GetActiveScene()->GetSystem<DAVA::HeightmapEditorSystem>()->SetBrushSize(BrushSizeUIToSystem(brushSize));
 }
 
 void HeightmapEditorPanel::SetToolImage(int toolImage)
@@ -400,60 +403,60 @@ void HeightmapEditorPanel::SetToolImage(int toolImage)
     if (!s.isEmpty())
     {
         DAVA::FilePath fp(s.toStdString());
-        GetActiveScene()->heightmapEditorSystem->SetToolImage(fp, toolImage);
+        GetActiveScene()->GetSystem<DAVA::HeightmapEditorSystem>()->SetToolImage(fp, toolImage);
     }
 }
 
 void HeightmapEditorPanel::SetRelativeDrawing()
 {
-    SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE);
+    SetDrawingType(DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE);
 }
 
 void HeightmapEditorPanel::SetAverageDrawing()
 {
-    SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE);
+    SetDrawingType(DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE);
 }
 
 void HeightmapEditorPanel::SetAbsoluteDrawing()
 {
-    SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE);
+    SetDrawingType(DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE);
 }
 
 void HeightmapEditorPanel::SetAbsDropDrawing()
 {
-    SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER);
+    SetDrawingType(DAVA::HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER);
 }
 
 void HeightmapEditorPanel::SetDropper()
 {
-    SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_DROPPER);
+    SetDrawingType(DAVA::HeightmapEditorSystem::HEIGHTMAP_DROPPER);
 }
 
 void HeightmapEditorPanel::SetHeightmapCopyPaste()
 {
-    SetDrawingType(HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE);
+    SetDrawingType(DAVA::HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE);
 }
 
 void HeightmapEditorPanel::SetStrength(int strength)
 {
-    GetActiveScene()->heightmapEditorSystem->SetStrength(StrengthUIToSystem(strength));
+    GetActiveScene()->GetSystem<DAVA::HeightmapEditorSystem>()->SetStrength(StrengthUIToSystem(strength));
 }
 
 void HeightmapEditorPanel::SetAverageStrength(int averageStrength)
 {
-    GetActiveScene()->heightmapEditorSystem->SetAverageStrength(AverageStrengthUIToSystem(averageStrength));
+    GetActiveScene()->GetSystem<DAVA::HeightmapEditorSystem>()->SetAverageStrength(AverageStrengthUIToSystem(averageStrength));
 }
 
-void HeightmapEditorPanel::SetDrawingType(HeightmapEditorSystem::eHeightmapDrawType type)
+void HeightmapEditorPanel::SetDrawingType(DAVA::HeightmapEditorSystem::eHeightmapDrawType type)
 {
     BlockAllSignals(true);
     UpdateRadioState(type);
     BlockAllSignals(false);
 
-    GetActiveScene()->heightmapEditorSystem->SetDrawingType(type);
+    GetActiveScene()->GetSystem<DAVA::HeightmapEditorSystem>()->SetDrawingType(type);
 }
 
-void HeightmapEditorPanel::SetDropperHeight(SceneEditor2* scene, double height)
+void HeightmapEditorPanel::SetDropperHeight(DAVA::SceneEditor2* scene, double height)
 {
     if (scene == GetActiveScene())
     {
@@ -463,8 +466,8 @@ void HeightmapEditorPanel::SetDropperHeight(SceneEditor2* scene, double height)
 
 void HeightmapEditorPanel::HeightUpdatedManually()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
-    sceneEditor->heightmapEditorSystem->SetDropperHeight(editHeight->value());
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
+    sceneEditor->GetSystem<DAVA::HeightmapEditorSystem>()->SetDropperHeight(editHeight->value());
 }
 
 void HeightmapEditorPanel::OnEditorEnabled()
@@ -476,49 +479,49 @@ void HeightmapEditorPanel::ConnectToShortcuts()
 {
     LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
             this, SLOT(IncreaseBrushSize()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
             this, SLOT(DecreaseBrushSize()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
             this, SLOT(IncreaseBrushSizeLarge()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
             this, SLOT(DecreaseBrushSizeLarge()));
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
             this, SLOT(IncreaseStrength()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
             this, SLOT(DecreaseStrength()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
             this, SLOT(IncreaseStrengthLarge()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
             this, SLOT(DecreaseStrengthLarge()));
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
             this, SLOT(IncreaseAvgStrength()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
             this, SLOT(DecreaseAvgStrength()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
             this, SLOT(IncreaseAvgStrengthLarge()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
             this, SLOT(DecreaseAvgStrengthLarge()));
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
             this, SLOT(NextTool()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
             this, SLOT(PrevTool()));
 
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_COPY_PASTE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_COPY_PASTE), SIGNAL(activated()),
             this, SLOT(SetHeightmapCopyPaste()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABSOLUTE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_ABSOLUTE), SIGNAL(activated()),
             this, SLOT(SetAbsoluteDrawing()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_RELATIVE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_RELATIVE), SIGNAL(activated()),
             this, SLOT(SetRelativeDrawing()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_AVERAGE), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_AVERAGE), SIGNAL(activated()),
             this, SLOT(SetAverageDrawing()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABS_DROP), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_ABS_DROP), SIGNAL(activated()),
             this, SLOT(SetAbsDropDrawing()));
-    connect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
+    connect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
             this, SLOT(SetDropper()));
 
     shortcutManager->SetHeightMapEditorShortcutsEnabled(true);
@@ -533,49 +536,49 @@ void HeightmapEditorPanel::DisconnectFromShortcuts()
 {
     LandscapeEditorShortcutManager* shortcutManager = LandscapeEditorShortcutManager::Instance();
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_SMALL), SIGNAL(activated()),
                this, SLOT(IncreaseBrushSize()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_SMALL), SIGNAL(activated()),
                this, SLOT(DecreaseBrushSize()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_INCREASE_LARGE), SIGNAL(activated()),
                this, SLOT(IncreaseBrushSizeLarge()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_SIZE_DECREASE_LARGE), SIGNAL(activated()),
                this, SLOT(DecreaseBrushSizeLarge()));
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
                this, SLOT(IncreaseStrength()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
                this, SLOT(DecreaseStrength()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
                this, SLOT(IncreaseStrengthLarge()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
                this, SLOT(DecreaseStrengthLarge()));
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_SMALL), SIGNAL(activated()),
                this, SLOT(IncreaseAvgStrength()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_SMALL), SIGNAL(activated()),
                this, SLOT(DecreaseAvgStrength()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE), SIGNAL(activated()),
                this, SLOT(IncreaseAvgStrengthLarge()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE), SIGNAL(activated()),
                this, SLOT(DecreaseAvgStrengthLarge()));
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_IMAGE_NEXT), SIGNAL(activated()),
                this, SLOT(NextTool()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_BRUSH_IMAGE_PREV), SIGNAL(activated()),
                this, SLOT(PrevTool()));
 
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_COPY_PASTE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_COPY_PASTE), SIGNAL(activated()),
                this, SLOT(SetHeightmapCopyPaste()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABSOLUTE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_ABSOLUTE), SIGNAL(activated()),
                this, SLOT(SetAbsoluteDrawing()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_RELATIVE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_RELATIVE), SIGNAL(activated()),
                this, SLOT(SetRelativeDrawing()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_AVERAGE), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_AVERAGE), SIGNAL(activated()),
                this, SLOT(SetAverageDrawing()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_ABS_DROP), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_ABS_DROP), SIGNAL(activated()),
                this, SLOT(SetAbsDropDrawing()));
-    disconnect(shortcutManager->GetShortcutByName(ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
+    disconnect(shortcutManager->GetShortcutByName(DAVA::ResourceEditor::SHORTCUT_SET_DROPPER), SIGNAL(activated()),
                this, SLOT(SetDropper()));
 
     shortcutManager->SetHeightMapEditorShortcutsEnabled(false);
@@ -602,73 +605,73 @@ bool HeightmapEditorPanel::eventFilter(QObject* o, QEvent* e)
 void HeightmapEditorPanel::IncreaseBrushSize()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                    + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void HeightmapEditorPanel::DecreaseBrushSize()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                    - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void HeightmapEditorPanel::IncreaseBrushSizeLarge()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                    + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void HeightmapEditorPanel::DecreaseBrushSizeLarge()
 {
     sliderWidgetBrushSize->SetValue(sliderWidgetBrushSize->GetValue()
-                                    - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                    - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void HeightmapEditorPanel::IncreaseStrength()
 {
     sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
-                                   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                   + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void HeightmapEditorPanel::DecreaseStrength()
 {
     sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
-                                   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                   - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void HeightmapEditorPanel::IncreaseStrengthLarge()
 {
     sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
-                                   + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                   + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void HeightmapEditorPanel::DecreaseStrengthLarge()
 {
     sliderWidgetStrength->SetValue(sliderWidgetStrength->GetValue()
-                                   - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                   - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void HeightmapEditorPanel::IncreaseAvgStrength()
 {
     sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
-                                          + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                          + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void HeightmapEditorPanel::DecreaseAvgStrength()
 {
     sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
-                                          - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
+                                          - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_SMALL);
 }
 
 void HeightmapEditorPanel::IncreaseAvgStrengthLarge()
 {
     sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
-                                          + ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                          + DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void HeightmapEditorPanel::DecreaseAvgStrengthLarge()
 {
     sliderWidgetAverageStrength->SetValue(sliderWidgetAverageStrength->GetValue()
-                                          - ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
+                                          - DAVA::ResourceEditor::SLIDER_WIDGET_CHANGE_VALUE_STEP_LARGE);
 }
 
 void HeightmapEditorPanel::PrevTool()

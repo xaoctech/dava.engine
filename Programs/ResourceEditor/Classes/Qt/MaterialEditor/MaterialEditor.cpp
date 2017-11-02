@@ -1,54 +1,52 @@
 #include "Classes/Qt/MaterialEditor/MaterialEditor.h"
 #include "Classes/Qt/MaterialEditor/MaterialModel.h"
 #include "Classes/Qt/MaterialEditor/MaterialFilterModel.h"
-
-#include "ui_materialeditor.h"
-
-#include "Classes/Commands2/MaterialGlobalCommand.h"
-#include "Classes/Commands2/MaterialRemoveTexture.h"
-#include "Classes/Commands2/MaterialConfigCommands.h"
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
-#include "Classes/Commands2/ApplyMaterialPresetCommand.h"
-
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Selection/SelectionData.h"
-
-#include "Classes/Qt/Main/QtUtils.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
 
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "ui_materialeditor.h"
+
+#include <REPlatform/Commands/ApplyMaterialPresetCommand.h>
+#include <REPlatform/Commands/MaterialConfigCommands.h>
+#include <REPlatform/Commands/MaterialGlobalCommand.h>
+#include <REPlatform/Commands/MaterialRemoveTexture.h>
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Scene/SceneHelper.h>
+#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
 
 #include <QtTools/FileDialogs/FileDialog.h>
 #include <QtTools/Updaters/LazyUpdater.h>
 
+#include "TArc/Core/Deprecated.h"
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/Utils.h>
 
 #include <Base/Introspection.h>
 #include <Functional/Function.h>
+#include <Render/Texture.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
 
+#include <QAction>
+#include <QBoxLayout>
+#include <QCheckBox>
+#include <QDebug>
+#include <QDialogButtonBox>
 #include <QFile>
 #include <QFileInfo>
-#include <QTextStream>
-#include <QAction>
-#include <QVariant>
 #include <QGroupBox>
-#include <QDialogButtonBox>
-#include <QDebug>
-#include <QScrollBar>
-#include <QMenu>
-#include <QCheckBox>
 #include <QLineEdit>
-#include <QBoxLayout>
-#include "Render/Texture.h"
-#include "Scene/SceneHelper.h"
+#include <QMenu>
+#include <QMessageBox>
+#include <QScrollBar>
+#include <QTextStream>
+#include <QVariant>
 
 namespace UIName
 {
@@ -153,7 +151,7 @@ public:
     PropertiesBuilder(MaterialEditor* editor_)
         : editor(editor_)
     {
-        SceneEditor2* scene = editor->activeScene;
+        DAVA::SceneEditor2* scene = editor->activeScene;
         if (scene != nullptr)
         {
             globalMaterial = scene->GetGlobalMaterial();
@@ -210,7 +208,7 @@ public:
     void UpdateAddRemoveButtonState(QtPropertyDataInspDynamic* data)
     {
         // don't create/update buttons for global material
-        SceneEditor2* curScene = editor->activeScene;
+        DAVA::SceneEditor2* curScene = editor->activeScene;
         if (curScene == nullptr)
             return;
 
@@ -226,7 +224,7 @@ public:
         if (memberFlags & DAVA::I_EDIT)
         {
             editEnabled = true;
-            addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
+            addRemoveButton->setIcon(DAVA::SharedIcon(":/QtIcons/cminus.png"));
             addRemoveButton->setToolTip(QStringLiteral("Remove property"));
 
             // isn't set in parent or shader
@@ -240,7 +238,7 @@ public:
         {
             editEnabled = false;
             bgColor = QBrush(QColor(0, 0, 0, 25));
-            addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
+            addRemoveButton->setIcon(DAVA::SharedIcon(":/QtIcons/cplus.png"));
             addRemoveButton->setToolTip(QStringLiteral("Add property"));
         }
 
@@ -295,7 +293,7 @@ private:
             {
                 QtPropertyToolButton* button = data->AddButton();
                 button->setObjectName(QStringLiteral("reloadTexture"));
-                button->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/reloadtextures.png"));
+                button->setIcon(DAVA::SharedIcon(":/QtIcons/reloadtextures.png"));
                 button->setIconSize(QSize(14, 14));
                 QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnReloadTexture);
             }
@@ -382,7 +380,7 @@ private:
                 QtPropertyToolButton* addRemoveButton = textureSlot->AddButton();
                 addRemoveButton->setObjectName("dynamicAddRemoveButton");
                 addRemoveButton->setIconSize(QSize(14, 14));
-                addRemoveButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
+                addRemoveButton->setIcon(DAVA::SharedIcon(":/QtIcons/cminus.png"));
                 addRemoveButton->setToolTip(QStringLiteral("Remove property"));
                 QObject::connect(addRemoveButton, &QAbstractButton::clicked, editor, &MaterialEditor::removeInvalidTexture);
 
@@ -455,7 +453,7 @@ private:
         QtPropertyDataInspDynamic* dynamicData = dynamic_cast<QtPropertyDataInspDynamic*>(data);
         if (dynamicData)
         {
-            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
             DVASSERT(data != nullptr);
             QString defaultPath = data->GetProjectPath().GetAbsolutePathname().c_str();
             DAVA::FilePath dataSourcePath = data->GetDataSource3DPath();
@@ -466,7 +464,7 @@ private:
                 defaultPath = dataSourcePath.GetAbsolutePathname().c_str();
             }
 
-            SceneEditor2* activeScene = editor->activeScene;
+            DAVA::SceneEditor2* activeScene = editor->activeScene;
             if ((nullptr != activeScene) && DAVA::FileSystem::Instance()->Exists(activeScene->GetScenePath()))
             {
                 DAVA::String scenePath = activeScene->GetScenePath().GetDirectory().GetAbsolutePathname();
@@ -529,12 +527,12 @@ MaterialEditor::MaterialEditor(QWidget* parent /* = 0 */)
     , templatesFilterModel(nullptr)
     , validator(new ConfigNameValidator(this))
 {
-    lastCheckState = ApplyMaterialPresetCommand::PROPERTIES | ApplyMaterialPresetCommand::TEMPLATE | ApplyMaterialPresetCommand::GROUP;
+    lastCheckState = DAVA::ApplyMaterialPresetCommand::PROPERTIES | DAVA::ApplyMaterialPresetCommand::TEMPLATE | DAVA::ApplyMaterialPresetCommand::GROUP;
     DAVA::Function<void()> fn(this, &MaterialEditor::RefreshMaterialProperties);
     materialPropertiesUpdater = new LazyUpdater(fn, this);
 
     ui->setupUi(this);
-    setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
+    setWindowFlags(DAVA::WINDOWFLAG_ON_TOP_OF_APPLICATION);
 
     ui->tabbar->setNameValidator(validator);
     ui->tabbar->setUsesScrollButtons(true);
@@ -556,11 +554,11 @@ MaterialEditor::MaterialEditor(QWidget* parent /* = 0 */)
     QObject::connect(SceneSignals::Instance(), &SceneSignals::Deactivated, this, &MaterialEditor::sceneDeactivated);
     QObject::connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &MaterialEditor::commandExecuted);
 
-    selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    selectionFieldBinder.reset(new DAVA::FieldBinder(DAVA::Deprecated::GetAccessor()));
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
-        fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::SelectionData>();
+        fieldDescr.fieldName = DAVA::FastName(DAVA::SelectionData::selectionPropertyName);
         selectionFieldBinder->BindField(fieldDescr, [this](const DAVA::Any&) { autoExpand(); });
     }
 
@@ -653,14 +651,14 @@ void MaterialEditor::initTemplates()
     {
         QStandardItemModel* templatesModel = new QStandardItemModel(this);
 
-        ProjectManagerData* projectManagerData = REGlobal::GetDataNode<ProjectManagerData>();
+        DAVA::ProjectManagerData* projectManagerData = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
         DVASSERT(projectManagerData != nullptr);
-        const DAVA::Vector<MaterialTemplateInfo>* templates = projectManagerData->GetMaterialTemplatesInfo();
+        const DAVA::Vector<DAVA::MaterialTemplateInfo>* templates = projectManagerData->GetMaterialTemplatesInfo();
 
         QStandardItem* emptyItem = new QStandardItem(QString());
         templatesModel->appendRow(emptyItem);
 
-        for (const MaterialTemplateInfo& t : *templates)
+        for (const DAVA::MaterialTemplateInfo& t : *templates)
         {
             QStandardItem* item = new QStandardItem();
             item->setText(t.name.c_str());
@@ -762,13 +760,13 @@ void MaterialEditor::SetCurMaterial(const QList<DAVA::NMaterial*>& materials)
     ui->materialProperty->verticalScrollBar()->setValue(curScrollPos);
 }
 
-void MaterialEditor::sceneActivated(SceneEditor2* scene)
+void MaterialEditor::sceneActivated(DAVA::SceneEditor2* scene)
 {
     activeScene = scene;
     UpdateContent(activeScene);
 }
 
-void MaterialEditor::sceneDeactivated(SceneEditor2* scene)
+void MaterialEditor::sceneDeactivated(DAVA::SceneEditor2* scene)
 {
     activeScene = nullptr;
     UpdateContent(activeScene);
@@ -793,7 +791,7 @@ void MaterialEditor::materialSelected(const QItemSelection& selected, const QIte
     SetCurMaterial(materials);
 }
 
-void MaterialEditor::commandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
+void MaterialEditor::commandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification)
 {
     if (scene != activeScene)
     {
@@ -806,75 +804,61 @@ void MaterialEditor::commandExecuted(SceneEditor2* scene, const RECommandNotific
         ui->materialProperty->verticalScrollBar()->setValue(curScrollPos);
     };
 
-    if (commandNotification.MatchCommandID(CMDID_MATERIAL_GLOBAL_SET))
+    if (commandNotification.MatchCommandTypes<DAVA::MaterialGlobalSetCommand>())
     {
         sceneActivated(scene);
         materialPropertiesUpdater->Update();
     }
-    if (commandNotification.MatchCommandID(CMDID_MATERIAL_REMOVE_TEXTURE))
+
+    if (commandNotification.MatchCommandTypes<DAVA::MaterialRemoveTexture>())
     {
         materialPropertiesUpdater->Update();
     }
 
-    if (commandNotification.MatchCommandIDs({
-        CMDID_MATERIAL_CHANGE_CURRENT_CONFIG,
-        CMDID_MATERIAL_CREATE_CONFIG,
-        CMDID_MATERIAL_REMOVE_CONFIG,
-        CMDID_MATERIAL_APPLY_PRESET
-        }))
+    if (commandNotification.MatchCommandTypes<DAVA::MaterialChangeCurrentConfig, DAVA::MaterialCreateConfig,
+                                              DAVA::MaterialRemoveConfig, DAVA::ApplyMaterialPresetCommand>())
     {
         RefreshMaterialProperties();
     }
 
-    if (commandNotification.MatchCommandIDs({ CMDID_INSP_MEMBER_MODIFY, CMDID_INSP_DYNAMIC_MODIFY }))
-    {
-        auto processSingleCommand = [this](const RECommand* command, bool redo)
+    commandNotification.ForEach<DAVA::InspMemberModifyCommand>([&](const DAVA::InspMemberModifyCommand* cmd) {
+        const DAVA::String memberName(cmd->member->Name().c_str());
+        if (memberName == DAVA::NMaterialSerializationKey::QualityGroup || memberName == DAVA::NMaterialSerializationKey::FXName)
         {
-            if (command->MatchCommandID(CMDID_INSP_MEMBER_MODIFY))
+            for (auto& m : curMaterials)
             {
-                const InspMemberModifyCommand* inspCommand = static_cast<const InspMemberModifyCommand*>(command);
-                const DAVA::String memberName(inspCommand->member->Name().c_str());
-                if (memberName == DAVA::NMaterialSerializationKey::QualityGroup || memberName == DAVA::NMaterialSerializationKey::FXName)
+                m->InvalidateRenderVariants();
+            }
+            materialPropertiesUpdater->Update();
+        }
+        if (memberName == "configName")
+        {
+            materialPropertiesUpdater->Update();
+        }
+    });
+
+    commandNotification.ForEach<DAVA::InspDynamicModifyCommand>([&](const DAVA::InspDynamicModifyCommand* cmd) {
+        // if material flag was changed we should rebuild list of all properties because their set can be changed
+        if (cmd->dynamicInfo->GetMember()->Name() == NMaterialSectionName::LocalFlags)
+        {
+            if (cmd->key == DAVA::NMaterialFlagName::FLAG_ILLUMINATION_USED)
+            {
+                DAVA::NMaterial* material = static_cast<DAVA::NMaterial*>(cmd->ddata.object);
+                if (material->HasLocalFlag(DAVA::NMaterialFlagName::FLAG_ILLUMINATION_USED) && material->GetLocalFlagValue(DAVA::NMaterialFlagName::FLAG_ILLUMINATION_USED) == 1)
                 {
-                    for (auto& m : curMaterials)
-                    {
-                        m->InvalidateRenderVariants();
-                    }
-                    materialPropertiesUpdater->Update();
-                }
-                if (memberName == "configName")
-                {
-                    materialPropertiesUpdater->Update();
+                    AddMaterialFlagIfNeed(material, DAVA::NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER);
+                    AddMaterialFlagIfNeed(material, DAVA::NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER);
+                    material->InvalidateRenderVariants();
                 }
             }
-            else if (command->MatchCommandID(CMDID_INSP_DYNAMIC_MODIFY))
-            {
-                const InspDynamicModifyCommand* inspCommand = static_cast<const InspDynamicModifyCommand*>(command);
-                // if material flag was changed we should rebuild list of all properties because their set can be changed
-                if (inspCommand->dynamicInfo->GetMember()->Name() == NMaterialSectionName::LocalFlags)
-                {
-                    if (inspCommand->key == DAVA::NMaterialFlagName::FLAG_ILLUMINATION_USED)
-                    {
-                        DAVA::NMaterial* material = static_cast<DAVA::NMaterial*>(inspCommand->ddata.object);
-                        if (material->HasLocalFlag(DAVA::NMaterialFlagName::FLAG_ILLUMINATION_USED) && material->GetLocalFlagValue(DAVA::NMaterialFlagName::FLAG_ILLUMINATION_USED) == 1)
-                        {
-                            AddMaterialFlagIfNeed(material, DAVA::NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER);
-                            AddMaterialFlagIfNeed(material, DAVA::NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER);
-                            material->InvalidateRenderVariants();
-                        }
-                    }
 
-                    materialPropertiesUpdater->Update();
-                }
-                else
-                {
-                    PropertiesBuilder(this).UpdateAllAddRemoveButtons(ui->materialProperty->GetRootProperty());
-                }
-            }
-        };
-
-        commandNotification.ExecuteForAllCommands(processSingleCommand);
-    }
+            materialPropertiesUpdater->Update();
+        }
+        else
+        {
+            PropertiesBuilder(this).UpdateAllAddRemoveButtons(ui->materialProperty->GetRootProperty());
+        }
+    });
 }
 
 void MaterialEditor::AddMaterialFlagIfNeed(DAVA::NMaterial* material, const DAVA::FastName& flagName)
@@ -967,7 +951,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
             ui->templateBox->setCurrentIndex(-1);
             ui->templateBox->setEnabled(false);
             ui->templateButton->setEnabled(false);
-            ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
+            ui->templateButton->setIcon(DAVA::SharedIcon(":/QtIcons/cplus.png"));
         }
         else
         {
@@ -1013,11 +997,11 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
 
                 if (hasLocalFxName)
                 {
-                    ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cminus.png"));
+                    ui->templateButton->setIcon(DAVA::SharedIcon(":/QtIcons/cminus.png"));
                 }
                 else
                 {
-                    ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
+                    ui->templateButton->setIcon(DAVA::SharedIcon(":/QtIcons/cplus.png"));
                 }
 
                 if (parentMaterial == nullptr || parentMaterial == globalMaterial || isAssignableFx == false)
@@ -1038,7 +1022,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
         ui->templateBox->setCurrentIndex(-1);
         ui->templateBox->setEnabled(false);
         ui->templateButton->setEnabled(false);
-        ui->templateButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/cplus.png"));
+        ui->templateButton->setIcon(DAVA::SharedIcon(":/QtIcons/cplus.png"));
     }
 }
 
@@ -1054,8 +1038,8 @@ void MaterialEditor::OnTemplateChanged(int index)
 
             if (nullptr != templateMember)
             {
-                activeScene->Exec(std::unique_ptr<DAVA::Command>(new InspMemberModifyCommand(templateMember, material,
-                                                                                             DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str())))));
+                activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::InspMemberModifyCommand(templateMember, material,
+                                                                                                   DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str())))));
             }
         }
     }
@@ -1076,12 +1060,12 @@ void MaterialEditor::OnTemplateButton()
             if (material->HasLocalFXName())
             {
                 // has local fxname, so button shoud remove it (by setting empty value)
-                activeScene->Exec(std::unique_ptr<DAVA::Command>(new InspMemberModifyCommand(templateMember, material, DAVA::VariantType(DAVA::FastName()))));
+                activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::InspMemberModifyCommand(templateMember, material, DAVA::VariantType(DAVA::FastName()))));
             }
             else
             {
                 // no local fxname, so button should add it
-                activeScene->Exec(std::unique_ptr<DAVA::Command>(new InspMemberModifyCommand(templateMember, material, DAVA::VariantType(material->GetEffectiveFXName()))));
+                activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::InspMemberModifyCommand(templateMember, material, DAVA::VariantType(material->GetEffectiveFXName()))));
             }
 
             RefreshMaterialProperties();
@@ -1136,7 +1120,7 @@ void MaterialEditor::OnReloadTexture()
             {
                 DAVA::Vector<DAVA::Texture*> reloadTextures;
                 reloadTextures.push_back(texture);
-                REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+                DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
             }
         }
     }
@@ -1176,7 +1160,7 @@ void MaterialEditor::OnMaterialAddGlobal(bool checked)
         DAVA::ScopedPtr<DAVA::NMaterial> global(new DAVA::NMaterial());
 
         global->SetMaterialName(DAVA::FastName("Scene_Global_Material"));
-        activeScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialGlobalSetCommand(activeScene, global)));
+        activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialGlobalSetCommand(activeScene, global)));
 
         sceneActivated(activeScene);
         SelectMaterial(activeScene->GetGlobalMaterial());
@@ -1187,7 +1171,7 @@ void MaterialEditor::OnMaterialRemoveGlobal(bool checked)
 {
     if (nullptr != activeScene)
     {
-        activeScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialGlobalSetCommand(activeScene, nullptr)));
+        activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialGlobalSetCommand(activeScene, nullptr)));
         sceneActivated(activeScene);
     }
 }
@@ -1244,12 +1228,12 @@ void MaterialEditor::OnMaterialPropertyEditorContextMenuRequest(const QPoint& po
 
 void MaterialEditor::OnMaterialSave(bool checked)
 {
-    SaveMaterialPresetImpl(DAVA::MakeFunction(&ApplyMaterialPresetCommand::StoreAllConfigsPreset));
+    SaveMaterialPresetImpl(DAVA::MakeFunction(&DAVA::ApplyMaterialPresetCommand::StoreAllConfigsPreset));
 }
 
 void MaterialEditor::OnMaterialSaveCurrentConfig(bool checked)
 {
-    SaveMaterialPresetImpl(DAVA::MakeFunction(&ApplyMaterialPresetCommand::StoreCurrentConfigPreset));
+    SaveMaterialPresetImpl(DAVA::MakeFunction(&DAVA::ApplyMaterialPresetCommand::StoreCurrentConfigPreset));
 }
 
 void MaterialEditor::SaveMaterialPresetImpl(const DAVA::Function<void(DAVA::KeyedArchive*, DAVA::NMaterial*, const DAVA::SerializationContext&)>& saveFunction)
@@ -1261,7 +1245,7 @@ void MaterialEditor::SaveMaterialPresetImpl(const DAVA::Function<void(DAVA::Keye
 
         if (!outputFile.isEmpty() && (nullptr != activeScene))
         {
-            ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+            DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
             DVASSERT(data != nullptr);
 
             lastSavePath = outputFile.toLatin1().data();
@@ -1293,7 +1277,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
         {
             lastSavePath = inputFile.toLatin1().data();
 
-            std::unique_ptr<ApplyMaterialPresetCommand> command = std::make_unique<ApplyMaterialPresetCommand>(lastSavePath, curMaterials.front(), activeScene);
+            std::unique_ptr<DAVA::ApplyMaterialPresetCommand> command = std::make_unique<DAVA::ApplyMaterialPresetCommand>(lastSavePath, curMaterials.front(), activeScene);
 
             // not checking version right now
             // version info is reserved for future use
@@ -1341,10 +1325,10 @@ bool MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32& userChoise, const Q
     QCheckBox* propertiesChBox = new QCheckBox(QString(UIName::Properties.c_str()), groupbox);
     QCheckBox* texturesChBox = new QCheckBox(QString(UIName::Textures.c_str()), groupbox);
 
-    templateChBox->setChecked((bool)(userChoise & ApplyMaterialPresetCommand::TEMPLATE));
-    groupChBox->setChecked((bool)(userChoise & ApplyMaterialPresetCommand::GROUP));
-    propertiesChBox->setChecked((bool)(userChoise & ApplyMaterialPresetCommand::PROPERTIES));
-    texturesChBox->setChecked((bool)(userChoise & ApplyMaterialPresetCommand::TEXTURES));
+    templateChBox->setChecked((bool)(userChoise & DAVA::ApplyMaterialPresetCommand::TEMPLATE));
+    groupChBox->setChecked((bool)(userChoise & DAVA::ApplyMaterialPresetCommand::GROUP));
+    propertiesChBox->setChecked((bool)(userChoise & DAVA::ApplyMaterialPresetCommand::PROPERTIES));
+    texturesChBox->setChecked((bool)(userChoise & DAVA::ApplyMaterialPresetCommand::TEXTURES));
 
     QGridLayout* gridLayout = new QGridLayout();
     groupbox->setLayout(gridLayout);
@@ -1366,13 +1350,13 @@ bool MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32& userChoise, const Q
     {
         userChoise = 0;
         if (templateChBox->checkState() == Qt::Checked)
-            userChoise |= ApplyMaterialPresetCommand::TEMPLATE;
+            userChoise |= DAVA::ApplyMaterialPresetCommand::TEMPLATE;
         if (groupChBox->checkState() == Qt::Checked)
-            userChoise |= ApplyMaterialPresetCommand::GROUP;
+            userChoise |= DAVA::ApplyMaterialPresetCommand::GROUP;
         if (propertiesChBox->checkState() == Qt::Checked)
-            userChoise |= ApplyMaterialPresetCommand::PROPERTIES;
+            userChoise |= DAVA::ApplyMaterialPresetCommand::PROPERTIES;
         if (texturesChBox->checkState() == Qt::Checked)
-            userChoise |= ApplyMaterialPresetCommand::TEXTURES;
+            userChoise |= DAVA::ApplyMaterialPresetCommand::TEXTURES;
     }
 
     return retCode == QDialog::Accepted;
@@ -1402,7 +1386,7 @@ void MaterialEditor::removeInvalidTexture()
         {
             if (material->HasLocalTexture(textureSlot))
             {
-                activeScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialRemoveTexture(textureSlot, material)));
+                activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialRemoveTexture(textureSlot, material)));
                 break;
             }
 
@@ -1454,7 +1438,7 @@ void MaterialEditor::onTabNameChanged(int index)
     const DAVA::InspMember* configNameProperty = material->GetTypeInfo()->Member(DAVA::FastName("configName"));
     DVASSERT(configNameProperty != nullptr);
     DAVA::VariantType newValue(DAVA::FastName(ui->tabbar->tabText(index).toStdString()));
-    activeScene->Exec(std::unique_ptr<DAVA::Command>(new InspMemberModifyCommand(configNameProperty, material, newValue)));
+    activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::InspMemberModifyCommand(configNameProperty, material, newValue)));
 }
 
 void MaterialEditor::onCreateConfig(int index)
@@ -1485,7 +1469,7 @@ void MaterialEditor::onCreateConfig(int index)
     {
         newConfig.name = DAVA::FastName(DAVA::String(newConfig.name.c_str()) + std::to_string(counter));
     }
-    activeScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialCreateConfig(material, newConfig)));
+    activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialCreateConfig(material, newConfig)));
 }
 
 void MaterialEditor::onCurrentConfigChanged(int index)
@@ -1503,7 +1487,7 @@ void MaterialEditor::onCurrentConfigChanged(int index)
     DVASSERT(curMaterials.size() == 1);
     DAVA::NMaterial* material = curMaterials.front();
     DVASSERT(static_cast<DAVA::uint32>(index) < material->GetConfigCount());
-    activeScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialChangeCurrentConfig(material, static_cast<DAVA::uint32>(index))));
+    activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialChangeCurrentConfig(material, static_cast<DAVA::uint32>(index))));
 }
 
 void MaterialEditor::onTabRemove(int index)
@@ -1511,7 +1495,7 @@ void MaterialEditor::onTabRemove(int index)
     DVASSERT(activeScene);
     DVASSERT(curMaterials.size() == 1);
     DAVA::NMaterial* material = curMaterials.front();
-    activeScene->Exec(std::unique_ptr<DAVA::Command>(new MaterialRemoveConfig(material, static_cast<DAVA::uint32>(index))));
+    activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialRemoveConfig(material, static_cast<DAVA::uint32>(index))));
 }
 
 void MaterialEditor::onTabContextMenuRequested(const QPoint& pos)
@@ -1534,7 +1518,7 @@ void MaterialEditor::onTabContextMenuRequested(const QPoint& pos)
     contextMenu->exec(ui->tabbar->mapToGlobal(pos));
 }
 
-void MaterialEditor::UpdateContent(SceneEditor2* scene)
+void MaterialEditor::UpdateContent(DAVA::SceneEditor2* scene)
 {
     if (isVisible() || scene == nullptr)
     {

@@ -5,7 +5,7 @@
 
 #include "Reflection/Reflection.h"
 
-class TestUIModule : public DAVA::TArc::ClientModule
+class TestUIModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override;
@@ -13,7 +13,7 @@ protected:
 private:
     void ShowDialog();
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(TestUIModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(TestUIModule, DAVA::ClientModule);
 };

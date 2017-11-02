@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class UI;
 class DefaultChildCheatorExtension : public ChildCreatorExtension
 {
@@ -26,5 +24,4 @@ private:
 };
 
 std::shared_ptr<IChildAllocator> CreateDefaultAllocator();
-} // namespace TArc
 } // namespace DAVA

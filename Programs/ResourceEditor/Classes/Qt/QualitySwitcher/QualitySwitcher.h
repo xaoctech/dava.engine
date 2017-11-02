@@ -9,10 +9,10 @@ class QualitySwitcher : public QDialog
     Q_OBJECT
 
 public:
-    static void ShowDialog(std::shared_ptr<GlobalOperations> globalOperations);
+    static void ShowDialog();
 
 protected:
-    QualitySwitcher(const std::shared_ptr<GlobalOperations>& globalOperations);
+    QualitySwitcher();
     ~QualitySwitcher();
 
     void ApplyTx();
@@ -35,6 +35,5 @@ protected slots:
 
 private:
     bool settingsDirty = false;
-    std::shared_ptr<GlobalOperations> globalOperations;
     static QualitySwitcher* switcherDialog;
 };

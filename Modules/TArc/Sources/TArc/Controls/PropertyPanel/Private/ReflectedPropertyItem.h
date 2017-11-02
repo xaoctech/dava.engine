@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ReflectedPropertyModel;
 class BaseComponentValue;
 struct PropertyNode;
@@ -65,5 +63,4 @@ private:
     bool isFavorite = false;
     bool isFavorited = false;
 };
-} // namespace TArc
 } // namespace DAVA

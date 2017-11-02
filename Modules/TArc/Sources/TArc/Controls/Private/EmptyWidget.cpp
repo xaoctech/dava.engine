@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 EmptyWidget::EmptyWidget(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent /*= nullptr*/)
     : TBase(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -34,6 +32,4 @@ void EmptyWidget::mouseMoveEvent(QMouseEvent* e)
 {
     e->accept();
 }
-
-} // namespace TArc
 } // namespace DAVA

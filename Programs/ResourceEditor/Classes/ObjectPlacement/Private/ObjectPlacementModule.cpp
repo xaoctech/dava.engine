@@ -2,10 +2,9 @@
 #include "Classes/ObjectPlacement/Private/ObjectPlacementData.h"
 #include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/System/ModifSystem.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Selection/Selection.h"
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/ModifSystem.h>
+#include <REPlatform/DataNodes/SceneData.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -13,10 +12,10 @@
 
 #include <Scene3D/Components/ComponentHelpers.h>
 
-void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void ObjectPlacementModule::OnContextCreated(DAVA::DataContext* context)
 {
-    SceneData* sceneData = context->GetData<SceneData>();
-    SceneEditor2* scene = sceneData->GetScene().Get();
+    DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
+    DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
     std::unique_ptr<ObjectPlacementData> objectPlacementData = std::make_unique<ObjectPlacementData>();
 
@@ -28,10 +27,10 @@ void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(objectPlacementData));
 }
 
-void ObjectPlacementModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void ObjectPlacementModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    SceneData* sceneData = context->GetData<SceneData>();
-    SceneEditor2* scene = sceneData->GetScene().Get();
+    DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
+    DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
     ObjectPlacementData* objectPlacementData = context->GetData<ObjectPlacementData>();
     scene->RemoveSystem(objectPlacementData->objectPlacementSystem.get());
@@ -44,7 +43,7 @@ void ObjectPlacementModule::PostInit()
 
     const QString centerPivotPointName("actionCenterPivotPoint");
 
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
@@ -131,14 +130,14 @@ void ObjectPlacementModule::PostInit()
 
 void ObjectPlacementModule::OnPlaceOnLandscape()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     ObjectPlacementData* data = context->GetData<ObjectPlacementData>();
     data->objectPlacementSystem->PlaceOnLandscape();
 }
 
 void ObjectPlacementModule::OnSnapToLandscape()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     ObjectPlacementData* data = context->GetData<ObjectPlacementData>();
     bool snapToLandscapeEnabled = data->GetSnapToLandscape();
     data->SetSnapToLandscape(!snapToLandscapeEnabled);
@@ -146,7 +145,7 @@ void ObjectPlacementModule::OnSnapToLandscape()
 
 void ObjectPlacementModule::OnPlaceAndAlign()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     ObjectPlacementData* data = context->GetData<ObjectPlacementData>();
     data->objectPlacementSystem->PlaceAndAlign();
 }

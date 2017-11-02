@@ -72,12 +72,12 @@ DAVA_REFLECTION_IMPL(RootNode)
 
 WindowKey wnd = WindowKey("PropertiesViewTests");
 
-class SelectionData : public DAVA::TArc::DataNode
+class SelectionData : public DAVA::TArcDataNode
 {
 public:
     Vector<Reflection> selection;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SelectionData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SelectionData, DAVA::TArcDataNode)
     {
         ReflectionRegistrator<SelectionData>::Begin()
         .Field("objects", &SelectionData::selection)
@@ -85,11 +85,11 @@ public:
     }
 };
 
-class TestModule : public DAVA::TArc::ClientModule
+class TestModule : public DAVA::ClientModule
 {
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         DataContext* ctx = GetAccessor()->GetGlobalContext();
         ctx->CreateData(std::make_unique<PropertiesViewTestsDetail::SelectionData>());
@@ -108,7 +108,7 @@ class TestModule : public DAVA::TArc::ClientModule
         GetUI()->AddView(PropertiesViewTestsDetail::wnd, key, view);
     }
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestModule, DAVA::ClientModule)
     {
         ReflectionRegistrator<TestModule>::Begin()
         .ConstructorByPointer()
@@ -139,7 +139,7 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
 
     DAVA_TEST (ReadExpandedList)
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ::testing;
 
         DataContext* ctx = GetGlobalContext();
@@ -178,7 +178,7 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
 
     DAVA_TEST (SetOtherObjectTest)
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ::testing;
 
         DataContext* ctx = GetGlobalContext();

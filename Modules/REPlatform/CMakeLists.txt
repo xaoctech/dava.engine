@@ -1,0 +1,17 @@
+set(MODULE_NAME REPlatform)
+
+set(MODULE_TYPE STATIC)
+
+set(HPP_FILES_RECURSE Sources/REPlatform/*.h )
+set(CPP_FILES_RECURSE Sources/REPlatform/*.cpp)
+
+set(INCLUDES Sources)
+set(INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR} ${DAVA_THIRD_PARTY_ROOT_PATH} ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet)
+
+set(DEFINITIONS_PRIVATE_WIN -D_CRT_SECURE_NO_WARNINGS)
+set(DEFINITIONS_PRIVATE -D__DAVAENGINE_QT__)
+
+set(FIND_PACKAGE Qt)
+set(FIND_MODULE QtHelpers TArc QtTools DavaTools Physics)
+
+setup_main_module()

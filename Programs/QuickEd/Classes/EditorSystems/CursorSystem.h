@@ -12,7 +12,7 @@
 class CursorSystem final : public BaseEditorSystem
 {
 public:
-    explicit CursorSystem(DAVA::TArc::ContextAccessor* accessor);
+    explicit CursorSystem(DAVA::ContextAccessor* accessor);
     ~CursorSystem() override = default;
 
 private:

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 #include <Math/Vector.h>
 
 //private data of EditorCanvas
 //used to keep widget state between tabs
 
-class CanvasData : public DAVA::TArc::DataNode
+class CanvasData : public DAVA::TArcDataNode
 {
 public:
     CanvasData();
@@ -78,5 +78,5 @@ private:
 
     bool needCentralize = false;
 
-    DAVA_VIRTUAL_REFLECTION(CanvasData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(CanvasData, DAVA::TArcDataNode);
 };

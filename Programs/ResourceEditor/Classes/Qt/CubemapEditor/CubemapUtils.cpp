@@ -1,6 +1,7 @@
-#include "CubemapEditor/CubemapUtils.h"
-#include "Render/Texture.h"
-#include "Render/TextureDescriptor.h"
+#include "Classes/Qt/CubemapEditor/CubemapUtils.h"
+
+#include <Render/Texture.h>
+#include <Render/TextureDescriptor.h>
 
 void CubemapUtils::GenerateFaceNames(const DAVA::String& baseName, DAVA::Vector<DAVA::FilePath>& faceNames)
 {

@@ -2,9 +2,7 @@
 #include "PlaneLODDialog.h"
 #include "ui_planeloddialog.h"
 
-#include "Qt/Main/mainwindow.h"
-#include "Qt/Main/QtUtils.h"
-#include "Tools/PathDescriptor/PathDescriptor.h"
+#include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
 
 #include "QtTools/FileDialogs/FileDialog.h"
 
