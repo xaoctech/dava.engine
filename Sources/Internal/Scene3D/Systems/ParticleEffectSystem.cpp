@@ -963,10 +963,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         float32 curAngle = angleBase + angleVariation * VanDerCorput(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
         {
-            float32 u = static_cast<float32>(Random::Instance()->RandFloat() + Random::Instance()->RandFloat());
-            if (u > 1.0f)
-                u = 2.0f - u;
-            curRadius *= u;
+            curRadius *= std::sqrt(static_cast<float32>(Random::Instance()->RandFloat()));
         }
         float sinAngle = 0.0f;
         float cosAngle = 0.0f;
