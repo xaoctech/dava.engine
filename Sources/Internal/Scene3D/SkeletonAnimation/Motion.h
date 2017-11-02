@@ -24,7 +24,7 @@ class Motion
     Motion() = default;
 
 public:
-	const static FastName STATE_ANIMATION_END_MARKER;
+    const static FastName STATE_ANIMATION_END_MARKER;
 
     enum eMotionBlend
     {

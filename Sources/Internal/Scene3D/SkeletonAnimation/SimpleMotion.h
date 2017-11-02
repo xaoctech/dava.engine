@@ -14,7 +14,7 @@ class SkeletonComponent;
 class SimpleMotion
 {
 public:
-	SimpleMotion() = default;
+    SimpleMotion() = default;
     ~SimpleMotion();
 
     void BindSkeleton(SkeletonComponent* skeleton);
@@ -22,13 +22,13 @@ public:
     void Stop();
     void Update(float32 dTime);
 
-	void EvaluatePose(SkeletonPose* outPose);
+    void EvaluatePose(SkeletonPose* outPose);
 
     bool IsPlaying() const;
     bool IsFinished() const;
 
-	void SetAnimation(AnimationClip* animationClip);
-	AnimationClip* GetAnimation() const;
+    void SetAnimation(AnimationClip* animationClip);
+    AnimationClip* GetAnimation() const;
 
     uint32 GetRepeatsCount() const;
     void SetRepeatsCount(uint32 count);
@@ -37,37 +37,37 @@ protected:
     AnimationClip* animationClip = nullptr;
     SkeletonAnimation* skeletonAnimation = nullptr;
 
-	uint32 repeatsCount = 0;
+    uint32 repeatsCount = 0;
     uint32 repeatsLeft = 0;
     float32 currentAnimationTime = 0.f;
 
-	bool isPlaying = false;
+    bool isPlaying = false;
 };
 
 inline bool SimpleMotion::IsPlaying() const
 {
-	return isPlaying;
+    return isPlaying;
 }
 
 inline void SimpleMotion::SetAnimation(AnimationClip* clip)
 {
-	SafeRelease(animationClip);
-	animationClip = SafeRetain(clip);
+    SafeRelease(animationClip);
+    animationClip = SafeRetain(clip);
 }
 
 inline AnimationClip* SimpleMotion::GetAnimation() const
 {
-	return animationClip;
+    return animationClip;
 }
 
 inline uint32 SimpleMotion::GetRepeatsCount() const
 {
-	return repeatsCount;
+    return repeatsCount;
 }
 
 inline void SimpleMotion::SetRepeatsCount(uint32 count)
 {
-	repeatsCount = count;
+    repeatsCount = count;
 }
 
 } //ns

@@ -22,8 +22,8 @@ public:
     MotionComponent() = default;
     ~MotionComponent();
 
-	void TriggerEvent(const FastName& trigger); //TODO: *Skinning* make adequate naming
-	void SetParameter(const FastName& parameterID, float32 value);
+    void TriggerEvent(const FastName& trigger); //TODO: *Skinning* make adequate naming
+    void SetParameter(const FastName& parameterID, float32 value);
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -38,43 +38,43 @@ public:
     float32 GetPlaybackRate() const;
     void SetPlaybackRate(float32 rate);
 
-	const Vector3& GetRootOffsetDelta() const;
+    const Vector3& GetRootOffsetDelta() const;
 
-	Vector<FilePath> GetDependencies() const;
+    Vector<FilePath> GetDependencies() const;
 
 protected:
-	void ReloadFromFile();
-	void GetDependenciesRecursive(const YamlNode* node, Set<FilePath>* dependencies) const;
+    void ReloadFromFile();
+    void GetDependenciesRecursive(const YamlNode* node, Set<FilePath>* dependencies) const;
 
     FilePath motionPath;
-	Vector<Motion*> motions;
+    Vector<Motion*> motions;
 
     float32 playbackRate = 1.f;
-	UnorderedMap<FastName, float32> parameters;
+    UnorderedMap<FastName, float32> parameters;
 
-	Vector3 rootOffsetDelta;
+    Vector3 rootOffsetDelta;
 
-	SimpleMotion* simpleMotion = nullptr;
-	uint32 simpleMotionRepeatsCount = 0;
+    SimpleMotion* simpleMotion = nullptr;
+    uint32 simpleMotionRepeatsCount = 0;
 
-	DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
+    DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
-	friend class MotionSystem;
+    friend class MotionSystem;
 };
 
 inline float32 MotionComponent::GetPlaybackRate() const
 {
-	return playbackRate;
+    return playbackRate;
 }
 
 inline void MotionComponent::SetPlaybackRate(float32 rate)
 {
-	playbackRate = rate;
+    playbackRate = rate;
 }
 
 inline const Vector3& MotionComponent::GetRootOffsetDelta() const
 {
-	return rootOffsetDelta;
+    return rootOffsetDelta;
 }
 
 } //ns

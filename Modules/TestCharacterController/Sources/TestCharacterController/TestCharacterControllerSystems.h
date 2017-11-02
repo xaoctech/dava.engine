@@ -24,7 +24,7 @@ public:
     void Process(DAVA::float32 timeElapsed) override;
     bool Input(DAVA::UIEvent* uiEvent) override;
 
-	void SetCharacterEntity(DAVA::Entity* entity);
+    void SetCharacterEntity(DAVA::Entity* entity);
     void SetJoypadDirection(const DAVA::Vector2& direction);
 
 private:
@@ -35,16 +35,16 @@ private:
     DAVA::Entity* weaponEntity = nullptr;
     DAVA::Entity* shootEffect = nullptr;
     DAVA::MotionComponent* characterMotionComponent = nullptr;
-	DAVA::SkeletonComponent* characterSkeleton = nullptr;
+    DAVA::SkeletonComponent* characterSkeleton = nullptr;
 
     DAVA::Vector2 inputJoypadDirection;
     DAVA::Vector2 inputBeginPosition;
     DAVA::Vector2 inputEndPosition;
-    
+
     DAVA::Vector3 characterForward;
     DAVA::Vector3 characterLeft;
-	DAVA::Vector3 cameraDirection;
-	DAVA::float32 cameraAngle = 0.f;
+    DAVA::Vector3 cameraDirection;
+    DAVA::float32 cameraAngle = 0.f;
 
     DAVA::Vector2 directionParam;
     DAVA::float32 runningParam = 0.f;
@@ -62,7 +62,7 @@ private:
     bool isZooming = false;
 
     bool doubleTapped = false;
-	bool waitReloadEnd = false;
+    bool waitReloadEnd = false;
 
     friend class TestCharacterMoveSystem;
     friend class TestCharacterWeaponSystem;
@@ -104,5 +104,4 @@ public:
 protected:
     TestCharacterControllerSystem* controllerSystem = nullptr;
 };
-
 };

@@ -11,7 +11,6 @@
 
 namespace DAVA
 {
-
 SimpleMotion::~SimpleMotion()
 {
     SafeRelease(animationClip);
@@ -64,12 +63,11 @@ void SimpleMotion::Update(float32 timeElapsed)
 
 bool SimpleMotion::IsFinished() const
 {
-	return (repeatsCount > 0) && (isPlaying == false) && (currentAnimationTime != 0.f);
+    return (repeatsCount > 0) && (isPlaying == false) && (currentAnimationTime != 0.f);
 }
 
 void SimpleMotion::EvaluatePose(SkeletonPose* outPose)
 {
-	skeletonAnimation->EvaluatePose(currentAnimationTime, outPose);
+    skeletonAnimation->EvaluatePose(currentAnimationTime, outPose);
 }
-
 }

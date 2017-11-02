@@ -51,7 +51,7 @@ public:
     ColladaMesh* mesh = nullptr;
 
 private:
-	void LinkJoints(ColladaSceneNode* node, int32 parentJointIndex = -1);
+    void LinkJoints(ColladaSceneNode* node, int32 parentJointIndex = -1);
     void BuildJointsHierarhy();
 };
 };

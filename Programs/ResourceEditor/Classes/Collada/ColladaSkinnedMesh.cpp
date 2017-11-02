@@ -188,7 +188,7 @@ void ColladaSkinnedMesh::BuildJoints(ColladaSceneNode* node)
 
 void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, int32 parentJointIndex)
 {
-	int32 currentJointIndex = -1;
+    int32 currentJointIndex = -1;
     for (int j = 0; j < (int)joints.size(); ++j)
     {
         if (joints[j].joint != nullptr && node->originalNode->GetSubId() == joints[j].joint->GetId())
@@ -207,14 +207,14 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, int32 parentJointInd
 
             node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
 
-			currentJointIndex = j;
+            currentJointIndex = j;
             break;
         }
     }
 
     if (currentJointIndex == -1 && parentJointIndex != -1)
-	{
-		currentJointIndex = int32(joints.size());
+    {
+        currentJointIndex = int32(joints.size());
 
         joints.emplace_back();
         Joint& joint = joints.back();
@@ -225,7 +225,7 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, int32 parentJointInd
         joint.parentIndex = -1;
 
         Matrix4 bindPose;
-		joints[parentJointIndex].inverse0.GetInverse(bindPose);
+        joints[parentJointIndex].inverse0.GetInverse(bindPose);
         bindPose = node->localTransform * bindPose;
         bindPose.GetInverse(joint.inverse0);
 
@@ -236,7 +236,6 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, int32 parentJointInd
         joint.jointUID = node->originalNode->GetDaeId();
 
         node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
-
     }
 
     for (int i = 0; i < (int)node->childs.size(); i++)

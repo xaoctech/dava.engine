@@ -64,15 +64,15 @@ private:
     void OnButtonSelectFromRes(DAVA::BaseObject* caller, void* param, void* callerData);
     void OnButtonSelectFromDoc(DAVA::BaseObject* caller, void* param, void* callerData);
     void OnButtonSelectFromExt(DAVA::BaseObject* caller, void* param, void* callerData);
-	void OnButtonToggleSpawnCharacter(DAVA::BaseObject* caller, void* param, void* callerData);
+    void OnButtonToggleSpawnCharacter(DAVA::BaseObject* caller, void* param, void* callerData);
 
     void UpdateInfo(DAVA::float32 timeElapsed);
     void UpdatePerformanceTest(DAVA::float32 timeElapsed);
     void ProcessUserInput(DAVA::float32 timeElapsed);
 
     void SetCameraAtCenter(DAVA::Camera* camera);
-	void AddCameraControllerSystems();
-	void RemoveCameraControllerSystems();
+    void AddCameraControllerSystems();
+    void RemoveCameraControllerSystems();
 
     void LoadScene();
     void ReloadScene();
@@ -94,7 +94,7 @@ private:
     MenuItem* qualitySettingsMenuItem = nullptr;
     MenuItem* reloadShadersMenuItem = nullptr;
     MenuItem* performanceTestMenuItem = nullptr;
-	MenuItem* characterSpawnMenuItem = nullptr;
+    MenuItem* characterSpawnMenuItem = nullptr;
 
     DAVA::RotationControllerSystem* rotationControllerSystem = nullptr;
     DAVA::WASDControllerSystem* wasdSystem = nullptr;
@@ -105,5 +105,5 @@ private:
     GridTest gridTest;
 #endif
 
-	bool characterSpawned = false;
+    bool characterSpawned = false;
 };

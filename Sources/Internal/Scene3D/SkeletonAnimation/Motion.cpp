@@ -16,7 +16,6 @@ ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 
 namespace DAVA
 {
-
 const FastName Motion::STATE_ANIMATION_END_MARKER("##state-animation-end");
 
 DAVA_REFLECTION_IMPL(Motion)
@@ -34,11 +33,11 @@ Motion::~Motion()
 
 void Motion::TriggerEvent(const FastName& trigger)
 {
-	MotionState* state = (nextState != nullptr) ? nextState->GetTransitionState(trigger) : currentState->GetTransitionState(trigger);
-	if (state != nullptr)
-	{
-		pendingState = state;
-	}
+    MotionState* state = (nextState != nullptr) ? nextState->GetTransitionState(trigger) : currentState->GetTransitionState(trigger);
+    if (state != nullptr)
+    {
+        pendingState = state;
+    }
 }
 
 void Motion::Update(float32 dTime)
@@ -101,8 +100,8 @@ void Motion::Update(float32 dTime)
             endedPhases.emplace_back(currentState->GetID(), m);
     }
 
-	if (currentState->IsEndReached())
-		endedPhases.emplace_back(currentState->GetID(), Motion::STATE_ANIMATION_END_MARKER);
+    if (currentState->IsEndReached())
+        endedPhases.emplace_back(currentState->GetID(), Motion::STATE_ANIMATION_END_MARKER);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -217,12 +216,12 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
             motion->blendMode = eMotionBlend(enumValue);
     }
 
-	FastName defaultStateID;
-	const YamlNode* defaultStateNode = motionNode->Get("default-state");
-	if (defaultStateNode != nullptr && defaultStateNode->GetType() == YamlNode::TYPE_STRING)
-	{
-		defaultStateID = defaultStateNode->AsFastName();
-	}
+    FastName defaultStateID;
+    const YamlNode* defaultStateNode = motionNode->Get("default-state");
+    if (defaultStateNode != nullptr && defaultStateNode->GetType() == YamlNode::TYPE_STRING)
+    {
+        defaultStateID = defaultStateNode->AsFastName();
+    }
 
     const YamlNode* statesNode = motionNode->Get("states");
     if (statesNode != nullptr && statesNode->GetType() == YamlNode::TYPE_ARRAY)
@@ -240,8 +239,8 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
             const Vector<FastName>& blendTreeParams = state.GetBlendTreeParameters();
             statesParameters.insert(blendTreeParams.begin(), blendTreeParams.end());
 
-			if (defaultStateID == state.GetID())
-				motion->currentState = motion->states.data() + s;
+            if (defaultStateID == state.GetID())
+                motion->currentState = motion->states.data() + s;
         }
 
         if (motion->currentState == nullptr && statesCount > 0)

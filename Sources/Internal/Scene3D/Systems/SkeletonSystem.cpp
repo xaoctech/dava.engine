@@ -274,7 +274,7 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
             else
             {
                 for (uint32 i = 0, sz = component->GetJointsCount(); i < sz; ++i)
-				{
+                {
                     component->SetJointOrientation(i, Quaternion::MakeRotationFastY(t));
                 }
             }

@@ -14,7 +14,7 @@ ENUM_DECLARE(DAVA::BlendTree::eNodeType)
     ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_LERP_1D, "LERP1D");
     ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_LERP_2D, "LERP2D");
     ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_ADD, "Add");
-	ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_DIFF, "Diff");
+    ENUM_ADD_DESCR(DAVA::BlendTree::eNodeType::TYPE_DIFF, "Diff");
 };
 
 namespace DAVA
@@ -200,33 +200,33 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phase
     }
     break;
 
-	case TYPE_ADD:
-	case TYPE_DIFF:
-	{
-		const BlendNode::BlendData& blendData = node.blendData;
-		DVASSERT((blendData.endChildIndex - blendData.beginChildIndex) == 2);
-		if (outPose != nullptr)
-		{
-			SkeletonPose pose1;
-			EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, nullptr, nullptr);
-			EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr, nullptr);
+    case TYPE_ADD:
+    case TYPE_DIFF:
+    {
+        const BlendNode::BlendData& blendData = node.blendData;
+        DVASSERT((blendData.endChildIndex - blendData.beginChildIndex) == 2);
+        if (outPose != nullptr)
+        {
+            SkeletonPose pose1;
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, outPose, nullptr, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, &pose1, nullptr, nullptr);
 
-			if (node.type == TYPE_ADD)
-				outPose->Add(pose1);
-			else if (node.type == TYPE_DIFF)
-				outPose->Diff(pose1);
-		}
+            if (node.type == TYPE_ADD)
+                outPose->Add(pose1);
+            else if (node.type == TYPE_DIFF)
+                outPose->Diff(pose1);
+        }
 
-		if (outPhaseDuration != nullptr)
-		{
-			float32 dur0, dur1;
-			EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, nullptr, &dur0, nullptr);
-			EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, nullptr, &dur1, nullptr);
+        if (outPhaseDuration != nullptr)
+        {
+            float32 dur0, dur1;
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex], parameters, nullptr, &dur0, nullptr);
+            EvaluateRecursive(phaseIndex, phase, phaseIndex1, phase1, nodes[blendData.beginChildIndex + 1], parameters, nullptr, &dur1, nullptr);
 
-			*outPhaseDuration = Max(dur0, dur1);
-		}
-	}
-	break;
+            *outPhaseDuration = Max(dur0, dur1);
+        }
+    }
+    break;
     default:
         break;
     }
@@ -245,19 +245,19 @@ BlendTree* BlendTree::LoadFromYaml(const YamlNode* yamlNode)
 
 void BlendTree::LoadIgnoreMask(const YamlNode* yamlNode, UnorderedSet<uint32>* ignoreMask)
 {
-	const YamlNode* ignoreMaskNode = yamlNode->Get("ignore-mask");
-	if (ignoreMaskNode != nullptr && ignoreMaskNode->GetType() == YamlNode::TYPE_ARRAY)
-	{
-		uint32 ignoreJointsCount = ignoreMaskNode->GetCount();
-		for (uint32 ij = 0; ij < ignoreJointsCount; ++ij)
-		{
-			const YamlNode* ignoreJointNode = ignoreMaskNode->Get(ij);
-			if (ignoreJointNode->GetType() == YamlNode::TYPE_STRING)
-			{
-				ignoreMask->insert(ignoreJointNode->AsUInt32());
-			}
-		}
-	}
+    const YamlNode* ignoreMaskNode = yamlNode->Get("ignore-mask");
+    if (ignoreMaskNode != nullptr && ignoreMaskNode->GetType() == YamlNode::TYPE_ARRAY)
+    {
+        uint32 ignoreJointsCount = ignoreMaskNode->GetCount();
+        for (uint32 ij = 0; ij < ignoreJointsCount; ++ij)
+        {
+            const YamlNode* ignoreJointNode = ignoreMaskNode->Get(ij);
+            if (ignoreJointNode->GetType() == YamlNode::TYPE_STRING)
+            {
+                ignoreMask->insert(ignoreJointNode->AsUInt32());
+            }
+        }
+    }
 }
 
 void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blendTree, uint32 nodeIndex, UnorderedSet<uint32> ignoreMask)
@@ -283,8 +283,8 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
         FilePath animationClipPath(clipNode->AsString());
         ScopedPtr<AnimationClip> animationClip(AnimationClip::Load(animationClipPath));
         if (animationClip)
-		{
-			LoadIgnoreMask(yamlNode, &ignoreMask);
+        {
+            LoadIgnoreMask(yamlNode, &ignoreMask);
 
             node.animData.animationIndex = int32(animations.size());
 
@@ -380,7 +380,7 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
                     const YamlNode* childrenNode = yamlNode->Get("nodes");
                     if (childrenNode != nullptr && childrenNode->GetType() == YamlNode::TYPE_ARRAY)
                     {
-						LoadIgnoreMask(yamlNode, &ignoreMask);
+                        LoadIgnoreMask(yamlNode, &ignoreMask);
 
                         uint32 childrenCount = childrenNode->GetCount();
                         uint32 childBegin = uint32(nodes.size());

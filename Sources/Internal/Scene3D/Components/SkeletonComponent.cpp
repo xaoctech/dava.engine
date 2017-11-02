@@ -44,7 +44,7 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
 
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
 
-	UpdateJointsMap();
+    UpdateJointsMap();
 }
 
 SkeletonPose SkeletonComponent::GetDefaultPose() const
@@ -139,20 +139,20 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.bindTransformInv = jointArch->GetMatrix4("joint.invBindPose");
     }
 
-	UpdateJointsMap();
+    UpdateJointsMap();
 }
 
 void SkeletonComponent::UpdateJointsMap()
 {
-	jointMap.clear();
-	uint32 jointCount = uint32(jointsArray.size());
-	for (uint32 j = 0; j < jointCount; ++j)
-	{
-		const FastName& jointUID = jointsArray[j].uid;
-		DVASSERT(jointMap.count(jointUID) == 0); //duplicate bone name
+    jointMap.clear();
+    uint32 jointCount = uint32(jointsArray.size());
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const FastName& jointUID = jointsArray[j].uid;
+        DVASSERT(jointMap.count(jointUID) == 0); //duplicate bone name
 
-		jointMap[jointUID] = j;
-	}
+        jointMap[jointUID] = j;
+    }
 }
 
 template <>

@@ -66,7 +66,7 @@ void MotionSystem::Process(float32 timeElapsed)
     for (MotionComponent* motionComponent : motionSingleComponent->reloadMotion)
     {
         motionComponent->ReloadFromFile();
-		FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
+        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
         motionSingleComponent->rebindSkeleton.emplace_back(motionComponent);
     }
 
@@ -82,37 +82,37 @@ void MotionSystem::Process(float32 timeElapsed)
             motion->BindSkeleton(skeleton);
         }
 
-		FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
-		activeComponents.emplace_back(motionComponent);
+        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
+        activeComponents.emplace_back(motionComponent);
 
-		SkeletonPose defaultPose = skeleton->GetDefaultPose();
-		SimpleMotion* simpleMotion = motionComponent->simpleMotion;
-		if (simpleMotion != nullptr)
-		{
-			simpleMotion->BindSkeleton(skeleton);
-			simpleMotion->EvaluatePose(&defaultPose);
-		}
-		skeleton->ApplyPose(defaultPose);
+        SkeletonPose defaultPose = skeleton->GetDefaultPose();
+        SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+        if (simpleMotion != nullptr)
+        {
+            simpleMotion->BindSkeleton(skeleton);
+            simpleMotion->EvaluatePose(&defaultPose);
+        }
+        skeleton->ApplyPose(defaultPose);
     }
 
-	for (MotionComponent* motionComponent : motionSingleComponent->stopSimpleMotion)
-	{
-		if (motionComponent->simpleMotion != nullptr)
-			motionComponent->simpleMotion->Stop();
-	}
+    for (MotionComponent* motionComponent : motionSingleComponent->stopSimpleMotion)
+    {
+        if (motionComponent->simpleMotion != nullptr)
+            motionComponent->simpleMotion->Stop();
+    }
 
-	for (MotionComponent* motionComponent : motionSingleComponent->startSimpleMotion)
-	{
-		SimpleMotion* simpleMotion = motionComponent->simpleMotion;
-		if (simpleMotion != nullptr)
-		{
-			if (simpleMotion->IsPlaying())
-				continue;
+    for (MotionComponent* motionComponent : motionSingleComponent->startSimpleMotion)
+    {
+        SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+        if (simpleMotion != nullptr)
+        {
+            if (simpleMotion->IsPlaying())
+                continue;
 
-			simpleMotion->SetRepeatsCount(motionComponent->simpleMotionRepeatsCount);
-			simpleMotion->Start();
-		}
-	}
+            simpleMotion->SetRepeatsCount(motionComponent->simpleMotionRepeatsCount);
+            simpleMotion->Start();
+        }
+    }
 
     motionSingleComponent->Clear();
 
@@ -129,7 +129,7 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
     SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
     if (skeleton != nullptr && (motionComponent->GetMotionsCount() != 0 || (motionComponent->simpleMotion != nullptr && motionComponent->simpleMotion->IsPlaying())))
     {
-		dTime *= motionComponent->playbackRate;
+        dTime *= motionComponent->playbackRate;
         SkeletonPose resultPose = skeleton->GetDefaultPose();
 
         uint32 motionCount = motionComponent->GetMotionsCount();
@@ -141,8 +141,8 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
 
             for (auto& phaseEnd : motion->GetEndedPhases())
             {
-				if(phaseEnd.second == Motion::STATE_ANIMATION_END_MARKER)
-					motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), phaseEnd.first));
+                if (phaseEnd.second == Motion::STATE_ANIMATION_END_MARKER)
+                    motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), phaseEnd.first));
             }
 
             const SkeletonPose& pose = motion->GetCurrentSkeletonPose();
@@ -167,17 +167,17 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
             }
         }
 
-		SimpleMotion* simpleMotion = motionComponent->simpleMotion;
-		if (simpleMotion != nullptr && simpleMotion->IsPlaying())
-		{
-			simpleMotion->Update(dTime);
-			if (simpleMotion->IsFinished())
-				motionSingleComponent->simpleMotionFinished.emplace_back(motionComponent);
+        SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+        if (simpleMotion != nullptr && simpleMotion->IsPlaying())
+        {
+            simpleMotion->Update(dTime);
+            if (simpleMotion->IsFinished())
+                motionSingleComponent->simpleMotionFinished.emplace_back(motionComponent);
 
-			simpleMotion->EvaluatePose(&resultPose);
-		}
+            simpleMotion->EvaluatePose(&resultPose);
+        }
 
-		skeleton->ApplyPose(resultPose);
+        skeleton->ApplyPose(resultPose);
     }
 }
 }

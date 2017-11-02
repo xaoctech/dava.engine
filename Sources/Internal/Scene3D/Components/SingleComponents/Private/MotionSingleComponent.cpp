@@ -10,10 +10,10 @@ void MotionSingleComponent::Clear()
     animationEnd.clear();
     rebindSkeleton.clear();
     reloadMotion.clear();
-	
-	startSimpleMotion.clear();
-	stopSimpleMotion.clear();
-	simpleMotionFinished.clear();
+
+    startSimpleMotion.clear();
+    stopSimpleMotion.clear();
+    simpleMotionFinished.clear();
 }
 
 void MotionSingleComponent::EntityRemoved(const Entity* entity)
@@ -22,10 +22,10 @@ void MotionSingleComponent::EntityRemoved(const Entity* entity)
     if (component)
     {
         FindAndRemoveExchangingWithLast(rebindSkeleton, component);
-		FindAndRemoveExchangingWithLast(reloadMotion, component);
-		FindAndRemoveExchangingWithLast(startSimpleMotion, component);
-		FindAndRemoveExchangingWithLast(stopSimpleMotion, component);
-		FindAndRemoveExchangingWithLast(simpleMotionFinished, component);
+        FindAndRemoveExchangingWithLast(reloadMotion, component);
+        FindAndRemoveExchangingWithLast(startSimpleMotion, component);
+        FindAndRemoveExchangingWithLast(stopSimpleMotion, component);
+        FindAndRemoveExchangingWithLast(simpleMotionFinished, component);
     }
 }
 }

@@ -372,8 +372,8 @@ void SceneDumper::DumpAnimations(DAVA::MotionComponent* motionComponent, DAVA::S
 {
     if (motionComponent != nullptr)
     {
-		Vector<FilePath> dependencies = motionComponent->GetDependencies();
-		for (const FilePath& fp : dependencies)
-			links.insert(fp.GetAbsolutePathname());
+        Vector<FilePath> dependencies = motionComponent->GetDependencies();
+        for (const FilePath& fp : dependencies)
+            links.insert(fp.GetAbsolutePathname());
     }
 }
