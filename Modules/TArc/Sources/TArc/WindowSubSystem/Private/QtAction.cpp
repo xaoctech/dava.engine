@@ -66,6 +66,16 @@ void QtAction::OnFieldValueChanged(const Any& value, eActionState state)
         }
     }
     break;
+    case Visible:
+    {
+        DVASSERT(stateResult.CanCast<bool>());
+        bool stateVisible = stateResult.Cast<bool>();
+        if (stateVisible != isVisible())
+        {
+            setVisible(stateVisible);
+        }
+    }
+    break;
     case Checked:
     {
         DVASSERT(stateResult.CanCast<bool>());

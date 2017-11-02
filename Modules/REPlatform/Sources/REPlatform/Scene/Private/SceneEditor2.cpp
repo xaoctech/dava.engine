@@ -183,6 +183,7 @@ SceneFileV2::eError SceneEditor2::LoadScene(const FilePath& path)
 
 SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGame /*= false*/)
 {
+    using namespace DAVA;
     EditorLightSystem* lightSystem = GetSystem<EditorLightSystem>();
     RenderContextGuard guard;
     bool cameraLightState = false;
@@ -191,8 +192,6 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
         cameraLightState = lightSystem->GetCameraLightEnabled();
         lightSystem->SetCameraLightEnabled(false);
     }
-
-    ExtractEditorEntities();
 
     Vector<std::unique_ptr<Command>> prepareForSaveCommands;
     prepareForSaveCommands.reserve(editorSystems.size());
@@ -209,6 +208,8 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
                   {
                       cmd->Redo();
                   });
+
+    ExtractEditorEntities();
 
     ScopedPtr<Texture> tilemaskTexture(nullptr);
     bool needToRestoreTilemask = false;
@@ -802,6 +803,24 @@ void SceneEditor2::EnableEditorSystems()
     for (EditorSceneSystem* system : editorSystems)
     {
         system->EnableSystem();
+    }
+}
+
+void SceneEditor2::SaveSystemsLocalProperties(DAVA::PropertiesHolder* holder)
+{
+    for (DAVA::EditorSceneSystem* system : editorSystems)
+    {
+        DVASSERT(system != nullptr);
+        system->SaveLocalProperties(holder);
+    }
+}
+
+void SceneEditor2::LoadSystemsLocalProperties(DAVA::PropertiesHolder* holder)
+{
+    for (DAVA::EditorSceneSystem* system : editorSystems)
+    {
+        DVASSERT(system != nullptr);
+        system->LoadLocalProperties(holder);
     }
 }
 

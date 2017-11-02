@@ -64,46 +64,63 @@ void ShadersModule::ReloadShaders()
     using namespace DAVA;
     ShaderDescriptorCache::ReloadShaders();
 
-    GetAccessor()->ForEachContext([](DAVA::DataContext& ctx)
-                                  {
-                                      SceneData* sceneData = ctx.GetData<SceneData>();
-                                      DAVA::RefPtr<SceneEditor2> sceneEditor = sceneData->GetScene();
+    GetAccessor()->ForEachContext([](DAVA::DataContext& ctx) {
+        SceneData* sceneData = ctx.GetData<SceneData>();
+        DAVA::RefPtr<SceneEditor2> sceneEditor = sceneData->GetScene();
 
-                                      const DAVA::Set<DAVA::NMaterial*>& topParents = sceneEditor->GetSystem<EditorMaterialSystem>()->GetTopParents();
+        const DAVA::Set<DAVA::NMaterial*>& topParents = sceneEditor->GetSystem<EditorMaterialSystem>()->GetTopParents();
 
-                                      for (auto material : topParents)
-                                      {
-                                          material->InvalidateRenderVariants();
-                                      }
-                                      const auto particleInstances = sceneEditor->particleEffectSystem->GetMaterialInstances();
-                                      for (auto& material : particleInstances)
-                                      {
-                                          material.second->InvalidateRenderVariants();
-                                      }
+        for (DAVA::NMaterial* material : topParents)
+        {
+            material->InvalidateRenderVariants();
+        }
+        const auto particleInstances = sceneEditor->particleEffectSystem->GetMaterialInstances();
+        for (auto& material : particleInstances)
+        {
+            material.second->InvalidateRenderVariants();
+        }
 
-                                      DAVA::ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = sceneEditor->GetParticleEffectDebugDrawSystem();
-                                      if (particleEffectDebugDrawSystem != nullptr)
-                                      {
-                                          const DAVA::Vector<DAVA::NMaterial*>* const particleDebug = particleEffectDebugDrawSystem->GetMaterials();
-                                          for (auto material : *particleDebug)
-                                          {
-                                              material->InvalidateRenderVariants();
-                                          }
-                                      }
+        DAVA::ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = sceneEditor->GetParticleEffectDebugDrawSystem();
+        if (particleEffectDebugDrawSystem != nullptr)
+        {
+            const DAVA::Vector<DAVA::NMaterial*>* const particleDebug = particleEffectDebugDrawSystem->GetMaterials();
+            for (DAVA::NMaterial* material : *particleDebug)
+            {
+                material->InvalidateRenderVariants();
+            }
+        }
 
-                                      DAVA::Set<DAVA::NMaterial*> materialList;
-                                      sceneEditor->foliageSystem->CollectFoliageMaterials(materialList);
-                                      for (auto material : materialList)
-                                      {
-                                          if (material)
-                                              material->InvalidateRenderVariants();
-                                      }
+        DAVA::Set<DAVA::NMaterial*> materialList;
+        sceneEditor->foliageSystem->CollectFoliageMaterials(materialList);
+        for (DAVA::NMaterial* material : materialList)
+        {
+            DVASSERT(material != nullptr);
+            material->InvalidateRenderVariants();
+        }
 
-                                      sceneEditor->renderSystem->GetDebugDrawer()->InvalidateMaterials();
-                                      sceneEditor->renderSystem->SetForceUpdateLights();
+        sceneEditor->renderSystem->GetDebugDrawer()->InvalidateMaterials();
+        DAVA::RenderHierarchy* renderHierarchy = sceneEditor->renderSystem->GetRenderHierarchy();
 
-                                      sceneEditor->GetSystem<VisibilityCheckSystem>()->InvalidateMaterials();
-                                  });
+        DAVA::Vector<DAVA::RenderObject*> visibilityArray;
+        renderHierarchy->GetAllObjectsInBBox(renderHierarchy->GetWorldBoundingBox(), visibilityArray);
+        for (DAVA::RenderObject* ro : visibilityArray)
+        {
+            DAVA::Set<DAVA::DataNode*> dataNodes;
+            ro->GetDataNodes(dataNodes);
+            for (DAVA::DataNode* dataNode : dataNodes)
+            {
+                DAVA::NMaterial* material = dynamic_cast<DAVA::NMaterial*>(dataNode);
+                if (material != nullptr)
+                {
+                    material->InvalidateRenderVariants();
+                }
+            }
+        }
+
+        sceneEditor->renderSystem->SetForceUpdateLights();
+
+        sceneEditor->GetSystem<VisibilityCheckSystem>()->InvalidateMaterials();
+    });
     
 #define INVALIDATE_2D_MATERIAL(material) \
     if (DAVA::RenderSystem2D::material) \

@@ -7,6 +7,7 @@
 #include "REPlatform/Scene/Systems/CollisionSystem.h"
 
 #include "REPlatform/Commands/AddComponentCommand.h"
+#include "REPlatform/Commands/EntityRemoveCommand.h"
 #include "REPlatform/Commands/RemoveComponentCommand.h"
 #include "REPlatform/DataNodes/SceneData.h"
 #include "REPlatform/DataNodes/SelectableGroup.h"
@@ -48,6 +49,47 @@ SceneCameraSystem::SceneCameraSystem(Scene* scene)
 SceneCameraSystem::~SceneCameraSystem()
 {
     SafeRelease(curSceneCamera);
+}
+
+void SceneCameraSystem::SaveLocalProperties(PropertiesHolder* holder)
+{
+    PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
+    // Debug camera whole object archive
+    Camera* debugCam = GetCamera(topCameraEntity);
+    RefPtr<KeyedArchive> camArch;
+    camArch.ConstructInplace();
+    debugCam->SaveObject(camArch.Get());
+    cameraProps.Set("archive", camArch);
+
+    // Current active camera name
+    FastName curCamName = GetEntityFromCamera(curSceneCamera)->GetName();
+    cameraProps.Set("activeCameraName", curCamName);
+}
+
+void SceneCameraSystem::LoadLocalProperties(PropertiesHolder* holder)
+{
+    PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
+    Camera* cur = GetCamera(topCameraEntity);
+
+    // set debug camera position
+    RefPtr<KeyedArchive> camArch;
+    camArch.ConstructInplace();
+    cur->SaveObject(camArch.Get());
+    camArch = cameraProps.Get<RefPtr<KeyedArchive>>("archive", camArch);
+    cur->LoadObject(camArch.Get());
+
+    // set active scene camera
+    FastName camName = cameraProps.Get<FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
+    auto camEntityIt = std::find_if(std::begin(sceneCameras), std::end(sceneCameras),
+                                    [&camName](Entity* cam) {
+                                        return cam->GetName() == camName;
+                                    });
+    if (camEntityIt != std::end(sceneCameras))
+    {
+        cur = GetCamera(*camEntityIt);
+        Scene* scene = GetScene();
+        scene->SetCurrentCamera(cur);
+    }
 }
 
 Camera* SceneCameraSystem::GetCurCamera() const
@@ -443,7 +485,7 @@ void SceneCameraSystem::CreateDebugCameras()
         topCamera->SetupPerspective(cameraFov, 320.0f / 480.0f, cameraNear, cameraFar);
         topCamera->SetAspect(1.0f);
 
-        ScopedPtr<Entity> topCameraEntity(new Entity());
+        topCameraEntity = new DAVA::Entity();
         topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
         topCameraEntity->SetNotRemovable(true);
         topCameraEntity->AddComponent(new CameraComponent(topCamera));
@@ -662,5 +704,10 @@ void SceneCameraSystem::EnableSystem()
 {
     EditorSceneSystem::EnableSystem();
     CreateDebugCameras();
+}
+
+std::unique_ptr<Command> SceneCameraSystem::PrepareForSave(bool saveForGame)
+{
+    return std::make_unique<EntityRemoveCommand>(topCameraEntity);
 }
 } // namespace DAVA

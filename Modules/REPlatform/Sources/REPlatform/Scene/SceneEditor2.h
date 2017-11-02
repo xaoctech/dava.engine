@@ -4,11 +4,13 @@
 #include "REPlatform/Scene/Utils/SceneExporter.h"
 
 #include <FileSystem/FilePath.h>
+#include <Functional/Signal.h>
+#include <Reflection/Reflection.h>
+#include <Render/Renderer.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/Controller/RotationControllerSystem.h>
 #include <Scene3D/Systems/Controller/WASDControllerSystem.h>
 #include <Scene3D/Systems/StaticOcclusionBuildSystem.h>
-#include <Render/Renderer.h>
 
 namespace DAVA
 {
@@ -16,6 +18,7 @@ class RECommandNotificationObject;
 class RECommandStack;
 class EditorSceneSystem;
 class Command;
+class PropertiesHolder;
 
 class SceneEditor2 : public Scene
 {
@@ -37,7 +40,13 @@ public:
     ~SceneEditor2() override;
 
     //to manage editor systems adding/deleting
-    void AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
+    //to manage editor systems adding/deleting
+    void AddSystem(SceneSystem* sceneSystem,
+                   uint64 componentFlags,
+                   uint32 processFlags = 0,
+                   SceneSystem* insertBeforeSceneForProcess = nullptr,
+                   SceneSystem* insertBeforeSceneForInput = nullptr,
+                   SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
     void RemoveSystem(SceneSystem* sceneSystem) override;
 
     // save/load
@@ -75,7 +84,7 @@ public:
         commandStack->RemoveCommands<Args...>();
     }
 
-    DAVA::Signal<DAVA::SceneEditor2*, const DAVA::RECommandNotificationObject&> commandExecuted;
+    Signal<SceneEditor2*, const RECommandNotificationObject&> commandExecuted;
 
     // checks whether the scene changed since the last save
     bool IsLoaded() const;
@@ -108,6 +117,8 @@ public:
     Entity* Clone(Entity* dstNode /* = NULL */) override;
 
     void EnableEditorSystems();
+    void LoadSystemsLocalProperties(DAVA::PropertiesHolder* holder);
+    void SaveSystemsLocalProperties(DAVA::PropertiesHolder* holder);
 
     uint32 GetFramesCount() const;
     void ResetFramesCount();

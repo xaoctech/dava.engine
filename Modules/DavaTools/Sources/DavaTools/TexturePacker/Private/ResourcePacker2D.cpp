@@ -20,8 +20,79 @@
 
 namespace DAVA
 {
-const String ResourcePacker2D::VERSION = "0.0.5";
+const String ResourcePacker2D::VERSION = "0.0.6";
 const String ResourcePacker2D::INTERNAL_LIBPSD_VERSION = "0.0.1";
+
+namespace ResourcePacker2DDetails
+{
+List<FilePath> ReadIgnoresList(const FilePath& ignoresListPath, const FilePath& baseDir)
+{
+    List<FilePath> result;
+
+    ScopedPtr<File> listFile(File::Create(ignoresListPath, File::OPEN | File::READ));
+    if (listFile)
+    {
+        while (!listFile->IsEof())
+        {
+            String str = StringUtils::Trim(listFile->ReadLine());
+            if (!str.empty())
+            {
+                result.emplace_back(baseDir + str);
+            }
+        }
+    }
+    else
+    {
+        Logger::Error("Can't open ignore list file %s", ignoresListPath.GetAbsolutePathname().c_str());
+    }
+
+    return result;
+}
+
+bool IsNameInHardcodedIgnoreList(const String& filename)
+{
+    static const Vector<String> hardcodeIgnoredNames = { ".DS_Store", "flags.txt", "Thumbs.db", ".gitignore" };
+    auto found = std::find_if(hardcodeIgnoredNames.begin(), hardcodeIgnoredNames.end(), [&filename](const String& name)
+                              {
+                                  return (CompareCaseInsensitive(filename, name) == 0);
+                              });
+    return (found != hardcodeIgnoredNames.end());
+}
+
+bool IsPathInIgnoreList(const FilePath& path, const List<FilePath>& ignoredFiles)
+{
+    return (std::find(ignoredFiles.begin(), ignoredFiles.end(), path) != ignoredFiles.end());
+}
+
+void SplitFileName(const String& filename, String& basename, String& ext)
+{
+    const String::size_type dotpos = filename.rfind(String("."));
+    basename = filename.substr(0, dotpos);
+    ext = filename.substr(dotpos, filename.size());
+}
+
+String GetBasenameWithoutTag(const String& basename, const String& tag)
+{
+    String result = basename;
+    const String::size_type tagPos = result.find(tag);
+    result.erase(tagPos, tag.size());
+    return result;
+}
+
+bool IsBasenameContainsTag(const String& basename, const String& tag)
+{
+    const String::size_type tagPos = basename.find(tag);
+    bool isTagged = (tagPos != String::npos && tagPos > 0); // tag can't be at beginning of the basename
+    if (isTagged)
+    {
+        if (basename.find(tag, tagPos + tag.size()) != String::npos)
+        {
+            Logger::Error("File name '%s' contains multiple '%s' tags", basename.c_str(), tag.c_str());
+        }
+    }
+    return isTagged;
+}
+} // namespace ResourcePacker2DDetails
 
 String ResourcePacker2D::GetProcessFolderName()
 {
@@ -54,6 +125,11 @@ void ResourcePacker2D::InitFolders(const FilePath& inputPath, const FilePath& ou
 void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
 {
     SetRunning(true);
+    SCOPE_EXIT
+    {
+        SetRunning(false);
+    };
+
     Logger::FrameworkDebug("\nInput: %s \nOutput: %s \nExclude: %s",
                            inputGfxDirectory.GetAbsolutePathname().c_str(),
                            outputGfxDirectory.GetAbsolutePathname().c_str(),
@@ -62,14 +138,12 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
     if (FileSystem::Instance()->Exists(inputGfxDirectory) == false)
     {
         AddError(Format("Input folder is not exist: '%s'", inputGfxDirectory.GetStringValue().c_str()));
-        SetRunning(false);
         return;
     }
 
     if (StringUtils::HasWhitespace(texturePostfix))
     {
         AddError(Format("Texture name postfix '%s' has whitespaces", texturePostfix.c_str()).c_str());
-        SetRunning(false);
         return;
     }
 
@@ -100,8 +174,18 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
     else
     {
         AddError(Format("Unknown algorithm: '%s'", alg.c_str()));
-        SetRunning(false);
         return;
+    }
+
+    if (tag.empty() == false && std::find(allTags.begin(), allTags.end(), tag) == allTags.end())
+    {
+        AddError(Format("Tag '%s' is not found in allTags", tag.c_str()));
+        return;
+    }
+
+    if (ignoresListPath.IsEmpty() == false)
+    {
+        ignoredFiles = ResourcePacker2DDetails::ReadIgnoresList(ignoresListPath, inputGfxDirectory);
     }
 
     requestedGPUs = forGPUs;
@@ -115,7 +199,8 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
 
     FileSystem::Instance()->CreateDirectory(outputGfxDirectory, true);
 
-    if (RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true))
+    bool outputGfxDirChanged = RecalculateDirMD5(outputGfxDirectory, processDirectoryPath + gfxDirName + ".md5", true);
+    if (outputGfxDirChanged)
     {
         if (Engine::Instance()->IsConsoleMode())
         {
@@ -278,9 +363,11 @@ uint32 ResourcePacker2D::GetMaxTextureSize() const
     return maxTextureSize;
 }
 
-void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath& outputPath, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
+void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath& outputDir, const Vector<PackingAlgorithm>& packAlgorithms, const Vector<String>& passedFlags)
 {
-    DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
+    using namespace ResourcePacker2DDetails;
+
+    DVASSERT(inputDir.IsDirectoryPathname() && outputDir.IsDirectoryPathname());
 
     if (!running)
     {
@@ -289,7 +376,7 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
 
     uint64 packTime = SystemTimer::GetMs();
 
-    String inputRelativePath = inputPath.GetRelativePathname(rootDirectory);
+    String inputRelativePath = inputDir.GetRelativePathname(rootDirectory);
     FilePath processDir = rootDirectory + GetProcessFolderName() + inputRelativePath;
     FileSystem::Instance()->CreateDirectory(processDir, true);
 
@@ -298,11 +385,11 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
         FileSystem::Instance()->DeleteDirectoryFiles(processDir, false);
     }
 
-    FileSystem::Instance()->CreateDirectory(outputPath);
+    FileSystem::Instance()->CreateDirectory(outputDir);
 
     Vector<String> currentFlags;
 
-    const auto flagsPathname = inputPath + "flags.txt";
+    const auto flagsPathname = inputDir + "flags.txt";
     if (FileSystem::Instance()->Exists(flagsPathname))
     {
         currentFlags = FetchFlags(flagsPathname);
@@ -330,53 +417,107 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
         packingParams += String("PackerAlgorithm = ") + GlobalEnumMap<DAVA::PackingAlgorithm>::Instance()->ToString(static_cast<int>(algorithm));
     }
 
-    ScopedPtr<FileList> fileList(new FileList(inputPath));
+    if (tag.empty() == false)
+    {
+        packingParams += String("Tag = ") + tag;
+    }
+
+    ScopedPtr<FileList> fileList(new FileList(inputDir));
     fileList->Sort();
 
-    bool inputDirHasFiles = false;
     uint64 allFilesSize = 0;
-    uint32 allFilesCount = 0;
 
-    static const Vector<String> ignoredFileNames = { ".DS_Store", "flags.txt", "Thumbs.db", ".gitignore" };
-    auto IsFileIgnoredByName = [](const Vector<String>& ignoredFileNames, const String& filename)
+    struct PickedFile
     {
-        auto found = std::find_if(ignoredFileNames.begin(), ignoredFileNames.end(), [&filename](const String& name)
-                                  {
-                                      return (CompareCaseInsensitive(filename, name) == 0);
-                                  });
-
-        return (found != ignoredFileNames.end());
+        String name;
+        String basename;
+        String ext;
+        uint32 index = 0;
+        bool tagged = false;
+        String outName;
+        String outBasename;
     };
+    List<PickedFile> pickedFiles;
+    List<PickedFile*> taggedFiles;
 
     for (uint32 fi = 0; fi < fileList->GetCount(); ++fi)
     {
-        if (!fileList->IsDirectory(fi))
+        if (fileList->IsDirectory(fi) == true)
         {
-            String fileName = fileList->GetFilename(fi);
-            if (IsFileIgnoredByName(ignoredFileNames, fileName))
+            continue;
+        }
+
+        String filename = fileList->GetFilename(fi);
+        if (IsNameInHardcodedIgnoreList(filename) || IsPathInIgnoreList(fileList->GetPathname(fi), ignoredFiles))
+        {
+            continue;
+        }
+
+        PickedFile file;
+        file.name = std::move(filename);
+        file.index = fi;
+        SplitFileName(file.name, file.basename, file.ext);
+        file.tagged = IsBasenameContainsTag(file.basename, tag);
+
+        if (file.tagged == true)
+        {
+            file.outBasename = GetBasenameWithoutTag(file.basename, tag);
+            file.outName = file.outBasename + file.ext;
+            pickedFiles.emplace_back(std::move(file));
+            taggedFiles.push_back(&(pickedFiles.back()));
+        }
+        else
+        {
+            bool containsExcludedTag = false;
+            for (const String& tagToExclude : allTags)
+            {
+                if (tagToExclude != tag && IsBasenameContainsTag(file.basename, tagToExclude) == true)
+                {
+                    containsExcludedTag = true;
+                    break;
+                }
+            }
+            if (containsExcludedTag)
             {
                 continue;
             }
 
-            inputDirHasFiles = true;
-
-            packingParams += fileName;
-            allFilesSize += fileList->GetFileSize(fi);
-            ++allFilesCount;
+            file.outBasename = file.basename;
+            file.outName = file.name;
+            pickedFiles.emplace_back(std::move(file));
         }
     }
 
+    for (PickedFile* taggedFile : taggedFiles)
+    {
+        List<PickedFile>::iterator substitutedFileFound = std::find_if(pickedFiles.begin(), pickedFiles.end(), [taggedFile](PickedFile& next)
+                                                                       {
+                                                                           return (next.name == taggedFile->outName);
+                                                                       });
+
+        if (substitutedFileFound != pickedFiles.end() && substitutedFileFound->tagged == false)
+        {
+            pickedFiles.erase(substitutedFileFound);
+        }
+    }
+
+    for (const PickedFile& file : pickedFiles)
+    {
+        packingParams += file.name;
+        allFilesSize += fileList->GetFileSize(file.index);
+    }
+
     packingParams += Format("FilesSize = %llu", allFilesSize);
-    packingParams += Format("FilesCount = %u", allFilesCount);
+    packingParams += Format("FilesCount = %u", pickedFiles.size());
     packingParams += Format("DescriptorVersion = %i", TextureDescriptor::CURRENT_VERSION);
 
-    bool inputDirModified = RecalculateDirMD5(inputPath, processDir + "dir.md5", false);
+    bool inputDirModified = RecalculateDirMD5(inputDir, processDir + "dir.md5", false);
     bool paramsModified = RecalculateParamsMD5(packingParams, processDir + "params.md5");
 
     bool modified = outputDirModified || inputDirModified || paramsModified;
     if (modified)
     {
-        if (inputDirHasFiles)
+        if (pickedFiles.empty() == false)
         {
             AssetCache::CacheItemKey cacheKey;
             if (IsUsingCache())
@@ -390,7 +531,7 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                 cacheKey.SetSecondaryKey(digest);
             }
 
-            bool needRepack = (false == GetFilesFromCache(cacheKey, inputPath, outputPath));
+            bool needRepack = (false == GetFilesFromCache(cacheKey, inputDir, outputDir));
             if (needRepack)
             {
                 // read textures margins settings
@@ -413,38 +554,40 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
 
                 if (clearOutputDirectory)
                 {
-                    FileSystem::Instance()->DeleteDirectoryFiles(outputPath, false);
+                    FileSystem::Instance()->DeleteDirectoryFiles(outputDir, false);
                 }
 
                 DefinitionFile::Collection definitionFileList;
-                Vector<FilePath> justCopyList;
-                definitionFileList.reserve(fileList->GetCount());
-                for (uint32 fi = 0; fi < fileList->GetCount() && running; ++fi)
+                Vector<PickedFile*> justCopyList;
+                definitionFileList.reserve(pickedFiles.size());
+                for (PickedFile& file : pickedFiles)
                 {
-                    if (fileList->IsDirectory(fi))
-                        continue;
+                    if (running == false)
+                    {
+                        break;
+                    }
 
                     DAVA::RefPtr<DefinitionFile> defFile(new DefinitionFile());
 
                     bool shouldAcceptFile = false;
 
-                    FilePath fullname = fileList->GetPathname(fi);
-                    if (fullname.IsEqualToExtension(".psd"))
+                    FilePath path = fileList->GetPathname(file.index);
+                    if (CompareCaseInsensitive(file.ext, ".psd") == 0)
                     {
-                        shouldAcceptFile = defFile->LoadPSD(fullname, processDir, maxTextureSize,
-                                                            withAlpha, useLayerNames, verbose);
+                        shouldAcceptFile = defFile->LoadPSD(path, processDir, maxTextureSize,
+                                                            withAlpha, useLayerNames, verbose, file.outBasename);
                     }
-                    else if (fullname.IsEqualToExtension(".png"))
+                    else if (CompareCaseInsensitive(file.ext, ".png") == 0)
                     {
-                        shouldAcceptFile = defFile->LoadPNG(fullname, processDir);
+                        shouldAcceptFile = defFile->LoadPNG(path, processDir, file.outBasename);
                     }
-                    else if (fullname.IsEqualToExtension(".pngdef"))
+                    else if (CompareCaseInsensitive(file.ext, ".pngdef") == 0)
                     {
-                        shouldAcceptFile = defFile->LoadPNGDef(fullname, processDir);
+                        shouldAcceptFile = defFile->LoadPNGDef(path, processDir, file.outBasename);
                     }
-                    else if (!IsFileIgnoredByName(ignoredFileNames, fullname.GetFilename()))
+                    else
                     {
-                        justCopyList.push_back(fullname);
+                        justCopyList.push_back(&file);
                     }
 
                     if (shouldAcceptFile)
@@ -479,11 +622,11 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
 
                     if (CommandLineParser::Instance()->IsFlagSet("--split"))
                     {
-                        packer.PackToTexturesSeparate(outputPath, definitionFileList, requestedGPUs);
+                        packer.PackToTexturesSeparate(outputDir, definitionFileList, requestedGPUs);
                     }
                     else
                     {
-                        packer.PackToTextures(outputPath, definitionFileList, requestedGPUs);
+                        packer.PackToTextures(outputDir, definitionFileList, requestedGPUs);
                     }
 
                     Set<String> currentErrors = packer.GetErrors();
@@ -493,13 +636,13 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                     }
                 }
 
-                for (FilePath& path : justCopyList)
+                for (const PickedFile* file : justCopyList)
                 {
-                    FilePath destPath(path);
-                    destPath.ReplaceDirectory(outputPath);
-                    if (!FileSystem::Instance()->CopyFile(path, destPath))
+                    FilePath srcPath = inputDir + file->name;
+                    FilePath destPath = outputDir + file->outName;
+                    if (!FileSystem::Instance()->CopyFile(srcPath, destPath))
                     {
-                        Logger::Error("Can't copy %s to %s", path.GetStringValue().c_str(), destPath.GetStringValue().c_str());
+                        Logger::Error("Can't copy %s to %s", srcPath.GetStringValue().c_str(), destPath.GetStringValue().c_str());
                     }
                 }
 
@@ -511,21 +654,21 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
                 }
 
                 const char* result = definitionFileList.empty() ? "[unchanged]" : "[REPACKED]";
-                Logger::Info("[%s - %.2lf secs] - %s", inputPath.GetAbsolutePathname().c_str(),
+                Logger::Info("[%s - %.2lf secs] - %s", inputDir.GetAbsolutePathname().c_str(),
                              static_cast<float64>(packTime) / 1000.0, result);
 
-                AddFilesToCache(cacheKey, inputPath, outputPath);
+                AddFilesToCache(cacheKey, inputDir, outputDir);
             }
         }
         else if (outputDirModified || inputDirModified)
         {
-            Logger::Info("[%s] - empty directory. Clearing output folder", inputPath.GetAbsolutePathname().c_str());
-            FileSystem::Instance()->DeleteDirectoryFiles(outputPath, false);
+            Logger::Info("[%s] - empty directory. Clearing output folder", inputDir.GetAbsolutePathname().c_str());
+            FileSystem::Instance()->DeleteDirectoryFiles(outputDir, false);
         }
     }
     else
     {
-        Logger::Info("[%s] - unchanged", inputPath.GetAbsolutePathname().c_str());
+        Logger::Info("[%s] - unchanged", inputDir.GetAbsolutePathname().c_str());
     }
 
     const auto& flagsToPass = CommandLineParser::Instance()->IsFlagSet("--recursive") ? currentFlags : passedFlags;
@@ -539,10 +682,10 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputPath, const FilePath
             {
                 if ((filename.size() > 0) && (filename[0] != '.'))
                 {
-                    FilePath input = inputPath + filename;
+                    FilePath input = inputDir + filename;
                     input.MakeDirectoryPathname();
 
-                    FilePath output = outputPath + filename;
+                    FilePath output = outputDir + filename;
                     output.MakeDirectoryPathname();
 
                     PackRecursively(input, output, packAlgorithms, flagsToPass);
@@ -567,6 +710,21 @@ void ResourcePacker2D::SetCacheClient(AssetCacheClient* cacheClient_, const Stri
 void ResourcePacker2D::SetTexturePostfix(const String& postfix)
 {
     texturePostfix = postfix;
+}
+
+void ResourcePacker2D::SetTag(const String& tag_)
+{
+    tag = tag_;
+}
+
+void DAVA::ResourcePacker2D::SetAllTags(const Vector<String>& tags)
+{
+    allTags = tags;
+}
+
+void ResourcePacker2D::SetIgnoresFile(const String& ignoresPath)
+{
+    ignoresListPath = ignoresPath;
 }
 
 bool ResourcePacker2D::GetFilesFromCache(const AssetCache::CacheItemKey& key, const FilePath& inputPath, const FilePath& outputPath)

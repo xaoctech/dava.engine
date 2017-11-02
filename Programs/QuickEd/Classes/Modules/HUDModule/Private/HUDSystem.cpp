@@ -502,6 +502,11 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
 
 EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput)
 {
+    if (accessor->GetActiveContext() == nullptr)
+    {
+        return EditorSystemsManager::NoDrag;
+    }
+
     EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
     //ignore all input devices except mouse while selecting by rect
     if (dragState == EditorSystemsManager::SelectByRect && currentInput->device != eInputDevices::MOUSE)

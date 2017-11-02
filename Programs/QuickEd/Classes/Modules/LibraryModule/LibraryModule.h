@@ -21,6 +21,7 @@ class LibraryModule : public DAVA::ClientModule, PackageListener
     void InitData();
     void InitUI();
     void BindFields();
+    void CreateActions();
 
     void AddProjectControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages);
     void RemoveProjectControls();

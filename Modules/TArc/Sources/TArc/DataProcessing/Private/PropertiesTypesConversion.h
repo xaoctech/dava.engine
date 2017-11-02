@@ -214,6 +214,32 @@ Vector<Color> PropertiesItem::Impl::FromValue(const QJsonValue& value, const Vec
 }
 
 template <>
+RefPtr<KeyedArchive> PropertiesItem::Impl::FromValue(const QJsonValue& value, const RefPtr<KeyedArchive>& defaultValue)
+{
+    if (value.isString() == true)
+    {
+        QByteArray raw = QByteArray::fromBase64(value.toString().toUtf8());
+        RefPtr<KeyedArchive> retVal(new KeyedArchive);
+        retVal->Load(reinterpret_cast<uint8*>(raw.data()), raw.size());
+        return retVal;
+    }
+    return defaultValue;
+}
+
+template <>
+FastName PropertiesItem::Impl::FromValue(const QJsonValue& value, const FastName& defaultValue)
+{
+    if (value.isString())
+    {
+        return FastName(value.toString().toStdString());
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
+
+template <>
 QJsonValue PropertiesItem::Impl::ToValue(const bool& value)
 {
     return QJsonValue(value);
@@ -352,5 +378,26 @@ QJsonValue PropertiesItem::Impl::ToValue(const Vector<Color>& value)
                        return jsonColor;
                    });
     return jsonResult;
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const RefPtr<KeyedArchive>& value)
+{
+    uint32 requiredSize = value->Save(nullptr, 0);
+    Vector<uint8> data(requiredSize);
+    value->Save(data.data(), requiredSize);
+
+    QByteArray ba(reinterpret_cast<char*>(data.data()), static_cast<int>(requiredSize));
+    return QString::fromUtf8(ba.toBase64());
+}
+
+template <>
+QJsonValue PropertiesItem::Impl::ToValue(const FastName& value)
+{
+#ifdef __DAVAENGINE_DEBUG__
+    String errorMessage = Format("string to save %s contains special character used to save: %s", value.c_str(), PropertiesHolderDetails::stringListDelimiter);
+    DVASSERT(value.find(PropertiesHolderDetails::stringListDelimiter) == String::npos, errorMessage.c_str());
+#endif //__DAVAENGINE_DEBUG__
+    return QString(value.c_str());
 }
 } // namespace DAVA

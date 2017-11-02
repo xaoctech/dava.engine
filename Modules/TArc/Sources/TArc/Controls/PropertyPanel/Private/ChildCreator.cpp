@@ -3,6 +3,9 @@
 
 #include <Logger/Logger.h>
 
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/ReflectedTypeDB.h>
+
 namespace DAVA
 {
 namespace ChildCreatorDetail

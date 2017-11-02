@@ -13,6 +13,7 @@ class SceneManagerModule;
 namespace DAVA
 {
 class PropertiesItem;
+class FileSystem;
 class SceneData : public TArcDataNode
 {
 public:
@@ -28,6 +29,8 @@ public:
 
     bool IsHUDVisible() const;
 
+    PropertiesHolder* GetPropertiesRoot();
+
     static const char* scenePropertyName;
     static const char* sceneChangedPropertyName;
     static const char* scenePathPropertyName;
@@ -41,8 +44,11 @@ public:
 private:
     friend class SceneManagerModule;
 
+    void CreatePropertiesRoot(FileSystem* fs, const FilePath& dirPath, const FilePath& fileName);
+
     SceneEditor2* GetScenePtr() const;
     RefPtr<SceneEditor2> scene;
+    std::unique_ptr<PropertiesHolder> propertiesRoot = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneData, TArcDataNode)
     {

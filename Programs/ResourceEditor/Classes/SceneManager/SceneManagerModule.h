@@ -80,6 +80,10 @@ private:
     bool SaveSceneImpl(DAVA::RefPtr<DAVA::SceneEditor2> scene, const DAVA::FilePath& scenePath = DAVA::FilePath());
     DAVA::FilePath GetSceneSavePath(const DAVA::RefPtr<DAVA::SceneEditor2>& scene);
 
+    void GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
+                               DAVA::FilePath& fileName, bool sceneIsTemp = false);
+    void CreateSceneProperties(SceneData* const data, bool sceneIsTemp = false);
+
     /// scene->SaveEmitters() would call this function if emitter to save didn't have path
     DAVA::FilePath SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName);
     bool IsSceneCompatible(const DAVA::FilePath& scenePath);

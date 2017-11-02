@@ -6,6 +6,8 @@ namespace DAVA
 {
 class RECommandNotificationObject;
 class REDependentCommandsHolder;
+class PropertiesHolder;
+
 class EditorSceneSystem
 {
     friend class SceneEditor2;
@@ -21,6 +23,14 @@ public:
     virtual void DisableSystem()
     {
         systemIsEnabled = false;
+    }
+
+    virtual void LoadLocalProperties(DAVA::PropertiesHolder* holder)
+    {
+    }
+
+    virtual void SaveLocalProperties(DAVA::PropertiesHolder* holder)
+    {
     }
 
     bool IsSystemEnabled() const
@@ -39,7 +49,7 @@ protected:
     {
     }
 
-    virtual std::unique_ptr<DAVA::Command> PrepareForSave(bool saveForGame)
+    virtual std::unique_ptr<Command> PrepareForSave(bool saveForGame)
     {
         return nullptr;
     }

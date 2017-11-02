@@ -77,6 +77,24 @@ bool SceneData::IsHUDVisible() const
     return scene->IsHUDVisible();
 }
 
+PropertiesHolder* SceneData::GetPropertiesRoot()
+{
+    return propertiesRoot.get();
+}
+
+void SceneData::CreatePropertiesRoot(FileSystem* fs, const FilePath& dirPath, const FilePath& fileName)
+{
+    fs->CreateDirectory(dirPath, true);
+    if (propertiesRoot.get() == nullptr)
+    {
+        propertiesRoot = std::make_unique<PropertiesHolder>(fileName.GetFilename(), dirPath);
+    }
+    else
+    {
+        propertiesRoot = PropertiesHolder::CopyWithNewPath(*propertiesRoot, fs, fileName.GetFilename(), dirPath);
+    }
+}
+
 const char* SceneData::scenePropertyName = "Scene";
 const char* SceneData::sceneChangedPropertyName = "IsSceneChanged";
 const char* SceneData::scenePathPropertyName = "ScenePath";

@@ -25,6 +25,7 @@
 #include <UI/UIControl.h>
 
 #include <QToolButton>
+#include <QTreeView>
 #include <QMenu>
 
 namespace LibraryModuleDetails
@@ -57,6 +58,7 @@ void LibraryModule::PostInit()
     InitData();
     InitUI();
     BindFields();
+    CreateActions();
 }
 
 void LibraryModule::InitData()
@@ -106,6 +108,36 @@ void LibraryModule::BindFields()
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &LibraryModule::OnPackageChanged));
+    }
+}
+
+void LibraryModule::CreateActions()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    LibraryData* data = GetLibraryData();
+    LibraryWidget* libraryWidget = data->libraryWidget;
+
+    {
+        QtAction* action = new QtAction(GetAccessor(), QObject::tr("Collapse all"), libraryWidget);
+
+        KeyBindableActionInfo info;
+        info.blockName = "Library";
+        info.context = Qt::WidgetWithChildrenShortcut;
+        MakeActionKeyBindable(action, info);
+
+        QTreeView* libraryWidgetTreeView = libraryWidget->GetTreeView();
+        QObject::connect(action, &QAction::triggered, libraryWidgetTreeView, &QTreeView::collapseAll);
+
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<ProjectData>();
+        fieldDescr.fieldName = FastName(ProjectData::projectPathPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
+            return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
+        });
+        libraryWidgetTreeView->addAction(action);
+        GetUI()->AddAction(DAVA::TArc::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);
     }
 }
 

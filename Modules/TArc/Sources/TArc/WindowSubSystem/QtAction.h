@@ -23,6 +23,7 @@ public:
     enum eActionState
     {
         Enabled, // call back should return Any that can be casted to bool
+        Visible,
         Checked,
         Text, // String
         Tooltip, // String
