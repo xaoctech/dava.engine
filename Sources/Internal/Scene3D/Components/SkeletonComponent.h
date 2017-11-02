@@ -61,6 +61,8 @@ public:
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
 private:
+	void UpdateJointsMap();
+
     /*config time*/
     Vector<Joint> jointsArray;
 
@@ -80,7 +82,7 @@ private:
     //bounding boxes
     Vector<AABBox3> objectSpaceBoxes;
 
-    Map<FastName, uint32> jointMap;
+    UnorderedMap<FastName, uint32> jointMap;
 
     uint32 startJoint = 0u; //first joint in the list that was updated this frame - cache this value to optimize processing
     bool configUpdated = true;
@@ -93,9 +95,9 @@ private:
 
 inline uint32 SkeletonComponent::GetJointIndex(const FastName& uid) const
 {
-    Map<FastName, uint32>::const_iterator it = jointMap.find(uid);
-    if (jointMap.end() != it)
-        return it->second;
+    auto found = jointMap.find(uid);
+    if (jointMap.end() != found)
+        return found->second;
     else
         return INVALID_JOINT_INDEX;
 }

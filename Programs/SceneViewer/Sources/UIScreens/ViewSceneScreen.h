@@ -4,7 +4,6 @@
 #include "UIScreens/BaseScreen.h"
 #include "UIControls/Menu.h"
 #include "Quality/QualitySettingsDialog.h"
-#include "Character/Systems/CharacterControllerSystem.h"
 
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
 #include <GridTest.h>
@@ -65,12 +64,15 @@ private:
     void OnButtonSelectFromRes(DAVA::BaseObject* caller, void* param, void* callerData);
     void OnButtonSelectFromDoc(DAVA::BaseObject* caller, void* param, void* callerData);
     void OnButtonSelectFromExt(DAVA::BaseObject* caller, void* param, void* callerData);
+	void OnButtonToggleSpawnCharacter(DAVA::BaseObject* caller, void* param, void* callerData);
 
     void UpdateInfo(DAVA::float32 timeElapsed);
     void UpdatePerformanceTest(DAVA::float32 timeElapsed);
     void ProcessUserInput(DAVA::float32 timeElapsed);
 
     void SetCameraAtCenter(DAVA::Camera* camera);
+	void AddCameraControllerSystems();
+	void RemoveCameraControllerSystems();
 
     void LoadScene();
     void ReloadScene();
@@ -92,20 +94,16 @@ private:
     MenuItem* qualitySettingsMenuItem = nullptr;
     MenuItem* reloadShadersMenuItem = nullptr;
     MenuItem* performanceTestMenuItem = nullptr;
+	MenuItem* characterSpawnMenuItem = nullptr;
 
     DAVA::RotationControllerSystem* rotationControllerSystem = nullptr;
     DAVA::WASDControllerSystem* wasdSystem = nullptr;
-
-    CharacterControllerSystem* characterControllerSystem = nullptr;
-    CharacterMoveSystem* characterMoveSystem = nullptr;
-    CharacterWeaponSystem* characterWeaponSystem = nullptr;
-    CharacterCameraSystem* characterCameraSystem = nullptr;
-
-    DAVA::Entity* characterEntity = nullptr;
 
     DAVA::FpsMeter fpsMeter;
 
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
     GridTest gridTest;
 #endif
+
+	bool characterSpawned = false;
 };

@@ -1,41 +1,30 @@
-#include "CharacterControllerSystem.h"
+#include "TestCharacterController/TestCharacterControllerSystems.h"
 
-#include "Engine/Engine.h"
-#include "Engine/EngineContext.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <DeviceManager/DeviceManager.h>
 
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
+#include <Input/InputSystem.h>
+#include <Input/Keyboard.h>
+#include <Input/Mouse.h>
 
-#include "Scene3D/Entity.h"
-#include "Scene3D/Scene.h"
+#include <Physics/PhysicsUtils.h>
+#include <Physics/CharacterControllerComponent.h>
 
-#include "Render/Highlevel/Camera.h"
+#include <Render/Highlevel/Camera.h>
 
-#include "Input/InputSystem.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Components/SingleComponents/MotionSingleComponent.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Utils/Utils.h>
 
-#include "Utils/Utils.h"
+namespace DAVA
+{
 
-#include "DeviceManager/DeviceManager.h"
-
-#include "Physics/PhysicsUtils.h"
-#include "Physics/CharacterControllerComponent.h"
-
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/MotionComponent.h"
-#include "Scene3D/SkeletonAnimation/Motion.h"
-#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
-
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/RenderHelper.h"
-
-#include "Logger/Logger.h"
-
-using namespace DAVA;
-
-CharacterControllerSystem::CharacterControllerSystem(Scene* scene)
+TestCharacterControllerSystem::TestCharacterControllerSystem(Scene* scene)
     : SceneSystem(scene)
 {
 	characterForward = Vector3::UnitX;
@@ -44,71 +33,59 @@ CharacterControllerSystem::CharacterControllerSystem(Scene* scene)
     characterLeft = Vector3::UnitZ.CrossProduct(characterForward);
 }
 
-CharacterControllerSystem::~CharacterControllerSystem()
+TestCharacterControllerSystem::~TestCharacterControllerSystem()
 {
     SafeRelease(characterEntity);
-    SafeRelease(camera);
 }
 
-void CharacterControllerSystem::AddEntity(Entity* entity)
+void TestCharacterControllerSystem::SetCharacterEntity(DAVA::Entity* entity)
 {
-    DVASSERT(characterEntity == nullptr);
+	SafeRelease(characterEntity);
+	characterMeshEntity = nullptr;
+	weaponEntity = nullptr;
+	shootEffect = nullptr;
 
-    DVASSERT(GetCamera(entity) != nullptr);
-    DVASSERT(PhysicsUtils::GetCharacterControllerComponent(entity) != nullptr);
-
-    characterEntity = SafeRetain(entity);
-    characterMeshEntity = entity->FindByName("Character");
-    DVASSERT(characterMeshEntity != nullptr);
-
-    weaponEntity = entity->FindByName("Weapon");
-	if (weaponEntity != nullptr)
-		shootEffect = weaponEntity->FindByName("shot_auto");
-
-    camera = SafeRetain(GetCamera(entity));
-    controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
-
-	characterSkeleton = GetSkeletonComponent(characterMeshEntity);
-	DVASSERT(characterSkeleton != nullptr);
-
-	headJointIndex = characterSkeleton->GetJointIndex(FastName("node-Head"));
-
-	weaponPointJointIndex = characterSkeleton->GetJointIndex(FastName("node-RH_WP"));
-	if (weaponPointJointIndex == SkeletonComponent::INVALID_JOINT_INDEX)
-		weaponPointJointIndex = characterSkeleton->GetJointIndex(FastName("node-Weapon_Primary"));
-
-	DVASSERT(headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
-	DVASSERT(weaponPointJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
-
-	characterMotionComponent = GetMotionComponent(characterMeshEntity);
-	//characterMotionComponent->SetPlaybackRate(0.1f);
-}
-
-void CharacterControllerSystem::RemoveEntity(Entity* entity)
-{
-    DVASSERT(characterEntity == entity);
-
-    SafeRelease(characterEntity);
-    characterMeshEntity = nullptr;
-    weaponEntity = nullptr;
-    shootEffect = nullptr;
-
-    SafeRelease(camera);
-    controllerComponent = nullptr;
-    characterMotionComponent = nullptr;
+	controllerComponent = nullptr;
+	characterMotionComponent = nullptr;
 	characterSkeleton = nullptr;
 
 	headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
 	weaponPointJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
+
+	if (entity != nullptr)
+	{
+		characterEntity = SafeRetain(entity);
+		characterMeshEntity = entity->FindByName("Character");
+		DVASSERT(characterMeshEntity != nullptr);
+
+		weaponEntity = entity->FindByName("Weapon");
+		if (weaponEntity != nullptr)
+			shootEffect = weaponEntity->FindByName("shot_auto");
+
+		controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
+
+		characterSkeleton = GetSkeletonComponent(characterMeshEntity);
+		DVASSERT(characterSkeleton != nullptr);
+
+		headJointIndex = characterSkeleton->GetJointIndex(FastName("node-Head"));
+
+		weaponPointJointIndex = characterSkeleton->GetJointIndex(FastName("node-RH_WP"));
+		if (weaponPointJointIndex == SkeletonComponent::INVALID_JOINT_INDEX)
+			weaponPointJointIndex = characterSkeleton->GetJointIndex(FastName("node-Weapon_Primary"));
+
+		DVASSERT(headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+		DVASSERT(weaponPointJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
+
+		characterMotionComponent = GetMotionComponent(characterMeshEntity);
+	}
 }
 
-void CharacterControllerSystem::PrepareForRemove()
+void TestCharacterControllerSystem::PrepareForRemove()
 {
-    if (characterEntity != nullptr)
-        RemoveEntity(characterEntity);
+	SetCharacterEntity(nullptr);
 }
 
-void CharacterControllerSystem::Process(float32 timeElapsed)
+void TestCharacterControllerSystem::Process(float32 timeElapsed)
 {
     if (characterMotionComponent == nullptr)
         return;
@@ -256,7 +233,7 @@ void CharacterControllerSystem::Process(float32 timeElapsed)
 	}
 }
 
-bool CharacterControllerSystem::Input(UIEvent* uiEvent)
+bool TestCharacterControllerSystem::Input(UIEvent* uiEvent)
 {
     const static float32 MOUSE_SENSITIVITY_X = 2.f;
 	const static float32 MOUSE_SENSITIVITY_Y = 1.4f;
@@ -307,25 +284,25 @@ bool CharacterControllerSystem::Input(UIEvent* uiEvent)
 }
 
 
-void CharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& direction)
+void TestCharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& direction)
 {
     inputJoypadDirection = direction;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-CharacterMoveSystem::CharacterMoveSystem(DAVA::Scene* scene)
+TestCharacterMoveSystem::TestCharacterMoveSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
-    controllerSystem = scene->GetSystem<CharacterControllerSystem>();
+    controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
 }
 
-void CharacterMoveSystem::PrepareForRemove()
+void TestCharacterMoveSystem::PrepareForRemove()
 {
     controllerSystem = nullptr;
 }
 
-void CharacterMoveSystem::Process(DAVA::float32 timeElapsed)
+void TestCharacterMoveSystem::Process(DAVA::float32 timeElapsed)
 {
 	if (controllerSystem->characterMotionComponent == nullptr)
 		return;
@@ -340,18 +317,18 @@ void CharacterMoveSystem::Process(DAVA::float32 timeElapsed)
 
 //////////////////////////////////////////////////////////////////////////
 
-CharacterWeaponSystem::CharacterWeaponSystem(DAVA::Scene* scene)
+TestCharacterWeaponSystem::TestCharacterWeaponSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
-    controllerSystem = scene->GetSystem<CharacterControllerSystem>();
+    controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
 }
 
-void CharacterWeaponSystem::PrepareForRemove()
+void TestCharacterWeaponSystem::PrepareForRemove()
 {
     controllerSystem = nullptr;
 }
 
-void CharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
+void TestCharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
 {
     if (controllerSystem->weaponEntity == nullptr)
         return;
@@ -368,18 +345,18 @@ void CharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
 
 //////////////////////////////////////////////////////////////////////////
 
-CharacterCameraSystem::CharacterCameraSystem(DAVA::Scene* scene)
+TestCharacterCameraSystem::TestCharacterCameraSystem(DAVA::Scene* scene)
     : SceneSystem(scene)
 {
-    controllerSystem = scene->GetSystem<CharacterControllerSystem>();
+    controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
 }
 
-void CharacterCameraSystem::PrepareForRemove()
+void TestCharacterCameraSystem::PrepareForRemove()
 {
     controllerSystem = nullptr;
 }
 
-void CharacterCameraSystem::Process(DAVA::float32 timeElapsed)
+void TestCharacterCameraSystem::Process(DAVA::float32 timeElapsed)
 {
 	if (controllerSystem->characterSkeleton == nullptr || controllerSystem->characterMeshEntity == nullptr)
 		return;
@@ -390,7 +367,7 @@ void CharacterCameraSystem::Process(DAVA::float32 timeElapsed)
 	const float32 crouchingParam = controllerSystem->crouchingParam;
 	const uint32 headJointIndex = controllerSystem->headJointIndex;
 
-	Camera* camera = controllerSystem->camera;
+	Camera* camera = GetScene()->GetCurrentCamera();
 	Entity* characterMeshEntity = controllerSystem->characterMeshEntity;
 	SkeletonComponent* characterSkeleton = controllerSystem->characterSkeleton;
 
@@ -412,3 +389,5 @@ void CharacterCameraSystem::Process(DAVA::float32 timeElapsed)
 	camera->SetUp(cameraDirection.CrossProduct(characterLeft));
     camera->SetFOV(fov);
 }
+
+};

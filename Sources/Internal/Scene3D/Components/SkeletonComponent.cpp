@@ -43,6 +43,8 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
     jointsArray = config;
 
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
+
+	UpdateJointsMap();
 }
 
 SkeletonPose SkeletonComponent::GetDefaultPose() const
@@ -89,7 +91,7 @@ Component* SkeletonComponent::Clone(Entity* toEntity)
 {
     SkeletonComponent* newComponent = new SkeletonComponent();
     newComponent->SetEntity(toEntity);
-    newComponent->jointsArray = jointsArray;
+    newComponent->SetJoints(jointsArray);
     return newComponent;
 }
 
@@ -122,6 +124,7 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
 
     uint32 jointsCount = archive->GetUInt32("jointsCount", static_cast<uint32>(jointsArray.size()));
     jointsArray.resize(jointsCount);
+
     KeyedArchive* jointsArch = archive->GetArchive("joints");
     for (uint32 i = 0; i < jointsCount; ++i)
     {
@@ -135,6 +138,21 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.bindTransform = jointArch->GetMatrix4("joint.bindPose");
         joint.bindTransformInv = jointArch->GetMatrix4("joint.invBindPose");
     }
+
+	UpdateJointsMap();
+}
+
+void SkeletonComponent::UpdateJointsMap()
+{
+	jointMap.clear();
+	uint32 jointCount = uint32(jointsArray.size());
+	for (uint32 j = 0; j < jointCount; ++j)
+	{
+		const FastName& jointUID = jointsArray[j].uid;
+		DVASSERT(jointMap.count(jointUID) == 0); //duplicate bone name
+
+		jointMap[jointUID] = j;
+	}
 }
 
 template <>

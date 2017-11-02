@@ -214,17 +214,14 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
     skeleton->finalTransforms.resize(jointsCount);
     skeleton->inverseBindTransforms.resize(jointsCount);
     skeleton->objectSpaceBoxes.resize(jointsCount);
-    skeleton->jointMap.clear();
 
     DVASSERT(skeleton->jointsArray.size() < SkeletonComponent::INFO_PARENT_MASK);
     for (uint32 i = 0, sz = static_cast<int32>(skeleton->jointsArray.size()); i < sz; ++i)
     {
         DVASSERT((skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (skeleton->jointsArray[i].parentIndex < i)); //order
         DVASSERT((skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((skeleton->jointsArray[i].parentIndex & SkeletonComponent::INFO_PARENT_MASK) == skeleton->jointsArray[i].parentIndex)); //parent fits mask
-        DVASSERT(skeleton->jointMap.find(skeleton->jointsArray[i].uid) == skeleton->jointMap.end()); //duplicate bone name
 
         skeleton->jointInfo[i] = skeleton->jointsArray[i].parentIndex | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-        skeleton->jointMap[skeleton->jointsArray[i].uid] = i;
 
         JointTransform localTransform;
         localTransform.Construct(skeleton->jointsArray[i].bindTransform);
