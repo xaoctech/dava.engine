@@ -456,31 +456,46 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
             }
 
             layoutWidth += advances[i].x;
-            metrics.drawRect.x = Min(metrics.drawRect.x, int32(bbox.xMin));
-            metrics.drawRect.y = Min(metrics.drawRect.y, multilineOffsetY - int32(bbox.yMax));
-            metrics.drawRect.dx = Max(metrics.drawRect.dx, int32(bbox.xMax));
-            metrics.drawRect.dy = Max(metrics.drawRect.dy, multilineOffsetY - int32(bbox.yMin));
+
+            int32 width = 0;
+            int32 height = 0;
+            int32 left = 0;
+            int32 top = 0;
+            if (glyph.index > 0)
+            {
+                metrics.drawRect.x = Min(metrics.drawRect.x, int32(bbox.xMin));
+                metrics.drawRect.y = Min(metrics.drawRect.y, multilineOffsetY - int32(bbox.yMax));
+                metrics.drawRect.dx = Max(metrics.drawRect.dx, int32(bbox.xMax));
+                metrics.drawRect.dy = Max(metrics.drawRect.dy, multilineOffsetY - int32(bbox.yMin));
+            }
+            else // guess bitmap dimensions for empty bitmap
+            {
+                width = int32(advances[i].x) >> ftToPixelShift;
+                height = int32(std::ceil(2 * metrics.baseline - metrics.height));
+                left = int32(pen.x) >> ftToPixelShift;
+                top = multilineOffsetY - (int32(pen.y) >> ftToPixelShift) - height;
+
+                metrics.drawRect.x = Min(metrics.drawRect.x, left);
+                metrics.drawRect.y = Min(metrics.drawRect.y, top);
+                metrics.drawRect.dx = Max(metrics.drawRect.dx, left + width);
+                metrics.drawRect.dy = Max(metrics.drawRect.dy, top + height);
+            }
 
             if (realDraw && bbox.xMin < bufWidth && bbox.yMin < bufHeight)
             {
                 FT_BitmapGlyph bit = FT_BitmapGlyph(image);
                 FT_Bitmap* bitmap = &bit->bitmap;
 
-                int32 left = bit->left;
-                int32 top = multilineOffsetY - bit->top;
-                int32 width = bitmap->width;
-                int32 height = bitmap->rows;
+                if (glyph.index > 0)
+                {
+                    left = bit->left;
+                    top = multilineOffsetY - bit->top;
+                    width = bitmap->width;
+                    height = bitmap->rows;
+                }
 
                 if (top >= 0)
                 {
-                    if (glyph.index == 0) // guess bitmap dimensions for empty bitmap
-                    {
-                        width = int32(advances[i].x) >> ftToPixelShift;
-                        height = int32(std::ceil(2 * metrics.baseline - metrics.height));
-                        left = int32(pen.x) >> ftToPixelShift;
-                        top = multilineOffsetY - (int32(pen.y) >> ftToPixelShift) - height;
-                    }
-
                     uint8* resultBuf = static_cast<uint8*>(buffer);
                     int32 realH = Min(height, bufHeight - top);
                     int32 realW = Min(width, bufWidth - left);
