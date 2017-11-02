@@ -944,7 +944,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
 
-            particle->position = Vector3(currSize.x * (VanDerCorput(ind) - 0.5f), currSize.y * (VanDerCorput(ind + 17, 2) - 0.5f), currSize.z * (VanDerCorput(ind + 13, 5) - 0.5f));
+            particle->position = Vector3(currSize.x * (VanDerCorput(ind, 3) - 0.5f), currSize.y * (VanDerCorput(ind + 17, 2) - 0.5f), currSize.z * (VanDerCorput(ind + 13, 5) - 0.5f));
         }
     }
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
@@ -962,7 +962,12 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
 
         float32 curAngle = angleBase + angleVariation * VanDerCorput(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= VanDerCorput(ind + 11, 4);
+        {
+            float32 u = static_cast<float32>(Random::Instance()->RandFloat() + Random::Instance()->RandFloat());
+            if (u > 1.0f)
+                u = 2.0f - u;
+            curRadius *= u;
+        }
         float sinAngle = 0.0f;
         float cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);
@@ -997,8 +1002,8 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     {
         if (group.emitter->emissionRange)
         {
-            float32 theta = VanDerCorput(ind + 82) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
-            float32 phi = VanDerCorput(ind + 5585) * PI_2;
+            float32 theta = VanDerCorput(ind + 82, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
+            float32 phi = VanDerCorput(ind + 5585, 4) * PI_2;
             particle->speed = Vector3(currEmissionPower * cos(phi) * sin(theta), currEmissionPower * sin(phi) * sin(theta), currEmissionPower * cos(theta));
         }
         else
