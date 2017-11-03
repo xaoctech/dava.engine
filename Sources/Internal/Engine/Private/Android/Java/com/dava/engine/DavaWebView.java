@@ -1,5 +1,8 @@
 package com.dava.engine;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.util.AndroidRuntimeException;
 import android.view.View;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -24,6 +27,7 @@ final class DavaWebView
     private volatile long webviewBackendPointer = 0;
     private DavaSurfaceView surfaceView = null;
     private CustomWebView nativeWebView = null;
+    private static boolean errorMsgIsShown = false;
 
     // Properties that have been set in DAVA::Engine thread and waiting to apply to WebView
     private WebViewProperties properties = new WebViewProperties();
@@ -263,13 +267,21 @@ final class DavaWebView
 
     void update()
     {
-        if (properties.anyPropertyChanged)
+        if (!errorMsgIsShown && properties.anyPropertyChanged)
         {
             final WebViewProperties props = new WebViewProperties(properties);
             DavaActivity.commandHandler().post(new Runnable() {
                 @Override public void run()
                 {
-                    processProperties(props);
+                    try
+                    {
+                        processProperties(props);
+                    }
+                    catch (Exception e)
+                    {
+                        errorMsgIsShown = true;
+                        showErrorMsg(e.getMessage());
+                    }
                 }
             });
             properties.clearChangedFlags();
@@ -290,6 +302,9 @@ final class DavaWebView
 
     void createNativeControl()
     {
+        if (true)
+            throw new AndroidRuntimeException("Here goes message about webview problem.");
+
         nativeWebView = new CustomWebView(DavaActivity.instance());
 
         nativeWebView.getSettings().setJavaScriptEnabled(true);
@@ -482,5 +497,28 @@ final class DavaWebView
         {
             nativeOnExecuteJavaScript(webviewBackendPointer, message);
         }
+    }
+
+    private void showErrorMsg(String msg)
+    {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(DavaActivity.instance());
+        alert.setTitle("WebView error");
+        alert.setMessage(msg);
+        alert.setCancelable(false);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                errorMsgIsShown = false;
+                DavaActivity.instance().finish();
+            }
+        });
+
+        DavaActivity.instance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                alert.show();
+            }
+        });
     }
 }
