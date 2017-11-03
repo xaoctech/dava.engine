@@ -31,9 +31,6 @@ add_tool_single     ( UnitTests         NO_UNITY_BUILD
                                         WIN32_SUPPORTED
                                         CHECK_DEPENDS_FOLDERS )
 
-add_tool_single     ( TestBed           PLATFORMS IGNORE_LINUX  
-                                        CHECK_DEPENDS_FOLDERS )
-
 add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX 
                                         CHECK_DEPENDS_FOLDERS )
 
@@ -46,6 +43,9 @@ add_tool_single     ( UWPRunner         PLATFORMS WIN
  
 
 ############ PACKAGE TOOLS
+
+add_tool_package     ( TestBed          PLATFORMS IGNORE_LINUX  
+                                        CHECK_DEPENDS_FOLDERS )
 
 add_tool_package     ( SceneViewer      PLATFORMS IGNORE_LINUX  
                                         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
