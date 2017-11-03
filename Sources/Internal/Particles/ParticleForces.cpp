@@ -15,8 +15,8 @@ namespace ParticleForces
 {
 namespace ParticleForcesDetail
 {
-const int32 noiseWidth = 64;
-const int32 noiseHeight = 64;
+const int32 noiseWidth = 57;
+const int32 noiseHeight = 57;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
 
 void GenerateNoise()
@@ -197,7 +197,7 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     static const float32 windScale = 100.0f; // Artiom request.
 
     uintptr_t partInd = reinterpret_cast<uintptr_t>(particle);
-    uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
+    uint64 particleIndex = static_cast<uint64>(partInd);
     Vector3 turbulence;
 
     uint32 clampedIndex = particleIndex % ParticleForcesDetail::noiseWidth;
@@ -205,7 +205,7 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     float32 tubulencePower = GetValue(force, particleOverLife, layerOverLife, particle->life, force->turbulenceLine.Get(), force->windTurbulence);
     if (Abs(tubulencePower) > EPSILON)
     {
-        turbulence = ParticleForcesDetail::GetNoiseValue(particleOverLife, force->windTurbulence, clampedIndex);
+        turbulence = ParticleForcesDetail::GetNoiseValue(particleOverLife, force->windTurbulenceFrequency, clampedIndex);
         if ((100 - force->backwardTurbulenceProbability) > clampedIndex % 100)
         {
             float32 dot = Normalize(force->direction).DotProduct(Normalize(turbulence));
