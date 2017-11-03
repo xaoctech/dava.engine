@@ -7,7 +7,7 @@ namespace DAVA
 class DebugOverlayItemEngineSettings final : public DebugOverlayItem
 {
 public:
-    virtual String GetName() const override;
-    virtual void Draw() override;
+    String GetName() const override;
+    void Draw() override;
 };
 }

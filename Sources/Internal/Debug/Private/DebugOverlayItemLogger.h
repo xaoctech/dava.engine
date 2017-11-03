@@ -15,8 +15,8 @@ public:
     DebugOverlayItemLogger();
     ~DebugOverlayItemLogger();
 
-    virtual String GetName() const override;
-    virtual void Draw() override;
+    String GetName() const override;
+    void Draw() override;
 
 private:
     std::unique_ptr<DebugOverlayItemLoggerDetail::LoggerOutputContainer> loggerOutput;

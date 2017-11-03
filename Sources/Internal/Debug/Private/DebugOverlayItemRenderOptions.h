@@ -10,7 +10,7 @@ public:
     DebugOverlayItemRenderOptions() = default;
     ~DebugOverlayItemRenderOptions() = default;
 
-    virtual String GetName() const override;
-    virtual void Draw() override;
+    String GetName() const override;
+    void Draw() override;
 };
 }

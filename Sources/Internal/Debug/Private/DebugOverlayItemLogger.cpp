@@ -20,19 +20,7 @@ class LoggerOutputContainer : public LoggerOutput
 public:
     void Output(Logger::eLogLevel level, const char8* text) override
     {
-        static UnorderedMap<Logger::eLogLevel, String> levelToString
-        {
-          { Logger::eLogLevel::LEVEL_DEBUG, "Debug" },
-          { Logger::eLogLevel::LEVEL_ERROR, "Error" },
-          { Logger::eLogLevel::LEVEL_FRAMEWORK, "Framework" },
-          { Logger::eLogLevel::LEVEL_INFO, "Info" },
-          { Logger::eLogLevel::LEVEL_WARNING, "Warning" },
-          { Logger::eLogLevel::LEVEL__DISABLE, "Disabled" }
-        };
-
-        DVASSERT(levelToString.find(level) != levelToString.end());
-
-        logsArray.next() = Format("[%s] %s", levelToString[level].c_str(), text);
+        logsArray.next() = Format("[%s] %s", Logger::GetLogLevelString(level), text);
     }
 
     RingArray<String> logsArray = RingArray<String>(256);

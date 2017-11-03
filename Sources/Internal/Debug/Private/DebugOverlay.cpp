@@ -86,7 +86,7 @@ void DebugOverlay::RegisterItem(DebugOverlayItem* overlayItem)
     itemData.name = overlayItem->GetName();
     itemData.shown = false;
 
-    items.push_back(itemData);
+    items.push_back(std::move(itemData));
 }
 
 void DebugOverlay::UnregisterItem(DebugOverlayItem* overlayItem)
@@ -202,9 +202,9 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
         ImGui::End();
         ImGui::PopStyleVar(2);
 
-        Size2f surfaceSize = GetPrimaryWindow()->GetSize();
+        Size2f surfaceSize = window->GetSize();
 
-        float32 scale = GetPrimaryWindow()->GetDPI() / 200.f;
+        float32 scale = window->GetDPI() / 200.f;
         float32 buttonSide = 50.f * scale;
 
         ImGui::SetNextWindowPos(ImVec2(surfaceSize.dx - buttonSide - 20.f, 0.0f));

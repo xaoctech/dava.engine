@@ -19,7 +19,7 @@ class DebugOverlayItemRenderOptions;
 class DebugOverlayItemProfiler;
 
 /**
-    Class representing visual overlay ment for debugging.
+    Class representing visual overlay meant for debugging.
 
     It provides features for extending and showing custom information or UI via `DebugOverlayItem`.
     Each `DebugOverlayItem` is shown as a menu item which can be enabled or disabled. Multiple items can be enabled simultaneously.

@@ -10,8 +10,8 @@ public:
     DebugOverlayItemRenderStats() = default;
     ~DebugOverlayItemRenderStats() = default;
 
-    virtual String GetName() const override;
-    virtual void Draw() override;
+    String GetName() const override;
+    void Draw() override;
 
 private:
     void AddUIntStat(const char* name, uint32 value);

@@ -85,6 +85,7 @@ void DebugOverlayTest::UnloadResources()
     if (itemRegistered)
     {
         GetEngineContext()->debugOverlay->UnregisterItem(&testItem);
+        itemRegistered = false;
     }
 }
 
