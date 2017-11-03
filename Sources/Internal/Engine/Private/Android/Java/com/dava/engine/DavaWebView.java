@@ -284,8 +284,16 @@ final class DavaWebView
                     catch (Exception e)
                     {
                         DavaLog.e(DavaActivity.LOG_TAG, "[WebView] exception: " + e.getMessage(), e);
-                        errorMsgIsShown = true;
-                        showErrorMsg(e.getMessage());
+
+                        if (e.getClass().getSimpleName().equals("MissingWebViewPackageException"))
+                        {
+                            errorMsgIsShown = true;
+                            showErrorMsgAndFinishActivity(e.getMessage());
+                        }
+                        else
+                        {
+                            throw e;
+                        }
                     }
                 }
             });
@@ -501,7 +509,7 @@ final class DavaWebView
         }
     }
 
-    private void showErrorMsg(String msg)
+    private void showErrorMsgAndFinishActivity(String msg)
     {
         final AlertDialog.Builder alert = new AlertDialog.Builder(DavaActivity.instance());
         alert.setTitle("WebView error");
