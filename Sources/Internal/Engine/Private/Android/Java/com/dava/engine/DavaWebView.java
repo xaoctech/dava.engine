@@ -273,12 +273,18 @@ final class DavaWebView
             DavaActivity.commandHandler().post(new Runnable() {
                 @Override public void run()
                 {
+                    if (errorMsgIsShown)
+                    {
+                        return;
+                    }
+
                     try
                     {
                         processProperties(props);
                     }
                     catch (Exception e)
                     {
+                        DavaLog.e(DavaActivity.LOG_TAG, "[WebView] exception: " + e.getMessage(), e);
                         errorMsgIsShown = true;
                         showErrorMsg(e.getMessage());
                     }
@@ -302,9 +308,6 @@ final class DavaWebView
 
     void createNativeControl()
     {
-        if (true)
-            throw new AndroidRuntimeException("Here goes message about webview problem.");
-
         nativeWebView = new CustomWebView(DavaActivity.instance());
 
         nativeWebView.getSettings().setJavaScriptEnabled(true);
@@ -503,7 +506,7 @@ final class DavaWebView
     {
         final AlertDialog.Builder alert = new AlertDialog.Builder(DavaActivity.instance());
         alert.setTitle("WebView error");
-        alert.setMessage(msg);
+        alert.setMessage(msg + "\nApplication will be closed.");
         alert.setCancelable(false);
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener(){
             @Override
