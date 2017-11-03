@@ -65,7 +65,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
             name = "Copy build result"
             id = "RUNNER_205"
             workingDir = "%pathToProjectApp_other%"
-            scriptContent = """xcopy %pathToProjectApp_other%/UnitTests %dava_dir%/Programs/UnitTests/Release /F /R /Y /I"""
+            scriptContent = """xcopy "%pathToProjectApp_other%/UnitTests" "%dava_dir%/Programs/UnitTests/Release" /I /S /H /E /R"""
         }
         script {
             name = "UnitTest"
