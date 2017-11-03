@@ -10,7 +10,7 @@ namespace DAVA
 class AnimationClip;
 class SkeletonAnimation;
 class SkeletonComponent;
-
+class SkeletonPose;
 class SimpleMotion
 {
 public:
@@ -47,12 +47,6 @@ protected:
 inline bool SimpleMotion::IsPlaying() const
 {
     return isPlaying;
-}
-
-inline void SimpleMotion::SetAnimation(AnimationClip* clip)
-{
-    SafeRelease(animationClip);
-    animationClip = SafeRetain(clip);
 }
 
 inline AnimationClip* SimpleMotion::GetAnimation() const

@@ -287,8 +287,8 @@ void SceneSaver::CopyAnimationClips(DAVA::Entity* node)
     for (DAVA::uint32 i = 0; i < node->GetComponentCount(DAVA::Component::MOTION_COMPONENT); ++i)
     {
         DAVA::MotionComponent* component = static_cast<DAVA::MotionComponent*>(node->GetComponent(DAVA::Component::MOTION_COMPONENT, i));
-        Vector<FilePath> dependencies = component->GetDependencies();
-        for (const FilePath& fp : dependencies)
+        DAVA::Vector<DAVA::FilePath> dependencies = component->GetDependencies();
+        for (const DAVA::FilePath& fp : dependencies)
             sceneUtils.AddFile(fp);
     }
 

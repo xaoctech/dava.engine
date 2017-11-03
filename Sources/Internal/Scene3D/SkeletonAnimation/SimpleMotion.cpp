@@ -8,6 +8,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/SkeletonAnimation/SkeletonAnimation.h"
+#include "Scene3D/SkeletonAnimation/SkeletonPose.h"
 
 namespace DAVA
 {
@@ -64,6 +65,12 @@ void SimpleMotion::Update(float32 timeElapsed)
 bool SimpleMotion::IsFinished() const
 {
     return (repeatsCount > 0) && (isPlaying == false) && (currentAnimationTime != 0.f);
+}
+
+void SimpleMotion::SetAnimation(AnimationClip* clip)
+{
+    SafeRelease(animationClip);
+    animationClip = SafeRetain(clip);
 }
 
 void SimpleMotion::EvaluatePose(SkeletonPose* outPose)
