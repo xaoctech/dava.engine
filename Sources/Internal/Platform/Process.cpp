@@ -364,12 +364,7 @@ void Process::Wait()
     running = false;
 
     int status = 0;
-    int64 pd = -1;
-    do
-    {
-        status = 0;
-        pd = wait(&status);
-    } while (pd != pid);
+    waitpid(pid, &status, 0);
 
     exitCode = WEXITSTATUS(status);
     if (WIFEXITED(status) == 0)
