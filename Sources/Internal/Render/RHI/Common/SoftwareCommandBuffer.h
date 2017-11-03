@@ -238,13 +238,12 @@ struct SoftwareCommandBuffer
             cmdData = reinterpret_cast<uint8*>(::realloc(cmdData, cmdDataSize));
         }
 
-        uint8* p = cmdData + curUsedSize;
+        uint8* ptr = cmdData + curUsedSize;
+        T* command = new (reinterpret_cast<T*>(p)) T();
+
+        command->size = alignedSize;
         curUsedSize += alignedSize;
 
-        DVASSERT((uintptr_t(p) % Alignment) == 0);
-
-        T* command = new (reinterpret_cast<T*>(p)) T();
-        command->size = alignedSize;
         return command;
     }
 

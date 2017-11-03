@@ -535,9 +535,6 @@ void CommandBufferGLES2_t::Execute()
     {
         const SWCommand* cmd = reinterpret_cast<const SWCommand*>(c);
 
-        uintptr_t cmdPtr = reinterpret_cast<uintptr_t>(cmd);
-        DVASSERT((cmdPtr % 4) == 0);
-
         switch (SoftwareCommandType(cmd->type))
         {
         case CMD_BEGIN:
