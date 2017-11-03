@@ -239,7 +239,7 @@ struct SoftwareCommandBuffer
         }
 
         uint8* ptr = cmdData + curUsedSize;
-        T* command = new (reinterpret_cast<T*>(p)) T();
+        T* command = new (reinterpret_cast<T*>(ptr)) T();
 
         command->size = alignedSize;
         curUsedSize += alignedSize;
