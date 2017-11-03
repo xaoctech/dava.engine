@@ -706,6 +706,11 @@ void CommandRemoveParticleForce::Redo()
     selectedLayer->RemoveForce(selectedForce);
 }
 
+CommandRemoveParticleForce::~CommandRemoveParticleForce()
+{
+    DAVA::SafeRelease(selectedForce);
+}
+
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEffectComponent* effect, ParticleEmitterInstance* emitter, const FilePath& path)
     : CommandAction(CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML)
     , selectedEffect(effect)

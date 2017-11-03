@@ -217,6 +217,7 @@ class CommandRemoveParticleForce : public CommandAction
 public:
     CommandRemoveParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
     void Redo() override;
+    ~CommandRemoveParticleForce();
 
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
