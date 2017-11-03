@@ -3,7 +3,6 @@
 #include "REPlatform/Scene/SceneEditor2.h"
 
 #include <TArc/DataProcessing/TArcDataNode.h>
-#include <TArc/DataProcessing/SettingsNode.h>
 #include <TArc/Qt/QtString.h>
 
 #include <Reflection/ReflectionRegistrator.h>

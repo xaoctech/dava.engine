@@ -53,8 +53,8 @@ public:
     explicit PackageWidget(QWidget* parent = 0);
     ~PackageWidget();
 
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
-    void SetUI(DAVA::TArc::UI* ui);
+    void SetAccessor(DAVA::ContextAccessor* accessor);
+    void SetUI(DAVA::UI* ui);
     void BindActionsToTArc();
 
     PackageModel* GetPackageModel() const;

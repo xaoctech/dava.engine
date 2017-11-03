@@ -1,6 +1,8 @@
 #include "REPlatform/DataNodes/SceneData.h"
 #include "REPlatform/Scene/Systems/WayEditSystem.h"
 
+#include <TArc/DataProcessing/PropertiesHolder.h>
+
 #include <FileSystem/FileSystem.h>
 
 namespace DAVA

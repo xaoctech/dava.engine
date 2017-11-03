@@ -5,7 +5,6 @@
 #include "Math/Math2D.h"
 #include "FileSystem/FilePath.h"
 
-
 namespace DAVA
 {
 class Camera;

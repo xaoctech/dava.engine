@@ -114,7 +114,6 @@ void LibraryModule::BindFields()
 void LibraryModule::CreateActions()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     LibraryData* data = GetLibraryData();
     LibraryWidget* libraryWidget = data->libraryWidget;
@@ -137,7 +136,7 @@ void LibraryModule::CreateActions()
             return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
         });
         libraryWidgetTreeView->addAction(action);
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);
+        GetUI()->AddAction(DAVA::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);
     }
 }
 

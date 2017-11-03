@@ -18,6 +18,7 @@ class RECommandNotificationObject;
 class SceneEditor2;
 class SelectableGroup;
 class EditorStatisticsSystem;
+class DataNode;
 }
 
 class SceneInfo : public QtPropertyEditor
@@ -117,8 +118,6 @@ protected:
     DAVA::Landscape* landscape = nullptr;
 
     DAVA::TexturesMap particleTextures;
-
-    DAVA::Vector<DAVA::TArcDataNode*> dataNodesAtScene;
 
     DAVA::Vector<SpeedTreeInfo> speedTreesInfo;
 

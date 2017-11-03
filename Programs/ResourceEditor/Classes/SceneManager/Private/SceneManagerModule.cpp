@@ -940,7 +940,7 @@ void SceneManagerModule::SaveScene()
     SaveScene(false);
 }
 
-void SceneManagerModule::CreateSceneProperties(SceneData* const data, bool sceneIsTemp)
+void SceneManagerModule::CreateSceneProperties(DAVA::SceneData* const data, bool sceneIsTemp)
 {
     DAVA::FilePath dirPath, fileName;
     GetPropertiesFilePath(data->scene->GetScenePath(), dirPath, fileName, sceneIsTemp);

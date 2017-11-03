@@ -5,7 +5,6 @@
 #include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
 
-
 namespace DAVA
 {
 class Entity;
