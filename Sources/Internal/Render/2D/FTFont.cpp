@@ -494,7 +494,7 @@ Font::StringMetrics FTInternalFont::DrawString(const WideString& str, void* buff
                     height = bitmap->rows;
                 }
 
-                if (top >= 0)
+                if (top >= 0 && left >= 0)
                 {
                     uint8* resultBuf = static_cast<uint8*>(buffer);
                     int32 realH = Min(height, bufHeight - top);
