@@ -81,11 +81,13 @@ protected:
 };
 
 // Remove a layer from Particle Emitter.
-class CommandRemoveParticleEmitterLayer : public CommandAction
+class CommandRemoveParticleEmitterLayer : public RECommand
 {
 public:
     CommandRemoveParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
     void Redo() override;
+    void Undo() override;
+    ~CommandRemoveParticleEmitterLayer();
 
 protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
@@ -212,11 +214,13 @@ protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
 };
 
-class CommandRemoveParticleForce : public CommandAction
+class CommandRemoveParticleForce : public RECommand
 {
 public:
     CommandRemoveParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
     void Redo() override;
+    void Undo() override;
+
     ~CommandRemoveParticleForce();
 
 protected:

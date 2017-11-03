@@ -203,6 +203,7 @@ protected:
             selectedIndecies.insert(treeWidget->filteringProxyModel->mapToSource(index));
         }
 
+        SelectableGroup selection = Selection::GetSelection();
         foreach (QModelIndex srcIndex, selectedIndecies)
         {
             SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
@@ -228,6 +229,7 @@ protected:
             if (!parentSelected && static_cast<SceneTreeItem::eItemType>(item->ItemType()) == type)
             {
                 RemoveInfo info = callback(item);
+                selection.Remove(info.selectedObject);
                 commands.push_back(std::move(info.command));
             }
         }
@@ -244,6 +246,7 @@ protected:
             }
             MarkStructureChanged();
             sceneEditor->EndBatch();
+            Selection::SetSelection(selection);
         }
 
         treeWidget->SyncSelectionFromTree();

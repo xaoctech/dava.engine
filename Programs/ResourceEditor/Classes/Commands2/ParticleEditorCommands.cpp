@@ -539,18 +539,27 @@ void CommandAddParticleEmitterLayer::Redo()
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEmitterInstance* emitter, ParticleLayer* layer)
-    : CommandAction(CMDID_PARTICLE_EMITTER_LAYER_REMOVE)
+    : RECommand(CMDID_PARTICLE_EMITTER_LAYER_REMOVE)
     , instance(emitter)
-    , selectedLayer(layer)
+    , selectedLayer(SafeRetain(layer))
 {
+    DVASSERT(instance != nullptr);
+    DVASSERT(selectedLayer != nullptr);
 }
 
 void CommandRemoveParticleEmitterLayer::Redo()
 {
-    if ((selectedLayer == nullptr) || (instance == nullptr))
-        return;
-
     instance->GetEmitter()->RemoveLayer(selectedLayer);
+}
+
+void CommandRemoveParticleEmitterLayer::Undo()
+{
+    instance->GetEmitter()->AddLayer(selectedLayer);
+}
+
+CommandRemoveParticleEmitterLayer::~CommandRemoveParticleEmitterLayer()
+{
+    SafeRelease(selectedLayer);
 }
 
 CommandRemoveParticleEmitter::CommandRemoveParticleEmitter(ParticleEffectComponent* effect, ParticleEmitterInstance* emitter)
@@ -693,17 +702,22 @@ void CommandAddParticlePlaneCollision::Redo()
 }
 
 CommandRemoveParticleForce::CommandRemoveParticleForce(ParticleLayer* layer, ParticleForce* force)
-    : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
+    : RECommand(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
     , selectedLayer(layer)
     , selectedForce(SafeRetain(force))
 {
+    DVASSERT(selectedLayer != nullptr);
+    DVASSERT(selectedForce != nullptr);
 }
 
 void CommandRemoveParticleForce::Redo()
 {
-    if (selectedLayer == nullptr || selectedForce == nullptr)
-        return;
     selectedLayer->RemoveForce(selectedForce);
+}
+
+void CommandRemoveParticleForce::Undo()
+{
+    selectedLayer->AddForce(selectedForce);
 }
 
 CommandRemoveParticleForce::~CommandRemoveParticleForce()
