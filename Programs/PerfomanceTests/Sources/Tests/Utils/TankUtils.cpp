@@ -80,9 +80,7 @@ void TankUtils::Animate(Entity* tank, const Vector<uint32>& jointIndexes, float3
 
     for (uint32 i = 0; i < jointIndexes.size(); i++)
     {
-        JointTransform transform = skeleton->GetJointTransform(jointIndexes[i]);
-        transform.orientation = wheelsRotation;
-        skeleton->SetJointTransform(jointIndexes[i], transform);
+        skeleton->SetJointOrientation(jointIndexes[i], wheelsRotation);
     }
 
     // rotate gun shot effect
@@ -90,7 +88,5 @@ void TankUtils::Animate(Entity* tank, const Vector<uint32>& jointIndexes, float3
 
     uint32 turretJoint = skeleton->GetJointIndex(TankUtils::TankNode::TURRET);
     JointTransform transform = skeleton->GetJointTransform(turretJoint);
-
-    transform.orientation = turrentRotation;
-    skeleton->SetJointTransform(turretJoint, transform);
+    skeleton->SetJointOrientation(turretJoint, turrentRotation);
 }
