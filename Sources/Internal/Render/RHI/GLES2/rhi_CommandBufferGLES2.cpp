@@ -87,7 +87,7 @@ static Handle gles2_RenderPass_Allocate(const RenderPassConfig& passConf, uint32
     pass->perfQueryEnd = passConf.perfQueryEnd;
     pass->skipPerfQueries = false;
 
-    for (unsigned i = 0; i != cmdBufCount; ++i)
+    for (uint32 i = 0; i != cmdBufCount; ++i)
     {
         Handle h = CommandBufferPoolGLES2::Alloc();
         CommandBufferGLES2_t* cb = CommandBufferPoolGLES2::Get(h);
@@ -511,41 +511,33 @@ void CommandBufferGLES2_t::Execute()
     uint32 cur_base_vert = 0;
     Handle last_ps = InvalidHandle;
     uint32 cur_gl_prog = 0;
-    Handle vp_const[MAX_CONST_BUFFER_COUNT];
-    const void* vp_const_data[MAX_CONST_BUFFER_COUNT];
-    Handle fp_const[MAX_CONST_BUFFER_COUNT];
-    const void* fp_const_data[MAX_CONST_BUFFER_COUNT];
-    Handle cur_vb[MAX_VERTEX_STREAM_COUNT];
+
+    Handle vp_const[MAX_CONST_BUFFER_COUNT] = {};
+    const void* vp_const_data[MAX_CONST_BUFFER_COUNT] = {};
+
+    Handle fp_const[MAX_CONST_BUFFER_COUNT] = {};
+    const void* fp_const_data[MAX_CONST_BUFFER_COUNT] = {};
+
+    Handle cur_vb[MAX_VERTEX_STREAM_COUNT] = {};
     Handle cur_ib = InvalidHandle;
+
     bool vdecl_pending = true;
     IndexSize idx_size = INDEX_SIZE_16BIT;
-    unsigned tex_unit_0 = 0;
+    uint32 tex_unit_0 = 0;
     Handle cur_query_buf = InvalidHandle;
-    GLint def_viewport[4] = { 0, 0, 0, 0 };
-
-    for (unsigned i = 0; i != MAX_VERTEX_STREAM_COUNT; ++i)
-        cur_vb[i] = InvalidHandle;
-
-    for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
-    {
-        vp_const[i] = InvalidHandle;
-        fp_const[i] = InvalidHandle;
-    }
-    memset(vp_const_data, 0, sizeof(vp_const_data));
-    memset(fp_const_data, 0, sizeof(fp_const_data));
+    GLint def_viewport[4] = {};
 
     int immediate_cmd_ttw = 10;
 
     sync = InvalidHandle;
 
-    //unsigned    cmd_cnt=0;
-    //unsigned    dip_cnt=0;
-    //unsigned    stcb_cnt=0;
-    //unsigned    sttx_cnt=0;
-
     for (const uint8 *c = cmdData, *c_end = cmdData + curUsedSize; c != c_end;)
     {
         const SWCommand* cmd = reinterpret_cast<const SWCommand*>(c);
+
+        uintptr_t cmdPtr = reinterpret_cast<uintptr_t>(cmd);
+        DVASSERT((cmdPtr % 4) == 0);
+
         switch (SoftwareCommandType(cmd->type))
         {
         case CMD_BEGIN:
@@ -566,15 +558,15 @@ void CommandBufferGLES2_t::Execute()
 #endif
                 Handle rt[MAX_RENDER_TARGET_COUNT] = {};
                 TextureFace rt_face[MAX_RENDER_TARGET_COUNT] = {};
-                unsigned rt_level[MAX_RENDER_TARGET_COUNT] = {};
-                unsigned rt_count = 0;
+                uint32 rt_level[MAX_RENDER_TARGET_COUNT] = {};
+                uint32 rt_count = 0;
                 bool apply_fb = true;
                 bool do_clear = true;
 
                 def_viewport[0] = 0;
                 def_viewport[1] = 0;
 
-                for (unsigned i = 0; i != countof(passCfg.colorBuffer); ++i)
+                for (uint32 i = 0; i != countof(passCfg.colorBuffer); ++i)
                 {
                     if (passCfg.colorBuffer[i].texture != InvalidHandle)
                     {
@@ -626,7 +618,7 @@ void CommandBufferGLES2_t::Execute()
                     _GLES2_Bound_FrameBuffer = fbo;
 
                     #if !defined(__DAVAENGINE_ANDROID__)
-                    for (unsigned i = 0; i != rt_count; ++i)
+                    for (uint32 i = 0; i != rt_count; ++i)
                     {
                         if (passCfg.colorBuffer[i].loadAction == LOADACTION_CLEAR)
                             glClearBufferfv(GL_COLOR, i, passCfg.colorBuffer[i].clearColor);
@@ -728,7 +720,7 @@ void CommandBufferGLES2_t::Execute()
         case CMD_SET_VERTEX_DATA:
         {
             Handle vb = (static_cast<const SWCommand_SetVertexData*>(cmd))->vb;
-            unsigned stream_i = (static_cast<const SWCommand_SetVertexData*>(cmd))->streamIndex;
+            uint32 stream_i = (static_cast<const SWCommand_SetVertexData*>(cmd))->streamIndex;
             if (cur_vb[stream_i] != vb)
             {
                 if (stream_i == 0)
@@ -784,7 +776,7 @@ void CommandBufferGLES2_t::Execute()
             uint32 vdecl = (static_cast<const SWCommand_SetPipelineState*>(cmd))->vdecl;
             if (cur_ps != ps || cur_vdecl != vdecl)
             {
-                for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+                for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
                 {
                     vp_const[i] = InvalidHandle;
                     fp_const[i] = InvalidHandle;
@@ -899,7 +891,7 @@ void CommandBufferGLES2_t::Execute()
         case CMD_SET_VERTEX_PROG_CONST_BUFFER:
         {
             //++stcb_cnt;
-            unsigned buf_i = (static_cast<const SWCommand_SetVertexProgConstBuffer*>(cmd))->bufIndex;
+            uint32 buf_i = (static_cast<const SWCommand_SetVertexProgConstBuffer*>(cmd))->bufIndex;
             const void* inst = (static_cast<const SWCommand_SetVertexProgConstBuffer*>(cmd))->inst;
             Handle buf = (static_cast<const SWCommand_SetVertexProgConstBuffer*>(cmd))->buffer;
             vp_const[buf_i] = buf;
@@ -910,7 +902,7 @@ void CommandBufferGLES2_t::Execute()
         case CMD_SET_FRAGMENT_PROG_CONST_BUFFER:
         {
             //++stcb_cnt;
-            unsigned buf_i = (static_cast<const SWCommand_SetFragmentProgConstBuffer*>(cmd))->bufIndex;
+            uint32 buf_i = (static_cast<const SWCommand_SetFragmentProgConstBuffer*>(cmd))->bufIndex;
             const void* inst = (static_cast<const SWCommand_SetFragmentProgConstBuffer*>(cmd))->inst;
             Handle buf = (static_cast<const SWCommand_SetFragmentProgConstBuffer*>(cmd))->buffer;
             fp_const[buf_i] = buf;
@@ -922,7 +914,7 @@ void CommandBufferGLES2_t::Execute()
         {
             //++sttx_cnt;
             Handle tex = (static_cast<const SWCommand_SetFragmentTexture*>(cmd))->tex;
-            unsigned unit_i = (static_cast<const SWCommand_SetFragmentTexture*>(cmd))->unitIndex;
+            uint32 unit_i = (static_cast<const SWCommand_SetFragmentTexture*>(cmd))->unitIndex;
             TextureGLES2::SetToRHI(tex, unit_i, tex_unit_0);
             StatSet::IncStat(stat_SET_TEX, 1);
         }
@@ -932,7 +924,7 @@ void CommandBufferGLES2_t::Execute()
         {
             //++sttx_cnt;
             Handle tex = (static_cast<const SWCommand_SetVertexTexture*>(cmd))->tex;
-            unsigned unit_i = (static_cast<const SWCommand_SetVertexTexture*>(cmd))->unitIndex;
+            uint32 unit_i = (static_cast<const SWCommand_SetVertexTexture*>(cmd))->unitIndex;
 
             TextureGLES2::SetToRHI(tex, unit_i, DAVA::InvalidIndex);
             StatSet::IncStat(stat_SET_TEX, 1);
@@ -943,7 +935,7 @@ void CommandBufferGLES2_t::Execute()
         {
             //++dip_cnt;
             //{SCOPED_NAMED_TIMING("gl.DP")}
-            unsigned v_cnt = (static_cast<const SWCommand_DrawPrimitive*>(cmd))->vertexCount;
+            uint32 v_cnt = (static_cast<const SWCommand_DrawPrimitive*>(cmd))->vertexCount;
             int mode = (static_cast<const SWCommand_DrawPrimitive*>(cmd))->mode;
             if (last_ps != cur_ps)
             {
@@ -952,12 +944,12 @@ void CommandBufferGLES2_t::Execute()
                 last_ps = cur_ps;
             }
 
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (vp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(vp_const[i], cur_gl_prog, vp_const_data[i]);
             }
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (fp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(fp_const[i], cur_gl_prog, fp_const_data[i]);
@@ -992,7 +984,7 @@ void CommandBufferGLES2_t::Execute()
         {
             //++dip_cnt;
             //{SCOPED_NAMED_TIMING("gl.DIP")}
-            unsigned v_cnt = (static_cast<const SWCommand_DrawIndexedPrimitive*>(cmd))->indexCount;
+            uint32 v_cnt = (static_cast<const SWCommand_DrawIndexedPrimitive*>(cmd))->indexCount;
             int mode = (static_cast<const SWCommand_DrawIndexedPrimitive*>(cmd))->mode;
             uint32 firstVertex = (static_cast<const SWCommand_DrawIndexedPrimitive*>(cmd))->firstVertex;
             uint32 startIndex = (static_cast<const SWCommand_DrawIndexedPrimitive*>(cmd))->startIndex;
@@ -1004,12 +996,12 @@ void CommandBufferGLES2_t::Execute()
                 last_ps = cur_ps;
             }
 
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (vp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(vp_const[i], cur_gl_prog, vp_const_data[i]);
             }
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (fp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(fp_const[i], cur_gl_prog, fp_const_data[i]);
@@ -1052,9 +1044,9 @@ void CommandBufferGLES2_t::Execute()
 
         case CMD_DRAW_INSTANCED_PRIMITIVE:
         {
-            unsigned v_cnt = (static_cast<const SWCommand_DrawInstancedPrimitive*>(cmd))->vertexCount;
+            uint32 v_cnt = (static_cast<const SWCommand_DrawInstancedPrimitive*>(cmd))->vertexCount;
             int mode = (static_cast<const SWCommand_DrawInstancedPrimitive*>(cmd))->mode;
-            unsigned instCount = (static_cast<const SWCommand_DrawInstancedPrimitive*>(cmd))->instanceCount;
+            uint32 instCount = (static_cast<const SWCommand_DrawInstancedPrimitive*>(cmd))->instanceCount;
 
             if (last_ps != cur_ps)
             {
@@ -1063,12 +1055,12 @@ void CommandBufferGLES2_t::Execute()
                 last_ps = cur_ps;
             }
 
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (vp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(vp_const[i], cur_gl_prog, vp_const_data[i]);
             }
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (fp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(fp_const[i], cur_gl_prog, fp_const_data[i]);
@@ -1112,9 +1104,9 @@ void CommandBufferGLES2_t::Execute()
 
         case CMD_DRAW_INSTANCED_INDEXED_PRIMITIVE:
         {
-            unsigned v_cnt = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->indexCount;
+            uint32 v_cnt = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->indexCount;
             int mode = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->mode;
-            unsigned instCount = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->instanceCount;
+            uint32 instCount = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->instanceCount;
             uint32 firstVertex = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->firstVertex;
             uint32 startIndex = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->startIndex;
             uint32 baseInst = (static_cast<const SWCommand_DrawInstancedIndexedPrimitive*>(cmd))->baseInstance;
@@ -1127,12 +1119,12 @@ void CommandBufferGLES2_t::Execute()
                 last_ps = cur_ps;
             }
 
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (vp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(vp_const[i], cur_gl_prog, vp_const_data[i]);
             }
-            for (unsigned i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
+            for (uint32 i = 0; i != MAX_CONST_BUFFER_COUNT; ++i)
             {
                 if (fp_const[i] != InvalidHandle)
                     ConstBufferGLES2::SetToRHI(fp_const[i], cur_gl_prog, fp_const_data[i]);
@@ -1250,7 +1242,7 @@ static void _GLES2_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
     StatSet::ResetAll();
 
     std::vector<RenderPassGLES2_t*> pass;
-    unsigned frame_n = 0;
+    uint32 frame_n = 0;
     Handle framePerfQueryStart = InvalidHandle;
     Handle framePerfQueryEnd = InvalidHandle;
     bool skipFramePerfQueries = false;
@@ -1260,7 +1252,7 @@ static void _GLES2_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
         RenderPassGLES2_t* pp = RenderPassPoolGLES2::Get(p);
         bool do_add = true;
 
-        for (unsigned i = 0; i != pass.size(); ++i)
+        for (uint32 i = 0; i != pass.size(); ++i)
         {
             if (pp->priority > pass[i]->priority)
             {
@@ -1274,7 +1266,7 @@ static void _GLES2_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
 
         if (DeviceCaps().isPerfQuerySupported && !_GLES2_TimeStampQuerySupported)
         {
-            for (unsigned b = 0; b != pp->cmdBuf.size(); ++b)
+            for (uint32 b = 0; b != pp->cmdBuf.size(); ++b)
             {
                 pp->skipPerfQueries |= CommandBufferPoolGLES2::Get(pp->cmdBuf[b])->skipPassPerfQueries;
             }
@@ -1319,7 +1311,7 @@ static void _GLES2_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
     {
         RenderPassGLES2_t* pp = *p;
 
-        for (unsigned b = 0; b != pp->cmdBuf.size(); ++b)
+        for (uint32 b = 0; b != pp->cmdBuf.size(); ++b)
         {
             Handle cb_h = pp->cmdBuf[b];
             CommandBufferGLES2_t* cb = CommandBufferPoolGLES2::Get(cb_h);
