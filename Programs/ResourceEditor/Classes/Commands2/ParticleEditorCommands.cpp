@@ -708,7 +708,7 @@ void CommandRemoveParticleForce::Redo()
 
 CommandRemoveParticleForce::~CommandRemoveParticleForce()
 {
-    DAVA::SafeRelease(selectedForce);
+    SafeRelease(selectedForce);
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEffectComponent* effect, ParticleEmitterInstance* emitter, const FilePath& path)
