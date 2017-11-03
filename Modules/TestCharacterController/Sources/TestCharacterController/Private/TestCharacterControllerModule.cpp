@@ -3,8 +3,6 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/PhysicsSystem.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Entity.h>
@@ -13,6 +11,11 @@
 #include <Scene3D/Systems/MotionSystem.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/PhysicsSystem.h>
+#endif
 
 namespace DAVA
 {
@@ -39,7 +42,10 @@ void TestCharacterControllerModule::CheckCharacterResources()
         if (characterSourceEntity != nullptr)
         {
             testCharacterEntity = new Entity();
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
             testCharacterEntity->AddComponent(new CapsuleCharacterControllerComponent());
+#endif
 
             ScopedPtr<Entity> characterMeshEntity(characterSourceEntity->Clone());
             characterMeshEntity->SetName("Character");
@@ -80,8 +86,10 @@ bool TestCharacterControllerModule::EnableController(DAVA::Scene* scene, const V
     context.characterControllerSystem = new TestCharacterControllerSystem(scene);
     scene->AddSystem(context.characterControllerSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT, scene->motionSystem);
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     context.characterMoveSystem = new TestCharacterMoveSystem(scene);
     scene->AddSystem(context.characterMoveSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->physicsSystem);
+#endif
 
     context.characterWeaponSystem = new TestCharacterWeaponSystem(scene);
     scene->AddSystem(context.characterWeaponSystem, 0, Scene::SCENE_SYSTEM_REQUIRE_PROCESS, scene->transformSystem);
@@ -110,8 +118,10 @@ bool TestCharacterControllerModule::DisableController(DAVA::Scene* scene)
     scene->RemoveSystem(context.characterControllerSystem);
     SafeDelete(context.characterControllerSystem);
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     scene->RemoveSystem(context.characterMoveSystem);
     SafeDelete(context.characterMoveSystem);
+#endif
 
     scene->RemoveSystem(context.characterWeaponSystem);
     SafeDelete(context.characterWeaponSystem);

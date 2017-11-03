@@ -8,9 +8,6 @@
 #include <Input/Keyboard.h>
 #include <Input/Mouse.h>
 
-#include <Physics/PhysicsUtils.h>
-#include <Physics/CharacterControllerComponent.h>
-
 #include <Render/Highlevel/Camera.h>
 
 #include <Scene3D/Entity.h>
@@ -20,6 +17,11 @@
 #include <Scene3D/Components/SingleComponents/MotionSingleComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Utils/Utils.h>
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+#include <Physics/PhysicsUtils.h>
+#include <Physics/CharacterControllerComponent.h>
+#endif
 
 namespace DAVA
 {
@@ -61,7 +63,9 @@ void TestCharacterControllerSystem::SetCharacterEntity(DAVA::Entity* entity)
         if (weaponEntity != nullptr)
             shootEffect = weaponEntity->FindByName("shot_auto");
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
+#endif
 
         characterSkeleton = GetSkeletonComponent(characterMeshEntity);
         DVASSERT(characterSkeleton != nullptr);
@@ -101,7 +105,7 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
     Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
     Mouse* mouse = GetEngineContext()->deviceManager->GetMouse();
 
-    Vector3 moveDirectionTarget;
+    Vector2 moveDirectionTarget = inputJoypadDirection;
     if (keyboard != nullptr)
     {
         if (keyboard->GetKeyState(eInputElements::KB_W).IsPressed() || keyboard->GetKeyState(eInputElements::KB_UP).IsPressed())
@@ -115,32 +119,27 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
 
         if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
             moveDirectionTarget.x += 1.f;
-
-        float32 directionDt = timeElapsed * 5.f;
-
-        if (directionParam.x > moveDirectionTarget.x)
-            directionParam.x -= directionDt;
-        if (directionParam.x < moveDirectionTarget.x)
-            directionParam.x += directionDt;
-
-        if (directionParam.y > moveDirectionTarget.y)
-            directionParam.y -= directionDt;
-        if (directionParam.y < moveDirectionTarget.y)
-            directionParam.y += directionDt;
-
-        if (Abs(directionParam.x) < directionDt)
-            directionParam.x = 0.f;
-        if (Abs(directionParam.y) < directionDt)
-            directionParam.y = 0.f;
-
-        directionParam.x = Clamp(directionParam.x, -1.f, 1.f);
-        directionParam.y = Clamp(directionParam.y, -1.f, 1.f);
     }
-    else
-    {
-        directionParam.x = Clamp(inputJoypadDirection.x, -1.f, 1.f);
-        directionParam.y = Clamp(-inputJoypadDirection.y, -1.f, 1.f);
-    }
+
+    float32 directionDt = timeElapsed * 5.f;
+
+    if (directionParam.x > moveDirectionTarget.x)
+        directionParam.x -= directionDt;
+    if (directionParam.x < moveDirectionTarget.x)
+        directionParam.x += directionDt;
+
+    if (directionParam.y > moveDirectionTarget.y)
+        directionParam.y -= directionDt;
+    if (directionParam.y < moveDirectionTarget.y)
+        directionParam.y += directionDt;
+
+    if (Abs(directionParam.x) < directionDt)
+        directionParam.x = 0.f;
+    if (Abs(directionParam.y) < directionDt)
+        directionParam.y = 0.f;
+
+    directionParam.x = Clamp(directionParam.x, -1.f, 1.f);
+    directionParam.y = Clamp(directionParam.y, -1.f, 1.f);
 
     isMoving = (directionParam.SquareLength() > EPSILON || !moveDirectionTarget.IsZero());
     isCrouching = (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
@@ -283,7 +282,8 @@ bool TestCharacterControllerSystem::Input(UIEvent* uiEvent)
 
 void TestCharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& direction)
 {
-    inputJoypadDirection = direction;
+    inputJoypadDirection.x = Clamp(direction.x, -1.f, 1.f);
+    inputJoypadDirection.y = Clamp(-direction.y, -1.f, 1.f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -304,12 +304,14 @@ void TestCharacterMoveSystem::Process(DAVA::float32 timeElapsed)
     if (controllerSystem->characterMotionComponent == nullptr)
         return;
 
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     const Vector3& characterForward = controllerSystem->characterForward;
     const Vector3& characterLeft = controllerSystem->characterLeft;
     const Vector3& rootOffsetDelta = controllerSystem->characterMotionComponent->GetRootOffsetDelta();
 
     Vector3 moveDisplacement = -characterForward * rootOffsetDelta.y + characterLeft * rootOffsetDelta.x;
     controllerSystem->controllerComponent->Move(moveDisplacement);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////

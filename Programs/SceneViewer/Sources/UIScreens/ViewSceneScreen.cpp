@@ -15,9 +15,11 @@
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Update/UIUpdateComponent.h>
 #include <Platform/DeviceInfo.h>
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/StaticBodyComponent.h>
 #include <Physics/HeightFieldShapeComponent.h>
 #include <Physics/PhysicsSystem.h>
+#endif
 
 #include <TestCharacterController/TestCharacterControllerModule.h>
 #include <TestCharacterController/TestCharacterControllerSystems.h>
