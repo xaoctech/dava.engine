@@ -234,8 +234,8 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
     Vector3 forceDirection = toCenter;
     if (force->pointGravityUseRandomPointsOnSphere)
     {
-        intptr_t partInd = reinterpret_cast<intptr_t>(particle);
-        uint32 particleIndex = *reinterpret_cast<uint32*>(&partInd);
+        uintptr_t partInd = reinterpret_cast<uintptr_t>(particle);
+        uint64 particleIndex = static_cast<uint64>(partInd);
         particleIndex %= ParticleForcesDetail::sphereRandomVectorsSize;
         Vector3 forcePositionModified = forcePosition + ParticleForcesDetail::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
         forceDirection = forcePositionModified - position;
