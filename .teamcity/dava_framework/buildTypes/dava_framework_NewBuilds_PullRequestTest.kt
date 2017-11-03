@@ -42,7 +42,7 @@ object dava_framework_NewBuilds_PullRequestTest : BuildType({
         script {
             name = "Send Build Status to Slack"
             executionMode = BuildStep.ExecutionMode.ALWAYS
-            scriptContent = "curl http://10.128.2.115/modules/bot_slack/build_notify.php?build_id=%teamcity.build.id%"
+            scriptContent = "curl http://ba-manager.wargaming.net/modules/bot_slack/build_notify.php?build_id=%teamcity.build.id%"
         }
         script {
             name = "Update depend build status"
