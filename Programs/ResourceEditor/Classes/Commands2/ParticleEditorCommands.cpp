@@ -695,7 +695,7 @@ void CommandAddParticlePlaneCollision::Redo()
 CommandRemoveParticleForce::CommandRemoveParticleForce(ParticleLayer* layer, ParticleForce* force)
     : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
     , selectedLayer(layer)
-    , selectedForce(force)
+    , selectedForce(SafeRetain(force))
 {
 }
 
