@@ -2,7 +2,6 @@ package com.dava.engine;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.AndroidRuntimeException;
 import android.view.View;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
