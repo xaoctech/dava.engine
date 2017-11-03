@@ -17,14 +17,7 @@
 #include <Platform/DeviceInfo.h>
 #include <Physics/StaticBodyComponent.h>
 #include <Physics/HeightFieldShapeComponent.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/BoxCharacterControllerComponent.h>
-#include <Physics/WASDPhysicsControllerComponent.h>
 #include <Physics/PhysicsSystem.h>
-#include <Scene3D/Components/MotionComponent.h>
-#include <Scene3D/Systems/MotionSystem.h>
-#include <Scene3D/Systems/RenderUpdateSystem.h>
-#include <Scene3D/Systems/TransformSystem.h>
 
 #include <TestCharacterController/TestCharacterControllerModule.h>
 #include <TestCharacterController/TestCharacterControllerSystems.h>
