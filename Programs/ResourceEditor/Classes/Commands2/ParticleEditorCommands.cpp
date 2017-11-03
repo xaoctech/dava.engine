@@ -22,7 +22,7 @@ DAVA::Map<ForceType, String> forceNames =
   { ForceType::WIND, "Wind" },
   { ForceType::VORTEX, "Vortex" },
   { ForceType::GRAVITY, "Gravity" },
-  { ForceType::POINT_GRAVITY, "Magnet" },
+  { ForceType::POINT_GRAVITY, "Point Gravity" },
   { ForceType::PLANE_COLLISION, "Plane Collision" }
 };
 
