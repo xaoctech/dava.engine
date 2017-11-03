@@ -47,7 +47,7 @@ public:
     static const String ProjectPathProperty;
 
 private:
-    friend class ProjectManagerModule;
+    friend class ::ProjectManagerModule;
     friend class ProjectResources;
 
     std::unique_ptr<SpritesPackerModule> spritesPacker;

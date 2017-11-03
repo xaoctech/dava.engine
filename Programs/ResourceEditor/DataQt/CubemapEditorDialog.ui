@@ -533,7 +533,7 @@
   <customwidget>
    <class>ClickableQLabel</class>
    <extends>QLabel</extends>
-   <header>ClickableQLabel.h</header>
+   <header>Classes/Qt/CubemapEditor/ClickableQLabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>

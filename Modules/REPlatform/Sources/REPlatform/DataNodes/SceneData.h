@@ -1,6 +1,7 @@
 #pragma once
 
 #include "REPlatform/Scene/SceneEditor2.h"
+#include "REPlatform/Scene/Utils/Utils.h"
 
 #include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/Qt/QtString.h>
@@ -41,7 +42,7 @@ public:
     static const char* sceneRedoDescriptionPropertyName;
 
 private:
-    friend class SceneManagerModule;
+    friend class ::SceneManagerModule;
 
     void CreatePropertiesRoot(FileSystem* fs, const FilePath& dirPath, const FilePath& fileName);
 

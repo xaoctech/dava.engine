@@ -844,13 +844,13 @@
   <customwidget>
    <class>TextureScrollArea</class>
    <extends>QGraphicsView</extends>
-   <header>TextureScrollArea.h</header>
+   <header>Classes/Qt/TextureBrowser/TextureScrollArea.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TextureList</class>
    <extends>QListView</extends>
-   <header>TextureList.h</header>
+   <header>Classes/Qt/TextureBrowser/TextureList.h</header>
   </customwidget>
   <customwidget>
    <class>QTabBar</class>
@@ -861,7 +861,7 @@
   <customwidget>
    <class>TextureProperties</class>
    <extends>QTreeView</extends>
-   <header>TextureProperties.h</header>
+   <header>Classes/Qt/TextureBrowser/TextureProperties.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

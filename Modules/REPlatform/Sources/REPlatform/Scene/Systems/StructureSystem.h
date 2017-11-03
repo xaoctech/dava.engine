@@ -17,6 +17,7 @@
 namespace DAVA
 {
 class RECommandNotificationObject;
+class SceneEditor2;
 class StructureSystem : public SceneSystem, public EditorSceneSystem
 {
 public:
@@ -52,7 +53,7 @@ public:
 
     void CheckAndMarkSolid(Entity* entity);
 
-    DAVA::Signal<DAVA::SceneEditor2*> structureChangedSignal;
+    Signal<SceneEditor2*> structureChangedSignal;
 
 protected:
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;

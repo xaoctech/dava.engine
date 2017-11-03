@@ -11,7 +11,7 @@ class CommandAction : public RECommand
 {
 public:
     CommandAction(const String& text = String());
-    void Undo();
+    void Undo() override;
 
 private:
     DAVA_VIRTUAL_REFLECTION(CommandAction, RECommand);

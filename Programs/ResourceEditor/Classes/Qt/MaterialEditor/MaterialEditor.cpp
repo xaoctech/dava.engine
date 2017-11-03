@@ -20,6 +20,7 @@
 #include <REPlatform/Global/GlobalOperations.h>
 #include <REPlatform/Scene/SceneHelper.h>
 #include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+#include <REPlatform/Scene/Utils/Utils.h>
 
 #include <QtTools/FileDialogs/FileDialog.h>
 #include <QtTools/Updaters/LazyUpdater.h>

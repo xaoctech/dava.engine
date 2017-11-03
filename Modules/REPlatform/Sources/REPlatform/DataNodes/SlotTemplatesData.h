@@ -26,7 +26,7 @@ public:
     Vector<Template> GetTemplates() const;
 
 private:
-    friend class SlotSupportModule;
+    friend class ::SlotSupportModule;
     void Clear();
     void ParseConfig(const FilePath& configPath);
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "REPlatform/Commands/Private/CommandMatchHelper.h"
+
 #include <Base/BaseTypes.h>
 #include <Command/CommandBatch.h>
 

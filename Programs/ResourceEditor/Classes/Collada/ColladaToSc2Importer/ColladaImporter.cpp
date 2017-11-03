@@ -105,7 +105,6 @@ bool ColladaImporter::VerifyColladaMesh(ColladaMeshInstance* mesh, const FastNam
     {
         if (polygonGroupInstance->material == nullptr)
         {
-        DAVA:
             Logger::Error("[DAE to SC2] Node %s has no material", nodeName.c_str());
             return false;
         }

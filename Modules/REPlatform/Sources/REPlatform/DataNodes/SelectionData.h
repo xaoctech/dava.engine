@@ -9,6 +9,7 @@
 
 #include <memory>
 
+class SelectionModule;
 namespace DAVA
 {
 class Entity;
@@ -43,7 +44,7 @@ public:
     //end of old interface
 
 private:
-    friend class SelectionModule;
+    friend class ::SelectionModule;
 
     std::unique_ptr<SelectionSystem> selectionSystem;
 

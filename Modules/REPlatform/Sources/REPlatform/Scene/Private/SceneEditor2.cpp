@@ -4,7 +4,6 @@
 #include "REPlatform/Commands/CustomColorsCommands2.h"
 #include "REPlatform/Commands/HeightmapEditorCommands2.h"
 #include "REPlatform/Commands/LandscapeToolsToggleCommand.h"
-#include "REPlatform/Commands/Private/RECommandStack.h"
 #include "REPlatform/Commands/RECommandNotificationObject.h"
 #include "REPlatform/Commands/TilemaskEditorCommands.h"
 

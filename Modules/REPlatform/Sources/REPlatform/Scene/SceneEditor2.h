@@ -1,6 +1,7 @@
 #pragma once
 
 #include "REPlatform/Commands/CommandNotify.h"
+#include "REPlatform/Commands/Private/RECommandStack.h"
 #include "REPlatform/Scene/Utils/SceneExporter.h"
 
 #include <FileSystem/FilePath.h>

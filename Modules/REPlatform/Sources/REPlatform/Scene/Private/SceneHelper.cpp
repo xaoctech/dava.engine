@@ -157,7 +157,7 @@ int32 EnumerateModifiedTextures(Scene* forScene, Map<Texture*, Vector<eGPUFamily
     return retValue;
 }
 
-void SceneHelper::EnumerateMaterials(Entity* forNode, Set<NMaterial*>& materials)
+void EnumerateMaterials(Entity* forNode, Set<NMaterial*>& materials)
 {
     EnumerateMaterialInstances(forNode, materials);
 
@@ -172,7 +172,7 @@ void SceneHelper::EnumerateMaterials(Entity* forNode, Set<NMaterial*>& materials
     }
 }
 
-void SceneHelper::EnumerateMaterialInstances(Entity* forNode, Set<NMaterial*>& materials)
+void EnumerateMaterialInstances(Entity* forNode, Set<NMaterial*>& materials)
 {
     uint32 childrenCount = forNode->GetChildrenCount();
     for (uint32 i = 0; i < childrenCount; ++i)
