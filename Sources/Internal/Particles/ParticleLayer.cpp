@@ -1415,14 +1415,13 @@ void ParticleLayer::AddForce(ParticleForce* force)
 
 void ParticleLayer::RemoveForce(ParticleForce* force)
 {
-    if (force->CanAlterPosition())
-        --alterPositionForcesCount;
-    if (force->type == ParticleForce::eType::PLANE_COLLISION)
-        --planeCollisionForcesCount;
-
     auto iter = std::find(particleForces.begin(), particleForces.end(), force);
     if (iter != particleForces.end())
     {
+        if (force->CanAlterPosition())
+            --alterPositionForcesCount;
+        if (force->type == ParticleForce::eType::PLANE_COLLISION)
+            --planeCollisionForcesCount;
         SafeRelease(*iter);
         particleForces.erase(iter);
     }
@@ -1432,6 +1431,10 @@ void ParticleLayer::RemoveForce(int32 forceIndex)
 {
     if (forceIndex <= static_cast<int32>(particleForces.size()))
     {
+        if (particleForces[forceIndex]->CanAlterPosition())
+            --alterPositionForcesCount;
+        if (particleForces[forceIndex]->type == ParticleForce::eType::PLANE_COLLISION)
+            --planeCollisionForcesCount;
         SafeRelease(particleForces[forceIndex]);
         particleForces.erase(particleForces.begin() + forceIndex);
     }

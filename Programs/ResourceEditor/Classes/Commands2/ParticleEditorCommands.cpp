@@ -549,12 +549,13 @@ CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEmi
 
 void CommandRemoveParticleEmitterLayer::Redo()
 {
-    instance->GetEmitter()->RemoveLayer(selectedLayer);
+    selectedLayerIndex = instance->GetEmitter()->RemoveLayer(selectedLayer);
 }
 
 void CommandRemoveParticleEmitterLayer::Undo()
 {
-    instance->GetEmitter()->AddLayer(selectedLayer);
+    DVASSERT(selectedLayerIndex != -1);
+    instance->GetEmitter()->InsertLayer(selectedLayer, selectedLayerIndex);
 }
 
 CommandRemoveParticleEmitterLayer::~CommandRemoveParticleEmitterLayer()

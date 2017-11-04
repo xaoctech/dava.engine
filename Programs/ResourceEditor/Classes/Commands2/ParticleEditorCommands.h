@@ -85,13 +85,15 @@ class CommandRemoveParticleEmitterLayer : public RECommand
 {
 public:
     CommandRemoveParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
+    ~CommandRemoveParticleEmitterLayer();
+
     void Redo() override;
     void Undo() override;
-    ~CommandRemoveParticleEmitterLayer();
 
 protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::ParticleLayer* selectedLayer = nullptr;
+    DAVA::int32 selectedLayerIndex = -1;
 };
 
 class CommandRemoveParticleEmitter : public RECommand
@@ -218,10 +220,10 @@ class CommandRemoveParticleForce : public RECommand
 {
 public:
     CommandRemoveParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
+    ~CommandRemoveParticleForce();
+
     void Redo() override;
     void Undo() override;
-
-    ~CommandRemoveParticleForce();
 
 protected:
     DAVA::ParticleLayer* selectedLayer = nullptr;
