@@ -11,25 +11,20 @@
 class QMimeData;
 class PackageBaseNode;
 
-class PackageModule
-: public DAVA::TArc::ClientModule
-  ,
-  public Interfaces::PackageActionsInterface
-  ,
-  private DAVA::TArc::DataListener
+class PackageModule : public DAVA::TArc::ClientModule, public Interfaces::PackageActionsInterface, private DAVA::TArc::DataListener
 {
     // ClientModule
     void PostInit() override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
     // PackageActionsInterface
-    DAVA::TArc::QtAction* GetCutAction() override;
-    DAVA::TArc::QtAction* GetCopyAction() override;
-    DAVA::TArc::QtAction* GetPasteAction() override;
-    DAVA::TArc::QtAction* GetDuplicateAction() override;
-    DAVA::TArc::QtAction* GetDeleteAction() override;
-    DAVA::TArc::QtAction* GetJumpToPrototypeAction() override;
-    DAVA::TArc::QtAction* GetFindPrototypeInstancesAction() override;
+    QAction* GetCutAction() override;
+    QAction* GetCopyAction() override;
+    QAction* GetPasteAction() override;
+    QAction* GetDuplicateAction() override;
+    QAction* GetDeleteAction() override;
+    QAction* GetJumpToPrototypeAction() override;
+    QAction* GetFindPrototypeInstancesAction() override;
 
     // DataListener
     void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
@@ -60,15 +55,15 @@ class PackageModule
 
     void OnDropIntoPackageNode(const QMimeData* data, Qt::DropAction action, PackageBaseNode* destNode, DAVA::uint32 destIndex, const DAVA::Vector2* pos);
 
-    enum DIRECTION : bool
+    enum eDirection : bool
     {
         UP = true,
         DOWN = false
     };
-    bool CanMove(const PackageBaseNode* dest, PackageBaseNode* node, DIRECTION direction) const;
+    bool CanMove(const PackageBaseNode* dest, PackageBaseNode* node, eDirection direction) const;
     bool CanMoveLeft(PackageBaseNode* node) const;
     bool CanMoveRight(PackageBaseNode* node) const;
-    void MoveNode(PackageBaseNode* node, DIRECTION direction);
+    void MoveNode(PackageBaseNode* node, eDirection direction);
     void MoveNode(PackageBaseNode* node, PackageBaseNode* dest, DAVA::uint32 destIndex);
 
     void PushErrorMessage(const DAVA::String& errorMessage);

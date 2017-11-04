@@ -32,7 +32,7 @@ public:
     explicit PackageWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent = 0);
 
     PackageModel* GetPackageModel() const;
-    using ExpandedIndexes = QModelIndexList;
+    using QModelIndexList = QModelIndexList;
 
     void OnSelectionChanged(const DAVA::Any& selection);
     void OnPackageChanged(PackageContext* context, PackageNode* node);
@@ -51,13 +51,13 @@ private:
     void SetSelectedNodes(const SelectedNodes& selection);
     void CollectExpandedIndexes(PackageBaseNode* node);
     void LoadContext();
-    void SaveContext();
+    void SaveContext() const;
 
     void DeselectNodeImpl(PackageBaseNode* node);
     void SelectNodeImpl(PackageBaseNode* node);
 
-    ExpandedIndexes GetExpandedIndexes() const;
-    void RestoreExpandedIndexes(const ExpandedIndexes& indexes);
+    QModelIndexList GetExpandedIndexes() const;
+    void RestoreExpandedIndexes(const QModelIndexList& indexes);
 
 private:
     friend class PackageModule;
@@ -72,5 +72,5 @@ private:
 
 struct PackageContext
 {
-    PackageWidget::ExpandedIndexes expandedIndexes;
+    QModelIndexList expandedIndexes;
 };

@@ -1,24 +1,18 @@
 #pragma once
 
-namespace DAVA
-{
-namespace TArc
-{
-class QtAction;
-}
-}
+class QAction;
 
 namespace Interfaces
 {
 class PackageActionsInterface
 {
 public:
-    virtual DAVA::TArc::QtAction* GetCutAction() = 0;
-    virtual DAVA::TArc::QtAction* GetCopyAction() = 0;
-    virtual DAVA::TArc::QtAction* GetPasteAction() = 0;
-    virtual DAVA::TArc::QtAction* GetDuplicateAction() = 0;
-    virtual DAVA::TArc::QtAction* GetDeleteAction() = 0;
-    virtual DAVA::TArc::QtAction* GetJumpToPrototypeAction() = 0;
-    virtual DAVA::TArc::QtAction* GetFindPrototypeInstancesAction() = 0;
+    virtual QAction* GetCutAction() = 0;
+    virtual QAction* GetCopyAction() = 0;
+    virtual QAction* GetPasteAction() = 0;
+    virtual QAction* GetDuplicateAction() = 0;
+    virtual QAction* GetDeleteAction() = 0;
+    virtual QAction* GetJumpToPrototypeAction() = 0;
+    virtual QAction* GetFindPrototypeInstancesAction() = 0;
 };
 }

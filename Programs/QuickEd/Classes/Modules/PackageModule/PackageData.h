@@ -5,14 +5,7 @@
 #include <TArc/DataProcessing/DataNode.h>
 
 class PackageNode;
-
-namespace DAVA
-{
-namespace TArc
-{
-class QtAction;
-}
-}
+class QAction;
 
 class PackageData : public DAVA::TArc::DataNode
 {
@@ -20,15 +13,15 @@ public:
 private:
     friend class PackageModule;
 
-    DAVA::TArc::QtAction* copyAction = nullptr;
-    DAVA::TArc::QtAction* pasteAction = nullptr;
-    DAVA::TArc::QtAction* cutAction = nullptr;
+    QAction* copyAction = nullptr;
+    QAction* pasteAction = nullptr;
+    QAction* cutAction = nullptr;
 
-    DAVA::TArc::QtAction* deleteAction = nullptr;
-    DAVA::TArc::QtAction* duplicateAction = nullptr;
+    QAction* deleteAction = nullptr;
+    QAction* duplicateAction = nullptr;
 
-    DAVA::TArc::QtAction* jumpToPrototypeAction = nullptr;
-    DAVA::TArc::QtAction* findPrototypeInstancesAction = nullptr;
+    QAction* jumpToPrototypeAction = nullptr;
+    QAction* findPrototypeInstancesAction = nullptr;
 
     PackageWidget* packageWidget = nullptr;
     DAVA::Map<PackageNode*, PackageContext> packageWidgetContexts;

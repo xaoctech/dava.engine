@@ -161,17 +161,17 @@ void PackageModule::CreateActions()
         READONLY = true,
         MODIFIABLE = false
     };
-    auto MakeBindable = [](QString blockName, QtAction* action, Readonly readonly = MODIFIABLE)
+    auto makeBindable = [](QString blockName, QtAction* action, Readonly isReadonly)
     {
         KeyBindableActionInfo info;
         info.blockName = blockName;
         info.context = action->shortcutContext();
         info.defaultShortcuts << action->shortcuts();
-        info.readOnly = readonly;
+        info.readOnly = isReadonly;
         MakeActionKeyBindable(action, info);
     };
 
-    auto AddActionIntoTreeViewOnly = [packageWidget, ui](QtAction* action)
+    auto addActionIntoTreeViewOnly = [packageWidget, ui](QtAction* action)
     {
         packageWidget->treeView->addAction(action);
 
@@ -180,7 +180,7 @@ void PackageModule::CreateActions()
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     };
 
-    auto AddSeparatorIntoTreeView = [packageWidget]()
+    auto addSeparatorIntoTreeView = [packageWidget]()
     {
         QAction* separator = new QAction(packageWidget->treeView);
         separator->setSeparator(true);
@@ -205,8 +205,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnImport, this));
 
-        MakeBindable("Package", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Add Style
@@ -227,11 +227,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnAddStyle, this));
 
-        MakeBindable("Package", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Cut
     {
@@ -256,8 +256,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCut, this));
 
-        MakeBindable("Package/CopyPaste", action, READONLY);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/CopyPaste", action, READONLY);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Copy
@@ -283,8 +283,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCopy, this));
 
-        MakeBindable("Package/CopyPaste", action, READONLY);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/CopyPaste", action, READONLY);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Paste
@@ -312,8 +312,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnPaste, this));
 
-        MakeBindable("Package/CopyPaste", action, READONLY);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/CopyPaste", action, READONLY);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Duplicate
@@ -352,11 +352,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnDuplicate, this));
 
-        MakeBindable("Package/CopyPaste", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/CopyPaste", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Copy Control Path
     {
@@ -378,11 +378,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCopyControlPath, this));
 
-        MakeBindable("Package", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Rename
     {
@@ -401,11 +401,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRename, this));
 
-        MakeBindable("Package", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Delete
     {
@@ -433,11 +433,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnDelete, this));
 
-        MakeBindable("Package/CopyPaste", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/CopyPaste", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Move up
     {
@@ -475,8 +475,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveUp, this));
 
-        MakeBindable("Package/Move", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/Move", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Move down
@@ -515,8 +515,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveDown, this));
 
-        MakeBindable("Package/Move", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/Move", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Move left
@@ -542,8 +542,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveLeft, this));
 
-        MakeBindable("Package/Move", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/Move", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Move right
@@ -569,11 +569,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveRight, this));
 
-        MakeBindable("Package/Move", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package/Move", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Run UIViewer Fast
     {
@@ -607,8 +607,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRunUIViewerFast, this));
 
-        MakeBindable("UIViewer", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("UIViewer", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
     // Run UIViewer
@@ -643,11 +643,11 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnRunUIViewer, this));
 
-        MakeBindable("UIViewer", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("UIViewer", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Jump to Prototype
     const QString jumpToPrototypeActionName = "Jump to Prototype";
@@ -669,7 +669,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnJumpToPrototype, this));
 
-        MakeBindable("Package", action);
+        makeBindable("Package", action, MODIFIABLE);
 
         packageWidget->treeView->addAction(action);
 
@@ -698,7 +698,7 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnFindPrototypeInstances, this));
 
-        MakeBindable("Package", action);
+        makeBindable("Package", action, MODIFIABLE);
 
         packageWidget->treeView->addAction(action);
 
@@ -707,7 +707,7 @@ void PackageModule::CreateActions()
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
     }
 
-    AddSeparatorIntoTreeView();
+    addSeparatorIntoTreeView();
 
     // Collapse all
     {
@@ -725,8 +725,8 @@ void PackageModule::CreateActions()
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCollapseAll, this));
 
-        MakeBindable("Package", action);
-        AddActionIntoTreeViewOnly(action);
+        makeBindable("Package", action, MODIFIABLE);
+        addActionIntoTreeViewOnly(action);
     }
 }
 
@@ -836,7 +836,7 @@ void PackageModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     packageData->packageWidgetContexts.erase(documentData->GetPackageNode());
 }
 
-DAVA::TArc::QtAction* PackageModule::GetCutAction()
+QAction* PackageModule::GetCutAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -844,7 +844,7 @@ DAVA::TArc::QtAction* PackageModule::GetCutAction()
     return packageData->cutAction;
 }
 
-DAVA::TArc::QtAction* PackageModule::GetCopyAction()
+QAction* PackageModule::GetCopyAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -852,7 +852,7 @@ DAVA::TArc::QtAction* PackageModule::GetCopyAction()
     return packageData->copyAction;
 }
 
-DAVA::TArc::QtAction* PackageModule::GetPasteAction()
+QAction* PackageModule::GetPasteAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -860,7 +860,7 @@ DAVA::TArc::QtAction* PackageModule::GetPasteAction()
     return packageData->pasteAction;
 }
 
-DAVA::TArc::QtAction* PackageModule::GetDuplicateAction()
+QAction* PackageModule::GetDuplicateAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -868,7 +868,7 @@ DAVA::TArc::QtAction* PackageModule::GetDuplicateAction()
     return packageData->duplicateAction;
 }
 
-DAVA::TArc::QtAction* PackageModule::GetDeleteAction()
+QAction* PackageModule::GetDeleteAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -876,7 +876,7 @@ DAVA::TArc::QtAction* PackageModule::GetDeleteAction()
     return packageData->deleteAction;
 }
 
-DAVA::TArc::QtAction* PackageModule::GetJumpToPrototypeAction()
+QAction* PackageModule::GetJumpToPrototypeAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -884,7 +884,7 @@ DAVA::TArc::QtAction* PackageModule::GetJumpToPrototypeAction()
     return packageData->jumpToPrototypeAction;
 }
 
-DAVA::TArc::QtAction* PackageModule::GetFindPrototypeInstancesAction()
+QAction* PackageModule::GetFindPrototypeInstancesAction()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     DVASSERT(packageData != nullptr);
@@ -1377,7 +1377,7 @@ void PackageModule::OnCollapseAll()
     packageWidget->ExpandToFirstChild();
 }
 
-bool PackageModule::CanMove(const PackageBaseNode* dest, PackageBaseNode* node, DIRECTION direction) const
+bool PackageModule::CanMove(const PackageBaseNode* dest, PackageBaseNode* node, eDirection direction) const
 {
     DVASSERT(nullptr != node);
     DVASSERT(nullptr != dest);
@@ -1431,7 +1431,7 @@ bool PackageModule::CanMoveRight(PackageBaseNode* node) const
     return PackageModuleDetails::CanInsertControlOrStyle(dest, node, destIndex);
 }
 
-void PackageModule::MoveNode(PackageBaseNode* node, DIRECTION direction)
+void PackageModule::MoveNode(PackageBaseNode* node, eDirection direction)
 {
     PackageIterator iter(node, [direction, node, this](const PackageBaseNode* dest) -> bool
                          {
