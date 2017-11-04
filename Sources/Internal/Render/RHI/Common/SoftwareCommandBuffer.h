@@ -41,10 +41,10 @@ enum SoftwareCommandType
 
 struct SWCommand
 {
-    uint32 type;
-    uint32 size;
+    uint16 type;
+    uint16 size;
 
-    SWCommand(uint32 t, uint32 sz)
+    SWCommand(uint16 t, uint16 sz)
         : type(t)
         , size(sz)
     {
