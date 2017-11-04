@@ -299,6 +299,7 @@ fragment_out fp_main( fragment_in input )
 
         #if PARTICLES_THREE_POINT_GRADIENT
             half uperGradientLerpValue = textureColor0.r - gradientMiddlePoint;
+            gradientMiddlePoint = clamp(gradientMiddlePoint, 0.001f, 0.999f);
             half4 lowerGradColor = lerp(gradientColorForBlack, gradientColorForMiddle, textureColor0.r / gradientMiddlePoint);
             half4 upperGradColor = lerp(gradientColorForMiddle, gradientColorForWhite, uperGradientLerpValue / (1.0f - gradientMiddlePoint));
             half4 finalGradientColor = lerp(lowerGradColor, upperGradColor, step(0.0f, uperGradientLerpValue));

@@ -375,8 +375,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     QHBoxLayout* threePointGradHLayout = new QHBoxLayout();
     gradientMiddlePointLabel = new QLabel("Three point gradient middle point");
     gradientMiddlePointSpin = new EventFilterDoubleSpinBox();
-    gradientMiddlePointSpin->setMinimum(0.01f);
-    gradientMiddlePointSpin->setMaximum(0.99f);
+    gradientMiddlePointSpin->setMinimum(0.0f);
+    gradientMiddlePointSpin->setMaximum(1.0f);
     gradientMiddlePointSpin->setSingleStep(0.01f);
     gradientMiddlePointSpin->setDecimals(3);
     gradientMiddlePointSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
