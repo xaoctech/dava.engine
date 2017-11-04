@@ -370,14 +370,14 @@ macro( setup_main_module )
         endif()
 
 #####
+        if( CPP_FILES_EXECUTE )
+            get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
+            save_property( PROPERTY_LIST CPP_FILES_EXECUTE )
+        endif()        
+
+#####
         if (${MODULE_TYPE} STREQUAL "STATIC"  )
             append_property(EXTERNAL_TEST_FOLDERS ${CMAKE_CURRENT_LIST_DIR})
-
-            if( CPP_FILES_EXECUTE )
-                get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
-                save_property( PROPERTY_LIST CPP_FILES_EXECUTE )
-            endif()
-
 
             if( COVERAGE AND MACOS )
                 set( COVERAGE_STRING "COVERAGE" )
@@ -491,13 +491,20 @@ macro( setup_main_module )
                 set( ${VALUE}_DIR_NAME ${${VALUE}} )
                 set( ${VALUE})
             endforeach()
+
+
             
             if( SRC_FOLDERS_DIR_NAME )
-                define_source( SOURCE        ${SRC_FOLDERS_DIR_NAME}
-                                           IGNORE_ITEMS  ${ERASE_FOLDERS_DIR_NAME} ${ERASE_FOLDERS_${DAVA_PLATFORM_CURRENT}_DIR_NAME} 
-                                                                          ${ERASE_FILES_DIR_NAME} ${ERASE_FILES_${DAVA_PLATFORM_CURRENT}_DIR_NAME}
-                                            GROUP_SOURCE ${GROUP_SOURCE}
-                                         )
+                define_source( SOURCE           ${SRC_FOLDERS_DIR_NAME}
+
+                               IGNORE_ITEMS     ${CPP_FILES_EXECUTE} 
+                                                ${ERASE_FOLDERS_DIR_NAME} 
+                                                ${ERASE_FOLDERS_${DAVA_PLATFORM_CURRENT}_DIR_NAME} 
+                                                ${ERASE_FILES_DIR_NAME} 
+                                                ${ERASE_FILES_${DAVA_PLATFORM_CURRENT}_DIR_NAME}
+
+                                GROUP_SOURCE    ${GROUP_SOURCE}
+                            )
                                          
                 set_project_files_properties( "${PROJECT_SOURCE_FILES_CPP}" )
                 list( APPEND ALL_SRC  ${PROJECT_SOURCE_FILES} )
@@ -548,7 +555,7 @@ macro( setup_main_module )
                                       ${HPP_FILES} ${HPP_FILES_${DAVA_PLATFORM_CURRENT}}
                        SOURCE_RECURSE ${CPP_FILES_RECURSE} ${CPP_FILES_RECURSE_${DAVA_PLATFORM_CURRENT}}
                                       ${HPP_FILES_RECURSE} ${HPP_FILES_RECURSE_${DAVA_PLATFORM_CURRENT}}
-                       IGNORE_ITEMS   ${ERASE_FILES} ${ERASE_FILES_${DAVA_PLATFORM_CURRENT}}
+                       IGNORE_ITEMS   ${ERASE_FILES} ${ERASE_FILES_${DAVA_PLATFORM_CURRENT}} ${CPP_FILES_EXECUTE}
                        GROUP_SOURCE ${GROUP_SOURCE}
                        GROUP_STRINGS  ${MODULE_GROUP_STRINGS}
                      )
