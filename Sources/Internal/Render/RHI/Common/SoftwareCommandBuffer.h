@@ -118,18 +118,18 @@ struct SWCommand_SetCullMode : public SWCommandImpl<SWCommand_SetCullMode, CMD_S
 
 struct SWCommand_SetScissorRect : public SWCommandImpl<SWCommand_SetScissorRect, CMD_SET_SCISSOR_RECT>
 {
-    uint32 x;
-    uint32 y;
-    uint32 width;
-    uint32 height;
+    uint16 x;
+    uint16 y;
+    uint16 width;
+    uint16 height;
 };
 
 struct SWCommand_SetViewport : public SWCommandImpl<SWCommand_SetViewport, CMD_SET_VIEWPORT>
 {
-    uint32 x;
-    uint32 y;
-    uint32 width;
-    uint32 height;
+    uint16 x;
+    uint16 y;
+    uint16 width;
+    uint16 height;
 };
 
 struct SWCommand_SetFillMode : public SWCommandImpl<SWCommand_SetFillMode, CMD_SET_FILLMODE>
@@ -139,34 +139,34 @@ struct SWCommand_SetFillMode : public SWCommandImpl<SWCommand_SetFillMode, CMD_S
 
 struct SWCommand_SetVertexProgConstBuffer : public SWCommandImpl<SWCommand_SetVertexProgConstBuffer, CMD_SET_VERTEX_PROG_CONST_BUFFER>
 {
-    Handle buffer;
-    uint32 bufIndex;
     const void* inst;
+    Handle buffer;
+    uint8 bufIndex;
 };
 
 struct SWCommand_SetFragmentProgConstBuffer : public SWCommandImpl<SWCommand_SetFragmentProgConstBuffer, CMD_SET_FRAGMENT_PROG_CONST_BUFFER>
 {
-    Handle buffer;
-    uint32 bufIndex;
     const void* inst;
+    Handle buffer;
+    uint8 bufIndex;
 };
 
 struct SWCommand_SetVertexTexture : public SWCommandImpl<SWCommand_SetVertexTexture, CMD_SET_VERTEX_TEXTURE>
 {
     Handle tex;
-    uint32 unitIndex;
+    uint8 unitIndex;
 };
 
 struct SWCommand_SetFragmentTexture : public SWCommandImpl<SWCommand_SetFragmentTexture, CMD_SET_FRAGMENT_TEXTURE>
 {
     Handle tex;
-    uint32 unitIndex;
+    uint8 unitIndex;
 };
 
 struct SWCommand_DrawPrimitive : public SWCommandImpl<SWCommand_DrawPrimitive, CMD_DRAW_PRIMITIVE>
 {
     uint32 vertexCount;
-    uint32 mode;
+    uint8 mode;
 };
 
 struct SWCommand_DrawInstancedPrimitive : public SWCommandImpl<SWCommand_DrawInstancedPrimitive, CMD_DRAW_INSTANCED_PRIMITIVE>
@@ -174,7 +174,7 @@ struct SWCommand_DrawInstancedPrimitive : public SWCommandImpl<SWCommand_DrawIns
     uint32 vertexCount;
     uint32 instanceCount;
     uint32 baseInstance;
-    uint32 mode;
+    uint8 mode;
 };
 
 struct SWCommand_DrawIndexedPrimitive : public SWCommandImpl<SWCommand_DrawIndexedPrimitive, CMD_DRAW_INDEXED_PRIMITIVE>
@@ -182,7 +182,7 @@ struct SWCommand_DrawIndexedPrimitive : public SWCommandImpl<SWCommand_DrawIndex
     uint32 indexCount;
     uint32 firstVertex;
     uint32 startIndex;
-    uint32 mode;
+    uint8 mode;
 };
 
 struct SWCommand_DrawIndexedPrimitiveRanged : public SWCommandImpl<SWCommand_DrawIndexedPrimitiveRanged, CMD_DRAW_INDEXED_PRIMITIVE_RANGED>
@@ -191,7 +191,7 @@ struct SWCommand_DrawIndexedPrimitiveRanged : public SWCommandImpl<SWCommand_Dra
     uint32 firstVertex;
     uint32 startIndex;
     uint32 vertexCount;
-    uint32 mode;
+    uint8 mode;
 };
 
 struct SWCommand_DrawInstancedIndexedPrimitive : public SWCommandImpl<SWCommand_DrawInstancedIndexedPrimitive, CMD_DRAW_INSTANCED_INDEXED_PRIMITIVE>
@@ -201,7 +201,7 @@ struct SWCommand_DrawInstancedIndexedPrimitive : public SWCommandImpl<SWCommand_
     uint32 startIndex;
     uint32 instanceCount;
     uint32 baseInstance;
-    uint32 mode;
+    uint8 mode;
 };
 
 struct SWCommand_DrawInstancedIndexedPrimitiveRanged : public SWCommandImpl<SWCommand_DrawInstancedIndexedPrimitiveRanged, CMD_DRAW_INSTANCED_INDEXED_PRIMITIVE_RANGED>
@@ -212,7 +212,7 @@ struct SWCommand_DrawInstancedIndexedPrimitiveRanged : public SWCommandImpl<SWCo
     uint32 vertexCount;
     uint32 instanceCount;
     uint32 baseInstance;
-    uint32 mode;
+    uint8 mode;
 };
 
 struct SWCommand_SetMarker : public SWCommandImpl<SWCommand_SetMarker, CMD_SET_MARKER>
