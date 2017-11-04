@@ -6,6 +6,8 @@
 #include <DavaTools/TexturePacker/ResourcePacker2D.h>
 #include <DavaTools/TextureCompression/PVRConverter.h>
 
+#include <Engine/EngineContext.h>
+#include <FileSystem/FileSystem.h>
 #include <Render/PixelFormatDescriptor.h>
 
 DAVA_TESTCLASS (ResourcePackerTest)
@@ -28,8 +30,8 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     void ClearWorkingFolders()
     {
-        TEST_VERIFY(GetEngineContext()->fileSystem->DeleteDirectory(rootDir, true) == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CreateDirectory(inputDir, true) != FileSystem::DIRECTORY_CANT_CREATE);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->DeleteDirectory(rootDir, true) == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CreateDirectory(inputDir, true) != DAVA::FileSystem::DIRECTORY_CANT_CREATE);
     }
 
     void CopyPsdSources()
@@ -37,7 +39,7 @@ DAVA_TESTCLASS (ResourcePackerTest)
         for (const DAVA::String& basename : psdBaseNames)
         {
             DAVA::String fullName = basename + ".psd";
-            TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + fullName, inputDir + fullName) == true);
+            TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + fullName, inputDir + fullName) == true);
         }
     }
 
@@ -89,16 +91,16 @@ DAVA_TESTCLASS (ResourcePackerTest)
         for (const String& name : psdBaseNames)
         {
             String fullName = name + ".txt";
-            TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + fullName) == true);
+            TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + fullName) == true);
         }
 
         for (const GpuParams& params : gpuParams)
         {
             String expectedSheetName = "texture0" + GPUFamilyDescriptor::GetGPUPrefix(params.gpu) + ImageSystem::GetDefaultExtension(params.imageFormat);
-            TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + expectedSheetName) == true);
+            TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + expectedSheetName) == true);
         }
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "texture0.tex") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "flags.txt") == false);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "texture0.tex") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "flags.txt") == false);
     };
 
     DAVA_TEST (WrongGpuParamsTest)
@@ -138,7 +140,7 @@ DAVA_TESTCLASS (ResourcePackerTest)
         using namespace DAVA;
 
         ClearWorkingFolders();
-        TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "air.png", inputDir + "air.png") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "air.png", inputDir + "air.png") == true);
 
         ResourcePacker2D packer;
         packer.InitFolders(inputDir, outputDir);
@@ -146,10 +148,10 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
         TEST_VERIFY(packer.IsRunning() == false);
         TEST_VERIFY(packer.GetErrors().empty() == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "air.txt") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "texture0.png") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "texture0.tex") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "flags.txt") == false);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "air.txt") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "texture0.png") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "texture0.tex") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "flags.txt") == false);
     }
 
     DAVA_TEST (TagsTest)
@@ -158,22 +160,22 @@ DAVA_TESTCLASS (ResourcePackerTest)
         ClearWorkingFolders();
 
         {
-            TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "arrow_tut.psd", inputDir + "arrow_tut.psd") == true);
-            TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "eye_tut.psd", inputDir + "eye_tut.psd") == true);
+            TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "arrow_tut.psd", inputDir + "arrow_tut.psd") == true);
+            TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "eye_tut.psd", inputDir + "eye_tut.psd") == true);
 
             ResourcePacker2D packer;
             packer.InitFolders(inputDir, outputDir);
             packer.PackResources({ eGPUFamily::GPU_ORIGIN });
-            TEST_VERIFY(GetEngineContext()->fileSystem->Exists(outputDir + "texture0.png") == true);
+            TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "texture0.png") == true);
         }
 
         FilePath tagsOutputDir = rootDir + "OutputWithTags/";
-        TEST_VERIFY(GetEngineContext()->fileSystem->DeleteDirectory(inputDir, true) == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CreateDirectory(inputDir, true) != FileSystem::DIRECTORY_CANT_CREATE);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "air.psd", inputDir + "arrow_tut.psd") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "arrow_tut.psd", inputDir + "arrow_tut.china.psd") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "eye_tut.psd", inputDir + "eye_tut.psd") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CopyFile(resourcesDir + "target_tut.psd", inputDir + "target_tut.japan.psd") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->DeleteDirectory(inputDir, true) == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CreateDirectory(inputDir, true) != FileSystem::DIRECTORY_CANT_CREATE);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "air.psd", inputDir + "arrow_tut.psd") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "arrow_tut.psd", inputDir + "arrow_tut.china.psd") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "eye_tut.psd", inputDir + "eye_tut.psd") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "target_tut.psd", inputDir + "target_tut.japan.psd") == true);
 
         ResourcePacker2D packer;
         packer.InitFolders(inputDir, tagsOutputDir);
@@ -181,17 +183,17 @@ DAVA_TESTCLASS (ResourcePackerTest)
         packer.SetTag(".china");
         packer.PackResources({ eGPUFamily::GPU_ORIGIN });
 
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "texture0.png") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "texture0.tex") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "arrow_tut.txt") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "eye_tut.txt") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "arrow_tut.china.txt") == false);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "target_tut.txt") == false);
-        TEST_VERIFY(GetEngineContext()->fileSystem->Exists(tagsOutputDir + "target_tut.japan.txt") == false);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CompareBinaryFiles(outputDir + "texture0.png", tagsOutputDir + "texture0.png") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CompareBinaryFiles(outputDir + "texture0.tex", tagsOutputDir + "texture0.tex") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CompareTextFiles(outputDir + "arrow_tut.txt", tagsOutputDir + "arrow_tut.txt") == true);
-        TEST_VERIFY(GetEngineContext()->fileSystem->CompareTextFiles(outputDir + "eye_tut.txt", tagsOutputDir + "eye_tut.txt") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "texture0.png") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "texture0.tex") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "arrow_tut.txt") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "eye_tut.txt") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "arrow_tut.china.txt") == false);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "target_tut.txt") == false);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(tagsOutputDir + "target_tut.japan.txt") == false);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CompareBinaryFiles(outputDir + "texture0.png", tagsOutputDir + "texture0.png") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CompareBinaryFiles(outputDir + "texture0.tex", tagsOutputDir + "texture0.tex") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CompareTextFiles(outputDir + "arrow_tut.txt", tagsOutputDir + "arrow_tut.txt") == true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CompareTextFiles(outputDir + "eye_tut.txt", tagsOutputDir + "eye_tut.txt") == true);
     };
 
     DAVA_TEST (MissingTagTest)
