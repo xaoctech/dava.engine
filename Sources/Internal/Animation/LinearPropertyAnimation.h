@@ -3,10 +3,10 @@
 
 #include "Animation/Animation.h"
 #include "Base/BaseTypes.h"
-#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
+class Reflection;
 class ReflectionAnyPropertyAnimation : public Animation
 {
 public:
@@ -17,7 +17,7 @@ protected:
     void SetPropertyValue(const Any& value);
 
 private:
-    Reflection ref;
+    std::unique_ptr<Reflection> ref;
 };
 
 template <class T>
