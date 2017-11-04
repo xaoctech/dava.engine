@@ -1,5 +1,10 @@
 #include "FontValueProperty.h"
 
+#include <Base/Any.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/ReflectedTypeDB.h>
+
 using namespace DAVA;
 
 FontValueProperty::FontValueProperty(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
