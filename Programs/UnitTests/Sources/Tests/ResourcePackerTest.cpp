@@ -30,7 +30,8 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     void ClearWorkingFolders()
     {
-        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->DeleteDirectory(rootDir, true) == true);
+        DAVA::GetEngineContext()->fileSystem->DeleteDirectory(rootDir, true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(rootDir) == false);
         TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CreateDirectory(inputDir, true) != DAVA::FileSystem::DIRECTORY_CANT_CREATE);
     }
 
@@ -170,7 +171,8 @@ DAVA_TESTCLASS (ResourcePackerTest)
         }
 
         FilePath tagsOutputDir = rootDir + "OutputWithTags/";
-        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->DeleteDirectory(inputDir, true) == true);
+        DAVA::GetEngineContext()->fileSystem->DeleteDirectory(inputDir, true);
+        TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(inputDir) == false);
         TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CreateDirectory(inputDir, true) != FileSystem::DIRECTORY_CANT_CREATE);
         TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "air.psd", inputDir + "arrow_tut.psd") == true);
         TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->CopyFile(resourcesDir + "arrow_tut.psd", inputDir + "arrow_tut.china.psd") == true);
