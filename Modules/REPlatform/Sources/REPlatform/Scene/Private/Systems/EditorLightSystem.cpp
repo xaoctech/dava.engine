@@ -23,7 +23,7 @@ EditorLightSystem::EditorLightSystem(Scene* scene)
 
     cameraLight = new Entity();
     cameraLight->SetLocked(true);
-    cameraLight->SetName(ResourceEditor::EDITOR_CAMERA_LIGHT);
+    cameraLight->SetName(FastName(ResourceEditor::EDITOR_CAMERA_LIGHT));
     cameraLight->AddComponent(new LightComponent(light));
 
     SetRequiredComponents(MAKE_COMPONENT_MASK(Component::LIGHT_COMPONENT));

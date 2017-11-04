@@ -288,8 +288,6 @@ private:
 
     String absolutePathname;
     ePathType pathType;
-
-    static Vector<FilePath> resourceFolders;
 };
 
 bool operator<(const FilePath& left, const FilePath& right);

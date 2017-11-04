@@ -243,18 +243,28 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     : SceneSystem(scene)
     , simulationEventCallback(scene->collisionSingleComponent)
 {
-    const KeyedArchive* options = Engine::Instance()->GetOptions();
+    Engine* engine = Engine::Instance();
+    uint32 threadCount = 2;
+    Vector3 gravity(0.0, 0.0, -9.81f);
+    simulationBlockSize = PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE;
+    if (engine != nullptr)
+    {
+        const KeyedArchive* options = Engine::Instance()->GetOptions();
 
-    simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE);
-    DVASSERT((simulationBlockSize % (16 * 1024)) == 0); // simulationBlockSize must be 16K multiplier
+        simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE);
+        DVASSERT((simulationBlockSize % (16 * 1024)) == 0); // simulationBlockSize must be 16K multiplier
+
+        gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
+        threadCount = options->GetUInt32("physics.threadCount", 2);
+    }
 
     const EngineContext* ctx = GetEngineContext();
     PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
     simulationBlock = physics->Allocate(simulationBlockSize, "SimulationBlock", __FILE__, __LINE__);
 
     PhysicsSceneConfig sceneConfig;
-    sceneConfig.gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
-    sceneConfig.threadCount = options->GetUInt32("physics.threadCount", 2);
+    sceneConfig.gravity = gravity;
+    sceneConfig.threadCount = threadCount;
 
     geometryCache = new PhysicsGeometryCache();
 

@@ -17,6 +17,8 @@
 #include <Render/Highlevel/RenderSystem.h>
 #include <Render/PixelFormatDescriptor.h>
 #include <Render/Renderer.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
@@ -429,7 +431,7 @@ bool TryToGenerateAroundPoint(const Vector3& src, float32 distanceBetweenPoints,
 
     float32 distanceSquared = distanceBetweenPoints * distanceBetweenPoints;
     float32 radiusSquared = radius * radius;
-    float32 angle = Random::Instance()->RandFloat32InBounds(-PI, PI);
+    float32 angle = GetEngineContext()->random->RandFloat32InBounds(-PI, PI);
     float32 da = 2.0f * PI / static_cast<float>(maxAttempts);
     uint32 attempts = 0;
     Vector3 newPoint;
@@ -468,7 +470,7 @@ void VisibilityCheckSystem::BuildPointSetForEntity(EntityMap::value_type& item)
     }
     else
     {
-        item.second.push_back(Polar(Random::Instance()->RandFloat32InBounds(-PI, +PI), radius - distanceBetweenPoints));
+        item.second.push_back(Polar(GetEngineContext()->random->RandFloat32InBounds(-PI, +PI), radius - distanceBetweenPoints));
 
         bool canGenerate = true;
         while (canGenerate)
@@ -490,7 +492,7 @@ void VisibilityCheckSystem::BuildPointSetForEntity(EntityMap::value_type& item)
     {
         for (auto& p : item.second)
         {
-            p.z = Random::Instance()->RandFloat32InBounds(-verticalVariance, verticalVariance);
+            p.z = GetEngineContext()->random->RandFloat32InBounds(-verticalVariance, verticalVariance);
         }
     }
 }

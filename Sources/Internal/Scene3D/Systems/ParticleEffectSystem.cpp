@@ -20,6 +20,8 @@
 #include "Render/Renderer.h"
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -358,9 +360,10 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
         return;
     /*shortEffectTime*/
     float32 currFps = 1.0f / timeElapsed;
-    float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS()) / (PerformanceSettings::Instance()->GetPsPerformanceMaxFPS() - PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
+    PerformanceSettings* perfSettings = GetEngineContext()->performanceSettings;
+    float32 currPSValue = (currFps - perfSettings->GetPsPerformanceMinFPS()) / (perfSettings->GetPsPerformanceMaxFPS() - perfSettings->GetPsPerformanceMinFPS());
     currPSValue = Clamp(currPSValue, 0.0f, 1.0f);
-    float32 speedMult = 1.0f + (PerformanceSettings::Instance()->GetPsPerformanceSpeedMult() - 1.0f) * (1 - currPSValue);
+    float32 speedMult = 1.0f + (perfSettings->GetPsPerformanceSpeedMult() - 1.0f) * (1 - currPSValue);
     float32 shortEffectTime = timeElapsed * speedMult;
 
     size_t componentsCount = activeComponents.size();
@@ -484,6 +487,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
     AABBox3 bbox;
     List<ParticleGroup>::iterator it = effect->effectData.groups.begin();
+    Random* random = GetEngineContext()->random;
     while (it != effect->effectData.groups.end())
     {
         ParticleGroup& group = *it;
@@ -498,8 +502,8 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         if ((!group.finishingGroup) && (group.layer->isLooped) && (currLoopTime > group.loopDuration)) //restart loop
         {
             group.loopStartTime = group.time;
-            group.loopLayerStartTime = group.layer->deltaTime + group.layer->deltaVariation * static_cast<float32>(Random::Instance()->RandFloat());
-            group.loopDuration = group.loopLayerStartTime + (group.layer->endTime - group.layer->startTime) + group.layer->loopVariation * static_cast<float32>(Random::Instance()->RandFloat());
+            group.loopLayerStartTime = group.layer->deltaTime + group.layer->deltaVariation * static_cast<float32>(random->RandFloat());
+            group.loopDuration = group.loopLayerStartTime + (group.layer->endTime - group.layer->startTime) + group.layer->loopVariation * static_cast<float32>(random->RandFloat());
             currLoopTime = 0;
         }
 
@@ -608,7 +612,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
                 if (group.layer->number)
                     newParticles = group.layer->number->GetValue(currLoopTime);
                 if (group.layer->numberVariation)
-                    newParticles += group.layer->numberVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat());
+                    newParticles += group.layer->numberVariation->GetValue(currLoopTime) * static_cast<float32>(random->RandFloat());
                 newParticles *= dt;
                 group.particlesToGenerate += newParticles;
 
@@ -757,7 +761,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     particle->color = Color();
     if (group.layer->colorRandom)
     {
-        particle->color = group.layer->colorRandom->GetValue(static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->color = group.layer->colorRandom->GetValue(static_cast<float32>(GetEngineContext()->random->RandFloat()));
     }
     if (group.emitter->colorOverLife)
     {
@@ -768,21 +772,21 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->life)
         particle->lifeTime += group.layer->life->GetValue(currLoopTime);
     if (group.layer->lifeVariation)
-        particle->lifeTime += (group.layer->lifeVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->lifeTime += (group.layer->lifeVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
 
     // Flow.
     particle->baseFlowSpeed = 0.0f;
     if (group.layer->flowSpeed)
         particle->baseFlowSpeed += group.layer->flowSpeed->GetValue(currLoopTime);
     if (group.layer->flowSpeedVariation)
-        particle->baseFlowSpeed += (group.layer->flowSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->baseFlowSpeed += (group.layer->flowSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->currFlowSpeed = particle->baseFlowSpeed;
 
     particle->baseFlowOffset = 0.0f;
     if (group.layer->flowOffset)
         particle->baseFlowOffset += group.layer->flowOffset->GetValue(currLoopTime);
     if (group.layer->flowOffsetVariation)
-        particle->baseFlowOffset += (group.layer->flowOffsetVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->baseFlowOffset += (group.layer->flowOffsetVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->currFlowOffset = particle->baseFlowOffset;
 
     // Noise.
@@ -790,21 +794,21 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->noiseScale)
         particle->baseNoiseScale += group.layer->noiseScale->GetValue(currLoopTime);
     if (group.layer->noiseScaleVariation)
-        particle->baseNoiseScale += (group.layer->noiseScaleVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->baseNoiseScale += (group.layer->noiseScaleVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->currNoiseScale = particle->baseNoiseScale;
 
     particle->baseNoiseUScrollSpeed = 0.0f;
     if (group.layer->noiseUScrollSpeed)
         particle->baseNoiseUScrollSpeed += group.layer->noiseUScrollSpeed->GetValue(currLoopTime);
     if (group.layer->noiseUScrollSpeedVariation)
-        particle->baseNoiseUScrollSpeed += (group.layer->noiseUScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->baseNoiseUScrollSpeed += (group.layer->noiseUScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->currNoiseUOffset = particle->baseNoiseUScrollSpeed;
 
     particle->baseNoiseVScrollSpeed = 0.0f;
     if (group.layer->noiseVScrollSpeed)
         particle->baseNoiseVScrollSpeed += group.layer->noiseVScrollSpeed->GetValue(currLoopTime);
     if (group.layer->noiseVScrollSpeedVariation)
-        particle->baseNoiseVScrollSpeed += (group.layer->noiseVScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->baseNoiseVScrollSpeed += (group.layer->noiseVScrollSpeedVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->currNoiseVOffset = particle->baseNoiseVScrollSpeed;
 
     // size
@@ -812,7 +816,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->size)
         particle->baseSize = group.layer->size->GetValue(currLoopTime);
     if (group.layer->sizeVariation)
-        particle->baseSize += (group.layer->sizeVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->baseSize += (group.layer->sizeVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->baseSize *= effect->effectData.infoSources[group.positionSource].size;
 
     particle->currSize = particle->baseSize;
@@ -826,11 +830,11 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->angle)
         particle->angle = DegToRad(group.layer->angle->GetValue(currLoopTime));
     if (group.layer->angleVariation)
-        particle->angle += DegToRad(group.layer->angleVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->angle += DegToRad(group.layer->angleVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     if (group.layer->spin)
         particle->spin = DegToRad(group.layer->spin->GetValue(currLoopTime));
     if (group.layer->spinVariation)
-        particle->spin += DegToRad(group.layer->spinVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        particle->spin += DegToRad(group.layer->spinVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     if (group.layer->randomSpinDirection)
     {
         int32 dir = Rand() & 1;
@@ -840,7 +844,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     particle->animTime = 0;
     if (group.layer->randomFrameOnStart && group.layer->sprite)
     {
-        particle->frame = static_cast<int32>(static_cast<float32>(Random::Instance()->RandFloat()) * static_cast<float32>(group.layer->sprite->GetFrameCount()));
+        particle->frame = static_cast<int32>(static_cast<float32>(GetEngineContext()->random->RandFloat()) * static_cast<float32>(group.layer->sprite->GetFrameCount()));
     }
 
     PrepareEmitterParameters(particle, group, worldTransform);
@@ -849,7 +853,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     if (group.layer->velocity)
         vel += group.layer->velocity->GetValue(currLoopTime);
     if (group.layer->velocityVariation)
-        vel += (group.layer->velocityVariation->GetValue(currLoopTime) * static_cast<float32>(Random::Instance()->RandFloat()));
+        vel += (group.layer->velocityVariation->GetValue(currLoopTime) * static_cast<float32>(GetEngineContext()->random->RandFloat()));
     particle->speed *= vel;
 
     if (!group.layer->GetInheritPosition()) //just generate at correct position
@@ -935,7 +939,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->size)
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
-            particle->position = Vector3(currSize.x * (static_cast<float32>(Random::Instance()->RandFloat()) - 0.5f), currSize.y * (static_cast<float32>(Random::Instance()->RandFloat()) - 0.5f), currSize.z * (static_cast<float32>(Random::Instance()->RandFloat()) - 0.5f));
+            particle->position = Vector3(currSize.x * (static_cast<float32>(GetEngineContext()->random->RandFloat()) - 0.5f), currSize.y * (static_cast<float32>(GetEngineContext()->random->RandFloat()) - 0.5f), currSize.z * (static_cast<float32>(GetEngineContext()->random->RandFloat()) - 0.5f));
         }
     }
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
@@ -951,9 +955,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->emissionAngleVariation)
             angleVariation = DegToRad(group.emitter->emissionAngleVariation->GetValue(group.time));
 
-        float32 curAngle = angleBase + angleVariation * static_cast<float32>(Random::Instance()->RandFloat());
+        float32 curAngle = angleBase + angleVariation * static_cast<float32>(GetEngineContext()->random->RandFloat());
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= static_cast<float32>(Random::Instance()->RandFloat());
+            curRadius *= static_cast<float32>(GetEngineContext()->random->RandFloat());
         float sinAngle = 0.0f;
         float cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);
@@ -979,8 +983,8 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     {
         if (group.emitter->emissionRange)
         {
-            float32 theta = static_cast<float32>(Random::Instance()->RandFloat()) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
-            float32 phi = static_cast<float32>(Random::Instance()->RandFloat()) * PI_2;
+            float32 theta = static_cast<float32>(GetEngineContext()->random->RandFloat()) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
+            float32 phi = static_cast<float32>(GetEngineContext()->random->RandFloat()) * PI_2;
             particle->speed = Vector3(currEmissionPower * cos(phi) * sin(theta), currEmissionPower * sin(phi) * sin(theta), currEmissionPower * cos(theta));
         }
         else

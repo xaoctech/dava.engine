@@ -90,8 +90,6 @@ public:
 
     virtual void OnLoopStopped()
     {
-        pluginsManager->UnloadPlugins();
-        pluginsManager.reset();
         wrappersProcessor.Shoutdown();
         for (DataContext* context : contexts)
         {
@@ -99,6 +97,9 @@ public:
         }
         contexts.clear();
         SafeDelete(globalContext);
+
+        pluginsManager->UnloadPlugins();
+        pluginsManager.reset();
     }
 
     virtual void OnFrame(float32 delta)

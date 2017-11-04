@@ -25,6 +25,7 @@ class QSpacerItem;
 
 class LibraryFileSystemModel;
 class LibraryFilteringModel;
+class REFileOperationsManager;
 
 //TreeView with custom signals
 class LibraryTreeView : public QTreeView
@@ -57,7 +58,7 @@ class LibraryWidget : public QWidget
     };
 
 public:
-    LibraryWidget(DAVA::ContextAccessor* contextAccessor, QWidget* parent = 0);
+    LibraryWidget(DAVA::ContextAccessor* contextAccessor, std::weak_ptr<REFileOperationsManager> fileOpMng, QWidget* parent = 0);
 
 signals:
 
@@ -113,4 +114,5 @@ private:
 
     std::unique_ptr<DAVA::FieldBinder> fieldBinder;
     DAVA::ContextAccessor* contextAccessor = nullptr;
+    std::weak_ptr<REFileOperationsManager> fileOperationsManager;
 };

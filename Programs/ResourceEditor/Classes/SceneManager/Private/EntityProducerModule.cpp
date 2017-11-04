@@ -53,7 +53,7 @@ void EntityProducerModule::InstantiateCurrentCamera()
     sceneNode->AddComponent(new DAVA::CameraComponent(camera));
     sceneNode->AddComponent(new DAVA::WASDControllerComponent());
     sceneNode->AddComponent(new DAVA::RotationControllerComponent());
-    sceneNode->SetName(DAVA::ResourceEditor::CAMERA_NODE_NAME);
+    sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::CAMERA_NODE_NAME));
 
     sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(sceneNode, sceneEditor.Get())));
 }

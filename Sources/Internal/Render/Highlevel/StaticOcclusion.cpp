@@ -285,10 +285,11 @@ bool StaticOcclusion::RenderCurrentBlock()
     uint64 maxRenders = 48;
 #endif
 
+    Random* random = GetEngineContext()->random;
     while ((renders < maxRenders) && !renderPassConfigs.empty())
     {
         auto i = renderPassConfigs.begin();
-        std::advance(i, DAVA::Random::Instance()->Rand() % renderPassConfigs.size());
+        std::advance(i, random->Rand() % renderPassConfigs.size());
         PerformRender(*i);
         renderPassConfigs.erase(i);
         ++renders;

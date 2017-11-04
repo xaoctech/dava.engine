@@ -89,7 +89,7 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     }
 
     //Tags
-    FileSystem* fs = FileSystem::Instance();
+    FileSystem* fs = GetEngineContext()->fileSystem;
     FileSystemDelegate* fsDelegate = fs->GetDelegate();
     if (fsDelegate != nullptr)
     { // hooked check: can we continue work with file?

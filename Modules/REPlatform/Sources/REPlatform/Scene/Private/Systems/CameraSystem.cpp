@@ -79,7 +79,7 @@ void SceneCameraSystem::LoadLocalProperties(PropertiesHolder* holder)
     cur->LoadObject(camArch.Get());
 
     // set active scene camera
-    FastName camName = cameraProps.Get<FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
+    FastName camName = cameraProps.Get<FastName>("activeCameraName", FastName(ResourceEditor::EDITOR_DEBUG_CAMERA));
     auto camEntityIt = std::find_if(std::begin(sceneCameras), std::end(sceneCameras),
                                     [&camName](Entity* cam) {
                                         return cam->GetName() == camName;
@@ -486,7 +486,7 @@ void SceneCameraSystem::CreateDebugCameras()
         topCamera->SetAspect(1.0f);
 
         topCameraEntity = new DAVA::Entity();
-        topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
+        topCameraEntity->SetName(FastName(ResourceEditor::EDITOR_DEBUG_CAMERA));
         topCameraEntity->SetNotRemovable(true);
         topCameraEntity->AddComponent(new CameraComponent(topCamera));
         topCameraEntity->AddComponent(new WASDControllerComponent());
@@ -633,7 +633,7 @@ Entity* SceneCameraSystem::GetEntityWithEditorCamera() const
     {
         Camera* c = GetScene()->GetCamera(i);
         Entity* e = GetEntityFromCamera(c);
-        if (e && e->GetName() == ResourceEditor::EDITOR_DEBUG_CAMERA)
+        if (e && e->GetName() == FastName(ResourceEditor::EDITOR_DEBUG_CAMERA))
         {
             return e;
         }

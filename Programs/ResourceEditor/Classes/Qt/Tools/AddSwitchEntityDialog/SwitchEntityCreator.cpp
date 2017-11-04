@@ -19,7 +19,7 @@ DAVA::Entity* SwitchEntityCreator::CreateSwitchEntity(const DAVA::Vector<DAVA::E
 {
     DAVA::Entity* switchEntity = new DAVA::Entity();
     switchEntity->AddComponent(new DAVA::SwitchComponent());
-    switchEntity->SetName(DAVA::ResourceEditor::SWITCH_NODE_NAME);
+    switchEntity->SetName(DAVA::FastName(DAVA::ResourceEditor::SWITCH_NODE_NAME));
     switchEntity->SetSolid(false);
 
     DAVA::uint32 count = static_cast<DAVA::uint32>(fromEntities.size());

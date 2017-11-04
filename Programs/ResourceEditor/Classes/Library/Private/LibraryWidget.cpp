@@ -1,9 +1,11 @@
 #include "Classes/Library/Private/LibraryWidget.h"
 #include "Classes/Library/Private/LibraryFileSystemModel.h"
 #include "Classes/Library/Private/LibraryData.h"
+#include "Classes/Library/Private/REFileOperationsManager.h"
 
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Global/REFileOperationsIntarface.h>
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Core/ContextAccessor.h>
@@ -76,9 +78,10 @@ struct FileType
 QVector<FileType> fileTypeValues;
 }
 
-LibraryWidget::LibraryWidget(DAVA::ContextAccessor* contextAccessor_, QWidget* parent)
+LibraryWidget::LibraryWidget(DAVA::ContextAccessor* contextAccessor_, std::weak_ptr<REFileOperationsManager> fileOpMng, QWidget* parent)
     : QWidget(parent)
     , contextAccessor(contextAccessor_)
+    , fileOperationsManager(fileOpMng)
 {
     DVASSERT(contextAccessor != nullptr);
 
@@ -329,6 +332,27 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
 
         QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsDae()));
         actionConvertAnimations->setData(fileInfoAsVariant);
+    }
+
+    std::shared_ptr<REFileOperationsManager> manager = fileOperationsManager.lock();
+    if (manager != nullptr)
+    {
+        DAVA::Vector<std::shared_ptr<DAVA::REFileOperation>> operations = manager->GetMatchedOperations(pathname);
+        if (operations.empty() == false)
+        {
+            contextMenu.addSeparator();
+            for (const std::shared_ptr<DAVA::REFileOperation>& operation : operations)
+            {
+                std::weak_ptr<DAVA::REFileOperation> weakOperation = operation;
+                contextMenu.addAction(operation->GetIcon(), operation->GetName(), [weakOperation, pathname]() {
+                    std::shared_ptr<DAVA::REFileOperation> operation = weakOperation.lock();
+                    if (operation != nullptr)
+                    {
+                        operation->Apply(pathname);
+                    }
+                });
+            }
+        }
     }
 
     contextMenu.addSeparator();

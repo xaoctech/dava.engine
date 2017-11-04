@@ -135,7 +135,7 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                 }
             };
             
-            testSwitch(ResourceEditor::SWITCH_NODE_NAME, 1);
+            testSwitch(DAVA::FastName(ResourceEditor::SWITCH_NODE_NAME), 1);
             testSwitch(FastName("switchWithoutChildren"), 0);
         }
         

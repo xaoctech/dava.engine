@@ -1,10 +1,12 @@
 #include "Classes/Library/LibraryModule.h"
+#include "Classes/Library/Private/REFileOperationsManager.h"
 #include "Classes/Library/Private/ControlsFactory.h"
 #include "Classes/Library/Private/LibraryData.h"
 #include "Classes/Library/Private/LibraryWidget.h"
 #include "Classes/Library/Private/DAEConverter.h"
 
 #include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/FieldBinder.h>
@@ -15,7 +17,6 @@
 #include <FileSystem/FilePath.h>
 #include <Functional/Function.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include "REPlatform/Global/GlobalOperations.h"
 
 LibraryModule::~LibraryModule()
 {
@@ -27,7 +28,9 @@ void LibraryModule::PostInit()
     std::unique_ptr<LibraryData> libraryData = std::make_unique<LibraryData>();
     GetAccessor()->GetGlobalContext()->CreateData(std::move(libraryData));
 
-    LibraryWidget* libraryWidget = new LibraryWidget(GetAccessor(), nullptr);
+    fileOperationsManager.reset(new REFileOperationsManager());
+
+    LibraryWidget* libraryWidget = new LibraryWidget(GetAccessor(), fileOperationsManager, nullptr);
     connections.AddConnection(libraryWidget, &LibraryWidget::AddSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnAddSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::EditSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnEditSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DAEConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEConvertionRequested));
@@ -43,6 +46,8 @@ void LibraryModule::PostInit()
     fieldBinder.reset(new DAVA::FieldBinder(GetAccessor()));
     DAVA::FieldDescriptor libraryFieldDescriptor(DAVA::ReflectedTypeDB::Get<LibraryData>(), DAVA::FastName(LibraryData::selectedPathProperty));
     fieldBinder->BindField(libraryFieldDescriptor, DAVA::MakeFunction(this, &LibraryModule::OnSelectedPathChanged));
+
+    RegisterInterface<DAVA::REFileOperationsInterface>(fileOperationsManager.get());
 }
 
 void LibraryModule::OnSelectedPathChanged(const DAVA::Any& selectedPathValue)

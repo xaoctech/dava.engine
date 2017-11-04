@@ -641,7 +641,7 @@ void QtMainWindow::SceneCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::R
 
         for (DAVA::Entity* e : entities)
         {
-            if (e->GetName() == DAVA::ResourceEditor::EDITOR_DEBUG_CAMERA)
+            if (e->GetName() == DAVA::FastName(DAVA::ResourceEditor::EDITOR_DEBUG_CAMERA))
             {
                 SetActionCheckedSilently(ui->actionSnapCameraToLandscape, scene->GetSystem<DAVA::SceneCameraSystem>()->IsEditorCameraSnappedToLandscape());
             }
@@ -923,7 +923,7 @@ void QtMainWindow::OnAddLandscape()
     if (sceneEditor)
     {
         DAVA::ScopedPtr<DAVA::Entity> entityToProcess(new DAVA::Entity());
-        entityToProcess->SetName(DAVA::ResourceEditor::LANDSCAPE_NODE_NAME);
+        entityToProcess->SetName(DAVA::FastName(DAVA::ResourceEditor::LANDSCAPE_NODE_NAME));
         entityToProcess->SetLocked(true);
 
         DAVA::ScopedPtr<DAVA::Landscape> newLandscape(new DAVA::Landscape());
@@ -955,7 +955,7 @@ void QtMainWindow::OnAddVegetation()
 
         DAVA::ScopedPtr<DAVA::Entity> vegetationNode(new DAVA::Entity());
         vegetationNode->AddComponent(rc);
-        vegetationNode->SetName(DAVA::ResourceEditor::VEGETATION_NODE_NAME);
+        vegetationNode->SetName(DAVA::FastName(DAVA::ResourceEditor::VEGETATION_NODE_NAME));
         vegetationNode->SetLocked(true);
 
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(vegetationNode, sceneEditor.Get())));
@@ -969,7 +969,7 @@ void QtMainWindow::OnLightDialog()
     {
         DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         sceneNode->AddComponent(new DAVA::LightComponent(DAVA::ScopedPtr<DAVA::Light>(new DAVA::Light)));
-        sceneNode->SetName(DAVA::ResourceEditor::LIGHT_NODE_NAME);
+        sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::LIGHT_NODE_NAME));
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(sceneNode, sceneEditor.Get())));
     }
 }
@@ -993,7 +993,7 @@ void QtMainWindow::OnCameraDialog()
         sceneNode->AddComponent(new DAVA::WASDControllerComponent());
         sceneNode->AddComponent(new DAVA::RotationControllerComponent());
 
-        sceneNode->SetName(DAVA::ResourceEditor::CAMERA_NODE_NAME);
+        sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::CAMERA_NODE_NAME));
 
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(sceneNode, sceneEditor.Get())));
     }
@@ -1006,7 +1006,7 @@ void QtMainWindow::OnUserNodeDialog()
     {
         DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         sceneNode->AddComponent(new DAVA::UserComponent());
-        sceneNode->SetName(DAVA::ResourceEditor::USER_NODE_NAME);
+        sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::USER_NODE_NAME));
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(sceneNode, sceneEditor.Get())));
     }
 }
@@ -1031,7 +1031,7 @@ void QtMainWindow::OnParticleEffectDialog()
         DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         sceneNode->AddComponent(new DAVA::ParticleEffectComponent());
         sceneNode->AddComponent(new DAVA::LodComponent());
-        sceneNode->SetName(DAVA::ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
+        sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::PARTICLE_EFFECT_NODE_NAME));
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(sceneNode, sceneEditor.Get())));
     }
 }
@@ -1083,7 +1083,7 @@ void QtMainWindow::On2DSpriteDialog()
         return;
 
     DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-    sceneNode->SetName(DAVA::ResourceEditor::EDITOR_SPRITE);
+    sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::EDITOR_SPRITE));
 
     DAVA::ScopedPtr<DAVA::SpriteObject> spriteObject(new DAVA::SpriteObject(sprite, 0, DAVA::Vector2(1, 1), DAVA::Vector2(0.5f * sprite->GetWidth(), 0.5f * sprite->GetHeight())));
     spriteObject->AddFlag(DAVA::RenderObject::ALWAYS_CLIPPING_VISIBLE);
@@ -1686,7 +1686,7 @@ void QtMainWindow::OnEmptyEntity()
         return;
 
     DAVA::ScopedPtr<DAVA::Entity> newEntity(new DAVA::Entity());
-    newEntity->SetName(DAVA::ResourceEditor::ENTITY_NAME);
+    newEntity->SetName(DAVA::FastName(DAVA::ResourceEditor::ENTITY_NAME));
 
     scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(newEntity, scene.Get())));
 }
@@ -1698,7 +1698,7 @@ void QtMainWindow::OnAddWindEntity()
         return;
 
     DAVA::ScopedPtr<DAVA::Entity> windEntity(new DAVA::Entity());
-    windEntity->SetName(DAVA::ResourceEditor::WIND_NODE_NAME);
+    windEntity->SetName(DAVA::FastName(DAVA::ResourceEditor::WIND_NODE_NAME));
 
     DAVA::Matrix4 ltMx = DAVA::Matrix4::MakeTranslation(DAVA::Vector3(0.f, 0.f, 20.f));
     GetTransformComponent(windEntity)->SetLocalTransform(&ltMx);
@@ -1715,7 +1715,7 @@ void QtMainWindow::OnAddPathEntity()
         return;
 
     DAVA::ScopedPtr<DAVA::Entity> pathEntity(new DAVA::Entity());
-    pathEntity->SetName(DAVA::ResourceEditor::PATH_NODE_NAME);
+    pathEntity->SetName(DAVA::FastName(DAVA::ResourceEditor::PATH_NODE_NAME));
     DAVA::PathComponent* pc = new DAVA::PathComponent();
 
     pathEntity->AddComponent(pc);

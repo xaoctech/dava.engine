@@ -14,6 +14,7 @@ class FieldBinder;
 }
 
 class LibraryWidget;
+class REFileOperationsManager;
 class LibraryModule : public DAVA::ClientModule
 {
 public:
@@ -37,6 +38,7 @@ private:
 
     DAVA::RefPtr<ScenePreviewDialog> previewDialog;
     std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    std::shared_ptr<REFileOperationsManager> fileOperationsManager;
     DAVA::QtConnections connections;
     DAVA::QtDelayedExecutor executor;
 
