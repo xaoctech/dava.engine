@@ -122,7 +122,7 @@ void UIStyleSheetSystem::Process(float32 elapsedTime)
         ProcessControlHierarhy(popupContainer.Get());
     }
 
-    globalStyleSheetListChanged = false;
+    globalStyleSheetDirty = false;
 }
 
 void UIStyleSheetSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
@@ -276,14 +276,18 @@ void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFr
 
 void UIStyleSheetSystem::AddGlobalClass(const FastName& clazz)
 {
-    globalClasses.AddClass(clazz);
-    SetGlobalStyleSheetListChanged();
+    if (globalClasses.AddClass(clazz))
+    {
+        SetGlobalStyleSheetDirty();
+    }
 }
 
 void UIStyleSheetSystem::RemoveGlobalClass(const FastName& clazz)
 {
-    globalClasses.RemoveClass(clazz);
-    SetGlobalStyleSheetListChanged();
+    if (globalClasses.RemoveClass(clazz))
+    {
+        SetGlobalStyleSheetDirty();
+    }
 }
 
 bool UIStyleSheetSystem::HasGlobalClass(const FastName& clazz) const
@@ -335,7 +339,7 @@ void UIStyleSheetSystem::ProcessControlHierarhy(UIControl* control)
     if ((control->IsVisible() || control->GetStyledPropertySet().test(propIndex))
         && control->IsStyleSheetDirty())
     {
-        ProcessControl(control, globalStyleSheetListChanged);
+        ProcessControl(control, globalStyleSheetDirty);
     }
 
     for (UIControl* child : control->GetChildren())
@@ -430,16 +434,16 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
     }
 }
 
-void UIStyleSheetSystem::SetGlobalStyleSheetListChanged()
+void UIStyleSheetSystem::SetGlobalStyleSheetDirty()
 {
-    globalStyleSheetListChanged = true;
+    globalStyleSheetDirty = true;
     if (currentScreen.Valid())
     {
-        currentScreen.Get()->SetStyleSheetDirty();
+        currentScreen->SetStyleSheetDirty();
     }
     if (popupContainer.Valid())
     {
-        popupContainer.Get()->SetStyleSheetDirty();
+        popupContainer->SetStyleSheetDirty();
     }
 }
 }
