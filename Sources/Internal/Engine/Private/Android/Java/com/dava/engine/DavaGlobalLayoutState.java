@@ -83,12 +83,29 @@ public class DavaGlobalLayoutState extends DavaActivity.ActivityListenerImpl imp
         if (l != null)
         {
             listeners.add(l);
+
+            // Workaround: Send to specified listener current visible rect because after
+            // suspending and resuming activity signal about changing global layout comes before
+            // then all system listeners (DavaSurfaceView, DavaKeyboardState) register back to this
+            // helper.
+            if (!visibleFrame.isEmpty())
+            {
+                l.onVisibleFrameChanged(visibleFrame);
+            }
         }
     }
 
     public void removeGlobalLayoutListener(GlobalLayoutListener l)
     {
-        listeners.remove(l);
+        if (l != null)
+        {
+            listeners.remove(l);
+        }
+    }
+
+    public boolean hasGlobalLayoutListener(GlobalLayoutListener l)
+    {
+        return l != null && listeners.contains(l);
     }
 
     @Override

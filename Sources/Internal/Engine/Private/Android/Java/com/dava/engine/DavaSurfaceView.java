@@ -128,7 +128,11 @@ final class DavaSurfaceView extends SurfaceView
 
     public void onResume()
     {
-        DavaActivity.instance().globalLayoutState.addGlobalLayoutListener(this);
+        DavaGlobalLayoutState gls = DavaActivity.instance().globalLayoutState;
+        if (gls != null && !gls.hasGlobalLayoutListener(this))
+        {
+            gls.addGlobalLayoutListener(this);
+        }
 
         setFocusableInTouchMode(true);
         setFocusable(true);
@@ -140,7 +144,11 @@ final class DavaSurfaceView extends SurfaceView
 
     public void onPause()
     {
-        DavaActivity.instance().globalLayoutState.removeGlobalLayoutListener(this);
+        DavaGlobalLayoutState gls = DavaActivity.instance().globalLayoutState;
+        if (gls != null)
+        {
+            gls.removeGlobalLayoutListener(this);
+        }
 
         nativeSurfaceViewOnPause(windowImplPointer);
     }
@@ -204,6 +212,14 @@ final class DavaSurfaceView extends SurfaceView
             DavaActivity.instance().onFinishCreatingMainWindowSurface();
         }
         DavaActivity.instance().handleResume();
+
+        // Workaround: Duplicate register global layout listener here because method `onResume` don't
+        // called in `DavaActivity.instance().handleResume()` in first launch.
+        DavaGlobalLayoutState gls = DavaActivity.instance().globalLayoutState;
+        if (gls != null && !gls.hasGlobalLayoutListener(this))
+        {
+            gls.addGlobalLayoutListener(this);
+        }
     }
     
     @Override
