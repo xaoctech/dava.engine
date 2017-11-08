@@ -1,5 +1,7 @@
 #include "Particles/ParticlesRandom.h"
 
+// https://blog.demofox.org/2017/05/29/when-random-numbers-are-too-random-low-discrepancy-sequences/
+
 namespace DAVA
 {
 namespace ParticlesRandom
@@ -13,7 +15,7 @@ float32 HammersleyRnd(uint32 n)
         if ((n & 1) != 0)
             res += base;
         n >>= 1;
-        base /= 2.0f;
+        base *= 0.5f;
     }
     return res;
 }

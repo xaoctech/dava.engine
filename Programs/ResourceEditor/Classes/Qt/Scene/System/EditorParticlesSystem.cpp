@@ -188,7 +188,7 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
         emissionVelocityVector = emitter->GetEmitter()->emissionVelocityVector->GetValue(effect->GetCurrTime());
         float32 sqrLen = emissionVelocityVector.SquareLength();
         if (sqrLen > DAVA::EPSILON)
-            emissionVelocityVector /= sqrLen;
+            emissionVelocityVector /= std::sqrt(sqrLen);
     }
 
     DAVA::float32 scale = 1.0f;
