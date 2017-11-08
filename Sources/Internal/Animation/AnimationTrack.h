@@ -39,6 +39,7 @@ public:
     uint32 GetChannelsCount() const;
     eChannelTarget GetChannelTarget(uint32 channel) const;
 
+    //TODO: *Skinning* evaluate direct into memory by pointer without states?
     void Evaluate(float32 time, State* state) const;
 
     const float32* GetStateValue(const State* state, uint32 channel) const;

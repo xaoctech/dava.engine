@@ -49,7 +49,8 @@ protected:
 
     Vector<const float32*> boundParams;
 
-    Vector<FastName> markers;
+    //TODO: *Skinning* restore markers
+    //Vector<FastName> markers;
     UnorderedSet<FastName> reachedMarkers;
     UnorderedMap<FastName, MotionState*> transitions;
 

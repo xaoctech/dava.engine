@@ -24,7 +24,6 @@ void MotionState::Update(float32 dTime)
     if (blendTree == nullptr)
         return;
 
-    reachedMarkers.clear();
     animationEndReached = false;
 
     animationPrevPhaseIndex = animationCurrPhaseIndex;
@@ -36,17 +35,18 @@ void MotionState::Update(float32 dTime)
     animationPhase += (duration != 0.f) ? (dTime / duration) : 0.f;
     if (animationPhase >= 1.f)
     {
-        animationPhase -= 1.f; //TODO: *Skinning* fix phase calculation on change phaseIndex
-
-        if (animationCurrPhaseIndex < uint32(markers.size()) && !markers[animationCurrPhaseIndex].empty())
-            reachedMarkers.insert(markers[animationCurrPhaseIndex]);
+        animationPhase -= 1.f;
 
         ++animationCurrPhaseIndex;
-        if (animationCurrPhaseIndex == uint32(blendTree->GetPhasesCount()))
+        if (animationCurrPhaseIndex == blendTree->GetPhasesCount())
         {
             animationCurrPhaseIndex = 0;
             animationEndReached = true;
         }
+
+        float32 nextPhaseDuration = blendTree->EvaluatePhaseDuration(animationCurrPhaseIndex, boundParams);
+        animationPhase = (nextPhaseDuration != 0.f) ? (animationPhase * duration / nextPhaseDuration) : animationPhase;
+        animationPhase = Clamp(animationPhase, 0.f, 1.f);
     }
 
     blendTree->EvaluateRootOffset(animationCurrPhaseIndex0, animationPhase0, animationCurrPhaseIndex, animationPhase, boundParams, &rootOffset);
@@ -144,29 +144,6 @@ void MotionState::LoadFromYaml(const YamlNode* stateNode)
         DVASSERT(blendTree != nullptr);
 
         boundParams.resize(blendTree->GetParameterIDs().size());
-        markers.resize(blendTree->GetPhasesCount());
-    }
-
-    const YamlNode* markersNode = stateNode->Get("markers");
-    if (markersNode != nullptr)
-    {
-        if (markersNode->GetType() == YamlNode::TYPE_STRING)
-        {
-            if (!markers.empty())
-            {
-                markers[0] = markersNode->AsFastName();
-            }
-        }
-        else if (markersNode->GetType() == YamlNode::TYPE_ARRAY)
-        {
-            uint32 markersCount = Min(markersNode->GetCount(), uint32(markers.size()));
-            for (uint32 mi = 0; mi < markersCount; ++mi)
-            {
-                FastName marker = markersNode->Get(mi)->AsFastName();
-                if (!marker.empty() && marker != FastName(""))
-                    markers[mi] = marker;
-            }
-        }
     }
 }
 

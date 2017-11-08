@@ -101,32 +101,9 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phase
 
             if (outOffset != nullptr)
             {
-                if (phaseIndex1 < phaseIndex || (phasesCount == 1 && phase1 < phase))
-                {
-                    Vector3 endOffset, startOffset;
-                    animation.skeletonAnimation->EvaluateRootPosition(0.f, &startOffset);
-                    animation.skeletonAnimation->EvaluateRootPosition(animation.skeletonAnimation->GetDuration(), &endOffset);
-
-                    float32 animationLocalTime0 = GetAnimationLocalTime(animation, phaseIndex, phase);
-                    float32 animationLocalTime1 = GetAnimationLocalTime(animation, phaseIndex1, phase1);
-
-                    Vector3 offset0, offset1;
-                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime0, &offset0);
-                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime1, &offset1);
-
-                    *outOffset = (endOffset - offset0) + (offset1 - startOffset);
-                }
-                else
-                {
-                    float32 animationLocalTime0 = GetAnimationLocalTime(animation, phaseIndex, phase);
-                    float32 animationLocalTime1 = GetAnimationLocalTime(animation, phaseIndex1, phase1);
-
-                    Vector3 offset0;
-                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime0, &offset0);
-                    animation.skeletonAnimation->EvaluateRootPosition(animationLocalTime1, outOffset);
-
-                    *outOffset -= offset0;
-                }
+                float32 animationLocalTime0 = GetAnimationLocalTime(animation, phaseIndex, phase);
+                float32 animationLocalTime1 = GetAnimationLocalTime(animation, phaseIndex1, phase1);
+                animation.skeletonAnimation->EvaluateRootOffset(animationLocalTime0, animationLocalTime1, outOffset);
             }
         }
     }
@@ -236,7 +213,15 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phase
 
 BlendTree* BlendTree::LoadFromYaml(const YamlNode* yamlNode)
 {
+    DVASSERT(yamlNode != nullptr);
+
     BlendTree* blendTree = new BlendTree();
+    blendTree->phasesCount = 1;
+
+    const YamlNode* phasesNode = yamlNode->Get("phases-count");
+    if (phasesNode != nullptr && phasesNode->GetType() == YamlNode::TYPE_STRING)
+        blendTree->phasesCount = phasesNode->AsUInt32();
+
     blendTree->nodes.emplace_back();
     blendTree->LoadBlendNodeRecursive(yamlNode, blendTree, 0);
 
@@ -260,6 +245,18 @@ void BlendTree::LoadIgnoreMask(const YamlNode* yamlNode, UnorderedSet<uint32>* i
     }
 }
 
+float32 BlendTree::GetClipTimestamp(const YamlNode* yamlNode)
+{
+    DVASSERT(yamlNode != nullptr && yamlNode->GetType() == YamlNode::TYPE_STRING);
+    const String& string = yamlNode->AsString();
+
+    float32 result = 0.f, divisor = 0.f;
+    if (sscanf(string.c_str(), "%f/%f", &result, &divisor) == 2)
+        result /= divisor;
+
+    return result;
+}
+
 void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blendTree, uint32 nodeIndex, UnorderedSet<uint32> ignoreMask)
 {
     Vector<BlendNode>& nodes = blendTree->nodes;
@@ -274,79 +271,112 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
             node.coord.x = paramNode->AsFloat();
     }
 
-    const YamlNode* clipNode = yamlNode->Get("clip");
-    if (clipNode != nullptr && clipNode->GetType() == YamlNode::TYPE_STRING)
+    LoadIgnoreMask(yamlNode, &ignoreMask);
+
+    Vector<const YamlNode*> animationNodes;
+    {
+        const YamlNode* clipNode = yamlNode->Get("clip");
+        const YamlNode* animationsNode = yamlNode->Get("animation");
+
+        if (clipNode != nullptr && clipNode->GetType() == YamlNode::TYPE_STRING)
+        {
+            DVASSERT(animationsNode == nullptr);
+
+            animationNodes.push_back(yamlNode);
+        }
+        if (animationsNode != nullptr && animationsNode->GetType() == YamlNode::TYPE_ARRAY)
+        {
+            DVASSERT(clipNode == nullptr);
+
+            uint32 animationCount = animationsNode->GetCount();
+            for (uint32 ac = 0; ac < animationCount; ++ac)
+            {
+                animationNodes.push_back(animationsNode->Get(ac));
+                DVASSERT(animationNodes.back()->Get("clip") != nullptr);
+            }
+        }
+    }
+
+    if (!animationNodes.empty())
     {
         node.type = eNodeType::TYPE_ANIMATION;
-        node.animData.animationIndex = -1;
+        node.animData.animationIndex = int32(animations.size());
 
-        FilePath animationClipPath(clipNode->AsString());
-        ScopedPtr<AnimationClip> animationClip(AnimationClip::Load(animationClipPath));
-        if (animationClip)
+        animations.emplace_back();
+        BlendTree::Animation& animation = animations.back();
+        animation.skeletonAnimation = new SkeletonAnimation();
+
+        float32 syncPointsBase = 0.f;
+
+        for (const YamlNode* animationNode : animationNodes)
         {
-            LoadIgnoreMask(yamlNode, &ignoreMask);
+            const YamlNode* clipNode = animationNode->Get("clip");
+            DVASSERT(clipNode != nullptr && clipNode->GetType() == YamlNode::TYPE_STRING);
 
-            node.animData.animationIndex = int32(animations.size());
+            FilePath animationClipPath(clipNode->AsString());
+            ScopedPtr<AnimationClip> animationClip(AnimationClip::Load(animationClipPath));
+            DVASSERT(animationClip);
 
-            animations.emplace_back();
-            BlendTree::Animation& animation = animations.back();
+            UnorderedSet<uint32> clipIgnoreMask = ignoreMask;
+            LoadIgnoreMask(animationNode, &clipIgnoreMask);
 
-            animation.skeletonAnimation = new SkeletonAnimation(animationClip, ignoreMask);
+            float32 clipStart = 0.f;
+            float32 clipEnd = animationClip->GetDuration();
 
-            const YamlNode* treatAsPoseNode = yamlNode->Get("treat-as-pose");
+            const YamlNode* rangeNode = animationNode->Get("range");
+            if (rangeNode != nullptr && rangeNode->GetType() == YamlNode::TYPE_ARRAY)
+            {
+                DVASSERT(rangeNode->GetCount() == 2);
+
+                clipStart = GetClipTimestamp(rangeNode->Get(0));
+                clipEnd = GetClipTimestamp(rangeNode->Get(1));
+
+                DVASSERT(clipEnd > clipStart);
+            }
+
+            animation.skeletonAnimation->AddAnimationClip(animationClip, clipIgnoreMask, clipStart, clipEnd);
+
+            const YamlNode* treatAsPoseNode = animationNode->Get("treat-as-pose");
             if (treatAsPoseNode != nullptr && treatAsPoseNode->GetType() == YamlNode::TYPE_STRING)
             {
                 animation.treatAsPose = treatAsPoseNode->AsBool();
             }
 
-            uint32 markerCount = animationClip->GetMarkerCount();
-            if (markerCount != 0)
+            const YamlNode* syncPointsNode = animationNode->Get("sync-points");
+            if (syncPointsNode != nullptr && syncPointsNode->GetType() == YamlNode::TYPE_ARRAY)
             {
-                for (uint32 m = 0; m < markerCount; ++m)
+                uint32 pointsCount = syncPointsNode->GetCount();
+                for (uint32 sp = 0; sp < pointsCount; ++sp)
                 {
-                    DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < animationClip->GetMarkerTime(m));
-                    animation.phaseEnds.push_back(animationClip->GetMarkerTime(m));
-                }
-            }
-            else
-            {
-                const YamlNode* syncPointsNode = yamlNode->Get("sync-points");
-                if (syncPointsNode != nullptr)
-                {
-                    if (syncPointsNode->GetType() == YamlNode::TYPE_STRING)
+                    const YamlNode* syncPointNode = syncPointsNode->Get(sp);
+                    if (syncPointNode->GetType() == YamlNode::TYPE_STRING)
                     {
-                        animation.phaseEnds.push_back(Clamp(syncPointsNode->AsFloat(), 0.f, 1.f));
-                    }
-                    else if (syncPointsNode->GetType() == YamlNode::TYPE_ARRAY)
-                    {
-                        uint32 pointsCount = syncPointsNode->GetCount();
-                        for (uint32 sp = 0; sp < pointsCount; ++sp)
+                        float32 syncPointTimestamp = GetClipTimestamp(syncPointNode);
+                        if (syncPointTimestamp > EPSILON)
                         {
-                            const YamlNode* syncPointNode = syncPointsNode->Get(sp);
-                            if (syncPointNode->GetType() == YamlNode::TYPE_STRING)
-                            {
-                                float32 syncPointTimestamp = Clamp(syncPointNode->AsFloat(), 0.f, 1.f);
-
-                                DVASSERT(syncPointTimestamp > EPSILON); //TODO: *Skinning* resolve that
-                                DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < syncPointTimestamp);
-
-                                animation.phaseEnds.push_back(syncPointTimestamp);
-                            }
+                            syncPointTimestamp += syncPointsBase;
+                            DVASSERT(animation.phaseEnds.empty() || animation.phaseEnds.back() < syncPointTimestamp);
+                            animation.phaseEnds.push_back(syncPointTimestamp);
                         }
                     }
                 }
             }
 
-            if (animation.phaseEnds.empty() || (!animation.phaseEnds.empty() && !FLOAT_EQUAL(animation.phaseEnds.back(), 1.f)))
-                animation.phaseEnds.push_back(1.f);
+            syncPointsBase = animation.skeletonAnimation->GetDuration();
 
-            DVASSERT(animation.phaseEnds.front() > EPSILON);
-
-            //All animation should have the same phases count
-            //TODO: *Skinning* return error, not assert
-            DVASSERT(phasesCount == 0 || phasesCount == uint32(animation.phaseEnds.size()));
-            phasesCount = uint32(animation.phaseEnds.size());
+            if (animation.phaseEnds.empty() || (!animation.phaseEnds.empty() && !FLOAT_EQUAL(animation.phaseEnds.back(), syncPointsBase)))
+                animation.phaseEnds.push_back(syncPointsBase);
         }
+
+        for (float32& phaseEnd : animation.phaseEnds)
+            phaseEnd /= syncPointsBase;
+
+        DVASSERT(animation.phaseEnds.front() > EPSILON);
+        DVASSERT(FLOAT_EQUAL(animation.phaseEnds.back(), 1.f));
+
+        //All animation should have the same phases count
+        //TODO: *Skinning* return error, not assert
+        DVASSERT(phasesCount == uint32(animation.phaseEnds.size()));
     }
     else
     {
