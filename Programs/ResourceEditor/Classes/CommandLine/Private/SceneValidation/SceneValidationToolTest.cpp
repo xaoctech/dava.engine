@@ -3,7 +3,7 @@
 #include "TArc/Testing/ConsoleModuleTestExecution.h"
 #include "TArc/Testing/TArcUnitTests.h"
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TextureCompression/TextureConverter.h>
 
 #include "Scene/SceneHelper.h"
 #include "Scene3D/Components/ComponentHelpers.h"

@@ -4,7 +4,7 @@
 #include "StringConstants.h"
 #include "Scene/SceneHelper.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>

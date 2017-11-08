@@ -3,8 +3,8 @@
 
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 
-#include <DavaTools/TexturePacker/ResourcePacker2D.h>
-#include <DavaTools/TextureCompression/PVRConverter.h>
+#include <TexturePacker/ResourcePacker2D.h>
+#include <TextureCompression/PVRConverter.h>
 
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>

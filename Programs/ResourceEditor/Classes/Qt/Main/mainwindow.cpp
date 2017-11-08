@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 
-#include <DavaTools/Version.h>
 #include "Classes/Qt/CubemapEditor/CubeMapTextureBrowser.h"
 #include "Classes/Qt/CubemapEditor/CubemapUtils.h"
 #include "Classes/Qt/DebugTools/VersionInfoWidget/VersionInfoWidget.h"
@@ -59,7 +58,8 @@
 #include "Constants.h"
 #include "StringConstants.h"
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TextureCompression/TextureConverter.h>
+#include <Version/Version.h>
 
 #include <QtTools/ConsoleWidget/LogWidget.h>
 #include <QtTools/ConsoleWidget/LogModel.h>
@@ -345,9 +345,7 @@ bool QtMainWindow::eventFilter(QObject* obj, QEvent* event)
 
 void QtMainWindow::SetupTitle(const DAVA::String& projectPath)
 {
-    DAVA::String title = DAVA::Format("DAVA Framework - ResourceEditor | %s.%s [%u bit]", DAVAENGINE_VERSION, APPLICATION_BUILD_VERSION,
-                                      static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8));
-
+    DAVA::String title = DAVA::Version::CreateAppVersion("Resource Editor");
     if (!projectPath.empty())
     {
         title += " | Project - ";

@@ -69,6 +69,8 @@
 #include <LoggerService/ServiceInfo.h>
 #include <LoggerService/NetLogger.h>
 
+#include <Version/Version.h>
+
 #include "Infrastructure/NativeDelegateMac.h"
 #include "Infrastructure/NativeDelegateIos.h"
 #include "Infrastructure/NativeDelegateWin10.h"
@@ -173,7 +175,8 @@ TestBed::TestBed(Engine& engine)
 
         Window* w = engine.PrimaryWindow();
         w->sizeChanged.Connect(this, &TestBed::OnWindowSizeChanged);
-        w->SetTitleAsync("[Testbed] The one who owns a minigun fears not");
+        String title = Version::CreateAppVersion("TestBed");
+        w->SetTitleAsync(title);
         w->SetSizeAsync({ 1024.f, 768.f });
     }
 
