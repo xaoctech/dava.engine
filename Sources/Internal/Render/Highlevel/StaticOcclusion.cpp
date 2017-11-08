@@ -10,6 +10,8 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
