@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Vector.h"
 #include "UI/Components/UIComponent.h"
 #include "Reflection/Reflection.h"
 

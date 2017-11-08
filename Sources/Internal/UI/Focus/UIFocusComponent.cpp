@@ -1,4 +1,6 @@
 #include "UI/Focus/UIFocusComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
