@@ -55,7 +55,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             name = "report commit status INPROGRESS"
             id = "RUNNER_626"
             workingDir = "Teamcity"
-            scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
+            scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash-dava.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
         }
         script {
             name = "UnitTest"
@@ -79,7 +79,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             workingDir = "Teamcity"
             scriptContent = """
                 echo "##teamcity[setParameter name='env.build_failed' value='false']"
-                python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status SUCCESSFUL --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Good job !"
+                python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash-dava.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status SUCCESSFUL --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Good job !"
             """.trimIndent()
         }
         script {
@@ -87,7 +87,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             id = "RUNNER_629"
             executionMode = BuildStep.ExecutionMode.ALWAYS
             workingDir = "Teamcity"
-            scriptContent = """python report_build_status.py --reported_status %env.build_failed% --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status FAILED --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Need to work!""""
+            scriptContent = """python report_build_status.py --reported_status %env.build_failed% --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash-dava.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status FAILED --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Need to work!""""
         }
         stepsOrder = arrayListOf("RUNNER_625", "RUNNER_626", "RUNNER_1085", "RUNNER_132", "RUNNER_133", "RUNNER_134", "RUNNER_135", "RUNNER_15", "RUNNER_956", "RUNNER_627", "RUNNER_629")
     }
@@ -109,7 +109,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             id = "BUILD_EXT_7"
             type = "teamcity.stash.status"
             enabled = false
-            param("stash_host", "https://stash.wargaming.net")
+            param("stash_host", "https://stash-dava.wargaming.net")
             param("stash_only_latest", "true")
             param("stash_username", "dava_teamcity")
             param("stash_vcsignorecsv", "dava.framework_wgtf_stash")
@@ -121,7 +121,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             enabled = false
             vcsRootExtId = "dava_DavaFrameworkStash"
             publisher = bitbucketServer {
-                url = "https://stash.wargaming.net"
+                url = "https://stash-dava.wargaming.net"
                 userName = "dava_teamcity"
                 password = "zxx38986f37ccea38c0775d03cbe80d301b"
             }
