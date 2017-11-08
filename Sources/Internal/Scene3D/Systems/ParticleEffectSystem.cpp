@@ -874,7 +874,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
             RunEmitter(effect, innerEmitter, Vector3(0, 0, 0), particle->positionTarget);
     }
 
-    ++group.layer->particlesGenerated;
+    group.particlesGenerated++;
     return particle;
 }
 
@@ -933,8 +933,8 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
 void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform)
 {
     //calculate position new particle position in emitter space (for point leave it V3(0,0,0))
-    uint32 ind = group.layer->particlesGenerated;
-    uintptr_t uptr = reinterpret_cast<uintptr_t>(group.layer);
+    uint32 ind = group.particlesGenerated;
+    uintptr_t uptr = reinterpret_cast<uintptr_t>(&group);
     uint32 offset = static_cast<uint32>(uptr);
     ind += offset;
 
