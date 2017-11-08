@@ -6,6 +6,7 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticlesRandom.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Time/SystemTimer.h"
 #include "Utils/Random.h"
@@ -20,8 +21,6 @@
 #include "Render/Renderer.h"
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
-
-#include "Particles/ParticlesRandom.h"
 
 namespace DAVA
 {
@@ -956,7 +955,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->size)
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
-            particle->position = Vector3(currSize.x * (ParticlesRandom::VanDerCorputRnd(ind, 3) - 0.5f), currSize.y * (ParticlesRandom::VanDerCorputRnd(ind + 17, 2) - 0.5f), currSize.z * (ParticlesRandom::VanDerCorputRnd(ind + 13, 5) - 0.5f));
+            particle->position = Vector3(currSize.x * (ParticlesRandom::VanDerCorputRnd(ind, 3) - 0.5f), currSize.y * (ParticlesRandom::VanDerCorputRnd(ind, 2) - 0.5f), currSize.z * (ParticlesRandom::VanDerCorputRnd(ind, 5) - 0.5f));
         }
     }
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
@@ -1009,8 +1008,8 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     {
         if (group.emitter->emissionRange)
         {
-            float32 theta = ParticlesRandom::VanDerCorputRnd(ind + 82, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
-            float32 phi = ParticlesRandom::VanDerCorputRnd(ind + 5585, 4) * PI_2;
+            float32 theta = ParticlesRandom::VanDerCorputRnd(ind, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
+            float32 phi = ParticlesRandom::VanDerCorputRnd(ind, 4) * PI_2;
             particle->speed = Vector3(currVelPower * cos(phi) * sin(theta), currVelPower * sin(phi) * sin(theta), currVelPower * cos(theta));
         }
         else
