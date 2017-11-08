@@ -27,7 +27,7 @@ namespace DAVA
 {
 namespace ParticleEffectSystemDetails
 {
-Matrix3 GenerateRotationForEmitter(Vector3 vector, float32 power)
+Matrix3 GenerateEmitterRotationMatrix(Vector3 vector, float32 power)
 {
     Vector3 axis(vector.y, -vector.x, 0);
     axis.Normalize();
@@ -1035,7 +1035,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     }
     else
     {
-        Matrix3 rotation = ParticleEffectSystemDetails::GenerateRotationForEmitter(currEmissionVector, currEmissionPower);
+        Matrix3 rotation = ParticleEffectSystemDetails::GenerateEmitterRotationMatrix(currEmissionVector, currEmissionPower);
         particle->position = particle->position * rotation;
 
         if (!hasCustomEmissionVector)
@@ -1052,7 +1052,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         }
         else
         {
-            particle->speed = particle->speed * ParticleEffectSystemDetails::GenerateRotationForEmitter(currVelVector, currVelPower);
+            particle->speed = particle->speed * ParticleEffectSystemDetails::GenerateEmitterRotationMatrix(currVelVector, currVelPower);
         }
     }
     particle->position += group.spawnPosition;
