@@ -944,7 +944,6 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->size)
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
-
             particle->position = Vector3(currSize.x * (ParticlesRandom::VanDerCorputRnd(ind, 3) - 0.5f), currSize.y * (ParticlesRandom::VanDerCorputRnd(ind + 17, 2) - 0.5f), currSize.z * (ParticlesRandom::VanDerCorputRnd(ind + 13, 5) - 0.5f));
         }
     }
@@ -963,11 +962,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
 
         float32 curAngle = angleBase + angleVariation * ParticlesRandom::VanDerCorputRnd(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-        {
             curRadius *= std::sqrt(static_cast<float32>(Random::Instance()->RandFloat()));
-        }
-        float sinAngle = 0.0f;
-        float cosAngle = 0.0f;
+        float32 sinAngle = 0.0f;
+        float32 cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);
         particle->position = Vector3(curRadius * cosAngle, curRadius * sinAngle, 0.0f);
     }
