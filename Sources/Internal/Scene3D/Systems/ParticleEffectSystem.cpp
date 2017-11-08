@@ -1042,7 +1042,6 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
             particle->speed = particle->speed * rotation;
     }
 
-
     if (hasCustomEmissionVector)
     {
         if ((std::abs(currVelVector.x) < EPSILON) && (std::abs(currVelVector.y) < EPSILON))
