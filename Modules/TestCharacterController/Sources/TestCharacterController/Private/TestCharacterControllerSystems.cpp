@@ -143,7 +143,7 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
 
     isMoving = (directionParam.SquareLength() > EPSILON || !moveDirectionTarget.IsZero());
     isCrouching = (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
-    isRun = isMoving && !isCrouching && (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed();
+    isRun = isMoving && !isCrouching && !waitReloadEnd && (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed();
     isZooming = !isRun && ((mouse != nullptr && mouse->GetRightButtonState().IsPressed()) || doubleTapped);
 
     runningParam += (isRun ? timeElapsed : -timeElapsed) * 3.f;
