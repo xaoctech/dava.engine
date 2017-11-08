@@ -701,6 +701,9 @@ void ParticleRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* ba
 
 void ParticleRenderObject::SetupThreePontGradient(const ParticleGroup& group, NMaterial* material)
 {
+    // If you will use graphs and will create multiple instances of particle effect in scene - in editor all will be fine
+    // but in the game the values will be taken from last launched effect's layer. It is not a bug. If you want to use graphs you should
+    // create unique effects.
     Color currColor = Color::Black;
     float32 currLoopTime = group.time - group.loopStartTime;
     float32 currLoopTimeNormalized = currLoopTime / group.loopDuration;
