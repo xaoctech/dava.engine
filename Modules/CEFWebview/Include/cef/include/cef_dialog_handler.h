@@ -45,65 +45,63 @@
 // Callback interface for asynchronous continuation of file dialog requests.
 ///
 /*--cef(source=library)--*/
-class CefFileDialogCallback : public virtual CefBase
-{
-public:
-    ///
-    // Continue the file selection. |selected_accept_filter| should be the 0-based
-    // index of the value selected from the accept filters array passed to
-    // CefDialogHandler::OnFileDialog. |file_paths| should be a single value or a
-    // list of values depending on the dialog mode. An empty |file_paths| value is
-    // treated the same as calling Cancel().
-    ///
-    /*--cef(capi_name=cont,index_param=selected_accept_filter,
+class CefFileDialogCallback : public virtual CefBase {
+ public:
+  ///
+  // Continue the file selection. |selected_accept_filter| should be the 0-based
+  // index of the value selected from the accept filters array passed to
+  // CefDialogHandler::OnFileDialog. |file_paths| should be a single value or a
+  // list of values depending on the dialog mode. An empty |file_paths| value is
+  // treated the same as calling Cancel().
+  ///
+  /*--cef(capi_name=cont,index_param=selected_accept_filter,
           optional_param=file_paths)--*/
-    virtual void Continue(int selected_accept_filter,
-                          const std::vector<CefString>& file_paths) = 0;
+  virtual void Continue(int selected_accept_filter,
+                        const std::vector<CefString>& file_paths) =0;
 
-    ///
-    // Cancel the file selection.
-    ///
-    /*--cef()--*/
-    virtual void Cancel() = 0;
+  ///
+  // Cancel the file selection.
+  ///
+  /*--cef()--*/
+  virtual void Cancel() =0;
 };
+
 
 ///
 // Implement this interface to handle dialog events. The methods of this class
 // will be called on the browser process UI thread.
 ///
 /*--cef(source=client)--*/
-class CefDialogHandler : public virtual CefBase
-{
-public:
-    typedef cef_file_dialog_mode_t FileDialogMode;
+class CefDialogHandler : public virtual CefBase {
+ public:
+  typedef cef_file_dialog_mode_t FileDialogMode;
 
-    ///
-    // Called to run a file chooser dialog. |mode| represents the type of dialog
-    // to display. |title| to the title to be used for the dialog and may be empty
-    // to show the default title ("Open" or "Save" depending on the mode).
-    // |default_file_path| is the path with optional directory and/or file name
-    // component that should be initially selected in the dialog. |accept_filters|
-    // are used to restrict the selectable file types and may any combination of
-    // (a) valid lower-cased MIME types (e.g. "text/*" or "image/*"),
-    // (b) individual file extensions (e.g. ".txt" or ".png"), or (c) combined
-    // description and file extension delimited using "|" and ";" (e.g.
-    // "Image Types|.png;.gif;.jpg"). |selected_accept_filter| is the 0-based
-    // index of the filter that should be selected by default. To display a custom
-    // dialog return true and execute |callback| either inline or at a later time.
-    // To display the default dialog return false.
-    ///
-    /*--cef(optional_param=title,optional_param=default_file_path,
+  ///
+  // Called to run a file chooser dialog. |mode| represents the type of dialog
+  // to display. |title| to the title to be used for the dialog and may be empty
+  // to show the default title ("Open" or "Save" depending on the mode).
+  // |default_file_path| is the path with optional directory and/or file name
+  // component that should be initially selected in the dialog. |accept_filters|
+  // are used to restrict the selectable file types and may any combination of
+  // (a) valid lower-cased MIME types (e.g. "text/*" or "image/*"),
+  // (b) individual file extensions (e.g. ".txt" or ".png"), or (c) combined
+  // description and file extension delimited using "|" and ";" (e.g.
+  // "Image Types|.png;.gif;.jpg"). |selected_accept_filter| is the 0-based
+  // index of the filter that should be selected by default. To display a custom
+  // dialog return true and execute |callback| either inline or at a later time.
+  // To display the default dialog return false.
+  ///
+  /*--cef(optional_param=title,optional_param=default_file_path,
           optional_param=accept_filters,index_param=selected_accept_filter)--*/
-    virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
-                              FileDialogMode mode,
-                              const CefString& title,
-                              const CefString& default_file_path,
-                              const std::vector<CefString>& accept_filters,
-                              int selected_accept_filter,
-                              CefRefPtr<CefFileDialogCallback> callback)
-    {
-        return false;
-    }
+  virtual bool OnFileDialog(CefRefPtr<CefBrowser> browser,
+                            FileDialogMode mode,
+                            const CefString& title,
+                            const CefString& default_file_path,
+                            const std::vector<CefString>& accept_filters,
+                            int selected_accept_filter,
+                            CefRefPtr<CefFileDialogCallback> callback) {
+    return false;
+  }
 };
 
-#endif // CEF_INCLUDE_CEF_DIALOG_HANDLER_H_
+#endif  // CEF_INCLUDE_CEF_DIALOG_HANDLER_H_

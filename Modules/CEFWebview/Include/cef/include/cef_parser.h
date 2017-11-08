@@ -149,10 +149,10 @@ CefRefPtr<CefValue> CefParseJSON(const CefString& json_string,
 // message respectively.
 /*--cef()--*/
 CefRefPtr<CefValue> CefParseJSONAndReturnError(
-const CefString& json_string,
-cef_json_parser_options_t options,
-cef_json_parser_error_t& error_code_out,
-CefString& error_msg_out);
+    const CefString& json_string,
+    cef_json_parser_options_t options,
+    cef_json_parser_error_t& error_code_out,
+    CefString& error_msg_out);
 
 // Generates a JSON string from the specified root |node| which should be a
 // dictionary or list value. Returns an empty string on failure. This method
@@ -161,4 +161,4 @@ CefString& error_msg_out);
 CefString CefWriteJSON(CefRefPtr<CefValue> node,
                        cef_json_writer_options_t options);
 
-#endif // CEF_INCLUDE_CEF_PARSER_H_
+#endif  // CEF_INCLUDE_CEF_PARSER_H_

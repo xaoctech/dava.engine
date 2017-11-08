@@ -48,53 +48,52 @@
 // on any thread unless otherwise indicated.
 ///
 /*--cef(source=library,no_debugct_check)--*/
-class CefResourceBundle : public virtual CefBase
-{
-public:
-    typedef cef_scale_factor_t ScaleFactor;
+class CefResourceBundle : public virtual CefBase {
+ public:
+  typedef cef_scale_factor_t ScaleFactor;
 
-    ///
-    // Returns the global resource bundle instance.
-    ///
-    /*--cef()--*/
-    static CefRefPtr<CefResourceBundle> GetGlobal();
+  ///
+  // Returns the global resource bundle instance.
+  ///
+  /*--cef()--*/
+  static CefRefPtr<CefResourceBundle> GetGlobal();
 
-    ///
-    // Returns the localized string for the specified |string_id| or an empty
-    // string if the value is not found. Include cef_pack_strings.h for a listing
-    // of valid string ID values.
-    ///
-    /*--cef()--*/
-    virtual CefString GetLocalizedString(int string_id) = 0;
+  ///
+  // Returns the localized string for the specified |string_id| or an empty
+  // string if the value is not found. Include cef_pack_strings.h for a listing
+  // of valid string ID values.
+  ///
+  /*--cef()--*/
+  virtual CefString GetLocalizedString(int string_id) =0;
 
-    ///
-    // Retrieves the contents of the specified scale independent |resource_id|.
-    // If the value is found then |data| and |data_size| will be populated and
-    // this method will return true. If the value is not found then this method
-    // will return false. The returned |data| pointer will remain resident in
-    // memory and should not be freed. Include cef_pack_resources.h for a listing
-    // of valid resource ID values.
-    ///
-    /*--cef()--*/
-    virtual bool GetDataResource(int resource_id,
-                                 void*& data,
-                                 size_t& data_size) = 0;
+  ///
+  // Retrieves the contents of the specified scale independent |resource_id|.
+  // If the value is found then |data| and |data_size| will be populated and
+  // this method will return true. If the value is not found then this method
+  // will return false. The returned |data| pointer will remain resident in
+  // memory and should not be freed. Include cef_pack_resources.h for a listing
+  // of valid resource ID values.
+  ///
+  /*--cef()--*/
+  virtual bool GetDataResource(int resource_id,
+                               void*& data,
+                               size_t& data_size) =0;
 
-    ///
-    // Retrieves the contents of the specified |resource_id| nearest the scale
-    // factor |scale_factor|. Use a |scale_factor| value of SCALE_FACTOR_NONE for
-    // scale independent resources or call GetDataResource instead. If the value
-    // is found then |data| and |data_size| will be populated and this method will
-    // return true. If the value is not found then this method will return false.
-    // The returned |data| pointer will remain resident in memory and should not
-    // be freed. Include cef_pack_resources.h for a listing of valid resource ID
-    // values.
-    ///
-    /*--cef()--*/
-    virtual bool GetDataResourceForScale(int resource_id,
-                                         ScaleFactor scale_factor,
-                                         void*& data,
-                                         size_t& data_size) = 0;
+  ///
+  // Retrieves the contents of the specified |resource_id| nearest the scale
+  // factor |scale_factor|. Use a |scale_factor| value of SCALE_FACTOR_NONE for
+  // scale independent resources or call GetDataResource instead. If the value
+  // is found then |data| and |data_size| will be populated and this method will
+  // return true. If the value is not found then this method will return false.
+  // The returned |data| pointer will remain resident in memory and should not
+  // be freed. Include cef_pack_resources.h for a listing of valid resource ID
+  // values.
+  ///
+  /*--cef()--*/
+  virtual bool GetDataResourceForScale(int resource_id,
+                                       ScaleFactor scale_factor,
+                                       void*& data,
+                                       size_t& data_size) =0;
 };
 
-#endif // CEF_INCLUDE_CEF_RESOURCE_BUNDLE_H_
+#endif  // CEF_INCLUDE_CEF_RESOURCE_BUNDLE_H_

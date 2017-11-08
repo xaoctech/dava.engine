@@ -40,7 +40,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/synchronization/lock.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -49,152 +49,119 @@
 #include "include/base/cef_platform_thread.h"
 #include "include/base/internal/cef_lock_impl.h"
 
-namespace base
-{
+namespace base {
+
 // A convenient wrapper for an OS specific critical section.  The only real
 // intelligence in this class is in debug mode for the support for the
 // AssertAcquired() method.
-class Lock
-{
-public:
-#if defined(NDEBUG) // Optimized wrapper implementation
-    Lock()
-        : lock_()
-    {
-    }
-    ~Lock()
-    {
-    }
-    void Acquire()
-    {
-        lock_.Lock();
-    }
-    void Release()
-    {
-        lock_.Unlock();
-    }
+class Lock {
+ public:
+#if defined(NDEBUG)             // Optimized wrapper implementation
+  Lock() : lock_() {}
+  ~Lock() {}
+  void Acquire() { lock_.Lock(); }
+  void Release() { lock_.Unlock(); }
 
-    // If the lock is not held, take it and return true. If the lock is already
-    // held by another thread, immediately return false. This must not be called
-    // by a thread already holding the lock (what happens is undefined and an
-    // assertion may fail).
-    bool Try()
-    {
-        return lock_.Try();
-    }
+  // If the lock is not held, take it and return true. If the lock is already
+  // held by another thread, immediately return false. This must not be called
+  // by a thread already holding the lock (what happens is undefined and an
+  // assertion may fail).
+  bool Try() { return lock_.Try(); }
 
-    // Null implementation if not debug.
-    void AssertAcquired() const
-    {
-    }
+  // Null implementation if not debug.
+  void AssertAcquired() const {}
 #else
-    Lock();
-    ~Lock();
+  Lock();
+  ~Lock();
 
-    // NOTE: Although windows critical sections support recursive locks, we do not
-    // allow this, and we will commonly fire a DCHECK() if a thread attempts to
-    // acquire the lock a second time (while already holding it).
-    void Acquire()
-    {
-        lock_.Lock();
-        CheckUnheldAndMark();
+  // NOTE: Although windows critical sections support recursive locks, we do not
+  // allow this, and we will commonly fire a DCHECK() if a thread attempts to
+  // acquire the lock a second time (while already holding it).
+  void Acquire() {
+    lock_.Lock();
+    CheckUnheldAndMark();
+  }
+  void Release() {
+    CheckHeldAndUnmark();
+    lock_.Unlock();
+  }
+
+  bool Try() {
+    bool rv = lock_.Try();
+    if (rv) {
+      CheckUnheldAndMark();
     }
-    void Release()
-    {
-        CheckHeldAndUnmark();
-        lock_.Unlock();
-    }
+    return rv;
+  }
 
-    bool Try()
-    {
-        bool rv = lock_.Try();
-        if (rv)
-        {
-            CheckUnheldAndMark();
-        }
-        return rv;
-    }
+  void AssertAcquired() const;
+#endif                          // NDEBUG
 
-    void AssertAcquired() const;
-#endif // NDEBUG
-
-private:
+ private:
 #if !defined(NDEBUG)
-    // Members and routines taking care of locks assertions.
-    // Note that this checks for recursive locks and allows them
-    // if the variable is set.  This is allowed by the underlying implementation
-    // on windows but not on Posix, so we're doing unneeded checks on Posix.
-    // It's worth it to share the code.
-    void CheckHeldAndUnmark();
-    void CheckUnheldAndMark();
+  // Members and routines taking care of locks assertions.
+  // Note that this checks for recursive locks and allows them
+  // if the variable is set.  This is allowed by the underlying implementation
+  // on windows but not on Posix, so we're doing unneeded checks on Posix.
+  // It's worth it to share the code.
+  void CheckHeldAndUnmark();
+  void CheckUnheldAndMark();
 
-    // All private data is implicitly protected by lock_.
-    // Be VERY careful to only access members under that lock.
-    base::PlatformThreadRef owning_thread_ref_;
-#endif // NDEBUG
+  // All private data is implicitly protected by lock_.
+  // Be VERY careful to only access members under that lock.
+  base::PlatformThreadRef owning_thread_ref_;
+#endif  // NDEBUG
 
-    // Platform specific underlying lock implementation.
-    cef_internal::LockImpl lock_;
+  // Platform specific underlying lock implementation.
+  cef_internal::LockImpl lock_;
 
-    DISALLOW_COPY_AND_ASSIGN(Lock);
+  DISALLOW_COPY_AND_ASSIGN(Lock);
 };
 
 // A helper class that acquires the given Lock while the AutoLock is in scope.
-class AutoLock
-{
-public:
-    struct AlreadyAcquired
-    {
-    };
+class AutoLock {
+ public:
+  struct AlreadyAcquired {};
 
-    explicit AutoLock(Lock& lock)
-        : lock_(lock)
-    {
-        lock_.Acquire();
-    }
+  explicit AutoLock(Lock& lock) : lock_(lock) {
+    lock_.Acquire();
+  }
 
-    AutoLock(Lock& lock, const AlreadyAcquired&)
-        : lock_(lock)
-    {
-        lock_.AssertAcquired();
-    }
+  AutoLock(Lock& lock, const AlreadyAcquired&) : lock_(lock) {
+    lock_.AssertAcquired();
+  }
 
-    ~AutoLock()
-    {
-        lock_.AssertAcquired();
-        lock_.Release();
-    }
+  ~AutoLock() {
+    lock_.AssertAcquired();
+    lock_.Release();
+  }
 
-private:
-    Lock& lock_;
-    DISALLOW_COPY_AND_ASSIGN(AutoLock);
+ private:
+  Lock& lock_;
+  DISALLOW_COPY_AND_ASSIGN(AutoLock);
 };
 
 // AutoUnlock is a helper that will Release() the |lock| argument in the
 // constructor, and re-Acquire() it in the destructor.
-class AutoUnlock
-{
-public:
-    explicit AutoUnlock(Lock& lock)
-        : lock_(lock)
-    {
-        // We require our caller to have the lock.
-        lock_.AssertAcquired();
-        lock_.Release();
-    }
+class AutoUnlock {
+ public:
+  explicit AutoUnlock(Lock& lock) : lock_(lock) {
+    // We require our caller to have the lock.
+    lock_.AssertAcquired();
+    lock_.Release();
+  }
 
-    ~AutoUnlock()
-    {
-        lock_.Acquire();
-    }
+  ~AutoUnlock() {
+    lock_.Acquire();
+  }
 
-private:
-    Lock& lock_;
-    DISALLOW_COPY_AND_ASSIGN(AutoUnlock);
+ private:
+  Lock& lock_;
+  DISALLOW_COPY_AND_ASSIGN(AutoUnlock);
 };
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_LOCK_H_
+#endif  // CEF_INCLUDE_BASE_CEF_LOCK_H_
