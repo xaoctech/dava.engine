@@ -1,6 +1,5 @@
 #pragma once
 #include "Reflection/Reflection.h"
-#include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA
 {
@@ -28,16 +27,16 @@ public:
     void RegisterComponent();
 
     /** Return total number of registered components. */
-    uint32 GetComponentsCount();
+    uint32 GetComponentsCount() const;
 
     /** Check if specified 'type' was registered as UIComponent. */
-    bool IsUIComponent(const Type* type);
+    bool IsUIComponent(const Type* type) const;
 
     /** Return runtimeType for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
-    int32 GetRuntimeType(const Type* type);
+    int32 GetRuntimeType(const Type* type) const;
 
     /** Return reference to sorted vector of registered components types. */
-    Vector<const Type*>& GetRegisteredComponents();
+    const Vector<const Type*>& GetRegisteredComponents() const;
 
 private:
     int32 runtimeComponentsCount = 0;
@@ -63,27 +62,5 @@ void ComponentManager::RegisterComponent()
     {
         throw new std::logic_error("Can only register UIComponents");
     }
-}
-
-inline bool ComponentManager::IsUIComponent(const Type* type)
-{
-    auto it = typeToRuntimeType.find(type);
-    return (it != typeToRuntimeType.end());
-}
-
-inline int32 ComponentManager::GetRuntimeType(const Type* type)
-{
-    DVASSERT(IsUIComponent(type));
-    return typeToRuntimeType[type];
-}
-
-inline Vector<const Type*>& ComponentManager::GetRegisteredComponents()
-{
-    return registeredCompoennts;
-}
-
-inline uint32 ComponentManager::GetComponentsCount()
-{
-    return runtimeComponentsCount;
 }
 }
