@@ -25,6 +25,19 @@
 
 namespace DAVA
 {
+namespace ParticleEffectSystemDetails
+{
+Matrix3 GenerateRotationForEmitter(Vector3 vector, float32 power)
+{
+    Vector3 axis(vector.y, -vector.x, 0);
+    axis.Normalize();
+    float32 angle = std::acos(vector.z / power);
+    Matrix3 rotation;
+    rotation.CreateRotation(axis, angle);
+    return rotation;
+}
+}
+
 NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialData)
 {
     if (materialData.texture == nullptr) //for superemitter particles eg
@@ -933,10 +946,9 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
 void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform)
 {
     //calculate position new particle position in emitter space (for point leave it V3(0,0,0))
-    uint32 ind = group.particlesGenerated;
     uintptr_t uptr = reinterpret_cast<uintptr_t>(&group);
     uint32 offset = static_cast<uint32>(uptr);
-    ind += offset;
+    uint32 ind = group.particlesGenerated + offset;
 
     // In VanDerCorput random we use different bases to avoid diagonal patterns.
     if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
@@ -962,7 +974,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
 
         float32 curAngle = angleBase + angleVariation * ParticlesRandom::VanDerCorputRnd(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= std::sqrt(static_cast<float32>(Random::Instance()->RandFloat()));
+            curRadius *= std::sqrt(static_cast<float32>(Random::Instance()->RandFloat())); // Better distribution on circle.
         float32 sinAngle = 0.0f;
         float32 cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);
@@ -1009,25 +1021,21 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
 
     //now transform position and speed by emissionVector and worldTransfrom rotations - preserving length
     Matrix3 newTransform(worldTransform);
+    Matrix3 PIRotationAroundX;
+    PIRotationAroundX.CreateRotation(Vector3(1, 0, 0), PI);
     if ((std::abs(currEmissionVector.x) < EPSILON) && (std::abs(currEmissionVector.y) < EPSILON))
     {
         if (currEmissionVector.z < 0)
         {
-            Matrix3 rotation;
-            rotation.CreateRotation(Vector3(1, 0, 0), PI);
-            particle->position = particle->position * rotation;
+            particle->position = particle->position * PIRotationAroundX;
 
             if (!hasCustomEmissionVector)
-                particle->speed = particle->speed * rotation;
+                particle->speed = particle->speed * PIRotationAroundX;
         }
     }
     else
     {
-        Vector3 axis(currEmissionVector.y, -currEmissionVector.x, 0);
-        axis.Normalize();
-        float32 angle = std::acos(currEmissionVector.z / currEmissionPower);
-        Matrix3 rotation;
-        rotation.CreateRotation(axis, angle);
+        Matrix3 rotation = ParticleEffectSystemDetails::GenerateRotationForEmitter(currEmissionVector, currEmissionPower);
         particle->position = particle->position * rotation;
 
         if (!hasCustomEmissionVector)
@@ -1040,20 +1048,11 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if ((std::abs(currVelVector.x) < EPSILON) && (std::abs(currVelVector.y) < EPSILON))
         {
             if (currVelVector.z < 0)
-            {
-                Matrix3 rotation;
-                rotation.CreateRotation(Vector3(1, 0, 0), PI);
-                particle->speed = particle->speed * rotation;
-            }
+                particle->speed = particle->speed * PIRotationAroundX;
         }
         else
         {
-            Vector3 axis(currVelVector.y, -currVelVector.x, 0);
-            axis.Normalize();
-            float32 angle = std::acos(currVelVector.z / currVelPower);
-            Matrix3 rotation;
-            rotation.CreateRotation(axis, angle);
-            particle->speed = particle->speed * rotation;
+            particle->speed = particle->speed * ParticleEffectSystemDetails::GenerateRotationForEmitter(currVelVector, currVelPower);
         }
     }
     particle->position += group.spawnPosition;

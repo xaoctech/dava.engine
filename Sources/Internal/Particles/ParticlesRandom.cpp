@@ -41,7 +41,7 @@ float32 VanDerCorputRnd(uint32 n, uint32 base)
 
 float32 VanDerCorputRnd(float32 min, float32 max, uint32 n, uint32 base)
 {
-    return (max - min) * HammersleyRnd(n) + min;
+    return (max - min) * VanDerCorputRnd(n, base) + min;
 }
 }
 }
