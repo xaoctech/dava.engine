@@ -1,4 +1,5 @@
 #include "UI/UIScreenTransition.h"
+#include "Engine/Engine.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
