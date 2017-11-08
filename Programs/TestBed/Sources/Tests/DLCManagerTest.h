@@ -51,4 +51,5 @@ private:
     DAVA::UITextField* editUrl = nullptr;
     DAVA::UIButton* buttonInitDLC = nullptr;
     DAVA::UIButton* buttonRemovePack = nullptr;
+    DAVA::UIButton* buttonPauseResume = nullptr;
 };
