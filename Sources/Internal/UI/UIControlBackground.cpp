@@ -1,4 +1,6 @@
 #include "UI/UIControlBackground.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Debug/DVAssert.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Sprite.h"

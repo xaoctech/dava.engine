@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "Base/BaseTypes.h"
+#include "Math/MathConstants.h"
 
 /*
  It contein's defines from Math2D.h to resolve circular reference

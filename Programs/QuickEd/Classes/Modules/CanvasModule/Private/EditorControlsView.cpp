@@ -14,6 +14,8 @@
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/DataListener.h>
 
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <UI/UIControl.h>

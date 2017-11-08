@@ -12,6 +12,7 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIList.h"
+#include "UI/UIListCell.h"
 #include "UI/UIStaticText.h"
 #include "UI/UITextField.h"
 #include "Utils/UTF8Utils.h"

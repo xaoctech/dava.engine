@@ -296,7 +296,7 @@ fragment_out fp_main( fragment_in input )
     #endif
     
     #if FLATALBEDO
-        textureColor0 *= flatColor;
+        textureColor0 *= half4(flatColor);
     #endif
     
     #if MATERIAL_TEXTURE

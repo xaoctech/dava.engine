@@ -17,6 +17,7 @@
 #include <Base/ObjectFactory.h>
 #include <Entity/ComponentManager.h>
 #include <FileSystem/YamlNode.h>
+#include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIPackage.h>
 #include <UI/UIControl.h>
 #include <UI/UIControlPackageContext.h>
