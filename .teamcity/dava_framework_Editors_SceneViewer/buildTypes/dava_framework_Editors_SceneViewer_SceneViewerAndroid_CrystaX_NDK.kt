@@ -100,7 +100,7 @@ object dava_framework_Editors_SceneViewer_SceneViewerAndroid_CrystaX_NDK : Build
     features {
         feature {
             type = "teamcity.stash.status"
-            param("stash_host", "https://stash-dava.wargaming.net")
+            param("stash_host", "https://stash.wargaming.net")
             param("stash_only_latest", "true")
             param("stash_username", "i_petrochenko")
             param("stash_failCancelledBuilds", "true")

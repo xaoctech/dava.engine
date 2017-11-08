@@ -6,7 +6,7 @@ import jetbrains.buildServer.configs.kotlin.v10.buildSteps.ScriptBuildStep.*
 import jetbrains.buildServer.configs.kotlin.v10.buildSteps.script
 
 object dava_framework_Editors_ResourceEditorPublic_ResourceEditorWin : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDavaTools_win)
+    template = "dava_framework_TemplateDavaTools_win"
     uuid = "68ed3638-d2d5-4e40-b495-025b0617e27a"
     extId = "dava_framework_Editors_ResourceEditorPublic_ResourceEditorWin"
     name = "ResourceEditor_win"
