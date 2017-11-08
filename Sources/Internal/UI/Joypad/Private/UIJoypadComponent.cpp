@@ -1,6 +1,8 @@
 #include "UI/Joypad/UIJoypadComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/UIControl.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "UI/Components/UIComponent.h"
+#include "Functional/Function.h"
+#include "Math/Rect.h"
 
 namespace DAVA
 {
