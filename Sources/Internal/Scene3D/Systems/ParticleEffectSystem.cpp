@@ -938,13 +938,14 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     uint32 offset = static_cast<uint32>(uptr);
     ind += offset;
 
+    // In VanDerCorput random we use different bases to avoid diagonal patterns.
     if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
     {
         if (group.emitter->size)
         {
             Vector3 currSize = group.emitter->size->GetValue(group.time);
 
-            particle->position = Vector3(currSize.x * (VanDerCorput(ind, 3) - 0.5f), currSize.y * (VanDerCorput(ind + 17, 2) - 0.5f), currSize.z * (VanDerCorput(ind + 13, 5) - 0.5f));
+            particle->position = Vector3(currSize.x * (ParticlesRandom::VanDerCorputRnd(ind, 3) - 0.5f), currSize.y * (ParticlesRandom::VanDerCorputRnd(ind + 17, 2) - 0.5f), currSize.z * (ParticlesRandom::VanDerCorputRnd(ind + 13, 5) - 0.5f));
         }
     }
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
@@ -960,7 +961,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         if (group.emitter->emissionAngleVariation)
             angleVariation = DegToRad(group.emitter->emissionAngleVariation->GetValue(group.time));
 
-        float32 curAngle = angleBase + angleVariation * VanDerCorput(ind, 3);
+        float32 curAngle = angleBase + angleVariation * ParticlesRandom::VanDerCorputRnd(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
         {
             curRadius *= std::sqrt(static_cast<float32>(Random::Instance()->RandFloat()));
@@ -999,8 +1000,8 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     {
         if (group.emitter->emissionRange)
         {
-            float32 theta = VanDerCorput(ind + 82, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
-            float32 phi = VanDerCorput(ind + 5585, 4) * PI_2;
+            float32 theta = ParticlesRandom::VanDerCorputRnd(ind + 82, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
+            float32 phi = ParticlesRandom::VanDerCorputRnd(ind + 5585, 4) * PI_2;
             particle->speed = Vector3(currEmissionPower * cos(phi) * sin(theta), currEmissionPower * sin(phi) * sin(theta), currEmissionPower * cos(theta));
         }
         else
