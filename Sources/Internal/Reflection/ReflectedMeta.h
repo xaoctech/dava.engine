@@ -245,6 +245,10 @@ using CantBeCreatedManualyComponent = Meta<Metas::CantBeCreatedManualyComponent>
 */
 using CantBeDeletedManualyComponent = Meta<Metas::CantBeDeletedManualyComponent>;
 
+using NonExportableComponent = Meta<Metas::NonExportableComponent>;
+
+using NonSerializableComponent = Meta<Metas::NonSerializableComponent>;
+
 using Tooltip = Meta<Metas::Tooltip>;
 using IntColor = Meta<Metas::IntColor>;
 }

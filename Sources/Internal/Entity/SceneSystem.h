@@ -22,8 +22,8 @@ public:
     SceneSystem(Scene* scene);
     virtual ~SceneSystem() = default;
 
-    inline void SetRequiredComponents(uint64 requiredComponents);
-    inline uint64 GetRequiredComponents() const;
+    inline void SetRequiredComponents(ComponentFlags requiredComponents);
+    inline ComponentFlags GetRequiredComponents() const;
 
     /**
         \brief  This function is called when any entity registered to scene.
@@ -132,7 +132,7 @@ protected:
     virtual void SetScene(Scene* scene);
 
 private:
-    uint64 requiredComponents = 0;
+    ComponentFlags requiredComponents = 0;
     Scene* scene = nullptr;
 
     bool locked = false;
@@ -144,12 +144,12 @@ inline Scene* SceneSystem::GetScene() const
     return scene;
 }
 
-inline void SceneSystem::SetRequiredComponents(uint64 _requiredComponents)
+inline void SceneSystem::SetRequiredComponents(ComponentFlags requiredComponents_)
 {
-    requiredComponents = _requiredComponents;
+    requiredComponents = requiredComponents_;
 }
 
-inline uint64 SceneSystem::GetRequiredComponents() const
+inline ComponentFlags SceneSystem::GetRequiredComponents() const
 {
     return requiredComponents;
 }

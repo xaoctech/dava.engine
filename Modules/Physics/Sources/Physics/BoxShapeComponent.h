@@ -9,7 +9,6 @@ namespace DAVA
 class BoxShapeComponent : public CollisionShapeComponent
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(BOX_SHAPE_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;

@@ -119,7 +119,7 @@ void FullscreenTest::LoadResources()
 
     rotationControllerSystem = new RotationControllerSystem(scene);
     scene->AddSystem(rotationControllerSystem,
-                     MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::ROTATION_CONTROLLER_COMPONENT),
+                     MakeComponentMask<CameraComponent>() | MakeComponentMask<RotationControllerComponent>(),
                      Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
     scene->AddCamera(camera);

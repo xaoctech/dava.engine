@@ -35,7 +35,7 @@ void ScenePreviewControl::RecreateScene()
 
     rotationSystem = new DAVA::RotationControllerSystem(editorScene);
     rotationSystem->SetRotationSpeeed(0.10f);
-    editorScene->AddSystem(rotationSystem, (MAKE_COMPONENT_MASK(DAVA::Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(DAVA::Component::ROTATION_CONTROLLER_COMPONENT)),
+    editorScene->AddSystem(rotationSystem, DAVA::MakeComponentMask<DAVA::CameraComponent>() | DAVA::MakeComponentMask<DAVA::RotationControllerComponent>(),
                            DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 }
 

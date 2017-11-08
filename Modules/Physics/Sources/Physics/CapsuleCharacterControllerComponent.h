@@ -12,7 +12,6 @@ namespace DAVA
 class CapsuleCharacterControllerComponent final : public CharacterControllerComponent
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;

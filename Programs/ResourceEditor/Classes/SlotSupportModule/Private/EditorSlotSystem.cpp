@@ -41,9 +41,9 @@ void DetachSlotForRemovingEntity(DAVA::Entity* entity, SceneEditor2* scene, REDe
         DetachSlotForRemovingEntity(entity->GetChild(i), scene, holder);
     }
 
-    for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+    for (DAVA::uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
     {
-        DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+        DAVA::SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
         holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, DAVA::FastName()));
     }
 }
@@ -57,23 +57,23 @@ EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccess
 
 void EditorSlotSystem::AddEntity(DAVA::Entity* entity)
 {
-    DVASSERT(entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0);
+    DVASSERT(entity->GetComponentCount<DAVA::SlotComponent>() > 0);
     entities.push_back(entity);
     pendingOnInitialize.insert(entity);
 }
 
 void EditorSlotSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    DVASSERT(entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0);
+    DVASSERT(entity->GetComponentCount<DAVA::SlotComponent>() > 0);
     DAVA::FindAndRemoveExchangingWithLast(entities, entity);
     pendingOnInitialize.erase(entity);
 }
 
 void EditorSlotSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Component::SLOT_COMPONENT);
+    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>());
     pendingOnInitialize.insert(entity);
-    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
+    if (entity->GetComponentCount<DAVA::SlotComponent>() == 1)
     {
 #if defined(__DAVAENGINE_DEBUG__)
         DVASSERT(std::find(entities.begin(), entities.end(), entity) == entities.end());
@@ -84,8 +84,8 @@ void EditorSlotSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* compo
 
 void EditorSlotSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Component::SLOT_COMPONENT);
-    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1)
+    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>());
+    if (entity->GetComponentCount<DAVA::SlotComponent>() == 1)
     {
         DAVA::FindAndRemoveExchangingWithLast(entities, entity);
         pendingOnInitialize.erase(entity);
@@ -108,9 +108,9 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
     {
         Set<FastName> names;
         Set<SlotComponent*> uninitializedSlots;
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
         {
-            SlotComponent* slotComponent = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* slotComponent = entity->GetComponent<DAVA::SlotComponent>(i);
             FastName slotName = slotComponent->GetSlotName();
             if (slotName.IsValid())
             {
@@ -142,10 +142,10 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
     {
         for (Entity* entity : pendingOnInitialize)
         {
-            uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
+            uint32 slotCount = entity->GetComponentCount<DAVA::SlotComponent>();
             for (uint32 slotIndex = 0; slotIndex < slotCount; ++slotIndex)
             {
-                SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, slotIndex));
+                SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>();
                 Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
                 if (loadedEntity == nullptr)
                 {
@@ -187,9 +187,9 @@ void EditorSlotSystem::Process(DAVA::float32 timeElapsed)
 
     for (Entity* entity : entities)
     {
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
         {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
             Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
             if (loadedEntity != nullptr)
             {
@@ -210,14 +210,14 @@ void EditorSlotSystem::WillClone(DAVA::Entity* originalEntity)
 {
     auto extractSlots = [this](DAVA::Entity* entity)
     {
-        DAVA::uint32 slotCount = entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT);
+        DAVA::uint32 slotCount = entity->GetComponentCount<DAVA::SlotComponent>();
         if (slotCount > 0)
         {
             DAVA::Scene* scene = GetScene();
             for (DAVA::uint32 i = 0; i < slotCount; ++i)
             {
                 AttachedItemInfo info;
-                info.component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+                info.component = entity->GetComponent<DAVA::SlotComponent>(i);
                 DVASSERT(info.component->GetEntity() != nullptr);
                 info.entity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(scene->slotSystem->LookUpLoadedEntity(info.component));
                 info.itemName = info.component->GetLoadedItemName();
@@ -230,7 +230,7 @@ void EditorSlotSystem::WillClone(DAVA::Entity* originalEntity)
 
     extractSlots(originalEntity);
     DAVA::Vector<DAVA::Entity*> children;
-    originalEntity->GetChildEntitiesWithComponent(children, DAVA::Component::SLOT_COMPONENT);
+    originalEntity->GetChildEntitiesWithComponent(children, DAVA::Type::Instance<DAVA::SlotComponent>());
     for (DAVA::Entity* e : children)
     {
         extractSlots(e);
@@ -257,7 +257,7 @@ void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* new
 
     restoreSlots(originalEntity);
     DAVA::Vector<DAVA::Entity*> children;
-    originalEntity->GetChildEntitiesWithComponent(children, DAVA::Component::SLOT_COMPONENT);
+    originalEntity->GetChildEntitiesWithComponent(children, DAVA::Type::Instance<DAVA::SlotComponent>());
     for (DAVA::Entity* e : children)
     {
         restoreSlots(e);
@@ -292,7 +292,7 @@ DAVA::RefPtr<DAVA::KeyedArchive> EditorSlotSystem::SaveSlotsPreset(DAVA::Entity*
         }
     }
 
-    DAVA::uint32 slotsCount = entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT);
+    DAVA::uint32 slotsCount = entity->GetComponentCount<DAVA::SlotComponent>();
     if (slotsCount != 0)
     {
         DAVA::FilePath scenePath = static_cast<SceneEditor2*>(GetScene())->GetScenePath();
@@ -311,7 +311,7 @@ DAVA::RefPtr<DAVA::KeyedArchive> EditorSlotSystem::SaveSlotsPreset(DAVA::Entity*
         result->SetUInt32("slotsCount", slotsCount);
         for (DAVA::uint32 slotIndex = 0; slotIndex < slotsCount; ++slotIndex)
         {
-            DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, slotIndex));
+            DAVA::SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(slotIndex);
             DAVA::RefPtr<DAVA::KeyedArchive> arch(new DAVA::KeyedArchive());
             component->Serialize(arch.Get(), &serializeCtx);
             DVASSERT(component->GetSlotName().IsValid());
@@ -384,9 +384,9 @@ DAVA::FastName EditorSlotSystem::GenerateUniqueSlotName(DAVA::SlotComponent* com
         }
         else
         {
-            for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+            for (DAVA::uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
             {
-                DAVA::SlotComponent* comp = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+                DAVA::SlotComponent* comp = entity->GetComponent<DAVA::SlotComponent>(i);
                 if (comp == component)
                 {
                     continue;
@@ -481,9 +481,9 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         {
             DAVA::Entity* entityWithNewName = object.GetPtr<DAVA::Entity>();
             DAVA::Set<DAVA::FastName> reservedNames;
-            for (DAVA::uint32 i = 0; i < entityWithNewName->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+            for (DAVA::uint32 i = 0; i < entityWithNewName->GetComponentCount<DAVA::SlotComponent>(); ++i)
             {
-                DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entityWithNewName->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+                DAVA::SlotComponent* component = entityWithNewName->GetComponent<DAVA::SlotComponent>(i);
                 DAVA::Reflection componentRef = DAVA::Reflection::Create(DAVA::ReflectedObject(component));
                 DAVA::Reflection::Field f;
                 f.key = DAVA::SlotComponent::SlotNameFieldName;
@@ -503,7 +503,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         const RemoveComponentCommand* cmd = static_cast<const RemoveComponentCommand*>(command);
         DAVA::Component* component = const_cast<DAVA::Component*>(cmd->GetComponent());
-        if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
+        if (component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>())
         {
             DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
             holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr, DAVA::FastName()));
@@ -539,7 +539,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         const AddComponentCommand* cmd = static_cast<const AddComponentCommand*>(command);
         DAVA::Component* component = cmd->GetComponent();
-        if (component->GetType() == DAVA::Component::SLOT_COMPONENT)
+        if (component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>())
         {
             SlotSystemSettings* settings = accessor->GetGlobalContext()->GetData<SlotSystemSettings>();
             DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
@@ -573,14 +573,14 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         if (iter != clonedEntityes.end())
         {
             DAVA::Vector<DAVA::Entity*> slotEntityes;
-            entityForAdd->GetChildEntitiesWithComponent(slotEntityes, DAVA::Component::SLOT_COMPONENT);
+            entityForAdd->GetChildEntitiesWithComponent(slotEntityes, DAVA::Type::Instance<DAVA::SlotComponent>());
             slotEntityes.push_back(entityForAdd);
 
             for (DAVA::Entity* e : slotEntityes)
             {
-                for (DAVA::uint32 i = 0; i < e->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+                for (DAVA::uint32 i = 0; i < e->GetComponentCount<DAVA::SlotComponent>(); ++i)
                 {
-                    loadDefaultItem(static_cast<DAVA::SlotComponent*>(e->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
+                    loadDefaultItem((e->GetComponent<DAVA::SlotComponent>(i)));
                 }
             }
 
@@ -668,9 +668,9 @@ void EditorSlotSystem::Draw()
     RenderHelper* rh = scene->GetRenderSystem()->GetDebugDrawer();
     for (Entity* entity : entities)
     {
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
         {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
             FastName templateName = component->GetTemplateName();
             const SlotTemplatesData::Template* t = data->GetTemplate(templateName);
             if (t != nullptr)
@@ -722,9 +722,9 @@ std::unique_ptr<DAVA::Command> EditorSlotSystem::PrepareForSave(bool /*saveForGa
     {
         for (DAVA::Entity* entity : entityNode.second)
         {
-            for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+            for (DAVA::uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
             {
-                DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+                DAVA::SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
                 batchCommand->Add(std::make_unique<AttachEntityToSlot>(sceneEditor, component, nullptr, DAVA::FastName()));
             }
         }
@@ -769,9 +769,9 @@ void EditorSlotSystem::LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DA
     if (slotsCount > 0)
     {
         DAVA::UnorderedMap<DAVA::FastName, DAVA::Deque<DAVA::SlotComponent*>> existsComponents;
-        for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+        for (DAVA::uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
         {
-            DAVA::SlotComponent* component = static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i));
+            DAVA::SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
             existsComponents[component->GetSlotName()].push_back(component);
         }
 

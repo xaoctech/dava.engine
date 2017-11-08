@@ -2,6 +2,7 @@
 
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Lod/LodComponent.h>
 #include <Utils/StringFormat.h>
@@ -188,7 +189,7 @@ void AccumulateImportParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& scen
 {
     using namespace DAVA;
 
-    for (DAVA::uint32 type : ImportParams::reImportComponentsIds)
+    for (const DAVA::Type* type : ImportParams::reImportComponentsIds)
     {
         DAVA::Map<DAVA::FastName, DAVA::Vector<DAVA::Component*>>& componentsMap = params->componentsMap[type];
         DAVA::Vector<DAVA::Component*>& components = componentsMap[DAVA::FastName(entity->GetFullName())];
@@ -236,7 +237,7 @@ void RestoreSceneParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& sceneDir
 
     const FastName& entityName = entity->GetName();
 
-    for (DAVA::uint32 type : ImportParams::reImportComponentsIds)
+    for (const DAVA::Type* type : ImportParams::reImportComponentsIds)
     {
         DAVA::Map<DAVA::FastName, DAVA::Vector<DAVA::Component*>>& componentsMap = params->componentsMap[type];
         DAVA::Vector<DAVA::Component*>& components = componentsMap[DAVA::FastName(entity->GetFullName())];
@@ -300,6 +301,20 @@ void RestoreSceneParamsImpl(DAVA::Entity* entity, const DAVA::FilePath& sceneDir
 }
 }
 
+DAVA::Vector<const DAVA::Type*> ImportParams::reImportComponentsIds = {};
+
+ImportParams::ImportParams()
+{
+    if (reImportComponentsIds.empty())
+    {
+        reImportComponentsIds = {
+            DAVA::Type::Instance<DAVA::LodComponent>(),
+            DAVA::Type::Instance<DAVA::SlotComponent>(),
+            DAVA::Type::Instance<DAVA::CustomPropertiesComponent>()
+        };
+    }
+}
+
 ImportParams::~ImportParams()
 {
     for (const auto& typeIter : componentsMap)
@@ -318,12 +333,6 @@ ImportParams::~ImportParams()
     componentsMap.clear();
     materialsMap.clear();
 }
-
-const DAVA::Vector<DAVA::uint32> ImportParams::reImportComponentsIds = {
-    DAVA::Component::LOD_COMPONENT,
-    DAVA::Component::SLOT_COMPONENT,
-    DAVA::Component::CUSTOM_PROPERTIES_COMPONENT
-};
 
 void AccumulateImportParams(DAVA::RefPtr<DAVA::Scene> scene, const DAVA::FilePath& scenePath, ImportParams* params)
 {

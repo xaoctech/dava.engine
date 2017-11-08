@@ -11,6 +11,8 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
@@ -28,9 +30,13 @@ void LodSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_LOD_SYSTEM);
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+    ComponentManager* cm = GetEngineContext()->componentManager;
+
+    int32 runtimeType = cm->GetRuntimeType(Type::Instance<LodComponent>());
+
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Component::LOD_COMPONENT) > 0)
+        if (pair.first->GetComponentsCount(runtimeType) > 0)
         {
             for (Entity* entity : pair.second)
             {
@@ -39,7 +45,7 @@ void LodSystem::Process(float32 timeElapsed)
                 {
                     int32 index = iter->second;
                     FastStruct* fast = &fastVector[index];
-                    fast->position = static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform().GetTranslationVector();
+                    fast->position = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
                 }
             }
         }
@@ -189,9 +195,9 @@ void LodSystem::UpdateDistances(LodComponent* from, LodSystem::SlowStruct* to)
 
 void LodSystem::AddEntity(Entity* entity)
 {
-    TransformComponent* transform = static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
-    LodComponent* lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-    ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    TransformComponent* transform = entity->GetComponent<TransformComponent>();
+    LodComponent* lod = entity->GetComponent<LodComponent>();
+    ParticleEffectComponent* effect = entity->GetComponent<ParticleEffectComponent>();
     Vector3 position = transform->GetWorldTransform().GetTranslationVector();
 
     lod->currentLod = LodComponent::INVALID_LOD_LAYER;
@@ -246,7 +252,7 @@ void LodSystem::RemoveEntity(Entity* entity)
 
 void LodSystem::RegisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Component::PARTICLE_EFFECT_COMPONENT)
+    if (component->GetType() == Type::Instance<ParticleEffectComponent>())
     {
         auto iter = fastMap.find(entity);
         if (iter != fastMap.end())
@@ -265,7 +271,7 @@ void LodSystem::RegisterComponent(Entity* entity, Component* component)
 
 void LodSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Component::PARTICLE_EFFECT_COMPONENT)
+    if (component->GetType() == Type::Instance<ParticleEffectComponent>())
     {
         auto iter = fastMap.find(entity);
         if (iter != fastMap.end())
@@ -296,7 +302,7 @@ void LodSystem::ImmediateEvent(Component* component, uint32 event)
     case EventSystem::START_PARTICLE_EFFECT:
     case EventSystem::STOP_PARTICLE_EFFECT:
     {
-        DVASSERT(component->GetType() == Component::PARTICLE_EFFECT_COMPONENT);
+        DVASSERT(component->GetType() == Type::Instance<ParticleEffectComponent>());
         auto iter = fastMap.find(component->GetEntity());
         if (iter != fastMap.end())
         {
@@ -309,7 +315,7 @@ void LodSystem::ImmediateEvent(Component* component, uint32 event)
 
     case EventSystem::LOD_DISTANCE_CHANGED:
     {
-        DVASSERT(component->GetType() == Component::LOD_COMPONENT);
+        DVASSERT(component->GetType() == Type::Instance<LodComponent>());
         LodComponent* lod = static_cast<LodComponent*>(component);
         auto iter = fastMap.find(component->GetEntity());
         if (iter != fastMap.end())
@@ -328,7 +334,7 @@ void LodSystem::ImmediateEvent(Component* component, uint32 event)
 
     case EventSystem::LOD_RECURSIVE_UPDATE_ENABLED:
     {
-        DVASSERT(component->GetType() == Component::LOD_COMPONENT);
+        DVASSERT(component->GetType() == Type::Instance<LodComponent>());
         auto iter = fastMap.find(component->GetEntity());
         DVASSERT(iter != fastMap.end());
         int32 index = iter->second;

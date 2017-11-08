@@ -15,10 +15,10 @@
 #include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/StringConstants.h"
 
-#include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/Controller/WASDControllerSystem.h>
 #include <Scene3D/Systems/Controller/RotationControllerSystem.h>
+#include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/Controller/WASDControllerComponent.h>
 #include <Scene3D/Components/Controller/RotationControllerComponent.h>
 #include <Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h>
@@ -649,7 +649,7 @@ bool SceneCameraSystem::SnapEditorCameraToLandscape(bool snap)
         {
             DAVA::float32 height = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->heightOnLandscape;
 
-            snapComponent = static_cast<DAVA::SnapToLandscapeControllerComponent*>(DAVA::Component::CreateByType(DAVA::Component::SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT));
+            snapComponent = DAVA::Component::CreateByType<DAVA::SnapToLandscapeControllerComponent>();
             snapComponent->SetHeightOnLandscape(height);
 
             scene->Exec(std::unique_ptr<DAVA::Command>(new AddComponentCommand(entity, snapComponent)));

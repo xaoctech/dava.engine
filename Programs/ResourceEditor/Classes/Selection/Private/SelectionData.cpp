@@ -34,13 +34,13 @@ void SelectionData::ResetSelectionComponentMask()
     selectionSystem->ResetSelectionComponentMask();
 }
 
-void SelectionData::SetSelectionComponentMask(DAVA::uint64 mask)
+void SelectionData::SetSelectionComponentMask(DAVA::ComponentFlags mask)
 {
     DVASSERT(selectionSystem);
     selectionSystem->SetSelectionComponentMask(mask);
 }
 
-DAVA::uint64 SelectionData::GetSelectionComponentMask() const
+DAVA::ComponentFlags SelectionData::GetSelectionComponentMask() const
 {
     DVASSERT(selectionSystem);
     return selectionSystem->GetSelectionComponentMask();

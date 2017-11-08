@@ -4,7 +4,7 @@
 #include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
 #include "UI/Components/UIComponent.h"
-#include "Entity/BaseFamily.h"
+#include "Entity/FamilyRepository.h"
 
 namespace DAVA
 {
@@ -30,6 +30,6 @@ private:
     Vector<uint32> componentsCount;
 
     template <typename EntityFamilyType>
-    friend class BaseFamilyRepository;
+    friend class FamilyRepository;
 };
 }

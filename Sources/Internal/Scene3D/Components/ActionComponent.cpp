@@ -503,7 +503,7 @@ void ActionComponent::OnActionParticleEffectStart(const Action& action)
 
     if (target != NULL)
     {
-        ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>(target->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+        ParticleEffectComponent* component = target->GetComponent<ParticleEffectComponent>();
         if (component)
         {
             component->StopAfterNRepeats(action.stopAfterNRepeats);
@@ -520,7 +520,7 @@ void ActionComponent::OnActionParticleEffectStop(const Action& action)
 
     if (target != NULL)
     {
-        ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>(target->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+        ParticleEffectComponent* component = target->GetComponent<ParticleEffectComponent>();
         if (component)
         {
             component->Stop(!action.stopWhenEmpty);
@@ -575,7 +575,7 @@ void ActionComponent::OnActionSoundStart(const Action& action)
 
     if (target != NULL)
     {
-        SoundComponent* component = static_cast<SoundComponent*>(target->GetComponent(Component::SOUND_COMPONENT));
+        SoundComponent* component = target->GetComponent<SoundComponent>();
         if (component)
         {
             component->Trigger();
@@ -589,7 +589,7 @@ void ActionComponent::OnActionSoundStop(const Action& action)
 
     if (target != NULL)
     {
-        SoundComponent* component = static_cast<SoundComponent*>(target->GetComponent(Component::SOUND_COMPONENT));
+        SoundComponent* component = target->GetComponent<SoundComponent>();
         if (component)
         {
             component->Stop();

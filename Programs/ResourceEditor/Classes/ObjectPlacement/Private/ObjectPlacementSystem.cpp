@@ -102,7 +102,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
             addRo(item.AsEntity());
 
             Vector<Entity*> children;
-            item.AsEntity()->GetChildEntitiesWithComponent(children, Component::RENDER_COMPONENT);
+            item.AsEntity()->GetChildEntitiesWithComponent(children, DAVA::Type::Instance<DAVA::RenderComponent>());
             for (Entity* entity : children)
             {
                 addRo(entity);

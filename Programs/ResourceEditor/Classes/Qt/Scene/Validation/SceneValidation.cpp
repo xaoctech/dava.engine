@@ -3,18 +3,19 @@
 #include "Qt/Scene/SceneHelper.h"
 #include "Project/ProjectManagerData.h"
 
-#include "Scene3D/Components/SoundComponent.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include <Scene3D/Scene.h>
+#include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Render/RenderBase.h>
-#include "Render/Material/NMaterialNames.h"
-#include "Render/Material/NMaterial.h"
-#include "Render/TextureDescriptor.h"
+#include <Render/Material/NMaterialNames.h>
+#include <Render/Material/NMaterial.h>
+#include <Render/TextureDescriptor.h>
 #include <Render/Texture.h>
-#include "Render/GPUFamilyDescriptor.h"
-#include "Render/Texture.h"
-#include "FileSystem/FileSystem.h"
+#include <Render/GPUFamilyDescriptor.h>
+#include <Render/Texture.h>
+#include <FileSystem/FileSystem.h>
 #include <FileSystem/FilePath.h>
 #include <Utils/StringFormat.h>
 
@@ -189,8 +190,8 @@ void CompareEffects(const Entity* entity1, const Entity* entity2, ValidationProg
 
     Vector<const Entity*> childEffects1;
     Vector<const Entity*> childEffects2;
-    entity1->GetChildEntitiesWithComponent(childEffects1, Component::PARTICLE_EFFECT_COMPONENT, false);
-    entity2->GetChildEntitiesWithComponent(childEffects2, Component::PARTICLE_EFFECT_COMPONENT, false);
+    entity1->GetChildEntitiesWithComponent(childEffects1, Type::Instance<ParticleEffectComponent>(), false);
+    entity2->GetChildEntitiesWithComponent(childEffects2, Type::Instance<ParticleEffectComponent>(), false);
 
     bool vectorsAreDifferent = childEffects1.size() != childEffects2.size();
     if (!vectorsAreDifferent)
@@ -414,7 +415,7 @@ void SceneValidation::ValidateCollisionProperties(DAVA::Scene* scene, Validation
     int32 collisionTypeSpeedTreeId = SceneValidationDetails::GetCollisionTypeID("SpeedTree");
 
     Vector<Entity*> container;
-    scene->GetChildEntitiesWithComponent(container, Component::CUSTOM_PROPERTIES_COMPONENT);
+    scene->GetChildEntitiesWithComponent(container, Type::Instance<CustomPropertiesComponent>());
 
     for (const Entity* entity : container)
     {

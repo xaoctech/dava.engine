@@ -19,7 +19,7 @@ EditorLightSystem::EditorLightSystem(DAVA::Scene* scene)
     cameraLight->SetName(ResourceEditor::EDITOR_CAMERA_LIGHT);
     cameraLight->AddComponent(new LightComponent(light));
 
-    SetRequiredComponents(MAKE_COMPONENT_MASK(Component::LIGHT_COMPONENT));
+    SetRequiredComponents(MakeComponentMask<LightComponent>());
 
     if (isEnabled)
     {

@@ -16,6 +16,7 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <Entity/ComponentManager.h>
 #include <Logger/Logger.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Render/Highlevel/Landscape.h>
@@ -164,21 +165,21 @@ PhysicsModule::PhysicsModule(Engine* engine)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
     bodyComponents.reserve(2);
-    bodyComponents.push_back(Component::STATIC_BODY_COMPONENT);
-    bodyComponents.push_back(Component::DYNAMIC_BODY_COMPONENT);
+    bodyComponents.push_back(Type::Instance<StaticBodyComponent>());
+    bodyComponents.push_back(Type::Instance<DynamicBodyComponent>());
 
     shapeComponents.reserve(7);
-    shapeComponents.push_back(Component::BOX_SHAPE_COMPONENT);
-    shapeComponents.push_back(Component::CAPSULE_SHAPE_COMPONENT);
-    shapeComponents.push_back(Component::SPHERE_SHAPE_COMPONENT);
-    shapeComponents.push_back(Component::PLANE_SHAPE_COMPONENT);
-    shapeComponents.push_back(Component::MESH_SHAPE_COMPONENT);
-    shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
-    shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
+    shapeComponents.push_back(Type::Instance<BoxShapeComponent>());
+    shapeComponents.push_back(Type::Instance<CapsuleShapeComponent>());
+    shapeComponents.push_back(Type::Instance<SphereShapeComponent>());
+    shapeComponents.push_back(Type::Instance<PlaneShapeComponent>());
+    shapeComponents.push_back(Type::Instance<MeshShapeComponent>());
+    shapeComponents.push_back(Type::Instance<ConvexHullShapeComponent>());
+    shapeComponents.push_back(Type::Instance<HeightFieldShapeComponent>());
 
     characterControllerComponents.reserve(2);
-    characterControllerComponents.push_back(Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
-    characterControllerComponents.push_back(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
+    characterControllerComponents.push_back(Type::Instance<BoxCharacterControllerComponent>());
+    characterControllerComponents.push_back(Type::Instance<CapsuleCharacterControllerComponent>());
 }
 
 void PhysicsModule::Init()
@@ -467,17 +468,17 @@ physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
     return defaultMaterial;
 }
 
-const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
+const Vector<const Type*>& PhysicsModule::GetBodyComponentTypes() const
 {
     return bodyComponents;
 }
 
-const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
+const Vector<const Type*>& PhysicsModule::GetShapeComponentTypes() const
 {
     return shapeComponents;
 }
 
-const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
+const Vector<const Type*>& PhysicsModule::GetCharacterControllerComponentTypes() const
 {
     return characterControllerComponents;
 }

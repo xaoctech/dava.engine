@@ -29,7 +29,7 @@
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Utils/StringUtils.h>
 #include <Utils/MD5.h>
-
+#include <Entity/ComponentManager.h>
 
 #include <algorithm>
 
@@ -248,7 +248,7 @@ void RemoveEditorCustomProperties(DAVA::Entity* entity)
 
         if (props->Count() == 0)
         {
-            entity->RemoveComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
+            entity->RemoveComponent<CustomPropertiesComponent>();
         }
     }
 }
@@ -256,6 +256,10 @@ void RemoveEditorCustomProperties(DAVA::Entity* entity)
 void PrepareSceneToExport(DAVA::Scene* scene, bool removeCustomProperties)
 {
     using namespace DAVA;
+
+    ComponentManager* cm = GetEngineContext()->componentManager;
+
+    const Vector<const Type*> sceneComponentsTypes = cm->GetRegisteredSceneComponents();
 
     //Remove scene nodes
     Vector<Entity*> entities;
@@ -277,11 +281,22 @@ void PrepareSceneToExport(DAVA::Scene* scene, bool removeCustomProperties)
                 RemoveEditorCustomProperties(entity);
             }
 
-            for (uint32 ct = Component::NON_EXPORTABLE_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+            for (const Type* type : sceneComponentsTypes)
             { // remove RE specific components
-                while (entity->GetComponentCount(ct) > 0)
+                const ReflectedType* refType = ReflectedTypeDB::GetByType(type);
+
+                DVASSERT(refType != nullptr);
+
+                ReflectedMeta* meta = refType->GetStructure()->meta.get();
+
+                if (meta == nullptr || meta->GetMeta<M::NonExportableComponent>() == nullptr)
                 {
-                    entity->RemoveComponent(ct, 0);
+                    continue;
+                }
+
+                while (entity->GetComponentCount(type) > 0)
+                {
+                    entity->RemoveComponent(type);
                 }
             }
         }
@@ -339,13 +354,13 @@ void CollectParticleConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSource
     };
 
     Vector<Entity*> effects;
-    scene->GetChildEntitiesWithComponent(effects, Component::PARTICLE_EFFECT_COMPONENT);
+    scene->GetChildEntitiesWithComponent(effects, Type::Instance<ParticleEffectComponent>());
     for (Entity* e : effects)
     {
-        uint32 count = e->GetComponentCount(Component::PARTICLE_EFFECT_COMPONENT);
+        uint32 count = e->GetComponentCount<ParticleEffectComponent>();
         for (uint32 ic = 0; ic < count; ++ic)
         {
-            ParticleEffectComponent* effectComponent = static_cast<ParticleEffectComponent*>(e->GetComponent(Component::PARTICLE_EFFECT_COMPONENT, ic));
+            ParticleEffectComponent* effectComponent = e->GetComponent<ParticleEffectComponent>(ic);
             uint32 emittersCount = effectComponent->GetEmittersCount();
             for (uint32 id = 0; id < emittersCount; ++id)
             {
@@ -361,13 +376,13 @@ void CollectSlotConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSourceFold
 {
     using namespace DAVA;
     Vector<Entity*> slotHolders;
-    scene->GetChildEntitiesWithComponent(slotHolders, Component::SLOT_COMPONENT);
+    scene->GetChildEntitiesWithComponent(slotHolders, Type::Instance<SlotComponent>());
     for (Entity* slotHolder : slotHolders)
     {
-        uint32 slotComponentCount = slotHolder->GetComponentCount(Component::SLOT_COMPONENT);
+        uint32 slotComponentCount = slotHolder->GetComponentCount<SlotComponent>();
         for (uint32 i = 0; i < slotComponentCount; ++i)
         {
-            SlotComponent* slotComponent = static_cast<SlotComponent*>(slotHolder->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* slotComponent = slotHolder->GetComponent<SlotComponent>(i);
             FilePath configPath = slotComponent->GetConfigFilePath();
             if (configPath.IsEmpty() == false)
             {
@@ -382,13 +397,13 @@ void CollectAnimationClips(DAVA::Scene* scene, const DAVA::FilePath& dataSourceF
 {
     using namespace DAVA;
     Vector<Entity*> animationHolders;
-    scene->GetChildEntitiesWithComponent(animationHolders, Component::MOTION_COMPONENT);
+    scene->GetChildEntitiesWithComponent(animationHolders, Type::Instance<MotionComponent>());
     for (Entity* entity : animationHolders)
     {
-        uint32 componentCount = entity->GetComponentCount(Component::MOTION_COMPONENT);
+        uint32 componentCount = entity->GetComponentCount<MotionComponent>();
         for (uint32 i = 0; i < componentCount; ++i)
         {
-            MotionComponent* motionComponent = static_cast<MotionComponent*>(entity->GetComponent(Component::MOTION_COMPONENT, i));
+            MotionComponent* motionComponent = entity->GetComponent<MotionComponent>(i);
             const MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
             if (motion)
             {

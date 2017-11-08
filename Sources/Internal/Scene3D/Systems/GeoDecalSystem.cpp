@@ -9,6 +9,8 @@
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 0
 
@@ -42,15 +44,20 @@ void GeoDecalSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_GEODECAL_SYSTEM);
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+
+    ComponentManager* cm = GetEngineContext()->componentManager;
+
+    int32 runtimeType = cm->GetRuntimeType(Type::Instance<GeoDecalComponent>());
+
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Component::GEO_DECAL_COMPONENT) > 0)
+        if (pair.first->GetComponentsCount(runtimeType) > 0)
         {
             for (Entity* entity : pair.second)
             {
-                for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_COMPONENT); i < e; ++i)
+                for (uint32 i = 0, e = entity->GetComponentCount<GeoDecalComponent>(); i < e; ++i)
                 {
-                    GeoDecalComponent* component = static_cast<GeoDecalComponent*>(entity->GetComponent(Component::GEO_DECAL_COMPONENT, i));
+                    GeoDecalComponent* component = entity->GetComponent<GeoDecalComponent>(i);
                     if (component->GetRebakeOnTransform())
                     {
                         decals[component].lastValidConfig.invalidate();
@@ -124,7 +131,7 @@ void GeoDecalSystem::Process(float32 timeElapsed)
 void GeoDecalSystem::AddComponent(Entity* entity, Component* component)
 {
     DVASSERT(component != nullptr);
-    DVASSERT(component->GetType() == Component::GEO_DECAL_COMPONENT);
+    DVASSERT(component->GetType() == Type::Instance<GeoDecalComponent>());
     DVASSERT(decals.count(component) == 0);
 
     decals[component].lastValidConfig.invalidate();
@@ -133,7 +140,7 @@ void GeoDecalSystem::AddComponent(Entity* entity, Component* component)
 void GeoDecalSystem::RemoveComponent(Entity* entity, Component* component)
 {
     DVASSERT(component != nullptr);
-    DVASSERT(component->GetType() == Component::GEO_DECAL_COMPONENT);
+    DVASSERT(component->GetType() == Type::Instance<GeoDecalComponent>());
     DVASSERT(decals.count(component) > 0);
 
     RemoveCreatedDecals(entity, static_cast<GeoDecalComponent*>(component));
@@ -142,18 +149,18 @@ void GeoDecalSystem::RemoveComponent(Entity* entity, Component* component)
 
 void GeoDecalSystem::AddEntity(Entity* entity)
 {
-    for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_COMPONENT); i < e; ++i)
+    for (uint32 i = 0, e = entity->GetComponentCount<GeoDecalComponent>(); i < e; ++i)
     {
-        Component* component = entity->GetComponent(Component::GEO_DECAL_COMPONENT, i);
+        Component* component = entity->GetComponent<GeoDecalComponent>(i);
         AddComponent(entity, component);
     }
 }
 
 void GeoDecalSystem::RemoveEntity(Entity* entity)
 {
-    for (uint32 i = 0, e = entity->GetComponentCount(Component::GEO_DECAL_COMPONENT); i < e; ++i)
+    for (uint32 i = 0, e = entity->GetComponentCount<GeoDecalComponent>(); i < e; ++i)
     {
-        Component* component = entity->GetComponent(Component::GEO_DECAL_COMPONENT, i);
+        Component* component = entity->GetComponent<GeoDecalComponent>(i);
         RemoveComponent(entity, component);
     }
 }

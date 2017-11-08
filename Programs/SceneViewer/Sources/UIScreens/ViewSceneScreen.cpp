@@ -63,11 +63,11 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         //camera->SetPosition(Vector3(0, -10, 1));
 
         rotationControllerSystem = new DAVA::RotationControllerSystem(scene);
-        scene->AddSystem(rotationControllerSystem, MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::ROTATION_CONTROLLER_COMPONENT),
+        scene->AddSystem(rotationControllerSystem, MakeComponentMask<CameraComponent>() | MakeComponentMask<RotationControllerComponent>(),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
         wasdSystem = new WASDControllerSystem(scene);
-        scene->AddSystem(wasdSystem, MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::WASD_CONTROLLER_COMPONENT),
+        scene->AddSystem(wasdSystem, MakeComponentMask<CameraComponent>() | MakeComponentMask<WASDControllerComponent>(),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
         sceneView = new DAVA::UI3DView(GetRect());
@@ -192,7 +192,7 @@ void ViewSceneScreen::AddTanksAtScene()
     using namespace DAVA;
 
     List<Entity*> spawnPoints;
-    scene->GetChildEntitiesWithComponent(spawnPoints, Component::CUSTOM_PROPERTIES_COMPONENT, false);
+    scene->GetChildEntitiesWithComponent(spawnPoints, Type::Instance<CustomPropertiesComponent>(), false);
 
     for (List<Entity*>::iterator it = spawnPoints.begin(); it != spawnPoints.end();)
     {

@@ -39,7 +39,7 @@ class StaticOcclusionComponent;
 class StaticOcclusionDebugDrawComponent;
 class GeoDecalComponent;
 
-bool HasComponent(const Entity* fromEntity, const Component::eType componentType);
+bool HasComponent(const Entity* fromEntity, const Type* componentType);
 
 ParticleEffectComponent* GetEffectComponent(const Entity* fromEntity);
 AnimationComponent* GetAnimationComponent(const Entity* fromEntity);

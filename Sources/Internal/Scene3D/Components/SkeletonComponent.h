@@ -21,8 +21,6 @@ class SkeletonComponent : public Component
     friend class SkeletonSystem;
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(SKELETON_COMPONENT);
-
     const static uint32 INVALID_JOINT_INDEX = 0xffffff; //same as INFO_PARENT_MASK
 
     struct Joint : public InspBase

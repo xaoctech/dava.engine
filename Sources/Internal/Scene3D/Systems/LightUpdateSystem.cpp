@@ -13,6 +13,8 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/Scene.h"
 #include "Time/SystemTimer.h"
+#include "Entity/ComponentManager.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -24,9 +26,13 @@ LightUpdateSystem::LightUpdateSystem(Scene* scene)
 void LightUpdateSystem::Process(float32 timeElapsed)
 {
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+    ComponentManager* cm = GetEngineContext()->componentManager;
+
+    int32 runtimeType = cm->GetRuntimeType(Type::Instance<LightComponent>());
+
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Component::LIGHT_COMPONENT) > 0)
+        if (pair.first->GetComponentsCount(runtimeType) > 0)
         {
             for (Entity* entity : pair.second)
             {
@@ -39,15 +45,15 @@ void LightUpdateSystem::Process(float32 timeElapsed)
 void LightUpdateSystem::RecalcLight(Entity* entity)
 {
     // Update new transform pointer, and mark that transform is changed
-    Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
-    Light* light = (static_cast<LightComponent*>(entity->GetComponent(Component::LIGHT_COMPONENT)))->GetLightObject();
+    Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+    Light* light = entity->GetComponent<LightComponent>()->GetLightObject();
     light->SetPositionDirectionFromMatrix(*worldTransformPointer);
     entity->GetScene()->renderSystem->MarkForUpdate(light);
 }
 
 void LightUpdateSystem::AddEntity(Entity* entity)
 {
-    Light* lightObject = (static_cast<LightComponent*>(entity->GetComponent(Component::LIGHT_COMPONENT)))->GetLightObject();
+    Light* lightObject = entity->GetComponent<LightComponent>()->GetLightObject();
     if (!lightObject)
         return;
 

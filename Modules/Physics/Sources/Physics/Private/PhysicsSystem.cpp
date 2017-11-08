@@ -11,17 +11,25 @@
 #include "Physics/BoxCharacterControllerComponent.h"
 #include "Physics/CapsuleCharacterControllerComponent.h"
 #include "Physics/CollisionSingleComponent.h"
+#include "Physics/StaticBodyComponent.h"
+#include "Physics/DynamicBodyComponent.h"
+#include "Physics/ConvexHullShapeComponent.h"
+#include "Physics/MeshShapeComponent.h"
+#include "Physics/HeightFieldShapeComponent.h"
+
 #include "Physics/Private/PhysicsMath.h"
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
 
+#include <Base/Type.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
 #include <Render/Highlevel/RenderObject.h>
@@ -70,18 +78,18 @@ void UpdateGlobalPose(physx::PxRigidActor* actor, const Matrix4& m, Vector3& sca
     actor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
 }
 
-bool IsCollisionShapeType(uint32 componentType)
+bool IsCollisionShapeType(const Type* componentType)
 {
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
-    return std::any_of(shapeComponents.begin(), shapeComponents.end(), [componentType](uint32 type) {
+    const Vector<const Type*>& shapeComponents = module->GetShapeComponentTypes();
+    return std::any_of(shapeComponents.begin(), shapeComponents.end(), [componentType](const Type* type) {
         return componentType == type;
     });
 }
 
-bool IsCharacterControllerType(uint32 componentType)
+bool IsCharacterControllerType(const Type* componentType)
 {
-    return componentType == Component::BOX_CHARACTER_CONTROLLER_COMPONENT || componentType == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT;
+    return componentType == Type::Instance<BoxCharacterControllerComponent>() || componentType == Type::Instance<CapsuleCharacterControllerComponent>();
 }
 
 Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
@@ -283,7 +291,7 @@ PhysicsSystem::~PhysicsSystem()
 
 void PhysicsSystem::RegisterEntity(Entity* entity)
 {
-    auto processEntity = [this](Entity* entity, uint32 componentType)
+    auto processEntity = [this](Entity* entity, const Type* componentType)
     {
         for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
         {
@@ -292,31 +300,31 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
     };
 
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-    const Vector<uint32>& bodyComponents = module->GetBodyComponentTypes();
-    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
-    const Vector<uint32>& characterControllerComponents = module->GetCharacterControllerComponentTypes();
+    const Vector<const Type*>& bodyComponents = module->GetBodyComponentTypes();
+    const Vector<const Type*>& shapeComponents = module->GetShapeComponentTypes();
+    const Vector<const Type*>& characterControllerComponents = module->GetCharacterControllerComponentTypes();
 
-    for (uint32 type : bodyComponents)
+    for (const Type* type : bodyComponents)
     {
         processEntity(entity, type);
     }
 
-    for (uint32 type : shapeComponents)
+    for (const Type* type : shapeComponents)
     {
         processEntity(entity, type);
     }
 
-    for (uint32 type : characterControllerComponents)
+    for (const Type* type : characterControllerComponents)
     {
         processEntity(entity, type);
     }
 
-    processEntity(entity, Component::RENDER_COMPONENT);
+    processEntity(entity, Type::Instance<RenderComponent>());
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
 {
-    auto processEntity = [this](Entity* entity, uint32 componentType)
+    auto processEntity = [this](Entity* entity, const Type* componentType)
     {
         for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
         {
@@ -325,32 +333,32 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
     };
 
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-    const Vector<uint32>& bodyComponents = module->GetBodyComponentTypes();
-    const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
-    const Vector<uint32>& characterControllerComponents = module->GetCharacterControllerComponentTypes();
+    const Vector<const Type*>& bodyComponents = module->GetBodyComponentTypes();
+    const Vector<const Type*>& shapeComponents = module->GetShapeComponentTypes();
+    const Vector<const Type*>& characterControllerComponents = module->GetCharacterControllerComponentTypes();
 
-    for (uint32 type : bodyComponents)
+    for (const Type* type : bodyComponents)
     {
         processEntity(entity, type);
     }
 
-    for (uint32 type : shapeComponents)
+    for (const Type* type : shapeComponents)
     {
         processEntity(entity, type);
     }
 
-    for (uint32 type : characterControllerComponents)
+    for (const Type* type : characterControllerComponents)
     {
         processEntity(entity, type);
     }
 
-    processEntity(entity, Component::RENDER_COMPONENT);
+    processEntity(entity, Type::Instance<RenderComponent>());
 }
 
 void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
 {
-    uint32 componentType = component->GetType();
-    if (componentType == Component::STATIC_BODY_COMPONENT || componentType == Component::DYNAMIC_BODY_COMPONENT)
+    const Type* componentType = component->GetType();
+    if (componentType == Type::Instance<StaticBodyComponent>() || componentType == Type::Instance<DynamicBodyComponent>())
     {
         pendingAddPhysicsComponents.push_back(static_cast<PhysicsComponent*>(component));
     }
@@ -366,7 +374,7 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
         pendingAddCharacterControllerComponents.push_back(static_cast<CharacterControllerComponent*>(component));
     }
 
-    if (componentType == Component::RENDER_COMPONENT)
+    if (componentType == Type::Instance<RenderComponent>())
     {
         auto iter = waitRenderInfoComponents.find(entity);
         if (iter != waitRenderInfoComponents.end())
@@ -379,8 +387,8 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
 
 void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    uint32 componentType = component->GetType();
-    if (componentType == Component::STATIC_BODY_COMPONENT || componentType == Component::DYNAMIC_BODY_COMPONENT)
+    const Type* componentType = component->GetType();
+    if (componentType == Type::Instance<StaticBodyComponent>() || componentType == Type::Instance<DynamicBodyComponent>())
     {
         PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(component);
         PhysicsSystemDetail::EraseComponent(physicsComponent, pendingAddPhysicsComponents, physicsComponents);
@@ -432,14 +440,14 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         }
     }
 
-    if (componentType == Component::RENDER_COMPONENT)
+    if (componentType == Type::Instance<RenderComponent>())
     {
         Vector<CollisionShapeComponent*>* waitingComponents = nullptr;
-        auto collisionProcess = [&](uint32 componentType)
+        auto collisionProcess = [&](const Type* componentType)
         {
             for (uint32 i = 0; i < entity->GetComponentCount(componentType); ++i)
             {
-                CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(entity->GetComponent(componentType, i));
+                CollisionShapeComponent* component = entity->GetComponent<CollisionShapeComponent>(i);
                 auto iter = std::find(collisionComponents.begin(), collisionComponents.end(), component);
                 if (iter == collisionComponents.end())
                 {
@@ -457,9 +465,9 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
             }
         };
 
-        collisionProcess(Component::CONVEX_HULL_SHAPE_COMPONENT);
-        collisionProcess(Component::MESH_SHAPE_COMPONENT);
-        collisionProcess(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
+        collisionProcess(Type::Instance<ConvexHullShapeComponent>());
+        collisionProcess(Type::Instance<MeshShapeComponent>());
+        collisionProcess(Type::Instance<HeightFieldShapeComponent>());
     }
 }
 
@@ -655,15 +663,15 @@ void PhysicsSystem::InitNewObjects()
     PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     for (PhysicsComponent* component : pendingAddPhysicsComponents)
     {
-        uint32 componentType = component->GetType();
+        const Type* componentType = component->GetType();
         physx::PxActor* createdActor = nullptr;
-        if (componentType == Component::STATIC_BODY_COMPONENT)
+        if (componentType == Type::Instance<StaticBodyComponent>())
         {
             createdActor = physics->CreateStaticActor();
         }
         else
         {
-            DVASSERT(componentType == Component::DYNAMIC_BODY_COMPONENT);
+            DVASSERT(componentType == Type::Instance<DynamicBodyComponent>());
             createdActor = physics->CreateDynamicActor();
         }
 
@@ -691,14 +699,14 @@ void PhysicsSystem::InitNewObjects()
             Vector3 position, scale, rotation;
             worldTransform.Decomposition(position, scale, rotation);
 
-            PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+            PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent<StaticBodyComponent>());
             if (staticBodyComponent != nullptr)
             {
                 AttachShape(staticBodyComponent, component, scale);
             }
             else
             {
-                PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+                PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent<DynamicBodyComponent>());
                 if (dynamicBodyComponent != nullptr)
                 {
                     AttachShape(dynamicBodyComponent, component, scale);
@@ -731,7 +739,7 @@ void PhysicsSystem::InitNewObjects()
         PhysicsModule* physics = ctx->moduleManager->GetModule<PhysicsModule>();
 
         physx::PxController* controller = nullptr;
-        if (component->GetType() == Component::BOX_CHARACTER_CONTROLLER_COMPONENT)
+        if (component->GetType() == Type::Instance<BoxCharacterControllerComponent>())
         {
             BoxCharacterControllerComponent* boxCharacterControllerComponent = static_cast<BoxCharacterControllerComponent*>(component);
 
@@ -746,7 +754,7 @@ void PhysicsSystem::InitNewObjects()
 
             controller = controllerManager->createController(desc);
         }
-        else if (component->GetType() == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT)
+        else if (component->GetType() == Type::Instance<CapsuleCharacterControllerComponent>())
         {
             CapsuleCharacterControllerComponent* capsuleCharacterControllerComponent = static_cast<CapsuleCharacterControllerComponent*>(component);
 
@@ -789,7 +797,7 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
 
 void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale)
 {
-    for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
+    for (const Type* type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
     {
         for (uint32 i = 0; i < entity->GetComponentCount(type); ++i)
         {
@@ -802,32 +810,33 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
 {
     using namespace PhysicsSystemDetail;
     physx::PxShape* shape = nullptr;
-    switch (component->GetType())
-    {
-    case Component::BOX_SHAPE_COMPONENT:
+
+    const Type* componentType = component->GetType();
+
+    if (componentType == Type::Instance<BoxShapeComponent>())
     {
         BoxShapeComponent* boxShape = static_cast<BoxShapeComponent*>(component);
         shape = physics->CreateBoxShape(boxShape->GetHalfSize());
     }
-    break;
-    case Component::CAPSULE_SHAPE_COMPONENT:
+
+    else if (componentType == Type::Instance<CapsuleShapeComponent>())
     {
         CapsuleShapeComponent* capsuleShape = static_cast<CapsuleShapeComponent*>(component);
         shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight());
     }
-    break;
-    case Component::SPHERE_SHAPE_COMPONENT:
+
+    else if (componentType == Type::Instance<SphereShapeComponent>())
     {
         SphereShapeComponent* sphereShape = static_cast<SphereShapeComponent*>(component);
         shape = physics->CreateSphereShape(sphereShape->GetRadius());
     }
-    break;
-    case Component::PLANE_SHAPE_COMPONENT:
+
+    else if (componentType == Type::Instance<PlaneShapeComponent>())
     {
         shape = physics->CreatePlaneShape();
     }
-    break;
-    case Component::CONVEX_HULL_SHAPE_COMPONENT:
+
+    else if (componentType == Type::Instance<ConvexHullShapeComponent>())
     {
         Vector<PolygonGroup*> groups;
         Entity* entity = component->GetEntity();
@@ -841,8 +850,8 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
             waitRenderInfoComponents[entity].push_back(component);
         }
     }
-    break;
-    case Component::MESH_SHAPE_COMPONENT:
+
+    else if (componentType == Type::Instance<MeshShapeComponent>())
     {
         Vector<PolygonGroup*> groups;
         Entity* entity = component->GetEntity();
@@ -856,8 +865,8 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
             waitRenderInfoComponents[entity].push_back(component);
         }
     }
-    break;
-    case Component::HEIGHT_FIELD_SHAPE_COMPONENT:
+
+    else if (componentType == Type::Instance<HeightFieldShapeComponent>())
     {
         Entity* entity = component->GetEntity();
         Landscape* landscape = GetLandscape(entity);
@@ -872,10 +881,10 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
             waitRenderInfoComponents[entity].push_back(component);
         }
     }
-    break;
-    default:
+
+    else
+    {
         DVASSERT(false);
-        break;
     }
 
     if (shape != nullptr)
@@ -953,10 +962,10 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
         }
     };
 
-    PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
+    PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent<StaticBodyComponent>());
     updatePose(entity, staticBodyComponent);
 
-    PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
+    PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent<DynamicBodyComponent>());
     updatePose(entity, dynamicBodyComponent);
 
     for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
@@ -1057,7 +1066,7 @@ void PhysicsSystem::UpdateComponents()
             // Update geometry if needed
             if (controllerComponent->geometryChanged)
             {
-                if (controllerComponent->GetType() == Component::BOX_CHARACTER_CONTROLLER_COMPONENT)
+                if (controllerComponent->GetType() == Type::Instance<BoxCharacterControllerComponent>())
                 {
                     BoxCharacterControllerComponent* boxComponent = static_cast<BoxCharacterControllerComponent*>(controllerComponent);
                     physx::PxBoxController* boxController = static_cast<physx::PxBoxController*>(controller);
@@ -1066,7 +1075,7 @@ void PhysicsSystem::UpdateComponents()
                     boxController->setHalfForwardExtent(boxComponent->GetHalfForwardExtent());
                     boxController->setHalfSideExtent(boxComponent->GetHalfSideExtent());
                 }
-                else if (controllerComponent->GetType() == Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT)
+                else if (controllerComponent->GetType() == Type::Instance<CapsuleCharacterControllerComponent>())
                 {
                     CapsuleCharacterControllerComponent* capsuleComponent = static_cast<CapsuleCharacterControllerComponent*>(controllerComponent);
                     physx::PxCapsuleController* capsuleController = static_cast<physx::PxCapsuleController*>(controller);
@@ -1077,7 +1086,7 @@ void PhysicsSystem::UpdateComponents()
                 controllerComponent->geometryChanged = false;
             }
 
-            // Teleport if neeeded
+            // Teleport if needed
             if (controllerComponent->teleported)
             {
                 controller->setPosition(PhysicsMath::Vector3ToPxExtendedVec3(controllerComponent->teleportDestination));

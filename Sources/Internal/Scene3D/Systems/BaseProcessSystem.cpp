@@ -4,10 +4,9 @@
 
 namespace DAVA
 {
-BaseProcessSystem::BaseProcessSystem(uint32 componentId, Scene* scene)
+BaseProcessSystem::BaseProcessSystem(int32 runtimeComponentType_, Scene* scene)
     : SceneSystem(scene)
-    ,
-    processingComponentId(componentId)
+    , runtimeComponentType(runtimeComponentType_)
 {
 }
 
@@ -34,19 +33,19 @@ void BaseProcessSystem::RemoveComponent(Entity* entity, Component* component)
 
 void BaseProcessSystem::AddEntity(Entity* entity)
 {
-    uint32 size = entity->GetComponentCount(processingComponentId);
+    uint32 size = entity->GetComponentCount(runtimeComponentType);
     for (uint32 i = 0; i < size; ++i)
     {
-        AddComponent(entity, entity->GetComponent(processingComponentId, i));
+        AddComponent(entity, entity->GetComponent(runtimeComponentType, i));
     }
 }
 
 void BaseProcessSystem::RemoveEntity(Entity* entity)
 {
-    uint32 size = entity->GetComponentCount(processingComponentId);
+    uint32 size = entity->GetComponentCount(runtimeComponentType);
     for (uint32 i = 0; i < size; ++i)
     {
-        RemoveComponent(entity, entity->GetComponent(processingComponentId, i));
+        RemoveComponent(entity, entity->GetComponent(runtimeComponentType, i));
     }
 }
 }

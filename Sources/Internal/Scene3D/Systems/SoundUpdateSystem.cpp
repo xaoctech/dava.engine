@@ -11,6 +11,7 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
@@ -64,13 +65,17 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_SOUND_UPDATE_SYSTEM);
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+    ComponentManager* cm = GetEngineContext()->componentManager;
+
+    int32 runtimeType = cm->GetRuntimeType(Type::Instance<SoundComponent>());
+
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Component::SOUND_COMPONENT) > 0)
+        if (pair.first->GetComponentsCount(runtimeType) > 0)
         {
             for (Entity* entity : pair.second)
             {
-                SoundComponent* sc = static_cast<SoundComponent*>(entity->GetComponent(Component::SOUND_COMPONENT));
+                SoundComponent* sc = entity->GetComponent<SoundComponent>();
                 const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldTransform();
                 Vector3 translation = worldTransform.GetTranslationVector();
 

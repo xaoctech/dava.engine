@@ -3,7 +3,10 @@
 #include "Commands2/ConvertToShadowCommand.h"
 
 // framework
-#include "Scene3D/Components/ComponentHelpers.h"
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Components/TextComponent.h>
 #include <TArc/Utils/Utils.h>
 
 SceneTreeItem::SceneTreeItem(eItemType _type, const DAVA::Any& object_)
@@ -130,7 +133,7 @@ const QIcon& SceneTreeItemEntity::ItemIcon() const
 
     if (nullptr != entity)
     {
-        if (nullptr != entity->GetComponent(DAVA::Component::STATIC_OCCLUSION_COMPONENT))
+        if (nullptr != entity->GetComponent<DAVA::StaticOcclusionComponent>())
         {
             return SharedIcon(":/QtIcons/so.png");
         }
@@ -162,7 +165,7 @@ const QIcon& SceneTreeItemEntity::ItemIcon() const
         {
             return SharedIcon(":/QtIcons/render_object.png");
         }
-        else if (nullptr != entity->GetComponent(DAVA::Component::USER_COMPONENT))
+        else if (nullptr != entity->GetComponent<DAVA::UserComponent>())
         {
             return SharedIcon(":/QtIcons/user_object.png");
         }
@@ -182,7 +185,7 @@ const QIcon& SceneTreeItemEntity::ItemIcon() const
         {
             return SharedIcon(":/QtIcons/path.png");
         }
-        else if (0 != entity->GetComponentCount(DAVA::Component::TEXT_COMPONENT))
+        else if (0 != entity->GetComponentCount<DAVA::TextComponent>())
         {
             return SharedIcon(":/QtIcons/text_component.png");
         }
@@ -201,7 +204,7 @@ void SceneTreeItemEntity::DoSync(QStandardItem* rootItem, DAVA::Entity* entity)
 
         DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
 
-        // remember all entity childs
+        // remember all entity children
         for (i = 0; i < entity->GetChildrenCount(); ++i)
         {
             entitiesSet.insert(entity->GetChild(i));

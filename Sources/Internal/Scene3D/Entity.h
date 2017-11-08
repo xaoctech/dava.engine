@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SCENENODE_H__
-#define __DAVAENGINE_SCENENODE_H__
+#pragma once
 
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
@@ -46,14 +45,30 @@ public:
 
     //components
     void AddComponent(Component* component);
+
     void RemoveComponent(Component* component);
-    void RemoveComponent(uint32 componentType, uint32 index = 0);
+    void RemoveComponent(int32 runtimeType, uint32 index = 0);
+    void RemoveComponent(const Type* type, uint32 index = 0);
+    template <typename T>
+    void RemoveComponent(uint32 index = 0);
+
     void DetachComponent(Component* component);
-    Component* GetComponent(uint32 componentType, uint32 index = 0) const;
-    Component* GetOrCreateComponent(uint32 componentType, uint32 index = 0);
+
+    Component* GetComponent(int32 runtimeType, uint32 index = 0) const;
+    Component* GetComponent(const Type* type, uint32 index = 0) const;
+    template <typename T>
+    T* GetComponent(uint32 index = 0) const;
+
+    Component* GetOrCreateComponent(const Type* type, uint32 index = 0);
+    template <typename T>
+    T* GetOrCreateComponent(uint32 index = 0);
+
     uint32 GetComponentCount() const;
-    uint32 GetComponentCount(uint32 componentType) const;
-    inline uint64 GetAvailableComponentFlags();
+    uint32 GetComponentCount(const Type* type) const;
+    uint32 GetComponentCount(int32 runtimeType) const;
+    template <typename T>
+    uint32 GetComponentCount() const;
+    inline ComponentFlags GetAvailableComponentFlags();
 
     // working with children
     virtual void AddNode(Entity* node);
@@ -251,7 +266,7 @@ public:
         Function may work `recursively`
     */
     template <template <typename, typename> class Container, class A>
-    void GetChildEntitiesWithComponent(Container<Entity*, A>& container, Component::eType type, bool recursively = true);
+    void GetChildEntitiesWithComponent(Container<Entity*, A>& container, const Type* type, bool recursively = true);
 
     /**
         Puts into `container` all child entities
@@ -259,7 +274,7 @@ public:
         Function may work `recursively`
     */
     template <template <typename, typename> class Container, class A>
-    void GetChildEntitiesWithComponent(Container<const Entity*, A>& container, Component::eType type, bool recursively = true) const;
+    void GetChildEntitiesWithComponent(Container<const Entity*, A>& container, const Type* type, bool recursively = true) const;
 
     /**
         Puts into `container` recursively all child entities
@@ -268,7 +283,7 @@ public:
     template <template <typename, typename> class Container, class A, class Pred>
     void GetChildEntitiesWithCondition(Container<Entity*, A>& container, Pred pred);
 
-    uint32 CountChildEntitiesWithComponent(Component::eType type, bool recursive = false) const;
+    uint32 CountChildEntitiesWithComponent(const Type* type, bool recursive = false) const;
 
     /**
         \brief This function is called after scene is loaded from file.
@@ -284,7 +299,7 @@ public:
     static FastName EntityNameFieldName;
     static const char* componentFieldString;
 
-    void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*>& components);
+    void FindComponentsByTypeRecursive(const Type* type, List<DAVA::Entity*>& components);
 
     Vector<Entity*> children;
 
@@ -382,8 +397,10 @@ void Entity::GetDataNodes(Container<T, A>& container)
         DataNode* obj = *t;
 
         T res = dynamic_cast<T>(obj);
-        if (res)
+        if (res != nullptr)
+        {
             container.push_back(res);
+        }
     }
 }
 
@@ -396,15 +413,17 @@ void Entity::GetChildNodes(Container<T, A>& container)
         Entity* obj = *t;
 
         T res = dynamic_cast<T>(obj);
-        if (res)
+        if (res != nullptr)
+        {
             container.push_back(res);
+        }
 
         obj->GetChildNodes(container);
     }
 }
 
 template <template <typename, typename> class Container, class A>
-void Entity::GetChildEntitiesWithComponent(Container<Entity*, A>& container, Component::eType type, bool recursively)
+void Entity::GetChildEntitiesWithComponent(Container<Entity*, A>& container, const Type* type, bool recursively)
 {
     for (auto& child : children)
     {
@@ -421,7 +440,7 @@ void Entity::GetChildEntitiesWithComponent(Container<Entity*, A>& container, Com
 }
 
 template <template <typename, typename> class Container, class A>
-void Entity::GetChildEntitiesWithComponent(Container<const Entity*, A>& container, Component::eType type, bool recursively) const
+void Entity::GetChildEntitiesWithComponent(Container<const Entity*, A>& container, const Type* type, bool recursively) const
 {
     for (auto& child : children)
     {
@@ -451,7 +470,7 @@ void Entity::GetChildEntitiesWithCondition(Container<Entity*, A>& container, Pre
     }
 }
 
-inline uint64 Entity::GetAvailableComponentFlags()
+inline ComponentFlags Entity::GetAvailableComponentFlags()
 {
     return family->GetComponentsFlags();
 }
@@ -485,9 +504,18 @@ inline void Entity::RemoveAllComponents()
     }
 }
 
-inline void Entity::RemoveComponent(uint32 componentType, uint32 index)
+inline void Entity::RemoveComponent(int32 runtimeType, uint32 index)
 {
-    Component* c = GetComponent(componentType, index);
+    Component* c = GetComponent(runtimeType, index);
+    if (c)
+    {
+        RemoveComponent(c);
+    }
+}
+
+inline void Entity::RemoveComponent(const Type* type, uint32 index)
+{
+    Component* c = GetComponent(type, index);
     if (c)
     {
         RemoveComponent(c);
@@ -498,6 +526,24 @@ inline void Entity::RemoveComponent(Component* component)
 {
     DetachComponent(component);
     SafeDelete(component);
+}
+
+template <typename T>
+inline void Entity::RemoveComponent(uint32 index)
+{
+    RemoveComponent(Type::Instance<T>(), index);
+}
+
+template <typename T>
+inline T* Entity::GetComponent(uint32 index) const
+{
+    return DynamicTypeCheck<T*>(GetComponent(Type::Instance<T>(), index));
+}
+
+template <typename T>
+inline T* Entity::GetOrCreateComponent(uint32 index)
+{
+    return DynamicTypeCheck<T*>(GetOrCreateComponent(Type::Instance<T>(), index));
 }
 
 inline void Entity::DetachComponent(Component* component)
@@ -513,9 +559,15 @@ inline Scene* Entity::GetScene()
     return scene;
 }
 
-inline uint32 Entity::GetComponentCount(uint32 componentType) const
+inline uint32 Entity::GetComponentCount(int32 runtimeType) const
 {
-    return family->GetComponentsCount(componentType);
+    return family->GetComponentsCount(runtimeType);
+}
+
+template <typename T>
+inline uint32 Entity::GetComponentCount() const
+{
+    return GetComponentCount(Type::Instance<T>());
 }
 
 inline bool Entity::GetVisible()
@@ -538,5 +590,3 @@ inline EntityFamily* Entity::GetFamily() const
     return family;
 }
 };
-
-#endif // __DAVAENGINE_SCENENODE_H__

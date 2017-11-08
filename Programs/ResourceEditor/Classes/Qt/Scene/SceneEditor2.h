@@ -100,7 +100,7 @@ public:
 
     //to manage editor systems adding/deleting
     void AddSystem(DAVA::SceneSystem* sceneSystem,
-                   DAVA::uint64 componentFlags,
+                   DAVA::ComponentFlags componentFlags,
                    DAVA::uint32 processFlags = 0,
                    DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr,
                    DAVA::SceneSystem* insertBeforeSceneForInput = nullptr,

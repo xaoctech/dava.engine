@@ -109,7 +109,7 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity* entity)
                 }
             }
 
-            renderPairs[0].first->RemoveComponent(Component::RENDER_COMPONENT);
+            renderPairs[0].first->RemoveComponent(DAVA::Type::Instance<DAVA::RenderComponent>());
 
             LodComponent* lc = GetLodComponent(sourceEntity);
             if ((nullptr != lc) && (nullptr == GetLodComponent(entity)))
@@ -118,7 +118,7 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity* entity)
                 entity->AddComponent(newLod);
             }
 
-            renderPairs[0].first->RemoveComponent(Component::LOD_COMPONENT);
+            renderPairs[0].first->RemoveComponent(DAVA::Type::Instance<DAVA::LodComponent>());
 
             if (sourceEntity->GetChildrenCount() == 0)
             {

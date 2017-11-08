@@ -82,10 +82,10 @@ void OverdrawTestingScreen::LoadResources()
                                                 AddButtons();
                                             });
 
-    scene->AddSystem(testerSystem, MAKE_COMPONENT_MASK(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(testerSystem, DAVA::MakeComponentMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     chartPainterSystem = new ChartPainterSystem(scene, OverdrawTestConfig::chartHeight);
-    scene->AddSystem(chartPainterSystem, MAKE_COMPONENT_MASK(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(chartPainterSystem, DAVA::MakeComponentMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     ScopedPtr<Camera> camera(new Camera());
 

@@ -22,8 +22,6 @@ class ParticleEffectComponent : public Component
     static const uint32 PARTICLE_FLAGS_SERIALIZATION_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_REFLECTION | RenderObject::VISIBLE_REFRACTION;
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
-
     enum eState : uint32
     {
         STATE_PLAYING, //effect is playing

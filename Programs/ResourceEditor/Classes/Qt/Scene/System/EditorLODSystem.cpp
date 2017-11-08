@@ -106,7 +106,7 @@ bool LODComponentHolder::DeleteLOD(DAVA::int32 layer)
     scene->BeginBatch(DAVA::Format("Delete lod layer %", layer), static_cast<DAVA::uint32>(lodComponents.size()));
     for (DAVA::LodComponent* lc : lodComponents)
     {
-        if ((GetLodLayersCount(lc) > 0) && (HasComponent(lc->GetEntity(), DAVA::Component::PARTICLE_EFFECT_COMPONENT) == false))
+        if ((GetLodLayersCount(lc) > 0) && (HasComponent(lc->GetEntity(), DAVA::Type::Instance<DAVA::ParticleEffectComponent>()) == false))
         {
             scene->Exec(std::unique_ptr<DAVA::Command>(new DeleteLODCommand(lc, layer, -1)));
             wasLayerRemoved = true;
@@ -125,7 +125,7 @@ bool LODComponentHolder::CopyLod(DAVA::int32 from, DAVA::int32 to)
     for (DAVA::LodComponent* lc : lodComponents)
     {
         DAVA::Entity* entity = lc->GetEntity();
-        if (HasComponent(entity, DAVA::Component::PARTICLE_EFFECT_COMPONENT))
+        if (HasComponent(entity, DAVA::Type::Instance<DAVA::ParticleEffectComponent>()))
         {
             continue;
         }
@@ -269,7 +269,7 @@ void EditorLODSystem::RemoveEntity(DAVA::Entity* entity)
 
 void EditorLODSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Component::LOD_COMPONENT);
+    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::LodComponent>());
 
     DAVA::LodComponent* lodComponent = static_cast<DAVA::LodComponent*>(component);
     lodData[eEditorMode::MODE_ALL_SCENE].lodComponents.push_back(lodComponent);
@@ -280,7 +280,7 @@ void EditorLODSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* compon
 
 void EditorLODSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Component::LOD_COMPONENT);
+    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::LodComponent>());
 
     DAVA::LodComponent* removedComponent = static_cast<DAVA::LodComponent*>(component);
     for (DAVA::uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
@@ -408,7 +408,7 @@ bool EditorLODSystem::CanDeleteLOD() const
         for (auto& lc : activeLodData->lodComponents)
         {
             Entity* entity = lc->GetEntity();
-            if (HasComponent(entity, Component::PARTICLE_EFFECT_COMPONENT))
+            if (HasComponent(entity, DAVA::Type::Instance<DAVA::ParticleEffectComponent>()))
             {
                 canDeleteLod = false;
                 break;
@@ -452,12 +452,12 @@ bool EditorLODSystem::CanCreateLOD() const
         if (canCreateLod)
         {
             DAVA::Entity* entity = activeLodData->lodComponents[0]->GetEntity();
-            if (HasComponent(entity, DAVA::Component::PARTICLE_EFFECT_COMPONENT))
+            if (HasComponent(entity, DAVA::Type::Instance<DAVA::ParticleEffectComponent>()))
             {
                 return false;
             }
 
-            return HasComponent(entity, DAVA::Component::RENDER_COMPONENT);
+            return HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>());
         }
     }
 
@@ -580,10 +580,10 @@ void EditorLODSystem::SelectionChanged(const SelectableGroup& selection)
     {
         if (recursive)
         {
-            entity->GetChildEntitiesWithComponent(lodEntities, DAVA::Component::LOD_COMPONENT);
+            entity->GetChildEntitiesWithComponent(lodEntities, DAVA::Type::Instance<DAVA::LodComponent>());
         }
 
-        if (entity->GetComponentCount(DAVA::Component::LOD_COMPONENT) > 0)
+        if (entity->GetComponentCount<DAVA::LodComponent>() > 0)
         {
             lodEntities.push_back(entity);
         }
@@ -594,10 +594,10 @@ void EditorLODSystem::SelectionChanged(const SelectableGroup& selection)
 
     for (auto& entity : lodEntities)
     {
-        DAVA::uint32 count = entity->GetComponentCount(DAVA::Component::LOD_COMPONENT);
+        DAVA::uint32 count = entity->GetComponentCount<DAVA::LodComponent>();
         for (DAVA::uint32 i = 0; i < count; ++i)
         {
-            lodData[eEditorMode::MODE_SELECTION].lodComponents.push_back(static_cast<DAVA::LodComponent*>(entity->GetComponent(DAVA::Component::LOD_COMPONENT, i)));
+            lodData[eEditorMode::MODE_SELECTION].lodComponents.push_back(entity->GetComponent<DAVA::LodComponent>(i));
         }
     }
 
@@ -699,7 +699,7 @@ void EditorLODSystem::ProcessCommand(const RECommandNotificationObject& commandN
     {
         auto processRemoveCommand = [this, InvalidateAllData](const RemoveComponentCommand* removeCommand)
         {
-            if (removeCommand->GetComponent()->GetType() == DAVA::Component::RENDER_COMPONENT)
+            if (removeCommand->GetComponent()->GetType() == DAVA::Type::Instance<DAVA::RenderComponent>())
             {
                 InvalidateAllData();
                 return true;

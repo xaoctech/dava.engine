@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SCENE3D_BASEPROCESSSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_BASEPROCESSSYSTEM_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
@@ -10,7 +9,7 @@ class Component;
 class BaseProcessSystem : public SceneSystem
 {
 public:
-    BaseProcessSystem(uint32 componentId, Scene* scene);
+    BaseProcessSystem(int32 runtimeComponentType, Scene* scene);
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
@@ -20,8 +19,6 @@ public:
 
 protected:
     Vector<Component*> components;
-    uint32 processingComponentId;
+    int32 runtimeComponentType;
 };
 }
-
-#endif //__DAVAENGINE_SCENE3D_BASEPROCESSSYSTEM_H__

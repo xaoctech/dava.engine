@@ -1,23 +1,36 @@
-#ifndef __DAVAENGINE_ENTITY_FAMILY_H__
-#define __DAVAENGINE_ENTITY_FAMILY_H__
+#pragma once
 
-#include "Entity/BaseFamily.h"
-#include "Entity/Component.h"
+#include "Entity/FamilyRepository.h"
 
 namespace DAVA
 {
-class EntityFamily : public BaseFamily<Component>
+class Component;
+
+class EntityFamily
 {
 private:
     EntityFamily(const Vector<Component*>& components);
+    EntityFamily(const EntityFamily& other);
 
 public:
     static EntityFamily* GetOrCreate(const Vector<Component*>& components);
     static void Release(EntityFamily*& family);
 
+    uint32 GetComponentIndex(int32 runtimeType, uint32 index) const;
+    uint32 GetComponentsCount(int32 runtimeType) const;
+    ComponentFlags GetComponentsFlags() const;
+
+    bool operator==(const EntityFamily& rhs) const;
+
 private:
-    static BaseFamilyRepository<EntityFamily> repository;
+    Vector<uint32> componentsIndices;
+    Vector<uint32> componentsCount;
+    ComponentFlags componentsFlags;
+    Atomic<int32> refCount;
+
+    template <typename EntityFamilyType>
+    friend class FamilyRepository;
+
+    static FamilyRepository<EntityFamily> repository;
 };
 }
-
-#endif //__DAVAENGINE_ENTITY_FAMILY_H_

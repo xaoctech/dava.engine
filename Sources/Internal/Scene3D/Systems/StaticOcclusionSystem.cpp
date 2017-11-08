@@ -20,6 +20,8 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Entity/ComponentManager.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -90,9 +92,13 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_STATIC_OCCLUSION_SYSTEM)
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+    ComponentManager* cm = GetEngineContext()->componentManager;
+
+    int32 runtimeType = cm->GetRuntimeType(Type::Instance<StaticOcclusionComponent>());
+
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT) > 0)
+        if (pair.first->GetComponentsCount(runtimeType) > 0)
         {
             for (Entity* entity : pair.second)
             {
@@ -101,7 +107,7 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
                 {
                     RenderObject* object = debugDrawComponent->GetRenderObject();
                     // Update new transform pointer, and mark that transform is changed
-                    Matrix4* worldTransformPointer = static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+                    Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
                     object->SetWorldTransformPtr(worldTransformPointer);
                     GetScene()->renderSystem->MarkForUpdate(object);
                 }
@@ -203,7 +209,7 @@ void StaticOcclusionSystem::RegisterComponent(Entity* entity, Component* compone
 {
     SceneSystem::RegisterComponent(entity, component);
 
-    if (component->GetType() == Component::RENDER_COMPONENT)
+    if (component->GetType() == Type::Instance<RenderComponent>())
     {
         RenderObject* ro = GetRenderObject(entity);
         if (ro)
@@ -215,7 +221,7 @@ void StaticOcclusionSystem::RegisterComponent(Entity* entity, Component* compone
 
 void StaticOcclusionSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Component::RENDER_COMPONENT)
+    if (component->GetType() == Type::Instance<RenderComponent>())
     {
         RenderObject* ro = GetRenderObject(entity);
         if (ro)
@@ -228,7 +234,7 @@ void StaticOcclusionSystem::UnregisterComponent(Entity* entity, Component* compo
 
 void StaticOcclusionSystem::AddEntity(Entity* entity)
 {
-    staticOcclusionComponents.push_back(static_cast<StaticOcclusionDataComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT)));
+    staticOcclusionComponents.push_back(entity->GetComponent<StaticOcclusionDataComponent>());
 }
 
 void StaticOcclusionSystem::AddRenderObjectToOcclusion(RenderObject* renderObject)
@@ -262,7 +268,7 @@ void StaticOcclusionSystem::RemoveEntity(Entity* entity)
     for (uint32 k = 0; k < static_cast<uint32>(staticOcclusionComponents.size()); ++k)
     {
         StaticOcclusionDataComponent* component = staticOcclusionComponents[k];
-        if (component == entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT))
+        if (component == entity->GetComponent<StaticOcclusionDataComponent>())
         {
             UndoOcclusionVisibility();
 
@@ -432,13 +438,13 @@ void StaticOcclusionDebugDrawSystem::RemoveComponentFromEntity(Entity* entity)
     StaticOcclusionDebugDrawComponent* debugDrawComponent = GetStaticOcclusionDebugDrawComponent(entity);
     DVASSERT(debugDrawComponent != nullptr);
     GetScene()->GetRenderSystem()->RemoveFromRender(debugDrawComponent->GetRenderObject());
-    entity->RemoveComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);
+    entity->RemoveComponent<StaticOcclusionDebugDrawSystem>();
 }
 
 void StaticOcclusionDebugDrawSystem::UpdateGeometry(StaticOcclusionDebugDrawComponent* component)
 {
     Entity* entity = component->GetEntity();
-    StaticOcclusionComponent* staticOcclusionComponent = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
+    StaticOcclusionComponent* staticOcclusionComponent = entity->GetComponent<StaticOcclusionComponent>();
     DVASSERT(staticOcclusionComponent);
 
     CreateStaticOcclusionDebugDrawVertices(component, staticOcclusionComponent);

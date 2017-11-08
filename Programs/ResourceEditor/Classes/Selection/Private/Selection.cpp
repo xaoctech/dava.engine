@@ -70,7 +70,7 @@ void ResetSelectionComponentMask()
     }
 }
 
-void SetSelectionComponentMask(DAVA::uint64 mask)
+void SetSelectionComponentMask(DAVA::ComponentFlags mask)
 {
     SelectionData* selectionData = REGlobal::GetActiveDataNode<SelectionData>();
     if (selectionData != nullptr)
@@ -79,7 +79,7 @@ void SetSelectionComponentMask(DAVA::uint64 mask)
     }
 }
 
-DAVA::uint64 GetSelectionComponentMask()
+DAVA::ComponentFlags GetSelectionComponentMask()
 {
     SelectionData* selectionData = REGlobal::GetActiveDataNode<SelectionData>();
     if (selectionData != nullptr)

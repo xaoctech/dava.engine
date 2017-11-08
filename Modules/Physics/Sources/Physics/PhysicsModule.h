@@ -7,6 +7,7 @@
 
 #include <Math/Vector.h>
 #include <Base/BaseTypes.h>
+#include <Base/Type.h>
 
 #include <physx/PxFiltering.h>
 
@@ -57,9 +58,9 @@ public:
 
     physx::PxMaterial* GetDefaultMaterial() const;
 
-    const Vector<uint32>& GetBodyComponentTypes() const;
-    const Vector<uint32>& GetShapeComponentTypes() const;
-    const Vector<uint32>& GetCharacterControllerComponentTypes() const;
+    const Vector<const Type*>& GetBodyComponentTypes() const;
+    const Vector<const Type*>& GetShapeComponentTypes() const;
+    const Vector<const Type*>& GetCharacterControllerComponentTypes() const;
 
 private:
     physx::PxFoundation* foundation = nullptr;
@@ -75,9 +76,9 @@ private:
     class PhysicsErrotCallback;
     PhysicsErrotCallback* errorCallback = nullptr;
 
-    Vector<uint32> bodyComponents;
-    Vector<uint32> shapeComponents;
-    Vector<uint32> characterControllerComponents;
+    Vector<const Type*> bodyComponents;
+    Vector<const Type*> shapeComponents;
+    Vector<const Type*> characterControllerComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

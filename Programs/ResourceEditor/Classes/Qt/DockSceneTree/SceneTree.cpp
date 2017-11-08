@@ -432,7 +432,7 @@ protected:
             }
             {
                 std::function<bool(DAVA::Entity*)> checkSlotComponent = [&checkSlotComponent](DAVA::Entity* entity) {
-                    if (entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0)
+                    if (entity->GetComponentCount<DAVA::SlotComponent>() > 0)
                         return true;
 
                     for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); ++i)

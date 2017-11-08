@@ -93,7 +93,7 @@ void EditorParticlesSystem::Draw()
 
     for (auto entity : entities)
     {
-        auto effect = static_cast<DAVA::ParticleEffectComponent*>(entity->GetComponent(DAVA::Component::PARTICLE_EFFECT_COMPONENT));
+        auto effect = entity->GetComponent<DAVA::ParticleEffectComponent>();
         if (effect != nullptr)
         {
             for (DAVA::uint32 i = 0, e = effect->GetEmittersCount(); i < e; ++i)

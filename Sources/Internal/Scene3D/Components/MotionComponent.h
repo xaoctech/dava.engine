@@ -19,8 +19,6 @@ public:
     static const FastName EVENT_SINGLE_ANIMATION_STARTED;
     static const FastName EVENT_SINGLE_ANIMATION_ENDED;
 
-    IMPLEMENT_COMPONENT_TYPE(MOTION_COMPONENT);
-
     MotionComponent();
     ~MotionComponent();
 

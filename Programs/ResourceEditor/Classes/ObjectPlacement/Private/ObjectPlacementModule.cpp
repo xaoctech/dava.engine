@@ -22,7 +22,7 @@ void ObjectPlacementModule::OnContextCreated(DAVA::TArc::DataContext* context)
 
     objectPlacementData->objectPlacementSystem.reset(new ObjectPlacementSystem(scene));
     scene->AddSystem(objectPlacementData->objectPlacementSystem.get(),
-                     MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT),
+                     DAVA::MakeComponentMask<DAVA::RenderComponent>(),
                      DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(objectPlacementData));

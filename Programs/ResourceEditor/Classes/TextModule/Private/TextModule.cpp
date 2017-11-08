@@ -69,7 +69,7 @@ void TextModule::OnContextCreated(DAVA::TArc::DataContext* context)
     std::unique_ptr<TextModuleData> moduleData = std::make_unique<TextModuleData>();
     moduleData->editorTextSystem.reset(new EditorTextSystem(scene));
     moduleData->editorTextSystem->EnableSystem();
-    scene->AddSystem(moduleData->editorTextSystem.get(), MAKE_COMPONENT_MASK(DAVA::Component::TEXT_COMPONENT));
+    scene->AddSystem(moduleData->editorTextSystem.get(), DAVA::MakeComponentMask<DAVA::TextComponent>());
 
     context->CreateData(std::move(moduleData));
 }

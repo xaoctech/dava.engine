@@ -90,9 +90,9 @@ void SceneDumper::DumpLinksRecursive(DAVA::Entity* entity, DAVA::Set<DAVA::FileP
     //Animations
     DumpAnimations(GetMotionComponent(entity), links);
 
-    for (DAVA::uint32 i = 0; i < entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
+    for (DAVA::uint32 i = 0; i < entity->GetComponentCount<DAVA::SlotComponent>(); ++i)
     {
-        DumpSlot(static_cast<DAVA::SlotComponent*>(entity->GetComponent(DAVA::Component::SLOT_COMPONENT, i)), links, redumpScenes);
+        DumpSlot(entity->GetComponent<DAVA::SlotComponent>(i), links, redumpScenes);
     }
 }
 

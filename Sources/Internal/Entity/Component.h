@@ -15,6 +15,7 @@
 namespace DAVA
 {
 class Entity;
+
 class Component : public Serializable, public InspBase
 {
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_COMPONENT)
@@ -84,14 +85,17 @@ public:
     };
 
 public:
-    static Component* CreateByType(uint32 componentType);
+    static Component* CreateByType(const Type* componentType);
+    template <typename T>
+    static T* CreateByType();
 
     ~Component() override;
 
-    virtual uint32 GetType() const = 0;
+    const Type* GetType() const;
+    int32 GetRuntimeType() const;
 
     /**
-    Clone component. Then add cloned component to specified `toEntity` if `toEntity` is not nullptr. Return cloned component.
+        Clone component. Then add cloned component to specified `toEntity` if `toEntity` is not nullptr. Return cloned component.
     */
     virtual Component* Clone(Entity* toEntity) = 0;
 
@@ -105,16 +109,17 @@ public:
         \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*>& dataNodes);
+
     /**
-	 \brief This function optimize component before export.
-	*/
+        \brief This function optimize component before export.
+    */
     virtual void OptimizeBeforeExport()
     {
     }
 
     /**
         \brief Function to get data nodes of requested type to specific container you provide.
-     */
+    */
     template <template <typename> class Container, class T>
     void GetDataNodes(Container<T>& container);
 
@@ -124,16 +129,34 @@ protected:
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };
 
+template <typename T>
+inline T* Component::CreateByType()
+{
+    return DynamicTypeCheck<T*>(CreateByType(Type::Instance<T>()));
+}
+
 inline Entity* Component::GetEntity() const
 {
     return entity;
 };
 
-#define IMPLEMENT_COMPONENT_TYPE(TYPE) \
-    uint32 GetType() const override { return TYPE; }; \
-    static const uint32 C_TYPE = TYPE; 
+inline ComponentFlags MakeComponentMask(int32 runtimeType)
+{
+    DVASSERT(runtimeType > 0);
 
-#define MAKE_COMPONENT_MASK(x) (1ULL << static_cast<DAVA::uint64>(x))
+    ComponentFlags flags;
+    flags.set(static_cast<size_t>(runtimeType));
+    return flags;
+}
+
+ComponentFlags MakeComponentMask(const Type* type);
+
+template <typename T>
+ComponentFlags MakeComponentMask()
+{
+    static_assert(std::is_base_of<Component, T>::value, "");
+    return MakeComponentMask(Type::Instance<T>());
+}
 
 template <template <typename> class Container, class T>
 void Component::GetDataNodes(Container<T>& container)
@@ -147,8 +170,10 @@ void Component::GetDataNodes(Container<T>& container)
         DataNode* obj = *t;
 
         T res = dynamic_cast<T>(obj);
-        if (res)
+        if (res != nullptr)
+        {
             container.push_back(res);
+        }
     }
 }
 };

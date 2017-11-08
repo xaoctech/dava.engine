@@ -93,7 +93,7 @@ OverdrawTesterSystem::~OverdrawTesterSystem()
 
 void OverdrawTesterSystem::AddEntity(DAVA::Entity* entity)
 {
-    OverdrawTesterComponent* comp = static_cast<OverdrawTesterComponent*>(entity->GetComponent(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT));
+    OverdrawTesterComponent* comp = entity->GetComponent<OverdrawTesterComponent>();
     if (comp != nullptr)
     {
         maxStepsCount = comp->GetStepsCount();
@@ -108,7 +108,7 @@ void OverdrawTesterSystem::AddEntity(DAVA::Entity* entity)
 
 void OverdrawTesterSystem::RemoveEntity(Entity* entity)
 {
-    OverdrawTesterComponent* comp = static_cast<OverdrawTesterComponent*>(entity->GetComponent(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT));
+    OverdrawTesterComponent* comp = entity->GetComponent<OverdrawTesterComponent>();
     if (comp != nullptr)
     {
         GetScene()->GetRenderSystem()->RemoveFromRender(comp->GetRenderObject());

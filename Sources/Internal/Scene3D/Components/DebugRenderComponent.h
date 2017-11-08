@@ -35,8 +35,6 @@ protected:
 public:
     DebugRenderComponent();
 
-    IMPLEMENT_COMPONENT_TYPE(DEBUG_RENDER_COMPONENT);
-
     void SetDebugFlags(uint32 debugFlags);
     uint32 GetDebugFlags() const;
 

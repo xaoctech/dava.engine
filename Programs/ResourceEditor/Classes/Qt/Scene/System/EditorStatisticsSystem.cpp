@@ -82,12 +82,12 @@ void EnumerateTriangles(TrianglesData& triangles)
 
 void EnumerateRenderObjectsRecursive(DAVA::Entity* entity, DAVA::Vector<DAVA::RenderObject*>& renderObjects, bool recursive)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT))
+    if (HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>()))
     {
-        DAVA::uint32 componentsCount = entity->GetComponentCount(DAVA::Component::RENDER_COMPONENT);
+        DAVA::uint32 componentsCount = entity->GetComponentCount<DAVA::RenderComponent>();
         for (DAVA::uint32 c = 0; c < componentsCount; ++c)
         {
-            DAVA::RenderComponent* rc = static_cast<DAVA::RenderComponent*>(entity->GetComponent(DAVA::Component::RENDER_COMPONENT, c));
+            DAVA::RenderComponent* rc = entity->GetComponent<DAVA::RenderComponent>(c);
             DAVA::RenderObject* ro = rc->GetRenderObject();
             if (ro != nullptr)
             {
@@ -138,7 +138,7 @@ EditorStatisticsSystem::EditorStatisticsSystem(DAVA::Scene* scene)
 
 void EditorStatisticsSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT))
+    if (HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>()))
     {
         AddComponent(entity, GetRenderComponent(entity));
     }
@@ -146,7 +146,7 @@ void EditorStatisticsSystem::AddEntity(DAVA::Entity* entity)
 
 void EditorStatisticsSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT))
+    if (HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>()))
     {
         RemoveComponent(entity, GetRenderComponent(entity));
     }
