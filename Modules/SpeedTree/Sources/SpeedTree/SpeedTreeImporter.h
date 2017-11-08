@@ -3,6 +3,7 @@
 #ifdef __DAVAENGINE_SPEEDTREE__
 
 #include "DAVAEngine.h"
+#include "FileSystem/XMLParserDelegate.h"
 
 namespace DAVA
 {

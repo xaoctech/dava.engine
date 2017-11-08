@@ -13,6 +13,7 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
+#include "UI/IUIWebViewDelegate.h"
 
 @interface WebViewURLDelegate : NSObject<UIWebViewDelegate>
 {

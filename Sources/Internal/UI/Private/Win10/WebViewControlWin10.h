@@ -5,6 +5,7 @@
 #if defined(__DAVAENGINE_WIN_UAP__) && !defined(DISABLE_NATIVE_WEBVIEW)
 
 #include "UI/IWebViewControl.h"
+#include "UI/IUIWebViewDelegate.h"
 
 namespace DAVA
 {
